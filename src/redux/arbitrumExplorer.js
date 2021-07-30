@@ -206,6 +206,10 @@ const INITIAL_STATE = {
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case ARBITRUM_EXPLORER_CLEAR_STATE:
+      state.arbitrumExplorerAssetsHandle &&
+        clearTimeout(state.arbitrumExplorerAssetsHandle);
+      state.arbitrumExplorerBalancesHandle &&
+        clearTimeout(state.arbitrumExplorerBalancesHandle);
       return {
         ...state,
         ...INITIAL_STATE,

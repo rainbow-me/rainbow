@@ -488,6 +488,7 @@ export default (state = INITIAL_STATE, action) => {
         assetsSocket: action.payload.assetsSocket,
       };
     case EXPLORER_CLEAR_STATE:
+      state.assetsTimeoutHandler && clearTimeout(state.assetsTimeoutHandler);
       return {
         ...state,
         ...INITIAL_STATE,

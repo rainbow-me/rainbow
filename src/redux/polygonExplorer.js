@@ -374,6 +374,10 @@ const INITIAL_STATE = {
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case POLYGON_EXPLORER_CLEAR_STATE:
+      state.polygonExplorerAssetsHandle &&
+        clearTimeout(state.polygonExplorerAssetsHandle);
+      state.polygonExplorerBalancesHandle &&
+        clearTimeout(state.polygonExplorerBalancesHandle);
       return {
         ...state,
         ...INITIAL_STATE,

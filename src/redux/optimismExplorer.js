@@ -195,6 +195,10 @@ const INITIAL_STATE = {
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case OPTIMISM_EXPLORER_CLEAR_STATE:
+      state.optimismExplorerAssetsHandle &&
+        clearTimeout(state.optimismExplorerAssetsHandle);
+      state.optimismExplorerBalancesHandle &&
+        clearTimeout(state.optimismExplorerBalancesHandle);
       return {
         ...state,
         ...INITIAL_STATE,
