@@ -65,6 +65,7 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import {
+  loadWallet,
   sendTransaction,
   signMessage,
   signPersonalMessage,
@@ -510,13 +511,20 @@ export default function TransactionConfirmationScreen() {
     let result = null;
 
     try {
+      const existingWallet = await loadWallet(
+        accountInfo.address,
+        true,
+        provider
+      );
       if (sendInsteadOfSign) {
         result = await sendTransaction({
+          existingWallet,
           provider,
           transaction: txPayloadUpdated,
         });
       } else {
         result = await signTransaction({
+          existingWallet,
           provider,
           transaction: txPayloadUpdated,
         });
@@ -583,6 +591,7 @@ export default function TransactionConfirmationScreen() {
     gasLimit,
     network,
     provider,
+    accountInfo.address,
     callback,
     requestId,
     closeScreen,
@@ -611,15 +620,26 @@ export default function TransactionConfirmationScreen() {
     } else if (isSignSecondParamType(method)) {
       message = params?.[1];
     }
+    const existingWallet = await loadWallet(
+      accountInfo.address,
+      true,
+      provider
+    );
     switch (method) {
       case SIGN:
-        flatFormatSignature = await signMessage(message);
+        flatFormatSignature = await signMessage(message, existingWallet);
         break;
       case PERSONAL_SIGN:
-        flatFormatSignature = await signPersonalMessage(message);
+        flatFormatSignature = await signPersonalMessage(
+          message,
+          existingWallet
+        );
         break;
       case SIGN_TYPED_DATA:
-        flatFormatSignature = await signTypedDataMessage(message);
+        flatFormatSignature = await signTypedDataMessage(
+          message,
+          existingWallet
+        );
         break;
       default:
         break;
