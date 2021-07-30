@@ -1,4 +1,5 @@
 import { toLower } from 'lodash';
+import isEqual from 'react-fast-compare';
 import {
   COVALENT_ANDROID_API_KEY,
   COVALENT_IOS_API_KEY,
@@ -16,6 +17,7 @@ import {
 } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 
+let lastUpdatePayload = null;
 // -- Constants --------------------------------------- //
 const ARBITRUM_EXPLORER_CLEAR_STATE = 'explorer/ARBITRUM_EXPLORER_CLEAR_STATE';
 const ARBITRUM_EXPLORER_SET_BALANCE_HANDLER =
@@ -147,19 +149,24 @@ export const arbitrumExplorerInit = () => async (dispatch, getState) => {
       });
     }
 
-    dispatch(
-      addressAssetsReceived(
-        {
-          meta: {
-            address: accountAddress,
-            currency: nativeCurrency,
-            status: 'ok',
+    const newPayload = { assets };
+
+    if (!isEqual(lastUpdatePayload, newPayload)) {
+      dispatch(
+        addressAssetsReceived(
+          {
+            meta: {
+              address: accountAddress,
+              currency: nativeCurrency,
+              status: 'ok',
+            },
+            payload: newPayload,
           },
-          payload: { assets },
-        },
-        true
-      )
-    );
+          true
+        )
+      );
+      lastUpdatePayload = newPayload;
+    }
 
     const arbitrumExplorerBalancesHandle = setTimeout(
       fetchAssetsBalancesAndPrices,

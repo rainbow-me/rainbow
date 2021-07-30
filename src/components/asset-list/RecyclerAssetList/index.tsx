@@ -35,11 +35,116 @@ import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
 
 import LayoutItemAnimator from './LayoutItemAnimator';
+import { EthereumAddress } from '@rainbow-me/entities';
 import { usePrevious } from '@rainbow-me/hooks';
 import { deviceUtils, logger } from '@rainbow-me/utils';
 
+const extractCollectiblesIdFromRow = (row: {
+  item: {
+    tokens: { asset_contract: { address: EthereumAddress }; id: string }[][];
+  };
+}) => {
+  try {
+    let tokenAddresses = '';
+    row.item?.tokens?.forEach(
+      (
+        token: { asset_contract: { address: EthereumAddress }; id: string }[]
+      ) => {
+        token.forEach(
+          (individualToken: {
+            asset_contract: { address: EthereumAddress };
+            id: string;
+          }) => {
+            tokenAddresses += `${individualToken?.asset_contract?.address}|${individualToken.id}||`;
+          }
+        );
+      }
+    );
+    return tokenAddresses;
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
+};
+
+const extractRelevantAssetInfo = (asset: {
+  address: EthereumAddress;
+  balance: { display: string };
+  price: { relative_change_24h: string };
+  native: { balance: { display: string } };
+}) => {
+  try {
+    const {
+      address,
+      balance: { display: balanceDisplay },
+      price: { relative_change_24h: relativeChange24h },
+      native: {
+        balance: { display: nativeBalanceDisplay },
+      },
+    } = asset;
+    return {
+      address,
+      balanceDisplay,
+      nativeBalanceDisplay,
+      relativeChange24h,
+    };
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
+};
+
+const extractPoolRelevantAssetsInfo = (data: any[]) => {
+  try {
+    return data?.map(asset => ({
+      address: asset.address,
+      balanceDisplay: asset.balance?.display,
+      nativeBalanceDisplay: asset.native?.balance?.display,
+      priceDisplay: asset.price?.value,
+      relativeChange24h: asset.price?.relative_change_24h,
+      totalNativeDisplay: asset.totalNativeDisplay,
+    }));
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
+};
+
 const defaultIndices = [0];
-const isEqualDataProvider = new DataProvider(isEqual);
+const isEqualDataProvider = new DataProvider((r1, r2) => {
+  // Last placeholder
+  if (r1.isLastPlaceholder) {
+    return r1.isLastPlaceholder === r2.isLastPlaceholder;
+    // coinDivider
+  } else if (r1.item?.coinDivider) {
+    return r1.item?.value === r2.item?.value;
+    // Savings
+  } else if (r1.item?.savingsContainer) {
+    return isEqual(r1.item.assets, r2.item?.assets);
+    // Family sections
+  } else if (r1.familySectionIndex === 0 || r1.familySectionIndex > 0) {
+    const nftsRow1 = extractCollectiblesIdFromRow(r1);
+    const nftsRow2 = extractCollectiblesIdFromRow(r2);
+    return (
+      r1.item.childrenAmount === r2.item?.childrenAmount &&
+      r1.item.familyName === r2.item?.familyName &&
+      isEqual(nftsRow1, nftsRow2)
+    );
+
+    // Coin Rows
+  } else if (r1.item?.address) {
+    const slimR1 = extractRelevantAssetInfo(r1.item);
+    const slimR2 = extractRelevantAssetInfo(r2.item);
+    return isEqual(slimR1, slimR2);
+    // Pool rows
+  } else if (r1.data) {
+    const r1Assets = r1.data.map(extractPoolRelevantAssetsInfo);
+    const r2Assets = r2.data?.map(extractPoolRelevantAssetsInfo);
+    return isEqual(r1Assets, r2Assets);
+    // Small balances rows
+  } else if (r1.item?.assets) {
+    const r1Assets = r1.item.assets.map(extractRelevantAssetInfo);
+    const r2Assets = r2.item?.assets?.map(extractRelevantAssetInfo);
+    return isEqual(r1Assets, r2Assets);
+    // Headers, which are very small objects :D
+  } else {
+    return isEqual(r1, r2);
+  }
+});
 
 const StyledRecyclerListView = styled(RecyclerListView)`
   background-color: ${({ theme: { colors } }) => colors.white};

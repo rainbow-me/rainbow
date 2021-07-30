@@ -1,6 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { toLower } from 'lodash';
+import isEqual from 'react-fast-compare';
 import { optimismEnabled } from '../config/debug';
 // eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPrices } from './data';
@@ -16,6 +17,7 @@ import {
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
+let lastUpdatePayload = null;
 // -- Constants --------------------------------------- //
 const OPTIMISM_EXPLORER_CLEAR_STATE = 'explorer/OPTIMISM_EXPLORER_CLEAR_STATE';
 const OPTIMISM_EXPLORER_SET_BALANCE_HANDLER =
@@ -136,19 +138,24 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       });
     }
 
-    dispatch(
-      addressAssetsReceived(
-        {
-          meta: {
-            address: accountAddress,
-            currency: nativeCurrency,
-            status: 'ok',
+    const newPayload = { assets };
+
+    if (!isEqual(lastUpdatePayload, newPayload)) {
+      dispatch(
+        addressAssetsReceived(
+          {
+            meta: {
+              address: accountAddress,
+              currency: nativeCurrency,
+              status: 'ok',
+            },
+            payload: newPayload,
           },
-          payload: { assets },
-        },
-        true
-      )
-    );
+          true
+        )
+      );
+      lastUpdatePayload = newPayload;
+    }
 
     const optimismExplorerBalancesHandle = setTimeout(
       fetchAssetsBalancesAndPrices,
