@@ -35,11 +35,98 @@ import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
 
 import LayoutItemAnimator from './LayoutItemAnimator';
+import { EthereumAddress } from '@rainbow-me/entities';
 import { usePrevious } from '@rainbow-me/hooks';
 import { deviceUtils, logger } from '@rainbow-me/utils';
 
+const extractCollectiblesIdFromRow = (row: {
+  item: {
+    tokens: { asset_contract: { address: EthereumAddress }; id: string }[][];
+  };
+}) => {
+  try {
+    let tokenAddresses = '';
+    row.item?.tokens?.forEach(
+      (
+        token: { asset_contract: { address: EthereumAddress }; id: string }[]
+      ) => {
+        token.forEach(
+          (individualToken: {
+            asset_contract: { address: EthereumAddress };
+            id: string;
+          }) => {
+            tokenAddresses += `${individualToken?.asset_contract?.address}|${individualToken.id}||`;
+          }
+        );
+      }
+    );
+    return tokenAddresses;
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
+};
+const extractRelevantRowInfo = (row: {
+  item: {
+    address: EthereumAddress;
+    balance: { display: string };
+    price: { value: string };
+  };
+  uniqueId: string;
+}) => {
+  try {
+    const {
+      item: {
+        address,
+        balance: { display: balanceDisplay },
+        price: { value: priceValue },
+      },
+      uniqueId,
+    } = row;
+    return { address, balanceDisplay, priceValue, uniqueId };
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
+};
+
 const defaultIndices = [0];
-const isEqualDataProvider = new DataProvider(isEqual);
+const isEqualDataProvider = new DataProvider((r1, r2) => {
+  // Last placeholder
+  if (r1.isLastPlaceholder) {
+    return r1.isLastPlaceholder === r2.isLastPlaceholder;
+    // coinDivider
+  } else if (r1.item?.coinDivider) {
+    return r1.item?.value === r2.item?.value;
+    // Savings
+  } else if (r1.item?.savingsContainer) {
+    return isEqual(r1.item.assets, r2.item?.assets);
+    // Headers
+  } else if (r1.isHeader) {
+    return isEqual(r1, r2);
+    // Family sections
+  } else if (r1.familySectionIndex === 0 || r1.familySectionIndex > 0) {
+    const nftsRow1 = extractCollectiblesIdFromRow(r1);
+    const nftsRow2 = extractCollectiblesIdFromRow(r2);
+    const isFamilyRowEqual =
+      r1.item.childrenAmount === r2.item?.childrenAmount &&
+      r1.item.familyName === r2.item?.familyName &&
+      isEqual(nftsRow1, nftsRow2);
+    if (!isFamilyRowEqual) {
+      logger.log('TOKEN FAMILY NOT EQUAL', nftsRow1, nftsRow2);
+    }
+
+    return isFamilyRowEqual;
+    // Coin Rows
+  } else if (r1.item?.address) {
+    const slimR1 = extractRelevantRowInfo(r1);
+    const slimR2 = extractRelevantRowInfo(r2);
+    const isCoinRowEqual = isEqual(slimR1, slimR2);
+    //logger.debug({ isCoinRowEqual });
+    if (!isCoinRowEqual) {
+      logger.log('COIN ROW NOT EQUAL', slimR1, slimR2);
+    }
+    return isCoinRowEqual;
+  } else {
+    return isEqual(r1, r2);
+  }
+});
 
 const StyledRecyclerListView = styled(RecyclerListView)`
   background-color: ${({ theme: { colors } }) => colors.white};
@@ -746,6 +833,10 @@ function RecyclerAssetList({
     : StickyContainer;
 
   const isInsideBottomSheet = !!useBottomSheet();
+
+  useEffect(() => {
+    logger.debug('SHIT RE-RENDERING => dataProvider');
+  }, [dataProvider]);
 
   return (
     <StyledContainer onLayout={onLayout}>
