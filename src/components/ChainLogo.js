@@ -16,18 +16,18 @@ import { position } from '@rainbow-me/styles';
 
 const ChainIcon = styled(FastImage)`
   height: ${({ size }) => size};
-  margin-top: 1;
+  top: ${({ size }) => (size * 20) / 44 / 5};
   width: ${({ size }) => size};
 `;
 
 const Content = styled(Centered)`
-  ${({ size }) => position.size(size / 2)};
+  ${({ size }) => position.size((size * 20) / 44)};
   overflow: visible;
 `;
 
 export default function ChainLogo({
   network,
-  size = 40,
+  size = 44,
   withShadows = true,
   ...props
 }) {
@@ -59,7 +59,7 @@ export default function ChainLogo({
   if (!source) return null;
 
   return (
-    <Content size={size * 0.5} {...props}>
+    <Content size={size} {...props}>
       <ChainIcon size={size} source={source} />
     </Content>
   );

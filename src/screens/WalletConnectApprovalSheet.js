@@ -49,7 +49,7 @@ import logger from 'logger';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
-    color: colors.lightGrey,
+    color: colors.alpha(colors.blueGreyDark, 0.3),
   })
 )``;
 
@@ -65,29 +65,34 @@ const DappLogo = styled(RequestVendorLogoIcon).attrs(
 `;
 
 const NetworkLabelText = styled(Text).attrs(({ theme: { colors } }) => ({
-  color: colors.blueGreyDark,
-  lineHeight: 17,
-  size: 'lmedium',
+  color: colors.alpha(colors.blueGreyDark, 0.6),
+  letterSpacing: 'roundedMedium',
+  size: 'smedium',
+  weight: 'semibold',
 }))`
   margin-bottom: 4;
+  text-align: ${({ alignRight }) => (alignRight ? 'right' : 'left')};
 `;
 
-const LabelText = styled(Text).attrs(() => ({
-  lineHeight: 22,
+const LabelText = styled(Text).attrs(({ theme: { colors } }) => ({
+  color: colors.dark,
   size: 'large',
   weight: 'heavy',
-}))``;
+}))`
+  text-align: ${({ alignRight }) => (alignRight ? 'right' : 'left')};
+`;
 
 const AvatarWrapper = styled(Column)`
   margin-right: 5;
+  margin-top: 1;
 `;
 
-const SwitchText = styled(Text).attrs(() => ({
-  fontSize: 18,
-  lineHeight: 22,
+const SwitchText = styled(Text).attrs(({ theme: { colors } }) => ({
+  color: colors.dark,
+  size: 'large',
   weight: 'heavy',
 }))`
-  margin-left: 5;
+  text-align: ${({ alignRight }) => (alignRight ? 'right' : 'left')};
 `;
 
 export default function WalletConnectApprovalSheet() {
@@ -295,13 +300,13 @@ export default function WalletConnectApprovalSheet() {
   }, [handleCancel, scam]);
 
   return (
-    <Sheet hideHandle>
+    <Sheet>
       {!Object.keys(meta).length ? (
-        <Centered height={400}>
+        <Centered height={408}>
           <LoadingSpinner size="large" />
         </Centered>
       ) : (
-        <Flex direction="column">
+        <Flex direction="column" height={408}>
           <Centered
             direction="column"
             paddingBottom={5}
@@ -317,8 +322,9 @@ export default function WalletConnectApprovalSheet() {
                   color={colors.alpha(colors.blueGreyDark, 0.6)}
                   lineHeight={29}
                   size="big"
+                  weight="medium"
                 >
-                  <Text color="dark" size="big" weight="bold">
+                  <Text color="dark" size="big" weight="heavy">
                     {dappName}
                   </Text>{' '}
                   {type === WalletConnectApprovalSheetType.connect
@@ -334,14 +340,14 @@ export default function WalletConnectApprovalSheet() {
                 color="appleBlue"
                 lineHeight={29}
                 size="large"
-                weight="bold"
+                weight="heavy"
               >
                 {isAuthenticated ? `􀇻 ${formattedDappUrl}` : formattedDappUrl}
               </Text>
             </Row>
             <Divider color={colors.rowDividerLight} inset={[0, 84]} />
           </Centered>
-          <SheetActionButtonRow>
+          <SheetActionButtonRow paddingBottom={30}>
             <SheetActionButton
               color={colors.white}
               label="Cancel"
@@ -356,10 +362,14 @@ export default function WalletConnectApprovalSheet() {
               onPress={handleConnect}
               size="big"
               testID="wc-connect"
-              weight="bold"
+              weight="heavy"
             />
           </SheetActionButtonRow>
-          <SheetActionButtonRow>
+          <SheetActionButtonRow
+            ignorePaddingTop
+            paddingBottom={21}
+            paddingHorizontal={16.5}
+          >
             <Column>
               <NetworkLabelText>Wallet</NetworkLabelText>
               <ButtonPressAnimation onPress={handlePressChangeWallet}>
@@ -385,12 +395,12 @@ export default function WalletConnectApprovalSheet() {
                   <LabelText numberOfLines={1}>
                     {approvalAccountInfo.accountLabel}
                   </LabelText>
-                  <SwitchText>􀁰</SwitchText>
+                  <SwitchText> 􀁰</SwitchText>
                 </Row>
               </ButtonPressAnimation>
             </Column>
             <Column align="flex-end">
-              <NetworkLabelText>Network</NetworkLabelText>
+              <NetworkLabelText alignRight>Network</NetworkLabelText>
               <ContextMenuButton
                 activeOpacity={0}
                 isMenuPrimaryAction
@@ -405,18 +415,13 @@ export default function WalletConnectApprovalSheet() {
               >
                 <ButtonPressAnimation>
                   <Row>
-                    <Centered marginBottom={0} marginRight={8} marginTop={5}>
+                    <Centered marginRight={5}>
                       <ChainLogo network={approvalNetworkInfo.value} />
                     </Centered>
-                    <LabelText
-                      color={colors.networkColors[approvalNetwork]}
-                      numberOfLines={1}
-                    >
+                    <LabelText alignRight color={colors.dark} numberOfLines={1}>
                       {approvalNetworkInfo.name}
                     </LabelText>
-                    <SwitchText color={colors.networkColors[approvalNetwork]}>
-                      􀁰
-                    </SwitchText>
+                    <SwitchText alignRight> 􀁰</SwitchText>
                   </Row>
                 </ButtonPressAnimation>
               </ContextMenuButton>
