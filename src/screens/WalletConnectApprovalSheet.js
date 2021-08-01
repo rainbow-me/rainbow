@@ -51,7 +51,7 @@ const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
     color: colors.lightGrey,
   })
-);
+)``;
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs(
   ({ theme: { colors } }) => ({
