@@ -71,16 +71,13 @@ const NetworkLabelText = styled(Text).attrs(({ theme: { colors } }) => ({
   weight: 'semibold',
 }))`
   margin-bottom: 4;
-  text-align: ${({ alignRight }) => (alignRight ? 'right' : 'left')};
 `;
 
 const LabelText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.dark,
   size: 'large',
   weight: 'heavy',
-}))`
-  text-align: ${({ alignRight }) => (alignRight ? 'right' : 'left')};
-`;
+}))``;
 
 const AvatarWrapper = styled(Column)`
   margin-right: 5;
@@ -91,9 +88,7 @@ const SwitchText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.dark,
   size: 'large',
   weight: 'heavy',
-}))`
-  text-align: ${({ alignRight }) => (alignRight ? 'right' : 'left')};
-`;
+}))``;
 
 export default function WalletConnectApprovalSheet() {
   const { colors } = useTheme();
@@ -400,7 +395,7 @@ export default function WalletConnectApprovalSheet() {
               </ButtonPressAnimation>
             </Column>
             <Column align="flex-end">
-              <NetworkLabelText alignRight>Network</NetworkLabelText>
+              <NetworkLabelText align="right">Network</NetworkLabelText>
               <ContextMenuButton
                 activeOpacity={0}
                 isMenuPrimaryAction
@@ -418,10 +413,14 @@ export default function WalletConnectApprovalSheet() {
                     <Centered marginRight={5}>
                       <ChainLogo network={approvalNetworkInfo.value} />
                     </Centered>
-                    <LabelText alignRight color={colors.dark} numberOfLines={1}>
+                    <LabelText
+                      align="right"
+                      color={colors.dark}
+                      numberOfLines={1}
+                    >
                       {approvalNetworkInfo.name}
                     </LabelText>
-                    <SwitchText alignRight> 􀁰</SwitchText>
+                    <SwitchText align="right"> 􀁰</SwitchText>
                   </Row>
                 </ButtonPressAnimation>
               </ContextMenuButton>
