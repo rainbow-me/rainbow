@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/native';
-import analytics, { Analytics } from '@segment/analytics-react-native';
+import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { capitalize, get } from 'lodash';
 import React, {
