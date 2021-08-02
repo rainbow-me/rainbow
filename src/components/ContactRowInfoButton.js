@@ -25,9 +25,9 @@ const InfoButton = styled(Centered)`
   flex: 0;
   height: ${CoinRowHeight};
   justify-content: center;
-  left: ${({ prominent }) => (prominent ? -9 : -5)};
+  left: -5;
   position: absolute;
-  top: ${({ prominent }) => (prominent ? -14 : -15)};
+  top: -15;
   width: 68px;
 `;
 
@@ -44,9 +44,9 @@ const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
   width: 30px;
 `;
 
-const Icon = styled(Text).attrs(({ prominent, theme: { colors } }) => ({
+const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, prominent ? 0.5 : 0.3),
+  color: colors.alpha(colors.blueGreyDark, 0.3),
   letterSpacing: 'zero',
   size: 'lmedium',
   weight: 'bold',
@@ -86,13 +86,7 @@ const buildBlockExplorerAction = type => {
   };
 };
 
-const ContactRowInfoButton = ({
-  children,
-  item,
-  network,
-  prominent,
-  scaleTo,
-}) => {
+const ContactRowInfoButton = ({ children, item, network, scaleTo }) => {
   const { setClipboard } = useClipboard();
   const handleCopyAddress = useCallback(
     address => {
@@ -159,7 +153,7 @@ const ContactRowInfoButton = ({
   const Container = children ? Centered : InfoButton;
 
   return (
-    <Container prominent={prominent}>
+    <Container>
       <ContextMenuButton
         activeOpacity={0}
         menuConfig={menuConfig}
@@ -172,7 +166,7 @@ const ContactRowInfoButton = ({
         <ButtonPressAnimation scaleTo={scaleTo}>
           {children || (
             <Circle>
-              <Icon prominent={prominent}>􀅳</Icon>
+              <Icon>􀅳</Icon>
             </Circle>
           )}
         </ButtonPressAnimation>
