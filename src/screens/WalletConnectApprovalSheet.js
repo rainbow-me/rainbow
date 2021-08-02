@@ -41,7 +41,7 @@ import {
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { ethereumUtils, logger } from '@rainbow-me/utils';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
@@ -106,9 +106,6 @@ export default function WalletConnectApprovalSheet() {
   const meta = params?.meta || {};
   const callback = params?.callback;
   const receivedTimestamp = params?.receivedTimestamp;
-
-  logger.log('META IS ', meta);
-
   const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
 
   const checkIfScam = useCallback(
