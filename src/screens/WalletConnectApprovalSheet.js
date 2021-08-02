@@ -223,11 +223,13 @@ export default function WalletConnectApprovalSheet() {
   const handlePressChangeWallet = useCallback(() => {
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
       currentAccountAddress: approvalAccount.address,
-      onChangeWallet: (address, wallet) =>
-        setApprovalAccount({ address, wallet }),
+      onChangeWallet: (address, wallet) => {
+        setApprovalAccount({ address, wallet });
+        goBack();
+      },
       watchOnly: true,
     });
-  }, [approvalAccount.address]);
+  }, [approvalAccount.address, goBack]);
 
   useEffect(() => {
     if (scam) {
