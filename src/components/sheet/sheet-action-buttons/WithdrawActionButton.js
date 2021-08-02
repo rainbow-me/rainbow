@@ -25,7 +25,7 @@ function WithdrawActionButton({
     }
 
     Linking.openURL(
-      `https://app.uniswap.org/#/remove/${token1Address}/${token2Address}`
+      `https://app.uniswap.org/#/remove/v2/${token1Address}/${token2Address}`
     );
   }, [didTrack, symbol, token1Address, token2Address]);
 

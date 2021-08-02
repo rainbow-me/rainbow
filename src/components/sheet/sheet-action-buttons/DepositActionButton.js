@@ -24,7 +24,7 @@ function DepositActionButton({
       setDidTrack(true);
     }
     Linking.openURL(
-      `https://app.uniswap.org/#/add/${token1Address}/${token2Address}`
+      `https://app.uniswap.org/#/add/v2/${token1Address}/${token2Address}`
     );
   }, [didTrack, symbol, token1Address, token2Address]);
 
