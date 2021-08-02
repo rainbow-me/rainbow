@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { captureException } from '@sentry/react-native';
-import { capitalize, get } from 'lodash';
+import { capitalize } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -29,8 +28,6 @@ import {
 import { Text } from '../components/text';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import {
-  dappLogoOverride,
-  dappNameOverride,
   getDappHostname,
   isDappAuthenticated,
 } from '@rainbow-me/helpers/dappNameHandler';
@@ -44,8 +41,7 @@ import {
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
+import { ethereumUtils, logger } from '@rainbow-me/utils';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
@@ -97,8 +93,6 @@ export default function WalletConnectApprovalSheet() {
   const { network, accountAddress } = useAccountSettings();
   const { selectedWallet, walletNames } = useWallets();
   const handled = useRef(false);
-
-  const [meta, setMeta] = useState({});
   const [scam, setScam] = useState(false);
   const [approvalNetwork, setApprovalNetwork] = useState(network);
   const [approvalAccount, setApprovalAccount] = useState({
@@ -109,9 +103,11 @@ export default function WalletConnectApprovalSheet() {
   const type = params?.type || WalletConnectApprovalSheetType.connect;
   const chainId = params?.chainId || 1;
 
+  const meta = params?.meta || {};
   const callback = params?.callback;
-  const walletConnector = params?.walletConnector;
   const receivedTimestamp = params?.receivedTimestamp;
+
+  logger.log('META IS ', meta);
 
   const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
 
@@ -259,44 +255,14 @@ export default function WalletConnectApprovalSheet() {
   }, [approvalAccount.address, goBack]);
 
   useEffect(() => {
-    walletConnector?.on('session_request', (error, payload) => {
-      if (error) {
-        analytics.track('Error on wc session_request', {
-          error,
-          payload,
-        });
-        logger.log('Error on wc session_request', payload);
-        captureException(error);
-        throw error;
-      }
-      const { peerId, peerMeta } = payload.params[0];
-
-      const imageUrl =
-        dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
-      const dappName = dappNameOverride(peerMeta.url) || peerMeta.name;
-      const dappUrl = peerMeta.url;
-      const dappScheme = peerMeta.scheme;
-      analytics.track('Showing Walletconnect session request', {
+    InteractionManager.runAfterInteractions(() => {
+      analytics.track('Received wc connection', {
         dappName,
         dappUrl,
-      });
-      const meta = {
-        dappName,
-        dappScheme,
-        dappUrl,
-        imageUrl,
-        peerId,
-      };
-      setMeta(meta);
-      InteractionManager.runAfterInteractions(() => {
-        analytics.track('Received wc connection', {
-          dappName,
-          dappUrl,
-          waitingTime: (Date.now() - receivedTimestamp) / 1000,
-        });
+        waitingTime: (Date.now() - receivedTimestamp) / 1000,
       });
     });
-  }, [receivedTimestamp, walletConnector]);
+  }, [dappName, dappUrl, receivedTimestamp]);
 
   useEffect(() => {
     if (scam) {
