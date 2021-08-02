@@ -28,11 +28,14 @@ const Content = styled(Column).attrs({ justify: 'space-between' })`
 
 export default function CoinRow({
   address,
+  badgeXPosition,
+  badgeYPosition,
   bottomRowRender,
   children,
   coinIconRender = CoinIcon,
   containerStyles,
   contentStyles,
+  isFirstCoinRow,
   isHidden,
   isPinned,
   isPool,
@@ -52,6 +55,9 @@ export default function CoinRow({
       ) : (
         createElement(coinIconRender, {
           address,
+          badgeXPosition,
+          badgeYPosition,
+          isFirstCoinRow,
           isHidden,
           isPinned,
           symbol,

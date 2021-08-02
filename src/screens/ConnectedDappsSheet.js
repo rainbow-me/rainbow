@@ -7,7 +7,7 @@ import WalletConnectListItem, {
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 
-const MAX_VISIBLE_DAPPS = 5;
+const MAX_VISIBLE_DAPPS = 6;
 
 const ScrollableItems = styled.ScrollView`
   height: ${({ length }) =>
@@ -25,7 +25,7 @@ export default function ConnectedDappsSheet() {
   }, [goBack, walletConnectorsByDappName.length]);
 
   return (
-    <Sheet borderRadius={30}>
+    <Sheet borderRadius={39}>
       <SheetTitle>Connected apps</SheetTitle>
       <ScrollableItems length={walletConnectorsByDappName.length}>
         {walletConnectorsByDappName.map(

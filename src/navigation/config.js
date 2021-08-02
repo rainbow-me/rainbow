@@ -94,10 +94,10 @@ export const sendConfirmationSheetConfig = {
   options: ({ route: { params = {} } }) => {
     let height = params.shouldShowChecks
       ? SendConfirmationSheetHeight
-      : SendConfirmationSheetHeight - 150;
+      : SendConfirmationSheetHeight - 104;
 
     if (!params.isL2) {
-      height -= 60;
+      height -= 59;
     }
     return {
       ...buildCoolModalConfig({

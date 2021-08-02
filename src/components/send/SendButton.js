@@ -32,7 +32,7 @@ export default function SendButton({
       disabledBackgroundColor={colorForAsset}
       hideInnerBorder
       isAuthorizing={isAuthorizing}
-      label={disabled ? 'Complete checks' : 'Hold to Send'}
+      label={disabled ? '􀄨 Complete checks' : 'Hold to Send'}
       onLongPress={onLongPress}
       parentHorizontalPadding={19}
       shadows={disabled ? shadows.disabled : shadows.colored}

@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import { SORT_DIRECTION } from '../../hooks/useUniswapPools';
 import { ButtonPressAnimation } from '../animations';
 import { AssetListItemSkeleton } from '../asset-list';
-import UniswapLogo from '../icons/UniswapLogo';
 import { UniswapPoolListRow } from '../investment-cards';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
@@ -100,7 +99,7 @@ export default function UniswapPools({
   alwaysShowMoreButton,
 }) {
   const listRef = useRef(null);
-  const { colors, isDarkMode } = useTheme();
+  const { colors } = useTheme();
   const { network } = useAccountSettings();
   const [showAllState, setShowAll] = useState(false);
   const showAll = forceShowAll === undefined ? showAllState : forceShowAll;
@@ -242,26 +241,13 @@ export default function UniswapPools({
   }
 
   return (
-    <Column marginTop={32}>
+    <Column marginTop={25}>
       <Row marginBottom={12} paddingHorizontal={19}>
-        <UniswapLogo
-          borderRadius={8}
-          height={22}
-          imageStyle={{
-            height: 18,
-            marginBottom: 2.5,
-            marginRight: 1,
-            width: 16,
-          }}
-          marginRight={7}
-          marginTop={android ? 8 : 1}
-          shadowBlur={4.5}
-          shadowColor={isDarkMode ? colors.shadow : colors.purpleUniswap}
-          shadowOffset={{ height: 3, width: 0 }}
-          shadowOpacity={0.2}
-          width={22}
-        />
+        <Text size="large" style={{ marginTop: -4 }} weight="heavy">
+          🐋
+        </Text>
         <Text size="larger" testID="pools-section" weight="heavy">
+          {' '}
           Uniswap Pools
         </Text>
       </Row>

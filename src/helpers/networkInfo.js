@@ -8,7 +8,7 @@ const networkInfo = {
     disabled: false,
     exchange_enabled: true,
     faucet_url: null,
-    name: 'Mainnet',
+    name: 'Ethereum',
     value: networkTypes.mainnet,
   },
   [`${networkTypes.ropsten}`]: {

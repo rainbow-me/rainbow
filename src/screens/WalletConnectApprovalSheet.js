@@ -173,7 +173,10 @@ export default function WalletConnectApprovalSheet() {
     return {
       chainId: ethereumUtils.getChainIdFromNetwork(approvalNetwork),
       color: networkInfo[approvalNetwork]?.color,
-      name: capitalize(value?.charAt(0)) + value?.slice(1),
+      name:
+        value === 'mainnet'
+          ? 'Ethereum'
+          : capitalize(value?.charAt(0)) + value?.slice(1),
       value,
     };
   }, [approvalNetwork]);

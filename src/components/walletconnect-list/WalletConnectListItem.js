@@ -44,7 +44,7 @@ const LabelText = styled(Text).attrs(() => ({
 
 const androidContextMenuActions = [
   'Switch Network',
-  'Switch Account',
+  'Switch Wallet',
   'Disconnect',
 ];
 

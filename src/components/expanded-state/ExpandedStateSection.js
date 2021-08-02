@@ -7,14 +7,15 @@ import { padding } from '@rainbow-me/styles';
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
 })`
-  ${padding(android ? 10 : 19, 19, android ? 12 : 24)};
+  ${padding(android ? 19 : 36, 19, 24)};
+  padding-top: ${({ isL2 }) => (isL2 ? 24 : android ? 19 : 36)};
 `;
 
 export default function ExpandedStateSection({ children, title, ...props }) {
   const { colors } = useTheme();
   return (
     <Container {...props}>
-      <Text color={colors.dark} size="larger" weight="bold">
+      <Text color={colors.dark} size="larger" weight="heavy">
         {title}
       </Text>
       {typeof children === 'string' ? (

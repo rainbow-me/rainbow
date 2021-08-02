@@ -20,18 +20,18 @@ import { useAccountProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { margin, padding, position } from '@rainbow-me/styles';
-import { abbreviations, defaultProfileUtils } from '@rainbow-me/utils';
+import { defaultProfileUtils } from '@rainbow-me/utils';
 const WalletProfileAddressText = styled(TruncatedAddress).attrs(
   ({ theme: { colors } }) => ({
     align: 'center',
     color: colors.alpha(colors.blueGreyDark, 0.6),
-    firstSectionLength: abbreviations.defaultNumCharsPerSection,
-    size: 'lmedium',
+    firstSectionLength: 4,
+    size: 'large',
     truncationLength: 4,
-    weight: 'medium',
+    weight: 'bold',
   })
 )`
-  ${margin(9, 0, 5)};
+  ${margin(6, 0, 5)};
   width: 100%;
 `;
 

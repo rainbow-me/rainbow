@@ -1,11 +1,11 @@
 import { isNil } from 'lodash';
-import React, { Fragment } from 'react';
+import React from 'react';
 import ReactCoinIcon from 'react-coin-icon';
+import { View } from 'react-native';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import ChainBadge from './ChainBadge';
 import CoinIconFallback from './CoinIconFallback';
-import CoinIconIndicator from './CoinIconIndicator';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { getTokenMetadata, isETH, magicMemo } from '@rainbow-me/utils';
 
@@ -17,14 +17,12 @@ const StyledCoinIcon = styled(ReactCoinIcon)`
 
 const CoinIcon = ({
   address = 'eth',
+  badgeXPosition,
+  badgeYPosition,
   forcedShadowColor,
-  isHidden,
-  isPinned,
   size = CoinIconSize,
   symbol = '',
   type,
-  badgeXPosition,
-  badgeYPosition,
   ...props
 }) => {
   const tokenMetadata = getTokenMetadata(props.mainnet_address || address);
@@ -34,8 +32,7 @@ const CoinIcon = ({
     !isETH(props.mainnet_address || address) && isNil(tokenMetadata);
 
   return (
-    <Fragment>
-      {(isPinned || isHidden) && <CoinIconIndicator isPinned={isPinned} />}
+    <View>
       <StyledCoinIcon
         {...props}
         address={address}
@@ -56,7 +53,7 @@ const CoinIcon = ({
         badgeXPosition={badgeXPosition}
         badgeYPosition={badgeYPosition}
       />
-    </Fragment>
+    </View>
   );
 };
 

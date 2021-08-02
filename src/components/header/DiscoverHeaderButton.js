@@ -81,7 +81,7 @@ export default function DiscoverHeaderButton() {
         <DiscoverButtonContent>
           <Text
             color={colors.alpha(colors.blueGreyDark, isDarkMode ? 1 : 0.8)}
-            letterSpacing="roundedTight"
+            letterSpacing="roundedMedium"
             size="large"
             weight="bold"
             {...(android && { lineHeight: 32 })}

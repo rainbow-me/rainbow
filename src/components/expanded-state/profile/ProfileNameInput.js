@@ -15,7 +15,7 @@ const NameInput = styled(Input).attrs({
   size: 'big',
   spellCheck: false,
 })`
-  ${fontWithWidth(fonts.weight.bold)};
+  ${fontWithWidth(fonts.weight.heavy)};
   ${android ? 'height: 70; margin-vertical: -8;' : ''}
   width: 100%;
 `;
@@ -48,7 +48,7 @@ function ProfileNameInput(
 
   return (
     <Fragment>
-      <PlaceholderText ref={placeholderRef} />
+      <PlaceholderText ref={placeholderRef} weight="heavy" />
       <NameInput
         {...props}
         onChange={handleChange}

@@ -20,15 +20,15 @@ import {
 } from '@rainbow-me/utils';
 
 const InfoButton = styled(Centered)`
-  ${padding(8, 0)}
+  ${padding(0, 0)}
   align-items: center;
-  justify-content: center;
   flex: 0;
   height: ${CoinRowHeight};
+  justify-content: center;
+  left: ${({ prominent }) => (prominent ? -9 : -5)};
   position: absolute;
+  top: ${({ prominent }) => (prominent ? -14 : -15)};
   width: 68px;
-  top: -15;
-  left: -5;
 `;
 
 const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
@@ -39,14 +39,14 @@ const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
 )`
   border-radius: 15px;
   height: 30px;
+  margin: 10px;
   overflow: hidden;
   width: 30px;
-  margin: 10px;
 `;
 
-const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
+const Icon = styled(Text).attrs(({ prominent, theme: { colors } }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.3),
+  color: colors.alpha(colors.blueGreyDark, prominent ? 0.5 : 0.3),
   letterSpacing: 'zero',
   size: 'lmedium',
   weight: 'bold',
@@ -86,7 +86,13 @@ const buildBlockExplorerAction = type => {
   };
 };
 
-const ContactRowInfoButton = ({ item, network }) => {
+const ContactRowInfoButton = ({
+  children,
+  item,
+  network,
+  prominent,
+  scaleTo,
+}) => {
   const { setClipboard } = useClipboard();
   const handleCopyAddress = useCallback(
     address => {
@@ -150,8 +156,10 @@ const ContactRowInfoButton = ({ item, network }) => {
     [item, handleCopyAddress]
   );
 
+  const Container = children ? Centered : InfoButton;
+
   return (
-    <InfoButton>
+    <Container prominent={prominent}>
       <ContextMenuButton
         activeOpacity={0}
         menuConfig={menuConfig}
@@ -161,13 +169,15 @@ const ContactRowInfoButton = ({ item, network }) => {
         useActionSheetFallback={false}
         wrapNativeComponent={false}
       >
-        <ButtonPressAnimation>
-          <Circle>
-            <Icon>􀅳</Icon>
-          </Circle>
+        <ButtonPressAnimation scaleTo={scaleTo}>
+          {children || (
+            <Circle>
+              <Icon prominent={prominent}>􀅳</Icon>
+            </Circle>
+          )}
         </ButtonPressAnimation>
       </ContextMenuButton>
-    </InfoButton>
+    </Container>
   );
 };
 
