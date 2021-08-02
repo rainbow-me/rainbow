@@ -24,32 +24,43 @@ export const networksMenuItems = () =>
       },
     }));
 
-export const changeConnectionMenuItems = () => [
-  {
-    actionKey: 'disconnect',
-    actionTitle: 'Disconnect',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'xmark.circle',
+const networksAvailable = networksMenuItems();
+
+export const changeConnectionMenuItems = () => {
+  const baseOptions = [
+    {
+      actionKey: 'disconnect',
+      actionTitle: 'Disconnect',
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'xmark.circle',
+      },
     },
-  },
-  {
-    actionKey: 'switch-account',
-    actionTitle: 'Switch Account',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'person.2',
+    {
+      actionKey: 'switch-account',
+      actionTitle: 'Switch Account',
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'person.2',
+      },
     },
-  },
-  {
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'cloud',
-    },
-    menuItems: networksMenuItems(),
-    menuTitle: 'Switch Network',
-  },
-];
+  ];
+
+  if (networksAvailable.length > 1) {
+    return [
+      ...baseOptions,
+      {
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'cloud',
+        },
+        menuItems: networksAvailable,
+        menuTitle: 'Switch Network',
+      },
+    ];
+  }
+  return baseOptions;
+};
 
 export const androidShowNetworksActionSheet = callback => {
   showActionSheetWithOptions(

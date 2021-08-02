@@ -20,6 +20,7 @@ import {
   androidShowNetworksActionSheet,
   changeConnectionMenuItems,
   NETWORK_MENU_ACTION_KEY_FILTER,
+  networksMenuItems,
 } from '@rainbow-me/helpers/walletConnectNetworks';
 import {
   useAccountSettings,
@@ -42,11 +43,13 @@ const LabelText = styled(Text).attrs(() => ({
   weight: 'semibold',
 }))``;
 
-const androidContextMenuActions = [
-  'Switch Network',
-  'Switch Account',
-  'Disconnect',
-];
+const networksAvailable = networksMenuItems();
+
+const androidContextMenuActions = ['Switch Account', 'Disconnect'];
+
+if (networksAvailable.length > 1) {
+  androidContextMenuActions.splice(0, 0, 'Switch Network');
+}
 
 const AvatarWrapper = styled(Column)`
   margin-right: 5;
@@ -134,7 +137,7 @@ export default function WalletConnectListItem({
         title: dappName,
       },
       idx => {
-        if (idx === 0) {
+        if (idx === 0 && networksAvailable.length > 1) {
           androidShowNetworksActionSheet(({ chainId }) => {
             walletConnectUpdateSessionConnectorByDappName(
               dappName,
@@ -142,9 +145,9 @@ export default function WalletConnectListItem({
               chainId
             );
           });
-        } else if (idx === 1) {
+        } else if ((idx === 0 && networksAvailable.length === 1) || idx === 1) {
           handlePressChangeWallet();
-        } else if (idx === 2) {
+        } else if ((idx === 1 && networksAvailable.length === 1) || idx === 2) {
           walletConnectDisconnectAllByDappName(dappName);
           analytics.track(
             'Manually disconnected from WalletConnect connection',
