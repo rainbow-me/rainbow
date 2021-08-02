@@ -304,6 +304,10 @@ export default function WalletConnectApprovalSheet() {
     }
   }, [handleCancel, scam]);
 
+  const menuItems = useMemo(() => networksMenuItems(), []);
+  const NetworkSwitcherParent =
+    menuItems.length > 1 ? ContextMenuButton : React.Fragment;
+
   return (
     <Sheet>
       {!Object.keys(meta).length ? (
@@ -406,12 +410,12 @@ export default function WalletConnectApprovalSheet() {
             </Column>
             <Column align="flex-end">
               <NetworkLabelText align="right">Network</NetworkLabelText>
-              <ContextMenuButton
+              <NetworkSwitcherParent
                 activeOpacity={0}
                 isMenuPrimaryAction
                 {...(android ? { onPress: onPressAndroid } : {})}
                 menuConfig={{
-                  menuItems: networksMenuItems(),
+                  menuItems,
                   menuTitle: 'Available Networks',
                 }}
                 onPressMenuItem={handleOnPressNetworksMenuItem}
@@ -430,10 +434,12 @@ export default function WalletConnectApprovalSheet() {
                     >
                       {approvalNetworkInfo.name}
                     </LabelText>
-                    <SwitchText align="right"> 􀁰</SwitchText>
+                    {menuItems.length > 1 && (
+                      <SwitchText align="right"> 􀁰</SwitchText>
+                    )}
                   </Row>
                 </ButtonPressAnimation>
-              </ContextMenuButton>
+              </NetworkSwitcherParent>
             </Column>
           </SheetActionButtonRow>
         </Flex>
