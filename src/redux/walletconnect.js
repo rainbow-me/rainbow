@@ -115,68 +115,47 @@ export const walletConnectOnSessionRequest = (
   callback
 ) => async dispatch => {
   let walletConnector = null;
+  const receivedTimestamp = Date.now();
   try {
     const { clientMeta, push } = await getNativeOptions();
     try {
       walletConnector = new WalletConnect({ clientMeta, uri }, push);
-      walletConnector.on('session_request', (error, payload) => {
-        if (error) {
-          analytics.track('Error on wc session_request', {
-            error,
-            payload,
-          });
-          logger.log('Error on wc session_request', payload);
-          captureException(error);
-          throw error;
-        }
-
-        const { peerId, peerMeta } = payload.params[0];
-
-        const imageUrl =
-          dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
-        const dappName = dappNameOverride(peerMeta.url) || peerMeta.name;
-        const dappUrl = peerMeta.url;
-        const dappScheme = peerMeta.scheme;
-
-        analytics.track('Showing Walletconnect session request', {
+      Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
+        callback: async (
+          approved,
+          chainId,
+          accountAddress,
+          peerId,
+          dappScheme,
           dappName,
-          dappUrl,
-        });
-
-        Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
-          callback: async (approved, chainId, accountAddress) => {
-            if (approved) {
-              dispatch(setPendingRequest(peerId, walletConnector));
-              dispatch(
-                walletConnectApproveSession(
-                  peerId,
-                  callback,
-                  dappScheme,
-                  chainId,
-                  accountAddress
-                )
-              );
-              analytics.track('Approved new WalletConnect session', {
-                dappName,
-                dappUrl,
-              });
-            } else {
-              await dispatch(
-                walletConnectRejectSession(peerId, walletConnector)
-              );
-              callback && callback('reject', dappScheme);
-              analytics.track('Rejected new WalletConnect session', {
-                dappName,
-                dappUrl,
-              });
-            }
-          },
-          meta: {
-            dappName,
-            dappUrl,
-            imageUrl,
-          },
-        });
+          dappUrl
+        ) => {
+          if (approved) {
+            dispatch(setPendingRequest(peerId, walletConnector));
+            dispatch(
+              walletConnectApproveSession(
+                peerId,
+                callback,
+                dappScheme,
+                chainId,
+                accountAddress
+              )
+            );
+            analytics.track('Approved new WalletConnect session', {
+              dappName,
+              dappUrl,
+            });
+          } else {
+            await dispatch(walletConnectRejectSession(peerId, walletConnector));
+            callback && callback('reject', dappScheme);
+            analytics.track('Rejected new WalletConnect session', {
+              dappName,
+              dappUrl,
+            });
+          }
+        },
+        receivedTimestamp,
+        walletConnector,
       });
     } catch (error) {
       logger.log('Exception during wc session_request');
