@@ -224,8 +224,8 @@ export default function WalletConnectApprovalSheet() {
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
       currentAccountAddress: approvalAccount.address,
       onChangeWallet: (address, wallet) => {
-        goBack();
         setApprovalAccount({ address, wallet });
+        goBack();
       },
       watchOnly: true,
     });
