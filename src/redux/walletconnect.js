@@ -26,6 +26,7 @@ import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove } from './requests';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
+import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { convertHexToString } from '@rainbow-me/helpers/utilities';
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
@@ -274,8 +275,9 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
         });
       return;
     } else {
-      const { selected } = getState().wallets;
-      const selectedWallet = selected || {};
+      const { wallets } = getState().wallets;
+      const address = walletConnector._accounts?.[0];
+      const selectedWallet = findWalletWithAccount(wallets, address);
       const isReadOnlyWallet = selectedWallet.type === WalletTypes.readOnly;
       if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
         watchingAlert();
