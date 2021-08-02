@@ -6,7 +6,6 @@ import {
   COVALENT_ANDROID_API_KEY,
   COVALENT_IOS_API_KEY,
 } from 'react-native-dotenv';
-import { polygonEnabled } from '../config/debug';
 // eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPrices } from './data';
 // eslint-disable-next-line import/no-cycle
@@ -183,7 +182,7 @@ const fetchAssetBalances = async (tokens, address) => {
 };
 
 export const polygonExplorerInit = () => async (dispatch, getState) => {
-  if (!polygonEnabled) return;
+  if (networkInfo[networkTypes.polygon]?.disabled) return;
   const { accountAddress, nativeCurrency } = getState().settings;
   const { assets: allAssets, genericAssets } = getState().data;
   const { coingeckoIds } = getState().additionalAssetsData;
