@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/native';
-import analytics from '@segment/analytics-react-native';
+import analytics, { Analytics } from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { capitalize, get } from 'lodash';
 import React, {
@@ -111,6 +111,7 @@ export default function WalletConnectApprovalSheet() {
 
   const callback = params?.callback;
   const walletConnector = params?.walletConnector;
+  const receivedTimestamp = params?.receivedTimestamp;
 
   const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
 
@@ -285,8 +286,15 @@ export default function WalletConnectApprovalSheet() {
         peerId,
       };
       setMeta(meta);
+      InteractionManager.runAfterInteractions(() => {
+        analytics.track('Received wc connection', {
+          dappName,
+          dappUrl,
+          waitingTime: (Date.now() - receivedTimestamp) / 1000,
+        });
+      });
     });
-  }, [walletConnector]);
+  }, [receivedTimestamp, walletConnector]);
 
   useEffect(() => {
     if (scam) {

@@ -115,6 +115,7 @@ export const walletConnectOnSessionRequest = (
   callback
 ) => async dispatch => {
   let walletConnector = null;
+  const receivedTimestamp = Date.now();
   try {
     const { clientMeta, push } = await getNativeOptions();
     try {
@@ -153,6 +154,7 @@ export const walletConnectOnSessionRequest = (
             });
           }
         },
+        receivedTimestamp,
         walletConnector,
       });
     } catch (error) {
