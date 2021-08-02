@@ -25,6 +25,7 @@ import Divider from '../components/Divider';
 import L2Disclaimer from '../components/L2Disclaimer';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
+import ImageAvatar from '../components/contacts/ImageAvatar';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import {
@@ -48,11 +49,12 @@ import {
   toHex,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
+import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
+import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   useAccountAssets,
-  useAccountProfile,
   useAccountSettings,
   useBooleanState,
   useDimensions,
@@ -63,6 +65,7 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import {
+  loadWallet,
   sendTransaction,
   signMessage,
   signPersonalMessage,
@@ -156,14 +159,8 @@ export default function TransactionConfirmationScreen() {
   const [methodName, setMethodName] = useState(null);
   const calculatingGasLimit = useRef(false);
   const [isBalanceEnough, setIsBalanceEnough] = useState(true);
-  const {
-    accountAddress,
-    accountColor,
-    accountName,
-    accountSymbol,
-  } = useAccountProfile();
   const { height: deviceHeight } = useDimensions();
-  const { wallets } = useWallets();
+  const { wallets, walletNames } = useWallets();
   const balances = useWalletBalances(wallets);
   const { nativeCurrency } = useAccountSettings();
   const keyboardHeight = useKeyboardHeight();
@@ -200,6 +197,21 @@ export default function TransactionConfirmationScreen() {
   } = routeParams;
 
   const walletConnector = walletConnectors[peerId];
+
+  const accountInfo = useMemo(() => {
+    const address = walletConnector._accounts?.[0];
+    const selectedWallet = findWalletWithAccount(wallets, address);
+    const profileInfo = getAccountProfileInfo(
+      selectedWallet,
+      walletNames,
+      network,
+      address
+    );
+    return {
+      ...profileInfo,
+      address,
+    };
+  }, [network, walletConnector._accounts, walletNames, wallets]);
 
   const isL2 = useMemo(() => {
     return isL2Network(network);
@@ -274,19 +286,18 @@ export default function TransactionConfirmationScreen() {
   );
 
   useEffect(() => {
-    analytics.track('Shown Walletconnect signing request');
-  }, []);
-
-  useEffect(() => {
     if (openAutomatically && !isEmulatorSync()) {
       Vibration.vibrate();
     }
     InteractionManager.runAfterInteractions(() => {
-      if (!isMessageRequest && network) {
-        startPollingGasPrices(network);
-        fetchMethodName(params[0].data);
-      } else {
-        setMethodName(lang.t('wallet.message_signing.request'));
+      if (network) {
+        if (!isMessageRequest) {
+          startPollingGasPrices(network);
+          fetchMethodName(params[0].data);
+        } else {
+          setMethodName(lang.t('wallet.message_signing.request'));
+        }
+        analytics.track('Shown Walletconnect signing request');
       }
     });
   }, [
@@ -500,13 +511,20 @@ export default function TransactionConfirmationScreen() {
     let result = null;
 
     try {
+      const existingWallet = await loadWallet(
+        accountInfo.address,
+        true,
+        provider
+      );
       if (sendInsteadOfSign) {
         result = await sendTransaction({
+          existingWallet,
           provider,
           transaction: txPayloadUpdated,
         });
       } else {
         result = await signTransaction({
+          existingWallet,
           provider,
           transaction: txPayloadUpdated,
         });
@@ -573,6 +591,7 @@ export default function TransactionConfirmationScreen() {
     gasLimit,
     network,
     provider,
+    accountInfo.address,
     callback,
     requestId,
     closeScreen,
@@ -601,15 +620,26 @@ export default function TransactionConfirmationScreen() {
     } else if (isSignSecondParamType(method)) {
       message = params?.[1];
     }
+    const existingWallet = await loadWallet(
+      accountInfo.address,
+      true,
+      provider
+    );
     switch (method) {
       case SIGN:
-        flatFormatSignature = await signMessage(message);
+        flatFormatSignature = await signMessage(message, existingWallet);
         break;
       case PERSONAL_SIGN:
-        flatFormatSignature = await signPersonalMessage(message);
+        flatFormatSignature = await signPersonalMessage(
+          message,
+          existingWallet
+        );
         break;
       case SIGN_TYPED_DATA:
-        flatFormatSignature = await signTypedDataMessage(message);
+        flatFormatSignature = await signTypedDataMessage(
+          message,
+          existingWallet
+        );
         break;
       default:
         break;
@@ -917,15 +947,24 @@ export default function TransactionConfirmationScreen() {
                 <WalletLabel>Wallet</WalletLabel>
                 <RowWithMargins margin={5}>
                   <Column marginTop={ios ? 2 : 8}>
-                    <ContactAvatar
-                      color={
-                        isNaN(accountColor) ? colors.skeleton : accountColor
-                      }
-                      size="smaller"
-                      value={accountSymbol}
-                    />
+                    {accountInfo.accountImage ? (
+                      <ImageAvatar
+                        image={accountInfo.accountImage}
+                        size="smaller"
+                      />
+                    ) : (
+                      <ContactAvatar
+                        color={
+                          isNaN(accountInfo.accountColor)
+                            ? colors.skeleton
+                            : accountInfo.accountColor
+                        }
+                        size="smaller"
+                        value={accountInfo.accountSymbol}
+                      />
+                    )}
                   </Column>
-                  <WalletText>{accountName}</WalletText>
+                  <WalletText>{accountInfo.accountName}</WalletText>
                 </RowWithMargins>
               </Column>
               <Column align="flex-end" flex={1} justify="end">
@@ -938,7 +977,7 @@ export default function TransactionConfirmationScreen() {
                   {isBalanceEnough === false &&
                     isSufficientGas !== undefined &&
                     '􀇿 '}
-                  {balances[accountAddress]} ETH
+                  {balances[accountInfo.address]} ETH
                 </WalletText>
               </Column>
             </RowWithMargins>
