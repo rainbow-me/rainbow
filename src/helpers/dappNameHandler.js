@@ -4,9 +4,9 @@ const buildAssetUrl = hostname =>
   `https://raw.githubusercontent.com/rainbow-me/rainbow/develop/src/assets/dappLogos/${hostname}.jpg`;
 
 const DisplayDappNames = Object.freeze({
-  '1inch.exchange': {
+  '1inch.io': {
     name: '1inch',
-    uri: null,
+    uri: buildAssetUrl('1inch.io'),
   },
   '88mph.app': {
     name: '88mph',
@@ -16,6 +16,10 @@ const DisplayDappNames = Object.freeze({
     name: 'Aave',
     uri: buildAssetUrl('aave.com'),
   },
+  'artblocks.io': {
+    name: 'Art Blocks',
+    uri: buildAssetUrl('artblocks.io'),
+  },
   'badger.finance': {
     name: 'Badger DAO',
     uri: null,
@@ -23,6 +27,10 @@ const DisplayDappNames = Object.freeze({
   'balancer.exchange': {
     name: 'Balancer',
     uri: null,
+  },
+  'blitmap.com': {
+    name: 'Blitmap',
+    uri: buildAssetUrl('blitmap.com'),
   },
   'compound.finance': {
     name: 'Compound',
@@ -34,7 +42,7 @@ const DisplayDappNames = Object.freeze({
   },
   'curve.fi': {
     name: 'Curve',
-    uri: null,
+    uri: buildAssetUrl('curve.fi'),
   },
   'defisaver.com': {
     name: 'DeFi Saver',
@@ -45,8 +53,12 @@ const DisplayDappNames = Object.freeze({
     uri: buildAssetUrl('dydx.exchange'),
   },
   'ens.domains': {
-    name: 'ENS App',
-    uri: null,
+    name: 'ENS',
+    uri: buildAssetUrl('ens.domains'),
+  },
+  'flexa.network': {
+    name: 'Flexa',
+    uri: buildAssetUrl('flexa.network'),
   },
   'foundation.app': {
     name: 'Foundation',
@@ -57,12 +69,16 @@ const DisplayDappNames = Object.freeze({
     uri: buildAssetUrl('furucombo.app'),
   },
   'gnosis-safe.io': {
-    name: 'Gnosis Safe Multisig',
-    uri: null,
+    name: 'Gnosis Safe',
+    uri: buildAssetUrl('gnosis-safe.io'),
+  },
+  'indexcoop.com': {
+    name: 'Index',
+    uri: buildAssetUrl('indexcoop.com'),
   },
   'instadapp.io': {
     name: 'Instadapp',
-    uri: null,
+    uri: buildAssetUrl('instadapp.io'),
   },
   'kyberswap.com': {
     name: 'KyberSwap',
@@ -72,6 +88,10 @@ const DisplayDappNames = Object.freeze({
     name: 'Matcha',
     uri: buildAssetUrl('matcha.xyz'),
   },
+  'mirror.xyz': {
+    name: 'Mirror',
+    uri: buildAssetUrl('mirror.xyz'),
+  },
   'mstable.org': {
     name: 'mStable',
     uri: buildAssetUrl('mstable.org'),
@@ -80,13 +100,21 @@ const DisplayDappNames = Object.freeze({
     name: 'MyCrypto',
     uri: buildAssetUrl('mycrypto.com'),
   },
+  'niftygateway.com': {
+    name: 'Nifty Gateway',
+    uri: buildAssetUrl('niftygateway.com'),
+  },
   'oasis.app': {
     name: 'Oasis',
-    uri: null,
+    uri: buildAssetUrl('oasis.app'),
   },
   'opensea.io': {
     name: 'OpenSea',
     uri: buildAssetUrl('opensea.io'),
+  },
+  'optimism.io': {
+    name: 'Optimism Gateway',
+    uri: buildAssetUrl('optimism.io'),
   },
   'piedao.org': {
     name: 'PieDAO',
@@ -100,9 +128,9 @@ const DisplayDappNames = Object.freeze({
     name: 'Rarible',
     uri: buildAssetUrl('rarible.com'),
   },
-  'sushiswap.fi': {
+  'sushi.com': {
     name: 'SushiSwap',
-    uri: null,
+    uri: buildAssetUrl('sushi.com'),
   },
   'swerve.fi': {
     name: 'Swerve',
