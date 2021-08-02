@@ -164,10 +164,11 @@ export default function WalletConnectApprovalSheet() {
   }, [approvalNetwork]);
 
   const handleOnPressNetworksMenuItem = useCallback(
-    ({ nativeEvent }) =>
+    ({ nativeEvent }) => {
       setApprovalNetwork(
         nativeEvent.actionKey?.replace(NETWORK_MENU_ACTION_KEY_FILTER, '')
-      ),
+      );
+    },
     [setApprovalNetwork]
   );
 
@@ -215,19 +216,21 @@ export default function WalletConnectApprovalSheet() {
   }, [handleSuccess, goBack]);
 
   const onPressAndroid = useCallback(() => {
-    androidShowNetworksActionSheet(({ network }) =>
-      setApprovalNetwork(network)
-    );
+    androidShowNetworksActionSheet(({ network }) => {
+      setApprovalNetwork(network);
+    });
   }, []);
 
   const handlePressChangeWallet = useCallback(() => {
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
       currentAccountAddress: approvalAccount.address,
-      onChangeWallet: (address, wallet) =>
-        setApprovalAccount({ address, wallet }),
+      onChangeWallet: (address, wallet) => {
+        goBack();
+        setApprovalAccount({ address, wallet });
+      },
       watchOnly: true,
     });
-  }, [approvalAccount.address]);
+  }, [approvalAccount.address, goBack]);
 
   useEffect(() => {
     if (scam) {
