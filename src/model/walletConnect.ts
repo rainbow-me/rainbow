@@ -8,6 +8,7 @@ import { Alert, InteractionManager, Linking } from 'react-native';
 import { enableActionsOnReadOnlyWallet } from '../config/debug';
 import { isSigningMethod } from '../utils/signingMethods';
 import { sendRpcCall } from '@rainbow-me/handlers/web3';
+import { delay } from '@rainbow-me/helpers/utilities';
 import walletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { addRequestToApproveV2 } from '@rainbow-me/redux/requests';
@@ -205,6 +206,7 @@ export const walletConnectInit = async (store: any) => {
           if (request.method === 'wallet_addEthereumChain') {
             wcLogger('wallet_addEthereumChain');
           } else if (!isSigningMethod(request.method)) {
+            wcLogger('!isSigningMethod');
             sendRpcCall(request)
               .then(async result => {
                 const response = {
@@ -226,6 +228,7 @@ export const walletConnectInit = async (store: any) => {
               });
             return;
           } else {
+            wcLogger('e;lse');
             const { dispatch, getState } = store;
             const { selected } = getState().wallets;
             const selectedWallet = selected || {};
@@ -244,6 +247,8 @@ export const walletConnectInit = async (store: any) => {
             const requestToApprove = await dispatch(
               addRequestToApproveV2(request.id, session, request)
             );
+
+            wcLogger('requestToApprove', requestToApprove);
 
             if (requestToApprove) {
               InteractionManager.runAfterInteractions(() => {
@@ -356,6 +361,10 @@ const walletConnectDisconnect = async (topic: string) => {
 
 export const walletConnectPair = async (uri: string) => {
   wcLogger('on about to walletConnectPair', uri);
+  while (!client) {
+    delay(300);
+  }
+  wcLogger('on about to walletConnectPair dalay out', !!client);
   const pair = await client.pair({ uri });
   wcLogger('on walletConnectPair', pair);
 };

@@ -335,9 +335,10 @@ export default function TransactionConfirmationScreen() {
       closeScreen(true);
       callback?.({ error: 'User cancelled the request' });
       setTimeout(async () => {
-        if (requestId && !isWalletConnectV2Request) {
-          await dispatch(walletConnectSendStatus(peerId, requestId, null));
+        if (requestId) {
           dispatch(removeRequest(requestId));
+          !isWalletConnectV2Request &&
+            (await dispatch(walletConnectSendStatus(peerId, requestId, null)));
         }
         const rejectionType =
           method === SEND_TRANSACTION ? 'transaction' : 'signature';
@@ -542,9 +543,12 @@ export default function TransactionConfirmationScreen() {
       analytics.track('Approved WalletConnect transaction request', {
         version: requestVersion,
       });
-      if (requestId && !isWalletConnectV2Request) {
+      if (requestId) {
         dispatch(removeRequest(requestId));
-        await dispatch(walletConnectSendStatus(peerId, requestId, result.hash));
+        !isWalletConnectV2Request &&
+          (await dispatch(
+            walletConnectSendStatus(peerId, requestId, result.hash)
+          ));
       }
       closeScreen(false);
     } else {
@@ -625,11 +629,12 @@ export default function TransactionConfirmationScreen() {
       analytics.track('Approved WalletConnect signature request', {
         version: requestVersion,
       });
-      if (requestId && !isWalletConnectV2Request) {
+      if (requestId) {
         dispatch(removeRequest(requestId));
-        await dispatch(
-          walletConnectSendStatus(peerId, requestId, flatFormatSignature)
-        );
+        !isWalletConnectV2Request &&
+          (await dispatch(
+            walletConnectSendStatus(peerId, requestId, flatFormatSignature)
+          ));
       }
       // TODO check v1
       callback?.({ result: flatFormatSignature });
