@@ -34,12 +34,12 @@ export interface TypeSpecificParameters {
   supplyBalanceUnderlying: string;
 }
 
-interface PositionsState {
-  [key: string]: any;
+export interface PositionsState {
+  [key: string]: StoredPosition[];
 }
 
 interface ReturnMetrics {
-  hodleReturn: number; // difference in asset values t0 -> t1 with t0 deposit amounts
+  hodlReturn: number; // difference in asset values t0 -> t1 with t0 deposit amounts
   netReturn: number; // net return from t0 -> t1
   uniswapReturn: number; // netReturn - hodlReturn
   impLoss: number;
@@ -149,7 +149,7 @@ function getMetricsForPositionWindow(
 
   return {
     fees: difference_fees_usd,
-    hodleReturn: assetValueT1 - assetValueT0,
+    hodlReturn: assetValueT1 - assetValueT0,
     impLoss: imp_loss_usd,
     netReturn: netValueT1 - netValueT0,
     uniswapReturn: uniswap_return,
@@ -257,7 +257,7 @@ async function getLPReturnsOnPair(
         : snapshots[parseInt(index) + 1];
 
     const results = getMetricsForPositionWindow(positionT0, positionT1);
-    hodlReturn = hodlReturn + results.hodleReturn;
+    hodlReturn = hodlReturn + results.hodlReturn;
     netReturn = netReturn + results.netReturn;
     uniswapReturn = uniswapReturn + results.uniswapReturn;
     fees = fees + results.fees;
