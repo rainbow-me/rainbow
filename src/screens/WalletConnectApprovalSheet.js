@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { capitalize, get } from 'lodash';
+import { get } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -173,10 +173,7 @@ export default function WalletConnectApprovalSheet() {
     return {
       chainId: ethereumUtils.getChainIdFromNetwork(approvalNetwork),
       color: networkInfo[approvalNetwork]?.color,
-      name:
-        value === 'mainnet'
-          ? 'Ethereum'
-          : capitalize(value?.charAt(0)) + value?.slice(1),
+      name: networkInfo[approvalNetwork]?.name,
       value,
     };
   }, [approvalNetwork]);
