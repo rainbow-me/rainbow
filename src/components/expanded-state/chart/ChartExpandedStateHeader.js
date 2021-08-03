@@ -101,7 +101,7 @@ export default function ChartExpandedStateHeader({
         }
       >
         {tokens.length === 1 ? (
-          <CoinIcon badgeXPosition={-15} badgeYPosition={-15} {...asset} />
+          <CoinIcon badgeXPosition={-7} badgeYPosition={0} {...asset} />
         ) : (
           <CoinIconGroup tokens={tokens} />
         )}

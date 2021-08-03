@@ -274,10 +274,13 @@ export const sendTransaction = async ({
 
 export const signTransaction = async ({
   transaction,
+  existingWallet,
+  provider,
 }: TransactionRequestParam): Promise<null | string> => {
   try {
     logger.sentry('about to sign transaction', transaction);
-    const wallet = await loadWallet();
+    const wallet =
+      existingWallet || (await loadWallet(undefined, true, provider));
     if (!wallet) return null;
     try {
       return wallet.signTransaction(transaction);
@@ -298,11 +301,14 @@ export const signTransaction = async ({
 };
 
 export const signMessage = async (
-  message: BytesLike | Hexable | number
+  message: BytesLike | Hexable | number,
+  existingWallet?: Wallet,
+  provider?: Provider
 ): Promise<null | string> => {
   try {
     logger.sentry('about to sign message', message);
-    const wallet = await loadWallet();
+    const wallet =
+      existingWallet || (await loadWallet(undefined, true, provider));
     try {
       if (!wallet) return null;
       const signingKey = new SigningKey(wallet.privateKey);
@@ -323,11 +329,14 @@ export const signMessage = async (
 };
 
 export const signPersonalMessage = async (
-  message: string | Uint8Array
+  message: string | Uint8Array,
+  existingWallet?: Wallet,
+  provider?: Provider
 ): Promise<null | string> => {
   try {
     logger.sentry('about to sign personal message', message);
-    const wallet = await loadWallet();
+    const wallet =
+      existingWallet || (await loadWallet(undefined, true, provider));
     try {
       if (!wallet) return null;
       return wallet.signMessage(
@@ -352,11 +361,14 @@ export const signPersonalMessage = async (
 };
 
 export const signTypedDataMessage = async (
-  message: string | TypedData
+  message: string | TypedData,
+  existingWallet?: Wallet,
+  provider?: Provider
 ): Promise<null | string> => {
   try {
     logger.sentry('about to sign typed data  message', message);
-    const wallet = await loadWallet();
+    const wallet =
+      existingWallet || (await loadWallet(undefined, true, provider));
     if (!wallet) return null;
     try {
       const pkeyBuffer = toBuffer(addHexPrefix(wallet.privateKey));

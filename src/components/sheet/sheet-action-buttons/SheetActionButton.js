@@ -15,9 +15,7 @@ import ShadowStack from 'react-native-shadow-stack';
 const addChartsStyling = isCharts =>
   isCharts ? 'position: absolute; width: 100%;' : '';
 
-const Button = styled(Centered).attrs({
-  scaleTo: 0.9,
-})`
+const Button = styled(Centered)`
   height: ${({ size }) => (size === 'big' ? 56 : 46)};
   ${({ isCharts }) => addChartsStyling(isCharts)}
 `;
@@ -57,11 +55,13 @@ const SheetActionButton = ({
   disabled,
   elevation = 24,
   emoji,
+  forceShadows,
   fullWidth,
   icon,
   isCharts,
   isTransparent,
   label,
+  scaleTo = 0.9,
   size,
   testID,
   textColor: givenTextColor,
@@ -75,7 +75,7 @@ const SheetActionButton = ({
   const shadowsForButtonColor = useMemo(() => {
     const isWhite = color === colors.white;
 
-    if (disabled || isTransparent) {
+    if (!forceShadows && (disabled || isTransparent)) {
       return [[0, 0, 0, colors.transparent, 0]];
     } else
       return [
@@ -88,7 +88,7 @@ const SheetActionButton = ({
           isWhite ? 0.08 : 0.4,
         ],
       ];
-  }, [color, colors, disabled, isTransparent, isDarkMode]);
+  }, [color, colors, disabled, forceShadows, isTransparent, isDarkMode]);
 
   const androidButtonWidth =
     androidWidth || (fullWidth ? deviceWidth - 38 : (deviceWidth - 53) / 2);
@@ -107,6 +107,7 @@ const SheetActionButton = ({
         isCharts={isCharts}
         overflowMargin={30}
         radiusAndroid={borderRadius}
+        scaleTo={scaleTo}
         size={size}
         testID={`${testID}-action-button`}
         wrapperStyle={{ alignItems: 'center' }}

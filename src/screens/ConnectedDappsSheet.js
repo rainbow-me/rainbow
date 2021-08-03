@@ -1,17 +1,25 @@
 import React, { useEffect, useMemo } from 'react';
+import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
-import { Sheet, SheetTitle } from '../components/sheet';
+import Divider from '../components/Divider';
+import { Row } from '../components/layout';
+import { Sheet, SheetHandleFixedToTop, SheetTitle } from '../components/sheet';
 import WalletConnectListItem, {
   WalletConnectListItemHeight,
 } from '../components/walletconnect-list/WalletConnectListItem';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 
-const MAX_VISIBLE_DAPPS = 5;
+const MAX_VISIBLE_DAPPS = 7;
 
 const ScrollableItems = styled.ScrollView`
   height: ${({ length }) =>
     WalletConnectListItemHeight * Math.min(length, MAX_VISIBLE_DAPPS)};
+`;
+
+const SheetTitleWithPadding = styled(SheetTitle)`
+  margin-top: 18;
+  padding-bottom: 16;
 `;
 
 export default function ConnectedDappsSheet() {
@@ -22,6 +30,9 @@ export default function ConnectedDappsSheet() {
     walletConnectV2SessionsCount,
     walletConnectV2Sessions,
   } = useWalletConnectConnections();
+  const insets = useSafeArea();
+  const { colors } = useTheme();
+
   const { connectionsNumber, connections } = useMemo(
     () => ({
       connections: walletConnectorsByDappName.concat(walletConnectV2Sessions),
@@ -42,9 +53,18 @@ export default function ConnectedDappsSheet() {
   }, [goBack, connectionsNumber]);
 
   return (
-    <Sheet borderRadius={30}>
-      <SheetTitle>Connected apps</SheetTitle>
+    <Sheet
+      borderRadius={30}
+      hideHandle
+      noInsets
+      paddingBottom={0}
+      paddingTop={0}
+    >
+      <SheetHandleFixedToTop />
+      <SheetTitleWithPadding>Connected apps</SheetTitleWithPadding>
+      <Divider color={colors.rowDividerExtraLight} inset={[0, 19]} />
       <ScrollableItems length={connectionsNumber}>
+        <Row height={4} />
         {connections.map(
           ({ account, chainId, dappIcon, dappName, dappUrl, version }, i) => (
             <WalletConnectListItem
@@ -58,6 +78,7 @@ export default function ConnectedDappsSheet() {
             />
           )
         )}
+        <Row height={insets.bottom} />
       </ScrollableItems>
     </Sheet>
   );

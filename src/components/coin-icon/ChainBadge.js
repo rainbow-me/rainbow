@@ -3,60 +3,86 @@ import FastImage from 'react-native-fast-image';
 import styled from 'styled-components';
 import ArbitrumBadge from '../../assets/badges/arbitrumBadge.png';
 import ArbitrumBadgeDark from '../../assets/badges/arbitrumBadgeDark.png';
+import ArbitrumBadgeLarge from '../../assets/badges/arbitrumBadgeLarge.png';
+import ArbitrumBadgeLargeDark from '../../assets/badges/arbitrumBadgeLargeDark.png';
 import OptimismBadge from '../../assets/badges/optimismBadge.png';
 import OptimismBadgeDark from '../../assets/badges/optimismBadgeDark.png';
+import OptimismBadgeLarge from '../../assets/badges/optimismBadgeLarge.png';
+import OptimismBadgeLargeDark from '../../assets/badges/optimismBadgeLargeDark.png';
 import PolygonBadge from '../../assets/badges/polygonBadge.png';
 import PolygonBadgeDark from '../../assets/badges/polygonBadgeDark.png';
+import PolygonBadgeLarge from '../../assets/badges/polygonBadgeLarge.png';
+import PolygonBadgeLargeDark from '../../assets/badges/polygonBadgeLargeDark.png';
 import { Centered } from '../layout';
 import { AssetType } from '@rainbow-me/entities';
-import { borders } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
 const sizeConfigs = {
   large: {
-    iconSize: 60,
+    containerSize: 64,
+    iconSize: 40,
   },
   medium: {
-    iconSize: 45,
+    containerSize: 44,
+    iconSize: 20,
   },
   small: {
-    iconSize: 40,
+    containerSize: 44,
+    iconSize: 20,
   },
 };
 
 const ChainIcon = styled(FastImage)`
-  height: ${({ iconSize }) => iconSize};
-  margin-top: 1;
-  width: ${({ iconSize }) => iconSize};
+  height: ${({ containerSize }) => containerSize};
+  top: ${({ iconSize }) => iconSize / 5};
+  width: ${({ containerSize }) => containerSize};
 `;
 
 const IndicatorIconContainer = styled(Centered)`
-  ${({ iconSize }) => borders.buildCircle(iconSize)};
-  bottom: ${({ badgeYPosition }) => badgeYPosition || -4};
-  left: ${({ badgeXPosition }) => badgeXPosition || 2};
-  position: absolute;
+  bottom: ${({ badgeYPosition, position }) =>
+    position === 'relative' ? 0 : badgeYPosition};
+  left: ${({ badgeXPosition, position }) =>
+    position === 'relative' ? 0 : badgeXPosition};
+  ${({ iconSize }) => position.size(iconSize)};
+  margin-bottom: ${({ marginBottom }) => marginBottom};
+  overflow: visible;
+  position: ${({ position }) => position || 'absolute'};
   z-index: 10;
 `;
+
 export default function ChainBadge({
   assetType,
-  badgeYPosition,
-  badgeXPosition,
+  badgeXPosition = -7,
+  badgeYPosition = 0,
+  marginBottom = 0,
+  position,
   size = 'small',
 }) {
   const { isDarkMode } = useTheme();
 
-  const { iconSize } = sizeConfigs[size];
+  const { containerSize, iconSize } = sizeConfigs[size];
 
   const source = useMemo(() => {
     let val = null;
-    if (assetType === AssetType.arbitrum) {
-      val = isDarkMode ? ArbitrumBadgeDark : ArbitrumBadge;
-    } else if (assetType === AssetType.optimism) {
-      val = isDarkMode ? OptimismBadgeDark : OptimismBadge;
-    } else if (assetType === AssetType.polygon) {
-      val = isDarkMode ? PolygonBadgeDark : PolygonBadge;
+    if (size === 'large') {
+      if (assetType === AssetType.arbitrum) {
+        val = isDarkMode ? ArbitrumBadgeLargeDark : ArbitrumBadgeLarge;
+      } else if (assetType === AssetType.optimism) {
+        val = isDarkMode ? OptimismBadgeLargeDark : OptimismBadgeLarge;
+      } else if (assetType === AssetType.polygon) {
+        val = isDarkMode ? PolygonBadgeLargeDark : PolygonBadgeLarge;
+      }
+    } else {
+      if (assetType === AssetType.arbitrum) {
+        val = isDarkMode ? ArbitrumBadgeDark : ArbitrumBadge;
+      } else if (assetType === AssetType.optimism) {
+        val = isDarkMode ? OptimismBadgeDark : OptimismBadge;
+      } else if (assetType === AssetType.polygon) {
+        val = isDarkMode ? PolygonBadgeDark : PolygonBadge;
+      }
     }
     return val;
-  }, [assetType, isDarkMode]);
+  }, [assetType, isDarkMode, size]);
 
   if (!source) return null;
 
@@ -65,8 +91,14 @@ export default function ChainBadge({
       badgeXPosition={badgeXPosition}
       badgeYPosition={badgeYPosition}
       iconSize={iconSize}
+      marginBottom={marginBottom}
+      position={position}
     >
-      <ChainIcon iconSize={iconSize} source={source} />
+      <ChainIcon
+        containerSize={containerSize}
+        iconSize={iconSize}
+        source={source}
+      />
     </IndicatorIconContainer>
   );
 }

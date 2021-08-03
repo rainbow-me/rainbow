@@ -1,14 +1,15 @@
 import { toLower } from 'lodash';
+import isEqual from 'react-fast-compare';
 import {
   COVALENT_ANDROID_API_KEY,
   COVALENT_IOS_API_KEY,
 } from 'react-native-dotenv';
-import { arbitrumEnabled } from '../config/debug';
 // eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPrices } from './data';
 // eslint-disable-next-line import/no-cycle
 import { emitAssetRequest, emitChartsRequest } from './explorer';
 import { AssetTypes } from '@rainbow-me/entities';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   ARBITRUM_ETH_ADDRESS,
@@ -16,6 +17,7 @@ import {
 } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 
+let lastUpdatePayload = null;
 // -- Constants --------------------------------------- //
 const ARBITRUM_EXPLORER_CLEAR_STATE = 'explorer/ARBITRUM_EXPLORER_CLEAR_STATE';
 const ARBITRUM_EXPLORER_SET_BALANCE_HANDLER =
@@ -89,7 +91,7 @@ const getAssetsFromCovalent = async (
 };
 
 export const arbitrumExplorerInit = () => async (dispatch, getState) => {
-  if (!arbitrumEnabled) return;
+  if (networkInfo[networkTypes.arbitrum]?.disabled) return;
   const { accountAddress, nativeCurrency } = getState().settings;
   const { assets: allAssets, genericAssets } = getState().data;
   const { coingeckoIds } = getState().additionalAssetsData;
@@ -147,19 +149,24 @@ export const arbitrumExplorerInit = () => async (dispatch, getState) => {
       });
     }
 
-    dispatch(
-      addressAssetsReceived(
-        {
-          meta: {
-            address: accountAddress,
-            currency: nativeCurrency,
-            status: 'ok',
+    const newPayload = { assets };
+
+    if (!isEqual(lastUpdatePayload, newPayload)) {
+      dispatch(
+        addressAssetsReceived(
+          {
+            meta: {
+              address: accountAddress,
+              currency: nativeCurrency,
+              status: 'ok',
+            },
+            payload: newPayload,
           },
-          payload: { assets },
-        },
-        true
-      )
-    );
+          true
+        )
+      );
+      lastUpdatePayload = newPayload;
+    }
 
     const arbitrumExplorerBalancesHandle = setTimeout(
       fetchAssetsBalancesAndPrices,

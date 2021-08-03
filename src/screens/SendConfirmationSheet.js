@@ -6,6 +6,7 @@ import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
+import Divider from '../components/Divider';
 import L2Disclaimer from '../components/L2Disclaimer';
 import Pill from '../components/Pill';
 import TouchableBackdrop from '../components/TouchableBackdrop';
@@ -13,9 +14,9 @@ import { ButtonPressAnimation } from '../components/animations';
 import { CoinIcon } from '../components/coin-icon';
 import RequestVendorLogoIcon from '../components/coin-icon/RequestVendorLogoIcon';
 import { ContactAvatar } from '../components/contacts';
-import { Centered, Column, Row } from '../components/layout';
+import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { SendButton } from '../components/send';
-import { SheetDivider, SheetTitle, SlackSheet } from '../components/sheet';
+import { SheetTitle, SlackSheet } from '../components/sheet';
 import { Text, TruncatedText } from '../components/text';
 import { address } from '../utils/abbreviations';
 import {
@@ -49,58 +50,105 @@ const Container = styled(Centered).attrs({
     height ? `height: ${height + deviceHeight}` : null};
 `;
 
+const CheckboxContainer = styled(Row)`
+  height: 20;
+  width: 20;
+`;
+
+const CheckboxBorder = styled.View`
+  ${({ checked, color }) => checked && `background-color: ${color}`};
+  border-radius: 7;
+  border-color: ${({ checked, theme: { colors } }) =>
+    colors.alpha(colors.blueGreyDark, checked ? 0 : 0.15)};
+  border-width: 2;
+  height: 20;
+  position: absolute;
+  width: 20;
+`;
+
 const CheckboxLabelText = styled(Text).attrs({
   direction: 'column',
-  lineHeight: 'loose',
+  letterSpacing: 'roundedMedium',
+  lineHeight: 'looserLoose',
   size: 'lmedium',
-  weight: '700',
+  weight: 'bold',
 })`
   flex-shrink: 1;
 `;
 
+const Checkmark = styled(Text).attrs(({ checked, theme: { colors } }) => ({
+  align: 'center',
+  color: checked ? colors.whiteLabel : colors.transparent,
+  lineHeight: 'normal',
+  size: 'smaller',
+  weight: 'bold',
+}))`
+  width: 100%;
+`;
+
+const SendButtonWrapper = styled(Column).attrs({
+  align: 'center',
+})`
+  height: 56;
+`;
+
 export const SendConfirmationSheetHeight = android
   ? 551 - getSoftMenuBarHeight()
-  : 545;
+  : 540;
 
 const ChevronDown = () => {
   const { colors } = useTheme();
   return (
-    <Column align="center" width={50}>
+    <Column align="center" height={34.5} position="absolute" width={50}>
       <Text
-        color={colors.alpha(colors.blueGreyDark, 0.09)}
+        align="center"
+        color={colors.alpha(colors.blueGreyDark, 0.15)}
+        letterSpacing="zero"
         size="larger"
-        style={{ top: -5, transform: [{ rotate: '90deg' }] }}
-        weight="600"
+        weight="semibold"
       >
-        􀰫
+        􀆈
+      </Text>
+      <Text
+        align="center"
+        color={colors.alpha(colors.blueGreyDark, 0.09)}
+        letterSpacing="zero"
+        size="larger"
+        style={{ top: -13 }}
+        weight="semibold"
+      >
+        􀆈
       </Text>
     </Column>
   );
 };
 
-const Checkbox = ({ id, checked, label, onPress, activeColor }) => {
+const Checkbox = ({ activeColor, checked, id, label, onPress }) => {
   const { colors } = useTheme();
 
   const handlePress = useCallback(() => {
     onPress({ checked: !checked, id, label });
   }, [checked, id, label, onPress]);
   return (
-    <Column marginBottom={20}>
-      <ButtonPressAnimation onPress={handlePress}>
-        <Row align="center">
-          <Text
-            color={(checked && activeColor) || colors.blueGreyDark80}
-            size="larger"
-            weight="700"
-          >
-            {checked ? '􀃳 ' : '􀂒 '}
-          </Text>
+    <Column>
+      <ButtonPressAnimation
+        onPress={handlePress}
+        paddingVertical={9.5}
+        scaleTo={0.925}
+      >
+        <RowWithMargins align="center" margin={8}>
+          <CheckboxContainer>
+            <CheckboxBorder checked={checked} color={activeColor} />
+            <Checkmark checked={checked}>􀆅</Checkmark>
+          </CheckboxContainer>
           <CheckboxLabelText
-            color={(checked && activeColor) || colors.blueGreyDark80}
+            color={
+              (checked && activeColor) || colors.alpha(colors.blueGreyDark, 0.8)
+            }
           >
             {label}
           </CheckboxLabelText>
-        </Row>
+        </RowWithMargins>
       </ButtonPressAnimation>
     </Column>
   );
@@ -110,7 +158,12 @@ export default function SendConfirmationSheet() {
   const { colors, isDarkMode } = useTheme();
   const { nativeCurrency } = useAccountSettings();
   const { goBack, navigate, setParams } = useNavigation();
-  const { height: deviceHeight, isSmallPhone, isTinyPhone } = useDimensions();
+  const {
+    height: deviceHeight,
+    isSmallPhone,
+    isTinyPhone,
+    width: deviceWidth,
+  } = useDimensions();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const insets = useSafeArea();
   const { contacts } = useContacts();
@@ -273,20 +326,25 @@ export default function SendConfirmationSheet() {
       >
         <SheetTitle>Sending</SheetTitle>
         <Column height={contentHeight}>
-          <Column padding={24} paddingBottom={30}>
+          <Column padding={24} paddingBottom={19}>
             <Row>
-              <Column width="80%">
-                <TruncatedText size="big" weight="heavy">
+              <Column width={deviceWidth - 117}>
+                <TruncatedText
+                  letterSpacing="roundedTightest"
+                  size="bigger"
+                  weight="heavy"
+                >
                   {isNft ? asset?.name : nativeDisplayAmount}
                 </TruncatedText>
 
-                <Row paddingTop={4}>
+                <Row paddingTop={3}>
                   <Text
                     color={
                       isNft ? colors.alpha(colors.blueGreyDark, 0.6) : color
                     }
+                    letterSpacing="roundedMedium"
                     size="lmedium"
-                    weight="700"
+                    weight={isNft ? 'bold' : 'heavy'}
                   >
                     {isNft
                       ? asset.familyName
@@ -294,13 +352,13 @@ export default function SendConfirmationSheet() {
                   </Text>
                 </Row>
               </Column>
-              <Column align="end" flex={1} justify="end">
+              <Column align="end" flex={1}>
                 <Row>
                   {isNft ? (
                     <RequestVendorLogoIcon
                       backgroundColor={asset.background || colors.lightestGrey}
-                      badgeXPosition={-19}
-                      badgeYPosition={-16}
+                      badgeXPosition={-7}
+                      badgeYPosition={0}
                       borderRadius={10}
                       imageUrl={asset.image_thumbnail_url || asset.image_url}
                       network={asset.network}
@@ -308,29 +366,28 @@ export default function SendConfirmationSheet() {
                       size={50}
                     />
                   ) : (
-                    <CoinIcon
-                      badgeXPosition={-15}
-                      badgeYPosition={-15}
-                      size={50}
-                      {...asset}
-                    />
+                    <CoinIcon size={50} {...asset} />
                   )}
                 </Row>
               </Column>
             </Row>
 
-            <Row marginBottom={22} marginTop={22}>
+            <Row marginVertical={19}>
               <Column>
                 <Pill
-                  borderRadius={20}
+                  borderRadius={15}
+                  height={30}
+                  minWidth={39}
                   paddingHorizontal={10}
-                  paddingVertical={4}
+                  paddingVertical={5.5}
                 >
                   <Column>
                     <Text
+                      align="center"
                       color={colors.blueGreyDark60}
+                      letterSpacing="roundedMedium"
                       size="large"
-                      weight="bold"
+                      weight="heavy"
                     >
                       to
                     </Text>
@@ -341,39 +398,52 @@ export default function SendConfirmationSheet() {
                 <ChevronDown />
               </Column>
             </Row>
-            <Row>
+            <Row marginBottom={30}>
               <Column flex={1}>
-                <Row width="70%">
-                  <Column>
-                    <TruncatedText size="big" weight="heavy">
-                      {avatarName}
-                    </TruncatedText>
-                  </Column>
-                  <Column>
-                    <ContactRowInfoButton
-                      item={{
-                        address: toAddress,
-                        name: avatarName || address(to, 4, 8),
-                      }}
-                      network={network}
-                    />
-                  </Column>
+                <Row width={deviceWidth - 117}>
+                  <TruncatedText
+                    letterSpacing="roundedTight"
+                    size="bigger"
+                    weight="heavy"
+                  >
+                    {avatarName}
+                  </TruncatedText>
+                  <ContactRowInfoButton
+                    item={{
+                      address: toAddress,
+                      name: avatarName || address(to, 4, 8),
+                    }}
+                    network={network}
+                    scaleTo={0.75}
+                  >
+                    <Text
+                      color={colors.alpha(
+                        colors.blueGreyDark,
+                        isDarkMode ? 0.5 : 0.6
+                      )}
+                      lineHeight={31}
+                      size="larger"
+                      weight="heavy"
+                    >
+                      {' 􀍡'}
+                    </Text>
+                  </ContactRowInfoButton>
                 </Row>
-                <Row paddingTop={4}>
+                <Row paddingTop={3}>
                   <Text
                     color={colors.alpha(colors.blueGreyDark, 0.6)}
                     size="lmedium"
-                    weight="700"
+                    weight="bold"
                   >
                     {isSendingToUserAccount
-                      ? `You own this account`
+                      ? `You own this wallet`
                       : alreadySentTransactions === 0
                       ? `First time send`
                       : `${alreadySentTransactions} previous sends`}
                   </Text>
                 </Row>
               </Column>
-              <Column align="end" justify="end">
+              <Column align="end">
                 <ContactAvatar
                   color={avatarColor}
                   size="lmedium"
@@ -381,24 +451,27 @@ export default function SendConfirmationSheet() {
                 />
               </Column>
             </Row>
+            <Divider color={colors.rowDividerExtraLight} inset={[0]} />
           </Column>
           {isL2 && (
             <Fragment>
-              <Column paddingBottom={22}>
-                <Row paddingRight={19}>
-                  <SheetDivider />
-                </Row>
-              </Column>
               <L2Disclaimer
                 assetType={asset.type}
                 colors={colors}
+                hideDivider
+                marginBottom={9.5}
                 onPress={handleL2DisclaimerPress}
+                prominent
                 sending
                 symbol={asset.symbol}
               />
             </Fragment>
           )}
-          <Column paddingBottom={15} paddingHorizontal={24} paddingTop={4}>
+          <Column
+            paddingBottom={isL2 ? 20.5 : 11}
+            paddingLeft={29}
+            paddingRight={24}
+          >
             {shouldShowChecks &&
               checkboxes.map((check, i) => (
                 <Checkbox
@@ -411,22 +484,16 @@ export default function SendConfirmationSheet() {
                 />
               ))}
           </Column>
-          <Column align="center" flex={1} justify="end">
+          <SendButtonWrapper>
             <SendButton
-              backgroundColor={
-                canSubmit
-                  ? color
-                  : isDarkMode
-                  ? colors.darkGrey
-                  : colors.lightGrey
-              }
+              backgroundColor={color}
               disabled={!canSubmit}
               isAuthorizing={isAuthorizing}
               onLongPress={handleSubmit}
               smallButton={!isTinyPhone && (android || isSmallPhone)}
               testID="send-confirmation-button"
             />
-          </Column>
+          </SendButtonWrapper>
         </Column>
       </SlackSheet>
     </Container>

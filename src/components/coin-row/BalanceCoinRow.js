@@ -23,7 +23,7 @@ import {
 import { isNewValueForObjectPaths, isNewValueForPath } from '@rainbow-me/utils';
 
 const editTranslateOffsetInner = android ? -8 : 0;
-const editTranslateOffset = 32 - (android ? editTranslateOffsetInner : 0);
+const editTranslateOffset = 37 - (android ? editTranslateOffsetInner : 0);
 
 const formatPercentageString = percentString =>
   percentString ? percentString.split('-').join('- ') : '-';
@@ -171,6 +171,7 @@ const BalanceCoinRow = ({
             <CoinRow
               bottomRowRender={BottomRow}
               containerStyles={containerStyles}
+              isFirstCoinRow={isFirstCoinRow}
               onPress={handlePress}
               topRowRender={TopRow}
               {...item}
@@ -189,10 +190,12 @@ const BalanceCoinRow = ({
         }}
       >
         <BalanceCoinRowCoinCheckButton
+          isHidden={item.isHidden}
+          isPinned={item.isPinned}
           onPress={handleEditModePress}
           pointerEvents={isCoinListEdited ? 'auto' : 'none'}
           toggle={toggle}
-          top={isFirstCoinRow ? -53 : 9}
+          top={isFirstCoinRow ? -50 : 9}
         />
       </Animated.View>
     </Column>

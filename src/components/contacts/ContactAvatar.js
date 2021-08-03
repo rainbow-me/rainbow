@@ -9,7 +9,7 @@ import { borders } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const buildShadows = (color, size, darkMode, colors) => {
-  if (size === 'small' || size === 'smaller') {
+  if (size === 'small') {
     return [
       [0, 3, 5, colors.shadow, 0.14],
       [
@@ -22,7 +22,19 @@ const buildShadows = (color, size, darkMode, colors) => {
         0.2,
       ],
     ];
-  } else if (size === 'medium' || size === 'smedium') {
+  } else if (size === 'smaller') {
+    return [
+      [
+        0,
+        4,
+        12,
+        darkMode
+          ? darkModeThemeColors.shadow
+          : darkModeThemeColors.avatarBackgrounds[color] || color,
+        0.3,
+      ],
+    ];
+  } else if (size === 'lmedium' || size === 'medium' || size === 'smedium') {
     return [
       [
         0,
@@ -49,10 +61,10 @@ const sizeConfigs = colors => ({
   lmedium: {
     dimensions: 50,
     shadow: [
-      [0, 4, 6, colors.shadow, 0.04],
+      [0, 4, 12, colors.shadow, 0.04],
       [0, 1, 3, colors.shadow, 0.08],
     ],
-    textSize: 'larger',
+    textSize: 28,
   },
   medium: {
     dimensions: 40,
@@ -68,7 +80,7 @@ const sizeConfigs = colors => ({
   },
   smaller: {
     dimensions: 20,
-    textSize: 'smaller',
+    textSize: 'micro',
   },
   smedium: {
     dimensions: 36,

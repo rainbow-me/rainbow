@@ -61,7 +61,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     </imageView>
                     <imageView hidden="YES" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="QZL-nP-Qk6" userLabel="Badge">
-                        <rect key="frame" x="3" y="24" width="40" height="40"/>
+                        <rect key="frame" x="0.0" y="21" width="44" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </imageView>
                 </subviews>

@@ -4,8 +4,8 @@ import React, { useCallback } from 'react';
 import { Linking, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
-import ChainLogo from '../components/ChainLogo';
-import { Centered, ColumnWithMargins } from '../components/layout';
+import { ChainBadge } from '../components/coin-icon';
+import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
@@ -42,13 +42,13 @@ const VERIFIED_EXPLAINER = `Tokens with a verified badge mean they have appeared
 
 Always do your own research to ensure you are interacting with a token you trust.`;
 
-const OPTIMISM_EXPLAINER = `Optimism is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Layer 1.
+const OPTIMISM_EXPLAINER = `Optimism is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.
 
-It bundles lots of transactions together in a "roll up" before sending them down to live permanently on Layer 1.`;
+It bundles lots of transactions together in a "roll up" before sending them down to live permanently on Ethereum.`;
 
-const ARBITRUM_EXPLAINER = `Arbitrum is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Layer 1.
+const ARBITRUM_EXPLAINER = `Arbitrum is a Layer 2 network that runs on top of Ethereum, enabling cheaper and faster transactions while still benefiting from the underlying security of Ethereum.
 
-It bundles lots of transactions together in a "roll up" before sending them down to live permanently on Layer 1.`;
+It bundles lots of transactions together in a "roll up" before sending them down to live permanently on Ethereum.`;
 
 const POLYGON_EXPLAINER = `Polygon is a sidechain, a distinct network that runs alongside Ethereum and is compatible with it. 
 
@@ -74,7 +74,12 @@ export const explainers = {
   optimism: {
     emoji: '⛽️',
     logo: (
-      <ChainLogo marginBottom={10} network={networkTypes.optimism} size={100} />
+      <ChainBadge
+        assetType={networkTypes.optimism}
+        marginBottom={8}
+        position="relative"
+        size="large"
+      />
     ),
     text: OPTIMISM_EXPLAINER,
     title: `What's Optimism?`,
@@ -84,22 +89,39 @@ export const explainers = {
   arbitrum: {
     emoji: '⛽️',
     logo: (
-      <ChainLogo marginBottom={10} network={networkTypes.arbitrum} size={100} />
+      <ChainBadge
+        assetType={networkTypes.arbitrum}
+        marginBottom={8}
+        position="relative"
+        size="large"
+      />
     ),
     text: ARBITRUM_EXPLAINER,
     title: `What's Arbitrum?`,
     readMoreLink: 'https://arbitrum.io/',
-    extraHeight: 150,
+    extraHeight: 144,
   },
   polygon: {
     emoji: '⛽️',
     logo: (
-      <ChainLogo marginBottom={10} network={networkTypes.polygon} size={100} />
+      <ChainBadge
+        assetType={networkTypes.polygon}
+        marginBottom={8}
+        position="relative"
+        size="large"
+      />
     ),
     text: POLYGON_EXPLAINER,
     title: `What's Polygon?`,
     readMoreLink: 'https://polygon.technology/',
     extraHeight: 120,
+  },
+  failed_wc_connection: {
+    emoji: '😵',
+    text:
+      'Uh oh, something went wrong! The site may be experiencing a connection outage. Try again later or contact the site’s team for more details.',
+    title: 'Connection failed',
+    extraHeight: -100,
   },
 };
 
@@ -141,10 +163,11 @@ const ExplainSheet = () => {
         >
           <ColumnWithMargins
             margin={15}
+            marginBottom={21}
             style={{
               height: sheetHeight,
               paddingHorizontal: 19,
-              paddingTop: 19,
+              paddingTop: 8,
               width: '100%',
             }}
           >
@@ -179,20 +202,22 @@ const ExplainSheet = () => {
               {explainers[type].text}
             </Text>
             {explainers[type].readMoreLink && (
-              <SheetActionButton
-                androidWidth={deviceWidth - 60}
-                color={colors.blueGreyDarkLight}
-                isTransparent
-                label="Read More"
-                onPress={handleReadMore}
-                size="big"
-                textColor={colors.blueGreyDark60}
-                weight="heavy"
-              />
+              <Column height={60}>
+                <SheetActionButton
+                  androidWidth={deviceWidth - 60}
+                  color={colors.blueGreyDarkLight}
+                  isTransparent
+                  label="Read More"
+                  onPress={handleReadMore}
+                  size="big"
+                  textColor={colors.blueGreyDark60}
+                  weight="heavy"
+                />
+              </Column>
             )}
             <SheetActionButton
               androidWidth={deviceWidth - 60}
-              color={colors.alpha(colors.appleBlue, 0.06)}
+              color={colors.alpha(colors.appleBlue, 0.04)}
               isTransparent
               label="Got it"
               onPress={handleClose}

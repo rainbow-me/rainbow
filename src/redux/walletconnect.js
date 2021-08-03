@@ -13,6 +13,7 @@ import {
   values,
 } from 'lodash';
 import { Alert, InteractionManager, Linking } from 'react-native';
+import URL, { qs } from 'url-parse';
 import {
   getAllValidWalletConnectSessions,
   removeWalletConnectSessions,
@@ -26,8 +27,9 @@ import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove } from './requests';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
+import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
-import { convertHexToString } from '@rainbow-me/helpers/utilities';
+import { convertHexToString, delay } from '@rainbow-me/helpers/utilities';
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
 import {
   walletConnectDisconnectAllSessions,
@@ -115,23 +117,74 @@ export const walletConnectRemovePendingRedirect = (
   });
   if (scheme) {
     Linking.openURL(`${scheme}://`);
-  } else {
+  } else if (type !== 'timedOut') {
     return Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
       type,
     });
   }
 };
 
-export const walletConnectOnSessionRequest = (
-  uri,
-  callback
-) => async dispatch => {
+export const walletConnectOnSessionRequest = (uri, callback) => async (
+  dispatch,
+  getState
+) => {
+  getState().appState;
   let walletConnector = null;
+  const receivedTimestamp = Date.now();
   try {
     const { clientMeta, push } = await getNativeOptions();
     try {
       walletConnector = new WalletConnect({ clientMeta, uri }, push);
-      walletConnector.on('session_request', (error, payload) => {
+      let meta = null;
+      let navigated = false;
+      let timedOut = false;
+      let routeParams = {
+        callback: async (
+          approved,
+          chainId,
+          accountAddress,
+          peerId,
+          dappScheme,
+          dappName,
+          dappUrl
+        ) => {
+          if (approved) {
+            dispatch(setPendingRequest(peerId, walletConnector));
+            dispatch(
+              walletConnectApproveSession(
+                peerId,
+                callback,
+                dappScheme,
+                chainId,
+                accountAddress
+              )
+            );
+            analytics.track('Approved new WalletConnect session', {
+              dappName,
+              dappUrl,
+            });
+          } else if (!timedOut) {
+            await dispatch(walletConnectRejectSession(peerId, walletConnector));
+            callback?.('reject', dappScheme);
+            analytics.track('Rejected new WalletConnect session', {
+              dappName,
+              dappUrl,
+            });
+          } else {
+            callback?.('timedOut', dappScheme);
+            const url = new URL(uri);
+            const bridge = qs.parse(url?.query)?.bridge;
+            analytics.track('New WalletConnect session time out', {
+              bridge,
+              dappName,
+              dappUrl,
+            });
+          }
+        },
+        receivedTimestamp,
+      };
+
+      walletConnector?.on('session_request', (error, payload) => {
         if (error) {
           analytics.track('Error on wc session_request', {
             error,
@@ -141,7 +194,6 @@ export const walletConnectOnSessionRequest = (
           captureException(error);
           throw error;
         }
-
         const { peerId, peerMeta } = payload.params[0];
 
         const imageUrl =
@@ -149,46 +201,57 @@ export const walletConnectOnSessionRequest = (
         const dappName = dappNameOverride(peerMeta.url) || peerMeta.name;
         const dappUrl = peerMeta.url;
         const dappScheme = peerMeta.scheme;
-
         analytics.track('Showing Walletconnect session request', {
           dappName,
           dappUrl,
         });
+        meta = {
+          dappName,
+          dappScheme,
+          dappUrl,
+          imageUrl,
+          peerId,
+        };
+        // If we already showed the sheet
+        // We need navigate to the same route with the updated params
+        // which now includes the meta
+        if (navigated && !timedOut) {
+          routeParams = { ...routeParams, meta };
+          Navigation.handleAction(
+            Routes.WALLET_CONNECT_APPROVAL_SHEET,
+            routeParams
+          );
+        }
+      });
 
-        Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
-          callback: async (approved, chainId, accountAddress) => {
-            if (approved) {
-              dispatch(setPendingRequest(peerId, walletConnector));
-              dispatch(
-                walletConnectApproveSession(
-                  peerId,
-                  callback,
-                  dappScheme,
-                  chainId,
-                  accountAddress
-                )
-              );
-              analytics.track('Approved new WalletConnect session', {
-                dappName,
-                dappUrl,
-              });
-            } else {
-              await dispatch(
-                walletConnectRejectSession(peerId, walletConnector)
-              );
-              callback && callback('reject', dappScheme);
-              analytics.track('Rejected new WalletConnect session', {
-                dappName,
-                dappUrl,
-              });
-            }
-          },
-          meta: {
-            dappName,
-            dappUrl,
-            imageUrl,
-          },
-        });
+      InteractionManager.runAfterInteractions(async () => {
+        // Wait until the app is idle so we can navigate
+        // This usually happens only when coming from a cold start
+        while (!getState().appState.walletReady) {
+          await delay(300);
+        }
+
+        // We need to add a timeout in case the bridge is down
+        // to explain the user what's happening
+        setTimeout(() => {
+          if (meta) return;
+          timedOut = true;
+          routeParams = { ...routeParams, timedOut };
+          Navigation.handleAction(
+            Routes.WALLET_CONNECT_APPROVAL_SHEET,
+            routeParams
+          );
+        }, 10000);
+
+        // If we have the meta, send it
+        if (meta) {
+          routeParams = { ...routeParams, meta };
+        }
+        navigated = true;
+        Navigation.handleAction(
+          Routes.WALLET_CONNECT_APPROVAL_SHEET,
+          routeParams
+        );
       });
     } catch (error) {
       logger.log('Exception during wc session_request');
@@ -307,8 +370,9 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
         });
       return;
     } else {
-      const { selected } = getState().wallets;
-      const selectedWallet = selected || {};
+      const { wallets } = getState().wallets;
+      const address = walletConnector._accounts?.[0];
+      const selectedWallet = findWalletWithAccount(wallets, address);
       const isReadOnlyWallet = selectedWallet.type === WalletTypes.readOnly;
       if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
         watchingAlert();

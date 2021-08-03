@@ -1,11 +1,11 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { toLower } from 'lodash';
+import isEqual from 'react-fast-compare';
 import {
   COVALENT_ANDROID_API_KEY,
   COVALENT_IOS_API_KEY,
 } from 'react-native-dotenv';
-import { polygonEnabled } from '../config/debug';
 // eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPrices } from './data';
 // eslint-disable-next-line import/no-cycle
@@ -26,6 +26,7 @@ import {
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
+let lastUpdatePayload = null;
 // -- Constants --------------------------------------- //
 const POLYGON_EXPLORER_CLEAR_STATE = 'explorer/POLYGON_EXPLORER_CLEAR_STATE';
 const POLYGON_EXPLORER_SET_BALANCE_HANDLER =
@@ -181,7 +182,7 @@ const fetchAssetBalances = async (tokens, address) => {
 };
 
 export const polygonExplorerInit = () => async (dispatch, getState) => {
-  if (!polygonEnabled) return;
+  if (networkInfo[networkTypes.polygon]?.disabled) return;
   const { accountAddress, nativeCurrency } = getState().settings;
   const { assets: allAssets, genericAssets } = getState().data;
   const { coingeckoIds } = getState().additionalAssetsData;
@@ -316,19 +317,24 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
       });
     }
 
-    dispatch(
-      addressAssetsReceived(
-        {
-          meta: {
-            address: accountAddress,
-            currency: nativeCurrency,
-            status: 'ok',
+    const newPayload = { assets };
+
+    if (!isEqual(lastUpdatePayload, newPayload)) {
+      dispatch(
+        addressAssetsReceived(
+          {
+            meta: {
+              address: accountAddress,
+              currency: nativeCurrency,
+              status: 'ok',
+            },
+            payload: newPayload,
           },
-          payload: { assets },
-        },
-        true
-      )
-    );
+          true
+        )
+      );
+      lastUpdatePayload = newPayload;
+    }
 
     const polygonExplorerBalancesHandle = setTimeout(
       fetchAssetsBalancesAndPrices,

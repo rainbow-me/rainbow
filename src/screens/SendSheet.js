@@ -751,19 +751,16 @@ export default function SendSheet(props) {
             assetAmount={amountDetails.assetAmount}
             buttonRenderer={
               <SheetActionButton
-                color={
-                  buttonDisabled
-                    ? isDarkMode
-                      ? colors.darkGrey
-                      : colors.lightGrey
-                    : color
-                }
+                color={color}
                 disabled={buttonDisabled}
+                forceShadows
+                fullWidth
                 label={buttonLabel}
                 onPress={showConfirmationSheet}
+                scaleTo={buttonDisabled ? 1.025 : 0.9}
                 size="big"
                 testID="send-sheet-confirm"
-                weight="bold"
+                weight="heavy"
               />
             }
             nativeAmount={amountDetails.nativeAmount}

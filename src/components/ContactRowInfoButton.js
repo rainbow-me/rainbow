@@ -1,3 +1,4 @@
+import { startCase } from 'lodash';
 import React from 'react';
 import { View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -19,15 +20,15 @@ import {
 } from '@rainbow-me/utils';
 
 const InfoButton = styled(Centered)`
-  ${padding(8, 0)}
+  ${padding(0, 0)}
   align-items: center;
-  justify-content: center;
   flex: 0;
   height: ${CoinRowHeight};
-  position: absolute;
-  width: 68px;
-  top: -15;
+  justify-content: center;
   left: -5;
+  position: absolute;
+  top: -15;
+  width: 68px;
 `;
 
 const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
@@ -38,9 +39,9 @@ const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
 )`
   border-radius: 15px;
   height: 30px;
+  margin: 10px;
   overflow: hidden;
   width: 30px;
-  margin: 10px;
 `;
 
 const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -56,33 +57,36 @@ const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
   ${fontWithWidth(fonts.weight.bold)};
 `;
 
-const CoinRowActionsEnum = {
+const ContactRowActionsEnum = {
+  blockExplorer: 'blockExplorer',
   copyAddress: 'copyAddress',
-  etherscan: 'etherscan',
 };
 
-const CoinRowActions = {
-  [CoinRowActionsEnum.copyAddress]: {
-    actionKey: CoinRowActionsEnum.copyAddress,
+const ContactRowActions = {
+  [ContactRowActionsEnum.copyAddress]: {
+    actionKey: ContactRowActionsEnum.copyAddress,
     actionTitle: 'Copy Address',
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'doc.on.doc',
     },
   },
-  [CoinRowActionsEnum.etherscan]: {
-    actionKey: CoinRowActionsEnum.etherscan,
-    actionTitle: 'View on Etherscan',
+};
+
+const buildBlockExplorerAction = type => {
+  const blockExplorerText =
+    'View on ' + startCase(ethereumUtils.getBlockExplorer(type));
+  return {
+    actionKey: ContactRowActionsEnum.blockExplorer,
+    actionTitle: blockExplorerText,
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'safari',
     },
-  },
+  };
 };
 
-const androidContractActions = ['Copy Address', 'View on Etherscan', 'Cancel'];
-
-const ContactRowInfoButton = ({ item, network }) => {
+const ContactRowInfoButton = ({ children, item, network, scaleTo }) => {
   const { setClipboard } = useClipboard();
   const handleCopyAddress = useCallback(
     address => {
@@ -93,6 +97,14 @@ const ContactRowInfoButton = ({ item, network }) => {
   );
 
   const onPressAndroid = useCallback(() => {
+    const blockExplorerText = `View on ' ${startCase(
+      ethereumUtils.getBlockExplorer(item?.type)
+    )}`;
+    const androidContractActions = [
+      'Copy Contract Address',
+      blockExplorerText,
+      'Cancel',
+    ];
     showActionSheetWithOptions(
       {
         cancelButtonIndex: 2,
@@ -109,37 +121,39 @@ const ContactRowInfoButton = ({ item, network }) => {
         }
       }
     );
-  }, [item?.name, item?.address, handleCopyAddress, network]);
+  }, [item?.type, item?.name, item?.address, handleCopyAddress, network]);
 
-  const menuConfig = useMemo(
-    () => ({
+  const menuConfig = useMemo(() => {
+    const blockExplorerAction = buildBlockExplorerAction(item?.type);
+    return {
       menuItems: [
-        CoinRowActions[CoinRowActionsEnum.etherscan],
+        blockExplorerAction,
         {
-          ...CoinRowActions[CoinRowActionsEnum.copyAddress],
+          ...ContactRowActions[ContactRowActionsEnum.copyAddress],
           discoverabilityTitle: abbreviations.formatAddressForDisplay(
             item?.address
           ),
         },
       ],
       menuTitle: `${item?.name}`,
-    }),
-    [item]
-  );
+    };
+  }, [item]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
-      if (actionKey === CoinRowActionsEnum.copyAddress) {
+      if (actionKey === ContactRowActionsEnum.copyAddress) {
         handleCopyAddress(item?.address);
-      } else if (actionKey === CoinRowActionsEnum.etherscan) {
+      } else if (actionKey === ContactRowActionsEnum.blockExplorer) {
         ethereumUtils.openAddressInBlockExplorer(item?.address);
       }
     },
     [item, handleCopyAddress]
   );
 
+  const Container = children ? Centered : InfoButton;
+
   return (
-    <InfoButton>
+    <Container>
       <ContextMenuButton
         activeOpacity={0}
         menuConfig={menuConfig}
@@ -149,13 +163,15 @@ const ContactRowInfoButton = ({ item, network }) => {
         useActionSheetFallback={false}
         wrapNativeComponent={false}
       >
-        <ButtonPressAnimation>
-          <Circle>
-            <Icon>􀅳</Icon>
-          </Circle>
+        <ButtonPressAnimation scaleTo={scaleTo}>
+          {children || (
+            <Circle>
+              <Icon>􀅳</Icon>
+            </Circle>
+          )}
         </ButtonPressAnimation>
       </ContextMenuButton>
-    </InfoButton>
+    </Container>
   );
 };
 

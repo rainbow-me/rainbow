@@ -81,7 +81,7 @@ const EditButtonLabel = styled(Text).attrs(
     color: colors.appleBlue,
     letterSpacing: 'roundedMedium',
     size: 'large',
-    weight: editMode ? 'semibold' : 'medium',
+    weight: editMode ? 'bold' : 'semibold',
   })
 )`
   height: 40px;

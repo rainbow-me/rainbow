@@ -44,7 +44,7 @@ const sx = StyleSheet.create({
     color: '#0E76FD',
     fontFamily: fonts.family.SFProRounded,
     fontSize: getFontSize(fonts.size.large),
-    fontWeight: fonts.weight.medium,
+    fontWeight: fonts.weight.heavy,
     textAlign: 'center',
   },
   gradient: {

@@ -44,18 +44,14 @@ function handleWalletConnect(uri) {
   const { query, pathname } = new URL(uri);
   if (uri && query) {
     const [, version] = pathname.split('@');
-    console.log('handleWalletConnect', version, !!uri);
     if (version === '2') {
       walletConnectPair(uri);
     } else {
       dispatch(walletConnectSetPendingRedirect());
       dispatch(
         walletConnectOnSessionRequest(uri, (status, dappScheme) => {
-          if (status === 'reject') {
-            dispatch(walletConnectRemovePendingRedirect('reject', dappScheme));
-          } else {
-            dispatch(walletConnectRemovePendingRedirect('connect', dappScheme));
-          }
+          const type = status === 'approved' ? 'connect' : status;
+          dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
         })
       );
     }

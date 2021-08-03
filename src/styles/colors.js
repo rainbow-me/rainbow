@@ -155,7 +155,7 @@ const getColorsByTheme = darkMode => {
     arbitrum: '#2D374B',
     goerli: '#f6c343',
     kovan: '#7057ff',
-    mainnet: '#0E76FD',
+    mainnet: buildRgba('#3C4252', 0.5),
     optimism: '#FF4040',
     polygon: '#8247E5',
     rinkeby: '#f6c343',
@@ -165,6 +165,7 @@ const getColorsByTheme = darkMode => {
   let gradients = {
     lighterGrey: [buildRgba('#ECF1F5', 0.15), buildRgba('#DFE4EB', 0.5)],
     lightestGrey: ['#FFFFFF', '#F2F4F7'],
+    lightestGreyReverse: ['#F2F4F7', '#FFFFFF'],
     lightGrey: [buildRgba('#ECF1F5', 0.5), buildRgba('#DFE4EB', 0.5)],
     lightGreyWhite: [buildRgba('#F0F2F5', 0.5), buildRgba('#FFFFFF', 0.5)],
     offWhite: [base.white, base.offWhite],
@@ -244,6 +245,10 @@ const getColorsByTheme = darkMode => {
     gradients = {
       lighterGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.6)],
       lightestGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.3)],
+      lightestGreyReverse: [
+        buildRgba('#1F222A', 0.1),
+        buildRgba('#1F222A', 0.8),
+      ],
       lightGrey: ['#1F222A', buildRgba('#1F222A', 0.8)],
       lightGreyWhite: [buildRgba('#F0F2F5', 0.05), buildRgba('#FFFFFF', 0.01)],
       offWhite: ['#1F222A', '#1F222A'],
@@ -264,7 +269,7 @@ const getColorsByTheme = darkMode => {
       arbitrum: '#96BEDC',
       goerli: '#f6c343',
       kovan: '#7057ff',
-      mainnet: '#0E76FD',
+      mainnet: buildRgba('#E0E8FF', 0.5),
       optimism: '#FF4040',
       polygon: '#8247E5',
       rinkeby: '#f6c343',
