@@ -4,12 +4,12 @@ import {
   COVALENT_ANDROID_API_KEY,
   COVALENT_IOS_API_KEY,
 } from 'react-native-dotenv';
-import { arbitrumEnabled } from '../config/debug';
 // eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPrices } from './data';
 // eslint-disable-next-line import/no-cycle
 import { emitAssetRequest, emitChartsRequest } from './explorer';
 import { AssetTypes } from '@rainbow-me/entities';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   ARBITRUM_ETH_ADDRESS,
@@ -91,7 +91,7 @@ const getAssetsFromCovalent = async (
 };
 
 export const arbitrumExplorerInit = () => async (dispatch, getState) => {
-  if (!arbitrumEnabled) return;
+  if (networkInfo[networkTypes.arbitrum]?.disabled) return;
   const { accountAddress, nativeCurrency } = getState().settings;
   const { assets: allAssets, genericAssets } = getState().data;
   const { coingeckoIds } = getState().additionalAssetsData;

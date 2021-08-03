@@ -2,7 +2,6 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { toLower } from 'lodash';
 import isEqual from 'react-fast-compare';
-import { optimismEnabled } from '../config/debug';
 // eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPrices } from './data';
 // eslint-disable-next-line import/no-cycle
@@ -64,7 +63,7 @@ const fetchAssetBalances = async (tokens, address) => {
 };
 
 export const optimismExplorerInit = () => async (dispatch, getState) => {
-  if (!optimismEnabled) return;
+  if (networkInfo[networkTypes.optimism]?.disabled) return;
   const { assets: allAssets, genericAssets } = getState().data;
   const { accountAddress, nativeCurrency } = getState().settings;
   const formattedNativeCurrency = toLower(nativeCurrency);

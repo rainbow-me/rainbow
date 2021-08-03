@@ -24,33 +24,44 @@ export const networksMenuItems = () =>
       },
     }));
 
-export const changeConnectionMenuItems = () => [
-  {
-    actionKey: 'disconnect',
-    actionTitle: 'Disconnect',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'xmark.circle.fill',
+const networksAvailable = networksMenuItems();
+
+export const changeConnectionMenuItems = () => {
+  const baseOptions = [
+    {
+      actionKey: 'disconnect',
+      actionTitle: 'Disconnect',
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'xmark.circle.fill',
+      },
+      menuAttributes: ['destructive'],
     },
-    menuAttributes: ['destructive'],
-  },
-  {
-    actionKey: 'switch-account',
-    actionTitle: 'Switch Wallet',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'rectangle.stack.person.crop',
+    {
+      actionKey: 'switch-account',
+      actionTitle: 'Switch Wallet',
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'rectangle.stack.person.crop',
+      },
     },
-  },
-  {
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'network',
-    },
-    menuItems: networksMenuItems(),
-    menuTitle: 'Switch Network',
-  },
-];
+  ];
+
+  if (networksAvailable.length > 1) {
+    return [
+      ...baseOptions,
+      {
+        icon: {
+          iconType: 'SYSTEM',
+          iconValue: 'network',
+        },
+        menuItems: networksAvailable,
+        menuTitle: 'Switch Network',
+      },
+    ];
+  }
+  return baseOptions;
+};
 
 export const androidShowNetworksActionSheet = callback => {
   showActionSheetWithOptions(
