@@ -14921,7 +14921,7 @@ xmldoc@^1.1.2:
   dependencies:
     sax "^1.2.1"
 
-xmldom@0.1.x, "xmldom@github:xmldom/xmldom#0.7.0":
+xmldom@0.1.x, "xmldom@github:xmldom/xmldom#c568938641cc1f121cef5b4df80fcfda1e489b6e":
   version "0.7.0"
   resolved "https://codeload.github.com/xmldom/xmldom/tar.gz/c568938641cc1f121cef5b4df80fcfda1e489b6e"
 
