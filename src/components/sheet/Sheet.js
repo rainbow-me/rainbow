@@ -10,7 +10,14 @@ import SheetHandle from './SheetHandle';
 import { useDimensions } from '@rainbow-me/hooks';
 import { borders } from '@rainbow-me/styles';
 
-const Sheet = ({ borderRadius, children, hideHandle }) => {
+const Sheet = ({
+  borderRadius,
+  children,
+  hideHandle,
+  noInsets,
+  paddingBottom = 7,
+  paddingTop = 6,
+}) => {
   const { width } = useDimensions();
   const { goBack } = useNavigation();
   const insets = useSafeArea();
@@ -22,10 +29,10 @@ const Sheet = ({ borderRadius, children, hideHandle }) => {
       <Column
         backgroundColor={colors.white}
         css={borders.buildRadius('top', borderRadius)}
-        paddingBottom={insets.bottom}
+        paddingBottom={noInsets ? 0 : insets.bottom}
         width="100%"
       >
-        <Centered paddingBottom={7} paddingTop={6}>
+        <Centered paddingBottom={paddingBottom} paddingTop={paddingTop}>
           {!hideHandle && <SheetHandle />}
         </Centered>
         {children}

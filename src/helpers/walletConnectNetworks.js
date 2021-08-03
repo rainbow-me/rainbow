@@ -15,7 +15,7 @@ export const networksMenuItems = () =>
     .filter(({ disabled, testnet }) => !disabled && !testnet)
     .map(netInfo => ({
       actionKey: `${NETWORK_MENU_ACTION_KEY_FILTER}${netInfo.value}`,
-      actionTitle: netInfo.name,
+      actionTitle: netInfo.longName || netInfo.name,
       icon: {
         iconType: 'ASSET',
         iconValue: `${
@@ -39,7 +39,7 @@ export const changeConnectionMenuItems = () => [
     actionTitle: 'Switch Wallet',
     icon: {
       iconType: 'SYSTEM',
-      iconValue: 'rectangle.stack.person.crop.fill',
+      iconValue: 'rectangle.stack.person.crop',
     },
   },
   {

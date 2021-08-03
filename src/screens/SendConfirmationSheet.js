@@ -155,7 +155,7 @@ const Checkbox = ({ activeColor, checked, id, label, onPress }) => {
 };
 
 export default function SendConfirmationSheet() {
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const { nativeCurrency } = useAccountSettings();
   const { goBack, navigate, setParams } = useNavigation();
   const {
@@ -417,7 +417,10 @@ export default function SendConfirmationSheet() {
                     scaleTo={0.75}
                   >
                     <Text
-                      color={colors.alpha(colors.blueGreyDark, 0.5)}
+                      color={colors.alpha(
+                        colors.blueGreyDark,
+                        isDarkMode ? 0.5 : 0.6
+                      )}
                       lineHeight={31}
                       size="larger"
                       weight="heavy"
