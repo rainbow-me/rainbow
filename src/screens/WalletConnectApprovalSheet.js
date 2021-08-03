@@ -90,6 +90,7 @@ export default function WalletConnectApprovalSheet() {
   const { goBack } = useNavigation();
   const { params } = useRoute();
   const { network, accountAddress } = useAccountSettings();
+  const { navigate } = useNavigation();
   const { selectedWallet, walletNames } = useWallets();
   const handled = useRef(false);
   const [scam, setScam] = useState(false);
@@ -105,6 +106,7 @@ export default function WalletConnectApprovalSheet() {
   const meta = params?.meta || {};
   const callback = params?.callback;
   const receivedTimestamp = params?.receivedTimestamp;
+  const timedOut = params?.timedOut;
   const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
 
   const checkIfScam = useCallback(
@@ -259,6 +261,15 @@ export default function WalletConnectApprovalSheet() {
       });
     });
   }, [dappName, dappUrl, receivedTimestamp]);
+
+  useEffect(() => {
+    if (!timedOut) return;
+    goBack();
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: 'wallet_connect',
+    });
+    return;
+  }, [goBack, handleSuccess, navigate, timedOut]);
 
   useEffect(() => {
     if (scam) {

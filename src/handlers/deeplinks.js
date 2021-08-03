@@ -46,11 +46,8 @@ function handleWalletConnect(uri) {
   if (uri && query) {
     dispatch(
       walletConnectOnSessionRequest(uri, (status, dappScheme) => {
-        if (status === 'reject') {
-          dispatch(walletConnectRemovePendingRedirect('reject', dappScheme));
-        } else {
-          dispatch(walletConnectRemovePendingRedirect('connect', dappScheme));
-        }
+        const type = status === 'approved' ? 'connect' : status;
+        dispatch(walletConnectRemovePendingRedirect(type, dappScheme));
       })
     );
   } else {

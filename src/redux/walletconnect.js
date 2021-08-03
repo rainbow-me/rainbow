@@ -104,7 +104,7 @@ export const walletConnectRemovePendingRedirect = (
   });
   if (scheme) {
     Linking.openURL(`${scheme}://`);
-  } else {
+  } else if (type !== 'timedOut') {
     return Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
       type,
     });
@@ -124,6 +124,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
       walletConnector = new WalletConnect({ clientMeta, uri }, push);
       let meta = null;
       let navigated = false;
+      let timedOut = false;
       let routeParams = {
         callback: async (
           approved,
@@ -149,10 +150,16 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
               dappName,
               dappUrl,
             });
-          } else {
+          } else if (!timedOut) {
             await dispatch(walletConnectRejectSession(peerId, walletConnector));
-            callback && callback('reject', dappScheme);
+            callback?.('reject', dappScheme);
             analytics.track('Rejected new WalletConnect session', {
+              dappName,
+              dappUrl,
+            });
+          } else {
+            callback?.('timedOut', dappScheme);
+            analytics.track('New WalletConnect session time out', {
               dappName,
               dappUrl,
             });
@@ -192,7 +199,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         // If we already showed the sheet
         // We need navigate to the same route with the updated params
         // which now includes the meta
-        if (navigated) {
+        if (navigated && !timedOut) {
           routeParams = { ...routeParams, meta };
           Navigation.handleAction(
             Routes.WALLET_CONNECT_APPROVAL_SHEET,
@@ -200,6 +207,16 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
           );
         }
       });
+
+      setTimeout(() => {
+        timedOut = true;
+        routeParams = { ...routeParams, timedOut };
+        Navigation.handleAction(
+          Routes.WALLET_CONNECT_APPROVAL_SHEET,
+          routeParams
+        );
+      }, 10000);
+
       InteractionManager.runAfterInteractions(async () => {
         // Wait until the app is idle so we can navigate
         // This usually happens only when coming from a cold start
