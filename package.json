@@ -306,7 +306,8 @@
     "**/glob-parent": "6.0.0",
     "**/merge-deep": "3.0.3",
     "**/css-what": "5.0.1",
-    "**/socket.io-parser": "3.3.1"
+    "**/socket.io-parser": "3.3.1",
+    "**/tar": "6.1.2"
   },
   "jest": {
     "preset": "react-native",
