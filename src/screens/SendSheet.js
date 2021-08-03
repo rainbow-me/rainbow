@@ -754,6 +754,7 @@ export default function SendSheet(props) {
                 color={color}
                 disabled={buttonDisabled}
                 forceShadows
+                fullWidth
                 label={buttonLabel}
                 onPress={showConfirmationSheet}
                 scaleTo={buttonDisabled ? 1.025 : 0.9}
