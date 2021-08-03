@@ -572,34 +572,6 @@ export const walletConnectRejectSession = (
   dispatch(removePendingRequest(peerId));
 };
 
-export const walletConnectDisconnectAllByDappName = dappName => async (
-  dispatch,
-  getState
-) => {
-  const { walletConnectors } = getState().walletconnect;
-  const matchingWalletConnectors = values(
-    pickBy(walletConnectors, session => session.peerMeta.name === dappName)
-  );
-  try {
-    const peerIds = values(
-      mapValues(
-        matchingWalletConnectors,
-        walletConnector => walletConnector.peerId
-      )
-    );
-    await removeWalletConnectSessions(peerIds);
-    forEach(matchingWalletConnectors, walletConnector =>
-      walletConnector.killSession()
-    );
-    dispatch({
-      payload: omitBy(walletConnectors, wc => wc.peerMeta.name === dappName),
-      type: WALLETCONNECT_REMOVE_SESSION,
-    });
-  } catch (error) {
-    Alert.alert('Failed to disconnect all WalletConnect sessions');
-  }
-};
-
 export const walletConnectDisconnectAllByPeerId = peerId => async (
   dispatch,
   getState
