@@ -54,7 +54,7 @@ export default function ChainBadge({
   assetType,
   badgeXPosition = -7,
   badgeYPosition = 0,
-  marginBottom,
+  marginBottom = 0,
   position,
   size = 'small',
 }) {
