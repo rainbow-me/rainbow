@@ -98,7 +98,7 @@ export default function WalletProfileState({
     ? null
     : (indexOfForceColor !== -1 && indexOfForceColor) || getRandomColor();
   const [value, setValue] = useState(
-    profile?.name ? removeFirstEmojiFromString(profile.name).join('') : ''
+    profile?.name ? removeFirstEmojiFromString(profile.name) : ''
   );
   const inputRef = useRef(null);
 

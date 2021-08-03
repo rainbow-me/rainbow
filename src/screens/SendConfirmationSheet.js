@@ -24,6 +24,7 @@ import {
 } from '../utils/defaultProfileUtils';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
+import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
@@ -294,7 +295,7 @@ export default function SendConfirmationSheet() {
   }, [wallets, toAddress, network, walletNames]);
 
   const avatarName =
-    contact?.nickname ||
+    removeFirstEmojiFromString(contact?.nickname) ||
     accountProfile?.accountName ||
     (isENSAddressFormat(to) ? to : address(to, 4, 6));
 
