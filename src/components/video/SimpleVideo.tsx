@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
 // @ts-ignore
 import Video from 'react-native-video';
@@ -69,11 +75,11 @@ export default function SimpleVideo({
   }, [opacity, loading]);
 
   // HACK: Force the player to quit when unmounted. (iOS)
-  useEffect(() => {
-    const { current } = ref;
+  useLayoutEffect(() => {
+    const current = ref?.current;
     return () => {
       try {
-        current?.setNativeProps({ paused: true });
+        current?.setNativeProps?.({ paused: true });
       } catch (e) {
         logger.error(e);
       }
