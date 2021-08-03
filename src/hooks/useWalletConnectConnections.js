@@ -4,10 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
 import {
-  walletConnectDisconnectAllByDappName as rawWalletConnectDisconnectAllByDappName,
   walletConnectDisconnectAllByPeerId as rawWalletConnectDisconnectAllByPeerId,
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
-  walletConnectUpdateSessionConnectorByDappName as rawWalletConnectUpdateSessionConnectorByDappName,
   walletConnectUpdateSessionConnectorByPeerId as rawWalletConnectUpdateSessionConnectorByPeerId,
 } from '../redux/walletconnect';
 
@@ -44,11 +42,6 @@ export default function useWalletConnectConnections() {
     walletConnectorsCount,
   } = useSelector(walletConnectSelector);
 
-  const walletConnectDisconnectAllByDappName = useCallback(
-    dappName => dispatch(rawWalletConnectDisconnectAllByDappName(dappName)),
-    [dispatch]
-  );
-
   const walletConnectDisconnectAllByPeerId = useCallback(
     peerId => dispatch(rawWalletConnectDisconnectAllByPeerId(peerId)),
     [dispatch]
@@ -57,18 +50,6 @@ export default function useWalletConnectConnections() {
   const walletConnectOnSessionRequest = useCallback(
     (uri, callback) =>
       dispatch(rawWalletConnectOnSessionRequest(uri, callback)),
-    [dispatch]
-  );
-
-  const walletConnectUpdateSessionConnectorByDappName = useCallback(
-    (dappName, accountAddress, chainId) =>
-      dispatch(
-        rawWalletConnectUpdateSessionConnectorByDappName(
-          dappName,
-          accountAddress,
-          chainId
-        )
-      ),
     [dispatch]
   );
 
@@ -86,12 +67,10 @@ export default function useWalletConnectConnections() {
 
   return {
     sortedWalletConnectors,
-    walletConnectDisconnectAllByDappName,
     walletConnectDisconnectAllByPeerId,
     walletConnectOnSessionRequest,
     walletConnectorsByDappName,
     walletConnectorsCount,
-    walletConnectUpdateSessionConnectorByDappName,
     walletConnectUpdateSessionConnectorByPeerId,
   };
 }
