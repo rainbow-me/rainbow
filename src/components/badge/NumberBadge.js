@@ -39,7 +39,7 @@ const Circle = styled(Centered)`
 const NumberText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.whiteLabel,
   size: 'smaller',
-  weight: 'semibold',
+  weight: 'bold',
 }))`
   ${android && `lineHeight: 17`};
 `;

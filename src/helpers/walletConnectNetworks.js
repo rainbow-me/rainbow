@@ -15,7 +15,7 @@ export const networksMenuItems = () =>
     .filter(({ disabled, testnet }) => !disabled && !testnet)
     .map(netInfo => ({
       actionKey: `${NETWORK_MENU_ACTION_KEY_FILTER}${netInfo.value}`,
-      actionTitle: netInfo.name,
+      actionTitle: netInfo.longName || netInfo.name,
       icon: {
         iconType: 'ASSET',
         iconValue: `${
@@ -33,15 +33,16 @@ export const changeConnectionMenuItems = () => {
       actionTitle: 'Disconnect',
       icon: {
         iconType: 'SYSTEM',
-        iconValue: 'xmark.circle',
+        iconValue: 'xmark.circle.fill',
       },
+      menuAttributes: ['destructive'],
     },
     {
       actionKey: 'switch-account',
-      actionTitle: 'Switch Account',
+      actionTitle: 'Switch Wallet',
       icon: {
         iconType: 'SYSTEM',
-        iconValue: 'person.2',
+        iconValue: 'rectangle.stack.person.crop',
       },
     },
   ];
@@ -52,7 +53,7 @@ export const changeConnectionMenuItems = () => {
       {
         icon: {
           iconType: 'SYSTEM',
-          iconValue: 'cloud',
+          iconValue: 'network',
         },
         menuItems: networksAvailable,
         menuTitle: 'Switch Network',

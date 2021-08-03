@@ -736,7 +736,7 @@ export default function TransactionConfirmationScreen() {
           onPress={ready ? onPressSend : NOOP}
           size="big"
           testID="wc-confirm"
-          weight="bold"
+          weight="heavy"
         />
       </SheetActionButtonRow>
     );
@@ -819,10 +819,10 @@ export default function TransactionConfirmationScreen() {
     [amount, isBalanceEnough, method, request]
   );
 
-  const ShortSheetHeight = 457 + safeAreaInsetValues.bottom;
-  const TallSheetHeight = 604 + safeAreaInsetValues.bottom;
+  const ShortSheetHeight = 486 + safeAreaInsetValues.bottom;
+  const TallSheetHeight = 656 + safeAreaInsetValues.bottom;
   const MessageSheetHeight =
-    (method === SIGN_TYPED_DATA ? 640 : android ? 595 : 575) +
+    (method === SIGN_TYPED_DATA ? 640 : android ? 595 : 556) +
     safeAreaInsetValues.bottom;
 
   const balanceTooLow =
@@ -933,16 +933,21 @@ export default function TransactionConfirmationScreen() {
               <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
             )}
             {renderTransactionSection()}
-            {isL2 && (
-              <L2Disclaimer
-                assetType={network}
-                colors={colors}
-                onPress={handleL2DisclaimerPress}
-                symbol="request"
-              />
+            {isL2 && !isMessageRequest && (
+              <Column marginTop={0} width="100%">
+                <Row height={19} />
+                <L2Disclaimer
+                  assetType={network}
+                  colors={colors}
+                  hideDivider
+                  onPress={handleL2DisclaimerPress}
+                  prominent
+                  symbol="app"
+                />
+              </Column>
             )}
             {renderTransactionButtons()}
-            <RowWithMargins css={padding(0, 24, 30)} margin={15}>
+            <RowWithMargins css={padding(6, 24, 30)} margin={15}>
               <Column>
                 <WalletLabel>Wallet</WalletLabel>
                 <RowWithMargins margin={5}>

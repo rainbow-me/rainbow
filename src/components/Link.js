@@ -30,6 +30,7 @@ const Link = ({
   color,
   transformOrigin = 'left',
   scaleTo = 1.1,
+  weight = 'semibold',
   ...props
 }) => {
   const handlePress = useCallback(() => Linking.openURL(url), [url]);
@@ -44,11 +45,7 @@ const Link = ({
     >
       <Container {...props}>
         {!emoji && <Icon color={color || colors.appleBlue} name={emojiName} />}
-        <Text
-          color={color || colors.appleBlue}
-          size="lmedium"
-          weight="semibold"
-        >
+        <Text color={color || colors.appleBlue} size="lmedium" weight={weight}>
           {emoji}
           {display || formatURLForDisplay(url)}
         </Text>

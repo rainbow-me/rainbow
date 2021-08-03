@@ -26,7 +26,7 @@ import {
   SlackSheet,
   SwapActionButton,
 } from '../../sheet';
-import { Bold, Text } from '../../text';
+import { Text } from '../../text';
 import {
   TokenInfoBalanceValue,
   TokenInfoItem,
@@ -80,9 +80,12 @@ const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
 
 const TIMEOUT = 15000;
 
-const ReadMoreBotton = styled(Bold)`
-  margin-top: 12;
-`;
+const ReadMoreButton = styled(Text).attrs(({ theme: { colors } }) => ({
+  color: colors.alpha(colors.blueGreyDark, 0.8),
+  lineHeight: 37,
+  size: 'lmedium',
+  weight: 'heavy',
+}))``;
 
 function CarouselWrapper({
   style,
@@ -154,9 +157,9 @@ function Description({ text }) {
   const { colors } = useTheme();
   return (
     <ButtonPressAnimation
-      disabled={!needToTruncate}
+      disabled={!needToTruncate || !truncated}
       onPress={() => setTruncated(prev => !prev)}
-      scaleTo={0.99}
+      scaleTo={1}
     >
       <Text
         color={colors.alpha(colors.blueGreyDark, 0.5)}
@@ -164,10 +167,10 @@ function Description({ text }) {
         size="lmedium"
       >
         {delayedTruncated ? truncatedText : text}
+        {truncated && needToTruncate && (
+          <ReadMoreButton>{'\n Read more 􀯼'}</ReadMoreButton>
+        )}
       </Text>
-      {truncated && needToTruncate && (
-        <ReadMoreBotton>Read more 􀯼</ReadMoreBotton>
-      )}
     </ButtonPressAnimation>
   );
 }
@@ -303,7 +306,8 @@ export default function ChartExpandedState({ asset }) {
         isActive
         isSendSheet
         isSmallBalancesOpen={delayedMorePoolsVisible}
-        marginLeft={18}
+        marginLeft={19}
+        marginTop={5}
         onPress={() => setMorePoolsVisible(prev => !prev)}
       />
     );
@@ -443,13 +447,14 @@ export default function ChartExpandedState({ asset }) {
         )}
 
         {!!delayedDescriptions && (
-          <ExpandedStateSection title={`About ${asset?.name}`}>
+          <ExpandedStateSection isL2 title={`About ${asset?.name}`}>
             <Description text={description} />
           </ExpandedStateSection>
         )}
         <SocialLinks
           color={color}
           links={links}
+          marginTop={!delayedDescriptions && 19}
           type={asset?.type}
           uniqueId={asset?.uniqueId}
         />

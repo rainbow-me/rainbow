@@ -8,7 +8,7 @@ const networkInfo = {
     disabled: false,
     exchange_enabled: true,
     faucet_url: null,
-    name: 'Mainnet',
+    name: 'Ethereum',
     value: networkTypes.mainnet,
   },
   [`${networkTypes.ropsten}`]: {
@@ -85,7 +85,8 @@ const networkInfo = {
     exchange_enabled: false,
     faucet_url: `https://faucet.kovan.network/`,
     layer2: true,
-    name: 'Polygon (Matic)',
+    longName: 'Polygon (Matic)',
+    name: 'Polygon',
     value: networkTypes.polygon,
   },
 };

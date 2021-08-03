@@ -51,11 +51,11 @@ const TitleText = styled(TruncatedText).attrs({
   letterSpacing: 'roundedMedium',
   lineHeight: 'normal',
   size: 'large',
-  weight: 'bold',
+  weight: 'heavy',
 })`
   flex: 1;
   margin-bottom: 1;
-  padding-left: ${({ isShowcase }) => (!isShowcase ? 9 : 0)};
+  padding-left: ${({ isShowcase }) => (isShowcase ? 1 : 10)};
   padding-right: 9;
 `;
 

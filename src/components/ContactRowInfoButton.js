@@ -20,15 +20,15 @@ import {
 } from '@rainbow-me/utils';
 
 const InfoButton = styled(Centered)`
-  ${padding(8, 0)}
+  ${padding(0, 0)}
   align-items: center;
-  justify-content: center;
   flex: 0;
   height: ${CoinRowHeight};
-  position: absolute;
-  width: 68px;
-  top: -15;
+  justify-content: center;
   left: -5;
+  position: absolute;
+  top: -15;
+  width: 68px;
 `;
 
 const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
@@ -39,9 +39,9 @@ const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
 )`
   border-radius: 15px;
   height: 30px;
+  margin: 10px;
   overflow: hidden;
   width: 30px;
-  margin: 10px;
 `;
 
 const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -86,7 +86,7 @@ const buildBlockExplorerAction = type => {
   };
 };
 
-const ContactRowInfoButton = ({ item, network }) => {
+const ContactRowInfoButton = ({ children, item, network, scaleTo }) => {
   const { setClipboard } = useClipboard();
   const handleCopyAddress = useCallback(
     address => {
@@ -150,8 +150,10 @@ const ContactRowInfoButton = ({ item, network }) => {
     [item, handleCopyAddress]
   );
 
+  const Container = children ? Centered : InfoButton;
+
   return (
-    <InfoButton>
+    <Container>
       <ContextMenuButton
         activeOpacity={0}
         menuConfig={menuConfig}
@@ -161,13 +163,15 @@ const ContactRowInfoButton = ({ item, network }) => {
         useActionSheetFallback={false}
         wrapNativeComponent={false}
       >
-        <ButtonPressAnimation>
-          <Circle>
-            <Icon>􀅳</Icon>
-          </Circle>
+        <ButtonPressAnimation scaleTo={scaleTo}>
+          {children || (
+            <Circle>
+              <Icon>􀅳</Icon>
+            </Circle>
+          )}
         </ButtonPressAnimation>
       </ContextMenuButton>
-    </InfoButton>
+    </Container>
   );
 };
 

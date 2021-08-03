@@ -25,7 +25,7 @@ const AccountName = styled(TruncatedText).attrs({
   letterSpacing: 'roundedMedium',
   size: 'big',
   truncationLength: 4,
-  weight: 'bold',
+  weight: 'heavy',
 })`
   height: ${android ? '35' : '30'};
   margin-top: 2;
@@ -103,7 +103,7 @@ const AssetListHeader = ({
     async function measure() {
       const { width } = await measureText(accountName, {
         fontSize: parseFloat(fonts.size.big),
-        fontWeight: fonts.weight.bold,
+        fontWeight: fonts.weight.heavy,
         letterSpacing: fonts.letterSpacing.roundedMedium,
       });
       setTextWidth(width);

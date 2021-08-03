@@ -65,7 +65,7 @@ const SavingsListHeader = ({
             letterSpacing="roundedMedium"
             lineHeight="normal"
             size="large"
-            weight="bold"
+            weight="heavy"
           >
             {title}
           </TruncatedText>
