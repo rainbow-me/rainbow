@@ -266,7 +266,7 @@ export default function WalletConnectApprovalSheet() {
     if (!timedOut) return;
     goBack();
     navigate(Routes.EXPLAIN_SHEET, {
-      type: 'wallet_connect',
+      type: 'failed_wc_connection',
     });
     return;
   }, [goBack, navigate, timedOut]);
