@@ -211,6 +211,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
       // We need to add a timeout in case the bridge is down
       // to explain the user what's happening
       setTimeout(() => {
+        if (meta) return;
         timedOut = true;
         routeParams = { ...routeParams, timedOut };
         Navigation.handleAction(
