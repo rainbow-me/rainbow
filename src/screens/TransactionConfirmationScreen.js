@@ -173,10 +173,6 @@ export default function TransactionConfirmationScreen() {
     ({ walletconnect }) => walletconnect.pendingRedirect
   );
 
-  const walletConnectors = useSelector(
-    ({ walletconnect }) => walletconnect.walletConnectors
-  );
-
   const {
     dataAddNewTransaction,
     removeRequest,
@@ -186,6 +182,7 @@ export default function TransactionConfirmationScreen() {
   const {
     callback,
     transactionDetails: {
+      address,
       chainId,
       dappName,
       dappScheme,
@@ -202,10 +199,8 @@ export default function TransactionConfirmationScreen() {
   const isWalletConnectV2Request = useMemo(() => requestVersion === 'v2', [
     requestVersion,
   ]);
-  const walletConnector = walletConnectors[peerId];
 
   const accountInfo = useMemo(() => {
-    const address = walletConnector._accounts?.[0];
     const selectedWallet = findWalletWithAccount(wallets, address);
     const profileInfo = getAccountProfileInfo(
       selectedWallet,
@@ -217,7 +212,7 @@ export default function TransactionConfirmationScreen() {
       ...profileInfo,
       address,
     };
-  }, [network, walletConnector._accounts, walletNames, wallets]);
+  }, [address, network, walletNames, wallets]);
 
   const isL2 = useMemo(() => isL2Network(network), [network]);
 

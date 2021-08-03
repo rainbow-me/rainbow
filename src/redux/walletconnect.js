@@ -397,6 +397,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
               openAutomatically: true,
               transactionDetails: {
                 ...request,
+                address,
                 chainId: walletConnector._chainId,
               },
             });

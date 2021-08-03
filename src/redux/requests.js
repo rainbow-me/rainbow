@@ -106,8 +106,9 @@ export const addRequestToApproveV2 = (requestId, session, payload) => (
   const dappUrl = peerMeta.url || 'Unknown Url';
   const dappScheme = peerMeta.scheme || null;
   const account = session.state.accounts?.[0];
-  const { chainId } = getAddressAndChainIdFromWCAccount(account);
+  const { address, chainId } = getAddressAndChainIdFromWCAccount(account);
   const request = {
+    address,
     chainId,
     dappName,
     dappScheme,
