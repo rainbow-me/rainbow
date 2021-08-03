@@ -116,6 +116,13 @@ export const explainers = {
     readMoreLink: 'https://polygon.technology/',
     extraHeight: 120,
   },
+  failed_wc_connection: {
+    emoji: '😵',
+    text:
+      'Uh oh, something went wrong! The site may be experiencing a connection outage. Try again later or contact the site’s team for more details.',
+    title: 'Connection failed',
+    extraHeight: -100,
+  },
 };
 
 const ExplainSheet = () => {
