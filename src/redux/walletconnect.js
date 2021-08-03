@@ -13,6 +13,7 @@ import {
   values,
 } from 'lodash';
 import { Alert, InteractionManager, Linking } from 'react-native';
+import URL, { qs } from 'url-parse';
 import {
   getAllValidWalletConnectSessions,
   removeWalletConnectSessions,
@@ -159,7 +160,10 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
             });
           } else {
             callback?.('timedOut', dappScheme);
+            const url = new URL(uri);
+            const bridge = qs.parse(url?.query)?.bridge;
             analytics.track('New WalletConnect session time out', {
+              bridge,
               dappName,
               dappUrl,
             });
