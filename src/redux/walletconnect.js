@@ -208,24 +208,24 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         }
       });
 
-      // We need to add a timeout in case the bridge is down
-      // to explain the user what's happening
-      setTimeout(() => {
-        if (meta) return;
-        timedOut = true;
-        routeParams = { ...routeParams, timedOut };
-        Navigation.handleAction(
-          Routes.WALLET_CONNECT_APPROVAL_SHEET,
-          routeParams
-        );
-      }, 10000);
-
       InteractionManager.runAfterInteractions(async () => {
         // Wait until the app is idle so we can navigate
         // This usually happens only when coming from a cold start
         while (!getState().appState.walletReady) {
           await delay(300);
         }
+        // We need to add a timeout in case the bridge is down
+        // to explain the user what's happening
+        setTimeout(() => {
+          if (meta) return;
+          timedOut = true;
+          routeParams = { ...routeParams, timedOut };
+          Navigation.handleAction(
+            Routes.WALLET_CONNECT_APPROVAL_SHEET,
+            routeParams
+          );
+        }, 10000);
+
         // If we have the meta, send it
         if (meta) {
           routeParams = { ...routeParams, meta };
