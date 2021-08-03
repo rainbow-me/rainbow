@@ -394,9 +394,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     if (error) {
       throw error;
     }
-    dispatch(
-      walletConnectDisconnectAllByDappName(walletConnector.peerMeta.name)
-    );
+    dispatch(walletConnectDisconnectAllByPeerId(walletConnector.peerId));
   });
   return walletConnector;
 };
