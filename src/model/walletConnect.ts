@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnect/clientv2';
-import { Reason, SessionTypes } from '@walletconnect/typesv2';
+import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnectv2/client';
+import { Reason, SessionTypes } from '@walletconnectv2/types';
 import lang from 'i18n-js';
 import { Alert, InteractionManager, Linking } from 'react-native';
 import { enableActionsOnReadOnlyWallet } from '../config/debug';
@@ -311,15 +311,39 @@ export const walletConnectUpdateSessionByDappName = async (
   newAccountAddress: string,
   newChainId: string
 ) => {
+  wcLogger('walletConnectUpdateSessionByDappName ');
   const sessions = client?.session?.values;
+  wcLogger('walletConnectUpdateSessionByDappName sessions', sessions);
   const session = sessions?.find(
     value => dappName === value?.peer?.metadata?.name
   );
+  wcLogger('walletConnectUpdateSessionByDappName session', session);
   const { address } = getAddressAndChainIdFromWCAccount(newAccountAddress);
+  wcLogger('walletConnectUpdateSessionByDappName address', address);
   const eip55ChainId = toEIP55Format(newChainId);
+  wcLogger('walletConnectUpdateSessionByDappName eip55ChainId', eip55ChainId);
   const newAccount = generateWalletConnectAccount(address, eip55ChainId);
-  session.permissions.blockchain = [eip55ChainId];
+  wcLogger('walletConnectUpdateSessionByDappName newAccount', newAccount);
+  wcLogger(
+    'walletConnectUpdateSessionByDappName session.permissions.blockchain',
+    session?.permissions?.blockchain
+  );
+  session.permissions = {
+    ...session.permissions,
+    blockchain: {
+      chains: [eip55ChainId],
+    },
+  };
+  wcLogger(
+    'walletConnectUpdateSessionByDappName session.permissions.blockchain',
+    session.permissions.blockchain
+  );
   session.state.accounts = [newAccount];
+  wcLogger(
+    'walletConnectUpdateSessionByDappName session.state.accounts',
+    session.state.accounts
+  );
+  wcLogger('client.upgrade in');
   await client.upgrade({
     permissions: {
       blockchain: {

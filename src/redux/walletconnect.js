@@ -416,11 +416,13 @@ export const walletConnectV2UpdateSessionByDappName = (
   accountAddress,
   chainId
 ) => async dispatch => {
+  console.log(' 🆎  🆎  🆎 walletConnectV2UpdateSessionByDappName');
   const sessions = await walletConnectUpdateSessionByDappName(
     dappName,
     accountAddress,
     chainId
   );
+  console.log(' 🆎  🆎  🆎 walletConnectV2UpdateSessionByDappName DISPATCHHH');
   dispatch({
     payload: clone(sessions),
     type: WALLETCONNECT_V2_UPDATE_SESSIONS,
