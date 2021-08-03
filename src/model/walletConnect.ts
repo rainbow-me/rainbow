@@ -311,39 +311,20 @@ export const walletConnectUpdateSessionByDappName = async (
   newAccountAddress: string,
   newChainId: string
 ) => {
-  wcLogger('walletConnectUpdateSessionByDappName ');
   const sessions = client?.session?.values;
-  wcLogger('walletConnectUpdateSessionByDappName sessions', sessions);
   const session = sessions?.find(
     value => dappName === value?.peer?.metadata?.name
   );
-  wcLogger('walletConnectUpdateSessionByDappName session', session);
   const { address } = getAddressAndChainIdFromWCAccount(newAccountAddress);
-  wcLogger('walletConnectUpdateSessionByDappName address', address);
   const eip55ChainId = toEIP55Format(newChainId);
-  wcLogger('walletConnectUpdateSessionByDappName eip55ChainId', eip55ChainId);
   const newAccount = generateWalletConnectAccount(address, eip55ChainId);
-  wcLogger('walletConnectUpdateSessionByDappName newAccount', newAccount);
-  wcLogger(
-    'walletConnectUpdateSessionByDappName session.permissions.blockchain',
-    session?.permissions?.blockchain
-  );
   session.permissions = {
     ...session.permissions,
     blockchain: {
       chains: [eip55ChainId],
     },
   };
-  wcLogger(
-    'walletConnectUpdateSessionByDappName session.permissions.blockchain',
-    session.permissions.blockchain
-  );
   session.state.accounts = [newAccount];
-  wcLogger(
-    'walletConnectUpdateSessionByDappName session.state.accounts',
-    session.state.accounts
-  );
-  wcLogger('client.upgrade in');
   await client.upgrade({
     permissions: {
       blockchain: {
@@ -352,12 +333,10 @@ export const walletConnectUpdateSessionByDappName = async (
     },
     topic: session.topic,
   });
-  wcLogger('client.upgrade out');
   await client.update({
     state: session.state.accounts,
     topic: session.topic,
   });
-  wcLogger('client.update out');
 
   return client.session.values;
 };
