@@ -5,8 +5,10 @@ import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
 import {
   walletConnectDisconnectAllByDappName as rawWalletConnectDisconnectAllByDappName,
+  walletConnectDisconnectAllByPeerId as rawWalletConnectDisconnectAllByPeerId,
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
   walletConnectUpdateSessionConnectorByDappName as rawWalletConnectUpdateSessionConnectorByDappName,
+  walletConnectUpdateSessionConnectorByPeerId as rawWalletConnectUpdateSessionConnectorByPeerId,
 } from '../redux/walletconnect';
 
 const formatDappData = connections =>
@@ -17,6 +19,7 @@ const formatDappData = connections =>
       dappIcon: connection?.[0].peerMeta.icons[0],
       dappName: connection?.[0].peerMeta.name,
       dappUrl: connection?.[0].peerMeta.url,
+      peerId: connection?.[0].peerId,
     }))
   );
 
@@ -46,6 +49,11 @@ export default function useWalletConnectConnections() {
     [dispatch]
   );
 
+  const walletConnectDisconnectAllByPeerId = useCallback(
+    peerId => dispatch(rawWalletConnectDisconnectAllByPeerId(peerId)),
+    [dispatch]
+  );
+
   const walletConnectOnSessionRequest = useCallback(
     (uri, callback) =>
       dispatch(rawWalletConnectOnSessionRequest(uri, callback)),
@@ -64,12 +72,26 @@ export default function useWalletConnectConnections() {
     [dispatch]
   );
 
+  const walletConnectUpdateSessionConnectorByPeerId = useCallback(
+    (peerId, accountAddress, chainId) =>
+      dispatch(
+        rawWalletConnectUpdateSessionConnectorByPeerId(
+          peerId,
+          accountAddress,
+          chainId
+        )
+      ),
+    [dispatch]
+  );
+
   return {
     sortedWalletConnectors,
     walletConnectDisconnectAllByDappName,
+    walletConnectDisconnectAllByPeerId,
     walletConnectOnSessionRequest,
     walletConnectorsByDappName,
     walletConnectorsCount,
     walletConnectUpdateSessionConnectorByDappName,
+    walletConnectUpdateSessionConnectorByPeerId,
   };
 }

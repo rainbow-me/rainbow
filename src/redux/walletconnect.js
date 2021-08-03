@@ -540,6 +540,30 @@ export const walletConnectUpdateSessionConnectorByDappName = (
   });
 };
 
+export const walletConnectUpdateSessionConnectorByPeerId = (
+  peerId,
+  accountAddress,
+  chainId
+) => (dispatch, getState) => {
+  const { walletConnectors } = getState().walletconnect;
+  const connectors = pickBy(
+    walletConnectors,
+    connector => connector.peerId === peerId
+  );
+  const newSessionData = {
+    accounts: [accountAddress],
+    chainId,
+  };
+  values(connectors).forEach(connector => {
+    connector.updateSession(newSessionData);
+    saveWalletConnectSession(connector.peerId, connector.session);
+  });
+  dispatch({
+    payload: clone(walletConnectors),
+    type: WALLETCONNECT_UPDATE_CONNECTORS,
+  });
+};
+
 export const walletConnectApproveSession = (
   peerId,
   callback,
@@ -595,6 +619,34 @@ export const walletConnectDisconnectAllByDappName = dappName => async (
     );
     dispatch({
       payload: omitBy(walletConnectors, wc => wc.peerMeta.name === dappName),
+      type: WALLETCONNECT_REMOVE_SESSION,
+    });
+  } catch (error) {
+    Alert.alert('Failed to disconnect all WalletConnect sessions');
+  }
+};
+
+export const walletConnectDisconnectAllByPeerId = peerId => async (
+  dispatch,
+  getState
+) => {
+  const { walletConnectors } = getState().walletconnect;
+  const matchingWalletConnectors = values(
+    pickBy(walletConnectors, session => session.peerId === peerId)
+  );
+  try {
+    const peerIds = values(
+      mapValues(
+        matchingWalletConnectors,
+        walletConnector => walletConnector.peerId
+      )
+    );
+    await removeWalletConnectSessions(peerIds);
+    forEach(matchingWalletConnectors, walletConnector =>
+      walletConnector.killSession()
+    );
+    dispatch({
+      payload: omitBy(walletConnectors, wc => wc.peerId === peerId),
       type: WALLETCONNECT_REMOVE_SESSION,
     });
   } catch (error) {
