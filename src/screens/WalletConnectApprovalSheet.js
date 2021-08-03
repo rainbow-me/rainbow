@@ -269,7 +269,7 @@ export default function WalletConnectApprovalSheet() {
       type: 'wallet_connect',
     });
     return;
-  }, [goBack, handleSuccess, navigate, timedOut]);
+  }, [goBack, navigate, timedOut]);
 
   useEffect(() => {
     if (scam) {
