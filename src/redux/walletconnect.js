@@ -35,6 +35,8 @@ import Routes from '@rainbow-me/routes';
 import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';
 import logger from 'logger';
 
+const UNISWAP_BRIDGE = 'https://uniswap.bridge.walletconnect.org';
+
 // -- Constants --------------------------------------- //
 
 const WALLETCONNECT_ADD_REQUEST = 'walletconnect/WALLETCONNECT_ADD_REQUEST';
@@ -121,6 +123,8 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
   const receivedTimestamp = Date.now();
   try {
     const { clientMeta, push } = await getNativeOptions();
+    const url = new URL(uri);
+    const bridge = qs.parse(url?.query)?.bridge;
     try {
       walletConnector = new WalletConnect({ clientMeta, uri }, push);
       let meta = null;
@@ -160,8 +164,6 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
             });
           } else {
             callback?.('timedOut', dappScheme);
-            const url = new URL(uri);
-            const bridge = qs.parse(url?.query)?.bridge;
             analytics.track('New WalletConnect session time out', {
               bridge,
               dappName,
@@ -221,15 +223,18 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
 
         // We need to add a timeout in case the bridge is down
         // to explain the user what's happening
-        setTimeout(() => {
-          if (meta) return;
-          timedOut = true;
-          routeParams = { ...routeParams, timedOut };
-          Navigation.handleAction(
-            Routes.WALLET_CONNECT_APPROVAL_SHEET,
-            routeParams
-          );
-        }, 20000);
+        setTimeout(
+          () => {
+            if (meta) return;
+            timedOut = true;
+            routeParams = { ...routeParams, timedOut };
+            Navigation.handleAction(
+              Routes.WALLET_CONNECT_APPROVAL_SHEET,
+              routeParams
+            );
+          },
+          bridge === UNISWAP_BRIDGE ? 60000 : 10000
+        );
 
         // If we have the meta, send it
         if (meta) {
