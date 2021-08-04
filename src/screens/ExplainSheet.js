@@ -119,7 +119,7 @@ export const explainers = {
   failed_wc_connection: {
     emoji: '😵',
     text:
-      'Uh oh, something went wrong! The site may be experiencing a connection outage. Try again later or contact the site’s team for more details.',
+      'Uh oh, something went wrong! The site may be experiencing a connection outage. Please try again or contact the site’s team for more details.',
     title: 'Connection failed',
     extraHeight: -100,
   },
