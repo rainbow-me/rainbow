@@ -68,6 +68,7 @@ export default function WalletConnectListItem({
   dappIcon,
   dappName,
   dappUrl,
+  peerId,
   version,
 }) {
   const {
@@ -75,7 +76,10 @@ export default function WalletConnectListItem({
     walletConnectUpdateSessionConnectorByDappName,
     walletConnectV2DisconnectByDappName,
     walletConnectV2UpdateSessionByDappName,
+    walletConnectDisconnectAllByPeerId,
+    walletConnectUpdateSessionConnectorByPeerId,
   } = useWalletConnectConnections();
+
   const { goBack } = useNavigation();
   const { colors } = useTheme();
   const { wallets, walletNames } = useWallets();
@@ -121,12 +125,12 @@ export default function WalletConnectListItem({
       const updateSession =
         version === 'v2'
           ? walletConnectV2UpdateSessionByDappName
-          : walletConnectUpdateSessionConnectorByDappName;
+          : walletConnectUpdateSessionConnectorByPeerId;
       updateSession(dappName, address, chainId);
     },
     [
       version,
-      walletConnectUpdateSessionConnectorByDappName,
+      walletConnectUpdateSessionConnectorByPeerId,
       walletConnectV2UpdateSessionByDappName,
     ]
   );
@@ -168,6 +172,11 @@ export default function WalletConnectListItem({
         if (idx === 0 && networksAvailable.length > 1) {
           androidShowNetworksActionSheet(({ chainId }) => {
             walletConnectUpdateSession(dappName, account, chainId);
+            walletConnectUpdateSessionConnectorByPeerId(
+              peerId,
+              account,
+              chainId
+            );
           });
         } else if ((idx === 0 && networksAvailable.length === 1) || idx === 1) {
           handlePressChangeWallet();
@@ -191,12 +200,15 @@ export default function WalletConnectListItem({
     handlePressChangeWallet,
     walletConnectUpdateSession,
     walletConnectDisconnect,
+    peerId,
+    walletConnectUpdateSessionConnectorByPeerId,
   ]);
 
   const handleOnPressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'disconnect') {
         walletConnectDisconnect(dappName);
+        walletConnectDisconnectAllByPeerId(peerId);
         analytics.track('Manually disconnected from WalletConnect connection', {
           dappName,
           dappUrl,
@@ -210,15 +222,19 @@ export default function WalletConnectListItem({
         );
         const chainId = ethereumUtils.getChainIdFromNetwork(networkValue);
         walletConnectUpdateSession(dappName, account, chainId);
+        walletConnectUpdateSessionConnectorByPeerId(peerId, account, chainId);
       }
     },
     [
       account,
       dappName,
       dappUrl,
+      peerId,
       handlePressChangeWallet,
       walletConnectDisconnect,
       walletConnectUpdateSession,
+      walletConnectDisconnectAllByPeerId,
+      walletConnectUpdateSessionConnectorByPeerId,
     ]
   );
 

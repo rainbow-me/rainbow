@@ -410,9 +410,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     if (error) {
       throw error;
     }
-    dispatch(
-      walletConnectDisconnectAllByDappName(walletConnector.peerMeta.name)
-    );
+    dispatch(walletConnectDisconnectAllByPeerId(walletConnector.peerId));
   });
   return walletConnector;
 };
@@ -580,15 +578,15 @@ export const walletConnectUpdateSessions = () => (dispatch, getState) => {
   });
 };
 
-export const walletConnectUpdateSessionConnectorByDappName = (
-  dappName,
+export const walletConnectUpdateSessionConnectorByPeerId = (
+  peerId,
   accountAddress,
   chainId
 ) => (dispatch, getState) => {
   const { walletConnectors } = getState().walletconnect;
   const connectors = pickBy(
     walletConnectors,
-    connector => connector.peerMeta.name === dappName
+    connector => connector.peerId === peerId
   );
   const newSessionData = {
     accounts: [accountAddress],
@@ -638,13 +636,13 @@ export const walletConnectRejectSession = (
   dispatch(removePendingRequest(peerId));
 };
 
-export const walletConnectDisconnectAllByDappName = dappName => async (
+export const walletConnectDisconnectAllByPeerId = peerId => async (
   dispatch,
   getState
 ) => {
   const { walletConnectors } = getState().walletconnect;
   const matchingWalletConnectors = values(
-    pickBy(walletConnectors, session => session.peerMeta.name === dappName)
+    pickBy(walletConnectors, session => session.peerId === peerId)
   );
   try {
     const peerIds = values(
@@ -658,7 +656,7 @@ export const walletConnectDisconnectAllByDappName = dappName => async (
       walletConnector.killSession()
     );
     dispatch({
-      payload: omitBy(walletConnectors, wc => wc.peerMeta.name === dappName),
+      payload: omitBy(walletConnectors, wc => wc.peerId === peerId),
       type: WALLETCONNECT_REMOVE_SESSION,
     });
   } catch (error) {

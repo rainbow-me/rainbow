@@ -300,7 +300,7 @@
     "**/postcss": "8.2.10",
     "**/resolve": "1.8.1",
     "**/semver": "7.3.2",
-    "**/xmldom": "0.5.0",
+    "**/xmldom": "github:xmldom/xmldom#c568938641cc1f121cef5b4df80fcfda1e489b6e",
     "**/xmlhttprequest-ssl": "1.6.2",
     "**/y18n": "5.0.5",
     "**/yargs-parser": "20.2.5",
@@ -309,6 +309,7 @@
     "**/merge-deep": "3.0.3",
     "**/css-what": "5.0.1",
     "**/socket.io-parser": "3.3.1",
+    "**/tar": "6.1.2",
     "@walletconnectv2/**/@walletconnect/types": "npm:@walletconnect/types@2.0.0-beta.16"
   },
   "jest": {
