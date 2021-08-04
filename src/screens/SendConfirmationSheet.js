@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { capitalize, get, toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect } from 'react';
-import { StatusBar } from 'react-native';
+import { Keyboard, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
@@ -171,6 +171,10 @@ export default function SendConfirmationSheet() {
   const insets = useSafeArea();
   const { contacts } = useContacts();
   const { wallets, walletNames } = useWallets();
+
+  useEffect(() => {
+    android && Keyboard.dismiss();
+  }, []);
 
   const {
     params: { asset, amountDetails, callback, isNft, network, to, toAddress },
