@@ -30,8 +30,8 @@ export default function useSwapAdjustedAmounts(tradeDetails: Trade) {
     slippageInBips
   );
   const amountReceivedSold = inputAsExact
-    ? adjustedAmounts[Field.OUTPUT].toExact()
-    : adjustedAmounts[Field.INPUT].toExact();
+    ? adjustedAmounts[Field.OUTPUT]?.toExact()
+    : adjustedAmounts[Field.INPUT]?.toExact();
   const address = inputAsExact ? outputCurrency.address : inputCurrency.address;
   const priceValue = genericAssets[address]?.price?.value ?? 0;
   const amountReceivedSoldDisplay = updatePrecisionToDisplay(

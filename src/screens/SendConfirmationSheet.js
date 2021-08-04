@@ -1,8 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { capitalize, get, toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect } from 'react';
-import { StatusBar } from 'react-native';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { Keyboard, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
@@ -92,14 +91,18 @@ const SendButtonWrapper = styled(Column).attrs({
   height: 56;
 `;
 
-export const SendConfirmationSheetHeight = android
-  ? 551 - getSoftMenuBarHeight()
-  : 540;
+export const SendConfirmationSheetHeight = android ? 651 : 540;
 
 const ChevronDown = () => {
   const { colors } = useTheme();
   return (
-    <Column align="center" height={34.5} position="absolute" width={50}>
+    <Column
+      align="center"
+      height={ios ? 34.5 : 30}
+      marginTop={android ? -14 : 0}
+      position="absolute"
+      width={50}
+    >
       <Text
         align="center"
         color={colors.alpha(colors.blueGreyDark, 0.15)}
@@ -168,6 +171,10 @@ export default function SendConfirmationSheet() {
   const insets = useSafeArea();
   const { contacts } = useContacts();
   const { wallets, walletNames } = useWallets();
+
+  useEffect(() => {
+    android && Keyboard.dismiss();
+  }, []);
 
   const {
     params: { asset, amountDetails, callback, isNft, network, to, toAddress },
@@ -313,7 +320,7 @@ export default function SendConfirmationSheet() {
   return (
     <Container
       deviceHeight={deviceHeight}
-      height={realSheetHeight}
+      height={contentHeight}
       insets={insets}
     >
       {ios && <StatusBar barStyle="light-content" />}
@@ -321,12 +328,12 @@ export default function SendConfirmationSheet() {
 
       <SlackSheet
         additionalTopPadding={android}
-        contentHeight={realSheetHeight}
+        contentHeight={contentHeight}
         scrollEnabled={false}
       >
         <SheetTitle>Sending</SheetTitle>
         <Column height={contentHeight}>
-          <Column padding={24} paddingBottom={19}>
+          <Column padding={24} paddingBottom={android ? 0 : 19}>
             <Row>
               <Column width={deviceWidth - 117}>
                 <TruncatedText
@@ -337,7 +344,7 @@ export default function SendConfirmationSheet() {
                   {isNft ? asset?.name : nativeDisplayAmount}
                 </TruncatedText>
 
-                <Row paddingTop={3}>
+                <Row marginTop={android ? -16 : 0} paddingTop={3}>
                   <Text
                     color={
                       isNft ? colors.alpha(colors.blueGreyDark, 0.6) : color
@@ -352,7 +359,7 @@ export default function SendConfirmationSheet() {
                   </Text>
                 </Row>
               </Column>
-              <Column align="end" flex={1}>
+              <Column align="end" flex={1} justify="center">
                 <Row>
                   {isNft ? (
                     <RequestVendorLogoIcon
@@ -373,34 +380,32 @@ export default function SendConfirmationSheet() {
             </Row>
 
             <Row marginVertical={19}>
-              <Column>
-                <Pill
-                  borderRadius={15}
-                  height={30}
-                  minWidth={39}
-                  paddingHorizontal={10}
-                  paddingVertical={5.5}
+              <Pill
+                borderRadius={15}
+                height={30}
+                minWidth={39}
+                paddingHorizontal={10}
+                paddingVertical={5.5}
+              >
+                <Text
+                  align="center"
+                  color={colors.blueGreyDark60}
+                  letterSpacing="roundedMedium"
+                  lineHeight={20}
+                  size="large"
+                  weight="heavy"
                 >
-                  <Column>
-                    <Text
-                      align="center"
-                      color={colors.blueGreyDark60}
-                      letterSpacing="roundedMedium"
-                      size="large"
-                      weight="heavy"
-                    >
-                      to
-                    </Text>
-                  </Column>
-                </Pill>
-              </Column>
-              <Column align="end" flex={1} justify="end">
+                  to
+                </Text>
+              </Pill>
+
+              <Column align="end" flex={1}>
                 <ChevronDown />
               </Column>
             </Row>
-            <Row marginBottom={30}>
+            <Row marginBottom={android ? 15 : 30}>
               <Column flex={1}>
-                <Row width={deviceWidth - 117}>
+                <Row width={android ? '80%' : '90%'}>
                   <TruncatedText
                     letterSpacing="roundedTight"
                     size="bigger"
@@ -408,28 +413,30 @@ export default function SendConfirmationSheet() {
                   >
                     {avatarName}
                   </TruncatedText>
-                  <ContactRowInfoButton
-                    item={{
-                      address: toAddress,
-                      name: avatarName || address(to, 4, 8),
-                    }}
-                    network={network}
-                    scaleTo={0.75}
-                  >
-                    <Text
-                      color={colors.alpha(
-                        colors.blueGreyDark,
-                        isDarkMode ? 0.5 : 0.6
-                      )}
-                      lineHeight={31}
-                      size="larger"
-                      weight="heavy"
+                  <Centered marginTop={android ? 8 : 0}>
+                    <ContactRowInfoButton
+                      item={{
+                        address: toAddress,
+                        name: avatarName || address(to, 4, 8),
+                      }}
+                      network={network}
+                      scaleTo={0.75}
                     >
-                      {' 􀍡'}
-                    </Text>
-                  </ContactRowInfoButton>
+                      <Text
+                        color={colors.alpha(
+                          colors.blueGreyDark,
+                          isDarkMode ? 0.5 : 0.6
+                        )}
+                        lineHeight={31}
+                        size="larger"
+                        weight="heavy"
+                      >
+                        {' 􀍡'}
+                      </Text>
+                    </ContactRowInfoButton>
+                  </Centered>
                 </Row>
-                <Row paddingTop={3}>
+                <Row marginTop={android ? -18 : 0} paddingTop={3}>
                   <Text
                     color={colors.alpha(colors.blueGreyDark, 0.6)}
                     size="lmedium"
@@ -443,7 +450,7 @@ export default function SendConfirmationSheet() {
                   </Text>
                 </Row>
               </Column>
-              <Column align="end">
+              <Column align="end" justify="center">
                 <ContactAvatar
                   color={avatarColor}
                   size="lmedium"
@@ -486,6 +493,7 @@ export default function SendConfirmationSheet() {
           </Column>
           <SendButtonWrapper>
             <SendButton
+              androidWidth={deviceWidth - 60}
               backgroundColor={color}
               disabled={!canSubmit}
               isAuthorizing={isAuthorizing}

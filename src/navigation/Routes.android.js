@@ -70,11 +70,6 @@ function SendFlowNavigator() {
         options={overlayExpandedPreset}
       />
       <Stack.Screen
-        component={SendConfirmationSheet}
-        name={Routes.SEND_CONFIRMATION_SHEET}
-        options={sheetPreset}
-      />
-      <Stack.Screen
         component={SendSheet}
         name={Routes.SEND_SHEET}
         options={sheetPreset}
@@ -304,6 +299,11 @@ function BSNavigator() {
         options={{
           height: '100%',
         }}
+      />
+      <BSStack.Screen
+        component={SendConfirmationSheet}
+        name={Routes.SEND_CONFIRMATION_SHEET}
+        options={sheetPreset}
       />
       <BSStack.Screen
         component={WalletDiagnosticsSheet}
