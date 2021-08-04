@@ -7,11 +7,10 @@ import { getAddressAndChainIdFromWCAccount } from '../model/walletConnect';
 import {
   walletConnectDisconnectAllByPeerId as rawWalletConnectDisconnectAllByPeerId,
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
-  walletConnectUpdateSessionConnectorByDappName as rawWalletConnectUpdateSessionConnectorByDappName,
+  walletConnectUpdateSessionConnectorByPeerId as rawWalletConnectUpdateSessionConnectorByPeerId,
   walletConnectV2DisconnectAllSessions as rawWalletConnectV2DisconnectAllSessions,
   walletConnectV2DisconnectByDappName as rawWalletConnectV2DisconnectByDappName,
   walletConnectV2UpdateSessionByDappName as rawWalletConnectV2UpdateSessionByDappName,
-  walletConnectUpdateSessionConnectorByPeerId as rawWalletConnectUpdateSessionConnectorByPeerId,
 } from '../redux/walletconnect';
 
 const formatDappData = connections =>
@@ -78,11 +77,6 @@ export default function useWalletConnectConnections() {
     walletConnectV2Selector
   );
 
-  const walletConnectDisconnectAllByDappName = useCallback(
-    dappName => dispatch(rawWalletConnectDisconnectAllByDappName(dappName)),
-    [dispatch]
-  );
-
   const walletConnectDisconnectAllByPeerId = useCallback(
     peerId => dispatch(rawWalletConnectDisconnectAllByPeerId(peerId)),
     [dispatch]
@@ -137,12 +131,11 @@ export default function useWalletConnectConnections() {
     walletConnectOnSessionRequest,
     walletConnectorsByDappName,
     walletConnectorsCount,
-    walletConnectUpdateSessionConnectorByDappName,
+    walletConnectUpdateSessionConnectorByPeerId,
     walletConnectV2DisconnectAllSessions,
     walletConnectV2DisconnectByDappName,
     walletConnectV2Sessions,
     walletConnectV2SessionsCount,
     walletConnectV2UpdateSessionByDappName,
-    walletConnectUpdateSessionConnectorByPeerId,
   };
 }

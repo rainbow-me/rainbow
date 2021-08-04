@@ -73,7 +73,6 @@ export default function WalletConnectListItem({
 }) {
   const {
     walletConnectDisconnectAllByDappName,
-    walletConnectUpdateSessionConnectorByDappName,
     walletConnectV2DisconnectByDappName,
     walletConnectV2UpdateSessionByDappName,
     walletConnectDisconnectAllByPeerId,
