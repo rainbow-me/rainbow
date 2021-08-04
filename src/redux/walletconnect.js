@@ -233,7 +233,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
               routeParams
             );
           },
-          bridge === UNISWAP_BRIDGE ? 60000 : 10000
+          bridge === UNISWAP_BRIDGE ? 60000 : 20000
         );
 
         // If we have the meta, send it
