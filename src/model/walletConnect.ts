@@ -370,4 +370,10 @@ export const walletConnectPair = async (uri: string) => {
   wcLogger('on about to walletConnectPair dalay out', !!client);
   const pair = await client.pair({ uri });
   wcLogger('on walletConnectPair', pair);
+  Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
+    callback: () => null,
+    chainId: null,
+    meta: null,
+    version: 'v2',
+  });
 };
