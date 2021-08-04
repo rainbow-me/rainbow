@@ -168,7 +168,7 @@ const GasSpeedButton = ({
       if (isL2Network(currentNetwork)) {
         return `${nativeCurrencySymbol}${Number.parseFloat(
           animatedValue
-        ).toPrecision(2)}`;
+        ).toFixed(2)}`;
       } else {
         return `${nativeCurrencySymbol}${
           nativeCurrency === 'ETH'
