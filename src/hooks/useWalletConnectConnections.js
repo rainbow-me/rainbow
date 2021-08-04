@@ -4,9 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
 import {
-  walletConnectDisconnectAllByDappName as rawWalletConnectDisconnectAllByDappName,
+  walletConnectDisconnectAllByPeerId as rawWalletConnectDisconnectAllByPeerId,
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
-  walletConnectUpdateSessionConnectorByDappName as rawWalletConnectUpdateSessionConnectorByDappName,
+  walletConnectUpdateSessionConnectorByPeerId as rawWalletConnectUpdateSessionConnectorByPeerId,
 } from '../redux/walletconnect';
 
 const formatDappData = connections =>
@@ -17,6 +17,7 @@ const formatDappData = connections =>
       dappIcon: connection?.[0].peerMeta.icons[0],
       dappName: connection?.[0].peerMeta.name,
       dappUrl: connection?.[0].peerMeta.url,
+      peerId: connection?.[0].peerId,
     }))
   );
 
@@ -41,8 +42,8 @@ export default function useWalletConnectConnections() {
     walletConnectorsCount,
   } = useSelector(walletConnectSelector);
 
-  const walletConnectDisconnectAllByDappName = useCallback(
-    dappName => dispatch(rawWalletConnectDisconnectAllByDappName(dappName)),
+  const walletConnectDisconnectAllByPeerId = useCallback(
+    peerId => dispatch(rawWalletConnectDisconnectAllByPeerId(peerId)),
     [dispatch]
   );
 
@@ -52,11 +53,11 @@ export default function useWalletConnectConnections() {
     [dispatch]
   );
 
-  const walletConnectUpdateSessionConnectorByDappName = useCallback(
-    (dappName, accountAddress, chainId) =>
+  const walletConnectUpdateSessionConnectorByPeerId = useCallback(
+    (peerId, accountAddress, chainId) =>
       dispatch(
-        rawWalletConnectUpdateSessionConnectorByDappName(
-          dappName,
+        rawWalletConnectUpdateSessionConnectorByPeerId(
+          peerId,
           accountAddress,
           chainId
         )
@@ -66,10 +67,10 @@ export default function useWalletConnectConnections() {
 
   return {
     sortedWalletConnectors,
-    walletConnectDisconnectAllByDappName,
+    walletConnectDisconnectAllByPeerId,
     walletConnectOnSessionRequest,
     walletConnectorsByDappName,
     walletConnectorsCount,
-    walletConnectUpdateSessionConnectorByDappName,
+    walletConnectUpdateSessionConnectorByPeerId,
   };
 }
