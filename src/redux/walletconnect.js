@@ -600,18 +600,19 @@ export const walletConnectDisconnectAllByPeerId = peerId => async (
   }
 };
 
-export const walletConnectSendStatus = (peerId, requestId, result) => async (
+export const walletConnectSendStatus = (peerId, requestId, response) => async (
   dispatch,
   getState
 ) => {
   const walletConnector = getState().walletconnect.walletConnectors[peerId];
   if (walletConnector) {
+    const { result, error } = response;
     try {
       if (result) {
         await walletConnector.approveRequest({ id: requestId, result });
       } else {
         await walletConnector.rejectRequest({
-          error: { message: 'User rejected request' },
+          error,
           id: requestId,
         });
       }

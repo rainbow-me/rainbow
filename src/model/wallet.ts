@@ -245,7 +245,10 @@ export const sendTransaction = async ({
   transaction,
   existingWallet,
   provider,
-}: TransactionRequestParam): Promise<null | Transaction> => {
+}: TransactionRequestParam): Promise<null | {
+  result?: Transaction;
+  error?: any;
+}> => {
   try {
     logger.sentry('about to send transaction', transaction);
     const wallet =
@@ -254,13 +257,13 @@ export const sendTransaction = async ({
     try {
       const result = await wallet.sendTransaction(transaction);
       logger.log('tx result', result);
-      return result;
+      return { result };
     } catch (error) {
       logger.log('Failed to SEND transaction', error);
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
       logger.sentry('Failed to SEND transaction, alerted user');
       captureException(error);
-      return null;
+      return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
@@ -276,19 +279,23 @@ export const signTransaction = async ({
   transaction,
   existingWallet,
   provider,
-}: TransactionRequestParam): Promise<null | string> => {
+}: TransactionRequestParam): Promise<null | {
+  result?: string;
+  error?: any;
+}> => {
   try {
     logger.sentry('about to sign transaction', transaction);
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
     if (!wallet) return null;
     try {
-      return wallet.signTransaction(transaction);
+      const result = await wallet.signTransaction(transaction);
+      return { result };
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
       logger.sentry('Failed to SIGN transaction, alerted user');
       captureException(error);
-      return null;
+      return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
@@ -304,7 +311,10 @@ export const signMessage = async (
   message: BytesLike | Hexable | number,
   existingWallet?: Wallet,
   provider?: Provider
-): Promise<null | string> => {
+): Promise<null | {
+  result?: string;
+  error?: any;
+}> => {
   try {
     logger.sentry('about to sign message', message);
     const wallet =
@@ -313,12 +323,12 @@ export const signMessage = async (
       if (!wallet) return null;
       const signingKey = new SigningKey(wallet.privateKey);
       const sigParams = await signingKey.signDigest(arrayify(message));
-      return joinSignature(sigParams);
+      return { result: joinSignature(sigParams) };
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
       logger.sentry('Failed to SIGN message, alerted user');
       captureException(error);
-      return null;
+      return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
@@ -332,23 +342,27 @@ export const signPersonalMessage = async (
   message: string | Uint8Array,
   existingWallet?: Wallet,
   provider?: Provider
-): Promise<null | string> => {
+): Promise<null | {
+  result?: string;
+  error?: any;
+}> => {
   try {
     logger.sentry('about to sign personal message', message);
     const wallet =
       existingWallet || (await loadWallet(undefined, true, provider));
     try {
       if (!wallet) return null;
-      return wallet.signMessage(
+      const result = await wallet.signMessage(
         typeof message === 'string' && isHexString(message)
           ? arrayify(message)
           : message
       );
+      return { result };
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
       logger.sentry('Failed to SIGN personal message, alerted user');
       captureException(error);
-      return null;
+      return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
@@ -364,7 +378,10 @@ export const signTypedDataMessage = async (
   message: string | TypedData,
   existingWallet?: Wallet,
   provider?: Provider
-): Promise<null | string> => {
+): Promise<null | {
+  result?: string;
+  error?: any;
+}> => {
   try {
     logger.sentry('about to sign typed data  message', message);
     const wallet =
@@ -394,17 +411,21 @@ export const signTypedDataMessage = async (
 
       switch (version) {
         case 'v4':
-          return signTypedData_v4(pkeyBuffer, {
-            data: parsedData,
-          });
+          return {
+            result: signTypedData_v4(pkeyBuffer, {
+              data: parsedData,
+            }),
+          };
         default:
-          return signTypedDataLegacy(pkeyBuffer, { data: parsedData });
+          return {
+            result: signTypedDataLegacy(pkeyBuffer, { data: parsedData }),
+          };
       }
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
       logger.sentry('Failed to SIGN typed data message, alerted user');
       captureException(error);
-      return null;
+      return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
