@@ -126,6 +126,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
       let meta = null;
       let navigated = false;
       let timedOut = false;
+      let timeout = null;
       let routeParams = {
         callback: async (
           approved,
@@ -173,6 +174,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
       };
 
       walletConnector?.on('session_request', (error, payload) => {
+        clearTimeout(timeout);
         if (error) {
           analytics.track('Error on wc session_request', {
             error,
@@ -221,7 +223,8 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
 
         // We need to add a timeout in case the bridge is down
         // to explain the user what's happening
-        setTimeout(() => {
+        timeout = setTimeout(() => {
+          console.log('GITTIMEOUT');
           if (meta) return;
           timedOut = true;
           routeParams = { ...routeParams, timedOut };
