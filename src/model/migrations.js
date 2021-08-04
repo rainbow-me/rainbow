@@ -383,7 +383,15 @@ export default async function runMigrations() {
         let nickname = contact.nickname;
         if (!returnStringFirstEmoji(nickname)) {
           let address = null;
-          address = await resolveNameOrAddress(contact.address);
+          try {
+            address = await resolveNameOrAddress(contact.address);
+          } catch (error) {
+            const migrationError = new Error(
+              `Error during v10 migration contact address resolution for ${contact.address}`
+            );
+            captureException(migrationError);
+            continue;
+          }
           const emoji = defaultProfileUtils.addressHashedEmoji(address);
           const color = defaultProfileUtils.addressHashedColorIndex(address);
           nickname = `${emoji} ${nickname}`;
