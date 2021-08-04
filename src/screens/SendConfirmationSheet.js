@@ -413,7 +413,7 @@ export default function SendConfirmationSheet() {
                   >
                     {avatarName}
                   </TruncatedText>
-                  <Centered marginTop={android ? 10 : 0}>
+                  <Centered marginTop={android ? 8 : 0}>
                     <ContactRowInfoButton
                       item={{
                         address: toAddress,
@@ -436,7 +436,7 @@ export default function SendConfirmationSheet() {
                     </ContactRowInfoButton>
                   </Centered>
                 </Row>
-                <Row marginTop={android ? -7 : 0} paddingTop={3}>
+                <Row marginTop={android ? -18 : 0} paddingTop={3}>
                   <Text
                     color={colors.alpha(colors.blueGreyDark, 0.6)}
                     size="lmedium"
