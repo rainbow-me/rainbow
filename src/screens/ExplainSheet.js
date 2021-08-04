@@ -59,6 +59,7 @@ export const explainers = {
     emoji: '⛽️',
     text: GAS_EXPLAINER,
     title: 'Ethereum network fee',
+    extraHeight: 2,
   },
   sending_funds_to_contract: {
     emoji: '✋',
@@ -121,7 +122,7 @@ export const explainers = {
     text:
       'Uh oh, something went wrong! The site may be experiencing a connection outage. Please try again later or contact the site’s team for more details.',
     title: 'Connection failed',
-    extraHeight: -100,
+    extraHeight: -50,
   },
 };
 
@@ -163,18 +164,14 @@ const ExplainSheet = () => {
         >
           <ColumnWithMargins
             margin={15}
-            marginBottom={21}
             style={{
               height: sheetHeight,
-              paddingHorizontal: 19,
-              paddingTop: 8,
+              padding: 19,
               width: '100%',
             }}
           >
             {explainers[type]?.logo ? (
-              <Centered marginBottom={10} marginTop={20}>
-                {explainers[type].logo}
-              </Centered>
+              <Centered>{explainers[type].logo}</Centered>
             ) : (
               <EmojiText
                 align="center"
