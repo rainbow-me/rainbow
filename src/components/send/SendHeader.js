@@ -1,3 +1,4 @@
+import { isHexString } from '@ethersproject/bytes';
 import { isValidAddress as validateAddress } from 'ethereumjs-util';
 import { get, isEmpty, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
@@ -107,20 +108,17 @@ export default function SendHeader({
     let color = get(contact, 'color');
     let nickname = recipient;
     if (color !== 0 && !color) {
+      const emoji = defaultProfileUtils.addressHashedEmoji(hexAddress);
       color = defaultProfileUtils.addressHashedColorIndex(hexAddress) || 0;
-      nickname = `${defaultProfileUtils.addressHashedEmoji(
-        hexAddress
-      )} ${recipient}`;
+      nickname = isHexString(recipient) ? emoji : `${emoji} ${recipient}`;
     }
 
     navigate(Routes.MODAL_SCREEN, {
       additionalPadding: true,
-      address: recipient,
+      address: isEmpty(contact.address) ? recipient : contact.address,
       color,
       contact: isEmpty(contact.address)
-        ? validateAddress(recipient)
-          ? false
-          : { color, nickname, temporary: true }
+        ? { color, nickname, temporary: true }
         : contact,
       onRefocusInput,
       type: 'contact_profile',
