@@ -17,8 +17,7 @@ import Routes from '@rainbow-me/routes';
 import { logger, watchingAlert } from '@rainbow-me/utils';
 
 // eslint-disable-next-line no-console
-const wcLogger = (a: String, b?: any) =>
-  console.info(`::: WC 🐞🐞🐞 ::: ${a}`, b);
+const wcLogger = (a: String, b?: any) => console.info(`WC 🐞🐞🐞 :: ${a}`, b);
 
 const wcTrack = (
   event: string,
@@ -40,15 +39,6 @@ const SUPPORTED_MAIN_CHAINS = [
 ];
 
 const SUPPORTED_TEST_CHAINS = ['eip155:3', 'eip155:4', 'eip155:5', 'eip155:42'];
-
-const notSupportedResponse = (id: number) => ({
-  error: {
-    code: -32601,
-    message: 'JSON RPC method not supported',
-  },
-  id,
-  jsonrpc: '2.0',
-});
 
 const toEIP55Format = (chainId: string | number) => `eip155:${chainId}`;
 export const fromEIP55Format = (chain: string) => chain?.replace('eip155:', '');
@@ -113,7 +103,13 @@ export const walletConnectInit = async (store: any) => {
             wcTrack('Walletconnect chain not supported', metadata, {
               chain: chains[0],
             });
-            client.reject({ proposal });
+            client.reject({
+              proposal,
+              reason: {
+                code: 1,
+                message: `Chain ${chains[0]} is not supported`,
+              },
+            });
             return;
           }
           wcTrack('Showing Walletconnect session request', metadata);
@@ -143,7 +139,10 @@ export const walletConnectInit = async (store: any) => {
               } else {
                 wcTrack('Rejected new WalletConnect session', metadata);
                 walletConnectV2HandleAction('reject');
-                await client.reject({ proposal });
+                await client.reject({
+                  proposal,
+                  reason: { code: 1, message: 'User rejected request' },
+                });
               }
               return client.session.values;
             },
@@ -160,6 +159,10 @@ export const walletConnectInit = async (store: any) => {
           analytics.track('Exception on wc session.proposal', {
             error,
             version: 'v2',
+          });
+          await client.reject({
+            proposal,
+            reason: error,
           });
           captureException(error);
           Alert.alert(lang.t('wallet.wallet_connect.error'));
@@ -206,7 +209,6 @@ export const walletConnectInit = async (store: any) => {
           if (request.method === 'wallet_addEthereumChain') {
             wcLogger('wallet_addEthereumChain');
           } else if (!isSigningMethod(request.method)) {
-            wcLogger('!isSigningMethod');
             sendRpcCall(request)
               .then(async result => {
                 const response = {
@@ -219,16 +221,15 @@ export const walletConnectInit = async (store: any) => {
                 };
                 await client.respond(response);
               })
-              .catch(async () => {
+              .catch(async error => {
                 const response = {
-                  response: notSupportedResponse(request.id),
+                  response: error,
                   topic,
                 };
                 await client.respond(response);
               });
             return;
           } else {
-            wcLogger('e;lse');
             const { dispatch, getState } = store;
             const { selected } = getState().wallets;
             const selectedWallet = selected || {};
@@ -237,7 +238,14 @@ export const walletConnectInit = async (store: any) => {
             if (isReadOnlyWallet && !enableActionsOnReadOnlyWallet) {
               watchingAlert();
               const response = {
-                response: notSupportedResponse(request.id),
+                response: {
+                  error: {
+                    code: -32601,
+                    message: 'JSON RPC method not supported',
+                  },
+                  id: request.id,
+                  jsonrpc: '2.0',
+                },
                 topic,
               };
               await client.respond(response);
@@ -248,31 +256,19 @@ export const walletConnectInit = async (store: any) => {
               addRequestToApproveV2(request.id, session, request)
             );
 
-            wcLogger('requestToApprove', requestToApprove);
-
             if (requestToApprove) {
               InteractionManager.runAfterInteractions(() => {
-                wcTrack('Showing Walletconnect signing request', session);
                 Navigation.handleAction(Routes.CONFIRM_REQUEST, {
                   callback: async (res: { error: string; result: string }) => {
                     const { error, result } = res;
-                    const response = {
+                    await client.respond({
                       response: {
                         id: request.id,
                         jsonrpc: '2.0',
-                        ...(error
-                          ? {
-                              error: {
-                                // internal error
-                                code: -32603,
-                                message: error,
-                              },
-                            }
-                          : { result }),
+                        ...{ error, result },
                       },
                       topic,
-                    };
-                    await client.respond(response);
+                    });
                   },
                   openAutomatically: true,
                   transactionDetails: requestToApprove,
@@ -286,6 +282,11 @@ export const walletConnectInit = async (store: any) => {
             error,
             version: 'v2',
           });
+          await client.respond({
+            response: { error, id: requestEvent.request.id, jsonrpc: '2.0' },
+            topic: requestEvent.topic,
+          });
+
           captureException(error);
           Alert.alert(lang.t('wallet.wallet_connect.error'));
         }
