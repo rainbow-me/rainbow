@@ -1,6 +1,16 @@
-import { compact, find, isEmpty, join, map, orderBy, sumBy } from 'lodash';
+import { ChainId, WETH } from '@uniswap/sdk';
+import {
+  compact,
+  find,
+  isEmpty,
+  join,
+  map,
+  orderBy,
+  sumBy,
+  toLower,
+} from 'lodash';
 import { createSelector } from 'reselect';
-import { ParsedAddressAsset } from '@rainbow-me/entities';
+import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
 import { AppState } from '@rainbow-me/redux/store';
 import {
   PositionsState,
@@ -15,10 +25,11 @@ import {
 } from '@rainbow-me/utilities';
 import { getTokenMetadata } from '@rainbow-me/utils';
 
-const nativeCurrencySelector = (state: AppState) =>
-  state.settings.nativeCurrency;
 const accountAddressSelector = (state: AppState) =>
   state.settings.accountAddress;
+const chainIdSelector = (state: AppState) => state.settings.chainId;
+const nativeCurrencySelector = (state: AppState) =>
+  state.settings.nativeCurrency;
 const uniswapLiquidityPositionsSelector = (state: AppState) =>
   state.usersPositions;
 const uniswapLiquidityTokensSelector = (state: AppState) =>
@@ -30,8 +41,7 @@ interface Price {
   value?: number | null;
 }
 
-interface Token {
-  address: string;
+interface Token extends Asset {
   balance: string;
   value: string;
 }
@@ -52,10 +62,24 @@ interface UniswapCard {
   uniswapTotal: number;
 }
 
+const switchWethToEth = (chainId: ChainId, token: Token): Token => {
+  if (toLower(token.address) === toLower(WETH[chainId].address)) {
+    return {
+      ...token,
+      address: 'eth',
+      decimals: 18,
+      name: 'Ethereum',
+      symbol: 'ETH',
+    };
+  }
+  return token;
+};
+
 const transformPool = (
   liquidityToken: ParsedAddressAsset | undefined,
   position: StoredPosition,
-  nativeCurrency: string
+  nativeCurrency: string,
+  chainId: ChainId
 ): UniswapPool | null => {
   if (isEmpty(position)) {
     return null;
@@ -69,16 +93,19 @@ const transformPool = (
 
   const token0Balance = divide(multiply(reserve0, balanceAmount), totalSupply);
   const token1Balance = divide(multiply(reserve1, balanceAmount), totalSupply);
-  const token0 = {
+
+  const token0: Token = switchWethToEth(chainId, {
     ...position?.pair?.token0,
     address: position?.pair?.token0?.id,
     balance: token0Balance,
-  };
-  const token1 = {
+  });
+
+  const token1: Token = switchWethToEth(chainId, {
     ...position?.pair?.token1,
     address: position?.pair?.token1?.id,
     balance: token1Balance,
-  };
+  });
+
   const tokens = [token0, token1];
 
   const totalBalancePrice = multiply(balanceAmount, price?.value || 0);
@@ -110,6 +137,7 @@ const transformPool = (
 
 const buildUniswapCards = (
   accountAddress: string,
+  chainId: number,
   nativeCurrency: string,
   uniswapLiquidityTokens: ParsedAddressAsset[],
   allUniswapLiquidityPositions: PositionsState
@@ -122,7 +150,7 @@ const buildUniswapCards = (
         uniswapLiquidityTokens,
         token => token.address === position?.pair?.id
       );
-      return transformPool(liquidityToken, position, nativeCurrency);
+      return transformPool(liquidityToken, position, nativeCurrency, chainId);
     })
   );
   const orderedUniswapPools = orderBy(
@@ -148,6 +176,7 @@ const buildUniswapCards = (
 export const readableUniswapSelector = createSelector(
   [
     accountAddressSelector,
+    chainIdSelector,
     nativeCurrencySelector,
     uniswapLiquidityTokensSelector,
     uniswapLiquidityPositionsSelector,
