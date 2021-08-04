@@ -33,9 +33,9 @@ import { convertHexToString, delay } from '@rainbow-me/helpers/utilities';
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
 import {
   walletConnectDisconnectAllSessions,
-  walletConnectDisconnectByDappName,
+  walletConnectDisconnectByTopic,
   walletConnectInit,
-  walletConnectUpdateSessionByDappName,
+  walletConnectUpdateSessionByTopic,
 } from '@rainbow-me/model/walletConnect';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';
@@ -474,26 +474,24 @@ export const walletConnectV2DisconnectAllSessions = () => async dispatch => {
   });
 };
 
-export const walletConnectV2UpdateSessionByDappName = (
-  dappName,
+export const walletConnectV2UpdateSessionByTopic = (
+  topic,
   accountAddress,
   chainId
 ) => async dispatch => {
-  console.log(' 🆎  🆎  🆎 walletConnectV2UpdateSessionByDappName');
-  const sessions = await walletConnectUpdateSessionByDappName(
-    dappName,
+  const sessions = await walletConnectUpdateSessionByTopic(
+    topic,
     accountAddress,
     chainId
   );
-  console.log(' 🆎  🆎  🆎 walletConnectV2UpdateSessionByDappName DISPATCHHH');
   dispatch({
     payload: clone(sessions),
     type: WALLETCONNECT_V2_UPDATE_SESSIONS,
   });
 };
 
-export const walletConnectV2DisconnectByDappName = dappName => async dispatch => {
-  const sessions = await walletConnectDisconnectByDappName(dappName);
+export const walletConnectV2DisconnectByTopic = topic => async dispatch => {
+  const sessions = await walletConnectDisconnectByTopic(topic);
   dispatch({
     payload: clone(sessions),
     type: WALLETCONNECT_V2_UPDATE_SESSIONS,

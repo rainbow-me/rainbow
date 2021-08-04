@@ -307,15 +307,13 @@ export const walletConnectDisconnectAllSessions = async () => {
   return client.session.values;
 };
 
-export const walletConnectUpdateSessionByDappName = async (
-  dappName: string,
+export const walletConnectUpdateSessionByTopic = async (
+  topic: string,
   newAccountAddress: string,
   newChainId: string
 ) => {
   const sessions = client?.session?.values;
-  const session = sessions?.find(
-    value => dappName === value?.peer?.metadata?.name
-  );
+  const session = sessions?.find(value => topic === value?.topic);
   const { address } = getAddressAndChainIdFromWCAccount(newAccountAddress);
   const eip55ChainId = toEIP55Format(newChainId);
   const newAccount = generateWalletConnectAccount(address, eip55ChainId);
@@ -342,15 +340,11 @@ export const walletConnectUpdateSessionByDappName = async (
   return client.session.values;
 };
 
-export const walletConnectDisconnectByDappName = async (dappName: string) => {
-  wcLogger('walletConnectDisconnectByDappName', client?.session?.values);
-  const session = client?.session?.values?.find(value => {
-    wcLogger('value', value);
-    return dappName === value?.peer?.metadata?.name;
-  });
-  wcLogger('walletConnectDisconnect', session.topic);
+export const walletConnectDisconnectByTopic = async (topic: string) => {
+  const session = client?.session?.values?.find(
+    value => topic === value?.topic
+  );
   await walletConnectDisconnect(session.topic);
-  wcLogger('disconnected', client.session.values);
   return client.session.values;
 };
 
@@ -359,12 +353,10 @@ const walletConnectDisconnect = async (topic: string) => {
     code: 400,
     message: 'User disconnected',
   };
-  wcLogger('walletConnectDisconnect ---- ------ ', client);
   await client.disconnect({ reason, topic });
 };
 
 export const walletConnectPair = async (uri: string) => {
-  wcLogger('on about to walletConnectPair', uri);
   while (!client) {
     delay(300);
   }

@@ -9,8 +9,8 @@ import {
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
   walletConnectUpdateSessionConnectorByPeerId as rawWalletConnectUpdateSessionConnectorByPeerId,
   walletConnectV2DisconnectAllSessions as rawWalletConnectV2DisconnectAllSessions,
-  walletConnectV2DisconnectByDappName as rawWalletConnectV2DisconnectByDappName,
-  walletConnectV2UpdateSessionByDappName as rawWalletConnectV2UpdateSessionByDappName,
+  walletConnectV2DisconnectByTopic as rawWalletConnectV2DisconnectByTopic,
+  walletConnectV2UpdateSessionByTopic as rawWalletConnectV2UpdateSessionByTopic,
 } from '../redux/walletconnect';
 
 const formatDappData = connections =>
@@ -21,7 +21,8 @@ const formatDappData = connections =>
       dappIcon: connection?.[0].peerMeta.icons[0],
       dappName: connection?.[0].peerMeta.name,
       dappUrl: connection?.[0].peerMeta.url,
-      peerId: connection?.[0].peerId,
+      id: connection?.[0].peerId,
+      version: 'v1',
     }))
   );
 
@@ -39,6 +40,7 @@ const formatSessionsData = clientV2Sessions =>
         dappIcon: icons[0],
         dappName: name,
         dappUrl: url,
+        id: session.topic,
         version: 'v2',
       };
     })
@@ -105,22 +107,18 @@ export default function useWalletConnectConnections() {
     [dispatch]
   );
 
-  const walletConnectV2UpdateSessionByDappName = useCallback(
-    (dappName, accountAddress, chainId) => {
+  const walletConnectV2UpdateSessionByTopic = useCallback(
+    (id, accountAddress, chainId) => {
       dispatch(
-        rawWalletConnectV2UpdateSessionByDappName(
-          dappName,
-          accountAddress,
-          chainId
-        )
+        rawWalletConnectV2UpdateSessionByTopic(id, accountAddress, chainId)
       );
     },
     [dispatch]
   );
 
-  const walletConnectV2DisconnectByDappName = useCallback(
-    dappName => {
-      dispatch(rawWalletConnectV2DisconnectByDappName(dappName));
+  const walletConnectV2DisconnectByTopic = useCallback(
+    id => {
+      dispatch(rawWalletConnectV2DisconnectByTopic(id));
     },
     [dispatch]
   );
@@ -133,9 +131,9 @@ export default function useWalletConnectConnections() {
     walletConnectorsCount,
     walletConnectUpdateSessionConnectorByPeerId,
     walletConnectV2DisconnectAllSessions,
-    walletConnectV2DisconnectByDappName,
+    walletConnectV2DisconnectByTopic,
     walletConnectV2Sessions,
     walletConnectV2SessionsCount,
-    walletConnectV2UpdateSessionByDappName,
+    walletConnectV2UpdateSessionByTopic,
   };
 }
