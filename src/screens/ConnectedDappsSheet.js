@@ -48,7 +48,7 @@ export default function ConnectedDappsSheet() {
       <ScrollableItems length={walletConnectorsByDappName.length}>
         <Row height={4} />
         {walletConnectorsByDappName.map(
-          ({ account, chainId, dappIcon, dappName, dappUrl }) => (
+          ({ account, chainId, dappIcon, dappName, dappUrl, peerId }) => (
             <WalletConnectListItem
               account={account}
               chainId={chainId}
@@ -56,6 +56,7 @@ export default function ConnectedDappsSheet() {
               dappName={dappName}
               dappUrl={dappUrl}
               key={dappName}
+              peerId={peerId}
             />
           )
         )}
