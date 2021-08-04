@@ -88,7 +88,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
   const { network } = useAccountSettings();
 
   const handleAddContact = useCallback(() => {
-    const nickname = `${emoji} ${value}`.trim();
+    const nickname = (emoji ? `${emoji} ${value}` : value).trim();
     if (value.length > 0 || color !== colorProp) {
       onAddOrUpdateContacts(address, nickname, color, network);
       goBack();
