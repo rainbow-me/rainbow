@@ -377,6 +377,8 @@ export default function TransactionConfirmationScreen() {
     ]
   );
 
+  const onPressCancel = useCallback(() => onCancel(), [onCancel]);
+
   const calculateGasLimit = useCallback(async () => {
     calculatingGasLimit.current = true;
     const txPayload = params?.[0];
@@ -566,7 +568,9 @@ export default function TransactionConfirmationScreen() {
       analytics.track('Approved WalletConnect transaction request');
       if (requestId) {
         dispatch(removeRequest(requestId));
-        await dispatch(walletConnectSendStatus(peerId, requestId, result.hash));
+        await dispatch(
+          walletConnectSendStatus(peerId, requestId, { result: result.hash })
+        );
       }
       closeScreen(false);
     } else {
@@ -651,7 +655,7 @@ export default function TransactionConfirmationScreen() {
       analytics.track('Approved WalletConnect signature request');
       if (requestId) {
         dispatch(removeRequest(requestId));
-        await dispatch(walletConnectSendStatus(peerId, requestId, result));
+        await dispatch(walletConnectSendStatus(peerId, requestId, response));
       }
       if (callback) {
         callback({ sig: result });
@@ -716,7 +720,7 @@ export default function TransactionConfirmationScreen() {
           disabled
           fullWidth
           label="ETH balance too low"
-          onPress={onCancel}
+          onPress={onPressCancel}
           size="big"
           textColor={colors.avatarColor[7]}
           weight="bold"
@@ -727,7 +731,7 @@ export default function TransactionConfirmationScreen() {
         <SheetActionButton
           color={colors.white}
           label="Cancel"
-          onPress={onCancel}
+          onPress={onPressCancel}
           size="big"
           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           weight="bold"
@@ -747,7 +751,7 @@ export default function TransactionConfirmationScreen() {
     isBalanceEnough,
     isMessageRequest,
     isSufficientGas,
-    onCancel,
+    onPressCancel,
     onPressSend,
   ]);
 
