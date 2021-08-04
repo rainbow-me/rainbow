@@ -229,7 +229,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
             Routes.WALLET_CONNECT_APPROVAL_SHEET,
             routeParams
           );
-        }, 10000);
+        }, 20000);
 
         // If we have the meta, send it
         if (meta) {
