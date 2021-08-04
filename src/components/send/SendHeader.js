@@ -1,5 +1,4 @@
 import { isHexString } from '@ethersproject/bytes';
-import { isValidAddress as validateAddress } from 'ethereumjs-util';
 import { get, isEmpty, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import styled from 'styled-components';

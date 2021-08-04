@@ -305,9 +305,11 @@ export default function SendConfirmationSheet() {
     addressHashedEmoji(toAddress);
 
   const avatarColor =
-    contact?.color ||
-    accountProfile?.accountColor ||
-    addressHashedColorIndex(toAddress);
+    contact?.color == null
+      ? accountProfile?.accountColor == null
+        ? addressHashedColorIndex(toAddress)
+        : accountProfile?.accountColor
+      : contact?.color;
 
   let realSheetHeight = !shouldShowChecks
     ? SendConfirmationSheetHeight - 150
