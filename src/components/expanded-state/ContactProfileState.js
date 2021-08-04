@@ -77,7 +77,6 @@ const SubmitButtonLabel = styled(Text).attrs(({ value }) => ({
 `;
 
 const ContactProfileState = ({ address, color: colorProp, contact }) => {
-  console.log({ address, colorProp, contact });
   const { goBack } = useNavigation();
   const { onAddOrUpdateContacts, onRemoveContact } = useContacts();
   const [color, setColor] = useState(colorProp || 0);
@@ -145,7 +144,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           marginBottom={0}
           radiusAndroid={32}
           testID="contact-profile-avatar-button"
-          value={emoji}
+          value={emoji || value}
         />
         <Spacer />
         <ProfileNameInput
