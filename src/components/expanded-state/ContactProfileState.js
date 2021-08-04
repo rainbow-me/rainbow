@@ -51,12 +51,19 @@ const Spacer = styled.View`
   height: 19;
 `;
 
-const SubmitButton = styled(Button).attrs(({ theme: { colors }, value }) => ({
-  backgroundColor: value.length > 0 ? colors.appleBlue : undefined,
-  disabled: !value.length > 0,
-  showShadow: true,
-  size: 'small',
-}))`
+const SubmitButton = styled(Button).attrs(
+  ({ theme: { colors }, value, color }) => ({
+    backgroundColor:
+      value.length > 0
+        ? typeof color === 'string'
+          ? color
+          : colors.avatarBackgrounds[color] || colors.appleBlue
+        : undefined,
+    disabled: !value.length > 0,
+    showShadow: true,
+    size: 'small',
+  })
+)`
   height: 43;
   width: 215;
 `;
@@ -70,6 +77,7 @@ const SubmitButtonLabel = styled(Text).attrs(({ value }) => ({
 `;
 
 const ContactProfileState = ({ address, color: colorProp, contact }) => {
+  console.log({ address, colorProp, contact });
   const { goBack } = useNavigation();
   const { onAddOrUpdateContacts, onRemoveContact } = useContacts();
   const [color, setColor] = useState(colorProp || 0);
@@ -164,6 +172,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           <Divider inset={false} />
         </Centered>
         <SubmitButton
+          color={color}
           isDarkMode={isDarkMode}
           onPress={handleAddContact}
           testID="contact-profile-add-button"
