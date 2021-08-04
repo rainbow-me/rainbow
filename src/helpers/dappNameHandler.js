@@ -56,6 +56,10 @@ const DisplayDappNames = Object.freeze({
     name: 'ENS',
     uri: buildAssetUrl('ens.domains'),
   },
+  'etherscan.io': {
+    name: 'Etherscan',
+    uri: buildAssetUrl('etherscan.io'),
+  },
   'flexa.network': {
     name: 'Flexa',
     uri: buildAssetUrl('flexa.network'),
@@ -99,6 +103,10 @@ const DisplayDappNames = Object.freeze({
   'mycrypto.com': {
     name: 'MyCrypto',
     uri: buildAssetUrl('mycrypto.com'),
+  },
+  'nft20.io': {
+    name: 'NFT20',
+    uri: buildAssetUrl('nft20.io'),
   },
   'niftygateway.com': {
     name: 'Nifty Gateway',
