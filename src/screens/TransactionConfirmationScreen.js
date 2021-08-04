@@ -661,6 +661,7 @@ export default function TransactionConfirmationScreen() {
       await onCancel();
     }
   }, [
+    accountInfo.address,
     callback,
     closeScreen,
     dispatch,
@@ -671,6 +672,7 @@ export default function TransactionConfirmationScreen() {
     removeRequest,
     requestId,
     walletConnectSendStatus,
+    provider,
   ]);
 
   const onConfirm = useCallback(async () => {
