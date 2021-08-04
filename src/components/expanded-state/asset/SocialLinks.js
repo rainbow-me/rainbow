@@ -42,7 +42,7 @@ export default function SocialLinks({
   const blockExplorerName = ethereumUtils.getBlockExplorer(type);
   return (
     <>
-      <Carousel height={59} marginBottom={1} marginTop={marginTop}>
+      <Carousel height={59} marginBottom={1} marginTop={marginTop || 0}>
         <CommunityLink
           color={color}
           display={` ${startCase(blockExplorerName)}`}
