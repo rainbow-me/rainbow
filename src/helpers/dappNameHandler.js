@@ -124,6 +124,10 @@ const DisplayDappNames = Object.freeze({
     name: 'Optimism Gateway',
     uri: buildAssetUrl('optimism.io'),
   },
+  'partybid.app': {
+    name: 'PartyBid',
+    uri: buildAssetUrl('partybid.app'),
+  },
   'piedao.org': {
     name: 'PieDAO',
     uri: null,
