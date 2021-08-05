@@ -11,6 +11,7 @@ import {
 } from 'lodash';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
+import { parseAssetsNative } from '@rainbow-me/parsers';
 import { AppState } from '@rainbow-me/redux/store';
 import {
   PositionsState,
@@ -62,7 +63,7 @@ interface UniswapCard {
   uniswapTotal: number;
 }
 
-const switchWethToEth = (chainId: ChainId, token: Token): Token => {
+const switchWethToEth = (token: Token, chainId: ChainId): Token => {
   if (toLower(token.address) === toLower(WETH[chainId].address)) {
     return {
       ...token,
@@ -84,8 +85,12 @@ const transformPool = (
   if (isEmpty(position)) {
     return null;
   }
+  const liquidityTokenWithNative = parseAssetsNative(
+    [liquidityToken],
+    nativeCurrency
+  )?.[0];
 
-  const price = liquidityToken?.price;
+  const price = liquidityTokenWithNative?.price;
   const {
     liquidityTokenBalance: balanceAmount,
     pair: { totalSupply, reserve0, reserve1 },
@@ -94,17 +99,23 @@ const transformPool = (
   const token0Balance = divide(multiply(reserve0, balanceAmount), totalSupply);
   const token1Balance = divide(multiply(reserve1, balanceAmount), totalSupply);
 
-  const token0: Token = switchWethToEth(chainId, {
-    ...position?.pair?.token0,
-    address: position?.pair?.token0?.id,
-    balance: token0Balance,
-  });
+  const token0: Token = switchWethToEth(
+    {
+      ...position?.pair?.token0,
+      address: position?.pair?.token0?.id,
+      balance: token0Balance,
+    },
+    chainId
+  );
 
-  const token1: Token = switchWethToEth(chainId, {
-    ...position?.pair?.token1,
-    address: position?.pair?.token1?.id,
-    balance: token1Balance,
-  });
+  const token1: Token = switchWethToEth(
+    {
+      ...position?.pair?.token1,
+      address: position?.pair?.token1?.id,
+      balance: token1Balance,
+    },
+    chainId
+  );
 
   const tokens = [token0, token1];
 
@@ -126,7 +137,7 @@ const transformPool = (
   );
 
   return {
-    ...liquidityToken,
+    ...liquidityTokenWithNative,
     tokenNames,
     tokens: formattedTokens,
     totalBalancePrice,
