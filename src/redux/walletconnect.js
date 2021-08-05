@@ -27,10 +27,12 @@ import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove } from './requests';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
+import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { convertHexToString, delay } from '@rainbow-me/helpers/utilities';
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
+import { getRequestDisplayDetails } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -370,22 +372,17 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
         });
         return;
       }
-      const { requests: pendingRequests } = getState().requests;
-      const request = !pendingRequests[requestId]
-        ? await dispatch(
-            addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)
-          )
-        : null;
+      const request = dispatch(
+        addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)
+      );
 
       if (request) {
-        analytics.track('Showing Walletconnect signing request');
+        Navigation.handleAction(Routes.CONFIRM_REQUEST, {
+          openAutomatically: true,
+          transactionDetails: request,
+        });
         InteractionManager.runAfterInteractions(() => {
-          setTimeout(() => {
-            Navigation.handleAction(Routes.CONFIRM_REQUEST, {
-              openAutomatically: true,
-              transactionDetails: request,
-            });
-          }, 1000);
+          analytics.track('Showing Walletconnect signing request');
         });
       }
     }

@@ -38,6 +38,8 @@ export const addRequestToApprove = (
   peerMeta
 ) => (dispatch, getState) => {
   const { requests } = getState().requests;
+  if (!requests[requestId]) return null;
+
   const { accountAddress, network, nativeCurrency } = getState().settings;
   const { assets } = getState().data;
   const displayDetails = getRequestDisplayDetails(
