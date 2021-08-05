@@ -80,7 +80,7 @@ export default function WalletScreen() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    eth && dispatch(updatePositions);
+    eth && dispatch(updatePositions());
   }, [dispatch, eth, numberOfPools]);
 
   const { addressSocket, assetsSocket } = useSelector(

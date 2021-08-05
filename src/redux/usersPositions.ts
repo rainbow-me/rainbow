@@ -362,7 +362,7 @@ async function fetchData(account: string): Promise<StoredPosition[]> {
 
 // -- Actions ---------------------------------------- //
 
-export const updatePositions = async (
+export const updatePositions = () => async (
   dispatch: AppDispatch,
   getState: AppGetState
 ) => {
