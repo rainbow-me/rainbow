@@ -185,19 +185,20 @@ export default function SendSheet(props) {
     // after we know the network that the asset
     // belongs to
     if (prevNetwork !== currentNetwork) {
-      InteractionManager.runAfterInteractions(() =>
-        startPollingGasPrices(currentNetwork)
-      );
+      InteractionManager.runAfterInteractions(() => {
+        startPollingGasPrices(currentNetwork);
+      });
     }
+  }, [currentNetwork, prevNetwork, startPollingGasPrices]);
+
+  // Stop polling when the sheet is unmounted
+  useEffect(() => {
     return () => {
-      InteractionManager.runAfterInteractions(() => stopPollingGasPrices());
+      InteractionManager.runAfterInteractions(() => {
+        stopPollingGasPrices();
+      });
     };
-  }, [
-    currentNetwork,
-    prevNetwork,
-    startPollingGasPrices,
-    stopPollingGasPrices,
-  ]);
+  }, [stopPollingGasPrices]);
 
   // Recalculate balance when gas price changes
   useEffect(() => {
