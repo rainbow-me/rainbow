@@ -141,8 +141,8 @@ const DisplayDappNames = Object.freeze({
     uri: buildAssetUrl('rarible.com'),
   },
   'sushi.com': {
-    name: 'SushiSwap',
-    uri: buildAssetUrl('sushi.com'),
+    name: 'Sushi',
+    uri: null,
   },
   'swerve.fi': {
     name: 'Swerve',
