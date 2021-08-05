@@ -95,6 +95,7 @@ function ImportSeedPhraseFlowNavigator() {
       <Stack.Screen
         component={ImportSeedPhraseSheet}
         name={Routes.IMPORT_SEED_PHRASE_SHEET}
+        options={sheetPreset}
       />
     </Stack.Navigator>
   );
@@ -114,6 +115,7 @@ function AddCashFlowNavigator() {
       <Stack.Screen
         component={AddCashSheet}
         name={Routes.ADD_CASH_SCREEN_NAVIGATOR}
+        options={sheetPreset}
       />
     </Stack.Navigator>
   );

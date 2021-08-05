@@ -393,13 +393,17 @@ export const sheetPreset = ({ route }) => {
     route.name === Routes.SEND_SHEET_NAVIGATOR ||
     route.name === Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR ||
     route.name === Routes.IMPORT_SEED_PHRASE_SHEET;
+  const shouldNotUseCardStyleInterpolator =
+    route.name === Routes.SEND_SHEET ||
+    route.name === Routes.ADD_CASH_FLOW ||
+    route.name === Routes.IMPORT_SEED_PHRASE_SHEET;
   return {
     cardOverlayEnabled: true,
     cardShadowEnabled: true,
     cardStyle: { backgroundColor: 'transparent' },
-    cardStyleInterpolator: sheetStyleInterpolator(
-      shouldUseNonTransparentOverlay ? 0.7 : 0
-    ),
+    cardStyleInterpolator: shouldNotUseCardStyleInterpolator
+      ? () => ({})
+      : sheetStyleInterpolator(shouldUseNonTransparentOverlay ? 0.7 : 0),
     cardTransparent: true,
     gestureDirection: 'vertical',
     gestureResponseDistance:

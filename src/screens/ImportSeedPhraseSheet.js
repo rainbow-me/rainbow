@@ -104,7 +104,7 @@ const Sheet = styled(Column).attrs({
   align: 'center',
   flex: 1,
 })`
-  ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
+  ${borders.buildRadius('top', isNativeStackAvailable ? 39 : 16)};
   ${padding(0, 15, sheetBottomPadding)};
   background-color: ${({ theme: { colors } }) => colors.white};
   z-index: 1;

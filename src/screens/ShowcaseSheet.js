@@ -28,8 +28,8 @@ async function fetchShowcaseForAddress(address) {
 
 const Wrapper = styled.View`
   background-color: ${({ theme: { colors } }) => colors.white};
-  border-top-left-radius: 15;
-  border-top-right-radius: 15;
+  border-top-left-radius: 39;
+  border-top-right-radius: 39;
   height: 100%;
   overflow: hidden;
 `;
