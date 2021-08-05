@@ -303,6 +303,15 @@ const GasSpeedButton = ({
     type,
   ]);
 
+  useEffect(() => {
+    const gasOptions = options || GasSpeedOrder;
+    const currentSpeedIndex = gasOptions?.indexOf(selectedGasPriceOption);
+    // If the option isn't available anymore, we need to reset it
+    if (currentSpeedIndex === -1) {
+      handlePress();
+    }
+  }, [handlePress, options, selectedGasPriceOption]);
+
   const handleCustomGasFocus = useCallback(() => {
     setInputFocused(true);
     onCustomGasFocus?.();
