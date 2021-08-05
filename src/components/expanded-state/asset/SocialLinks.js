@@ -3,7 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Link from '../../Link';
 import EdgeFade from '../../discover-sheet/EdgeFade';
-import { ethereumUtils, logger } from '@rainbow-me/utils';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const TWITTER_URL = 'https://twitter.com/';
 const TELEGRAM_URL = 'https://t.me/';
@@ -40,7 +40,6 @@ export default function SocialLinks({
 }) {
   const etherscanURL = ethereumUtils.getEtherscanHostForNetwork(type);
   const blockExplorerName = ethereumUtils.getBlockExplorer(type);
-  logger.debug('MARGIN TOP', marginTop);
   return (
     <>
       <Carousel height={59} marginBottom={1} marginTop={marginTop || 0}>
