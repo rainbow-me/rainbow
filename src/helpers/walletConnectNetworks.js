@@ -33,7 +33,7 @@ export const changeConnectionMenuItems = () => {
       actionTitle: 'Disconnect',
       icon: {
         iconType: 'SYSTEM',
-        iconValue: 'xmark.circle.fill',
+        iconValue: 'xmark.square',
       },
       menuAttributes: ['destructive'],
     },

@@ -56,6 +56,10 @@ const DisplayDappNames = Object.freeze({
     name: 'ENS',
     uri: buildAssetUrl('ens.domains'),
   },
+  'etherscan.io': {
+    name: 'Etherscan',
+    uri: buildAssetUrl('etherscan.io'),
+  },
   'flexa.network': {
     name: 'Flexa',
     uri: buildAssetUrl('flexa.network'),
@@ -100,6 +104,10 @@ const DisplayDappNames = Object.freeze({
     name: 'MyCrypto',
     uri: buildAssetUrl('mycrypto.com'),
   },
+  'nft20.io': {
+    name: 'NFT20',
+    uri: buildAssetUrl('nft20.io'),
+  },
   'niftygateway.com': {
     name: 'Nifty Gateway',
     uri: buildAssetUrl('niftygateway.com'),
@@ -115,6 +123,10 @@ const DisplayDappNames = Object.freeze({
   'optimism.io': {
     name: 'Optimism Gateway',
     uri: buildAssetUrl('optimism.io'),
+  },
+  'partybid.app': {
+    name: 'PartyBid',
+    uri: buildAssetUrl('partybid.app'),
   },
   'piedao.org': {
     name: 'PieDAO',
