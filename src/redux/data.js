@@ -767,7 +767,7 @@ export const dataWatchPendingTransactions = (
         if (txObj && txObj.blockNumber) {
           // When speeding up a non "normal tx" we need to resubscribe
           // because zerion "append" event isn't reliable
-          logger.log('TX CONFIRMED!', tx);
+          logger.log('TX CONFIRMED!', txObj);
           if (cb) {
             logger.log('executing cb', cb);
             cb(tx);

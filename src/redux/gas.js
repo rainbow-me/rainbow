@@ -127,14 +127,15 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
     const baseGasPrice = await provider.getGasPrice();
     const baseGasPriceGwei = weiToGwei(baseGasPrice.toString());
 
-    // Add 20% buffer suggested by the Arbitrum team
-    const fastGasPriceWithBuffer = multiply(baseGasPriceGwei, '1.2');
+    // Node price is super inflated (50%+)
+    const fastGasPriceAdjusted = multiply(baseGasPriceGwei, '0.7');
     // Their node adds 10% buffer so -9.9% it's the safe low
-    const safeLowGasPriceWithBuffer = multiply(baseGasPriceGwei, '0.91');
+    const normalGasPriceAdjusted = multiply(baseGasPriceGwei, '0.5');
+    const safeLowGasPriceWithBuffer = multiply(baseGasPriceGwei, '0.4');
     const priceData = {
-      average: Number(baseGasPriceGwei),
+      average: Number(normalGasPriceAdjusted),
       avgWait: 0.5,
-      fast: Number(fastGasPriceWithBuffer),
+      fast: Number(fastGasPriceAdjusted),
       fastWait: 0.2,
       safeLow: Number(safeLowGasPriceWithBuffer),
       safeLowWait: 1,

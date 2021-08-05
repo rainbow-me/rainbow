@@ -993,6 +993,12 @@ export default function TransactionConfirmationScreen() {
                 currentNetwork={network}
                 onCustomGasBlur={hideKeyboard}
                 onCustomGasFocus={showKeyboard}
+                options={
+                  network === networkTypes.optimism ||
+                  network === networkTypes.arbitrum
+                    ? ['normal']
+                    : undefined
+                }
                 type="transaction"
               />
             </GasSpeedButtonContainer>

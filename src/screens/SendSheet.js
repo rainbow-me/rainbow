@@ -776,7 +776,8 @@ export default function SendSheet(props) {
                 currentNetwork={currentNetwork}
                 horizontalPadding={isTinyPhone ? 0 : 5}
                 options={
-                  currentNetwork === networkTypes.optimism
+                  currentNetwork === networkTypes.optimism ||
+                  currentNetwork === networkTypes.arbitrum
                     ? ['normal']
                     : undefined
                 }
