@@ -129,10 +129,8 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
     );
     const nextAvatarIndex =
       (prevAvatarIndex + 1) % defaultProfileUtils.avatars.length;
-    if (prevAvatarIndex > -1) {
-      setColor(defaultProfileUtils.avatars[nextAvatarIndex]?.colorIndex);
-      setEmoji(defaultProfileUtils.avatars[nextAvatarIndex]?.emoji);
-    }
+    setColor(defaultProfileUtils.avatars[nextAvatarIndex]?.colorIndex);
+    setEmoji(defaultProfileUtils.avatars[nextAvatarIndex]?.emoji);
   }, [emoji, setColor]);
 
   return (
