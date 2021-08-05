@@ -97,7 +97,7 @@ const KeyboardSizeView = styled(KeyboardArea)`
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
-  const { isTinyPhone } = useDimensions();
+  const { deviceWidth, isTinyPhone } = useDimensions();
   const { goBack, navigate, addListener } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
@@ -751,6 +751,7 @@ export default function SendSheet(props) {
             assetAmount={amountDetails.assetAmount}
             buttonRenderer={
               <SheetActionButton
+                androidWidth={deviceWidth - 60}
                 color={color}
                 disabled={buttonDisabled}
                 forceShadows
