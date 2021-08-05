@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { AnyAction } from 'redux';
 import { uniswapClient } from '../apollo/client';
 import {
@@ -5,6 +6,10 @@ import {
   USER_MINTS_BURNS_PER_PAIR,
   USER_POSITIONS,
 } from '../apollo/queries';
+import {
+  getUniswapPositions,
+  saveUniswapPositions,
+} from '@rainbow-me/handlers/localstorage/uniswap';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
 import {
   BUSD_ADDRESS,
@@ -65,6 +70,21 @@ export type StoredPosition = Position &
 
 // -- Constants --------------------------------------- //
 const UPDATE_POSITIONS = 'positions/UPDATE_POSITIONS';
+
+export const uniswapPositionsLoadState = () => async (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
+  const { accountAddress, network } = getState().settings;
+  try {
+    const positions = await getUniswapPositions(accountAddress, network);
+    dispatch({
+      payload: positions,
+      type: UPDATE_POSITIONS,
+    });
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
+};
 
 function formatPricesForEarlyTimestamps(position: any): Position {
   if (position.timestamp < PRICE_DISCOVERY_START_TIMESTAMP) {
@@ -346,13 +366,21 @@ export const updatePositions = async (
   dispatch: AppDispatch,
   getState: AppGetState
 ) => {
-  const { accountAddress } = getState().settings;
+  const { accountAddress, network } = getState().settings;
+  const existingPositions = getState().usersPositions;
   const data = await fetchData(accountAddress);
+  if (!isEmpty(data)) {
+    const payload = {
+      ...existingPositions,
+      [accountAddress]: data,
+    };
 
-  dispatch({
-    payload: { [accountAddress]: data },
-    type: UPDATE_POSITIONS,
-  });
+    dispatch({
+      payload,
+      type: UPDATE_POSITIONS,
+    });
+    saveUniswapPositions(payload, accountAddress, network);
+  }
 };
 
 const INITIAL_STATE: PositionsState = {};
