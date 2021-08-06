@@ -4,41 +4,41 @@ import colors from '../styles/colors';
 
 // avatars groups emojis with their respective color backgrounds in the `avatarBackgrounds` object in colors.js
 export const avatars = [
-  { emoji: '🌶', color: colors.avatarBackgrounds[0] },
-  { emoji: '🤑', color: colors.avatarBackgrounds[1] },
-  { emoji: '🐙', color: colors.avatarBackgrounds[2] },
-  { emoji: '🫐', color: colors.avatarBackgrounds[3] },
-  { emoji: '🐳', color: colors.avatarBackgrounds[4] },
-  { emoji: '🤶', color: colors.avatarBackgrounds[0] },
-  { emoji: '🌲', color: colors.avatarBackgrounds[5] },
-  { emoji: '🌞', color: colors.avatarBackgrounds[6] },
-  { emoji: '🐒', color: colors.avatarBackgrounds[7] },
-  { emoji: '🐵', color: colors.avatarBackgrounds[8] },
-  { emoji: '🦊', color: colors.avatarBackgrounds[9] },
-  { emoji: '🐼', color: colors.avatarBackgrounds[10] },
-  { emoji: '🦄', color: colors.avatarBackgrounds[11] },
-  { emoji: '🐷', color: colors.avatarBackgrounds[12] },
-  { emoji: '🐧', color: colors.avatarBackgrounds[13] },
-  { emoji: '🦩', color: colors.avatarBackgrounds[8] },
-  { emoji: '👽', color: colors.avatarBackgrounds[14] },
-  { emoji: '🎈', color: colors.avatarBackgrounds[0] },
-  { emoji: '🍉', color: colors.avatarBackgrounds[8] },
-  { emoji: '🎉', color: colors.avatarBackgrounds[1] },
-  { emoji: '🐲', color: colors.avatarBackgrounds[15] },
-  { emoji: '🌎', color: colors.avatarBackgrounds[16] },
-  { emoji: '🍊', color: colors.avatarBackgrounds[17] },
-  { emoji: '🐭', color: colors.avatarBackgrounds[18] },
-  { emoji: '🍣', color: colors.avatarBackgrounds[19] },
-  { emoji: '🐥', color: colors.avatarBackgrounds[1] },
-  { emoji: '👾', color: colors.avatarBackgrounds[20] },
-  { emoji: '🥦', color: colors.avatarBackgrounds[15] },
-  { emoji: '👹', color: colors.avatarBackgrounds[0] },
-  { emoji: '🙀', color: colors.avatarBackgrounds[17] },
-  { emoji: '⛱', color: colors.avatarBackgrounds[4] },
-  { emoji: '⛵️', color: colors.avatarBackgrounds[21] },
-  { emoji: '🥳', color: colors.avatarBackgrounds[17] },
-  { emoji: '🤯', color: colors.avatarBackgrounds[8] },
-  { emoji: '🤠', color: colors.avatarBackgrounds[22] },
+  { emoji: '🌶', colorIndex: 0 },
+  { emoji: '🤑', colorIndex: 1 },
+  { emoji: '🐙', colorIndex: 2 },
+  { emoji: '🫐', colorIndex: 3 },
+  { emoji: '🐳', colorIndex: 4 },
+  { emoji: '🤶', colorIndex: 0 },
+  { emoji: '🌲', colorIndex: 5 },
+  { emoji: '🌞', colorIndex: 6 },
+  { emoji: '🐒', colorIndex: 7 },
+  { emoji: '🐵', colorIndex: 8 },
+  { emoji: '🦊', colorIndex: 9 },
+  { emoji: '🐼', colorIndex: 10 },
+  { emoji: '🦄', colorIndex: 11 },
+  { emoji: '🐷', colorIndex: 12 },
+  { emoji: '🐧', colorIndex: 13 },
+  { emoji: '🦩', colorIndex: 8 },
+  { emoji: '👽', colorIndex: 14 },
+  { emoji: '🎈', colorIndex: 0 },
+  { emoji: '🍉', colorIndex: 8 },
+  { emoji: '🎉', colorIndex: 1 },
+  { emoji: '🐲', colorIndex: 15 },
+  { emoji: '🌎', colorIndex: 16 },
+  { emoji: '🍊', colorIndex: 17 },
+  { emoji: '🐭', colorIndex: 18 },
+  { emoji: '🍣', colorIndex: 19 },
+  { emoji: '🐥', colorIndex: 1 },
+  { emoji: '👾', colorIndex: 20 },
+  { emoji: '🥦', colorIndex: 15 },
+  { emoji: '👹', colorIndex: 0 },
+  { emoji: '🙀', colorIndex: 17 },
+  { emoji: '⛱', colorIndex: 4 },
+  { emoji: '⛵️', colorIndex: 21 },
+  { emoji: '🥳', colorIndex: 17 },
+  { emoji: '🤯', colorIndex: 8 },
+  { emoji: '🤠', colorIndex: 22 },
 ];
 
 // oldAvatarColorToAvatarBackgroundIndex maps old hex colors from showcase of webProfiles
@@ -60,9 +60,7 @@ export function getOldAvatarColorToAvatarBackgroundIndex(colorHex: string) {
   return oldAvatarColorToAvatarBackgroundIndex[colorHex] || 0;
 }
 export const popularEmojis = avatars.map(avatar => avatar.emoji);
-export const emojiColorIndexes = avatars.map(avatar =>
-  colors.avatarBackgrounds.indexOf(avatar.color)
-);
+export const emojiColorIndexes = avatars.map(avatar => avatar.colorIndex);
 const emojiCount = avatars.length;
 
 export function hashCode(text: string) {

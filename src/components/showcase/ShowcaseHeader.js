@@ -115,19 +115,31 @@ export function Header() {
   const onAddToContact = useCallback(async () => {
     const contacts = await getContacts();
     const currentContact = contacts[contextValue?.address];
+    const nickname =
+      contextValue?.data?.reverseEns ||
+      isHexString(contextValue?.addressOrDomain)
+        ? abbreviations.address(contextValue?.addressOrDomain, 4, 4)
+        : contextValue?.addressOrDomain;
 
     navigate(Routes.MODAL_SCREEN, {
       address: contextValue?.address,
-      color,
+      color: currentContact?.color || color,
       contact: currentContact || {
         address: contextValue?.address,
-        color,
-        nickname: contextValue?.data?.reverseEns,
+        color: currentContact?.color || color,
+        nickname: `${emoji} ${nickname}`,
         temporary: true,
       },
       type: 'contact_profile',
     });
-  }, [color, contextValue?.address, contextValue?.data?.reverseEns, navigate]);
+  }, [
+    color,
+    contextValue?.address,
+    contextValue?.addressOrDomain,
+    contextValue?.data?.reverseEns,
+    emoji,
+    navigate,
+  ]);
 
   const onSend = useCallback(async () => {
     goBack();

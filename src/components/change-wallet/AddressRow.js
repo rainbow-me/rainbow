@@ -117,7 +117,7 @@ export default function AddressRow({
 
   let cleanedUpLabel = null;
   if (label) {
-    cleanedUpLabel = removeFirstEmojiFromString(label).join('');
+    cleanedUpLabel = removeFirstEmojiFromString(label);
   }
 
   const onOptionsPress = useCallback(() => {
