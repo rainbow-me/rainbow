@@ -103,4 +103,4 @@ export { default as usePoolDetails } from './usePoolDetails';
 export { default as useAdditionalAssetData } from './useAdditionalAssetData';
 export { useTotalFeeEarnedPerAsset } from './useUsersPositions';
 export { default as useImportingWallet } from './useImportingWallet';
-export { default as useGasEstimates } from './useGasEstimates';
+export { default as useBlockGasEstimates } from './useBlockGasEstimates';
