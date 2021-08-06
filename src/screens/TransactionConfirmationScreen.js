@@ -617,6 +617,8 @@ export default function TransactionConfirmationScreen() {
     dappUrl,
     formattedDappUrl,
     isAuthenticated,
+    blockGasLimit,
+    toCode,
   ]);
 
   const handleSignMessage = useCallback(async () => {
@@ -668,6 +670,8 @@ export default function TransactionConfirmationScreen() {
       await onCancel();
     }
   }, [
+    accountInfo.address,
+    provider,
     callback,
     closeScreen,
     dispatch,
@@ -818,7 +822,7 @@ export default function TransactionConfirmationScreen() {
   // to know if its not already requested
   // to speed the gas estimation with padding "onConfirm"
   useEffect(() => {
-    if (!blockListener && provider) {
+    if (!blockListener && provider && network === networkTypes.mainnet) {
       const doPartialEstimations = async to => {
         provider?.on('block', async () => {
           const { gasLimit } = await provider.getBlock();
