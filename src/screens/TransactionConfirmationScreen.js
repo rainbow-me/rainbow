@@ -43,7 +43,6 @@ import {
 } from '../components/transaction';
 import {
   estimateGas,
-  estimateGasWithPadding,
   getProviderForNetwork,
   isL2Network,
   toHex,
@@ -56,10 +55,10 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   useAccountAssets,
   useAccountSettings,
+  useBlockGasEstimates,
   useBooleanState,
   useDimensions,
   useGas,
-  useGasEstimates,
   useKeyboardHeight,
   useTransactionConfirmation,
   useWalletBalances,
@@ -190,8 +189,9 @@ export default function TransactionConfirmationScreen() {
     },
   } = routeParams;
 
-  const { estimatedGas, toCode, blockGasLimit } = useGasEstimates(
+  const { estimatedGas: paddedEstimatedGas } = useBlockGasEstimates(
     params?.[0],
+    method,
     network,
     provider
   );
@@ -482,24 +482,23 @@ export default function TransactionConfirmationScreen() {
       });
 
       if (network === networkTypes.mainnet) {
-        // Estimate the tx with gas limit padding before sending
-        const rawGasLimit = await estimateGasWithPadding(
-          txPayload,
-          null,
-          null,
-          provider
-        );
-
         // If the estimation with padding is higher or gas limit was missing,
         // let's use the higher value
         if (
           (isNil(gas) && isNil(gasLimitFromPayload)) ||
-          (!isNil(gas) && greaterThan(rawGasLimit, convertHexToString(gas))) ||
+          (!isNil(gas) &&
+            greaterThan(paddedEstimatedGas, convertHexToString(gas))) ||
           (!isNil(gasLimitFromPayload) &&
-            greaterThan(rawGasLimit, convertHexToString(gasLimitFromPayload)))
+            greaterThan(
+              paddedEstimatedGas,
+              convertHexToString(gasLimitFromPayload)
+            ))
         ) {
-          logger.log('⛽ using padded estimation!', rawGasLimit.toString());
-          gas = toHex(rawGasLimit);
+          logger.log(
+            '⛽ using padded estimation!',
+            paddedEstimatedGas.toString()
+          );
+          gas = toHex(paddedEstimatedGas);
         }
       }
     } catch (error) {
@@ -618,8 +617,7 @@ export default function TransactionConfirmationScreen() {
     dappUrl,
     formattedDappUrl,
     isAuthenticated,
-    blockGasLimit,
-    toCode,
+    paddedEstimatedGas,
   ]);
 
   const handleSignMessage = useCallback(async () => {
