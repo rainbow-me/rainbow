@@ -83,7 +83,7 @@ export default function SendHeader({
   const [hexAddress, setHexAddress] = useState(null);
 
   useEffect(() => {
-    if (isValidAddress) {
+    if (isValidAddress && !contact.address) {
       resolveAndStoreAddress();
     } else {
       setHexAddress(null);
@@ -95,7 +95,7 @@ export default function SendHeader({
       }
       setHexAddress(hex);
     }
-  }, [isValidAddress, recipient, setHexAddress]);
+  }, [isValidAddress, recipient, setHexAddress, contact]);
 
   const userWallet = useMemo(() => {
     return userAccounts.find(
@@ -197,31 +197,35 @@ export default function SendHeader({
           ref={recipientFieldRef}
           testID="send-asset-form-field"
         />
-        {isValidAddress && !userWallet && hexAddress && (
-          <ButtonPressAnimation
-            onPress={
-              isPreExistingContact
-                ? handleOpenContactActionSheet
-                : handleNavigateToContact
-            }
-          >
-            <Text
-              align="right"
-              color="appleBlue"
-              size="large"
-              style={{ paddingLeft: 4 }}
-              testID={
+        {isValidAddress &&
+          !userWallet &&
+          (hexAddress || !isEmpty(contact?.address)) && (
+            <ButtonPressAnimation
+              onPress={
                 isPreExistingContact
-                  ? 'edit-contact-button'
-                  : 'add-contact-button'
+                  ? handleOpenContactActionSheet
+                  : handleNavigateToContact
               }
-              weight="heavy"
             >
-              {isPreExistingContact ? '􀍡' : ' 􀉯 Save'}
-            </Text>
-          </ButtonPressAnimation>
+              <Text
+                align="right"
+                color="appleBlue"
+                size="large"
+                style={{ paddingLeft: 4 }}
+                testID={
+                  isPreExistingContact
+                    ? 'edit-contact-button'
+                    : 'add-contact-button'
+                }
+                weight="heavy"
+              >
+                {isPreExistingContact ? '􀍡' : ' 􀉯 Save'}
+              </Text>
+            </ButtonPressAnimation>
+          )}
+        {isValidAddress && !hexAddress && isEmpty(contact?.address) && (
+          <Spinner color={colors.appleBlue} />
         )}
-        {isValidAddress && !hexAddress && <Spinner color={colors.appleBlue} />}
         {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
       {hideDivider && !isTinyPhone ? null : (
