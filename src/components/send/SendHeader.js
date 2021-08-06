@@ -84,11 +84,11 @@ export default function SendHeader({
 
   useEffect(() => {
     if (isValidAddress) {
-      getAddress();
+      resolveAndStoreAddress();
     } else {
       setHexAddress(null);
     }
-    async function getAddress() {
+    async function resolveAndStoreAddress() {
       const hex = await resolveNameOrAddress(recipient);
       if (!hex) {
         return;
