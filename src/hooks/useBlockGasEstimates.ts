@@ -16,6 +16,8 @@ const useBlockGasEstimates = (
   const [blockGasLimit, setBlockGasLimit] = useState<Object | null>(null);
   const [toCode, setToCode] = useState<string | null>(null);
 
+  const isMainnet = useMemo(() => network === networkTypes.mainnet, [network]);
+
   const isBasicTransaction = useMemo(
     () =>
       !txPayload.to ||
@@ -23,16 +25,15 @@ const useBlockGasEstimates = (
     [txPayload.to, txPayload.data, toCode]
   );
 
-  const shouldListenBlocks = useMemo(
-    () =>
-      !isMessageDisplayType(method) &&
-      provider &&
-      network === networkTypes.mainnet,
-    [provider, method, network]
+  // we don't don't need gas estimates if no provider
+  // it's a message request or is not mainnet
+  const shouldGetEstimates = useMemo(
+    () => !isMessageDisplayType(method) && provider && isMainnet,
+    [provider, method, isMainnet]
   );
 
   useEffect(() => {
-    if (!shouldListenBlocks || !blockGasLimit) return;
+    if (!shouldGetEstimates) return;
     const runCalculations = async () => {
       const estimatedGas = await calculateGasWithPadding(
         txPayload,
@@ -43,10 +44,11 @@ const useBlockGasEstimates = (
       setEstimatedGas(estimatedGas);
     };
     runCalculations();
-  }, [blockGasLimit, provider, shouldListenBlocks, toCode, txPayload]);
+  }, [blockGasLimit, provider, shouldGetEstimates, toCode, txPayload]);
 
   useEffect(() => {
-    if (!shouldListenBlocks) return;
+    // if is a basic transaction, we send a default value
+    if (!shouldGetEstimates || isBasicTransaction) return;
 
     const getCode = async () => {
       const toCode = await provider?.getCode(txPayload.to);
@@ -63,7 +65,7 @@ const useBlockGasEstimates = (
     return () => {
       provider?.off('block');
     };
-  }, [shouldListenBlocks, txPayload.to, provider, isBasicTransaction]);
+  }, [shouldGetEstimates, txPayload.to, provider, isBasicTransaction]);
 
   return { estimatedGas };
 };

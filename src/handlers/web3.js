@@ -218,7 +218,6 @@ export const estimateGasWithPadding = async (
       );
       return ethUnits.basic_tx.toString();
     }
-    // get or use gas limit only if we're using it
 
     logger.sentry('⛽ Calculating safer gas limit for last block');
     // 3 - If it is a contract, call the RPC method `estimateGas` with a safe value
@@ -274,25 +273,23 @@ export const calculateGasWithPadding = async (
   paddingFactor = 1.1
 ) => {
   try {
-    const p = provider || web3Provider;
     const txPayloadToEstimate = { ...txPayload };
     const { to, data } = txPayloadToEstimate;
     // 1 - Check if the receiver is a contract with `code`
     // 2 - if it's not a contract AND it doesn't have any data use the default gas limit
-
     if (!to || (to && !data && (!code || code === '0x'))) {
       return ethUnits.basic_tx.toString();
     }
+    const p = provider || web3Provider;
     // get or use gas limit only if we're using it
-
     // 3 - If it is a contract, call the RPC method `estimateGas` with a safe value
-    const saferGasLimit = fraction(blockGasLimit.toString(), 19, 20);
+    const saferGasLimit = fraction(blockGasLimit?.toString(), 19, 20);
 
     txPayloadToEstimate.gas = toHex(saferGasLimit);
 
     const estimatedGas = await p.estimateGas(txPayloadToEstimate);
 
-    const lastBlockGasLimit = addBuffer(blockGasLimit.toString(), 0.9);
+    const lastBlockGasLimit = addBuffer(blockGasLimit?.toString(), 0.9);
     const paddedGas = addBuffer(
       estimatedGas.toString(),
       paddingFactor.toString()
