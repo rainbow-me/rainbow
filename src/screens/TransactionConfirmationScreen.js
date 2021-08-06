@@ -159,6 +159,7 @@ export default function TransactionConfirmationScreen() {
   const [methodName, setMethodName] = useState(null);
   const calculatingGasLimit = useRef(false);
   const [isBalanceEnough, setIsBalanceEnough] = useState(true);
+  const [existingWallet, setExistingWallet] = useState(null);
 
   const { height: deviceHeight } = useDimensions();
   const { wallets, walletNames } = useWallets();
@@ -518,11 +519,6 @@ export default function TransactionConfirmationScreen() {
     let result = null;
 
     try {
-      const existingWallet = await loadWallet(
-        accountInfo.address,
-        true,
-        provider
-      );
       if (sendInsteadOfSign) {
         result = await sendTransaction({
           existingWallet,
@@ -598,7 +594,6 @@ export default function TransactionConfirmationScreen() {
     gasLimit,
     network,
     provider,
-    accountInfo.address,
     callback,
     requestId,
     closeScreen,
@@ -618,6 +613,7 @@ export default function TransactionConfirmationScreen() {
     formattedDappUrl,
     isAuthenticated,
     paddedEstimatedGas,
+    existingWallet,
   ]);
 
   const handleSignMessage = useCallback(async () => {
@@ -628,11 +624,6 @@ export default function TransactionConfirmationScreen() {
     } else if (isSignSecondParamType(method)) {
       message = params?.[1];
     }
-    const existingWallet = await loadWallet(
-      accountInfo.address,
-      true,
-      provider
-    );
     switch (method) {
       case SIGN:
         flatFormatSignature = await signMessage(message, existingWallet);
@@ -669,8 +660,6 @@ export default function TransactionConfirmationScreen() {
       await onCancel();
     }
   }, [
-    accountInfo.address,
-    provider,
     callback,
     closeScreen,
     dispatch,
@@ -681,6 +670,7 @@ export default function TransactionConfirmationScreen() {
     removeRequest,
     requestId,
     walletConnectSendStatus,
+    existingWallet,
   ]);
 
   const onConfirm = useCallback(async () => {
@@ -816,6 +806,21 @@ export default function TransactionConfirmationScreen() {
       sheetOpacity.value = withSpring(1, springConfig);
     }
   }, [isKeyboardVisible, keyboardHeight, offset, sheetOpacity]);
+
+  useEffect(() => {
+    const getExistingWallet = async () => {
+      const existingWallet = await loadWallet(
+        accountInfo.address,
+        true,
+        provider
+      );
+      setExistingWallet(existingWallet);
+    };
+    // if users try to sign without this being loaded
+    // both sendTransaction and signMessage have this same method
+    // if existing wallet is undefined
+    getExistingWallet();
+  }, [accountInfo.address, provider, setExistingWallet]);
 
   const amount = request?.value ?? '0.00';
 
