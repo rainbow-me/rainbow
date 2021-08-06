@@ -159,6 +159,10 @@ export default function TransactionConfirmationScreen() {
   const [methodName, setMethodName] = useState(null);
   const calculatingGasLimit = useRef(false);
   const [isBalanceEnough, setIsBalanceEnough] = useState(true);
+  const [blockGasLimit, setBlockGasLimit] = useState(null);
+  const [toCode, setToCode] = useState(null);
+  const [blockListener, setBlockListener] = useState(false);
+
   const { height: deviceHeight } = useDimensions();
   const { wallets, walletNames } = useWallets();
   const balances = useWalletBalances(wallets);
@@ -479,7 +483,10 @@ export default function TransactionConfirmationScreen() {
           txPayload,
           null,
           null,
-          provider
+          provider,
+          undefined,
+          blockGasLimit,
+          toCode
         );
 
         // If the estimation with padding is higher or gas limit was missing,
@@ -806,6 +813,26 @@ export default function TransactionConfirmationScreen() {
       sheetOpacity.value = withSpring(1, springConfig);
     }
   }, [isKeyboardVisible, keyboardHeight, offset, sheetOpacity]);
+
+  // Constantly get gasLimit from blocks and tx "to" code
+  // to know if its not already requested
+  // to speed the gas estimation with padding "onConfirm"
+  useEffect(() => {
+    if (!blockListener && provider) {
+      const doPartialEstimations = async to => {
+        provider?.on('block', async () => {
+          const { gasLimit } = await provider.getBlock();
+          setBlockGasLimit({ gasLimit });
+        });
+        if (!to || toCode) return;
+        const newCode = await provider?.getCode(to);
+        setToCode(newCode);
+      };
+      doPartialEstimations(params?.[0]?.to);
+      setBlockListener(true);
+    }
+    return () => () => provider?.off('block');
+  }, [provider, blockListener, toCode, params, network, setBlockListener]);
 
   const amount = request?.value ?? '0.00';
 

@@ -198,15 +198,17 @@ export const estimateGasWithPadding = async (
   contractCallEstimateGas = null,
   callArguments = null,
   provider = null,
-  paddingFactor = 1.1
+  paddingFactor = 1.1,
+  blockGasLimit = null,
+  toCode = null
 ) => {
   try {
     const p = provider || web3Provider;
     const txPayloadToEstimate = { ...txPayload };
-    const { gasLimit } = await p.getBlock();
+    const { gasLimit } = blockGasLimit || (await p.getBlock());
     const { to, data } = txPayloadToEstimate;
     // 1 - Check if the receiver is a contract
-    const code = to ? await p.getCode(to) : undefined;
+    const code = toCode || to ? await p.getCode(to) : undefined;
     // 2 - if it's not a contract AND it doesn't have any data use the default gas limit
     if (
       (!contractCallEstimateGas && !to) ||
