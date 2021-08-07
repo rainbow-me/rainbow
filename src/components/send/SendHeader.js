@@ -1,22 +1,26 @@
-import { isValidAddress as validateAddress } from 'ethereumjs-util';
+import { isHexString } from '@ethersproject/bytes';
 import { get, isEmpty, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
+import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
 import { PasteAddressButton } from '../buttons';
 import { AddressField } from '../fields';
 import { Row } from '../layout';
 import { SheetHandleFixedToTop, SheetTitle } from '../sheet';
 import { Label, Text } from '../text';
+import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
-import { getRandomColor } from '@rainbow-me/styles/colors';
-import { showActionSheetWithOptions } from '@rainbow-me/utils';
+import {
+  defaultProfileUtils,
+  showActionSheetWithOptions,
+} from '@rainbow-me/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
   ${({ isSmallPhone, isTinyPhone }) =>
@@ -48,11 +52,11 @@ const SendSheetTitle = styled(SheetTitle).attrs({
   margin-top: ${android ? 10 : 17};
 `;
 
-const defaultContactItem = randomColor => ({
+const defaultContactItem = {
   address: '',
-  color: randomColor,
+  color: null,
   nickname: '',
-});
+};
 
 export default function SendHeader({
   contacts,
@@ -74,12 +78,24 @@ export default function SendHeader({
   const { colors } = useTheme();
 
   const contact = useMemo(() => {
-    return get(
-      contacts,
-      `${[toLower(recipient)]}`,
-      defaultContactItem(getRandomColor())
-    );
+    return get(contacts, `${[toLower(recipient)]}`, defaultContactItem);
   }, [contacts, recipient]);
+  const [hexAddress, setHexAddress] = useState(null);
+
+  useEffect(() => {
+    if (isValidAddress) {
+      resolveAndStoreAddress();
+    } else {
+      setHexAddress(null);
+    }
+    async function resolveAndStoreAddress() {
+      const hex = await resolveNameOrAddress(recipient);
+      if (!hex) {
+        return;
+      }
+      setHexAddress(hex);
+    }
+  }, [isValidAddress, recipient, setHexAddress]);
 
   const userWallet = useMemo(() => {
     return userAccounts.find(
@@ -89,23 +105,24 @@ export default function SendHeader({
 
   const handleNavigateToContact = useCallback(() => {
     let color = get(contact, 'color');
+    let nickname = recipient;
     if (color !== 0 && !color) {
-      color = getRandomColor();
+      const emoji = defaultProfileUtils.addressHashedEmoji(hexAddress);
+      color = defaultProfileUtils.addressHashedColorIndex(hexAddress) || 0;
+      nickname = isHexString(recipient) ? emoji : `${emoji} ${recipient}`;
     }
 
     navigate(Routes.MODAL_SCREEN, {
       additionalPadding: true,
-      address: recipient,
+      address: isEmpty(contact.address) ? recipient : contact.address,
       color,
       contact: isEmpty(contact.address)
-        ? validateAddress(recipient)
-          ? false
-          : { color, nickname: recipient, temporary: true }
+        ? { color, nickname, temporary: true }
         : contact,
       onRefocusInput,
       type: 'contact_profile',
     });
-  }, [contact, navigate, onRefocusInput, recipient]);
+  }, [contact, hexAddress, navigate, onRefocusInput, recipient]);
 
   const handleOpenContactActionSheet = useCallback(async () => {
     return showActionSheetWithOptions(
@@ -157,8 +174,8 @@ export default function SendHeader({
   const name = useMemo(
     () =>
       userWallet?.label
-        ? removeFirstEmojiFromString(userWallet.label).join('')
-        : contact.nickname,
+        ? removeFirstEmojiFromString(userWallet.label)
+        : removeFirstEmojiFromString(contact.nickname),
     [contact.nickname, userWallet?.label]
   );
 
@@ -180,7 +197,7 @@ export default function SendHeader({
           ref={recipientFieldRef}
           testID="send-asset-form-field"
         />
-        {isValidAddress && !userWallet && (
+        {isValidAddress && !userWallet && hexAddress && (
           <ButtonPressAnimation
             onPress={
               isPreExistingContact
@@ -204,6 +221,7 @@ export default function SendHeader({
             </Text>
           </ButtonPressAnimation>
         )}
+        {isValidAddress && !hexAddress && <Spinner color={colors.appleBlue} />}
         {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
       {hideDivider && !isTinyPhone ? null : (

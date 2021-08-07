@@ -66,7 +66,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
 
   let cleanedUpLabel = null;
   if (label) {
-    cleanedUpLabel = removeFirstEmojiFromString(label).join('');
+    cleanedUpLabel = removeFirstEmojiFromString(label);
   }
 
   const handlePress = useCallback(() => onPress(address), [address, onPress]);
