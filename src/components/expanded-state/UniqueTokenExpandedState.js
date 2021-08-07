@@ -97,7 +97,7 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
               onPress={handlePressShowcase}
               weight="bold"
             />
-            {isSendable && <SendActionButton />}
+            {isSendable && <SendActionButton asset={asset} />}
           </SheetActionButtonRow>
         ) : (
           <SheetActionButtonRow>
