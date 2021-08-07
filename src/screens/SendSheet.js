@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
-import { isEmpty, isString, toLower } from 'lodash';
+import { isEmpty, isEqual, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
@@ -243,6 +243,7 @@ export default function SendSheet(props) {
 
   const sendUpdateSelected = useCallback(
     newSelected => {
+      if (isEqual(newSelected, selected)) return;
       updateMaxInputBalance(newSelected);
       if (newSelected?.type === AssetTypes.nft) {
         setAmountDetails({
@@ -261,33 +262,9 @@ export default function SendSheet(props) {
       } else {
         setSelected(newSelected);
         sendUpdateAssetAmount('');
-        // Since we don't trust the balance from zerion,
-        // let's hit the blockchain and update it
-        if (currentProvider) {
-          updateAssetOnchainBalanceIfNeeded(
-            newSelected,
-            accountAddress,
-            currentNetwork,
-            currentProvider,
-            updatedAsset => {
-              // set selected asset with new balance
-              setSelected(updatedAsset);
-              // Update selected to recalculate the maxInputAmount
-              sendUpdateSelected(updatedAsset);
-            }
-          );
-        }
       }
     },
-    [
-      accountAddress,
-      currentNetwork,
-      currentProvider,
-      selected?.uniqueId,
-      sendUpdateAssetAmount,
-      updateAssetOnchainBalanceIfNeeded,
-      updateMaxInputBalance,
-    ]
+    [selected, sendUpdateAssetAmount, updateMaxInputBalance]
   );
 
   useEffect(() => {
@@ -333,16 +310,39 @@ export default function SendSheet(props) {
   ]);
 
   useEffect(() => {
+    if (isEmpty(selected)) return;
     if (currentProvider?._network?.chainId) {
       const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
         currentProvider._network.chainId
       );
-      if (currentProviderNetwork === currentNetwork) {
-        sendUpdateSelected(selected);
+
+      const assetNetwork =
+        selected?.type === AssetType.token || selected?.type === AssetType.nft
+          ? network
+          : selected.type;
+
+      if (
+        assetNetwork === currentNetwork &&
+        currentProviderNetwork === currentNetwork
+      ) {
+        updateAssetOnchainBalanceIfNeeded(
+          selected,
+          accountAddress,
+          currentNetwork,
+          currentProvider,
+          updatedAsset => {
+            // set selected asset with new balance
+            if (!isEqual(selected, updatedAsset)) {
+              setSelected(updatedAsset);
+              updateMaxInputBalance(updatedAsset);
+              sendUpdateAssetAmount('');
+            }
+          }
+        );
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentProvider, currentNetwork, selected]);
+  }, [accountAddress, currentProvider, currentNetwork, selected]);
 
   const onChangeNativeAmount = useCallback(
     newNativeAmount => {
