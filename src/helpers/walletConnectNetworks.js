@@ -71,11 +71,13 @@ export const androidShowNetworksActionSheet = callback => {
       title: `Available Networks`,
     },
     idx => {
-      const { value } = androidReverseNetworkWithName(
-        androidNetworkActions[idx]
-      );
-      const chainId = ethereumUtils.getChainIdFromNetwork(value);
-      callback({ chainId, network: value });
+      if (idx) {
+        const { value } = androidReverseNetworkWithName(
+          androidNetworkActions[idx]
+        );
+        const chainId = ethereumUtils.getChainIdFromNetwork(value);
+        callback({ chainId, network: value });
+      }
     }
   );
 };
