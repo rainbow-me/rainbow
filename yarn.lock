@@ -12159,10 +12159,10 @@ react-native-haptic-feedback@^1.8.2:
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-1.11.0.tgz#adfd841f3b67046532f912c6ec827aea0037d8ad"
   integrity sha512-KTIy7lExwMtB6pOpCARyUzFj5EzYTh+A1GN/FB5Eb0LrW5C6hbb1kdj9K2/RHyZC+wyAJD1M823ZaDCU6n6cLA==
 
-react-native-image-crop-picker@^0.32.2:
-  version "0.32.3"
-  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.32.3.tgz#53aa18249485e002e3a57a8cf70447482112b86e"
-  integrity sha512-+2em4wBcjpAkDat9gfNjGMIDvtjd67ekVaUQ6jC0dP2KOylX5zQbUlUQxx/gMbxQRZZDmBy8YGCDG1Y8D2d+oA==
+react-native-image-crop-picker@^0.36.2:
+  version "0.36.2"
+  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.36.2.tgz#fcb35c1a12d805bedbb6d94a87078e86a6c9b49f"
+  integrity sha512-cTauoEHHzx14ZHA7Pt65e7RVnbn1WRYQz2ufTZp9/05EtNDrdsXwNhgtXdWVFbOhYB8qgUFQjy2NelkBOHIH3g==
 
 react-native-indicators@0.17.0:
   version "0.17.0"

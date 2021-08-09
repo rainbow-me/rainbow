@@ -1,17 +1,18 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
-import { Linking, Share } from 'react-native';
+import { InteractionManager, Linking, Share } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import styled from 'styled-components';
 import { buildUniqueTokenName } from '../../../helpers/assets';
+import Routes from '../../../navigation/routesNames';
 import Pill from '../../Pill';
 import { ContextCircleButton } from '../../context-menu';
 import { ColumnWithMargins, FlexItem, Row, RowWithMargins } from '../../layout';
 import { Text } from '../../text';
 import { useAccountProfile, useAvatarActions } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
 import { padding } from '@rainbow-me/styles';
 import { buildRainbowUrl, magicMemo } from '@rainbow-me/utils';
-
 const paddingHorizontal = 19;
 
 const Container = styled(Row).attrs({
@@ -34,6 +35,7 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
   const { accountAddress, accountENS } = useAccountProfile();
   const { setProfileImage, canNFTBeSetAsProfileImage } = useAvatarActions();
   const canBeSetAsProfileImage = canNFTBeSetAsProfileImage(asset);
+  const { navigate } = useNavigation();
 
   const imageUrl =
     asset.image_preview_url || asset.image_url || asset.image_original_url;
@@ -59,15 +61,18 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
         // View on OpenSea
         Linking.openURL(asset.permalink);
       } else if (buttonIndex === 2) {
-        // Set NFT as Profile Image
-        ImagePicker.openCropper({
-          cropperCircleOverlay: true,
-          mediaType: 'photo',
-          path: imageUrl,
-        }).then(setProfileImage);
+        navigate(Routes.PROFILE_SCREEN);
+        InteractionManager.runAfterInteractions(() => {
+          // Set NFT as Profile Image
+          ImagePicker.openCropper({
+            cropperCircleOverlay: true,
+            mediaType: 'photo',
+            path: imageUrl,
+          }).then(setProfileImage);
+        });
       }
     },
-    [accountAddress, accountENS, asset, imageUrl, setProfileImage]
+    [accountAddress, accountENS, asset, imageUrl, navigate, setProfileImage]
   );
 
   const { colors } = useTheme();

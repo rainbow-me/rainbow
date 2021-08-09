@@ -48,6 +48,7 @@ export default () => {
 
   const setProfileImage = useCallback(
     (image: any) => {
+      if (!image) return;
       const stringIndex = image?.path.indexOf('/tmp');
       const newWallets = {
         ...wallets,
