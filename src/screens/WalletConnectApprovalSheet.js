@@ -285,7 +285,7 @@ export default function WalletConnectApprovalSheet() {
     <Sheet>
       {!Object.keys(meta).length ? (
         <Centered height={408}>
-          <LoadingSpinner size="large" />
+          <LoadingSpinner size={android ? 40 : 'large'} />
         </Centered>
       ) : (
         <Flex direction="column" height={408}>
@@ -329,7 +329,7 @@ export default function WalletConnectApprovalSheet() {
             </Row>
             <Divider color={colors.rowDividerLight} inset={[0, 84]} />
           </Centered>
-          <SheetActionButtonRow paddingBottom={30}>
+          <SheetActionButtonRow paddingBottom={android ? 20 : 30}>
             <SheetActionButton
               color={colors.white}
               label="Cancel"
@@ -347,15 +347,15 @@ export default function WalletConnectApprovalSheet() {
               weight="heavy"
             />
           </SheetActionButtonRow>
-          <SheetActionButtonRow
-            ignorePaddingTop
+          <Row
+            justify="space-between"
             paddingBottom={21}
-            paddingHorizontal={16.5}
+            paddingHorizontal={24}
           >
             <Column>
               <NetworkLabelText>Wallet</NetworkLabelText>
               <ButtonPressAnimation onPress={handlePressChangeWallet}>
-                <Row>
+                <Row align="center" marginTop={android ? -10 : 0}>
                   <AvatarWrapper>
                     {approvalAccountInfo.accountImage ? (
                       <ImageAvatar
@@ -396,7 +396,7 @@ export default function WalletConnectApprovalSheet() {
                 wrapNativeComponent={false}
               >
                 <ButtonPressAnimation>
-                  <Row>
+                  <Row marginTop={android ? -10 : 0}>
                     <Centered marginRight={5}>
                       <ChainLogo network={approvalNetworkInfo.value} />
                     </Centered>
@@ -414,7 +414,7 @@ export default function WalletConnectApprovalSheet() {
                 </ButtonPressAnimation>
               </NetworkSwitcherParent>
             </Column>
-          </SheetActionButtonRow>
+          </Row>
         </Flex>
       )}
     </Sheet>
