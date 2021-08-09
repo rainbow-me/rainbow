@@ -17,8 +17,8 @@ import useExperimentalFlag, {
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import {
   useAccountProfile,
+  useAvatarActions,
   useDimensions,
-  useOnAvatarPress,
   useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -102,7 +102,7 @@ export default function ProfileMasthead({
   } = useAccountProfile();
   const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
 
-  const { onAvatarPress } = useOnAvatarPress();
+  const { onAvatarPress } = useAvatarActions();
 
   const handlePressAvatar = useCallback(() => {
     recyclerListRef?.scrollToTop(true);

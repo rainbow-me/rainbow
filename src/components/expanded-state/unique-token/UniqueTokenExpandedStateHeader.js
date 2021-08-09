@@ -1,21 +1,16 @@
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { Linking, Share } from 'react-native';
+import ImagePicker from 'react-native-image-crop-picker';
 import styled from 'styled-components';
 import { buildUniqueTokenName } from '../../../helpers/assets';
 import Pill from '../../Pill';
 import { ContextCircleButton } from '../../context-menu';
 import { ColumnWithMargins, FlexItem, Row, RowWithMargins } from '../../layout';
 import { Text } from '../../text';
-import { useAccountProfile } from '@rainbow-me/hooks';
+import { useAccountProfile, useAvatarActions } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 import { buildRainbowUrl, magicMemo } from '@rainbow-me/utils';
-
-const contextButtonOptions = [
-  'Share',
-  'View on OpenSea',
-  ...(ios ? [lang.t('wallet.action.cancel')] : []),
-];
 
 const paddingHorizontal = 19;
 
@@ -37,6 +32,23 @@ const HeadingColumn = styled(ColumnWithMargins).attrs({
 
 const UniqueTokenExpandedStateHeader = ({ asset }) => {
   const { accountAddress, accountENS } = useAccountProfile();
+  const { setProfileImage, canNFTBeSetAsProfileImage } = useAvatarActions();
+  const canBeSetAsProfileImage = canNFTBeSetAsProfileImage(asset);
+
+  console.log('🌈 asset: ', asset);
+
+  const imageUrl =
+    asset.image_preview_url || asset.image_url || asset.image_original_url;
+
+  const contextButtonOptions = useMemo(
+    () => [
+      'Share',
+      'View on OpenSea',
+      ...(canBeSetAsProfileImage ? ['Set as Profile Image'] : []),
+      ...(ios ? [lang.t('wallet.action.cancel')] : []),
+    ],
+    [canBeSetAsProfileImage]
+  );
 
   const handleActionSheetPress = useCallback(
     buttonIndex => {
@@ -48,9 +60,16 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
       } else if (buttonIndex === 1) {
         // View on OpenSea
         Linking.openURL(asset.permalink);
+      } else if (buttonIndex === 2) {
+        // Set NFT as Profile Image
+        ImagePicker.openCropper({
+          cropperCircleOverlay: true,
+          mediaType: 'photo',
+          path: imageUrl,
+        }).then(setProfileImage);
       }
     },
-    [accountAddress, accountENS, asset]
+    [accountAddress, accountENS, asset, imageUrl, setProfileImage]
   );
 
   const { colors } = useTheme();

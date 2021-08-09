@@ -99,7 +99,7 @@ export { default as useWalletsWithBalancesAndNames } from './useWalletsWithBalan
 export { default as useWebData } from './useWebData';
 export { default as useWyreApplePay } from './useWyreApplePay';
 export { default as useForceUpdate } from './useForceUpdate';
-export { default as useOnAvatarPress } from './useOnAvatarPress';
+export { default as useAvatarActions } from './useAvatarActions';
 export { default as usePoolDetails } from './usePoolDetails';
 export { default as useAdditionalAssetData } from './useAdditionalAssetData';
 export { default as useTotalFeeEarnedPerAsset } from './useTotalFeeEarnedPerAsset';

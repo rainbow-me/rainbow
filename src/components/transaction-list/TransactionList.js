@@ -23,7 +23,7 @@ import {
 } from '@rainbow-me/helpers/validators';
 import {
   useAccountProfile,
-  useOnAvatarPress,
+  useAvatarActions,
   useSafeImageUri,
   useWallets,
 } from '@rainbow-me/hooks';
@@ -102,7 +102,7 @@ export default function TransactionList({
     onAvatarPickEmoji,
     onAvatarPress,
     onAvatarWebProfile,
-  } = useOnAvatarPress();
+  } = useAvatarActions();
 
   const onReceivePress = useCallback(() => {
     if (isDamaged) {

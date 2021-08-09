@@ -42,7 +42,11 @@ export default () => {
     await dispatch(walletsUpdate(newWallets));
   }, [dispatch, selectedWallet, accountAddress, wallets]);
 
-  const processPhoto = useCallback(
+  const canNFTBeSetAsProfileImage = useCallback((asset: any) => {
+    return !!asset;
+  }, []);
+
+  const setProfileImage = useCallback(
     (image: any) => {
       const stringIndex = image?.path.indexOf('/tmp');
       const newWallets = {
@@ -76,8 +80,8 @@ export default () => {
     ImagePicker.openPicker({
       cropperCircleOverlay: true,
       cropping: true,
-    }).then(processPhoto);
-  }, [processPhoto]);
+    }).then(setProfileImage);
+  }, [setProfileImage]);
 
   const onAvatarWebProfile = useCallback(() => {
     const rainbowURL = buildRainbowUrl(null, accountENS, accountAddress);
@@ -158,10 +162,12 @@ export default () => {
 
   return {
     avatarOptions,
+    canNFTBeSetAsProfileImage,
     onAvatarChooseImage,
     onAvatarPickEmoji,
     onAvatarPress,
     onAvatarRemovePhoto,
     onAvatarWebProfile,
+    setProfileImage,
   };
 };
