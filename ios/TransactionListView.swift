@@ -69,9 +69,9 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
             self.activelyWaitToPresentDiscoverSheetBack(controller: discoverSheeet)
           })
           
-        },for: .menuActionTriggered)
+         },for: .menuActionTriggered)
         
-      }
+       }
     }
   }
   @objc var isLoading: Bool = false {
