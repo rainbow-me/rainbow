@@ -43,6 +43,7 @@ import RainbowContextWrapper from './helpers/RainbowContext';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
+import { walletConnectInit } from './model/walletConnect';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
 import { requestsForTopic } from './redux/requests';
@@ -87,6 +88,10 @@ class App extends Component {
     }
     this.identifyFlow();
     AppState.addEventListener('change', this.handleAppStateChange);
+
+    // Wallet connect v2
+    walletConnectInit(store);
+
     await this.handleInitializeAnalytics();
     saveFCMToken();
     this.onTokenRefreshListener = registerTokenRefreshListener();
@@ -159,9 +164,7 @@ class App extends Component {
   }
 
   identifyFlow = async () => {
-    console.log('---- LOAD ADDREESS');
     const address = await loadAddress();
-    console.log('---- LOAD ADDREESS 11');
     if (address) {
       this.setState({ initialRoute: Routes.SWIPE_LAYOUT });
     } else {

@@ -416,13 +416,6 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
 };
 
 export const walletConnectLoadState = () => async (dispatch, getState) => {
-  // Wallet connect v2
-  const client = await walletConnectInit({ dispatch, getState });
-  dispatch({
-    payload: clone(client.session.values),
-    type: WALLETCONNECT_V2_INIT_SESSIONS,
-  });
-
   const { walletConnectors } = getState().walletconnect;
   let newWalletConnectors = {};
   try {
@@ -457,6 +450,13 @@ export const walletConnectLoadState = () => async (dispatch, getState) => {
       type: WALLETCONNECT_INIT_SESSIONS,
     });
   }
+};
+
+export const saveWalletConnectV2Sessions = client => dispatch => {
+  dispatch({
+    payload: clone(client.session.values),
+    type: WALLETCONNECT_V2_INIT_SESSIONS,
+  });
 };
 
 export const walletConnectV2UpdateSessions = sessions => async dispatch => {

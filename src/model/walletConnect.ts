@@ -12,7 +12,10 @@ import { delay } from '@rainbow-me/helpers/utilities';
 import walletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { addRequestToApproveV2 } from '@rainbow-me/redux/requests';
-import { RAINBOW_METADATA } from '@rainbow-me/redux/walletconnect';
+import {
+  RAINBOW_METADATA,
+  saveWalletConnectV2Sessions,
+} from '@rainbow-me/redux/walletconnect';
 import Routes from '@rainbow-me/routes';
 import { logger, watchingAlert } from '@rainbow-me/utils';
 
@@ -82,15 +85,15 @@ export const walletConnectInit = async (store: any) => {
     wcLogger('🚗 🚗 🚗  WC INIT', client);
     client = await WalletConnectClient.init({
       controller: true,
-      logger: 'debug',
+      logger: 'fatal',
       metadata: RAINBOW_METADATA,
       relayProvider: 'wss://relay.walletconnect.org',
       storageOptions: {
         asyncStorage: AsyncStorage as any,
       },
     });
-    wcLogger('🚗 🚗 🚗  WC INITIALIZED', client);
-    wcLogger('Client started!');
+    store.dispatch(saveWalletConnectV2Sessions(client));
+    wcLogger('Client started and saved!');
     client.on(
       CLIENT_EVENTS.session.proposal,
       async (proposal: SessionTypes.Proposal) => {
