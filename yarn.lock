@@ -3910,10 +3910,10 @@
   resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.5.1.tgz#d59ecfd7d6d405fd3ff0406dd2d015f2227752c4"
   integrity sha512-e3Tzy4NbNyM5yyLzKLNKRnMq4IZWjH0GsWQRNMl2WCSdssHPgSC4LQlxVtmMZt9NwceeGjmCZb4G25eD6hcbLA==
 
-"@walletconnect/types@^2.0.0-beta.17", "@walletconnect/types@npm:@walletconnect/types@2.0.0-beta.16":
-  version "2.0.0-beta.16"
-  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.0.0-beta.16.tgz#90afa38cdb105dad9064a6fb8a8232b93e384720"
-  integrity sha512-vvdKVUzkUbE0GXaHd8u0EAZLCuG6lVfj5ueUjPKVWSl5YZJMHfORqNfrDi2znVs4F4Kcw4wkkT1UycqMZ5MVew==
+"@walletconnect/types@^2.0.0-beta.17", "@walletconnect/types@npm:@walletconnect/types@2.0.0-beta.17", "@walletconnectv2/types@npm:@walletconnect/types@2.0.0-beta.17":
+  version "2.0.0-beta.17"
+  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.0.0-beta.17.tgz#9432b01aec32cb1847faea13de0ecc00c4e3c82a"
+  integrity sha512-YQjS9HqQSR6yztTarzeT9+DW5BTnDWBAlWedGGxiEdhuwV56FQJTZKnMjpM1f8yS5j0vBH/mSst65h7jS/65zQ==
   dependencies:
     "@walletconnect/jsonrpc-types" "^1.0.0"
     keyvaluestorage "^0.7.1"
@@ -3933,7 +3933,7 @@
     js-sha3 "0.8.0"
     query-string "6.13.5"
 
-"@walletconnect/utils@^2.0.0-beta.17":
+"@walletconnect/utils@^2.0.0-beta.17", "@walletconnect/utils@npm:@walletconnect/utils@2.0.0-beta.17", "@walletconnectv2/utils@npm:@walletconnect/utils@2.0.0-beta.17":
   version "2.0.0-beta.17"
   resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-2.0.0-beta.17.tgz#ac7fb9738c503b651ca84b10b27294a4f7c33322"
   integrity sha512-+1Yp1aymXDlrsVl/koDb0vt2XDwy71ERDxM81yqbLMTkAR8Y96aV+uVJS1tEVox72Eccj3QHb5JdgQYYJWp1MA==
@@ -3973,16 +3973,6 @@
     "@walletconnect/safe-json" "^1.0.0"
     "@walletconnect/types" "^2.0.0-beta.17"
     "@walletconnect/utils" "^2.0.0-beta.17"
-    keyvaluestorage "^0.7.1"
-    pino "^6.7.0"
-    pino-pretty "^4.3.0"
-
-"@walletconnectv2/types@npm:@walletconnect/types@2.0.0-beta.17":
-  version "2.0.0-beta.17"
-  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.0.0-beta.17.tgz#9432b01aec32cb1847faea13de0ecc00c4e3c82a"
-  integrity sha512-YQjS9HqQSR6yztTarzeT9+DW5BTnDWBAlWedGGxiEdhuwV56FQJTZKnMjpM1f8yS5j0vBH/mSst65h7jS/65zQ==
-  dependencies:
-    "@walletconnect/jsonrpc-types" "^1.0.0"
     keyvaluestorage "^0.7.1"
     pino "^6.7.0"
     pino-pretty "^4.3.0"

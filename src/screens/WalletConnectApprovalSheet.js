@@ -286,6 +286,15 @@ export default function WalletConnectApprovalSheet() {
     }
   }, [handleCancel, scam]);
 
+  useEffect(() => {
+    if (params?.chainId) {
+      const network = ethereumUtils.getNetworkFromChainId(
+        Number(params.chainId || 1)
+      );
+      setApprovalNetwork(network);
+    }
+  }, [params?.chainId]);
+
   const menuItems = useMemo(() => networksMenuItems(), []);
   const NetworkSwitcherParent =
     menuItems.length > 1 ? ContextMenuButton : React.Fragment;

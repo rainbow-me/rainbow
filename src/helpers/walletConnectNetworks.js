@@ -2,7 +2,7 @@ import networkInfo from './networkInfo';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const androidNetworkActions = Object.values(networkInfo)
-  .filter(({ disabled }) => !disabled)
+  .filter(({ disabled, testnet }) => !disabled && !testnet)
   .map(netInfo => netInfo.name);
 
 const androidReverseNetworkWithName = name =>

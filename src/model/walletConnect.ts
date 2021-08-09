@@ -41,7 +41,10 @@ const SUPPORTED_MAIN_CHAINS = [
 const SUPPORTED_TEST_CHAINS = ['eip155:3', 'eip155:4', 'eip155:5', 'eip155:42'];
 
 const toEIP55Format = (chainId: string | number) => `eip155:${chainId}`;
-export const fromEIP55Format = (chain: string) => chain?.replace('eip155:', '');
+export const fromEIP55Format = (chain: string) => {
+  const [, chainId] = chain?.split(':');
+  return chainId;
+};
 
 const generateWalletConnectAccount = (address: string, chain: string) => {
   wcLogger('generateWalletConnectAccount', `${chain}:${address}`);
@@ -87,7 +90,6 @@ export const walletConnectInit = async (store: any) => {
       },
     });
     wcLogger('🚗 🚗 🚗  WC INITIALIZED', client);
-
     wcLogger('Client started!');
     client.on(
       CLIENT_EVENTS.session.proposal,
@@ -115,7 +117,6 @@ export const walletConnectInit = async (store: any) => {
             return;
           }
           wcTrack('Showing Walletconnect session request', metadata);
-          wcLogger('CLIENT_EVENTS.session.proposal 3');
 
           Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
             callback: async (
@@ -134,6 +135,7 @@ export const walletConnectInit = async (store: any) => {
                     accounts: [walletConnectAccount],
                   },
                 };
+                wcLogger('approve  connection', walletConnectAccount);
                 wcTrack('Approved new WalletConnect session', metadata);
                 walletConnectV2HandleAction('connect');
                 await client.approve({ proposal, response });
@@ -317,6 +319,8 @@ export const walletConnectUpdateSessionByTopic = async (
   const session = sessions?.find(value => topic === value?.topic);
   const eip55ChainId = toEIP55Format(newChainId);
   const newAccount = generateWalletConnectAccount(address, newChainId);
+  wcLogger('walletConnectUpdateSessionByTopic', eip55ChainId);
+  wcLogger('walletConnectUpdateSessionByTopic', newAccount);
   session.permissions = {
     ...session.permissions,
     blockchain: {
