@@ -57,6 +57,7 @@ const isSupportedChain = (chain: string) =>
 export const getAddressAndChainIdFromWCAccount = (
   account: string
 ): { address: string; chainId: number } => {
+  wcLogger('getAddressAndChainIdFromWCAccount', account);
   const [, chainId, address] = account.split(':');
   return { address, chainId: Number(chainId) };
 };
@@ -309,12 +310,11 @@ export const walletConnectDisconnectAllSessions = async () => {
 
 export const walletConnectUpdateSessionByTopic = async (
   topic: string,
-  newAccountAddress: string,
+  address: string,
   newChainId: string
 ) => {
   const sessions = client?.session?.values;
   const session = sessions?.find(value => topic === value?.topic);
-  const { address } = getAddressAndChainIdFromWCAccount(newAccountAddress);
   const eip55ChainId = toEIP55Format(newChainId);
   const newAccount = generateWalletConnectAccount(address, newChainId);
   session.permissions = {
