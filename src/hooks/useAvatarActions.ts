@@ -95,6 +95,7 @@ export default () => {
       'Choose from Library',
       ...(!accountImage ? ['Pick an Emoji'] : []),
       ...(accountImage ? ['Remove Photo'] : []),
+      'View Web Profile',
       ...(ios ? ['Cancel'] : []),
     ];
 
@@ -116,6 +117,8 @@ export default () => {
           if (accountImage) {
             onAvatarRemovePhoto();
           }
+        } else if (buttonIndex === 2) {
+          onAvatarWebProfile();
         }
       }
     );
@@ -124,6 +127,7 @@ export default () => {
     onAvatarChooseImage,
     onAvatarPickEmoji,
     onAvatarRemovePhoto,
+    onAvatarWebProfile,
   ]);
 
   const avatarOptions = useMemo(
