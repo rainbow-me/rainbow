@@ -103,7 +103,7 @@ export default () => {
       {
         cancelButtonIndex: avatarActionSheetOptions.length - 1,
         destructiveButtonIndex: accountImage
-          ? avatarActionSheetOptions.length - 2
+          ? avatarActionSheetOptions.length - 3
           : undefined,
         options: avatarActionSheetOptions,
       },

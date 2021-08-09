@@ -35,8 +35,6 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
   const { setProfileImage, canNFTBeSetAsProfileImage } = useAvatarActions();
   const canBeSetAsProfileImage = canNFTBeSetAsProfileImage(asset);
 
-  console.log('🌈 asset: ', asset);
-
   const imageUrl =
     asset.image_preview_url || asset.image_url || asset.image_original_url;
 
