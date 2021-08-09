@@ -71,7 +71,7 @@ export const androidShowNetworksActionSheet = callback => {
       title: `Available Networks`,
     },
     idx => {
-      if (idx) {
+      if (idx !== undefined) {
         const { value } = androidReverseNetworkWithName(
           androidNetworkActions[idx]
         );
