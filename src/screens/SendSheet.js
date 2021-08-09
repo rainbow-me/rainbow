@@ -104,6 +104,7 @@ export default function SendSheet(props) {
   const { allAssets } = useAccountAssets();
   const {
     gasLimit,
+    gasPrices,
     isSufficientGas,
     prevSelectedGasPrice,
     selectedGasPrice,
@@ -676,7 +677,22 @@ export default function SendSheet(props) {
   }, [checkAddress]);
 
   useEffect(() => {
-    if (isValidAddress && !isEmpty(selected) && currentNetwork) {
+    if (!currentProvider?._network?.chainId) return;
+    const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
+      currentProvider._network.chainId
+    );
+    const assetNetwork =
+      selected?.type === AssetType.token || selected?.type === AssetType.nft
+        ? network
+        : selected.type;
+
+    if (
+      assetNetwork === currentNetwork &&
+      currentProviderNetwork === currentNetwork &&
+      isValidAddress &&
+      !isEmpty(selected) &&
+      !isEmpty(gasPrices)
+    ) {
       estimateGasLimit(
         {
           address: accountAddress,
@@ -705,6 +721,8 @@ export default function SendSheet(props) {
     selected,
     toAddress,
     updateTxFee,
+    network,
+    gasPrices,
   ]);
 
   return (

@@ -207,7 +207,6 @@ export default function SendConfirmationSheet() {
         if (toLower(tx.to) === toLower(toAddress)) {
           sends++;
           if (tx.network === network) {
-            logger.debug('FOUND one!');
             sendsCurrentNetwork++;
           }
         }

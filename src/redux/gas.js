@@ -302,6 +302,7 @@ export const gasUpdateTxFee = (gasLimit, overrideGasOption, network) => (
   if (network === networkTypes.polygon) {
     nativeTokenPriceUnit = ethereumUtils.getMaticPriceUnit();
   }
+
   const txFees = parseTxFees(
     gasPrices,
     nativeTokenPriceUnit,

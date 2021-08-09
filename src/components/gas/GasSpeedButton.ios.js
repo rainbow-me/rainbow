@@ -158,6 +158,7 @@ const GasSpeedButton = ({
   // (and leave the number only!)
   // which gets added later in the formatGasPrice function
   const price = (isNil(gasPrice) ? '0.00' : gasPrice)
+    .replace(',', '') // In case gas price is > 1k!
     .replace(nativeCurrencySymbol, '')
     .trim();
 
