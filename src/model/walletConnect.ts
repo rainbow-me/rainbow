@@ -43,8 +43,10 @@ const SUPPORTED_TEST_CHAINS = ['eip155:3', 'eip155:4', 'eip155:5', 'eip155:42'];
 const toEIP55Format = (chainId: string | number) => `eip155:${chainId}`;
 export const fromEIP55Format = (chain: string) => chain?.replace('eip155:', '');
 
-const generateWalletConnectAccount = (address: string, chain: string) =>
-  `${address}@${chain}`;
+const generateWalletConnectAccount = (address: string, chain: string) => {
+  wcLogger('generateWalletConnectAccount', `${chain}:${address}`);
+  return `eip155:${chain}:${address}`;
+};
 
 const isSupportedChain = (chain: string) =>
   SUPPORTED_MAIN_CHAINS.includes(chain) ||
@@ -55,8 +57,7 @@ const isSupportedChain = (chain: string) =>
 export const getAddressAndChainIdFromWCAccount = (
   account: string
 ): { address: string; chainId: number } => {
-  const [address, eip155Network] = account.split('@');
-  const chainId = fromEIP55Format(eip155Network);
+  const [, chainId, address] = account.split(':');
   return { address, chainId: Number(chainId) };
 };
 
@@ -122,10 +123,9 @@ export const walletConnectInit = async (store: any) => {
               accountAddress: string
             ) => {
               if (approved) {
-                const chain = toEIP55Format(chainId);
                 const walletConnectAccount = generateWalletConnectAccount(
                   accountAddress,
-                  chain
+                  chainId
                 );
                 const response: SessionTypes.Response = {
                   metadata: RAINBOW_METADATA,
@@ -316,7 +316,7 @@ export const walletConnectUpdateSessionByTopic = async (
   const session = sessions?.find(value => topic === value?.topic);
   const { address } = getAddressAndChainIdFromWCAccount(newAccountAddress);
   const eip55ChainId = toEIP55Format(newChainId);
-  const newAccount = generateWalletConnectAccount(address, eip55ChainId);
+  const newAccount = generateWalletConnectAccount(address, newChainId);
   session.permissions = {
     ...session.permissions,
     blockchain: {
