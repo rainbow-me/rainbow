@@ -421,9 +421,9 @@ function RecyclerAssetList({
 
   const onScroll = useCallback(
     (e: unknown, f: unknown, offsetY: number) => {
-      isCoinListEdited && checkEditStickyHeader(offsetY);
+      checkEditStickyHeader(offsetY);
     },
-    [isCoinListEdited, checkEditStickyHeader]
+    [checkEditStickyHeader]
   );
 
   const rowRenderer = React.useCallback(
