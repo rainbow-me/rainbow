@@ -95,7 +95,14 @@ export default function TransactionList({
     });
   }, [navigate, isDamaged]);
 
-  const onAvatarPress = useOnAvatarPress();
+  const {
+    avatarOptions,
+    onAvatarChooseImage,
+    onAvatarRemovePhoto,
+    onAvatarPickEmoji,
+    onAvatarPress,
+    onAvatarWebProfile,
+  } = useOnAvatarPress();
 
   const onReceivePress = useCallback(() => {
     if (isDamaged) {
@@ -275,6 +282,34 @@ export default function TransactionList({
   const safeAccountImage = useSafeImageUri(accountImage);
   const { isDarkMode, colors } = useTheme();
 
+  const onNativeAvatarMenuSelect = useCallback(
+    e => {
+      const { selection } = e.nativeEvent;
+      switch (selection) {
+        case 'newimage':
+          onAvatarChooseImage();
+          break;
+        case 'newemoji':
+          onAvatarPickEmoji();
+          break;
+        case 'removeimage':
+          onAvatarRemovePhoto();
+          break;
+        case 'webprofile':
+          onAvatarWebProfile();
+          break;
+        default:
+          break;
+      }
+    },
+    [
+      onAvatarChooseImage,
+      onAvatarPickEmoji,
+      onAvatarRemovePhoto,
+      onAvatarWebProfile,
+    ]
+  );
+
   return (
     <Container>
       <Container
@@ -284,6 +319,7 @@ export default function TransactionList({
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}
+        avatarOptions={avatarOptions}
         darkMode={isDarkMode}
         data={data}
         isAvatarPickerAvailable={isAvatarPickerAvailable}
@@ -292,6 +328,7 @@ export default function TransactionList({
         onAddCashPress={onAddCashPress}
         onAvatarPress={onAvatarPress}
         onCopyAddressPress={onCopyAddressPress}
+        onNativeAvatarMenuSelect={onNativeAvatarMenuSelect}
         onReceivePress={onReceivePress}
         onRequestExpire={onRequestExpire}
         onRequestPress={onRequestPress}
