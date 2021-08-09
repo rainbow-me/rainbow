@@ -6,6 +6,7 @@ import { PERMISSIONS, request } from 'react-native-permissions';
 import URL from 'url-parse';
 import { Alert } from '../components/alerts';
 import { checkPushNotificationPermissions } from '../model/firebase';
+import { walletConnectPair } from '../model/walletConnect';
 import { useNavigation } from '../navigation/Navigation';
 import usePrevious from './usePrevious';
 import useWalletConnectConnections from './useWalletConnectConnections';
@@ -130,13 +131,21 @@ export default function useScanner(enabled) {
       analytics.track('Scanned WalletConnect QR code');
       await checkPushNotificationPermissions();
 
-      try {
-        await walletConnectOnSessionRequest(qrCodeData, () => {
-          setTimeout(enableScanning, 2000);
-        });
-      } catch (e) {
-        logger.log('walletConnectOnSessionRequest exception', e);
-        setTimeout(enableScanning, 2000);
+      const { query, pathname } = new URL(qrCodeData);
+      if (qrCodeData && query) {
+        const [, version] = pathname.split('@');
+        if (version === '2') {
+          walletConnectPair(qrCodeData);
+        } else {
+          try {
+            await walletConnectOnSessionRequest(qrCodeData, () => {
+              setTimeout(enableScanning, 2000);
+            });
+          } catch (e) {
+            logger.log('walletConnectOnSessionRequest exception', e);
+            setTimeout(enableScanning, 2000);
+          }
+        }
       }
     },
     [enableScanning, walletConnectOnSessionRequest]

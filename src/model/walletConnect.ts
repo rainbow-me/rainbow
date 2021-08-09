@@ -319,8 +319,6 @@ export const walletConnectUpdateSessionByTopic = async (
   const session = sessions?.find(value => topic === value?.topic);
   const eip55ChainId = toEIP55Format(newChainId);
   const newAccount = generateWalletConnectAccount(address, newChainId);
-  wcLogger('walletConnectUpdateSessionByTopic', eip55ChainId);
-  wcLogger('walletConnectUpdateSessionByTopic', newAccount);
   session.permissions = {
     ...session.permissions,
     blockchain: {
