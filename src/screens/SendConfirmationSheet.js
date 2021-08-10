@@ -181,7 +181,14 @@ export default function SendConfirmationSheet() {
     params: { asset, amountDetails, callback, isNft, network, to, toAddress },
   } = useRoute();
 
-  const [alreadySentTransactions, setAlreadySentTransactions] = useState(0);
+  const [
+    alreadySentTransactionsTotal,
+    setAlreadySentTransactionsTotal,
+  ] = useState(0);
+  const [
+    alreadySentTransactionsCurrentNetwork,
+    setAlreadySentTransactionsCurrentNetwork,
+  ] = useState(0);
 
   const { transactions } = useAccountTransactions(true, true);
   const { userAccounts } = useUserAccounts();
@@ -195,21 +202,23 @@ export default function SendConfirmationSheet() {
   useEffect(() => {
     if (!isSendingToUserAccount) {
       let sends = 0;
+      let sendsCurrentNetwork = 0;
       transactions.forEach(tx => {
         if (toLower(tx.to) === toLower(toAddress)) {
           sends++;
+          if (tx.network === network) {
+            sendsCurrentNetwork++;
+          }
         }
       });
       if (sends > 0) {
-        setAlreadySentTransactions(sends);
+        setAlreadySentTransactionsTotal(sends);
+        if (sendsCurrentNetwork > 0) {
+          setAlreadySentTransactionsCurrentNetwork(sendsCurrentNetwork);
+        }
       }
     }
-  }, [
-    isSendingToUserAccount,
-    setAlreadySentTransactions,
-    toAddress,
-    transactions,
-  ]);
+  }, [isSendingToUserAccount, network, toAddress, transactions]);
 
   const contact = useMemo(() => {
     return get(contacts, `${[toLower(to)]}`);
@@ -259,7 +268,9 @@ export default function SendConfirmationSheet() {
   }, [network]);
 
   const shouldShowChecks =
-    isL2 && !isSendingToUserAccount && alreadySentTransactions < 3;
+    isL2 &&
+    !isSendingToUserAccount &&
+    alreadySentTransactionsCurrentNetwork < 3;
 
   useEffect(() => {
     setParams({ shouldShowChecks });
@@ -447,9 +458,9 @@ export default function SendConfirmationSheet() {
                   >
                     {isSendingToUserAccount
                       ? `You own this wallet`
-                      : alreadySentTransactions === 0
+                      : alreadySentTransactionsTotal === 0
                       ? `First time send`
-                      : `${alreadySentTransactions} previous sends`}
+                      : `${alreadySentTransactionsTotal} previous sends`}
                   </Text>
                 </Row>
               </Column>

@@ -133,12 +133,15 @@ export default function useChartThrottledPoints({
   // Only show the chart if we have chart data, or if chart data is still loading
   const showChart = useMemo(
     () =>
-      (nativeCurrency !== 'ETH' || asset?.address !== ETH_ADDRESS) &&
+      (nativeCurrency !== 'ETH' ||
+        (asset?.mainnet_address !== ETH_ADDRESS &&
+          asset?.address !== ETH_ADDRESS)) &&
       (throttledPoints?.points.length > 5 ||
         throttledPoints?.points.length > 5 ||
         (fetchingCharts && !isFetchingInitially)),
     [
       asset?.address,
+      asset?.mainnet_address,
       fetchingCharts,
       isFetchingInitially,
       nativeCurrency,

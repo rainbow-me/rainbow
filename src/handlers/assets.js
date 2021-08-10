@@ -6,7 +6,6 @@ import {
   erc20ABI,
   ETH_ADDRESS,
   MATIC_POLYGON_ADDRESS,
-  OPTIMISM_ETH_ADDRESS,
 } from '@rainbow-me/references';
 import {
   convertAmountToBalanceDisplay,
@@ -18,7 +17,6 @@ const nativeAssetsPerNetwork = {
   [networkTypes.goerli]: ETH_ADDRESS,
   [networkTypes.kovan]: ETH_ADDRESS,
   [networkTypes.mainnet]: ETH_ADDRESS,
-  [networkTypes.optimism]: OPTIMISM_ETH_ADDRESS,
   [networkTypes.polygon]: MATIC_POLYGON_ADDRESS,
   [networkTypes.ropsten]: ETH_ADDRESS,
 };
@@ -35,11 +33,7 @@ export async function getOnchainAssetBalance(
 ) {
   // Check if it's the native chain asset
   if (isNativeAsset(address, network)) {
-    return getOnchainNativeAssetBalance(
-      { address, decimals, symbol },
-      userAddress,
-      provider
-    );
+    return getOnchainNativeAssetBalance({ decimals }, userAddress, provider);
   }
   return getOnchainTokenBalance(
     { address, decimals, symbol },
@@ -76,7 +70,7 @@ async function getOnchainTokenBalance(
 }
 
 async function getOnchainNativeAssetBalance(
-  { address, decimals, symbol },
+  { decimals },
   userAddress,
   provider
 ) {
@@ -87,9 +81,7 @@ async function getOnchainNativeAssetBalance(
       decimals
     );
     const displayBalance = convertAmountToBalanceDisplay(tokenBalance, {
-      address,
       decimals,
-      symbol,
     });
 
     return {

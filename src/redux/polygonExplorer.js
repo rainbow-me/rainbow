@@ -272,7 +272,6 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
     );
 
     if (assets === null) {
-      logger.debug('COVALENT FAILED, FALLING BACK');
       fetchAssetsBalancesAndPricesFallback();
       return;
     }

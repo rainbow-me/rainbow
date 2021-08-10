@@ -40,6 +40,7 @@ const GAS_PRICES_DEFAULT = 'gas/GAS_PRICES_DEFAULT';
 const GAS_PRICES_SUCCESS = 'gas/GAS_PRICES_SUCCESS';
 const GAS_PRICES_FAILURE = 'gas/GAS_PRICES_FAILURE';
 
+const GAS_PRICES_RESET = 'gas/GAS_PRICES_RESET';
 const GAS_UPDATE_TX_FEE = 'gas/GAS_UPDATE_TX_FEE';
 const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
 
@@ -94,23 +95,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   dispatch,
   getState
 ) => {
-  const { gasPrices } = getState().gas;
-
-  const { fallbackGasPrices, selectedGasPrice, txFees } = dispatch(
-    getDefaultTxFees()
-  );
-  // We only set the default if we don't have any price
-  // The previous price will be always more accurate than our default values!
-  if (isEmpty(gasPrices)) {
-    dispatch({
-      payload: {
-        gasPrices: fallbackGasPrices,
-        selectedGasPrice,
-        txFees,
-      },
-      type: GAS_PRICES_DEFAULT,
-    });
-  }
+  dispatch(gasPricesStopPolling());
 
   const getPolygonGasPrices = async () => {
     const { data: maticGasStationPrices } = await maticGasStationGetGasPrices();
@@ -127,14 +112,15 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
     const baseGasPrice = await provider.getGasPrice();
     const baseGasPriceGwei = weiToGwei(baseGasPrice.toString());
 
-    // Add 20% buffer suggested by the Arbitrum team
-    const fastGasPriceWithBuffer = multiply(baseGasPriceGwei, '1.2');
+    // Node price is super inflated (50%+)
+    const fastGasPriceAdjusted = multiply(baseGasPriceGwei, '0.7');
     // Their node adds 10% buffer so -9.9% it's the safe low
-    const safeLowGasPriceWithBuffer = multiply(baseGasPriceGwei, '0.91');
+    const normalGasPriceAdjusted = multiply(baseGasPriceGwei, '0.5');
+    const safeLowGasPriceWithBuffer = multiply(baseGasPriceGwei, '0.4');
     const priceData = {
-      average: Number(baseGasPriceGwei),
+      average: Number(normalGasPriceAdjusted),
       avgWait: 0.5,
-      fast: Number(fastGasPriceWithBuffer),
+      fast: Number(fastGasPriceAdjusted),
       fastWait: 0.2,
       safeLow: Number(safeLowGasPriceWithBuffer),
       safeLowWait: 1,
@@ -214,6 +200,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
 
         fetchResolve(true);
       } catch (error) {
+        const { fallbackGasPrices } = dispatch(getDefaultTxFees());
         captureException(new Error('all gas estimates failed'));
         logger.sentry('gas estimates error', error);
         dispatch({
@@ -225,13 +212,14 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
     });
 
   const watchGasPrices = async network => {
-    gasPricesHandle && clearTimeout(gasPricesHandle);
     try {
       await getGasPrices(network);
       // eslint-disable-next-line no-empty
     } catch (e) {
     } finally {
-      gasPricesHandle = setTimeout(watchGasPrices, 15000); // 15 secs
+      gasPricesHandle = setTimeout(() => {
+        watchGasPrices(network);
+      }, 15000); // 15 secs
     }
   };
 
@@ -314,6 +302,7 @@ export const gasUpdateTxFee = (gasLimit, overrideGasOption, network) => (
   if (network === networkTypes.polygon) {
     nativeTokenPriceUnit = ethereumUtils.getMaticPriceUnit();
   }
+
   const txFees = parseTxFees(
     gasPrices,
     nativeTokenPriceUnit,
@@ -398,8 +387,11 @@ const bumpGasPrices = data => {
   return processedData;
 };
 
-export const gasPricesStopPolling = () => () => {
+export const gasPricesStopPolling = () => dispatch => {
   gasPricesHandle && clearTimeout(gasPricesHandle);
+  dispatch({
+    type: GAS_PRICES_RESET,
+  });
 };
 
 // -- Reducer --------------------------------------------------------------- //
@@ -452,6 +444,8 @@ export default (state = INITIAL_STATE, action) => {
         selectedGasPrice: action.payload.selectedGasPrice,
         selectedGasPriceOption: action.payload.selectedGasPriceOption,
       };
+    case GAS_PRICES_RESET:
+      return INITIAL_STATE;
     default:
       return state;
   }
