@@ -136,7 +136,7 @@ export default function SettingsSection({
   const isReviewAvailable = false;
   const { wallets, isReadOnlyWallet } = useWallets();
   const { /*language,*/ nativeCurrency, network } = useAccountSettings();
-  const { isTinyPhone } = useDimensions();
+  const { isSmallPhone } = useDimensions();
 
   const { colors, isDarkMode, setTheme, colorScheme } = useTheme();
 
@@ -192,8 +192,8 @@ export default function SettingsSection({
   return (
     <Container backgroundColor={colors.white}>
       <ScrollContainer
-        contentContainerStyle={!isTinyPhone && scrollContainerStyle}
-        scrollEnabled={isTinyPhone}
+        contentContainerStyle={!isSmallPhone && scrollContainerStyle}
+        scrollEnabled={isSmallPhone}
       >
         <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
           {canBeBackedUp && (
