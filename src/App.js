@@ -37,6 +37,7 @@ import {
 import { MainThemeProvider } from './context/ThemeContext';
 import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
+import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
 import RainbowContextWrapper from './helpers/RainbowContext';
@@ -45,6 +46,7 @@ import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
+import { explorerInit } from './redux/explorer';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
@@ -87,6 +89,8 @@ class App extends Component {
     }
     this.identifyFlow();
     AppState.addEventListener('change', this.handleAppStateChange);
+    // This is our custom event so we need to access it via ._emitter
+    appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
     await this.handleInitializeAnalytics();
     saveFCMToken();
     this.onTokenRefreshListener = registerTokenRefreshListener();
@@ -230,6 +234,14 @@ class App extends Component {
 
   handleNavigatorRef = navigatorRef =>
     Navigation.setTopLevelNavigator(navigatorRef);
+
+  handleTransactionConfirmed = () => {
+    logger.log('Reloading all data from zerion in 5!');
+    setTimeout(() => {
+      logger.log('Reloading all data from zerion NOW!');
+      store.dispatch(explorerInit());
+    }, 5000);
+  };
 
   render = () => (
     <MainThemeProvider>

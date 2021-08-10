@@ -26,7 +26,7 @@ import {
 } from '../apollo/queries';
 /* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
-/* eslint-disable-next-line import/no-cycle */
+// eslint-disable-next-line import/no-cycle
 import { uniqueTokensRefreshState } from './uniqueTokens';
 /* eslint-disable-next-line import/no-cycle */
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
@@ -36,6 +36,7 @@ import {
   TransactionStatusTypes,
   TransactionTypes,
 } from '@rainbow-me/entities';
+import appEvents from '@rainbow-me/handlers/appEvents';
 import { isL2Asset } from '@rainbow-me/handlers/assets';
 import {
   getAssetPricesFromUniswap,
@@ -778,6 +779,7 @@ export const dataWatchPendingTransactions = (
           // When speeding up a non "normal tx" we need to resubscribe
           // because zerion "append" event isn't reliable
           logger.log('TX CONFIRMED!', txObj);
+          appEvents.emit('transactionConfirmed', txObj);
           if (cb) {
             logger.log('executing cb', cb);
             cb(tx);
