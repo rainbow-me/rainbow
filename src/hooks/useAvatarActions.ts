@@ -43,7 +43,11 @@ export default () => {
   }, [dispatch, selectedWallet, accountAddress, wallets]);
 
   const canNFTBeSetAsProfileImage = useCallback((asset: any) => {
-    return !!asset;
+    return !!(
+      asset.image_preview_url ||
+      asset.image_url ||
+      asset.image_original_url
+    );
   }, []);
 
   const setProfileImage = useCallback(
@@ -94,7 +98,7 @@ export default () => {
   const onAvatarPress = useCallback(() => {
     const avatarActionSheetOptions = [
       'Choose from Library',
-      'Pick an NFT',
+      'Pick a Collectible',
       ...(!accountImage ? ['Pick an Emoji'] : []),
       ...(accountImage ? ['Remove Photo'] : []),
       'View Web Profile',

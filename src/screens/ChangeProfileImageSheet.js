@@ -1,149 +1,123 @@
-import { useRoute } from '@react-navigation/native';
-import axios from 'axios';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { Alert, InteractionManager, StatusBar } from 'react-native';
+import ImagePicker from 'react-native-image-crop-picker';
+import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
-import ActivityIndicator from '../components/ActivityIndicator';
+import TouchableBackdrop from '../components/TouchableBackdrop';
 import { AssetList } from '../components/asset-list';
+import { Centered } from '../components/layout';
+import { SheetTitle, SlackSheet } from '../components/sheet';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
-import { PREFS_ENDPOINT } from '../model/preferences';
+import { useTheme } from '../context/ThemeContext';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
-import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
-import { buildUniqueTokenList } from '@rainbow-me/helpers/assets';
-import { tokenFamilyItem } from '@rainbow-me/helpers/buildWalletSections';
-import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
-import { removeShowcase } from '@rainbow-me/redux/openStateSettings';
-import { fetchUniqueTokens } from '@rainbow-me/redux/uniqueTokens';
+import {
+  useAccountProfile,
+  useAccountSettings,
+  useAvatarActions,
+  useDimensions,
+  useWallets,
+  useWalletSectionsData,
+} from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { position } from '@rainbow-me/styles';
 
-async function fetchShowcaseForAddress(address) {
-  const response = await axios({
-    method: 'get',
-    params: {
-      address,
-    },
-    url: `${PREFS_ENDPOINT}/address`,
-  });
-  return response.data;
-}
-
-const Wrapper = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.white};
-  border-top-left-radius: 15;
-  border-top-right-radius: 15;
-  height: 100%;
-  overflow: hidden;
-`;
-
-const LoadingWrapper = styled.View`
-  align-items: center;
-  height: 100%;
-  justify-content: center;
-  width: 100%;
+const Container = styled(Centered).attrs({
+  direction: 'column',
+})`
+  ${position.cover};
+  ${({ deviceHeight, height }) =>
+    height ? `height: ${height + deviceHeight}` : null};
 `;
 
 export default function ChangeProfileImageSheet() {
-  const { params: { address: addressOrDomain } = {} } = useRoute();
-
-  const [userData, setUserData] = useState(null);
-  const [accountAddress, setAcccountAddress] = useState(null);
-  const dispatch = useDispatch();
-  const { isReadOnlyWallet } = useWallets();
-
-  useEffect(() => {
-    const init = async () => {
-      const address = await resolveNameOrAddress(addressOrDomain);
-      setAcccountAddress(address?.toLowerCase());
-    };
-    init();
-  }, [addressOrDomain]);
-
-  useEffect(() => {
-    dispatch(removeShowcase);
-  }, [dispatch]);
-
-  useEffect(() => {
-    accountAddress && dispatch(fetchUniqueTokens(accountAddress));
-  }, [dispatch, accountAddress]);
-
-  useEffect(() => {
-    async function fetchShowcase() {
-      const userData = await fetchShowcaseForAddress(accountAddress);
-      setUserData(userData);
-    }
-    accountAddress && fetchShowcase();
-  }, [accountAddress]);
-
+  const { accountAddress } = useAccountProfile();
+  const { setProfileImage } = useAvatarActions();
   const { network } = useAccountSettings();
-
-  const uniqueTokensShowcase = useSelector(
-    state => state.uniqueTokens.uniqueTokensShowcase
-  );
-
-  const uniqueTokensShowcaseLoading = useSelector(
-    state => state.uniqueTokens.fetchingUniqueTokensShowcase
-  );
+  const { goBack } = useNavigation();
 
   const { layout } = useContext(ModalContext) || {};
-
-  const sections = useMemo(
-    () => [
-      {
-        collectibles: true,
-        data: buildUniqueTokenList(
-          uniqueTokensShowcase,
-          userData?.data?.showcase?.ids ?? []
-        ),
-        header: {
-          title: '',
-          totalItems: uniqueTokensShowcase.length,
-          totalValue: '',
-        },
-        name: 'collectibles',
-        renderItem: item =>
-          tokenFamilyItem({ ...item, external: true, showcase: true }),
-        type: 'big',
-      },
-    ],
-    [uniqueTokensShowcase, userData?.data?.showcase?.ids]
+  const handleCollectiblePress = useCallback(
+    asset => {
+      const imageUrl =
+        asset.image_preview_url || asset.image_url || asset.image_original_url;
+      if (imageUrl) {
+        InteractionManager.runAfterInteractions(() => {
+          // Set NFT as Profile Image
+          ImagePicker.openCropper({
+            cropperCircleOverlay: true,
+            mediaType: 'photo',
+            path: imageUrl,
+          })
+            .then(setProfileImage)
+            .then(goBack);
+        });
+      } else {
+        Alert.alert(
+          'No Image Available',
+          'This collectible does not have an image file that we can use for your profile.'
+        );
+      }
+    },
+    [goBack, setProfileImage]
   );
 
   const contextValue = useMemo(
     () => ({
-      ...userData,
       address: accountAddress,
-      addressOrDomain,
+      customHandleCollectiblePress: handleCollectiblePress,
     }),
-    [addressOrDomain, accountAddress, userData]
+    [accountAddress, handleCollectiblePress]
   );
 
-  const loading = userData === null || uniqueTokensShowcaseLoading;
+  const { sections } = useWalletSectionsData();
+  const { isReadOnlyWallet } = useWallets();
+  const { isDarkMode } = useTheme();
+  const insets = useSafeArea();
+  const [collectiblesSection, setCollectiblesSection] = useState([]);
+  useEffect(() => {
+    if (sections) {
+      const collectibles = sections.filter(sec => sec.collectibles);
+      if (collectibles) {
+        setCollectiblesSection(collectibles);
+      }
+    }
+  }, [sections]);
 
   useEffect(() => {
     setTimeout(() => layout?.(), 300);
-  }, [layout, sections, loading]);
+  }, [layout, sections]);
+
+  const { height: deviceHeight } = useDimensions();
 
   return (
-    <Wrapper>
-      <ShowcaseContext.Provider value={contextValue}>
-        {loading ? (
-          <LoadingWrapper>
-            <ActivityIndicator />
-          </LoadingWrapper>
-        ) : (
+    <Container deviceHeight={deviceHeight} insets={insets}>
+      {ios && !isDarkMode && <StatusBar barStyle="light-content" />}
+      {ios && <TouchableBackdrop onPress={goBack} />}
+      <SlackSheet
+        additionalTopPadding={android}
+        contentHeight={deviceHeight}
+        scrollEnabled
+        {...(ios
+          ? { height: '100%' }
+          : { additionalTopPadding: true, contentHeight: deviceHeight - 80 })}
+      >
+        <Centered>
+          <SheetTitle>Select</SheetTitle>
+        </Centered>
+        <ShowcaseContext.Provider value={contextValue}>
           <AssetList
             disableAutoScrolling
             disableRefreshControl
             disableStickyHeaders
-            hideHeader={false}
+            hideHeader
             isReadOnlyWallet={isReadOnlyWallet}
             isWalletEthZero={false}
             network={network}
             openFamilies
-            sections={sections}
-            showcase
+            sections={collectiblesSection}
           />
-        )}
-      </ShowcaseContext.Provider>
-    </Wrapper>
+        </ShowcaseContext.Provider>
+      </SlackSheet>
+    </Container>
   );
 }

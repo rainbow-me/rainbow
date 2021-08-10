@@ -60,19 +60,28 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
       } else if (buttonIndex === 1) {
         // View on OpenSea
         Linking.openURL(asset.permalink);
-      } else if (buttonIndex === 2) {
-        navigate(Routes.PROFILE_SCREEN);
+      } else if (buttonIndex === 2 && canBeSetAsProfileImage) {
         InteractionManager.runAfterInteractions(() => {
           // Set NFT as Profile Image
           ImagePicker.openCropper({
             cropperCircleOverlay: true,
             mediaType: 'photo',
             path: imageUrl,
-          }).then(setProfileImage);
+          })
+            .then(setProfileImage)
+            .then(() => navigate(Routes.PROFILE_SCREEN));
         });
       }
     },
-    [accountAddress, accountENS, asset, imageUrl, navigate, setProfileImage]
+    [
+      accountAddress,
+      accountENS,
+      asset,
+      canBeSetAsProfileImage,
+      imageUrl,
+      navigate,
+      setProfileImage,
+    ]
   );
 
   const { colors } = useTheme();

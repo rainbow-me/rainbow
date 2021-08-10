@@ -36,6 +36,7 @@ import {
   addTokenSheetConfig,
   backupSheetConfig,
   basicSheetConfig,
+  changeProfileImageSheetConfig,
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
   expandedAssetSheetConfigWithLimit,
@@ -262,9 +263,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ChangeProfileImageSheet}
         name={Routes.CHANGE_PROFILE_IMAGE_SHEET}
-        options={{
-          customStack: true,
-        }}
+        {...changeProfileImageSheetConfig}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}

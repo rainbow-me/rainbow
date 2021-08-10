@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { useNavigation } from '../../navigation/Navigation';
 import { deviceUtils, magicMemo } from '../../utils';
 import { Row } from '../layout';
+import { ShowcaseContext } from '../showcase/ShowcaseHeader';
 import UniqueTokenCard from './UniqueTokenCard';
 import { useWallets } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
@@ -29,17 +30,22 @@ const UniqueTokenCardItem = styled(UniqueTokenCard).attrs({
 const UniqueTokenRow = magicMemo(({ item, external = false }) => {
   const { isReadOnlyWallet } = useWallets();
   const { navigate } = useNavigation();
+  const showcaseContext = useContext(ShowcaseContext);
+  const customHandleCollectiblePress =
+    showcaseContext?.customHandleCollectiblePress;
 
   const handleItemPress = useCallback(
     asset =>
-      navigate(Routes.EXPANDED_ASSET_SHEET, {
-        asset,
-        cornerRadius: 30,
-        external,
-        isReadOnlyWallet,
-        type: 'unique_token',
-      }),
-    [external, isReadOnlyWallet, navigate]
+      customHandleCollectiblePress
+        ? customHandleCollectiblePress(asset)
+        : navigate(Routes.EXPANDED_ASSET_SHEET, {
+            asset,
+            cornerRadius: 30,
+            external,
+            isReadOnlyWallet,
+            type: 'unique_token',
+          }),
+    [external, customHandleCollectiblePress, isReadOnlyWallet, navigate]
   );
 
   return (

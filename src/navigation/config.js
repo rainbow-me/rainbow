@@ -140,6 +140,16 @@ export const expandedAssetSheetConfigWithLimit = {
   }),
 };
 
+export const changeProfileImageSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      scrollEnabled: true,
+    }),
+    limitActiveModals: true,
+  }),
+};
+
 const restoreSheetSizes = {
   ...backupSheetSizes,
   medium: 505,
