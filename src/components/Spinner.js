@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Text } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import SpinnerImageSource from '../assets/spinner.png';
 import { useTheme } from '../context/ThemeContext';
@@ -12,13 +13,15 @@ const Spinner = ({ color, duration, size, ...props }) => {
   const { colors } = useTheme();
   return (
     <Centered {...props}>
-      {IS_TESTING !== 'true' && (
+      {IS_TESTING !== true && (
         <SpinAnimation duration={duration}>
-          <ImgixImage
-            source={SpinnerImageSource}
-            style={position.sizeAsObject(size)}
-            tintColor={color || colors.whiteLabel}
-          />
+          <Text>
+            <ImgixImage
+              source={SpinnerImageSource}
+              style={position.sizeAsObject(size)}
+              tintColor={color || colors.whiteLabel}
+            />
+          </Text>
         </SpinAnimation>
       )}
     </Centered>
