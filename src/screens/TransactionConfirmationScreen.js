@@ -3,7 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
-import { isEmpty, isNil, omit } from 'lodash';
+import { isEmpty, isNil, omit, toLower } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -74,6 +74,12 @@ import {
 } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
+import {
+  ARBITRUM_ETH_ADDRESS,
+  ETH_ADDRESS,
+  MATIC_POLYGON_ADDRESS,
+  OPTIMISM_ETH_ADDRESS,
+} from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import {
@@ -167,6 +173,35 @@ export default function TransactionConfirmationScreen() {
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
   const { goBack, navigate } = useNavigation();
+
+  const getL2WalletBalance = useCallback(
+    network => {
+      let nativeAssetAddress;
+      switch (network) {
+        case networkTypes.arbitrum:
+          nativeAssetAddress = ARBITRUM_ETH_ADDRESS;
+          break;
+        case networkTypes.optimism:
+          nativeAssetAddress = OPTIMISM_ETH_ADDRESS;
+          break;
+        case networkTypes.polygon:
+          nativeAssetAddress = MATIC_POLYGON_ADDRESS;
+          break;
+        default:
+          nativeAssetAddress = ETH_ADDRESS;
+      }
+      const asset = ethereumUtils.getAsset(
+        allAssets,
+        toLower(nativeAssetAddress)
+      );
+      return {
+        amount: asset?.balance?.amount || 0,
+        display: asset?.balance?.display || `0 ETH`,
+        symbol: asset?.symbol || 'ETH',
+      };
+    },
+    [allAssets]
+  );
 
   const pendingRedirect = useSelector(
     ({ walletconnect }) => walletconnect.pendingRedirect
@@ -415,6 +450,18 @@ export default function TransactionConfirmationScreen() {
     updateTxFee,
   ]);
 
+  const walletBalance = useMemo(() => {
+    if (isL2) {
+      return getL2WalletBalance(network);
+    } else {
+      return {
+        amount: balances[accountInfo.address] || 0,
+        display: `${balances[accountInfo.address] || 0} ETH`,
+        symbol: 'ETH',
+      };
+    }
+  }, [accountInfo.address, balances, getL2WalletBalance, isL2, network]);
+
   useEffect(() => {
     if (isMessageRequest) {
       setIsBalanceEnough(true);
@@ -435,8 +482,7 @@ export default function TransactionConfirmationScreen() {
     const txFeeAmount = fromWei(txFee?.value?.amount ?? 0);
 
     // Get the ETH balance
-    const ethAsset = ethereumUtils.getAsset(allAssets);
-    const balanceAmount = ethAsset?.balance?.amount ?? 0;
+    const balanceAmount = walletBalance.amount ?? 0;
 
     // Get the TX value
     const txPayload = params?.[0];
@@ -455,6 +501,7 @@ export default function TransactionConfirmationScreen() {
     method,
     params,
     selectedGasPrice,
+    walletBalance.amount,
   ]);
 
   const handleConfirmTransaction = useCallback(async () => {
@@ -553,7 +600,7 @@ export default function TransactionConfirmationScreen() {
           nonce: result.nonce,
           to: displayDetails?.request?.to,
         };
-        dispatch(dataAddNewTransaction(txDetails));
+        dispatch(dataAddNewTransaction(txDetails, null, false, provider));
       }
       analytics.track('Approved WalletConnect transaction request');
       if (requestId) {
@@ -661,6 +708,7 @@ export default function TransactionConfirmationScreen() {
       await onCancel();
     }
   }, [
+    accountInfo.address,
     callback,
     closeScreen,
     dispatch,
@@ -668,6 +716,7 @@ export default function TransactionConfirmationScreen() {
     onCancel,
     params,
     peerId,
+    provider,
     removeRequest,
     requestId,
     walletConnectSendStatus,
@@ -982,7 +1031,7 @@ export default function TransactionConfirmationScreen() {
                   {isBalanceEnough === false &&
                     isSufficientGas !== undefined &&
                     '􀇿 '}
-                  {balances[accountInfo.address]} ETH
+                  {walletBalance.display}
                 </WalletText>
               </Column>
             </RowWithMargins>
