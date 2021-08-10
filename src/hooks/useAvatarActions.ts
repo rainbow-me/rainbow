@@ -94,6 +94,7 @@ export default () => {
   const onAvatarPress = useCallback(() => {
     const avatarActionSheetOptions = [
       'Choose from Library',
+      'Pick an NFT',
       ...(!accountImage ? ['Pick an Emoji'] : []),
       ...(accountImage ? ['Remove Photo'] : []),
       'View Web Profile',
@@ -112,19 +113,22 @@ export default () => {
         if (buttonIndex === 0) {
           onAvatarChooseImage();
         } else if (buttonIndex === 1) {
+          navigate(Routes.CHANGE_PROFILE_IMAGE_SHEET);
+        } else if (buttonIndex === 2) {
           if (!accountImage) {
             onAvatarPickEmoji();
           }
           if (accountImage) {
             onAvatarRemovePhoto();
           }
-        } else if (buttonIndex === 2) {
+        } else if (buttonIndex === 3) {
           onAvatarWebProfile();
         }
       }
     );
   }, [
     accountImage,
+    navigate,
     onAvatarChooseImage,
     onAvatarPickEmoji,
     onAvatarRemovePhoto,

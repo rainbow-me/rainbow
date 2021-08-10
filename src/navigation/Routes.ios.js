@@ -9,6 +9,7 @@ import AddCashSheet from '../screens/AddCashSheet';
 import AddTokenSheet from '../screens/AddTokenSheet';
 import AvatarBuilder from '../screens/AvatarBuilder';
 import BackupSheet from '../screens/BackupSheet';
+import ChangeProfileImageSheet from '../screens/ChangeProfileImageSheet';
 import ChangeWalletSheet from '../screens/ChangeWalletSheet';
 import ConnectedDappsSheet from '../screens/ConnectedDappsSheet';
 import DepositModal from '../screens/DepositModal';
@@ -254,6 +255,13 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ShowcaseScreen}
         name={Routes.SHOWCASE_SHEET}
+        options={{
+          customStack: true,
+        }}
+      />
+      <NativeStack.Screen
+        component={ChangeProfileImageSheet}
+        name={Routes.CHANGE_PROFILE_IMAGE_SHEET}
         options={{
           customStack: true,
         }}
