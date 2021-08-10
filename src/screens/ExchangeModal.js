@@ -191,6 +191,7 @@ export default function ExchangeModal({
 
   const {
     isHighPriceImpact,
+    outputPriceValue,
     priceImpactColor,
     priceImpactNativeAmount,
     priceImpactPercentDisplay,
@@ -297,8 +298,9 @@ export default function ExchangeModal({
     updateMaxInputAmount();
   }, [updateMaxInputAmount]);
 
-  const checkGasvInput = async (gasPrice, inputPrice) => {
-    if (convertStringToNumber(gasPrice) > convertStringToNumber(inputPrice)) {
+  const checkGasVsOutput = async (gasPrice, outputPrice) => {
+    const outputValue = convertStringToNumber(outputPrice);
+    if (outputValue > 0 && convertStringToNumber(gasPrice) > outputValue) {
       const res = new Promise(resolve => {
         Alert.alert(
           'Are you sure?',
@@ -362,8 +364,9 @@ export default function ExchangeModal({
       });
     }
 
+    const outputInUSD = outputPriceValue * outputAmount;
     const gasPrice = selectedGasPrice?.txFee?.native?.value?.amount;
-    const cancelTransaction = await checkGasvInput(gasPrice, amountInUSD);
+    const cancelTransaction = await checkGasVsOutput(gasPrice, outputInUSD);
 
     if (cancelTransaction) {
       return;
@@ -423,9 +426,10 @@ export default function ExchangeModal({
     outputCurrency?.address,
     outputCurrency?.name,
     outputCurrency?.symbol,
+    outputPriceValue,
     priceImpactPercentDisplay,
     priceOfEther,
-    selectedGasPrice,
+    selectedGasPrice?.txFee?.native?.value?.amount,
     setParams,
     tradeDetails,
     type,
