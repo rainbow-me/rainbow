@@ -136,6 +136,10 @@ const DisplayDappNames = Object.freeze({
     name: 'PoolTogether',
     uri: buildAssetUrl('pooltogether.com'),
   },
+  'quickswap.exchange': {
+    name: 'QuickSwap',
+    uri: null,
+  },
   'rarible.com': {
     name: 'Rarible',
     uri: buildAssetUrl('rarible.com'),

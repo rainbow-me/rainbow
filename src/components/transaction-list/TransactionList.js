@@ -1,6 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
-import { startCase, toLower } from 'lodash';
+import { pick, startCase, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -263,14 +263,6 @@ export default function TransactionList({
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
-  const data = useMemo(
-    () => ({
-      requests,
-      transactions,
-    }),
-    [requests, transactions]
-  );
-
   const loading = useMemo(() => (!initialized && !isFocused()) || isLoading, [
     initialized,
     isLoading,
@@ -309,6 +301,22 @@ export default function TransactionList({
       onAvatarWebProfile,
     ]
   );
+
+  const data = useMemo(() => {
+    const requestsNative = requests.map(request =>
+      pick(request, [
+        'clientId',
+        'dappName',
+        'imageUrl',
+        'payloadId',
+        'displayDetails.timestampInMs',
+      ])
+    );
+    return {
+      requests: requestsNative,
+      transactions,
+    };
+  }, [requests, transactions]);
 
   return (
     <Container>

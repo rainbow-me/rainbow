@@ -18,7 +18,12 @@ import {
   SIGN_TYPED_DATA,
 } from '@rainbow-me/utils/signingMethods';
 
-export const getRequestDisplayDetails = (payload, assets, nativeCurrency) => {
+export const getRequestDisplayDetails = (
+  payload,
+  assets,
+  nativeCurrency,
+  dappNetwork
+) => {
   let timestampInMs = Date.now();
   if (payload.id) {
     timestampInMs = getTimestampFromPayload(payload);
@@ -48,7 +53,8 @@ export const getRequestDisplayDetails = (payload, assets, nativeCurrency) => {
       transaction,
       assets,
       nativeCurrency,
-      timestampInMs
+      timestampInMs,
+      dappNetwork
     );
   }
   if (payload.method === SIGN) {
@@ -95,13 +101,17 @@ const getTransactionDisplayDetails = (
   transaction,
   assets,
   nativeCurrency,
-  timestampInMs
+  timestampInMs,
+  dappNetwork
 ) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
+  const nativeAsset = ethereumUtils.getNativeAssetForNetwork(
+    assets,
+    dappNetwork
+  );
   if (transaction.data === '0x') {
     const value = fromWei(convertHexToString(transaction.value));
-    const asset = ethereumUtils.getAsset(assets);
-    const priceUnit = get(asset, 'price.value', 0);
+    const priceUnit = get(nativeAsset, 'price.value', 0);
     const { amount, display } = convertAmountAndPriceToNativeDisplay(
       value,
       priceUnit,
@@ -109,7 +119,7 @@ const getTransactionDisplayDetails = (
     );
     return {
       request: {
-        asset,
+        asset: nativeAsset,
         from: transaction.from,
         gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
         gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
@@ -160,13 +170,12 @@ const getTransactionDisplayDetails = (
   if (transaction.data) {
     // If it's not a token transfer, let's assume it's an ETH transaction
     // Once it confirmed, zerion will show the correct data
-    const asset = ethereumUtils.getAsset(assets);
     const value = transaction.value
       ? fromWei(convertHexToString(transaction.value))
       : 0;
     return {
       request: {
-        asset,
+        asset: nativeAsset,
         data: transaction.data,
         from: transaction.from,
         gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),

@@ -3,7 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
-import { isEmpty, isNil, omit, toLower } from 'lodash';
+import { isEmpty, isNil, omit } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -74,12 +74,6 @@ import {
 } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
-import {
-  ARBITRUM_ETH_ADDRESS,
-  ETH_ADDRESS,
-  MATIC_POLYGON_ADDRESS,
-  OPTIMISM_ETH_ADDRESS,
-} from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import {
@@ -176,24 +170,7 @@ export default function TransactionConfirmationScreen() {
 
   const getL2WalletBalance = useCallback(
     network => {
-      let nativeAssetAddress;
-      switch (network) {
-        case networkTypes.arbitrum:
-          nativeAssetAddress = ARBITRUM_ETH_ADDRESS;
-          break;
-        case networkTypes.optimism:
-          nativeAssetAddress = OPTIMISM_ETH_ADDRESS;
-          break;
-        case networkTypes.polygon:
-          nativeAssetAddress = MATIC_POLYGON_ADDRESS;
-          break;
-        default:
-          nativeAssetAddress = ETH_ADDRESS;
-      }
-      const asset = ethereumUtils.getAsset(
-        allAssets,
-        toLower(nativeAssetAddress)
-      );
+      const asset = ethereumUtils.getNativeAssetForNetwork(allAssets, network);
       return {
         amount: asset?.balance?.amount || 0,
         display: asset?.balance?.display || `0 ETH`,
