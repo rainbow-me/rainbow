@@ -36,6 +36,7 @@ import {
   TransactionStatusTypes,
   TransactionTypes,
 } from '@rainbow-me/entities';
+import { isL2Asset } from '@rainbow-me/handlers/assets';
 import {
   getAssetPricesFromUniswap,
   getAssets,
@@ -490,10 +491,21 @@ export const addressAssetsReceived = (
   );
 
   const { assets: existingAssets } = getState().data;
-  parsedAssets = uniqBy(
-    concat(parsedAssets, existingAssets),
-    item => item.uniqueId
-  );
+
+  if (append || change || removed) {
+    parsedAssets = uniqBy(
+      concat(parsedAssets, existingAssets),
+      item => item.uniqueId
+    );
+  } else {
+    // This is zerion's response
+    // We need to merge it with all l2 assets
+    // to prevent L2 assets dissapearing
+    // temporarilly from the wallet
+    const { assets: existingAssets } = getState().data;
+    const l2Assets = existingAssets.filter(asset => isL2Asset(asset));
+    parsedAssets = concat(parsedAssets, l2Assets);
+  }
 
   parsedAssets = parsedAssets.filter(asset => !!Number(asset?.balance?.amount));
 

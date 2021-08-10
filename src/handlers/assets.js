@@ -1,5 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { toLower } from 'lodash';
+import { AssetTypes } from '@rainbow-me/entities';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   ARBITRUM_ETH_ADDRESS,
@@ -20,6 +21,15 @@ const nativeAssetsPerNetwork = {
   [networkTypes.polygon]: MATIC_POLYGON_ADDRESS,
   [networkTypes.ropsten]: ETH_ADDRESS,
 };
+
+export function isL2Asset({ type }) {
+  const l2AssetTypes = [
+    AssetTypes.arbitrum,
+    AssetTypes.optimism,
+    AssetTypes.polygon,
+  ];
+  return l2AssetTypes.indexOf(type) !== -1;
+}
 
 export function isNativeAsset(address, network) {
   return toLower(nativeAssetsPerNetwork[network]) === toLower(address);
