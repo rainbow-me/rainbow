@@ -212,9 +212,12 @@ const GasSpeedButton = ({
       // L2's are very cheap,
       // so let's default to the last 2 significant decimals
       if (isL2Network(currentNetwork)) {
-        return `${nativeCurrencySymbol}${Number.parseFloat(
-          animatedValue
-        ).toFixed(2)}`;
+        const numAnimatedValue = Number.parseFloat(animatedValue);
+        if (numAnimatedValue < 0.01) {
+          return `${nativeCurrencySymbol}${numAnimatedValue.toPrecision(2)}`;
+        } else {
+          return `${nativeCurrencySymbol}${numAnimatedValue.toFixed(2)}`;
+        }
       } else {
         return `${nativeCurrencySymbol}${
           nativeCurrency === 'ETH'
