@@ -277,9 +277,10 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
     }
 
     if (!assets || !assets.length) {
+      // Try again in one minute
       const polygonExplorerBalancesHandle = setTimeout(
         fetchAssetsBalancesAndPrices,
-        UPDATE_BALANCE_AND_PRICE_FREQUENCY
+        UPDATE_BALANCE_AND_PRICE_FREQUENCY * 2
       );
       dispatch({
         payload: {
