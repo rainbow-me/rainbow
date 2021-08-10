@@ -329,7 +329,10 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
             },
             payload: newPayload,
           },
-          true
+          false,
+          false,
+          false,
+          networkTypes.polygon
         )
       );
       lastUpdatePayload = newPayload;

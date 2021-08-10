@@ -162,7 +162,10 @@ export const arbitrumExplorerInit = () => async (dispatch, getState) => {
             },
             payload: newPayload,
           },
-          true
+          false,
+          false,
+          false,
+          networkTypes.optimism
         )
       );
       lastUpdatePayload = newPayload;

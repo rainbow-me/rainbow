@@ -150,7 +150,10 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
             },
             payload: newPayload,
           },
-          true
+          false,
+          false,
+          false,
+          networkTypes.optimism
         )
       );
       lastUpdatePayload = newPayload;

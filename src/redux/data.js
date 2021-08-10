@@ -47,7 +47,7 @@ import {
   saveAssets,
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
-import { getTransactionReceipt } from '@rainbow-me/handlers/web3';
+import { getTransactionReceipt, isL2Network } from '@rainbow-me/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
@@ -450,7 +450,8 @@ export const addressAssetsReceived = (
   message,
   append = false,
   change = false,
-  removed = false
+  removed = false,
+  assetsNetwork = null
 ) => (dispatch, getState) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
@@ -492,10 +493,20 @@ export const addressAssetsReceived = (
   );
 
   const { assets: existingAssets } = getState().data;
-
   if (append || change || removed) {
     parsedAssets = uniqBy(
       concat(parsedAssets, existingAssets),
+      item => item.uniqueId
+    );
+  } else if (assetsNetwork && isL2Network(assetsNetwork)) {
+    logger.debug('L2 gang');
+    // We need to replace all the assets for that network completely
+    const { assets: existingAssets } = getState().data;
+    const restOfTheAssets = existingAssets.filter(
+      asset => asset.network !== assetsNetwork
+    );
+    parsedAssets = uniqBy(
+      concat(parsedAssets, restOfTheAssets),
       item => item.uniqueId
     );
   } else {
@@ -503,7 +514,10 @@ export const addressAssetsReceived = (
     // to prevent L2 assets temporarily dissapearing
     const { assets: existingAssets } = getState().data;
     const l2Assets = existingAssets.filter(asset => isL2Asset(asset));
-    parsedAssets = concat(parsedAssets, l2Assets);
+    parsedAssets = uniqBy(
+      concat(parsedAssets, l2Assets),
+      item => item.uniqueId
+    );
   }
 
   parsedAssets = parsedAssets.filter(asset => !!Number(asset?.balance?.amount));
