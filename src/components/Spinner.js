@@ -15,13 +15,11 @@ const Spinner = ({ color, duration, size, ...props }) => {
     <Centered {...props}>
       {IS_TESTING !== 'true' && (
         <SpinAnimation duration={duration}>
-          <Text>
-            <ImgixImage
-              source={SpinnerImageSource}
-              style={position.sizeAsObject(size)}
-              tintColor={color || colors.whiteLabel}
-            />
-          </Text>
+          <ImgixImage
+            source={SpinnerImageSource}
+            style={position.sizeAsObject(size)}
+            tintColor={color || colors.whiteLabel}
+          />
         </SpinAnimation>
       )}
     </Centered>
