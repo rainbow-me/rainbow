@@ -13,7 +13,7 @@ const Spinner = ({ color, duration, size, ...props }) => {
   const { colors } = useTheme();
   return (
     <Centered {...props}>
-      {IS_TESTING !== true && (
+      {IS_TESTING !== 'true' && (
         <SpinAnimation duration={duration}>
           <Text>
             <ImgixImage
