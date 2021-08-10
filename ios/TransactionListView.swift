@@ -51,7 +51,7 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   
   @objc var avatarOptions: NSArray? {
     didSet {
-      if #available(iOS 14.0, *) {
+      if #available(iOS 14.0, *), false {
         let options: Array = avatarOptions as! Array<NSDictionary>;
         let actions: [UIAction] = options.map { opt in
           return UIAction(title: opt["label"] as! String, 
