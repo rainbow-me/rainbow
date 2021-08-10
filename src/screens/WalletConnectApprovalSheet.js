@@ -12,7 +12,6 @@ import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
 import ChainLogo from '../components/ChainLogo';
 import Divider from '../components/Divider';
-import Spinner from '../components/Spinner';
 import { Alert } from '../components/alerts';
 import ButtonPressAnimation from '../components/animations/ButtonPressAnimation';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
@@ -42,7 +41,7 @@ import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 
-const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
+const LoadingSpinner = styled(ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
     color: colors.alpha(colors.blueGreyDark, 0.3),
   })
