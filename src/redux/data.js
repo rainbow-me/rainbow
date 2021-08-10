@@ -498,10 +498,8 @@ export const addressAssetsReceived = (
       item => item.uniqueId
     );
   } else {
-    // This is zerion's response
-    // We need to merge it with all l2 assets
-    // to prevent L2 assets dissapearing
-    // temporarilly from the wallet
+    // We need to merge the response with all l2 assets
+    // to prevent L2 assets temporarily dissapearing
     const { assets: existingAssets } = getState().data;
     const l2Assets = existingAssets.filter(asset => isL2Asset(asset));
     parsedAssets = concat(parsedAssets, l2Assets);
