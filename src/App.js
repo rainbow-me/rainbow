@@ -236,11 +236,11 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   handleTransactionConfirmed = () => {
-    logger.log('Reloading all data from zerion in 5!');
+    logger.log('Reloading all data from zerion in 10!');
     setTimeout(() => {
       logger.log('Reloading all data from zerion NOW!');
       store.dispatch(explorerInit());
-    }, 5000);
+    }, 10000);
   };
 
   render = () => (
