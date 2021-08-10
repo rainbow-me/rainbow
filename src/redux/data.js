@@ -499,7 +499,6 @@ export const addressAssetsReceived = (
       item => item.uniqueId
     );
   } else if (assetsNetwork && isL2Network(assetsNetwork)) {
-    logger.debug('L2 gang');
     // We need to replace all the assets for that network completely
     const { assets: existingAssets } = getState().data;
     const restOfTheAssets = existingAssets.filter(
