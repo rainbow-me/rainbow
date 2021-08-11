@@ -89,7 +89,6 @@ class App extends Component {
     }
     this.identifyFlow();
     AppState.addEventListener('change', this.handleAppStateChange);
-    // This is our custom event so we need to access it via ._emitter
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
     await this.handleInitializeAnalytics();
     saveFCMToken();
