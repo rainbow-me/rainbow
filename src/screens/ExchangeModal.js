@@ -269,19 +269,19 @@ export default function ExchangeModal({
     updateTxFee,
   ]);
 
-  // Update gas limit
-  useEffect(() => {
-    if (!isEmpty(gasPrices)) {
-      updateGasLimit();
-    }
-  }, [gasPrices, updateGasLimit]);
-
   // Set default gas limit
   useEffect(() => {
     if (isEmpty(prevGasPrices) && !isEmpty(gasPrices)) {
       updateTxFee(defaultGasLimit);
     }
   }, [gasPrices, defaultGasLimit, updateTxFee, prevGasPrices]);
+
+  // Update gas limit
+  useEffect(() => {
+    if (!isEmpty(gasPrices)) {
+      updateGasLimit();
+    }
+  }, [gasPrices, updateGasLimit]);
 
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
