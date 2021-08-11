@@ -19,6 +19,7 @@ const CoinIcon = ({
   address = 'eth',
   badgeXPosition,
   badgeYPosition,
+  badgeSize,
   forcedShadowColor,
   size = CoinIconSize,
   symbol = '',
@@ -52,6 +53,7 @@ const CoinIcon = ({
         assetType={type}
         badgeXPosition={badgeXPosition}
         badgeYPosition={badgeYPosition}
+        size={badgeSize}
       />
     </View>
   );

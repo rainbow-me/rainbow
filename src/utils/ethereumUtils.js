@@ -39,15 +39,36 @@ import {
 import store from '@rainbow-me/redux/store';
 import {
   ARBITRUM_BLOCK_EXPLORER_URL,
+  ARBITRUM_ETH_ADDRESS,
   chains,
   ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
+  MATIC_POLYGON_ADDRESS,
   OPTIMISM_BLOCK_EXPLORER_URL,
+  OPTIMISM_ETH_ADDRESS,
   POLYGON_BLOCK_EXPLORER_URL,
 } from '@rainbow-me/references';
 import logger from 'logger';
 
 const { RNBip39 } = NativeModules;
+
+const getNativeAssetForNetwork = (allAssets, network) => {
+  let nativeAssetAddress;
+  switch (network) {
+    case networkTypes.arbitrum:
+      nativeAssetAddress = ARBITRUM_ETH_ADDRESS;
+      break;
+    case networkTypes.optimism:
+      nativeAssetAddress = OPTIMISM_ETH_ADDRESS;
+      break;
+    case networkTypes.polygon:
+      nativeAssetAddress = MATIC_POLYGON_ADDRESS;
+      break;
+    default:
+      nativeAssetAddress = ETH_ADDRESS;
+  }
+  return getAsset(allAssets, toLower(nativeAssetAddress));
+};
 
 const getAsset = (assets, address = 'eth') =>
   find(assets, matchesProperty('address', toLower(address)));
@@ -381,6 +402,7 @@ export default {
   getEthPriceUnit,
   getHash,
   getMaticPriceUnit,
+  getNativeAssetForNetwork,
   getNetworkFromChainId,
   getNetworkNameFromChainId,
   hasPreviousTransactions,

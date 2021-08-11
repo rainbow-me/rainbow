@@ -168,6 +168,18 @@ export default function TransactionConfirmationScreen() {
   const { params: routeParams } = useRoute();
   const { goBack, navigate } = useNavigation();
 
+  const getL2WalletBalance = useCallback(
+    network => {
+      const asset = ethereumUtils.getNativeAssetForNetwork(allAssets, network);
+      return {
+        amount: asset?.balance?.amount || 0,
+        display: asset?.balance?.display || `0 ETH`,
+        symbol: asset?.symbol || 'ETH',
+      };
+    },
+    [allAssets]
+  );
+
   const pendingRedirect = useSelector(
     ({ walletconnect }) => walletconnect.pendingRedirect
   );
@@ -415,6 +427,18 @@ export default function TransactionConfirmationScreen() {
     updateTxFee,
   ]);
 
+  const walletBalance = useMemo(() => {
+    if (isL2) {
+      return getL2WalletBalance(network);
+    } else {
+      return {
+        amount: balances[accountInfo.address] || 0,
+        display: `${balances[accountInfo.address] || 0} ETH`,
+        symbol: 'ETH',
+      };
+    }
+  }, [accountInfo.address, balances, getL2WalletBalance, isL2, network]);
+
   useEffect(() => {
     if (isMessageRequest) {
       setIsBalanceEnough(true);
@@ -435,8 +459,7 @@ export default function TransactionConfirmationScreen() {
     const txFeeAmount = fromWei(txFee?.value?.amount ?? 0);
 
     // Get the ETH balance
-    const ethAsset = ethereumUtils.getAsset(allAssets);
-    const balanceAmount = ethAsset?.balance?.amount ?? 0;
+    const balanceAmount = walletBalance.amount ?? 0;
 
     // Get the TX value
     const txPayload = params?.[0];
@@ -455,6 +478,7 @@ export default function TransactionConfirmationScreen() {
     method,
     params,
     selectedGasPrice,
+    walletBalance.amount,
   ]);
 
   const handleConfirmTransaction = useCallback(async () => {
@@ -553,7 +577,7 @@ export default function TransactionConfirmationScreen() {
           nonce: result.nonce,
           to: displayDetails?.request?.to,
         };
-        dispatch(dataAddNewTransaction(txDetails));
+        dispatch(dataAddNewTransaction(txDetails, null, false, provider));
       }
       analytics.track('Approved WalletConnect transaction request');
       if (requestId) {
@@ -661,6 +685,7 @@ export default function TransactionConfirmationScreen() {
       await onCancel();
     }
   }, [
+    accountInfo.address,
     callback,
     closeScreen,
     dispatch,
@@ -668,6 +693,7 @@ export default function TransactionConfirmationScreen() {
     onCancel,
     params,
     peerId,
+    provider,
     removeRequest,
     requestId,
     walletConnectSendStatus,
@@ -769,12 +795,13 @@ export default function TransactionConfirmationScreen() {
       if (!amount) return;
       return (
         <TransactionConfirmationSection
-          address={request?.asset?.address}
+          address={request?.asset?.mainnet_address || request?.asset?.address}
           amount={amount}
           method={method}
           name={request?.asset?.name || 'No data'}
           nativeAmountDisplay={nativeAmountDisplay}
           symbol={request?.asset?.symbol || 'N/A'}
+          type={isL2 && network}
         />
       );
     }
@@ -786,7 +813,7 @@ export default function TransactionConfirmationScreen() {
         value={request?.value}
       />
     );
-  }, [isMessageRequest, method, nativeCurrency, request]);
+  }, [isL2, isMessageRequest, method, nativeCurrency, network, request]);
 
   const offset = useSharedValue(0);
   const sheetOpacity = useSharedValue(1);
@@ -982,7 +1009,7 @@ export default function TransactionConfirmationScreen() {
                   {isBalanceEnough === false &&
                     isSufficientGas !== undefined &&
                     '􀇿 '}
-                  {balances[accountInfo.address]} ETH
+                  {walletBalance.display}
                 </WalletText>
               </Column>
             </RowWithMargins>
