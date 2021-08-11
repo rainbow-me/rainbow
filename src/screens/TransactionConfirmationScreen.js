@@ -801,7 +801,6 @@ export default function TransactionConfirmationScreen() {
           name={request?.asset?.name || 'No data'}
           nativeAmountDisplay={nativeAmountDisplay}
           symbol={request?.asset?.symbol || 'N/A'}
-          type={isL2 && network}
         />
       );
     }

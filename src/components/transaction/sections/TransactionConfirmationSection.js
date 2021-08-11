@@ -42,7 +42,6 @@ const NativeAmount = styled(Text).attrs(({ theme: { colors } }) => ({
 export default function TransactionConfirmationSection({
   address,
   amount,
-  type,
   nativeAmountDisplay,
   symbol,
   method,
@@ -55,15 +54,7 @@ export default function TransactionConfirmationSection({
       <AmountRow>
         <Column>
           <RowWithMargins align="center" margin={5}>
-            <CoinIcon
-              address={address}
-              badgeSize="tiny"
-              badgeXPosition={-3}
-              badgeYPosition={-3}
-              size={20}
-              symbol={symbol}
-              type={type}
-            />
+            <CoinIcon address={address} size={20} symbol={symbol} />
             <Amount>
               {formatFixedDecimals(amount, 10)} {symbol}
             </Amount>
