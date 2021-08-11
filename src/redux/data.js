@@ -26,7 +26,7 @@ import {
 } from '../apollo/queries';
 /* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
-/* eslint-disable-next-line import/no-cycle */
+// eslint-disable-next-line import/no-cycle
 import { uniqueTokensRefreshState } from './uniqueTokens';
 /* eslint-disable-next-line import/no-cycle */
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
@@ -36,6 +36,8 @@ import {
   TransactionStatusTypes,
   TransactionTypes,
 } from '@rainbow-me/entities';
+import appEvents from '@rainbow-me/handlers/appEvents';
+import { isL2Asset } from '@rainbow-me/handlers/assets';
 import {
   getAssetPricesFromUniswap,
   getAssets,
@@ -45,7 +47,7 @@ import {
   saveAssets,
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
-import { getTransactionReceipt } from '@rainbow-me/handlers/web3';
+import { getTransactionReceipt, isL2Network } from '@rainbow-me/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
@@ -448,7 +450,8 @@ export const addressAssetsReceived = (
   message,
   append = false,
   change = false,
-  removed = false
+  removed = false,
+  assetsNetwork = null
 ) => (dispatch, getState) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
@@ -490,10 +493,31 @@ export const addressAssetsReceived = (
   );
 
   const { assets: existingAssets } = getState().data;
-  parsedAssets = uniqBy(
-    concat(parsedAssets, existingAssets),
-    item => item.uniqueId
-  );
+  if (append || change || removed) {
+    parsedAssets = uniqBy(
+      concat(parsedAssets, existingAssets),
+      item => item.uniqueId
+    );
+  } else if (assetsNetwork && isL2Network(assetsNetwork)) {
+    // We need to replace all the assets for that network completely
+    const { assets: existingAssets } = getState().data;
+    const restOfTheAssets = existingAssets.filter(
+      asset => asset.network !== assetsNetwork
+    );
+    parsedAssets = uniqBy(
+      concat(parsedAssets, restOfTheAssets),
+      item => item.uniqueId
+    );
+  } else {
+    // We need to merge the response with all l2 assets
+    // to prevent L2 assets temporarily dissapearing
+    const { assets: existingAssets } = getState().data;
+    const l2Assets = existingAssets.filter(asset => isL2Asset(asset.type));
+    parsedAssets = uniqBy(
+      concat(parsedAssets, l2Assets),
+      item => item.uniqueId
+    );
+  }
 
   parsedAssets = parsedAssets.filter(asset => !!Number(asset?.balance?.amount));
 
@@ -768,6 +792,7 @@ export const dataWatchPendingTransactions = (
           // When speeding up a non "normal tx" we need to resubscribe
           // because zerion "append" event isn't reliable
           logger.log('TX CONFIRMED!', txObj);
+          appEvents.emit('transactionConfirmed', txObj);
           if (cb) {
             logger.log('executing cb', cb);
             cb(tx);

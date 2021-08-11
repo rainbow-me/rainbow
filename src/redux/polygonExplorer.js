@@ -33,7 +33,7 @@ const POLYGON_EXPLORER_SET_BALANCE_HANDLER =
   'explorer/POLYGON_EXPLORER_SET_BALANCE_HANDLER';
 const POLYGON_EXPLORER_SET_HANDLERS = 'explorer/POLYGON_EXPLORER_SET_HANDLERS';
 
-const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 30000;
+const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 60000;
 const network = networkTypes.polygon;
 let tokenMapping = {};
 
@@ -330,7 +330,10 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
             },
             payload: newPayload,
           },
-          true
+          false,
+          false,
+          false,
+          networkTypes.polygon
         )
       );
       lastUpdatePayload = newPayload;

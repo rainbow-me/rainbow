@@ -24,7 +24,7 @@ const ARBITRUM_EXPLORER_SET_BALANCE_HANDLER =
   'explorer/ARBITRUM_EXPLORER_SET_BALANCE_HANDLER';
 const ARBITRUM_EXPLORER_SET_HANDLERS =
   'explorer/ARBITRUM_EXPLORER_SET_HANDLERS';
-const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 30000;
+const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 60000;
 
 const network = networkTypes.arbitrum;
 
@@ -163,7 +163,10 @@ export const arbitrumExplorerInit = () => async (dispatch, getState) => {
             },
             payload: newPayload,
           },
-          true
+          false,
+          false,
+          false,
+          networkTypes.optimism
         )
       );
       lastUpdatePayload = newPayload;

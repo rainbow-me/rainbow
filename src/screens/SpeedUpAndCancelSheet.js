@@ -25,7 +25,7 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
-import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
+import { TransactionStatusTypes } from '@rainbow-me/entities';
 import { getTransaction, toHex } from '@rainbow-me/handlers/web3';
 import {
   useAccountSettings,
@@ -38,7 +38,6 @@ import { loadWallet, sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { getTitle, gweiToWei, weiToGwei } from '@rainbow-me/parsers';
 import { dataUpdateTransaction } from '@rainbow-me/redux/data';
-import { explorerInit } from '@rainbow-me/redux/explorer';
 import { updateGasPriceForSpeed } from '@rainbow-me/redux/gas';
 import { ethUnits } from '@rainbow-me/references';
 import { position } from '@rainbow-me/styles';
@@ -151,20 +150,6 @@ export default function SpeedUpAndCancelSheet() {
       : toHex(minGasPriceAllowed);
   }, [minGasPrice, selectedGasPrice]);
 
-  const reloadTransactions = useCallback(
-    transaction => {
-      if (transaction.type !== TransactionTypes.send) {
-        logger.log('Reloading zerion in 5!');
-        setTimeout(() => {
-          logger.log('Reloading tx from zerion NOW!');
-          dispatch(explorerInit());
-        }, 5000);
-        return;
-      }
-    },
-    [dispatch]
-  );
-
   const handleCancellation = useCallback(async () => {
     try {
       const gasPrice = getNewGasPrice();
@@ -186,23 +171,13 @@ export default function SpeedUpAndCancelSheet() {
       }
       updatedTx.status = TransactionStatusTypes.cancelling;
       updatedTx.title = getTitle(updatedTx);
-      dispatch(
-        dataUpdateTransaction(originalHash, updatedTx, true, reloadTransactions)
-      );
+      dispatch(dataUpdateTransaction(originalHash, updatedTx, true));
     } catch (e) {
       logger.log('Error submitting cancel tx', e);
     } finally {
       goBack();
     }
-  }, [
-    accountAddress,
-    dispatch,
-    getNewGasPrice,
-    goBack,
-    nonce,
-    reloadTransactions,
-    tx,
-  ]);
+  }, [accountAddress, dispatch, getNewGasPrice, goBack, nonce, tx]);
 
   const handleSpeedUp = useCallback(async () => {
     try {
