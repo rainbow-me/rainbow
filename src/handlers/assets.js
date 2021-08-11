@@ -22,13 +22,15 @@ const nativeAssetsPerNetwork = {
   [networkTypes.ropsten]: ETH_ADDRESS,
 };
 
-export function isL2Asset({ type }) {
-  const l2AssetTypes = [
-    AssetTypes.arbitrum,
-    AssetTypes.optimism,
-    AssetTypes.polygon,
-  ];
-  return l2AssetTypes.indexOf(type) !== -1;
+export function isL2Asset(type) {
+  switch (type) {
+    case AssetTypes.arbitrum:
+    case AssetTypes.optimism:
+    case AssetTypes.polygon:
+      return true;
+    default:
+      return false;
+  }
 }
 
 export function isNativeAsset(address, network) {

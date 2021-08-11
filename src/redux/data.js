@@ -512,7 +512,7 @@ export const addressAssetsReceived = (
     // We need to merge the response with all l2 assets
     // to prevent L2 assets temporarily dissapearing
     const { assets: existingAssets } = getState().data;
-    const l2Assets = existingAssets.filter(asset => isL2Asset(asset));
+    const l2Assets = existingAssets.filter(asset => isL2Asset(asset.type));
     parsedAssets = uniqBy(
       concat(parsedAssets, l2Assets),
       item => item.uniqueId
