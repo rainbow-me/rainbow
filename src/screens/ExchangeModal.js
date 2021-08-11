@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import { isEmpty } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -37,6 +38,7 @@ import {
   useAccountSettings,
   useBlockPolling,
   useGas,
+  usePrevious,
   usePriceImpactDetails,
   useSwapCurrencies,
   useSwapCurrencyHandlers,
@@ -132,6 +134,7 @@ export default function ExchangeModal({
     : ethUnits.basic_swap;
 
   const {
+    gasPrices,
     selectedGasPrice,
     startPollingGasPrices,
     stopPollingGasPrices,
@@ -143,6 +146,8 @@ export default function ExchangeModal({
   const { nativeCurrency, network } = useAccountSettings();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
+
+  const prevGasPrices = usePrevious(gasPrices);
 
   useAndroidBackHandler(() => {
     navigate(Routes.WALLET_SCREEN);
@@ -266,15 +271,17 @@ export default function ExchangeModal({
 
   // Update gas limit
   useEffect(() => {
-    updateGasLimit();
-  }, [updateGasLimit]);
+    if (!isEmpty(gasPrices)) {
+      updateGasLimit();
+    }
+  }, [gasPrices, updateGasLimit]);
 
   // Set default gas limit
   useEffect(() => {
-    setTimeout(() => {
+    if (isEmpty(prevGasPrices) && !isEmpty(gasPrices)) {
       updateTxFee(defaultGasLimit);
-    }, 1000);
-  }, [defaultGasLimit, updateTxFee]);
+    }
+  }, [gasPrices, defaultGasLimit, updateTxFee, prevGasPrices]);
 
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
