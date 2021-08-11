@@ -110,9 +110,10 @@ export const arbitrumExplorerInit = () => async (dispatch, getState) => {
     );
 
     if (!assets || !assets.length) {
+      // Try again in one minute
       const arbitrumExplorerBalancesHandle = setTimeout(
         fetchAssetsBalancesAndPrices,
-        10000
+        UPDATE_BALANCE_AND_PRICE_FREQUENCY * 2
       );
       dispatch({
         payload: {

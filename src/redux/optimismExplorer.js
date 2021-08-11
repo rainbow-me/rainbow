@@ -88,35 +88,6 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       ({ asset: { asset_code } }) => asset_code
     );
 
-    dispatch(emitAssetRequest(tokenAddresses));
-    dispatch(emitChartsRequest(tokenAddresses));
-    const prices = await fetchAssetPrices(
-      assets.map(({ asset: { coingecko_id } }) => coingecko_id),
-      formattedNativeCurrency
-    );
-
-    if (prices) {
-      Object.keys(prices).forEach(key => {
-        for (let i = 0; i < assets.length; i++) {
-          if (toLower(assets[i].asset.coingecko_id) === toLower(key)) {
-            const asset =
-              ethereumUtils.getAsset(
-                allAssets,
-                toLower(assets[i].asset.mainnet_address)
-              ) || genericAssets[toLower(assets[i].asset.mainnet_address)];
-
-            assets[i].asset.price = asset?.price || {
-              changed_at: prices[key].last_updated_at,
-              relative_change_24h:
-                prices[key][`${formattedNativeCurrency}_24h_change`],
-              value: prices[key][`${formattedNativeCurrency}`],
-            };
-            break;
-          }
-        }
-      });
-    }
-
     const balances = await fetchAssetBalances(
       assets.map(({ asset: { asset_code } }) => asset_code),
       accountAddress,
@@ -137,31 +108,66 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       });
     }
 
-    const newPayload = { assets };
+    const hasAssets = !!assets.find(asset => asset.quantity > 0);
 
-    if (!isEqual(lastUpdatePayload, newPayload)) {
-      dispatch(
-        addressAssetsReceived(
-          {
-            meta: {
-              address: accountAddress,
-              currency: nativeCurrency,
-              status: 'ok',
-            },
-            payload: newPayload,
-          },
-          false,
-          false,
-          false,
-          networkTypes.optimism
-        )
+    if (hasAssets) {
+      dispatch(emitAssetRequest(tokenAddresses));
+      dispatch(emitChartsRequest(tokenAddresses));
+      const prices = await fetchAssetPrices(
+        assets.map(({ asset: { coingecko_id } }) => coingecko_id),
+        formattedNativeCurrency
       );
-      lastUpdatePayload = newPayload;
+
+      if (prices) {
+        Object.keys(prices).forEach(key => {
+          for (let i = 0; i < assets.length; i++) {
+            if (toLower(assets[i].asset.coingecko_id) === toLower(key)) {
+              const asset =
+                ethereumUtils.getAsset(
+                  allAssets,
+                  toLower(assets[i].asset.mainnet_address)
+                ) || genericAssets[toLower(assets[i].asset.mainnet_address)];
+
+              assets[i].asset.price = asset?.price || {
+                changed_at: prices[key].last_updated_at,
+                relative_change_24h:
+                  prices[key][`${formattedNativeCurrency}_24h_change`],
+                value: prices[key][`${formattedNativeCurrency}`],
+              };
+              break;
+            }
+          }
+        });
+      }
+
+      const newPayload = { assets };
+
+      if (!isEqual(lastUpdatePayload, newPayload)) {
+        dispatch(
+          addressAssetsReceived(
+            {
+              meta: {
+                address: accountAddress,
+                currency: nativeCurrency,
+                status: 'ok',
+              },
+              payload: newPayload,
+            },
+            false,
+            false,
+            false,
+            networkTypes.optimism
+          )
+        );
+        lastUpdatePayload = newPayload;
+      }
     }
 
     const optimismExplorerBalancesHandle = setTimeout(
       fetchAssetsBalancesAndPrices,
-      UPDATE_BALANCE_AND_PRICE_FREQUENCY
+      !hasAssets
+        ? UPDATE_BALANCE_AND_PRICE_FREQUENCY * 2
+        : UPDATE_BALANCE_AND_PRICE_FREQUENCY
     );
     let optimismExplorerAssetsHandle = null;
 

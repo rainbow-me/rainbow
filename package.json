@@ -228,7 +228,7 @@
     "timers-browserify": "^1.4.2",
     "tty-browserify": "0.0.0",
     "url": "^0.10.3",
-    "url-parse": "^1.5.0",
+    "url-parse": "^1.5.3",
     "use-debounce": "^5.2.0",
     "use-memo-one": "^1.1.1",
     "util": "^0.10.3",
@@ -307,7 +307,8 @@
     "**/merge-deep": "3.0.3",
     "**/css-what": "5.0.1",
     "**/socket.io-parser": "3.3.1",
-    "**/tar": "6.1.2"
+    "**/tar": "6.1.2",
+    "**/path-parse": "1.0.7"
   },
   "jest": {
     "preset": "react-native",
