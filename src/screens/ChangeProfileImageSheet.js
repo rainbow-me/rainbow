@@ -1,32 +1,43 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { Alert, InteractionManager, StatusBar } from 'react-native';
+import { Alert, InteractionManager, StatusBar, View } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
-import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
-import TouchableBackdrop from '../components/TouchableBackdrop';
+import Divider from '../components/Divider';
 import { AssetList } from '../components/asset-list';
 import { Centered } from '../components/layout';
-import { SheetTitle, SlackSheet } from '../components/sheet';
+import { SheetHandle, SheetTitle } from '../components/sheet';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
-import { useTheme } from '../context/ThemeContext';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import {
   useAccountProfile,
   useAccountSettings,
   useAvatarActions,
-  useDimensions,
   useWallets,
   useWalletSectionsData,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import { position } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
-const Container = styled(Centered).attrs({
-  direction: 'column',
+const Wrapper = styled.View`
+  background-color: ${({ theme: { colors } }) => colors.white};
+  border-top-left-radius: 15;
+  border-top-right-radius: 15;
+  height: 100%;
+`;
+
+const HandleWrapper = styled(Centered).attrs({
+  pointerEvents: 'none',
 })`
-  ${position.cover};
-  ${({ deviceHeight, height }) =>
-    height ? `height: ${height + deviceHeight}` : null};
+  ${padding(6, 0, 6)};
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 9;
+`;
+
+const TitleWrapper = styled.View`
+  ${padding(18, 0, 10)}
 `;
 
 export default function ChangeProfileImageSheet() {
@@ -71,8 +82,6 @@ export default function ChangeProfileImageSheet() {
 
   const { sections } = useWalletSectionsData();
   const { isReadOnlyWallet } = useWallets();
-  const { isDarkMode } = useTheme();
-  const insets = useSafeArea();
   const [collectiblesSection, setCollectiblesSection] = useState([]);
   useEffect(() => {
     if (sections) {
@@ -87,35 +96,29 @@ export default function ChangeProfileImageSheet() {
     setTimeout(() => layout?.(), 300);
   }, [layout, sections]);
 
-  const { height: deviceHeight } = useDimensions();
-
   return (
-    <Container deviceHeight={deviceHeight} insets={insets}>
-      {ios && !isDarkMode && <StatusBar barStyle="light-content" />}
-      {ios && <TouchableBackdrop onPress={goBack} />}
-      <SlackSheet
-        additionalTopPadding={android}
-        contentHeight={deviceHeight}
-        scrollEnabled
-        {...(ios
-          ? { height: '100%' }
-          : { additionalTopPadding: true, contentHeight: deviceHeight - 80 })}
-      >
+    <Wrapper>
+      <StatusBar barStyle="light-content" />
+      <HandleWrapper>
+        <SheetHandle />
+      </HandleWrapper>
+      <TitleWrapper>
         <SheetTitle>Select</SheetTitle>
-        <ShowcaseContext.Provider value={contextValue}>
-          <AssetList
-            disableAutoScrolling
-            disableRefreshControl
-            disableStickyHeaders
-            hideHeader
-            isReadOnlyWallet={isReadOnlyWallet}
-            isWalletEthZero={false}
-            network={network}
-            openFamilies
-            sections={collectiblesSection}
-          />
-        </ShowcaseContext.Provider>
-      </SlackSheet>
-    </Container>
+      </TitleWrapper>
+      <Divider />
+      <ShowcaseContext.Provider value={contextValue}>
+        <AssetList
+          disableAutoScrolling
+          disableRefreshControl
+          disableStickyHeaders
+          hideHeader
+          isReadOnlyWallet={isReadOnlyWallet}
+          isWalletEthZero={false}
+          network={network}
+          openFamilies
+          sections={collectiblesSection}
+        />
+      </ShowcaseContext.Provider>
+    </Wrapper>
   );
 }

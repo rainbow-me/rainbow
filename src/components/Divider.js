@@ -57,7 +57,7 @@ const Divider = ({
   backgroundColor,
   color,
   horizontal = true,
-  inset = [0, 0, 0, 19],
+  inset = [0, 19, 0, 19],
   size = DividerSize,
   ...props
 }) => {
