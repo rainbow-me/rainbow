@@ -146,7 +146,6 @@ export const changeProfileImageSheetConfig = {
       ...params,
       scrollEnabled: true,
     }),
-    limitActiveModals: true,
   }),
 };
 

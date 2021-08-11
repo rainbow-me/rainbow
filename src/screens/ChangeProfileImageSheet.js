@@ -101,9 +101,7 @@ export default function ChangeProfileImageSheet() {
           ? { height: '100%' }
           : { additionalTopPadding: true, contentHeight: deviceHeight - 80 })}
       >
-        <Centered>
-          <SheetTitle>Select</SheetTitle>
-        </Centered>
+        <SheetTitle>Select</SheetTitle>
         <ShowcaseContext.Provider value={contextValue}>
           <AssetList
             disableAutoScrolling

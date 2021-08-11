@@ -251,7 +251,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
-        {...expandedAssetSheetConfigWithLimit}
+        {...expandedAssetSheetConfig}
       />
       <NativeStack.Screen
         component={ShowcaseScreen}
