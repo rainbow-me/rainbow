@@ -795,12 +795,13 @@ export default function TransactionConfirmationScreen() {
       if (!amount) return;
       return (
         <TransactionConfirmationSection
-          address={request?.asset?.address}
+          address={request?.asset?.mainnet_address || request?.asset?.address}
           amount={amount}
           method={method}
           name={request?.asset?.name || 'No data'}
           nativeAmountDisplay={nativeAmountDisplay}
           symbol={request?.asset?.symbol || 'N/A'}
+          type={isL2 && network}
         />
       );
     }
@@ -812,7 +813,7 @@ export default function TransactionConfirmationScreen() {
         value={request?.value}
       />
     );
-  }, [isMessageRequest, method, nativeCurrency, request]);
+  }, [isL2, isMessageRequest, method, nativeCurrency, network, request]);
 
   const offset = useSharedValue(0);
   const sheetOpacity = useSharedValue(1);

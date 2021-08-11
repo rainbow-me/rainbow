@@ -30,6 +30,10 @@ const sizeConfigs = {
     containerSize: 44,
     iconSize: 20,
   },
+  tiny: {
+    containerSize: 22,
+    iconSize: 10,
+  },
 };
 
 const ChainIcon = styled(FastImage)`
