@@ -28,6 +28,10 @@ const DisplayDappNames = Object.freeze({
     name: 'Balancer',
     uri: null,
   },
+  'blit.house': {
+    name: 'Blit House',
+    uri: buildAssetUrl('blit.house'),
+  },
   'blitmap.com': {
     name: 'Blitmap',
     uri: buildAssetUrl('blitmap.com'),
