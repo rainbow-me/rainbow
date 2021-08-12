@@ -184,7 +184,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
           captureException(error);
           throw error;
         }
-        const { peerId, peerMeta } = payload.params[0];
+        const { peerId, peerMeta, chainId } = payload.params[0];
 
         const imageUrl =
           dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
@@ -196,6 +196,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
           dappUrl,
         });
         meta = {
+          chainId,
           dappName,
           dappScheme,
           dappUrl,
