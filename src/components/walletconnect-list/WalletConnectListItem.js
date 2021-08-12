@@ -254,19 +254,26 @@ export default function WalletConnectListItem({
               </Centered>
             </SessionRow>
           </ColumnWithMargins>
-          <NetworkPill mainnet={connectionNetworkInfo.value === 'mainnet'}>
-            <ChainLogo network={connectionNetworkInfo.value} />
-            <LabelText
-              color={
-                connectionNetworkInfo.value === 'mainnet'
-                  ? colors.alpha(colors.blueGreyDark, 0.5)
-                  : colors.alpha(colors.blueGreyDark, 0.8)
-              }
-              numberOfLines={1}
-            >
-              {connectionNetworkInfo.name}
-            </LabelText>
-          </NetworkPill>
+          <ContextMenuButton
+            menuItems={networksMenuItems()}
+            menuTitle="Change Network"
+            onPressAndroid={onPressAndroid}
+            onPressMenuItem={handleOnPressMenuItem}
+          >
+            <NetworkPill mainnet={connectionNetworkInfo.value === 'mainnet'}>
+              <ChainLogo network={connectionNetworkInfo.value} />
+              <LabelText
+                color={
+                  connectionNetworkInfo.value === 'mainnet'
+                    ? colors.alpha(colors.blueGreyDark, 0.5)
+                    : colors.alpha(colors.blueGreyDark, 0.8)
+                }
+                numberOfLines={1}
+              >
+                {connectionNetworkInfo.name}
+              </LabelText>
+            </NetworkPill>
+          </ContextMenuButton>
         </Row>
       </Row>
     </ContextMenuButton>
