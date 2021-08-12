@@ -68,6 +68,7 @@ export default function SendContactList({
   onPressContact,
   removeContact,
   userAccounts,
+  ensSuggestions,
 }) {
   const { accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
@@ -80,6 +81,11 @@ export default function SendContactList({
   const filteredContacts = useMemo(
     () => filterList(contacts, currentInput, ['nickname']),
     [contacts, currentInput]
+  );
+
+  const filteredSuggestions = useMemo(
+    () => filterList(ensSuggestions, currentInput, ['nickname']),
+    [currentInput, ensSuggestions]
   );
 
   const handleCloseAllDifferentContacts = useCallback(address => {
@@ -151,13 +157,21 @@ export default function SendContactList({
         id: 'accounts',
         title: '􀢲 My wallets',
       });
+    filteredSuggestions.length &&
+      tmp.push({
+        data: filteredSuggestions,
+        id: 'suggestions',
+        title: '􀊫 Suggestions',
+      });
     return tmp;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filteredAddresses, filteredContacts, currentInput]);
+  }, [currentInput, ensSuggestions, filteredAddresses, filteredContacts]);
 
   return (
     <FlyInAnimation>
-      {filteredContacts.length === 0 && filteredAddresses.length === 0 ? (
+      {filteredContacts.length === 0 &&
+      filteredAddresses.length === 0 &&
+      filteredSuggestions.length === 0 ? (
         <SendEmptyState />
       ) : (
         <SendContactFlatList

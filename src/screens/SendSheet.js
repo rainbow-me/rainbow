@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
-import { isEmpty, isEqual, isString, toLower } from 'lodash';
+import { debounce, isEmpty, isEqual, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
@@ -9,6 +9,8 @@ import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { dismissingScreenListener } from '../../shim';
+import { ensClient } from '../apollo/client';
+import { ENS_SUGGESTIONS } from '../apollo/queries';
 import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import {
@@ -66,7 +68,7 @@ import {
   convertAmountFromNativeValue,
   formatInputDecimals,
 } from '@rainbow-me/utilities';
-import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
+import { deviceUtils, ethereumUtils, profileUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
@@ -94,6 +96,35 @@ const KeyboardSizeView = styled(KeyboardArea)`
   background-color: ${({ showAssetForm, theme: { colors } }) =>
     showAssetForm ? colors.lighterGrey : colors.white};
 `;
+
+const fetchSuggestions = async (recipient, setSuggestions) => {
+  if (recipient?.length && recipient.length > 2) {
+    let result = await ensClient.query({
+      query: ENS_SUGGESTIONS,
+      variables: {
+        amount: 3,
+        name: recipient,
+      },
+    });
+    if (result?.data?.domains.length) {
+      const newSuggestions = result.data.domains
+        .map(ensDomain => ({
+          address: ensDomain.name,
+          color:
+            profileUtils.avatars[
+              Math.floor(Math.random() * profileUtils.avatars.length)
+            ].colorIndex,
+          network: 'mainnet',
+          nickname: ensDomain.name,
+        }))
+        .sort((a, b) => a.length - b.length);
+
+      setSuggestions(newSuggestions);
+    }
+  }
+};
+
+const debouncedFetchSuggestions = debounce(fetchSuggestions, 500);
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
@@ -672,6 +703,16 @@ export default function SendSheet(props) {
     setIsValidAddress(validAddress);
   }, [recipient]);
 
+  const [ensSuggestions, setEnsSuggestions] = useState([]);
+
+  useEffect(() => {
+    if (recipient?.length > 2) {
+      debouncedFetchSuggestions(recipient, setEnsSuggestions);
+    } else {
+      setEnsSuggestions([]);
+    }
+  }, [recipient, setEnsSuggestions]);
+
   useEffect(() => {
     checkAddress();
   }, [checkAddress]);
@@ -746,6 +787,9 @@ export default function SendSheet(props) {
           <SendContactList
             contacts={filteredContacts}
             currentInput={currentInput}
+            ensSuggestions={
+              recipient?.length && recipient?.length > 2 ? ensSuggestions : []
+            }
             onPressContact={setRecipient}
             removeContact={onRemoveContact}
             userAccounts={userAccounts}

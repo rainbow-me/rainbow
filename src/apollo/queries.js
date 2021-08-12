@@ -363,3 +363,18 @@ export const USER_HISTORY = gql`
     }
   }
 `;
+
+export const ENS_SUGGESTIONS = gql`
+  query lookup($name: String!, $amount: Int!) {
+    domains(
+      first: $amount
+      where: {
+        name_contains: $name
+        resolvedAddress_not: null
+        name_ends_with: ".eth"
+      }
+    ) {
+      name
+    }
+  }
+`;
