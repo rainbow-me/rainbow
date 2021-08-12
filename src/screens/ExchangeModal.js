@@ -285,7 +285,7 @@ export default function ExchangeModal({
 
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
-    updateDefaultGasLimit(defaultGasLimit);
+    updateDefaultGasLimit(network, defaultGasLimit);
     startPollingGasPrices();
     initWeb3Listener();
     return () => {
@@ -294,6 +294,7 @@ export default function ExchangeModal({
     };
   }, [
     defaultGasLimit,
+    network,
     initWeb3Listener,
     startPollingGasPrices,
     stopPollingGasPrices,

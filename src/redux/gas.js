@@ -276,20 +276,21 @@ export const gasUpdateCustomValues = (price, network) => async (
     type: GAS_PRICES_SUCCESS,
   });
 
-  dispatch(gasUpdateTxFee(gasLimit, null, network));
+  dispatch(gasUpdateTxFee(network, gasLimit));
 };
 
 export const gasUpdateDefaultGasLimit = (
+  network,
   defaultGasLimit = ethUnits.basic_tx
 ) => dispatch => {
   dispatch({
     payload: defaultGasLimit,
     type: GAS_UPDATE_DEFAULT_GAS_LIMIT,
   });
-  dispatch(gasUpdateTxFee(defaultGasLimit));
+  dispatch(gasUpdateTxFee(network, defaultGasLimit));
 };
 
-export const gasUpdateTxFee = (gasLimit, overrideGasOption, network) => (
+export const gasUpdateTxFee = (network, gasLimit, overrideGasOption) => (
   dispatch,
   getState
 ) => {

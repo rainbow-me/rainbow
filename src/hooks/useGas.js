@@ -49,7 +49,8 @@ export default function useGas() {
   );
 
   const updateDefaultGasLimit = useCallback(
-    defaultGasLimit => dispatch(gasUpdateDefaultGasLimit(defaultGasLimit)),
+    (network, defaultGasLimit) =>
+      dispatch(gasUpdateDefaultGasLimit(network, defaultGasLimit)),
     [dispatch]
   );
 
@@ -61,7 +62,7 @@ export default function useGas() {
 
   const updateTxFee = useCallback(
     (newGasLimit, overrideGasOption, network = currentNetwork) => {
-      dispatch(gasUpdateTxFee(newGasLimit, overrideGasOption, network));
+      dispatch(gasUpdateTxFee(network, newGasLimit, overrideGasOption));
     },
     [currentNetwork, dispatch]
   );
