@@ -419,6 +419,7 @@ export default function SendSheet(props) {
             recipient: toAddress,
           },
           true,
+          currentProvider,
           currentNetwork
         );
         logger.log('gasLimit updated before sending', {
