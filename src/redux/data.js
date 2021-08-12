@@ -488,9 +488,13 @@ export const addressAssetsReceived = (
       asset?.type === AssetTypes.uniswap || asset?.type === AssetTypes.uniswapV2
   );
 
-  dispatch(
-    uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
-  );
+  const isL2 = assetsNetwork && isL2Network(assetsNetwork);
+
+  if (!isL2) {
+    dispatch(
+      uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
+    );
+  }
 
   const { assets: existingAssets } = getState().data;
   if (append || change || removed) {
@@ -498,7 +502,7 @@ export const addressAssetsReceived = (
       concat(parsedAssets, existingAssets),
       item => item.uniqueId
     );
-  } else if (assetsNetwork && isL2Network(assetsNetwork)) {
+  } else if (isL2) {
     // We need to replace all the assets for that network completely
     const { assets: existingAssets } = getState().data;
     const restOfTheAssets = existingAssets.filter(

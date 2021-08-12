@@ -254,7 +254,10 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
           },
           payload: { assets },
         },
-        true
+        false,
+        false,
+        false,
+        networkTypes.polygon
       )
     );
   };
