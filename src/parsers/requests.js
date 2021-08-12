@@ -2,6 +2,7 @@ import { convertHexToUtf8 } from '@walletconnect/utils';
 import BigNumber from 'bignumber.js';
 import { get, isNil } from 'lodash';
 import { isHexString } from '@rainbow-me/handlers/web3';
+import store from '@rainbow-me/redux/store';
 import { ethUnits, smartContractMethods } from '@rainbow-me/references';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -20,7 +21,6 @@ import {
 
 export const getRequestDisplayDetails = (
   payload,
-  assets,
   nativeCurrency,
   dappNetwork
 ) => {
@@ -51,7 +51,6 @@ export const getRequestDisplayDetails = (
 
     return getTransactionDisplayDetails(
       transaction,
-      assets,
       nativeCurrency,
       timestampInMs,
       dappNetwork
@@ -99,16 +98,12 @@ const getMessageDisplayDetails = (message, timestampInMs) => ({
 
 const getTransactionDisplayDetails = (
   transaction,
-  assets,
   nativeCurrency,
   timestampInMs,
   dappNetwork
 ) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
-  const nativeAsset = ethereumUtils.getNativeAssetForNetwork(
-    assets,
-    dappNetwork
-  );
+  const nativeAsset = ethereumUtils.getNativeAssetForNetwork(dappNetwork);
   if (transaction.data === '0x') {
     const value = fromWei(convertHexToString(transaction.value));
     const priceUnit = get(nativeAsset, 'price.value', 0);
@@ -135,6 +130,7 @@ const getTransactionDisplayDetails = (
     };
   }
   if (transaction.data.startsWith(tokenTransferHash)) {
+    const { assets } = store.getState().data;
     const contractAddress = transaction.to;
     const asset = ethereumUtils.getAsset(assets, contractAddress);
     const dataPayload = transaction.data.replace(tokenTransferHash, '');

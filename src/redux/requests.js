@@ -41,13 +41,11 @@ export const addRequestToApprove = (
   const { requests } = getState().requests;
   const { walletConnectors } = getState().walletconnect;
   const { accountAddress, network, nativeCurrency } = getState().settings;
-  const { assets } = getState().data;
   const walletConnector = walletConnectors[peerId];
   const chainId = walletConnector._chainId;
   const dappNetwork = ethereumUtils.getNetworkFromChainId(Number(chainId));
   const displayDetails = getRequestDisplayDetails(
     payload,
-    assets,
     nativeCurrency,
     dappNetwork
   );

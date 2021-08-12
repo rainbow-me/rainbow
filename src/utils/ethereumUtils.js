@@ -20,7 +20,8 @@ import { Linking, NativeModules } from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
 import URL from 'url-parse';
-import { isTestnet } from '@rainbow-me/handlers/web3';
+import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
+import { getProviderForNetwork, isTestnet } from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -52,7 +53,7 @@ import logger from 'logger';
 
 const { RNBip39 } = NativeModules;
 
-const getNativeAssetForNetwork = (allAssets, network) => {
+const getNativeAssetForNetwork = async (network, address) => {
   let nativeAssetAddress;
   switch (network) {
     case networkTypes.arbitrum:
@@ -67,7 +68,40 @@ const getNativeAssetForNetwork = (allAssets, network) => {
     default:
       nativeAssetAddress = ETH_ADDRESS;
   }
-  return getAsset(allAssets, toLower(nativeAssetAddress));
+  const { accountAddress } = store.getState().settings;
+  let differentWallet = toLower(address) !== toLower(accountAddress);
+  const { assets } = store.getState().data;
+  let nativeAsset =
+    !differentWallet && getAsset(assets, toLower(nativeAssetAddress));
+
+  // If the asset is on a different wallet, or not available in this wallet
+  if (differentWallet || !nativeAsset) {
+    const { genericAssets } = store.getState().data;
+    const mainnetAddress =
+      network === networkTypes.polygon ? MATIC_MAINNET_ADDRESS : ETH_ADDRESS;
+    nativeAsset = genericAssets[mainnetAddress];
+
+    if (network === networkTypes.polygon) {
+      nativeAsset.mainnet_address = mainnetAddress;
+      nativeAsset.address = MATIC_POLYGON_ADDRESS;
+    }
+
+    const provider = await getProviderForNetwork(network);
+    const balance = await getOnchainAssetBalance(
+      nativeAsset,
+      address,
+      network,
+      provider
+    );
+
+    const assetWithBalance = {
+      ...nativeAsset,
+      balance,
+    };
+
+    return assetWithBalance;
+  }
+  return nativeAsset;
 };
 
 const getAsset = (assets, address = 'eth') =>
@@ -95,6 +129,12 @@ export const useEthUSDPrice = () => {
 
 export const useEthUSDMonthChart = () => {
   return useSelector(({ charts: { chartsEthUSDMonth } }) => chartsEthUSDMonth);
+};
+
+const getPriceOfNativeAssetForNetwork = network => {
+  return network === networkTypes.polygon
+    ? getMaticPriceUnit()
+    : getEthPriceUnit();
 };
 
 const getEthPriceUnit = () => getAssetPrice();
@@ -405,6 +445,7 @@ export default {
   getNativeAssetForNetwork,
   getNetworkFromChainId,
   getNetworkNameFromChainId,
+  getPriceOfNativeAssetForNetwork,
   hasPreviousTransactions,
   isEthAddress,
   openAddressInBlockExplorer,
