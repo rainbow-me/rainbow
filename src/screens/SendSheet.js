@@ -119,7 +119,13 @@ const fetchSuggestions = async (recipient, setSuggestions) => {
         }))
         .sort((a, b) => a.length - b.length);
 
-      setSuggestions(newSuggestions);
+      setSuggestions(oldSuggestions =>
+        newSuggestions.map(
+          newSg =>
+            oldSuggestions.find(oldSg => oldSg.nickname === newSg.nickname) ||
+            newSg
+        )
+      );
     }
   }
 };
