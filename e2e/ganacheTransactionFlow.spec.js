@@ -1,29 +1,15 @@
+/* eslint-disable sort-keys */
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
 import { exec } from 'child_process';
-//import WalletConnect from '@walletconnect/client';
+import WalletConnect from '@walletconnect/client';
 import * as Helpers from './helpers';
 
-/*let connector = null;
+let connector = null;
 let uri = null;
-let account = null;*/
+let account = null;
 
 beforeAll(async () => {
-  // Create WC client
-  /* Create a connector
-  connector = new WalletConnect({
-    bridge: 'https://zora.bridge.walletconnect.org',
-    clientMeta: {
-      description: 'Connect with WalletConnect',
-      icons: ['https://walletconnect.org/walletconnect-logo.png'],
-      name: 'WalletConnect',
-      url: 'https://walletconnect.org',
-    },
-  });
-
-  await connector.createSession();
-  uri = connector.uri;
-  */
   // Connect to ganache
   await exec('yarn ganache');
 });
@@ -102,40 +88,39 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  /*
-  it('Should swap ETH -> ERC20 (DAI)', async () => {
-    await Helpers.tap('exchange-fab');
-    await Helpers.typeText('exchange-modal-input', '0.01', true);
-    await Helpers.tap('exchange-modal-output-selection-button');
-    await Helpers.typeText('currency-select-search-input', 'DAI', true);
-    await Helpers.tap('exchange-coin-row-DAI');
-    await Helpers.tapAndLongPress('exchange-modal-confirm');
-    await Helpers.swipe('profile-screen', 'left', 'slow');
-  });
+  // it('Should swap ETH -> ERC20 (DAI)', async () => {
+  //   await Helpers.tap('exchange-fab');
+  //   await Helpers.typeText('exchange-modal-input', '0.01', true);
+  //   await Helpers.tap('exchange-modal-output-selection-button');
+  //   await Helpers.typeText('currency-select-search-input', 'DAI', true);
+  //   await Helpers.tap('exchange-coin-row-DAI');
+  //   await Helpers.tapAndLongPress('exchange-modal-confirm');
+  //   await Helpers.swipe('profile-screen', 'left', 'slow');
+  // });
 
-  it('Should swap ERC20 (BAT) -> ERC20 (ZRX)', async () => {
-    await Helpers.tap('exchange-fab');
-    await Helpers.tap('exchange-modal-input-selection-button');
-    await Helpers.tap('exchange-coin-row-BAT');
-    await Helpers.typeText('exchange-modal-input', '5', true);
-    await Helpers.tap('exchange-modal-output-selection-button');
-    await Helpers.tap('exchange-coin-row-ZRX');
-    await Helpers.tapAndLongPress('exchange-modal-confirm');
-    await Helpers.swipe('profile-screen', 'left', 'slow');
-  });
+  // it('Should swap ERC20 (BAT) -> ERC20 (ZRX)', async () => {
+  //   await Helpers.tap('exchange-fab');
+  //   await Helpers.tap('exchange-modal-input-selection-button');
+  //   await Helpers.tap('exchange-coin-row-BAT');
+  //   await Helpers.typeText('exchange-modal-input', '5', true);
+  //   await Helpers.tap('exchange-modal-output-selection-button');
+  //   await Helpers.tap('exchange-coin-row-ZRX');
+  //   await Helpers.tapAndLongPress('exchange-modal-confirm');
+  //   await Helpers.swipe('profile-screen', 'left', 'slow');
+  // });
 
-  it('Should swap ERC20 (USDC)-> ETH', async () => {
-    await Helpers.tap('exchange-fab');
-    await Helpers.tap('exchange-modal-input-selection-button');
-    await Helpers.tap('exchange-coin-row-USDC');
-    await Helpers.typeText('exchange-modal-input', '2', true);
-    await Helpers.tap('exchange-modal-output-selection-button');
-    await Helpers.typeText('currency-select-search-input', 'ETH', true);
-    await Helpers.tap('exchange-coin-row-ETH');
-    await Helpers.tapAndLongPress('exchange-modal-confirm');
-    await Helpers.swipe('profile-screen', 'left', 'slow');
-  });
-*/
+  // it('Should swap ERC20 (USDC)-> ETH', async () => {
+  //   await Helpers.tap('exchange-fab');
+  //   await Helpers.tap('exchange-modal-input-selection-button');
+  //   await Helpers.tap('exchange-coin-row-USDC');
+  //   await Helpers.typeText('exchange-modal-input', '2', true);
+  //   await Helpers.tap('exchange-modal-output-selection-button');
+  //   await Helpers.typeText('currency-select-search-input', 'ETH', true);
+  //   await Helpers.tap('exchange-coin-row-ETH');
+  //   await Helpers.tapAndLongPress('exchange-modal-confirm');
+  //   await Helpers.swipe('profile-screen', 'left', 'slow');
+  // });
+
   it('Should send ERC20 (cSAI)', async () => {
     await Helpers.tap('send-fab');
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
@@ -191,8 +176,21 @@ describe('Ganache Transaction Flow', () => {
     //await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  /*
   it('Should receive the WC connect request and approve it', async () => {
+    connector = new WalletConnect({
+      bridge: 'https://bridge.walletconnect.org',
+      clientMeta: {
+        description: 'Connect with WalletConnect',
+        icons: ['https://walletconnect.org/walletconnect-logo.png'],
+        name: 'WalletConnect',
+        url: 'https://walletconnect.org',
+      },
+    });
+    await Helpers.delay(3000);
+
+    await connector.createSession();
+    uri = connector.uri;
+
     const connected = new Promise(async (resolve, reject) => {
       connector.on('connect', (error, payload) => {
         if (error) {
