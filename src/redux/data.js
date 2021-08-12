@@ -508,6 +508,7 @@ export const addressAssetsReceived = (
     const restOfTheAssets = existingAssets.filter(
       asset => asset.network !== assetsNetwork
     );
+
     parsedAssets = uniqBy(
       concat(parsedAssets, restOfTheAssets),
       item => item.uniqueId

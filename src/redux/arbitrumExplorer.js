@@ -74,6 +74,7 @@ const getAssetsFromCovalent = async (
           icon_url: item.logo_url,
           mainnet_address: mainnetAddress,
           name: item.contract_name,
+          network: networkTypes.arbitrum,
           price: {
             value: item.quote_rate || 0,
             ...price,

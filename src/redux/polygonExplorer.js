@@ -132,6 +132,7 @@ const getAssetsFromCovalent = async (
           icon_url: item.logo_url,
           mainnet_address: mainnetAddress,
           name: item.contract_name.replace(' (PoS)', ''),
+          network: networkTypes.polygon,
           price: {
             value: item.quote_rate || 0,
             ...price,
@@ -212,7 +213,7 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
                 allAssets,
                 toLower(assets[i].asset.mainnet_address)
               ) || genericAssets[toLower(assets[i].asset.mainnet_address)];
-
+            assets[i].asset.network = networkTypes.polygon;
             assets[i].asset.price = asset?.price || {
               changed_at: prices[key].last_updated_at,
               relative_change_24h:
