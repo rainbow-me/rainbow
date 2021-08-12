@@ -57,15 +57,15 @@ It allows for cheaper and faster transactions, but unlike Layer 2 networks, Poly
 export const explainers = {
   gas: {
     emoji: '⛽️',
+    extraHeight: 2,
     text: GAS_EXPLAINER,
     title: 'Ethereum network fee',
-    extraHeight: 2,
   },
   sending_funds_to_contract: {
     emoji: '✋',
+    extraHeight: 80,
     text: SENDING_FUNDS_TO_CONTRACT,
     title: 'Hold your horses!',
-    extraHeight: 80,
   },
   verified: {
     emoji: '􀇻',
@@ -74,6 +74,7 @@ export const explainers = {
   },
   optimism: {
     emoji: '⛽️',
+    extraHeight: 150,
     logo: (
       <ChainBadge
         assetType={networkTypes.optimism}
@@ -82,13 +83,13 @@ export const explainers = {
         size="large"
       />
     ),
+    readMoreLink: 'https://optimism.io/',
     text: OPTIMISM_EXPLAINER,
     title: `What's Optimism?`,
-    readMoreLink: 'https://optimism.io/',
-    extraHeight: 150,
   },
   arbitrum: {
     emoji: '⛽️',
+    extraHeight: 144,
     logo: (
       <ChainBadge
         assetType={networkTypes.arbitrum}
@@ -97,13 +98,13 @@ export const explainers = {
         size="large"
       />
     ),
+    readMoreLink: 'https://arbitrum.io/',
     text: ARBITRUM_EXPLAINER,
     title: `What's Arbitrum?`,
-    readMoreLink: 'https://arbitrum.io/',
-    extraHeight: 144,
   },
   polygon: {
     emoji: '⛽️',
+    extraHeight: 120,
     logo: (
       <ChainBadge
         assetType={networkTypes.polygon}
@@ -112,17 +113,16 @@ export const explainers = {
         size="large"
       />
     ),
+    readMoreLink: 'https://polygon.technology/',
     text: POLYGON_EXPLAINER,
     title: `What's Polygon?`,
-    readMoreLink: 'https://polygon.technology/',
-    extraHeight: 120,
   },
   failed_wc_connection: {
     emoji: '😵',
+    extraHeight: -50,
     text:
       'Uh oh, something went wrong! The site may be experiencing a connection outage. Please try again later or contact the site’s team for more details.',
     title: 'Connection failed',
-    extraHeight: -50,
   },
 };
 
