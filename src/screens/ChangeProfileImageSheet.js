@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { Alert, InteractionManager, StatusBar, View } from 'react-native';
+import { Alert, InteractionManager, StatusBar } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import styled from 'styled-components';
 import Divider from '../components/Divider';
