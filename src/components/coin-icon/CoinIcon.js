@@ -36,7 +36,7 @@ const CoinIcon = ({
     <View>
       <StyledCoinIcon
         {...props}
-        address={address}
+        address={props.mainnet_address || address}
         color={color}
         fallbackRenderer={CoinIconFallback}
         forceFallback={forceFallback}
