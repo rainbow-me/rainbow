@@ -136,6 +136,10 @@ const DisplayDappNames = Object.freeze({
     name: 'PoolTogether',
     uri: buildAssetUrl('pooltogether.com'),
   },
+  'punks.house': {
+    name: 'Punk House',
+    uri: buildAssetUrl('punks.house'),
+  },
   'quickswap.exchange': {
     name: 'QuickSwap',
     uri: null,
@@ -143,6 +147,10 @@ const DisplayDappNames = Object.freeze({
   'rarible.com': {
     name: 'Rarible',
     uri: buildAssetUrl('rarible.com'),
+  },
+  'superrare.com': {
+    name: 'SuperRare',
+    uri: buildAssetUrl('superrare.com'),
   },
   'sushi.com': {
     name: 'Sushi',
