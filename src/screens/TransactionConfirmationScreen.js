@@ -173,6 +173,7 @@ export default function TransactionConfirmationScreen() {
   const [methodName, setMethodName] = useState(null);
   const calculatingGasLimit = useRef(false);
   const [isBalanceEnough, setIsBalanceEnough] = useState(true);
+  const [isSufficientGasChecked, setIsSufficientGasChecked] = useState(false);
   const [nativeAsset, setNativeAsset] = useState(null);
   const { height: deviceHeight } = useDimensions();
   const { wallets, walletNames } = useWallets();
@@ -265,9 +266,26 @@ export default function TransactionConfirmationScreen() {
     isSufficientGas,
     startPollingGasPrices,
     stopPollingGasPrices,
+    updateGasPriceOption,
     updateTxFee,
     selectedGasPrice,
+    selectedGasPriceOption,
   } = useGas();
+
+  useEffect(() => {
+    const { txFee } = selectedGasPrice;
+    if (!txFee || !nativeAsset || !network || isSufficientGasChecked) return;
+    updateGasPriceOption(selectedGasPriceOption, network, [nativeAsset]);
+    setIsSufficientGasChecked(true);
+  }, [
+    isSufficientGas,
+    isSufficientGasChecked,
+    nativeAsset,
+    network,
+    selectedGasPrice,
+    selectedGasPriceOption,
+    updateGasPriceOption,
+  ]);
 
   const request = useMemo(() => {
     return nativeAsset
@@ -418,10 +436,7 @@ export default function TransactionConfirmationScreen() {
       logger.log('error estimating gas', error);
     }
     logger.log('Setting gas limit to', convertHexToString(gas));
-    // Wait until the gas prices are populated
-    setTimeout(() => {
-      updateTxFee(gas, null, network);
-    }, 1000);
+    updateTxFee(gas, null, network);
   }, [network, params, provider, updateTxFee]);
 
   useEffect(() => {
