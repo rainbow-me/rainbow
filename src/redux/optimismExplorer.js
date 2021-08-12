@@ -127,7 +127,7 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
                   allAssets,
                   toLower(assets[i].asset.mainnet_address)
                 ) || genericAssets[toLower(assets[i].asset.mainnet_address)];
-
+              assets[i].asset.network = networkTypes.optimism;
               assets[i].asset.price = asset?.price || {
                 changed_at: prices[key].last_updated_at,
                 relative_change_24h:
