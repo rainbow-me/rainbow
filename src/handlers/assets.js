@@ -45,7 +45,11 @@ export async function getOnchainAssetBalance(
 ) {
   // Check if it's the native chain asset
   if (isNativeAsset(address, network)) {
-    return getOnchainNativeAssetBalance({ decimals }, userAddress, provider);
+    return getOnchainNativeAssetBalance(
+      { decimals, symbol },
+      userAddress,
+      provider
+    );
   }
   return getOnchainTokenBalance(
     { address, decimals, symbol },
@@ -82,7 +86,7 @@ async function getOnchainTokenBalance(
 }
 
 async function getOnchainNativeAssetBalance(
-  { decimals },
+  { decimals, symbol },
   userAddress,
   provider
 ) {
@@ -94,6 +98,7 @@ async function getOnchainNativeAssetBalance(
     );
     const displayBalance = convertAmountToBalanceDisplay(tokenBalance, {
       decimals,
+      symbol,
     });
 
     return {

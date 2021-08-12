@@ -226,15 +226,16 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   watchGasPrices(network);
 };
 
-export const gasUpdateGasPriceOption = (newGasPriceOption, network) => (
-  dispatch,
-  getState
-) => {
+export const gasUpdateGasPriceOption = (
+  newGasPriceOption,
+  network,
+  assetsOverride
+) => (dispatch, getState) => {
   const { gasPrices, txFees } = getState().gas;
   if (isEmpty(gasPrices)) return;
   const { assets } = getState().data;
   const results = getSelectedGasPrice(
-    assets,
+    assetsOverride || assets,
     gasPrices,
     txFees,
     newGasPriceOption,

@@ -18,8 +18,8 @@ import {
   SendHeader,
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
-import { AssetType, AssetTypes } from '@rainbow-me/entities';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
+import { AssetTypes } from '@rainbow-me/entities';
+import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';
 import {
   createSignableTransaction,
   estimateGasLimit,
@@ -270,10 +270,7 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const updateNetworkAndProvider = async () => {
-      const assetNetwork =
-        selected?.type === AssetType.token || selected?.type === AssetType.nft
-          ? network
-          : selected.type;
+      const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
       if (
         selected?.type &&
         (assetNetwork !== currentNetwork ||
@@ -282,11 +279,11 @@ export default function SendSheet(props) {
       ) {
         let provider = web3Provider;
         switch (selected.type) {
-          case AssetType.polygon:
+          case AssetTypes.polygon:
             setCurrentNetwork(networkTypes.polygon);
             provider = await getProviderForNetwork(networkTypes.polygon);
             break;
-          case AssetType.arbitrum:
+          case AssetTypes.arbitrum:
             setCurrentNetwork(networkTypes.arbitrum);
             provider = await getProviderForNetwork(networkTypes.arbitrum);
             break;
@@ -317,10 +314,7 @@ export default function SendSheet(props) {
         currentProvider._network.chainId
       );
 
-      const assetNetwork =
-        selected?.type === AssetType.token || selected?.type === AssetType.nft
-          ? network
-          : selected.type;
+      const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
 
       if (
         assetNetwork === currentNetwork &&
@@ -681,10 +675,7 @@ export default function SendSheet(props) {
     const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
       currentProvider._network.chainId
     );
-    const assetNetwork =
-      selected?.type === AssetType.token || selected?.type === AssetType.nft
-        ? network
-        : selected.type;
+    const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
 
     if (
       assetNetwork === currentNetwork &&
