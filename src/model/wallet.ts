@@ -23,7 +23,6 @@ import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import { ACCESSIBLE, getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
-import { addressHashedColorIndex } from '../utils/defaultProfileUtils';
 import {
   addressKey,
   allWalletsKey,
@@ -33,6 +32,7 @@ import {
   seedPhraseKey,
   selectedWalletKey,
 } from '../utils/keychainConstants';
+import { addressHashedColorIndex } from '../utils/profileUtils';
 import * as keychain from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
 import { EthereumAddress } from '@rainbow-me/entities';

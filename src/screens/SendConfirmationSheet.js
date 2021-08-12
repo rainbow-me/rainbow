@@ -21,7 +21,7 @@ import { address } from '../utils/abbreviations';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
-} from '../utils/defaultProfileUtils';
+} from '../utils/profileUtils';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';

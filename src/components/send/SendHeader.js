@@ -17,10 +17,7 @@ import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
-import {
-  defaultProfileUtils,
-  showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+import { profileUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
   ${({ isSmallPhone, isTinyPhone }) =>
@@ -107,8 +104,8 @@ export default function SendHeader({
     let color = get(contact, 'color');
     let nickname = recipient;
     if (color !== 0 && !color) {
-      const emoji = defaultProfileUtils.addressHashedEmoji(hexAddress);
-      color = defaultProfileUtils.addressHashedColorIndex(hexAddress) || 0;
+      const emoji = profileUtils.addressHashedEmoji(hexAddress);
+      color = profileUtils.addressHashedColorIndex(hexAddress) || 0;
       nickname = isHexString(recipient) ? emoji : `${emoji} ${recipient}`;
     }
 

@@ -20,7 +20,7 @@ import { useAccountProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { margin, padding, position } from '@rainbow-me/styles';
-import { defaultProfileUtils } from '@rainbow-me/utils';
+import { profileUtils } from '@rainbow-me/utils';
 const WalletProfileAddressText = styled(TruncatedAddress).attrs(
   ({ theme: { colors } }) => ({
     align: 'center',
@@ -78,9 +78,9 @@ export default function WalletProfileState({
 }) {
   const nameEmoji =
     isNewProfile && !forceColor
-      ? defaultProfileUtils.addressHashedEmoji(address)
+      ? profileUtils.addressHashedEmoji(address)
       : returnStringFirstEmoji(profile?.name) ||
-        defaultProfileUtils.addressHashedEmoji(address);
+        profileUtils.addressHashedEmoji(address);
 
   const { goBack, navigate } = useNavigation();
   const { accountImage } = useAccountProfile();
@@ -91,7 +91,7 @@ export default function WalletProfileState({
   const color = forceColor
     ? forceColor
     : isNewProfile && address
-    ? defaultProfileUtils.addressHashedColorIndex(address)
+    ? profileUtils.addressHashedColorIndex(address)
     : profile.color !== null
     ? profile.color
     : isNewProfile
@@ -112,9 +112,7 @@ export default function WalletProfileState({
   const handleSubmit = useCallback(() => {
     onCloseModal({
       color:
-        typeof color === 'string'
-          ? defaultProfileUtils.colorHexToIndex(color)
-          : color,
+        typeof color === 'string' ? profileUtils.colorHexToIndex(color) : color,
       name: nameEmoji ? `${nameEmoji} ${value}` : value,
     });
     goBack();

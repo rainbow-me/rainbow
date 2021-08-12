@@ -4,7 +4,7 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '../../helpers/emojiHandler';
-import { abbreviations, defaultProfileUtils, magicMemo } from '../../utils';
+import { abbreviations, magicMemo, profileUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import { Column, RowWithMargins } from '../layout';
@@ -59,9 +59,9 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
 
   // show avatar for contact rows that are accounts, not contacts
   const avatar =
-    accountType !== 'contacts'
+    accountType !== 'contacts' && accountType !== 'suggestions'
       ? returnStringFirstEmoji(label) ||
-        defaultProfileUtils.addressHashedEmoji(address)
+        profileUtils.addressHashedEmoji(address)
       : null;
 
   let cleanedUpLabel = null;
