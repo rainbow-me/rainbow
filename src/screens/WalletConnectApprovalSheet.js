@@ -101,12 +101,12 @@ export default function WalletConnectApprovalSheet() {
   });
 
   const type = params?.type || WalletConnectApprovalSheetType.connect;
-  const chainId = params?.chainId || 1;
 
   const meta = params?.meta || {};
   const callback = params?.callback;
   const receivedTimestamp = params?.receivedTimestamp;
   const timedOut = params?.timedOut;
+  const chainId = meta?.chainId || 1;
   const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
 
   const checkIfScam = useCallback(
@@ -208,6 +208,15 @@ export default function WalletConnectApprovalSheet() {
       dappUrl,
     ]
   );
+
+  useEffect(() => {
+    if (meta?.chainId) {
+      const network = ethereumUtils.getNetworkFromChainId(
+        Number(meta?.chainId || 1)
+      );
+      setApprovalNetwork(network);
+    }
+  }, [meta?.chainId]);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
