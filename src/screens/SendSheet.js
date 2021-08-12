@@ -110,27 +110,18 @@ const fetchSuggestions = async (recipient, setSuggestions) => {
       const newSuggestions = result.data.domains
         .map(ensDomain => ({
           address: ensDomain.name,
-          color:
-            profileUtils.avatars[
-              Math.floor(Math.random() * profileUtils.avatars.length)
-            ].colorIndex,
+          color: profileUtils.addressHashedColorIndex(ensDomain.name),
           network: 'mainnet',
           nickname: ensDomain.name,
         }))
         .sort((a, b) => a.length - b.length);
 
-      setSuggestions(oldSuggestions =>
-        newSuggestions.map(
-          newSg =>
-            oldSuggestions.find(oldSg => oldSg.nickname === newSg.nickname) ||
-            newSg
-        )
-      );
+      setSuggestions(newSuggestions);
     }
   }
 };
 
-const debouncedFetchSuggestions = debounce(fetchSuggestions, 500);
+const debouncedFetchSuggestions = debounce(fetchSuggestions, 200);
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
