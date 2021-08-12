@@ -44,8 +44,6 @@ import { position } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const LoadingSpinner = android ? Spinner : ActivityIndicator;
-
 const springConfig = {
   damping: 500,
   mass: 3,
@@ -72,6 +70,13 @@ const ExtendedSheetBackground = styled.View`
   bottom: -800;
   width: 100%;
 `;
+
+const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.alpha(colors.blueGreyDark, 0.3),
+    size: 'large',
+  })
+)``;
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent(CenteredSheet);
@@ -350,7 +355,7 @@ export default function SpeedUpAndCancelSheet() {
                       align="center"
                       color={colors.dark}
                       size="big"
-                      weight="bold"
+                      weight="heavy"
                     >
                       {title[type]}
                     </Text>
