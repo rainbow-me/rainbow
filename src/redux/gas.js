@@ -19,7 +19,7 @@ import {
   weiToGwei,
 } from '@rainbow-me/parsers';
 import {
-  ABRITRUM_ETH_ADDRESS,
+  ARBITRUM_ETH_ADDRESS,
   ETH_ADDRESS,
   ethUnits,
   MATIC_POLYGON_ADDRESS,
@@ -350,7 +350,7 @@ const getSelectedGasPrice = (
       nativeAssetAddress = MATIC_POLYGON_ADDRESS;
       break;
     case networkTypes.arbitrum:
-      nativeAssetAddress = ABRITRUM_ETH_ADDRESS;
+      nativeAssetAddress = ARBITRUM_ETH_ADDRESS;
       break;
     case networkTypes.optimism:
       nativeAssetAddress = OPTIMISM_ETH_ADDRESS;
