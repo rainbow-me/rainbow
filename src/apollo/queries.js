@@ -375,6 +375,11 @@ export const ENS_SUGGESTIONS = gql`
       }
     ) {
       name
+      resolver {
+        addr {
+          id
+        }
+      }
     }
   }
 `;

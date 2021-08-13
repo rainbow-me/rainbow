@@ -83,11 +83,6 @@ export default function SendContactList({
     [contacts, currentInput]
   );
 
-  const filteredSuggestions = useMemo(
-    () => filterList(ensSuggestions, currentInput, ['nickname']),
-    [currentInput, ensSuggestions]
-  );
-
   const handleCloseAllDifferentContacts = useCallback(address => {
     if (touchedContact.current && contactRefs.current[touchedContact.current]) {
       contactRefs.current[touchedContact.current].close?.();
@@ -157,9 +152,9 @@ export default function SendContactList({
         id: 'accounts',
         title: '􀢲 My wallets',
       });
-    filteredSuggestions.length &&
+    ensSuggestions.length &&
       tmp.push({
-        data: filteredSuggestions,
+        data: ensSuggestions,
         id: 'suggestions',
         title: '􀊫 Suggestions',
       });
@@ -171,7 +166,7 @@ export default function SendContactList({
     <FlyInAnimation>
       {filteredContacts.length === 0 &&
       filteredAddresses.length === 0 &&
-      filteredSuggestions.length === 0 ? (
+      ensSuggestions.length === 0 ? (
         <SendEmptyState />
       ) : (
         <SendContactFlatList
