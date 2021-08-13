@@ -45,6 +45,7 @@ import { ethereumUtils } from '@rainbow-me/utils';
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
     color: colors.alpha(colors.blueGreyDark, 0.3),
+    size: android ? 40 : 'large',
   })
 )``;
 
@@ -294,7 +295,7 @@ export default function WalletConnectApprovalSheet() {
     <Sheet>
       {!Object.keys(meta).length ? (
         <Centered height={408}>
-          <LoadingSpinner size={android ? 40 : 'large'} />
+          <LoadingSpinner />
         </Centered>
       ) : (
         <Flex direction="column" height={408}>

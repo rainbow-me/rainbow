@@ -20,6 +20,10 @@ const DisplayDappNames = Object.freeze({
     name: 'Art Blocks',
     uri: buildAssetUrl('artblocks.io'),
   },
+  'astrofrens.com': {
+    name: 'Astro Frens',
+    uri: buildAssetUrl('astrofrens.com'),
+  },
   'badger.finance': {
     name: 'Badger DAO',
     uri: null,
@@ -28,9 +32,17 @@ const DisplayDappNames = Object.freeze({
     name: 'Balancer',
     uri: null,
   },
+  'blit.house': {
+    name: 'Blit House',
+    uri: buildAssetUrl('blit.house'),
+  },
   'blitmap.com': {
     name: 'Blitmap',
     uri: buildAssetUrl('blitmap.com'),
+  },
+  'collab.land': {
+    name: 'Collab.Land',
+    uri: buildAssetUrl('collab.land'),
   },
   'compound.finance': {
     name: 'Compound',
@@ -136,6 +148,10 @@ const DisplayDappNames = Object.freeze({
     name: 'PoolTogether',
     uri: buildAssetUrl('pooltogether.com'),
   },
+  'punks.house': {
+    name: 'Punk House',
+    uri: buildAssetUrl('punks.house'),
+  },
   'quickswap.exchange': {
     name: 'QuickSwap',
     uri: null,
@@ -143,6 +159,14 @@ const DisplayDappNames = Object.freeze({
   'rarible.com': {
     name: 'Rarible',
     uri: buildAssetUrl('rarible.com'),
+  },
+  'snapshot.org': {
+    name: 'Snapshot',
+    uri: buildAssetUrl('snapshot.org'),
+  },
+  'superrare.com': {
+    name: 'SuperRare',
+    uri: buildAssetUrl('superrare.com'),
   },
   'sushi.com': {
     name: 'Sushi',
