@@ -44,6 +44,7 @@ const { RainbowRequestReview, RNReview } = NativeModules;
 
 export const SettingsExternalURLs = {
   rainbowHomepage: 'https://rainbow.me',
+  rainbowLearn: 'https://rainbow.me/learn',
   review:
     'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review',
   twitterDeepLink: 'twitter://user?screen_name=rainbowdotme',
@@ -169,6 +170,11 @@ export default function SettingsSection({
         : Linking.openURL(SettingsExternalURLs.twitterWebUrl)
     );
   }, []);
+
+  const onPressLearn = useCallback(
+    async () => Linking.openURL(SettingsExternalURLs.rainbowLearn),
+    []
+  );
 
   const { allBackedUp, areBackedUp, canBeBackedUp } = useMemo(
     () => checkAllWallets(wallets),
@@ -301,6 +307,13 @@ export default function SettingsSection({
             onPress={onPressShare}
             testID="share-section"
             value={SettingsExternalURLs.rainbowHomepage}
+          />
+          <ListItem
+            icon={<Emoji name="brain" />}
+            label="Learn about Rainbow and Ethereum"
+            onPress={onPressLearn}
+            testID="learn-section"
+            value={SettingsExternalURLs.rainbowLearn}
           />
           <ListItem
             icon={<Emoji name="bird" />}
