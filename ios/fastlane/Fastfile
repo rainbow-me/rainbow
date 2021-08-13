@@ -54,6 +54,7 @@ platform :ios do
 
     pilot(
       app_identifier: "me.rainbow",
+      apple_id: "fastlane@rainbow.me",
       skip_waiting_for_build_processing: true,
     )
   end
