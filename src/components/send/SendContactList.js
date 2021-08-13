@@ -132,7 +132,9 @@ export default function SendContactList({
     return sortBy(
       filterList(
         userAccounts.filter(
-          account => toLower(account.address) !== toLower(accountAddress)
+          account =>
+            account.visible &&
+            toLower(account.address) !== toLower(accountAddress)
         ),
         currentInput,
         ['label']
