@@ -1,7 +1,15 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
-import { debounce, isEmpty, isEqual, isString, toLower } from 'lodash';
+import {
+  contains,
+  debounce,
+  isEmpty,
+  isEqual,
+  isString,
+  sortBy,
+  toLower,
+} from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
@@ -102,21 +110,28 @@ const fetchSuggestions = async (recipient, setSuggestions) => {
     let result = await ensClient.query({
       query: ENS_SUGGESTIONS,
       variables: {
-        amount: 3,
+        amount: 75,
         name: recipient,
       },
     });
     if (result?.data?.domains.length) {
       const newSuggestions = result.data.domains
         .map(ensDomain => ({
-          address: ensDomain.name,
-          color: profileUtils.addressHashedColorIndex(ensDomain.name),
+          address: ensDomain?.resolver?.addr?.id || ensDomain.name,
+          color: profileUtils.addressHashedColorIndex(
+            ensDomain?.resolver?.addr?.id || ensDomain.name
+          ),
           network: 'mainnet',
           nickname: ensDomain.name,
         }))
-        .sort((a, b) => a.length - b.length);
+        .filter(domain => !contains(domain.nickname, ['[', ']']));
 
-      setSuggestions(newSuggestions);
+      const sortedSuggestions = sortBy(
+        newSuggestions,
+        domain => domain.nickname.length,
+        ['asc']
+      ).slice(0, 3);
+      setSuggestions(sortedSuggestions);
     }
   }
 };
