@@ -172,7 +172,7 @@ export default function SettingsSection({
   }, []);
 
   const onPressLearn = useCallback(
-    async () => Linking.openURL(SettingsExternalURLs.rainbowLearn),
+    () => Linking.openURL(SettingsExternalURLs.rainbowLearn),
     []
   );
 
