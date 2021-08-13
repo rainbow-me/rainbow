@@ -59,7 +59,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
 
   // show avatar for contact rows that are accounts, not contacts
   const avatar =
-    accountType !== 'contacts' && accountType !== 'suggestions'
+    accountType !== 'contacts'
       ? returnStringFirstEmoji(label) ||
         profileUtils.addressHashedEmoji(address)
       : null;
@@ -69,7 +69,10 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
     cleanedUpLabel = removeFirstEmojiFromString(label);
   }
 
-  const handlePress = useCallback(() => onPress(address), [address, onPress]);
+  const handlePress = useCallback(() => {
+    const label = accountType === 'suggestions' ? nickname : address;
+    onPress(label);
+  }, [accountType, address, nickname, onPress]);
 
   return (
     <ButtonPressAnimation
