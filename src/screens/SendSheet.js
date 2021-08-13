@@ -716,14 +716,13 @@ export default function SendSheet(props) {
   }, [recipient]);
 
   const [ensSuggestions, setEnsSuggestions] = useState([]);
-
   useEffect(() => {
-    if (recipient?.length > 2) {
+    if (recipient?.length > 2 && network === networkTypes.mainnet) {
       debouncedFetchSuggestions(recipient, setEnsSuggestions);
     } else {
       setEnsSuggestions([]);
     }
-  }, [recipient, setEnsSuggestions]);
+  }, [network, recipient, setEnsSuggestions]);
 
   useEffect(() => {
     checkAddress();
