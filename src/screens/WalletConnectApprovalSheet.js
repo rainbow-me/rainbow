@@ -215,11 +215,11 @@ export default function WalletConnectApprovalSheet() {
   );
 
   useEffect(() => {
-    if (chainId && type === WalletConnectApprovalSheetType.connect) {
+    if (chainId) {
       const network = ethereumUtils.getNetworkFromChainId(Number(chainId));
       setApprovalNetwork(network);
     }
-  }, [approvalNetwork, chainId, type]);
+  }, [chainId]);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
