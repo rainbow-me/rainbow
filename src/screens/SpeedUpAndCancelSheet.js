@@ -287,7 +287,6 @@ export default function SpeedUpAndCancelSheet() {
           fetchedTx.current = true;
           const txObj = await currentProvider.getTransaction(txHash);
           if (txObj) {
-            logger.log(txObj);
             const hexGasLimit = toHex(txObj.gasLimit.toString());
             const hexGasPrice = toHex(txObj.gasPrice.toString());
             const hexValue = toHex(txObj.value.toString());
