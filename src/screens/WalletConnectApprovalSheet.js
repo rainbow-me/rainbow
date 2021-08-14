@@ -219,7 +219,7 @@ export default function WalletConnectApprovalSheet() {
       const network = ethereumUtils.getNetworkFromChainId(Number(chainId));
       setApprovalNetwork(network);
     }
-  }, [approvalNetwork, chainId, type]);
+  }, [chainId, type]);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
