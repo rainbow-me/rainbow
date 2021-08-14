@@ -116,6 +116,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
   dispatch,
   getState
 ) => {
+  let timeout = null;
   getState().appState;
   let walletConnector = null;
   const receivedTimestamp = Date.now();
@@ -126,7 +127,6 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
       let meta = null;
       let navigated = false;
       let timedOut = false;
-      let timeout = null;
       let routeParams = {
         callback: async (
           approved,
@@ -174,6 +174,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
       };
 
       walletConnector?.on('session_request', (error, payload) => {
+        logger.debug('CLEARED TIMED OUT YO 1!');
         clearTimeout(timeout);
         if (error) {
           analytics.track('Error on wc session_request', {
@@ -228,6 +229,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
           if (meta) return;
           timedOut = true;
           routeParams = { ...routeParams, timedOut };
+          logger.debug('TIMED OUT YO!');
           Navigation.handleAction(
             Routes.WALLET_CONNECT_APPROVAL_SHEET,
             routeParams
@@ -245,6 +247,8 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         );
       });
     } catch (error) {
+      logger.debug('CLEARED TIMED OUT YO 2!');
+      clearTimeout(timeout);
       logger.log('Exception during wc session_request');
       analytics.track('Exception on wc session_request', {
         error,
@@ -253,6 +257,8 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
       Alert.alert(lang.t('wallet.wallet_connect.error'));
     }
   } catch (error) {
+    logger.debug('CLEARED TIMED OUT YO 3!');
+    clearTimeout(timeout);
     logger.log('FCM exception during wc session_request');
     analytics.track('FCM exception on wc session_request', {
       error,
