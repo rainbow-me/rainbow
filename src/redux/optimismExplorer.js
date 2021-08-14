@@ -107,28 +107,32 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
         total = total.add(balances[key]);
       });
     }
+    const assetsWithBalance = assets.filter(asset => asset.quantity > 0);
 
-    const hasAssets = !!assets.find(asset => asset.quantity > 0);
-
-    if (hasAssets) {
+    if (assetsWithBalance.length) {
       dispatch(emitAssetRequest(tokenAddresses));
       dispatch(emitChartsRequest(tokenAddresses));
       const prices = await fetchAssetPrices(
-        assets.map(({ asset: { coingecko_id } }) => coingecko_id),
+        assetsWithBalance.map(({ asset: { coingecko_id } }) => coingecko_id),
         formattedNativeCurrency
       );
 
       if (prices) {
         Object.keys(prices).forEach(key => {
-          for (let i = 0; i < assets.length; i++) {
-            if (toLower(assets[i].asset.coingecko_id) === toLower(key)) {
+          for (let i = 0; i < assetsWithBalance.length; i++) {
+            if (
+              toLower(assetsWithBalance[i].asset.coingecko_id) === toLower(key)
+            ) {
               const asset =
                 ethereumUtils.getAsset(
                   allAssets,
-                  toLower(assets[i].asset.mainnet_address)
-                ) || genericAssets[toLower(assets[i].asset.mainnet_address)];
-              assets[i].asset.network = networkTypes.optimism;
-              assets[i].asset.price = asset?.price || {
+                  toLower(assetsWithBalance[i].asset.mainnet_address)
+                ) ||
+                genericAssets[
+                  toLower(assetsWithBalance[i].asset.mainnet_address)
+                ];
+              assetsWithBalance[i].asset.network = networkTypes.optimism;
+              assetsWithBalance[i].asset.price = asset?.price || {
                 changed_at: prices[key].last_updated_at,
                 relative_change_24h:
                   prices[key][`${formattedNativeCurrency}_24h_change`],
@@ -140,7 +144,7 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
         });
       }
 
-      const newPayload = { assets };
+      const newPayload = { assets: assetsWithBalance };
 
       if (!isEqual(lastUpdatePayload, newPayload)) {
         dispatch(
@@ -165,7 +169,7 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
 
     const optimismExplorerBalancesHandle = setTimeout(
       fetchAssetsBalancesAndPrices,
-      !hasAssets
+      !assetsWithBalance.length
         ? UPDATE_BALANCE_AND_PRICE_FREQUENCY * 2
         : UPDATE_BALANCE_AND_PRICE_FREQUENCY
     );

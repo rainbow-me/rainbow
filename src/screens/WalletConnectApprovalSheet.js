@@ -95,7 +95,6 @@ export default function WalletConnectApprovalSheet() {
   const { selectedWallet, walletNames } = useWallets();
   const handled = useRef(false);
   const [scam, setScam] = useState(false);
-  const [approvalNetwork, setApprovalNetwork] = useState(network);
   const [approvalAccount, setApprovalAccount] = useState({
     address: accountAddress,
     wallet: selectedWallet,
@@ -107,7 +106,12 @@ export default function WalletConnectApprovalSheet() {
   const callback = params?.callback;
   const receivedTimestamp = params?.receivedTimestamp;
   const timedOut = params?.timedOut;
-  const chainId = meta?.chainId || 1;
+  const chainId = meta?.chainId || params?.chainId || 1;
+  const currentNetwork = params?.currentNetwork;
+  const [approvalNetwork, setApprovalNetwork] = useState(
+    currentNetwork || network
+  );
+
   const { dappName, dappUrl, dappScheme, imageUrl, peerId } = meta;
 
   const checkIfScam = useCallback(
@@ -211,13 +215,11 @@ export default function WalletConnectApprovalSheet() {
   );
 
   useEffect(() => {
-    if (meta?.chainId) {
-      const network = ethereumUtils.getNetworkFromChainId(
-        Number(meta?.chainId || 1)
-      );
+    if (chainId && type === WalletConnectApprovalSheetType.connect) {
+      const network = ethereumUtils.getNetworkFromChainId(Number(chainId));
       setApprovalNetwork(network);
     }
-  }, [meta?.chainId]);
+  }, [approvalNetwork, chainId, type]);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -252,15 +254,16 @@ export default function WalletConnectApprovalSheet() {
   }, []);
 
   const handlePressChangeWallet = useCallback(() => {
-    Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
-      currentAccountAddress: approvalAccount.address,
-      onChangeWallet: (address, wallet) => {
-        setApprovalAccount({ address, wallet });
-        goBack();
-      },
-      watchOnly: true,
-    });
-  }, [approvalAccount.address, goBack]);
+    type === WalletConnectApprovalSheetType.connect &&
+      Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
+        currentAccountAddress: approvalAccount.address,
+        onChangeWallet: (address, wallet) => {
+          setApprovalAccount({ address, wallet });
+          goBack();
+        },
+        watchOnly: true,
+      });
+  }, [approvalAccount.address, goBack, type]);
 
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -289,16 +292,21 @@ export default function WalletConnectApprovalSheet() {
 
   const menuItems = useMemo(() => networksMenuItems(), []);
   const NetworkSwitcherParent =
-    menuItems.length > 1 ? ContextMenuButton : React.Fragment;
+    type === WalletConnectApprovalSheetType.connect && menuItems.length > 1
+      ? ContextMenuButton
+      : React.Fragment;
+
+  const sheetHeight =
+    type === WalletConnectApprovalSheetType.connect ? 408 : 438;
 
   return (
     <Sheet>
       {!Object.keys(meta).length ? (
-        <Centered height={408}>
+        <Centered height={sheetHeight}>
           <LoadingSpinner />
         </Centered>
       ) : (
-        <Flex direction="column" height={408}>
+        <Flex direction="column" height={sheetHeight}>
           <Centered
             direction="column"
             paddingBottom={5}
@@ -387,7 +395,9 @@ export default function WalletConnectApprovalSheet() {
                   <LabelText numberOfLines={1}>
                     {approvalAccountInfo.accountLabel}
                   </LabelText>
-                  <SwitchText> 􀁰</SwitchText>
+                  {type === WalletConnectApprovalSheetType.connect && (
+                    <SwitchText> 􀁰</SwitchText>
+                  )}
                 </Row>
               </ButtonPressAnimation>
             </Column>
@@ -417,9 +427,10 @@ export default function WalletConnectApprovalSheet() {
                     >
                       {approvalNetworkInfo.name}
                     </LabelText>
-                    {menuItems.length > 1 && (
-                      <SwitchText align="right"> 􀁰</SwitchText>
-                    )}
+                    {type === WalletConnectApprovalSheetType.connect &&
+                      menuItems.length > 1 && (
+                        <SwitchText align="right"> 􀁰</SwitchText>
+                      )}
                   </Row>
                 </ButtonPressAnimation>
               </NetworkSwitcherParent>

@@ -282,6 +282,9 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     const requestId = payload.id;
     if (payload.method === 'wallet_addEthereumChain') {
       const { chainId } = payload.params[0];
+      const currentNetwork = ethereumUtils.getNetworkFromChainId(
+        Number(walletConnector._chainId)
+      );
       const supportedChains = [
         networkTypes.mainnet,
         networkTypes.ropsten,
@@ -329,6 +332,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
             }
           },
           chainId: Number(numericChainId),
+          currentNetwork,
           meta: {
             dappName,
             dappUrl,
