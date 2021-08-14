@@ -605,7 +605,7 @@ export default function TransactionConfirmationScreen() {
       if (sendInsteadOfSign) {
         const txDetails = {
           amount: displayDetails?.request?.value ?? 0,
-          asset: displayDetails?.request?.asset,
+          asset: nativeAsset || displayDetails?.request?.asset,
           dappName,
           from: displayDetails?.request?.from,
           gasLimit,
