@@ -861,10 +861,13 @@ export const dataWatchPendingTransactions = (
   return false;
 };
 
-export const dataUpdateTransaction = (txHash, txObj, watch, cb) => (
-  dispatch,
-  getState
-) => {
+export const dataUpdateTransaction = (
+  txHash,
+  txObj,
+  watch,
+  cb,
+  provider = null
+) => (dispatch, getState) => {
   const { transactions } = getState().data;
 
   const allOtherTx = transactions.filter(tx => tx.hash !== txHash);
@@ -882,7 +885,8 @@ export const dataUpdateTransaction = (txHash, txObj, watch, cb) => (
       watchPendingTransactions(
         accountAddress,
         txObj.network ? TXN_WATCHER_MAX_TRIES_LAYER_2 : TXN_WATCHER_MAX_TRIES,
-        cb
+        cb,
+        provider
       )
     );
   }

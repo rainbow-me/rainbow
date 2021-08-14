@@ -26,7 +26,11 @@ import {
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
-import { getTransaction, toHex } from '@rainbow-me/handlers/web3';
+import {
+  getProviderForNetwork,
+  getTransaction,
+  toHex,
+} from '@rainbow-me/handlers/web3';
 import {
   useAccountSettings,
   useBooleanState,
@@ -34,7 +38,7 @@ import {
   useGas,
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
-import { loadWallet, sendTransaction } from '@rainbow-me/model/wallet';
+import { sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { getTitle, gweiToWei, weiToGwei } from '@rainbow-me/parsers';
 import { dataUpdateTransaction } from '@rainbow-me/redux/data';
@@ -102,8 +106,6 @@ const text = {
   [SPEED_UP]: `This will speed up your pending transaction by replacing it. There’s still a chance your original transaction will confirm first!`,
 };
 
-let existingWallet;
-
 const calcMinGasPriceAllowed = prevGasPrice => {
   const prevGasPriceBN = new BigNumber(prevGasPrice);
 
@@ -139,6 +141,8 @@ export default function SpeedUpAndCancelSheet() {
     calcMinGasPriceAllowed(tx.gasPrice)
   );
   const fetchedTx = useRef(false);
+  const [currentNetwork, setCurrentNetwork] = useState(null);
+  const [currentProvider, setCurrentProvider] = useState(null);
   const [data, setData] = useState(null);
   const [gasLimit, setGasLimit] = useState(null);
   const [nonce, setNonce] = useState(null);
@@ -165,6 +169,7 @@ export default function SpeedUpAndCancelSheet() {
       };
       const originalHash = tx.hash;
       const { hash } = await sendTransaction({
+        provider: currentProvider,
         transaction: cancelTxPayload,
       });
 
@@ -176,13 +181,23 @@ export default function SpeedUpAndCancelSheet() {
       }
       updatedTx.status = TransactionStatusTypes.cancelling;
       updatedTx.title = getTitle(updatedTx);
-      dispatch(dataUpdateTransaction(originalHash, updatedTx, true));
+      dispatch(
+        dataUpdateTransaction(originalHash, updatedTx, true, currentProvider)
+      );
     } catch (e) {
       logger.log('Error submitting cancel tx', e);
     } finally {
       goBack();
     }
-  }, [accountAddress, dispatch, getNewGasPrice, goBack, nonce, tx]);
+  }, [
+    accountAddress,
+    currentProvider,
+    dispatch,
+    getNewGasPrice,
+    goBack,
+    nonce,
+    tx,
+  ]);
 
   const handleSpeedUp = useCallback(async () => {
     try {
@@ -195,10 +210,9 @@ export default function SpeedUpAndCancelSheet() {
         to,
         value,
       };
-      existingWallet = await loadWallet();
       const originalHash = tx.hash;
       const { hash } = await sendTransaction({
-        existingWallet,
+        provider: currentProvider,
         transaction: fasterTxPayload,
       });
       const updatedTx = { ...tx };
@@ -209,17 +223,57 @@ export default function SpeedUpAndCancelSheet() {
       }
       updatedTx.status = TransactionStatusTypes.speeding_up;
       updatedTx.title = getTitle(updatedTx);
-      dispatch(dataUpdateTransaction(originalHash, updatedTx, true));
+      dispatch(
+        dataUpdateTransaction(originalHash, updatedTx, true, currentProvider)
+      );
     } catch (e) {
       logger.log('Error submitting speed up tx', e);
     } finally {
       goBack();
     }
-  }, [data, dispatch, gasLimit, getNewGasPrice, goBack, nonce, to, tx, value]);
+  }, [
+    currentProvider,
+    data,
+    dispatch,
+    gasLimit,
+    getNewGasPrice,
+    goBack,
+    nonce,
+    to,
+    tx,
+    value,
+  ]);
+
+  // Set the network
+  useEffect(() => {
+    setCurrentNetwork(tx.network || network);
+  }, [network, tx.network]);
+
+  // Set the provider
+  useEffect(() => {
+    if (currentNetwork) {
+      startPollingGasPrices(currentNetwork);
+      const updateProvider = async () => {
+        const provider = await getProviderForNetwork(currentNetwork);
+        setCurrentProvider(provider);
+      };
+
+      updateProvider();
+    }
+  }, [currentNetwork, startPollingGasPrices]);
+
+  // Update gas limit
+  useEffect(() => {
+    if (!isEmpty(gasPrices) && gasLimit) {
+      updateTxFee(gasLimit, null, currentNetwork);
+      // Always default to fast
+      updateGasPriceOption('fast');
+    }
+  }, [currentNetwork, gasLimit, gasPrices, updateGasPriceOption, updateTxFee]);
 
   useEffect(() => {
-    setTimeout(async () => {
-      if (!fetchedTx.current) {
+    const init = async () => {
+      if (currentNetwork && currentProvider && !fetchedTx.current) {
         const txHash = tx.hash.split('-')[0];
         try {
           fetchedTx.current = true;
@@ -236,6 +290,9 @@ export default function SpeedUpAndCancelSheet() {
             setTo(txObj.to);
             setGasLimit(hexGasLimit);
             setMinGasPrice(calcMinGasPriceAllowed(hexGasPrice));
+          } else {
+            // Retry every 3 sec
+            setTimeout(() => init(), 3000);
           }
         } catch (e) {
           logger.log('something went wrong while fetching tx info ', e);
@@ -249,17 +306,19 @@ export default function SpeedUpAndCancelSheet() {
           }
           // We don't care about this for cancellations
         }
-        startPollingGasPrices();
-        // Always default to fast
-        updateGasPriceOption('fast');
       }
-    }, 300);
+    };
+
+    init();
 
     return () => {
       stopPollingGasPrices();
     };
   }, [
+    currentNetwork,
+    currentProvider,
     goBack,
+    network,
     startPollingGasPrices,
     stopPollingGasPrices,
     tx,
@@ -430,7 +489,7 @@ export default function SpeedUpAndCancelSheet() {
                   )}
                   <GasSpeedButtonContainer>
                     <GasSpeedButton
-                      currentNetwork={network}
+                      currentNetwork={currentNetwork}
                       minGasPrice={minGasPrice}
                       onCustomGasBlur={hideKeyboard}
                       onCustomGasFocus={showKeyboard}
