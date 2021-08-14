@@ -1,7 +1,15 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
-import { isEmpty, isEqual, isString, toLower } from 'lodash';
+import {
+  contains,
+  debounce,
+  isEmpty,
+  isEqual,
+  isString,
+  sortBy,
+  toLower,
+} from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
@@ -9,6 +17,8 @@ import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { dismissingScreenListener } from '../../shim';
+import { ensClient } from '../apollo/client';
+import { ENS_SUGGESTIONS } from '../apollo/queries';
 import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import {
@@ -66,7 +76,7 @@ import {
   convertAmountFromNativeValue,
   formatInputDecimals,
 } from '@rainbow-me/utilities';
-import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
+import { deviceUtils, ethereumUtils, profileUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
@@ -94,6 +104,39 @@ const KeyboardSizeView = styled(KeyboardArea)`
   background-color: ${({ showAssetForm, theme: { colors } }) =>
     showAssetForm ? colors.lighterGrey : colors.white};
 `;
+
+const fetchSuggestions = async (recipient, setSuggestions) => {
+  if (recipient?.length && recipient.length > 2) {
+    let result = await ensClient.query({
+      query: ENS_SUGGESTIONS,
+      variables: {
+        amount: 75,
+        name: recipient,
+      },
+    });
+    if (result?.data?.domains.length) {
+      const newSuggestions = result.data.domains
+        .map(ensDomain => ({
+          address: ensDomain?.resolver?.addr?.id || ensDomain.name,
+          color: profileUtils.addressHashedColorIndex(
+            ensDomain?.resolver?.addr?.id || ensDomain.name
+          ),
+          network: 'mainnet',
+          nickname: ensDomain.name,
+        }))
+        .filter(domain => !contains(domain.nickname, ['[', ']']));
+
+      const sortedSuggestions = sortBy(
+        newSuggestions,
+        domain => domain.nickname.length,
+        ['asc']
+      ).slice(0, 3);
+      setSuggestions(sortedSuggestions);
+    }
+  }
+};
+
+const debouncedFetchSuggestions = debounce(fetchSuggestions, 200);
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
@@ -667,6 +710,15 @@ export default function SendSheet(props) {
     setIsValidAddress(validAddress);
   }, [recipient]);
 
+  const [ensSuggestions, setEnsSuggestions] = useState([]);
+  useEffect(() => {
+    if (recipient?.length > 2 && network === networkTypes.mainnet) {
+      debouncedFetchSuggestions(recipient, setEnsSuggestions);
+    } else {
+      setEnsSuggestions([]);
+    }
+  }, [network, recipient, setEnsSuggestions]);
+
   useEffect(() => {
     checkAddress();
   }, [checkAddress]);
@@ -738,6 +790,9 @@ export default function SendSheet(props) {
           <SendContactList
             contacts={filteredContacts}
             currentInput={currentInput}
+            ensSuggestions={
+              recipient?.length && recipient?.length > 2 ? ensSuggestions : []
+            }
             onPressContact={setRecipient}
             removeContact={onRemoveContact}
             userAccounts={userAccounts}

@@ -4,7 +4,7 @@ import {
   returnStringFirstEmoji,
 } from '../helpers/emojiHandler';
 import { address } from '../utils/abbreviations';
-import { addressHashedEmoji } from '../utils/defaultProfileUtils';
+import { addressHashedEmoji } from '../utils/profileUtils';
 import networkTypes from './networkTypes';
 
 export function getAccountProfileInfo(

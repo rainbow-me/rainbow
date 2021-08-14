@@ -116,6 +116,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
   dispatch,
   getState
 ) => {
+  let timeout = null;
   getState().appState;
   let walletConnector = null;
   const receivedTimestamp = Date.now();
@@ -126,7 +127,6 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
       let meta = null;
       let navigated = false;
       let timedOut = false;
-      let timeout = null;
       let routeParams = {
         callback: async (
           approved,
@@ -245,6 +245,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         );
       });
     } catch (error) {
+      clearTimeout(timeout);
       logger.log('Exception during wc session_request');
       analytics.track('Exception on wc session_request', {
         error,
@@ -253,6 +254,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
       Alert.alert(lang.t('wallet.wallet_connect.error'));
     }
   } catch (error) {
+    clearTimeout(timeout);
     logger.log('FCM exception during wc session_request');
     analytics.track('FCM exception on wc session_request', {
       error,
@@ -282,6 +284,9 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     const requestId = payload.id;
     if (payload.method === 'wallet_addEthereumChain') {
       const { chainId } = payload.params[0];
+      const currentNetwork = ethereumUtils.getNetworkFromChainId(
+        Number(walletConnector._chainId)
+      );
       const supportedChains = [
         networkTypes.mainnet,
         networkTypes.ropsten,
@@ -329,6 +334,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
             }
           },
           chainId: Number(numericChainId),
+          currentNetwork,
           meta: {
             dappName,
             dappUrl,

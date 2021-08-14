@@ -68,6 +68,7 @@ export default function SendContactList({
   onPressContact,
   removeContact,
   userAccounts,
+  ensSuggestions,
 }) {
   const { accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
@@ -132,7 +133,9 @@ export default function SendContactList({
     return sortBy(
       filterList(
         userAccounts.filter(
-          account => toLower(account.address) !== toLower(accountAddress)
+          account =>
+            account.visible &&
+            toLower(account.address) !== toLower(accountAddress)
         ),
         currentInput,
         ['label']
@@ -151,13 +154,21 @@ export default function SendContactList({
         id: 'accounts',
         title: '􀢲 My wallets',
       });
+    ensSuggestions.length &&
+      tmp.push({
+        data: ensSuggestions,
+        id: 'suggestions',
+        title: '􀊫 Suggestions',
+      });
     return tmp;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filteredAddresses, filteredContacts, currentInput]);
+  }, [currentInput, ensSuggestions, filteredAddresses, filteredContacts]);
 
   return (
     <FlyInAnimation>
-      {filteredContacts.length === 0 && filteredAddresses.length === 0 ? (
+      {filteredContacts.length === 0 &&
+      filteredAddresses.length === 0 &&
+      ensSuggestions.length === 0 ? (
         <SendEmptyState />
       ) : (
         <SendContactFlatList

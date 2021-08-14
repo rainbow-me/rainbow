@@ -31,7 +31,7 @@ import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { returnStringFirstEmoji } from '@rainbow-me/helpers/emojiHandler';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import { DefaultTokenLists } from '@rainbow-me/references';
-import { defaultProfileUtils } from '@rainbow-me/utils';
+import { profileUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 export default async function runMigrations() {
@@ -312,16 +312,14 @@ export default async function runMigrations() {
           return {
             ...account,
             ...(!accountEmoji && {
-              label: `${defaultProfileUtils.addressHashedEmoji(
-                account.address
-              )} ${account.label}`,
+              label: `${profileUtils.addressHashedEmoji(account.address)} ${
+                account.label
+              }`,
             }),
             color:
               (accountEmoji
                 ? newColorIndexes[account.color]
-                : defaultProfileUtils.addressHashedColorIndex(
-                    account.address
-                  )) || 0,
+                : profileUtils.addressHashedColorIndex(account.address)) || 0,
           };
         });
         const newWallet = { ...wallet, addresses: newAddresses };
@@ -392,8 +390,8 @@ export default async function runMigrations() {
             captureException(migrationError);
             continue;
           }
-          const emoji = defaultProfileUtils.addressHashedEmoji(address);
-          const color = defaultProfileUtils.addressHashedColorIndex(address);
+          const emoji = profileUtils.addressHashedEmoji(address);
+          const color = profileUtils.addressHashedColorIndex(address);
           nickname = `${emoji} ${nickname}`;
           updatedContacts[contactKeys[j]] = {
             ...contact,

@@ -1,6 +1,7 @@
 import { isHexString } from '@ethersproject/bytes';
 import { get, isEmpty, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
+import { ActivityIndicator } from 'react-native';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
@@ -17,10 +18,7 @@ import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
-import {
-  defaultProfileUtils,
-  showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+import { profileUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
   ${({ isSmallPhone, isTinyPhone }) =>
@@ -43,6 +41,14 @@ const AddressFieldLabel = styled(Label).attrs({
   color: ${({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.6)};
   margin-right: 4;
   opacity: 1;
+`;
+
+const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.alpha(colors.blueGreyDark, 0.3),
+  })
+)`
+  margin-right: 2;
 `;
 
 const SendSheetTitle = styled(SheetTitle).attrs({
@@ -107,8 +113,8 @@ export default function SendHeader({
     let color = get(contact, 'color');
     let nickname = recipient;
     if (color !== 0 && !color) {
-      const emoji = defaultProfileUtils.addressHashedEmoji(hexAddress);
-      color = defaultProfileUtils.addressHashedColorIndex(hexAddress) || 0;
+      const emoji = profileUtils.addressHashedEmoji(hexAddress);
+      color = profileUtils.addressHashedColorIndex(hexAddress) || 0;
       nickname = isHexString(recipient) ? emoji : `${emoji} ${recipient}`;
     }
 
@@ -224,7 +230,7 @@ export default function SendHeader({
             </ButtonPressAnimation>
           )}
         {isValidAddress && !hexAddress && isEmpty(contact?.address) && (
-          <Spinner color={colors.appleBlue} />
+          <LoadingSpinner />
         )}
         {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
