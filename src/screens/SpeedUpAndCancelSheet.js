@@ -26,11 +26,7 @@ import {
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
-import {
-  getProviderForNetwork,
-  getTransaction,
-  toHex,
-} from '@rainbow-me/handlers/web3';
+import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
 import {
   useAccountSettings,
   useBooleanState,
@@ -277,8 +273,9 @@ export default function SpeedUpAndCancelSheet() {
         const txHash = tx.hash.split('-')[0];
         try {
           fetchedTx.current = true;
-          const txObj = await getTransaction(txHash);
+          const txObj = await currentProvider.getTransaction(txHash);
           if (txObj) {
+            logger.log(txObj);
             const hexGasLimit = toHex(txObj.gasLimit.toString());
             const hexGasPrice = toHex(txObj.gasPrice.toString());
             const hexValue = toHex(txObj.value.toString());
@@ -290,9 +287,6 @@ export default function SpeedUpAndCancelSheet() {
             setTo(txObj.to);
             setGasLimit(hexGasLimit);
             setMinGasPrice(calcMinGasPriceAllowed(hexGasPrice));
-          } else {
-            // Retry every 3 sec
-            setTimeout(() => init(), 3000);
           }
         } catch (e) {
           logger.log('something went wrong while fetching tx info ', e);
@@ -300,9 +294,13 @@ export default function SpeedUpAndCancelSheet() {
           if (type === SPEED_UP) {
             Alert.alert(
               'Unable to speed up transaction',
-              'There was a problem while fetching the transaction data. Please try again...'
+              'There was a problem while fetching the transaction data. Please try again...',
+              [
+                {
+                  onPress: () => goBack(),
+                },
+              ]
             );
-            goBack();
           }
           // We don't care about this for cancellations
         }
