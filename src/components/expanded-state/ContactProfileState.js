@@ -3,7 +3,7 @@ import { Keyboard } from 'react-native';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
-import { abbreviations, defaultProfileUtils, magicMemo } from '../../utils';
+import { abbreviations, magicMemo, profileUtils } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { Button } from '../buttons';
@@ -124,13 +124,12 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
   const { isDarkMode, colors } = useTheme();
 
   const handleChangeAvatar = useCallback(() => {
-    const prevAvatarIndex = defaultProfileUtils.avatars.findIndex(
+    const prevAvatarIndex = profileUtils.avatars.findIndex(
       avatar => avatar.emoji === emoji
     );
-    const nextAvatarIndex =
-      (prevAvatarIndex + 1) % defaultProfileUtils.avatars.length;
-    setColor(defaultProfileUtils.avatars[nextAvatarIndex]?.colorIndex);
-    setEmoji(defaultProfileUtils.avatars[nextAvatarIndex]?.emoji);
+    const nextAvatarIndex = (prevAvatarIndex + 1) % profileUtils.avatars.length;
+    setColor(profileUtils.avatars[nextAvatarIndex]?.colorIndex);
+    setEmoji(profileUtils.avatars[nextAvatarIndex]?.emoji);
   }, [emoji, setColor]);
 
   return (
