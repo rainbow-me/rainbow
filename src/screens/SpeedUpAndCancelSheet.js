@@ -178,7 +178,13 @@ export default function SpeedUpAndCancelSheet() {
       updatedTx.status = TransactionStatusTypes.cancelling;
       updatedTx.title = getTitle(updatedTx);
       dispatch(
-        dataUpdateTransaction(originalHash, updatedTx, true, currentProvider)
+        dataUpdateTransaction(
+          originalHash,
+          updatedTx,
+          true,
+          null,
+          currentProvider
+        )
       );
     } catch (e) {
       logger.log('Error submitting cancel tx', e);
@@ -220,7 +226,13 @@ export default function SpeedUpAndCancelSheet() {
       updatedTx.status = TransactionStatusTypes.speeding_up;
       updatedTx.title = getTitle(updatedTx);
       dispatch(
-        dataUpdateTransaction(originalHash, updatedTx, true, currentProvider)
+        dataUpdateTransaction(
+          originalHash,
+          updatedTx,
+          true,
+          null,
+          currentProvider
+        )
       );
     } catch (e) {
       logger.log('Error submitting speed up tx', e);
