@@ -267,8 +267,12 @@ export default function SpeedUpAndCancelSheet() {
       };
 
       updateProvider();
+
+      return () => {
+        stopPollingGasPrices();
+      };
     }
-  }, [currentNetwork, startPollingGasPrices]);
+  }, [currentNetwork, startPollingGasPrices, stopPollingGasPrices]);
 
   // Update gas limit
   useEffect(() => {
@@ -319,17 +323,11 @@ export default function SpeedUpAndCancelSheet() {
     };
 
     init();
-
-    return () => {
-      stopPollingGasPrices();
-    };
   }, [
     currentNetwork,
     currentProvider,
     goBack,
     network,
-    startPollingGasPrices,
-    stopPollingGasPrices,
     tx,
     tx.gasLimit,
     tx.gasPrice,
