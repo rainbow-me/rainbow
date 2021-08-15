@@ -28,6 +28,7 @@ const Routes = {
   MAIN_NAVIGATOR_WRAPPER: 'MainNavigatorWrapper',
   MODAL_SCREEN: 'ModalScreen',
   NATIVE_STACK: 'NativeStack',
+  NFC_SHEET: 'NFCSheet',
   PIN_AUTHENTICATION_SCREEN: 'PinAuthenticationScreen',
   PROFILE_SCREEN: 'ProfileScreen',
   QR_SCANNER_SCREEN: 'QRScannerScreen',

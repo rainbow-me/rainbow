@@ -16,6 +16,7 @@ import ExpandedAssetSheet from '../screens/ExpandedAssetSheet';
 import ExplainSheet from '../screens/ExplainSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
+import NFCSheet from '../screens/NFCSheet';
 import ReceiveModal from '../screens/ReceiveModal';
 import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
@@ -294,6 +295,11 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
+        {...explainSheetConfig}
+      />
+      <NativeStack.Screen
+        component={NFCSheet}
+        name={Routes.NFC_SHEET}
         {...explainSheetConfig}
       />
       <NativeStack.Screen
