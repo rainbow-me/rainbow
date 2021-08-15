@@ -32,6 +32,7 @@
 		66F889DC260CEF1E00E27D6E /* SlackBottomSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 66F889DA260CEF1E00E27D6E /* SlackBottomSheet.m */; };
 		66FEC91623EDA14000A0F367 /* RoundedCornerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FEC91523EDA13F00A0F367 /* RoundedCornerView.swift */; };
 		7287CE1EC33B4913AEE1F4B6 /* SFMono-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 668A9E253DAF444A90ECB997 /* SFMono-Medium.otf */; };
+		7F3BB90426C885B9008A9DE2 /* PassKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F3BB90326C885B9008A9DE2 /* PassKit.framework */; };
 		A4277D9F23CBD1910042BAF4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277D9E23CBD1910042BAF4 /* Extensions.swift */; };
 		A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4277DA223CFE85F0042BAF4 /* Theme.swift */; };
 		A44A4EEE23EC928900B543F1 /* CoinIconWithProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44A4EED23EC928900B543F1 /* CoinIconWithProgressBar.swift */; };
@@ -139,6 +140,7 @@
 		66F889D9260CEF1E00E27D6E /* SlackBottomSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlackBottomSheet.h; sourceTree = "<group>"; };
 		66F889DA260CEF1E00E27D6E /* SlackBottomSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SlackBottomSheet.m; sourceTree = "<group>"; };
 		66FEC91523EDA13F00A0F367 /* RoundedCornerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedCornerView.swift; sourceTree = "<group>"; };
+		7F3BB90326C885B9008A9DE2 /* PassKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PassKit.framework; path = System/Library/Frameworks/PassKit.framework; sourceTree = SDKROOT; };
 		95F2888C850F40C8A26E083B /* SFMono-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Regular.otf"; path = "../src/assets/fonts/SFMono-Regular.otf"; sourceTree = "<group>"; };
 		98AED33BAB4247CEBEF8464D /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		9DEADFA4826D4D0BAA950D21 /* libRNFIRMessaging.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFIRMessaging.a; sourceTree = "<group>"; };
@@ -183,6 +185,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7F3BB90426C885B9008A9DE2 /* PassKit.framework in Frameworks */,
 				ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */,
 				C72F456C99A646399192517D /* libz.tbd in Frameworks */,
 				356973DFA8A8728D633A27DA /* libPods-Rainbow.a in Frameworks */,
@@ -293,6 +296,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7F3BB90326C885B9008A9DE2 /* PassKit.framework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
 				24979E7920F84004007EB0DA /* Firebase.h */,
@@ -754,7 +758,7 @@
 				ASSETCATALOG_COMPILER_OPTIMIZATION = time;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Rainbow/RainbowDebug.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
@@ -811,7 +815,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = me.rainbow;
 				PRODUCT_NAME = Rainbow;
 				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "match Development me.rainbow";
+				PROVISIONING_PROFILE_SPECIFIER = "match AppStore me.rainbow";
 				SWIFT_OBJC_BRIDGING_HEADER = "Rainbow-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;

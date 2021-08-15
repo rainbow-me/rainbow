@@ -29,6 +29,8 @@
 		<string>merchant.me.rainbow.test</string>
 		<string>merchant.me.rainbow</string>
 	</array>
+	<key>com.apple.developer.passkit.pass-presentation-suppression</key>
+	<true/>
 	<key>com.apple.developer.ubiquity-container-identifiers</key>
 	<array>
 		<string>iCloud.me.rainbow</string>

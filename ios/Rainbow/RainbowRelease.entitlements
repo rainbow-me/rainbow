@@ -33,6 +33,8 @@
 	<array>
 		<string>iCloud.me.rainbow</string>
 	</array>
+	<key>com.apple.developer.passkit.pass-presentation-suppression</key>
+    <true/>
 	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
 	<string>$(TeamIdentifierPrefix)$(CFBundleIdentifier)</string>
 </dict>
