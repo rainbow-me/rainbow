@@ -49,9 +49,7 @@ export default function DiscoverHeaderButton() {
     navigate,
   ]);
 
-  const onLongPress = useCallback(() => navigate(Routes.CONNECTED_DAPPS), [
-    navigate,
-  ]);
+  const onLongPress = useCallback(() => navigate(Routes.NFC_SHEET), [navigate]);
 
   const shadows = useMemo(() => DiscoverButtonShadowsFactory(colors), [colors]);
 
