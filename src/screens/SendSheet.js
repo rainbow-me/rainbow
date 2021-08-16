@@ -9,6 +9,7 @@ import {
   isString,
   sortBy,
   toLower,
+  uniqBy,
 } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
@@ -105,34 +106,62 @@ const KeyboardSizeView = styled(KeyboardArea)`
     showAssetForm ? colors.lighterGrey : colors.white};
 `;
 
-const fetchSuggestions = async (recipient, setSuggestions) => {
-  if (recipient?.length && recipient.length > 2) {
-    let result = await ensClient.query({
-      query: ENS_SUGGESTIONS,
-      variables: {
-        amount: 75,
-        name: recipient,
-      },
-    });
-    if (result?.data?.domains.length) {
-      const newSuggestions = result.data.domains
-        .map(ensDomain => ({
-          address: ensDomain?.resolver?.addr?.id || ensDomain.name,
-          color: profileUtils.addressHashedColorIndex(
-            ensDomain?.resolver?.addr?.id || ensDomain.name
-          ),
-          network: 'mainnet',
-          nickname: ensDomain.name,
-        }))
-        .filter(domain => !contains(domain.nickname, ['[', ']']));
+const fetchSuggestions = async (recipient, setSuggestions, watchedAccounts) => {
+  if (recipient?.length) {
+    const watchedSuggestions = watchedAccounts
+      .map(account => ({
+        address: account.address,
+        color: profileUtils.addressHashedColorIndex(
+          account.address || account.label
+        ),
+        network: 'mainnet',
+        nickname: account.label,
+      }))
+      .filter(account => account.nickname.includes(recipient));
 
-      const sortedSuggestions = sortBy(
-        newSuggestions,
-        domain => domain.nickname.length,
-        ['asc']
-      ).slice(0, 3);
-      setSuggestions(sortedSuggestions);
+    const sortedWatchSuggestions = sortBy(
+      watchedSuggestions,
+      domain => domain.nickname.length,
+      ['asc']
+    );
+
+    let sortedSuggestions = sortedWatchSuggestions;
+
+    if (recipient.length > 2) {
+      let result = await ensClient.query({
+        query: ENS_SUGGESTIONS,
+        variables: {
+          amount: 75,
+          name: recipient,
+        },
+      });
+
+      if (result?.data?.domains.length) {
+        const ENSSuggestions = result.data.domains
+          .map(ensDomain => ({
+            address: ensDomain?.resolver?.addr?.id || ensDomain.name,
+            color: profileUtils.addressHashedColorIndex(
+              ensDomain?.resolver?.addr?.id || ensDomain.name
+            ),
+            network: 'mainnet',
+            nickname: ensDomain.name,
+          }))
+          .filter(domain => !contains(domain.nickname, ['[', ']']));
+
+        const sortedENSSuggestions = sortBy(
+          ENSSuggestions,
+          domain => domain.nickname.length,
+          ['asc']
+        );
+
+        sortedSuggestions = uniqBy(
+          [...sortedSuggestions, ...sortedENSSuggestions],
+          suggestion => suggestion.address
+        );
+      }
     }
+    sortedSuggestions = sortedSuggestions.slice(0, 3);
+    setSuggestions(sortedSuggestions);
   }
 };
 
@@ -183,7 +212,7 @@ export default function SendSheet(props) {
     };
   }, [addListener]);
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
-  const { userAccounts } = useUserAccounts();
+  const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
 
@@ -712,12 +741,12 @@ export default function SendSheet(props) {
 
   const [ensSuggestions, setEnsSuggestions] = useState([]);
   useEffect(() => {
-    if (recipient?.length > 2 && network === networkTypes.mainnet) {
-      debouncedFetchSuggestions(recipient, setEnsSuggestions);
+    if (network === networkTypes.mainnet) {
+      debouncedFetchSuggestions(recipient, setEnsSuggestions, watchedAccounts);
     } else {
       setEnsSuggestions([]);
     }
-  }, [network, recipient, setEnsSuggestions]);
+  }, [network, recipient, setEnsSuggestions, watchedAccounts]);
 
   useEffect(() => {
     checkAddress();
@@ -790,9 +819,7 @@ export default function SendSheet(props) {
           <SendContactList
             contacts={filteredContacts}
             currentInput={currentInput}
-            ensSuggestions={
-              recipient?.length && recipient?.length > 2 ? ensSuggestions : []
-            }
+            ensSuggestions={ensSuggestions}
             onPressContact={setRecipient}
             removeContact={onRemoveContact}
             userAccounts={userAccounts}
