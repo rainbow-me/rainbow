@@ -207,7 +207,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         // We need navigate to the same route with the updated params
         // which now includes the meta
         if (navigated && !timedOut) {
-          routeParams = { ...routeParams, meta };
+          routeParams = { ...routeParams, meta, timeout };
           Navigation.handleAction(
             Routes.WALLET_CONNECT_APPROVAL_SHEET,
             routeParams
