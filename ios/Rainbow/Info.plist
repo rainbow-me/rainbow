@@ -30,8 +30,6 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>rainbow</string>
-				<string>ethereum</string>
-				<string>dapp</string>
 				<string>wc</string>
 			</array>
 		</dict>
