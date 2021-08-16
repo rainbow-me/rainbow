@@ -71,7 +71,7 @@ export default function WalletConnectListItem({
   peerId,
 }) {
   const {
-    walletConnectDisconnectAllByPeerId,
+    walletConnectDisconnectAllByDappUrl,
     walletConnectUpdateSessionConnectorByPeerId,
   } = useWalletConnectConnections();
   const { goBack } = useNavigation();
@@ -146,7 +146,7 @@ export default function WalletConnectListItem({
         } else if ((idx === 0 && networksAvailable.length === 1) || idx === 1) {
           handlePressChangeWallet();
         } else if ((idx === 1 && networksAvailable.length === 1) || idx === 2) {
-          walletConnectDisconnectAllByPeerId(peerId);
+          walletConnectDisconnectAllByDappUrl(dappUrl);
           analytics.track(
             'Manually disconnected from WalletConnect connection',
             {
@@ -165,13 +165,13 @@ export default function WalletConnectListItem({
     handlePressChangeWallet,
     overrideName,
     walletConnectUpdateSessionConnectorByPeerId,
-    walletConnectDisconnectAllByPeerId,
+    walletConnectDisconnectAllByDappUrl,
   ]);
 
   const handleOnPressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'disconnect') {
-        walletConnectDisconnectAllByPeerId(peerId);
+        walletConnectDisconnectAllByDappUrl(dappUrl);
         analytics.track('Manually disconnected from WalletConnect connection', {
           dappName,
           dappUrl,
@@ -193,7 +193,7 @@ export default function WalletConnectListItem({
       dappUrl,
       peerId,
       handlePressChangeWallet,
-      walletConnectDisconnectAllByPeerId,
+      walletConnectDisconnectAllByDappUrl,
       walletConnectUpdateSessionConnectorByPeerId,
     ]
   );

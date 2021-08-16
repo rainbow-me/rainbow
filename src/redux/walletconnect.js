@@ -403,7 +403,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     if (error) {
       throw error;
     }
-    dispatch(walletConnectDisconnectAllByPeerId(walletConnector.peerId));
+    dispatch(walletConnectDisconnectAllByDappUrl(walletConnector.dappUrl));
   });
   return walletConnector;
 };
@@ -581,19 +581,19 @@ export const walletConnectRejectSession = (
   dispatch(removePendingRequest(peerId));
 };
 
-export const walletConnectDisconnectAllByPeerId = peerId => async (
+export const walletConnectDisconnectAllByDappUrl = dappUrl => async (
   dispatch,
   getState
 ) => {
   const { walletConnectors } = getState().walletconnect;
   const matchingWalletConnectors = values(
-    pickBy(walletConnectors, session => session.peerId === peerId)
+    pickBy(walletConnectors, session => session.dappUrl === dappUrl)
   );
   try {
     const peerIds = values(
       mapValues(
         matchingWalletConnectors,
-        walletConnector => walletConnector.peerId
+        walletConnector => walletConnector.dappUrl
       )
     );
     await removeWalletConnectSessions(peerIds);
@@ -601,7 +601,7 @@ export const walletConnectDisconnectAllByPeerId = peerId => async (
       walletConnector.killSession()
     );
     dispatch({
-      payload: omitBy(walletConnectors, wc => wc.peerId === peerId),
+      payload: omitBy(walletConnectors, wc => wc.dappUrl === dappUrl),
       type: WALLETCONNECT_REMOVE_SESSION,
     });
   } catch (error) {

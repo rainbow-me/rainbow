@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
 import {
-  walletConnectDisconnectAllByPeerId as rawWalletConnectDisconnectAllByPeerId,
+  walletConnectDisconnectAllByDappUrl as rawWalletConnectDisconnectAllByDappUrl,
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
   walletConnectUpdateSessionConnectorByPeerId as rawWalletConnectUpdateSessionConnectorByPeerId,
 } from '../redux/walletconnect';
@@ -42,8 +42,8 @@ export default function useWalletConnectConnections() {
     walletConnectorsCount,
   } = useSelector(walletConnectSelector);
 
-  const walletConnectDisconnectAllByPeerId = useCallback(
-    peerId => dispatch(rawWalletConnectDisconnectAllByPeerId(peerId)),
+  const walletConnectDisconnectAllByDappUrl = useCallback(
+    dappUrl => dispatch(rawWalletConnectDisconnectAllByDappUrl(dappUrl)),
     [dispatch]
   );
 
@@ -67,7 +67,7 @@ export default function useWalletConnectConnections() {
 
   return {
     sortedWalletConnectors,
-    walletConnectDisconnectAllByPeerId,
+    walletConnectDisconnectAllByDappUrl,
     walletConnectOnSessionRequest,
     walletConnectorsByDappName,
     walletConnectorsCount,
