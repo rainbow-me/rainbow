@@ -103,6 +103,7 @@ export default function WalletConnectApprovalSheet() {
   const type = params?.type || WalletConnectApprovalSheetType.connect;
 
   const meta = params?.meta || {};
+  const timeout = params?.timeout;
   const callback = params?.callback;
   const receivedTimestamp = params?.receivedTimestamp;
   const timedOut = params?.timedOut;
@@ -137,6 +138,12 @@ export default function WalletConnectApprovalSheet() {
     },
     [setScam]
   );
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [timeout]);
 
   const isAuthenticated = useMemo(() => {
     return isDappAuthenticated(dappUrl);
