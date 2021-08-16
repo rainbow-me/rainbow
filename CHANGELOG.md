@@ -12,6 +12,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.18](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.18)
+
+### Added
+* Enabled Layer 2 Support: Optimism & Polygon
+* Send Sheet - ENS Suggestions
+
+### Changed
+* WalletConnect account + network selection
+* WalletConnect timeout
+* Avatars for contacts
+* Default gas limit changes
+
 ## [1.5.17](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.17)
 
 ### Added
