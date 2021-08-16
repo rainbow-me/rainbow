@@ -163,6 +163,7 @@ export default function useScanner(enabled) {
       if (address) return handleScanAddress(address);
       if (data.startsWith('wc:')) return handleScanWalletConnect(data);
       if (data.startsWith(RAINBOW_PROFILES_BASE_URL)) {
+        if (data.contains('wc:')) return handleScanWalletConnect(data);
         return handleScanRainbowProfile(data);
       }
       return handleScanInvalid(data);
