@@ -1,6 +1,6 @@
-import qs from 'qs';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
+import qs from 'qs';
 import { useCallback, useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { PERMISSIONS, request } from 'react-native-permissions';
@@ -163,11 +163,14 @@ export default function useScanner(enabled) {
       const address = await addressUtils.getEthereumAddressFromQRCodeData(data);
       if (address) return handleScanAddress(address);
       if (data.startsWith('wc:')) return handleScanWalletConnect(data);
-    
+
       const urlObj = new URL(data);
-      if (urlObj?.protocol === 'https:' && urlObj?.pathname?.split('/')?.[1] === 'wc') {
+      if (
+        urlObj?.protocol === 'https:' &&
+        urlObj?.pathname?.split('/')?.[1] === 'wc'
+      ) {
         const { uri } = qs.parse(urlObj.query.substring(1));
-        return handleScanWalletConnect(uri)
+        return handleScanWalletConnect(uri);
       }
 
       if (data.startsWith(RAINBOW_PROFILES_BASE_URL)) {
