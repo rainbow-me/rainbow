@@ -68,11 +68,10 @@ export default function WalletConnectListItem({
   dappIcon,
   dappName,
   dappUrl,
-  peerId,
 }) {
   const {
     walletConnectDisconnectAllByDappUrl,
-    walletConnectUpdateSessionConnectorByPeerId,
+    walletConnectUpdateSessionConnectorByDappUrl,
   } = useWalletConnectConnections();
   const { goBack } = useNavigation();
   const { colors } = useTheme();
@@ -114,7 +113,7 @@ export default function WalletConnectListItem({
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
       currentAccountAddress: account,
       onChangeWallet: address => {
-        walletConnectUpdateSessionConnectorByPeerId(peerId, address, chainId);
+        walletConnectUpdateSessionConnectorByDappUrl(dappUrl, address, chainId);
         goBack();
       },
       watchOnly: true,
@@ -122,9 +121,9 @@ export default function WalletConnectListItem({
   }, [
     account,
     chainId,
-    peerId,
+    dappUrl,
     goBack,
-    walletConnectUpdateSessionConnectorByPeerId,
+    walletConnectUpdateSessionConnectorByDappUrl,
   ]);
 
   const onPressAndroid = useCallback(() => {
@@ -137,8 +136,8 @@ export default function WalletConnectListItem({
       idx => {
         if (idx === 0 && networksAvailable.length > 1) {
           androidShowNetworksActionSheet(({ chainId }) => {
-            walletConnectUpdateSessionConnectorByPeerId(
-              peerId,
+            walletConnectUpdateSessionConnectorByDappUrl(
+              dappUrl,
               account,
               chainId
             );
@@ -161,10 +160,9 @@ export default function WalletConnectListItem({
     account,
     dappName,
     dappUrl,
-    peerId,
     handlePressChangeWallet,
     overrideName,
-    walletConnectUpdateSessionConnectorByPeerId,
+    walletConnectUpdateSessionConnectorByDappUrl,
     walletConnectDisconnectAllByDappUrl,
   ]);
 
@@ -184,17 +182,16 @@ export default function WalletConnectListItem({
           ''
         );
         const chainId = ethereumUtils.getChainIdFromNetwork(networkValue);
-        walletConnectUpdateSessionConnectorByPeerId(peerId, account, chainId);
+        walletConnectUpdateSessionConnectorByDappUrl(dappUrl, account, chainId);
       }
     },
     [
       account,
       dappName,
       dappUrl,
-      peerId,
       handlePressChangeWallet,
       walletConnectDisconnectAllByDappUrl,
-      walletConnectUpdateSessionConnectorByPeerId,
+      walletConnectUpdateSessionConnectorByDappUrl,
     ]
   );
 

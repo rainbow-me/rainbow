@@ -523,15 +523,15 @@ export const walletConnectUpdateSessions = () => (dispatch, getState) => {
   });
 };
 
-export const walletConnectUpdateSessionConnectorByPeerId = (
-  peerId,
+export const walletConnectUpdateSessionConnectorByDappUrl = (
+  dappUrl,
   accountAddress,
   chainId
 ) => (dispatch, getState) => {
   const { walletConnectors } = getState().walletconnect;
   const connectors = pickBy(
     walletConnectors,
-    connector => connector.peerId === peerId
+    connector => connector.dappUrl === dappUrl
   );
   const newSessionData = {
     accounts: [accountAddress],
