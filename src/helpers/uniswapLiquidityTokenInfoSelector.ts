@@ -15,8 +15,9 @@ import { parseAssetsNative } from '@rainbow-me/parsers';
 import { AppState } from '@rainbow-me/redux/store';
 import {
   PositionsState,
-  StoredPosition,
+  UniswapPosition,
 } from '@rainbow-me/redux/usersPositions';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import {
   convertAmountToNativeDisplay,
   divide,
@@ -67,7 +68,7 @@ const switchWethToEth = (token: Token, chainId: ChainId): Token => {
   if (toLower(token.address) === toLower(WETH[chainId].address)) {
     return {
       ...token,
-      address: 'eth',
+      address: ETH_ADDRESS,
       decimals: 18,
       name: 'Ethereum',
       symbol: 'ETH',
@@ -78,7 +79,7 @@ const switchWethToEth = (token: Token, chainId: ChainId): Token => {
 
 const transformPool = (
   liquidityToken: ParsedAddressAsset | undefined,
-  position: StoredPosition,
+  position: UniswapPosition,
   nativeCurrency: string,
   chainId: ChainId
 ): UniswapPool | null => {

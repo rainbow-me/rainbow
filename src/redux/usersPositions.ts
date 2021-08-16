@@ -40,7 +40,7 @@ export interface TypeSpecificParameters {
 }
 
 export interface PositionsState {
-  [key: string]: StoredPosition[];
+  [key: string]: UniswapPosition[];
 }
 
 interface ReturnMetrics {
@@ -63,7 +63,7 @@ interface Position {
   token1PriceUSD: number;
 }
 
-export type StoredPosition = Position &
+export type UniswapPosition = Position &
   ReturnMetrics & { fees: { sum: number } };
 
 // --- fetching ----------------//
@@ -325,7 +325,7 @@ async function fetchSnapshots(account: string): Promise<Position[]> {
   return [];
 }
 
-async function fetchData(account: string): Promise<StoredPosition[]> {
+async function fetchData(account: string): Promise<UniswapPosition[]> {
   const priceOfEther = ethereumUtils.getEthPriceUnit();
 
   try {
