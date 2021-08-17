@@ -403,7 +403,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     if (error) {
       throw error;
     }
-    dispatch(walletConnectDisconnectAllByDappUrl(walletConnector.dappUrl));
+    dispatch(walletConnectDisconnectAllByDappUrl(walletConnector.peerMeta.url));
   });
   return walletConnector;
 };
@@ -529,12 +529,9 @@ export const walletConnectUpdateSessionConnectorByDappUrl = (
   chainId
 ) => (dispatch, getState) => {
   const { walletConnectors } = getState().walletconnect;
-  const connectors = pickBy(
-    walletConnectors,
-    connector => {
-      return connector.peerMeta.url === dappUrl
-    }
-  );
+  const connectors = pickBy(walletConnectors, connector => {
+    return connector.peerMeta.url === dappUrl;
+  });
   const newSessionData = {
     accounts: [accountAddress],
     chainId,
@@ -599,11 +596,12 @@ export const walletConnectDisconnectAllByDappUrl = dappUrl => async (
       )
     );
     await removeWalletConnectSessions(peerIds);
-    forEach(matchingWalletConnectors, connector =>
-      connector.killSession()
-    );
+    forEach(matchingWalletConnectors, connector => connector.killSession());
     dispatch({
-      payload: omitBy(walletConnectors, connector => connector.peerMeta.url === dappUrl),
+      payload: omitBy(
+        walletConnectors,
+        connector => connector.peerMeta.url === dappUrl
+      ),
       type: WALLETCONNECT_REMOVE_SESSION,
     });
   } catch (error) {
