@@ -387,3 +387,27 @@ export const ENS_SUGGESTIONS = gql`
     }
   }
 `;
+
+export const SNAPSHOT_PROPOSALS = gql`
+  query proposals($space: String!) {
+    proposals(first: 5, skip: 0, where: { space: $space }) {
+      id
+      title
+      choices
+      start
+      end
+      snapshot
+      state
+      strategies {
+        name
+        params
+      }
+      author
+      space {
+        id
+        name
+        avatar
+      }
+    }
+  }
+`;
