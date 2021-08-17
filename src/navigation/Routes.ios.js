@@ -23,6 +23,7 @@ import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
+import SnapshotSheet from '../screens/SnapshotSheet';
 import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
@@ -254,6 +255,13 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ShowcaseScreen}
         name={Routes.SHOWCASE_SHEET}
+        options={{
+          customStack: true,
+        }}
+      />
+       <NativeStack.Screen
+        component={SnapshotSheet}
+        name={Routes.SNAPSHOT_SHEET}
         options={{
           customStack: true,
         }}
