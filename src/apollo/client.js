@@ -41,3 +41,11 @@ export const ensClient = new ApolloClient({
     uri: 'https://api.thegraph.com/subgraphs/name/ensdomains/ens',
   }),
 });
+
+export const snapshotClient = new ApolloClient({
+  cache: new InMemoryCache(),
+  defaultOptions,
+  link: new HttpLink({
+    uri: 'https://hub.snapshot.org/graphql',
+  }),
+});
