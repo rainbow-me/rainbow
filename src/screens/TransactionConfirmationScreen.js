@@ -661,6 +661,7 @@ export default function TransactionConfirmationScreen() {
     displayDetails?.request?.asset,
     displayDetails?.request?.from,
     displayDetails?.request?.to,
+    nativeAsset,
     dappName,
     dispatch,
     dataAddNewTransaction,
