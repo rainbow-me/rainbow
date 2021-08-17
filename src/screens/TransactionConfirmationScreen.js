@@ -661,6 +661,7 @@ export default function TransactionConfirmationScreen() {
     displayDetails?.request?.asset,
     displayDetails?.request?.from,
     displayDetails?.request?.to,
+    nativeAsset,
     dappName,
     dispatch,
     dataAddNewTransaction,
@@ -972,7 +973,7 @@ export default function TransactionConfirmationScreen() {
                 ? safeAreaInsetValues.bottom + (android ? 20 : 0)
                 : 0
             }
-            paddingTop={24}
+            paddingTop={android && isTransactionDisplayType(method) ? 84 : 24}
             style={[
               animatedSheetStyles,
               android && isMessageRequest
