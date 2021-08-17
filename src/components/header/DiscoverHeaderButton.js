@@ -49,7 +49,7 @@ export default function DiscoverHeaderButton() {
     navigate,
   ]);
 
-  const onLongPress = useCallback(() => navigate(Routes.CONNECTED_DAPPS), [
+  const onLongPress = useCallback(() => navigate(Routes.SNAPSHOT_SHEET), [
     navigate,
   ]);
 
