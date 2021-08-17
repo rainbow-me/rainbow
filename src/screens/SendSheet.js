@@ -1,6 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
+import { toChecksumAddress } from 'ethereumjs-util';
 import {
   contains,
   debounce,
@@ -39,6 +40,7 @@ import {
   resolveNameOrAddress,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
+import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
@@ -108,6 +110,7 @@ const KeyboardSizeView = styled(KeyboardArea)`
 
 const fetchSuggestions = async (recipient, setSuggestions, watchedAccounts) => {
   if (recipient?.length) {
+    recipient = recipient.toLowerCase();
     const watchedSuggestions = watchedAccounts
       .map(account => ({
         address: account.address,
@@ -115,7 +118,7 @@ const fetchSuggestions = async (recipient, setSuggestions, watchedAccounts) => {
           account.address || account.label
         ),
         network: 'mainnet',
-        nickname: account.label,
+        nickname: removeFirstEmojiFromString(account.label),
       }))
       .filter(account => account.nickname.includes(recipient));
 
@@ -139,7 +142,9 @@ const fetchSuggestions = async (recipient, setSuggestions, watchedAccounts) => {
       if (result?.data?.domains.length) {
         const ENSSuggestions = result.data.domains
           .map(ensDomain => ({
-            address: ensDomain?.resolver?.addr?.id || ensDomain.name,
+            address:
+              toChecksumAddress(ensDomain?.resolver?.addr?.id) ||
+              ensDomain.name,
             color: profileUtils.addressHashedColorIndex(
               ensDomain?.resolver?.addr?.id || ensDomain.name
             ),
@@ -162,6 +167,8 @@ const fetchSuggestions = async (recipient, setSuggestions, watchedAccounts) => {
     }
     sortedSuggestions = sortedSuggestions.slice(0, 3);
     setSuggestions(sortedSuggestions);
+  } else {
+    setSuggestions([]);
   }
 };
 
