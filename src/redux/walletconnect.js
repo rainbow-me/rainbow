@@ -403,7 +403,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     if (error) {
       throw error;
     }
-    dispatch(walletConnectDisconnectAllByPeerId(walletConnector.peerId));
+    dispatch(walletConnectDisconnectAllByDappUrl(walletConnector.peerMeta.url));
   });
   return walletConnector;
 };
@@ -523,16 +523,15 @@ export const walletConnectUpdateSessions = () => (dispatch, getState) => {
   });
 };
 
-export const walletConnectUpdateSessionConnectorByPeerId = (
-  peerId,
+export const walletConnectUpdateSessionConnectorByDappUrl = (
+  dappUrl,
   accountAddress,
   chainId
 ) => (dispatch, getState) => {
   const { walletConnectors } = getState().walletconnect;
-  const connectors = pickBy(
-    walletConnectors,
-    connector => connector.peerId === peerId
-  );
+  const connectors = pickBy(walletConnectors, connector => {
+    return connector.peerMeta.url === dappUrl;
+  });
   const newSessionData = {
     accounts: [accountAddress],
     chainId,
@@ -581,13 +580,13 @@ export const walletConnectRejectSession = (
   dispatch(removePendingRequest(peerId));
 };
 
-export const walletConnectDisconnectAllByPeerId = peerId => async (
+export const walletConnectDisconnectAllByDappUrl = dappUrl => async (
   dispatch,
   getState
 ) => {
   const { walletConnectors } = getState().walletconnect;
   const matchingWalletConnectors = values(
-    pickBy(walletConnectors, session => session.peerId === peerId)
+    pickBy(walletConnectors, connector => connector.peerMeta.url === dappUrl)
   );
   try {
     const peerIds = values(
@@ -597,11 +596,12 @@ export const walletConnectDisconnectAllByPeerId = peerId => async (
       )
     );
     await removeWalletConnectSessions(peerIds);
-    forEach(matchingWalletConnectors, walletConnector =>
-      walletConnector.killSession()
-    );
+    forEach(matchingWalletConnectors, connector => connector.killSession());
     dispatch({
-      payload: omitBy(walletConnectors, wc => wc.peerId === peerId),
+      payload: omitBy(
+        walletConnectors,
+        connector => connector.peerMeta.url === dappUrl
+      ),
       type: WALLETCONNECT_REMOVE_SESSION,
     });
   } catch (error) {
