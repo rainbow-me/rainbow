@@ -52,6 +52,7 @@ const IndicatorIconContainer = styled(Centered)`
   overflow: visible;
   position: ${({ position }) => position || 'absolute'};
   z-index: 10;
+  elevation: 10;
 `;
 
 export default function ChainBadge({
