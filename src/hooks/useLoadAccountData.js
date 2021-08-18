@@ -10,6 +10,7 @@ import { showcaseTokensLoadState } from '../redux/showcaseTokens';
 import { uniqueTokensLoadState } from '../redux/uniqueTokens';
 import { uniswapLoadState } from '../redux/uniswap';
 import { uniswapLiquidityLoadState } from '../redux/uniswapLiquidity';
+import { uniswapPositionsLoadState } from '../redux/usersPositions';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { promiseUtils } from '../utils';
 import logger from 'logger';
@@ -33,7 +34,8 @@ export default function useLoadAccountData() {
       const p5 = dispatch(uniswapLoadState());
       const p6 = dispatch(addCashLoadState());
       const p7 = dispatch(uniswapLiquidityLoadState());
-      promises.push(p3, p4, p5, p6, p7);
+      const p8 = dispatch(uniswapPositionsLoadState());
+      promises.push(p3, p4, p5, p6, p7, p8);
 
       return promiseUtils.PromiseAllWithFails(promises);
     },

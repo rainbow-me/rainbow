@@ -116,6 +116,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
   dispatch,
   getState
 ) => {
+  let timeout = null;
   getState().appState;
   let walletConnector = null;
   const receivedTimestamp = Date.now();
@@ -173,6 +174,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
       };
 
       walletConnector?.on('session_request', (error, payload) => {
+        clearTimeout(timeout);
         if (error) {
           analytics.track('Error on wc session_request', {
             error,
@@ -182,7 +184,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
           captureException(error);
           throw error;
         }
-        const { peerId, peerMeta } = payload.params[0];
+        const { peerId, peerMeta, chainId } = payload.params[0];
 
         const imageUrl =
           dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
@@ -194,6 +196,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
           dappUrl,
         });
         meta = {
+          chainId,
           dappName,
           dappScheme,
           dappUrl,
@@ -204,7 +207,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         // We need navigate to the same route with the updated params
         // which now includes the meta
         if (navigated && !timedOut) {
-          routeParams = { ...routeParams, meta };
+          routeParams = { ...routeParams, meta, timeout };
           Navigation.handleAction(
             Routes.WALLET_CONNECT_APPROVAL_SHEET,
             routeParams
@@ -221,7 +224,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
 
         // We need to add a timeout in case the bridge is down
         // to explain the user what's happening
-        setTimeout(() => {
+        timeout = setTimeout(() => {
           if (meta) return;
           timedOut = true;
           routeParams = { ...routeParams, timedOut };
@@ -229,7 +232,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
             Routes.WALLET_CONNECT_APPROVAL_SHEET,
             routeParams
           );
-        }, 10000);
+        }, 20000);
 
         // If we have the meta, send it
         if (meta) {
@@ -242,6 +245,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         );
       });
     } catch (error) {
+      clearTimeout(timeout);
       logger.log('Exception during wc session_request');
       analytics.track('Exception on wc session_request', {
         error,
@@ -250,6 +254,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
       Alert.alert(lang.t('wallet.wallet_connect.error'));
     }
   } catch (error) {
+    clearTimeout(timeout);
     logger.log('FCM exception during wc session_request');
     analytics.track('FCM exception on wc session_request', {
       error,
@@ -279,6 +284,9 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     const requestId = payload.id;
     if (payload.method === 'wallet_addEthereumChain') {
       const { chainId } = payload.params[0];
+      const currentNetwork = ethereumUtils.getNetworkFromChainId(
+        Number(walletConnector._chainId)
+      );
       const supportedChains = [
         networkTypes.mainnet,
         networkTypes.ropsten,
@@ -326,6 +334,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
             }
           },
           chainId: Number(numericChainId),
+          currentNetwork,
           meta: {
             dappName,
             dappUrl,
@@ -394,7 +403,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     if (error) {
       throw error;
     }
-    dispatch(walletConnectDisconnectAllByPeerId(walletConnector.peerId));
+    dispatch(walletConnectDisconnectAllByDappUrl(walletConnector.peerMeta.url));
   });
   return walletConnector;
 };
@@ -514,16 +523,15 @@ export const walletConnectUpdateSessions = () => (dispatch, getState) => {
   });
 };
 
-export const walletConnectUpdateSessionConnectorByPeerId = (
-  peerId,
+export const walletConnectUpdateSessionConnectorByDappUrl = (
+  dappUrl,
   accountAddress,
   chainId
 ) => (dispatch, getState) => {
   const { walletConnectors } = getState().walletconnect;
-  const connectors = pickBy(
-    walletConnectors,
-    connector => connector.peerId === peerId
-  );
+  const connectors = pickBy(walletConnectors, connector => {
+    return connector.peerMeta.url === dappUrl;
+  });
   const newSessionData = {
     accounts: [accountAddress],
     chainId,
@@ -572,13 +580,13 @@ export const walletConnectRejectSession = (
   dispatch(removePendingRequest(peerId));
 };
 
-export const walletConnectDisconnectAllByPeerId = peerId => async (
+export const walletConnectDisconnectAllByDappUrl = dappUrl => async (
   dispatch,
   getState
 ) => {
   const { walletConnectors } = getState().walletconnect;
   const matchingWalletConnectors = values(
-    pickBy(walletConnectors, session => session.peerId === peerId)
+    pickBy(walletConnectors, connector => connector.peerMeta.url === dappUrl)
   );
   try {
     const peerIds = values(
@@ -588,11 +596,12 @@ export const walletConnectDisconnectAllByPeerId = peerId => async (
       )
     );
     await removeWalletConnectSessions(peerIds);
-    forEach(matchingWalletConnectors, walletConnector =>
-      walletConnector.killSession()
-    );
+    forEach(matchingWalletConnectors, connector => connector.killSession());
     dispatch({
-      payload: omitBy(walletConnectors, wc => wc.peerId === peerId),
+      payload: omitBy(
+        walletConnectors,
+        connector => connector.peerMeta.url === dappUrl
+      ),
       type: WALLETCONNECT_REMOVE_SESSION,
     });
   } catch (error) {

@@ -33,7 +33,7 @@ const POLYGON_EXPLORER_SET_BALANCE_HANDLER =
   'explorer/POLYGON_EXPLORER_SET_BALANCE_HANDLER';
 const POLYGON_EXPLORER_SET_HANDLERS = 'explorer/POLYGON_EXPLORER_SET_HANDLERS';
 
-const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 30000;
+const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 60000;
 const network = networkTypes.polygon;
 let tokenMapping = {};
 
@@ -132,6 +132,7 @@ const getAssetsFromCovalent = async (
           icon_url: item.logo_url,
           mainnet_address: mainnetAddress,
           name: item.contract_name.replace(' (PoS)', ''),
+          network: networkTypes.polygon,
           price: {
             value: item.quote_rate || 0,
             ...price,
@@ -212,7 +213,7 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
                 allAssets,
                 toLower(assets[i].asset.mainnet_address)
               ) || genericAssets[toLower(assets[i].asset.mainnet_address)];
-
+            assets[i].asset.network = networkTypes.polygon;
             assets[i].asset.price = asset?.price || {
               changed_at: prices[key].last_updated_at,
               relative_change_24h:
@@ -254,7 +255,10 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
           },
           payload: { assets },
         },
-        true
+        false,
+        false,
+        false,
+        networkTypes.polygon
       )
     );
   };
@@ -272,15 +276,15 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
     );
 
     if (assets === null) {
-      logger.debug('COVALENT FAILED, FALLING BACK');
       fetchAssetsBalancesAndPricesFallback();
       return;
     }
 
     if (!assets || !assets.length) {
+      // Try again in one minute
       const polygonExplorerBalancesHandle = setTimeout(
         fetchAssetsBalancesAndPrices,
-        UPDATE_BALANCE_AND_PRICE_FREQUENCY
+        UPDATE_BALANCE_AND_PRICE_FREQUENCY * 2
       );
       dispatch({
         payload: {
@@ -330,7 +334,10 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
             },
             payload: newPayload,
           },
-          true
+          false,
+          false,
+          false,
+          networkTypes.polygon
         )
       );
       lastUpdatePayload = newPayload;

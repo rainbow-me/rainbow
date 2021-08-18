@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.5.17-1",
+  "version": "1.5.19-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn allow-scripts && yarn postinstall",
@@ -96,8 +96,8 @@
     "@uniswap/sdk": "^3.0.3",
     "@uniswap/v2-core": "^1.0.1",
     "@unstoppabledomains/resolution": "^1.19.0",
-    "@walletconnect/client": "^1.5.1",
-    "@walletconnect/utils": "^1.5.1",
+    "@walletconnect/client": "^1.6.1",
+    "@walletconnect/utils": "^1.6.1",
     "assert": "^1.5.0",
     "asyncstorage-down": "^4.2.0",
     "axios": "^0.21.1",
@@ -131,8 +131,8 @@
     "inherits": "^2.0.3",
     "lint-staged": "^10.0.7",
     "lodash": "^4.17.19",
-    "lottie-ios": "3.1.8",
-    "lottie-react-native": "3.5.0",
+    "lottie-ios": "3.2.3",
+    "lottie-react-native": "4.0.2",
     "make-color-more-chill": "^0.2.1",
     "match-sorter": "^4.0.2",
     "mnemonist": "^0.38.1",
@@ -228,7 +228,7 @@
     "timers-browserify": "^1.4.2",
     "tty-browserify": "0.0.0",
     "url": "^0.10.3",
-    "url-parse": "^1.5.0",
+    "url-parse": "^1.5.3",
     "use-debounce": "^5.2.0",
     "use-memo-one": "^1.1.1",
     "util": "^0.10.3",
@@ -307,7 +307,8 @@
     "**/merge-deep": "3.0.3",
     "**/css-what": "5.0.1",
     "**/socket.io-parser": "3.3.1",
-    "**/tar": "6.1.2"
+    "**/tar": "6.1.2",
+    "**/path-parse": "1.0.7"
   },
   "jest": {
     "preset": "react-native",

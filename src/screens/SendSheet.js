@@ -1,7 +1,17 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
-import { isEmpty, isString, toLower } from 'lodash';
+import { toChecksumAddress } from 'ethereumjs-util';
+import {
+  contains,
+  debounce,
+  isEmpty,
+  isEqual,
+  isString,
+  sortBy,
+  toLower,
+  uniqBy,
+} from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
@@ -9,6 +19,8 @@ import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { dismissingScreenListener } from '../../shim';
+import { ensClient } from '../apollo/client';
+import { ENS_SUGGESTIONS } from '../apollo/queries';
 import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import {
@@ -18,8 +30,8 @@ import {
   SendHeader,
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
-import { AssetType, AssetTypes } from '@rainbow-me/entities';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
+import { AssetTypes } from '@rainbow-me/entities';
+import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';
 import {
   createSignableTransaction,
   estimateGasLimit,
@@ -28,6 +40,7 @@ import {
   resolveNameOrAddress,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
+import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
@@ -66,7 +79,7 @@ import {
   convertAmountFromNativeValue,
   formatInputDecimals,
 } from '@rainbow-me/utilities';
-import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
+import { deviceUtils, ethereumUtils, profileUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
@@ -95,15 +108,82 @@ const KeyboardSizeView = styled(KeyboardArea)`
     showAssetForm ? colors.lighterGrey : colors.white};
 `;
 
+const fetchSuggestions = async (recipient, setSuggestions, watchedAccounts) => {
+  if (recipient?.length) {
+    recipient = recipient.toLowerCase();
+    const watchedSuggestions = watchedAccounts
+      .map(account => ({
+        address: account.address,
+        color: profileUtils.addressHashedColorIndex(
+          account.address || account.label
+        ),
+        network: 'mainnet',
+        nickname: removeFirstEmojiFromString(account.label),
+      }))
+      .filter(account => account.nickname.includes(recipient));
+
+    const sortedWatchSuggestions = sortBy(
+      watchedSuggestions,
+      domain => domain.nickname.length,
+      ['asc']
+    );
+
+    let sortedSuggestions = sortedWatchSuggestions;
+
+    if (recipient.length > 2) {
+      let result = await ensClient.query({
+        query: ENS_SUGGESTIONS,
+        variables: {
+          amount: 75,
+          name: recipient,
+        },
+      });
+
+      if (result?.data?.domains.length) {
+        const ENSSuggestions = result.data.domains
+          .map(ensDomain => ({
+            address:
+              toChecksumAddress(ensDomain?.resolver?.addr?.id) ||
+              ensDomain.name,
+            color: profileUtils.addressHashedColorIndex(
+              ensDomain?.resolver?.addr?.id || ensDomain.name
+            ),
+            network: 'mainnet',
+            nickname: ensDomain.name,
+          }))
+          .filter(domain => !contains(domain.nickname, ['[', ']']));
+
+        const sortedENSSuggestions = sortBy(
+          ENSSuggestions,
+          domain => domain.nickname.length,
+          ['asc']
+        );
+
+        sortedSuggestions = uniqBy(
+          [...sortedSuggestions, ...sortedENSSuggestions],
+          suggestion => suggestion.address
+        );
+      }
+    }
+    sortedSuggestions = sortedSuggestions.slice(0, 3);
+    setSuggestions(sortedSuggestions);
+  } else {
+    setSuggestions([]);
+  }
+};
+
+const debouncedFetchSuggestions = debounce(fetchSuggestions, 200);
+
 export default function SendSheet(props) {
   const dispatch = useDispatch();
-  const { isTinyPhone } = useDimensions();
+  const { deviceWidth, isTinyPhone } = useDimensions();
   const { goBack, navigate, addListener } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const { allAssets } = useAccountAssets();
   const {
     gasLimit,
+    gasPrices,
     isSufficientGas,
     prevSelectedGasPrice,
     selectedGasPrice,
@@ -139,7 +219,7 @@ export default function SendSheet(props) {
     };
   }, [addListener]);
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
-  const { userAccounts } = useUserAccounts();
+  const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
 
@@ -185,19 +265,20 @@ export default function SendSheet(props) {
     // after we know the network that the asset
     // belongs to
     if (prevNetwork !== currentNetwork) {
-      InteractionManager.runAfterInteractions(() =>
-        startPollingGasPrices(currentNetwork)
-      );
+      InteractionManager.runAfterInteractions(() => {
+        startPollingGasPrices(currentNetwork);
+      });
     }
+  }, [currentNetwork, prevNetwork, startPollingGasPrices]);
+
+  // Stop polling when the sheet is unmounted
+  useEffect(() => {
     return () => {
-      InteractionManager.runAfterInteractions(() => stopPollingGasPrices());
+      InteractionManager.runAfterInteractions(() => {
+        stopPollingGasPrices();
+      });
     };
-  }, [
-    currentNetwork,
-    prevNetwork,
-    startPollingGasPrices,
-    stopPollingGasPrices,
-  ]);
+  }, [stopPollingGasPrices]);
 
   // Recalculate balance when gas price changes
   useEffect(() => {
@@ -242,6 +323,7 @@ export default function SendSheet(props) {
 
   const sendUpdateSelected = useCallback(
     newSelected => {
+      if (isEqual(newSelected, selected)) return;
       updateMaxInputBalance(newSelected);
       if (newSelected?.type === AssetTypes.nft) {
         setAmountDetails({
@@ -260,41 +342,14 @@ export default function SendSheet(props) {
       } else {
         setSelected(newSelected);
         sendUpdateAssetAmount('');
-        // Since we don't trust the balance from zerion,
-        // let's hit the blockchain and update it
-        if (currentProvider) {
-          updateAssetOnchainBalanceIfNeeded(
-            newSelected,
-            accountAddress,
-            currentNetwork,
-            currentProvider,
-            updatedAsset => {
-              // set selected asset with new balance
-              setSelected(updatedAsset);
-              // Update selected to recalculate the maxInputAmount
-              sendUpdateSelected(updatedAsset);
-            }
-          );
-        }
       }
     },
-    [
-      accountAddress,
-      currentNetwork,
-      currentProvider,
-      selected?.uniqueId,
-      sendUpdateAssetAmount,
-      updateAssetOnchainBalanceIfNeeded,
-      updateMaxInputBalance,
-    ]
+    [selected, sendUpdateAssetAmount, updateMaxInputBalance]
   );
 
   useEffect(() => {
     const updateNetworkAndProvider = async () => {
-      const assetNetwork =
-        selected?.type === AssetType.token || selected?.type === AssetType.nft
-          ? network
-          : selected.type;
+      const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
       if (
         selected?.type &&
         (assetNetwork !== currentNetwork ||
@@ -303,11 +358,11 @@ export default function SendSheet(props) {
       ) {
         let provider = web3Provider;
         switch (selected.type) {
-          case AssetType.polygon:
+          case AssetTypes.polygon:
             setCurrentNetwork(networkTypes.polygon);
             provider = await getProviderForNetwork(networkTypes.polygon);
             break;
-          case AssetType.arbitrum:
+          case AssetTypes.arbitrum:
             setCurrentNetwork(networkTypes.arbitrum);
             provider = await getProviderForNetwork(networkTypes.arbitrum);
             break;
@@ -332,16 +387,36 @@ export default function SendSheet(props) {
   ]);
 
   useEffect(() => {
+    if (isEmpty(selected)) return;
     if (currentProvider?._network?.chainId) {
       const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
         currentProvider._network.chainId
       );
-      if (currentProviderNetwork === currentNetwork) {
-        sendUpdateSelected(selected);
+
+      const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
+
+      if (
+        assetNetwork === currentNetwork &&
+        currentProviderNetwork === currentNetwork
+      ) {
+        updateAssetOnchainBalanceIfNeeded(
+          selected,
+          accountAddress,
+          currentNetwork,
+          currentProvider,
+          updatedAsset => {
+            // set selected asset with new balance
+            if (!isEqual(selected, updatedAsset)) {
+              setSelected(updatedAsset);
+              updateMaxInputBalance(updatedAsset);
+              sendUpdateAssetAmount('');
+            }
+          }
+        );
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentProvider, currentNetwork, selected]);
+  }, [accountAddress, currentProvider, currentNetwork, selected]);
 
   const onChangeNativeAmount = useCallback(
     newNativeAmount => {
@@ -423,6 +498,7 @@ export default function SendSheet(props) {
             recipient: toAddress,
           },
           true,
+          currentProvider,
           currentNetwork
         );
         logger.log('gasLimit updated before sending', {
@@ -635,8 +711,8 @@ export default function SendSheet(props) {
   }, []);
 
   useEffect(() => {
-    updateDefaultGasLimit();
-  }, [updateDefaultGasLimit]);
+    updateDefaultGasLimit(network);
+  }, [updateDefaultGasLimit, network]);
 
   useEffect(() => {
     if (
@@ -670,12 +746,33 @@ export default function SendSheet(props) {
     setIsValidAddress(validAddress);
   }, [recipient]);
 
+  const [ensSuggestions, setEnsSuggestions] = useState([]);
+  useEffect(() => {
+    if (network === networkTypes.mainnet) {
+      debouncedFetchSuggestions(recipient, setEnsSuggestions, watchedAccounts);
+    } else {
+      setEnsSuggestions([]);
+    }
+  }, [network, recipient, setEnsSuggestions, watchedAccounts]);
+
   useEffect(() => {
     checkAddress();
   }, [checkAddress]);
 
   useEffect(() => {
-    if (isValidAddress && !isEmpty(selected) && currentNetwork) {
+    if (!currentProvider?._network?.chainId) return;
+    const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
+      currentProvider._network.chainId
+    );
+    const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
+
+    if (
+      assetNetwork === currentNetwork &&
+      currentProviderNetwork === currentNetwork &&
+      isValidAddress &&
+      !isEmpty(selected) &&
+      !isEmpty(gasPrices)
+    ) {
       estimateGasLimit(
         {
           address: accountAddress,
@@ -704,6 +801,8 @@ export default function SendSheet(props) {
     selected,
     toAddress,
     updateTxFee,
+    network,
+    gasPrices,
   ]);
 
   return (
@@ -727,6 +826,7 @@ export default function SendSheet(props) {
           <SendContactList
             contacts={filteredContacts}
             currentInput={currentInput}
+            ensSuggestions={ensSuggestions}
             onPressContact={setRecipient}
             removeContact={onRemoveContact}
             userAccounts={userAccounts}
@@ -751,6 +851,7 @@ export default function SendSheet(props) {
             assetAmount={amountDetails.assetAmount}
             buttonRenderer={
               <SheetActionButton
+                androidWidth={deviceWidth - 60}
                 color={color}
                 disabled={buttonDisabled}
                 forceShadows
@@ -775,7 +876,8 @@ export default function SendSheet(props) {
                 currentNetwork={currentNetwork}
                 horizontalPadding={isTinyPhone ? 0 : 5}
                 options={
-                  currentNetwork === networkTypes.optimism
+                  currentNetwork === networkTypes.optimism ||
+                  currentNetwork === networkTypes.arbitrum
                     ? ['normal']
                     : undefined
                 }

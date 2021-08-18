@@ -5,13 +5,20 @@ import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
 import { isEmpty, isNil, omit } from 'lodash';
 import React, {
+  Fragment,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import { Alert, InteractionManager, Vibration } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  InteractionManager,
+  Vibration,
+} from 'react-native';
+
 import { isEmulatorSync } from 'react-native-device-info';
 import Animated, {
   useAnimatedStyle,
@@ -23,6 +30,7 @@ import styled from 'styled-components';
 import URL from 'url-parse';
 import Divider from '../components/Divider';
 import L2Disclaimer from '../components/L2Disclaimer';
+import Spinner from '../components/Spinner';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
@@ -104,6 +112,12 @@ const springConfig = {
   stiffness: 1000,
 };
 
+const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
+  ({ theme: { colors } }) => ({
+    color: colors.alpha(colors.blueGreyDark, 0.3),
+  })
+)``;
+
 const DappLogo = styled(RequestVendorLogoIcon).attrs(
   ({ theme: { colors } }) => ({
     backgroundColor: colors.transparent,
@@ -159,6 +173,8 @@ export default function TransactionConfirmationScreen() {
   const [methodName, setMethodName] = useState(null);
   const calculatingGasLimit = useRef(false);
   const [isBalanceEnough, setIsBalanceEnough] = useState(true);
+  const [isSufficientGasChecked, setIsSufficientGasChecked] = useState(false);
+  const [nativeAsset, setNativeAsset] = useState(null);
   const { height: deviceHeight } = useDimensions();
   const { wallets, walletNames } = useWallets();
   const balances = useWalletBalances(wallets);
@@ -195,6 +211,8 @@ export default function TransactionConfirmationScreen() {
       requestId,
     },
   } = routeParams;
+  const isMessageRequest = isMessageDisplayType(method);
+  const [ready, setReady] = useState(isMessageRequest);
 
   const walletConnector = walletConnectors[peerId];
 
@@ -231,7 +249,16 @@ export default function TransactionConfirmationScreen() {
     network && initProvider();
   }, [isL2, network]);
 
-  const isMessageRequest = isMessageDisplayType(method);
+  useEffect(() => {
+    const getNativeAsset = async () => {
+      const asset = await ethereumUtils.getNativeAssetForNetwork(
+        network,
+        accountInfo.address
+      );
+      setNativeAsset(asset);
+    };
+    getNativeAsset();
+  }, [accountInfo.address, allAssets, network]);
 
   const {
     gasLimit,
@@ -239,11 +266,33 @@ export default function TransactionConfirmationScreen() {
     isSufficientGas,
     startPollingGasPrices,
     stopPollingGasPrices,
+    updateGasPriceOption,
     updateTxFee,
     selectedGasPrice,
+    selectedGasPriceOption,
   } = useGas();
 
-  const request = displayDetails.request;
+  useEffect(() => {
+    const { txFee } = selectedGasPrice;
+    if (!txFee || !nativeAsset || !network || isSufficientGasChecked) return;
+    updateGasPriceOption(selectedGasPriceOption, network, [nativeAsset]);
+    setIsSufficientGasChecked(true);
+  }, [
+    isSufficientGas,
+    isSufficientGasChecked,
+    nativeAsset,
+    network,
+    selectedGasPrice,
+    selectedGasPriceOption,
+    updateGasPriceOption,
+  ]);
+
+  const request = useMemo(() => {
+    return isMessageRequest
+      ? { message: displayDetails.request }
+      : { ...displayDetails.request, asset: nativeAsset };
+  }, [displayDetails.request, nativeAsset, isMessageRequest]);
+
   const openAutomatically = routeParams?.openAutomatically;
 
   const formattedDappUrl = useMemo(() => {
@@ -396,10 +445,7 @@ export default function TransactionConfirmationScreen() {
       logger.log('error estimating gas', error);
     }
     logger.log('Setting gas limit to', convertHexToString(gas));
-    // Wait until the gas prices are populated
-    setTimeout(() => {
-      updateTxFee(gas, null, network);
-    }, 1000);
+    updateTxFee(gas, null, network);
   }, [network, params, provider, updateTxFee]);
 
   useEffect(() => {
@@ -424,6 +470,22 @@ export default function TransactionConfirmationScreen() {
     updateTxFee,
   ]);
 
+  const walletBalance = useMemo(() => {
+    if (isL2) {
+      return {
+        amount: nativeAsset?.balance?.amount || 0,
+        display: nativeAsset?.balance?.display || `0 ${nativeAsset?.symbol}`,
+        symbol: nativeAsset?.symbol || 'ETH',
+      };
+    } else {
+      return {
+        amount: balances[accountInfo.address] || 0,
+        display: `${balances[accountInfo.address] || 0} ETH`,
+        symbol: 'ETH',
+      };
+    }
+  }, [nativeAsset, accountInfo.address, balances, isL2]);
+
   useEffect(() => {
     if (isMessageRequest) {
       setIsBalanceEnough(true);
@@ -444,8 +506,7 @@ export default function TransactionConfirmationScreen() {
     const txFeeAmount = fromWei(txFee?.value?.amount ?? 0);
 
     // Get the ETH balance
-    const ethAsset = ethereumUtils.getAsset(allAssets);
-    const balanceAmount = ethAsset?.balance?.amount ?? 0;
+    const balanceAmount = walletBalance.amount ?? 0;
 
     // Get the TX value
     const txPayload = params?.[0];
@@ -464,6 +525,7 @@ export default function TransactionConfirmationScreen() {
     method,
     params,
     selectedGasPrice,
+    walletBalance.amount,
   ]);
 
   const handleConfirmTransaction = useCallback(async () => {
@@ -553,7 +615,7 @@ export default function TransactionConfirmationScreen() {
       if (sendInsteadOfSign) {
         const txDetails = {
           amount: displayDetails?.request?.value ?? 0,
-          asset: displayDetails?.request?.asset,
+          asset: nativeAsset || displayDetails?.request?.asset,
           dappName,
           from: displayDetails?.request?.from,
           gasLimit,
@@ -563,7 +625,7 @@ export default function TransactionConfirmationScreen() {
           nonce: result.nonce,
           to: displayDetails?.request?.to,
         };
-        dispatch(dataAddNewTransaction(txDetails));
+        dispatch(dataAddNewTransaction(txDetails, null, false, provider));
       }
       analytics.track('Approved WalletConnect transaction request');
       if (requestId) {
@@ -611,6 +673,7 @@ export default function TransactionConfirmationScreen() {
     displayDetails?.request?.asset,
     displayDetails?.request?.from,
     displayDetails?.request?.to,
+    nativeAsset,
     dappName,
     dispatch,
     dataAddNewTransaction,
@@ -622,6 +685,7 @@ export default function TransactionConfirmationScreen() {
     dappUrl,
     formattedDappUrl,
     isAuthenticated,
+    nativeAsset,
   ]);
 
   const handleSignMessage = useCallback(async () => {
@@ -673,6 +737,7 @@ export default function TransactionConfirmationScreen() {
     onCancel,
     params,
     peerId,
+    provider,
     removeRequest,
     requestId,
     walletConnectSendStatus,
@@ -719,8 +784,8 @@ export default function TransactionConfirmationScreen() {
           color={colors.transparent}
           disabled
           fullWidth
-          label="ETH balance too low"
-          onPress={onPressCancel}
+          label={`${nativeAsset?.symbol} balance too low`}
+          onPress={onCancel}
           size="big"
           textColor={colors.avatarColor[7]}
           weight="bold"
@@ -751,7 +816,8 @@ export default function TransactionConfirmationScreen() {
     isBalanceEnough,
     isMessageRequest,
     isSufficientGas,
-    onPressCancel,
+    nativeAsset?.symbol,
+    onCancel,
     onPressSend,
   ]);
 
@@ -759,15 +825,17 @@ export default function TransactionConfirmationScreen() {
     if (isMessageRequest) {
       return (
         <RowWithMargins css={padding(24, 0)}>
-          <MessageSigningSection message={request} method={method} />
+          <MessageSigningSection message={request.message} method={method} />
         </RowWithMargins>
       );
     }
 
     if (isTransactionDisplayType(method) && request?.asset) {
-      const priceOfEther = ethereumUtils.getEthPriceUnit();
+      const priceOfNativeAsset = ethereumUtils.getPriceOfNativeAssetForNetwork(
+        network
+      );
       const amount = request?.value ?? '0.00';
-      const nativeAmount = multiply(priceOfEther, amount);
+      const nativeAmount = multiply(priceOfNativeAsset, amount);
       const nativeAmountDisplay = convertAmountToNativeDisplay(
         nativeAmount,
         nativeCurrency
@@ -775,12 +843,12 @@ export default function TransactionConfirmationScreen() {
       if (!amount) return;
       return (
         <TransactionConfirmationSection
-          address={request?.asset?.address}
+          address={request?.asset?.mainnet_address || request?.asset?.address}
           amount={amount}
           method={method}
-          name={request?.asset?.name || 'No data'}
+          name={request?.asset?.name}
           nativeAmountDisplay={nativeAmountDisplay}
-          symbol={request?.asset?.symbol || 'N/A'}
+          symbol={request?.asset?.symbol}
         />
       );
     }
@@ -792,7 +860,7 @@ export default function TransactionConfirmationScreen() {
         value={request?.value}
       />
     );
-  }, [isMessageRequest, method, nativeCurrency, request]);
+  }, [isMessageRequest, method, nativeCurrency, network, request]);
 
   const offset = useSharedValue(0);
   const sheetOpacity = useSharedValue(1);
@@ -828,7 +896,7 @@ export default function TransactionConfirmationScreen() {
   const ShortSheetHeight = 486 + safeAreaInsetValues.bottom;
   const TallSheetHeight = 656 + safeAreaInsetValues.bottom;
   const MessageSheetHeight =
-    (method === SIGN_TYPED_DATA ? 640 : android ? 595 : 556) +
+    (method === SIGN_TYPED_DATA ? 630 : android ? 595 : 580) +
     safeAreaInsetValues.bottom;
 
   const balanceTooLow =
@@ -855,9 +923,36 @@ export default function TransactionConfirmationScreen() {
     sheetHeight += 140;
   }
 
-  if (isL2) {
-    sheetHeight += 30;
+  if (isTransactionDisplayType(method) && !isL2) {
+    sheetHeight -= 70;
   }
+
+  useEffect(() => {
+    if (ready) return;
+    if (
+      request?.asset &&
+      walletBalance &&
+      network &&
+      provider &&
+      nativeAsset &&
+      selectedGasPrice?.txFee
+    ) {
+      setReady(true);
+    }
+  }, [
+    nativeAsset,
+    network,
+    provider,
+    ready,
+    request?.asset,
+    selectedGasPrice?.txFee,
+    walletBalance,
+  ]);
+
+  const spinnerHeight =
+    sheetHeight -
+    227 +
+    (isTransactionDisplayType(method) ? (isL2 ? 84 : 72) : 0);
 
   return (
     <SheetKeyboardAnimation
@@ -883,7 +978,7 @@ export default function TransactionConfirmationScreen() {
                 ? safeAreaInsetValues.bottom + (android ? 20 : 0)
                 : 0
             }
-            paddingTop={24}
+            paddingTop={android && isTransactionDisplayType(method) ? 84 : 24}
             style={[
               animatedSheetStyles,
               android && isMessageRequest
@@ -891,107 +986,115 @@ export default function TransactionConfirmationScreen() {
                 : null,
             ]}
           >
-            <SheetHandleFixedToTop showBlur={false} />
-            <Column marginBottom={17} />
-            <DappLogo
-              dappName={dappName || ''}
-              imageUrl={imageUrl || ''}
-              network={network}
-            />
-            <Row marginBottom={5}>
-              <Text
-                align="center"
-                color={colors.alpha(colors.blueGreyDark, 0.8)}
-                letterSpacing="roundedMedium"
-                size="large"
-                weight="bold"
-              >
-                {isAuthenticated ? dappName : formattedDappUrl}
-              </Text>
-              {
-                //We only show the checkmark
-                // if it's on the override list (dappNameHandler.js)
-                isAuthenticated && (
+            {!ready ? (
+              <Centered height={spinnerHeight}>
+                <LoadingSpinner size={android ? 40 : 'large'} />
+              </Centered>
+            ) : (
+              <Fragment>
+                <SheetHandleFixedToTop showBlur={false} />
+                <Column marginBottom={17} />
+                <DappLogo
+                  dappName={dappName || ''}
+                  imageUrl={imageUrl || ''}
+                  network={network}
+                />
+                <Row marginBottom={5}>
                   <Text
                     align="center"
-                    color={colors.appleBlue}
+                    color={colors.alpha(colors.blueGreyDark, 0.8)}
                     letterSpacing="roundedMedium"
                     size="large"
                     weight="bold"
                   >
-                    {' 􀇻'}
+                    {isAuthenticated ? dappName : formattedDappUrl}
                   </Text>
-                )
-              }
-            </Row>
-            <Centered marginBottom={24} paddingHorizontal={24}>
-              <Text
-                align="center"
-                color={methodName ? 'dark' : 'white'}
-                letterSpacing="roundedMedium"
-                size="larger"
-                weight="heavy"
-              >
-                {methodName || 'Placeholder'}
-              </Text>
-            </Centered>
-            {(!isKeyboardVisible || ios) && (
-              <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
-            )}
-            {renderTransactionSection()}
-            {isL2 && !isMessageRequest && (
-              <Column marginTop={0} width="100%">
-                <Row height={19} />
-                <L2Disclaimer
-                  assetType={network}
-                  colors={colors}
-                  hideDivider
-                  onPress={handleL2DisclaimerPress}
-                  prominent
-                  symbol="app"
-                />
-              </Column>
-            )}
-            {renderTransactionButtons()}
-            <RowWithMargins css={padding(6, 24, 30)} margin={15}>
-              <Column>
-                <WalletLabel>Wallet</WalletLabel>
-                <RowWithMargins margin={5}>
-                  <Column marginTop={ios ? 2 : 8}>
-                    {accountInfo.accountImage ? (
-                      <ImageAvatar
-                        image={accountInfo.accountImage}
-                        size="smaller"
-                      />
-                    ) : (
-                      <ContactAvatar
-                        color={
-                          isNaN(accountInfo.accountColor)
-                            ? colors.skeleton
-                            : accountInfo.accountColor
-                        }
-                        size="smaller"
-                        value={accountInfo.accountSymbol}
-                      />
-                    )}
+                  {
+                    //We only show the checkmark
+                    // if it's on the override list (dappNameHandler.js)
+                    isAuthenticated && (
+                      <Text
+                        align="center"
+                        color={colors.appleBlue}
+                        letterSpacing="roundedMedium"
+                        size="large"
+                        weight="bold"
+                      >
+                        {' 􀇻'}
+                      </Text>
+                    )
+                  }
+                </Row>
+                <Centered marginBottom={24} paddingHorizontal={24}>
+                  <Text
+                    align="center"
+                    color={methodName ? 'dark' : 'white'}
+                    letterSpacing="roundedMedium"
+                    size="larger"
+                    weight="heavy"
+                  >
+                    {methodName || 'Placeholder'}
+                  </Text>
+                </Centered>
+                {(!isKeyboardVisible || ios) && (
+                  <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
+                )}
+                {renderTransactionSection()}
+                {isL2 && !isMessageRequest && (
+                  <Column marginTop={0} width="100%">
+                    <Row height={19} />
+                    <L2Disclaimer
+                      assetType={network}
+                      colors={colors}
+                      hideDivider
+                      onPress={handleL2DisclaimerPress}
+                      prominent
+                      symbol="app"
+                    />
                   </Column>
-                  <WalletText>{accountInfo.accountName}</WalletText>
+                )}
+                {renderTransactionButtons()}
+                <RowWithMargins css={padding(6, 24, 30)} margin={15}>
+                  <Column>
+                    <WalletLabel>Wallet</WalletLabel>
+                    <RowWithMargins margin={5}>
+                      <Column marginTop={ios ? 2 : 8}>
+                        {accountInfo.accountImage ? (
+                          <ImageAvatar
+                            image={accountInfo.accountImage}
+                            size="smaller"
+                          />
+                        ) : (
+                          <ContactAvatar
+                            color={
+                              isNaN(accountInfo.accountColor)
+                                ? colors.skeleton
+                                : accountInfo.accountColor
+                            }
+                            size="smaller"
+                            value={accountInfo.accountSymbol}
+                          />
+                        )}
+                      </Column>
+                      <WalletText>{accountInfo.accountName}</WalletText>
+                    </RowWithMargins>
+                  </Column>
+                  <Column align="flex-end" flex={1} justify="end">
+                    <WalletLabel align="right">Balance</WalletLabel>
+                    <WalletText
+                      align="right"
+                      balanceTooLow={balanceTooLow}
+                      letterSpacing="roundedTight"
+                    >
+                      {isBalanceEnough === false &&
+                        isSufficientGas !== undefined &&
+                        '􀇿 '}
+                      {walletBalance?.display}
+                    </WalletText>
+                  </Column>
                 </RowWithMargins>
-              </Column>
-              <Column align="flex-end" flex={1} justify="end">
-                <WalletLabel align="right">Balance</WalletLabel>
-                <WalletText
-                  align="right"
-                  balanceTooLow={balanceTooLow}
-                  letterSpacing="roundedTight"
-                >
-                  {isBalanceEnough === false &&
-                    isSufficientGas !== undefined &&
-                    '􀇿 '}
-                  {balances[accountInfo.address]} ETH
-                </WalletText>
-              </Column>
-            </RowWithMargins>
+              </Fragment>
+            )}
           </AnimatedSheet>
           {!isMessageRequest && (
             <GasSpeedButtonContainer>
@@ -999,6 +1102,12 @@ export default function TransactionConfirmationScreen() {
                 currentNetwork={network}
                 onCustomGasBlur={hideKeyboard}
                 onCustomGasFocus={showKeyboard}
+                options={
+                  network === networkTypes.optimism ||
+                  network === networkTypes.arbitrum
+                    ? ['normal']
+                    : undefined
+                }
                 type="transaction"
               />
             </GasSpeedButtonContainer>

@@ -1,17 +1,16 @@
-/* eslint-disable sort-keys */
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
 import { exec } from 'child_process';
-import WalletConnect from '@walletconnect/client';
+//import WalletConnect from '@walletconnect/client';
 import * as Helpers from './helpers';
 
-let connector = null;
+/*let connector = null;
 let uri = null;
-let account = null;
+let account = null;*/
 
 beforeAll(async () => {
   // Create WC client
-  // Create a connector
+  /* Create a connector
   connector = new WalletConnect({
     bridge: 'https://zora.bridge.walletconnect.org',
     clientMeta: {
@@ -24,6 +23,7 @@ beforeAll(async () => {
 
   await connector.createSession();
   uri = connector.uri;
+  */
   // Connect to ganache
   await exec('yarn ganache');
 });
@@ -188,9 +188,10 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.tap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.checkIfVisible('profile-screen');
-    await Helpers.swipe('profile-screen', 'left', 'slow');
+    //await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
+  /*
   it('Should receive the WC connect request and approve it', async () => {
     const connected = new Promise(async (resolve, reject) => {
       connector.on('connect', (error, payload) => {
@@ -347,6 +348,7 @@ describe('Ganache Transaction Flow', () => {
       await Helpers.checkIfVisible('Sending-Compound Sai');
     }
   });*/
+
   it('Should show completed send ERC20 (cSAI)', async () => {
     try {
       await Helpers.checkIfVisible('Sent-Compound SAI-1.69 cSAI');
@@ -381,19 +383,20 @@ describe('Ganache Transaction Flow', () => {
     }
   });
 
-  it('Should show completed send ETH (WC)', async () => {
+  /*it('Should show completed send ETH (WC)', async () => {
     try {
       await Helpers.checkIfVisible('Self-Ethereum-0.00 ETH');
     } catch (e) {
       await Helpers.checkIfVisible('Sending-Ethereum-0.00 ETH');
     }
-  });
+  });*/
 
   afterAll(async () => {
     // Reset the app state
-    await connector.killSession();
-    connector = null;
+    /*await connector.killSession();
+    connector = null;*/
     await device.clearKeychain();
     await exec('kill $(lsof -t -i:7545)');
+    await Helpers.delay(2000);
   });
 });

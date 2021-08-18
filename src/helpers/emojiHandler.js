@@ -11,7 +11,7 @@ export const removeFirstEmojiFromString = string => {
   if (first.search(regex) > -1) {
     grapheme.splice(0, 2);
   }
-  return grapheme;
+  return grapheme?.join('');
 };
 
 export const returnStringFirstEmoji = string => {

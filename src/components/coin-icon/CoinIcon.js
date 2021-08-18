@@ -19,6 +19,7 @@ const CoinIcon = ({
   address = 'eth',
   badgeXPosition,
   badgeYPosition,
+  badgeSize,
   forcedShadowColor,
   size = CoinIconSize,
   symbol = '',
@@ -35,7 +36,7 @@ const CoinIcon = ({
     <View>
       <StyledCoinIcon
         {...props}
-        address={address}
+        address={props.mainnet_address || address}
         color={color}
         fallbackRenderer={CoinIconFallback}
         forceFallback={forceFallback}
@@ -52,6 +53,7 @@ const CoinIcon = ({
         assetType={type}
         badgeXPosition={badgeXPosition}
         badgeYPosition={badgeYPosition}
+        size={badgeSize}
       />
     </View>
   );

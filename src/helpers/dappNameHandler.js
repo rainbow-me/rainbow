@@ -20,6 +20,10 @@ const DisplayDappNames = Object.freeze({
     name: 'Art Blocks',
     uri: buildAssetUrl('artblocks.io'),
   },
+  'astrofrens.com': {
+    name: 'Astro Frens',
+    uri: buildAssetUrl('astrofrens.com'),
+  },
   'badger.finance': {
     name: 'Badger DAO',
     uri: null,
@@ -28,9 +32,17 @@ const DisplayDappNames = Object.freeze({
     name: 'Balancer',
     uri: null,
   },
+  'blit.house': {
+    name: 'Blit House',
+    uri: buildAssetUrl('blit.house'),
+  },
   'blitmap.com': {
     name: 'Blitmap',
     uri: buildAssetUrl('blitmap.com'),
+  },
+  'collab.land': {
+    name: 'Collab.Land',
+    uri: buildAssetUrl('collab.land'),
   },
   'compound.finance': {
     name: 'Compound',
@@ -55,6 +67,10 @@ const DisplayDappNames = Object.freeze({
   'ens.domains': {
     name: 'ENS',
     uri: buildAssetUrl('ens.domains'),
+  },
+  'etherscan.io': {
+    name: 'Etherscan',
+    uri: buildAssetUrl('etherscan.io'),
   },
   'flexa.network': {
     name: 'Flexa',
@@ -100,6 +116,10 @@ const DisplayDappNames = Object.freeze({
     name: 'MyCrypto',
     uri: buildAssetUrl('mycrypto.com'),
   },
+  'nft20.io': {
+    name: 'NFT20',
+    uri: buildAssetUrl('nft20.io'),
+  },
   'niftygateway.com': {
     name: 'Nifty Gateway',
     uri: buildAssetUrl('niftygateway.com'),
@@ -116,6 +136,10 @@ const DisplayDappNames = Object.freeze({
     name: 'Optimism Gateway',
     uri: buildAssetUrl('optimism.io'),
   },
+  'partybid.app': {
+    name: 'PartyBid',
+    uri: buildAssetUrl('partybid.app'),
+  },
   'piedao.org': {
     name: 'PieDAO',
     uri: null,
@@ -124,13 +148,29 @@ const DisplayDappNames = Object.freeze({
     name: 'PoolTogether',
     uri: buildAssetUrl('pooltogether.com'),
   },
+  'punks.house': {
+    name: 'Punk House',
+    uri: buildAssetUrl('punks.house'),
+  },
+  'quickswap.exchange': {
+    name: 'QuickSwap',
+    uri: null,
+  },
   'rarible.com': {
     name: 'Rarible',
     uri: buildAssetUrl('rarible.com'),
   },
+  'snapshot.org': {
+    name: 'Snapshot',
+    uri: buildAssetUrl('snapshot.org'),
+  },
+  'superrare.com': {
+    name: 'SuperRare',
+    uri: buildAssetUrl('superrare.com'),
+  },
   'sushi.com': {
-    name: 'SushiSwap',
-    uri: buildAssetUrl('sushi.com'),
+    name: 'Sushi',
+    uri: null,
   },
   'swerve.fi': {
     name: 'Swerve',
