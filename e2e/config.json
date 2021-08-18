@@ -1,4 +1,5 @@
 {
+    "maxWorkers": 4,
     "setupFilesAfterEnv": ["./init.js"],
     "testEnvironment": "./environment",
     "testRunner": "jest-circus/runner",

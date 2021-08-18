@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+
+## [1.5.19](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.19)
+
+### Added
+* Add QR support for wc links
+
+### Changed
+* Fix WalletConnect timeout
+* Fix edge cases in send sheet - ENS suggestions
+* Remove unnecesary LP calls
+
 ## [1.5.18](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.18)
 
 ### Added
