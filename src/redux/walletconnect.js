@@ -380,9 +380,11 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
         return;
       }
       const { requests: pendingRequests } = getState().requests;
-      const request = !pendingRequests[requestId] ? dispatch(
-        addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)
-      ) : null;
+      const request = !pendingRequests[requestId]
+        ? dispatch(
+            addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)
+          )
+        : null;
       if (request) {
         Navigation.handleAction(Routes.CONFIRM_REQUEST, {
           openAutomatically: true,

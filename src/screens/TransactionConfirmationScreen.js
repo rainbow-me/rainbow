@@ -673,7 +673,6 @@ export default function TransactionConfirmationScreen() {
     dappUrl,
     formattedDappUrl,
     isAuthenticated,
-    nativeAsset,
   ]);
 
   const handleSignMessage = useCallback(async () => {
