@@ -70,7 +70,10 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
   }
 
   const handlePress = useCallback(() => {
-    const label = accountType === 'suggestions' ? nickname : address;
+    const label =
+      accountType === 'suggestions' && isENSAddressFormat(nickname)
+        ? nickname
+        : address;
     onPress(label);
   }, [accountType, address, nickname, onPress]);
 

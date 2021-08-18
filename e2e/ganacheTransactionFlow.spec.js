@@ -121,16 +121,16 @@ describe('Ganache Transaction Flow', () => {
   //   await Helpers.swipe('profile-screen', 'left', 'slow');
   // });
 
-  it('Should send ERC20 (cSAI)', async () => {
-    await Helpers.tap('send-fab');
-    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
-    await Helpers.tap('send-savings-cSAI');
-    await Helpers.typeText('selected-asset-field-input', '1.69', true);
-    await Helpers.tap('send-sheet-confirm-action-button');
-    await Helpers.tapAndLongPress('send-confirmation-button');
-    await Helpers.checkIfVisible('profile-screen');
-    await Helpers.swipe('profile-screen', 'left', 'slow');
-  });
+  // it('Should send ERC20 (cSAI)', async () => {
+  //   await Helpers.tap('send-fab');
+  //   await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
+  //   await Helpers.tap('send-savings-cSAI');
+  //   await Helpers.typeText('selected-asset-field-input', '1.69', true);
+  //   await Helpers.tap('send-sheet-confirm-action-button');
+  //   await Helpers.tapAndLongPress('send-confirmation-button');
+  //   await Helpers.checkIfVisible('profile-screen');
+  //   await Helpers.swipe('profile-screen', 'left', 'slow');
+  // });
 
   /*
   it('Should show completed swap ETH -> ERC20 (DAI)', async () => {
@@ -173,7 +173,6 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.tap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.checkIfVisible('profile-screen');
-    //await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
   it('Should receive the WC connect request and approve it', async () => {
@@ -190,7 +189,6 @@ describe('Ganache Transaction Flow', () => {
 
     await connector.createSession();
     uri = connector.uri;
-
     const connected = new Promise(async (resolve, reject) => {
       connector.on('connect', (error, payload) => {
         if (error) {
@@ -209,11 +207,15 @@ describe('Ganache Transaction Flow', () => {
     const baseUrl = 'https://rnbwapp.com';
     const encodedUri = encodeURIComponent(uri);
     const fullUrl = `${baseUrl}/wc?uri=${encodedUri}`;
+
+    await Helpers.disableSynchronization();
     await device.sendToHome();
+    await Helpers.enableSynchronization();
+
+    await Helpers.delay(2000);
 
     await device.launchApp({
       newInstance: false,
-      sourceApp: 'com.apple.mobilesafari',
       url: fullUrl,
     });
 
@@ -322,7 +324,6 @@ describe('Ganache Transaction Flow', () => {
       throw new Error('WC approving tx failed');
     }
     await Helpers.delay(3000);
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
   });
 
   /*
@@ -381,18 +382,18 @@ describe('Ganache Transaction Flow', () => {
     }
   });
 
-  /*it('Should show completed send ETH (WC)', async () => {
+  it('Should show completed send ETH (WC)', async () => {
     try {
       await Helpers.checkIfVisible('Self-Ethereum-0.00 ETH');
     } catch (e) {
       await Helpers.checkIfVisible('Sending-Ethereum-0.00 ETH');
     }
-  });*/
+  });
 
   afterAll(async () => {
     // Reset the app state
-    /*await connector.killSession();
-    connector = null;*/
+    await connector.killSession();
+    connector = null;
     await device.clearKeychain();
     await exec('kill $(lsof -t -i:7545)');
     await Helpers.delay(2000);

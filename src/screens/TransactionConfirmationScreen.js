@@ -257,8 +257,8 @@ export default function TransactionConfirmationScreen() {
       );
       setNativeAsset(asset);
     };
-    !isMessageRequest && getNativeAsset();
-  }, [accountInfo.address, allAssets, isMessageRequest, network]);
+    getNativeAsset();
+  }, [accountInfo.address, allAssets, network]);
 
   const {
     gasLimit,
@@ -288,10 +288,10 @@ export default function TransactionConfirmationScreen() {
   ]);
 
   const request = useMemo(() => {
-    return nativeAsset
-      ? { ...displayDetails.request, asset: nativeAsset }
-      : displayDetails.request;
-  }, [displayDetails.request, nativeAsset]);
+    return isMessageRequest
+      ? { message: displayDetails.request }
+      : { ...displayDetails.request, asset: nativeAsset };
+  }, [displayDetails.request, nativeAsset, isMessageRequest]);
 
   const openAutomatically = routeParams?.openAutomatically;
 
@@ -661,6 +661,7 @@ export default function TransactionConfirmationScreen() {
     displayDetails?.request?.asset,
     displayDetails?.request?.from,
     displayDetails?.request?.to,
+    nativeAsset,
     dappName,
     dispatch,
     dataAddNewTransaction,
@@ -818,7 +819,7 @@ export default function TransactionConfirmationScreen() {
     if (isMessageRequest) {
       return (
         <RowWithMargins css={padding(24, 0)}>
-          <MessageSigningSection message={request} method={method} />
+          <MessageSigningSection message={request.message} method={method} />
         </RowWithMargins>
       );
     }
@@ -971,7 +972,7 @@ export default function TransactionConfirmationScreen() {
                 ? safeAreaInsetValues.bottom + (android ? 20 : 0)
                 : 0
             }
-            paddingTop={24}
+            paddingTop={android && isTransactionDisplayType(method) ? 84 : 24}
             style={[
               animatedSheetStyles,
               android && isMessageRequest

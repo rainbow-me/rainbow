@@ -277,19 +277,23 @@ export const GET_BLOCKS_QUERY = timestamps => {
 
 export const USER_POSITIONS = gql`
   query liquidityPositions($user: Bytes!) {
-    liquidityPositions(where: { user: $user }) {
+    liquidityPositions(where: { user: $user, liquidityTokenBalance_gt: 0 }) {
       pair {
         id
         reserve0
         reserve1
         reserveUSD
         token0 {
+          decimals
           id
+          name
           symbol
           derivedETH
         }
         token1 {
+          decimals
           id
+          name
           symbol
           derivedETH
         }

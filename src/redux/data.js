@@ -481,11 +481,10 @@ export const addressAssetsReceived = (
 
   let parsedAssets = parseAccountAssets(assets, uniqueTokens);
 
-  // remove LP tokens
+  // remove V2 LP tokens
   const liquidityTokens = remove(
     parsedAssets,
-    asset =>
-      asset?.type === AssetTypes.uniswap || asset?.type === AssetTypes.uniswapV2
+    asset => asset?.type === AssetTypes.uniswapV2
   );
 
   const isL2 = assetsNetwork && isL2Network(assetsNetwork);

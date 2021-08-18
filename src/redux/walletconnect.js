@@ -13,6 +13,7 @@ import {
   values,
 } from 'lodash';
 import { Alert, InteractionManager, Linking } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import URL, { qs } from 'url-parse';
 import {
   getAllValidWalletConnectSessions,
@@ -191,10 +192,12 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         const dappName = dappNameOverride(peerMeta.url) || peerMeta.name;
         const dappUrl = peerMeta.url;
         const dappScheme = peerMeta.scheme;
+
         analytics.track('Showing Walletconnect session request', {
           dappName,
           dappUrl,
         });
+
         meta = {
           chainId,
           dappName,
@@ -203,11 +206,12 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
           imageUrl,
           peerId,
         };
+
         // If we already showed the sheet
         // We need navigate to the same route with the updated params
         // which now includes the meta
         if (navigated && !timedOut) {
-          routeParams = { ...routeParams, meta };
+          routeParams = { ...routeParams, meta, timeout };
           Navigation.handleAction(
             Routes.WALLET_CONNECT_APPROVAL_SHEET,
             routeParams
@@ -215,11 +219,18 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         }
       });
 
-      InteractionManager.runAfterInteractions(async () => {
-        // Wait until the app is idle so we can navigate
-        // This usually happens only when coming from a cold start
-        while (!getState().appState.walletReady) {
-          await delay(300);
+      let waitingFn = InteractionManager.runAfterInteractions;
+      if (IS_TESTING === 'true') {
+        waitingFn = setTimeout;
+      }
+
+      waitingFn(async () => {
+        if (IS_TESTING !== 'true') {
+          // Wait until the app is idle so we can navigate
+          // This usually happens only when coming from a cold start
+          while (!getState().appState.walletReady) {
+            await delay(300);
+          }
         }
 
         // We need to add a timeout in case the bridge is down
@@ -243,10 +254,10 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
           Routes.WALLET_CONNECT_APPROVAL_SHEET,
           routeParams
         );
-      });
+      }, 2000);
     } catch (error) {
       clearTimeout(timeout);
-      logger.log('Exception during wc session_request');
+      logger.log('Exception during wc session_request', error);
       analytics.track('Exception on wc session_request', {
         error,
       });
@@ -255,7 +266,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
     }
   } catch (error) {
     clearTimeout(timeout);
-    logger.log('FCM exception during wc session_request');
+    logger.log('FCM exception during wc session_request', error);
     analytics.track('FCM exception on wc session_request', {
       error,
     });
@@ -403,7 +414,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     if (error) {
       throw error;
     }
-    dispatch(walletConnectDisconnectAllByPeerId(walletConnector.peerId));
+    dispatch(walletConnectDisconnectAllByDappUrl(walletConnector.peerMeta.url));
   });
   return walletConnector;
 };
@@ -523,16 +534,15 @@ export const walletConnectUpdateSessions = () => (dispatch, getState) => {
   });
 };
 
-export const walletConnectUpdateSessionConnectorByPeerId = (
-  peerId,
+export const walletConnectUpdateSessionConnectorByDappUrl = (
+  dappUrl,
   accountAddress,
   chainId
 ) => (dispatch, getState) => {
   const { walletConnectors } = getState().walletconnect;
-  const connectors = pickBy(
-    walletConnectors,
-    connector => connector.peerId === peerId
-  );
+  const connectors = pickBy(walletConnectors, connector => {
+    return connector.peerMeta.url === dappUrl;
+  });
   const newSessionData = {
     accounts: [accountAddress],
     chainId,
@@ -581,13 +591,13 @@ export const walletConnectRejectSession = (
   dispatch(removePendingRequest(peerId));
 };
 
-export const walletConnectDisconnectAllByPeerId = peerId => async (
+export const walletConnectDisconnectAllByDappUrl = dappUrl => async (
   dispatch,
   getState
 ) => {
   const { walletConnectors } = getState().walletconnect;
   const matchingWalletConnectors = values(
-    pickBy(walletConnectors, session => session.peerId === peerId)
+    pickBy(walletConnectors, connector => connector.peerMeta.url === dappUrl)
   );
   try {
     const peerIds = values(
@@ -597,11 +607,12 @@ export const walletConnectDisconnectAllByPeerId = peerId => async (
       )
     );
     await removeWalletConnectSessions(peerIds);
-    forEach(matchingWalletConnectors, walletConnector =>
-      walletConnector.killSession()
-    );
+    forEach(matchingWalletConnectors, connector => connector.killSession());
     dispatch({
-      payload: omitBy(walletConnectors, wc => wc.peerId === peerId),
+      payload: omitBy(
+        walletConnectors,
+        connector => connector.peerMeta.url === dappUrl
+      ),
       type: WALLETCONNECT_REMOVE_SESSION,
     });
   } catch (error) {
