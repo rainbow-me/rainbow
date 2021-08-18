@@ -121,16 +121,16 @@ describe('Ganache Transaction Flow', () => {
   //   await Helpers.swipe('profile-screen', 'left', 'slow');
   // });
 
-  // it('Should send ERC20 (cSAI)', async () => {
-  //   await Helpers.tap('send-fab');
-  //   await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
-  //   await Helpers.tap('send-savings-cSAI');
-  //   await Helpers.typeText('selected-asset-field-input', '1.69', true);
-  //   await Helpers.tap('send-sheet-confirm-action-button');
-  //   await Helpers.tapAndLongPress('send-confirmation-button');
-  //   await Helpers.checkIfVisible('profile-screen');
-  //   await Helpers.swipe('profile-screen', 'left', 'slow');
-  // });
+  it('Should send ERC20 (cSAI)', async () => {
+    await Helpers.tap('send-fab');
+    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
+    await Helpers.tap('send-savings-cSAI');
+    await Helpers.typeText('selected-asset-field-input', '1.69', true);
+    await Helpers.tap('send-sheet-confirm-action-button');
+    await Helpers.tapAndLongPress('send-confirmation-button');
+    await Helpers.checkIfVisible('profile-screen');
+    await Helpers.swipe('profile-screen', 'left', 'slow');
+  });
 
   /*
   it('Should show completed swap ETH -> ERC20 (DAI)', async () => {
