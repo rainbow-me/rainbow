@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.5.19-1",
+  "version": "1.5.20-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn allow-scripts && yarn postinstall",
@@ -187,7 +187,7 @@
     "react-native-qrcode-svg": "mikedemarais/react-native-qrcode-svg#c0302a698ea4fa0bb9b506a11ef39905674f2221",
     "react-native-radial-gradient": "rainbow-me/react-native-radial-gradient#1266cd8f6ac3321bcf27357f8771bd088f9f27ef",
     "react-native-randombytes": "^3.5.3",
-    "react-native-reanimated": "^2.1.0",
+    "react-native-reanimated": "2.3.0-alpha.2",
     "react-native-redash": "14.2.2",
     "react-native-restart": "^0.0.20",
     "react-native-safe-area-context": "^0.5.0",
@@ -264,7 +264,7 @@
     "babel-plugin-rewire": "^1.2.0",
     "babel-plugin-styled-components": "^1.10.7",
     "babel-plugin-transform-remove-console": "^6.9.4",
-    "detox": "^18.18.1",
+    "detox": "^18.20.2",
     "dotenv": "^8.2.0",
     "eslint": "7.14.0",
     "eslint-config-satya164": "^3.1.6",
