@@ -817,7 +817,7 @@ export default function TransactionConfirmationScreen() {
     nativeAsset?.symbol,
     onCancel,
     onPressSend,
-    onPressCancel
+    onPressCancel,
   ]);
 
   const renderTransactionSection = useCallback(() => {
