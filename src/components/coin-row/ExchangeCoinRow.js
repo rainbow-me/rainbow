@@ -48,7 +48,7 @@ const BottomRow = ({ showBalance, symbol }) =>
   showBalance ? null : <BottomRowText>{symbol}</BottomRowText>;
 
 const TopRow = ({ name, showBalance }) => (
-  <Row height={showBalance ? CoinIconSize : null}>
+  <Row align="center" height={showBalance ? CoinIconSize : null}>
     <ExchangeCoinName showBalance={showBalance}>{name}</ExchangeCoinName>
   </Row>
 );

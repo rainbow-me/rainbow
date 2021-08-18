@@ -423,7 +423,7 @@ function RecyclerAssetList({
     (e: unknown, f: unknown, offsetY: number) => {
       isCoinListEdited && checkEditStickyHeader(offsetY);
     },
-    [isCoinListEdited, checkEditStickyHeader]
+    [checkEditStickyHeader, isCoinListEdited]
   );
 
   const rowRenderer = React.useCallback(
@@ -710,6 +710,10 @@ function RecyclerAssetList({
   const lastOpenFamilyTabs = usePrevious(openFamilyTabs) || openFamilyTabs;
   const lastIsCoinListEdited =
     usePrevious(isCoinListEdited) || isCoinListEdited;
+
+  useEffect(() => {
+    lastIsCoinListEdited !== isCoinListEdited && checkEditStickyHeader(0);
+  }, [lastIsCoinListEdited, isCoinListEdited, checkEditStickyHeader]);
 
   useEffect(() => {
     let collectibles: RecyclerAssetListSection = {} as RecyclerAssetListSection;

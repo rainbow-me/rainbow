@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import { isEmpty } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -37,6 +38,7 @@ import {
   useAccountSettings,
   useBlockPolling,
   useGas,
+  usePrevious,
   usePriceImpactDetails,
   useSwapCurrencies,
   useSwapCurrencyHandlers,
@@ -132,6 +134,7 @@ export default function ExchangeModal({
     : ethUnits.basic_swap;
 
   const {
+    gasPrices,
     selectedGasPrice,
     startPollingGasPrices,
     stopPollingGasPrices,
@@ -143,6 +146,8 @@ export default function ExchangeModal({
   const { nativeCurrency, network } = useAccountSettings();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
+
+  const prevGasPrices = usePrevious(gasPrices);
 
   useAndroidBackHandler(() => {
     navigate(Routes.WALLET_SCREEN);
@@ -191,6 +196,7 @@ export default function ExchangeModal({
 
   const {
     isHighPriceImpact,
+    outputPriceValue,
     priceImpactColor,
     priceImpactNativeAmount,
     priceImpactPercentDisplay,
@@ -263,21 +269,23 @@ export default function ExchangeModal({
     updateTxFee,
   ]);
 
-  // Update gas limit
-  useEffect(() => {
-    updateGasLimit();
-  }, [updateGasLimit]);
-
   // Set default gas limit
   useEffect(() => {
-    setTimeout(() => {
+    if (isEmpty(prevGasPrices) && !isEmpty(gasPrices)) {
       updateTxFee(defaultGasLimit);
-    }, 1000);
-  }, [defaultGasLimit, updateTxFee]);
+    }
+  }, [gasPrices, defaultGasLimit, updateTxFee, prevGasPrices]);
+
+  // Update gas limit
+  useEffect(() => {
+    if (!isEmpty(gasPrices)) {
+      updateGasLimit();
+    }
+  }, [gasPrices, updateGasLimit]);
 
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
-    updateDefaultGasLimit(defaultGasLimit);
+    updateDefaultGasLimit(network, defaultGasLimit);
     startPollingGasPrices();
     initWeb3Listener();
     return () => {
@@ -286,6 +294,7 @@ export default function ExchangeModal({
     };
   }, [
     defaultGasLimit,
+    network,
     initWeb3Listener,
     startPollingGasPrices,
     stopPollingGasPrices,
@@ -297,8 +306,9 @@ export default function ExchangeModal({
     updateMaxInputAmount();
   }, [updateMaxInputAmount]);
 
-  const checkGasvInput = async (gasPrice, inputPrice) => {
-    if (convertStringToNumber(gasPrice) > convertStringToNumber(inputPrice)) {
+  const checkGasVsOutput = async (gasPrice, outputPrice) => {
+    const outputValue = convertStringToNumber(outputPrice);
+    if (outputValue > 0 && convertStringToNumber(gasPrice) > outputValue) {
       const res = new Promise(resolve => {
         Alert.alert(
           'Are you sure?',
@@ -362,8 +372,9 @@ export default function ExchangeModal({
       });
     }
 
+    const outputInUSD = outputPriceValue * outputAmount;
     const gasPrice = selectedGasPrice?.txFee?.native?.value?.amount;
-    const cancelTransaction = await checkGasvInput(gasPrice, amountInUSD);
+    const cancelTransaction = await checkGasVsOutput(gasPrice, outputInUSD);
 
     if (cancelTransaction) {
       return;
@@ -423,9 +434,10 @@ export default function ExchangeModal({
     outputCurrency?.address,
     outputCurrency?.name,
     outputCurrency?.symbol,
+    outputPriceValue,
     priceImpactPercentDisplay,
     priceOfEther,
-    selectedGasPrice,
+    selectedGasPrice?.txFee?.native?.value?.amount,
     setParams,
     tradeDetails,
     type,

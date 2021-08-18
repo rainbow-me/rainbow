@@ -33,3 +33,11 @@ export const blockClient = new ApolloClient({
     uri: 'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks',
   }),
 });
+
+export const ensClient = new ApolloClient({
+  cache: new InMemoryCache(),
+  defaultOptions,
+  link: new HttpLink({
+    uri: 'https://api.thegraph.com/subgraphs/name/ensdomains/ens',
+  }),
+});

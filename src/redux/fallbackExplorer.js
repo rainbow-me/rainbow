@@ -333,7 +333,10 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
             },
             payload: newPayload,
           },
-          true
+          false,
+          false,
+          false,
+          network
         )
       );
       lastUpdatePayload = newPayload;

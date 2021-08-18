@@ -68,11 +68,10 @@ export default function WalletConnectListItem({
   dappIcon,
   dappName,
   dappUrl,
-  peerId,
 }) {
   const {
-    walletConnectDisconnectAllByPeerId,
-    walletConnectUpdateSessionConnectorByPeerId,
+    walletConnectDisconnectAllByDappUrl,
+    walletConnectUpdateSessionConnectorByDappUrl,
   } = useWalletConnectConnections();
   const { goBack } = useNavigation();
   const { colors } = useTheme();
@@ -114,7 +113,7 @@ export default function WalletConnectListItem({
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
       currentAccountAddress: account,
       onChangeWallet: address => {
-        walletConnectUpdateSessionConnectorByPeerId(peerId, address, chainId);
+        walletConnectUpdateSessionConnectorByDappUrl(dappUrl, address, chainId);
         goBack();
       },
       watchOnly: true,
@@ -122,9 +121,9 @@ export default function WalletConnectListItem({
   }, [
     account,
     chainId,
-    peerId,
+    dappUrl,
     goBack,
-    walletConnectUpdateSessionConnectorByPeerId,
+    walletConnectUpdateSessionConnectorByDappUrl,
   ]);
 
   const onPressAndroid = useCallback(() => {
@@ -137,8 +136,8 @@ export default function WalletConnectListItem({
       idx => {
         if (idx === 0 && networksAvailable.length > 1) {
           androidShowNetworksActionSheet(({ chainId }) => {
-            walletConnectUpdateSessionConnectorByPeerId(
-              peerId,
+            walletConnectUpdateSessionConnectorByDappUrl(
+              dappUrl,
               account,
               chainId
             );
@@ -146,7 +145,7 @@ export default function WalletConnectListItem({
         } else if ((idx === 0 && networksAvailable.length === 1) || idx === 1) {
           handlePressChangeWallet();
         } else if ((idx === 1 && networksAvailable.length === 1) || idx === 2) {
-          walletConnectDisconnectAllByPeerId(peerId);
+          walletConnectDisconnectAllByDappUrl(dappUrl);
           analytics.track(
             'Manually disconnected from WalletConnect connection',
             {
@@ -161,17 +160,16 @@ export default function WalletConnectListItem({
     account,
     dappName,
     dappUrl,
-    peerId,
     handlePressChangeWallet,
     overrideName,
-    walletConnectUpdateSessionConnectorByPeerId,
-    walletConnectDisconnectAllByPeerId,
+    walletConnectUpdateSessionConnectorByDappUrl,
+    walletConnectDisconnectAllByDappUrl,
   ]);
 
   const handleOnPressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === 'disconnect') {
-        walletConnectDisconnectAllByPeerId(peerId);
+        walletConnectDisconnectAllByDappUrl(dappUrl);
         analytics.track('Manually disconnected from WalletConnect connection', {
           dappName,
           dappUrl,
@@ -184,17 +182,16 @@ export default function WalletConnectListItem({
           ''
         );
         const chainId = ethereumUtils.getChainIdFromNetwork(networkValue);
-        walletConnectUpdateSessionConnectorByPeerId(peerId, account, chainId);
+        walletConnectUpdateSessionConnectorByDappUrl(dappUrl, account, chainId);
       }
     },
     [
       account,
       dappName,
       dappUrl,
-      peerId,
       handlePressChangeWallet,
-      walletConnectDisconnectAllByPeerId,
-      walletConnectUpdateSessionConnectorByPeerId,
+      walletConnectDisconnectAllByDappUrl,
+      walletConnectUpdateSessionConnectorByDappUrl,
     ]
   );
 
@@ -254,19 +251,26 @@ export default function WalletConnectListItem({
               </Centered>
             </SessionRow>
           </ColumnWithMargins>
-          <NetworkPill mainnet={connectionNetworkInfo.value === 'mainnet'}>
-            <ChainLogo network={connectionNetworkInfo.value} />
-            <LabelText
-              color={
-                connectionNetworkInfo.value === 'mainnet'
-                  ? colors.alpha(colors.blueGreyDark, 0.5)
-                  : colors.alpha(colors.blueGreyDark, 0.8)
-              }
-              numberOfLines={1}
-            >
-              {connectionNetworkInfo.name}
-            </LabelText>
-          </NetworkPill>
+          <ContextMenuButton
+            menuItems={networksMenuItems()}
+            menuTitle="Change Network"
+            onPressAndroid={onPressAndroid}
+            onPressMenuItem={handleOnPressMenuItem}
+          >
+            <NetworkPill mainnet={connectionNetworkInfo.value === 'mainnet'}>
+              <ChainLogo network={connectionNetworkInfo.value} />
+              <LabelText
+                color={
+                  connectionNetworkInfo.value === 'mainnet'
+                    ? colors.alpha(colors.blueGreyDark, 0.5)
+                    : colors.alpha(colors.blueGreyDark, 0.8)
+                }
+                numberOfLines={1}
+              >
+                {connectionNetworkInfo.name}
+              </LabelText>
+            </NetworkPill>
+          </ContextMenuButton>
         </Row>
       </Row>
     </ContextMenuButton>
