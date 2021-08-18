@@ -49,6 +49,7 @@ import RoutesComponent from './navigation/Routes';
 import { explorerInit } from './redux/explorer';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
+import { walletConnectLoadState } from './redux/walletconnect';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
@@ -217,6 +218,14 @@ class App extends Component {
   };
 
   handleAppStateChange = async nextAppState => {
+    // Restore WC connectors when going from BG => FG
+    if (
+      ios &&
+      this.state.appState === 'background' &&
+      nextAppState === 'active'
+    ) {
+      store.dispatch(walletConnectLoadState());
+    }
     this.setState({ appState: nextAppState });
 
     analytics.track('State change', {
