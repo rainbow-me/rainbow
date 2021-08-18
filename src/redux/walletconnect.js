@@ -382,7 +382,6 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       const request = dispatch(
         addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)
       );
-
       if (request) {
         Navigation.handleAction(Routes.CONFIRM_REQUEST, {
           openAutomatically: true,
