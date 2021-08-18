@@ -685,7 +685,6 @@ export default function TransactionConfirmationScreen() {
     dappUrl,
     formattedDappUrl,
     isAuthenticated,
-    nativeAsset,
   ]);
 
   const handleSignMessage = useCallback(async () => {
@@ -737,7 +736,6 @@ export default function TransactionConfirmationScreen() {
     onCancel,
     params,
     peerId,
-    provider,
     removeRequest,
     requestId,
     walletConnectSendStatus,
@@ -819,6 +817,7 @@ export default function TransactionConfirmationScreen() {
     nativeAsset?.symbol,
     onCancel,
     onPressSend,
+    onPressCancel
   ]);
 
   const renderTransactionSection = useCallback(() => {
