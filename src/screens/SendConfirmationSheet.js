@@ -297,23 +297,12 @@ export default function SendConfirmationSheet() {
     }
   }, [callback, canSubmit]);
 
-  const accountProfile = useMemo(() => {
-    const selectedWallet = findWalletWithAccount(wallets, toAddress);
-    const approvalAccountInfo = getAccountProfileInfo(
-      selectedWallet,
-      network,
-      walletNames,
-      toAddress
-    );
-    return {
-      ...approvalAccountInfo,
-    };
-  }, [wallets, toAddress, network, walletNames]);
-
-  const watchedAccount = useMemo(() => {
+  const existingAccount = useMemo(() => {
     let existingAcct = null;
     if (toAddress) {
-      const allAccounts = [...watchedAccounts].filter(acct => acct.visible);
+      const allAccounts = [...userAccounts, ...watchedAccounts].filter(
+        acct => acct.visible
+      );
       for (const account of allAccounts) {
         if (
           toChecksumAddress(account.address) === toChecksumAddress(toAddress)
@@ -324,26 +313,21 @@ export default function SendConfirmationSheet() {
       }
     }
     return existingAcct;
-  }, [watchedAccounts, toAddress]);
+  }, [toAddress, userAccounts, watchedAccounts]);
 
   const avatarName =
-    removeFirstEmojiFromString(watchedAccount?.label || contact?.nickname) ||
-    accountProfile?.accountName ||
+    removeFirstEmojiFromString(existingAccount?.label || contact?.nickname) ||
     (isENSAddressFormat(to) ? to : address(to, 4, 6));
 
-  const avatarValue = watchedAccount
-    ? returnStringFirstEmoji(watchedAccount.label)
-    : contact?.nickname ||
-      accountProfile?.accountSymbol ||
-      addressHashedEmoji(toAddress);
+  const avatarValue =
+    returnStringFirstEmoji(existingAccount?.label) ||
+    contact?.nickname ||
+    addressHashedEmoji(toAddress);
 
-  const avatarColor = watchedAccount
-    ? watchedAccount.color
-    : contact?.color == null
-    ? accountProfile?.accountColor == null
-      ? addressHashedColorIndex(toAddress)
-      : accountProfile?.accountColor
-    : contact?.color;
+  const avatarColor =
+    existingAccount?.color ||
+    contact?.color ||
+    addressHashedColorIndex(toAddress);
 
   let realSheetHeight = !shouldShowChecks
     ? SendConfirmationSheetHeight - 150
@@ -353,7 +337,7 @@ export default function SendConfirmationSheet() {
     realSheetHeight -= 80;
   }
 
-  const accountImage = accountProfile?.accountImage || watchedAccount?.image;
+  const accountImage = existingAccount?.image;
 
   const contentHeight = realSheetHeight - (isL2 ? 50 : 30);
   return (
