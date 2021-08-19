@@ -12,6 +12,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../../components/animations';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
+import { ContactRow } from '../contacts';
 import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { GradientText, Text } from '../text';
 import { CopyToast, ToastPositionContainer } from '../toasts';
@@ -179,8 +180,18 @@ const ExchangeAssetList = (
     ) : null;
   };
 
-  const renderItemCallback = useCallback(
-    ({ item }) => (
+  // either show ENS row or Currency row
+  const LineToRender = ({ item }) =>
+    item.ens ? (
+      <ContactRow
+        accountType="contact"
+        address={item.address}
+        color={item.color}
+        nickname={item.nickname}
+        onPress={itemProps.onPress}
+        showcaseItem={item}
+      />
+    ) : (
       <ExchangeCoinRow
         {...itemProps}
         isVerified={item.isVerified}
@@ -188,6 +199,14 @@ const ExchangeAssetList = (
         onCopySwapDetailsText={onCopySwapDetailsText}
         onUnverifiedTokenPress={handleUnverifiedTokenPress}
         testID={testID}
+      />
+    );
+  const renderItemCallback = useCallback(
+    ({ item, index, section }) => (
+      // in the Discover screen search results, we mix in ENS rows with coin rows
+      <LineToRender
+        item={item}
+        key={`${item.address}_${index}_${section.key}`}
       />
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -199,6 +218,10 @@ const ExchangeAssetList = (
   return (
     <Fragment>
       <ExchangeAssetSectionList
+        keyExtractor={(item, index) => {
+          console.log('key extractor', { item, index });
+          return `${item.address}_${index}`;
+        }}
         keyboardDismissMode={keyboardDismissMode}
         onLayout={onLayout}
         ref={sectionListRef}

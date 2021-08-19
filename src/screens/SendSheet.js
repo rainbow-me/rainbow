@@ -1,17 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
-import { toChecksumAddress } from 'ethereumjs-util';
-import {
-  contains,
-  debounce,
-  isEmpty,
-  isEqual,
-  isString,
-  sortBy,
-  toLower,
-  uniqBy,
-} from 'lodash';
+import { isEmpty, isEqual, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
@@ -19,8 +9,6 @@ import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { dismissingScreenListener } from '../../shim';
-import { ensClient } from '../apollo/client';
-import { ENS_SUGGESTIONS } from '../apollo/queries';
 import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import {
@@ -32,6 +20,7 @@ import {
 import { SheetActionButton } from '../components/sheet';
 import { AssetTypes } from '@rainbow-me/entities';
 import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';
+import { debouncedFetchSuggestions } from '@rainbow-me/handlers/ens';
 import {
   createSignableTransaction,
   estimateGasLimit,
@@ -40,7 +29,6 @@ import {
   resolveNameOrAddress,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
-import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
@@ -80,7 +68,7 @@ import {
   formatInputDecimals,
   lessThan,
 } from '@rainbow-me/utilities';
-import { deviceUtils, ethereumUtils, profileUtils } from '@rainbow-me/utils';
+import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
@@ -108,72 +96,6 @@ const KeyboardSizeView = styled(KeyboardArea)`
   background-color: ${({ showAssetForm, theme: { colors } }) =>
     showAssetForm ? colors.lighterGrey : colors.white};
 `;
-
-const fetchSuggestions = async (recipient, setSuggestions, watchedAccounts) => {
-  if (recipient?.length) {
-    recipient = recipient.toLowerCase();
-    const watchedSuggestions = watchedAccounts
-      .map(account => ({
-        address: account.address,
-        color: profileUtils.addressHashedColorIndex(
-          account.address || account.label
-        ),
-        network: 'mainnet',
-        nickname: removeFirstEmojiFromString(account.label),
-      }))
-      .filter(account => account.nickname.includes(recipient));
-
-    const sortedWatchSuggestions = sortBy(
-      watchedSuggestions,
-      domain => domain.nickname.length,
-      ['asc']
-    );
-
-    let sortedSuggestions = sortedWatchSuggestions;
-
-    if (recipient.length > 2) {
-      let result = await ensClient.query({
-        query: ENS_SUGGESTIONS,
-        variables: {
-          amount: 75,
-          name: recipient,
-        },
-      });
-
-      if (result?.data?.domains.length) {
-        const ENSSuggestions = result.data.domains
-          .map(ensDomain => ({
-            address:
-              toChecksumAddress(ensDomain?.resolver?.addr?.id) ||
-              ensDomain.name,
-            color: profileUtils.addressHashedColorIndex(
-              ensDomain?.resolver?.addr?.id || ensDomain.name
-            ),
-            network: 'mainnet',
-            nickname: ensDomain.name,
-          }))
-          .filter(domain => !contains(domain.nickname, ['[', ']']));
-
-        const sortedENSSuggestions = sortBy(
-          ENSSuggestions,
-          domain => domain.nickname.length,
-          ['asc']
-        );
-
-        sortedSuggestions = uniqBy(
-          [...sortedSuggestions, ...sortedENSSuggestions],
-          suggestion => suggestion.address
-        );
-      }
-    }
-    sortedSuggestions = sortedSuggestions.slice(0, 3);
-    setSuggestions(sortedSuggestions);
-  } else {
-    setSuggestions([]);
-  }
-};
-
-const debouncedFetchSuggestions = debounce(fetchSuggestions, 200);
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
