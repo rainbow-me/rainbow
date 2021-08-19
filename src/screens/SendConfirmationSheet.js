@@ -243,8 +243,6 @@ export default function SendConfirmationSheet() {
     return existingAcct;
   }, [userAccounts, watchedAccounts, toAddress]);
 
-  console.log('existingAccount', existingAccount);
-
   const contact = useMemo(() => {
     return get(contacts, `${[toLower(to)]}`);
   }, [contacts, to]);
@@ -493,7 +491,7 @@ export default function SendConfirmationSheet() {
               </Column>
               <Column align="end" justify="center">
                 {existingAccount?.image ? (
-                  <ImageAvatar image={existingAccount.image} size="medium" />
+                  <ImageAvatar image={existingAccount.image} size="lmedium" />
                 ) : (
                   <ContactAvatar
                     color={avatarColor}
