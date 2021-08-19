@@ -1,4 +1,3 @@
-import { toChecksumAddress } from 'ethereumjs-util';
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import { ENS_SUGGESTIONS } from '../apollo/queries';
@@ -16,10 +15,9 @@ const fetchSuggestions = async (recipient, setSuggestions) => {
     });
 
     if (!isEmpty(result?.data?.domains)) {
-      const ENSSuggestions = result.data.domains
+      const ensSuggestions = result.data.domains
         .map(ensDomain => ({
-          address:
-            toChecksumAddress(ensDomain?.resolver?.addr?.id) || ensDomain?.name,
+          address: ensDomain?.resolver?.addr?.id || ensDomain?.name,
           color: profileUtils.addressHashedColorIndex(
             ensDomain?.resolver?.addr?.id || ensDomain.name
           ),
@@ -29,12 +27,12 @@ const fetchSuggestions = async (recipient, setSuggestions) => {
           uniqueId: ensDomain?.resolver?.addr?.id || ensDomain.name,
         }))
         .filter(domain => !domain?.nickname?.includes?.('['));
-      const sortedENSSuggestions = sortBy(
-        ENSSuggestions,
+      const sortedEnsSuggestions = sortBy(
+        ensSuggestions,
         domain => domain.nickname.length,
         ['asc']
       );
-      const slicedSortedSuggestions = sortedENSSuggestions.slice(0, 3);
+      const slicedSortedSuggestions = sortedEnsSuggestions.slice(0, 3);
       setSuggestions(slicedSortedSuggestions);
     }
   } else {
