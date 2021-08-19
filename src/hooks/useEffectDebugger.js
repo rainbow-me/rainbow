@@ -25,7 +25,7 @@ const compareInputs = (oldInputs, newInputs, prefix) => {
   });
 };
 
-export const useEffectDebugger = (func, inputs, prefix = 'useEffect') => {
+const useEffectDebugger = (func, inputs, prefix = 'useEffect') => {
   // Using a ref to hold the inputs from the previous run (or same run for initial run
   const oldInputsRef = useRef(inputs);
   useEffect(() => {
@@ -43,3 +43,5 @@ export const useEffectDebugger = (func, inputs, prefix = 'useEffect') => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, inputs);
 };
+
+export default useEffectDebugger;

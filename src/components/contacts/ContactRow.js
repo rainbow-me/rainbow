@@ -4,7 +4,7 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '../../helpers/emojiHandler';
-import { abbreviations, defaultProfileUtils, magicMemo } from '../../utils';
+import { abbreviations, magicMemo, profileUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
 import { Column, RowWithMargins } from '../layout';
@@ -61,15 +61,21 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
   const avatar =
     accountType !== 'contacts'
       ? returnStringFirstEmoji(label) ||
-        defaultProfileUtils.addressHashedEmoji(address)
+        profileUtils.addressHashedEmoji(address)
       : null;
 
   let cleanedUpLabel = null;
   if (label) {
-    cleanedUpLabel = removeFirstEmojiFromString(label).join('');
+    cleanedUpLabel = removeFirstEmojiFromString(label);
   }
 
-  const handlePress = useCallback(() => onPress(address), [address, onPress]);
+  const handlePress = useCallback(() => {
+    const label =
+      accountType === 'suggestions' && isENSAddressFormat(nickname)
+        ? nickname
+        : address;
+    onPress(label);
+  }, [accountType, address, nickname, onPress]);
 
   return (
     <ButtonPressAnimation

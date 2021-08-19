@@ -10,6 +10,7 @@ import {
   dappNameOverride,
 } from '@rainbow-me/helpers/dappNameHandler';
 import { getRequestDisplayDetails } from '@rainbow-me/parsers';
+import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -38,12 +39,15 @@ export const addRequestToApprove = (
   peerMeta
 ) => (dispatch, getState) => {
   const { requests } = getState().requests;
+  const { walletConnectors } = getState().walletconnect;
   const { accountAddress, network, nativeCurrency } = getState().settings;
-  const { assets } = getState().data;
+  const walletConnector = walletConnectors[peerId];
+  const chainId = walletConnector._chainId;
+  const dappNetwork = ethereumUtils.getNetworkFromChainId(Number(chainId));
   const displayDetails = getRequestDisplayDetails(
     payload,
-    assets,
-    nativeCurrency
+    nativeCurrency,
+    dappNetwork
   );
   const oneHourAgoTs = Date.now() - EXPIRATION_THRESHOLD_IN_MS;
   if (displayDetails.timestampInMs < oneHourAgoTs) {

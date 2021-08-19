@@ -15,7 +15,7 @@ import {
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
 import { fonts, getFontSize } from '@rainbow-me/styles';
-import { defaultProfileUtils, deviceUtils } from '@rainbow-me/utils';
+import { deviceUtils, profileUtils } from '@rainbow-me/utils';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;
@@ -117,7 +117,7 @@ export default function AddressRow({
 
   let cleanedUpLabel = null;
   if (label) {
-    cleanedUpLabel = removeFirstEmojiFromString(label).join('');
+    cleanedUpLabel = removeFirstEmojiFromString(label);
   }
 
   const onOptionsPress = useCallback(() => {
@@ -160,7 +160,7 @@ export default function AddressRow({
                 size="medium"
                 value={
                   returnStringFirstEmoji(label) ||
-                  defaultProfileUtils.addressHashedEmoji(address) ||
+                  profileUtils.addressHashedEmoji(address) ||
                   label ||
                   ens
                 }

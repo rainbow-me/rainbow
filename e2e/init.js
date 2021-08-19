@@ -10,5 +10,6 @@ beforeAll(async () => {
     // eslint-disable-next-line prettier/prettier
     'api.thegraph.com\/subgraphs\/name\/ianlapham\/uniswapv2',
     'raw.githubusercontent.com',
+    'api.coingecko.com',
   ]);
 });

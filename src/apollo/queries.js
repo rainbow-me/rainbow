@@ -277,19 +277,23 @@ export const GET_BLOCKS_QUERY = timestamps => {
 
 export const USER_POSITIONS = gql`
   query liquidityPositions($user: Bytes!) {
-    liquidityPositions(where: { user: $user }) {
+    liquidityPositions(where: { user: $user, liquidityTokenBalance_gt: 0 }) {
       pair {
         id
         reserve0
         reserve1
         reserveUSD
         token0 {
+          decimals
           id
+          name
           symbol
           derivedETH
         }
         token1 {
+          decimals
           id
+          name
           symbol
           derivedETH
         }
@@ -357,6 +361,26 @@ export const USER_HISTORY = gql`
           id
         }
         token1 {
+          id
+        }
+      }
+    }
+  }
+`;
+
+export const ENS_SUGGESTIONS = gql`
+  query lookup($name: String!, $amount: Int!) {
+    domains(
+      first: $amount
+      where: {
+        name_contains: $name
+        resolvedAddress_not: null
+        name_ends_with: ".eth"
+      }
+    ) {
+      name
+      resolver {
+        addr {
           id
         }
       }

@@ -25,6 +25,9 @@ function getDefaultKeyboardHeight() {
     case 812:
       keyboardHeight = 291;
       break;
+    case 844:
+      keyboardHeight = 291;
+      break;
     case 896:
       keyboardHeight = 301;
       break;
