@@ -118,7 +118,7 @@ export const estimateSwapGasLimit = async ({
           null,
           {
            contractCallEstimateGas: exchange.estimateGas[methodName],
-           callArguments:updatedMethodArgs
+           callArguments: updatedMethodArgs
           }
         )
           .then((value: string) => value)

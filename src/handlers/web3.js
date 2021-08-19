@@ -193,6 +193,13 @@ export const estimateGas = async (estimateGasData, provider = null) => {
   }
 };
 
+/**
+ * 
+ * @param {object} txPayload - Transaction object
+ * @param {any} provider - Provider
+ * @param {Object} opts - {blockGasLimit, callArguments, contractCallEstimateGas, paddingFactor, receiverCode}
+ * @returns 
+ */
 export const estimateGasWithPadding = async (
   txPayload,
   provider,
@@ -200,11 +207,11 @@ export const estimateGasWithPadding = async (
 ) => {
   try {
     const {
-      contractCallEstimateGas = null,
-      callArguments = null,
+      blockGasLimit,
+      callArguments,
+      contractCallEstimateGas,
       paddingFactor = 1.1,
-      blockGasLimit = null,
-      receiverCode = null,
+      receiverCode,
     } = opts
 
     const p = provider || web3Provider;
