@@ -25,12 +25,10 @@ import {
   addressHashedEmoji,
 } from '../utils/profileUtils';
 import { isL2Network } from '@rainbow-me/handlers/web3';
-import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
-import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import {
@@ -40,7 +38,6 @@ import {
   useContacts,
   useDimensions,
   useUserAccounts,
-  useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -176,7 +173,6 @@ export default function SendConfirmationSheet() {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const insets = useSafeArea();
   const { contacts } = useContacts();
-  const { wallets, walletNames } = useWallets();
 
   useEffect(() => {
     android && Keyboard.dismiss();
