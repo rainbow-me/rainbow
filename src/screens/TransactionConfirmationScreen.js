@@ -213,8 +213,6 @@ export default function TransactionConfirmationScreen() {
     provider
   );
 
-  console.log('👹 paddedEstimatedGas 👹👹👹', paddedEstimatedGas)
-
   const pendingRedirect = useSelector(
     ({ walletconnect }) => walletconnect.pendingRedirect
   );
