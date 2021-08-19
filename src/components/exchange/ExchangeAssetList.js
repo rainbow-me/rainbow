@@ -219,6 +219,8 @@ const ExchangeAssetList = (
 
   const isFocused = useIsFocused();
 
+  const sections = useMemo(() => items.map(createItem), [createItem, items]);
+
   return (
     <Fragment>
       <ExchangeAssetSectionList
@@ -228,7 +230,7 @@ const ExchangeAssetList = (
         renderItem={renderItemCallback}
         renderSectionHeader={ExchangeAssetSectionListHeader}
         scrollsToTop={isFocused}
-        sections={items.map(createItem)}
+        sections={sections}
       />
       <ToastPositionContainer>
         <CopyToast copiedText={copiedText} copyCount={copyCount} />
