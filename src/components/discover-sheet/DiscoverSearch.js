@@ -8,6 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { InteractionManager } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Animated, {
   useAnimatedStyle,
@@ -24,6 +25,7 @@ import { CurrencySelectionList } from '../exchange';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
+import { debouncedFetchSuggestions } from '@rainbow-me/handlers/ens';
 import {
   useAccountAssets,
   useTimeout,
@@ -84,6 +86,30 @@ export default function DiscoverSearch() {
   } = useUniswapAssets();
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const { colors } = useTheme();
+  const [ensSearchResults, setEnsSearchResults] = useState(null);
+
+  useEffect(() => {
+    if (searchQueryForSearch && searchQueryForSearch?.length > 2) {
+      debouncedFetchSuggestions(searchQueryForSearch, setEnsSearchResults, []);
+    } else {
+      setEnsSearchResults(null);
+    }
+  }, [searchQueryForSearch]);
+
+  // const ensResultsList = useMemo(
+  //   () =>
+  //     ensSearchResults?.length > 0
+  //       ? [
+  //           {
+  //             color: '#5893ff',
+  //             data: ensSearchResults,
+  //             key: '􀏼 Ethereum Name Service',
+  //             title: '􀏼 Ethereum Name Service',
+  //           },
+  //         ]
+  //       : [],
+  //   [ensSearchResults]
+  // );
 
   const currencyList = useMemo(() => {
     let filteredList = [];
@@ -118,12 +144,14 @@ export default function DiscoverSearch() {
           filteredList.push({
             color: colors.yellowFavorite,
             data: filteredFavorite,
+            key: tokenSectionTypes.favoriteTokenSection,
             title: tokenSectionTypes.favoriteTokenSection,
           });
 
         filteredVerified.length &&
           filteredList.push({
             data: filteredVerified,
+            key: tokenSectionTypes.verifiedTokenSection,
             title: tokenSectionTypes.verifiedTokenSection,
             useGradientText: IS_TESTING === 'true' ? false : true,
           });
@@ -131,23 +159,35 @@ export default function DiscoverSearch() {
         filteredHighUnverified.length &&
           filteredList.push({
             data: filteredHighUnverified,
+            key: tokenSectionTypes.unverifiedTokenSection,
             title: tokenSectionTypes.unverifiedTokenSection,
           });
 
         filteredLow.length &&
           filteredList.push({
             data: filteredLow,
+            key: tokenSectionTypes.lowLiquidityTokenSection,
             title: tokenSectionTypes.lowLiquidityTokenSection,
+          });
+
+        ensSearchResults?.length &&
+          filteredList.push({
+            color: '#5893ff',
+            data: ensSearchResults,
+            key: '􀏼 Ethereum Name Service',
+            title: '􀏼 Ethereum Name Service',
           });
       } else {
         filteredList = [
           {
             color: colors.yellowFavorite,
             data: favorites,
+            key: tokenSectionTypes.favoriteTokenSection,
             title: tokenSectionTypes.favoriteTokenSection,
           },
           {
             data: curatedNotFavorited,
+            key: tokenSectionTypes.verifiedTokenSection,
             title: tokenSectionTypes.verifiedTokenSection,
             useGradientText: IS_TESTING === 'true' ? false : true,
           },
@@ -166,6 +206,7 @@ export default function DiscoverSearch() {
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
     colors.yellowFavorite,
+    ensSearchResults,
     curatedNotFavorited,
   ]);
 
@@ -183,15 +224,22 @@ export default function DiscoverSearch() {
 
   const handlePress = useCallback(
     item => {
-      const asset = allAssets.find(asset => item.address === asset.address);
-
-      dispatch(emitAssetRequest(item.address));
-
-      navigate(Routes.EXPANDED_ASSET_SHEET, {
-        asset: asset || item,
-        longFormHeight: initialChartExpandedStateSheetHeight,
-        type: 'token',
-      });
+      if (item.ens) {
+        // navigate to Showcase sheet
+        InteractionManager.runAfterInteractions(() => {
+          navigate(Routes.SHOWCASE_SHEET, {
+            address: item.nickname,
+          });
+        });
+      } else {
+        const asset = allAssets.find(asset => item.address === asset.address);
+        dispatch(emitAssetRequest(item.address));
+        navigate(Routes.EXPANDED_ASSET_SHEET, {
+          asset: asset || item,
+          longFormHeight: initialChartExpandedStateSheetHeight,
+          type: 'token',
+        });
+      }
     },
     [allAssets, dispatch, navigate]
   );
