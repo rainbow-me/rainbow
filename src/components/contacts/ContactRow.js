@@ -110,7 +110,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
           />
         )}
         <Column justify={ios ? 'space-between' : 'center'}>
-          {accountType === 'accounts' ? (
+          {accountType === 'accounts' || accountType === 'watching' ? (
             <Fragment>
               {cleanedUpLabel || ens ? (
                 <ContactName deviceWidth={deviceWidth}>

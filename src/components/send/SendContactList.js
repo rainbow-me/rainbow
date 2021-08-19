@@ -65,10 +65,11 @@ const SendContactFlatList = styled(SectionList).attrs({
 export default function SendContactList({
   contacts,
   currentInput,
+  ensSuggestions,
   onPressContact,
   removeContact,
   userAccounts,
-  ensSuggestions,
+  watchedAccounts,
 }) {
   const { accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
@@ -144,6 +145,21 @@ export default function SendContactList({
     );
   }, [accountAddress, currentInput, userAccounts]);
 
+  const filteredWatchedAddresses = useMemo(() => {
+    return sortBy(
+      filterList(
+        watchedAccounts.filter(
+          account =>
+            account.visible &&
+            toLower(account.address) !== toLower(accountAddress)
+        ),
+        currentInput,
+        ['label']
+      ),
+      ['index']
+    );
+  }, [accountAddress, currentInput, watchedAccounts]);
+
   const sections = useMemo(() => {
     const tmp = [];
     filteredContacts.length &&
@@ -153,6 +169,12 @@ export default function SendContactList({
         data: filteredAddresses,
         id: 'accounts',
         title: '􀢲 My wallets',
+      });
+    filteredWatchedAddresses.length &&
+      tmp.push({
+        data: filteredWatchedAddresses,
+        id: 'watching',
+        title: '􀜀 Watching',
       });
     ensSuggestions.length &&
       tmp.push({
