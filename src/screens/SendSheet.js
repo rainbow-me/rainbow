@@ -790,6 +790,7 @@ export default function SendSheet(props) {
             onPressContact={setRecipient}
             removeContact={onRemoveContact}
             userAccounts={userAccounts}
+            watchedAccounts={watchedAccounts}
           />
         )}
         {showAssetList && (

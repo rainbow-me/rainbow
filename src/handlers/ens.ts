@@ -5,68 +5,42 @@ import { ENS_SUGGESTIONS } from '../apollo/queries';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { profileUtils } from '@rainbow-me/utils';
 
-const fetchSuggestions = async (recipient, setSuggestions, watchedAccounts) => {
+const fetchSuggestions = async (recipient, setSuggestions) => {
   console.log('fetch suggestions');
-  if (recipient?.length) {
-    recipient = recipient.toLowerCase();
-    const watchedSuggestions = watchedAccounts
-      .map(account => ({
-        address: account.address,
-        color: profileUtils.addressHashedColorIndex(
-          account.address || account.label
-        ),
-        ens: true,
-        network: 'mainnet',
-        nickname: removeFirstEmojiFromString(account.label),
-      }))
-      .filter(account => account.nickname.includes(recipient));
+  if (recipient.length > 2) {
+    const recpt = recipient.toLowerCase();
+    let result = await ensClient.query({
+      query: ENS_SUGGESTIONS,
+      variables: {
+        amount: 75,
+        name: recpt,
+      },
+    });
 
-    const sortedWatchSuggestions = sortBy(
-      watchedSuggestions,
-      domain => domain.nickname.length,
-      ['asc']
-    );
+    console.log('result from query: ', result?.data?.domains);
 
-    let sortedSuggestions = sortedWatchSuggestions;
+    if (result?.data?.domains.length) {
+      const ENSSuggestions = result.data.domains
+        .map(ensDomain => ({
+          address:
+            toChecksumAddress(ensDomain?.resolver?.addr?.id) || ensDomain.name,
+          color: profileUtils.addressHashedColorIndex(
+            ensDomain?.resolver?.addr?.id || ensDomain.name
+          ),
+          ens: true,
+          network: 'mainnet',
+          nickname: ensDomain.name,
+        }))
+        .filter(domain => !domain.nickname.includes('['));
 
-    if (recipient.length > 2) {
-      let result = await ensClient.query({
-        query: ENS_SUGGESTIONS,
-        variables: {
-          amount: 75,
-          name: recipient,
-        },
-      });
-
-      if (result?.data?.domains.length) {
-        const ENSSuggestions = result.data.domains
-          .map(ensDomain => ({
-            address:
-              toChecksumAddress(ensDomain?.resolver?.addr?.id) ||
-              ensDomain.name,
-            color: profileUtils.addressHashedColorIndex(
-              ensDomain?.resolver?.addr?.id || ensDomain.name
-            ),
-            ens: true,
-            network: 'mainnet',
-            nickname: ensDomain.name,
-          }))
-          .filter(domain => !domain.nickname.includes('['));
-
-        const sortedENSSuggestions = sortBy(
-          ENSSuggestions,
-          domain => domain.nickname.length,
-          ['asc']
-        );
-
-        sortedSuggestions = uniqBy(
-          [...sortedSuggestions, ...sortedENSSuggestions],
-          suggestion => suggestion.address
-        );
-      }
+      const sortedENSSuggestions = sortBy(
+        ENSSuggestions,
+        domain => domain.nickname.length,
+        ['asc']
+      );
+      const slicedSortedSuggestions = sortedENSSuggestions.slice(0, 3);
+      setSuggestions(slicedSortedSuggestions);
     }
-    sortedSuggestions = sortedSuggestions.slice(0, 3);
-    setSuggestions(sortedSuggestions);
   } else {
     setSuggestions([]);
   }
