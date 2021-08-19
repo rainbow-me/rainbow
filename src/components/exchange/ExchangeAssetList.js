@@ -181,26 +181,31 @@ const ExchangeAssetList = (
   };
 
   // either show ENS row or Currency row
-  const LineToRender = ({ item }) =>
-    item.ens ? (
-      <ContactRow
-        accountType="contact"
-        address={item.address}
-        color={item.color}
-        nickname={item.nickname}
-        onPress={itemProps.onPress}
-        showcaseItem={item}
-      />
-    ) : (
-      <ExchangeCoinRow
-        {...itemProps}
-        isVerified={item.isVerified}
-        item={item}
-        onCopySwapDetailsText={onCopySwapDetailsText}
-        onUnverifiedTokenPress={handleUnverifiedTokenPress}
-        testID={testID}
-      />
-    );
+  const LineToRender = useCallback(
+    ({ item }) => {
+      return item.ens ? (
+        <ContactRow
+          accountType="contact"
+          address={item.address}
+          color={item.color}
+          nickname={item.nickname}
+          onPress={itemProps.onPress}
+          showcaseItem={item}
+        />
+      ) : (
+        <ExchangeCoinRow
+          {...itemProps}
+          isVerified={item.isVerified}
+          item={item}
+          onCopySwapDetailsText={onCopySwapDetailsText}
+          onUnverifiedTokenPress={handleUnverifiedTokenPress}
+          testID={testID}
+        />
+      );
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [onCopySwapDetailsText]
+  );
   const renderItemCallback = useCallback(
     ({ item, index, section }) => (
       // in the Discover screen search results, we mix in ENS rows with coin rows
@@ -209,8 +214,7 @@ const ExchangeAssetList = (
         key={`${item.address}_${index}_${section.key}`}
       />
     ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [onCopySwapDetailsText]
+    []
   );
 
   const isFocused = useIsFocused();
@@ -218,10 +222,6 @@ const ExchangeAssetList = (
   return (
     <Fragment>
       <ExchangeAssetSectionList
-        keyExtractor={(item, index) => {
-          console.log('key extractor', { item, index });
-          return `${item.address}_${index}`;
-        }}
         keyboardDismissMode={keyboardDismissMode}
         onLayout={onLayout}
         ref={sectionListRef}
