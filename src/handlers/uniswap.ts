@@ -115,8 +115,11 @@ export const estimateSwapGasLimit = async ({
       methodNames.map((methodName: string) =>
         estimateGasWithPadding(
           params,
-          exchange.estimateGas[methodName],
-          updatedMethodArgs
+          null,
+          {
+           contractCallEstimateGas: exchange.estimateGas[methodName],
+           callArguments:updatedMethodArgs
+          }
         )
           .then((value: string) => value)
           .catch((error: Error) => {

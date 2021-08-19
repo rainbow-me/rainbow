@@ -1,6 +1,6 @@
 import { Transaction } from '@ethersproject/transactions';
 import { useEffect, useMemo, useState } from 'react';
-import { calculateGasWithPadding } from '@rainbow-me/handlers/web3';
+import { estimateGasWithPadding } from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { isMessageDisplayType } from '@rainbow-me/utils/signingMethods';
 
@@ -35,12 +35,11 @@ const useBlockGasEstimates = (
   useEffect(() => {
     if (!shouldGetEstimates) return;
     const runCalculations = async () => {
-      const estimatedGas = await calculateGasWithPadding(
+      const estimatedGas = await estimateGasWithPadding(
         txPayload,
         provider,
-        blockGasLimit,
-        toCode
-      );
+        { blockGasLimit, receiverCode: toCode }
+      )
       setEstimatedGas(estimatedGas);
     };
     runCalculations();
