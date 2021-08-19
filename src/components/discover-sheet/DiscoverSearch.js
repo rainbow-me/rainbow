@@ -96,21 +96,6 @@ export default function DiscoverSearch() {
     }
   }, [searchQueryForSearch]);
 
-  // const ensResultsList = useMemo(
-  //   () =>
-  //     ensSearchResults?.length > 0
-  //       ? [
-  //           {
-  //             color: '#5893ff',
-  //             data: ensSearchResults,
-  //             key: '􀏼 Ethereum Name Service',
-  //             title: '􀏼 Ethereum Name Service',
-  //           },
-  //         ]
-  //       : [],
-  //   [ensSearchResults]
-  // );
-
   const currencyList = useMemo(() => {
     let filteredList = [];
     if (type === CurrencySelectionTypes.input) {
