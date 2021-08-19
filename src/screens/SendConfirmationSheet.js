@@ -225,24 +225,6 @@ export default function SendConfirmationSheet() {
     }
   }, [isSendingToUserAccount, network, toAddress, transactions]);
 
-  const existingAccount = useMemo(() => {
-    let existingAcct = null;
-    if (toAddress) {
-      const allAccounts = [...userAccounts, ...watchedAccounts].filter(
-        acct => acct.visible
-      );
-      for (const account of allAccounts) {
-        if (
-          toChecksumAddress(account.address) === toChecksumAddress(toAddress)
-        ) {
-          existingAcct = account;
-          break;
-        }
-      }
-    }
-    return existingAcct;
-  }, [userAccounts, watchedAccounts, toAddress]);
-
   const contact = useMemo(() => {
     return get(contacts, `${[toLower(to)]}`);
   }, [contacts, to]);
@@ -328,19 +310,35 @@ export default function SendConfirmationSheet() {
     };
   }, [wallets, toAddress, network, walletNames]);
 
+  const watchedAccount = useMemo(() => {
+    let existingAcct = null;
+    if (toAddress) {
+      const allAccounts = [...watchedAccounts].filter(acct => acct.visible);
+      for (const account of allAccounts) {
+        if (
+          toChecksumAddress(account.address) === toChecksumAddress(toAddress)
+        ) {
+          existingAcct = account;
+          break;
+        }
+      }
+    }
+    return existingAcct;
+  }, [watchedAccounts, toAddress]);
+
   const avatarName =
-    removeFirstEmojiFromString(existingAccount?.label || contact?.nickname) ||
+    removeFirstEmojiFromString(watchedAccount?.label || contact?.nickname) ||
     accountProfile?.accountName ||
     (isENSAddressFormat(to) ? to : address(to, 4, 6));
 
-  const avatarValue = existingAccount
-    ? returnStringFirstEmoji(existingAccount.label)
+  const avatarValue = watchedAccount
+    ? returnStringFirstEmoji(watchedAccount.label)
     : contact?.nickname ||
       accountProfile?.accountSymbol ||
       addressHashedEmoji(toAddress);
 
-  const avatarColor = existingAccount
-    ? existingAccount.color
+  const avatarColor = watchedAccount
+    ? watchedAccount.color
     : contact?.color == null
     ? accountProfile?.accountColor == null
       ? addressHashedColorIndex(toAddress)
@@ -354,6 +352,8 @@ export default function SendConfirmationSheet() {
   if (!isL2) {
     realSheetHeight -= 80;
   }
+
+  const accountImage = accountProfile?.accountImage || watchedAccount?.image;
 
   const contentHeight = realSheetHeight - (isL2 ? 50 : 30);
   return (
@@ -490,8 +490,8 @@ export default function SendConfirmationSheet() {
                 </Row>
               </Column>
               <Column align="end" justify="center">
-                {existingAccount?.image ? (
-                  <ImageAvatar image={existingAccount.image} size="lmedium" />
+                {accountImage ? (
+                  <ImageAvatar image={accountImage} size="lmedium" />
                 ) : (
                   <ContactAvatar
                     color={avatarColor}
