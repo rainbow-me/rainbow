@@ -26,6 +26,7 @@ import {
 } from '../apollo/queries';
 /* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
+import { addCoinsToHiddenList } from './editOptions';
 // eslint-disable-next-line import/no-cycle
 import { uniqueTokensRefreshState } from './uniqueTokens';
 /* eslint-disable-next-line import/no-cycle */
@@ -541,6 +542,14 @@ export const addressAssetsReceived = (
       property('address')
     );
     dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
+  }
+
+  // Hide coins with price = 0 that are currently not pinned
+  if (isL2) {
+    const assetsWithNoPrice = parsedAssets
+      .filter(asset => asset.price?.value === 0)
+      .map(({ address }) => address);
+    dispatch(addCoinsToHiddenList(assetsWithNoPrice));
   }
 };
 
