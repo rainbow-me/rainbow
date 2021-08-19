@@ -11,8 +11,6 @@ let account = null;
 
 beforeAll(async () => {
   // Connect to ganache
-  jest.setTimeout(300000)
-
   await exec('yarn ganache');
 });
 
