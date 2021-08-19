@@ -55,7 +55,7 @@ const useBlockGasEstimates = (
     };
     const onBlockCallback = async () => {
       const { gasLimit } = await provider?.getBlock();
-      setBlockGasLimit(gasLimit);
+      setBlockGasLimit({gasLimit});
     };
 
     getCode();
