@@ -578,31 +578,31 @@ export default function TransactionConfirmationScreen() {
     txPayloadUpdated = omit(txPayloadUpdated, ['from', 'gas']);
     let result = null;
 
-    // try {
-    //   const existingWallet = await loadWallet(
-    //     accountInfo.address,
-    //     true,
-    //     provider
-    //   );
-    //   if (sendInsteadOfSign) {
-    //     result = await sendTransaction({
-    //       existingWallet,
-    //       provider,
-    //       transaction: txPayloadUpdated,
-    //     });
-    //   } else {
-    //     result = await signTransaction({
-    //       existingWallet,
-    //       provider,
-    //       transaction: txPayloadUpdated,
-    //     });
-    //   }
-    // } catch (e) {
-    //   logger.log(
-    //     `Error while ${sendInsteadOfSign ? 'sending' : 'signing'} transaction`,
-    //     e
-    //   );
-    // }
+    try {
+      const existingWallet = await loadWallet(
+        accountInfo.address,
+        true,
+        provider
+      );
+      if (sendInsteadOfSign) {
+        result = await sendTransaction({
+          existingWallet,
+          provider,
+          transaction: txPayloadUpdated,
+        });
+      } else {
+        result = await signTransaction({
+          existingWallet,
+          provider,
+          transaction: txPayloadUpdated,
+        });
+      }
+    } catch (e) {
+      logger.log(
+        `Error while ${sendInsteadOfSign ? 'sending' : 'signing'} transaction`,
+        e
+      );
+    }
 
     if (result) {
       if (callback) {
