@@ -26,6 +26,7 @@ const fetchSuggestions = async (recipient, setSuggestions) => {
           ens: true,
           network: 'mainnet',
           nickname: ensDomain?.name,
+          uniqueId: ensDomain?.resolver?.addr?.id || ensDomain.name,
         }))
         .filter(domain => !domain?.nickname?.includes?.('['));
       const sortedENSSuggestions = sortBy(
