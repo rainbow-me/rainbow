@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, InteractionManager, Keyboard } from 'react-native';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { isSamsungGalaxy } from '../../helpers/samsung';
 import {
@@ -17,15 +18,24 @@ import {
   isCloudBackupPasswordValid,
 } from '@rainbow-me/handlers/cloudBackup';
 import { removeWalletData } from '@rainbow-me/handlers/localstorage/removeWallet';
+import walletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import {
-  useAccountSettings,
   useDimensions,
+  useInitializeWallet,
+  useUserAccounts,
   useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import {
+  addressSetSelected,
+  setWalletBackedUp,
+  walletsLoadState,
+  walletsSetSelected,
+} from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
 import { margin, padding } from '@rainbow-me/styles';
+import logger from 'logger';
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -61,17 +71,23 @@ const Title = styled(Text).attrs({
 
 const samsungGalaxy = (android && isSamsungGalaxy()) || false;
 
-export default function RestoreCloudStep({ userData }) {
+export default function RestoreCloudStep({
+  userData,
+  backupSelected,
+  fromSettings,
+}) {
+  const dispatch = useDispatch();
   const { isTinyPhone } = useDimensions();
-  const { goBack, replace } = useNavigation();
+  const { navigate, goBack, replace } = useNavigation();
   const { setIsWalletLoading } = useWallets();
-  const { accountAddress } = useAccountSettings();
   const [validPassword, setValidPassword] = useState(false);
   const [incorrectPassword, setIncorrectPassword] = useState(false);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const [password, setPassword] = useState('');
   const [label, setLabel] = useState('􀎽 Confirm Backup');
   const passwordRef = useRef();
+  const { userAccounts } = useUserAccounts();
+  const initializeWallet = useInitializeWallet();
 
   useEffect(() => {
     const keyboardDidShow = () => {
@@ -128,15 +144,57 @@ export default function RestoreCloudStep({ userData }) {
   const onSubmit = useCallback(async () => {
     try {
       setIsWalletLoading(WalletLoadingStates.RESTORING_WALLET);
-      const success = await restoreCloudBackup(password, userData);
+      const success = await restoreCloudBackup(
+        password,
+        userData,
+        backupSelected?.name
+      );
       if (success) {
         // Store it in the keychain in case it was missing
         await saveBackupPassword(password);
-        // Get rid of the current wallet
-        await removeWalletData(accountAddress);
+
+        // Get rid of the old wallets
+        for (let i = 0; i < userAccounts.length; i++) {
+          const account = userAccounts[i];
+          await removeWalletData(account.address);
+        }
+
         goBack();
+
         InteractionManager.runAfterInteractions(async () => {
-          replace(Routes.SWIPE_LAYOUT);
+          const wallets = await dispatch(walletsLoadState());
+          if (!userData && backupSelected?.name) {
+            goBack();
+            logger.log('updating backup state of wallets');
+            await Promise.all(
+              Object.keys(wallets).map(walletId => {
+                logger.log('updating backup state of wallet', walletId);
+                logger.log('backupSelected?.name', backupSelected?.name);
+                // Mark the wallet as backed up
+                return dispatch(
+                  setWalletBackedUp(
+                    walletId,
+                    walletBackupTypes.cloud,
+                    backupSelected?.name
+                  )
+                );
+              })
+            );
+            logger.log('done updating backup state');
+          }
+          const firstWallet = wallets[Object.keys(wallets)[0]];
+          const firstAddress = firstWallet.addresses[0].address;
+          const p1 = dispatch(walletsSetSelected(firstWallet));
+          const p2 = dispatch(addressSetSelected(firstAddress));
+          await Promise.all([p1, p2]);
+          await initializeWallet(null, null, null, false, false, null, true);
+          if (fromSettings) {
+            logger.log('navigating to wallet');
+            navigate(Routes.WALLET_SCREEN);
+            logger.log('initializing wallet');
+          } else {
+            replace(Routes.SWIPE_LAYOUT);
+          }
           setIsWalletLoading(null);
         });
       } else {
@@ -147,7 +205,19 @@ export default function RestoreCloudStep({ userData }) {
       setIsWalletLoading(null);
       Alert.alert('Error while restoring backup');
     }
-  }, [accountAddress, goBack, password, replace, setIsWalletLoading, userData]);
+  }, [
+    backupSelected?.name,
+    dispatch,
+    fromSettings,
+    goBack,
+    initializeWallet,
+    navigate,
+    password,
+    replace,
+    setIsWalletLoading,
+    userAccounts,
+    userData,
+  ]);
 
   const onPasswordSubmit = useCallback(() => {
     validPassword && onSubmit();

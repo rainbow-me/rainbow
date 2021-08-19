@@ -377,7 +377,7 @@ PODS:
     - React-Core
   - react-native-camera/RN (3.40.0):
     - React-Core
-  - react-native-cloud-fs (2.3.0):
+  - react-native-cloud-fs (2.4.0):
     - React
   - react-native-get-random-values (1.5.0):
     - React
@@ -1002,7 +1002,7 @@ SPEC CHECKSUMS:
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-branch: 8bda99ca8dc5a16d32bd81c8a8d937cb3d2c5e0c
   react-native-camera: 35854c4f764a4a6cf61c1c3525888b92f0fe4b31
-  react-native-cloud-fs: 1cb3deba691efbb5c6fcc831959be58762d8bdfe
+  react-native-cloud-fs: 1e883ec82ff418d320c128f61971dd971b128ca0
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
   react-native-ios-context-menu: 1ccf4d6aa1c0e7dc596613eb9a36f8c0c23ca56f
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
