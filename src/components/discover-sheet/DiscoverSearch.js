@@ -16,6 +16,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
 import { addHexPrefix } from '../../handlers/web3';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
 import tokenSectionTypes from '../../helpers/tokenSectionTypes';
@@ -37,6 +38,10 @@ import Routes from '@rainbow-me/routes';
 import { filterList } from '@rainbow-me/utils';
 
 const headerlessSection = data => [{ data, title: '' }];
+
+export const SearchContainer = styled(Row)`
+  height: 100%;
+`;
 
 const searchCurrencyList = (searchList = [], query) => {
   const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);
@@ -271,7 +276,7 @@ export default function DiscoverSearch() {
         !android && { height: deviceUtils.dimensions.height - 140 },
       ]}
     >
-      <Row height="100%">
+      <SearchContainer>
         <CurrencySelectionList
           itemProps={itemProps}
           keyboardDismissMode="on-drag"
@@ -283,7 +288,7 @@ export default function DiscoverSearch() {
           testID="discover-currency-select-list"
           type={type}
         />
-      </Row>
+      </SearchContainer>
     </Animated.View>
   );
 }
