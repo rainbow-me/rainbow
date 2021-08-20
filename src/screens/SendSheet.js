@@ -781,6 +781,7 @@ export default function SendSheet(props) {
           removeContact={onRemoveContact}
           showAssetList={showAssetList}
           userAccounts={userAccounts}
+          watchedAccounts={watchedAccounts}
         />
         {showEmptyState && (
           <SendContactList
