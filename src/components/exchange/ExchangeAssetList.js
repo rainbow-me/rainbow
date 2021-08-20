@@ -86,6 +86,11 @@ function useSwapDetailsClipboardState() {
   };
 }
 
+const Spacer = styled.View`
+  height: 35px;
+  width: 100%;
+`;
+
 const ExchangeAssetSectionList = styled(SectionList).attrs({
   alwaysBounceVertical: true,
   contentContainerStyle,
@@ -103,7 +108,15 @@ const ExchangeAssetSectionList = styled(SectionList).attrs({
 `;
 
 const ExchangeAssetList = (
-  { itemProps, items, onLayout, query, testID, keyboardDismissMode = 'none' },
+  {
+    footerSpacer,
+    keyboardDismissMode = 'none',
+    itemProps,
+    items,
+    onLayout,
+    query,
+    testID,
+  },
   ref
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -217,6 +230,10 @@ const ExchangeAssetList = (
     []
   );
 
+  const FooterSpacer = useCallback(() => (footerSpacer ? <Spacer /> : null), [
+    footerSpacer,
+  ]);
+
   const isFocused = useIsFocused();
 
   const sections = useMemo(() => items.map(createItem), [createItem, items]);
@@ -224,6 +241,7 @@ const ExchangeAssetList = (
   return (
     <Fragment>
       <ExchangeAssetSectionList
+        ListFooterComponent={FooterSpacer}
         keyboardDismissMode={keyboardDismissMode}
         onLayout={onLayout}
         ref={sectionListRef}
