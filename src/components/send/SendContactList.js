@@ -12,7 +12,6 @@ import { Text } from '../text';
 import { InvalidPasteToast, ToastPositionContainer } from '../toasts';
 import SendEmptyState from './SendEmptyState';
 import { useAccountSettings, useKeyboardHeight } from '@rainbow-me/hooks';
-
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { filterList } from '@rainbow-me/utils';
@@ -75,6 +74,7 @@ export default function SendContactList({
   const { navigate } = useNavigation();
   const insets = useSafeArea();
   const keyboardHeight = useKeyboardHeight();
+  const { isDarkMode } = useTheme();
 
   const contactRefs = useRef({});
   const touchedContact = useRef(undefined);
@@ -174,17 +174,23 @@ export default function SendContactList({
       tmp.push({
         data: filteredWatchedAddresses,
         id: 'watching',
-        title: '􀦧 Watching',
+        title: `${isDarkMode ? '􀨭' : '􀦧'}  Watching`,
       });
     ensSuggestions.length &&
       tmp.push({
         data: ensSuggestions,
         id: 'suggestions',
-        title: '􀊫 Suggestions',
+        title: 'Suggestions',
       });
     return tmp;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentInput, ensSuggestions, filteredAddresses, filteredContacts]);
+  }, [
+    currentInput,
+    ensSuggestions,
+    filteredAddresses,
+    filteredContacts,
+    isDarkMode,
+  ]);
 
   return (
     <FlyInAnimation>
