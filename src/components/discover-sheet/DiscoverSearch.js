@@ -70,9 +70,13 @@ export default function DiscoverSearch() {
     listOpacity.value = withTiming(1, timingConfig);
   }, [listOpacity]);
 
-  const { setIsSearching, searchQuery, isSearchModeEnabled } = useContext(
-    DiscoverSheetContext
-  );
+  const {
+    isFetchingEns,
+    setIsSearching,
+    setIsFetchingEns,
+    searchQuery,
+    isSearchModeEnabled,
+  } = useContext(DiscoverSheetContext);
   const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
   const type = CurrencySelectionTypes.output;
   const dispatch = useDispatch();
@@ -87,14 +91,17 @@ export default function DiscoverSearch() {
   const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const { colors } = useTheme();
   const [ensSearchResults, setEnsSearchResults] = useState(null);
-
   useEffect(() => {
-    if (searchQueryForSearch && searchQueryForSearch?.length > 2) {
-      debouncedFetchSuggestions(searchQueryForSearch, setEnsSearchResults, []);
+    if (searchQuery && searchQuery?.length > 2) {
+      debouncedFetchSuggestions(
+        searchQuery,
+        setEnsSearchResults,
+        setIsFetchingEns
+      );
     } else {
       setEnsSearchResults(null);
     }
-  }, [searchQueryForSearch]);
+  }, [searchQuery, setIsFetchingEns]);
 
   const currencyList = useMemo(() => {
     let filteredList = [];
@@ -269,7 +276,7 @@ export default function DiscoverSearch() {
           itemProps={itemProps}
           keyboardDismissMode="on-drag"
           listItems={currencyList}
-          loading={loadingAllTokens}
+          loading={loadingAllTokens || isFetchingEns}
           query={searchQueryForSearch}
           ref={ref}
           showList

@@ -703,7 +703,7 @@ export default function SendSheet(props) {
   const [ensSuggestions, setEnsSuggestions] = useState([]);
   useEffect(() => {
     if (network === networkTypes.mainnet && !recipientOverride) {
-      debouncedFetchSuggestions(recipient, setEnsSuggestions, watchedAccounts);
+      debouncedFetchSuggestions(recipient, setEnsSuggestions);
     } else {
       setEnsSuggestions([]);
     }
