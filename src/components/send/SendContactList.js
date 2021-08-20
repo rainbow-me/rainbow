@@ -174,7 +174,7 @@ export default function SendContactList({
       tmp.push({
         data: filteredWatchedAddresses,
         id: 'watching',
-        title: '􀜀 Watching',
+        title: '􀦧 Watching',
       });
     ensSuggestions.length &&
       tmp.push({
