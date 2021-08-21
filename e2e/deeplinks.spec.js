@@ -80,7 +80,7 @@ describe('Deeplinks spec', () => {
 
   it('should be able to handle ethereum payments urls for DAI (optimism)', async () => {
     const url =
-      'ethereum:0xda10009cbd5d07dd0cecc66161fc93d7c9000da1@10/transfer?address=brunobarbieri.eth&uint256=1e18';
+      'ethereum:0xda10009cbd5d07dd0cecc66161fc93d7c9000da1@10/transfer?address=brunobarbieri.eth&uint256=1e15';
     await testEthereumDeeplink(url);
   });
 
