@@ -11,5 +11,6 @@ beforeAll(async () => {
     'api.thegraph.com\/subgraphs\/name\/ianlapham\/uniswapv2',
     'raw.githubusercontent.com',
     'api.coingecko.com',
+    'rainbow.imgix.net',
   ]);
 });

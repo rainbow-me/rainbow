@@ -7,14 +7,23 @@ import {
   walletConnectRemovePendingRedirect,
   walletConnectSetPendingRedirect,
 } from '../redux/walletconnect';
+import { delay } from '@rainbow-me/helpers/utilities';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import { ethereumUtils } from '@rainbow-me/utils';
 
-export default function handleDeeplink(url) {
+export default async function handleDeeplink(url) {
+  if (!url) return;
+  // We need to wait till the wallet is ready
+  // to handle any deeplink
+  while (store.getState().data.isLoadingAssets) {
+    await delay(300);
+  }
   const urlObj = new URL(url);
-  // iOS uses universal links
-  if (urlObj.protocol === 'https:') {
+  if (urlObj.protocol === 'ethereum:') {
+    ethereumUtils.parseEthereumUrl(url);
+  } else if (urlObj.protocol === 'https:') {
     const action = urlObj.pathname.split('/')[1];
     switch (action) {
       case 'wc': {

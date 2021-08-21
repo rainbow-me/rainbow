@@ -36,6 +36,7 @@ import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToPercentageDisplay,
   convertRawAmountToDecimalFormat,
+  delay,
   fromWei,
   greaterThan,
   isZero,
@@ -458,13 +459,18 @@ async function parseEthereumUrl(data) {
   const network = getNetworkFromChainId(Number(ethUrl.chain_id || 1));
   let address = null;
   let nativeAmount = null;
-  const { assets } = store.getState().data;
   const { nativeCurrency } = store.getState().settings;
+
+  while (store.getState().data.isLoadingAssets) {
+    await delay(300);
+  }
+  const { assets } = store.getState().data;
 
   if (!functionName) {
     // Send native asset
     const nativeAssetAddress = getNativeAssetAddressForNetwork(network);
     asset = getAsset(assets, toLower(nativeAssetAddress));
+
     if (!asset || asset?.balance.amount === 0) {
       Alert.alert(
         'Ooops!',
