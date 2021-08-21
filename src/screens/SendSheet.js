@@ -78,6 +78,7 @@ import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
   formatInputDecimals,
+  lessThan,
 } from '@rainbow-me/utilities';
 import { deviceUtils, ethereumUtils, profileUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -538,21 +539,33 @@ export default function SendSheet(props) {
           currentProvider,
           currentNetwork
         );
-        logger.log('gasLimit updated before sending', {
-          after: updatedGasLimit,
-          before: gasLimit,
-        });
 
-        updateTxFee(updatedGasLimit, null, currentNetwork);
+        if (!lessThan(updatedGasLimit, gasLimit)) {
+          logger.debug('gasLimit updated before sending', {
+            after: updatedGasLimit,
+            before: gasLimit,
+            selectedGasPrice,
+          });
+
+          updateTxFee(updatedGasLimit, null, currentNetwork);
+        } else {
+          logger.debug('using gas ', { gasLimit, selectedGasPrice });
+        }
         // eslint-disable-next-line no-empty
       } catch (e) {}
     }
 
+    const gasLimitToUse =
+      updatedGasLimit && !lessThan(updatedGasLimit, gasLimit)
+        ? updatedGasLimit
+        : gasLimit;
+
+    logger.debug('gasLimit', gasLimitToUse);
     const txDetails = {
       amount: amountDetails.assetAmount,
       asset: selected,
       from: accountAddress,
-      gasLimit: updatedGasLimit || gasLimit,
+      gasLimit: gasLimitToUse,
       gasPrice: selectedGasPrice.value?.amount,
       nonce: null,
       to: toAddress,
@@ -593,8 +606,7 @@ export default function SendSheet(props) {
     isSufficientGas,
     isValidAddress,
     selected,
-    selectedGasPrice.txFee,
-    selectedGasPrice.value?.amount,
+    selectedGasPrice,
     toAddress,
     updateTxFee,
   ]);
