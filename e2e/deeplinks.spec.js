@@ -33,7 +33,7 @@ describe('Deeplinks spec', () => {
   });
 
   it('Should show the "Add wallet modal" after tapping import with a valid private key"', async () => {
-    await Helpers.typeText('import-sheet-input', process.env.PROD_PKEY, false);
+    await Helpers.typeText('import-sheet-input', process.env.DEV_PKEY, false);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
       'Import'

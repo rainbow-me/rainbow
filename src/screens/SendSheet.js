@@ -541,12 +541,6 @@ export default function SendSheet(props) {
         );
 
         if (!lessThan(updatedGasLimit, gasLimit)) {
-          logger.debug('gasLimit updated before sending', {
-            after: updatedGasLimit,
-            before: gasLimit,
-            selectedGasPrice,
-          });
-
           updateTxFee(updatedGasLimit, null, currentNetwork);
         } else {
           logger.debug('using gas ', { gasLimit, selectedGasPrice });
