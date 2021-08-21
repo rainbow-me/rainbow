@@ -542,8 +542,6 @@ export default function SendSheet(props) {
 
         if (!lessThan(updatedGasLimit, gasLimit)) {
           updateTxFee(updatedGasLimit, null, currentNetwork);
-        } else {
-          logger.debug('using gas ', { gasLimit, selectedGasPrice });
         }
         // eslint-disable-next-line no-empty
       } catch (e) {}
@@ -554,7 +552,7 @@ export default function SendSheet(props) {
         ? updatedGasLimit
         : gasLimit;
 
-    logger.debug('gasLimit', gasLimitToUse);
+    logger.log('gasLimit', gasLimitToUse);
     const txDetails = {
       amount: amountDetails.assetAmount,
       asset: selected,

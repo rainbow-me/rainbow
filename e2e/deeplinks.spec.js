@@ -14,7 +14,7 @@ const openDeeplink = async url => {
 const testEthereumDeeplink = async url => {
   await openDeeplink(url);
   await Helpers.checkIfVisible('send-sheet-confirm-action-button', 30000);
-  await Helpers.checkIfElementByTextIsVisible('􀕹 Review');
+  await Helpers.checkIfElementByTextIsVisible('􀕹 Review', 15000);
 };
 
 describe('Deeplinks spec', () => {
@@ -33,7 +33,7 @@ describe('Deeplinks spec', () => {
   });
 
   it('Should show the "Add wallet modal" after tapping import with a valid private key"', async () => {
-    await Helpers.typeText('import-sheet-input', process.env.DEV_PKEY, false);
+    await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
       'Import'
@@ -45,7 +45,6 @@ describe('Deeplinks spec', () => {
   it('Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.checkIfVisible('wallet-info-input');
-    await Helpers.typeText('wallet-info-input', 'PKEY', false);
     await Helpers.waitAndTap('wallet-info-submit-button');
     if (device.getPlatform() === 'android') {
       await Helpers.checkIfVisible('pin-authentication-screen');
