@@ -499,13 +499,14 @@ async function parseEthereumUrl(data) {
   const assetWithPrice = parseAssetsNative([asset], nativeCurrency)[0];
 
   InteractionManager.runAfterInteractions(() => {
+    const params = { address, asset: assetWithPrice, nativeAmount };
     if (isNativeStackAvailable || android) {
       Navigation.handleAction(Routes.SEND_FLOW, {
-        params: { address, asset: assetWithPrice, nativeAmount },
+        params,
         screen: Routes.SEND_SHEET,
       });
     } else {
-      Navigation.handleAction(Routes.SEND_FLOW, { address, asset });
+      Navigation.handleAction(Routes.SEND_FLOW, params);
     }
   });
 }
