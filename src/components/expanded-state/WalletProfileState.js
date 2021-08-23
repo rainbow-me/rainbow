@@ -102,6 +102,8 @@ export default function WalletProfileState({
   );
   const inputRef = useRef(null);
 
+  const profileImage = accountImage || profile.image;
+
   const handleCancel = useCallback(() => {
     goBack();
     if (actionType === 'Create') {
@@ -142,8 +144,8 @@ export default function WalletProfileState({
         testID="wallet-info-modal"
         width="100%"
       >
-        {accountImage ? (
-          <ProfileImage image={accountImage} size="large" />
+        {profileImage ? (
+          <ProfileImage image={profileImage} size="large" />
         ) : (
           // hide avatar if creating new wallet since we
           // don't know what emoji / color it will be (determined by address)
