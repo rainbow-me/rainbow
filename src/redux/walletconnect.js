@@ -392,20 +392,17 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       }
       const { requests: pendingRequests } = getState().requests;
       const request = !pendingRequests[requestId]
-        ? await dispatch(
+        ? dispatch(
             addRequestToApprove(clientId, peerId, requestId, payload, peerMeta)
           )
         : null;
-
       if (request) {
-        analytics.track('Showing Walletconnect signing request');
+        Navigation.handleAction(Routes.CONFIRM_REQUEST, {
+          openAutomatically: true,
+          transactionDetails: request,
+        });
         InteractionManager.runAfterInteractions(() => {
-          setTimeout(() => {
-            Navigation.handleAction(Routes.CONFIRM_REQUEST, {
-              openAutomatically: true,
-              transactionDetails: request,
-            });
-          }, 1000);
+          analytics.track('Showing Walletconnect signing request');
         });
       }
     }
