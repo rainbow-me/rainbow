@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/native';
+import { toChecksumAddress } from 'ethereumjs-util';
 import { capitalize, get, toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import { Keyboard, StatusBar } from 'react-native';
@@ -13,6 +14,7 @@ import { ButtonPressAnimation } from '../components/animations';
 import { CoinIcon } from '../components/coin-icon';
 import RequestVendorLogoIcon from '../components/coin-icon/RequestVendorLogoIcon';
 import { ContactAvatar } from '../components/contacts';
+import ImageAvatar from '../components/contacts/ImageAvatar';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { SendButton } from '../components/send';
 import { SheetTitle, SlackSheet } from '../components/sheet';
@@ -23,9 +25,10 @@ import {
   addressHashedEmoji,
 } from '../utils/profileUtils';
 import { isL2Network } from '@rainbow-me/handlers/web3';
-import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
-import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
-import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '@rainbow-me/helpers/emojiHandler';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import {
@@ -35,7 +38,6 @@ import {
   useContacts,
   useDimensions,
   useUserAccounts,
-  useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -171,7 +173,6 @@ export default function SendConfirmationSheet() {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const insets = useSafeArea();
   const { contacts } = useContacts();
-  const { wallets, walletNames } = useWallets();
 
   useEffect(() => {
     android && Keyboard.dismiss();
@@ -191,7 +192,7 @@ export default function SendConfirmationSheet() {
   ] = useState(0);
 
   const { transactions } = useAccountTransactions(true, true);
-  const { userAccounts } = useUserAccounts();
+  const { userAccounts, watchedAccounts } = useUserAccounts();
   const isSendingToUserAccount = useMemo(() => {
     const found = userAccounts?.find(account => {
       return toLower(account.address) === toLower(toAddress);
@@ -292,35 +293,37 @@ export default function SendConfirmationSheet() {
     }
   }, [callback, canSubmit]);
 
-  const accountProfile = useMemo(() => {
-    const selectedWallet = findWalletWithAccount(wallets, toAddress);
-    const approvalAccountInfo = getAccountProfileInfo(
-      selectedWallet,
-      network,
-      walletNames,
-      toAddress
-    );
-    return {
-      ...approvalAccountInfo,
-    };
-  }, [wallets, toAddress, network, walletNames]);
+  const existingAccount = useMemo(() => {
+    let existingAcct = null;
+    if (toAddress) {
+      const allAccounts = [...userAccounts, ...watchedAccounts].filter(
+        acct => acct.visible
+      );
+      for (const account of allAccounts) {
+        if (
+          toChecksumAddress(account.address) === toChecksumAddress(toAddress)
+        ) {
+          existingAcct = account;
+          break;
+        }
+      }
+    }
+    return existingAcct;
+  }, [toAddress, userAccounts, watchedAccounts]);
 
   const avatarName =
-    removeFirstEmojiFromString(contact?.nickname) ||
-    accountProfile?.accountName ||
+    removeFirstEmojiFromString(existingAccount?.label || contact?.nickname) ||
     (isENSAddressFormat(to) ? to : address(to, 4, 6));
 
   const avatarValue =
+    returnStringFirstEmoji(existingAccount?.label) ||
     contact?.nickname ||
-    accountProfile?.accountSymbol ||
     addressHashedEmoji(toAddress);
 
   const avatarColor =
-    contact?.color == null
-      ? accountProfile?.accountColor == null
-        ? addressHashedColorIndex(toAddress)
-        : accountProfile?.accountColor
-      : contact?.color;
+    existingAccount?.color ||
+    contact?.color ||
+    addressHashedColorIndex(toAddress);
 
   let realSheetHeight = !shouldShowChecks
     ? SendConfirmationSheetHeight - 150
@@ -329,6 +332,8 @@ export default function SendConfirmationSheet() {
   if (!isL2) {
     realSheetHeight -= 80;
   }
+
+  const accountImage = existingAccount?.image;
 
   const contentHeight = realSheetHeight - (isL2 ? 50 : 30);
   return (
@@ -465,11 +470,15 @@ export default function SendConfirmationSheet() {
                 </Row>
               </Column>
               <Column align="end" justify="center">
-                <ContactAvatar
-                  color={avatarColor}
-                  size="lmedium"
-                  value={avatarValue}
-                />
+                {accountImage ? (
+                  <ImageAvatar image={accountImage} size="lmedium" />
+                ) : (
+                  <ContactAvatar
+                    color={avatarColor}
+                    size="lmedium"
+                    value={avatarValue}
+                  />
+                )}
               </Column>
             </Row>
             <Divider color={colors.rowDividerExtraLight} inset={[0]} />

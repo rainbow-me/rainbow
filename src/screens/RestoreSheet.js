@@ -28,6 +28,8 @@ export default function RestoreSheet() {
       longFormHeight = 0,
       step = WalletBackupStepTypes.first,
       userData,
+      backupSelected,
+      fromSettings,
     } = {},
   } = useRoute();
 
@@ -88,7 +90,6 @@ export default function RestoreSheet() {
 
   const wrapperHeight =
     deviceHeight + longFormHeight + (android ? getSoftMenuBarHeight() / 2 : 0);
-
   return (
     <Column height={wrapperHeight}>
       <StatusBar barStyle="light-content" />
@@ -98,7 +99,11 @@ export default function RestoreSheet() {
         testID="restore-sheet"
       >
         {step === WalletBackupStepTypes.cloud ? (
-          <RestoreCloudStep userData={userData} />
+          <RestoreCloudStep
+            backupSelected={backupSelected}
+            fromSettings={fromSettings}
+            userData={userData}
+          />
         ) : (
           <RestoreSheetFirstStep
             onCloudRestore={onCloudRestore}
