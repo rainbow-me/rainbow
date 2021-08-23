@@ -133,9 +133,9 @@ PODS:
   - libwebp/mux (1.1.0):
     - libwebp/demux
   - libwebp/webp (1.1.0)
-  - lottie-ios (3.2.3)
-  - lottie-react-native (4.0.2):
-    - lottie-ios (~> 3.2.3)
+  - lottie-ios (3.1.8)
+  - lottie-react-native (3.5.0):
+    - lottie-ios (~> 3.1.8)
     - React-Core
   - nanopb (2.30908.0):
     - nanopb/decode (= 2.30908.0)
@@ -537,7 +537,7 @@ PODS:
     - React-Core
   - RNReactNativeHapticFeedback (1.11.0):
     - React-Core
-  - RNReanimated (2.3.0-alpha.2):
+  - RNReanimated (2.1.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -951,9 +951,9 @@ SPEC CHECKSUMS:
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
-  DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
+  DoubleConversion: cde416483dac037923206447da6e1454df403714
   FBLazyVector: e686045572151edef46010a6f819ade377dfeb4b
-  FBReactNativeSpec: 7cf4d0d18e23268d66af71cbc3b45c788d5e01f5
+  FBReactNativeSpec: deacad5a4727314b5f7a7b53a0847db0227e2a30
   Firebase: 4bb49ae87756034cef870fa3c4006235eb46f475
   FirebaseCore: 389c4ce9a7cce4a7e25eb22326b4bee0050557b2
   FirebaseCoreDiagnostics: 7e873baabcfaa9512f538554ae4fa0817aaafbdb
@@ -968,7 +968,7 @@ SPEC CHECKSUMS:
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: 127954abe8b162fcaf68d2134d34dc2bd7076154
   FlipperKit: 8a20b5c5fcf9436cac58551dc049867247f64b00
-  glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
+  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   GoogleDataTransport: 85fd18ff3019bb85d3f2c551d04c481dedf71fc9
   GoogleUtilities: eea970f4a389963963bffe8d8fabe43540678b9c
   hermes-engine: 7d97ba46a1e29bacf3e3c61ecb2804a5ddd02d4f
@@ -976,8 +976,8 @@ SPEC CHECKSUMS:
   KTVHTTPCache: 588c3eb16f6bd1e6fde1e230dabfb7bd4e490a4d
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
-  lottie-ios: c058aeafa76daa4cf64d773554bccc8385d0150e
-  lottie-react-native: 336c6d26b1951496d75adbde3d3278b8cfca6b21
+  lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
+  lottie-react-native: 69740f3742cc82d8211979e2b48681e002c22bff
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
@@ -1052,7 +1052,7 @@ SPEC CHECKSUMS:
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: 7043bacbf928eae25808275cfe73799b8f618911
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
-  RNReanimated: daebbd404c0cd9df6daa248d63dd940086bea9ff
+  RNReanimated: b8c8004b43446e3c2709fe64b2b41072f87428ad
   RNScreens: c526239bbe0e957b988dacc8d75ac94ec9cb19da
   RNSentry: a2b02b326ae4fce91ce7c57d3f7dcf8df4f72269
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
