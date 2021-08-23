@@ -46,6 +46,7 @@ export { default as useLoadAccountData } from './useLoadAccountData';
 export { default as useLoadGlobalData } from './useLoadGlobalData';
 export { default as useLongPressEvents } from './useLongPressEvents';
 export { default as useMagicAutofocus } from './useMagicAutofocus';
+export { default as useManageCloudBackups } from './useManageCloudBackups';
 export { default as useMaxInputBalance } from './useMaxInputBalance';
 export { default as useMulticall } from './useMulticall';
 export { default as useUniqueToken } from './useUniqueToken';

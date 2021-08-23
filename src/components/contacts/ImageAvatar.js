@@ -19,6 +19,14 @@ const sizeConfigs = colors => ({
     ],
     textSize: 'bigger',
   },
+  lmedium: {
+    dimensions: 50,
+    shadow: [
+      [0, 4, 12, colors.shadow, 0.12],
+      [0, 1, 3, colors.shadow, 0.08],
+    ],
+    textSize: 28,
+  },
   medium: {
     dimensions: 40,
     shadow: [
