@@ -1,3 +1,4 @@
+import { toChecksumAddress } from 'ethereumjs-util';
 import { sortBy, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { SectionList } from 'react-native';
@@ -15,7 +16,6 @@ import { useAccountSettings, useKeyboardHeight } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { filterList } from '@rainbow-me/utils';
-import { toChecksumAddress } from 'ethereumjs-util';
 
 const KeyboardArea = styled.View`
   height: ${({ insets, keyboardHeight }) =>
