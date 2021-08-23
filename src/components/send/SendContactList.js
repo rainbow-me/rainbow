@@ -15,6 +15,7 @@ import { useAccountSettings, useKeyboardHeight } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { filterList } from '@rainbow-me/utils';
+import { toChecksumAddress } from 'ethereumjs-util';
 
 const KeyboardArea = styled.View`
   height: ${({ insets, keyboardHeight }) =>
@@ -160,6 +161,17 @@ export default function SendContactList({
     );
   }, [accountAddress, currentInput, watchedAccounts]);
 
+  const filteredEnsSuggestions = useMemo(() => {
+    const ownedAddresses = filteredAddresses.map(account => account.address);
+    const watchedAddresses = filteredWatchedAddresses.map(
+      account => account.address
+    );
+    const allAddresses = [...ownedAddresses, ...watchedAddresses];
+    return ensSuggestions.filter(
+      account => !allAddresses?.includes(toChecksumAddress(account?.address))
+    );
+  }, [filteredAddresses, filteredWatchedAddresses, ensSuggestions]);
+
   const sections = useMemo(() => {
     const tmp = [];
     filteredContacts.length &&
@@ -174,13 +186,13 @@ export default function SendContactList({
       tmp.push({
         data: filteredWatchedAddresses,
         id: 'watching',
-        title: `${isDarkMode ? '􀨭' : '􀦧'}  Watching`,
+        title: `${isDarkMode ? '􀨭' : '􀦧'} Watching`,
       });
-    ensSuggestions.length &&
+    filteredEnsSuggestions.length &&
       tmp.push({
-        data: ensSuggestions,
+        data: filteredEnsSuggestions,
         id: 'suggestions',
-        title: 'Suggestions',
+        title: '􀊫 Suggestions',
       });
     return tmp;
     // eslint-disable-next-line react-hooks/exhaustive-deps
