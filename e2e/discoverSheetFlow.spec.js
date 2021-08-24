@@ -106,11 +106,11 @@ describe('Discover Sheet Flow', () => {
     await Helpers.waitAndTap(
       'discover-currency-select-list-contact-row-rainbowwallet.eth'
     );
-    await Helpers.checkIfVisible('showcase-header-wrapper-rainbowwallet.eth');
+    await Helpers.checkIfExistsByText('Watch this Wallet');
   });
 
   it('Should close showcase and return to Search on swiping down', async () => {
-    await Helpers.swipe('showcase-header-wrapper-rainbowwallet.eth', 'down');
+    await Helpers.swipe('showcase-header-wrapper', 'down');
     await Helpers.waitAndTap('discover-search-clear-input-btn');
     await Helpers.checkIfVisible(
       'discover-currency-select-list-exchange-coin-row-ETH'
