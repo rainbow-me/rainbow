@@ -1,6 +1,3 @@
-diff --git a/node_modules/react-native-svg/.DS_Store b/node_modules/react-native-svg/.DS_Store
-new file mode 100644
-index 0000000..e69de29
 diff --git a/node_modules/react-native-svg/apple/Elements/RNSVGGroup.m b/node_modules/react-native-svg/apple/Elements/RNSVGGroup.m
 index 0322c7c..6ed5ede 100644
 --- a/node_modules/react-native-svg/apple/Elements/RNSVGGroup.m
@@ -67,7 +64,7 @@ index 7f4d152..113ece9 100644
  
  export type Middleware = (ast: XmlAST) => XmlAST;
 diff --git a/node_modules/react-native-svg/src/xml.tsx b/node_modules/react-native-svg/src/xml.tsx
-index 828f104..ee65944 100644
+index 828f104..d9fc8d7 100644
 --- a/node_modules/react-native-svg/src/xml.tsx
 +++ b/node_modules/react-native-svg/src/xml.tsx
 @@ -83,7 +83,7 @@ export interface JsxAST extends AST {
@@ -118,17 +115,15 @@ index 828f104..ee65944 100644
        : setXml(null);
    }, [onError, uri]);
    return <SvgXml xml={xml} override={props} />;
-@@ -155,9 +166,15 @@ export class SvgFromXml extends Component<XmlProps, XmlState> {
+@@ -155,9 +166,13 @@ export class SvgFromXml extends Component<XmlProps, XmlState> {
    }
    parse(xml: string | null) {
      try {
 -      this.setState({ ast: xml ? parse(xml) : null });
 +      const ast = xml ? parse(xml) : null;
 +      this.setState({ ast });
-+      console.log('⚡⚡⚡ PARSE GUCCI!!!');
      } catch (e) {
 -      console.error(e);
-+      console.log('⚡⚡⚡ WTF!!!', e);
 +      const onError = this.props.onError || this.props.override?.onError || err;
 +      if (!!onError) {
 +        onError(e);
@@ -136,16 +131,7 @@ index 828f104..ee65944 100644
      }
    }
    render() {
-@@ -165,6 +182,8 @@ export class SvgFromXml extends Component<XmlProps, XmlState> {
-       props,
-       state: { ast },
-     } = this;
-+    console.log('⚡⚡⚡ Should be rendering...');
-+    return null;
-     return <SvgAst ast={ast} override={props.override || props} />;
-   }
- }
-@@ -222,7 +241,7 @@ export function getStyle(string: string): Styles {
+@@ -222,7 +237,7 @@ export function getStyle(string: string): Styles {
  export function astToReact(
    value: AST | string,
    index: number,
@@ -154,7 +140,7 @@ index 828f104..ee65944 100644
    if (typeof value === 'object') {
      const { Tag, props, children } = value;
      return (
-@@ -231,7 +250,7 @@ export function astToReact(
+@@ -231,7 +246,7 @@ export function astToReact(
        </Tag>
      );
    }
