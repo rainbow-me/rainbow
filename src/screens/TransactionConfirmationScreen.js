@@ -3,7 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
-import { isEmpty, isNil, omit } from 'lodash';
+import { isEmpty, isNil, omit, toLower } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -176,9 +176,9 @@ export default function TransactionConfirmationScreen() {
   const [isSufficientGasChecked, setIsSufficientGasChecked] = useState(false);
   const [nativeAsset, setNativeAsset] = useState(null);
   const { height: deviceHeight } = useDimensions();
-  const { wallets, walletNames } = useWallets();
+  const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
   const balances = useWalletBalances(wallets);
-  const { nativeCurrency } = useAccountSettings();
+  const { accountAddress, nativeCurrency } = useAccountSettings();
   const keyboardHeight = useKeyboardHeight();
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
@@ -602,8 +602,10 @@ export default function TransactionConfirmationScreen() {
       if (callback) {
         callback({ result: result.hash });
       }
+      let txSavedInCurrentWallet = false;
+      let txDetails = null;
       if (sendInsteadOfSign) {
-        const txDetails = {
+        txDetails = {
           amount: displayDetails?.request?.value ?? 0,
           asset: nativeAsset || displayDetails?.request?.asset,
           dappName,
@@ -615,7 +617,10 @@ export default function TransactionConfirmationScreen() {
           nonce: result.nonce,
           to: displayDetails?.request?.to,
         };
-        dispatch(dataAddNewTransaction(txDetails, null, false, provider));
+        if (toLower(accountAddress) === toLower(txDetails.from)) {
+          dispatch(dataAddNewTransaction(txDetails, null, false, provider));
+          txSavedInCurrentWallet = true;
+        }
       }
       analytics.track('Approved WalletConnect transaction request');
       if (requestId) {
@@ -623,6 +628,14 @@ export default function TransactionConfirmationScreen() {
         await dispatch(walletConnectSendStatus(peerId, requestId, result.hash));
       }
       closeScreen(false);
+      // When the tx is sent from a different wallet,
+      // we need to switch to that wallet before saving the tx
+      if (!txSavedInCurrentWallet) {
+        InteractionManager.runAfterInteractions(async () => {
+          await switchToWalletWithAddress(txDetails.from);
+          dispatch(dataAddNewTransaction(txDetails, null, false, provider));
+        });
+      }
     } else {
       try {
         logger.sentry('Error with WC transaction. See previous logs...');
@@ -663,11 +676,13 @@ export default function TransactionConfirmationScreen() {
     displayDetails?.request?.to,
     nativeAsset,
     dappName,
+    accountAddress,
     dispatch,
     dataAddNewTransaction,
     removeRequest,
     walletConnectSendStatus,
     peerId,
+    switchToWalletWithAddress,
     onCancel,
     dappScheme,
     dappUrl,
