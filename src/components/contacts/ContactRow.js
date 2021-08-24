@@ -103,7 +103,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
         css={margin(6, 19, 13)}
         height={40}
         margin={10}
-        testID={`${testID}-${nickname || ''}`}
+        testID={`${testID}-contact-row-${nickname || ''}`}
       >
         {image ? (
           <ImageAvatar image={image} marginRight={10} size="medium" />
