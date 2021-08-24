@@ -7214,6 +7214,11 @@ fast-levenshtein@^2.0.6, fast-levenshtein@~2.0.6:
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc=
 
+fast-xml-parser@^3.19.0:
+  version "3.19.0"
+  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-3.19.0.tgz#cb637ec3f3999f51406dd8ff0e6fc4d83e520d01"
+  integrity sha512-4pXwmBplsCPv8FOY1WRakF970TjNGnGnfbOnLqjlYvMiF1SR3yOHyxMR/YCXpPTOspNF5gwudqktIP4VsWkvBg==
+
 fastq@^1.6.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/fastq/-/fastq-1.8.0.tgz#550e1f9f59bbc65fe185cb6a9b4d95357107f481"
@@ -8595,6 +8600,13 @@ is-svg@^3.0.0:
   integrity sha512-gi4iHK53LR2ujhLVVj+37Ykh9GLqYHX6JOVXbLAucaG/Cqw9xwdFOjDM2qeifLs1sF1npXXFvDu0r5HNgCMrzQ==
   dependencies:
     html-comment-regex "^1.1.0"
+
+is-svg@^4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/is-svg/-/is-svg-4.3.1.tgz#8c63ec8c67c8c7f0a8de0a71c8c7d58eccf4406b"
+  integrity sha512-h2CGs+yPUyvkgTJQS9cJzo9lYK06WgRiXUqBBHtglSzVKAuH4/oWsqk7LGfbSa1hGk9QcZ0SyQtVggvBA8LZXA==
+  dependencies:
+    fast-xml-parser "^3.19.0"
 
 is-symbol@^1.0.2:
   version "1.0.3"
@@ -12313,10 +12325,9 @@ react-native-store-review@^0.1.5:
   resolved "https://registry.yarnpkg.com/react-native-store-review/-/react-native-store-review-0.1.5.tgz#9df69786a137580748e368641698d2104519e4cf"
   integrity sha512-vVx7NYaQva3bGU5MdqXn4yEB+o+GPdmjqAuj7PnkepfeCS6Bi3sqniiKoXmKOKDgRTfIobBZjUkHzWeHli1+3A==
 
-react-native-svg@12.1.0:
-  version "12.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-12.1.0.tgz#acfe48c35cd5fca3d5fd767abae0560c36cfc03d"
-  integrity sha512-1g9qBRci7man8QsHoXn6tP3DhCDiypGgc6+AOWq+Sy+PmP6yiyf8VmvKuoqrPam/tf5x+ZaBT2KI0gl7bptZ7w==
+react-native-svg@react-native-svg/react-native-svg#fa71673b5834e593b5f8b021e28530ec2a466853:
+  version "12.2.0"
+  resolved "https://codeload.github.com/react-native-svg/react-native-svg/tar.gz/fa71673b5834e593b5f8b021e28530ec2a466853"
   dependencies:
     css-select "^2.1.0"
     css-tree "^1.0.0-alpha.39"
