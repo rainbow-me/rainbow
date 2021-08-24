@@ -12313,9 +12313,9 @@ react-native-store-review@^0.1.5:
   resolved "https://registry.yarnpkg.com/react-native-store-review/-/react-native-store-review-0.1.5.tgz#9df69786a137580748e368641698d2104519e4cf"
   integrity sha512-vVx7NYaQva3bGU5MdqXn4yEB+o+GPdmjqAuj7PnkepfeCS6Bi3sqniiKoXmKOKDgRTfIobBZjUkHzWeHli1+3A==
 
-react-native-svg@react-native-svg/react-native-svg#fa71673b5834e593b5f8b021e28530ec2a466853:
-  version "12.2.0"
-  resolved "https://codeload.github.com/react-native-svg/react-native-svg/tar.gz/fa71673b5834e593b5f8b021e28530ec2a466853"
+react-native-svg@brunobar79/react-native-svg#6e9d1f0327e1567913743b8df9093a38e8b8b473:
+  version "12.2.1"
+  resolved "https://codeload.github.com/brunobar79/react-native-svg/tar.gz/6e9d1f0327e1567913743b8df9093a38e8b8b473"
   dependencies:
     css-select "^2.1.0"
     css-tree "^1.0.0-alpha.39"
