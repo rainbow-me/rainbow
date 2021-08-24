@@ -38,6 +38,7 @@ import {
   useContacts,
   useDimensions,
   useUserAccounts,
+  useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -193,6 +194,7 @@ export default function SendConfirmationSheet() {
 
   const { transactions } = useAccountTransactions(true, true);
   const { userAccounts, watchedAccounts } = useUserAccounts();
+  const { walletNames } = useWallets();
   const isSendingToUserAccount = useMemo(() => {
     const found = userAccounts?.find(account => {
       return toLower(account.address) === toLower(toAddress);
@@ -313,7 +315,11 @@ export default function SendConfirmationSheet() {
 
   const avatarName =
     removeFirstEmojiFromString(existingAccount?.label || contact?.nickname) ||
-    (isENSAddressFormat(to) ? to : address(to, 4, 6));
+    (isENSAddressFormat(to)
+      ? to
+      : walletNames?.[to]
+      ? walletNames[to]
+      : address(to, 4, 6));
 
   const avatarValue =
     returnStringFirstEmoji(existingAccount?.label) ||
