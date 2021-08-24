@@ -204,6 +204,7 @@ const ExchangeAssetList = (
           nickname={item.nickname}
           onPress={itemProps.onPress}
           showcaseItem={item}
+          testID={testID}
         />
       ) : (
         <ExchangeCoinRow

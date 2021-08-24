@@ -183,7 +183,10 @@ export function Header() {
       : contextValue?.address?.toLowerCase();
 
   return (
-    <HeaderWrapper height={350}>
+    <HeaderWrapper
+      height={350}
+      testID={`showcase-header-wrapper-${mainText || ''}`}
+    >
       <SheetHandle />
       <Spacer />
       <AvatarCircle

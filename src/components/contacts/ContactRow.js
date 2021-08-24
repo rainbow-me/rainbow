@@ -59,6 +59,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
     label,
     onPress,
     showcaseItem,
+    testID,
   } = props;
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
@@ -98,7 +99,12 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
       {...props}
       onPress={handlePress}
     >
-      <RowWithMargins css={margin(6, 19, 13)} height={40} margin={10}>
+      <RowWithMargins
+        css={margin(6, 19, 13)}
+        height={40}
+        margin={10}
+        testID={`${testID}-${nickname || ''}`}
+      >
         {image ? (
           <ImageAvatar image={image} marginRight={10} size="medium" />
         ) : (
