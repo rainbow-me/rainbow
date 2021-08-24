@@ -2,11 +2,13 @@ import { Wallet } from '@ethersproject/wallet';
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
 import { mnemonicToSeed } from 'bip39';
+import { parse } from 'eth-url-parser';
 import {
   addHexPrefix,
   isValidAddress,
   toChecksumAddress,
 } from 'ethereumjs-util';
+
 import { hdkey } from 'ethereumjs-wallet';
 import {
   find,
@@ -16,16 +18,25 @@ import {
   replace,
   toLower,
 } from 'lodash';
-import { Linking, NativeModules } from 'react-native';
+
+import {
+  Alert,
+  InteractionManager,
+  Linking,
+  NativeModules,
+} from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
 import URL from 'url-parse';
 import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
 import { getProviderForNetwork, isTestnet } from '@rainbow-me/handlers/web3';
+import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToPercentageDisplay,
+  convertRawAmountToDecimalFormat,
+  delay,
   fromWei,
   greaterThan,
   isZero,
@@ -37,6 +48,8 @@ import {
   identifyWalletType,
   WalletLibraryType,
 } from '@rainbow-me/model/wallet';
+import { Navigation } from '@rainbow-me/navigation';
+import { parseAssetsNative } from '@rainbow-me/parsers';
 import store from '@rainbow-me/redux/store';
 import {
   ARBITRUM_BLOCK_EXPLORER_URL,
@@ -49,11 +62,12 @@ import {
   OPTIMISM_ETH_ADDRESS,
   POLYGON_BLOCK_EXPLORER_URL,
 } from '@rainbow-me/references';
+import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 
 const { RNBip39 } = NativeModules;
 
-const getNativeAssetForNetwork = async (network, address) => {
+const getNativeAssetAddressForNetwork = network => {
   let nativeAssetAddress;
   switch (network) {
     case networkTypes.arbitrum:
@@ -68,6 +82,11 @@ const getNativeAssetForNetwork = async (network, address) => {
     default:
       nativeAssetAddress = ETH_ADDRESS;
   }
+  return nativeAssetAddress;
+};
+
+const getNativeAssetForNetwork = async (network, address) => {
+  const nativeAssetAddress = getNativeAssetAddressForNetwork(network);
   const { accountAddress } = store.getState().settings;
   let differentWallet = toLower(address) !== toLower(accountAddress);
   const { assets } = store.getState().data;
@@ -426,6 +445,78 @@ function openTransactionInBlockExplorer(hash, network) {
   Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
 }
 
+async function parseEthereumUrl(data) {
+  let ethUrl;
+  try {
+    ethUrl = parse(data);
+  } catch (e) {
+    Alert.alert('Invalid ethereum url');
+    return;
+  }
+
+  const functionName = ethUrl.function_name;
+  let asset = null;
+  const network = getNetworkFromChainId(Number(ethUrl.chain_id || 1));
+  let address = null;
+  let nativeAmount = null;
+  const { nativeCurrency } = store.getState().settings;
+
+  while (store.getState().data.isLoadingAssets) {
+    await delay(300);
+  }
+  const { assets } = store.getState().data;
+
+  if (!functionName) {
+    // Send native asset
+    const nativeAssetAddress = getNativeAssetAddressForNetwork(network);
+    asset = getAsset(assets, toLower(nativeAssetAddress));
+
+    if (!asset || asset?.balance.amount === 0) {
+      Alert.alert(
+        'Ooops!',
+        `Looks like you don't have that asset in your wallet...`
+      );
+      return;
+    }
+    address = ethUrl.target_address;
+    nativeAmount = ethUrl.parameters?.value && fromWei(ethUrl.parameters.value);
+  } else if (functionName === 'transfer') {
+    // Send ERC-20
+    asset = getAsset(assets, toLower(ethUrl.target_address));
+    if (!asset || asset?.balance.amount === 0) {
+      Alert.alert(
+        'Ooops!',
+        `Looks like you don't have that asset in your wallet...`
+      );
+      return;
+    }
+    address = ethUrl.parameters?.address;
+    nativeAmount =
+      ethUrl.parameters?.uint256 &&
+      convertRawAmountToDecimalFormat(
+        ethUrl.parameters.uint256,
+        asset.decimals
+      );
+  } else {
+    Alert.alert('This action is currently not supported :(');
+    return;
+  }
+
+  const assetWithPrice = parseAssetsNative([asset], nativeCurrency)[0];
+
+  InteractionManager.runAfterInteractions(() => {
+    const params = { address, asset: assetWithPrice, nativeAmount };
+    if (isNativeStackAvailable || android) {
+      Navigation.handleAction(Routes.SEND_FLOW, {
+        params,
+        screen: Routes.SEND_SHEET,
+      });
+    } else {
+      Navigation.handleAction(Routes.SEND_FLOW, params);
+    }
+  });
+}
+
 export default {
   checkIfUrlIsAScam,
   deriveAccountFromMnemonic,
@@ -452,5 +543,6 @@ export default {
   openTokenEtherscanURL,
   openTransactionInBlockExplorer,
   padLeft,
+  parseEthereumUrl,
   removeHexPrefix,
 };

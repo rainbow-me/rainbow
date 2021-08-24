@@ -115,6 +115,7 @@
     "emoji-datasource": "^4.1.0",
     "eth-contract-metadata": "^1.9.3",
     "eth-sig-util": "^2.5.3",
+    "eth-url-parser": "^1.0.4",
     "ethereumjs-util": "^6.2.0",
     "ethereumjs-wallet": "^1.0.1",
     "events": "^1.1.1",
