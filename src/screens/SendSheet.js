@@ -198,28 +198,6 @@ export default function SendSheet(props) {
 
   const recipientFieldRef = useRef();
 
-  useEffect(() => {
-    if (ios) {
-      return;
-    }
-    dismissingScreenListener.current = () => {
-      Keyboard.dismiss();
-      isDismissing.current = true;
-    };
-    const unsubscribe = addListener(
-      'transitionEnd',
-      ({ data: { closing } }) => {
-        if (!closing && isDismissing.current) {
-          isDismissing.current = false;
-          recipientFieldRef?.current?.focus();
-        }
-      }
-    );
-    return () => {
-      unsubscribe();
-      dismissingScreenListener.current = undefined;
-    };
-  }, [addListener]);
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
@@ -247,6 +225,51 @@ export default function SendSheet(props) {
   const [recipient, setRecipient] = useState('');
   const [selected, setSelected] = useState({});
   const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
+
+  const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
+  const [currentProvider, setCurrentProvider] = useState();
+  const { colors, isDarkMode } = useTheme();
+
+  const showEmptyState = !isValidAddress;
+  const showAssetList = isValidAddress && isEmpty(selected);
+  const showAssetForm = isValidAddress && !isEmpty(selected);
+
+  const isNft = selected?.type === AssetTypes.nft;
+  let color = useColorForAsset({
+    address: selected?.mainnet_address || selected.address,
+  });
+  if (isNft) {
+    color = colors.appleBlue;
+  }
+
+  const isL2 = useMemo(() => {
+    return isL2Network(currentNetwork);
+  }, [currentNetwork]);
+
+  const { triggerFocus } = useMagicAutofocus(recipientFieldRef);
+
+  useEffect(() => {
+    if (ios) {
+      return;
+    }
+    dismissingScreenListener.current = () => {
+      Keyboard.dismiss();
+      isDismissing.current = true;
+    };
+    const unsubscribe = addListener(
+      'transitionEnd',
+      ({ data: { closing } }) => {
+        if (!closing && isDismissing.current) {
+          isDismissing.current = false;
+          recipientFieldRef?.current?.focus();
+        }
+      }
+    );
+    return () => {
+      unsubscribe();
+      dismissingScreenListener.current = undefined;
+    };
+  }, [addListener]);
 
   const sendUpdateAssetAmount = useCallback(
     newAssetAmount => {
@@ -331,28 +354,6 @@ export default function SendSheet(props) {
     sendUpdateSelected,
     updateMaxInputBalance,
   ]);
-
-  const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
-  const [currentProvider, setCurrentProvider] = useState();
-  const { colors, isDarkMode } = useTheme();
-
-  const showEmptyState = !isValidAddress;
-  const showAssetList = isValidAddress && isEmpty(selected);
-  const showAssetForm = isValidAddress && !isEmpty(selected);
-
-  const isNft = selected?.type === AssetTypes.nft;
-  let color = useColorForAsset({
-    address: selected?.mainnet_address || selected.address,
-  });
-  if (isNft) {
-    color = colors.appleBlue;
-  }
-
-  const isL2 = useMemo(() => {
-    return isL2Network(currentNetwork);
-  }, [currentNetwork]);
-
-  const { triggerFocus } = useMagicAutofocus(recipientFieldRef);
 
   useEffect(() => {
     // We can start fetching gas prices
