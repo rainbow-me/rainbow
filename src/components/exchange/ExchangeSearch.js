@@ -197,7 +197,7 @@ const ExchangeSearch = (
         inputHeight={ExchangeSearchHeight}
         isVisible={searchQuery !== ''}
         onPress={handleClearInput}
-        testID="discover-search-clear-input-btn"
+        testID={testID + '-clear-input'}
       />
     </Container>
   );
