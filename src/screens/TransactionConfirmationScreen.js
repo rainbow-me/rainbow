@@ -217,7 +217,7 @@ export default function TransactionConfirmationScreen() {
   const walletConnector = walletConnectors[peerId];
 
   const accountInfo = useMemo(() => {
-    const address = walletConnector._accounts?.[0];
+    const address = walletConnector?._accounts?.[0];
     const selectedWallet = findWalletWithAccount(wallets, address);
     const profileInfo = getAccountProfileInfo(
       selectedWallet,
@@ -229,7 +229,7 @@ export default function TransactionConfirmationScreen() {
       ...profileInfo,
       address,
     };
-  }, [network, walletConnector._accounts, walletNames, wallets]);
+  }, [network, walletConnector?._accounts, walletNames, wallets]);
 
   const isL2 = useMemo(() => {
     return isL2Network(network);
@@ -237,9 +237,9 @@ export default function TransactionConfirmationScreen() {
 
   useEffect(() => {
     setNetwork(
-      ethereumUtils.getNetworkFromChainId(Number(walletConnector._chainId))
+      ethereumUtils.getNetworkFromChainId(Number(walletConnector?._chainId))
     );
-  }, [walletConnector._chainId]);
+  }, [walletConnector?._chainId]);
 
   useEffect(() => {
     const initProvider = async () => {
@@ -418,6 +418,20 @@ export default function TransactionConfirmationScreen() {
     requestId,
     walletConnectSendStatus,
   ]);
+
+  useEffect(() => {
+    if (!peerId || !walletConnector) {
+      Alert.alert(
+        'Connection Expired',
+        'Please go back to the dapp and reconnect it to your wallet',
+        [
+          {
+            onPress: () => onCancel(),
+          },
+        ]
+      );
+    }
+  }, [goBack, onCancel, peerId, walletConnector]);
 
   const calculateGasLimit = useCallback(async () => {
     calculatingGasLimit.current = true;
