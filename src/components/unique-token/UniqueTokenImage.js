@@ -74,6 +74,7 @@ const UniqueTokenImage = ({
       {isSVG ? (
         <SvgCssUri
           height="100%"
+          onError={handleError}
           style={position.coverAsObject}
           uri={imageUrl}
           width="100%"
