@@ -33,7 +33,7 @@ function Switcher({ showSearch, children }) {
   );
 }
 
-export default function DiscoverSheetContent() {
+function DiscoverSheetContent() {
   const [showSearch, setShowSearch] = useState(false);
   const ref = useRef();
 
@@ -60,3 +60,5 @@ export default function DiscoverSheetContent() {
     </>
   );
 }
+
+export default React.memo(DiscoverSheetContent);

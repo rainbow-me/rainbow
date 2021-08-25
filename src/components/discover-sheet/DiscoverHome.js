@@ -7,7 +7,7 @@ import TopMoversSection from './TopMoversSection';
 import UniswapPools from './UniswapPoolsSection';
 import { useAccountSettings } from '@rainbow-me/hooks';
 
-export default function DiscoverHome() {
+function DiscoverHome() {
   const { accountAddress } = useAccountSettings();
   return (
     <React.Fragment>
@@ -20,3 +20,5 @@ export default function DiscoverHome() {
     </React.Fragment>
   );
 }
+
+export default React.memo(DiscoverHome);

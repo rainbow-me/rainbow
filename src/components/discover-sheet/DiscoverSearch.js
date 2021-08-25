@@ -60,7 +60,7 @@ const searchCurrencyList = (searchList = [], query) => {
 
 const timingConfig = { duration: 700 };
 
-export default function DiscoverSearch() {
+function DiscoverSearch() {
   const { navigate } = useNavigation();
   const listOpacity = useSharedValue(0);
   const { allAssets } = useAccountAssets();
@@ -293,3 +293,5 @@ export default function DiscoverSearch() {
     </Animated.View>
   );
 }
+
+export default React.memo(DiscoverSearch);

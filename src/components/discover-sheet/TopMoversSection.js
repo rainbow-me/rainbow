@@ -28,7 +28,7 @@ const ErrorMessage = ({ colors, children }) => (
   </Centered>
 );
 
-export default function TopMoversSection() {
+function TopMoversSection() {
   const { gainers = [], losers = [] } = useTopMovers() || {};
   const { navigate } = useNavigation();
   const { allAssets } = useAccountAssets();
@@ -116,3 +116,5 @@ export default function TopMoversSection() {
     </Column>
   );
 }
+
+export default React.memo(TopMoversSection);
