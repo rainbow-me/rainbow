@@ -10,7 +10,10 @@ const { event, add } = Animated;
 const ViewPagerWrapper = forwardRef((props, fref) => {
   const ref = React.useRef();
   useEffect(
-    () => android && ref?.current?.getNode().setPageWithoutAnimation(props.page)
+    () =>
+      android && ref?.current?.getNode().setPageWithoutAnimation(props.page),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
   React.useImperativeHandle(fref, () => ref.current);
   return <AnimatedViewPager ref={ref} {...props} />;
