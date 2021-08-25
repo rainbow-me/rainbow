@@ -11,8 +11,8 @@ const ViewPagerWrapper = forwardRef((props, fref) => {
   const ref = React.useRef();
   useEffect(() => {
     android &&
-      ref?.current?.getNode().setPageWithoutAnimation(props.initialPage);
-  }, [props.initialPage]);
+      ref?.current?.getNode().setPageWithoutAnimation(props.page);
+  });
   React.useImperativeHandle(fref, () => ref.current);
   return <AnimatedViewPager ref={ref} {...props} />;
 });
@@ -110,6 +110,7 @@ export default class ViewPagerBackend extends React.Component {
   };
 
   onIndexChange(newPosition) {
+    console.log('🤡🤡🤡🤡🤡🤡',newPosition)
     if (newPosition !== this.props.navigationState.index) {
       // assuming gesture
       this.justScrolled = true;
@@ -140,7 +141,7 @@ export default class ViewPagerBackend extends React.Component {
       removeListener: this.removeListener,
       render: children => (
         <ViewPagerWrapper
-          initialPage={this.props.navigationState.index}
+          page={this.props.navigationState.index}
           keyboardDismissMode={
             // ViewPager does not accept auto mode
             keyboardDismissMode === 'auto' ? 'on-drag' : keyboardDismissMode
