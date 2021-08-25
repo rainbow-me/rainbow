@@ -110,7 +110,6 @@ export default class ViewPagerBackend extends React.Component {
   };
 
   onIndexChange(newPosition) {
-    console.log('🤡🤡🤡🤡🤡🤡',newPosition)
     if (newPosition !== this.props.navigationState.index) {
       // assuming gesture
       this.justScrolled = true;
