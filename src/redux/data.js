@@ -48,7 +48,7 @@ import {
   saveAssets,
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
-import { getTransactionReceipt, isL2Network } from '@rainbow-me/handlers/web3';
+import { isL2Network, web3Provider } from '@rainbow-me/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
@@ -800,8 +800,8 @@ export const dataWatchPendingTransactions = (
       const txHash = ethereumUtils.getHash(tx);
       try {
         logger.log('Checking pending tx with hash', txHash);
-        const txObj = await getTransactionReceipt(txHash, provider);
-        if (txObj && txObj.blockNumber) {
+        const txObj = await (provider || web3Provider).getTransaction(txHash);
+        if (txObj && txObj.blockNumber && txObj.blockHash) {
           // When speeding up a non "normal tx" we need to resubscribe
           // because zerion "append" event isn't reliable
           logger.log('TX CONFIRMED!', txObj);
