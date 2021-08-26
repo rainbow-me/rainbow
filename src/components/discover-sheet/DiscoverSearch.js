@@ -8,8 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager } from 'react-native';
-import { View } from 'react-native';
+import { InteractionManager, View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
