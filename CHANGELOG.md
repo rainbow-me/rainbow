@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.20](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.20)
+
+### Added
+* EIP-618 support
+* Support for multiple cloud backups 
+* Search ENS domains in Discover
+
+### Changed
+* Walletconnect speed improvements
+* SVG bug fixes
+
 
 ## [1.5.19](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.19)
 
