@@ -9,10 +9,12 @@ const { event, add } = Animated;
 // eslint-disable-next-line react/display-name
 const ViewPagerWrapper = forwardRef((props, fref) => {
   const ref = React.useRef();
-  useEffect(() => {
-    android &&
-      ref?.current?.getNode().setPageWithoutAnimation(props.initialPage);
-  }, [props.initialPage]);
+  useEffect(
+    () =>
+      android && ref?.current?.getNode().setPageWithoutAnimation(props.page),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
   React.useImperativeHandle(fref, () => ref.current);
   return <AnimatedViewPager ref={ref} {...props} />;
 });
@@ -140,7 +142,6 @@ export default class ViewPagerBackend extends React.Component {
       removeListener: this.removeListener,
       render: children => (
         <ViewPagerWrapper
-          initialPage={this.props.navigationState.index}
           keyboardDismissMode={
             // ViewPager does not accept auto mode
             keyboardDismissMode === 'auto' ? 'on-drag' : keyboardDismissMode
@@ -152,6 +153,7 @@ export default class ViewPagerBackend extends React.Component {
           orientation={orientation}
           overScrollMode={overScrollMode}
           overdrag={overdrag}
+          page={this.props.navigationState.index}
           pageMargin={pageMargin}
           ref={this.ref}
           scrollEnabled={swipeEnabled}
