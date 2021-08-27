@@ -33,13 +33,14 @@ const skeletonTransition = (
 
 const CurrencySelectionList = (
   {
+    keyboardDismissMode,
+    footerSpacer,
     itemProps,
     listItems,
     loading,
+    query,
     showList,
     testID,
-    query,
-    keyboardDismissMode,
   },
   ref
 ) => {
@@ -67,6 +68,7 @@ const CurrencySelectionList = (
             <NoCurrencyResults />
           ) : (
             <ExchangeAssetList
+              footerSpacer={footerSpacer}
               itemProps={itemProps}
               items={listItems}
               keyboardDismissMode={keyboardDismissMode}

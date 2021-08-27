@@ -43,6 +43,7 @@ export default forwardRef(function DiscoverSearchContainer(
   useImperativeHandle(ref, () => searchInputRef.current);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [isFetchingEns, setIsFetchingEns] = useState(false);
   const loadingAllTokens = useSelector(
     ({ uniswap: { loadingAllTokens } }) => loadingAllTokens
   );
@@ -60,8 +61,22 @@ export default forwardRef(function DiscoverSearchContainer(
   } = useRoute();
 
   const contextValue = useMemo(
-    () => ({ ...upperContext, searchQuery, sectionListRef, setIsSearching }),
-    [searchQuery, upperContext, setIsSearching, sectionListRef]
+    () => ({
+      ...upperContext,
+      isFetchingEns,
+      searchQuery,
+      sectionListRef,
+      setIsFetchingEns,
+      setIsSearching,
+    }),
+    [
+      searchQuery,
+      upperContext,
+      isFetchingEns,
+      setIsFetchingEns,
+      setIsSearching,
+      sectionListRef,
+    ]
   );
   const setIsInputFocused = useCallback(
     value => {
@@ -99,6 +114,7 @@ export default forwardRef(function DiscoverSearchContainer(
     if (!isSearchModeEnabled) {
       setSearchQuery('');
       setIsSearching(false);
+      setIsFetchingEns(false);
       searchInputRef.current?.blur();
       setIsInputFocused(false);
     } else if (!searchInputRef.current.isFocused()) {
@@ -112,7 +128,7 @@ export default forwardRef(function DiscoverSearchContainer(
         <Column flex={1} marginTop={19}>
           <ExchangeSearch
             clearTextOnFocus={false}
-            isFetching={loadingAllTokens}
+            isFetching={loadingAllTokens || isFetchingEns}
             isSearching={isSearching}
             onBlur={() => setIsInputFocused(false)}
             onChangeText={setSearchQuery}

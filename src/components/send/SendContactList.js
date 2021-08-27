@@ -1,3 +1,4 @@
+import { toChecksumAddress } from 'ethereumjs-util';
 import { sortBy, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { SectionList } from 'react-native';
@@ -12,7 +13,6 @@ import { Text } from '../text';
 import { InvalidPasteToast, ToastPositionContainer } from '../toasts';
 import SendEmptyState from './SendEmptyState';
 import { useAccountSettings, useKeyboardHeight } from '@rainbow-me/hooks';
-
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { filterList } from '@rainbow-me/utils';
@@ -65,15 +65,17 @@ const SendContactFlatList = styled(SectionList).attrs({
 export default function SendContactList({
   contacts,
   currentInput,
+  ensSuggestions,
   onPressContact,
   removeContact,
   userAccounts,
-  ensSuggestions,
+  watchedAccounts,
 }) {
   const { accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
   const insets = useSafeArea();
   const keyboardHeight = useKeyboardHeight();
+  const { isDarkMode } = useTheme();
 
   const contactRefs = useRef({});
   const touchedContact = useRef(undefined);
@@ -144,6 +146,32 @@ export default function SendContactList({
     );
   }, [accountAddress, currentInput, userAccounts]);
 
+  const filteredWatchedAddresses = useMemo(() => {
+    return sortBy(
+      filterList(
+        watchedAccounts.filter(
+          account =>
+            account.visible &&
+            toLower(account.address) !== toLower(accountAddress)
+        ),
+        currentInput,
+        ['label']
+      ),
+      ['index']
+    );
+  }, [accountAddress, currentInput, watchedAccounts]);
+
+  const filteredEnsSuggestions = useMemo(() => {
+    const ownedAddresses = filteredAddresses.map(account => account.address);
+    const watchedAddresses = filteredWatchedAddresses.map(
+      account => account.address
+    );
+    const allAddresses = [...ownedAddresses, ...watchedAddresses];
+    return ensSuggestions.filter(
+      account => !allAddresses?.includes(toChecksumAddress(account?.address))
+    );
+  }, [filteredAddresses, filteredWatchedAddresses, ensSuggestions]);
+
   const sections = useMemo(() => {
     const tmp = [];
     filteredContacts.length &&
@@ -154,15 +182,27 @@ export default function SendContactList({
         id: 'accounts',
         title: '􀢲 My wallets',
       });
-    ensSuggestions.length &&
+    filteredWatchedAddresses.length &&
       tmp.push({
-        data: ensSuggestions,
+        data: filteredWatchedAddresses,
+        id: 'watching',
+        title: `${isDarkMode ? '􀨭' : '􀦧'} Watching`,
+      });
+    filteredEnsSuggestions.length &&
+      tmp.push({
+        data: filteredEnsSuggestions,
         id: 'suggestions',
         title: '􀊫 Suggestions',
       });
     return tmp;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentInput, ensSuggestions, filteredAddresses, filteredContacts]);
+  }, [
+    currentInput,
+    ensSuggestions,
+    filteredAddresses,
+    filteredContacts,
+    isDarkMode,
+  ]);
 
   return (
     <FlyInAnimation>
