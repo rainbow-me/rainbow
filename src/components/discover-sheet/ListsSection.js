@@ -217,7 +217,9 @@ export default function ListSection() {
       );
     }
 
-    return items.filter(item => item.symbol && Number(item.price?.value) > 0);
+    return items
+      .filter(item => item.symbol && Number(item.price?.value) > 0)
+      .sort((a, b) => (a.name > b.name ? 1 : -1));
   }, [
     allAssets,
     favorites,

@@ -9,13 +9,14 @@ import {
 const userListsSelector = state => state.userLists.lists;
 const userListsReadySelector = state => state.userLists.ready;
 const userListsSelectedListSelector = state => state.userLists.selectedList;
+const uniswapfavoritesSelector = state => state.uniswap.favorites;
 
 export default function useUserLists() {
   const dispatch = useDispatch();
   const lists = useSelector(userListsSelector);
   const ready = useSelector(userListsReadySelector);
   const selectedList = useSelector(userListsSelectedListSelector);
-  const { favorites, allTokens } = useSelector(({ uniswap }) => uniswap);
+  const favorites = useSelector(uniswapfavoritesSelector);
 
   const updateList = useCallback(
     (...data) => dispatch(userListsUpdateList(...data)),
@@ -30,17 +31,9 @@ export default function useUserLists() {
     [dispatch]
   );
 
-  const sortedFavorites = useMemo(() => {
-    const sorted = favorites
-      .map(address => allTokens[address])
-      .sort((a, b) => (a.name > b.name ? 1 : -1))
-      .map(token => token?.address || null);
-    return sorted;
-  }, [favorites, allTokens]);
-
   return {
     clearList,
-    favorites: sortedFavorites,
+    favorites,
     lists,
     ready,
     selectedList,
