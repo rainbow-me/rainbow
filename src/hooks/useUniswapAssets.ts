@@ -31,14 +31,14 @@ const withUniswapAssets = (
   globalVerifiedAssets: RainbowToken[];
   loadingAllTokens: boolean;
 } => {
-  const sorted = values(
-    globalAssets
-  ).sort(({ name: firstName }, { name: secondName }) =>
-    secondName < firstName ? 1 : -1
+  const [favorited, notFavorited] = partition(
+    values(globalAssets),
+    ({ address }) => includes(map(favorites, toLower), toLower(address))
   );
 
-  const [favorited, notFavorited] = partition(sorted, ({ address }) =>
-    includes(map(favorites, toLower), toLower(address))
+  const sortedFavorited = favorited.sort(
+    ({ name: firstName }, { name: secondName }) =>
+      secondName < firstName ? 1 : -1
   );
 
   const [globalVerifiedAssets, unverifiedAssets] = partition(
@@ -55,7 +55,7 @@ const withUniswapAssets = (
 
   return {
     curatedNotFavorited,
-    favorites: map(favorited, appendFavoriteKey),
+    favorites: map(sortedFavorited, appendFavoriteKey),
     globalHighLiquidityAssets,
     globalLowLiquidityAssets,
     globalVerifiedAssets,
