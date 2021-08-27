@@ -192,14 +192,16 @@ export default function ListSection() {
     }
     let items = [];
     if (selectedList === 'favorites') {
-      items = favorites.map(
-        address =>
-          ethereumUtils.getAsset(allAssets, toLower(address)) ||
-          ethereumUtils.formatGenericAsset(
-            genericAssets[toLower(address)],
-            nativeCurrency
-          )
-      );
+      items = favorites
+        .map(
+          address =>
+            ethereumUtils.getAsset(allAssets, toLower(address)) ||
+            ethereumUtils.formatGenericAsset(
+              genericAssets[toLower(address)],
+              nativeCurrency
+            )
+        )
+        .sort((a, b) => (a.name > b.name ? 1 : -1));
     } else {
       if (!lists?.length) return [];
       const currentList = lists.find(list => list.id === selectedList);
@@ -217,9 +219,7 @@ export default function ListSection() {
       );
     }
 
-    return items
-      .filter(item => item.symbol && Number(item.price?.value) > 0)
-      .sort((a, b) => (a.name > b.name ? 1 : -1));
+    return items.filter(item => item.symbol && Number(item.price?.value) > 0);
   }, [
     allAssets,
     favorites,
