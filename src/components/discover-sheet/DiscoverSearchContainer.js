@@ -9,16 +9,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { ExchangeSearch } from '../exchange';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import DiscoverSheetContext from './DiscoverSheetContext';
-import {
-  useDelayedValueWithLayoutAnimation,
-  useUniswapAssets,
-} from '@rainbow-me/hooks';
+import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 
 const CancelButton = styled(ButtonPressAnimation)`
   margin-top: 27;
@@ -46,6 +44,11 @@ export default forwardRef(function DiscoverSearchContainer(
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [isFetchingEns, setIsFetchingEns] = useState(false);
+  const loadingAllTokens = useSelector(
+    ({ uniswap: { loadingAllTokens } }) => loadingAllTokens
+  );
+  const delayedShowSearch = useDelayedValueWithLayoutAnimation(showSearch);
+
   const upperContext = useContext(DiscoverSheetContext);
   const {
     setIsSearchModeEnabled,
@@ -119,9 +122,6 @@ export default forwardRef(function DiscoverSearchContainer(
     }
   }, [isSearchModeEnabled, setIsInputFocused]);
 
-  const delayedShowSearch = useDelayedValueWithLayoutAnimation(showSearch);
-
-  const { loadingAllTokens } = useUniswapAssets();
   return (
     <>
       <Row>
