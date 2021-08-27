@@ -1,11 +1,10 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   userListsClearList,
   userListsSetSelectedList,
   userListsUpdateList,
 } from '../redux/userLists';
-import useUniswapAssets from './useUniswapAssets';
 
 const userListsSelector = state => state.userLists.lists;
 const userListsReadySelector = state => state.userLists.ready;
@@ -16,8 +15,8 @@ export default function useUserLists() {
   const lists = useSelector(userListsSelector);
   const ready = useSelector(userListsReadySelector);
   const selectedList = useSelector(userListsSelectedListSelector);
+  const { favorites, allTokens } = useSelector(({ uniswap }) => uniswap);
 
-  const { favorites } = useUniswapAssets();
   const updateList = useCallback(
     (...data) => dispatch(userListsUpdateList(...data)),
     [dispatch]
@@ -31,9 +30,17 @@ export default function useUserLists() {
     [dispatch]
   );
 
+  const sortedFavorites = useMemo(() => {
+    const sorted = favorites
+      .map(address => allTokens[address])
+      .sort((a, b) => (a.name > b.name ? 1 : -1))
+      .map(token => token?.address || null);
+    return sorted;
+  }, [favorites, allTokens]);
+
   return {
     clearList,
-    favorites,
+    favorites: sortedFavorites,
     lists,
     ready,
     selectedList,

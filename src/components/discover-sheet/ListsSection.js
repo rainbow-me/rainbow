@@ -193,10 +193,10 @@ export default function ListSection() {
     let items = [];
     if (selectedList === 'favorites') {
       items = favorites.map(
-        item =>
-          ethereumUtils.getAsset(allAssets, toLower(item.address)) ||
+        address =>
+          ethereumUtils.getAsset(allAssets, toLower(address)) ||
           ethereumUtils.formatGenericAsset(
-            genericAssets[toLower(item.address)],
+            genericAssets[toLower(address)],
             nativeCurrency
           )
       );
