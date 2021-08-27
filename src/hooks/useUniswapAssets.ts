@@ -1,12 +1,4 @@
-import {
-  filter,
-  includes,
-  map,
-  partition,
-  sortBy,
-  toLower,
-  values,
-} from 'lodash';
+import { filter, includes, map, partition, toLower, values } from 'lodash';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
