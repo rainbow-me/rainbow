@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
@@ -21,6 +22,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { margin, padding, position } from '@rainbow-me/styles';
 import { profileUtils } from '@rainbow-me/utils';
+
 const WalletProfileAddressText = styled(TruncatedAddress).attrs(
   ({ theme: { colors } }) => ({
     align: 'center',
@@ -106,12 +108,14 @@ export default function WalletProfileState({
 
   const handleCancel = useCallback(() => {
     goBack();
+    analytics.track('Tapped "Cancel" on Wallet Profile modal');
     if (actionType === 'Create') {
       navigate(Routes.CHANGE_WALLET_SHEET);
     }
   }, [actionType, goBack, navigate]);
 
   const handleSubmit = useCallback(() => {
+    analytics.track('Tapped "Submit" on Wallet Profile modal');
     onCloseModal({
       color:
         typeof color === 'string' ? profileUtils.colorHexToIndex(color) : color,

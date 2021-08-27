@@ -102,9 +102,9 @@ const swap = async (
       wallet,
     });
   } catch (e) {
-    logger.log(e);
-    logger.sentry(`[${actionName}] error executing rap`);
-    captureException(e);
+    logger.sentry('Error', e);
+    const fakeError = new Error('Failed to execute swap');
+    captureException(fakeError);
     throw e;
   }
 
