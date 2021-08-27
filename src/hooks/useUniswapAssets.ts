@@ -1,12 +1,4 @@
-import {
-  filter,
-  includes,
-  map,
-  partition,
-  sortBy,
-  toLower,
-  values,
-} from 'lodash';
+import { filter, includes, map, partition, toLower, values } from 'lodash';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -39,8 +31,11 @@ const withUniswapAssets = (
   globalVerifiedAssets: RainbowToken[];
   loadingAllTokens: boolean;
 } => {
-  const sorted = sortBy(values(globalAssets), ({ name }) => toLower(name));
-
+  const sorted = values(
+    globalAssets
+  ).sort(({ name: firstName }, { name: secondName }) =>
+    secondName < firstName ? 1 : -1
+  );
   const [favorited, notFavorited] = partition(sorted, ({ address }) =>
     includes(map(favorites, toLower), toLower(address))
   );
@@ -79,7 +74,6 @@ const withUniswapAssetsSelector = createSelector(
 export default function useUniswapAssets() {
   const dispatch = useDispatch();
   const uniswapAssets = useSelector(withUniswapAssetsSelector);
-
   const updateFavorites = useCallback(
     (...data) => dispatch(uniswapUpdateFavorites(...data)),
     [dispatch]
