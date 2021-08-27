@@ -28,7 +28,7 @@ const ErrorMessage = ({ colors, children }) => (
   </Centered>
 );
 
-function TopMoversSection() {
+const TopMoversSection = () => {
   const { gainers = [], losers = [] } = useTopMovers() || {};
   const { navigate } = useNavigation();
   const { allAssets } = useAccountAssets();
@@ -115,6 +115,6 @@ function TopMoversSection() {
       <EdgeFade />
     </Column>
   );
-}
+};
 
 export default React.memo(TopMoversSection);

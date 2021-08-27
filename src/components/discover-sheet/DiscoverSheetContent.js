@@ -33,7 +33,7 @@ function Switcher({ showSearch, children }) {
   );
 }
 
-function DiscoverSheetContent() {
+const DiscoverSheetContent = () => {
   const [showSearch, setShowSearch] = useState(false);
   const ref = useRef();
 
@@ -59,6 +59,6 @@ function DiscoverSheetContent() {
       </ColumnWithMargins>
     </>
   );
-}
+};
 
 export default React.memo(DiscoverSheetContent);

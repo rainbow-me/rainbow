@@ -50,7 +50,7 @@ const searchCurrencyList = (searchList = [], query) => {
   });
 };
 
-function DiscoverSearch() {
+const DiscoverSearch = () => {
   const { navigate } = useNavigation();
   const { allAssets } = useAccountAssets();
 
@@ -245,6 +245,6 @@ function DiscoverSearch() {
       </SearchContainer>
     </View>
   );
-}
+};
 
 export default React.memo(DiscoverSearch);
