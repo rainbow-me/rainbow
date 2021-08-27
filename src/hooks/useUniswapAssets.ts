@@ -1,4 +1,12 @@
-import { filter, includes, map, partition, toLower, values } from 'lodash';
+import {
+  filter,
+  includes,
+  map,
+  partition,
+  sortBy,
+  toLower,
+  values,
+} from 'lodash';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
@@ -31,10 +39,19 @@ const withUniswapAssets = (
   globalVerifiedAssets: RainbowToken[];
   loadingAllTokens: boolean;
 } => {
+  const a = Date.now();
+
+  // const sorted = sortBy(values(globalAssets), ({ name }) => toLower(name));
   const sorted = values(
     globalAssets
   ).sort(({ name: firstName }, { name: secondName }) =>
     secondName < firstName ? 1 : -1
+  );
+  const b = Date.now();
+  console.log(
+    '👹👹👹 withUniswapAssets took (ms)',
+    b - a,
+    values(globalAssets).length
   );
   const [favorited, notFavorited] = partition(sorted, ({ address }) =>
     includes(map(favorites, toLower), toLower(address))
@@ -49,6 +66,7 @@ const withUniswapAssets = (
     unverifiedAssets,
     'highLiquidity'
   );
+
   const curatedNotFavorited = filter(globalVerifiedAssets, 'isRainbowCurated');
 
   return {
