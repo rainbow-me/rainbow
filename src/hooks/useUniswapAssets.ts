@@ -39,20 +39,12 @@ const withUniswapAssets = (
   globalVerifiedAssets: RainbowToken[];
   loadingAllTokens: boolean;
 } => {
-  const a = Date.now();
-
-  // const sorted = sortBy(values(globalAssets), ({ name }) => toLower(name));
   const sorted = values(
     globalAssets
   ).sort(({ name: firstName }, { name: secondName }) =>
     secondName < firstName ? 1 : -1
   );
-  const b = Date.now();
-  console.log(
-    '👹👹👹 withUniswapAssets took (ms)',
-    b - a,
-    values(globalAssets).length
-  );
+
   const [favorited, notFavorited] = partition(sorted, ({ address }) =>
     includes(map(favorites, toLower), toLower(address))
   );
