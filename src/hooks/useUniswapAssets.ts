@@ -31,10 +31,8 @@ const withUniswapAssets = (
   globalVerifiedAssets: RainbowToken[];
   loadingAllTokens: boolean;
 } => {
-  const sorted = values(
-    globalAssets
-  ).sort(({ name: firstName }, { name: secondName }) =>
-    secondName < firstName ? 1 : -1
+  const sorted = values(globalAssets).sort((a, b) =>
+    a.name > b.name ? 1 : -1
   );
 
   const [favorited, notFavorited] = partition(sorted, ({ address }) =>
