@@ -77,6 +77,7 @@ export default function SendHeader({
   removeContact,
   showAssetList,
   userAccounts,
+  watchedAccounts,
 }) {
   const { setClipboard } = useClipboard();
   const { isSmallPhone, isTinyPhone } = useDimensions();
@@ -104,10 +105,10 @@ export default function SendHeader({
   }, [isValidAddress, recipient, setHexAddress, contact]);
 
   const userWallet = useMemo(() => {
-    return userAccounts.find(
+    return [...userAccounts, ...watchedAccounts].find(
       account => toLower(account.address) === toLower(recipient)
     );
-  }, [recipient, userAccounts]);
+  }, [recipient, userAccounts, watchedAccounts]);
 
   const handleNavigateToContact = useCallback(() => {
     let color = get(contact, 'color');

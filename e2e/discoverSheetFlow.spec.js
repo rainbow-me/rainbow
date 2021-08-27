@@ -91,6 +91,33 @@ describe('Discover Sheet Flow', () => {
     );
   });
 
+  it('Should search and open Showcase modal for rainbowwallet.eth', async () => {
+    await Helpers.waitAndTap('discover-search-clear-input');
+    await Helpers.typeText(
+      'discover-search-input',
+      'rainbowwallet.eth\n',
+      true
+    );
+    await Helpers.checkIfVisible(
+      'discover-currency-select-list-contact-row-rainbowwallet.eth'
+    );
+    await Helpers.checkIfNotVisible(
+      'discover-currency-select-list-exchange-coin-row-ETH'
+    );
+    await Helpers.waitAndTap(
+      'discover-currency-select-list-contact-row-rainbowwallet.eth'
+    );
+    await Helpers.checkIfVisible('showcase-sheet');
+  });
+
+  it('Should close showcase and return to Search on swiping down', async () => {
+    await Helpers.swipe('showcase-header-wrapper', 'down');
+    await Helpers.waitAndTap('discover-search-clear-input');
+    await Helpers.checkIfVisible(
+      'discover-currency-select-list-exchange-coin-row-ETH'
+    );
+  });
+
   it('Should close search and return to Discover Home on pressing Done', async () => {
     await Helpers.waitAndTap('done-button');
     await Helpers.checkIfVisible('top-movers-section');

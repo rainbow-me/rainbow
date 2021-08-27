@@ -16,14 +16,14 @@ import { useDimensions } from '@rainbow-me/hooks';
 import { margin } from '@rainbow-me/styles';
 
 const ContactAddress = styled(TruncatedAddress).attrs(
-  ({ theme: { colors } }) => ({
+  ({ theme: { colors }, lite }) => ({
     align: 'left',
     color: colors.alpha(colors.blueGreyDark, 0.5),
     firstSectionLength: 4,
     letterSpacing: 'roundedMedium',
     size: 'smedium',
     truncationLength: 4,
-    weight: 'medium',
+    weight: lite ? 'regular' : 'medium',
   })
 )`
   width: 100%;
@@ -40,10 +40,10 @@ const ContactENS = styled(TruncatedENS).attrs(({ theme: { colors } }) => ({
   width: 100%;
 `;
 
-const ContactName = styled(TruncatedText).attrs({
+const ContactName = styled(TruncatedText).attrs(({ lite }) => ({
   size: 'lmedium',
-  weight: 'medium',
-})`
+  weight: lite ? 'regular' : 'medium',
+}))`
   width: ${({ deviceWidth }) => deviceWidth - 90};
   height: 22;
 `;
@@ -51,7 +51,16 @@ const ContactName = styled(TruncatedText).attrs({
 const ContactRow = ({ address, color, nickname, ...props }, ref) => {
   const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
-  const { accountType, balance, ens, image, label, onPress } = props;
+  const {
+    accountType,
+    balance,
+    ens,
+    image,
+    label,
+    onPress,
+    showcaseItem,
+    testID,
+  } = props;
   let cleanedUpBalance = balance;
   if (balance === '0.00') {
     cleanedUpBalance = '0';
@@ -70,12 +79,16 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
   }
 
   const handlePress = useCallback(() => {
-    const label =
-      accountType === 'suggestions' && isENSAddressFormat(nickname)
-        ? nickname
-        : address;
-    onPress(label);
-  }, [accountType, address, nickname, onPress]);
+    if (showcaseItem) {
+      onPress(showcaseItem);
+    } else {
+      const label =
+        accountType === 'suggestions' && isENSAddressFormat(nickname)
+          ? nickname
+          : address;
+      onPress(label);
+    }
+  }, [accountType, address, nickname, onPress, showcaseItem]);
 
   return (
     <ButtonPressAnimation
@@ -86,7 +99,14 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
       {...props}
       onPress={handlePress}
     >
-      <RowWithMargins css={margin(6, 19, 13)} height={40} margin={10}>
+      <RowWithMargins
+        css={margin(6, 19, 13)}
+        height={40}
+        margin={10}
+        testID={`${testID}-contact-row-${
+          removeFirstEmojiFromString(nickname) || ''
+        }`}
+      >
         {image ? (
           <ImageAvatar image={image} marginRight={10} size="medium" />
         ) : (
@@ -98,7 +118,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
           />
         )}
         <Column justify={ios ? 'space-between' : 'center'}>
-          {accountType === 'accounts' ? (
+          {accountType === 'accounts' || accountType === 'watching' ? (
             <Fragment>
               {cleanedUpLabel || ens ? (
                 <ContactName deviceWidth={deviceWidth}>
@@ -121,13 +141,13 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
             </Fragment>
           ) : (
             <Fragment>
-              <ContactName deviceWidth={deviceWidth}>
+              <ContactName deviceWidth={deviceWidth} lite={!!showcaseItem}>
                 {removeFirstEmojiFromString(nickname)}
               </ContactName>
               {isENSAddressFormat(address) ? (
                 <ContactENS ens={address} />
               ) : (
-                <ContactAddress address={address} />
+                <ContactAddress address={address} lite={!!showcaseItem} />
               )}
             </Fragment>
           )}
