@@ -8,13 +8,8 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { InteractionManager } from 'react-native';
+import { InteractionManager, View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { addHexPrefix } from '../../handlers/web3';
@@ -31,13 +26,10 @@ import {
   useAccountAssets,
   useTimeout,
   useUniswapAssets,
-  useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { filterList } from '@rainbow-me/utils';
-
-const headerlessSection = data => [{ data, title: '' }];
 
 export const SearchContainer = styled(Row)`
   height: 100%;
@@ -58,22 +50,9 @@ const searchCurrencyList = (searchList = [], query) => {
   });
 };
 
-const timingConfig = { duration: 700 };
-
 export default function DiscoverSearch() {
   const { navigate } = useNavigation();
-  const listOpacity = useSharedValue(0);
   const { allAssets } = useAccountAssets();
-
-  const listAnimatedStyles = useAnimatedStyle(() => {
-    return {
-      opacity: listOpacity.value,
-    };
-  });
-
-  useEffect(() => {
-    listOpacity.value = withTiming(1, timingConfig);
-  }, [listOpacity]);
 
   const {
     isFetchingEns,
@@ -82,8 +61,8 @@ export default function DiscoverSearch() {
     searchQuery,
     isSearchModeEnabled,
   } = useContext(DiscoverSheetContext);
+
   const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
-  const type = CurrencySelectionTypes.output;
   const dispatch = useDispatch();
   const {
     curatedNotFavorited,
@@ -93,7 +72,6 @@ export default function DiscoverSearch() {
     globalVerifiedAssets,
     loadingAllTokens,
   } = useUniswapAssets();
-  const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
   const { colors } = useTheme();
   const [ensSearchResults, setEnsSearchResults] = useState(null);
   useEffect(() => {
@@ -110,93 +88,73 @@ export default function DiscoverSearch() {
 
   const currencyList = useMemo(() => {
     let filteredList = [];
-    if (type === CurrencySelectionTypes.input) {
-      filteredList = headerlessSection(uniswapAssetsInWallet);
-      if (searchQueryForSearch) {
-        filteredList = searchCurrencyList(
-          uniswapAssetsInWallet,
-          searchQueryForSearch
-        );
-        filteredList = headerlessSection(filteredList);
-      }
-    } else if (type === CurrencySelectionTypes.output) {
-      if (searchQueryForSearch) {
-        const [
-          filteredFavorite,
-          filteredVerified,
-          filteredHighUnverified,
-          filteredLow,
-        ] = map(
-          [
-            favorites,
-            globalVerifiedAssets,
-            globalHighLiquidityAssets,
-            globalLowLiquidityAssets,
-          ],
-          section => searchCurrencyList(section, searchQueryForSearch)
-        );
+    if (searchQueryForSearch) {
+      const [
+        filteredFavorite,
+        filteredVerified,
+        filteredHighUnverified,
+        filteredLow,
+      ] = map(
+        [
+          favorites,
+          globalVerifiedAssets,
+          globalHighLiquidityAssets,
+          globalLowLiquidityAssets,
+        ],
+        section => searchCurrencyList(section, searchQueryForSearch)
+      );
 
-        filteredList = [];
-        filteredFavorite.length &&
-          filteredList.push({
-            color: colors.yellowFavorite,
-            data: filteredFavorite,
-            key: tokenSectionTypes.favoriteTokenSection,
-            title: tokenSectionTypes.favoriteTokenSection,
-          });
+      filteredList = [];
+      filteredFavorite.length &&
+        filteredList.push({
+          color: colors.yellowFavorite,
+          data: filteredFavorite,
+          title: tokenSectionTypes.favoriteTokenSection,
+        });
 
-        filteredVerified.length &&
-          filteredList.push({
-            data: filteredVerified,
-            key: tokenSectionTypes.verifiedTokenSection,
-            title: tokenSectionTypes.verifiedTokenSection,
-            useGradientText: IS_TESTING === 'true' ? false : true,
-          });
+      filteredVerified.length &&
+        filteredList.push({
+          data: filteredVerified,
+          title: tokenSectionTypes.verifiedTokenSection,
+          useGradientText: IS_TESTING === 'true' ? false : true,
+        });
 
-        filteredHighUnverified.length &&
-          filteredList.push({
-            data: filteredHighUnverified,
-            key: tokenSectionTypes.unverifiedTokenSection,
-            title: tokenSectionTypes.unverifiedTokenSection,
-          });
+      filteredHighUnverified.length &&
+        filteredList.push({
+          data: filteredHighUnverified,
+          title: tokenSectionTypes.unverifiedTokenSection,
+        });
 
-        filteredLow.length &&
-          filteredList.push({
-            data: filteredLow,
-            key: tokenSectionTypes.lowLiquidityTokenSection,
-            title: tokenSectionTypes.lowLiquidityTokenSection,
-          });
-
-        ensSearchResults?.length &&
-          filteredList.push({
-            color: '#5893ff',
-            data: ensSearchResults,
-            key: '􀏼 Ethereum Name Service',
-            title: '􀏼 Ethereum Name Service',
-          });
-      } else {
-        filteredList = [
-          {
-            color: colors.yellowFavorite,
-            data: favorites,
-            key: tokenSectionTypes.favoriteTokenSection,
-            title: tokenSectionTypes.favoriteTokenSection,
-          },
-          {
-            data: curatedNotFavorited,
-            key: tokenSectionTypes.verifiedTokenSection,
-            title: tokenSectionTypes.verifiedTokenSection,
-            useGradientText: IS_TESTING === 'true' ? false : true,
-          },
-        ];
-      }
+      filteredLow.length &&
+        filteredList.push({
+          data: filteredLow,
+          title: tokenSectionTypes.lowLiquidityTokenSection,
+        });
+      ensSearchResults?.length &&
+        filteredList.push({
+          color: '#5893ff',
+          data: ensSearchResults,
+          key: '􀏼 Ethereum Name Service',
+          title: '􀏼 Ethereum Name Service',
+        });
+    } else {
+      filteredList = [
+        {
+          color: colors.yellowFavorite,
+          data: favorites,
+          title: tokenSectionTypes.favoriteTokenSection,
+        },
+        {
+          data: curatedNotFavorited,
+          title: tokenSectionTypes.verifiedTokenSection,
+          useGradientText: IS_TESTING === 'true' ? false : true,
+        },
+      ];
     }
     setIsSearching(false);
     return filteredList;
   }, [
-    type,
     setIsSearching,
-    uniswapAssetsInWallet,
     searchQueryForSearch,
     favorites,
     globalVerifiedAssets,
@@ -270,12 +228,7 @@ export default function DiscoverSearch() {
   }, [isSearchModeEnabled]);
 
   return (
-    <Animated.View
-      style={[
-        listAnimatedStyles,
-        !android && { height: deviceUtils.dimensions.height - 140 },
-      ]}
-    >
+    <View style={[!android && { height: deviceUtils.dimensions.height - 140 }]}>
       <SearchContainer>
         <CurrencySelectionList
           footerSpacer
@@ -287,9 +240,9 @@ export default function DiscoverSearch() {
           ref={ref}
           showList
           testID="discover-currency-select-list"
-          type={type}
+          type={CurrencySelectionTypes.output}
         />
       </SearchContainer>
-    </Animated.View>
+    </View>
   );
 }
