@@ -1,14 +1,5 @@
 import produce from 'immer';
-import {
-  concat,
-  isArray,
-  map,
-  remove,
-  toLower,
-  uniq,
-  values,
-  without,
-} from 'lodash';
+import { concat, isArray, map, remove, toLower, uniq, without } from 'lodash';
 import {
   getUniswapFavorites,
   saveUniswapFavorites,
@@ -103,15 +94,8 @@ export const uniswapUpdateTokens = tokens => (dispatch, getState) => {
     ...allTokens,
     ...parsedTokens,
   };
-
-  const updatedSortedTokens = values(
-    updatedTokens
-  ).sort(({ name: firstName }, { name: secondName }) =>
-    secondName < firstName ? 1 : -1
-  );
-
   dispatch({
-    payload: updatedSortedTokens,
+    payload: updatedTokens,
     type: UNISWAP_UPDATE_ALL_TOKENS,
   });
 };
