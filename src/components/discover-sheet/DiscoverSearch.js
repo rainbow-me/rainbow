@@ -1,5 +1,5 @@
 import { map, toLower } from 'lodash';
-import matchSorter from 'match-sorter';
+import { rankings } from 'match-sorter';
 import React, {
   useCallback,
   useContext,
@@ -41,28 +41,18 @@ const searchCurrencyList = (searchList = [], query) => {
   if (isAddress) {
     const formattedQuery = toLower(addHexPrefix(query));
     return filterList(searchList, formattedQuery, ['address'], {
-      threshold: matchSorter.rankings.CASE_SENSITIVE_EQUAL,
+      threshold: rankings.CASE_SENSITIVE_EQUAL,
     });
   }
 
   return filterList(searchList, query, ['symbol', 'name'], {
-    threshold: matchSorter.rankings.CONTAINS,
+    threshold: rankings.CONTAINS,
   });
 };
 
 export default function DiscoverSearch() {
   const { navigate } = useNavigation();
   const { allAssets } = useAccountAssets();
-
-  const {
-    isFetchingEns,
-    setIsSearching,
-    setIsFetchingEns,
-    searchQuery,
-    isSearchModeEnabled,
-  } = useContext(DiscoverSheetContext);
-
-  const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
   const dispatch = useDispatch();
   const {
     curatedNotFavorited,
@@ -72,36 +62,78 @@ export default function DiscoverSearch() {
     globalVerifiedAssets,
     loadingAllTokens,
   } = useUniswapAssets();
-  const { colors } = useTheme();
+  const {
+    isFetchingEns,
+    setIsSearching,
+    setIsFetchingEns,
+    searchQuery,
+    isSearchModeEnabled,
+  } = useContext(DiscoverSheetContext);
+
+  const currencySelectionListRef = useRef();
+  const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
   const [ensSearchResults, setEnsSearchResults] = useState(null);
-  useEffect(() => {
-    if (searchQuery && searchQuery?.length > 2) {
-      debouncedFetchSuggestions(
-        searchQuery,
-        setEnsSearchResults,
-        setIsFetchingEns
-      );
-    } else {
-      setEnsSearchResults(null);
-    }
-  }, [searchQuery, setIsFetchingEns]);
+  const { colors } = useTheme();
+  const [startQueryDebounce, stopQueryDebounce] = useTimeout();
+
+  const handlePress = useCallback(
+    item => {
+      if (item.ens) {
+        // navigate to Showcase sheet
+        InteractionManager.runAfterInteractions(() => {
+          navigate(Routes.SHOWCASE_SHEET, {
+            address: item.nickname,
+          });
+        });
+      } else {
+        const asset = allAssets.find(asset => item.address === asset.address);
+        dispatch(emitAssetRequest(item.address));
+        navigate(Routes.EXPANDED_ASSET_SHEET, {
+          asset: asset || item,
+          longFormHeight: initialChartExpandedStateSheetHeight,
+          type: 'token',
+        });
+      }
+    },
+    [allAssets, dispatch, navigate]
+  );
+
+  const handleActionAsset = useCallback(
+    item => {
+      navigate(Routes.ADD_TOKEN_SHEET, { item });
+    },
+    [navigate]
+  );
+
+  const itemProps = useMemo(
+    () => ({
+      onActionAsset: handleActionAsset,
+      onPress: handlePress,
+      showAddButton: true,
+      showBalance: false,
+    }),
+    [handleActionAsset, handlePress]
+  );
 
   const currencyList = useMemo(() => {
     let filteredList = [];
     if (searchQueryForSearch) {
-      const [
-        filteredFavorite,
-        filteredVerified,
-        filteredHighUnverified,
-        filteredLow,
-      ] = map(
-        [
-          favorites,
-          globalVerifiedAssets,
-          globalHighLiquidityAssets,
-          globalLowLiquidityAssets,
-        ],
-        section => searchCurrencyList(section, searchQueryForSearch)
+      const a = Date.now();
+      const filteredFavorite = searchCurrencyList(
+        favorites,
+        searchQueryForSearch
+      );
+      const filteredVerified = searchCurrencyList(
+        globalVerifiedAssets,
+        searchQueryForSearch
+      );
+      const filteredHighUnverified = searchCurrencyList(
+        globalHighLiquidityAssets,
+        searchQueryForSearch
+      );
+      const filteredLow = searchCurrencyList(
+        globalLowLiquidityAssets,
+        searchQueryForSearch
       );
 
       filteredList = [];
@@ -165,7 +197,18 @@ export default function DiscoverSearch() {
     curatedNotFavorited,
   ]);
 
-  const [startQueryDebounce, stopQueryDebounce] = useTimeout();
+  useEffect(() => {
+    if (searchQuery && searchQuery?.length > 2) {
+      debouncedFetchSuggestions(
+        searchQuery,
+        setEnsSearchResults,
+        setIsFetchingEns
+      );
+    } else {
+      setEnsSearchResults(null);
+    }
+  }, [searchQuery, setIsFetchingEns]);
+
   useEffect(() => {
     stopQueryDebounce();
     startQueryDebounce(
@@ -177,48 +220,8 @@ export default function DiscoverSearch() {
     );
   }, [searchQuery, setIsSearching, startQueryDebounce, stopQueryDebounce]);
 
-  const handlePress = useCallback(
-    item => {
-      if (item.ens) {
-        // navigate to Showcase sheet
-        InteractionManager.runAfterInteractions(() => {
-          navigate(Routes.SHOWCASE_SHEET, {
-            address: item.nickname,
-          });
-        });
-      } else {
-        const asset = allAssets.find(asset => item.address === asset.address);
-        dispatch(emitAssetRequest(item.address));
-        navigate(Routes.EXPANDED_ASSET_SHEET, {
-          asset: asset || item,
-          longFormHeight: initialChartExpandedStateSheetHeight,
-          type: 'token',
-        });
-      }
-    },
-    [allAssets, dispatch, navigate]
-  );
-
-  const handleActionAsset = useCallback(
-    item => {
-      navigate(Routes.ADD_TOKEN_SHEET, { item });
-    },
-    [navigate]
-  );
-
-  const itemProps = useMemo(
-    () => ({
-      onActionAsset: handleActionAsset,
-      onPress: handlePress,
-      showAddButton: true,
-      showBalance: false,
-    }),
-    [handleActionAsset, handlePress]
-  );
-
-  const ref = useRef();
   useEffect(() => {
-    ref.current?.scrollToLocation({
+    currencySelectionListRef.current?.scrollToLocation({
       animated: false,
       itemIndex: 0,
       sectionIndex: 0,
@@ -237,7 +240,7 @@ export default function DiscoverSearch() {
           listItems={currencyList}
           loading={loadingAllTokens || isFetchingEns}
           query={searchQueryForSearch}
-          ref={ref}
+          ref={currencySelectionListRef}
           showList
           testID="discover-currency-select-list"
           type={CurrencySelectionTypes.output}
