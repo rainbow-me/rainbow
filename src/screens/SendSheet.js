@@ -487,7 +487,7 @@ export default function SendSheet(props) {
     };
     try {
       const signableTransaction = await createSignableTransaction(txDetails);
-      const txResult = await sendTransaction({
+      const { result: txResult } = await sendTransaction({
         provider: currentProvider,
         transaction: signableTransaction,
       });

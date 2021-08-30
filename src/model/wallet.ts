@@ -265,7 +265,7 @@ export const sendTransaction = async ({
       logger.sentry('Error', error);
       const fakeError = new Error('Failed to send transaction');
       captureException(fakeError);
-      return null;
+      return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
@@ -298,7 +298,7 @@ export const signTransaction = async ({
       logger.sentry('Error', error);
       const fakeError = new Error('Failed to sign transaction');
       captureException(fakeError);
-      return null;
+      return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
@@ -332,7 +332,7 @@ export const signMessage = async (
       logger.sentry('Error', error);
       const fakeError = new Error('Failed to sign message');
       captureException(fakeError);
-      return null;
+      return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
@@ -367,7 +367,7 @@ export const signPersonalMessage = async (
       logger.sentry('Error', error);
       const fakeError = new Error('Failed to sign personal message');
       captureException(fakeError);
-      return null;
+      return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
@@ -431,7 +431,7 @@ export const signTypedDataMessage = async (
       logger.sentry('Error', error);
       const fakeError = new Error('Failed to sign typed data');
       captureException(fakeError);
-      return null;
+      return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
