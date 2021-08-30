@@ -123,7 +123,7 @@ export default function ShowcaseScreen() {
   }, [layout, sections, loading]);
 
   return (
-    <Wrapper>
+    <Wrapper testID="showcase-sheet">
       <ShowcaseContext.Provider value={contextValue}>
         {loading ? (
           <LoadingWrapper>

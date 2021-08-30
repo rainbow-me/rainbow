@@ -85,7 +85,7 @@ export default function AddTokenSheet() {
     listId => {
       if (listId === 'favorites') {
         return !!favorites.find(
-          token => toLower(token.address) === toLower(item.address)
+          address => toLower(address) === toLower(item.address)
         );
       } else {
         const list = lists.find(list => list.id === listId);

@@ -573,8 +573,8 @@ PODS:
     - Sentry (= 7.0.0)
   - RNStoreReview (0.1.5):
     - React
-  - RNSVG (12.1.0):
-    - React
+  - RNSVG (12.2.1):
+    - React-Core
   - RNTextSize (4.0.0-rc.1):
     - React
   - RNTooltips (1.0.2):
@@ -1056,7 +1056,7 @@ SPEC CHECKSUMS:
   RNScreens: c526239bbe0e957b988dacc8d75ac94ec9cb19da
   RNSentry: a2b02b326ae4fce91ce7c57d3f7dcf8df4f72269
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
-  RNSVG: ce9d996113475209013317e48b05c21ee988d42e
+  RNSVG: 91e9ee67766408d08cb08f5bd80cd57c9d2a6691
   RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
   RNTooltips: e13180e4339e2a85daabd09507f62a5a32d3dc8a
   SDWebImage: 9169792e9eec3e45bba2a0c02f74bf8bd922d1ee

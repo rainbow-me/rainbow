@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/native';
+import analytics from '@segment/analytics-react-native';
 import { forEach } from 'lodash';
 import React, { useCallback } from 'react';
 import { Alert, InteractionManager, StatusBar } from 'react-native';
@@ -34,6 +35,7 @@ export default function RestoreSheet() {
   } = useRoute();
 
   const onCloudRestore = useCallback(async () => {
+    analytics.track('Tapped "Restore from cloud"');
     let proceed = false;
     if (android) {
       const isAvailable = await isCloudBackupAvailable();
@@ -75,6 +77,7 @@ export default function RestoreSheet() {
   }, [setParams]);
 
   const onManualRestore = useCallback(() => {
+    analytics.track('Tapped "Restore with a secret phrase or private key"');
     InteractionManager.runAfterInteractions(goBack);
     InteractionManager.runAfterInteractions(() => {
       setTimeout(() => navigate(Routes.IMPORT_SEED_PHRASE_FLOW), 50);
@@ -82,6 +85,7 @@ export default function RestoreSheet() {
   }, [goBack, navigate]);
 
   const onWatchAddress = useCallback(() => {
+    analytics.track('Tapped "Watch an Ethereum Address"');
     InteractionManager.runAfterInteractions(goBack);
     InteractionManager.runAfterInteractions(() => {
       setTimeout(() => navigate(Routes.IMPORT_SEED_PHRASE_FLOW), 50);

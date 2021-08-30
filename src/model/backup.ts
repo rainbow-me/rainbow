@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { endsWith, forEach, map } from 'lodash';
 import {
@@ -251,10 +252,10 @@ export async function saveBackupPassword(
   try {
     if (ios) {
       await setSharedWebCredentials('rainbow.me', 'Backup Password', password);
+      analytics.track('Saved backup password on iCloud');
     }
   } catch (e) {
-    logger.sentry('Error while backing up password');
-    captureException(e);
+    analytics.track("Didn't save backup password on iCloud");
   }
 }
 

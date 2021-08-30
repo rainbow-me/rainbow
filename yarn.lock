@@ -4639,6 +4639,11 @@ big.js@^5.2.2:
   resolved "https://registry.yarnpkg.com/big.js/-/big.js-5.2.2.tgz#65f0af382f578bcdc742bd9c281e9cb2d7768328"
   integrity sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==
 
+bignumber.js@^7.2.1:
+  version "7.2.1"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-7.2.1.tgz#80c048759d826800807c4bfd521e50edbba57a5f"
+  integrity sha512-S4XzBk5sMB+Rcb/LNcpzXr57VRTxgAvaAEDAl1AwRx27j00hT84O6OkteE7u8UB3NuaaygCRrEpqox4uDOrbdQ==
+
 bignumber.js@^9.0.0:
   version "9.0.1"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.0.1.tgz#8d7ba124c882bfd8e43260c67475518d0689e4e5"
@@ -6883,6 +6888,14 @@ eth-sig-util@^2.5.3:
     ethereumjs-util "^5.1.1"
     tweetnacl "^1.0.0"
     tweetnacl-util "^0.15.0"
+
+eth-url-parser@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/eth-url-parser/-/eth-url-parser-1.0.4.tgz#310a99f331abdb8d603c74131568fb773e609cd8"
+  integrity sha512-2PTTyc9OXNxePTUlYfos1du6hytElYdubJbx2uF3wNMEsvHOg/P7ZpPFERub6vod2T8eGjDZtB8nkGsKEc4tIQ==
+  dependencies:
+    bignumber.js "^7.2.1"
+    qs "^6.5.2"
 
 ethereum-cryptography@^0.1.3:
   version "0.1.3"
@@ -11852,6 +11865,13 @@ qrcode@^1.2.0, qrcode@^1.4.4:
     pngjs "^3.3.0"
     yargs "^13.2.4"
 
+qs@^6.5.2:
+  version "6.10.1"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.10.1.tgz#4931482fa8d647a5aab799c5271d2133b981fb6a"
+  integrity sha512-M528Hph6wsSVOBiYUnGf+K/7w0hNshs/duGsNXPUCLH5XAqjEtiPGwNONLV0tBH8NoGb0mvD5JubnUTrujKDTg==
+  dependencies:
+    side-channel "^1.0.4"
+
 qs@^6.9.4:
   version "6.9.4"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.9.4.tgz#9090b290d1f91728d3c22e54843ca44aea5ab687"
@@ -12313,10 +12333,9 @@ react-native-store-review@^0.1.5:
   resolved "https://registry.yarnpkg.com/react-native-store-review/-/react-native-store-review-0.1.5.tgz#9df69786a137580748e368641698d2104519e4cf"
   integrity sha512-vVx7NYaQva3bGU5MdqXn4yEB+o+GPdmjqAuj7PnkepfeCS6Bi3sqniiKoXmKOKDgRTfIobBZjUkHzWeHli1+3A==
 
-react-native-svg@12.1.0:
-  version "12.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-12.1.0.tgz#acfe48c35cd5fca3d5fd767abae0560c36cfc03d"
-  integrity sha512-1g9qBRci7man8QsHoXn6tP3DhCDiypGgc6+AOWq+Sy+PmP6yiyf8VmvKuoqrPam/tf5x+ZaBT2KI0gl7bptZ7w==
+react-native-svg@brunobar79/react-native-svg#6e9d1f0327e1567913743b8df9093a38e8b8b473:
+  version "12.2.1"
+  resolved "https://codeload.github.com/brunobar79/react-native-svg/tar.gz/6e9d1f0327e1567913743b8df9093a38e8b8b473"
   dependencies:
     css-select "^2.1.0"
     css-tree "^1.0.0-alpha.39"

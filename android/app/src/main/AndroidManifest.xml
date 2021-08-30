@@ -51,6 +51,12 @@
           <data android:scheme="https" android:host="rnbwappdotcom-alternate.app.link" />
         </intent-filter>
         <intent-filter>
+          <data android:scheme="ethereum" />
+          <action android:name="android.intent.action.VIEW" />
+          <category android:name="android.intent.category.DEFAULT" />
+          <category android:name="android.intent.category.BROWSABLE" />
+        </intent-filter>
+        <intent-filter>
           <data android:scheme="rainbow" />
           <action android:name="android.intent.action.VIEW" />
           <category android:name="android.intent.category.DEFAULT" />

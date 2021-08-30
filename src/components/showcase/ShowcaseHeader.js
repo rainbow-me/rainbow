@@ -117,10 +117,9 @@ export function Header() {
     const currentContact = contacts[contextValue?.address];
     const nickname =
       contextValue?.data?.reverseEns ||
-      isHexString(contextValue?.addressOrDomain)
+      (isHexString(contextValue?.addressOrDomain)
         ? abbreviations.address(contextValue?.addressOrDomain, 4, 4)
-        : contextValue?.addressOrDomain;
-
+        : contextValue?.addressOrDomain);
     navigate(Routes.MODAL_SCREEN, {
       address: contextValue?.address,
       color: currentContact?.color || color,
@@ -145,13 +144,17 @@ export function Header() {
     goBack();
     if (isNativeStackAvailable || android) {
       navigate(Routes.SEND_FLOW, {
-        params: { address: contextValue?.address },
+        params: {
+          address: contextValue?.addressOrDomain || contextValue?.address,
+        },
         screen: Routes.SEND_SHEET,
       });
     } else {
-      navigate(Routes.SEND_FLOW, { address: contextValue?.address });
+      navigate(Routes.SEND_FLOW, {
+        address: contextValue?.addressOrDomain || contextValue?.address,
+      });
     }
-  }, [contextValue?.address, goBack, navigate]);
+  }, [contextValue?.address, contextValue?.addressOrDomain, goBack, navigate]);
 
   const { handleSetSeedPhrase, handlePressImportButton } = useImportingWallet();
 
@@ -180,7 +183,7 @@ export function Header() {
       : contextValue?.address?.toLowerCase();
 
   return (
-    <HeaderWrapper height={350}>
+    <HeaderWrapper height={350} testID="showcase-header-wrapper">
       <SheetHandle />
       <Spacer />
       <AvatarCircle

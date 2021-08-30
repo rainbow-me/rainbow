@@ -12,6 +12,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../../components/animations';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
+import { ContactRow } from '../contacts';
 import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { GradientText, Text } from '../text';
 import { CopyToast, ToastPositionContainer } from '../toasts';
@@ -85,6 +86,11 @@ function useSwapDetailsClipboardState() {
   };
 }
 
+const Spacer = styled.View`
+  height: 35px;
+  width: 100%;
+`;
+
 const ExchangeAssetSectionList = styled(SectionList).attrs({
   alwaysBounceVertical: true,
   contentContainerStyle,
@@ -102,7 +108,15 @@ const ExchangeAssetSectionList = styled(SectionList).attrs({
 `;
 
 const ExchangeAssetList = (
-  { itemProps, items, onLayout, query, testID, keyboardDismissMode = 'none' },
+  {
+    footerSpacer,
+    keyboardDismissMode = 'none',
+    itemProps,
+    items,
+    onLayout,
+    query,
+    testID,
+  },
   ref
 ) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -179,33 +193,63 @@ const ExchangeAssetList = (
     ) : null;
   };
 
-  const renderItemCallback = useCallback(
-    ({ item }) => (
-      <ExchangeCoinRow
-        {...itemProps}
-        isVerified={item.isVerified}
-        item={item}
-        onCopySwapDetailsText={onCopySwapDetailsText}
-        onUnverifiedTokenPress={handleUnverifiedTokenPress}
-        testID={testID}
-      />
-    ),
+  // either show ENS row or Currency row
+  const LineToRender = useCallback(
+    ({ item }) => {
+      return item.ens ? (
+        <ContactRow
+          accountType="contact"
+          address={item.address}
+          color={item.color}
+          nickname={item.nickname}
+          onPress={itemProps.onPress}
+          showcaseItem={item}
+          testID={testID}
+        />
+      ) : (
+        <ExchangeCoinRow
+          {...itemProps}
+          isVerified={item.isVerified}
+          item={item}
+          onCopySwapDetailsText={onCopySwapDetailsText}
+          onUnverifiedTokenPress={handleUnverifiedTokenPress}
+          testID={testID}
+        />
+      );
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [onCopySwapDetailsText]
   );
+  const renderItemCallback = useCallback(
+    ({ item, index, section }) => (
+      // in the Discover screen search results, we mix in ENS rows with coin rows
+      <LineToRender
+        item={item}
+        key={`${item.address}_${index}_${section.key}`}
+      />
+    ),
+    []
+  );
+
+  const FooterSpacer = useCallback(() => (footerSpacer ? <Spacer /> : null), [
+    footerSpacer,
+  ]);
 
   const isFocused = useIsFocused();
+
+  const sections = useMemo(() => items.map(createItem), [createItem, items]);
 
   return (
     <Fragment>
       <ExchangeAssetSectionList
+        ListFooterComponent={FooterSpacer}
         keyboardDismissMode={keyboardDismissMode}
         onLayout={onLayout}
         ref={sectionListRef}
         renderItem={renderItemCallback}
         renderSectionHeader={ExchangeAssetSectionListHeader}
         scrollsToTop={isFocused}
-        sections={items.map(createItem)}
+        sections={sections}
       />
       <ToastPositionContainer>
         <CopyToast copiedText={copiedText} copyCount={copyCount} />
