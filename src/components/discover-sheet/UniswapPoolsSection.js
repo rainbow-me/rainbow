@@ -86,9 +86,11 @@ const listData = [
   },
 ];
 
-const renderUniswapPoolListRow = item => (
-  <UniswapPoolListRow assetType="uniswap" item={item} key={item.address} />
-);
+const renderUniswapPoolListRow = ({ item }) => {
+  return (
+    <UniswapPoolListRow assetType="uniswap" item={item} key={item.address} />
+  );
+};
 
 export default function UniswapPools({
   token,
@@ -280,7 +282,14 @@ export default function UniswapPools({
         </ErrorMessage>
       ) : pairsSorted?.length > 0 ? (
         <Fragment>
-          {pairsSorted.map(pair => renderUniswapPoolListRow(pair))}
+          <FlatList
+            contentContainerStyle={{
+              paddingBottom: 10,
+            }}
+            data={pairsSorted}
+            keyExtractor={(item, index) => index}
+            renderItem={renderUniswapPoolListRow}
+          />
           {(!showAll || alwaysShowMoreButton) &&
             initialPageAmount < allPairs.length && (
               <ShowMoreButton
