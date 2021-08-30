@@ -293,7 +293,10 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     const dappName = dappNameOverride(peerMeta.url) || peerMeta.name;
     const dappUrl = peerMeta.url;
     const requestId = payload.id;
-    if (payload.method === 'wallet_addEthereumChain') {
+    if (
+      payload.method === 'wallet_addEthereumChain' ||
+      payload.method === `wallet_switchEthereumChain`
+    ) {
       const { chainId } = payload.params[0];
       const currentNetwork = ethereumUtils.getNetworkFromChainId(
         Number(walletConnector._chainId)
