@@ -259,8 +259,9 @@ export const sendTransaction = async ({
     } catch (error) {
       logger.log('Failed to SEND transaction', error);
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
-      logger.sentry('Failed to SEND transaction, alerted user');
-      captureException(error);
+      logger.sentry('Error', error);
+      const fakeError = new Error('Failed to send transaction');
+      captureException(fakeError);
       return null;
     }
   } catch (error) {
@@ -287,8 +288,9 @@ export const signTransaction = async ({
       return wallet.signTransaction(transaction);
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
-      logger.sentry('Failed to SIGN transaction, alerted user');
-      captureException(error);
+      logger.sentry('Error', error);
+      const fakeError = new Error('Failed to sign transaction');
+      captureException(fakeError);
       return null;
     }
   } catch (error) {
@@ -317,8 +319,9 @@ export const signMessage = async (
       return joinSignature(sigParams);
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
-      logger.sentry('Failed to SIGN message, alerted user');
-      captureException(error);
+      logger.sentry('Error', error);
+      const fakeError = new Error('Failed to sign message');
+      captureException(fakeError);
       return null;
     }
   } catch (error) {
@@ -347,8 +350,9 @@ export const signPersonalMessage = async (
       );
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
-      logger.sentry('Failed to SIGN personal message, alerted user');
-      captureException(error);
+      logger.sentry('Error', error);
+      const fakeError = new Error('Failed to sign personal message');
+      captureException(fakeError);
       return null;
     }
   } catch (error) {
@@ -403,8 +407,9 @@ export const signTypedDataMessage = async (
       }
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
-      logger.sentry('Failed to SIGN typed data message, alerted user');
-      captureException(error);
+      logger.sentry('Error', error);
+      const fakeError = new Error('Failed to sign typed data');
+      captureException(fakeError);
       return null;
     }
   } catch (error) {

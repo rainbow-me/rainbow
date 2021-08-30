@@ -103,7 +103,7 @@ export default function WalletScreen() {
   useEffect(() => {
     if (!initialized || (params?.emptyWallet && initialized)) {
       // We run the migrations only once on app launch
-      initializeWallet(null, null, null, true);
+      initializeWallet(null, null, null, !params?.emptyWallet);
       setInitialized(true);
       setParams({ emptyWallet: false });
     }
