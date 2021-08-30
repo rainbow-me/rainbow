@@ -1,4 +1,4 @@
-import { map, toLower } from 'lodash';
+import { toLower } from 'lodash';
 import { rankings } from 'match-sorter';
 import React, {
   useCallback,
@@ -118,7 +118,6 @@ export default function DiscoverSearch() {
   const currencyList = useMemo(() => {
     let filteredList = [];
     if (searchQueryForSearch) {
-      const a = Date.now();
       const filteredFavorite = searchCurrencyList(
         favorites,
         searchQueryForSearch
