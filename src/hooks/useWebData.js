@@ -83,10 +83,9 @@ export default function useWebData() {
 
   const updateWebProfile = useCallback(
     async (address, name, color) => {
+      if (!webDataEnabled) return;
       const wallet = findWalletWithAccount(address);
       if (wallet.type === WalletTypes.readOnly) return;
-
-      if (!webDataEnabled) return;
       const data = {
         accountColor: color || accountColor,
         accountSymbol: wipeNotEmoji(
