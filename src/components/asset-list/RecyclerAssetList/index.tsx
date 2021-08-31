@@ -161,7 +161,7 @@ const StyledContainer = styled(View)`
 `;
 
 const StyledRefreshControl = styled(RefreshControl)`
-  ${ios ? '' : 'padding-top: 20;'}
+  elevation: 5;
 `;
 
 type RecyclerListViewRef = RecyclerListView<
@@ -684,6 +684,7 @@ function RecyclerAssetList({
             refreshControl: (
               <StyledRefreshControl
                 onRefresh={handleRefresh}
+                progressViewOffset={android ? 6 : 0}
                 refreshing={isRefreshing}
                 tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
               />
