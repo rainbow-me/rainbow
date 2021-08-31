@@ -39,10 +39,17 @@ extension Collection {
 
 extension UIView {
   
+  func getHelperView() -> HelperView? {
+    if self.subviews.count > 1 && self.subviews[1].subviews.count > 0 && self.subviews[1].subviews[0] is HelperView && (self.subviews[1].subviews[0] as! HelperView).controller != nil {
+      return (self.subviews[1].subviews[0] as! HelperView);
+    }
+    return nil;
+  }
+  
   @objc func betterHitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-    if self.subviews.count > 1 && self.subviews[1].subviews.count > 0 && self.subviews[1].subviews[0] is HelperView {
-      let helperView: HelperView = self.subviews[1].subviews[0] as! HelperView;
-      let config = helperView.controller!.config
+    let helperView = getHelperView()
+    if helperView != nil {
+      let config = helperView!.controller!.config
       let blocksBackgroundTocuhes = config?.blocksBackgroundTouches;
       if (blocksBackgroundTocuhes! || self.subviews[1].frame.contains(point)) {
         return self.betterHitTest(point, with: event)
@@ -54,29 +61,28 @@ extension UIView {
   
   @objc func betterLayoutSubviews() {
     self.betterLayoutSubviews()
-    if self.subviews[1].subviews[0] is HelperView {
+    let helperView = getHelperView()
+    if helperView != nil {
       
-      
-      let helperView: HelperView = self.subviews[1].subviews[0] as! HelperView;
-      let config = helperView.controller!.config
+      let controller = helperView!.controller!
+      let config = controller.config
       
       let outerView = config?.value(forKey: "outerView") as? UIView
       if (!(config!.presentGlobally)) {
-        if helperView.controller!.moved {
+        if controller.moved {
           return
         }
-        helperView.controller!.moved = true
+        controller.moved = true
         removeFromSuperview()
-        let helperView: HelperView = self.subviews[1].subviews[0] as! HelperView;
         let bounds = outerView!.bounds
-        let topOffset:CGFloat = (helperView.controller!.topLayoutGuide.length ?? 0) + CGFloat(truncating: config?.topOffset as! NSNumber)
+        let topOffset:CGFloat = (controller.topLayoutGuide.length ?? 0) + CGFloat(truncating: config?.topOffset as! NSNumber)
         let newBounds = CGRect.init(x: bounds.minX, y: bounds.minY, width: bounds.width, height: bounds.height - topOffset)
-        helperView.setSpecialBounds(newBounds)
+        helperView!.setSpecialBounds(newBounds)
         outerView?.addSubview(self)
         
         let gr: UIGestureRecognizer = self.gestureRecognizers![0]
-        helperView.controller!.grdelegate = BetterGestureRecognizerDelegateAdapter.init(grd: gr.delegate!, config: config!)
-        gr.delegate = helperView.controller!.grdelegate
+        controller.grdelegate = BetterGestureRecognizerDelegateAdapter.init(grd: gr.delegate!, config: config!)
+        gr.delegate = controller.grdelegate
       }
     }
     
