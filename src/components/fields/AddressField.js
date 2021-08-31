@@ -19,8 +19,9 @@ const AddressInput = styled(Input).attrs({
   spellCheck: false,
   weight: 'bold',
 })`
+  ${android && 'height: 56;'}
   flex-grow: 1;
-  margin-top: ${android ? 7 : 1};
+  margin-top: 1;
   z-index: 1;
 `;
 
