@@ -8,7 +8,9 @@ import {
 } from '../model/preferences';
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
+import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import { containsEmoji } from '@rainbow-me/helpers/strings';
+import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import logger from 'logger';
 
@@ -82,6 +84,8 @@ export default function useWebData() {
   const updateWebProfile = useCallback(
     async (address, name, color) => {
       if (!webDataEnabled) return;
+      const wallet = findWalletWithAccount(address);
+      if (wallet.type === WalletTypes.readOnly) return;
       const data = {
         accountColor: color || accountColor,
         accountSymbol: wipeNotEmoji(
