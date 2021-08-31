@@ -127,6 +127,7 @@ const UniqueTokenExpandedStateImage = ({
               item={asset}
               lowResUrl={lowResUrl}
               resizeMode={resizeMode}
+              size={maxImageWidth}
             />
           )}
           {!!loading && (
