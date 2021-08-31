@@ -167,10 +167,10 @@ function Description({ text }) {
         size="lmedium"
       >
         {delayedTruncated ? truncatedText : text}
-        {truncated && needToTruncate && (
-          <ReadMoreButton>{'\n Read more 􀯼'}</ReadMoreButton>
-        )}
       </Text>
+      {truncated && needToTruncate && (
+        <ReadMoreButton>Read more 􀯼</ReadMoreButton>
+      )}
     </ButtonPressAnimation>
   );
 }
