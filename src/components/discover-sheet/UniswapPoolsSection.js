@@ -243,7 +243,11 @@ export default function UniswapPools({
   return (
     <Column marginTop={25}>
       <Row marginBottom={12} paddingHorizontal={19}>
-        <Text size="large" style={{ marginTop: -4 }} weight="heavy">
+        <Text
+          size="large"
+          style={{ marginTop: android ? 0 : -4 }}
+          weight="heavy"
+        >
           🐋
         </Text>
         <Text size="larger" testID="pools-section" weight="heavy">
