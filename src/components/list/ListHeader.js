@@ -66,7 +66,7 @@ const Content = styled(Row).attrs({
 `;
 
 const StickyBackgroundBlocker = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.white};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   height: ${({ isEditMode }) => (isEditMode ? ListHeaderHeight : 0)};
   top: ${({ isEditMode }) => (isEditMode ? -40 : 0)};
   width: ${({ deviceDimensions }) => deviceDimensions.width};
