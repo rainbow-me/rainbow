@@ -426,16 +426,7 @@ export const walletConnectLoadState = () => async (dispatch, getState) => {
   const { walletConnectors } = getState().walletconnect;
   let newWalletConnectors = {};
   try {
-    // if (!isEmpty(walletConnectors)) {
-    //   // Clear the event listeners before reconnecting
-    //   // to prevent having the same callbacks
-    //   Object.keys(walletConnectors).forEach(key => {
-    //     const connector = walletConnectors[key];
-    //     connector._eventManager = null;
-    //   });
-    // }
     const allSessions = await getAllValidWalletConnectSessions();
-
     const { clientMeta, push } = await getNativeOptions();
 
     newWalletConnectors = mapValues(allSessions, session => {
