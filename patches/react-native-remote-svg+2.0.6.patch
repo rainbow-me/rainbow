@@ -1,0 +1,62 @@
+diff --git a/node_modules/react-native-remote-svg/SvgImage.js b/node_modules/react-native-remote-svg/SvgImage.js
+index fe76b4c..faec925 100644
+--- a/node_modules/react-native-remote-svg/SvgImage.js
++++ b/node_modules/react-native-remote-svg/SvgImage.js
+@@ -7,8 +7,8 @@ import { WebView } from 'react-native-webview';
+ const getHTML = (svgContent, style) => `
+ <html data-key="key-${style.height}-${style.width}">
+   <head>
+-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+-    <style>
++  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no"> 
++  <style>
+       html, body {
+         margin: 0;
+         padding: 0;
+@@ -56,6 +56,7 @@ class SvgImage extends Component {
+   doFetch = async props => {
+     let uri = props.source && props.source.uri;
+     if (uri) {
++      console.log('=====> fetching ', uri);
+       props.onLoadStart && props.onLoadStart();
+       if (uri.match(/^data:image\/svg/)) {
+         const index = uri.indexOf('<svg');
+@@ -98,8 +99,8 @@ class SvgImage extends Component {
+         <View style={[props.style, props.containerStyle]}>
+           <WebView
+             originWhitelist={['*']}
++            pointerEvents="none"
+             scalesPageToFit
+-            useWebKit={false}
+             style={[
+               {
+                 width: 200,
+@@ -112,6 +113,7 @@ class SvgImage extends Component {
+             showsHorizontalScrollIndicator={false}
+             showsVerticalScrollIndicator={false}
+             source={{ html }}
++            
+           />
+         </View>
+       );
+diff --git a/node_modules/react-native-remote-svg/index.js b/node_modules/react-native-remote-svg/index.js
+index cc607d1..c9893ce 100644
+--- a/node_modules/react-native-remote-svg/index.js
++++ b/node_modules/react-native-remote-svg/index.js
+@@ -1,6 +1,5 @@
+ import React from 'react';
+ import { Image } from 'react-native';
+-import FadeIn from 'react-native-fade-in-image';
+ import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
+ import SvgImage from './SvgImage';
+ 
+@@ -18,9 +17,6 @@ const MyImage = props => {
+     }
+     return <SvgImage {...props} source={source} style={style} />;
+   } else {
+-    if(props.fadeIn){
+-      return <FadeIn placeholderStyle={props.placeholderStyle}><Image {...props} /></FadeIn>;
+-    }
+     return <Image {...props} />;
+   }
+ };
