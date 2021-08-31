@@ -1,15 +1,15 @@
 import { toLower } from 'lodash';
 import React, { Fragment, useCallback, useState } from 'react';
-import Image from 'react-native-remote-svg';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../../references';
 import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
+import RemoteSvg from '../svg/RemoteSvg';
 import { Monospace, Text } from '../text';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
-import { useDimensions, useSafeImageUri } from '@rainbow-me/hooks';
+import { useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 
@@ -62,16 +62,11 @@ const UniqueTokenImage = ({
   const isSVG = isSupportedUriExtension(imageUrl, ['.svg']);
   const [loadedImg, setLoadedImg] = useState(false);
   const onLoad = useCallback(() => setLoadedImg(true), [setLoadedImg]);
-  const safeSVG = useSafeImageUri(imageUrl);
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
       {isSVG ? (
-        <Image
-          onError={handleError}
-          source={{ uri: safeSVG }}
-          style={{ height: size, width: size }}
-        />
+        <RemoteSvg style={{ height: size, width: size }} uri={imageUrl} />
       ) : imageUrl && !error ? (
         <Fragment>
           <ImageTile
