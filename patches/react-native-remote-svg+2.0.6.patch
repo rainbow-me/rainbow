@@ -13,14 +13,6 @@ index fe76b4c..faec925 100644
        html, body {
          margin: 0;
          padding: 0;
-@@ -56,6 +56,7 @@ class SvgImage extends Component {
-   doFetch = async props => {
-     let uri = props.source && props.source.uri;
-     if (uri) {
-+      console.log('=====> fetching ', uri);
-       props.onLoadStart && props.onLoadStart();
-       if (uri.match(/^data:image\/svg/)) {
-         const index = uri.indexOf('<svg');
 @@ -98,8 +99,8 @@ class SvgImage extends Component {
          <View style={[props.style, props.containerStyle]}>
            <WebView
