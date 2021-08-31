@@ -22,8 +22,7 @@ import {
 } from '@rainbow-me/redux/editOptions';
 import { isNewValueForObjectPaths, isNewValueForPath } from '@rainbow-me/utils';
 
-const editTranslateOffsetInner = android ? -8 : 0;
-const editTranslateOffset = 37 - (android ? editTranslateOffsetInner : 0);
+const editTranslateOffset = 37;
 
 const formatPercentageString = percentString =>
   percentString ? percentString.split('-').join('- ') : '-';
@@ -160,14 +159,7 @@ const BalanceCoinRow = ({
           scaleTo={0.96}
           testID={`balance-coin-row-${item.name}`}
         >
-          <Animated.View
-            style={{
-              paddingLeft: Animated.multiply(
-                editTranslateOffsetInner,
-                isCoinListEditedValue
-              ),
-            }}
-          >
+          <Animated.View>
             <CoinRow
               bottomRowRender={BottomRow}
               containerStyles={containerStyles}
