@@ -241,9 +241,9 @@
   UIViewController *someViewController = changeRootController.presentedViewController;
   while (someViewController != nil) {
     UIView *view = someViewController.view.superview.superview;
-    if ([view isKindOfClass: PossiblyTouchesPassableUIView.class]) {
-      [((PossiblyTouchesPassableUIView*) view) makeOldClass];
-    }
+//    if ([view isKindOfClass: PossiblyTouchesPassableUIView.class]) {
+//    //  [((PossiblyTouchesPassableUIView*) view) makeOldClass];
+//    }
     someViewController = someViewController.presentedViewController;
   }
   
