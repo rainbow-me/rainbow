@@ -160,8 +160,6 @@ const StyledContainer = styled(View)`
   overflow: hidden;
 `;
 
-const StyledRefreshControl = styled(RefreshControl)``;
-
 type RecyclerListViewRef = RecyclerListView<
   RecyclerListViewProps,
   RecyclerListViewState
@@ -680,7 +678,7 @@ function RecyclerAssetList({
         ? {}
         : {
             refreshControl: (
-              <StyledRefreshControl
+              <RefreshControl
                 onRefresh={handleRefresh}
                 progressViewOffset={android ? 30 : 0}
                 refreshing={isRefreshing}
