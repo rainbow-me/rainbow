@@ -10,7 +10,7 @@ export default function useAsset(asset) {
   const genericAssets = useSelector(
     ({ data: { genericAssets } }) => genericAssets
   );
-  const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
+  const uniswapAssetsInWallet = useUniswapAssetsInWallet();
 
   return useMemo(() => {
     if (!asset) return null;
