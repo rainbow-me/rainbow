@@ -219,11 +219,7 @@ class App extends Component {
 
   handleAppStateChange = async nextAppState => {
     // Restore WC connectors when going from BG => FG
-    if (
-      ios &&
-      this.state.appState === 'background' &&
-      nextAppState === 'active'
-    ) {
+    if (this.state.appState === 'background' && nextAppState === 'active') {
       store.dispatch(walletConnectLoadState());
     }
     this.setState({ appState: nextAppState });
