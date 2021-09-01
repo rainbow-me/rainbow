@@ -320,7 +320,7 @@ export default function useUniswapPools(sortField, sortDirection, token) {
       client: uniswapClient,
       fetchPolicy: 'no-cache',
       pollInterval: UNISWAP_QUERY_INTERVAL,
-      skip: !priceOfEther || !ethereumPriceOneMonthAgo,
+      skip: !priceOfEther,
       variables: {
         address: token === ETH_ADDRESS ? WETH_ADDRESS : token,
       },
@@ -359,7 +359,7 @@ export default function useUniswapPools(sortField, sortDirection, token) {
   }, [ethereumPriceOneMonthAgo, pairsFromQuery, priceOfEther]);
 
   useEffect(() => {
-    if (pairsFromQuery && priceOfEther > 0 && ethereumPriceOneMonthAgo > 0) {
+    if (pairsFromQuery && priceOfEther > 0) {
       fetchPairsData();
     }
   }, [fetchPairsData, priceOfEther, ethereumPriceOneMonthAgo, pairsFromQuery]);
