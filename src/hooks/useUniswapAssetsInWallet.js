@@ -1,4 +1,4 @@
-import { filter, keys } from 'lodash';
+import { filter } from 'lodash';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { sortAssetsByNativeAmountSelector } from '@rainbow-me/helpers/assetSelectors';
@@ -9,16 +9,13 @@ const networkSelector = state => state.settings.network;
 
 const filterUniswapAssetsByAvailability = uniswapAssetAddresses => ({
   address,
-}) => uniswapAssetAddresses.includes(address);
+}) => uniswapAssetAddresses[address];
 
 const withUniswapAssetsInWallet = (network, assetData, uniswapAllPairs) => {
   const { allAssets } = assetData;
   const uniswapAssetsInWallet =
     network === NetworkTypes.mainnet
-      ? filter(
-          allAssets,
-          filterUniswapAssetsByAvailability(keys(uniswapAllPairs))
-        )
+      ? filter(allAssets, filterUniswapAssetsByAvailability(uniswapAllPairs))
       : allAssets;
 
   return { uniswapAssetsInWallet };
