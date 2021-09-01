@@ -39,7 +39,10 @@ extension Collection {
 extension UIView {
   
   func getHelperView() -> HelperView? {
-    if self.subviews.count > 1 && self.subviews[1].subviews.count > 0 && self.subviews[1].subviews[0] is HelperView && (self.subviews[1].subviews[0] as! HelperView).controller != nil {
+    if self.subviews.count > 1 &&
+        self.subviews[1].subviews.count > 0 &&
+        self.subviews[1].subviews[0] is HelperView &&
+        (self.subviews[1].subviews[0] as! HelperView).controller != nil {
       return (self.subviews[1].subviews[0] as! HelperView);
     }
     return nil;
