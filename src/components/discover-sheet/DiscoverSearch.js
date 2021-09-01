@@ -1,5 +1,5 @@
 import { toLower } from 'lodash';
-import matchSorter from 'match-sorter';
+import { rankings } from 'match-sorter';
 import React, {
   useCallback,
   useContext,
@@ -41,12 +41,13 @@ const searchCurrencyList = (searchList = [], query) => {
   if (isAddress) {
     const formattedQuery = toLower(addHexPrefix(query));
     return filterList(searchList, formattedQuery, ['address'], {
-      threshold: matchSorter.rankings.CASE_SENSITIVE_EQUAL,
+      threshold: rankings.CASE_SENSITIVE_EQUAL,
     });
   }
-  return filterList(searchList, query, ['symbol', 'name'], {
-    threshold: matchSorter.rankings.CONTAINS,
+  const filt = filterList(searchList, query, ['symbol', 'name'], {
+    threshold: rankings.CONTAINS,
   });
+  return filt;
 };
 
 export default function DiscoverSearch() {
