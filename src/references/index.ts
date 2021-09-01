@@ -43,7 +43,7 @@ export {
 } from './wyre';
 
 // Block Explorers
-export const ARBITRUM_BLOCK_EXPLORER_URL = 'explorer.arbitrum.io';
+export const ARBITRUM_BLOCK_EXPLORER_URL = 'arbiscan.io';
 export const POLYGON_BLOCK_EXPLORER_URL = 'polygonscan.com';
 export const OPTIMISM_BLOCK_EXPLORER_URL = 'optimistic.etherscan.io';
 
