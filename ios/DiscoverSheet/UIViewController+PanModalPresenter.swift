@@ -29,7 +29,6 @@ class BetterGestureRecognizerDelegateAdapter: NSObject, UIGestureRecognizerDeleg
   }
 }
 
-var swizzled = false;
 
 extension Collection {
   subscript (safe index: Index) -> Element? {
@@ -290,6 +289,8 @@ class DiscoverSheetViewController: UIViewController, PanModalPresentable {
   }
 }
 
+var swizzled = false;
+
 func swizzle(uiTransitionView: UIView?) {
   if uiTransitionView == nil {
     return;
@@ -308,13 +309,13 @@ func swizzle(uiTransitionView: UIView?) {
 
 extension UIViewController {
   @objc public func presentPanModal(view: HelperView, config: InvisibleView) {
-    if self.presentedViewController != nil {
+    if self.presentedViewController != nil || !swizzled {
+      swizzle(uiTransitionView: config.window?.rootViewController?.view.superview?.superview)
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.03) {
         self.presentPanModal(view: view, config: config)
       }
     } else {
       let viewControllerToPresent: UIViewController & PanModalPresentable = DiscoverSheetViewController(config: config)
-      swizzle(uiTransitionView: config.window?.rootViewController?.view.superview?.superview)
       viewControllerToPresent.view = view
       let sourceView: UIView? = nil, sourceRect: CGRect = .zero
       self.presentPanModal(viewControllerToPresent, sourceView: sourceView, sourceRect: sourceRect)
