@@ -62,11 +62,15 @@ const UniqueTokenImage = ({
   const isSVG = isSupportedUriExtension(imageUrl, ['.svg']);
   const [loadedImg, setLoadedImg] = useState(false);
   const onLoad = useCallback(() => setLoadedImg(true), [setLoadedImg]);
+  const remoteSvgStyle = useMemo(() => {
+    // I know... This shit is mad weird :|
+    return { height: size + 0.1, width: size + 0.1 };
+  }, [size]);
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
       {isSVG ? (
-        <RemoteSvg style={{ height: size, width: size }} uri={imageUrl} />
+        <RemoteSvg style={remoteSvgStyle} uri={imageUrl} />
       ) : imageUrl && !error ? (
         <Fragment>
           <ImageTile
