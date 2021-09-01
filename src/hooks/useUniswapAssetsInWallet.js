@@ -7,15 +7,11 @@ import NetworkTypes from '@rainbow-me/networkTypes';
 const uniswapAllTokensSelector = state => state.uniswap.allTokens;
 const networkSelector = state => state.settings.network;
 
-const filterUniswapAssetsByAvailability = uniswapAssetAddresses => ({
-  address,
-}) => uniswapAssetAddresses[address];
-
 const withUniswapAssetsInWallet = (network, assetData, uniswapAllPairs) => {
   const { allAssets } = assetData;
   const uniswapAssetsInWallet =
     network === NetworkTypes.mainnet
-      ? filter(allAssets, filterUniswapAssetsByAvailability(uniswapAllPairs))
+      ? filter(allAssets, ({ address }) => uniswapAllPairs[address])
       : allAssets;
 
   return { uniswapAssetsInWallet };
