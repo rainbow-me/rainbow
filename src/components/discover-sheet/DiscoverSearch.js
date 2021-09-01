@@ -75,6 +75,7 @@ export default function DiscoverSearch() {
   const [ensSearchResults, setEnsSearchResults] = useState(null);
   const { colors } = useTheme();
   const [startQueryDebounce, stopQueryDebounce] = useTimeout();
+  const [currencyList, setCurrencyList] = useState([]);
 
   const handlePress = useCallback(
     item => {
@@ -115,86 +116,89 @@ export default function DiscoverSearch() {
     [handleActionAsset, handlePress]
   );
 
-  const currencyList = useMemo(() => {
-    let filteredList = [];
-    if (searchQueryForSearch) {
-      const filteredFavorite = searchCurrencyList(
-        favorites,
-        searchQueryForSearch
-      );
-      const filteredVerified = searchCurrencyList(
-        globalVerifiedAssets,
-        searchQueryForSearch
-      );
-      const filteredHighUnverified = searchCurrencyList(
-        globalHighLiquidityAssets,
-        searchQueryForSearch
-      );
-      const filteredLow = searchCurrencyList(
-        globalLowLiquidityAssets,
-        searchQueryForSearch
-      );
+  const filterCurrencyList = useCallback(
+    searchQueryForSearch => {
+      let filteredList = [];
 
-      filteredList = [];
-      filteredFavorite.length &&
-        filteredList.push({
-          color: colors.yellowFavorite,
-          data: filteredFavorite,
-          title: tokenSectionTypes.favoriteTokenSection,
-        });
+      if (searchQueryForSearch) {
+        const filteredFavorite = searchCurrencyList(
+          favorites,
+          searchQueryForSearch
+        );
+        const filteredVerified = searchCurrencyList(
+          globalVerifiedAssets,
+          searchQueryForSearch
+        );
+        const filteredHighUnverified = searchCurrencyList(
+          globalHighLiquidityAssets,
+          searchQueryForSearch
+        );
+        const filteredLow = searchCurrencyList(
+          globalLowLiquidityAssets,
+          searchQueryForSearch
+        );
 
-      filteredVerified.length &&
-        filteredList.push({
-          data: filteredVerified,
-          title: tokenSectionTypes.verifiedTokenSection,
-          useGradientText: IS_TESTING === 'true' ? false : true,
-        });
+        filteredList = [];
+        filteredFavorite.length &&
+          filteredList.push({
+            color: colors.yellowFavorite,
+            data: filteredFavorite,
+            title: tokenSectionTypes.favoriteTokenSection,
+          });
 
-      filteredHighUnverified.length &&
-        filteredList.push({
-          data: filteredHighUnverified,
-          title: tokenSectionTypes.unverifiedTokenSection,
-        });
+        filteredVerified.length &&
+          filteredList.push({
+            data: filteredVerified,
+            title: tokenSectionTypes.verifiedTokenSection,
+            useGradientText: IS_TESTING === 'true' ? false : true,
+          });
 
-      filteredLow.length &&
-        filteredList.push({
-          data: filteredLow,
-          title: tokenSectionTypes.lowLiquidityTokenSection,
-        });
-      ensSearchResults?.length &&
-        filteredList.push({
-          color: '#5893ff',
-          data: ensSearchResults,
-          key: '􀏼 Ethereum Name Service',
-          title: '􀏼 Ethereum Name Service',
-        });
-    } else {
-      filteredList = [
-        {
-          color: colors.yellowFavorite,
-          data: favorites,
-          title: tokenSectionTypes.favoriteTokenSection,
-        },
-        {
-          data: curatedNotFavorited,
-          title: tokenSectionTypes.verifiedTokenSection,
-          useGradientText: IS_TESTING === 'true' ? false : true,
-        },
-      ];
-    }
-    setIsSearching(false);
-    return filteredList;
-  }, [
-    setIsSearching,
-    searchQueryForSearch,
-    favorites,
-    globalVerifiedAssets,
-    globalHighLiquidityAssets,
-    globalLowLiquidityAssets,
-    colors.yellowFavorite,
-    ensSearchResults,
-    curatedNotFavorited,
-  ]);
+        filteredHighUnverified.length &&
+          filteredList.push({
+            data: filteredHighUnverified,
+            title: tokenSectionTypes.unverifiedTokenSection,
+          });
+
+        filteredLow.length &&
+          filteredList.push({
+            data: filteredLow,
+            title: tokenSectionTypes.lowLiquidityTokenSection,
+          });
+        ensSearchResults?.length &&
+          filteredList.push({
+            color: '#5893ff',
+            data: ensSearchResults,
+            key: '􀏼 Ethereum Name Service',
+            title: '􀏼 Ethereum Name Service',
+          });
+      } else {
+        filteredList = [
+          {
+            color: colors.yellowFavorite,
+            data: favorites,
+            title: tokenSectionTypes.favoriteTokenSection,
+          },
+          {
+            data: curatedNotFavorited,
+            title: tokenSectionTypes.verifiedTokenSection,
+            useGradientText: IS_TESTING === 'true' ? false : true,
+          },
+        ];
+      }
+      setIsSearching(false);
+      return filteredList;
+    },
+    [
+      setIsSearching,
+      favorites,
+      globalVerifiedAssets,
+      globalHighLiquidityAssets,
+      globalLowLiquidityAssets,
+      colors.yellowFavorite,
+      ensSearchResults,
+      curatedNotFavorited,
+    ]
+  );
 
   useEffect(() => {
     if (searchQuery && searchQuery?.length > 2) {
@@ -214,9 +218,12 @@ export default function DiscoverSearch() {
       () => {
         setIsSearching(true);
         setSearchQueryForSearch(searchQuery);
+        const currencyList = filterCurrencyList(searchQuery);
+        setCurrencyList(currencyList);
       },
       searchQuery === '' ? 1 : 500
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, setIsSearching, startQueryDebounce, stopQueryDebounce]);
 
   useEffect(() => {
