@@ -122,11 +122,6 @@ class DiscoverSheetViewController: UIViewController, PanModalPresentable {
     self.config = config
   }
   
-  override func viewDidLoad() {
-    super.viewDidLoad()
-    hack()
-  }
-  
   @objc func panModalSetNeedsLayoutUpdateWrapper() {
     panModalSetNeedsLayoutUpdate()
   }
@@ -250,17 +245,6 @@ class DiscoverSheetViewController: UIViewController, PanModalPresentable {
   var hacked = false
   
   public func hack() {
-    let pview = view.superview!.superview!
-    let oldClass: AnyClass = type(of: pview)
-    if !swizzled {
-      swizzled = true;
-      let originalMethodLS = class_getInstanceMethod(oldClass, #selector(UIView.layoutSubviews))
-      let swizzledMethodLS = class_getInstanceMethod(oldClass, #selector(UIView.betterLayoutSubviews))
-      method_exchangeImplementations(originalMethodLS!, swizzledMethodLS!)
-      let originalMethodHT = class_getInstanceMethod(oldClass, #selector(UIView.hitTest(_:with:)))
-      let swizzledMethodHT = class_getInstanceMethod(oldClass, #selector(UIView.betterHitTest(_:with:)))
-      method_exchangeImplementations(originalMethodHT!, swizzledMethodHT!)
-    }
     if !hacked {
       observation = (self.presentationController as! PanModalPresentationController).observe(\.yPosition, options: [.old, .new]) { object, change in
         self.updatePostion(position: change.oldValue!, newPostion: change.newValue!) }
@@ -306,20 +290,36 @@ class DiscoverSheetViewController: UIViewController, PanModalPresentable {
   }
 }
 
+func swizzle(uiTransitionView: UIView?) {
+  if uiTransitionView == nil {
+    return;
+  }
+  let UITransitionView: AnyClass = type(of: uiTransitionView!)
+  if !swizzled {
+    swizzled = true;
+    let originalMethodLS = class_getInstanceMethod(UITransitionView, #selector(UIView.layoutSubviews))
+    let swizzledMethodLS = class_getInstanceMethod(UITransitionView, #selector(UIView.betterLayoutSubviews))
+    method_exchangeImplementations(originalMethodLS!, swizzledMethodLS!)
+    let originalMethodHT = class_getInstanceMethod(UITransitionView, #selector(UIView.hitTest(_:with:)))
+    let swizzledMethodHT = class_getInstanceMethod(UITransitionView, #selector(UIView.betterHitTest(_:with:)))
+    method_exchangeImplementations(originalMethodHT!, swizzledMethodHT!)
+  }
+}
 
 extension UIViewController {
-  @objc public func presentPanModal(view: UIView, config: UIView) -> UIViewController? {
+  @objc public func presentPanModal(view: HelperView, config: InvisibleView) {
     if self.presentedViewController != nil {
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.03) {
         self.presentPanModal(view: view, config: config)
       }
     } else {
-      let viewControllerToPresent: UIViewController & PanModalPresentable = DiscoverSheetViewController(config: config as! InvisibleView)
+      let viewControllerToPresent: UIViewController & PanModalPresentable = DiscoverSheetViewController(config: config)
+      swizzle(uiTransitionView: config.window?.rootViewController?.view.superview?.superview)
       viewControllerToPresent.view = view
       let sourceView: UIView? = nil, sourceRect: CGRect = .zero
       self.presentPanModal(viewControllerToPresent, sourceView: sourceView, sourceRect: sourceRect)
-      return viewControllerToPresent
+      view.controller = (viewControllerToPresent as! DiscoverSheetViewController);
+      config.contoller = (viewControllerToPresent as! DiscoverSheetViewController);
     }
-    return nil
   }
 }

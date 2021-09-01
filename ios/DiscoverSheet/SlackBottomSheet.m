@@ -44,7 +44,6 @@
   BOOL _visible;
   BOOL _modalPresented;
   BOOL _isHiding;
-  UIViewController* _contoller;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge {
@@ -174,8 +173,7 @@
       object_setClass(self->addedSubview, [HelperView class]);
       [(HelperView *)self->addedSubview setBridge: self->_bridge];
 
-      self->_contoller = [rootViewController presentPanModalWithView:self->addedSubview config:self];
-      ((HelperView *)self->addedSubview).controller = self->_contoller;
+      [rootViewController presentPanModalWithView:self->addedSubview config:self];
       self->_modalPresented = YES;
     });
   } else {

@@ -39,6 +39,7 @@
 @property (nonatomic, nonnull) NSNumber *shortFormHeight;
 @property (nonatomic) BOOL startFromShortForm;
 @property (nonatomic) BOOL scrollsToTop;
+@property (nonatomic, nullable) UIViewController *contoller;
 @property (nonatomic, copy, nullable) RCTBubblingEventBlock onWillTransition;
 @property (nonatomic, copy, nullable) RCTBubblingEventBlock onWillDismiss;
 @property (nonatomic, copy, nullable) RCTBubblingEventBlock onDidDismiss;
