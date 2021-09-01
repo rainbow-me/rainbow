@@ -1,5 +1,4 @@
 #import <React/RCTBridgeModule.h>
-//#import "Rainbow-Swift.h"
 
 @interface SlackBottomSheet : NSObject <RCTBridgeModule>
 
