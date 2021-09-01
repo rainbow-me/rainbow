@@ -63,7 +63,8 @@ const UniqueTokenImage = ({
   const [loadedImg, setLoadedImg] = useState(false);
   const onLoad = useCallback(() => setLoadedImg(true), [setLoadedImg]);
   const remoteSvgStyle = useMemo(() => {
-    return { height: size + 1, width: size + 1 };
+    // I know... This shit is mad weird :|
+    return { height: size + 0.1, width: size + 0.1 };
   }, [size]);
 
   return (
