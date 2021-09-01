@@ -9,12 +9,9 @@ const networkSelector = state => state.settings.network;
 
 const withUniswapAssetsInWallet = (network, assetData, uniswapAllPairs) => {
   const { allAssets } = assetData;
-  const uniswapAssetsInWallet =
-    network === NetworkTypes.mainnet
-      ? filter(allAssets, ({ address }) => uniswapAllPairs[address])
-      : allAssets;
-
-  return { uniswapAssetsInWallet };
+  return network === NetworkTypes.mainnet
+    ? filter(allAssets, ({ address }) => uniswapAllPairs[address])
+    : allAssets;
 };
 
 const withUniswapAssetsInWalletSelector = createSelector(

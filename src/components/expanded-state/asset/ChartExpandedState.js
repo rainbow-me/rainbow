@@ -260,7 +260,7 @@ export default function ChartExpandedState({ asset }) {
     ),
   });
 
-  const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
+  const uniswapAssetsInWallet = useUniswapAssetsInWallet();
   const showSwapButton = find(uniswapAssetsInWallet, [
     'uniqueId',
     asset?.uniqueId,

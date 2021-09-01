@@ -102,7 +102,7 @@ export default function CurrencySelectModal() {
     loadingAllTokens,
     updateFavorites,
   } = useUniswapAssets();
-  const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
+  const uniswapAssetsInWallet = useUniswapAssetsInWallet();
 
   const currencyList = useMemo(() => {
     let filteredList = [];
