@@ -40,8 +40,8 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   func activelyWaitToPresentDiscoverSheetBack(controller: DiscoverSheetViewController) {
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
       if (self.window?.rootViewController?.presentedViewController == nil) {
+        controller.moved = false;
         controller.hacked = false;
-        moved = false;
         self.window?.rootViewController?.present(controller, animated: true)
       } else {
         self.activelyWaitToPresentDiscoverSheetBack(controller: controller)

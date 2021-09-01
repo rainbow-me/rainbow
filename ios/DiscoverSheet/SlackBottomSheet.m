@@ -8,9 +8,7 @@
 #import <React/RCTView.h>
 #import <objc/runtime.h>
 #import "Rainbow-Swift.h"
-
-@interface HelperView : UIView
-@end
+#import "SlackBottomSheet.h"
 
 @implementation HelperView {
   __weak RCTBridge *_bridge;
@@ -38,38 +36,6 @@
 }
 @end
 
-@interface InvisibleView: RCTView
-- (void)jumpTo:(NSNumber*)longForm;
-@property (nonatomic, nonnull) NSNumber *topOffset;
-@property (nonatomic) BOOL isShortFormEnabled;
-@property (nonatomic, nullable) NSNumber *longFormHeight;
-@property (nonatomic, nonnull) NSNumber *cornerRadius;
-@property (nonatomic, nonnull) NSNumber *springDamping;
-@property (nonatomic, nonnull) NSNumber *transitionDuration;
-@property (nonatomic, nonnull) UIColor *backgroundColor;
-@property (nonatomic, nonnull) NSNumber *backgroundOpacity;
-@property (nonatomic) BOOL anchorModalToLongForm;
-@property (nonatomic) BOOL allowsDragToDismiss;
-@property (nonatomic) BOOL allowsTapToDismiss;
-@property (nonatomic) BOOL isUserInteractionEnabled;
-@property (nonatomic) BOOL isHapticFeedbackEnabled;
-@property (nonatomic) BOOL shouldRoundTopCorners;
-@property (nonatomic) BOOL showDragIndicator;
-@property (nonatomic) BOOL gestureEnabled;
-@property (nonatomic) BOOL blocksBackgroundTouches;
-@property (nonatomic) BOOL interactsWithOuterScrollView;
-@property (nonatomic) BOOL presentGlobally;
-@property (nonatomic) BOOL initialAnimation;
-@property (nonatomic) BOOL unmountAnimation;
-@property (nonatomic, nonnull) NSNumber *headerHeight;
-@property (nonatomic, nonnull) NSNumber *shortFormHeight;
-@property (nonatomic) BOOL startFromShortForm;
-@property (nonatomic) BOOL scrollsToTop;
-@property (nonatomic, copy, nullable) RCTBubblingEventBlock onWillTransition;
-@property (nonatomic, copy, nullable) RCTBubblingEventBlock onWillDismiss;
-@property (nonatomic, copy, nullable) RCTBubblingEventBlock onDidDismiss;
-@property (nonatomic, copy, nullable) RCTBubblingEventBlock onCrossMagicBorder;
-@end
 
 @implementation InvisibleView {
   __weak RCTBridge *_bridge;
@@ -78,7 +44,6 @@
   BOOL _visible;
   BOOL _modalPresented;
   BOOL _isHiding;
-  UIViewController* _contoller;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge {
@@ -208,7 +173,7 @@
       object_setClass(self->addedSubview, [HelperView class]);
       [(HelperView *)self->addedSubview setBridge: self->_bridge];
 
-      self->_contoller = [rootViewController presentPanModalWithView:self->addedSubview config:self];
+      [rootViewController presentPanModalWithView:self->addedSubview config:self];
       self->_modalPresented = YES;
     });
   } else {
