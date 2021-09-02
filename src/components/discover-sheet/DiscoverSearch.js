@@ -44,10 +44,9 @@ const searchCurrencyList = (searchList = [], query) => {
       threshold: rankings.CASE_SENSITIVE_EQUAL,
     });
   }
-  const filt = filterList(searchList, query, ['symbol', 'name'], {
+  return filterList(searchList, query, ['symbol', 'name'], {
     threshold: rankings.CONTAINS,
   });
-  return filt;
 };
 
 export default function DiscoverSearch() {
