@@ -116,10 +116,35 @@ export default function DiscoverSearch() {
     [handleActionAsset, handlePress]
   );
 
+  const searchInFilteredLow = useCallback(
+    (searchQueryForSearch, filteredList) => {
+      setTimeout(() => {
+        const newCurrencyList = [...filteredList];
+        const filteredLow = searchCurrencyList(
+          globalLowLiquidityAssets,
+          searchQueryForSearch
+        );
+        filteredLow.length &&
+          newCurrencyList.push({
+            data: [filteredLow[0]],
+            title: tokenSectionTypes.lowLiquidityTokenSection,
+          });
+        ensSearchResults?.length &&
+          newCurrencyList.push({
+            color: '#5893ff',
+            data: ensSearchResults,
+            key: '􀏼 Ethereum Name Service',
+            title: '􀏼 Ethereum Name Service',
+          });
+        setCurrencyList(newCurrencyList);
+      }, 0);
+    },
+    [ensSearchResults, globalLowLiquidityAssets]
+  );
+
   const filterCurrencyList = useCallback(
     searchQueryForSearch => {
       let filteredList = [];
-
       if (searchQueryForSearch) {
         const filteredFavorite = searchCurrencyList(
           favorites,
@@ -131,10 +156,6 @@ export default function DiscoverSearch() {
         );
         const filteredHighUnverified = searchCurrencyList(
           globalHighLiquidityAssets,
-          searchQueryForSearch
-        );
-        const filteredLow = searchCurrencyList(
-          globalLowLiquidityAssets,
           searchQueryForSearch
         );
 
@@ -158,19 +179,7 @@ export default function DiscoverSearch() {
             data: filteredHighUnverified,
             title: tokenSectionTypes.unverifiedTokenSection,
           });
-
-        filteredLow.length &&
-          filteredList.push({
-            data: filteredLow,
-            title: tokenSectionTypes.lowLiquidityTokenSection,
-          });
-        ensSearchResults?.length &&
-          filteredList.push({
-            color: '#5893ff',
-            data: ensSearchResults,
-            key: '􀏼 Ethereum Name Service',
-            title: '􀏼 Ethereum Name Service',
-          });
+        searchInFilteredLow(searchQueryForSearch, filteredList);
       } else {
         filteredList = [
           {
@@ -186,17 +195,16 @@ export default function DiscoverSearch() {
         ];
       }
       setIsSearching(false);
-      return filteredList;
+      setCurrencyList(filteredList);
     },
     [
       setIsSearching,
       favorites,
       globalVerifiedAssets,
       globalHighLiquidityAssets,
-      globalLowLiquidityAssets,
       colors.yellowFavorite,
-      ensSearchResults,
       curatedNotFavorited,
+      searchInFilteredLow,
     ]
   );
 
@@ -218,8 +226,7 @@ export default function DiscoverSearch() {
       () => {
         setIsSearching(true);
         setSearchQueryForSearch(searchQuery);
-        const currencyList = filterCurrencyList(searchQuery);
-        setCurrencyList(currencyList);
+        filterCurrencyList(searchQuery);
       },
       searchQuery === '' ? 1 : 500
     );
