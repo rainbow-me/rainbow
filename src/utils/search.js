@@ -1,5 +1,5 @@
 import { toLower } from 'lodash';
-import matchSorter from 'match-sorter';
+import { matchSorter } from 'match-sorter';
 
 export const filterList = (list, searchQuery, keys = null, options = null) =>
   matchSorter(list, searchQuery, {
