@@ -46,6 +46,10 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
     height ? `height: ${height + deviceHeight}` : null};
 `;
 
+const ActionButtonRow = styled(SheetActionButtonRow)`
+  ${android ? 'z-index: -1;' : ''}
+`;
+
 const SavingsSheet = () => {
   const { colors, isDarkMode } = useTheme();
   const { height: deviceHeight } = useDimensions();
@@ -168,7 +172,7 @@ const SavingsSheet = () => {
               balance={balance}
               lifetimeAccruedInterest={lifetimeAccruedInterest}
             />
-            <SheetActionButtonRow>
+            <ActionButtonRow>
               <SheetActionButton
                 color={isDarkMode ? colors.darkModeDark : colors.dark}
                 label="􀁏 Withdraw"
@@ -183,7 +187,7 @@ const SavingsSheet = () => {
                 radiusAndroid={24}
                 weight="bold"
               />
-            </SheetActionButtonRow>
+            </ActionButtonRow>
             <Divider color={colors.rowDividerLight} zIndex={0} />
             <FloatingEmojis
               disableHorizontalMovement

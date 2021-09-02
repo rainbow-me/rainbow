@@ -32,9 +32,11 @@ export default function SheetActionButtonRow({
   ignorePaddingTop,
   paddingBottom = null,
   paddingHorizontal = null,
+  ...props
 }) {
   return (
     <Container
+      {...props}
       ignorePaddingBottom={ignorePaddingBottom}
       ignorePaddingTop={ignorePaddingTop}
       paddingBottom={paddingBottom}
