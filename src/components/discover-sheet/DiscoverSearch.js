@@ -1,3 +1,4 @@
+import { ConstructorFragment } from '@ethersproject/abi';
 import { toLower } from 'lodash';
 import { rankings } from 'match-sorter';
 import React, {
@@ -71,10 +72,16 @@ export default function DiscoverSearch() {
 
   const currencySelectionListRef = useRef();
   const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
-  const [ensSearchResults, setEnsSearchResults] = useState(null);
   const { colors } = useTheme();
   const [startQueryDebounce, stopQueryDebounce] = useTimeout();
-  const [currencyList, setCurrencyList] = useState([]);
+  const [fastCurrencyList, setFastCurrencyList] = useState([]);
+  const [lowCurrencyList, setLowCurrencyList] = useState([]);
+  const [ensResults, setEnsResults] = useState([]);
+
+  const currencyList = useMemo(
+    () => [...fastCurrencyList, ...lowCurrencyList, ...ensResults],
+    [fastCurrencyList, lowCurrencyList, ensResults]
+  );
 
   const handlePress = useCallback(
     item => {
@@ -116,30 +123,39 @@ export default function DiscoverSearch() {
   );
 
   const searchInFilteredLow = useCallback(
-    (searchQueryForSearch, filteredList) => {
+    searchQueryForSearch => {
       setTimeout(() => {
-        const newCurrencyList = [...filteredList];
         const filteredLow = searchCurrencyList(
           globalLowLiquidityAssets,
           searchQueryForSearch
         );
-        filteredLow.length &&
-          newCurrencyList.push({
-            data: [filteredLow[0]],
-            title: tokenSectionTypes.lowLiquidityTokenSection,
-          });
-        ensSearchResults?.length &&
-          newCurrencyList.push({
-            color: '#5893ff',
-            data: ensSearchResults,
-            key: '􀏼 Ethereum Name Service',
-            title: '􀏼 Ethereum Name Service',
-          });
-        setCurrencyList(newCurrencyList);
+        if (filteredLow.length) {
+          const lowCurrencyList = [
+            {
+              data: [filteredLow[0]],
+              title: tokenSectionTypes.lowLiquidityTokenSection,
+            },
+          ];
+          setLowCurrencyList(lowCurrencyList);
+        }
       }, 0);
     },
-    [ensSearchResults, globalLowLiquidityAssets]
+    [globalLowLiquidityAssets]
   );
+
+  const addEnsResults = useCallback(ensResults => {
+    if (ensResults && ensResults.length) {
+      const ensSearchResults = [
+        {
+          color: '#5893ff',
+          data: ensResults,
+          key: '􀏼 Ethereum Name Service',
+          title: '􀏼 Ethereum Name Service',
+        },
+      ];
+      setEnsResults(ensSearchResults);
+    }
+  }, []);
 
   const filterCurrencyList = useCallback(
     searchQueryForSearch => {
@@ -178,7 +194,7 @@ export default function DiscoverSearch() {
             data: filteredHighUnverified,
             title: tokenSectionTypes.unverifiedTokenSection,
           });
-        searchInFilteredLow(searchQueryForSearch, filteredList);
+        searchInFilteredLow(searchQueryForSearch);
       } else {
         filteredList = [
           {
@@ -194,7 +210,7 @@ export default function DiscoverSearch() {
         ];
       }
       setIsSearching(false);
-      setCurrencyList(filteredList);
+      setFastCurrencyList(filteredList);
     },
     [
       setIsSearching,
@@ -208,23 +224,14 @@ export default function DiscoverSearch() {
   );
 
   useEffect(() => {
-    if (searchQuery && searchQuery?.length > 2) {
-      debouncedFetchSuggestions(
-        searchQuery,
-        setEnsSearchResults,
-        setIsFetchingEns
-      );
-    } else {
-      setEnsSearchResults(null);
-    }
-  }, [searchQuery, setIsFetchingEns]);
-
-  useEffect(() => {
     stopQueryDebounce();
+    searchQuery?.length > 2 &&
+      debouncedFetchSuggestions(searchQuery, addEnsResults, setIsFetchingEns);
     startQueryDebounce(
       () => {
         setIsSearching(true);
         setSearchQueryForSearch(searchQuery);
+
         filterCurrencyList(searchQuery);
       },
       searchQuery === '' ? 1 : 500
