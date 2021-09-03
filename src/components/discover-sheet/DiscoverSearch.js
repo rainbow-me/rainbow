@@ -223,9 +223,10 @@ export default function DiscoverSearch() {
   );
 
   useEffect(() => {
-    stopQueryDebounce();
-    searchQuery?.length > 2 &&
+    if (searchQuery?.length > 2) {
       debouncedFetchSuggestions(searchQuery, addEnsResults, setIsFetchingEns);
+    }
+    stopQueryDebounce();
     startQueryDebounce(
       () => {
         setIsSearching(true);
