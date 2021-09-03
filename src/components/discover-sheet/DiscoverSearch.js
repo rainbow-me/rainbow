@@ -131,7 +131,7 @@ export default function DiscoverSearch() {
         if (filteredLow.length) {
           const lowCurrencyList = [
             {
-              data: [filteredLow[0]],
+              data: filteredLow,
               title: tokenSectionTypes.lowLiquidityTokenSection,
             },
           ];
