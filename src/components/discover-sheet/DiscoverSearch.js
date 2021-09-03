@@ -1,4 +1,3 @@
-import { ConstructorFragment } from '@ethersproject/abi';
 import { toLower } from 'lodash';
 import { rankings } from 'match-sorter';
 import React, {
