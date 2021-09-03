@@ -128,23 +128,25 @@ export default function DiscoverSearch() {
           globalLowLiquidityAssets,
           searchQueryForSearch
         );
+        let lowCurrencyList = [];
         if (filteredLow.length) {
-          const lowCurrencyList = [
+          lowCurrencyList = [
             {
               data: filteredLow,
               title: tokenSectionTypes.lowLiquidityTokenSection,
             },
           ];
-          setLowCurrencyList(lowCurrencyList);
         }
+        setLowCurrencyList(lowCurrencyList);
       }, 0);
     },
     [globalLowLiquidityAssets]
   );
 
   const addEnsResults = useCallback(ensResults => {
+    let ensSearchResults = [];
     if (ensResults && ensResults.length) {
-      const ensSearchResults = [
+      ensSearchResults = [
         {
           color: '#5893ff',
           data: ensResults,
@@ -152,8 +154,8 @@ export default function DiscoverSearch() {
           title: '􀏼 Ethereum Name Service',
         },
       ];
-      setEnsResults(ensSearchResults);
     }
+    setEnsResults(ensSearchResults);
   }, []);
 
   const filterCurrencyList = useCallback(
