@@ -338,7 +338,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
               dispatch(walletConnectRemovePendingRedirect('connect'));
             } else {
               walletConnector.rejectRequest({
-                error: { message: 'Chain currently not supported' },
+                error: { message: 'User rejected request' },
                 id: requestId,
               });
               analytics.track('Rejected new WalletConnect chain request', {
@@ -373,9 +373,9 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
             result,
           });
         })
-        .catch(() => {
+        .catch(error => {
           walletConnector.rejectRequest({
-            error: { message: 'JSON RPC method not supported' },
+            error,
             id: payload.id,
           });
         });
@@ -624,18 +624,19 @@ export const walletConnectDisconnectAllByDappUrl = dappUrl => async (
   }
 };
 
-export const walletConnectSendStatus = (peerId, requestId, result) => async (
+export const walletConnectSendStatus = (peerId, requestId, response) => async (
   dispatch,
   getState
 ) => {
   const walletConnector = getState().walletconnect.walletConnectors[peerId];
   if (walletConnector) {
+    const { result, error } = response;
     try {
       if (result) {
         await walletConnector.approveRequest({ id: requestId, result });
       } else {
         await walletConnector.rejectRequest({
-          error: { message: 'User rejected request' },
+          error,
           id: requestId,
         });
       }
