@@ -12,6 +12,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.23](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.23)
+
+### Added
+* SVG support 
+
+
+### Changed
+* Enabled Arbitrum 
+* WalletConnect improvements
+* UniswapAssetsInWallet improvements
+
+
 ## [1.5.22](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.22)
 
 
