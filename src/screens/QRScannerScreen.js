@@ -46,7 +46,6 @@ export default function QRScannerScreen() {
   const { navigate } = useNavigation();
   const [cameraVisible, setCameraVisible] = useState();
 
-  const cameraDim = useSharedValue(0);
   const dsRef = useRef();
   useEffect(
     () => dsRef.current?.addOnCrossMagicBorderListener(setCameraVisible),
@@ -64,6 +63,7 @@ export default function QRScannerScreen() {
 
   const { colors } = useTheme();
   const { result: isEmulator } = useIsEmulator();
+  const androidSheetPosition = useSharedValue(0);
 
   return (
     <>
@@ -85,7 +85,6 @@ export default function QRScannerScreen() {
             )}
             {initializeCamera && !isEmulator && (
               <QRCodeScanner
-                cameraDim={cameraDim}
                 contentPositionTop={HeaderHeight}
                 dsRef={dsRef}
                 enableCamera={isFocused}
@@ -93,7 +92,7 @@ export default function QRScannerScreen() {
             )}
           </CameraDimmer>
           {android ? (
-            <DiscoverSheet ref={dsRef} />
+            <DiscoverSheet ref={dsRef} sheetPosition={androidSheetPosition} />
           ) : (
             <ScannerHeader>
               <BackButton

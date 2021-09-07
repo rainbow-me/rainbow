@@ -6,7 +6,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import QRScannerScreen from '../screens/QRScannerScreen';
 import WalletScreen from '../screens/WalletScreen';
 import { deviceUtils } from '../utils';
-import ScrollPagerWrapper, { scrollPosition } from './ScrollPagerWrapper';
+import ScrollPagerWrapper from './ScrollPagerWrapper';
 import Routes from './routesNames';
 import { useAccountSettings, useCoinListEdited } from '@rainbow-me/hooks';
 
@@ -14,7 +14,9 @@ const Swipe = createMaterialTopTabNavigator();
 
 const renderTabBar = () => null;
 
-const renderPager = props => <ScrollPagerWrapper {...props} />;
+const renderPager = props => (
+  <ScrollPagerWrapper {...props} initialScrollPosition={1} />
+);
 
 export function SwipeNavigator() {
   const { isCoinListEdited } = useCoinListEdited();
@@ -28,7 +30,6 @@ export function SwipeNavigator() {
         initialLayout={deviceUtils.dimensions}
         initialRouteName={Routes.WALLET_SCREEN}
         pager={renderPager}
-        position={scrollPosition}
         swipeEnabled={swipeEnabled && !isCoinListEdited}
         tabBar={renderTabBar}
       >
