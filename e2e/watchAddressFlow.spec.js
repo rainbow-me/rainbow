@@ -50,7 +50,7 @@ describe('Watch address flow', () => {
       //   // await Helpers.checkIfElementByTextIsVisible('test.eth');
     } else {
       await Helpers.swipe('wallet-screen', 'right');
-      await Helpers.checkIfElementByTextIsVisible('test.eth');
+      await Helpers.checkIfVisible('profileAddress-test.eth');
     }
   });
 
