@@ -48,7 +48,7 @@ function DiscoverSheet(_, forwardedRef) {
         }
       },
       jumpToShort() {
-        // sheet.current.scrollTo({ animated: false, x: 0, y: 0 });
+        sheet.current.scrollTo({ animated: false, x: 0, y: 0 });
         const screen = findNodeHandle(ref.current);
         if (screen) {
           NativeModules.DiscoverSheet.jumpTo(false, screen);
@@ -70,7 +70,7 @@ function DiscoverSheet(_, forwardedRef) {
   useImperativeHandle(forwardedRef, () => value);
 
   useEffect(() => {
-    //sheet.current.scrollTo({ animated: false, x: 0, y: 0 });
+    sheet.current.scrollTo({ animated: false, x: 0, y: 0 });
   }, [headerButtonsHandlers.isSearchModeEnabled]);
 
   // noinspection JSConstructorReturnsPrimitive
