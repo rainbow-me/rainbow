@@ -34,7 +34,7 @@ describe('Error boundary flow', () => {
 
   it('Should crash the app and show the error boundary section', async () => {
     await Helpers.waitAndTap('crash-app-section');
-    await Helpers.checkIfVisible('error-boundary-container');
+    await Helpers.checkIfVisible('error-boundary-container', 5000);
   });
 
   it('Should restart app in Wallet Screen after tapping Restart Rainbow', async () => {
