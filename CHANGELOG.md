@@ -12,11 +12,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.24](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.24)
+
+### Added
+* App Error Boundary
+
+### Changed
+* Send Full WC Errors 
+
 ## [1.5.23](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.23)
 
 ### Added
 * SVG support 
-
 
 ### Changed
 * Enabled Arbitrum 
