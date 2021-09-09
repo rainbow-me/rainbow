@@ -58,6 +58,7 @@ const sx = StyleSheet.create({
     fontFamily: fonts.family.SFProRounded,
     fontWeight: fonts.weight.semibold,
     letterSpacing: fonts.letterSpacing.roundedTight,
+    lineHeight: 22,
     paddingHorizontal: 6.5,
     paddingVertical: 3,
     textAlign: 'center',
@@ -166,7 +167,7 @@ export default function AddressRow({
                 }
               />
             )}
-            <ColumnWithMargins margin={3}>
+            <ColumnWithMargins margin={android ? -6 : 3}>
               {cleanedUpLabel || ens ? (
                 <TruncatedText
                   color={colors.dark}
