@@ -33,7 +33,7 @@ export default function Fallback() {
     Restart.Restart();
   };
   return (
-    <Container>
+    <Container testID="error-boundary-container">
       <Message>
         <Centered>
           <Text align="center" color={colors.dark} size="bigger" weight="heavy">
@@ -75,6 +75,7 @@ export default function Fallback() {
             label="🌈 Restart Rainbow"
             onPress={handleRestart}
             size="big"
+            testID="restart-rainbow-button"
             textColor={colors.appleBlue}
             weight="heavy"
           />
