@@ -126,7 +126,7 @@ function CarouselWrapper({
 }
 
 const Spacer = styled.View`
-  height: ${safeAreaInsetValues.bottom + 20};
+  height: ${safeAreaInsetValues.bottom + 20 + getSoftMenuBarHeight()};
 `;
 
 // truncate after the first paragraph or 4th dot

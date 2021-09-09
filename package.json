@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.5.23-1",
+  "version": "1.5.25-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn allow-scripts && yarn postinstall",
@@ -128,7 +128,7 @@
     "i18n-js": "^3.0.11",
     "i18next": "^17.0.3",
     "imgix-core-js": "^2.3.2",
-    "immer": "^8.0.1",
+    "immer": "^9.0.6",
     "inherits": "^2.0.3",
     "lint-staged": "^10.0.7",
     "lodash": "^4.17.19",

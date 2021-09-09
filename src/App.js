@@ -27,6 +27,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider } from 'react-redux';
 import PortalConsumer from './components/PortalConsumer';
+import ErrorBoundary from './components/error-boundary/ErrorBoundary';
 import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
 import {
@@ -244,21 +245,25 @@ class App extends Component {
   render = () => (
     <MainThemeProvider>
       <RainbowContextWrapper>
-        <Portal>
-          <SafeAreaProvider>
-            <Provider store={store}>
-              <FlexItem>
-                {this.state.initialRoute && (
-                  <InitialRouteContext.Provider value={this.state.initialRoute}>
-                    <RoutesComponent ref={this.handleNavigatorRef} />
-                    <PortalConsumer />
-                  </InitialRouteContext.Provider>
-                )}
-                <OfflineToast />
-              </FlexItem>
-            </Provider>
-          </SafeAreaProvider>
-        </Portal>
+        <ErrorBoundary>
+          <Portal>
+            <SafeAreaProvider>
+              <Provider store={store}>
+                <FlexItem>
+                  {this.state.initialRoute && (
+                    <InitialRouteContext.Provider
+                      value={this.state.initialRoute}
+                    >
+                      <RoutesComponent ref={this.handleNavigatorRef} />
+                      <PortalConsumer />
+                    </InitialRouteContext.Provider>
+                  )}
+                  <OfflineToast />
+                </FlexItem>
+              </Provider>
+            </SafeAreaProvider>
+          </Portal>
+        </ErrorBoundary>
       </RainbowContextWrapper>
     </MainThemeProvider>
   );
