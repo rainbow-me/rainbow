@@ -205,7 +205,7 @@ function MainNavigator() {
       <Stack.Screen
         component={BackupSheet}
         name={Routes.BACKUP_SHEET}
-        options={bottomSheetPreset}
+        options={expandedPreset}
       />
       <Stack.Screen
         component={RestoreSheet}
@@ -256,7 +256,7 @@ function MainOuterNavigator() {
       <OuterStack.Screen
         component={BackupSheet}
         name={Routes.BACKUP_SCREEN}
-        options={sheetPreset}
+        options={expandedPreset}
       />
     </OuterStack.Navigator>
   );
