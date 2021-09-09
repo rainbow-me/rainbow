@@ -17,7 +17,9 @@ export default class ErrorBoundary extends React.Component {
         errorInfo
       )}`
     );
-    captureException(error);
+    logger.sentry('Error is', error);
+    const customError = new Error('React Crash');
+    captureException(customError);
   }
 
   render() {
