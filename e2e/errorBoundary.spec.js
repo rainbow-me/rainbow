@@ -37,10 +37,6 @@ describe('Error boundary flow', () => {
     await Helpers.checkIfVisible('error-boundary-container');
     await Helpers.waitAndTap('restart-rainbow-button');
     await Helpers.checkIfVisible('wallet-screen', 40000);
-
-    // reset app
-    await device.launchApp({ newInstance: true });
-    await Helpers.checkIfVisible('welcome-screen');
   });
 
   it('Should restart app in Wallet Screen after tapping Restart Rainbow', async () => {
