@@ -46,7 +46,11 @@ function CoinIconGroup({ tokens }) {
   }, [breakIndex, tokens]);
 
   return (
-    <Column align={breakIndex ? 'center' : 'start'} width={70}>
+    <Column
+      align={breakIndex ? 'center' : 'start'}
+      shouldRasterizeIOS
+      width={70}
+    >
       <TokenRowsComponent
         iconSize={iconSize}
         tokenRows={tokenRows}
