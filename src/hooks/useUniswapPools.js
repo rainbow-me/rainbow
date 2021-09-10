@@ -198,6 +198,9 @@ function parseData(
   };
 }
 
+export const getOneDayVolume = (valueNow, value24HoursAgo) =>
+  parseFloat(valueNow) - parseFloat(value24HoursAgo);
+
 /**
  * gets the amoutn difference plus the % change in change itself (second order change)
  * @param {*} valueNow
