@@ -137,10 +137,9 @@ function parseData(
 ) {
   const newData = { ...data };
   // get volume changes
-  const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
+  const oneDayVolumeUSD = getOneDayVolume(
     newData?.volumeUSD,
-    oneDayData?.volumeUSD ? oneDayData.volumeUSD : 0,
-    twoDayData?.volumeUSD ? twoDayData.volumeUSD : 0
+    oneDayData?.volumeUSD ? oneDayData.volumeUSD : 0
   );
 
   newData.profit30d = calculateProfit30d(
@@ -152,7 +151,6 @@ function parseData(
 
   // set volume properties
   newData.oneDayVolumeUSD = parseFloat(oneDayVolumeUSD);
-  newData.volumeChangeUSD = volumeChangeUSD;
 
   // set liquidity properties
   newData.trackedReserveUSD = newData.trackedReserveETH * ethPrice;
