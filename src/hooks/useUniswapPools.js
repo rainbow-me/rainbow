@@ -174,32 +174,6 @@ function parseData(
 export const getOneDayVolume = (valueNow, value24HoursAgo) =>
   parseFloat(valueNow) - parseFloat(value24HoursAgo);
 
-/**
- * gets the amoutn difference plus the % change in change itself (second order change)
- * @param {*} valueNow
- * @param {*} value24HoursAgo
- * @param {*} value48HoursAgo
- */
-export const get2DayPercentChange = (
-  valueNow,
-  value24HoursAgo,
-  value48HoursAgo
-) => {
-  // get volume info for both 24 hour periods
-  const currentChange = parseFloat(valueNow) - parseFloat(value24HoursAgo);
-  const previousChange =
-    parseFloat(value24HoursAgo) - parseFloat(value48HoursAgo);
-
-  const adjustedPercentChange =
-    (parseFloat(currentChange - previousChange) / parseFloat(previousChange)) *
-    100;
-
-  if (isNaN(adjustedPercentChange) || !isFinite(adjustedPercentChange)) {
-    return [currentChange, 0];
-  }
-  return [currentChange, adjustedPercentChange];
-};
-
 export const calculateProfit30d = (
   data,
   valueOneMonthAgo,
