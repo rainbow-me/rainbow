@@ -86,11 +86,9 @@ const listData = [
   },
 ];
 
-const renderUniswapPoolListRow = ({ item }) => {
-  return (
-    <UniswapPoolListRow assetType="uniswap" item={item} key={item.address} />
-  );
-};
+const renderUniswapPoolListRow = ({ item }) => (
+  <UniswapPoolListRow assetType="uniswap" item={item} key={item.address} />
+);
 
 export default function UniswapPools({
   token,
