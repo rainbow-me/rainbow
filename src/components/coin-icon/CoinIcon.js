@@ -33,7 +33,7 @@ const CoinIcon = ({
     !isETH(props.mainnet_address || address) && isNil(tokenMetadata);
 
   return (
-    <View>
+    <View shouldRasterizeIOS>
       <StyledCoinIcon
         {...props}
         address={props.mainnet_address || address}
