@@ -75,7 +75,7 @@ export default function Fallback() {
             label="🌈 Restart Rainbow"
             onPress={handleRestart}
             size="big"
-            testID="restart-rainbow-button"
+            testID="restart-rainbow"
             textColor={colors.appleBlue}
             weight="heavy"
           />
