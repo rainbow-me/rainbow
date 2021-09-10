@@ -204,14 +204,20 @@ export const UNISWAP_PRICES_QUERY = gql`
 `;
 
 export const UNISWAP_ALL_TOKENS = gql`
-  query tokens($first: Int!, $lastId: String!) {
-    tokens(first: $first, where: { id_gt: $lastId }) {
+  query tokens($first: Int!, $lastUSDVolume: String!) {
+    tokens(
+      first: $first
+      orderBy: tradeVolumeUSD
+      orderDirection: desc
+      where: { tradeVolumeUSD_lt: $lastUSDVolume }
+    ) {
       id
       derivedETH
       name
       symbol
       decimals
       totalLiquidity
+      tradeVolumeUSD
     }
   }
 `;
