@@ -11,14 +11,16 @@ import {
 
 const formatDappData = connections =>
   values(
-    mapValues(connections, connection => ({
-      account: connection?.[0].accounts?.[0],
-      chainId: connection?.[0].chainId,
-      dappIcon: connection?.[0].peerMeta.icons[0],
-      dappName: connection?.[0].peerMeta.name,
-      dappUrl: connection?.[0].peerMeta.url,
-      peerId: connection?.[0].peerId,
-    }))
+    mapValues(connections, connection => {
+      return {
+        account: connection?.[0].accounts?.[0],
+        chainId: connection?.[0].chainId,
+        dappIcon: connection?.[0].peerMeta?.icons?.[0],
+        dappName: connection?.[0].peerMeta?.name,
+        dappUrl: connection?.[0].peerMeta?.url,
+        peerId: connection?.[0].peerId,
+      };
+    })
   );
 
 const walletConnectSelector = createSelector(
