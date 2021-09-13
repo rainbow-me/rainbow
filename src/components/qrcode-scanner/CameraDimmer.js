@@ -15,7 +15,7 @@ export default function CameraDimmer({ children, cameraVisible }) {
 
   const dimStyle = useAnimatedStyle(() => {
     return {
-      opacity: Math.max(scrollPosition.value, 1) - 1,
+      opacity: Math.min(Math.max(scrollPosition.value, 1), 2) - 1,
     };
   });
 
