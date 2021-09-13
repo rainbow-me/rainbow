@@ -282,6 +282,28 @@ const overrideSelfWalletConnect = (
   return newTxn;
 };
 
+const overrideChanges = (txn: ZerionTransaction): ZerionTransaction => {
+  if (!txn.changes?.length) {
+    txn.changes = [
+      {
+        address_from: txn.address_from,
+        address_to: txn.address_to,
+        asset: {
+          asset_code: ETH_ADDRESS,
+          decimals: 18,
+          name: 'Ethereum',
+          symbol: 'ETH',
+          type: AssetType.eth,
+        },
+        direction: txn?.direction || TransactionDirection.out,
+        price: txn?.fee?.price,
+        value: 0,
+      },
+    ];
+  }
+  return txn;
+};
+
 const overrideTradeRefund = (txn: ZerionTransaction): ZerionTransaction => {
   if (txn.type !== TransactionType.trade) return txn;
   return {
@@ -305,6 +327,7 @@ const parseTransaction = (
   txn = overrideAuthorizations(txn);
   txn = overrideSelfWalletConnect(txn);
   txn = overrideTradeRefund(txn);
+  txn = overrideChanges(txn);
 
   const internalTransactions = map(
     txn?.changes,
