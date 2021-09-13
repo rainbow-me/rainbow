@@ -24,7 +24,6 @@ import { ImgixImage } from '@rainbow-me/images';
 import { setIsCoinListEdited } from '@rainbow-me/redux/editOptions';
 import { setOpenSmallBalances } from '@rainbow-me/redux/openStateSettings';
 import store from '@rainbow-me/redux/store';
-import { ETH_ICON_URL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 
@@ -79,60 +78,14 @@ const filterWalletSections = sections =>
     data ? get(header, 'totalItems') : true
   );
 
-const addEth = section => {
-  const assets = store.getState().data.genericAssets;
-  if (assets.eth) {
-    const { relative_change_24h, value } = assets?.eth?.price || {};
-    const zeroEthRow = {
-      address: 'eth',
-      balance: {
-        amount: '0',
-        display: '0 ETH',
-      },
-      color: '#29292E',
-      decimals: 18,
-      icon_url: ETH_ICON_URL,
-      isCoin: true,
-      isPinned: true,
-      isPlaceholder: true,
-      isSmall: false,
-      name: 'Ethereum',
-      native: {
-        balance: {
-          amount: '0',
-          display: '0.00',
-        },
-        change: relative_change_24h ? `${relative_change_24h.toFixed(2)}%` : '',
-        price: {
-          amount: value,
-          display: String(value),
-        },
-      },
-      price: assets.eth.price,
-      symbol: 'ETH',
-      type: 'token',
-      uniqueId: 'eth',
-    };
-
-    if (section.data.length === 1) {
-      section.data.unshift(zeroEthRow);
-    }
-  }
-
-  return section;
-};
-
 const buildWalletSections = (
   balanceSection,
   uniqueTokenFamiliesSection,
   uniswapSection
 ) => {
-  const sections = [uniswapSection, uniqueTokenFamiliesSection];
+  const sections = [balanceSection, uniswapSection, uniqueTokenFamiliesSection];
 
-  const filteredSections =
-    filterWalletSections(sections).length > 0
-      ? [addEth(balanceSection), ...filterWalletSections(sections)]
-      : filterWalletSections([balanceSection]);
+  const filteredSections = filterWalletSections(sections);
   const isEmpty = !filteredSections.length;
 
   return {
