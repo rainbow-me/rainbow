@@ -14,6 +14,8 @@ import { useAccountSettings, useUniswapPools } from '@rainbow-me/hooks';
 
 const INITIAL_PAGE_AMOUNT = 15;
 
+const flatListContainerStyle = { paddingBottom: 10 };
+
 const DefaultShowMoreButton = ({ backgroundColor, color, onPress }) => (
   <Row justify="center">
     <ButtonPressAnimation onPress={onPress}>
@@ -281,9 +283,7 @@ export default function UniswapPools({
       ) : pairsSorted?.length > 0 ? (
         <Fragment>
           <FlatList
-            contentContainerStyle={{
-              paddingBottom: 10,
-            }}
+            contentContainerStyle={flatListContainerStyle}
             data={pairsSorted}
             keyExtractor={(item, index) => index}
             renderItem={renderUniswapPoolListRow}
