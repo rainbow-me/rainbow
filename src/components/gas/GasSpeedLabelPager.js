@@ -1,11 +1,32 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
-import { Row } from '../layout';
+// import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
+import { Column, Row } from '../layout';
 import GasSpeedLabelPagerItem, {
   GasSpeedLabelPagerItemHeight,
 } from './GasSpeedLabelPagerItem';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
+import { padding } from '@rainbow-me/styles';
+import { Text } from '../text';
+
+const SpeedButton = styled(ButtonPressAnimation).attrs({
+  hapticType: 'impactHeavy',
+  scaleTo: 0.9,
+})`
+  border: 2px solid #8150E6;
+  border-radius: 15px;
+  ${padding(0, 5, 5)};
+)
+`;
+
+const Chevron = styled(Text).attrs({
+  align: 'right',
+  size: 'lmedium',
+  weight: 'bold',
+})`
+  margin-left: 5;
+`;
 
 const speedColorsFactory = colors => ({
   dark: [
@@ -22,49 +43,16 @@ const speedColorsFactory = colors => ({
   ],
 });
 
-const PagerItem = styled(Row)`
-  border-radius: 2px;
-  height: 3px;
-  margin-left: ${({ selected }) => (selected ? '2' : '2.5')}px;
-  margin-right: ${({ selected }) => (selected ? '0' : '0.5')}px;
-  ${android ? `margin-top: -3px;` : ``}
-  width: ${({ selected }) => (selected ? '4' : '3')}px;
-`;
-
-const GasSpeedLabelPager = ({
-  label,
-  theme,
-  showPager = true,
-  options = null,
-}) => {
+const GasSpeedLabelPager = ({ label, theme, onPress }) => {
   const [touched, setTouched] = useState(false);
   useEffect(() => setTouched(true), [label]);
   const { colors, isDarkMode } = useTheme();
   const speedColors = useMemo(() => speedColorsFactory(colors), [colors]);
 
   return (
-    <Row align="center" height={GasSpeedLabelPagerItemHeight} justify="end">
-      {showPager && (!options || options?.length > 1) && (
-        <Row self="start">
-          {(options || gasUtils.GasSpeedOrder).map((speed, i) => (
-            <PagerItem
-              backgroundColor={
-                speed === label
-                  ? label === 'custom'
-                    ? colors.appleBlue
-                    : speedColors[theme][i]
-                  : theme === 'dark' || isDarkMode
-                  ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.3)
-                  : colors.alpha(lightModeThemeColors.blueGreyDark, 0.3)
-              }
-              key={`pager-${speed}-${i}`}
-              selected={speed === label}
-            />
-          ))}
-        </Row>
-      )}
-      <Row height={GasSpeedLabelPagerItemHeight}>
-        {gasUtils.GasSpeedOrder.map(speed => (
+    <Row align="center" justify="end">
+      <SpeedButton onPress={onPress}>
+        {/* {gasUtils.GasSpeedOrder.map(speed => (
           <GasSpeedLabelPagerItem
             key={speed}
             label={speed}
@@ -72,8 +60,30 @@ const GasSpeedLabelPager = ({
             shouldAnimate={touched}
             theme={theme}
           />
-        ))}
-      </Row>
+        ))} */}
+        <Row align="end">
+          <Column>
+            <GasSpeedLabelPagerItem
+              key={label}
+              label={label}
+              selected
+              shouldAnimate={touched}
+              theme={theme}
+            />
+          </Column>
+          <Column>
+            <Chevron
+              color={
+                theme !== 'light'
+                  ? colors.whiteLabel
+                  : colors.alpha(colors.blueGreyDark, 0.8)
+              }
+            >
+              􀁰
+            </Chevron>
+          </Column>
+        </Row>
+      </SpeedButton>
     </Row>
   );
 };
