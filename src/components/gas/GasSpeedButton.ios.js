@@ -1,5 +1,5 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
-import { get, isEmpty, isNil } from 'lodash';
+import { get, isEmpty, isNil, upperFirst } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -28,7 +28,12 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
-import { gasUtils, magicMemo } from '@rainbow-me/utils';
+import {
+  gasUtils,
+  magicMemo,
+  showActionSheetWithOptions,
+} from '@rainbow-me/utils';
+import { ContextMenuButton } from 'react-native-ios-context-menu';
 
 const { GasSpeedOrder, CUSTOM, FAST, NORMAL, SLOW } = gasUtils;
 
@@ -42,10 +47,10 @@ const Container = styled(Column).attrs({
   width: 100%;
 `;
 
-const Label = styled(Text).attrs({
-  size: 'smedium',
-  weight: 'semibold',
-})``;
+const Label = styled(Text).attrs(({ size, weight }) => ({
+  size: size || 'lmedium',
+  weight: weight || 'semibold',
+}))``;
 
 const ButtonLabel = styled(BorderlessButton).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
@@ -68,7 +73,7 @@ const LittleBorderlessButton = ({ onPress, children, testID }) => {
   );
 };
 
-const BottomRightLabel = ({ formatter, theme }) => {
+const TransactionTimeLabel = ({ formatter, theme }) => {
   const { colors } = useTheme();
   return (
     <Label
@@ -78,6 +83,8 @@ const BottomRightLabel = ({ formatter, theme }) => {
           ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
           : colors.alpha(colors.blueGreyDark, 0.6)
       }
+      size="lmedium"
+      weight="bold"
     >
       {formatter()}
     </Label>
@@ -110,6 +117,7 @@ const GasSpeedButton = ({
   minGasPrice = null,
   currentNetwork,
 }) => {
+  console.log({ options, GasSpeedOrder });
   const { colors } = useTheme();
   const inputRef = useRef(null);
   const {
@@ -253,13 +261,11 @@ const GasSpeedButton = ({
     const gasOptions = options || GasSpeedOrder;
     const currentSpeedIndex = gasOptions?.indexOf(selectedGasPriceOption);
     const nextSpeedIndex = (currentSpeedIndex + 1) % gasOptions?.length;
-
     const nextSpeed = gasOptions[nextSpeedIndex];
     updateGasPriceOption(nextSpeed);
   }, [inputFocused, options, selectedGasPriceOption, updateGasPriceOption]);
 
-  const formatBottomRightLabel = useCallback(() => {
-    const actionLabel = getActionLabel(type);
+  const formatTransactionTime = useCallback(() => {
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
     let gasPriceGwei = get(selectedGasPrice, 'value.display');
     if (gasPriceGwei === '0 Gwei') {
@@ -269,7 +275,7 @@ const GasSpeedButton = ({
 
     if (selectedGasPriceOption === CUSTOM) {
       if (!customGasPriceInput) {
-        return `${defaultCustomGasPriceNative} ~ ${defaultCustomGasConfirmationTime}`;
+        return ` ${timeSymbol}${defaultCustomGasConfirmationTime}`;
       } else if (gasPricesAvailable[CUSTOM]?.value) {
         const priceInWei = Number(gasPricesAvailable[CUSTOM].value.amount);
         const minGasPriceSlow = gasPricesAvailable[SLOW]
@@ -282,29 +288,27 @@ const GasSpeedButton = ({
           timeSymbol = '<';
         }
 
-        return `${gasPrice} ${timeSymbol} ${time} ${estimatedTimeUnit}`;
+        return ` ${timeSymbol}${time} ${estimatedTimeUnit}`;
       } else {
-        return `${actionLabel} ...`;
+        return ``;
       }
     }
 
     // If it's still loading show `...`
     if (time === '0' && estimatedTimeUnit === 'min') {
-      return `${actionLabel} ...`;
+      return ``;
     }
 
-    return `${gasPriceGwei} ${timeSymbol} ${time} ${estimatedTimeUnit}`;
+    return ` ${timeSymbol}${time} ${estimatedTimeUnit}`;
   }, [
     customGasPriceInput,
     defaultCustomGasConfirmationTime,
     defaultCustomGasPriceNative,
     estimatedTimeUnit,
     estimatedTimeValue,
-    gasPrice,
     gasPricesAvailable,
     selectedGasPrice,
     selectedGasPriceOption,
-    type,
   ]);
 
   useEffect(() => {
@@ -437,122 +441,136 @@ const GasSpeedButton = ({
     [navigate]
   );
 
+  const ContactRowActionsEnum = {
+    blockExplorer: 'blockExplorer',
+    copyAddress: 'copyAddress',
+  };
+
+  const ContactRowActions = {
+    [ContactRowActionsEnum.copyAddress]: {
+      actionKey: ContactRowActionsEnum.copyAddress,
+      actionTitle: 'Copy Address',
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'doc.on.doc',
+      },
+    },
+  };
+
+  const handlePressMenuItem = useCallback(({ nativeEvent: { actionKey } }) => {
+    console.log('actionKey: ', actionKey);
+  }, []);
+
+  const buildGasButtonMenuOptions = () =>
+    options.map(gasOption => ({
+      actionKey: gasOption,
+      actionTitle: upperFirst(gasOption),
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: 'safari',
+      },
+    }));
+
+  const menuConfig = useMemo(() => {
+    const menuOptions = buildGasButtonMenuOptions();
+    return {
+      menuItems: menuOptions,
+      menuTitle: `Gas Speeds`,
+    };
+  }, []);
+  const onPressAndroid = useCallback(() => {
+    const androidContractActions = ['Copy Contract Address', 'x', 'Cancel'];
+    showActionSheetWithOptions(
+      {
+        cancelButtonIndex: 2,
+        options: androidContractActions,
+        showSeparators: true,
+        title: `hi`,
+      },
+      idx => {
+        if (idx === 0) {
+          // handleCopyAddress(item?.address);
+        }
+        if (idx === 1) {
+          // ethereumUtils.openAddressInBlockExplorer(item?.address, network);
+        }
+      }
+    );
+  }, []);
+
   return (
     <Container
-      as={ButtonPressAnimation}
       horizontalPadding={horizontalPadding}
-      onPress={handlePress}
       testID={testID}
       topPadding={topPadding}
     >
-      <Row align="end" justify="space-between" marginBottom={1.5}>
-        {!isCustom ? (
-          <AnimateNumber
-            formatter={formatGasPrice}
-            interval={6}
-            renderContent={renderGasPriceText}
-            steps={6}
-            timing="linear"
-            value={price}
-          />
-        ) : (
-          <BorderlessButton onPress={focusOnInput}>
+      <Row align="center" justify="space-between" marginBottom={1.5}>
+        <Column>
+          <ButtonPressAnimation onPress={openGasHelper}>
             <Row>
-              <Input
-                color={
-                  theme === 'dark'
-                    ? colors.whiteLabel
-                    : colors.alpha(colors.blueGreyDark, 0.8)
-                }
-                height={19}
-                keyboardAppearance="dark"
-                keyboardType="numeric"
-                letterSpacing="roundedMedium"
-                maxLength={5}
-                onBlur={handleCustomGasBlur}
-                onChangeText={handleCustomGasChange}
-                onFocus={handleCustomGasFocus}
-                onSubmitEditing={handleInputButtonManager}
-                placeholder={`${defaultCustomGasPrice}`}
-                placeholderTextColor={
-                  theme === 'dark'
-                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.3)
-                    : colors.alpha(colors.blueGreyDark, 0.3)
-                }
-                ref={inputRef}
-                size="lmedium"
-                testID="custom-gas-input"
-                value={customGasPriceInput}
-                weight="bold"
-              />
-              <Text
-                color={
-                  customGasPriceInput
-                    ? theme === 'dark'
-                      ? colors.whiteLabel
-                      : colors.alpha(colors.blueGreyDark, 0.8)
-                    : theme === 'dark'
-                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.3)
-                    : colors.alpha(colors.blueGreyDark, 0.3)
-                }
-                size="lmedium"
-                weight="bold"
-              >
-                {' '}
-                Gwei
-              </Text>
+              <Column>
+                <AnimateNumber
+                  formatter={formatGasPrice}
+                  interval={6}
+                  renderContent={renderGasPriceText}
+                  steps={6}
+                  timing="linear"
+                  value={price}
+                />
+              </Column>
+              <Column>
+                <TransactionTimeLabel
+                  formatter={formatTransactionTime}
+                  theme={theme}
+                  value={{
+                    estimatedTimeValue,
+                    price: selectedGasPrice?.value?.display,
+                  }}
+                />
+              </Column>
             </Row>
-          </BorderlessButton>
-        )}
-
-        <GasSpeedLabelPager
-          label={selectedGasPriceOption}
-          options={options}
-          showPager={!inputFocused}
-          theme={theme}
-        />
-      </Row>
-      <Row justify="space-between">
-        {!isCustom ? (
-          <TouchableOpacity onPress={openGasHelper}>
-            <Label
-              color={
-                theme === 'dark'
-                  ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
-                  : colors.alpha(colors.blueGreyDark, 0.6)
-              }
-            >
-              Network Fee{' '}
+            <Row justify="space-between">
               <Label
                 color={
                   theme === 'dark'
-                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
-                    : colors.alpha(colors.blueGreyDark, 0.4)
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
+                    : colors.alpha(colors.blueGreyDark, 0.6)
                 }
+                size="smedium"
               >
-                􀅵
+                Estimated Fee{' '}
+                <Label
+                  color={
+                    theme === 'dark'
+                      ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
+                      : colors.alpha(colors.blueGreyDark, 0.4)
+                  }
+                  size="smedium"
+                >
+                  􀅵
+                </Label>
               </Label>
-            </Label>
-          </TouchableOpacity>
-        ) : (
-          <LittleBorderlessButton
-            onPress={handleInputButtonManager}
-            testID="custom-gas-edit-button"
+            </Row>
+          </ButtonPressAnimation>
+        </Column>
+        <Column>
+          <ContextMenuButton
+            activeOpacity={0}
+            menuConfig={menuConfig}
+            {...(android ? { onPress: onPressAndroid } : {})}
+            isMenuPrimaryAction
+            onPressMenuItem={handlePressMenuItem}
+            useActionSheetFallback={false}
+            wrapNativeComponent={false}
           >
-            {inputFocused
-              ? 'Done'
-              : `${customGasPriceInput ? 'Edit' : 'Enter'} Gas Price`}
-          </LittleBorderlessButton>
-        )}
-
-        <BottomRightLabel
-          formatter={formatBottomRightLabel}
-          theme={theme}
-          value={{
-            estimatedTimeValue,
-            price: selectedGasPrice?.value?.display,
-          }}
-        />
+            <GasSpeedLabelPager
+              label={selectedGasPriceOption}
+              onPress={handlePress}
+              showPager={!inputFocused}
+              theme={theme}
+            />
+          </ContextMenuButton>
+        </Column>
       </Row>
     </Container>
   );
