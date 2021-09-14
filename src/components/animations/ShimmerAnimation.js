@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
-  NewEasing,
+  Easing,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
@@ -12,7 +12,7 @@ import { position } from '@rainbow-me/styles';
 
 const timingConfig = {
   duration: 2500,
-  easing: NewEasing.bezier(0.76, 0, 0.24, 1),
+  easing: Easing.bezier(0.76, 0, 0.24, 1),
 };
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);

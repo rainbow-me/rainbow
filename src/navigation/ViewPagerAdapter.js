@@ -2,13 +2,14 @@ import ViewPager from '@react-native-community/viewpager';
 import React, { forwardRef, useEffect } from 'react';
 import { Keyboard } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { useAnimatedPageScrollHandler } from '../hooks/useAnimatedPageScrollHandler';
+import { usePagerPosition } from './ScrollPositionContext';
 const AnimatedViewPager = Animated.createAnimatedComponent(ViewPager);
-
-const { event, add } = Animated;
 
 // eslint-disable-next-line react/display-name
 const ViewPagerWrapper = forwardRef((props, fref) => {
   const ref = React.useRef();
+
   useEffect(
     () =>
       android && ref?.current?.getNode().setPageWithoutAnimation(props.page),
@@ -19,7 +20,7 @@ const ViewPagerWrapper = forwardRef((props, fref) => {
   return <AnimatedViewPager ref={ref} {...props} />;
 });
 
-export default class ViewPagerBackend extends React.Component {
+class ViewPagerBackend extends React.Component {
   static defaultProps = {
     onIndexChange: () => {},
     swipeEnabled: true,
@@ -86,18 +87,7 @@ export default class ViewPagerBackend extends React.Component {
     }
   };
 
-  currentIndex = new Animated.Value(this.props.navigationState.index);
-  offset = new Animated.Value(0);
   justScrolled = false;
-
-  onPageScroll = event([
-    {
-      nativeEvent: {
-        offset: this.offset,
-        position: this.currentIndex,
-      },
-    },
-  ]);
 
   onPageScrollStateChanged = state => {
     // eslint-disable-next-line default-case
@@ -138,7 +128,6 @@ export default class ViewPagerBackend extends React.Component {
     return children({
       addListener: this.addListener,
       jumpTo: this.jumpTo,
-      position: add(this.currentIndex, this.offset),
       removeListener: this.removeListener,
       render: children => (
         <ViewPagerWrapper
@@ -147,7 +136,7 @@ export default class ViewPagerBackend extends React.Component {
             keyboardDismissMode === 'auto' ? 'on-drag' : keyboardDismissMode
           }
           lazy={false}
-          onPageScroll={this.onPageScroll}
+          onPageScroll={this.props.scrollHandler}
           onPageScrollStateChanged={this.onPageScrollStateChanged}
           onPageSelected={e => this.onIndexChange(e.nativeEvent.position)}
           orientation={orientation}
@@ -166,4 +155,14 @@ export default class ViewPagerBackend extends React.Component {
       ),
     });
   }
+}
+
+export default function ViewPagerBackendWithScrollHandler(props) {
+  const scrollPosition = usePagerPosition();
+  const scrollHandler = useAnimatedPageScrollHandler(e => {
+    'worklet';
+    scrollPosition && (scrollPosition.value = e.offset + e.position);
+  });
+
+  return <ViewPagerBackend {...props} scrollHandler={scrollHandler} />;
 }

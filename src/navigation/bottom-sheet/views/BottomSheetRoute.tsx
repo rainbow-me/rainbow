@@ -7,7 +7,6 @@ import { View } from 'react-native';
 import type { ViewStyle } from 'react-native';
 import {
   CONTAINER_HEIGHT,
-  DEFAULT_ANIMATION_DURATION,
   DEFAULT_BACKDROP_COLOR,
   DEFAULT_BACKDROP_OPACITY,
   DEFAULT_HEIGHT,
@@ -52,8 +51,11 @@ const BottomSheetRoute = ({
   //#endregion
 
   //#region variables
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const enhancedSpanPoints = useMemo(() => [0, ...snapPoints], [...snapPoints]);
+  const enhancedSpanPoints = useMemo(
+    () => [0, ...(snapPoints as (string | number)[])],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [...(snapPoints as (string | number)[])]
+  );
   //#endregion
 
   //#region styles
@@ -150,7 +152,6 @@ const BottomSheetRoute = ({
       <BottomSheet
         activeOffsetY={[-offsetY, offsetY]}
         animateOnMount
-        animationDuration={DEFAULT_ANIMATION_DURATION}
         backdropComponent={renderBackdropComponent}
         backgroundComponent={null}
         containerHeight={CONTAINER_HEIGHT}
