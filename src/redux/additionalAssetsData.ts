@@ -1,8 +1,8 @@
-import axios from 'axios';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import { uniswapClient } from '../apollo/client';
 import { TOKEN_DATA, UNISWAP_ADDITIONAL_TOKEN_DATA } from '../apollo/queries';
 import { get2DayPercentChange } from '../hooks/useUniswapPools';
+import { rainbowFetch } from '../rainbow-fetch';
 import { fetchCoingeckoIds } from '@rainbow-me/redux/data';
 import { AppDispatch, AppState } from '@rainbow-me/redux/store';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
@@ -84,18 +84,20 @@ export const additionalAssetsDataAddCoingecko = (address: string) => async (
   const token = getState().additionalAssetsData.coingeckoIds[address];
   if (token) {
     try {
-      const data = await axios({
-        method: 'get',
-        params: {
-          community_data: true,
-          developer_data: false,
-          localization: false,
-          market_data: true,
-          sparkline: false,
-          tickers: false,
-        },
-        url: `https://api.coingecko.com/api/v3/coins/${token}`,
-      });
+      const data = (await rainbowFetch(
+        `https://api.coingecko.com/api/v3/coins/${token}`,
+        {
+          method: 'get',
+          params: {
+            community_data: true,
+            developer_data: false,
+            localization: false,
+            market_data: true,
+            sparkline: false,
+            tickers: false,
+          },
+        }
+      )) as any;
       const description = data?.data?.description?.en?.replace(
         /<\/?[^>]+(>|$)/g,
         ''
