@@ -519,7 +519,9 @@ export const addressAssetsReceived = (
     const { assets: existingAssets } = getState().data;
     const l2Assets = existingAssets.filter(asset => isL2Asset(asset.type));
     parsedAssets = uniqBy(
-      concat(parsedAssets, l2Assets),
+      network === networkTypes.mainnet
+        ? concat(parsedAssets, l2Assets)
+        : parsedAssets,
       item => item.uniqueId
     );
   }

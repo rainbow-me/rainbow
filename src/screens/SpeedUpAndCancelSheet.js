@@ -164,7 +164,9 @@ export default function SpeedUpAndCancelSheet() {
         to: accountAddress,
       };
       const originalHash = tx.hash;
-      const { hash } = await sendTransaction({
+      const {
+        result: { hash },
+      } = await sendTransaction({
         provider: currentProvider,
         transaction: cancelTxPayload,
       });
@@ -213,7 +215,9 @@ export default function SpeedUpAndCancelSheet() {
         value,
       };
       const originalHash = tx.hash;
-      const { hash } = await sendTransaction({
+      const {
+        result: { hash },
+      } = await sendTransaction({
         provider: currentProvider,
         transaction: fasterTxPayload,
       });

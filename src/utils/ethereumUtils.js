@@ -421,7 +421,7 @@ function getBlockExplorer(network) {
     case networkTypes.optimism:
       return 'etherscan';
     case networkTypes.arbitrum:
-      return 'arbitrumExplorer';
+      return 'arbiscan';
     default:
       return 'etherscan';
   }

@@ -14,7 +14,7 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
-import { fonts, getFontSize } from '@rainbow-me/styles';
+import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
 import { deviceUtils, profileUtils } from '@rainbow-me/utils';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
@@ -58,6 +58,7 @@ const sx = StyleSheet.create({
     fontFamily: fonts.family.SFProRounded,
     fontWeight: fonts.weight.semibold,
     letterSpacing: fonts.letterSpacing.roundedTight,
+    lineHeight: 22,
     paddingHorizontal: 6.5,
     paddingVertical: 3,
     textAlign: 'center',
@@ -166,9 +167,15 @@ export default function AddressRow({
                 }
               />
             )}
-            <ColumnWithMargins margin={3}>
+            <ColumnWithMargins margin={android ? -6 : 3}>
               {cleanedUpLabel || ens ? (
-                <TruncatedText color={colors.dark} style={sx.accountLabel}>
+                <TruncatedText
+                  color={colors.dark}
+                  style={
+                    (sx.accountLabel,
+                    { ...fontWithWidth(sx.accountLabel.fontWeight) })
+                  }
+                >
                   {cleanedUpLabel || ens}
                 </TruncatedText>
               ) : (
@@ -184,7 +191,10 @@ export default function AddressRow({
               )}
               <BottomRowText
                 color={colors.alpha(colors.blueGreyDark, 0.5)}
-                style={sx.bottomRowText}
+                style={
+                  (sx.bottomRowText,
+                  { ...fontWithWidth(sx.bottomRowText.fontWeight) })
+                }
               >
                 {cleanedUpBalance || 0} ETH
               </BottomRowText>
@@ -199,7 +209,10 @@ export default function AddressRow({
                 <Text
                   style={[
                     sx.readOnlyText,
-                    { color: colors.alpha(colors.blueGreyDark, 0.5) },
+                    {
+                      color: colors.alpha(colors.blueGreyDark, 0.5),
+                      ...fontWithWidth(sx.readOnlyText.fontWeight),
+                    },
                   ]}
                 >
                   Watching

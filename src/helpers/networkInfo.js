@@ -59,7 +59,7 @@ const networkInfo = {
     balance_checker_contract_address:
       '0x54A4E5800345c01455a7798E0D96438364e22723',
     color: '#2D374B',
-    disabled: !IS_DEV,
+    disabled: false,
     exchange_enabled: false,
     faucet_url: `https://faucet.kovan.network/`,
     layer2: true,
