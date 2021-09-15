@@ -206,7 +206,7 @@ export default function BackupSheet() {
     getSoftMenuBarHeight();
   let additionalTopPadding = android && !nativeScreen;
 
-  //If the sheet is full screen we should handle the sheet heights and padding differently 
+  //If the sheet is full screen we should handle the sheet heights and padding differently
   if (
     (android && step === WalletBackupStepTypes.cloud) ||
     step === WalletBackupStepTypes.manual
