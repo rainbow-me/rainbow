@@ -48,7 +48,11 @@ import {
   saveAssets,
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
-import { isL2Network, web3Provider } from '@rainbow-me/handlers/web3';
+import {
+  getTransactionCount,
+  isL2Network,
+  web3Provider,
+} from '@rainbow-me/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
@@ -783,7 +787,7 @@ const getConfirmedState = type => {
 
 export const dataWatchPendingTransactions = (
   cb = null,
-  provider = null
+  provider = web3Provider
 ) => async (dispatch, getState) => {
   const { transactions } = getState().data;
   if (!transactions.length) return true;
@@ -801,9 +805,13 @@ export const dataWatchPendingTransactions = (
       const updatedPending = { ...tx };
       const txHash = ethereumUtils.getHash(tx);
       try {
-        logger.log('Checking pending tx with hash', txHash);
-        const txObj = await (provider || web3Provider).getTransaction(txHash);
-        if (txObj && txObj.blockNumber && txObj.blockHash) {
+        const txObj = await provider.getTransaction(txHash);
+        // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
+        const currentNonce = await provider.getTransactionCount(tx.from);
+        if (
+          (txObj && txObj.blockNumber && txObj.blockHash) ||
+          currentNonce > tx.nonce
+        ) {
           // When speeding up a non "normal tx" we need to resubscribe
           // because zerion "append" event isn't reliable
           logger.log('TX CONFIRMED!', txObj);
@@ -816,7 +824,7 @@ export const dataWatchPendingTransactions = (
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;
           const isSelf = toLower(tx?.from) === toLower(tx?.to);
-          if (!isZero(txObj.status)) {
+          if (txObj && !isZero(txObj.status)) {
             const newStatus = getTransactionLabel({
               direction: isSelf
                 ? TransactionDirections.self
@@ -830,6 +838,8 @@ export const dataWatchPendingTransactions = (
               type: tx?.type,
             });
             updatedPending.status = newStatus;
+          } else if (currentNonce > tx.nonce) {
+            updatedPending.status = TransactionStatusTypes.unknown;
           } else {
             updatedPending.status = TransactionStatusTypes.failed;
           }
@@ -912,7 +922,7 @@ const updatePurchases = updatedTransactions => dispatch => {
   dispatch(addCashUpdatePurchases(confirmedPurchases));
 };
 
-const watchPendingTransactions = (
+export const watchPendingTransactions = (
   accountAddressToWatch,
   remainingTries = TXN_WATCHER_MAX_TRIES,
   cb = null,
