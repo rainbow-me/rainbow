@@ -854,12 +854,16 @@ export const dataWatchPendingTransactions = (
       return updatedPending;
     })
   );
-  const updatedTransactions = concat(
-    updatedPendingTransactions,
-    remainingTransactions
-  )?.filter(({ status }) => status !== TransactionStatusTypes.unknown);
 
   if (txStatusesDidChange) {
+    const filteredPendingTransactions = updatedPendingTransactions?.filter(
+      ({ status }) => status !== TransactionStatusTypes.unknown
+    );
+    const updatedTransactions = concat(
+      filteredPendingTransactions,
+      remainingTransactions
+    );
+
     dispatch(updatePurchases(updatedTransactions));
     const { accountAddress, network } = getState().settings;
     dispatch({
