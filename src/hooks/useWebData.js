@@ -6,14 +6,12 @@ import {
   PreferenceActionType,
   setPreference,
 } from '../model/preferences';
+import useAccountProfile from './useAccountProfile';
+import useAccountSettings from './useAccountSettings';
+import useWallets from './useWallets';
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import { containsEmoji } from '@rainbow-me/helpers/strings';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
-import {
-  useAccountProfile,
-  useAccountSettings,
-  useWallets,
-} from '@rainbow-me/hooks';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import logger from 'logger';
 
