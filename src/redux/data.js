@@ -149,6 +149,7 @@ export const dataLoadState = () => async (dispatch, getState) => {
   } catch (error) {
     dispatch({ type: DATA_LOAD_ASSETS_FAILURE });
   }
+  const releaseLock = await mutex.acquire();
   try {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_REQUEST });
     const transactions = await getLocalTransactions(accountAddress, network);
@@ -156,7 +157,9 @@ export const dataLoadState = () => async (dispatch, getState) => {
       payload: transactions,
       type: DATA_LOAD_TRANSACTIONS_SUCCESS,
     });
+    releaseLock();
   } catch (error) {
+    releaseLock();
     dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
   }
   genericAssetsHandle = setTimeout(() => {
@@ -739,7 +742,7 @@ export const dataAddNewTransaction = (
     toLower(accountAddressToUpdate) !== toLower(accountAddress)
   )
     return;
-
+  const releaseLock = await mutex.acquire();
   try {
     const parsedTransaction = await parseNewTransaction(
       txDetails,
@@ -751,6 +754,7 @@ export const dataAddNewTransaction = (
       type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
     });
     saveLocalTransactions(_transactions, accountAddress, network);
+    releaseLock();
     if (
       !disableTxnWatcher ||
       network !== networkTypes.mainnet ||
@@ -768,8 +772,9 @@ export const dataAddNewTransaction = (
       );
     }
     return parsedTransaction;
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
+  } catch (error) {
+    releaseLock();
+  }
 };
 
 const getConfirmedState = type => {
@@ -796,6 +801,8 @@ export const dataWatchPendingTransactions = (
   const { transactions } = getState().data;
   if (!transactions.length) return true;
   const releaseLock = await mutex.acquire();
+
+  console.log('😬😬 dataWatchPendingTransactions', mutex);
 
   const [pending, remainingTransactions] = partition(
     transactions,
