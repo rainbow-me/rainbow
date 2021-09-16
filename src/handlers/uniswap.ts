@@ -412,6 +412,7 @@ export const getAllTokens = async () => {
   const { dispatch } = store;
   try {
     let dataEnd = false;
+    //setting an extremely safe upper limit for token volume
     let lastUSDVolume = '1000000000000';
 
     while (!dataEnd) {
