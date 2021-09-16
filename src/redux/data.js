@@ -157,11 +157,10 @@ export const dataLoadState = () => async (dispatch, getState) => {
       payload: transactions,
       type: DATA_LOAD_TRANSACTIONS_SUCCESS,
     });
-    releaseLock();
   } catch (error) {
-    releaseLock();
     dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
   }
+  releaseLock();
   genericAssetsHandle = setTimeout(() => {
     dispatch(genericAssetsFallback());
   }, GENERIC_ASSETS_FALLBACK_TIMEOUT);
@@ -434,13 +433,12 @@ export const transactionsReceived = (message, appended = false) => async (
 export const transactionsRemoved = message => async (dispatch, getState) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
-  const releaseLock = await mutex.acquire();
 
   const transactionData = message?.payload?.transactions ?? [];
   if (!transactionData.length) {
-    releaseLock();
     return;
   }
+  const releaseLock = await mutex.acquire();
   const { accountAddress, network } = getState().settings;
   const { transactions } = getState().data;
   const removeHashes = map(transactionData, txn => txn.hash);
@@ -801,8 +799,6 @@ export const dataWatchPendingTransactions = (
   const { transactions } = getState().data;
   if (!transactions.length) return true;
   const releaseLock = await mutex.acquire();
-
-  console.log('😬😬 dataWatchPendingTransactions', mutex);
 
   const [pending, remainingTransactions] = partition(
     transactions,
