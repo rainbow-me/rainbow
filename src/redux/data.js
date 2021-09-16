@@ -48,11 +48,7 @@ import {
   saveAssets,
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
-import {
-  getTransactionCount,
-  isL2Network,
-  web3Provider,
-} from '@rainbow-me/handlers/web3';
+import { isL2Network, web3Provider } from '@rainbow-me/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
@@ -787,7 +783,7 @@ const getConfirmedState = type => {
 
 export const dataWatchPendingTransactions = (
   cb = null,
-  provider = web3Provider
+  provider = null
 ) => async (dispatch, getState) => {
   const { transactions } = getState().data;
   if (!transactions.length) return true;
@@ -799,15 +795,15 @@ export const dataWatchPendingTransactions = (
   );
 
   if (isEmpty(pending)) return true;
-
+  const p = provider || web3Provider;
   const updatedPendingTransactions = await Promise.all(
     pending.map(async tx => {
       const updatedPending = { ...tx };
       const txHash = ethereumUtils.getHash(tx);
       try {
-        const txObj = await provider.getTransaction(txHash);
+        const txObj = await p.getTransaction(txHash);
         // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
-        const currentNonce = await provider.getTransactionCount(tx.from);
+        const currentNonce = await p.getTransactionCount(tx.from);
         if (
           (txObj && txObj.blockNumber && txObj.blockHash) ||
           currentNonce > tx.nonce
@@ -861,7 +857,7 @@ export const dataWatchPendingTransactions = (
   const updatedTransactions = concat(
     updatedPendingTransactions,
     remainingTransactions
-  );
+  )?.filter(({ status }) => status !== TransactionStatusTypes.unknown);
 
   if (txStatusesDidChange) {
     dispatch(updatePurchases(updatedTransactions));
