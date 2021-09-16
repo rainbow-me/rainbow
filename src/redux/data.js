@@ -1,3 +1,4 @@
+import { Mutex } from 'async-mutex';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import {
   concat,
@@ -123,6 +124,7 @@ const DATA_UPDATE_REFETCH_SAVINGS = 'data/DATA_UPDATE_REFETCH_SAVINGS';
 
 const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
 
+const mutex = new Mutex();
 // -- Actions ---------------------------------------- //
 export const dataLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
@@ -378,6 +380,7 @@ export const transactionsReceived = (message, appended = false) => async (
 ) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
+  const releaseLock = await mutex.acquire();
   const transactionData = message?.payload?.transactions ?? [];
   if (appended) {
     dispatch(checkForConfirmedSavingsActions(transactionData));
@@ -408,7 +411,7 @@ export const transactionsReceived = (message, appended = false) => async (
   });
   dispatch(updatePurchases(parsedTransactions));
   saveLocalTransactions(parsedTransactions, accountAddress, network);
-
+  releaseLock();
   if (appended && parsedTransactions.length) {
     if (
       selected &&
@@ -425,12 +428,16 @@ export const transactionsReceived = (message, appended = false) => async (
   }
 };
 
-export const transactionsRemoved = message => (dispatch, getState) => {
+export const transactionsRemoved = message => async (dispatch, getState) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
+  const releaseLock = await mutex.acquire();
 
   const transactionData = message?.payload?.transactions ?? [];
-  if (!transactionData.length) return;
+  if (!transactionData.length) {
+    releaseLock();
+    return;
+  }
   const { accountAddress, network } = getState().settings;
   const { transactions } = getState().data;
   const removeHashes = map(transactionData, txn => txn.hash);
@@ -445,6 +452,7 @@ export const transactionsRemoved = message => (dispatch, getState) => {
     type: DATA_UPDATE_TRANSACTIONS,
   });
   saveLocalTransactions(updatedTransactions, accountAddress, network);
+  releaseLock();
 };
 
 export const addressAssetsReceived = (
@@ -787,14 +795,18 @@ export const dataWatchPendingTransactions = (
 ) => async (dispatch, getState) => {
   const { transactions } = getState().data;
   if (!transactions.length) return true;
-  let txStatusesDidChange = false;
+  const releaseLock = await mutex.acquire();
 
   const [pending, remainingTransactions] = partition(
     transactions,
     txn => txn.pending
   );
 
-  if (isEmpty(pending)) return true;
+  if (isEmpty(pending)) {
+    releaseLock();
+    return true;
+  }
+  let txStatusesDidChange = false;
 
   const updatedPendingTransactions = await Promise.all(
     pending.map(async tx => {
@@ -864,10 +876,11 @@ export const dataWatchPendingTransactions = (
 
     const pendingTx = updatedTransactions.find(tx => tx.pending);
     if (!pendingTx) {
+      releaseLock();
       return true;
     }
   }
-
+  releaseLock();
   return false;
 };
 
@@ -877,8 +890,9 @@ export const dataUpdateTransaction = (
   watch,
   cb,
   provider = null
-) => (dispatch, getState) => {
+) => async (dispatch, getState) => {
   const { transactions } = getState().data;
+  const releaseLock = await mutex.acquire();
 
   const allOtherTx = transactions.filter(tx => tx.hash !== txHash);
   const updatedTransactions = [txObj].concat(allOtherTx);
@@ -889,6 +903,7 @@ export const dataUpdateTransaction = (
   });
   const { accountAddress, network } = getState().settings;
   saveLocalTransactions(updatedTransactions, accountAddress, network);
+  releaseLock();
   // Always watch cancellation and speed up
   if (watch) {
     dispatch(
