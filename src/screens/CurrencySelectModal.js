@@ -5,7 +5,6 @@ import matchSorter from 'match-sorter';
 import React, {
   Fragment,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -13,10 +12,9 @@ import React, {
 } from 'react';
 import { StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
-import Animated, { Extrapolate } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import styled from 'styled-components';
 import GestureBlocker from '../components/GestureBlocker';
-import { interpolate } from '../components/animations';
 import {
   CurrencySelectionList,
   CurrencySelectModalHeader,
@@ -24,7 +22,7 @@ import {
 } from '../components/exchange';
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
-import { ScrollPagerContext } from '../navigation/ScrollPagerContext';
+import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
 import { CurrencySelectionTypes, TokenSectionTypes } from '@rainbow-me/helpers';
 import {
@@ -72,14 +70,12 @@ export default function CurrencySelectModal() {
       onSelectCurrency,
       restoreFocusOnSwapModal,
       setPointerEvents,
-      tabTransitionPosition: tabTransitionPositionFromRoute,
       toggleGestureEnabled,
       type,
     },
   } = useRoute();
 
-  const tabTransitionPosition =
-    useContext(ScrollPagerContext) || tabTransitionPositionFromRoute;
+  const scrollPosition = usePagerPosition();
 
   const searchInputRef = useRef();
   const { handleFocus } = useMagicAutofocus(searchInputRef, undefined, true);
@@ -298,30 +294,17 @@ export default function CurrencySelectModal() {
     }
   }, [assetsToFavoriteQueue, handleApplyFavoritesQueue, searchQueryExists]);
 
+  const style = useAnimatedStyle(() => ({
+    opacity: scrollPosition.value,
+    transform: [
+      { scale: 0.9 + scrollPosition.value / 10 },
+      { translateX: (1 - scrollPosition.value) * 8 },
+    ],
+  }));
+
   return (
     <Wrapper>
-      <TabTransitionAnimation
-        style={{
-          opacity: android
-            ? 1
-            : interpolate(tabTransitionPosition, {
-                extrapolate: Extrapolate.CLAMP,
-                inputRange: [0, 1, 1],
-                outputRange: [0, 1, 1],
-              }),
-          transform: [
-            {
-              translateX: android
-                ? 0
-                : interpolate(tabTransitionPosition, {
-                    extrapolate: Animated.Extrapolate.CLAMP,
-                    inputRange: [0, 1, 1],
-                    outputRange: [8, 0, 0],
-                  }),
-            },
-          ],
-        }}
-      >
+      <TabTransitionAnimation style={style}>
         <Modal
           containerPadding={0}
           fullScreenOnAndroid
