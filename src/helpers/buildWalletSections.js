@@ -163,7 +163,8 @@ const coinEditContextMenu = (
   currentAction,
   isLoadingAssets,
   allAssetsCount,
-  totalValue
+  totalValue,
+  addedEth
 ) => {
   const noSmallBalances = !find(balanceSectionData, 'smallBalancesContainer');
 
@@ -187,7 +188,7 @@ const coinEditContextMenu = (
           }
         : undefined,
     title: null,
-    totalItems: isLoadingAssets ? 1 : allAssetsCount,
+    totalItems: isLoadingAssets ? 1 : (addedEth ? 1 : 0) + allAssetsCount,
     totalValue: totalValue,
   };
 };
@@ -206,15 +207,17 @@ const withBalanceSection = (
   pinnedCoins,
   hiddenCoins,
   currentAction,
-  uniswapTotal
+  uniswapTotal,
+  collectibles
 ) => {
-  const { assets, totalBalancesValue } = buildCoinsList(
+  const { addedEth, assets, totalBalancesValue } = buildCoinsList(
     allAssets,
     nativeCurrency,
     isCoinListEdited,
     pinnedCoins,
     hiddenCoins,
-    true
+    true,
+    !collectibles.length
   );
   let balanceSectionData = [...assets];
 
@@ -250,7 +253,8 @@ const withBalanceSection = (
       currentAction,
       isLoadingAssets,
       allAssetsCount,
-      totalValue
+      totalValue,
+      addedEth
     ),
     name: 'balances',
     renderItem: isLoadingAssets
@@ -367,6 +371,7 @@ const balanceSectionSelector = createSelector(
     hiddenCoinsSelector,
     currentActionSelector,
     uniswapTotalSelector,
+    uniqueTokensSelector,
   ],
   withBalanceSection
 );
