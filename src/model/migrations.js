@@ -415,7 +415,7 @@ export default async function runMigrations() {
 
   /*
    *************** Migration v10 ******************
-   * This step makes sure all contacts have an emoji set based on the address
+   * This step resets review timers if we havnt asked in the last 2 weeks prior to running this
    */
   const v11 = async () => {
     logger.log('Start migration v11');
