@@ -1,6 +1,5 @@
 import { PaymentRequest } from '@rainbow-me/react-native-payments';
 import { captureException } from '@sentry/react-native';
-import axios from 'axios';
 import { get, join, split, toLower, values } from 'lodash';
 import {
   RAINBOW_WYRE_MERCHANT_ID,
@@ -12,6 +11,7 @@ import {
   WYRE_TOKEN,
   WYRE_TOKEN_TEST,
 } from 'react-native-dotenv';
+import { RAINBOW_FETCH_ERROR, RainbowFetchClient } from '../rainbow-fetch';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import { WYRE_SUPPORTED_COUNTRIES_ISO } from '@rainbow-me/references';
 import { subtract } from '@rainbow-me/utilities';
@@ -28,7 +28,7 @@ export const PaymentRequestStatusTypes = {
 const getBaseUrl = network =>
   network === NetworkTypes.mainnet ? WYRE_ENDPOINT : WYRE_ENDPOINT_TEST;
 
-const wyreApi = axios.create({
+const wyreApi = new RainbowFetchClient({
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -254,44 +254,42 @@ export const getOrderId = async (
     const baseUrl = getBaseUrl(network);
     const response = await wyreApi.post(
       `${baseUrl}/v3/apple-pay/process/partner`,
-      data,
-      {
-        validateStatus: function (status) {
-          // do not throw error so we can get
-          // exception ID and message from response
-          return status >= 200;
-        },
-      }
+      data
     );
 
-    if (response.status >= 200 && response.status < 300) {
-      const orderId = get(response, 'data.id', null);
-      return { orderId };
-    }
-    logger.sentry('WYRE - getOrderId response - was not 200', response.data);
-    const {
-      data: { errorCode, exceptionId, message, type },
-    } = response;
-    captureException(
-      new WyreException(
-        WyreExceptionTypes.CREATE_ORDER,
-        referenceInfo,
-        exceptionId,
-        errorCode,
-        message
-      )
-    );
-    return {
-      errorCategory: type,
-      errorCode,
-      errorMessage: message,
-    };
+    const orderId = get(response, 'data.id', null);
+
+    return { orderId };
   } catch (error) {
-    logger.sentry(
-      `WYRE - getOrderId response catch - ${referenceInfo.referenceId}`
-    );
-    captureException(error);
-    return {};
+    if (error && error.type === RAINBOW_FETCH_ERROR) {
+      const { responseBody } = error;
+
+      logger.sentry('WYRE - getOrderId response - was not 200', responseBody);
+      const {
+        data: { errorCode, exceptionId, message, type },
+      } = responseBody;
+
+      captureException(
+        new WyreException(
+          WyreExceptionTypes.CREATE_ORDER,
+          referenceInfo,
+          exceptionId,
+          errorCode,
+          message
+        )
+      );
+      return {
+        errorCategory: type,
+        errorCode,
+        errorMessage: message,
+      };
+    } else {
+      logger.sentry(
+        `WYRE - getOrderId response catch - ${referenceInfo.referenceId}`
+      );
+      captureException(error);
+      return {};
+    }
   }
 };
 
