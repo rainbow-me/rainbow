@@ -420,7 +420,7 @@ export default async function runMigrations() {
   const v11 = async () => {
     logger.log('Start migration v11');
     const reviewAsked = await AsyncStorage.getItem(REVIEW_ASKED_KEY);
-    const TWO_WEEKS = 7 * 24 * 60 * 60 * 1000;
+    const TWO_WEEKS = 14 * 24 * 60 * 60 * 1000;
     const TWO_MONTHS = 2 * 30 * 24 * 60 * 60 * 1000;
 
     if (Number(reviewAsked) > Date.now() - TWO_WEEKS) {
