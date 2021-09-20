@@ -2,7 +2,7 @@ import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import Animated from 'react-native-reanimated';
-import { mixColor, useTimingTransition } from 'react-native-redash';
+import { mixColor, useTimingTransition } from 'react-native-redash/src/v1';
 import { useMemoOne } from 'use-memo-one';
 import { ButtonPressAnimation, interpolate } from '../../animations';
 import { TruncatedAddress } from '../../text';

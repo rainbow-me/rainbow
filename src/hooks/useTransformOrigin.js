@@ -4,7 +4,7 @@ import Animated, { Value } from 'react-native-reanimated';
 import {
   transformOrigin as transformOriginUtil,
   useValues,
-} from 'react-native-redash';
+} from 'react-native-redash/src/v1';
 
 const { floor, divide, multiply } = Animated;
 

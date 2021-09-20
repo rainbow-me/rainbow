@@ -1,7 +1,7 @@
 import { constant, times } from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import Animated from 'react-native-reanimated';
-import { mixColor, useTimingTransition } from 'react-native-redash';
+import { mixColor, useTimingTransition } from 'react-native-redash/src/v1';
 import { useMemoOne } from 'use-memo-one';
 import { FloatingEmojisTapper } from '../../floating-emojis';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';

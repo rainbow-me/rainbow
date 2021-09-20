@@ -1,0 +1,6 @@
+diff --git a/node_modules/react-native-reanimated/src/reanimated2/js-reanimated/index.ts b/node_modules/react-native-reanimated/src/reanimated2/js-reanimated/index.ts
+index e69de29..336ce12 100644
+--- a/node_modules/react-native-reanimated/src/reanimated2/js-reanimated/index.ts
++++ b/node_modules/react-native-reanimated/src/reanimated2/js-reanimated/index.ts
+@@ -0,0 +1 @@
++export {}

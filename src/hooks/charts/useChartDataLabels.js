@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { useValue } from 'react-native-redash';
+import { useValue } from 'react-native-redash/src/v1';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 
