@@ -70,7 +70,7 @@ const buildTransactionsSections = (
       title: section,
     }));
     const pendingSectionIndex = sectionedTransactions.findIndex(
-      a => a.title === 'Pending'
+      ({ title }) => title === 'Pending'
     );
     if (pendingSectionIndex > 0) {
       const pendingSection = sectionedTransactions.splice(
