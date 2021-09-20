@@ -414,7 +414,7 @@ export default async function runMigrations() {
   migrations.push(v10);
 
   /*
-   *************** Migration v10 ******************
+   *************** Migration v11 ******************
    * This step resets review timers if we havnt asked in the last 2 weeks prior to running this
    */
   const v11 = async () => {
