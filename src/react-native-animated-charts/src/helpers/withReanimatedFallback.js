@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, TurboModuleRegistry } from 'react-native';
 
 function ChartFallback() {
-  return <Text> Charts are not available without Reanimated 2</Text>;
+  return <Text>Charts are not available without Reanimated 2</Text>;
 }
 
 export default function withReanimatedFallback(
