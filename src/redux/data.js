@@ -803,7 +803,7 @@ export const dataWatchPendingTransactions = (provider = null) => async (
         const txObj = await p.getTransaction(txHash);
         // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
         const currentNonce = await p.getTransactionCount(tx.from, 'latest');
-        const nonceAlreadyIncluded = currentNonce >= tx.nonce;
+        const nonceAlreadyIncluded = currentNonce > tx.nonce;
         if (
           (txObj && txObj.blockNumber && txObj.blockHash) ||
           nonceAlreadyIncluded
