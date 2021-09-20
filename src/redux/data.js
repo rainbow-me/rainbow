@@ -802,10 +802,11 @@ export const dataWatchPendingTransactions = (provider = null) => async (
       try {
         const txObj = await p.getTransaction(txHash);
         // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
-        const currentNonce = await p.getTransactionCount(tx.from);
+        const currentNonce = await p.getTransactionCount(tx.from, 'latest');
+        const nonceAlreadyIncluded = currentNonce >= tx.nonce;
         if (
           (txObj && txObj.blockNumber && txObj.blockHash) ||
-          currentNonce > tx.nonce
+          nonceAlreadyIncluded
         ) {
           // When speeding up a non "normal tx" we need to resubscribe
           // because zerion "append" event isn't reliable
@@ -813,8 +814,8 @@ export const dataWatchPendingTransactions = (provider = null) => async (
           appEvents.emit('transactionConfirmed', txObj);
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;
-          const isSelf = toLower(tx?.from) === toLower(tx?.to);
           if (txObj && !isZero(txObj.status)) {
+            const isSelf = toLower(tx?.from) === toLower(tx?.to);
             const newStatus = getTransactionLabel({
               direction: isSelf
                 ? TransactionDirections.self
@@ -828,7 +829,7 @@ export const dataWatchPendingTransactions = (provider = null) => async (
               type: tx?.type,
             });
             updatedPending.status = newStatus;
-          } else if (currentNonce > tx.nonce) {
+          } else if (nonceAlreadyIncluded) {
             updatedPending.status = TransactionStatusTypes.unknown;
           } else {
             updatedPending.status = TransactionStatusTypes.failed;
