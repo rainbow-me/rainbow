@@ -886,7 +886,6 @@ export const dataUpdateTransaction = (
   txHash,
   txObj,
   watch,
-  cb,
   provider = null
 ) => async (dispatch, getState) =>
   withRunExclusive(async () => {
@@ -907,7 +906,6 @@ export const dataUpdateTransaction = (
         watchPendingTransactions(
           accountAddress,
           txObj.network ? TXN_WATCHER_MAX_TRIES_LAYER_2 : TXN_WATCHER_MAX_TRIES,
-          cb,
           provider
         )
       );
@@ -927,7 +925,6 @@ const updatePurchases = updatedTransactions => dispatch => {
 const watchPendingTransactions = (
   accountAddressToWatch,
   remainingTries = TXN_WATCHER_MAX_TRIES,
-  cb = null,
   provider = null
 ) => async (dispatch, getState) => {
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
@@ -936,7 +933,7 @@ const watchPendingTransactions = (
   const { accountAddress: currentAccountAddress } = getState().settings;
   if (currentAccountAddress !== accountAddressToWatch) return;
 
-  const done = await dispatch(dataWatchPendingTransactions(cb, provider));
+  const done = await dispatch(dataWatchPendingTransactions(provider));
 
   if (!done) {
     pendingTransactionsHandle = setTimeout(() => {
@@ -944,7 +941,6 @@ const watchPendingTransactions = (
         watchPendingTransactions(
           accountAddressToWatch,
           remainingTries - 1,
-          cb,
           provider
         )
       );
