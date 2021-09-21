@@ -18,7 +18,6 @@ import {
   uniqBy,
   upperFirst,
 } from 'lodash';
-import assetTypes from 'src/entities/assetTypes';
 import { parseAllTxnsOnReceive } from '../config/debug';
 import {
   AssetType,
@@ -81,10 +80,9 @@ export const parseTransactions = async (
   const allL2Transactions = existingTransactions.filter(tx =>
     isL2Network(tx.network || '')
   );
-  const data = transactionData;
-  // appended
-  //   ? transactionData
-  //   : dataFromLastTxHash(transactionData, existingTransactions);
+  const data = appended
+    ? transactionData
+    : dataFromLastTxHash(transactionData, existingTransactions);
 
   const newTransactionPromises = data.map(txn =>
     parseTransaction(
@@ -503,9 +501,6 @@ export const getTransactionLabel = ({
   status: ZerionTransactionStatus | TransactionStatus;
   type: TransactionType;
 }) => {
-  if (type === TransactionType.execution)
-    return TransactionStatus.contract_interaction;
-
   if (status === TransactionStatus.cancelling)
     return TransactionStatus.cancelling;
 
@@ -545,6 +540,9 @@ export const getTransactionLabel = ({
   if (pending && isToAccount) return TransactionStatus.receiving;
 
   if (status === TransactionStatus.failed) return TransactionStatus.failed;
+
+  if (type === TransactionType.execution)
+    return TransactionStatus.contract_interaction;
 
   if (type === TransactionType.trade && isFromAccount)
     return TransactionStatus.swapped;

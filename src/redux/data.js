@@ -976,6 +976,7 @@ const INITIAL_STATE = {
     received: [],
   },
   transactions: [],
+  transactionSignatures: {},
   uniswapPricesQuery: null,
   uniswapPricesSubscription: null,
 };

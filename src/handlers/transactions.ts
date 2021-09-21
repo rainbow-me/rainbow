@@ -1,5 +1,9 @@
 import { Contract } from '@ethersproject/contracts';
 import axios from 'axios';
+import {
+  getLocalTransactionSignatures,
+  saveLocalTransactionSignatures,
+} from './localstorage/accountLocal';
 import { web3Provider } from './web3';
 import { ZerionTransaction } from '@rainbow-me/entities';
 
@@ -111,19 +115,37 @@ const fourByteApi = axios.create({
 export const getTransacionMethodName = async (
   transaction: ZerionTransaction
 ) => {
-  let signature;
+  //   const { transactionSignatures } = store.getState().data;
+  let transactionSignatures: any =
+    (await getLocalTransactionSignatures()) || {};
+  // only being used on mainnet ransactions, so we can use the default web3 provider
   const txn = await web3Provider.getTransaction(transaction.hash);
   const bytes = txn?.data?.substring(0, 10) || '';
-  try {
-    const { data } = await fourByteApi.get(`/?hex_signature=${bytes}`);
-    const bestResult = data.results.reduce(
-      (a: FourByteResult, b: FourByteResult) => (a.id < b.id ? a : b)
-    );
-    signature = bestResult.text_signature;
-  } catch (e) {
-    const contract = new Contract(REGISTRY_ADDRESS, abi, web3Provider);
-    signature = await contract.entries(bytes);
+  let signature = transactionSignatures[bytes];
+  if (!signature) {
+    try {
+      const { data } = await fourByteApi.get(`/?hex_signature=${bytes}`);
+      const bestResult = data.results.reduce(
+        (a: FourByteResult, b: FourByteResult) => (a.id < b.id ? a : b)
+      );
+      signature = bestResult.text_signature;
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
   }
-
-  return parse(signature);
+  if (!signature) {
+    try {
+      const contract = new Contract(REGISTRY_ADDRESS, abi, web3Provider);
+      signature = await contract.entries(bytes);
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+  }
+  const parsedSignature = parse(signature);
+  if (parsedSignature) {
+    const newTransactionSignatures = {
+      ...transactionSignatures,
+      [bytes]: parsedSignature,
+    };
+    saveLocalTransactionSignatures(newTransactionSignatures);
+  }
+  return parsedSignature;
 };

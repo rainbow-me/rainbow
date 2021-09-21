@@ -1,4 +1,9 @@
-import { getAccountLocal, saveAccountLocal } from './common';
+import {
+  getAccountLocal,
+  getLocal,
+  saveAccountLocal,
+  saveLocal,
+} from './common';
 
 const assetPricesFromUniswapVersion = '0.1.0';
 const assetsVersion = '0.2.0';
@@ -19,6 +24,7 @@ const SAVINGS = 'savings';
 const SAVINGS_TOGGLE = 'savingsToggle';
 const SHOWCASE_TOKENS = 'showcaseTokens';
 const TRANSACTIONS = 'transactions';
+const TRANSACTION_SIGNATURES = 'transactionSignatures';
 const UNIQUE_TOKENS = 'uniquetokens';
 const PINNED_COINS = 'pinnedCoins';
 const HIDDEN_COINS = 'hiddenCoins';
@@ -204,6 +210,19 @@ export const saveLocalTransactions = (transactions, accountAddress, network) =>
     network,
     transactionsVersion
   );
+
+/**
+ * @desc save transaction signatures
+ * @param  {Object}   [transactionSignatures]
+ */
+export const saveLocalTransactionSignatures = transactionSignatures =>
+  saveLocal(TRANSACTION_SIGNATURES, transactionSignatures);
+
+/**
+ * @desc get transaction signatures
+ */
+export const getLocalTransactionSignatures = () =>
+  getLocal(TRANSACTION_SIGNATURES);
 
 /**
  * @desc get unique tokens
