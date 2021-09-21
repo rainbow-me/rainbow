@@ -36,7 +36,7 @@ export async function rainbowFetch(url, opts) {
     ...otherOpts,
     body: requestBody,
     headers: {
-      Accept: 'application/json',
+      'Accept': 'application/json',
       'Content-Type': 'application/json',
       ...headers,
     },
