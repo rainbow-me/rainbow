@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import axios from 'axios';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -7,6 +6,7 @@ import ActivityIndicator from '../components/ActivityIndicator';
 import { AssetList } from '../components/asset-list';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
 import { PREFS_ENDPOINT } from '../model/preferences';
+import { rainbowFetch } from '../rainbow-fetch';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { buildUniqueTokenList } from '@rainbow-me/helpers/assets';
@@ -16,12 +16,11 @@ import { removeShowcase } from '@rainbow-me/redux/openStateSettings';
 import { fetchUniqueTokens } from '@rainbow-me/redux/uniqueTokens';
 
 async function fetchShowcaseForAddress(address) {
-  const response = await axios({
+  const response = await rainbowFetch(`${PREFS_ENDPOINT}/address`, {
     method: 'get',
     params: {
       address,
     },
-    url: `${PREFS_ENDPOINT}/address`,
   });
   return response.data;
 }

@@ -164,7 +164,9 @@ export default function SpeedUpAndCancelSheet() {
         to: accountAddress,
       };
       const originalHash = tx.hash;
-      const { hash } = await sendTransaction({
+      const {
+        result: { hash },
+      } = await sendTransaction({
         provider: currentProvider,
         transaction: cancelTxPayload,
       });
@@ -178,13 +180,7 @@ export default function SpeedUpAndCancelSheet() {
       updatedTx.status = TransactionStatusTypes.cancelling;
       updatedTx.title = getTitle(updatedTx);
       dispatch(
-        dataUpdateTransaction(
-          originalHash,
-          updatedTx,
-          true,
-          null,
-          currentProvider
-        )
+        dataUpdateTransaction(originalHash, updatedTx, true, currentProvider)
       );
     } catch (e) {
       logger.log('Error submitting cancel tx', e);
@@ -213,7 +209,9 @@ export default function SpeedUpAndCancelSheet() {
         value,
       };
       const originalHash = tx.hash;
-      const { hash } = await sendTransaction({
+      const {
+        result: { hash },
+      } = await sendTransaction({
         provider: currentProvider,
         transaction: fasterTxPayload,
       });
@@ -226,13 +224,7 @@ export default function SpeedUpAndCancelSheet() {
       updatedTx.status = TransactionStatusTypes.speeding_up;
       updatedTx.title = getTitle(updatedTx);
       dispatch(
-        dataUpdateTransaction(
-          originalHash,
-          updatedTx,
-          true,
-          null,
-          currentProvider
-        )
+        dataUpdateTransaction(originalHash, updatedTx, true, currentProvider)
       );
     } catch (e) {
       logger.log('Error submitting speed up tx', e);

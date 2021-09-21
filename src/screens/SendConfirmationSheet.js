@@ -290,7 +290,6 @@ export default function SendConfirmationSheet() {
       await callback();
     } catch (e) {
       logger.sentry('TX submit failed', e);
-    } finally {
       setIsAuthorizing(false);
     }
   }, [callback, canSubmit]);

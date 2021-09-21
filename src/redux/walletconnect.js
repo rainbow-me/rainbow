@@ -293,7 +293,10 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     const dappName = dappNameOverride(peerMeta.url) || peerMeta.name;
     const dappUrl = peerMeta.url;
     const requestId = payload.id;
-    if (payload.method === 'wallet_addEthereumChain') {
+    if (
+      payload.method === 'wallet_addEthereumChain' ||
+      payload.method === `wallet_switchEthereumChain`
+    ) {
       const { chainId } = payload.params[0];
       const currentNetwork = ethereumUtils.getNetworkFromChainId(
         Number(walletConnector._chainId)
@@ -335,7 +338,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
               dispatch(walletConnectRemovePendingRedirect('connect'));
             } else {
               walletConnector.rejectRequest({
-                error: { message: 'Chain currently not supported' },
+                error: { message: 'User rejected request' },
                 id: requestId,
               });
               analytics.track('Rejected new WalletConnect chain request', {
@@ -370,9 +373,9 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
             result,
           });
         })
-        .catch(() => {
+        .catch(error => {
           walletConnector.rejectRequest({
-            error: { message: 'JSON RPC method not supported' },
+            error,
             id: payload.id,
           });
         });
@@ -417,25 +420,29 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
 };
 
 export const walletConnectLoadState = () => async (dispatch, getState) => {
+  while (!getState().walletconnect.walletConnectors) {
+    await delay(300);
+  }
   const { walletConnectors } = getState().walletconnect;
   let newWalletConnectors = {};
   try {
-    if (!isEmpty(walletConnectors)) {
-      // Clear the event listeners before reconnecting
-      // to prevent having the same callbacks
-      Object.keys(walletConnectors).forEach(key => {
-        const connector = walletConnectors[key];
-        connector._eventManager = null;
-      });
-    }
-
     const allSessions = await getAllValidWalletConnectSessions();
-
     const { clientMeta, push } = await getNativeOptions();
 
     newWalletConnectors = mapValues(allSessions, session => {
-      const walletConnector = new WalletConnect({ clientMeta, session }, push);
-      return dispatch(listenOnNewMessages(walletConnector));
+      const connector = walletConnectors[session.peerId];
+      const connectorConnected = connector?._transport.connected;
+      if (!connectorConnected) {
+        if (connector?._eventManager) {
+          connector._eventManager = null;
+        }
+        const walletConnector = new WalletConnect(
+          { clientMeta, session },
+          push
+        );
+        return dispatch(listenOnNewMessages(walletConnector));
+      }
+      return connector;
     });
   } catch (error) {
     analytics.track('Error on walletConnectLoadState', {
@@ -617,18 +624,19 @@ export const walletConnectDisconnectAllByDappUrl = dappUrl => async (
   }
 };
 
-export const walletConnectSendStatus = (peerId, requestId, result) => async (
+export const walletConnectSendStatus = (peerId, requestId, response) => async (
   dispatch,
   getState
 ) => {
   const walletConnector = getState().walletconnect.walletConnectors[peerId];
   if (walletConnector) {
+    const { result, error } = response;
     try {
       if (result) {
         await walletConnector.approveRequest({ id: requestId, result });
       } else {
         await walletConnector.rejectRequest({
-          error: { message: 'User rejected request' },
+          error,
           id: requestId,
         });
       }

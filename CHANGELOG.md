@@ -12,6 +12,39 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.25](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.25)
+
+
+
+### Changed
+* Improved App Error Boundary Reporting
+
+## [1.5.24](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.24)
+
+### Added
+* App Error Boundary
+
+### Changed
+* Send Full WC Errors 
+
+## [1.5.23](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.23)
+
+### Added
+* SVG support 
+
+### Changed
+* Enabled Arbitrum 
+* WalletConnect improvements
+* UniswapAssetsInWallet improvements
+
+
+## [1.5.22](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.22)
+
+
+### Changed
+* Discover performance improvements
+* Improved debug & transaction analytics
+
 ## [1.5.21](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.21)
 
 

@@ -388,36 +388,45 @@ export default function TransactionConfirmationScreen() {
     ]
   );
 
-  const onCancel = useCallback(async () => {
-    try {
-      closeScreen(true);
-      if (callback) {
-        callback({ error: 'User cancelled the request' });
-      }
-      setTimeout(async () => {
-        if (requestId) {
-          await dispatch(walletConnectSendStatus(peerId, requestId, null));
-          dispatch(removeRequest(requestId));
+  const onCancel = useCallback(
+    async error => {
+      try {
+        closeScreen(true);
+        if (callback) {
+          callback({ error: error || 'User cancelled the request' });
         }
-        const rejectionType =
-          method === SEND_TRANSACTION ? 'transaction' : 'signature';
-        analytics.track(`Rejected WalletConnect ${rejectionType} request`);
-      }, 300);
-    } catch (error) {
-      logger.log('error while handling cancel request', error);
-      closeScreen(true);
-      Alert.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
-    }
-  }, [
-    callback,
-    closeScreen,
-    dispatch,
-    method,
-    peerId,
-    removeRequest,
-    requestId,
-    walletConnectSendStatus,
-  ]);
+        setTimeout(async () => {
+          if (requestId) {
+            await dispatch(
+              walletConnectSendStatus(peerId, requestId, {
+                error: error || 'User cancelled the request',
+              })
+            );
+            dispatch(removeRequest(requestId));
+          }
+          const rejectionType =
+            method === SEND_TRANSACTION ? 'transaction' : 'signature';
+          analytics.track(`Rejected WalletConnect ${rejectionType} request`);
+        }, 300);
+      } catch (error) {
+        logger.log('error while handling cancel request', error);
+        closeScreen(true);
+        Alert.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
+      }
+    },
+    [
+      callback,
+      closeScreen,
+      dispatch,
+      method,
+      peerId,
+      removeRequest,
+      requestId,
+      walletConnectSendStatus,
+    ]
+  );
+
+  const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
   useEffect(() => {
     if (!peerId || !walletConnector) {
@@ -584,7 +593,7 @@ export default function TransactionConfirmationScreen() {
     }
 
     txPayloadUpdated = omit(txPayloadUpdated, ['from', 'gas']);
-    let result = null;
+    let response = null;
 
     try {
       const existingWallet = await loadWallet(
@@ -593,13 +602,13 @@ export default function TransactionConfirmationScreen() {
         provider
       );
       if (sendInsteadOfSign) {
-        result = await sendTransaction({
+        response = await sendTransaction({
           existingWallet,
           provider,
           transaction: txPayloadUpdated,
         });
       } else {
-        result = await signTransaction({
+        response = await signTransaction({
           existingWallet,
           provider,
           transaction: txPayloadUpdated,
@@ -612,6 +621,7 @@ export default function TransactionConfirmationScreen() {
       );
     }
 
+    const { result, error } = response;
     if (result) {
       if (callback) {
         callback({ result: result.hash });
@@ -639,7 +649,9 @@ export default function TransactionConfirmationScreen() {
       analytics.track('Approved WalletConnect transaction request');
       if (requestId) {
         dispatch(removeRequest(requestId));
-        await dispatch(walletConnectSendStatus(peerId, requestId, result.hash));
+        await dispatch(
+          walletConnectSendStatus(peerId, requestId, { result: result.hash })
+        );
       }
       closeScreen(false);
       // When the tx is sent from a different wallet,
@@ -671,7 +683,7 @@ export default function TransactionConfirmationScreen() {
         // eslint-disable-next-line no-empty
       } catch (e) {}
 
-      await onCancel();
+      await onCancel(error);
     }
   }, [
     method,
@@ -706,7 +718,7 @@ export default function TransactionConfirmationScreen() {
 
   const handleSignMessage = useCallback(async () => {
     let message = null;
-    let flatFormatSignature = null;
+    let response = null;
     if (isSignFirstParamType(method)) {
       message = params?.[0];
     } else if (isSignSecondParamType(method)) {
@@ -719,38 +731,30 @@ export default function TransactionConfirmationScreen() {
     );
     switch (method) {
       case SIGN:
-        flatFormatSignature = await signMessage(message, existingWallet);
+        response = await signMessage(message, existingWallet);
         break;
       case PERSONAL_SIGN:
-        flatFormatSignature = await signPersonalMessage(
-          message,
-          existingWallet
-        );
+        response = await signPersonalMessage(message, existingWallet);
         break;
       case SIGN_TYPED_DATA:
-        flatFormatSignature = await signTypedDataMessage(
-          message,
-          existingWallet
-        );
+        response = await signTypedDataMessage(message, existingWallet);
         break;
       default:
         break;
     }
-
-    if (flatFormatSignature) {
+    const { result, error } = response;
+    if (result) {
       analytics.track('Approved WalletConnect signature request');
       if (requestId) {
         dispatch(removeRequest(requestId));
-        await dispatch(
-          walletConnectSendStatus(peerId, requestId, flatFormatSignature)
-        );
+        await dispatch(walletConnectSendStatus(peerId, requestId, response));
       }
       if (callback) {
-        callback({ sig: flatFormatSignature });
+        callback({ sig: result });
       }
       closeScreen(false);
     } else {
-      await onCancel();
+      await onCancel(error);
     }
   }, [
     accountInfo.address,
@@ -761,10 +765,10 @@ export default function TransactionConfirmationScreen() {
     onCancel,
     params,
     peerId,
-    provider,
     removeRequest,
     requestId,
     walletConnectSendStatus,
+    provider,
   ]);
 
   const onConfirm = useCallback(async () => {
@@ -819,7 +823,7 @@ export default function TransactionConfirmationScreen() {
         <SheetActionButton
           color={colors.white}
           label="Cancel"
-          onPress={onCancel}
+          onPress={onPressCancel}
           size="big"
           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           weight="bold"
@@ -842,6 +846,7 @@ export default function TransactionConfirmationScreen() {
     nativeAsset?.symbol,
     onCancel,
     onPressSend,
+    onPressCancel,
   ]);
 
   const renderTransactionSection = useCallback(() => {
