@@ -1,0 +1,59 @@
+diff --git a/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js b/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js
+index 4f76446..2cc52fa 100644
+--- a/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js
++++ b/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js
+@@ -172,6 +172,7 @@ function updateErrorWithErrorData(
+ let NativeModules: {[moduleName: string]: $FlowFixMe, ...} = {};
+ if (global.nativeModuleProxy) {
+   NativeModules = global.nativeModuleProxy;
++  global.nativeModuleProxy = null;
+ } else if (!global.nativeExtensions) {
+   const bridgeConfig = global.__fbBatchedBridgeConfig;
+   invariant(
+diff --git a/node_modules/react-native/Libraries/Core/Timers/JSTimers.js b/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
+index cdf614e..7a9151f 100644
+--- a/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
++++ b/node_modules/react-native/Libraries/Core/Timers/JSTimers.js
+@@ -208,7 +208,7 @@ const JSTimers = {
+    */
+   setTimeout: function(func: Function, duration: number, ...args: any): number {
+     const id = _allocateCallback(
+-      () => func.apply(undefined, args),
++      () => func?.apply(undefined, args),
+       'setTimeout',
+     );
+     createTimer(id, duration || 0, Date.now(), /* recurring */ false);
+@@ -225,7 +225,7 @@ const JSTimers = {
+     ...args: any
+   ): number {
+     const id = _allocateCallback(
+-      () => func.apply(undefined, args),
++      () => func?.apply(undefined, args),
+       'setInterval',
+     );
+     createTimer(id, duration || 0, Date.now(), /* recurring */ true);
+@@ -238,7 +238,7 @@ const JSTimers = {
+    */
+   setImmediate: function(func: Function, ...args: any) {
+     const id = _allocateCallback(
+-      () => func.apply(undefined, args),
++      () => func?.apply(undefined, args),
+       'setImmediate',
+     );
+     immediates.push(id);
+diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
+index 87ff206..cb4fb2f 100644
+--- a/node_modules/react-native/React/Views/RCTView.m
++++ b/node_modules/react-native/React/Views/RCTView.m
+@@ -810,6 +810,11 @@ - (void)displayLayer:(CALayer *)layer
+     layer.contents = nil;
+     layer.needsDisplayOnBoundsChange = NO;
+     layer.mask = nil;
++    if (@available(iOS 13.0, *)) {
++      if (layer.cornerRadius < MIN(self.bounds.size.height, self.bounds.size.width) / 2) {
++        layer.cornerCurve = kCACornerCurveContinuous;
++      }
++    }
+     return;
+   }
+ 
