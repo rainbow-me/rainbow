@@ -30,13 +30,13 @@ export async function rainbowFetch(url, opts) {
   const { body, params, headers, ...otherOpts } = opts;
 
   const requestBody =
-    body && typeof body === 'object' ? JSON.strigify(opts.body) : opts.body;
+    body && typeof body === 'object' ? JSON.stringify(opts.body) : opts.body;
 
   const response = await fetch(`${url}${createParams(params)}`, {
     ...otherOpts,
     body: requestBody,
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
       ...headers,
     },
