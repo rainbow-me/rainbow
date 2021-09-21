@@ -388,7 +388,10 @@ export const transactionsReceived = (message, appended = false) => async (
   const { transactions } = getState().data;
   const { selected } = getState().wallets;
 
-  const { parsedTransactions, potentialNftTransaction } = parseTransactions(
+  const {
+    parsedTransactions,
+    potentialNftTransaction,
+  } = await parseTransactions(
     transactionData,
     accountAddress,
     nativeCurrency,

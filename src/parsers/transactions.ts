@@ -33,6 +33,7 @@ import {
   ZerionTransactionChange,
   ZerionTransactionStatus,
 } from '@rainbow-me/entities';
+import { getTransacionMethodName } from '@rainbow-me/handlers/transactions';
 import { isL2Network, toChecksumAddress } from '@rainbow-me/handlers/web3';
 import { ETH_ADDRESS, savingsAssetsList } from '@rainbow-me/references';
 import {
@@ -64,7 +65,7 @@ const dataFromLastTxHash = (
   return transactionData;
 };
 
-export const parseTransactions = (
+export const parseTransactions = async (
   transactionData: ZerionTransaction[],
   accountAddress: EthereumAddress,
   nativeCurrency: string,
@@ -79,22 +80,21 @@ export const parseTransactions = (
   const allL2Transactions = existingTransactions.filter(tx =>
     isL2Network(tx.network || '')
   );
-
   const data = appended
     ? transactionData
     : dataFromLastTxHash(transactionData, existingTransactions);
 
-  const parsedNewTransactions = flatten(
-    data.map(txn =>
-      parseTransaction(
-        txn,
-        accountAddress,
-        nativeCurrency,
-        purchaseTransactionHashes,
-        network
-      )
+  const newTransactionPromises = data.map(txn =>
+    parseTransaction(
+      txn,
+      accountAddress,
+      nativeCurrency,
+      purchaseTransactionHashes,
+      network
     )
   );
+  const newTransactions = await Promise.all(newTransactionPromises);
+  const parsedNewTransactions = flatten(newTransactions);
 
   const [pendingTransactions, remainingTransactions] = partition(
     existingTransactions,
@@ -282,8 +282,12 @@ const overrideSelfWalletConnect = (
   return newTxn;
 };
 
-const overrideChanges = (txn: ZerionTransaction): ZerionTransaction => {
+const overrideChanges = async (
+  txn: ZerionTransaction
+): Promise<ZerionTransaction> => {
   if (!txn.changes?.length) {
+    const methodName = await getTransacionMethodName(txn);
+
     txn.changes = [
       {
         address_from: txn.address_from,
@@ -291,7 +295,7 @@ const overrideChanges = (txn: ZerionTransaction): ZerionTransaction => {
         asset: {
           asset_code: ETH_ADDRESS,
           decimals: 18,
-          name: 'Ethereum',
+          name: methodName || 'CONTRACT INTERACTION',
           symbol: 'ETH',
           type: AssetType.eth,
         },
@@ -312,13 +316,13 @@ const overrideTradeRefund = (txn: ZerionTransaction): ZerionTransaction => {
   };
 };
 
-const parseTransaction = (
+const parseTransaction = async (
   transaction: ZerionTransaction,
   accountAddress: EthereumAddress,
   nativeCurrency: string,
   purchaseTransactionsHashes: string[],
   network: string
-): RainbowTransaction[] => {
+): Promise<RainbowTransaction[]> => {
   let txn = {
     ...transaction,
   };
@@ -327,7 +331,7 @@ const parseTransaction = (
   txn = overrideAuthorizations(txn);
   txn = overrideSelfWalletConnect(txn);
   txn = overrideTradeRefund(txn);
-  txn = overrideChanges(txn);
+  txn = await overrideChanges(txn);
 
   const internalTransactions = map(
     txn?.changes,
