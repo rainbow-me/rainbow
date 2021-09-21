@@ -11,7 +11,7 @@
     "clean:android": "yarn uninstall:android && yarn gradle clean",
     "detox:android": "detox build -c android.emu.debug && detox test -R 1 -c android.emu.debug --loglevel verbose",
     "detox:android:release": "detox build -c android.emu.release && detox test -R 1 -c android.emu.release",
-    "detox:ios": "detox build -c ios.sim.debug && detox test -R 1 -c ios.sim.debug --bail",
+    "detox:ios": "detox test -R 1 -c ios.sim.debug --bail",
     "detox:ios:release": "detox build -c ios.sim.release && detox test -R 1 -c ios.sim.release --bail",
     "fast": "yarn setup && yarn install-pods-fast",
     "gradle": "cd android && ./gradlew",

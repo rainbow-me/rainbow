@@ -144,6 +144,7 @@ export default function ExchangeModal({
 
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const { nativeCurrency, network } = useAccountSettings();
+  const keyboardHideListener = useRef();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
@@ -474,7 +475,7 @@ export default function ExchangeModal({
     outputFieldRef?.current?.blur();
     nativeFieldRef?.current?.blur();
     const internalNavigate = () => {
-      android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
+      android && keyboardHideListener?.current.remove();
       setParams({ focused: false });
       navigate(Routes.SWAP_DETAILS_SHEET, {
         confirmButtonProps,
@@ -494,7 +495,10 @@ export default function ExchangeModal({
     };
     ios || !isKeyboardOpen()
       ? internalNavigate()
-      : Keyboard.addListener('keyboardDidHide', internalNavigate);
+      : (keyboardHideListener.current = Keyboard.addListener(
+          'keyboardDidHide',
+          internalNavigate
+        ));
   }, [
     confirmButtonProps,
     inputFieldRef,

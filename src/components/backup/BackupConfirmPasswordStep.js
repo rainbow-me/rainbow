@@ -86,6 +86,8 @@ export default function BackupConfirmPasswordStep() {
   const isSettingsRoute = useRouteExistsInNavigationState(
     Routes.SETTINGS_MODAL
   );
+  const keyboardShowListener = useRef();
+  const keyboardHideListener = useRef();
 
   useEffect(() => {
     const keyboardDidShow = () => {
@@ -95,11 +97,17 @@ export default function BackupConfirmPasswordStep() {
     const keyboardDidHide = () => {
       setIsKeyboardOpen(false);
     };
-    Keyboard.addListener('keyboardDidShow', keyboardDidShow);
-    Keyboard.addListener('keyboardDidHide', keyboardDidHide);
+    keyboardShowListener.current = Keyboard.addListener(
+      'keyboardDidShow',
+      keyboardDidShow
+    );
+    keyboardHideListener.current = Keyboard.addListener(
+      'keyboardDidHide',
+      keyboardDidHide
+    );
     return () => {
-      Keyboard.removeListener('keyboardDidShow', keyboardDidShow);
-      Keyboard.removeListener('keyboardDidHide', keyboardDidHide);
+      keyboardShowListener?.current.remove();
+      keyboardHideListener?.current.remove();
     };
   }, []);
 

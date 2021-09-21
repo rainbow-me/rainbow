@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Keyboard } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import KeyboardTypes from '@rainbow-me/helpers/keyboardTypes';
@@ -10,6 +10,7 @@ export default function useKeyboardHeight(options = {}) {
   // keyboards can different heights depending on whether
   // things like "autofill" or "autocomplete" are enabled on the target input.
   const { keyboardType = KeyboardTypes.default } = options;
+  const keyboardListener = useRef();
 
   const dispatch = useDispatch();
 
@@ -34,9 +35,12 @@ export default function useKeyboardHeight(options = {}) {
   );
 
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', handleKeyboardDidShow);
+    keyboardListener.current = Keyboard.addListener(
+      'keyboardDidShow',
+      handleKeyboardDidShow
+    );
     return () => {
-      Keyboard.removeListener('keyboardDidShow', handleKeyboardDidShow);
+      keyboardListener?.current.remove();
     };
   }, [handleKeyboardDidShow]);
 
