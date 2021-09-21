@@ -282,32 +282,6 @@ const overrideSelfWalletConnect = (
   return newTxn;
 };
 
-const overrideChanges = async (
-  txn: ZerionTransaction
-): Promise<ZerionTransaction> => {
-  if (!txn.changes?.length) {
-    const methodName = await getTransacionMethodName(txn);
-    txn.changes = [
-      {
-        address_from: txn.address_from,
-        address_to: txn.address_to,
-        asset: {
-          asset_code: ETH_ADDRESS,
-          decimals: 18,
-          name: methodName || 'Contract Interaction',
-          symbol: 'ETH',
-          type: AssetType.eth,
-        },
-        direction: txn?.direction || TransactionDirection.out,
-        price: txn?.fee?.price,
-        value: 0,
-      },
-    ];
-    txn.type = TransactionType.contract_interaction;
-  }
-  return txn;
-};
-
 const overrideTradeRefund = (txn: ZerionTransaction): ZerionTransaction => {
   if (txn.type !== TransactionType.trade) return txn;
   return {
@@ -331,78 +305,114 @@ const parseTransaction = async (
   txn = overrideAuthorizations(txn);
   txn = overrideSelfWalletConnect(txn);
   txn = overrideTradeRefund(txn);
-  txn = await overrideChanges(txn);
 
-  const internalTransactions = map(
-    txn?.changes,
-    (internalTxn, index): RainbowTransaction => {
-      const address = toLower(internalTxn?.asset?.asset_code);
-      const metadata = getTokenMetadata(address);
-      const updatedAsset = {
-        address,
-        decimals: internalTxn?.asset?.decimals,
-        name: internalTxn?.asset?.name,
-        symbol: toUpper(internalTxn?.asset?.symbol ?? ''),
-        ...metadata,
-      };
-      const priceUnit =
-        internalTxn.price ?? internalTxn?.asset?.price?.value ?? 0;
-      const valueUnit = internalTxn.value || 0;
-      const nativeDisplay = convertRawAmountToNativeDisplay(
-        valueUnit,
-        updatedAsset.decimals,
-        priceUnit,
-        nativeCurrency
-      );
+  if (txn.changes.length) {
+    const internalTransactions = map(
+      txn?.changes,
+      (internalTxn, index): RainbowTransaction => {
+        const address = toLower(internalTxn?.asset?.asset_code);
+        const metadata = getTokenMetadata(address);
+        const updatedAsset = {
+          address,
+          decimals: internalTxn?.asset?.decimals,
+          name: internalTxn?.asset?.name,
+          symbol: toUpper(internalTxn?.asset?.symbol ?? ''),
+          ...metadata,
+        };
+        const priceUnit =
+          internalTxn.price ?? internalTxn?.asset?.price?.value ?? 0;
+        const valueUnit = internalTxn.value || 0;
+        const nativeDisplay = convertRawAmountToNativeDisplay(
+          valueUnit,
+          updatedAsset.decimals,
+          priceUnit,
+          nativeCurrency
+        );
 
-      if (includes(purchaseTransactionsHashes, toLower(txn.hash))) {
-        txn.type = TransactionType.purchase;
+        if (includes(purchaseTransactionsHashes, toLower(txn.hash))) {
+          txn.type = TransactionType.purchase;
+        }
+
+        const status = getTransactionLabel({
+          direction: internalTxn.direction || txn.direction,
+          pending: false,
+          protocol: txn.protocol,
+          status: txn.status,
+          type: txn.type,
+        });
+
+        const title = getTitle({
+          protocol: txn.protocol,
+          status,
+          type: txn.type,
+        });
+
+        const description = getDescription({
+          name: updatedAsset.name,
+          status,
+          type: txn.type,
+        });
+        return {
+          address:
+            toLower(updatedAsset?.address) === ETH_ADDRESS
+              ? ETH_ADDRESS
+              : toChecksumAddress(updatedAsset.address),
+          balance: convertRawAmountToBalance(valueUnit, updatedAsset),
+          description,
+          from: internalTxn.address_from ?? txn.address_from,
+          hash: `${txn.hash}-${index}`,
+          minedAt: txn.mined_at,
+          name: updatedAsset.name,
+          native: nativeDisplay,
+          nonce: txn.nonce,
+          pending: false,
+          protocol: txn.protocol,
+          status,
+          symbol: updatedAsset.symbol,
+          title,
+          to: internalTxn.address_to ?? txn.address_to,
+          type: txn.type,
+        };
       }
-
-      const status = getTransactionLabel({
-        direction: internalTxn.direction || txn.direction,
-        pending: false,
-        protocol: txn.protocol,
-        status: txn.status,
-        type: txn.type,
-      });
-
-      const title = getTitle({
-        protocol: txn.protocol,
-        status,
-        type: txn.type,
-      });
-
-      const description = getDescription({
-        name: updatedAsset.name,
-        status,
-        type: txn.type,
-      });
-      return {
-        address:
-          toLower(updatedAsset?.address) === ETH_ADDRESS
-            ? ETH_ADDRESS
-            : toChecksumAddress(updatedAsset.address),
-        balance: convertRawAmountToBalance(valueUnit, updatedAsset),
-        description,
-        from: internalTxn.address_from ?? txn.address_from,
-        hash: `${txn.hash}-${index}`,
-        minedAt: txn.mined_at,
-        name: updatedAsset.name,
-        native: nativeDisplay,
-        nonce: txn.nonce,
-        pending: false,
-        protocol: txn.protocol,
-        status,
-        symbol: updatedAsset.symbol,
-        title,
-        to: internalTxn.address_to ?? txn.address_to,
-        type: txn.type,
-      };
-    }
+    );
+    return reverse(internalTransactions);
+  }
+  const methodName = await getTransacionMethodName(txn);
+  const updatedAsset = {
+    address: ETH_ADDRESS,
+    decimals: 18,
+    name: 'ethereum',
+    symbol: 'ETH',
+  };
+  const priceUnit = 0;
+  const valueUnit = 0;
+  const nativeDisplay = convertRawAmountToNativeDisplay(
+    0,
+    18,
+    priceUnit,
+    nativeCurrency
   );
 
-  return reverse(internalTransactions);
+  return [
+    {
+      address: ETH_ADDRESS,
+      balance: convertRawAmountToBalance(valueUnit, updatedAsset),
+      description: methodName,
+      from: txn.address_from,
+      hash: `${txn.hash}-${0}`,
+      minedAt: txn.mined_at,
+      name: methodName,
+      native: nativeDisplay,
+      nonce: txn.nonce,
+      pending: false,
+      protocol: txn.protocol,
+      status: TransactionStatus.contract_interaction,
+      symbol: 'contract',
+      title: 'Contract interaction',
+      to: txn.address_to,
+      type: TransactionType.contract_interaction,
+    },
+  ];
 };
 
 export const dedupePendingTransactions = (
@@ -540,9 +550,6 @@ export const getTransactionLabel = ({
   if (pending && isToAccount) return TransactionStatus.receiving;
 
   if (status === TransactionStatus.failed) return TransactionStatus.failed;
-
-  if (type === TransactionType.execution)
-    return TransactionStatus.contract_interaction;
 
   if (type === TransactionType.trade && isFromAccount)
     return TransactionStatus.swapped;

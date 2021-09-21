@@ -122,16 +122,15 @@ export const getTransacionMethodName = async (
   const txn = await web3Provider.getTransaction(transaction.hash);
   const bytes = txn?.data?.substring(0, 10) || '';
   let signature = transactionSignatures[bytes];
-  if (!signature) {
-    try {
-      const { data } = await fourByteApi.get(`/?hex_signature=${bytes}`);
-      const bestResult = data.results.reduce(
-        (a: FourByteResult, b: FourByteResult) => (a.id < b.id ? a : b)
-      );
-      signature = bestResult.text_signature;
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
-  }
+  if (signature) return signature;
+  try {
+    const { data } = await fourByteApi.get(`/?hex_signature=${bytes}`);
+    const bestResult = data.results.reduce(
+      (a: FourByteResult, b: FourByteResult) => (a.id < b.id ? a : b)
+    );
+    signature = bestResult.text_signature;
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
   if (!signature) {
     try {
       const contract = new Contract(REGISTRY_ADDRESS, abi, web3Provider);

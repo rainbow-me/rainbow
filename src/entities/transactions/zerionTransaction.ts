@@ -29,6 +29,15 @@ export interface ZerionTransactionChange {
   value: number;
 }
 
+export interface ContractInteractionTransaction {
+  address_from: string | null;
+  address_to: string | null;
+  name: string;
+  direction: TransactionDirection;
+  price?: number | null;
+  value: number;
+}
+
 export interface ZerionTransaction {
   address_from: string | null;
   address_to: string | null;
