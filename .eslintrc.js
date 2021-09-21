@@ -1,4 +1,4 @@
-/* eslint-disable sort-keys */
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 const fs = require('fs');
 const { parse: babelParse } = require('@babel/parser');
 const data = fs.readFileSync('./globalVariables.js', 'utf8');

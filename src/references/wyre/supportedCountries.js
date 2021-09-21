@@ -1,4 +1,4 @@
-/* eslint-disable sort-keys */
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 export const wyreSupportedCountries = {
   AU: {
     emojiName: 'flag_australia',
