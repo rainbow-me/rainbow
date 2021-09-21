@@ -290,6 +290,48 @@ const overrideTradeRefund = (txn: ZerionTransaction): ZerionTransaction => {
   };
 };
 
+const parseTransactionWithEmptyChanges = async (
+  txn: ZerionTransaction,
+  nativeCurrency: string
+) => {
+  const methodName = await getTransacionMethodName(txn);
+  const updatedAsset = {
+    address: ETH_ADDRESS,
+    decimals: 18,
+    name: 'ethereum',
+    symbol: 'ETH',
+  };
+  const priceUnit = 0;
+  const valueUnit = 0;
+  const nativeDisplay = convertRawAmountToNativeDisplay(
+    0,
+    18,
+    priceUnit,
+    nativeCurrency
+  );
+
+  return [
+    {
+      address: ETH_ADDRESS,
+      balance: convertRawAmountToBalance(valueUnit, updatedAsset),
+      description: methodName,
+      from: txn.address_from,
+      hash: `${txn.hash}-${0}`,
+      minedAt: txn.mined_at,
+      name: methodName,
+      native: nativeDisplay,
+      nonce: txn.nonce,
+      pending: false,
+      protocol: txn.protocol,
+      status: TransactionStatus.contract_interaction,
+      symbol: 'contract',
+      title: 'Contract interaction',
+      to: txn.address_to,
+      type: TransactionType.contract_interaction,
+    },
+  ];
+};
+
 const parseTransaction = async (
   transaction: ZerionTransaction,
   accountAddress: EthereumAddress,
@@ -377,42 +419,11 @@ const parseTransaction = async (
     );
     return reverse(internalTransactions);
   }
-  const methodName = await getTransacionMethodName(txn);
-  const updatedAsset = {
-    address: ETH_ADDRESS,
-    decimals: 18,
-    name: 'ethereum',
-    symbol: 'ETH',
-  };
-  const priceUnit = 0;
-  const valueUnit = 0;
-  const nativeDisplay = convertRawAmountToNativeDisplay(
-    0,
-    18,
-    priceUnit,
+  const parsedTransaction = await parseTransactionWithEmptyChanges(
+    txn,
     nativeCurrency
   );
-
-  return [
-    {
-      address: ETH_ADDRESS,
-      balance: convertRawAmountToBalance(valueUnit, updatedAsset),
-      description: methodName,
-      from: txn.address_from,
-      hash: `${txn.hash}-${0}`,
-      minedAt: txn.mined_at,
-      name: methodName,
-      native: nativeDisplay,
-      nonce: txn.nonce,
-      pending: false,
-      protocol: txn.protocol,
-      status: TransactionStatus.contract_interaction,
-      symbol: 'contract',
-      title: 'Contract interaction',
-      to: txn.address_to,
-      type: TransactionType.contract_interaction,
-    },
-  ];
+  return parsedTransaction;
 };
 
 export const dedupePendingTransactions = (
