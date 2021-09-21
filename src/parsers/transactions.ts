@@ -85,13 +85,7 @@ export const parseTransactions = async (
     : dataFromLastTxHash(transactionData, existingTransactions);
 
   const newTransactionPromises = data.map(txn =>
-    parseTransaction(
-      txn,
-      accountAddress,
-      nativeCurrency,
-      purchaseTransactionHashes,
-      network
-    )
+    parseTransaction(txn, nativeCurrency, purchaseTransactionHashes, network)
   );
   const newTransactions = await Promise.all(newTransactionPromises);
   const parsedNewTransactions = flatten(newTransactions);
@@ -334,7 +328,6 @@ const parseTransactionWithEmptyChanges = async (
 
 const parseTransaction = async (
   transaction: ZerionTransaction,
-  accountAddress: EthereumAddress,
   nativeCurrency: string,
   purchaseTransactionsHashes: string[],
   network: string
