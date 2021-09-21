@@ -18,6 +18,7 @@ import {
   uniqBy,
   upperFirst,
 } from 'lodash';
+import assetTypes from 'src/entities/assetTypes';
 import { parseAllTxnsOnReceive } from '../config/debug';
 import {
   AssetType,
@@ -80,9 +81,10 @@ export const parseTransactions = async (
   const allL2Transactions = existingTransactions.filter(tx =>
     isL2Network(tx.network || '')
   );
-  const data = appended
-    ? transactionData
-    : dataFromLastTxHash(transactionData, existingTransactions);
+  const data = transactionData;
+  // appended
+  //   ? transactionData
+  //   : dataFromLastTxHash(transactionData, existingTransactions);
 
   const newTransactionPromises = data.map(txn =>
     parseTransaction(
@@ -287,7 +289,6 @@ const overrideChanges = async (
 ): Promise<ZerionTransaction> => {
   if (!txn.changes?.length) {
     const methodName = await getTransacionMethodName(txn);
-
     txn.changes = [
       {
         address_from: txn.address_from,
@@ -295,7 +296,7 @@ const overrideChanges = async (
         asset: {
           asset_code: ETH_ADDRESS,
           decimals: 18,
-          name: methodName || 'CONTRACT INTERACTION',
+          name: methodName || 'Contract Interaction',
           symbol: 'ETH',
           type: AssetType.eth,
         },
@@ -304,6 +305,7 @@ const overrideChanges = async (
         value: 0,
       },
     ];
+    txn.type = TransactionType.contract_interaction;
   }
   return txn;
 };
@@ -378,7 +380,6 @@ const parseTransaction = async (
         status,
         type: txn.type,
       });
-
       return {
         address:
           toLower(updatedAsset?.address) === ETH_ADDRESS
@@ -502,6 +503,9 @@ export const getTransactionLabel = ({
   status: ZerionTransactionStatus | TransactionStatus;
   type: TransactionType;
 }) => {
+  if (type === TransactionType.execution)
+    return TransactionStatus.contract_interaction;
+
   if (status === TransactionStatus.cancelling)
     return TransactionStatus.cancelling;
 

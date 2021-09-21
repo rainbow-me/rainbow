@@ -1,7 +1,17 @@
 import { Contract } from '@ethersproject/contracts';
+import axios from 'axios';
 import { web3Provider } from './web3';
 import { ZerionTransaction } from '@rainbow-me/entities';
 
+interface FourByteResult {
+  bytes_signature?: string;
+  created_at?: string;
+  hex_signature?: string;
+  id: number;
+  text_signature?: string;
+}
+
+const REGISTRY_ADDRESS = '0x44691B39d1a75dC4E0A0346CBB15E310e6ED1E86';
 const abi = [
   {
     constant: false,
@@ -88,23 +98,32 @@ const parse = (signature: string) => {
   }
   return parsedName;
 };
+
+const fourByteApi = axios.create({
+  baseURL: 'https://www.4byte.directory/api/v1/signatures',
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  },
+  timeout: 1000,
+});
+
 export const getTransacionMethodName = async (
   transaction: ZerionTransaction
 ) => {
-  const tx = await web3Provider.getTransaction(transaction.hash);
-  const contract = new Contract(
-    '0x44691B39d1a75dC4E0A0346CBB15E310e6ED1E86',
-    abi,
-    web3Provider
-  );
-  const bytes = tx.data.substring(0, 10);
-  const entry = await contract.entries(bytes);
-  //   try {
-  //     const response = await fourBytes.get(`/?hex_signature=${bytes}`);
+  let signature;
+  const txn = await web3Provider.getTransaction(transaction.hash);
+  const bytes = txn?.data?.substring(0, 10) || '';
+  try {
+    const { data } = await fourByteApi.get(`/?hex_signature=${bytes}`);
+    const bestResult = data.results.reduce(
+      (a: FourByteResult, b: FourByteResult) => (a.id < b.id ? a : b)
+    );
+    signature = bestResult.text_signature;
+  } catch (e) {
+    const contract = new Contract(REGISTRY_ADDRESS, abi, web3Provider);
+    signature = await contract.entries(bytes);
+  }
 
-  //     console.log('entriessssss', response);
-  //   } catch (e) {
-  //     console.log('etf', e);
-  //   }
-  return parse(entry);
+  return parse(signature);
 };
