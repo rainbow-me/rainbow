@@ -47,7 +47,7 @@ class SvgImage extends Component {
     this.doFetch(this.props);
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     const prevUri = this.props.source && this.props.source.uri;
     const nextUri = nextProps.source && nextProps.source.uri;
 

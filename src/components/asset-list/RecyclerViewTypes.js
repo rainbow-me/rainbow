@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 /* eslint-disable sort-keys */
 import { get } from 'lodash';
 import React from 'react';

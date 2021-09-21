@@ -1,5 +1,5 @@
 import { map, toLower } from 'lodash';
-import matchSorter from 'match-sorter';
+import * as matchSorter from 'match-sorter';
 import React, {
   useCallback,
   useContext,
