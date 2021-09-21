@@ -549,7 +549,7 @@ export const addressAssetsReceived = (
 
   //Hide tokens with a url as their token name
   const assetsWithScamURL = parsedAssets
-    .filter(asset => isValidDomain(asset.name))
+    .filter(asset => isValidDomain(asset.name) && !asset.isVerified)
     .map(({ address }) => address);
   dispatch(addCoinsToHiddenList(assetsWithScamURL));
 
