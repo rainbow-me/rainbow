@@ -210,7 +210,7 @@ export default function ChartPathProvider({
     } else {
       setData(providedData);
     }
-  }, [providedData]);
+  }, [providedData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const smoothingStrategy = useSharedValue(data.smoothingStrategy);
 
@@ -260,7 +260,7 @@ export default function ChartPathProvider({
       currData.value = parsedData;
       curroriginalData.value = parsedoriginalData;
     }
-  }, [data]);
+  }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const isStarted = useSharedValue(false, 'isStarted');
 
