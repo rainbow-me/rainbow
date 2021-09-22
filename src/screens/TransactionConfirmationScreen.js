@@ -403,11 +403,12 @@ export default function TransactionConfirmationScreen() {
         }
         setTimeout(async () => {
           if (requestId) {
-            await dispatch(
-              walletConnectSendStatus(peerId, requestId, {
-                error: error || 'User cancelled the request',
-              })
-            );
+            !isWalletConnectV2Request &&
+              (await dispatch(
+                walletConnectSendStatus(peerId, requestId, {
+                  error: error || 'User cancelled the request',
+                })
+              ));
             dispatch(removeRequest(requestId));
           }
           const rejectionType =
@@ -434,19 +435,19 @@ export default function TransactionConfirmationScreen() {
 
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
-  useEffect(() => {
-    if (!peerId) {
-      Alert.alert(
-        'Connection Expired',
-        'Please go back to the dapp and reconnect it to your wallet',
-        [
-          {
-            onPress: () => onCancel(),
-          },
-        ]
-      );
-    }
-  }, [goBack, onCancel, peerId]);
+  // useEffect(() => {
+  //   if (!peerId) {
+  //     Alert.alert(
+  //       'Connection Expired',
+  //       'Please go back to the dapp and reconnect it to your wallet',
+  //       [
+  //         {
+  //           onPress: () => onCancel(),
+  //         },
+  //       ]
+  //     );
+  //   }
+  // }, [goBack, onCancel, peerId]);
 
   const calculateGasLimit = useCallback(async () => {
     calculatingGasLimit.current = true;
@@ -756,7 +757,10 @@ export default function TransactionConfirmationScreen() {
       analytics.track('Approved WalletConnect signature request');
       if (requestId) {
         dispatch(removeRequest(requestId));
-        await dispatch(walletConnectSendStatus(peerId, requestId, response));
+        !isWalletConnectV2Request &&
+          (await dispatch(
+            walletConnectSendStatus(peerId, requestId, response)
+          ));
       }
       if (callback) {
         callback({ sig: result });
@@ -766,18 +770,19 @@ export default function TransactionConfirmationScreen() {
       await onCancel(error);
     }
   }, [
+    method,
     accountInfo.address,
+    provider,
+    params,
+    requestId,
     callback,
     closeScreen,
     dispatch,
-    method,
-    onCancel,
-    params,
-    peerId,
     removeRequest,
-    requestId,
+    isWalletConnectV2Request,
     walletConnectSendStatus,
-    provider,
+    peerId,
+    onCancel,
   ]);
 
   const onConfirm = useCallback(async () => {

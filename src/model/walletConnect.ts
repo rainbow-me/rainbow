@@ -265,13 +265,14 @@ export const walletConnectInit = async (store: any) => {
             if (requestToApprove) {
               InteractionManager.runAfterInteractions(() => {
                 Navigation.handleAction(Routes.CONFIRM_REQUEST, {
-                  callback: async (res: { error: string; result: string }) => {
-                    const { error, result } = res;
+                  callback: async (res: { error: string; sig: string }) => {
+                    const { error, sig } = res;
+                    wcLogger('res', res);
                     await client.respond({
                       response: {
                         id: request.id,
                         jsonrpc: '2.0',
-                        ...{ error, result },
+                        ...{ error, result: sig },
                       },
                       topic,
                     });
