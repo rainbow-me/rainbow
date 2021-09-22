@@ -80,10 +80,9 @@ export const parseTransactions = async (
   const allL2Transactions = existingTransactions.filter(tx =>
     isL2Network(tx.network || '')
   );
-  const data = transactionData;
-  // appended
-  //   ? transactionData
-  //   : dataFromLastTxHash(transactionData, existingTransactions);
+  const data = appended
+    ? transactionData
+    : dataFromLastTxHash(transactionData, existingTransactions);
 
   const newTransactionPromises = data.map(txn =>
     parseTransaction(txn, nativeCurrency, purchaseTransactionHashes, network)
