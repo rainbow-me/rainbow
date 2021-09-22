@@ -1,12 +1,12 @@
 import { Contract } from '@ethersproject/contracts';
 import { toLower } from 'lodash';
+import { AssetTypes } from '@rainbow-me/entities';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   ARBITRUM_ETH_ADDRESS,
   erc20ABI,
   ETH_ADDRESS,
   MATIC_POLYGON_ADDRESS,
-  OPTIMISM_ETH_ADDRESS,
 } from '@rainbow-me/references';
 import {
   convertAmountToBalanceDisplay,
@@ -18,10 +18,20 @@ const nativeAssetsPerNetwork = {
   [networkTypes.goerli]: ETH_ADDRESS,
   [networkTypes.kovan]: ETH_ADDRESS,
   [networkTypes.mainnet]: ETH_ADDRESS,
-  [networkTypes.optimism]: OPTIMISM_ETH_ADDRESS,
   [networkTypes.polygon]: MATIC_POLYGON_ADDRESS,
   [networkTypes.ropsten]: ETH_ADDRESS,
 };
+
+export function isL2Asset(type) {
+  switch (type) {
+    case AssetTypes.arbitrum:
+    case AssetTypes.optimism:
+    case AssetTypes.polygon:
+      return true;
+    default:
+      return false;
+  }
+}
 
 export function isNativeAsset(address, network) {
   return toLower(nativeAssetsPerNetwork[network]) === toLower(address);
@@ -36,7 +46,7 @@ export async function getOnchainAssetBalance(
   // Check if it's the native chain asset
   if (isNativeAsset(address, network)) {
     return getOnchainNativeAssetBalance(
-      { address, decimals, symbol },
+      { decimals, symbol },
       userAddress,
       provider
     );
@@ -76,7 +86,7 @@ async function getOnchainTokenBalance(
 }
 
 async function getOnchainNativeAssetBalance(
-  { address, decimals, symbol },
+  { decimals, symbol },
   userAddress,
   provider
 ) {
@@ -87,7 +97,6 @@ async function getOnchainNativeAssetBalance(
       decimals
     );
     const displayBalance = convertAmountToBalanceDisplay(tokenBalance, {
-      address,
       decimals,
       symbol,
     });

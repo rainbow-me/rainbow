@@ -12,6 +12,91 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.25](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.25)
+
+
+
+### Changed
+* Improved App Error Boundary Reporting
+
+## [1.5.24](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.24)
+
+### Added
+* App Error Boundary
+
+### Changed
+* Send Full WC Errors 
+
+## [1.5.23](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.23)
+
+### Added
+* SVG support 
+
+### Changed
+* Enabled Arbitrum 
+* WalletConnect improvements
+* UniswapAssetsInWallet improvements
+
+
+## [1.5.22](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.22)
+
+
+### Changed
+* Discover performance improvements
+* Improved debug & transaction analytics
+
+## [1.5.21](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.21)
+
+
+### Changed
+* Added Opensea API key
+* Ethers pending transactions
+
+
+## [1.5.20](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.20)
+
+### Added
+* EIP-618 support
+* Support for multiple cloud backups 
+* Search ENS domains in Discover
+
+### Changed
+* Walletconnect speed improvements
+* SVG bug fixes
+
+
+## [1.5.19](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.19)
+
+### Added
+* Add QR support for wc links
+
+### Changed
+* Fix WalletConnect timeout
+* Fix edge cases in send sheet - ENS suggestions
+* Remove unnecesary LP calls
+
+## [1.5.18](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.18)
+
+### Added
+* Enabled Layer 2 Support: Optimism & Polygon
+* Send Sheet - ENS Suggestions
+
+### Changed
+* WalletConnect account + network selection
+* WalletConnect timeout
+* Avatars for contacts
+* Default gas limit changes
+
+## [1.5.17](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.17)
+
+### Added
+* Merged & Disabled Layer 2 support
+
+### Changed
+* WalletConnect improvements
+* Fix rerenders on Wallet Screen
+* Fix Token Icons & Color
+
 ## [1.5.16](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.16)
 
 ### Added

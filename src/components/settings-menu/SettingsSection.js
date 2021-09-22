@@ -44,6 +44,7 @@ const { RainbowRequestReview, RNReview } = NativeModules;
 
 export const SettingsExternalURLs = {
   rainbowHomepage: 'https://rainbow.me',
+  rainbowLearn: 'https://rainbow.me/learn',
   review:
     'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review',
   twitterDeepLink: 'twitter://user?screen_name=rainbowdotme',
@@ -115,7 +116,7 @@ const checkAllWallets = wallets => {
     ) {
       areBackedUp = false;
     }
-    if (!wallets[key].type !== WalletTypes.readOnly) {
+    if (wallets[key].type !== WalletTypes.readOnly) {
       canBeBackedUp = true;
     }
   });
@@ -136,7 +137,7 @@ export default function SettingsSection({
   const isReviewAvailable = false;
   const { wallets, isReadOnlyWallet } = useWallets();
   const { /*language,*/ nativeCurrency, network } = useAccountSettings();
-  const { isTinyPhone } = useDimensions();
+  const { isSmallPhone } = useDimensions();
 
   const { colors, isDarkMode, setTheme, colorScheme } = useTheme();
 
@@ -170,6 +171,11 @@ export default function SettingsSection({
     );
   }, []);
 
+  const onPressLearn = useCallback(
+    () => Linking.openURL(SettingsExternalURLs.rainbowLearn),
+    []
+  );
+
   const { allBackedUp, areBackedUp, canBeBackedUp } = useMemo(
     () => checkAllWallets(wallets),
     [wallets]
@@ -192,8 +198,8 @@ export default function SettingsSection({
   return (
     <Container backgroundColor={colors.white}>
       <ScrollContainer
-        contentContainerStyle={!isTinyPhone && scrollContainerStyle}
-        scrollEnabled={isTinyPhone}
+        contentContainerStyle={!isSmallPhone && scrollContainerStyle}
+        scrollEnabled={isSmallPhone}
       >
         <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
           {canBeBackedUp && (
@@ -301,6 +307,13 @@ export default function SettingsSection({
             onPress={onPressShare}
             testID="share-section"
             value={SettingsExternalURLs.rainbowHomepage}
+          />
+          <ListItem
+            icon={<Emoji name="brain" />}
+            label="Learn about Rainbow and Ethereum"
+            onPress={onPressLearn}
+            testID="learn-section"
+            value={SettingsExternalURLs.rainbowLearn}
           />
           <ListItem
             icon={<Emoji name="bird" />}

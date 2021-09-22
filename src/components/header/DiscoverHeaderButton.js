@@ -49,10 +49,9 @@ export default function DiscoverHeaderButton() {
     navigate,
   ]);
 
-  const onLongPress = useCallback(
-    () => navigate(Routes.SHOWCASE_SHEET, { address: 'vitalik.eth' }),
-    [navigate]
-  );
+  const onLongPress = useCallback(() => navigate(Routes.CONNECTED_DAPPS), [
+    navigate,
+  ]);
 
   const shadows = useMemo(() => DiscoverButtonShadowsFactory(colors), [colors]);
 

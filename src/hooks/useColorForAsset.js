@@ -29,7 +29,7 @@ export default function useColorForAsset(
       ? isDarkMode
         ? colors.brighten(lightModeThemeColors.dark)
         : colors.dark
-      : pseudoRandomArrayItemFromString(address, colors.avatarColor);
+      : pseudoRandomArrayItemFromString(address, colors.avatarBackgrounds);
     return color;
   }, [address, colors, isDarkMode]);
 

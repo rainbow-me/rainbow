@@ -27,6 +27,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider } from 'react-redux';
 import PortalConsumer from './components/PortalConsumer';
+import ErrorBoundary from './components/error-boundary/ErrorBoundary';
 import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
 import {
@@ -37,6 +38,7 @@ import {
 import { MainThemeProvider } from './context/ThemeContext';
 import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
+import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
 import RainbowContextWrapper from './helpers/RainbowContext';
@@ -46,6 +48,7 @@ import { loadAddress } from './model/wallet';
 import { walletConnectInit } from './model/walletConnect';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
+import { explorerInit } from './redux/explorer';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
@@ -92,6 +95,7 @@ class App extends Component {
     // Wallet connect v2
     walletConnectInit(store);
 
+    appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
     await this.handleInitializeAnalytics();
     saveFCMToken();
     this.onTokenRefreshListener = registerTokenRefreshListener();
@@ -224,7 +228,6 @@ class App extends Component {
     if (this.state.appState === 'background' && nextAppState === 'active') {
       store.dispatch(walletConnectLoadState());
     }
-
     this.setState({ appState: nextAppState });
 
     analytics.track('State change', {
@@ -236,24 +239,36 @@ class App extends Component {
   handleNavigatorRef = navigatorRef =>
     Navigation.setTopLevelNavigator(navigatorRef);
 
+  handleTransactionConfirmed = () => {
+    logger.log('Reloading all data from zerion in 10!');
+    setTimeout(() => {
+      logger.log('Reloading all data from zerion NOW!');
+      store.dispatch(explorerInit());
+    }, 10000);
+  };
+
   render = () => (
     <MainThemeProvider>
       <RainbowContextWrapper>
-        <Portal>
-          <SafeAreaProvider>
-            <Provider store={store}>
-              <FlexItem>
-                {this.state.initialRoute && (
-                  <InitialRouteContext.Provider value={this.state.initialRoute}>
-                    <RoutesComponent ref={this.handleNavigatorRef} />
-                    <PortalConsumer />
-                  </InitialRouteContext.Provider>
-                )}
-                <OfflineToast />
-              </FlexItem>
-            </Provider>
-          </SafeAreaProvider>
-        </Portal>
+        <ErrorBoundary>
+          <Portal>
+            <SafeAreaProvider>
+              <Provider store={store}>
+                <FlexItem>
+                  {this.state.initialRoute && (
+                    <InitialRouteContext.Provider
+                      value={this.state.initialRoute}
+                    >
+                      <RoutesComponent ref={this.handleNavigatorRef} />
+                      <PortalConsumer />
+                    </InitialRouteContext.Provider>
+                  )}
+                  <OfflineToast />
+                </FlexItem>
+              </Provider>
+            </SafeAreaProvider>
+          </Portal>
+        </ErrorBoundary>
       </RainbowContextWrapper>
     </MainThemeProvider>
   );

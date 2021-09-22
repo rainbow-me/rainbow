@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated from 'react-native-reanimated';
-import { useValues } from 'react-native-redash';
+import { useValues } from 'react-native-redash/src/v1';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import TouchableBackdrop from '../components/TouchableBackdrop';

@@ -231,6 +231,7 @@ const LiquidityPoolExpandedState = () => {
                 symbol={tokenNames}
                 token1Address={tokenAddresses[0]}
                 token2Address={tokenAddresses[1]}
+                type={asset.type}
                 weight="bold"
               />
             )}
@@ -239,6 +240,7 @@ const LiquidityPoolExpandedState = () => {
                 symbol={tokenNames}
                 token1Address={tokenAddresses[0]}
                 token2Address={tokenAddresses[1]}
+                type={asset.type}
                 weight="bold"
               />
             )}
@@ -251,6 +253,7 @@ const LiquidityPoolExpandedState = () => {
             symbol={tokenNames}
             token1Address={tokenAddresses[0]}
             token2Address={tokenAddresses[1]}
+            type={asset.type}
             weight="heavy"
           />
         </SheetActionButtonRow>

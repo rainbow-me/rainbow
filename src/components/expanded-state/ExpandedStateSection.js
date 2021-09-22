@@ -8,13 +8,18 @@ const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
 })`
   ${padding(android ? 19 : 36, 19, 24)};
-  padding-top: ${({ isL2 }) => (isL2 ? 24 : android ? 19 : 36)};
+  padding-top: ${({ isL2, isNft }) => (isL2 || isNft ? 24 : android ? 19 : 36)};
 `;
 
-export default function ExpandedStateSection({ children, title, ...props }) {
+export default function ExpandedStateSection({
+  children,
+  isNft,
+  title,
+  ...props
+}) {
   const { colors } = useTheme();
   return (
-    <Container {...props}>
+    <Container isNft={isNft} {...props}>
       <Text color={colors.dark} size="larger" weight="heavy">
         {title}
       </Text>

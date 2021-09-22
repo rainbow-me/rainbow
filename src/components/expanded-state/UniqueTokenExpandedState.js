@@ -31,6 +31,10 @@ import {
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
 
+const NftExpandedStateSection = styled(ExpandedStateSection).attrs({
+  isNft: true,
+})``;
+
 const Spacer = styled.View`
   height: ${safeAreaInsetValues.bottom + 20};
 `;
@@ -97,7 +101,7 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
               onPress={handlePressShowcase}
               weight="bold"
             />
-            {isSendable && <SendActionButton />}
+            {isSendable && <SendActionButton asset={asset} />}
           </SheetActionButtonRow>
         ) : (
           <SheetActionButtonRow>
@@ -112,17 +116,17 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
         <SheetDivider />
         <ColumnWithDividers dividerRenderer={SheetDivider}>
           {!!description && (
-            <ExpandedStateSection title="Description">
+            <NftExpandedStateSection title="Description">
               {description}
-            </ExpandedStateSection>
+            </NftExpandedStateSection>
           )}
           {!!traits.length && (
-            <ExpandedStateSection paddingBottom={14} title="Attributes">
+            <NftExpandedStateSection paddingBottom={14} title="Attributes">
               <UniqueTokenAttributes {...asset} />
-            </ExpandedStateSection>
+            </NftExpandedStateSection>
           )}
           {!!familyDescription && (
-            <ExpandedStateSection title={`About ${familyName}`}>
+            <NftExpandedStateSection title={`About ${familyName}`}>
               <Column>
                 <MarkdownText
                   color={colors.alpha(colors.blueGreyDark, 0.5)}
@@ -133,7 +137,7 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
                 </MarkdownText>
                 {familyLink && <Link url={familyLink} />}
               </Column>
-            </ExpandedStateSection>
+            </NftExpandedStateSection>
           )}
         </ColumnWithDividers>
         <Spacer />

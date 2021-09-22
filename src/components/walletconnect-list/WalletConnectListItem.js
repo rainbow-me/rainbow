@@ -74,8 +74,8 @@ export default function WalletConnectListItem({
   const {
     walletConnectV2DisconnectByTopic,
     walletConnectV2UpdateSessionByTopic,
-    walletConnectDisconnectAllByPeerId,
-    walletConnectUpdateSessionConnectorByPeerId,
+    walletConnectDisconnectAllByDappUrl,
+    walletConnectUpdateSessionConnectorByDappUrl,
   } = useWalletConnectConnections();
 
   const { goBack } = useNavigation();
@@ -123,12 +123,12 @@ export default function WalletConnectListItem({
       const updateSession =
         version === 'v2'
           ? walletConnectV2UpdateSessionByTopic
-          : walletConnectUpdateSessionConnectorByPeerId;
+          : walletConnectUpdateSessionConnectorByDappUrl;
       updateSession(id, address, chainId);
     },
     [
       version,
-      walletConnectUpdateSessionConnectorByPeerId,
+      walletConnectUpdateSessionConnectorByDappUrl,
       walletConnectV2UpdateSessionByTopic,
     ]
   );
@@ -138,12 +138,12 @@ export default function WalletConnectListItem({
       const disconnectSession =
         version === 'v2'
           ? walletConnectV2DisconnectByTopic
-          : walletConnectDisconnectAllByPeerId;
+          : walletConnectDisconnectAllByDappUrl;
       disconnectSession(id);
     },
     [
       version,
-      walletConnectDisconnectAllByPeerId,
+      walletConnectDisconnectAllByDappUrl,
       walletConnectV2DisconnectByTopic,
     ]
   );
@@ -282,19 +282,26 @@ export default function WalletConnectListItem({
               </Centered>
             </SessionRow>
           </ColumnWithMargins>
-          <NetworkPill mainnet={connectionNetworkInfo.value === 'mainnet'}>
-            <ChainLogo network={connectionNetworkInfo.value} />
-            <LabelText
-              color={
-                connectionNetworkInfo.value === 'mainnet'
-                  ? colors.alpha(colors.blueGreyDark, 0.5)
-                  : colors.alpha(colors.blueGreyDark, 0.8)
-              }
-              numberOfLines={1}
-            >
-              {connectionNetworkInfo.name}
-            </LabelText>
-          </NetworkPill>
+          <ContextMenuButton
+            menuItems={networksMenuItems()}
+            menuTitle="Change Network"
+            onPressAndroid={onPressAndroid}
+            onPressMenuItem={handleOnPressMenuItem}
+          >
+            <NetworkPill mainnet={connectionNetworkInfo.value === 'mainnet'}>
+              <ChainLogo network={connectionNetworkInfo.value} />
+              <LabelText
+                color={
+                  connectionNetworkInfo.value === 'mainnet'
+                    ? colors.alpha(colors.blueGreyDark, 0.5)
+                    : colors.alpha(colors.blueGreyDark, 0.8)
+                }
+                numberOfLines={1}
+              >
+                {connectionNetworkInfo.name}
+              </LabelText>
+            </NetworkPill>
+          </ContextMenuButton>
         </Row>
       </Row>
     </ContextMenuButton>

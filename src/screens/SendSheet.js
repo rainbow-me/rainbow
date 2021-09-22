@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
-import { isEmpty, isString, toLower } from 'lodash';
+import { isEmpty, isEqual, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
@@ -18,8 +18,9 @@ import {
   SendHeader,
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
-import { AssetType, AssetTypes } from '@rainbow-me/entities';
-import { isNativeAsset } from '@rainbow-me/handlers/assets';
+import { AssetTypes } from '@rainbow-me/entities';
+import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';
+import { debouncedFetchSuggestions } from '@rainbow-me/handlers/ens';
 import {
   createSignableTransaction,
   estimateGasLimit,
@@ -65,6 +66,7 @@ import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
   formatInputDecimals,
+  lessThan,
 } from '@rainbow-me/utilities';
 import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -97,24 +99,76 @@ const KeyboardSizeView = styled(KeyboardArea)`
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
-  const { isTinyPhone } = useDimensions();
+  const { deviceWidth, isTinyPhone } = useDimensions();
   const { goBack, navigate, addListener } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const { allAssets } = useAccountAssets();
   const {
     gasLimit,
+    gasPrices,
     isSufficientGas,
     prevSelectedGasPrice,
     selectedGasPrice,
     startPollingGasPrices,
     stopPollingGasPrices,
+    txFees,
     updateDefaultGasLimit,
     updateTxFee,
   } = useGas();
   const isDismissing = useRef(false);
 
   const recipientFieldRef = useRef();
+
+  const { contacts, onRemoveContact, filteredContacts } = useContacts();
+  const { userAccounts, watchedAccounts } = useUserAccounts();
+  const { sendableUniqueTokens } = useSendableUniqueTokens();
+  const { accountAddress, nativeCurrency, network } = useAccountSettings();
+
+  const savings = useSendSavingsAccount();
+  const fetchData = useRefreshAccountData();
+  const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
+  const [toAddress, setToAddress] = useState();
+  const [amountDetails, setAmountDetails] = useState({
+    assetAmount: '',
+    isSufficientBalance: false,
+    nativeAmount: '',
+  });
+  const [currentNetwork, setCurrentNetwork] = useState();
+  const prevNetwork = usePrevious(currentNetwork);
+  const [currentInput, setCurrentInput] = useState('');
+
+  const { params } = useRoute();
+  const assetOverride = params?.asset;
+  const prevAssetOverride = usePrevious(assetOverride);
+
+  const recipientOverride = params?.address;
+  const nativeAmountOverride = params?.nativeAmount;
+  const [recipient, setRecipient] = useState('');
+  const [selected, setSelected] = useState({});
+  const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
+
+  const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
+  const [currentProvider, setCurrentProvider] = useState();
+  const { colors, isDarkMode } = useTheme();
+
+  const showEmptyState = !isValidAddress;
+  const showAssetList = isValidAddress && isEmpty(selected);
+  const showAssetForm = isValidAddress && !isEmpty(selected);
+
+  const isNft = selected?.type === AssetTypes.nft;
+  let color = useColorForAsset({
+    address: selected?.mainnet_address || selected.address,
+  });
+  if (isNft) {
+    color = colors.appleBlue;
+  }
+
+  const isL2 = useMemo(() => {
+    return isL2Network(currentNetwork);
+  }, [currentNetwork]);
+
+  const { triggerFocus } = useMagicAutofocus(recipientFieldRef);
 
   useEffect(() => {
     if (ios) {
@@ -138,77 +192,6 @@ export default function SendSheet(props) {
       dismissingScreenListener.current = undefined;
     };
   }, [addListener]);
-  const { contacts, onRemoveContact, filteredContacts } = useContacts();
-  const { userAccounts } = useUserAccounts();
-  const { sendableUniqueTokens } = useSendableUniqueTokens();
-  const { accountAddress, nativeCurrency, network } = useAccountSettings();
-
-  const savings = useSendSavingsAccount();
-  const fetchData = useRefreshAccountData();
-  const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
-  const [toAddress, setToAddress] = useState();
-  const [amountDetails, setAmountDetails] = useState({
-    assetAmount: '',
-    isSufficientBalance: false,
-    nativeAmount: '',
-  });
-  const [currentNetwork, setCurrentNetwork] = useState();
-  const prevNetwork = usePrevious(currentNetwork);
-  const [currentInput, setCurrentInput] = useState('');
-  const [isValidAddress, setIsValidAddress] = useState(false);
-  const [recipient, setRecipient] = useState('');
-  const [selected, setSelected] = useState({});
-  const { maxInputBalance, updateMaxInputBalance } = useMaxInputBalance();
-  const [currentProvider, setCurrentProvider] = useState();
-  const { colors, isDarkMode } = useTheme();
-
-  const showEmptyState = !isValidAddress;
-  const showAssetList = isValidAddress && isEmpty(selected);
-  const showAssetForm = isValidAddress && !isEmpty(selected);
-
-  const isNft = selected?.type === AssetTypes.nft;
-  let color = useColorForAsset({
-    address: selected?.mainnet_address || selected.address,
-  });
-  if (isNft) {
-    color = colors.appleBlue;
-  }
-
-  const isL2 = useMemo(() => {
-    return isL2Network(currentNetwork);
-  }, [currentNetwork]);
-
-  const { triggerFocus } = useMagicAutofocus(recipientFieldRef);
-
-  useEffect(() => {
-    // We can start fetching gas prices
-    // after we know the network that the asset
-    // belongs to
-    if (prevNetwork !== currentNetwork) {
-      InteractionManager.runAfterInteractions(() =>
-        startPollingGasPrices(currentNetwork)
-      );
-    }
-    return () => {
-      InteractionManager.runAfterInteractions(() => stopPollingGasPrices());
-    };
-  }, [
-    currentNetwork,
-    prevNetwork,
-    startPollingGasPrices,
-    stopPollingGasPrices,
-  ]);
-
-  // Recalculate balance when gas price changes
-  useEffect(() => {
-    if (
-      selected?.address === ETH_ADDRESS &&
-      (prevSelectedGasPrice?.txFee?.value?.amount ?? 0) !==
-        (selectedGasPrice?.txFee?.value?.amount ?? 0)
-    ) {
-      updateMaxInputBalance(selected);
-    }
-  }, [prevSelectedGasPrice, selected, selectedGasPrice, updateMaxInputBalance]);
 
   const sendUpdateAssetAmount = useCallback(
     newAssetAmount => {
@@ -242,6 +225,7 @@ export default function SendSheet(props) {
 
   const sendUpdateSelected = useCallback(
     newSelected => {
+      if (isEqual(newSelected, selected)) return;
       updateMaxInputBalance(newSelected);
       if (newSelected?.type === AssetTypes.nft) {
         setAmountDetails({
@@ -260,41 +244,73 @@ export default function SendSheet(props) {
       } else {
         setSelected(newSelected);
         sendUpdateAssetAmount('');
-        // Since we don't trust the balance from zerion,
-        // let's hit the blockchain and update it
-        if (currentProvider) {
-          updateAssetOnchainBalanceIfNeeded(
-            newSelected,
-            accountAddress,
-            currentNetwork,
-            currentProvider,
-            updatedAsset => {
-              // set selected asset with new balance
-              setSelected(updatedAsset);
-              // Update selected to recalculate the maxInputAmount
-              sendUpdateSelected(updatedAsset);
-            }
-          );
-        }
       }
     },
-    [
-      accountAddress,
-      currentNetwork,
-      currentProvider,
-      selected?.uniqueId,
-      sendUpdateAssetAmount,
-      updateAssetOnchainBalanceIfNeeded,
-      updateMaxInputBalance,
-    ]
+    [selected, sendUpdateAssetAmount, updateMaxInputBalance]
   );
+
+  // Update all fields passed via params if needed
+  useEffect(() => {
+    if (recipientOverride && !recipient) {
+      setIsValidAddress(true);
+      setRecipient(recipientOverride);
+    }
+
+    if (assetOverride && assetOverride !== prevAssetOverride) {
+      sendUpdateSelected(assetOverride);
+      updateMaxInputBalance(assetOverride);
+    }
+
+    if (nativeAmountOverride && !amountDetails.assetAmount && maxInputBalance) {
+      sendUpdateAssetAmount(nativeAmountOverride);
+    }
+  }, [
+    amountDetails,
+    assetOverride,
+    maxInputBalance,
+    nativeAmountOverride,
+    prevAssetOverride,
+    recipient,
+    recipientOverride,
+    sendUpdateAssetAmount,
+    sendUpdateSelected,
+    updateMaxInputBalance,
+  ]);
+
+  useEffect(() => {
+    // We can start fetching gas prices
+    // after we know the network that the asset
+    // belongs to
+    if (prevNetwork !== currentNetwork) {
+      InteractionManager.runAfterInteractions(() => {
+        startPollingGasPrices(currentNetwork);
+      });
+    }
+  }, [currentNetwork, prevNetwork, startPollingGasPrices]);
+
+  // Stop polling when the sheet is unmounted
+  useEffect(() => {
+    return () => {
+      InteractionManager.runAfterInteractions(() => {
+        stopPollingGasPrices();
+      });
+    };
+  }, [stopPollingGasPrices]);
+
+  // Recalculate balance when gas price changes
+  useEffect(() => {
+    if (
+      selected?.address === ETH_ADDRESS &&
+      (prevSelectedGasPrice?.txFee?.value?.amount ?? 0) !==
+        (selectedGasPrice?.txFee?.value?.amount ?? 0)
+    ) {
+      updateMaxInputBalance(selected);
+    }
+  }, [prevSelectedGasPrice, selected, selectedGasPrice, updateMaxInputBalance]);
 
   useEffect(() => {
     const updateNetworkAndProvider = async () => {
-      const assetNetwork =
-        selected?.type === AssetType.token || selected?.type === AssetType.nft
-          ? network
-          : selected.type;
+      const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
       if (
         selected?.type &&
         (assetNetwork !== currentNetwork ||
@@ -303,11 +319,11 @@ export default function SendSheet(props) {
       ) {
         let provider = web3Provider;
         switch (selected.type) {
-          case AssetType.polygon:
+          case AssetTypes.polygon:
             setCurrentNetwork(networkTypes.polygon);
             provider = await getProviderForNetwork(networkTypes.polygon);
             break;
-          case AssetType.arbitrum:
+          case AssetTypes.arbitrum:
             setCurrentNetwork(networkTypes.arbitrum);
             provider = await getProviderForNetwork(networkTypes.arbitrum);
             break;
@@ -332,16 +348,36 @@ export default function SendSheet(props) {
   ]);
 
   useEffect(() => {
+    if (isEmpty(selected)) return;
     if (currentProvider?._network?.chainId) {
       const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
         currentProvider._network.chainId
       );
-      if (currentProviderNetwork === currentNetwork) {
-        sendUpdateSelected(selected);
+
+      const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
+
+      if (
+        assetNetwork === currentNetwork &&
+        currentProviderNetwork === currentNetwork
+      ) {
+        updateAssetOnchainBalanceIfNeeded(
+          selected,
+          accountAddress,
+          currentNetwork,
+          currentProvider,
+          updatedAsset => {
+            // set selected asset with new balance
+            if (!isEqual(selected, updatedAsset)) {
+              setSelected(updatedAsset);
+              updateMaxInputBalance(updatedAsset);
+              sendUpdateAssetAmount('');
+            }
+          }
+        );
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentProvider, currentNetwork, selected]);
+  }, [accountAddress, currentProvider, currentNetwork, selected]);
 
   const onChangeNativeAmount = useCallback(
     newNativeAmount => {
@@ -423,30 +459,35 @@ export default function SendSheet(props) {
             recipient: toAddress,
           },
           true,
+          currentProvider,
           currentNetwork
         );
-        logger.log('gasLimit updated before sending', {
-          after: updatedGasLimit,
-          before: gasLimit,
-        });
 
-        updateTxFee(updatedGasLimit, null, currentNetwork);
+        if (!lessThan(updatedGasLimit, gasLimit)) {
+          updateTxFee(updatedGasLimit, null, currentNetwork);
+        }
         // eslint-disable-next-line no-empty
       } catch (e) {}
     }
 
+    const gasLimitToUse =
+      updatedGasLimit && !lessThan(updatedGasLimit, gasLimit)
+        ? updatedGasLimit
+        : gasLimit;
+
+    logger.log('gasLimit', gasLimitToUse);
     const txDetails = {
       amount: amountDetails.assetAmount,
       asset: selected,
       from: accountAddress,
-      gasLimit: updatedGasLimit || gasLimit,
+      gasLimit: gasLimitToUse,
       gasPrice: selectedGasPrice.value?.amount,
       nonce: null,
       to: toAddress,
     };
     try {
       const signableTransaction = await createSignableTransaction(txDetails);
-      const txResult = await sendTransaction({
+      const { result: txResult } = await sendTransaction({
         provider: currentProvider,
         transaction: signableTransaction,
       });
@@ -480,8 +521,7 @@ export default function SendSheet(props) {
     isSufficientGas,
     isValidAddress,
     selected,
-    selectedGasPrice.txFee,
-    selectedGasPrice.value?.amount,
+    selectedGasPrice,
     toAddress,
     updateTxFee,
   ]);
@@ -549,7 +589,10 @@ export default function SendSheet(props) {
       nativeToken = 'MATIC';
     }
 
-    if (!isZeroAssetAmount && !isSufficientGas) {
+    if (isEmpty(gasPrices) || !selectedGasPrice || isEmpty(txFees)) {
+      label = `Loading...`;
+      disabled = true;
+    } else if (!isZeroAssetAmount && !isSufficientGas) {
       disabled = true;
       label = `Insufficient ${nativeToken}`;
     } else if (!isZeroAssetAmount && !amountDetails.isSufficientBalance) {
@@ -564,8 +607,11 @@ export default function SendSheet(props) {
   }, [
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
+    gasPrices,
     isSufficientGas,
     network,
+    selectedGasPrice,
+    txFees,
   ]);
 
   const showConfirmationSheet = useCallback(async () => {
@@ -635,8 +681,8 @@ export default function SendSheet(props) {
   }, []);
 
   useEffect(() => {
-    updateDefaultGasLimit();
-  }, [updateDefaultGasLimit]);
+    updateDefaultGasLimit(network);
+  }, [updateDefaultGasLimit, network]);
 
   useEffect(() => {
     if (
@@ -647,35 +693,46 @@ export default function SendSheet(props) {
     }
   }, [isValidAddress, selected, showAssetForm, showAssetList]);
 
-  const { params } = useRoute();
-  const assetOverride = params?.asset;
-  const prevAssetOverride = usePrevious(assetOverride);
-
-  useEffect(() => {
-    if (assetOverride && assetOverride !== prevAssetOverride) {
-      sendUpdateSelected(assetOverride);
+  const checkAddress = useCallback(async recipient => {
+    if (recipient) {
+      const validAddress = await checkIsValidAddressOrDomain(recipient);
+      setIsValidAddress(validAddress);
     }
-  }, [assetOverride, prevAssetOverride, sendUpdateSelected]);
+  }, []);
 
-  const recipientOverride = params?.address;
-
+  const [ensSuggestions, setEnsSuggestions] = useState([]);
   useEffect(() => {
-    if (recipientOverride && !recipient) {
-      setRecipient(recipientOverride);
+    if (network === networkTypes.mainnet && !recipientOverride) {
+      debouncedFetchSuggestions(recipient, setEnsSuggestions);
+    } else {
+      setEnsSuggestions([]);
     }
-  }, [recipient, recipientOverride]);
-
-  const checkAddress = useCallback(async () => {
-    const validAddress = await checkIsValidAddressOrDomain(recipient);
-    setIsValidAddress(validAddress);
-  }, [recipient]);
-
-  useEffect(() => {
-    checkAddress();
-  }, [checkAddress]);
+  }, [
+    network,
+    recipient,
+    recipientOverride,
+    setEnsSuggestions,
+    watchedAccounts,
+  ]);
 
   useEffect(() => {
-    if (isValidAddress && !isEmpty(selected) && currentNetwork) {
+    checkAddress(recipient);
+  }, [checkAddress, recipient]);
+
+  useEffect(() => {
+    if (!currentProvider?._network?.chainId) return;
+    const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
+      currentProvider._network.chainId
+    );
+    const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
+
+    if (
+      assetNetwork === currentNetwork &&
+      currentProviderNetwork === currentNetwork &&
+      isValidAddress &&
+      !isEmpty(selected) &&
+      !isEmpty(gasPrices)
+    ) {
       estimateGasLimit(
         {
           address: accountAddress,
@@ -704,6 +761,8 @@ export default function SendSheet(props) {
     selected,
     toAddress,
     updateTxFee,
+    network,
+    gasPrices,
   ]);
 
   return (
@@ -722,14 +781,17 @@ export default function SendSheet(props) {
           removeContact={onRemoveContact}
           showAssetList={showAssetList}
           userAccounts={userAccounts}
+          watchedAccounts={watchedAccounts}
         />
         {showEmptyState && (
           <SendContactList
             contacts={filteredContacts}
             currentInput={currentInput}
+            ensSuggestions={ensSuggestions}
             onPressContact={setRecipient}
             removeContact={onRemoveContact}
             userAccounts={userAccounts}
+            watchedAccounts={watchedAccounts}
           />
         )}
         {showAssetList && (
@@ -751,6 +813,7 @@ export default function SendSheet(props) {
             assetAmount={amountDetails.assetAmount}
             buttonRenderer={
               <SheetActionButton
+                androidWidth={deviceWidth - 60}
                 color={color}
                 disabled={buttonDisabled}
                 forceShadows
@@ -775,7 +838,8 @@ export default function SendSheet(props) {
                 currentNetwork={currentNetwork}
                 horizontalPadding={isTinyPhone ? 0 : 5}
                 options={
-                  currentNetwork === networkTypes.optimism
+                  currentNetwork === networkTypes.optimism ||
+                  currentNetwork === networkTypes.arbitrum
                     ? ['normal']
                     : undefined
                 }

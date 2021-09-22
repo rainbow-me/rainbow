@@ -1,8 +1,9 @@
 {
+    "maxWorkers": 4,
     "setupFilesAfterEnv": ["./init.js"],
     "testEnvironment": "./environment",
     "testRunner": "jest-circus/runner",
-    "testTimeout": 200000,
+    "testTimeout": 120000,
     "testRegex": "\\.spec\\.js$",
     "reporters": ["detox/runners/jest/streamlineReporter"],
     "verbose": true,

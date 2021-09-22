@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Animated, { Easing } from 'react-native-reanimated';
+import Animated, { EasingNode } from 'react-native-reanimated';
 import { useMemoOne } from 'use-memo-one';
 import { interpolate, timing } from '../animations';
 import { Emoji } from '../text';
@@ -25,7 +25,7 @@ const FloatingEmoji = ({
   wiggleFactor,
 }) => {
   const { opacity, rotate, scale, translateX, translateY } = useMemoOne(() => {
-    const animation = timing({ duration, easing: Easing.elastic() });
+    const animation = timing({ duration, easing: EasingNode.elastic() });
     const progress = interpolate(animation, {
       inputRange: [0, 1],
       outputRange: [0, distance],

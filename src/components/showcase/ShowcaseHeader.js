@@ -19,7 +19,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, padding } from '@rainbow-me/styles';
-import { abbreviations, defaultProfileUtils } from '@rainbow-me/utils';
+import { abbreviations, profileUtils } from '@rainbow-me/utils';
 
 export const ShowcaseContext = createContext();
 
@@ -68,7 +68,7 @@ const ENSAddress = styled(Text).attrs(({ theme: { colors } }) => ({
   width: 100%;
 `;
 
-const avatarColor = defaultProfileUtils.emojiColorIndexes.map(
+const avatarColor = profileUtils.emojiColorIndexes.map(
   idx => colors.avatarBackgrounds[idx]
 );
 
@@ -101,7 +101,7 @@ export function Header() {
     if (emojiFromContext) {
       return emojiFromContext;
     }
-    return defaultProfileUtils.popularEmojis[hash];
+    return profileUtils.popularEmojis[hash];
   }, [contextValue?.data?.profile?.accountSymbol, hash]);
 
   const color = useMemo(() => {
@@ -115,31 +115,46 @@ export function Header() {
   const onAddToContact = useCallback(async () => {
     const contacts = await getContacts();
     const currentContact = contacts[contextValue?.address];
-
+    const nickname =
+      contextValue?.data?.reverseEns ||
+      (isHexString(contextValue?.addressOrDomain)
+        ? abbreviations.address(contextValue?.addressOrDomain, 4, 4)
+        : contextValue?.addressOrDomain);
     navigate(Routes.MODAL_SCREEN, {
       address: contextValue?.address,
-      color,
+      color: currentContact?.color || color,
       contact: currentContact || {
         address: contextValue?.address,
-        color,
-        nickname: contextValue?.data?.reverseEns,
+        color: currentContact?.color || color,
+        nickname: `${emoji} ${nickname}`,
         temporary: true,
       },
       type: 'contact_profile',
     });
-  }, [color, contextValue?.address, contextValue?.data?.reverseEns, navigate]);
+  }, [
+    color,
+    contextValue?.address,
+    contextValue?.addressOrDomain,
+    contextValue?.data?.reverseEns,
+    emoji,
+    navigate,
+  ]);
 
   const onSend = useCallback(async () => {
     goBack();
     if (isNativeStackAvailable || android) {
       navigate(Routes.SEND_FLOW, {
-        params: { address: contextValue?.address },
+        params: {
+          address: contextValue?.addressOrDomain || contextValue?.address,
+        },
         screen: Routes.SEND_SHEET,
       });
     } else {
-      navigate(Routes.SEND_FLOW, { address: contextValue?.address });
+      navigate(Routes.SEND_FLOW, {
+        address: contextValue?.addressOrDomain || contextValue?.address,
+      });
     }
-  }, [contextValue?.address, goBack, navigate]);
+  }, [contextValue?.address, contextValue?.addressOrDomain, goBack, navigate]);
 
   const { handleSetSeedPhrase, handlePressImportButton } = useImportingWallet();
 
@@ -168,7 +183,7 @@ export function Header() {
       : contextValue?.address?.toLowerCase();
 
   return (
-    <HeaderWrapper height={350}>
+    <HeaderWrapper height={350} testID="showcase-header-wrapper">
       <SheetHandle />
       <Spacer />
       <AvatarCircle

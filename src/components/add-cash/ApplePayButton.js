@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo } from 'react';
-import Animated, { Easing } from 'react-native-reanimated';
-import { mixColor, useTimingTransition } from 'react-native-redash';
+import Animated, { EasingNode } from 'react-native-reanimated';
+import { mixColor, useTimingTransition } from 'react-native-redash/src/v1';
 import { useTheme } from '../../context/ThemeContext';
 import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation, interpolate } from '../animations';
@@ -48,7 +48,7 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
 
   const disabledAnimation = useTimingTransition(!disabled, {
     duration: 66,
-    ease: Easing.out(Easing.ease),
+    ease: EasingNode.out(EasingNode.ease),
   });
 
   const backgroundColor = mixColor(

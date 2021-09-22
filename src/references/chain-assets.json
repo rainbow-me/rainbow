@@ -210,6 +210,24 @@
       },
       {
         "asset": {
+          "mainnet_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "asset_code": "0x7f5c764cbc14f9669b88837ca1490cca17c31607",
+          "coingecko_id": "usd-coin",
+          "decimals": 8,
+          "icon_url": "https://s3.amazonaws.com/icons.assets/USDC.png",
+          "name": "USD Coin",
+          "price": {
+            "changed_at": 1582562452,
+            "relative_change_24h": 0.01,
+            "value": 1
+          },
+          "symbol": "USD",
+          "type": "optimism"
+        },
+        "quantity": 0
+      },
+      {
+        "asset": {
           "mainnet_address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
           "asset_code": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
           "coingecko_id": "tether",

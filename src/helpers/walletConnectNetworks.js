@@ -33,7 +33,7 @@ export const changeConnectionMenuItems = () => {
       actionTitle: 'Disconnect',
       icon: {
         iconType: 'SYSTEM',
-        iconValue: 'xmark.circle.fill',
+        iconValue: 'xmark.square',
       },
       menuAttributes: ['destructive'],
     },
@@ -71,11 +71,13 @@ export const androidShowNetworksActionSheet = callback => {
       title: `Available Networks`,
     },
     idx => {
-      const { value } = androidReverseNetworkWithName(
-        androidNetworkActions[idx]
-      );
-      const chainId = ethereumUtils.getChainIdFromNetwork(value);
-      callback({ chainId, network: value });
+      if (idx !== undefined) {
+        const { value } = androidReverseNetworkWithName(
+          androidNetworkActions[idx]
+        );
+        const chainId = ethereumUtils.getChainIdFromNetwork(value);
+        callback({ chainId, network: value });
+      }
     }
   );
 };

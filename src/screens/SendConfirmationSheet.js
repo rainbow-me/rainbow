@@ -1,8 +1,8 @@
 import { useRoute } from '@react-navigation/native';
+import { toChecksumAddress } from 'ethereumjs-util';
 import { capitalize, get, toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect } from 'react';
-import { StatusBar } from 'react-native';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { Keyboard, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
@@ -14,6 +14,7 @@ import { ButtonPressAnimation } from '../components/animations';
 import { CoinIcon } from '../components/coin-icon';
 import RequestVendorLogoIcon from '../components/coin-icon/RequestVendorLogoIcon';
 import { ContactAvatar } from '../components/contacts';
+import ImageAvatar from '../components/contacts/ImageAvatar';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import { SendButton } from '../components/send';
 import { SheetTitle, SlackSheet } from '../components/sheet';
@@ -22,10 +23,12 @@ import { address } from '../utils/abbreviations';
 import {
   addressHashedColorIndex,
   addressHashedEmoji,
-} from '../utils/defaultProfileUtils';
+} from '../utils/profileUtils';
 import { isL2Network } from '@rainbow-me/handlers/web3';
-import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
-import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '@rainbow-me/helpers/emojiHandler';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import {
@@ -92,14 +95,18 @@ const SendButtonWrapper = styled(Column).attrs({
   height: 56;
 `;
 
-export const SendConfirmationSheetHeight = android
-  ? 551 - getSoftMenuBarHeight()
-  : 540;
+export const SendConfirmationSheetHeight = android ? 651 : 540;
 
 const ChevronDown = () => {
   const { colors } = useTheme();
   return (
-    <Column align="center" height={34.5} position="absolute" width={50}>
+    <Column
+      align="center"
+      height={ios ? 34.5 : 30}
+      marginTop={android ? -14 : 0}
+      position="absolute"
+      width={50}
+    >
       <Text
         align="center"
         color={colors.alpha(colors.blueGreyDark, 0.15)}
@@ -167,16 +174,27 @@ export default function SendConfirmationSheet() {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const insets = useSafeArea();
   const { contacts } = useContacts();
-  const { wallets, walletNames } = useWallets();
+
+  useEffect(() => {
+    android && Keyboard.dismiss();
+  }, []);
 
   const {
     params: { asset, amountDetails, callback, isNft, network, to, toAddress },
   } = useRoute();
 
-  const [alreadySentTransactions, setAlreadySentTransactions] = useState(0);
+  const [
+    alreadySentTransactionsTotal,
+    setAlreadySentTransactionsTotal,
+  ] = useState(0);
+  const [
+    alreadySentTransactionsCurrentNetwork,
+    setAlreadySentTransactionsCurrentNetwork,
+  ] = useState(0);
 
   const { transactions } = useAccountTransactions(true, true);
-  const { userAccounts } = useUserAccounts();
+  const { userAccounts, watchedAccounts } = useUserAccounts();
+  const { walletNames } = useWallets();
   const isSendingToUserAccount = useMemo(() => {
     const found = userAccounts?.find(account => {
       return toLower(account.address) === toLower(toAddress);
@@ -187,21 +205,23 @@ export default function SendConfirmationSheet() {
   useEffect(() => {
     if (!isSendingToUserAccount) {
       let sends = 0;
+      let sendsCurrentNetwork = 0;
       transactions.forEach(tx => {
         if (toLower(tx.to) === toLower(toAddress)) {
           sends++;
+          if (tx.network === network) {
+            sendsCurrentNetwork++;
+          }
         }
       });
       if (sends > 0) {
-        setAlreadySentTransactions(sends);
+        setAlreadySentTransactionsTotal(sends);
+        if (sendsCurrentNetwork > 0) {
+          setAlreadySentTransactionsCurrentNetwork(sendsCurrentNetwork);
+        }
       }
     }
-  }, [
-    isSendingToUserAccount,
-    setAlreadySentTransactions,
-    toAddress,
-    transactions,
-  ]);
+  }, [isSendingToUserAccount, network, toAddress, transactions]);
 
   const contact = useMemo(() => {
     return get(contacts, `${[toLower(to)]}`);
@@ -251,7 +271,9 @@ export default function SendConfirmationSheet() {
   }, [network]);
 
   const shouldShowChecks =
-    isL2 && !isSendingToUserAccount && alreadySentTransactions < 3;
+    isL2 &&
+    !isSendingToUserAccount &&
+    alreadySentTransactionsCurrentNetwork < 3;
 
   useEffect(() => {
     setParams({ shouldShowChecks });
@@ -268,37 +290,44 @@ export default function SendConfirmationSheet() {
       await callback();
     } catch (e) {
       logger.sentry('TX submit failed', e);
-    } finally {
       setIsAuthorizing(false);
     }
   }, [callback, canSubmit]);
 
-  const accountProfile = useMemo(() => {
-    const selectedWallet = findWalletWithAccount(wallets, toAddress);
-    const approvalAccountInfo = getAccountProfileInfo(
-      selectedWallet,
-      network,
-      walletNames,
-      toAddress
-    );
-    return {
-      ...approvalAccountInfo,
-    };
-  }, [wallets, toAddress, network, walletNames]);
+  const existingAccount = useMemo(() => {
+    let existingAcct = null;
+    if (toAddress) {
+      const allAccounts = [...userAccounts, ...watchedAccounts].filter(
+        acct => acct.visible
+      );
+      for (const account of allAccounts) {
+        if (
+          toChecksumAddress(account.address) === toChecksumAddress(toAddress)
+        ) {
+          existingAcct = account;
+          break;
+        }
+      }
+    }
+    return existingAcct;
+  }, [toAddress, userAccounts, watchedAccounts]);
 
   const avatarName =
-    contact?.nickname ||
-    accountProfile?.accountName ||
-    (isENSAddressFormat(to) ? to : address(to, 4, 6));
+    removeFirstEmojiFromString(existingAccount?.label || contact?.nickname) ||
+    (isENSAddressFormat(to)
+      ? to
+      : walletNames?.[to]
+      ? walletNames[to]
+      : address(to, 4, 6));
 
   const avatarValue =
+    returnStringFirstEmoji(existingAccount?.label) ||
     contact?.nickname ||
-    accountProfile?.accountSymbol ||
     addressHashedEmoji(toAddress);
 
   const avatarColor =
+    existingAccount?.color ||
     contact?.color ||
-    accountProfile?.accountColor ||
     addressHashedColorIndex(toAddress);
 
   let realSheetHeight = !shouldShowChecks
@@ -309,11 +338,13 @@ export default function SendConfirmationSheet() {
     realSheetHeight -= 80;
   }
 
+  const accountImage = existingAccount?.image;
+
   const contentHeight = realSheetHeight - (isL2 ? 50 : 30);
   return (
     <Container
       deviceHeight={deviceHeight}
-      height={realSheetHeight}
+      height={contentHeight}
       insets={insets}
     >
       {ios && <StatusBar barStyle="light-content" />}
@@ -321,12 +352,12 @@ export default function SendConfirmationSheet() {
 
       <SlackSheet
         additionalTopPadding={android}
-        contentHeight={realSheetHeight}
+        contentHeight={contentHeight}
         scrollEnabled={false}
       >
         <SheetTitle>Sending</SheetTitle>
         <Column height={contentHeight}>
-          <Column padding={24} paddingBottom={19}>
+          <Column padding={24} paddingBottom={android ? 0 : 19}>
             <Row>
               <Column width={deviceWidth - 117}>
                 <TruncatedText
@@ -337,7 +368,7 @@ export default function SendConfirmationSheet() {
                   {isNft ? asset?.name : nativeDisplayAmount}
                 </TruncatedText>
 
-                <Row paddingTop={3}>
+                <Row marginTop={android ? -16 : 0} paddingTop={3}>
                   <Text
                     color={
                       isNft ? colors.alpha(colors.blueGreyDark, 0.6) : color
@@ -352,7 +383,7 @@ export default function SendConfirmationSheet() {
                   </Text>
                 </Row>
               </Column>
-              <Column align="end" flex={1}>
+              <Column align="end" flex={1} justify="center">
                 <Row>
                   {isNft ? (
                     <RequestVendorLogoIcon
@@ -373,34 +404,32 @@ export default function SendConfirmationSheet() {
             </Row>
 
             <Row marginVertical={19}>
-              <Column>
-                <Pill
-                  borderRadius={15}
-                  height={30}
-                  minWidth={39}
-                  paddingHorizontal={10}
-                  paddingVertical={5.5}
+              <Pill
+                borderRadius={15}
+                height={30}
+                minWidth={39}
+                paddingHorizontal={10}
+                paddingVertical={5.5}
+              >
+                <Text
+                  align="center"
+                  color={colors.blueGreyDark60}
+                  letterSpacing="roundedMedium"
+                  lineHeight={20}
+                  size="large"
+                  weight="heavy"
                 >
-                  <Column>
-                    <Text
-                      align="center"
-                      color={colors.blueGreyDark60}
-                      letterSpacing="roundedMedium"
-                      size="large"
-                      weight="heavy"
-                    >
-                      to
-                    </Text>
-                  </Column>
-                </Pill>
-              </Column>
-              <Column align="end" flex={1} justify="end">
+                  to
+                </Text>
+              </Pill>
+
+              <Column align="end" flex={1}>
                 <ChevronDown />
               </Column>
             </Row>
-            <Row marginBottom={30}>
+            <Row marginBottom={android ? 15 : 30}>
               <Column flex={1}>
-                <Row width={deviceWidth - 117}>
+                <Row width={android ? '80%' : '90%'}>
                   <TruncatedText
                     letterSpacing="roundedTight"
                     size="bigger"
@@ -408,28 +437,30 @@ export default function SendConfirmationSheet() {
                   >
                     {avatarName}
                   </TruncatedText>
-                  <ContactRowInfoButton
-                    item={{
-                      address: toAddress,
-                      name: avatarName || address(to, 4, 8),
-                    }}
-                    network={network}
-                    scaleTo={0.75}
-                  >
-                    <Text
-                      color={colors.alpha(
-                        colors.blueGreyDark,
-                        isDarkMode ? 0.5 : 0.6
-                      )}
-                      lineHeight={31}
-                      size="larger"
-                      weight="heavy"
+                  <Centered marginTop={android ? 8 : 0}>
+                    <ContactRowInfoButton
+                      item={{
+                        address: toAddress,
+                        name: avatarName || address(to, 4, 8),
+                      }}
+                      network={network}
+                      scaleTo={0.75}
                     >
-                      {' 􀍡'}
-                    </Text>
-                  </ContactRowInfoButton>
+                      <Text
+                        color={colors.alpha(
+                          colors.blueGreyDark,
+                          isDarkMode ? 0.5 : 0.6
+                        )}
+                        lineHeight={31}
+                        size="larger"
+                        weight="heavy"
+                      >
+                        {' 􀍡'}
+                      </Text>
+                    </ContactRowInfoButton>
+                  </Centered>
                 </Row>
-                <Row paddingTop={3}>
+                <Row marginTop={android ? -18 : 0} paddingTop={3}>
                   <Text
                     color={colors.alpha(colors.blueGreyDark, 0.6)}
                     size="lmedium"
@@ -437,18 +468,22 @@ export default function SendConfirmationSheet() {
                   >
                     {isSendingToUserAccount
                       ? `You own this wallet`
-                      : alreadySentTransactions === 0
+                      : alreadySentTransactionsTotal === 0
                       ? `First time send`
-                      : `${alreadySentTransactions} previous sends`}
+                      : `${alreadySentTransactionsTotal} previous sends`}
                   </Text>
                 </Row>
               </Column>
-              <Column align="end">
-                <ContactAvatar
-                  color={avatarColor}
-                  size="lmedium"
-                  value={avatarValue}
-                />
+              <Column align="end" justify="center">
+                {accountImage ? (
+                  <ImageAvatar image={accountImage} size="lmedium" />
+                ) : (
+                  <ContactAvatar
+                    color={avatarColor}
+                    size="lmedium"
+                    value={avatarValue}
+                  />
+                )}
               </Column>
             </Row>
             <Divider color={colors.rowDividerExtraLight} inset={[0]} />
@@ -486,6 +521,7 @@ export default function SendConfirmationSheet() {
           </Column>
           <SendButtonWrapper>
             <SendButton
+              androidWidth={deviceWidth - 60}
               backgroundColor={color}
               disabled={!canSubmit}
               isAuthorizing={isAuthorizing}

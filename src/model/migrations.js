@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
 import { findKey, isNumber, keys } from 'lodash';
 import { removeLocal } from '../handlers/localstorage/common';
@@ -27,10 +28,12 @@ import {
   getUserLists,
   saveUserLists,
 } from '@rainbow-me/handlers/localstorage/userLists';
+import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { returnStringFirstEmoji } from '@rainbow-me/helpers/emojiHandler';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import { DefaultTokenLists } from '@rainbow-me/references';
-import { defaultProfileUtils } from '@rainbow-me/utils';
+import { profileUtils } from '@rainbow-me/utils';
+import { REVIEW_ASKED_KEY } from '@rainbow-me/utils/reviewAlert';
 import logger from 'logger';
 
 export default async function runMigrations() {
@@ -311,16 +314,14 @@ export default async function runMigrations() {
           return {
             ...account,
             ...(!accountEmoji && {
-              label: `${defaultProfileUtils.addressHashedEmoji(
-                account.address
-              )} ${account.label}`,
+              label: `${profileUtils.addressHashedEmoji(account.address)} ${
+                account.label
+              }`,
             }),
             color:
               (accountEmoji
                 ? newColorIndexes[account.color]
-                : defaultProfileUtils.addressHashedColorIndex(
-                    account.address
-                  )) || 0,
+                : profileUtils.addressHashedColorIndex(account.address)) || 0,
           };
         });
         const newWallet = { ...wallet, addresses: newAddresses };
@@ -364,6 +365,73 @@ export default async function runMigrations() {
   };
 
   migrations.push(v9);
+
+  /*
+   *************** Migration v10 ******************
+   * This step makes sure all contacts have an emoji set based on the address
+   */
+  const v10 = async () => {
+    logger.log('Start migration v10');
+    try {
+      // migrate contacts to corresponding emoji
+      const contacts = await getContacts();
+      let updatedContacts = { ...contacts };
+      if (!contacts) return;
+      const contactKeys = Object.keys(contacts);
+      for (let j = 0; j < contactKeys.length; j++) {
+        const contact = contacts[contactKeys[j]];
+        let nickname = contact.nickname;
+        if (!returnStringFirstEmoji(nickname)) {
+          let address = null;
+          try {
+            address = await resolveNameOrAddress(contact.address);
+          } catch (error) {
+            const migrationError = new Error(
+              `Error during v10 migration contact address resolution for ${contact.address}`
+            );
+            captureException(migrationError);
+            continue;
+          }
+          const emoji = profileUtils.addressHashedEmoji(address);
+          const color = profileUtils.addressHashedColorIndex(address);
+          nickname = `${emoji} ${nickname}`;
+          updatedContacts[contactKeys[j]] = {
+            ...contact,
+            color,
+            nickname,
+          };
+        }
+      }
+      logger.log('update contacts to add emojis / colors');
+      await saveContacts(updatedContacts);
+    } catch (error) {
+      logger.sentry('Migration v10 failed: ', error);
+      const migrationError = new Error('Migration 10 failed');
+      captureException(migrationError);
+    }
+  };
+
+  migrations.push(v10);
+
+  /*
+   *************** Migration v11 ******************
+   * This step resets review timers if we havnt asked in the last 2 weeks prior to running this
+   */
+  const v11 = async () => {
+    logger.log('Start migration v11');
+    const reviewAsked = await AsyncStorage.getItem(REVIEW_ASKED_KEY);
+    const TWO_WEEKS = 14 * 24 * 60 * 60 * 1000;
+    const TWO_MONTHS = 2 * 30 * 24 * 60 * 60 * 1000;
+
+    if (Number(reviewAsked) > Date.now() - TWO_WEEKS) {
+      return;
+    } else {
+      const twoMonthsAgo = Date.now() - TWO_MONTHS;
+      AsyncStorage.setItem(REVIEW_ASKED_KEY, twoMonthsAgo.toString());
+    }
+  };
+
+  migrations.push(v11);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`

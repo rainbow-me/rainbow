@@ -92,6 +92,7 @@ export default function BackupSheet() {
   }, [goBack, isSettingsRoute]);
 
   const onIcloudBackup = useCallback(() => {
+    analytics.track('Tapped "Back up to cloud"');
     if (isDamaged) {
       showWalletErrorAlert();
       captureMessage('Damaged wallet preventing cloud backup');
@@ -117,6 +118,7 @@ export default function BackupSheet() {
   ]);
 
   const onManualBackup = useCallback(() => {
+    analytics.track('Tapped "Back up manually"');
     if (android) {
       goBack();
       navigate(Routes.BACKUP_SCREEN, {

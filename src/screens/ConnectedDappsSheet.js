@@ -14,7 +14,7 @@ const MAX_VISIBLE_DAPPS = 7;
 
 const ScrollableItems = styled.ScrollView`
   height: ${({ length }) =>
-    WalletConnectListItemHeight * Math.min(length, MAX_VISIBLE_DAPPS)};
+    WalletConnectListItemHeight * Math.min(length, MAX_VISIBLE_DAPPS) + 20};
 `;
 
 const SheetTitleWithPadding = styled(SheetTitle)`

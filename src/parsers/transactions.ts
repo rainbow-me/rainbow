@@ -33,7 +33,7 @@ import {
   ZerionTransactionChange,
   ZerionTransactionStatus,
 } from '@rainbow-me/entities';
-import { toChecksumAddress } from '@rainbow-me/handlers/web3';
+import { isL2Network, toChecksumAddress } from '@rainbow-me/handlers/web3';
 import { ETH_ADDRESS, savingsAssetsList } from '@rainbow-me/references';
 import {
   convertRawAmountToBalance,
@@ -76,6 +76,10 @@ export const parseTransactions = (
   const purchaseTransactionHashes = map(purchaseTransactions, txn =>
     ethereumUtils.getHash(txn)
   );
+  const allL2Transactions = existingTransactions.filter(tx =>
+    isL2Network(tx.network || '')
+  );
+
   const data = appended
     ? transactionData
     : dataFromLastTxHash(transactionData, existingTransactions);
@@ -106,7 +110,8 @@ export const parseTransactions = (
   const updatedResults = concat(
     updatedPendingTransactions,
     parsedNewTransactions,
-    remainingTransactions
+    remainingTransactions,
+    allL2Transactions
   );
 
   const potentialNftTransaction = appended

@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
@@ -20,7 +21,8 @@ import { useAccountProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { margin, padding, position } from '@rainbow-me/styles';
-import { defaultProfileUtils } from '@rainbow-me/utils';
+import { profileUtils } from '@rainbow-me/utils';
+
 const WalletProfileAddressText = styled(TruncatedAddress).attrs(
   ({ theme: { colors } }) => ({
     align: 'center',
@@ -78,9 +80,9 @@ export default function WalletProfileState({
 }) {
   const nameEmoji =
     isNewProfile && !forceColor
-      ? defaultProfileUtils.addressHashedEmoji(address)
+      ? profileUtils.addressHashedEmoji(address)
       : returnStringFirstEmoji(profile?.name) ||
-        defaultProfileUtils.addressHashedEmoji(address);
+        profileUtils.addressHashedEmoji(address);
 
   const { goBack, navigate } = useNavigation();
   const { accountImage } = useAccountProfile();
@@ -91,30 +93,32 @@ export default function WalletProfileState({
   const color = forceColor
     ? forceColor
     : isNewProfile && address
-    ? defaultProfileUtils.addressHashedColorIndex(address)
+    ? profileUtils.addressHashedColorIndex(address)
     : profile.color !== null
     ? profile.color
     : isNewProfile
     ? null
     : (indexOfForceColor !== -1 && indexOfForceColor) || getRandomColor();
   const [value, setValue] = useState(
-    profile?.name ? removeFirstEmojiFromString(profile.name).join('') : ''
+    profile?.name ? removeFirstEmojiFromString(profile.name) : ''
   );
   const inputRef = useRef(null);
 
+  const profileImage = accountImage || profile.image;
+
   const handleCancel = useCallback(() => {
     goBack();
+    analytics.track('Tapped "Cancel" on Wallet Profile modal');
     if (actionType === 'Create') {
       navigate(Routes.CHANGE_WALLET_SHEET);
     }
   }, [actionType, goBack, navigate]);
 
   const handleSubmit = useCallback(() => {
+    analytics.track('Tapped "Submit" on Wallet Profile modal');
     onCloseModal({
       color:
-        typeof color === 'string'
-          ? defaultProfileUtils.colorHexToIndex(color)
-          : color,
+        typeof color === 'string' ? profileUtils.colorHexToIndex(color) : color,
       name: nameEmoji ? `${nameEmoji} ${value}` : value,
     });
     goBack();
@@ -144,8 +148,8 @@ export default function WalletProfileState({
         testID="wallet-info-modal"
         width="100%"
       >
-        {accountImage ? (
-          <ProfileImage image={accountImage} size="large" />
+        {profileImage ? (
+          <ProfileImage image={profileImage} size="large" />
         ) : (
           // hide avatar if creating new wallet since we
           // don't know what emoji / color it will be (determined by address)

@@ -24,7 +24,24 @@ export default function useUserAccounts() {
     return addresses;
   }, [network, walletsWithBalancesAndNames]);
 
+  const watchedAccounts = useMemo(() => {
+    const filteredWallets = values(walletsWithBalancesAndNames).filter(
+      wallet => wallet.type === walletTypes.readOnly
+    );
+    const addresses = [];
+    filteredWallets.forEach(wallet => {
+      wallet.addresses.forEach(account => {
+        addresses.push({
+          ...account,
+          network,
+        });
+      });
+    });
+    return addresses;
+  }, [network, walletsWithBalancesAndNames]);
+
   return {
     userAccounts,
+    watchedAccounts,
   };
 }

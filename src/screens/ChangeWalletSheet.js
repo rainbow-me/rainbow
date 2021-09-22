@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/core';
+import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { get, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
@@ -232,6 +233,9 @@ export default function ChangeWalletSheet() {
               if (args) {
                 const newWallets = { ...wallets };
                 if ('name' in args) {
+                  analytics.track('Tapped "Done" after editing wallet', {
+                    wallet_label: args.name,
+                  });
                   asyncSome(
                     newWallets[walletId].addresses,
                     async (account, index) => {
@@ -256,11 +260,14 @@ export default function ChangeWalletSheet() {
                     }
                   );
                   await dispatch(walletsUpdate(newWallets));
+                } else {
+                  analytics.track('Tapped "Cancel" after editing wallet');
                 }
               }
             },
             profile: {
               color: account.color,
+              image: account.image || ``,
               name: account.label || ``,
             },
             type: 'wallet_profile',
@@ -310,8 +317,10 @@ export default function ChangeWalletSheet() {
         buttonIndex => {
           if (buttonIndex === 0) {
             // Edit wallet
+            analytics.track('Tapped "Edit Wallet"');
             renameWallet(walletId, address);
           } else if (buttonIndex === 1) {
+            analytics.track('Tapped "Delete Wallet"');
             // Delete wallet with confirmation
             showActionSheetWithOptions(
               {
@@ -322,9 +331,9 @@ export default function ChangeWalletSheet() {
               },
               async buttonIndex => {
                 if (buttonIndex === 0) {
+                  analytics.track('Tapped "Delete Wallet" (final confirm)');
                   await deleteWallet(walletId, address);
                   ReactNativeHapticFeedback.trigger('notificationSuccess');
-
                   if (!isLastAvailableWallet) {
                     await cleanUpWalletKeys();
                     goBack();
@@ -368,6 +377,7 @@ export default function ChangeWalletSheet() {
 
   const onPressAddAccount = useCallback(async () => {
     try {
+      analytics.track('Tapped "Create a new wallet"');
       if (creatingWallet.current) return;
       creatingWallet.current = true;
 
@@ -489,8 +499,14 @@ export default function ChangeWalletSheet() {
   ]);
 
   const onPressImportSeedPhrase = useCallback(() => {
+    analytics.track('Tapped "Add an existing wallet"');
     navigate(Routes.IMPORT_SEED_PHRASE_FLOW);
   }, [navigate]);
+
+  const onPressEditMode = useCallback(() => {
+    analytics.track('Tapped "Edit"');
+    setEditMode(e => !e);
+  }, []);
 
   return (
     <Sheet borderRadius={30}>
@@ -502,7 +518,7 @@ export default function ChangeWalletSheet() {
         )}
       </Column>
       {!watchOnly && (
-        <EditButton editMode={editMode} onPress={() => setEditMode(e => !e)}>
+        <EditButton editMode={editMode} onPress={onPressEditMode}>
           <EditButtonLabel editMode={editMode}>
             {editMode ? 'Done' : 'Edit'}
           </EditButtonLabel>

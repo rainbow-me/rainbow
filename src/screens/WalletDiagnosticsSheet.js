@@ -203,6 +203,7 @@ const WalletDiagnosticsSheet = () => {
   const [userPin, setUserPin] = useState(params?.userPin);
   const [pinRequired, setPinRequired] = useState(false);
   const walletsWithBalancesAndNames = useWalletsWithBalancesAndNames();
+  const [uuid, setUuid] = useState(null);
 
   useEffect(() => {
     const init = async () => {
@@ -210,11 +211,15 @@ const WalletDiagnosticsSheet = () => {
         const allKeys = await loadAllKeys();
         const processedKeys = await Promise.all(
           allKeys
-            .filter(
-              key =>
+            .filter(key => {
+              if (key?.username === 'analyticsUserIdentifier') {
+                setUuid(key.password);
+              }
+              return (
                 key?.username?.indexOf(seedPhraseKey) !== -1 ||
                 key?.username?.indexOf(privateKeyKey) !== -1
-            )
+              );
+            })
             .map(async key => {
               const secretObj = JSON.parse(key.password);
               let secret = secretObj.seedphrase || secretObj.privateKey;
@@ -370,6 +375,20 @@ const WalletDiagnosticsSheet = () => {
               weight="heavy"
             />
           </ColumnWithMargins>
+        )}
+
+        {uuid && (
+          <Fragment>
+            <ColumnWithMargins>
+              <RowWithMargins>
+                <Text size="lmedium">
+                  <Bold>UUID:</Bold> {` `}
+                  <Text color={colors.blueGreyDark50}>{uuid}</Text>
+                </Text>
+              </RowWithMargins>
+            </ColumnWithMargins>
+            <Divider />
+          </Fragment>
         )}
 
         {seeds?.length > 0 && (

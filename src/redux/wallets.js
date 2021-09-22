@@ -24,12 +24,12 @@ import {
 } from '../model/wallet';
 import { settingsUpdateAccountAddress } from '../redux/settings';
 import { logger } from '../utils';
-import { addressHashedColorIndex } from '../utils/defaultProfileUtils';
 import {
   addressKey,
   privateKeyKey,
   seedPhraseKey,
 } from '../utils/keychainConstants';
+import { addressHashedColorIndex } from '../utils/profileUtils';
 import { updateWebDataEnabled } from './showcaseTokens';
 import { lightModeThemeColors } from '@rainbow-me/styles';
 
@@ -110,6 +110,7 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     });
 
     dispatch(fetchWalletNames());
+    return wallets;
   } catch (error) {
     logger.sentry('Exception during walletsLoadState');
     captureException(error);

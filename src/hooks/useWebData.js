@@ -8,7 +8,10 @@ import {
 } from '../model/preferences';
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
+import useWallets from './useWallets';
+import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import { containsEmoji } from '@rainbow-me/helpers/strings';
+import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import logger from 'logger';
 
@@ -31,6 +34,7 @@ const wipeNotEmoji = text => {
 export default function useWebData() {
   const { accountAddress } = useAccountSettings();
   const dispatch = useDispatch();
+  const { wallets } = useWallets();
 
   const { showcaseTokens, webDataEnabled } = useSelector(
     ({ showcaseTokens: { webDataEnabled, showcaseTokens } }) => ({
@@ -82,6 +86,8 @@ export default function useWebData() {
   const updateWebProfile = useCallback(
     async (address, name, color) => {
       if (!webDataEnabled) return;
+      const wallet = findWalletWithAccount(wallets, address);
+      if (wallet.type === WalletTypes.readOnly) return;
       const data = {
         accountColor: color || accountColor,
         accountSymbol: wipeNotEmoji(
@@ -95,7 +101,7 @@ export default function useWebData() {
         data
       );
     },
-    [accountColor, accountSymbol, webDataEnabled]
+    [accountColor, accountSymbol, wallets, webDataEnabled]
   );
 
   const updateWebShowcase = useCallback(

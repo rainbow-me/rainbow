@@ -1,14 +1,15 @@
 import MaskedView from '@react-native-community/masked-view';
+import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
   Clock,
-  Easing as REasing,
+  EasingNode as REasing,
   Value as RValue,
   timing,
 } from 'react-native-reanimated';
-import { useValue } from 'react-native-redash';
+import { useValue } from 'react-native-redash/src/v1';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
@@ -25,6 +26,7 @@ import { Emoji, Text } from '../components/text';
 import {
   fetchUserDataFromCloud,
   isCloudBackupAvailable,
+  syncCloud,
 } from '../handlers/cloudBackup';
 import { cloudPlatform } from '../utils/platform';
 
@@ -43,7 +45,7 @@ const {
   not,
   set,
   cond,
-  interpolate,
+  interpolateNode: interpolate,
   round,
   startClock,
 } = Reanimated;
@@ -358,6 +360,9 @@ export default function WelcomeScreen() {
         logger.log(`downloading ${cloudPlatform} backup info...`);
         const isAvailable = await isCloudBackupAvailable();
         if (isAvailable && ios) {
+          logger.log('syncing...');
+          await syncCloud();
+          logger.log('fetching backup info...');
           const data = await fetchUserDataFromCloud();
           setUserData(data);
           logger.log(`Downloaded ${cloudPlatform} backup info`);
@@ -442,6 +447,7 @@ export default function WelcomeScreen() {
   const backgroundColor = useMemoOne(() => colorAnimation(rValue, false), []);
 
   const onCreateWallet = useCallback(async () => {
+    analytics.track('Tapped "Get a new wallet"');
     const operation = dangerouslyGetState().index === 1 ? navigate : replace;
     operation(Routes.SWIPE_LAYOUT, {
       params: { emptyWallet: true },
@@ -470,6 +476,7 @@ export default function WelcomeScreen() {
   }, [rValue]);
 
   const showRestoreSheet = useCallback(() => {
+    analytics.track('Tapped "I already have one"');
     navigate(Routes.RESTORE_SHEET, {
       userData,
     });

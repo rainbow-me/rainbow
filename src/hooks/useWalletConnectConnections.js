@@ -5,9 +5,9 @@ import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
 import { getAddressAndChainIdFromWCAccount } from '../model/walletConnect';
 import {
-  walletConnectDisconnectAllByPeerId as rawWalletConnectDisconnectAllByPeerId,
+  walletConnectDisconnectAllByDappUrl as rawWalletConnectDisconnectAllByDappUrl,
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
-  walletConnectUpdateSessionConnectorByPeerId as rawWalletConnectUpdateSessionConnectorByPeerId,
+  walletConnectUpdateSessionConnectorByDappUrl as rawWalletConnectUpdateSessionConnectorByDappUrl,
   walletConnectV2DisconnectAllSessions as rawWalletConnectV2DisconnectAllSessions,
   walletConnectV2DisconnectByTopic as rawWalletConnectV2DisconnectByTopic,
   walletConnectV2UpdateSessionByTopic as rawWalletConnectV2UpdateSessionByTopic,
@@ -18,10 +18,10 @@ const formatDappData = connections =>
     mapValues(connections, connection => ({
       account: connection?.[0].accounts?.[0],
       chainId: connection?.[0].chainId,
-      dappIcon: connection?.[0].peerMeta.icons[0],
-      dappName: connection?.[0].peerMeta.name,
-      dappUrl: connection?.[0].peerMeta.url,
-      id: connection?.[0].peerId,
+      dappIcon: connection?.[0].peerMeta?.icons?.[0],
+      dappName: connection?.[0].peerMeta?.name,
+      dappUrl: connection?.[0].peerMeta?.url,
+      peerId: connection?.[0].peerId,
       version: 'v1',
     }))
   );
@@ -79,8 +79,8 @@ export default function useWalletConnectConnections() {
     walletConnectV2Selector
   );
 
-  const walletConnectDisconnectAllByPeerId = useCallback(
-    peerId => dispatch(rawWalletConnectDisconnectAllByPeerId(peerId)),
+  const walletConnectDisconnectAllByDappUrl = useCallback(
+    dappUrl => dispatch(rawWalletConnectDisconnectAllByDappUrl(dappUrl)),
     [dispatch]
   );
 
@@ -90,11 +90,11 @@ export default function useWalletConnectConnections() {
     [dispatch]
   );
 
-  const walletConnectUpdateSessionConnectorByPeerId = useCallback(
-    (peerId, accountAddress, chainId) =>
+  const walletConnectUpdateSessionConnectorByDappUrl = useCallback(
+    (dappUrl, accountAddress, chainId) =>
       dispatch(
-        rawWalletConnectUpdateSessionConnectorByPeerId(
-          peerId,
+        rawWalletConnectUpdateSessionConnectorByDappUrl(
+          dappUrl,
           accountAddress,
           chainId
         )
@@ -125,11 +125,11 @@ export default function useWalletConnectConnections() {
 
   return {
     sortedWalletConnectors,
-    walletConnectDisconnectAllByPeerId,
+    walletConnectDisconnectAllByDappUrl,
     walletConnectOnSessionRequest,
     walletConnectorsByDappName,
     walletConnectorsCount,
-    walletConnectUpdateSessionConnectorByPeerId,
+    walletConnectUpdateSessionConnectorByDappUrl,
     walletConnectV2DisconnectAllSessions,
     walletConnectV2DisconnectByTopic,
     walletConnectV2Sessions,

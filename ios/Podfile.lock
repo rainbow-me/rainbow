@@ -133,9 +133,9 @@ PODS:
   - libwebp/mux (1.1.0):
     - libwebp/demux
   - libwebp/webp (1.1.0)
-  - lottie-ios (3.1.8)
-  - lottie-react-native (3.5.0):
-    - lottie-ios (~> 3.1.8)
+  - lottie-ios (3.2.3)
+  - lottie-react-native (4.0.2):
+    - lottie-ios (~> 3.2.3)
     - React-Core
   - nanopb (2.30908.0):
     - nanopb/decode (= 2.30908.0)
@@ -377,7 +377,7 @@ PODS:
     - React-Core
   - react-native-camera/RN (3.40.0):
     - React-Core
-  - react-native-cloud-fs (2.3.0):
+  - react-native-cloud-fs (2.4.0):
     - React
   - react-native-get-random-values (1.5.0):
     - React
@@ -537,7 +537,7 @@ PODS:
     - React-Core
   - RNReactNativeHapticFeedback (1.11.0):
     - React-Core
-  - RNReanimated (2.1.0):
+  - RNReanimated (2.2.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -573,8 +573,8 @@ PODS:
     - Sentry (= 7.0.0)
   - RNStoreReview (0.1.5):
     - React
-  - RNSVG (12.1.0):
-    - React
+  - RNSVG (12.2.1):
+    - React-Core
   - RNTextSize (4.0.0-rc.1):
     - React
   - RNTooltips (1.0.2):
@@ -976,8 +976,8 @@ SPEC CHECKSUMS:
   KTVHTTPCache: 588c3eb16f6bd1e6fde1e230dabfb7bd4e490a4d
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
-  lottie-ios: 48fac6be217c76937e36e340e2d09cf7b10b7f5f
-  lottie-react-native: 69740f3742cc82d8211979e2b48681e002c22bff
+  lottie-ios: c058aeafa76daa4cf64d773554bccc8385d0150e
+  lottie-react-native: 336c6d26b1951496d75adbde3d3278b8cfca6b21
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
@@ -1002,7 +1002,7 @@ SPEC CHECKSUMS:
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-branch: 8bda99ca8dc5a16d32bd81c8a8d937cb3d2c5e0c
   react-native-camera: 35854c4f764a4a6cf61c1c3525888b92f0fe4b31
-  react-native-cloud-fs: 1cb3deba691efbb5c6fcc831959be58762d8bdfe
+  react-native-cloud-fs: 1e883ec82ff418d320c128f61971dd971b128ca0
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
   react-native-ios-context-menu: 1ccf4d6aa1c0e7dc596613eb9a36f8c0c23ca56f
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
@@ -1052,11 +1052,11 @@ SPEC CHECKSUMS:
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: 7043bacbf928eae25808275cfe73799b8f618911
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
-  RNReanimated: b8c8004b43446e3c2709fe64b2b41072f87428ad
+  RNReanimated: 9c13c86454bfd54dab7505c1a054470bfecd2563
   RNScreens: c526239bbe0e957b988dacc8d75ac94ec9cb19da
   RNSentry: a2b02b326ae4fce91ce7c57d3f7dcf8df4f72269
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8
-  RNSVG: ce9d996113475209013317e48b05c21ee988d42e
+  RNSVG: 91e9ee67766408d08cb08f5bd80cd57c9d2a6691
   RNTextSize: 21c94a67819fbf2c358a219bf6d251e3be9e5f29
   RNTooltips: e13180e4339e2a85daabd09507f62a5a32d3dc8a
   SDWebImage: 9169792e9eec3e45bba2a0c02f74bf8bd922d1ee
@@ -1073,4 +1073,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 7e4000e0718fb9850e8f4ab5eaf9dd50378885bb
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.10.2

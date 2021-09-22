@@ -11,7 +11,7 @@ export { default as buildRainbowUrl } from './buildRainbowUrl';
 export { default as TokensListenedCache } from './tokensListenedCache';
 export { default as checkTokenIsScam } from './checkTokenIsScam';
 export { default as deviceUtils } from './deviceUtils';
-export { default as defaultProfileUtils } from './defaultProfileUtils';
+export { default as profileUtils } from './profileUtils';
 export { default as dimensionsPropType } from './dimensionsPropType';
 export { default as directionPropType } from './directionPropType';
 export { default as ethereumUtils } from './ethereumUtils';

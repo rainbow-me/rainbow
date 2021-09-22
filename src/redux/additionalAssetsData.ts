@@ -1,8 +1,8 @@
-import axios from 'axios';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import { uniswapClient } from '../apollo/client';
 import { TOKEN_DATA, UNISWAP_ADDITIONAL_TOKEN_DATA } from '../apollo/queries';
-import { get2DayPercentChange } from '../hooks/useUniswapPools';
+import { getOneDayVolume } from '../hooks/useUniswapPools';
+import { rainbowFetch } from '../rainbow-fetch';
 import { fetchCoingeckoIds } from '@rainbow-me/redux/data';
 import { AppDispatch, AppState } from '@rainbow-me/redux/store';
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
@@ -70,12 +70,6 @@ type State = {
 
 // -- Actions --------------------------------------------------------------- //
 
-const getTimestampsForChanges = () => {
-  const t1 = getUnixTime(startOfMinute(sub(Date.now(), { days: 1 })));
-  const t2 = getUnixTime(startOfMinute(sub(Date.now(), { days: 2 })));
-  return [t1, t2];
-};
-
 export const additionalAssetsDataAddCoingecko = (address: string) => async (
   dispatch: AppDispatch,
   getState: () => AppState
@@ -84,18 +78,20 @@ export const additionalAssetsDataAddCoingecko = (address: string) => async (
   const token = getState().additionalAssetsData.coingeckoIds[address];
   if (token) {
     try {
-      const data = await axios({
-        method: 'get',
-        params: {
-          community_data: true,
-          developer_data: false,
-          localization: false,
-          market_data: true,
-          sparkline: false,
-          tickers: false,
-        },
-        url: `https://api.coingecko.com/api/v3/coins/${token}`,
-      });
+      const data = (await rainbowFetch(
+        `https://api.coingecko.com/api/v3/coins/${token}`,
+        {
+          method: 'get',
+          params: {
+            community_data: true,
+            developer_data: false,
+            localization: false,
+            market_data: true,
+            sparkline: false,
+            tickers: false,
+          },
+        }
+      )) as any;
       const description = data?.data?.description?.en?.replace(
         /<\/?[^>]+(>|$)/g,
         ''
@@ -135,11 +131,9 @@ export const additionalAssetsDataAddUniswap = (rawAddress: string) => async (
 
   // uniswap v2 graph for the volume
   try {
-    const [t1, t2] = getTimestampsForChanges();
-    const [{ number: b1 }, { number: b2 }] = await getBlocksFromTimestamps([
-      t1,
-      t2,
-    ]);
+    const t1 = getUnixTime(startOfMinute(sub(Date.now(), { days: 1 })));
+
+    const [{ number: b1 }] = await getBlocksFromTimestamps([t1]);
 
     const tokenData = await uniswapClient.query({
       fetchPolicy: 'cache-first',
@@ -155,20 +149,14 @@ export const additionalAssetsDataAddUniswap = (rawAddress: string) => async (
       fetchPolicy: 'cache-first',
       query: TOKEN_DATA(address, b1),
     });
-    const twoDayResult = await uniswapClient.query({
-      fetchPolicy: 'cache-first',
-      query: TOKEN_DATA(address, b2),
-    });
     const oneDayHistory = oneDayResult.data.tokens[0];
-    const twoDayHistory = twoDayResult.data.tokens[0];
 
-    if (!oneDayHistory || !twoDayHistory) {
+    if (!oneDayHistory) {
       newData.oneDayVolumeUSD = tradeVolumeUSD;
     } else {
-      const [oneDayVolumeUSD] = get2DayPercentChange(
+      const oneDayVolumeUSD = getOneDayVolume(
         tradeVolumeUSD,
-        oneDayHistory?.tradeVolumeUSD ?? 0,
-        twoDayHistory?.tradeVolumeUSD ?? 0
+        oneDayHistory?.tradeVolumeUSD ?? 0
       );
       newData.oneDayVolumeUSD = oneDayVolumeUSD;
     }

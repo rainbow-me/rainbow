@@ -1,0 +1,11 @@
+diff --git a/node_modules/lottie-react-native/lottie-react-native.podspec b/node_modules/lottie-react-native/lottie-react-native.podspec
+index 5563ba9..11a57bc 100644
+--- a/node_modules/lottie-react-native/lottie-react-native.podspec
++++ b/node_modules/lottie-react-native/lottie-react-native.podspec
+@@ -21,5 +21,5 @@ Pod::Spec.new do |s|
+   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
+ 
+   s.dependency 'React-Core'
+-  s.dependency 'lottie-ios', '~> 3.1.8'
++  s.dependency 'lottie-ios', '~> 3.2.3'
+ end

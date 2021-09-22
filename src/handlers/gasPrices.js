@@ -1,16 +1,16 @@
-import axios from 'axios';
 import {
   ETH_GAS_STATION_API_KEY,
   ETHERSCAN_API_KEY,
 } from 'react-native-dotenv';
 import { multiply } from '../helpers/utilities';
+import { RainbowFetchClient } from '../rainbow-fetch';
 import { ethUnits } from '@rainbow-me/references';
 
 /**
  * Configuration for defipulse API
- * @type axios instance
+ * @type RainbowFetchClient instance
  */
-const ethGasstationApi = axios.create({
+const ethGasstationApi = new RainbowFetchClient({
   baseURL: 'https://data-api.defipulse.com',
   headers: {
     'Accept': 'application/json',
@@ -24,15 +24,17 @@ const ethGasstationApi = axios.create({
  * @return {Promise}
  */
 export const ethGasStationGetGasPrices = () =>
-  ethGasstationApi.get(
-    `/api/v1/egs/api/ethgasAPI.json?api-key=${ETH_GAS_STATION_API_KEY}`
-  );
+  ethGasstationApi.get(`/api/v1/egs/api/ethgasAPI.json`, {
+    params: {
+      'api-key': ETH_GAS_STATION_API_KEY,
+    },
+  });
 
 /**
  * Configuration for Matic GAS Station API
- * @type axios instance
+ * @type RainbowFetchClient instance
  */
-const maticGasstationApi = axios.create({
+const maticGasstationApi = new RainbowFetchClient({
   baseURL: 'https://gasstation-mainnet.matic.network',
   headers: {
     'Accept': 'application/json',
@@ -49,9 +51,9 @@ export const maticGasStationGetGasPrices = () => maticGasstationApi.get(`/`);
 
 /**
  * Configuration for Etherscan API
- * @type axios instance
+ * @type RainbowFetchClient instance
  */
-const etherscanAPI = axios.create({
+const etherscanAPI = new RainbowFetchClient({
   baseURL: 'https://api.etherscan.io',
   headers: {
     'Accept': 'application/json',
@@ -65,9 +67,13 @@ const etherscanAPI = axios.create({
  * @return {Promise}
  */
 export const etherscanGetGasPrices = () =>
-  etherscanAPI.get(
-    `/api?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`
-  );
+  etherscanAPI.get(`/api`, {
+    params: {
+      action: 'gasoracle',
+      apikey: ETHERSCAN_API_KEY,
+      module: 'gastracker',
+    },
+  });
 
 /**
  * @desc get matic time estimates
@@ -117,9 +123,14 @@ export const etherscanGetGasEstimates = async data => {
  */
 export const getEstimatedTimeForGasPrice = async gwei => {
   const priceInWei = multiply(gwei, ethUnits.gwei);
-  const { data: response } = await etherscanAPI.get(
-    `/api?module=gastracker&action=gasestimate&gasprice=${priceInWei}&apikey=${ETHERSCAN_API_KEY}`
-  );
+  const { data: response } = await etherscanAPI.get(`/api`, {
+    params: {
+      action: 'gasestimate',
+      apikey: ETHERSCAN_API_KEY,
+      gasprice: priceInWei,
+      module: 'gastracker',
+    },
+  });
   if (response.status === '0') {
     throw new Error('Etherscan gas estimation request failed');
   }

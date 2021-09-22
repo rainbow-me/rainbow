@@ -30,6 +30,8 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>rainbow</string>
+				<string>wc</string>
+				<string>ethereum</string>
 			</array>
 		</dict>
 	</array>

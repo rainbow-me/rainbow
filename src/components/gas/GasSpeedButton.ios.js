@@ -158,6 +158,7 @@ const GasSpeedButton = ({
   // (and leave the number only!)
   // which gets added later in the formatGasPrice function
   const price = (isNil(gasPrice) ? '0.00' : gasPrice)
+    .replace(',', '') // In case gas price is > 1k!
     .replace(nativeCurrencySymbol, '')
     .trim();
 
@@ -166,9 +167,12 @@ const GasSpeedButton = ({
       // L2's are very cheap,
       // so let's default to the last 2 significant decimals
       if (isL2Network(currentNetwork)) {
-        return `${nativeCurrencySymbol}${Number.parseFloat(
-          animatedValue
-        ).toPrecision(2)}`;
+        const numAnimatedValue = Number.parseFloat(animatedValue);
+        if (numAnimatedValue < 0.01) {
+          return `${nativeCurrencySymbol}${numAnimatedValue.toPrecision(2)}`;
+        } else {
+          return `${nativeCurrencySymbol}${numAnimatedValue.toFixed(2)}`;
+        }
       } else {
         return `${nativeCurrencySymbol}${
           nativeCurrency === 'ETH'
@@ -302,6 +306,15 @@ const GasSpeedButton = ({
     selectedGasPriceOption,
     type,
   ]);
+
+  useEffect(() => {
+    const gasOptions = options || GasSpeedOrder;
+    const currentSpeedIndex = gasOptions?.indexOf(selectedGasPriceOption);
+    // If the option isn't available anymore, we need to reset it
+    if (currentSpeedIndex === -1) {
+      handlePress();
+    }
+  }, [handlePress, options, selectedGasPriceOption]);
 
   const handleCustomGasFocus = useCallback(() => {
     setInputFocused(true);
