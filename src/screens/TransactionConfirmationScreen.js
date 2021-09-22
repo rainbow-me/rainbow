@@ -425,6 +425,7 @@ export default function TransactionConfirmationScreen() {
       callback,
       closeScreen,
       dispatch,
+      isWalletConnectV2Request,
       method,
       peerId,
       removeRequest,

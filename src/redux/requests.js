@@ -90,11 +90,13 @@ export const addRequestToApproveV2 = (requestId, session, payload) => (
 ) => {
   const { requests } = getState().requests;
   const { accountAddress, network, nativeCurrency } = getState().settings;
-  const { assets } = getState().data;
+  const account = session.state.accounts?.[0];
+  const { address, chainId } = getAddressAndChainIdFromWCAccount(account);
+  const dappNetwork = ethereumUtils.getNetworkFromChainId(Number(chainId));
   const displayDetails = getRequestDisplayDetails(
     payload,
-    assets,
-    nativeCurrency
+    nativeCurrency,
+    dappNetwork
   );
   const oneHourAgoTs = Date.now() - EXPIRATION_THRESHOLD_IN_MS;
   if (displayDetails.timestampInMs < oneHourAgoTs) {
@@ -109,8 +111,6 @@ export const addRequestToApproveV2 = (requestId, session, payload) => (
     dappNameOverride(peerMeta.url) || peerMeta.name || 'Unknown Dapp';
   const dappUrl = peerMeta.url || 'Unknown Url';
   const dappScheme = peerMeta.scheme || null;
-  const account = session.state.accounts?.[0];
-  const { address, chainId } = getAddressAndChainIdFromWCAccount(account);
   const request = {
     address,
     chainId,

@@ -96,14 +96,14 @@ const getMessageDisplayDetails = (message, timestampInMs) => ({
   timestampInMs,
 });
 
-const getTransactionDisplayDetails = (
+const getTransactionDisplayDetails = async (
   transaction,
   nativeCurrency,
   timestampInMs,
   dappNetwork
 ) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
-  const nativeAsset = ethereumUtils.getNativeAssetForNetwork(dappNetwork);
+  const nativeAsset = await ethereumUtils.getNativeAssetForNetwork(dappNetwork);
   if (transaction.data === '0x') {
     const value = fromWei(convertHexToString(transaction.value));
     const priceUnit = get(nativeAsset, 'price.value', 0);
@@ -138,7 +138,7 @@ const getTransactionDisplayDetails = (
     const amount = `0x${dataPayload.slice(64, 128).replace(/^0+/, '')}`;
     const value = convertRawAmountToDecimalFormat(
       convertHexToString(amount),
-      asset.decimals
+      asset?.decimals
     );
     const priceUnit = get(asset, 'price.value', 0);
     const native = convertAmountAndPriceToNativeDisplay(
