@@ -1,4 +1,5 @@
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
+import isValidDomain from 'is-valid-domain';
 import {
   concat,
   filter,
@@ -561,6 +562,12 @@ export const addressAssetsReceived = (
     dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
   }
 
+  //Hide tokens with a url as their token name
+  const assetsWithScamURL = parsedAssets
+    .filter(asset => isValidDomain(asset.name) && !asset.isVerified)
+    .map(({ address }) => address);
+  dispatch(addCoinsToHiddenList(assetsWithScamURL));
+
   // Hide coins with price = 0 that are currently not pinned
   if (isL2) {
     const assetsWithNoPrice = parsedAssets
@@ -769,7 +776,6 @@ export const dataAddNewTransaction = (
           parsedTransaction.network
             ? TXN_WATCHER_MAX_TRIES_LAYER_2
             : TXN_WATCHER_MAX_TRIES,
-          null,
           provider
         )
       );
@@ -796,10 +802,10 @@ const getConfirmedState = type => {
   }
 };
 
-export const dataWatchPendingTransactions = (
-  cb = null,
-  provider = null
-) => async (dispatch, getState) => {
+export const dataWatchPendingTransactions = (provider = null) => async (
+  dispatch,
+  getState
+) => {
   const { transactions } = getState().data;
   if (!transactions.length) return true;
   let txStatusesDidChange = false;
@@ -823,11 +829,6 @@ export const dataWatchPendingTransactions = (
           // because zerion "append" event isn't reliable
           logger.log('TX CONFIRMED!', txObj);
           appEvents.emit('transactionConfirmed', txObj);
-          if (cb) {
-            logger.log('executing cb', cb);
-            cb(tx);
-            return;
-          }
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;
           const isSelf = toLower(tx?.from) === toLower(tx?.to);
@@ -890,7 +891,6 @@ export const dataUpdateTransaction = (
   txHash,
   txObj,
   watch,
-  cb,
   provider = null
 ) => (dispatch, getState) => {
   const { transactions } = getState().data;
@@ -910,7 +910,6 @@ export const dataUpdateTransaction = (
       watchPendingTransactions(
         accountAddress,
         txObj.network ? TXN_WATCHER_MAX_TRIES_LAYER_2 : TXN_WATCHER_MAX_TRIES,
-        cb,
         provider
       )
     );
@@ -930,7 +929,6 @@ const updatePurchases = updatedTransactions => dispatch => {
 const watchPendingTransactions = (
   accountAddressToWatch,
   remainingTries = TXN_WATCHER_MAX_TRIES,
-  cb = null,
   provider = null
 ) => async (dispatch, getState) => {
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
@@ -939,7 +937,7 @@ const watchPendingTransactions = (
   const { accountAddress: currentAccountAddress } = getState().settings;
   if (currentAccountAddress !== accountAddressToWatch) return;
 
-  const done = await dispatch(dataWatchPendingTransactions(cb, provider));
+  const done = await dispatch(dataWatchPendingTransactions(provider));
 
   if (!done) {
     pendingTransactionsHandle = setTimeout(() => {
@@ -947,7 +945,6 @@ const watchPendingTransactions = (
         watchPendingTransactions(
           accountAddressToWatch,
           remainingTries - 1,
-          cb,
           provider
         )
       );

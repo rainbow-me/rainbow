@@ -2,8 +2,8 @@ import { isNil } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import Animated, { Easing } from 'react-native-reanimated';
-import { mixColor, useTimingTransition } from 'react-native-redash';
+import Animated, { EasingNode } from 'react-native-reanimated';
+import { mixColor, useTimingTransition } from 'react-native-redash/src/v1';
 import { magicMemo } from '../../utils';
 
 import { interpolate } from '../animations';
@@ -15,7 +15,7 @@ import { position } from '@rainbow-me/styles';
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
 const SheetSubtitleCyclerItem = ({ error, selected, subtitle }) => {
-  const ease = Easing[error ? 'out' : 'in'](Easing.ease);
+  const ease = EasingNode[error ? 'out' : 'in'](EasingNode.ease);
 
   const opacity = useTimingTransition(selected, {
     duration: 200,

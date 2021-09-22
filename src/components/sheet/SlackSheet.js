@@ -1,7 +1,9 @@
-import { BottomSheetScrollView, useBottomSheet } from '@gorhom/bottom-sheet';
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import React, {
   forwardRef,
   Fragment,
+  useContext,
   useEffect,
   useImperativeHandle,
   useMemo,
@@ -111,7 +113,7 @@ export default forwardRef(function SlackSheet(
   );
 
   const sheet = useRef();
-  const isInsideBottomSheet = !!useBottomSheet();
+  const isInsideBottomSheet = !!useContext(BottomSheetContext);
 
   useImperativeHandle(ref, () => sheet.current);
 

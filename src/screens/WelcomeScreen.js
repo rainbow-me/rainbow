@@ -5,11 +5,11 @@ import { Animated, Easing, StyleSheet } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
   Clock,
-  Easing as REasing,
+  EasingNode as REasing,
   Value as RValue,
   timing,
 } from 'react-native-reanimated';
-import { useValue } from 'react-native-redash';
+import { useValue } from 'react-native-redash/src/v1';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
@@ -45,7 +45,7 @@ const {
   not,
   set,
   cond,
-  interpolate,
+  interpolateNode: interpolate,
   round,
   startClock,
 } = Reanimated;

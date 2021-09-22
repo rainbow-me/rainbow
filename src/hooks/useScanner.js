@@ -194,10 +194,11 @@ export default function useScanner(enabled) {
     [
       isScanningEnabled,
       disableScanning,
-      handleScanAddress,
       handleScanWalletConnect,
-      handleScanRainbowProfile,
       handleScanInvalid,
+      handleScanEthereumUrl,
+      handleScanAddress,
+      handleScanRainbowProfile,
     ]
   );
 

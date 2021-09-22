@@ -14,8 +14,6 @@ function getAliasesFromTsConfig() {
     alias[key] = `./${paths[key][0]}`;
   });
 
-  alias['react-native-reanimated'] = 'react-native-reanimated/src/Animated';
-
   return alias;
 }
 
