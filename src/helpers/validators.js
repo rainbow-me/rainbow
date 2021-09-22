@@ -7,9 +7,6 @@ import {
 } from '@rainbow-me/handlers/web3';
 import { sanitizeSeedPhrase } from '@rainbow-me/utils';
 
-// Currently supported Top Level Domains from ENS
-const supportedTLDs = ['eth', 'test', 'xyz', 'luxe', 'kred', 'club', 'art'];
-
 /**
  * @desc validate email
  * @param  {String}  email
@@ -22,11 +19,7 @@ export const isValidEmail = email =>
 
 export const isENSAddressFormat = address => {
   const parts = address && address.split('.');
-  if (
-    !parts ||
-    parts.length === 1 ||
-    !supportedTLDs.includes(parts[parts.length - 1])
-  ) {
+  if (!parts || parts.length === 1) {
     return false;
   }
   return true;
