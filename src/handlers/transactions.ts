@@ -1,18 +1,10 @@
 import { Contract } from '@ethersproject/contracts';
-import axios from 'axios';
+import { RainbowFetchClient } from '../rainbow-fetch';
 import { web3Provider } from './web3';
 import { ZerionTransaction } from '@rainbow-me/entities';
 import { saveTransactionSignatures } from '@rainbow-me/handlers/localstorage/globalSettings';
 import store from '@rainbow-me/redux/store';
 import { SIGNATURE_REGISTRY_ADDRESS } from '@rainbow-me/references';
-
-interface FourByteResult {
-  bytes_signature?: string;
-  created_at?: string;
-  hex_signature?: string;
-  id: number;
-  text_signature?: string;
-}
 
 const abi = [
   {
@@ -100,13 +92,17 @@ const parseSignatureToTitle = (signature: string) => {
   return parsedName;
 };
 
-const fourByteApi = axios.create({
+const fourByteApi = new RainbowFetchClient({
   baseURL: 'https://www.4byte.directory/api/v1/signatures',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
   },
   timeout: 1000,
+});
+
+const timeoutPromise = new Promise((_, reject) => {
+  setTimeout(reject, 1000);
 });
 
 export const getTransactionMethodName = async (
@@ -119,10 +115,9 @@ export const getTransactionMethodName = async (
   let signature = transactionSignatures[bytes];
   if (signature) return signature;
   try {
-    const { data } = await fourByteApi.get(`/?hex_signature=${bytes}`);
-    const bestResult = data.results.reduce(
-      (a: FourByteResult, b: FourByteResult) => (a.id < b.id ? a : b)
-    );
+    const response = await fourByteApi.get(`/?hex_signature=${bytes}`);
+    const responseData: any = response?.data;
+    const bestResult = responseData?.results?.[0];
     signature = bestResult.text_signature;
     // eslint-disable-next-line no-empty
   } catch (e) {}
@@ -133,7 +128,7 @@ export const getTransactionMethodName = async (
         abi,
         web3Provider
       );
-      signature = await contract.entries(bytes);
+      signature = await Promise.race([contract.entries(bytes), timeoutPromise]);
       // eslint-disable-next-line no-empty
     } catch (e) {}
   }
