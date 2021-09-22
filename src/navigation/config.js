@@ -310,7 +310,6 @@ const SettingsTitle = ({ children }) => {
 
 export const wyreWebviewOptions = colors => ({
   ...headerConfigOptions,
-  // eslint-disable-next-line react/display-name
   headerLeft: props => <BackButton {...props} textChevron />,
   headerStatusBarHeight: 24,
   headerStyle: {
@@ -358,11 +357,8 @@ export const settingsOptions = colors => ({
     },
   },
   ...(android && {
-    // eslint-disable-next-line react/display-name
     headerLeft: props => <BackButton {...props} textChevron />,
-    // eslint-disable-next-line react/display-name
     headerRight: () => <EmptyButtonPlaceholder />,
-    // eslint-disable-next-line react/display-name
     headerTitle: props => <SettingsTitle {...props} />,
   }),
 });

@@ -1,4 +1,4 @@
-/* eslint-disable sort-keys */
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import { Linking, StatusBar } from 'react-native';
