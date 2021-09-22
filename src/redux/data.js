@@ -1,4 +1,5 @@
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
+import isValidDomain from 'is-valid-domain';
 import {
   concat,
   filter,
@@ -545,6 +546,12 @@ export const addressAssetsReceived = (
     );
     dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
   }
+
+  //Hide tokens with a url as their token name
+  const assetsWithScamURL = parsedAssets
+    .filter(asset => isValidDomain(asset.name) && !asset.isVerified)
+    .map(({ address }) => address);
+  dispatch(addCoinsToHiddenList(assetsWithScamURL));
 
   // Hide coins with price = 0 that are currently not pinned
   if (isL2) {

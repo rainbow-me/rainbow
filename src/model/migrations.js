@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
 import { findKey, isNumber, keys } from 'lodash';
 import { removeLocal } from '../handlers/localstorage/common';
@@ -32,6 +33,7 @@ import { returnStringFirstEmoji } from '@rainbow-me/helpers/emojiHandler';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import { DefaultTokenLists } from '@rainbow-me/references';
 import { profileUtils } from '@rainbow-me/utils';
+import { REVIEW_ASKED_KEY } from '@rainbow-me/utils/reviewAlert';
 import logger from 'logger';
 
 export default async function runMigrations() {
@@ -410,6 +412,26 @@ export default async function runMigrations() {
   };
 
   migrations.push(v10);
+
+  /*
+   *************** Migration v11 ******************
+   * This step resets review timers if we havnt asked in the last 2 weeks prior to running this
+   */
+  const v11 = async () => {
+    logger.log('Start migration v11');
+    const reviewAsked = await AsyncStorage.getItem(REVIEW_ASKED_KEY);
+    const TWO_WEEKS = 14 * 24 * 60 * 60 * 1000;
+    const TWO_MONTHS = 2 * 30 * 24 * 60 * 60 * 1000;
+
+    if (Number(reviewAsked) > Date.now() - TWO_WEEKS) {
+      return;
+    } else {
+      const twoMonthsAgo = Date.now() - TWO_MONTHS;
+      AsyncStorage.setItem(REVIEW_ASKED_KEY, twoMonthsAgo.toString());
+    }
+  };
+
+  migrations.push(v11);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`

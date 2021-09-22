@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useAnimatedStyle } from 'react-native-reanimated';
+
 import ChartContext, { useGenerateValues } from '../../helpers/ChartContext';
 
 export default function ChartPathProvider({ data: providedData, children }) {
