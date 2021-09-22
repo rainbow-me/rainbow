@@ -35,7 +35,7 @@ export const isENSAddressFormat = address => {
   if (
     !parts ||
     parts.length === 1 ||
-    supportedUnstoppableDomains.includes(parts[parts.length - 1])
+    supportedUnstoppableDomains.includes(parts[parts.length - 1].toLowerCase())
   ) {
     return false;
   }
@@ -43,7 +43,15 @@ export const isENSAddressFormat = address => {
 };
 
 export const isUnstoppableAddressFormat = address => {
-  return /^([\w-]+\.)+(crypto)$/.test(address);
+  const parts = address && address.split('.');
+  if (
+    !parts ||
+    parts.length === 1 ||
+    !supportedUnstoppableDomains.includes(parts[parts.length - 1].toLowerCase())
+  ) {
+    return false;
+  }
+  return true;
 };
 
 /**
