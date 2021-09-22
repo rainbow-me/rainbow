@@ -3,10 +3,12 @@ import React from 'react';
 import ReactCoinIcon from 'react-coin-icon';
 import { View } from 'react-native';
 import styled from 'styled-components';
+import ContractInteraction from '../../assets/contractInteraction.png';
 import { useTheme } from '../../context/ThemeContext';
 import ChainBadge from './ChainBadge';
 import CoinIconFallback from './CoinIconFallback';
 import { useColorForAsset } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
 import { getTokenMetadata, isETH, magicMemo } from '@rainbow-me/utils';
 
 export const CoinIconSize = 40;
@@ -34,21 +36,31 @@ const CoinIcon = ({
 
   return (
     <View>
-      <StyledCoinIcon
-        {...props}
-        address={props.mainnet_address || address}
-        color={color}
-        fallbackRenderer={CoinIconFallback}
-        forceFallback={forceFallback}
-        // force update on change symbol due to ImageCache strategy
-        key={symbol}
-        shadowColor={
-          forcedShadowColor ||
-          (isDarkMode ? colors.shadow : tokenMetadata?.shadowColor || color)
-        }
-        size={size}
-        symbol={symbol}
-      />
+      {symbol !== 'contract' ? (
+        <StyledCoinIcon
+          {...props}
+          address={props.mainnet_address || address}
+          color={color}
+          fallbackRenderer={CoinIconFallback}
+          forceFallback={forceFallback}
+          // force update on change symbol due to ImageCache strategy
+          key={symbol}
+          shadowColor={
+            forcedShadowColor ||
+            (isDarkMode ? colors.shadow : tokenMetadata?.shadowColor || color)
+          }
+          size={size}
+          symbol={symbol}
+        />
+      ) : (
+        <ImgixImage
+          source={ContractInteraction}
+          style={{
+            height: size,
+            width: size,
+          }}
+        />
+      )}
       <ChainBadge
         assetType={type}
         badgeXPosition={badgeXPosition}
