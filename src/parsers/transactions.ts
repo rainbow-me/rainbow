@@ -33,7 +33,7 @@ import {
   ZerionTransactionChange,
   ZerionTransactionStatus,
 } from '@rainbow-me/entities';
-import { getTransacionMethodName } from '@rainbow-me/handlers/transactions';
+import { getTransactionMethodName } from '@rainbow-me/handlers/transactions';
 import { isL2Network, toChecksumAddress } from '@rainbow-me/handlers/web3';
 import { ETH_ADDRESS, savingsAssetsList } from '@rainbow-me/references';
 import {
@@ -288,7 +288,7 @@ const parseTransactionWithEmptyChanges = async (
   txn: ZerionTransaction,
   nativeCurrency: string
 ) => {
-  const methodName = await getTransacionMethodName(txn);
+  const methodName = await getTransactionMethodName(txn);
   const updatedAsset = {
     address: ETH_ADDRESS,
     decimals: 18,

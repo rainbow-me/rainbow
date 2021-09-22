@@ -6,6 +6,7 @@ import {
 } from './localstorage/accountLocal';
 import { web3Provider } from './web3';
 import { ZerionTransaction } from '@rainbow-me/entities';
+import store from '@rainbow-me/redux/store';
 
 interface FourByteResult {
   bytes_signature?: string;
@@ -112,12 +113,10 @@ const fourByteApi = axios.create({
   timeout: 1000,
 });
 
-export const getTransacionMethodName = async (
+export const getTransactionMethodName = async (
   transaction: ZerionTransaction
 ) => {
-  //   const { transactionSignatures } = store.getState().data;
-  let transactionSignatures: any =
-    (await getLocalTransactionSignatures()) || {};
+  const { transactionSignatures } = store.getState().data;
   // only being used on mainnet ransactions, so we can use the default web3 provider
   const txn = await web3Provider.getTransaction(transaction.hash);
   const bytes = txn?.data?.substring(0, 10) || '';

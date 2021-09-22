@@ -43,6 +43,7 @@ import {
   getAssetPricesFromUniswap,
   getAssets,
   getLocalTransactions,
+  getLocalTransactionSignatures,
   saveAccountEmptyState,
   saveAssetPricesFromUniswap,
   saveAssets,
@@ -115,6 +116,9 @@ const DATA_LOAD_TRANSACTIONS_REQUEST = 'data/DATA_LOAD_TRANSACTIONS_REQUEST';
 const DATA_LOAD_TRANSACTIONS_SUCCESS = 'data/DATA_LOAD_TRANSACTIONS_SUCCESS';
 const DATA_LOAD_TRANSACTIONS_FAILURE = 'data/DATA_LOAD_TRANSACTIONS_FAILURE';
 
+const DATA_LOAD_TRANSACTION_SIGNATURES_SUCCESS =
+  'data/DATA_LOAD_TRANSACTION_SIGNATURES_SUCCESS';
+
 const DATA_ADD_NEW_TRANSACTION_SUCCESS =
   'data/DATA_ADD_NEW_TRANSACTION_SUCCESS';
 
@@ -157,6 +161,14 @@ export const dataLoadState = () => async (dispatch, getState) => {
   } catch (error) {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
   }
+  try {
+    const transactionSignatures = await getLocalTransactionSignatures();
+    dispatch({
+      payload: transactionSignatures,
+      type: DATA_LOAD_TRANSACTION_SIGNATURES_SUCCESS,
+    });
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
   genericAssetsHandle = setTimeout(() => {
     dispatch(genericAssetsFallback());
   }, GENERIC_ASSETS_FALLBACK_TIMEOUT);
@@ -1017,6 +1029,11 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         ethUSDCharts: action.payload,
+      };
+    case DATA_LOAD_TRANSACTION_SIGNATURES_SUCCESS:
+      return {
+        ...state,
+        transactionSignatures: action.payload,
       };
     case DATA_LOAD_TRANSACTIONS_REQUEST:
       return {
