@@ -8,7 +8,17 @@ import {
 import { sanitizeSeedPhrase } from '@rainbow-me/utils';
 
 // Currently supported Top Level Domains from ENS
-const supportedTLDs = ['eth', 'test', 'xyz', 'luxe', 'kred', 'club', 'art'];
+const supportedUnstoppableDomains = [
+  '888',
+  'bitcoin',
+  'coin',
+  'crypto',
+  'dao',
+  'nft',
+  'wallet',
+  'x',
+  'zil',
+];
 
 /**
  * @desc validate email
@@ -25,7 +35,7 @@ export const isENSAddressFormat = address => {
   if (
     !parts ||
     parts.length === 1 ||
-    !supportedTLDs.includes(parts[parts.length - 1])
+    supportedUnstoppableDomains.includes(parts[parts.length - 1])
   ) {
     return false;
   }
