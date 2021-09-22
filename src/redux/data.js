@@ -43,12 +43,12 @@ import {
   getAssetPricesFromUniswap,
   getAssets,
   getLocalTransactions,
-  getLocalTransactionSignatures,
   saveAccountEmptyState,
   saveAssetPricesFromUniswap,
   saveAssets,
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
+import { getTransactionSignatures } from '@rainbow-me/handlers/localstorage/globalSettings';
 import { isL2Network, web3Provider } from '@rainbow-me/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
@@ -162,7 +162,7 @@ export const dataLoadState = () => async (dispatch, getState) => {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
   }
   try {
-    const transactionSignatures = await getLocalTransactionSignatures();
+    const transactionSignatures = await getTransactionSignatures();
     dispatch({
       payload: transactionSignatures,
       type: DATA_LOAD_TRANSACTION_SIGNATURES_SUCCESS,

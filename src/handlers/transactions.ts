@@ -1,11 +1,8 @@
 import { Contract } from '@ethersproject/contracts';
 import axios from 'axios';
-import {
-  getLocalTransactionSignatures,
-  saveLocalTransactionSignatures,
-} from './localstorage/accountLocal';
 import { web3Provider } from './web3';
 import { ZerionTransaction } from '@rainbow-me/entities';
+import { saveTransactionSignatures } from '@rainbow-me/handlers/localstorage/globalSettings';
 import store from '@rainbow-me/redux/store';
 
 interface FourByteResult {
@@ -143,7 +140,7 @@ export const getTransactionMethodName = async (
       ...transactionSignatures,
       [bytes]: parsedSignature,
     };
-    saveLocalTransactionSignatures(newTransactionSignatures);
+    saveTransactionSignatures(newTransactionSignatures);
   }
   return parsedSignature;
 };
