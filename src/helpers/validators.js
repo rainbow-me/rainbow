@@ -7,7 +7,7 @@ import {
 } from '@rainbow-me/handlers/web3';
 import { sanitizeSeedPhrase } from '@rainbow-me/utils';
 
-// Currently supported Top Level Domains from ENS
+// Currently supported Top Level Domains from Unstoppable Domains
 const supportedUnstoppableDomains = [
   '888',
   'bitcoin',
