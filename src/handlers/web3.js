@@ -26,7 +26,6 @@ import { isNativeAsset } from './assets';
 import { AssetTypes } from '@rainbow-me/entities';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 
-import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   addBuffer,
   convertAmountToRawAmount,
@@ -100,7 +99,7 @@ export const isTestnet = network => {
  * @desc returns a web3 provider for the specified network
  * @param {String} network
  */
-export const getProviderForNetwork = async (network = networkTypes.mainnet) => {
+export const getProviderForNetwork = async (network = NetworkTypes.mainnet) => {
   if (networkProviders[network]) {
     return networkProviders[network];
   }
