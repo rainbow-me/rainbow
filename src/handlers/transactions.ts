@@ -98,11 +98,11 @@ const fourByteApi = new RainbowFetchClient({
     'Accept': 'application/json',
     'Content-Type': 'application/json',
   },
-  timeout: 500,
+  timeout: 800,
 });
 
 const timeoutPromise = new Promise((_, reject) => {
-  setTimeout(reject, 500);
+  setTimeout(reject, 800);
 });
 
 export const getTransactionMethodName = async (
