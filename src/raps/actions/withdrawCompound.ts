@@ -9,6 +9,7 @@ import {
   TransactionType,
 } from '@rainbow-me/entities';
 import { toHex } from '@rainbow-me/handlers/web3';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { TypeSpecificParameters } from '@rainbow-me/redux/swap';
@@ -101,6 +102,7 @@ const withdrawCompound = async (
     gasLimit: transactionParams.gasLimit,
     gasPrice: transactionParams.gasPrice,
     hash: withdraw?.hash,
+    network: networkTypes.mainnet,
     nonce: withdraw?.nonce,
     protocol: ProtocolType.compound,
     status: TransactionStatus.withdrawing,

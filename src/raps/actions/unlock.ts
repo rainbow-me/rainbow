@@ -11,6 +11,7 @@ import {
   TransactionType,
 } from '@rainbow-me/entities';
 import { toHex, web3Provider } from '@rainbow-me/handlers/web3';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { erc20ABI, ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
@@ -157,6 +158,7 @@ const unlock = async (
     gasLimit,
     gasPrice,
     hash: approval?.hash,
+    network: networkTypes.mainnet,
     nonce: approval?.nonce,
     status: TransactionStatus.approving,
     to: approval?.to,
