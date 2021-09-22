@@ -117,7 +117,9 @@ export const getTransactionMethodName = async (
   try {
     const response = await fourByteApi.get(`/?hex_signature=${bytes}`);
     const responseData: any = response?.data;
-    const bestResult = responseData?.results?.[0];
+    const bestResult = responseData?.results.sort(
+      (a: { id: number }, b: { id: number }) => (a.id < b.id ? -1 : 1)
+    )?.[0];
     signature = bestResult.text_signature;
     // eslint-disable-next-line no-empty
   } catch (e) {}
@@ -132,7 +134,7 @@ export const getTransactionMethodName = async (
       // eslint-disable-next-line no-empty
     } catch (e) {}
   }
-  const parsedSignature = parseSignatureToTitle(signature);
+  const parsedSignature = parseSignatureToTitle(signature || '');
   if (parsedSignature) {
     const newTransactionSignatures = {
       ...transactionSignatures,
