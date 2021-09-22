@@ -80,9 +80,10 @@ export const parseTransactions = async (
   const allL2Transactions = existingTransactions.filter(tx =>
     isL2Network(tx.network || '')
   );
-  const data = appended
-    ? transactionData
-    : dataFromLastTxHash(transactionData, existingTransactions);
+  const data = transactionData;
+  // appended
+  //   ? transactionData
+  //   : dataFromLastTxHash(transactionData, existingTransactions);
 
   const newTransactionPromises = data.map(txn =>
     parseTransaction(txn, nativeCurrency, purchaseTransactionHashes, network)
@@ -308,11 +309,11 @@ const parseTransactionWithEmptyChanges = async (
     {
       address: ETH_ADDRESS,
       balance: convertRawAmountToBalance(valueUnit, updatedAsset),
-      description: methodName,
+      description: methodName || 'Contract interaction',
       from: txn.address_from,
       hash: `${txn.hash}-${0}`,
       minedAt: txn.mined_at,
-      name: methodName || 'pendinng placeholder',
+      name: methodName || 'Contract interaction',
       native: nativeDisplay,
       nonce: txn.nonce,
       pending: false,

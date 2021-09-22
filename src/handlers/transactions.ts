@@ -98,49 +98,59 @@ const fourByteApi = new RainbowFetchClient({
     'Accept': 'application/json',
     'Content-Type': 'application/json',
   },
-  timeout: 1000,
+  timeout: 500,
 });
 
 const timeoutPromise = new Promise((_, reject) => {
-  setTimeout(reject, 1000);
+  setTimeout(reject, 500);
 });
 
 export const getTransactionMethodName = async (
   transaction: ZerionTransaction
 ) => {
-  const { transactionSignatures } = store.getState().data;
-  // only being used on mainnet transactions, so we can use the default web3 provider
-  const txn = await web3Provider.getTransaction(transaction.hash);
-  const bytes = txn?.data?.substring(0, 10) || '';
-  let signature = transactionSignatures[bytes];
-  if (signature) return signature;
   try {
-    const response = await fourByteApi.get(`/?hex_signature=${bytes}`);
-    const responseData: any = response?.data;
-    const bestResult = responseData?.results.sort(
-      (a: { id: number }, b: { id: number }) => (a.id < b.id ? -1 : 1)
-    )?.[0];
-    signature = bestResult.text_signature;
-    // eslint-disable-next-line no-empty
-  } catch (e) {}
-  if (!signature) {
+    const { transactionSignatures } = store.getState().data;
+    // only being used on mainnet transactions, so we can use the default web3 provider
+    const txn = await web3Provider.getTransaction(transaction.hash);
+    const bytes = txn?.data?.substring(0, 10) || '';
+    let signature = transactionSignatures[bytes] || '';
+    if (signature) return signature;
     try {
-      const contract = new Contract(
-        SIGNATURE_REGISTRY_ADDRESS,
-        abi,
-        web3Provider
-      );
-      signature = await Promise.race([contract.entries(bytes), timeoutPromise]);
+      const response = await fourByteApi.get(`/?hex_signature=${bytes}`);
+      const responseData: any = response?.data;
+      const bestResult = responseData?.results.sort(
+        (a: { id: number }, b: { id: number }) => (a.id < b.id ? -1 : 1)
+      )?.[0];
+      signature = bestResult.text_signature;
       // eslint-disable-next-line no-empty
     } catch (e) {}
+    if (!signature) {
+      try {
+        const contract = new Contract(
+          SIGNATURE_REGISTRY_ADDRESS,
+          abi,
+          web3Provider
+        );
+        signature = await Promise.race([
+          contract.entries(bytes),
+          timeoutPromise,
+        ]);
+        // eslint-disable-next-line no-empty
+      } catch (e) {}
+    }
+    const parsedSignature = parseSignatureToTitle(signature);
+    if (parsedSignature) {
+      const newTransactionSignatures = {
+        ...transactionSignatures,
+        [bytes]: parsedSignature,
+      };
+      try {
+        saveTransactionSignatures(newTransactionSignatures);
+        // eslint-disable-next-line no-empty
+      } catch (e) {}
+    }
+    return parsedSignature;
+  } catch (e) {
+    return '';
   }
-  const parsedSignature = parseSignatureToTitle(signature || '');
-  if (parsedSignature) {
-    const newTransactionSignatures = {
-      ...transactionSignatures,
-      [bytes]: parsedSignature,
-    };
-    saveTransactionSignatures(newTransactionSignatures);
-  }
-  return parsedSignature;
 };
