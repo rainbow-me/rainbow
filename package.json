@@ -129,6 +129,7 @@
     "imgix-core-js": "2.3.2",
     "immer": "9.0.6",
     "inherits": "2.0.4",
+    "is-valid-domain": "0.1.2",
     "lint-staged": "10.4.0",
     "lodash": "4.17.21",
     "lottie-ios": "3.2.3",
