@@ -113,7 +113,7 @@ export const getTransactionMethodName = async (
   transaction: ZerionTransaction
 ) => {
   const { transactionSignatures } = store.getState().data;
-  // only being used on mainnet ransactions, so we can use the default web3 provider
+  // only being used on mainnet transactions, so we can use the default web3 provider
   const txn = await web3Provider.getTransaction(transaction.hash);
   const bytes = txn?.data?.substring(0, 10) || '';
   let signature = transactionSignatures[bytes];
