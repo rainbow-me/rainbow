@@ -83,6 +83,9 @@ export const TRANSFER_EVENT_TOPIC_LENGTH = 3;
 export const TRANSFER_EVENT_KECCAK =
   '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 
+export const SIGNATURE_REGISTRY_ADDRESS =
+  '0x44691B39d1a75dC4E0A0346CBB15E310e6ED1E86';
+
 export const AddCashCurrencies = {
   kovan: {
     DAI: '0xc4375b7de8af5a38a93548eb8453a498222c4ff2',

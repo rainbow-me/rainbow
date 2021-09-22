@@ -4,6 +4,7 @@ import { web3Provider } from './web3';
 import { ZerionTransaction } from '@rainbow-me/entities';
 import { saveTransactionSignatures } from '@rainbow-me/handlers/localstorage/globalSettings';
 import store from '@rainbow-me/redux/store';
+import { SIGNATURE_REGISTRY_ADDRESS } from '@rainbow-me/references';
 
 interface FourByteResult {
   bytes_signature?: string;
@@ -13,7 +14,6 @@ interface FourByteResult {
   text_signature?: string;
 }
 
-const REGISTRY_ADDRESS = '0x44691B39d1a75dC4E0A0346CBB15E310e6ED1E86';
 const abi = [
   {
     constant: false,
@@ -84,9 +84,10 @@ const abi = [
     type: 'event',
   },
 ];
-const parse = (signature: string) => {
+
+const parseSignatureToTitle = (signature: string) => {
   const rawName = signature.match(/^([^)(]*)\((.*)\)([^)(]*)$/u);
-  let parsedName;
+  let parsedName = '';
 
   if (rawName) {
     parsedName =
@@ -95,8 +96,6 @@ const parse = (signature: string) => {
         .slice(1)
         .split(/(?=[A-Z])/u)
         .join(' ');
-  } else {
-    parsedName = '';
   }
   return parsedName;
 };
@@ -129,12 +128,16 @@ export const getTransactionMethodName = async (
   } catch (e) {}
   if (!signature) {
     try {
-      const contract = new Contract(REGISTRY_ADDRESS, abi, web3Provider);
+      const contract = new Contract(
+        SIGNATURE_REGISTRY_ADDRESS,
+        abi,
+        web3Provider
+      );
       signature = await contract.entries(bytes);
       // eslint-disable-next-line no-empty
     } catch (e) {}
   }
-  const parsedSignature = parse(signature);
+  const parsedSignature = parseSignatureToTitle(signature);
   if (parsedSignature) {
     const newTransactionSignatures = {
       ...transactionSignatures,
