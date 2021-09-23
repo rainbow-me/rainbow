@@ -5,78 +5,10 @@ import { ZerionTransaction } from '@rainbow-me/entities';
 import { saveTransactionSignatures } from '@rainbow-me/handlers/localstorage/globalSettings';
 import { DATA_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
-import { SIGNATURE_REGISTRY_ADDRESS } from '@rainbow-me/references';
-
-const abi = [
-  {
-    constant: false,
-    inputs: [{ name: '_new', type: 'address' }],
-    name: 'setOwner',
-    outputs: [],
-    payable: false,
-    type: 'function',
-  },
-  {
-    constant: true,
-    inputs: [],
-    name: 'totalSignatures',
-    outputs: [{ name: '', type: 'uint256' }],
-    payable: false,
-    type: 'function',
-  },
-  {
-    constant: true,
-    inputs: [],
-    name: 'owner',
-    outputs: [{ name: '', type: 'address' }],
-    payable: false,
-    type: 'function',
-  },
-  {
-    constant: false,
-    inputs: [],
-    name: 'drain',
-    outputs: [],
-    payable: false,
-    type: 'function',
-  },
-  {
-    constant: true,
-    inputs: [{ name: '', type: 'bytes4' }],
-    name: 'entries',
-    outputs: [{ name: '', type: 'string' }],
-    payable: false,
-    type: 'function',
-  },
-  {
-    constant: false,
-    inputs: [{ name: '_method', type: 'string' }],
-    name: 'register',
-    outputs: [{ name: '', type: 'bool' }],
-    payable: false,
-    type: 'function',
-  },
-  { inputs: [], type: 'constructor' },
-  {
-    anonymous: false,
-    inputs: [
-      { indexed: true, name: 'creator', type: 'address' },
-      { indexed: true, name: 'signature', type: 'bytes4' },
-      { indexed: false, name: 'method', type: 'string' },
-    ],
-    name: 'Registered',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      { indexed: true, name: 'old', type: 'address' },
-      { indexed: true, name: 'current', type: 'address' },
-    ],
-    name: 'NewOwner',
-    type: 'event',
-  },
-];
+import {
+  SIGNATURE_REGISTRY_ADDRESS,
+  signatureRegistryABI,
+} from '@rainbow-me/references';
 
 const parseSignatureToTitle = (signature: string) => {
   const rawName = signature.match(/^([^)(]*)\((.*)\)([^)(]*)$/u);
@@ -129,7 +61,7 @@ export const getTransactionMethodName = async (
       try {
         const contract = new Contract(
           SIGNATURE_REGISTRY_ADDRESS,
-          abi,
+          signatureRegistryABI,
           web3Provider
         );
         signature = await Promise.race([
