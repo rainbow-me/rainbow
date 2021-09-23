@@ -780,10 +780,10 @@ const getConfirmedState = type => {
   }
 };
 
-export const dataWatchPendingTransactions = (provider = null) => async (
-  dispatch,
-  getState
-) => {
+export const dataWatchPendingTransactions = (
+  provider = null,
+  currentNonce = -1
+) => async (dispatch, getState) => {
   const { transactions } = getState().data;
   if (!transactions.length) return true;
   let txStatusesDidChange = false;
@@ -802,7 +802,6 @@ export const dataWatchPendingTransactions = (provider = null) => async (
       try {
         const txObj = await p.getTransaction(txHash);
         // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
-        const currentNonce = await p.getTransactionCount(tx.from, 'latest');
         const nonceAlreadyIncluded = currentNonce > tx.nonce;
         if (
           (txObj && txObj.blockNumber && txObj.blockHash) ||
@@ -913,6 +912,19 @@ const updatePurchases = updatedTransactions => dispatch => {
     );
   });
   dispatch(addCashUpdatePurchases(confirmedPurchases));
+};
+
+export const watchPendingTransactionsOnInitialize = (
+  accountAddressToWatch,
+  provider = null
+) => async (dispatch, getState) => {
+  const { accountAddress: currentAccountAddress } = getState().settings;
+  if (currentAccountAddress !== accountAddressToWatch) return;
+  const currentNonce = await (provider || web3Provider).getTransactionCount(
+    currentAccountAddress,
+    'latest'
+  );
+  await dispatch(dataWatchPendingTransactions(provider, currentNonce));
 };
 
 export const watchPendingTransactions = (
