@@ -1,4 +1,4 @@
-/* eslint-disable sort-keys */
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 const fs = require('fs');
 const { parse: babelParse } = require('@babel/parser');
 const data = fs.readFileSync('./globalVariables.js', 'utf8');
@@ -19,10 +19,8 @@ const globalVars = parse(babelParse(data, { sourceType: 'module' }))
   );
 
 module.exports = {
-  extends: 'satya164',
-  plugins: ['jest'],
+  extends: 'rainbow',
   settings: {
-    'react': { version: '16' },
     'import/resolver': {
       'node': {
         extensions: [
@@ -39,61 +37,8 @@ module.exports = {
       },
     },
   },
+  plugins: [],
   globals: globalVars,
-  rules: {
-    'no-console': 2,
-    'sort-imports': [
-      'error',
-      {
-        ignoreCase: true,
-        ignoreDeclarationSort: true,
-        ignoreMemberSort: false,
-        memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
-      },
-    ],
-    'sort-keys': ['error', 'asc', { caseSensitive: false, natural: false }],
-    'jest/no-truthy-falsy': 0,
-    'react/jsx-sort-props': [
-      'error',
-      {
-        ignoreCase: false,
-      },
-    ],
-    'react-native/no-inline-styles': 0,
-    'import/named': 0,
-    'import/no-named-as-default': 0,
-    'import/order': [
-      'error',
-      {
-        alphabetize: {
-          order: 'asc',
-          caseInsensitive: false,
-        },
-        groups: ['builtin', 'external', 'parent', 'sibling', 'index'],
-        pathGroups: [
-          {
-            pattern: '../../../../**',
-            group: 'parent',
-            position: 'before',
-          },
-          {
-            pattern: '../../../**',
-            group: 'parent',
-            position: 'before',
-          },
-          {
-            pattern: '../../**',
-            group: 'parent',
-            position: 'before',
-          },
-        ],
-      },
-    ],
-    'react/display-name': 2,
-    'react/no-array-index-key': 0,
-    'jest/no-test-prefixes': 0,
-    'jest/no-disabled-tests': 0,
-    'babel/no-unused-expressions': 'off',
-  },
+  rules: {},
   env: { browser: true, node: true },
 };

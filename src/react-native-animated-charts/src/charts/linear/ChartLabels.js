@@ -4,6 +4,7 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
 } from 'react-native-reanimated';
+
 import ChartContext from '../../helpers/ChartContext';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);

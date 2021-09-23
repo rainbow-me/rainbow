@@ -1,5 +1,5 @@
 diff --git a/node_modules/@walletconnect/core/dist/esm/index.js b/node_modules/@walletconnect/core/dist/esm/index.js
-index 4cfb8e6..4bd906e 100644
+index 116b2f8..89d6972 100644
 --- a/node_modules/@walletconnect/core/dist/esm/index.js
 +++ b/node_modules/@walletconnect/core/dist/esm/index.js
 @@ -227,10 +227,10 @@ class Connector {
@@ -60,7 +60,16 @@ index 4cfb8e6..4bd906e 100644
              event: "session_update",
              params: [
                  {
-@@ -572,7 +572,7 @@ class Connector {
+@@ -488,7 +488,7 @@ class Connector {
+     }
+     unsafeSend(request, options) {
+         this._sendRequest(request, options);
+-        this._eventManager.trigger({
++        this?._eventManager?.trigger({
+             event: "call_request_sent",
+             params: [{ request, options }],
+         });
+@@ -576,7 +576,7 @@ class Connector {
      }
      _sendCallRequest(request, options) {
          this._sendRequest(request, options);
@@ -69,7 +78,7 @@ index 4cfb8e6..4bd906e 100644
              event: "call_request_sent",
              params: [{ request, options }],
          });
-@@ -629,7 +629,7 @@ class Connector {
+@@ -627,7 +627,7 @@ class Connector {
          if (this._handshakeTopic) {
              this._handshakeTopic = "";
          }
@@ -78,7 +87,7 @@ index 4cfb8e6..4bd906e 100644
              event: "disconnect",
              params: [{ message }],
          });
-@@ -653,7 +653,7 @@ class Connector {
+@@ -651,7 +651,7 @@ class Connector {
                      if (sessionParams.peerMeta && !this.peerMeta) {
                          this.peerMeta = sessionParams.peerMeta;
                      }
@@ -87,7 +96,7 @@ index 4cfb8e6..4bd906e 100644
                          event: "connect",
                          params: [
                              {
-@@ -672,7 +672,7 @@ class Connector {
+@@ -670,7 +670,7 @@ class Connector {
                      if (sessionParams.accounts) {
                          this.accounts = sessionParams.accounts;
                      }
@@ -96,7 +105,7 @@ index 4cfb8e6..4bd906e 100644
                          event: "session_update",
                          params: [
                              {
-@@ -706,7 +706,7 @@ class Connector {
+@@ -704,7 +704,7 @@ class Connector {
          }
          const payload = await this._decrypt(encryptionPayload);
          if (payload) {
@@ -105,7 +114,7 @@ index 4cfb8e6..4bd906e 100644
          }
      }
      _subscribeToSessionRequest() {
-@@ -755,7 +755,7 @@ class Connector {
+@@ -753,7 +753,7 @@ class Connector {
          this.on("display_uri", () => {
              if (this._qrcodeModal) {
                  this._qrcodeModal.open(this.uri, () => {
@@ -114,7 +123,7 @@ index 4cfb8e6..4bd906e 100644
                          event: "modal_closed",
                          params: [],
                      });
-@@ -769,7 +769,7 @@ class Connector {
+@@ -776,7 +776,7 @@ class Connector {
          });
          this.on("wc_sessionRequest", (error, payload) => {
              if (error) {
@@ -123,7 +132,7 @@ index 4cfb8e6..4bd906e 100644
                      event: "error",
                      params: [
                          {
-@@ -783,7 +783,7 @@ class Connector {
+@@ -790,7 +790,7 @@ class Connector {
              this.peerId = payload.params[0].peerId;
              this.peerMeta = payload.params[0].peerMeta;
              const internalPayload = Object.assign(Object.assign({}, payload), { method: "session_request" });
@@ -132,7 +141,7 @@ index 4cfb8e6..4bd906e 100644
          });
          this.on("wc_sessionUpdate", (error, payload) => {
              if (error) {
-@@ -794,9 +794,9 @@ class Connector {
+@@ -801,9 +801,9 @@ class Connector {
      }
      _initTransport() {
          this._transport.on("message", (socketMessage) => this._handleIncomingMessages(socketMessage));

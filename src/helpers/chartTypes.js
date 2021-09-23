@@ -1,4 +1,4 @@
-/* eslint-disable sort-keys */
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 export default {
   hour: 'h',
   day: 'd',
@@ -7,4 +7,4 @@ export default {
   year: 'y',
   max: 'a',
 };
-/* eslint-enable sort-keys */
+/* eslint-enable sort-keys-fix/sort-keys-fix */
