@@ -6,7 +6,7 @@ export const AppleReviewAddress =
   'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review';
 
 export const REVIEW_DONE_KEY = 'AppStoreReviewDone';
-const REVIEW_ASKED_KEY = 'AppStoreReviewAsked';
+export const REVIEW_ASKED_KEY = 'AppStoreReviewAsked';
 let reviewDisplayedInTheSession = false;
 const TWO_MONTHS = 2 * 30 * 24 * 60 * 60 * 1000;
 

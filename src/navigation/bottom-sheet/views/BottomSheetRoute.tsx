@@ -32,7 +32,7 @@ const BottomSheetRoute = ({
   const {
     enableContentPanningGesture,
     enableHandlePanningGesture,
-    index = 1,
+    index = 0,
     snapPoints = ['100%'],
     backdropColor = DEFAULT_BACKDROP_COLOR,
     backdropOpacity = DEFAULT_BACKDROP_OPACITY,
@@ -48,14 +48,6 @@ const BottomSheetRoute = ({
   removingRef.current = removing;
 
   // const
-  //#endregion
-
-  //#region variables
-  const enhancedSpanPoints = useMemo(
-    () => [0, ...(snapPoints as (string | number)[])],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [...(snapPoints as (string | number)[])]
-  );
   //#endregion
 
   //#region styles
@@ -118,7 +110,7 @@ const BottomSheetRoute = ({
 
   //#region callbacks
   const handleOnChange = useCallback((index: number) => {
-    if (index === 0) {
+    if (index === -1) {
       onDismiss(routeKey, removingRef.current);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -137,8 +129,8 @@ const BottomSheetRoute = ({
   const renderBackdropComponent = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
-        appearsOnIndex={1}
-        disappearsOnIndex={0}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
         opacity={backdropOpacity}
         style={backdropStyle}
         {...props}
@@ -157,12 +149,13 @@ const BottomSheetRoute = ({
         containerHeight={CONTAINER_HEIGHT}
         enableContentPanningGesture={enableContentPanningGesture}
         enableHandlePanningGesture={enableHandlePanningGesture}
+        enablePanDownToClose
         handleComponent={null}
         index={index}
         onChange={handleOnChange}
         ref={ref}
         simultaneousHandlers={[]}
-        snapPoints={enhancedSpanPoints}
+        snapPoints={snapPoints}
         waitFor={[]}
       >
         <View style={screenContainerStyle}>{render()}</View>
