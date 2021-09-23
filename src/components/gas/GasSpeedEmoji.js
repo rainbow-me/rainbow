@@ -5,6 +5,10 @@ import { Emoji } from '../text';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
 const EmojiForGasSpeedType = {
+  [gasUtils.URGENT]: {
+    emoji: 'police_car_light', // 🚨
+    position: [android ? 2 : 1, android ? 3.5 : 0], // (x, y)
+  },
   [gasUtils.FAST]: {
     emoji: 'rocket', // 🚀️
     position: [android ? 2 : 0.5, android ? 5 : 0], // (x, y)

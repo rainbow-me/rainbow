@@ -587,8 +587,9 @@ export default function ExchangeModal({
             currentNetwork={network}
             dontBlur
             onCustomGasBlur={handleCustomGasBlur}
-            options={['normal', 'fast', 'custom']}
+            options={['normal', 'fast', 'urgent', 'custom']}
             testID={`${testID}-gas`}
+            topPadding={25}
             type={type}
           />
         </FloatingPanels>

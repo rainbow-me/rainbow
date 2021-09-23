@@ -363,6 +363,11 @@ function NativeStackNavigator() {
         }}
       />
       <NativeStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.CUSTOM_GAS_SHEET}
+        {...expandedAssetSheetConfig}
+      />
+      <NativeStack.Screen
         component={WithdrawModal}
         name={Routes.SAVINGS_WITHDRAW_MODAL}
         options={nativeStackDefaultConfigWithoutStatusBar}
