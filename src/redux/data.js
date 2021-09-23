@@ -119,6 +119,8 @@ const DATA_LOAD_TRANSACTIONS_FAILURE = 'data/DATA_LOAD_TRANSACTIONS_FAILURE';
 
 const DATA_LOAD_TRANSACTION_SIGNATURES_SUCCESS =
   'data/DATA_LOAD_TRANSACTION_SIGNATURES_SUCCESS';
+export const DATA_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS =
+  'data/DATA_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS';
 
 const DATA_ADD_NEW_TRANSACTION_SUCCESS =
   'data/DATA_ADD_NEW_TRANSACTION_SUCCESS';
@@ -1028,6 +1030,11 @@ export default (state = INITIAL_STATE, action) => {
         ethUSDCharts: action.payload,
       };
     case DATA_LOAD_TRANSACTION_SIGNATURES_SUCCESS:
+      return {
+        ...state,
+        transactionSignatures: action.payload,
+      };
+    case DATA_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS:
       return {
         ...state,
         transactionSignatures: action.payload,

@@ -3,6 +3,7 @@ import { RainbowFetchClient } from '../rainbow-fetch';
 import { web3Provider } from './web3';
 import { ZerionTransaction } from '@rainbow-me/entities';
 import { saveTransactionSignatures } from '@rainbow-me/handlers/localstorage/globalSettings';
+import { DATA_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { SIGNATURE_REGISTRY_ADDRESS } from '@rainbow-me/references';
 
@@ -145,6 +146,10 @@ export const getTransactionMethodName = async (
         [bytes]: parsedSignature,
       };
       try {
+        store.dispatch({
+          payload: newTransactionSignatures,
+          type: DATA_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS,
+        });
         saveTransactionSignatures(newTransactionSignatures);
         // eslint-disable-next-line no-empty
       } catch (e) {}
