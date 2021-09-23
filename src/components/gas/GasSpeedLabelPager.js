@@ -1,89 +1,76 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 // import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Column, Row } from '../layout';
-import GasSpeedLabelPagerItem, {
-  GasSpeedLabelPagerItemHeight,
-} from './GasSpeedLabelPagerItem';
-import { gasUtils, magicMemo } from '@rainbow-me/utils';
-import { padding } from '@rainbow-me/styles';
 import { Text } from '../text';
+import GasSpeedLabelPagerItem from './GasSpeedLabelPagerItem';
+import { margin, padding } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 
 const SpeedButton = styled(ButtonPressAnimation).attrs({
   hapticType: 'impactHeavy',
   scaleTo: 0.9,
 })`
-  border: 2px solid #8150E6;
+  border: ${({ theme: { colors } }) => `2px solid ${colors.appleBlue}`};
   border-radius: 15px;
   ${padding(0, 5, 5)};
 )
 `;
 
-const Chevron = styled(Text).attrs({
+const Symbol = styled(Text).attrs({
   align: 'right',
   size: 'lmedium',
-  weight: 'bold',
+  weight: 'heavy',
 })`
-  margin-left: 5;
+  margin-left: ${({ nextToText }) => (nextToText ? 5 : 0)};
 `;
 
-const speedColorsFactory = colors => ({
-  dark: [
-    colors.whiteLabel,
-    colors.whiteLabel,
-    colors.whiteLabel,
-    colors.appleBlue,
-  ],
-  light: [
-    colors.alpha(colors.blueGreyDark, 0.8),
-    colors.alpha(colors.blueGreyDark, 0.8),
-    colors.alpha(colors.blueGreyDark, 0.8),
-    colors.appleBlue,
-  ],
-});
+const DoneCustomGas = styled(Text).attrs({
+  size: 'lmedium',
+  weight: 'heavy',
+})`
+  ${margin(3, 2, 0, 3)}
+`;
 
-const GasSpeedLabelPager = ({ label, theme, onPress }) => {
+const GasSpeedLabelPager = ({ hideDropdown, label, theme, onPress }) => {
   const [touched, setTouched] = useState(false);
   useEffect(() => setTouched(true), [label]);
-  const { colors, isDarkMode } = useTheme();
-  const speedColors = useMemo(() => speedColorsFactory(colors), [colors]);
+  const { colors } = useTheme();
 
   return (
     <Row align="center" justify="end">
-      <SpeedButton onPress={onPress}>
-        {/* {gasUtils.GasSpeedOrder.map(speed => (
-          <GasSpeedLabelPagerItem
-            key={speed}
-            label={speed}
-            selected={speed === label}
-            shouldAnimate={touched}
-            theme={theme}
-          />
-        ))} */}
-        <Row align="end">
-          <Column>
-            <GasSpeedLabelPagerItem
-              key={label}
-              label={label}
-              selected
-              shouldAnimate={touched}
-              theme={theme}
-            />
-          </Column>
-          <Column>
-            <Chevron
-              color={
-                theme !== 'light'
-                  ? colors.whiteLabel
-                  : colors.alpha(colors.blueGreyDark, 0.8)
-              }
-            >
-              􀁰
-            </Chevron>
-          </Column>
-        </Row>
-      </SpeedButton>
+      <Column>
+        <SpeedButton onPress={onPress}>
+          {!hideDropdown ? (
+            <Row align="end">
+              <Column>
+                <GasSpeedLabelPagerItem
+                  key={label}
+                  label={label}
+                  selected
+                  shouldAnimate={touched}
+                  theme={theme}
+                />
+              </Column>
+              <Column>
+                <Symbol
+                  color={
+                    theme !== 'light'
+                      ? colors.whiteLabel
+                      : colors.alpha(colors.blueGreyDark, 0.8)
+                  }
+                  nextToText
+                >
+                  􀁰
+                </Symbol>
+              </Column>
+            </Row>
+          ) : (
+            <DoneCustomGas>Done</DoneCustomGas>
+          )}
+        </SpeedButton>
+      </Column>
     </Row>
   );
 };
