@@ -13,10 +13,10 @@ import { getTokenMetadata, isETH, magicMemo } from '@rainbow-me/utils';
 
 export const CoinIconSize = 40;
 
-const ContractInteractionIcon = styled(ImgixImage).attrs(({ size }) => ({
-  height: size,
-  width: size,
-}));
+const ContractInteractionIcon = styled(ImgixImage)`
+  height: ${({ size }) => size};
+  width: ${({ size }) => size};
+`;
 
 const StyledCoinIcon = styled(ReactCoinIcon)`
   opacity: ${({ isHidden }) => (isHidden ? 0.4 : 1)};
@@ -61,7 +61,7 @@ const CoinIcon = ({
           symbol={symbol}
         />
       ) : (
-        <ContractInteractionIcon source={ContractInteraction} />
+        <ContractInteractionIcon size={size} source={ContractInteraction} />
       )}
       <ChainBadge
         assetType={type}
