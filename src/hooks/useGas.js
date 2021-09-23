@@ -12,6 +12,7 @@ import {
   gasUpdateTxFee,
 } from '@rainbow-me/redux/gas';
 
+// EIP1559 WIP
 export default function useGas() {
   const dispatch = useDispatch();
   const { network: currentNetwork } = useAccountSettings();
