@@ -1,5 +1,5 @@
 import { isNil } from 'lodash';
-import React from 'react';
+import React, { useMemo } from 'react';
 import ReactCoinIcon from 'react-coin-icon';
 import { View } from 'react-native';
 import styled from 'styled-components';
@@ -12,6 +12,11 @@ import { ImgixImage } from '@rainbow-me/images';
 import { getTokenMetadata, isETH, magicMemo } from '@rainbow-me/utils';
 
 export const CoinIconSize = 40;
+
+const ContractInteractionIcon = styled(ImgixImage).attrs(({ size }) => ({
+  height: size,
+  width: size,
+}));
 
 const StyledCoinIcon = styled(ReactCoinIcon)`
   opacity: ${({ isHidden }) => (isHidden ? 0.4 : 1)};
@@ -33,10 +38,13 @@ const CoinIcon = ({
   const { colors, isDarkMode } = useTheme();
   const forceFallback =
     !isETH(props.mainnet_address || address) && isNil(tokenMetadata);
+  const isNotContractInteraction = useMemo(() => symbol !== 'contract', [
+    symbol,
+  ]);
 
   return (
     <View>
-      {symbol !== 'contract' ? (
+      {isNotContractInteraction ? (
         <StyledCoinIcon
           {...props}
           address={props.mainnet_address || address}
@@ -53,13 +61,7 @@ const CoinIcon = ({
           symbol={symbol}
         />
       ) : (
-        <ImgixImage
-          source={ContractInteraction}
-          style={{
-            height: size,
-            width: size,
-          }}
-        />
+        <ContractInteractionIcon source={ContractInteraction} />
       )}
       <ChainBadge
         assetType={type}
