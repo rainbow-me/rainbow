@@ -23,7 +23,7 @@ export interface RainbowTransaction {
     amount: string;
     display: string;
   };
-  network?: Network;
+  network: Network;
   nonce: number | null;
   pending: boolean;
   protocol?: ProtocolType | null;
@@ -45,7 +45,7 @@ export interface NewTransaction {
   gasLimit?: string | null;
   gasPrice?: string;
   hash: string | null;
-  network?: Network;
+  network: Network;
   nonce: number | null;
   protocol?: ProtocolType | null;
   sourceAmount?: string; // for purchases
