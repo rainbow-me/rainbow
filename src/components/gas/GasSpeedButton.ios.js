@@ -112,6 +112,7 @@ const GasSpeedButton = ({
 }) => {
   const { colors } = useTheme();
   const inputRef = useRef(null);
+  // eip 1559
   const {
     gasPrices,
     updateCustomValues,
