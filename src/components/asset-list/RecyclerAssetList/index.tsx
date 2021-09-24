@@ -1,7 +1,9 @@
-import { BottomSheetScrollView, useBottomSheet } from '@gorhom/bottom-sheet';
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
 import { findIndex, get } from 'lodash';
 import React, {
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -846,7 +848,7 @@ function RecyclerAssetList({
     ? NoStickyContainer
     : StickyContainer;
 
-  const isInsideBottomSheet = !!useBottomSheet();
+  const isInsideBottomSheet = !!useContext(BottomSheetContext);
 
   return (
     <StyledContainer onLayout={onLayout}>

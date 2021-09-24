@@ -55,7 +55,6 @@ export const UNISWAP_PAIR_DATA_QUERY = (pairAddress, block) => {
       totalSupply
       trackedReserveETH
       volumeUSD
-      untrackedVolumeUSD
   }
   query pairs {
     pairs(${
@@ -109,7 +108,6 @@ export const UNISWAP_PAIRS_BULK_QUERY = gql`
     totalSupply
     trackedReserveETH
     volumeUSD
-    untrackedVolumeUSD
   }
   query pairs($allPairs: [Bytes]!) {
     pairs(
@@ -144,7 +142,6 @@ export const UNISWAP_PAIRS_HISTORICAL_BULK_QUERY = gql`
       token1 {
         derivedETH
       }
-      untrackedVolumeUSD
     }
   }
 `;

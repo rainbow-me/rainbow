@@ -1,22 +1,22 @@
 diff --git a/node_modules/@walletconnect/socket-transport/dist/esm/index.js b/node_modules/@walletconnect/socket-transport/dist/esm/index.js
-index 6faa6a3..c2b3acf 100644
+index 9a6cc32..d77e10d 100644
 --- a/node_modules/@walletconnect/socket-transport/dist/esm/index.js
 +++ b/node_modules/@walletconnect/socket-transport/dist/esm/index.js
-@@ -85,11 +85,13 @@ class SocketTransport {
+@@ -86,11 +86,13 @@ class SocketTransport {
          this._nextSocket.onmessage = (event) => this._socketReceive(event);
          this._nextSocket.onopen = () => this._socketOpen();
          this._nextSocket.onerror = (event) => this._socketError(event);
 -        this._nextSocket.onclose = () => {
 -            setTimeout(() => {
 +        this._nextSocket.onclose = (error) => {
-+            if(error?.message?.indexOf('received bad response code from server') === -1){
++            if(error?.message?.indexOf('received bad response code from server') === -1) {
                  this._nextSocket = null;
 -                this._socketCreate();
 -            }, 1000);
 +                setTimeout(() => {
 +                    this._socketCreate();
 +                }, 1000);
-+            }            
++            }
          };
      }
      _socketOpen() {

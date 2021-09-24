@@ -56,7 +56,7 @@
 ## Developing
 
 If you are new to React Native, this is a helpful introduction:
-https://facebook.github.io/react-native/docs/getting-started.html
+https://reactnative.dev/docs/getting-started
 
 ### Preflight
 
