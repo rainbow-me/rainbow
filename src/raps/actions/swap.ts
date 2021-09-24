@@ -32,11 +32,7 @@ const swap = async (
   const { inputAmount, tradeDetails } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { accountAddress, chainId } = store.getState().settings;
-  const {
-    inputCurrency,
-    outputCurrency,
-    slippageInBips: slippage,
-  } = store.getState().swap;
+  const { inputCurrency } = store.getState().swap;
   const { gasPrices, selectedGasPrice } = store.getState().gas;
 
   let gasPrice = selectedGasPrice?.value?.amount;
@@ -49,35 +45,18 @@ const swap = async (
   }
   let gasLimit, methodName;
   try {
-    const routeDetails = tradeDetails?.route?.path;
-    logger.sentry(`[${actionName}] estimate gas`, {
-      accountAddress,
-      routeDetails,
-    });
-    const {
-      gasLimit: newGasLimit,
-      methodName: newMethodName,
-    } = await estimateSwapGasLimit({
-      accountAddress,
+    const newGasLimit = await estimateSwapGasLimit({
       chainId,
-      inputCurrency,
-      outputCurrency,
-      requiresApprove,
-      slippage,
+      requiresApprove: false,
       tradeDetails,
     });
     gasLimit = requiresApprove
       ? ethUnits.basic_swap_require_approval
       : newGasLimit;
-    methodName = newMethodName;
   } catch (e) {
     logger.sentry(`[${actionName}] error estimateSwapGasLimit`);
     captureException(e);
     throw e;
-  }
-
-  if (!methodName) {
-    throw new Error(`[${actionName}] Error - no method name found`);
   }
 
   let swap;
@@ -89,15 +68,10 @@ const swap = async (
     });
     const nonce = baseNonce ? baseNonce + index : undefined;
     swap = await executeSwap({
-      accountAddress,
       chainId,
       gasLimit,
       gasPrice,
-      inputCurrency,
-      methodName,
       nonce,
-      outputCurrency,
-      slippage,
       tradeDetails,
       wallet,
     });

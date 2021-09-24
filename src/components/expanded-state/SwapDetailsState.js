@@ -111,7 +111,7 @@ export default function SwapDetailsState({
     priceImpactColor,
     priceImpactNativeAmount,
     priceImpactPercentDisplay,
-  } = usePriceImpactDetails(inputAmount, outputAmount, tradeDetails);
+  } = usePriceImpactDetails(inputAmount, outputAmount);
 
   const {
     copiedText,

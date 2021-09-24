@@ -1,4 +1,3 @@
-import { Trade } from '@uniswap/sdk';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import { useTheme } from '@rainbow-me/context';
@@ -19,8 +18,7 @@ const SeverePriceImpactThreshold = 0.1;
 
 export default function usePriceImpactDetails(
   inputAmount: string | null,
-  outputAmount: string | null,
-  tradeDetails: Trade | null
+  outputAmount: string | null
 ) {
   const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
@@ -66,13 +64,6 @@ export default function usePriceImpactDetails(
         priceImpactNativeAmount = convertAmountToNativeDisplay(
           nativeAmountDifference,
           nativeCurrency
-        );
-      }
-    } else {
-      if (tradeDetails) {
-        impact = divide(tradeDetails.priceImpact.toFixed(), 100);
-        priceImpactPercentDisplay = convertAmountToPercentageDisplayWithThreshold(
-          impact
         );
       }
     }

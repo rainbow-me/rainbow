@@ -9,18 +9,15 @@ import {
 } from './common';
 import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
 import store from '@rainbow-me/redux/store';
-import { ethUnits, UNISWAP_V2_ROUTER_ADDRESS } from '@rainbow-me/references';
+import { ethUnits } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
+import { RAINBOW_ROUTER_CONTRACT_ADDRESS } from 'rainbow-swaps';
 
 export const estimateUnlockAndSwap = async (
   swapParameters: SwapActionParameters
 ) => {
   const { inputAmount, tradeDetails } = swapParameters;
-  const {
-    inputCurrency,
-    outputCurrency,
-    slippageInBips: slippage,
-  } = store.getState().swap;
+  const { inputCurrency, outputCurrency } = store.getState().swap;
 
   if (!inputCurrency || !outputCurrency || !inputAmount)
     return ethUnits.basic_swap;
@@ -32,22 +29,19 @@ export const estimateUnlockAndSwap = async (
     accountAddress,
     inputAmount,
     inputCurrency,
-    UNISWAP_V2_ROUTER_ADDRESS
+    RAINBOW_ROUTER_CONTRACT_ADDRESS
   );
   if (swapAssetNeedsUnlocking) {
     const unlockGasLimit = await estimateApprove(
       accountAddress,
       inputCurrency.address,
-      UNISWAP_V2_ROUTER_ADDRESS
+      RAINBOW_ROUTER_CONTRACT_ADDRESS
     );
     gasLimits = concat(gasLimits, unlockGasLimit, ethUnits.basic_swap);
   } else {
-    const { gasLimit: swapGasLimit } = await estimateSwapGasLimit({
-      accountAddress,
+    const swapGasLimit = await estimateSwapGasLimit({
       chainId,
-      inputCurrency,
-      outputCurrency,
-      slippage,
+      requiresApprove: swapAssetNeedsUnlocking,
       tradeDetails,
     });
     gasLimits = concat(gasLimits, swapGasLimit);
@@ -71,14 +65,14 @@ export const createUnlockAndSwapRap = async (
     accountAddress,
     inputAmount,
     inputCurrency,
-    UNISWAP_V2_ROUTER_ADDRESS
+    RAINBOW_ROUTER_CONTRACT_ADDRESS
   );
 
   if (swapAssetNeedsUnlocking) {
     const unlock = createNewAction(RapActionTypes.unlock, {
       amount: inputAmount,
       assetToUnlock: inputCurrency,
-      contractAddress: UNISWAP_V2_ROUTER_ADDRESS,
+      contractAddress: RAINBOW_ROUTER_CONTRACT_ADDRESS,
     });
     actions = concat(actions, unlock);
   }

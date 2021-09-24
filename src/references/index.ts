@@ -34,7 +34,6 @@ export {
   UNISWAP_V1_EXCHANGE_ABI,
   UNISWAP_V2_BASES,
   UNISWAP_V2_ROUTER_ABI,
-  UNISWAP_V2_ROUTER_ADDRESS,
 } from './uniswap';
 export {
   getWyreErrorOverride,

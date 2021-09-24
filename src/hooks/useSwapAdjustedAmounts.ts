@@ -7,6 +7,7 @@ import {
 import { AppState } from '@rainbow-me/redux/store';
 import { SwapModalField } from '@rainbow-me/redux/swap';
 import { updatePrecisionToDisplay } from '@rainbow-me/utilities';
+import Logger from 'logger';
 
 export default function useSwapAdjustedAmounts(tradeDetails: Trade) {
   const genericAssets = useSelector(
@@ -30,10 +31,12 @@ export default function useSwapAdjustedAmounts(tradeDetails: Trade) {
     slippageInBips
   );
   const amountReceivedSold = inputAsExact
-    ? adjustedAmounts[Field.OUTPUT]?.toExact()
-    : adjustedAmounts[Field.INPUT]?.toExact();
+    ? adjustedAmounts[Field.OUTPUT]
+    : adjustedAmounts[Field.INPUT];
   const address = inputAsExact ? outputCurrency.address : inputCurrency.address;
   const priceValue = genericAssets[address]?.price?.value ?? 0;
+  Logger.debug(amountReceivedSold);
+
   const amountReceivedSoldDisplay = updatePrecisionToDisplay(
     amountReceivedSold,
     priceValue,

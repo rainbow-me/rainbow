@@ -12,7 +12,6 @@ import {
   useGas,
   useSwapCurrencies,
   useSwapIsSufficientBalance,
-  useSwapIsSufficientLiquidity,
 } from '@rainbow-me/hooks';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
@@ -46,10 +45,6 @@ export default function ConfirmExchangeButton({
   ...props
 }) {
   const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
-  const isSufficientLiquidity = useSwapIsSufficientLiquidity(
-    doneLoadingReserves,
-    tradeDetails
-  );
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
   const asset = outputCurrency ?? inputCurrency;
   const { isSufficientGas } = useGas();
@@ -110,8 +105,6 @@ export default function ConfirmExchangeButton({
 
   if (!isSufficientBalance) {
     label = 'Insufficient Funds';
-  } else if (!isSufficientLiquidity) {
-    label = 'Insufficient Liquidity';
   } else if (!isSufficientGas) {
     label = 'Insufficient ETH';
   } else if (isHighPriceImpact) {
@@ -126,8 +119,7 @@ export default function ConfirmExchangeButton({
     disabled ||
     !doneLoadingReserves ||
     !isSufficientBalance ||
-    !isSufficientGas ||
-    !isSufficientLiquidity;
+    !isSufficientGas;
 
   return (
     <Container>

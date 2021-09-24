@@ -30,6 +30,17 @@ const DevSection = () => {
     [config, setConfig]
   );
 
+  const connectToHardhat = useCallback(async () => {
+    try {
+      const ready = await web3SetHttpProvider('http://127.0.0.1:8545');
+      logger.log('connected to hardhat', ready);
+    } catch (e) {
+      await web3SetHttpProvider(networkTypes.mainnet);
+      logger.log('error connecting to hardhat');
+    }
+    navigate(Routes.PROFILE_SCREEN);
+  }, [navigate]);
+  
   const connectToGanache = useCallback(async () => {
     try {
       const ready = await web3SetHttpProvider(
@@ -97,6 +108,11 @@ const DevSection = () => {
       <ListItem
         label="‍👾 Connect to ganache"
         onPress={connectToGanache}
+        testID="ganache-section"
+      />
+      <ListItem
+        label="‍👷 Connect to hardhat"
+        onPress={connectToHardhat}
         testID="ganache-section"
       />
       <ListItem label="‍🏖️ Alert" onPress={checkAlert} testID="alert-section" />

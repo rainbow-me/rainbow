@@ -2,7 +2,6 @@ import { Logger } from '@ethersproject/logger';
 import { Wallet } from '@ethersproject/wallet';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { Trade } from '@uniswap/sdk';
 import { join, map } from 'lodash';
 import { depositCompound, swap, unlock, withdrawCompound } from './actions';
 import {
@@ -18,6 +17,7 @@ import { Asset } from '@rainbow-me/entities';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 
 import logger from 'logger';
+import { Quote } from 'rainbow-swaps';
 
 export enum RapActionType {
   depositCompound = 'depositCompound',
@@ -32,7 +32,7 @@ export interface RapActionParameters {
   contractAddress?: string;
   inputAmount?: string | null;
   outputAmount?: string | null;
-  tradeDetails?: Trade;
+  tradeDetails?: Quote;
 }
 
 export interface UnlockActionParameters {
@@ -44,7 +44,7 @@ export interface UnlockActionParameters {
 export interface SwapActionParameters {
   inputAmount: string;
   outputAmount: string;
-  tradeDetails: Trade;
+  tradeDetails: Quote;
 }
 
 export interface RapActionTransaction {

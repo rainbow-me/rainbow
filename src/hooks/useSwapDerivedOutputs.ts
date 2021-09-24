@@ -1,33 +1,118 @@
-import { Pair, Token, TokenAmount, Trade } from '@uniswap/sdk';
+import { Pair, Token } from '@uniswap/sdk';
 import { isEmpty } from 'lodash';
-import { useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import useUniswapPairs from './useUniswapPairs';
+import { EthereumAddress } from '@rainbow-me/entities';
 import { getTokenForCurrency } from '@rainbow-me/handlers/uniswap';
 import { AppState } from '@rainbow-me/redux/store';
 import { SwapModalField } from '@rainbow-me/redux/swap';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import {
   convertAmountFromNativeValue,
   convertAmountToNativeAmount,
   convertAmountToRawAmount,
   convertNumberToString,
+  convertRawAmountToDecimalFormat,
   isZero,
   updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils, logger } from '@rainbow-me/utils';
+import {
+  ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
+  getQuote,
+} from 'rainbow-swaps';
 
 enum DisplayValue {
   input = 'inputAmountDisplay',
   output = 'outputAmountDisplay',
 }
 
-const getOutputAmount = (
+const getInputAmount = async (
+  outputAmount: string | null,
+  inputToken: Token,
+  outputToken: Token | null,
+  inputPrice: string | null,
+  allPairs: Pair[] | null,
+  fromAddress: EthereumAddress,
+  chainId = 1
+) => {
+  if (
+    !outputAmount ||
+    isZero(outputAmount) ||
+    !outputToken ||
+    !allPairs ||
+    isEmpty(allPairs)
+  ) {
+    return {
+      outputAmount: null,
+      outputAmountDisplay: null,
+      tradeDetails: null,
+    };
+  }
+
+  try {
+    const buyTokenAddress =
+      outputToken?.address === ETH_ADDRESS
+        ? ETH_ADDRESS_AGGREGATORS
+        : outputToken?.address;
+    const sellTokenAddress =
+      inputToken?.address === ETH_ADDRESS
+        ? ETH_ADDRESS_AGGREGATORS
+        : inputToken?.address;
+
+    const buyAmount = convertAmountToRawAmount(
+      convertNumberToString(outputAmount),
+      inputToken.decimals
+    );
+
+    const quoteParams = {
+      buyAmount,
+      buyTokenAddress,
+      chainId: Number(chainId),
+      fromAddress,
+      sellTokenAddress,
+      slippage: 0.5,
+    };
+    logger.debug('getOutput :: getting quote');
+    const quote = await getQuote(quoteParams);
+    logger.debug('GOT QUOTE!');
+
+    const inputAmount = convertRawAmountToDecimalFormat(
+      quote.sellAmount.toString(),
+      inputToken.decimals
+    );
+
+    const inputAmountDisplay =
+      inputAmount && inputPrice
+        ? updatePrecisionToDisplay(inputAmount, inputPrice)
+        : inputAmount
+        ? quote.buyAmount
+        : null;
+    return {
+      inputAmount,
+      inputAmountDisplay,
+      tradeDetails: quote,
+    };
+  } catch (e) {
+    logger.debug('getOutputAmount error', e);
+    return {
+      outputAmount: null,
+      outputAmountDisplay: null,
+      tradeDetails: null,
+    };
+  }
+};
+
+const getOutputAmount = async (
   inputAmount: string | null,
   inputToken: Token,
   outputToken: Token | null,
   outputPrice: string | null,
-  allPairs: Pair[] | null
+  allPairs: Pair[] | null,
+  fromAddress: EthereumAddress,
+  chainId = 1
 ) => {
   if (
     !inputAmount ||
@@ -42,29 +127,81 @@ const getOutputAmount = (
       tradeDetails: null,
     };
   }
-  const rawInputAmount = convertAmountToRawAmount(
-    convertNumberToString(inputAmount),
-    inputToken.decimals
-  );
-  const amountIn = new TokenAmount(inputToken, rawInputAmount);
-  const tradeDetails = Trade.bestTradeExactIn(allPairs, amountIn, outputToken, {
-    maxNumResults: 1,
-  })[0];
-  const outputAmount = tradeDetails?.outputAmount?.toFixed() ?? null;
-  const outputAmountDisplay =
-    outputAmount && outputPrice
-      ? updatePrecisionToDisplay(outputAmount, outputPrice)
-      : outputAmount
-      ? tradeDetails?.outputAmount?.toSignificant(6)
-      : null;
-  return {
-    outputAmount,
-    outputAmountDisplay,
-    tradeDetails,
-  };
+
+  logger.debug('GETTING QUOTE FOR INPUT', inputToken?.address);
+
+  try {
+    const buyTokenAddress =
+      outputToken?.address === ETH_ADDRESS
+        ? ETH_ADDRESS_AGGREGATORS
+        : outputToken?.address;
+    const sellTokenAddress =
+      inputToken?.address === ETH_ADDRESS
+        ? ETH_ADDRESS_AGGREGATORS
+        : inputToken?.address;
+
+    const sellAmount = convertAmountToRawAmount(
+      convertNumberToString(inputAmount),
+      inputToken.decimals
+    );
+
+    const quoteParams = {
+      buyAmount: null || '0',
+      buyTokenAddress,
+      chainId: Number(chainId),
+      fromAddress,
+      sellAmount,
+      sellTokenAddress,
+      slippage: 0.5,
+    };
+    logger.debug('getOutput :: getting quote');
+    const quote = await getQuote(quoteParams);
+    logger.debug('GOT QUOTE!');
+
+    const outputAmount = convertRawAmountToDecimalFormat(
+      quote.buyAmount.toString(),
+      outputToken.decimals
+    );
+
+    const outputAmountDisplay =
+      outputAmount && outputPrice
+        ? updatePrecisionToDisplay(outputAmount, outputPrice)
+        : outputAmount
+        ? quote.buyAmount
+        : null;
+    return {
+      outputAmount,
+      outputAmountDisplay,
+      tradeDetails: quote,
+    };
+  } catch (e) {
+    logger.debug('getOutputAmount error', e);
+    return {
+      outputAmount: null,
+      outputAmountDisplay: null,
+      tradeDetails: null,
+    };
+  }
+};
+
+const derivedValues: { [key in SwapModalField]: string | null } = {
+  [SwapModalField.input]: null,
+  [SwapModalField.native]: null,
+  [SwapModalField.output]: null,
+};
+
+const displayValues: { [key in DisplayValue]: string | null } = {
+  [DisplayValue.input]: null,
+  [DisplayValue.output]: null,
 };
 
 export default function useSwapDerivedOutputs() {
+  const [result, setResult] = useState({
+    derivedValues,
+    displayValues,
+    doneLoadingReserves: false,
+    tradeDetails: null,
+  });
   const independentField = useSelector(
     (state: AppState) => state.swap.independentField
   );
@@ -84,21 +221,11 @@ export default function useSwapDerivedOutputs() {
   const inputPrice = ethereumUtils.getAssetPrice(inputCurrency?.address);
   const outputPrice = genericAssets[outputCurrency?.address]?.price?.value;
 
-  const { chainId } = useAccountSettings();
+  const { chainId, accountAddress } = useAccountSettings();
   const { allPairs, doneLoadingReserves } = useUniswapPairs();
 
-  return useMemo(() => {
+  const getTradeDetails = useCallback(async () => {
     let tradeDetails = null;
-    const derivedValues: { [key in SwapModalField]: string | null } = {
-      [SwapModalField.input]: null,
-      [SwapModalField.native]: null,
-      [SwapModalField.output]: null,
-    };
-
-    const displayValues: { [key in DisplayValue]: string | null } = {
-      [DisplayValue.input]: null,
-      [DisplayValue.output]: null,
-    };
 
     if (!independentValue || !inputCurrency) {
       return {
@@ -128,16 +255,19 @@ export default function useSwapDerivedOutputs() {
         outputAmount,
         outputAmountDisplay,
         tradeDetails: newTradeDetails,
-      } = getOutputAmount(
+      } = await getOutputAmount(
         independentValue,
         inputToken,
         outputToken,
         outputPrice,
-        allPairs
+        allPairs,
+        accountAddress,
+        chainId
       );
       tradeDetails = newTradeDetails;
       derivedValues[SwapModalField.output] = outputAmount;
-      displayValues[DisplayValue.output] = outputAmountDisplay;
+      displayValues[DisplayValue.output] =
+        outputAmountDisplay?.toString() || null;
     } else if (independentField === SwapModalField.native) {
       const inputAmount =
         independentValue && !isZero(independentValue) && inputPrice
@@ -158,16 +288,19 @@ export default function useSwapDerivedOutputs() {
         outputAmount,
         outputAmountDisplay,
         tradeDetails: newTradeDetails,
-      } = getOutputAmount(
+      } = await getOutputAmount(
         inputAmount,
         inputToken,
         outputToken,
         outputPrice,
-        allPairs
+        allPairs,
+        accountAddress,
+        chainId
       );
       tradeDetails = newTradeDetails;
       derivedValues[SwapModalField.output] = outputAmount;
-      displayValues[DisplayValue.output] = outputAmountDisplay;
+      displayValues[DisplayValue.output] =
+        outputAmountDisplay?.toString() || null;
     } else {
       if (!outputToken || !inputToken || isEmpty(allPairs)) {
         return {
@@ -180,41 +313,33 @@ export default function useSwapDerivedOutputs() {
       derivedValues[SwapModalField.output] = independentValue;
       displayValues[DisplayValue.output] = independentValue;
 
-      if (!isZero(independentValue)) {
-        const outputRawAmount = convertAmountToRawAmount(
-          convertNumberToString(independentValue),
-          outputToken.decimals
-        );
-        const amountOut = new TokenAmount(outputToken, outputRawAmount);
-        tradeDetails = Trade.bestTradeExactOut(
-          allPairs,
-          inputToken,
-          amountOut,
-          {
-            maxNumResults: 1,
-          }
-        )[0];
-      }
-
-      const inputAmountExact = tradeDetails?.inputAmount?.toExact() ?? null;
-      const inputAmount = tradeDetails?.inputAmount?.toSignificant(6) ?? null;
-
-      derivedValues[SwapModalField.input] = inputAmount;
-      const inputAmountDisplay =
-        inputAmount && inputPrice
-          ? updatePrecisionToDisplay(inputAmount, inputPrice, true)
-          : inputAmount;
+      const {
+        inputAmount,
+        inputAmountDisplay,
+        tradeDetails: newTradeDetails,
+      } = await getInputAmount(
+        independentValue,
+        inputToken,
+        outputToken,
+        inputPrice,
+        allPairs,
+        accountAddress,
+        chainId
+      );
+      tradeDetails = newTradeDetails;
+      derivedValues[SwapModalField.input] = inputAmount || '0';
       displayValues[DisplayValue.input] = inputAmountDisplay;
 
       const nativeValue =
-        inputPrice && inputAmountExact
-          ? convertAmountToNativeAmount(inputAmountExact, inputPrice)
+        inputPrice && inputAmount
+          ? convertAmountToNativeAmount(inputAmount, inputPrice)
           : null;
 
       derivedValues[SwapModalField.native] = nativeValue;
     }
     return { derivedValues, displayValues, doneLoadingReserves, tradeDetails };
   }, [
+    accountAddress,
     allPairs,
     chainId,
     doneLoadingReserves,
@@ -225,4 +350,11 @@ export default function useSwapDerivedOutputs() {
     outputCurrency,
     outputPrice,
   ]);
+
+  useMemo(async () => {
+    const data = await getTradeDetails();
+    setResult(data);
+  }, [getTradeDetails]);
+
+  return result;
 }

@@ -56,8 +56,6 @@ const CURATED_UNISWAP_TOKENS: Record<string, RainbowToken> = keyBy(
   'address'
 );
 
-const UNISWAP_V2_ROUTER_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D';
-
 const UNISWAP_V2_BASES = {
   [ChainId.MAINNET]: [
     WETH[ChainId.MAINNET],
@@ -97,5 +95,4 @@ export {
   UNISWAP_V1_EXCHANGE_ABI,
   UNISWAP_V2_BASES,
   UNISWAP_V2_ROUTER_ABI,
-  UNISWAP_V2_ROUTER_ADDRESS,
 };
