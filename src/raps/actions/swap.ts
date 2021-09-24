@@ -11,7 +11,6 @@ import {
   estimateSwapGasLimit,
   executeSwap,
 } from '@rainbow-me/handlers/uniswap';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { ethUnits } from '@rainbow-me/references';
@@ -118,7 +117,6 @@ const swap = async (
     gasLimit,
     gasPrice,
     hash: swap?.hash,
-    network: networkTypes.mainnet,
     nonce: swap?.nonce,
     protocol: ProtocolType.uniswap,
     status: TransactionStatus.swapping,

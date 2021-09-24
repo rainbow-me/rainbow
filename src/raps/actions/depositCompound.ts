@@ -10,7 +10,6 @@ import {
   TransactionType,
 } from '@rainbow-me/entities';
 import { toHex } from '@rainbow-me/handlers/web3';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import {
@@ -100,7 +99,6 @@ const depositCompound = async (
     gasLimit: transactionParams.gasLimit,
     gasPrice: transactionParams.gasPrice,
     hash: deposit?.hash,
-    network: networkTypes.mainnet,
     nonce: deposit?.nonce,
     protocol: ProtocolType.compound,
     status: TransactionStatus.depositing,

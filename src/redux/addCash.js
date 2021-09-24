@@ -9,7 +9,6 @@ import {
   savePurchaseTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import { trackWyreOrder, trackWyreTransfer } from '@rainbow-me/handlers/wyre';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { WYRE_ORDER_STATUS_TYPES } from '@rainbow-me/helpers/wyreStatusTypes';
 import { AddCashCurrencies, AddCashCurrencyInfo } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -255,7 +254,6 @@ const addCashGetTransferHash = (
           asset,
           from: null,
           hash: transferHash,
-          network: networkTypes.mainnet,
           nonce: null,
           sourceAmount,
           status: TransactionStatusTypes.purchasing,
