@@ -2,6 +2,7 @@ import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../../animations';
+import { Input } from '../../inputs';
 import { Column, Row } from '../../layout';
 import { AnimatedNumber, Text } from '../../text';
 import { margin, padding } from '@rainbow-me/styles';
@@ -12,6 +13,9 @@ const GweiPill = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   start: { x: 0, y: 0 },
 }))`
   border-radius: 15;
+  border: 2px solid
+    ${({ isActive, theme: { colors } }) =>
+      isActive ? colors.purple : colors.transparent};
   ${padding(10, 12)}
   ${margin(0, 6)}
 `;
@@ -51,19 +55,56 @@ const GweiStepButton = ({ type, setValue }) => {
     }
   };
   return (
-    <ButtonPressAnimation onPress={changeValue}>
+    <ButtonPressAnimation onPress={changeValue} scaleTo={1.2}>
       <StepButton>{type === 'plus' ? '􀁍' : '􀁏'}</StepButton>
     </ButtonPressAnimation>
   );
 };
 
-const GweiInputPill = ({ value }) => {
+const GweiInputPill = ({ value, setValue }) => {
+  const { theme, colors } = useTheme();
+  const [isActive, setIsActive] = useState(false);
+  const inputRef = useRef(null);
+  const handlePress = () => {
+    setIsActive(true);
+    inputRef.current?.focus();
+  };
+  const handleBlur = () => {
+    setIsActive(false);
+  };
   return (
-    <ButtonPressAnimation>
-      <GweiPill>
+    <ButtonPressAnimation onPress={handlePress} scaleTo={1.05}>
+      <GweiPill isActive={isActive}>
         <Row>
           <Column>
-            <GweiNumber value={value} />
+            {/* <GweiNumber value={value} /> */}
+            <Input
+              color={
+                theme === 'dark'
+                  ? colors.whiteLabel
+                  : colors.alpha(colors.black, 1)
+              }
+              height={19}
+              keyboardAppearance="dark"
+              keyboardType="numeric"
+              letterSpacing="roundedMedium"
+              maxLength={5}
+              onBlur={handleBlur}
+              onChangeText={setValue}
+              //   onFocus={handleCustomGasFocus}
+              //   onSubmitEditing={handleInputButtonManager}
+              placeholder={0}
+              placeholderTextColor={
+                theme === 'dark'
+                  ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.3)
+                  : colors.alpha(colors.blueGreyDark, 0.3)
+              }
+              ref={inputRef}
+              size="lmedium"
+              testID="custom-gas-input"
+              value={`${value}`}
+              weight="bold"
+            />
           </Column>
           <Column>
             <Text size="lmedium" weight="heavy">
@@ -80,13 +121,13 @@ const GweiInputPill = ({ value }) => {
 export default function GweiInput({ value, setValue }) {
   return (
     <Row>
-      <InputColumn justify="center">
+      <InputColumn>
         <GweiStepButton setValue={setValue} type="minus" />
       </InputColumn>
       <InputColumn>
-        <GweiInputPill value={value} />
+        <GweiInputPill value={value} setValue={setValue} />
       </InputColumn>
-      <InputColumn justify="center">
+      <InputColumn>
         <GweiStepButton setValue={setValue} type="plus" />
       </InputColumn>
     </Row>

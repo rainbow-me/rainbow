@@ -78,7 +78,7 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
     contentHeight +
     slippageMessageHeight +
     footerHeight +
-    30;
+    320;
 
   const sheetHeightWithKeyboard =
     sheetHeightWithoutKeyboard + keyboardHeight - 23;
