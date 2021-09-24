@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import {
   ChartExpandedState,
+  CustomGasState,
   LiquidityPoolExpandedState,
   SwapDetailsState,
   TokenIndexExpandedState,
@@ -18,6 +19,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { position } from '@rainbow-me/styles';
 
 const ScreenTypes = {
+  custom_gas: CustomGasState,
   swap_details: SwapDetailsState,
   token: ChartExpandedState,
   token_index: TokenIndexExpandedState,

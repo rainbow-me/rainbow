@@ -31,19 +31,18 @@ const GasSpeedRow = styled(AnimatedRow).attrs({
 `;
 
 const TransitionContainer = styled(Transitioning.View)`
-  bottom: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
+  // bottom: 0;
+  // position: absolute;
+  // right: 0;
+  // top: 0;
 `;
 
 const GasSpeedLabel = styled(Text).attrs({
   align: 'right',
   size: 'lmedium',
-  weight: 'bold',
+  weight: 'heavy',
 })``;
 
-const distance = 20;
 const duration = 150;
 const transition = (
   <Transition.Change durationMs={duration} interpolation="easeOut" />
@@ -51,11 +50,9 @@ const transition = (
 
 const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate, theme }) => {
   const opacity = useSharedValue(0);
-  const positionX = useSharedValue(0);
   const animatedStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
-      transform: [{ translateX: positionX.value }],
     };
   });
 
@@ -68,17 +65,12 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate, theme }) => {
   useEffect(() => {
     if (shouldAnimate) {
       if (selected) {
-        positionX.value = isFirst ? -distance * 3 : distance;
         opacity.value = withSpring(1, springConfig);
-        positionX.value = withSpring(0, springConfig);
       } else {
         opacity.value = withSpring(0, springConfig);
-        positionX.value = isLast
-          ? withSpring(distance * 3, springConfig)
-          : withSpring(distance * -1, springConfig);
       }
     }
-  }, [isFirst, isLast, opacity, positionX, selected, shouldAnimate]);
+  }, [isFirst, isLast, opacity, selected, shouldAnimate]);
 
   return (
     <TransitionContainer transition={transition}>
