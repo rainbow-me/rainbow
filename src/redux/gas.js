@@ -145,12 +145,16 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
 
   const parseEIP1559GasData = data => {
     const { baseFeePerGas, estimatedPrices } = data?.blockPrices?.[0];
-
+    // temp multiplier
+    const maxBaseFee = baseFeePerGas * 1.5;
     const confidenceLevels = {};
     estimatedPrices.forEach(
       ({ confidence, maxPriorityFeePerGas, maxFeePerGas }) => {
         confidenceLevels[GAS_CONFIDENCE[confidence]] = {
-          maxFee: maxFeePerGas,
+          maxBaseFee: maxBaseFee.toFixed(2),
+          // improve this calc this
+          maxFee: (maxBaseFee + maxPriorityFeePerGas).toFixed(2),
+          maxFeePerGas,
           priorityFee: maxPriorityFeePerGas,
         };
       }

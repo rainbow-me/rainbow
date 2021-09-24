@@ -1,5 +1,5 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
@@ -22,7 +22,6 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { padding, position } from '@rainbow-me/styles';
-import { gasUtils } from '@rainbow-me/utils';
 
 const springConfig = {
   damping: 500,
@@ -66,10 +65,8 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
   const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const insets = useSafeArea();
   const [footerHeight, setFooterHeight] = useHeight(FOOTER_MIN_HEIGHT);
-  const [slippageMessageHeight, setSlippageMessageHeight] = useHeight();
-  const [contentHeight, setContentHeight] = useHeight(
-    FOOTER_CONTENT_MIN_HEIGHT
-  );
+  const [slippageMessageHeight] = useHeight();
+  const [contentHeight] = useHeight(FOOTER_CONTENT_MIN_HEIGHT);
 
   useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
   useAndroidDisableGesturesOnFocus();
@@ -120,39 +117,23 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
   const [currentGasTrend] = useState('stable');
   const [maxBaseFee, setMaxBaseFee] = useState(0);
   const [minerTip, setMinerTip] = useState(0);
-  const { updateGasPriceOption, selectedGasPriceOption } = useGas();
+  const {
+    selectedGasPrice,
+    selectedGasPriceOption,
+    eip1559GasPrices,
+  } = useGas();
+
+  const { baseFee, estimatedFees } = eip1559GasPrices;
 
   // temporary arbitrary values to simulate changing speeds
   useEffect(() => {
-    switch (selectedGasPriceOption) {
-      case gasUtils.NORMAL:
-        setMaxBaseFee(50);
-        setMinerTip(50);
-        break;
-      case gasUtils.FAST:
-        setMaxBaseFee(100);
-        setMinerTip(100);
-        break;
-      case gasUtils.URGENT:
-        setMaxBaseFee(150);
-        setMinerTip(150);
-        break;
-      case gasUtils.CUSTOM:
-        setMaxBaseFee(0);
-        setMinerTip(0);
-        break;
-      default:
-        setMaxBaseFee(50);
-        setMinerTip(50);
-        break;
-    }
-  }, [selectedGasPriceOption]);
+    const maxFee = estimatedFees[selectedGasPriceOption]?.maxBaseFee || 50;
+    const priorityFee =
+      estimatedFees[selectedGasPriceOption]?.priorityFee || 50;
 
-  // temporary default values
-  useEffect(() => {
-    setMaxBaseFee(80);
-    setMinerTip(40);
-  }, []);
+    setMaxBaseFee(maxFee);
+    setMinerTip(priorityFee);
+  }, [selectedGasPriceOption, estimatedFees]);
 
   return (
     <SheetKeyboardAnimation
@@ -170,7 +151,9 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
         </Header> */}
         <PanelWrapper>
           <FeesPanel
+            currentBaseFee={baseFee}
             currentGasTrend={currentGasTrend}
+            estimatedFee={selectedGasPrice.txFee}
             maxBaseFee={maxBaseFee}
             minerTip={minerTip}
             setMaxBaseFee={setMaxBaseFee}

@@ -1,4 +1,3 @@
-/* eslint-disable sort-keys */
 import { colors } from '@rainbow-me/styles';
 
 const CUSTOM = 'custom';
