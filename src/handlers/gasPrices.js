@@ -1,4 +1,5 @@
 import {
+  BLOCK_NATIVE_API_KEY,
   ETH_GAS_STATION_API_KEY,
   ETHERSCAN_API_KEY,
 } from 'react-native-dotenv';
@@ -27,6 +28,22 @@ export const ethGasStationGetGasPrices = () =>
   ethGasstationApi.get(`/api/v1/egs/api/ethgasAPI.json`, {
     params: {
       'api-key': ETH_GAS_STATION_API_KEY,
+    },
+  });
+
+const blockNativeApi = new RainbowFetchClient({
+  baseURL: 'https://api.blocknative.com',
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  },
+  timeout: 30000, // 30 secs
+});
+
+export const blockNativeGetGasParams = () =>
+  blockNativeApi.get(`/gasprices/blockprices`, {
+    params: {
+      'api-key': BLOCK_NATIVE_API_KEY,
     },
   });
 

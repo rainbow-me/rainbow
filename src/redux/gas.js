@@ -2,6 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { get, isEmpty } from 'lodash';
 import {
+  blockNativeGetGasParams,
   etherscanGetGasEstimates,
   etherscanGetGasPrices,
   ethGasStationGetGasPrices,
@@ -141,11 +142,45 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
     return priceData;
   };
 
+  const parseEIP1559GasData = data => {
+    const { baseFeePerGas, estimatedPrices } = data.blockPrices;
+    const confidenceLevelKeys = {
+      70: 'verySlow',
+      80: 'slow',
+      90: 'normal',
+      95: 'fast',
+      99: 'urgent',
+    };
+    const confidenceLevels = {};
+    estimatedPrices.forEach(
+      ({ confidence, maxPriorityFeePerGas, maxFeePerGas }) => {
+        confidenceLevels[confidenceLevelKeys[confidence]] = {
+          maxFee: maxFeePerGas,
+          priorityFee: maxPriorityFeePerGas,
+        };
+      }
+    );
+
+    return { baseFee: baseFeePerGas, estimatedPrices };
+  };
+
+  const getEIP1559GasParams = () =>
+    new Promise(async (fetchResolve, fetchReject) => {
+      try {
+        const data = await blockNativeGetGasParams();
+        const parsedData = parseEIP1559GasData(data);
+
+        fetchResolve(parsedData);
+      } catch (e) {
+        fetchReject(e);
+      }
+    });
+
   const getGasPrices = () =>
     new Promise(async (fetchResolve, fetchReject) => {
       try {
         const { gasPrices: existingGasPrice } = getState().gas;
-
+        await getEIP1559GasParams();
         let adjustedGasPrices;
         let source = GAS_PRICE_SOURCES.ETHERSCAN;
         if (network === networkTypes.polygon) {
