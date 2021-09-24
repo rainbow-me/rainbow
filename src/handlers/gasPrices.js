@@ -42,8 +42,8 @@ const blockNativeApi = new RainbowFetchClient({
 
 export const blockNativeGetGasParams = () =>
   blockNativeApi.get(`/gasprices/blockprices`, {
-    params: {
-      'api-key': BLOCK_NATIVE_API_KEY,
+    headers: {
+      Authorization: `${BLOCK_NATIVE_API_KEY}`,
     },
   });
 

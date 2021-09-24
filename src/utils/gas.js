@@ -17,11 +17,18 @@ const GAS_PRICE_SOURCES = {
   OPTIMISM_NODE: 'optimismNode',
 };
 
+const GAS_CONFIDENCE = {
+  80: [SLOW],
+  90: [NORMAL],
+  95: [FAST],
+  99: [URGENT],
+};
+
 const GAS_ICONS = {
-  [NORMAL]: 'clock',
-  [FAST]: 'bolt',
-  [URGENT]: 'clock',
   [CUSTOM]: 'gear',
+  [FAST]: 'bolt',
+  [NORMAL]: 'clock',
+  [URGENT]: 'clock',
 };
 
 const GAS_TRENDS = {
@@ -34,6 +41,7 @@ const GAS_TRENDS = {
 export default {
   CUSTOM,
   FAST,
+  GAS_CONFIDENCE,
   GAS_ICONS,
   GAS_PRICE_SOURCES,
   GAS_TRENDS,

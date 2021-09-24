@@ -130,6 +130,29 @@ export const parseTxFees = (gasPrices, priceUnit, gasLimit, nativeCurrency) => {
   return zipObject(GasSpeedOrder, txFees);
 };
 
+export const parseEip1559TxFees = (
+  eip1559GasPrices,
+  priceUnit,
+  gasLimit,
+  nativeCurrency
+) => {
+  const txFees = map(GasSpeedOrder, speed => {
+    // using blocknative max fee for now
+    const gasPrice = get(eip1559GasPrices, `estimatedFees.${speed}.maxFee`);
+    const txFee = getTxFee(
+      multiply(gasPrice, ethUnits.gwei),
+      gasLimit,
+      priceUnit,
+      nativeCurrency
+    );
+    return {
+      txFee,
+    };
+  });
+  const toreturn = zipObject(GasSpeedOrder, txFees);
+  return toreturn;
+};
+
 const getTxFee = (gasPrice, gasLimit, priceUnit, nativeCurrency) => {
   const amount = multiply(gasPrice, gasLimit);
   return {
