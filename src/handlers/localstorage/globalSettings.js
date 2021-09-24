@@ -59,4 +59,4 @@ export const saveTransactionSignatures = transactionSignatures =>
 /**
  * @desc get transaction signatures
  */
-export const getTransactionSignatures = () => getGlobal(TRANSACTION_SIGNATURES);
+export const getTransactionSignatures = () => getGlobal(TRANSACTION_SIGNATURES, {});
