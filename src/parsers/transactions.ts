@@ -365,7 +365,6 @@ const parseTransaction = (
         minedAt: txn.mined_at,
         name: updatedAsset.name,
         native: nativeDisplay,
-        network,
         nonce: txn.nonce,
         pending: false,
         protocol: txn.protocol,
