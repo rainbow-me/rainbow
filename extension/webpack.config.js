@@ -1,5 +1,6 @@
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
@@ -20,6 +21,7 @@ module.exports = {
     hints: false,
   },
   plugins: [
+    new Dotenv(),
     new CopyPlugin([
       {
         from: path.resolve(__dirname, 'img'),

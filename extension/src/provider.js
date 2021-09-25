@@ -2,7 +2,7 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 import provider from 'eth-provider';
 
 const wcProvider = new WalletConnectProvider({
-  infuraId: '8b014620351a4cbe814220743619df5b',
+  infuraId: process.env.INFURA_PROJECT_ID,
   qrcode: false,
 });
 
@@ -13,7 +13,7 @@ wcProvider.connector.on('display_uri', (err, payload) => {
 });
 
 const fallbackProvider = provider([
-  'https://mainnet.infura.io/v3/8b014620351a4cbe814220743619df5b',
+  `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
 ]);
 
 fallbackProvider.enable = () => {

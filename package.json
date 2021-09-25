@@ -272,6 +272,7 @@
     "babel-plugin-transform-remove-console": "6.9.4",
     "detox": "18.20.2",
     "dotenv": "8.2.0",
+    "dotenv-webpack": "^7.0.3",
     "eslint": "7.32.0",
     "eslint-config-rainbow": "2.0.0",
     "eslint-import-resolver-babel-module": "5.3.1",
