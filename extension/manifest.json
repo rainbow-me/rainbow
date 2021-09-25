@@ -1,0 +1,22 @@
+{
+    "name": "Rainbow Bridge",
+    "version": "1.0",
+    "description": "Use Rainbow even when the sites only support MetaMask.",
+    "icons": {
+        "128": "img/icon-128.png",
+        "48": "img/icon-48.png",
+        "16": "img/icon-16.png"
+    },
+    "content_scripts": [
+        {
+            "matches": ["http://*/*", "https://*/*"],
+            "run_at": "document_start",
+            "js": ["/dist/inject.js"],
+            "all_frames": true
+        }
+    ],
+    "manifest_version": 2,
+    "background": {
+        "persistent": false
+    }
+}

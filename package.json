@@ -37,7 +37,8 @@
     "android-reverse-ports": "adb reverse tcp:8097 tcp:8097 && adb reverse tcp:8081 tcp:8081",
     "update-tokens": "yarn update-token-list && yarn update-token-metadata",
     "update-token-list": "./scripts/update-token-list.sh",
-    "update-token-metadata": "./scripts/update-token-metadata.sh"
+    "update-token-metadata": "./scripts/update-token-metadata.sh",
+    "build:extension": "webpack --config extension/webpack.config.js && node extension/src/main.js"
   },
   "husky": {
     "hooks": {
@@ -98,6 +99,7 @@
     "@unstoppabledomains/resolution": "5.0.2",
     "@walletconnect/client": "1.6.5",
     "@walletconnect/utils": "1.6.5",
+    "@walletconnect/web3-provider": "^1.6.5",
     "assert": "1.5.0",
     "async-mutex": "0.3.2",
     "asyncstorage-down": "4.2.0",
@@ -114,6 +116,7 @@
     "domain-browser": "1.2.0",
     "emoji-datasource": "4.1.0",
     "eth-contract-metadata": "1.16.0",
+    "eth-provider": "^0.9.4",
     "eth-sig-util": "2.5.3",
     "eth-url-parser": "1.0.4",
     "ethereumjs-util": "6.2.1",
@@ -228,6 +231,7 @@
     "stream-browserify": "1.0.0",
     "string.fromcodepoint": "0.2.1",
     "styled-components": "5.2.1",
+    "terser-webpack-plugin": "4.x",
     "timers-browserify": "1.4.2",
     "tty-browserify": "0.0.0",
     "url": "0.10.3",
@@ -236,6 +240,8 @@
     "use-memo-one": "1.1.1",
     "util": "0.10.4",
     "vm-browserify": "0.0.4",
+    "webpack": "4.x",
+    "webpack-cli": "3.x",
     "zxcvbn": "4.4.2"
   },
   "devDependencies": {
