@@ -5,7 +5,14 @@ const path = require('path');
 
 const inject = `
   var frame = unescape('${escape(
-    fs.readFileSync(path.join(__dirname, '../dist/provider.js')).toString()
+    fs
+      .readFileSync(
+        path.join(
+          __dirname,
+          '../../ios/Rainbow Bridge/Resources/dist/provider.js'
+        )
+      )
+      .toString()
   )}')
   try {
     let script = document.createElement('script')
@@ -17,6 +24,7 @@ const inject = `
     console.log(e)
   }
 `;
-fs.writeFile(path.join(__dirname, '../dist/inject.js'), inject, err => {
-  if (err) throw err;
-});
+fs.writeFileSync(
+  path.join(__dirname, '../../ios/Rainbow Bridge/Resources/dist/inject.js'),
+  inject
+);

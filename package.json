@@ -110,6 +110,7 @@
     "chroma-js": "2.1.0",
     "console-browserify": "1.2.0",
     "constants-browserify": "1.0.0",
+    "copy-webpack-plugin": "4.x",
     "date-fns": "2.16.1",
     "delay": "4.4.0",
     "dns.js": "1.0.1",
