@@ -103,9 +103,15 @@ const SavingsSheet = () => {
   const onWithdraw = useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       navigate(Routes.SAVINGS_WITHDRAW_MODAL, {
-        cTokenBalance,
-        defaultInputAsset: underlying,
-        supplyBalanceUnderlying,
+        params: {
+          params: {
+            cTokenBalance,
+            defaultInputAsset: underlying,
+            supplyBalanceUnderlying,
+          },
+          screen: Routes.MAIN_EXCHANGE_SCREEN,
+        },
+        screen: Routes.MAIN_EXCHANGE_NAVIGATOR,
       });
 
       analytics.track('Navigated to SavingsWithdrawModal', {
