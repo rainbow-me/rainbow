@@ -1,3 +1,4 @@
+import { ColorModeProvider } from '@rainbow-me/design-system';
 import React, {
   createContext,
   useContext,
@@ -123,7 +124,11 @@ export const MainThemeProvider = props => {
   return (
     <ThemeProvider theme={currentTheme}>
       <ThemeContext.Provider value={currentTheme}>
-        {props.children}
+        <ColorModeProvider
+          value={currentTheme.isDarkMode ? 'darkMode' : 'lightMode'}
+        >
+          {props.children}
+        </ColorModeProvider>
       </ThemeContext.Provider>
     </ThemeProvider>
   );

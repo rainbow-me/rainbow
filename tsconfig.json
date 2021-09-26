@@ -16,6 +16,7 @@
       "@rainbow-me/assets": ["./src/assets"],
       "@rainbow-me/config": ["./src/config"],
       "@rainbow-me/context": ["./src/context"],
+      "@rainbow-me/design-system": ["src/design-system"],
       "@rainbow-me/entities": ["src/entities"],
       "@rainbow-me/handlers": ["./src/handlers"],
       "@rainbow-me/handlers/*": ["./src/handlers/*"],
