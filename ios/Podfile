@@ -34,6 +34,8 @@ target 'Rainbow' do
   use_native_modules!
   if ENV['SKIP_FLIPPER'] != "true"
     use_flipper!()
+    pod 'RNExitApp', :path => '../node_modules/react-native-exit-app'
+
   end
 
   post_install do |installer|

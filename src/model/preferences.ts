@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { RainbowFetchClient } from '../rainbow-fetch';
 import { EthereumAddress } from '@rainbow-me/entities';
 import {
   getSignatureForSigningWalletAndCreateSignatureIfNeeded,
@@ -21,7 +21,7 @@ export interface PreferencesResponse {
 
 export const PREFS_ENDPOINT = 'https://api.rainbow.me';
 
-const preferencesAPI = axios.create({
+const preferencesAPI = new RainbowFetchClient({
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -56,7 +56,7 @@ export async function setPreference(
       signature,
       signature2,
     });
-    const responseData: PreferencesResponse = response.data;
+    const responseData: PreferencesResponse = response.data as PreferencesResponse;
     logger.log('☁️  RESPONSE', {
       reason: responseData?.reason,
       success: responseData?.success,
@@ -76,7 +76,7 @@ export async function getPreference(
     const response = await preferencesAPI.get(`${PREFS_ENDPOINT}/${key}`, {
       params: { address },
     });
-    const responseData: PreferencesResponse = response.data;
+    const responseData: PreferencesResponse = response.data as PreferencesResponse;
     logger.log('☁️  RESPONSE', {
       reason: responseData?.reason,
       success: responseData?.success,

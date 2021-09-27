@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.25](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.25)
+
+
+
+### Changed
+* Improved App Error Boundary Reporting
+
 ## [1.5.24](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.24)
 
 ### Added

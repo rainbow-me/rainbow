@@ -1,4 +1,4 @@
-import DeviceInfo from 'react-native-device-info';
+import * as DeviceInfo from 'react-native-device-info';
 
 export function isSamsung() {
   try {

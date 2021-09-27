@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import Animated from 'react-native-reanimated';
-import { useSpringTransition } from 'react-native-redash';
+import { useSpringTransition } from 'react-native-redash/src/v1';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';

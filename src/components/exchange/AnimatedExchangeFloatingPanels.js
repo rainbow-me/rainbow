@@ -1,41 +1,27 @@
-import { useRoute } from '@react-navigation/native';
-import React, { useContext } from 'react';
-import Animated, { Extrapolate } from 'react-native-reanimated';
-import { useCallbackOne, useMemoOne } from 'use-memo-one';
-import { ScrollPagerContext } from '../../navigation/ScrollPagerContext';
-import { interpolate } from '../animations';
+import React from 'react';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { usePagerPosition } from '../../navigation/ScrollPositionContext';
+
 import ExchangeFloatingPanels from './ExchangeFloatingPanels';
 
 const AnimatedPanels = Animated.createAnimatedComponent(ExchangeFloatingPanels);
 
 export default function AnimatedExchangeFloatingPanels(props) {
-  const {
-    params: { tabTransitionPosition: tabTransitionPositionFromRoute },
-  } = useRoute();
-
-  const tabTransitionPosition =
-    useContext(ScrollPagerContext) || tabTransitionPositionFromRoute;
-
-  const buildInterpolation = useCallbackOne(
-    outputRange =>
-      interpolate(tabTransitionPosition, {
-        extrapolate: Extrapolate.CLAMP,
-        inputRange: [0, 0, 1],
-        outputRange,
-      }),
-    [tabTransitionPosition]
-  );
-
-  const animatedStyle = useMemoOne(
-    () => ({
-      opacity: buildInterpolation([1, 1, 0]),
+  const scrollPosition = usePagerPosition();
+  const style = useAnimatedStyle(() => {
+    return {
+      opacity: 1 - (scrollPosition.value || 0),
       transform: [
-        { scale: buildInterpolation([1, 1, 0.9]) },
-        { translateX: buildInterpolation([0, 0, -8]) },
+        { scale: 1 - scrollPosition.value / 10 },
+        { translateX: scrollPosition.value * -8 },
       ],
-    }),
-    [buildInterpolation]
-  );
+      width: '100%',
+    };
+  });
 
-  return <AnimatedPanels {...props} style={animatedStyle} />;
+  return (
+    <Animated.View style={style}>
+      <AnimatedPanels {...props} />
+    </Animated.View>
+  );
 }

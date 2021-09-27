@@ -1,4 +1,4 @@
-/* eslint-disable sort-keys,no-extend-native,default-case */
+/* eslint-disable sort-keys-fix/sort-keys-fix,no-extend-native,default-case */
 // adapted from https://github.com/Girish-K/polyfill-Number.toLocaleString-with-Locales
 export default function toLocaleStringPolyfill() {
   'use strict';

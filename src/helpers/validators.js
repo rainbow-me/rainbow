@@ -7,8 +7,18 @@ import {
 } from '@rainbow-me/handlers/web3';
 import { sanitizeSeedPhrase } from '@rainbow-me/utils';
 
-// Currently supported Top Level Domains from ENS
-const supportedTLDs = ['eth', 'test', 'xyz', 'luxe', 'kred', 'club', 'art'];
+// Currently supported Top Level Domains from Unstoppable Domains
+const supportedUnstoppableDomains = [
+  '888',
+  'bitcoin',
+  'coin',
+  'crypto',
+  'dao',
+  'nft',
+  'wallet',
+  'x',
+  'zil',
+];
 
 /**
  * @desc validate email
@@ -25,7 +35,7 @@ export const isENSAddressFormat = address => {
   if (
     !parts ||
     parts.length === 1 ||
-    !supportedTLDs.includes(parts[parts.length - 1])
+    supportedUnstoppableDomains.includes(parts[parts.length - 1].toLowerCase())
   ) {
     return false;
   }
@@ -33,7 +43,15 @@ export const isENSAddressFormat = address => {
 };
 
 export const isUnstoppableAddressFormat = address => {
-  return /^([\w-]+\.)+(crypto)$/.test(address);
+  const parts = address && address.split('.');
+  if (
+    !parts ||
+    parts.length === 1 ||
+    !supportedUnstoppableDomains.includes(parts[parts.length - 1].toLowerCase())
+  ) {
+    return false;
+  }
+  return true;
 };
 
 /**

@@ -3,7 +3,7 @@ import { compact, find, get, isEmpty, keys, map, toLower } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { useValue } from 'react-native-redash';
+import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { OpacityToggler } from '../components/animations';
@@ -164,6 +164,8 @@ export default function WalletScreen() {
 
   const isCoinListEditedValue = useCoinListEditedValue();
 
+  const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);
+
   return (
     <WalletPage testID="wallet-screen">
       {ios && <StatusBar barStyle="dark-content" />}
@@ -185,6 +187,7 @@ export default function WalletScreen() {
         </HeaderOpacityToggler>
         <AssetList
           disableAutoScrolling
+          disableRefreshControl={isLoadingAssets}
           fetchData={refreshAccountData}
           isEmpty={isAccountEmpty || !!params?.emptyWallet}
           isWalletEthZero={isWalletEthZero}

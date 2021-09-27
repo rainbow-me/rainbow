@@ -46,7 +46,13 @@ function CoinIconGroup({ tokens }) {
   }, [breakIndex, tokens]);
 
   return (
-    <Column align={breakIndex ? 'center' : 'start'} width={70}>
+    <Column
+      align={breakIndex ? 'center' : 'start'}
+      // shouldRasterizeIOS fixes a strange framerate choppiness we see in the
+      // pools list on iOS only. Appears to be the amount of coinIcons onscreen at once.
+      shouldRasterizeIOS
+      width={70}
+    >
       <TokenRowsComponent
         iconSize={iconSize}
         tokenRows={tokenRows}
