@@ -206,7 +206,7 @@ export const UNISWAP_ALL_TOKENS = gql`
       first: $first
       orderBy: tradeVolumeUSD
       orderDirection: desc
-      where: { tradeVolumeUSD_lt: $lastUSDVolume }
+      where: { tradeVolumeUSD_lte: $lastUSDVolume }
     ) {
       id
       derivedETH
