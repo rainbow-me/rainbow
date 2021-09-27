@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 import { Column, Row } from '../../layout';
@@ -40,17 +41,21 @@ const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   padding-bottom: 0;
 `;
 
-const PanelColumn = styled(Column).attrs(({ theme: { colors } }) => ({
+const PanelColumn = styled(Column).attrs(() => ({
   justify: 'center',
 }))``;
 
 export default function FeesPanel({
   currentGasTrend,
+  currentBaseFee,
   maxBaseFee,
   minerTip,
+  estimatedFee,
   setMaxBaseFee,
   setMinerTip,
 }) {
+  const maxTxFee = get(estimatedFee, 'native.value.display', 0);
+
   return (
     <OuterWrapper>
       <InnerWrapper>
@@ -68,7 +73,7 @@ export default function FeesPanel({
             <PanelLabel>Current Base Fee</PanelLabel>
           </PanelColumn>
           <PanelColumn>
-            <PanelLabel>94 Gwei</PanelLabel>
+            <PanelLabel>{`${Math.round(currentBaseFee)} Gwei`}</PanelLabel>
           </PanelColumn>
         </PanelRow>
         {/* max base fee */}
@@ -95,7 +100,7 @@ export default function FeesPanel({
             <PanelLabel>Max Transaction Fee</PanelLabel>
           </PanelColumn>
           <PanelColumn>
-            <PanelLabel>$75.43</PanelLabel>
+            <PanelLabel>{maxTxFee}</PanelLabel>
           </PanelColumn>
         </PanelRow>
       </InnerWrapper>

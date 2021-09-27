@@ -9,6 +9,7 @@ export {
 export {
   getFallbackGasPrices,
   parseGasPrices,
+  parseEip1559TxFees,
   defaultGasPriceFormat,
   parseTxFees,
   gweiToWei,

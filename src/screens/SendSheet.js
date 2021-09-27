@@ -105,6 +105,7 @@ export default function SendSheet(props) {
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const { allAssets } = useAccountAssets();
   const {
+    eip1559GasPrices,
     gasLimit,
     gasPrices,
     isSufficientGas,
@@ -588,8 +589,7 @@ export default function SendSheet(props) {
     if (network === networkTypes.polygon) {
       nativeToken = 'MATIC';
     }
-
-    if (isEmpty(gasPrices) || !selectedGasPrice || isEmpty(txFees)) {
+    if (isEmpty(eip1559GasPrices) || !selectedGasPrice || isEmpty(txFees)) {
       label = `Loading...`;
       disabled = true;
     } else if (!isZeroAssetAmount && !isSufficientGas) {
@@ -607,7 +607,7 @@ export default function SendSheet(props) {
   }, [
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
-    gasPrices,
+    eip1559GasPrices,
     isSufficientGas,
     network,
     selectedGasPrice,
