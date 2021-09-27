@@ -1,3 +1,4 @@
+import { get } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 import { Column, Row } from '../../layout';
@@ -53,6 +54,8 @@ export default function FeesPanel({
   setMaxBaseFee,
   setMinerTip,
 }) {
+  const maxTxFee = get(estimatedFee, 'native.value.display', 0);
+
   return (
     <OuterWrapper>
       <InnerWrapper>
@@ -97,7 +100,7 @@ export default function FeesPanel({
             <PanelLabel>Max Transaction Fee</PanelLabel>
           </PanelColumn>
           <PanelColumn>
-            <PanelLabel>{estimatedFee?.native?.value.display}</PanelLabel>
+            <PanelLabel>{maxTxFee}</PanelLabel>
           </PanelColumn>
         </PanelRow>
       </InnerWrapper>

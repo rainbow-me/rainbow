@@ -125,12 +125,9 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
 
   const { baseFee, estimatedFees } = eip1559GasPrices;
 
-  // temporary arbitrary values to simulate changing speeds
   useEffect(() => {
     const maxFee = estimatedFees[selectedGasPriceOption]?.maxBaseFee || 50;
-    const priorityFee =
-      estimatedFees[selectedGasPriceOption]?.priorityFee || 50;
-
+    const priorityFee = estimatedFees[selectedGasPriceOption]?.priorityFee || 2;
     setMaxBaseFee(maxFee);
     setMinerTip(priorityFee);
   }, [selectedGasPriceOption, estimatedFees]);
@@ -153,7 +150,7 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
           <FeesPanel
             currentBaseFee={baseFee}
             currentGasTrend={currentGasTrend}
-            estimatedFee={selectedGasPrice.txFee}
+            estimatedFee={selectedGasPrice?.maxTxFee}
             maxBaseFee={maxBaseFee}
             minerTip={minerTip}
             setMaxBaseFee={setMaxBaseFee}

@@ -151,9 +151,8 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
     estimatedPrices.forEach(
       ({ confidence, maxPriorityFeePerGas, maxFeePerGas }) => {
         confidenceLevels[GAS_CONFIDENCE[confidence]] = {
-          maxBaseFee: maxBaseFee.toFixed(2),
-          // improve this calc this
-          maxFee: (maxBaseFee + maxPriorityFeePerGas).toFixed(2),
+          maxBaseFee: maxBaseFee,
+          maxFee: maxBaseFee + maxPriorityFeePerGas,
           maxFeePerGas,
           priorityFee: maxPriorityFeePerGas,
         };
@@ -406,13 +405,11 @@ const getEip1559SelectedGasPrice = (
   ) {
     txFee = txFees[gasUtils.FAST];
   }
-  let nativeAssetAddress;
-  nativeAssetAddress = ETH_ADDRESS;
-
+  const nativeAssetAddress = ETH_ADDRESS;
   const nativeAsset = ethereumUtils.getAsset(assets, nativeAssetAddress);
 
   const balanceAmount = get(nativeAsset, 'balance.amount', 0);
-  const txFeeAmount = fromWei(get(txFee, 'txFee.value.amount', 0));
+  const txFeeAmount = fromWei(get(txFee, 'maxTxFee.value.amount', 0));
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
   return {
     isSufficientGas,

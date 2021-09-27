@@ -125,9 +125,8 @@ const GasSpeedButton = ({
     return filteredGasPrices;
   }, [gasPrices, minGasPrice, options]);
 
-  const gasPrice = get(selectedGasPrice, 'txFee.native.value.display');
+  const gasPrice = get(selectedGasPrice, 'baseTxFee.native.value.display');
   const customGasPriceTimeEstimateHandler = useRef(null);
-
   const [customGasPriceInput, setCustomGasPriceInput] = useState(0);
   const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
   const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
