@@ -22,15 +22,16 @@ import {
 import { multiply } from '@rainbow-me/helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '@rainbow-me/parsers';
 import { CDAI_CONTRACT, DAI_ADDRESS } from '@rainbow-me/references';
-import { getTokenMetadata } from '@rainbow-me/utils';
+import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 
 const COMPOUND_QUERY_INTERVAL = 120000; // 120 seconds
 
 const getMarketData = marketData => {
   if (!marketData) return {};
   const underlying = getUnderlyingData(marketData);
+  const underlyingPrice = ethereumUtils.getAssetPrice(underlying.address);
   const cToken = getCTokenData(marketData);
-  const { exchangeRate, supplyRate, underlyingPrice } = marketData;
+  const { exchangeRate, supplyRate } = marketData;
 
   return {
     cToken,

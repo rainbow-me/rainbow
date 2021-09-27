@@ -13,8 +13,7 @@ export default function useSendSavingsAccount() {
       const { cToken, cTokenBalance, exchangeRate, underlyingPrice } = asset;
       const cTokenBalanceDisplay = `${cTokenBalance} ${cToken.symbol}`;
 
-      const underlyingNativePrice = multiply(underlyingPrice, priceOfEther);
-      const cTokenNativePrice = multiply(exchangeRate, underlyingNativePrice);
+      const cTokenNativePrice = multiply(exchangeRate, underlyingPrice);
       const cTokenNativePriceDisplay = convertAmountToNativeDisplay(
         cTokenNativePrice,
         nativeCurrency

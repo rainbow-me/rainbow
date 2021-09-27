@@ -53,7 +53,7 @@ const SavingsSheet = () => {
   const { params } = useRoute();
   const insets = useSafeArea();
   const { isReadOnlyWallet } = useWallets();
-  const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
   const cTokenBalance = params['cTokenBalance'];
   const isEmpty = params['isEmpty'];
   const underlyingBalanceNativeValue = params['underlyingBalanceNativeValue'];
@@ -64,7 +64,10 @@ const SavingsSheet = () => {
   const supplyBalanceUnderlying = params['supplyBalanceUnderlying'];
   const supplyRate = params['supplyRate'];
 
-  const balance = nativeCurrencySymbol + underlyingBalanceNativeValue;
+  const balance = convertAmountToNativeDisplay(
+    underlyingBalanceNativeValue,
+    nativeCurrency
+  );
   const lifetimeAccruedInterest = convertAmountToNativeDisplay(
     lifetimeSupplyInterestAccruedNative,
     nativeCurrency

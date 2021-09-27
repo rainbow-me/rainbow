@@ -10,6 +10,7 @@ import {
 } from 'lodash';
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
+import { useDispatch } from 'react-redux';
 import { createSelector } from 'reselect';
 import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
@@ -22,6 +23,7 @@ import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
 import { ImgixImage } from '@rainbow-me/images';
 import { setIsCoinListEdited } from '@rainbow-me/redux/editOptions';
+import { fetchAssetPrices } from '@rainbow-me/redux/explorer';
 import { setOpenSmallBalances } from '@rainbow-me/redux/openStateSettings';
 import store from '@rainbow-me/redux/store';
 import Routes from '@rainbow-me/routes';
@@ -120,15 +122,14 @@ const withBalanceSavingsSection = savings => {
   let totalUnderlyingNativeValue = '0';
   if (priceOfEther) {
     savingsAssets = map(savings, asset => {
-      const {
-        supplyBalanceUnderlying,
-        underlyingPrice,
-        lifetimeSupplyInterestAccrued,
-      } = asset;
+      const dispatch = useDispatch();
+      const { supplyBalanceUnderlying, lifetimeSupplyInterestAccrued } = asset;
+      dispatch(fetchAssetPrices(asset.underlying.address));
+      const priceOfAsset = ethereumUtils.getAssetPrice(
+        asset.underlying.address
+      );
       const underlyingNativePrice =
-        asset.underlying.symbol === 'ETH'
-          ? priceOfEther
-          : multiply(underlyingPrice, priceOfEther);
+        asset.underlying.symbol === 'ETH' ? priceOfEther : priceOfAsset;
       const underlyingBalanceNativeValue = supplyBalanceUnderlying
         ? multiply(supplyBalanceUnderlying, underlyingNativePrice)
         : 0;
