@@ -1,5 +1,4 @@
 import React from 'react';
-import ConnectedDapps from '../qrcode-scanner/ConnectedDapps';
 import BottomSpacer from './BottomSpacer';
 import Lists from './ListsSection';
 import PulseIndex from './PulseIndexSection';
@@ -14,7 +13,6 @@ export default function DiscoverHome() {
     <React.Fragment>
       <TopMoversSection />
       <PulseIndex />
-      <ConnectedDapps />
       <Lists />
       {/* <Strategies /> */}
       {accountAddress ? <UniswapPools /> : null}
