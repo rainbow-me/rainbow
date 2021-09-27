@@ -394,45 +394,42 @@ export default function TransactionConfirmationScreen() {
     ]
   );
 
-  const onCancel = useCallback(
-    async error => {
-      try {
-        closeScreen(true);
-        if (callback) {
-          callback({ error: error || 'User cancelled the request' });
-        }
-        setTimeout(async () => {
-          if (requestId) {
-            !isWalletConnectV2Request &&
-              (await dispatch(
-                walletConnectSendStatus(peerId, requestId, {
-                  error: error || 'User cancelled the request',
-                })
-              ));
-            dispatch(removeRequest(requestId));
-          }
-          const rejectionType =
-            method === SEND_TRANSACTION ? 'transaction' : 'signature';
-          analytics.track(`Rejected WalletConnect ${rejectionType} request`);
-        }, 300);
-      } catch (error) {
-        logger.log('error while handling cancel request', error);
-        closeScreen(true);
-        Alert.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
+  const onCancel = useCallback(async () => {
+    try {
+      closeScreen(true);
+      if (callback) {
+        callback({ error: 'User cancelled the request' });
       }
-    },
-    [
-      callback,
-      closeScreen,
-      dispatch,
-      isWalletConnectV2Request,
-      method,
-      peerId,
-      removeRequest,
-      requestId,
-      walletConnectSendStatus,
-    ]
-  );
+      if (requestId) {
+        !isWalletConnectV2Request &&
+          (await dispatch(
+            walletConnectSendStatus(peerId, requestId, {
+              error: 'User cancelled the request',
+            })
+          ));
+        dispatch(removeRequest(requestId));
+      }
+      analytics.track(
+        `Rejected WalletConnect ${
+          method === SEND_TRANSACTION ? 'transaction' : 'signature'
+        } request`
+      );
+    } catch (error) {
+      logger.log('error while handling cancel request', error);
+      closeScreen(true);
+      Alert.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
+    }
+  }, [
+    callback,
+    closeScreen,
+    dispatch,
+    isWalletConnectV2Request,
+    method,
+    peerId,
+    removeRequest,
+    requestId,
+    walletConnectSendStatus,
+  ]);
 
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 

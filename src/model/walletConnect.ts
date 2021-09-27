@@ -4,6 +4,7 @@ import { captureException } from '@sentry/react-native';
 import WalletConnectClient, { CLIENT_EVENTS } from '@walletconnectv2/client';
 import { Reason, SessionTypes } from '@walletconnectv2/types';
 import lang from 'i18n-js';
+import { clone } from 'lodash';
 import { Alert, InteractionManager, Linking } from 'react-native';
 import { enableActionsOnReadOnlyWallet } from '../config/debug';
 import { isSigningMethod } from '../utils/signingMethods';
@@ -15,6 +16,7 @@ import { addRequestToApproveV2 } from '@rainbow-me/redux/requests';
 import {
   RAINBOW_METADATA,
   saveWalletConnectV2Sessions,
+  WALLETCONNECT_V2_UPDATE_SESSIONS,
 } from '@rainbow-me/redux/walletconnect';
 import Routes from '@rainbow-me/routes';
 import { logger, watchingAlert } from '@rainbow-me/utils';
@@ -85,7 +87,6 @@ export const walletConnectInit = async (store: any) => {
     wcLogger('🚗 🚗 🚗  WC INIT', client);
     client = await WalletConnectClient.init({
       controller: true,
-      logger: 'fatal',
       metadata: RAINBOW_METADATA,
       relayProvider: 'wss://relay.walletconnect.org',
       storageOptions: {
@@ -94,6 +95,18 @@ export const walletConnectInit = async (store: any) => {
     });
     store.dispatch(saveWalletConnectV2Sessions(client));
     wcLogger('Client started and saved!');
+    client.on(
+      CLIENT_EVENTS.session.deleted,
+      async (session: SessionTypes.Settled) => {
+        const sessions = client?.session?.values?.filter(
+          value => session.topic !== value?.topic
+        );
+        store.dispatch({
+          payload: clone(sessions),
+          type: WALLETCONNECT_V2_UPDATE_SESSIONS,
+        });
+      }
+    );
     client.on(
       CLIENT_EVENTS.session.proposal,
       async (proposal: SessionTypes.Proposal) => {
@@ -369,10 +382,10 @@ export const walletConnectPair = async (uri: string) => {
   wcLogger('on about to walletConnectPair dalay out', !!client);
   const pair = await client.pair({ uri });
   wcLogger('on walletConnectPair', pair);
-  // Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
-  //   callback: () => null,
-  //   chainId: null,
-  //   meta: null,
-  //   version: 'v2',
-  // });
+  Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
+    callback: () => null,
+    chainId: null,
+    meta: null,
+    version: 'v2',
+  });
 };
