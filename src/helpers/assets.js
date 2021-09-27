@@ -230,7 +230,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
     });
   }
 
-  rows = sortBy(rows, ['familyName']);
+  rows = sortBy(rows, row => row.familyName.replace('The ', '').toLowerCase());
 
   showcaseTokens.sort(function (a, b) {
     return (
