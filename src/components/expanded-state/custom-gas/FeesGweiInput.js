@@ -13,9 +13,6 @@ const GweiPill = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   start: { x: 0, y: 0 },
 }))`
   border-radius: 15;
-  border: 2px solid
-    ${({ isActive, theme: { colors } }) =>
-      isActive ? colors.purple : colors.transparent};
   ${padding(10, 12)}
   ${margin(0, 6)}
 `;
@@ -79,6 +76,7 @@ const GweiInputPill = ({ value, setValue }) => {
           <Column>
             {/* <GweiNumber value={value} /> */}
             <Input
+              fontVariant={['tabular-nums']}
               color={
                 theme === 'dark'
                   ? colors.whiteLabel
@@ -91,7 +89,6 @@ const GweiInputPill = ({ value, setValue }) => {
               maxLength={5}
               onBlur={handleBlur}
               onChangeText={setValue}
-              //   onFocus={handleCustomGasFocus}
               //   onSubmitEditing={handleInputButtonManager}
               placeholder={0}
               placeholderTextColor={
@@ -107,7 +104,7 @@ const GweiInputPill = ({ value, setValue }) => {
             />
           </Column>
           <Column>
-            <Text size="lmedium" weight="heavy">
+            <Text size="lmedium" weight="bold">
               {' '}
               Gwei
             </Text>
