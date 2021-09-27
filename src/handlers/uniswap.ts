@@ -423,7 +423,6 @@ export const getAllTokens = async () => {
           lastUSDVolume,
         },
       });
-      //console.log('result: ', result);
       const resultTokens = result?.data?.tokens || [];
       const lastItem = resultTokens[resultTokens.length - 1];
       lastUSDVolume = lastItem?.tradeVolumeUSD ?? '';
