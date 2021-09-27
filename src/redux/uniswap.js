@@ -57,7 +57,7 @@ const parseTokens = tokens => {
   tokens.forEach(token => {
     const tokenAddress = toLower(token.id);
     const metadata = getTokenMetadata(tokenAddress);
-    if (token.totalLiquidity === '0') return;
+    if (token.totalLiquidity === '0' || token.derivedETH === '0') return;
 
     // if unverified AND name/symbol match a curated token, skip
     if (!metadata?.isVerified && checkTokenIsScam(token.name, token.symbol)) {
