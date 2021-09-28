@@ -123,6 +123,8 @@ class TransactionListView: UIView, UITableViewDelegate, UITableViewDataSource {
   @objc var accountAddress: String? = nil {
     didSet {
       header.accountAddress.text = accountAddress
+      header.isAccessibilityElement = true
+      header.accessibilityIdentifier = "profileAddress-\(accountAddress!)"
       header.accountAddress.addCharacterSpacing(kernValue: 0.5)
       header.accountAddress.sizeToFit()
       let dropdownMarginLeft: CGFloat = 6.7

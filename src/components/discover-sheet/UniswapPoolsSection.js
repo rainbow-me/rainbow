@@ -46,6 +46,13 @@ const ErrorMessage = ({ colors, children }) => (
   </Centered>
 );
 
+const PoolEmoji = styled(Text).attrs({
+  size: 'large',
+  weight: 'heavy',
+})`
+  margin-top: ${android ? 0 : -4};
+`;
+
 const PoolListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
 })`
@@ -245,9 +252,7 @@ export default function UniswapPools({
   return (
     <Column marginTop={25}>
       <Row marginBottom={12} paddingHorizontal={19}>
-        <Text size="large" style={{ marginTop: -4 }} weight="heavy">
-          🐋
-        </Text>
+        <PoolEmoji>🐋</PoolEmoji>
         <Text size="larger" testID="pools-section" weight="heavy">
           {' '}
           Uniswap Pools
