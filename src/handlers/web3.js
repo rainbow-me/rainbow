@@ -297,13 +297,17 @@ export const getTransactionCount = address =>
   web3Provider.getTransactionCount(address, 'pending');
 
 export const getTxGasParams = (selectedGasParams, network) => {
+  console.log('----- getTxGasParams selectedGasParams', selectedGasParams);
+  console.log('----- getTxGasParams network', network);
   const gasParams = isEIP1559SupportedNetwork(network)
     ? {
         maxFeePerGas: selectedGasParams?.maxFeePerGas.amount,
         maxPriorityFeePerGas: selectedGasParams?.priorityFeePerGas.amount,
+        type: 2,
       }
     : {
         gasPrice: selectedGasParams?.value?.amount,
+        type: 0,
       };
   return gasParams;
 };
@@ -315,11 +319,15 @@ export const getTxGasParams = (selectedGasParams, network) => {
  */
 export const getTxDetails = async transaction => {
   const { to } = transaction;
+  console.log('✗✗✗✗✗✗✗✗✗✗ getTxDetails 1');
   const data = transaction.data ? transaction.data : '0x';
+  console.log('✗✗✗✗✗✗✗✗✗✗ getTxDetails 2', transaction.amount);
   const value = transaction.amount ? toHex(toWei(transaction.amount)) : '0x00';
+  console.log('✗✗✗✗✗✗✗✗✗✗ getTxDetails 3');
   const gasLimit = transaction.gasLimit
     ? toHex(transaction.gasLimit)
     : undefined;
+  console.log('✗✗✗✗✗✗✗✗✗✗ getTxDetails 4');
   const baseTx = {
     data,
     gasLimit,
@@ -327,15 +335,23 @@ export const getTxDetails = async transaction => {
     value,
   };
 
+  console.log(
+    '✗✗✗✗✗✗✗✗✗✗ getTxDetails 5 isEIP1559SupportedNetwork(transaction.network)',
+    isEIP1559SupportedNetwork(transaction.network)
+  );
+  console.log('✗✗✗✗✗✗✗✗✗✗ getTxDetails transaction', transaction);
   const gasParams = isEIP1559SupportedNetwork(transaction.network)
     ? {
         maxFeePerGas: toHex(transaction.maxFeePerGas),
         maxPriorityFeePerGas: toHex(transaction.maxPriorityFeePerGas),
+        type: 2,
       }
     : {
         gasPrice: toHex(transaction.gasPrice),
+        type: 0,
       };
 
+  console.log('✗✗✗✗✗✗✗✗✗✗ getTxDetails 6');
   const tx = {
     ...baseTx,
     ...gasParams,

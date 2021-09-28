@@ -438,8 +438,9 @@ export default function SendSheet(props) {
   const onSubmit = useCallback(async () => {
     const validTransaction =
       isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
+    const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
     if (
-      (isEIP1559SupportedNetwork(network)
+      (isEIP1559SupportedNetwork(assetNetwork)
         ? !selectedGasPrice?.maxTxFee
         : !selectedGasPrice?.txFee) ||
       !validTransaction
@@ -489,10 +490,10 @@ export default function SendSheet(props) {
       asset: selected,
       from: accountAddress,
       gasLimit: gasLimitToUse,
-      network,
+      network: assetNetwork,
       nonce: null,
       to: toAddress,
-      ...getTxGasParams(selectedGasPrice, network),
+      ...getTxGasParams(selectedGasPrice, assetNetwork),
     };
 
     try {
@@ -599,7 +600,13 @@ export default function SendSheet(props) {
     if (network === networkTypes.polygon) {
       nativeToken = 'MATIC';
     }
-    if (isEmpty(eip1559GasPrices) || !selectedGasPrice || isEmpty(txFees)) {
+    const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
+
+    const gasrices = isEIP1559SupportedNetwork(assetNetwork)
+      ? eip1559GasPrices
+      : gasPrices;
+
+    if (isEmpty(gasrices) || !selectedGasPrice || isEmpty(txFees)) {
       label = `Loading...`;
       disabled = true;
     } else if (!isZeroAssetAmount && !isSufficientGas) {
@@ -617,11 +624,13 @@ export default function SendSheet(props) {
   }, [
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
-    eip1559GasPrices,
-    isSufficientGas,
     network,
+    selected.type,
+    eip1559GasPrices,
+    gasPrices,
     selectedGasPrice,
     txFees,
+    isSufficientGas,
   ]);
 
   const showConfirmationSheet = useCallback(async () => {
