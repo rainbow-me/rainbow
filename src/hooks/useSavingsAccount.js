@@ -21,7 +21,11 @@ import {
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import { multiply } from '@rainbow-me/helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '@rainbow-me/parsers';
-import { CDAI_CONTRACT, DAI_ADDRESS } from '@rainbow-me/references';
+import {
+  CDAI_CONTRACT,
+  DAI_ADDRESS,
+  ETH_ADDRESS,
+} from '@rainbow-me/references';
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 
 const COMPOUND_QUERY_INTERVAL = 120000; // 120 seconds
@@ -72,7 +76,7 @@ const getUnderlyingData = marketData => {
   const symbol = parseAssetSymbol(metadata, underlyingSymbol);
 
   return {
-    address: underlyingAddress,
+    address: symbol === 'ETH' ? ETH_ADDRESS : underlyingAddress,
     decimals: underlyingDecimals,
     name,
     symbol,
@@ -139,24 +143,28 @@ export default function useSavingsAccount(includeDefaultDai) {
           supplyBalanceUnderlying,
         } = token;
 
-        const ethPrice = multiply(underlyingPrice, supplyBalanceUnderlying);
+        const underlyingBalanceNativeValue =
+          underlyingPrice && supplyBalanceUnderlying
+            ? multiply(underlyingPrice, supplyBalanceUnderlying)
+            : 0;
 
         return {
           cToken,
           cTokenBalance,
-          ethPrice,
           exchangeRate,
           lifetimeSupplyInterestAccrued,
           supplyBalanceUnderlying,
           supplyRate,
           type: AssetTypes.compound,
           underlying,
+          underlyingBalanceNativeValue,
           underlyingPrice,
         };
       });
+
       const accountTokens = orderBy(
         parsedAccountTokens,
-        ['ethPrice'],
+        ['underlyingBalanceNativeValue'],
         ['desc']
       );
       const daiMarketData = getMarketData(markets[CDAI_CONTRACT]);
