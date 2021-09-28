@@ -296,6 +296,18 @@ export const getTransaction = hash => web3Provider.getTransaction(hash);
 export const getTransactionCount = address =>
   web3Provider.getTransactionCount(address, 'pending');
 
+export const getTxGasParams = (selectedGasParams, network) => {
+  const gasParams = isEIP1559SupportedNetwork(network)
+    ? {
+        maxFeePerGas: selectedGasParams?.maxFeePerGas.amount,
+        maxPriorityFeePerGas: selectedGasParams?.priorityFeePerGas.amount,
+      }
+    : {
+        gasPrice: selectedGasParams?.value?.amount,
+      };
+  return gasParams;
+};
+
 /**
  * @desc get transaction details
  * @param  {Object} transaction { from, to, data, value, gasPrice, gasLimit }

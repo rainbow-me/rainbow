@@ -25,6 +25,7 @@ import {
   createSignableTransaction,
   estimateGasLimit,
   getProviderForNetwork,
+  getTxGasParams,
   isEIP1559SupportedNetwork,
   isL2Network,
   resolveNameOrAddress,
@@ -483,7 +484,7 @@ export default function SendSheet(props) {
         : gasLimit;
 
     logger.log('gasLimit', gasLimitToUse);
-    const baseTxDetails = {
+    const txDetails = {
       amount: amountDetails.assetAmount,
       asset: selected,
       from: accountAddress,
@@ -491,20 +492,7 @@ export default function SendSheet(props) {
       network,
       nonce: null,
       to: toAddress,
-    };
-
-    const gasDetails = isEIP1559SupportedNetwork(network)
-      ? {
-          maxFeePerGas: selectedGasPrice?.maxFeePerGas.amount,
-          maxPriorityFeePerGas: selectedGasPrice?.priorityFeePerGas.amount,
-        }
-      : {
-          gasPrice: selectedGasPrice?.value?.amount,
-        };
-
-    const txDetails = {
-      ...baseTxDetails,
-      ...gasDetails,
+      ...getTxGasParams(selectedGasPrice, network),
     };
 
     try {
