@@ -47,14 +47,14 @@ const PanelColumn = styled(Column).attrs(() => ({
 
 export default function FeesPanel({
   currentGasTrend,
-  currentBaseFee,
-  maxBaseFee,
-  minerTip,
-  estimatedFee,
   setMaxBaseFee,
+  selectedGasPrice,
   setMinerTip,
 }) {
-  const maxTxFee = get(estimatedFee, 'native.value.display', 0);
+  const maxTxFee = get(selectedGasPrice, 'maxTxFee.native.value.display', 0);
+  const currentBaseFee = get(selectedGasPrice, 'baseFeePerGas.display', 0);
+  const maxBaseFee = get(selectedGasPrice, 'maxFeePerGas.gwei', 0);
+  const minerTip = get(selectedGasPrice, 'priorityFeePerGas.gwei', 0);
 
   return (
     <OuterWrapper>
@@ -73,7 +73,7 @@ export default function FeesPanel({
             <PanelLabel>Current Base Fee</PanelLabel>
           </PanelColumn>
           <PanelColumn>
-            <PanelLabel>{`${Math.round(currentBaseFee)} Gwei`}</PanelLabel>
+            <PanelLabel>{`${currentBaseFee}`}</PanelLabel>
           </PanelColumn>
         </PanelRow>
         {/* max base fee */}

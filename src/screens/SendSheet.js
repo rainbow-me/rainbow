@@ -55,6 +55,7 @@ import {
 } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { isLegacyTypeTransaction } from '@rainbow-me/redux/gas';
 import {
   chainAssets,
   ETH_ADDRESS,
@@ -118,7 +119,6 @@ export default function SendSheet(props) {
     updateTxFee,
   } = useGas();
   const isDismissing = useRef(false);
-
   const recipientFieldRef = useRef();
 
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
@@ -437,9 +437,15 @@ export default function SendSheet(props) {
   const onSubmit = useCallback(async () => {
     const validTransaction =
       isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
-    if (!selectedGasPrice.txFee || !validTransaction) {
+    if (
+      (isLegacyTypeTransaction(network)
+        ? !selectedGasPrice?.txFee
+        : !selectedGasPrice?.maxTxFee) ||
+      !validTransaction
+    ) {
       logger.sentry('preventing tx submit for one of the following reasons:');
-      logger.sentry('selectedGasPrice.txFee ? ', selectedGasPrice?.txFee);
+      logger.sentry('selectedGasPrice ? ', selectedGasPrice);
+      logger.sentry('selectedGasPrice.maxFee ? ', selectedGasPrice?.maxFee);
       logger.sentry('validTransaction ? ', validTransaction);
       captureEvent('Preventing tx submit');
       return false;
@@ -477,15 +483,29 @@ export default function SendSheet(props) {
         : gasLimit;
 
     logger.log('gasLimit', gasLimitToUse);
-    const txDetails = {
+    const baseTxDetails = {
       amount: amountDetails.assetAmount,
       asset: selected,
       from: accountAddress,
       gasLimit: gasLimitToUse,
-      gasPrice: selectedGasPrice.value?.amount,
       nonce: null,
       to: toAddress,
     };
+
+    const gasDetails = isLegacyTypeTransaction(network)
+      ? {
+          gasPrice: selectedGasPrice?.value?.amount,
+        }
+      : {
+          maxFeePerGas: selectedGasPrice?.maxFeePerGas.amount,
+          maxPriorityFeePerGas: selectedGasPrice?.priorityFeePerGas.amount,
+        };
+
+    const txDetails = {
+      ...baseTxDetails,
+      ...gasDetails,
+    };
+
     try {
       const signableTransaction = await createSignableTransaction(txDetails);
       const { result: txResult } = await sendTransaction({
@@ -521,6 +541,7 @@ export default function SendSheet(props) {
     gasLimit,
     isSufficientGas,
     isValidAddress,
+    network,
     selected,
     selectedGasPrice,
     toAddress,
