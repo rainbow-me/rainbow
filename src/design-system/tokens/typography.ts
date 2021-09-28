@@ -1,4 +1,4 @@
-/* eslint-disable sort-keys */
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 import capsize from 'react-native-capsize';
 
 const fonts = {
@@ -46,13 +46,13 @@ const fontMetrics = {
   unitsPerEm: 2048,
 } as const;
 
-const androidMarginCorrectionForFontSize: Record<
-  number,
-  Record<'top' | 'bottom', number>
-> = {
-  16: { top: 1.4, bottom: -1.9 },
-  23: { top: 0.1, bottom: -0.1 },
-};
+const marginCorrectionForFontSize = {
+  23: ios ? -0.3 : -0.35,
+  20: ios ? -0.5 : -0.2,
+  18: ios ? 0.2 : -0.2,
+  16: ios ? -0.5 : 1.075,
+  14: ios ? -0.3 : -0.1,
+} as const;
 
 const createTextVariant = <FontFamily extends keyof typeof fonts>({
   fontFamily,
@@ -63,7 +63,7 @@ const createTextVariant = <FontFamily extends keyof typeof fonts>({
 }: {
   fontFamily: FontFamily;
   fontWeight: keyof typeof fonts[FontFamily];
-  fontSize: number;
+  fontSize: keyof typeof marginCorrectionForFontSize;
   lineHeight: number;
   letterSpacing: number;
 }) => {
@@ -78,16 +78,15 @@ const createTextVariant = <FontFamily extends keyof typeof fonts>({
   } as const;
 
   const marginCorrection =
-    android && fontSize in androidMarginCorrectionForFontSize
-      ? androidMarginCorrectionForFontSize[fontSize]
-      : { top: 0, bottom: 0 };
+    fontSize in marginCorrectionForFontSize
+      ? marginCorrectionForFontSize[fontSize]
+      : 0;
 
   return {
     ...styles,
-    ...{
-      marginTop: styles.marginTop + marginCorrection.top,
-      marginBottom: styles.marginBottom + marginCorrection.bottom,
-    },
+    marginTop: styles.marginTop + marginCorrection,
+    marginBottom: styles.marginBottom - marginCorrection,
+    paddingTop: undefined, // react-native-capsize adds additional padding, not sure why
   };
 };
 

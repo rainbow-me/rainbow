@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import branch from 'react-native-branch';
 import {
+  ENABLE_DESIGN_SYSTEM_PLAYGROUND,
   IS_TESTING,
   REACT_APP_SEGMENT_API_WRITE_KEY,
   SENTRY_ENDPOINT,
@@ -38,6 +39,7 @@ import {
 import { MainThemeProvider } from './context/ThemeContext';
 import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
+import { DesignSystemPlayground } from './design-system/DesignSystemPlayground';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
@@ -278,4 +280,8 @@ const AppWithRedux = connect(
 
 const AppWithReduxStore = () => <AppWithRedux store={store} />;
 
-AppRegistry.registerComponent('Rainbow', () => AppWithReduxStore);
+AppRegistry.registerComponent('Rainbow', () =>
+  ENABLE_DESIGN_SYSTEM_PLAYGROUND === 'true'
+    ? DesignSystemPlayground
+    : AppWithReduxStore
+);
