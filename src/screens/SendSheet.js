@@ -25,6 +25,7 @@ import {
   createSignableTransaction,
   estimateGasLimit,
   getProviderForNetwork,
+  isEIP1559SupportedNetwork,
   isL2Network,
   resolveNameOrAddress,
   web3Provider,
@@ -55,7 +56,6 @@ import {
 } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import { isLegacyTypeTransaction } from '@rainbow-me/redux/gas';
 import {
   chainAssets,
   ETH_ADDRESS,
@@ -438,9 +438,9 @@ export default function SendSheet(props) {
     const validTransaction =
       isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
     if (
-      (isLegacyTypeTransaction(network)
-        ? !selectedGasPrice?.txFee
-        : !selectedGasPrice?.maxTxFee) ||
+      (isEIP1559SupportedNetwork(network)
+        ? !selectedGasPrice?.maxTxFee
+        : !selectedGasPrice?.txFee) ||
       !validTransaction
     ) {
       logger.sentry('preventing tx submit for one of the following reasons:');
@@ -493,13 +493,13 @@ export default function SendSheet(props) {
       to: toAddress,
     };
 
-    const gasDetails = isLegacyTypeTransaction(network)
+    const gasDetails = isEIP1559SupportedNetwork(network)
       ? {
-          gasPrice: selectedGasPrice?.value?.amount,
-        }
-      : {
           maxFeePerGas: selectedGasPrice?.maxFeePerGas.amount,
           maxPriorityFeePerGas: selectedGasPrice?.priorityFeePerGas.amount,
+        }
+      : {
+          gasPrice: selectedGasPrice?.value?.amount,
         };
 
     const txDetails = {

@@ -68,14 +68,14 @@ export const web3SetHttpProvider = async network => {
  * @desc returns true if the given network is EIP1559 supported
  * @param {String} network
  */
-export const isLegacyTypeTransaction = network => {
+export const isEIP1559SupportedNetwork = network => {
   switch (network) {
     case NetworkTypes.arbitrum:
     case NetworkTypes.optimism:
     case NetworkTypes.polygon:
-      return true;
-    default:
       return false;
+    default:
+      return true;
   }
 };
 
@@ -315,13 +315,13 @@ export const getTxDetails = async transaction => {
     value,
   };
 
-  const gasParams = isLegacyTypeTransaction(transaction.network)
+  const gasParams = isEIP1559SupportedNetwork(transaction.network)
     ? {
-        gasPrice: toHex(transaction.gasPrice),
-      }
-    : {
         maxFeePerGas: toHex(transaction.maxFeePerGas),
         maxPriorityFeePerGas: toHex(transaction.maxPriorityFeePerGas),
+      }
+    : {
+        gasPrice: toHex(transaction.gasPrice),
       };
 
   const tx = {

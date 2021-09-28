@@ -12,8 +12,8 @@ import {
 } from '@rainbow-me/handlers/gasPrices';
 import {
   getProviderForNetwork,
+  isEIP1559SupportedNetwork,
   isL2Network,
-  isLegacyTypeTransaction,
 } from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
@@ -254,19 +254,19 @@ export const gasUpdateGasPriceOption = (
   if (isEmpty(gasPrices)) return;
   const { assets } = getState().data;
 
-  const results = isLegacyTypeTransaction(network)
-    ? getLegacySelectedGasPrice(
+  const results = isEIP1559SupportedNetwork(network)
+    ? getSelectedGasPrice(
+        assetsOverride || assets,
+        eip1559GasPrices,
+        txFees,
+        newGasPriceOption
+      )
+    : getLegacySelectedGasPrice(
         assetsOverride || assets,
         gasPrices,
         txFees,
         newGasPriceOption,
         network
-      )
-    : getSelectedGasPrice(
-        assetsOverride || assets,
-        eip1559GasPrices,
-        txFees,
-        newGasPriceOption
       );
 
   dispatch({
@@ -336,17 +336,17 @@ export const gasUpdateTxFee = (network, gasLimit, overrideGasOption) => (
   if (network === networkTypes.polygon) {
     nativeTokenPriceUnit = ethereumUtils.getMaticPriceUnit();
   }
-  const gasParams = isLegacyTypeTransaction(network)
-    ? gasPrices
-    : eip1559GasPrices;
+  const gasParams = isEIP1559SupportedNetwork(network)
+    ? eip1559GasPrices
+    : gasPrices;
   if (isEmpty(gasParams)) return;
 
-  const parseFees = isLegacyTypeTransaction(network)
-    ? parseTxFees
-    : parseEip1559TxFees;
-  const getSelectedGasParams = isLegacyTypeTransaction(network)
-    ? getLegacySelectedGasPrice
-    : getSelectedGasPrice;
+  const parseFees = isEIP1559SupportedNetwork(network)
+    ? parseEip1559TxFees
+    : parseTxFees;
+  const getSelectedGasParams = isEIP1559SupportedNetwork(network)
+    ? getSelectedGasPrice
+    : getLegacySelectedGasPrice;
 
   const txFees = parseFees(
     gasParams,
@@ -362,6 +362,7 @@ export const gasUpdateTxFee = (network, gasLimit, overrideGasOption) => (
     _selectedGasPriceOption,
     network
   );
+
   dispatch({
     payload: {
       ...selectedGasParams,
