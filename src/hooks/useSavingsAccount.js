@@ -10,7 +10,7 @@ import {
   toLower,
 } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import { compoundClient } from '@rainbow-me/apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@rainbow-me/apollo/queries';
@@ -21,6 +21,7 @@ import {
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import { multiply } from '@rainbow-me/helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '@rainbow-me/parsers';
+import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 import {
   CDAI_CONTRACT,
   DAI_ADDRESS,
@@ -87,6 +88,7 @@ export default function useSavingsAccount(includeDefaultDai) {
   const [result, setResult] = useState({});
   const [backupSavings, setBackupSavings] = useState(null);
 
+  const dispatch = useDispatch();
   const { accountAddress, network } = useAccountSettings();
 
   const hasAccountAddress = !!accountAddress;
@@ -172,6 +174,8 @@ export default function useSavingsAccount(includeDefaultDai) {
         accountTokens,
         daiMarketData,
       };
+      const underlyingAddresses = map(accountTokens, token => token?.underlying?.address)
+      dispatch(emitAssetRequest(underlyingAddresses));
       saveSavings(result, accountAddress, network);
       setResult(result);
     } else if (loading && !isNil(backupSavings)) {
@@ -179,7 +183,7 @@ export default function useSavingsAccount(includeDefaultDai) {
     } else {
       setResult({});
     }
-  }, [accountAddress, backupSavings, data, error, loading, network]);
+  }, [accountAddress, backupSavings, data, dispatch, error, loading, network]);
 
   useEffect(() => {
     if (!hasAccountAddress) return;
