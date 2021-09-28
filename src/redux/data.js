@@ -169,7 +169,10 @@ export const dataLoadState = () => async (dispatch, getState) =>
     }, GENERIC_ASSETS_FALLBACK_TIMEOUT);
   });
 
-export const fetchAssetPrices = async (coingeckoIds, nativeCurrency) => {
+export const fetchAssetPricesWithCoingecko = async (
+  coingeckoIds,
+  nativeCurrency
+) => {
   try {
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoIds
       .filter(val => !!val)
@@ -261,7 +264,7 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
         .slice(from, to)
         .map(({ coingecko_id }) => coingecko_id);
 
-      const pricesForCurrentPage = await fetchAssetPrices(
+      const pricesForCurrentPage = await fetchAssetPricesWithCoingecko(
         currentPageIds,
         formattedNativeCurrency
       );

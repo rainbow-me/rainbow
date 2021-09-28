@@ -75,7 +75,7 @@ const SavingsSheet = () => {
 
   const savingsRowItem = useMemo(
     () => ({
-      address: underlying.symbol === 'ETH' ? 'eth' : underlying.address,
+      address: underlying.address,
       lifetimeSupplyInterestAccrued,
       name: underlying.name,
       supplyBalanceUnderlying,

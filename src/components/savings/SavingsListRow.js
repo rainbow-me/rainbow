@@ -166,9 +166,7 @@ const SavingsListRow = ({
             {underlying.symbol && supplyBalanceUnderlying ? (
               <Centered>
                 <CoinIcon
-                  address={
-                    underlying.symbol === 'ETH' ? 'eth' : underlying.address
-                  }
+                  address={underlying.address}
                   size={26}
                   symbol={underlying.symbol}
                 />
