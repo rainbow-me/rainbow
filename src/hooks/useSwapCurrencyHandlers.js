@@ -1,23 +1,15 @@
 import { useRoute } from '@react-navigation/native';
-import { isEmpty } from 'lodash';
-import { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
+import { useCallback, useLayoutEffect, useMemo } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
 import useAccountAssets from './useAccountAssets';
-import useAccountSettings from './useAccountSettings';
 import { delayNext } from './useMagicAutofocus';
-import useSwapCurrencies from './useSwapCurrencies';
 import useTimeout from './useTimeout';
-import useUniswapCalls from './useUniswapCalls';
 import {
   CurrencySelectionTypes,
   ExchangeModalTypes,
 } from '@rainbow-me/helpers';
 import { useNavigation } from '@rainbow-me/navigation';
-import {
-  multicallAddListeners,
-  multicallUpdateOutdatedListeners,
-} from '@rainbow-me/redux/multicall';
 import {
   flipSwapCurrencies,
   updateSwapDepositCurrency,
@@ -40,7 +32,6 @@ export default function useSwapCurrencyHandlers({
 }) {
   const dispatch = useDispatch();
   const { allAssets } = useAccountAssets();
-  const { chainId } = useAccountSettings();
   const { navigate, setParams, dangerouslyGetParent } = useNavigation();
   const {
     params: { blockInteractions },
@@ -89,16 +80,6 @@ export default function useSwapCurrencyHandlers({
     dispatch(updateSwapInputCurrency(defaultInputItemInWallet));
     dispatch(updateSwapOutputCurrency(defaultOutputItem));
   }, [defaultInputItemInWallet, dispatch, defaultOutputItem]);
-
-  const { inputCurrency, outputCurrency } = useSwapCurrencies();
-
-  const { calls } = useUniswapCalls();
-
-  useEffect(() => {
-    if (!inputCurrency || !outputCurrency || isEmpty(calls)) return;
-    dispatch(multicallAddListeners({ calls, chainId }));
-    dispatch(multicallUpdateOutdatedListeners());
-  }, [calls, chainId, dispatch, inputCurrency, outputCurrency]);
 
   const [startFlipFocusTimeout] = useTimeout();
   const flipCurrencies = useCallback(() => {

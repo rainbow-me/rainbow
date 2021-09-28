@@ -48,7 +48,6 @@ export { default as useLongPressEvents } from './useLongPressEvents';
 export { default as useMagicAutofocus } from './useMagicAutofocus';
 export { default as useManageCloudBackups } from './useManageCloudBackups';
 export { default as useMaxInputBalance } from './useMaxInputBalance';
-export { default as useMulticall } from './useMulticall';
 export { default as useUniqueToken } from './useUniqueToken';
 export { default as useOpenInvestmentCards } from './useOpenInvestmentCards';
 export { default as useOpenSavings } from './useOpenSavings';
@@ -83,7 +82,6 @@ export { default as useTransactionConfirmation } from './useTransactionConfirmat
 export { default as useTransformOrigin } from './useTransformOrigin';
 export { default as useUniswapAssets } from './useUniswapAssets';
 export { default as useUniswapAssetsInWallet } from './useUniswapAssetsInWallet';
-export { default as useUniswapCalls } from './useUniswapCalls';
 export { default as useUpdateAssetOnchainBalance } from './useUpdateAssetOnchainBalance';
 export { default as useUniswapPools } from './useUniswapPools';
 export { default as useUserAccounts } from './useUserAccounts';

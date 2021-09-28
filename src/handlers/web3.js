@@ -61,6 +61,7 @@ export const web3SetHttpProvider = async network => {
   } else {
     web3Provider = new JsonRpcProvider(replace(infuraUrl, 'network', network));
   }
+
   return web3Provider.ready;
 };
 

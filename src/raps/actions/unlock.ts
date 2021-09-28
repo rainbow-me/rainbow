@@ -177,7 +177,6 @@ export const assetNeedsUnlocking = async (
   const { address } = assetToUnlock;
   if (address === ETH_ADDRESS) return false;
   if (alwaysRequireApprove) return true;
-
   const cacheKey = toLower(`${accountAddress}|${address}|${contractAddress}`);
 
   let allowance;

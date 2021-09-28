@@ -13,7 +13,6 @@ import fallbackExplorer from './fallbackExplorer';
 import gas from './gas';
 import imageMetadata from './imageMetadata';
 import keyboardHeight from './keyboardHeight';
-import multicall from './multicall';
 import openStateSettings from './openStateSettings';
 import optimismExplorer from './optimismExplorer';
 import polygonExplorer from './polygonExplorer';
@@ -44,7 +43,6 @@ export default combineReducers({
   gas,
   imageMetadata,
   keyboardHeight,
-  multicall,
   openStateSettings,
   optimismExplorer,
   polygonExplorer,

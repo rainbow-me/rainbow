@@ -40,7 +40,7 @@ const DevSection = () => {
     }
     navigate(Routes.PROFILE_SCREEN);
   }, [navigate]);
-  
+
   const connectToGanache = useCallback(async () => {
     try {
       const ready = await web3SetHttpProvider(

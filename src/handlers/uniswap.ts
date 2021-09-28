@@ -1,7 +1,7 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
-import { ChainId, Token, WETH } from '@uniswap/sdk';
+import { ChainId, Token } from '@uniswap/sdk';
 import { get, mapKeys, mapValues, toLower } from 'lodash';
 import { uniswapClient } from '../apollo/client';
 import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
@@ -170,7 +170,6 @@ export const getTokenForCurrency = (
   currency: Asset,
   chainId: ChainId
 ): Token => {
-  if (currency.address === 'eth') return WETH[chainId];
   return new Token(
     chainId,
     currency.address,

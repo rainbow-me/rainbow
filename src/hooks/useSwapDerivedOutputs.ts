@@ -1,11 +1,8 @@
-import { Pair, Token } from '@uniswap/sdk';
-import { isEmpty } from 'lodash';
+import { Token } from '@uniswap/sdk';
 import { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
-import useUniswapPairs from './useUniswapPairs';
 import { EthereumAddress } from '@rainbow-me/entities';
-import { getTokenForCurrency } from '@rainbow-me/handlers/uniswap';
 import { AppState } from '@rainbow-me/redux/store';
 import { SwapModalField, updateSwapQuote } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS } from '@rainbow-me/references';
@@ -18,7 +15,7 @@ import {
   isZero,
   updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils, logger } from '@rainbow-me/utils';
 import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   getQuote,
@@ -34,17 +31,10 @@ const getInputAmount = async (
   inputToken: Token,
   outputToken: Token | null,
   inputPrice: string | null,
-  allPairs: Pair[] | null,
   fromAddress: EthereumAddress,
   chainId = 1
 ) => {
-  if (
-    !outputAmount ||
-    isZero(outputAmount) ||
-    !outputToken ||
-    !allPairs ||
-    isEmpty(allPairs)
-  ) {
+  if (!outputAmount || isZero(outputAmount) || !outputToken) {
     return {
       outputAmount: null,
       outputAmountDisplay: null,
@@ -111,17 +101,10 @@ const getOutputAmount = async (
   inputToken: Token,
   outputToken: Token | null,
   outputPrice: string | null,
-  allPairs: Pair[] | null,
   fromAddress: EthereumAddress,
   chainId = 1
 ) => {
-  if (
-    !inputAmount ||
-    isZero(inputAmount) ||
-    !outputToken ||
-    !allPairs ||
-    isEmpty(allPairs)
-  ) {
+  if (!inputAmount || isZero(inputAmount) || !outputToken) {
     return {
       outputAmount: null,
       outputAmountDisplay: null,
@@ -153,7 +136,6 @@ const getOutputAmount = async (
       sellTokenAddress,
       slippage: 0.5,
     };
-
     const quote = await getQuote(quoteParams);
 
     const outputAmount = convertRawAmountToDecimalFormat(
@@ -224,24 +206,19 @@ export default function useSwapDerivedOutputs() {
   const outputPrice = genericAssets[outputCurrency?.address]?.price?.value;
 
   const { chainId, accountAddress } = useAccountSettings();
-  const { allPairs, doneLoadingReserves } = useUniswapPairs();
 
   const getTradeDetails = useCallback(async () => {
     let tradeDetails = null;
-
     if (!independentValue || !inputCurrency) {
       return {
         derivedValues,
         displayValues,
-        doneLoadingReserves,
+        doneLoadingReserves: true,
         tradeDetails,
       };
     }
-
-    const inputToken = getTokenForCurrency(inputCurrency, chainId);
-    const outputToken = outputCurrency
-      ? getTokenForCurrency(outputCurrency, chainId)
-      : null;
+    const inputToken = inputCurrency;
+    const outputToken = outputCurrency;
 
     if (independentField === SwapModalField.input) {
       derivedValues[SwapModalField.input] = independentValue;
@@ -262,7 +239,6 @@ export default function useSwapDerivedOutputs() {
         inputToken,
         outputToken,
         outputPrice,
-        allPairs,
         accountAddress,
         chainId
       );
@@ -295,7 +271,6 @@ export default function useSwapDerivedOutputs() {
         inputToken,
         outputToken,
         outputPrice,
-        allPairs,
         accountAddress,
         chainId
       );
@@ -304,11 +279,11 @@ export default function useSwapDerivedOutputs() {
       displayValues[DisplayValue.output] =
         outputAmountDisplay?.toString() || null;
     } else {
-      if (!outputToken || !inputToken || isEmpty(allPairs)) {
+      if (!outputToken || !inputToken) {
         return {
           derivedValues,
           displayValues,
-          doneLoadingReserves,
+          doneLoadingReserves: true,
           tradeDetails,
         };
       }
@@ -324,7 +299,6 @@ export default function useSwapDerivedOutputs() {
         inputToken,
         outputToken,
         inputPrice,
-        allPairs,
         accountAddress,
         chainId
       );
@@ -339,12 +313,15 @@ export default function useSwapDerivedOutputs() {
 
       derivedValues[SwapModalField.native] = nativeValue;
     }
-    return { derivedValues, displayValues, doneLoadingReserves, tradeDetails };
+    return {
+      derivedValues,
+      displayValues,
+      doneLoadingReserves: true,
+      tradeDetails,
+    };
   }, [
     accountAddress,
-    allPairs,
     chainId,
-    doneLoadingReserves,
     independentField,
     independentValue,
     inputCurrency,
