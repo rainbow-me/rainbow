@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import Restart from 'react-native-restart';
+import RNExitApp from 'react-native-exit-app';
 import styled from 'styled-components';
 import { Centered } from '../layout';
 import { SheetActionButton } from '../sheet';
@@ -30,7 +30,7 @@ export default function Fallback() {
   const { width: deviceWidth } = useDimensions();
   const handleRestart = () => {
     logger.sentry('Restarting app after Error Boundary catch');
-    Restart.Restart();
+    RNExitApp.exitApp();
   };
   return (
     <Container>

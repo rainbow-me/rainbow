@@ -100,7 +100,7 @@ export const isTestnet = network => {
  * @desc returns a web3 provider for the specified network
  * @param {String} network
  */
-export const getProviderForNetwork = async network => {
+export const getProviderForNetwork = async (network = NetworkTypes.mainnet) => {
   if (networkProviders[network]) {
     return networkProviders[network];
   }
