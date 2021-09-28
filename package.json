@@ -25,7 +25,7 @@
     "install-pods-no-flipper": "cd ios && bundle exec env SKIP_FLIPPER=true pod install --repo-update && cd ..",
     "ios": "react-native run-ios --simulator='iPhone 11'",
     "lint": "yarn lint:ts && yarn lint:js",
-    "lint:js": "eslint --ext '.ts,.tsx,.js,.jsx' .",
+    "lint:js": "eslint --cache --ext '.ts,.tsx,.js,.jsx' .",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
     "postinstall": "./scripts/postinstall.sh",
     "start": "react-native start",
