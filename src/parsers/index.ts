@@ -12,7 +12,6 @@ export {
   parseEip1559TxFees,
   parseEIP1559GasData,
   defaultGasPriceFormat,
-  isLegacyTypeTransaction,
   parseTxFees,
   gweiToWei,
   weiToGwei,

@@ -26,7 +26,6 @@ import { isNativeAsset } from './assets';
 import { AssetTypes } from '@rainbow-me/entities';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 
-import { isLegacyTypeTransaction } from '@rainbow-me/parsers';
 import {
   addBuffer,
   convertAmountToRawAmount,
@@ -63,6 +62,21 @@ export const web3SetHttpProvider = async network => {
     web3Provider = new JsonRpcProvider(replace(infuraUrl, 'network', network));
   }
   return web3Provider.ready;
+};
+
+/**
+ * @desc returns true if the given network is EIP1559 supported
+ * @param {String} network
+ */
+export const isLegacyTypeTransaction = network => {
+  switch (network) {
+    case NetworkTypes.arbitrum:
+    case NetworkTypes.optimism:
+    case NetworkTypes.polygon:
+      return true;
+    default:
+      return false;
+  }
 };
 
 /**

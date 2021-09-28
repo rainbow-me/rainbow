@@ -10,12 +10,15 @@ import {
   maticGasStationGetGasPrices,
   maticGetGasEstimates,
 } from '@rainbow-me/handlers/gasPrices';
-import { getProviderForNetwork, isL2Network } from '@rainbow-me/handlers/web3';
+import {
+  getProviderForNetwork,
+  isL2Network,
+  isLegacyTypeTransaction,
+} from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasPriceFormat,
   getFallbackGasPrices,
-  isLegacyTypeTransaction,
   parseEIP1559GasData,
   parseEip1559TxFees,
   parseGasPrices,
