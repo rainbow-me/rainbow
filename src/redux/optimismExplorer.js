@@ -3,7 +3,7 @@ import { Contract } from '@ethersproject/contracts';
 import { toLower } from 'lodash';
 import isEqual from 'react-fast-compare';
 // eslint-disable-next-line import/no-cycle
-import { addressAssetsReceived, fetchAssetPrices } from './data';
+import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
 import { emitAssetRequest, emitChartsRequest } from './explorer';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
@@ -112,7 +112,7 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
     if (assetsWithBalance.length) {
       dispatch(emitAssetRequest(tokenAddresses));
       dispatch(emitChartsRequest(tokenAddresses));
-      const prices = await fetchAssetPrices(
+      const prices = await fetchAssetPricesWithCoingecko(
         assetsWithBalance.map(({ asset: { coingecko_id } }) => coingecko_id),
         formattedNativeCurrency
       );
