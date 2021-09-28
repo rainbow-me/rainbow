@@ -488,6 +488,7 @@ export default function SendSheet(props) {
       asset: selected,
       from: accountAddress,
       gasLimit: gasLimitToUse,
+      network,
       nonce: null,
       to: toAddress,
     };

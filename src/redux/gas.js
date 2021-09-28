@@ -15,6 +15,7 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasPriceFormat,
   getFallbackGasPrices,
+  isLegacyTypeTransaction,
   parseEIP1559GasData,
   parseEip1559TxFees,
   parseGasPrices,
@@ -49,11 +50,6 @@ const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
 
 // -- Actions --------------------------------------------------------------- //
 let gasPricesHandle = null;
-
-export const isLegacyTypeTransaction = network =>
-  network === networkTypes.polygon ||
-  network === networkTypes.arbitrum ||
-  network === networkTypes.optimism;
 
 const { GAS_PRICE_SOURCES } = gasUtils;
 

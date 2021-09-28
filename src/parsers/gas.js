@@ -9,6 +9,7 @@ import {
 import ethUnits from '../references/ethereum-units.json';
 import timeUnits from '../references/time-units.json';
 import { gasUtils } from '../utils';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 const { CUSTOM, FAST, NORMAL, SLOW, GasSpeedOrder, GAS_CONFIDENCE } = gasUtils;
 
@@ -165,6 +166,11 @@ export const defaultGasParamsFormat = (
     },
   };
 };
+
+export const isLegacyTypeTransaction = network =>
+  network === networkTypes.polygon ||
+  network === networkTypes.arbitrum ||
+  network === networkTypes.optimism;
 
 /**
  * @desc parse ether gas prices with updated gas limit

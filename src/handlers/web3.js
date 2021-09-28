@@ -26,6 +26,7 @@ import { isNativeAsset } from './assets';
 import { AssetTypes } from '@rainbow-me/entities';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 
+import { isLegacyTypeTransaction } from '@rainbow-me/parsers';
 import {
   addBuffer,
   convertAmountToRawAmount,
@@ -293,13 +294,25 @@ export const getTxDetails = async transaction => {
   const gasLimit = transaction.gasLimit
     ? toHex(transaction.gasLimit)
     : undefined;
-  const gasPrice = toHex(transaction.gasPrice) || undefined;
-  const tx = {
+  const baseTx = {
     data,
     gasLimit,
-    gasPrice,
     to,
     value,
+  };
+
+  const gasParams = isLegacyTypeTransaction(transaction.network)
+    ? {
+        gasPrice: toHex(transaction.gasPrice),
+      }
+    : {
+        maxFeePerGas: toHex(transaction.maxFeePerGas),
+        maxPriorityFeePerGas: toHex(transaction.maxPriorityFeePerGas),
+      };
+
+  const tx = {
+    ...baseTx,
+    ...gasParams,
   };
   return tx;
 };
