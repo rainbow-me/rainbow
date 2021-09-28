@@ -1,13 +1,13 @@
 import { Pair, Token } from '@uniswap/sdk';
 import { isEmpty } from 'lodash';
 import { useCallback, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import useUniswapPairs from './useUniswapPairs';
 import { EthereumAddress } from '@rainbow-me/entities';
 import { getTokenForCurrency } from '@rainbow-me/handlers/uniswap';
 import { AppState } from '@rainbow-me/redux/store';
-import { SwapModalField } from '@rainbow-me/redux/swap';
+import { SwapModalField, updateSwapQuote } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import {
   convertAmountFromNativeValue,
@@ -18,7 +18,7 @@ import {
   isZero,
   updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';
-import { ethereumUtils, logger } from '@rainbow-me/utils';
+import { ethereumUtils } from '@rainbow-me/utils';
 import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   getQuote,
@@ -75,9 +75,7 @@ const getInputAmount = async (
       sellTokenAddress,
       slippage: 0.5,
     };
-    logger.debug('getOutput :: getting quote');
     const quote = await getQuote(quoteParams);
-    logger.debug('GOT QUOTE!');
 
     const inputAmount = convertRawAmountToDecimalFormat(
       quote.sellAmount.toString(),
@@ -90,13 +88,16 @@ const getInputAmount = async (
         : inputAmount
         ? quote.buyAmount
         : null;
+
+    quote.inputTokenDecimals = inputToken.decimals;
+    quote.outputTokenDecimals = outputToken.decimals;
+
     return {
       inputAmount,
       inputAmountDisplay,
       tradeDetails: quote,
     };
   } catch (e) {
-    logger.debug('getOutputAmount error', e);
     return {
       outputAmount: null,
       outputAmountDisplay: null,
@@ -128,8 +129,6 @@ const getOutputAmount = async (
     };
   }
 
-  logger.debug('GETTING QUOTE FOR INPUT', inputToken?.address);
-
   try {
     const buyTokenAddress =
       outputToken?.address === ETH_ADDRESS
@@ -154,9 +153,8 @@ const getOutputAmount = async (
       sellTokenAddress,
       slippage: 0.5,
     };
-    logger.debug('getOutput :: getting quote');
+
     const quote = await getQuote(quoteParams);
-    logger.debug('GOT QUOTE!');
 
     const outputAmount = convertRawAmountToDecimalFormat(
       quote.buyAmount.toString(),
@@ -167,15 +165,18 @@ const getOutputAmount = async (
       outputAmount && outputPrice
         ? updatePrecisionToDisplay(outputAmount, outputPrice)
         : outputAmount
-        ? quote.buyAmount
+        ? outputAmount
         : null;
+
+    quote.inputTokenDecimals = inputToken.decimals;
+    quote.outputTokenDecimals = outputToken.decimals;
+
     return {
       outputAmount,
       outputAmountDisplay,
       tradeDetails: quote,
     };
   } catch (e) {
-    logger.debug('getOutputAmount error', e);
     return {
       outputAmount: null,
       outputAmountDisplay: null,
@@ -196,6 +197,7 @@ const displayValues: { [key in DisplayValue]: string | null } = {
 };
 
 export default function useSwapDerivedOutputs() {
+  const dispatch = useDispatch();
   const [result, setResult] = useState({
     derivedValues,
     displayValues,
@@ -353,8 +355,15 @@ export default function useSwapDerivedOutputs() {
 
   useMemo(async () => {
     const data = await getTradeDetails();
+    dispatch(
+      updateSwapQuote({
+        derivedValues: data.derivedValues,
+        displayValues: data.displayValues,
+        tradeDetails: data.tradeDetails,
+      })
+    );
     setResult(data);
-  }, [getTradeDetails]);
+  }, [dispatch, getTradeDetails]);
 
   return result;
 }

@@ -1,18 +1,33 @@
 import React, { useMemo } from 'react';
 import { ButtonPressAnimation } from '../../animations';
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
+import {
+  divide,
+  handleSignificantDecimals,
+} from '@rainbow-me/helpers/utilities';
 import { useStepper, useSwapCurrencies } from '@rainbow-me/hooks';
 
 export default function SwapDetailsPriceRow({ tradeDetails, ...props }) {
-  const inputExecutionRate = tradeDetails?.executionPrice?.toSignificant();
-  let outputExecutionRate = '0';
-  if (!tradeDetails?.executionPrice?.equalTo('0')) {
-    outputExecutionRate = tradeDetails?.executionPrice
-      ?.invert()
-      ?.toSignificant();
-  }
-
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
+
+  const outputExecutionRateRaw = divide(
+    tradeDetails?.sellAmount,
+    tradeDetails?.buyAmount
+  );
+  const inputExecutionRateRaw = divide(
+    tradeDetails?.buyAmount,
+    tradeDetails?.sellAmount
+  );
+
+  const inputExecutionRate = handleSignificantDecimals(
+    inputExecutionRateRaw,
+    2
+  );
+
+  const outputExecutionRate = handleSignificantDecimals(
+    outputExecutionRateRaw,
+    2
+  );
 
   const steps = useMemo(
     () => [

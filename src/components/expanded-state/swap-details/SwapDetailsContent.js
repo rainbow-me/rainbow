@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { ColumnWithMargins } from '../../layout';
 import SwapDetailsContractRow from './SwapDetailsContractRow';
@@ -9,6 +10,7 @@ import SwapDetailsRow, {
 } from './SwapDetailsRow';
 import SwapDetailsUniswapRow from './SwapDetailsUniswapRow';
 import { useSwapAdjustedAmounts, useSwapCurrencies } from '@rainbow-me/hooks';
+import { SwapModalField } from '@rainbow-me/redux/swap';
 import { padding } from '@rainbow-me/styles';
 import { isETH } from '@rainbow-me/utils';
 
@@ -36,6 +38,9 @@ export default function SwapDetailsContent({
   const { amountReceivedSold, receivedSoldLabel } = useSwapAdjustedAmounts(
     tradeDetails
   );
+  const inputAsExact = useSelector(
+    state => state.swap.independentField !== SwapModalField.output
+  );
 
   const showPriceImpact =
     (!isHighPriceImpact || priceImpactNativeAmount) &&
@@ -59,7 +64,8 @@ export default function SwapDetailsContent({
       )}
       <SwapDetailsRow label={receivedSoldLabel}>
         <SwapDetailsValue letterSpacing="roundedTight">
-          {amountReceivedSold}
+          {amountReceivedSold}{' '}
+          {inputAsExact ? outputCurrency.symbol : inputCurrency.symbol}
         </SwapDetailsValue>
       </SwapDetailsRow>
       <SwapDetailsPriceRow tradeDetails={tradeDetails} />
@@ -75,7 +81,7 @@ export default function SwapDetailsContent({
           onCopySwapDetailsText={onCopySwapDetailsText}
         />
       )}
-      <SwapDetailsUniswapRow />
+      <SwapDetailsUniswapRow protocols={tradeDetails.protocols} />
     </Container>
   );
 }

@@ -27,10 +27,16 @@ export const SwapDetailsValue = styled(SwapDetailsText).attrs(
   ${fontWithWidth(fonts.weight.bold)};
 `;
 
-export default function SwapDetailsRow({ children, label, ...props }) {
+export default function SwapDetailsRow({
+  children,
+  label,
+  truncated = true,
+  ...props
+}) {
+  const component = truncated ? TruncatedText : Text;
   return (
     <Centered {...props}>
-      <SwapDetailsText as={TruncatedText}>
+      <SwapDetailsText as={component}>
         <SwapDetailsLabel>{label}</SwapDetailsLabel>
         <Nbsp />
         <SwapDetailsValue>{children}</SwapDetailsValue>

@@ -4,6 +4,7 @@ import { UniswapCurrency } from '@rainbow-me/entities';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
 import { convertAmountFromNativeValue } from '@rainbow-me/utilities';
+import { Quote } from 'rainbow-swaps';
 
 export interface SwapAmount {
   display: string | null;
@@ -22,12 +23,15 @@ export interface TypeSpecificParameters {
 }
 
 interface SwapState {
+  derivedValues: any;
+  displayValues: any;
   depositCurrency: UniswapCurrency | null;
   inputCurrency: UniswapCurrency | null;
   independentField: SwapModalField;
   independentValue: string | null;
   slippageInBips: number;
   type: string;
+  tradeDetails: Quote | null;
   typeSpecificParameters?: TypeSpecificParameters | null;
   outputCurrency: UniswapCurrency | null;
 }
@@ -42,6 +46,7 @@ const SWAP_UPDATE_INPUT_CURRENCY = 'swap/SWAP_UPDATE_INPUT_CURRENCY';
 const SWAP_UPDATE_OUTPUT_CURRENCY = 'swap/SWAP_UPDATE_OUTPUT_CURRENCY';
 const SWAP_FLIP_CURRENCIES = 'swap/SWAP_FLIP_CURRENCIES';
 const SWAP_UPDATE_TYPE_DETAILS = 'swap/SWAP_UPDATE_TYPE_DETAILS';
+const SWAP_UPDATE_QUOTE = 'swap/SWAP_UPDATE_QUOTE';
 const SWAP_CLEAR_STATE = 'swap/SWAP_CLEAR_STATE';
 
 // -- Actions ---------------------------------------- //
@@ -186,6 +191,13 @@ export const flipSwapCurrencies = () => (
   }
 };
 
+export const updateSwapQuote = (value: any) => (dispatch: AppDispatch) => {
+  dispatch({
+    payload: value,
+    type: SWAP_UPDATE_QUOTE,
+  });
+};
+
 export const swapClearState = () => (dispatch: AppDispatch) => {
   dispatch({ type: SWAP_CLEAR_STATE });
 };
@@ -193,17 +205,27 @@ export const swapClearState = () => (dispatch: AppDispatch) => {
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE: SwapState = {
   depositCurrency: null,
+  derivedValues: null,
+  displayValues: null,
   independentField: SwapModalField.input,
   independentValue: null,
   inputCurrency: null,
   outputCurrency: null,
   slippageInBips: 50,
+  tradeDetails: null,
   type: ExchangeModalTypes.swap,
   typeSpecificParameters: null,
 };
 
 export default (state = INITIAL_STATE, action: AnyAction) => {
   switch (action.type) {
+    case SWAP_UPDATE_QUOTE:
+      return {
+        ...state,
+        derivedValues: action.payload.derivedValues,
+        displayValues: action.payload.displayValues,
+        tradeDetails: action.payload.tradeDetails,
+      };
     case SWAP_UPDATE_TYPE_DETAILS:
       return {
         ...state,

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { Provider } from '@ethersproject/abstract-provider';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Transaction } from '@ethersproject/transactions';
@@ -47,6 +48,8 @@ export interface Quote {
   fee: BigNumberish;
   feePercentageBasisPoints: number;
   protocols: ProtocolShare[];
+  inputTokenDecimals?: number;
+  outputTokenDecimals?: number;
 }
 
 export interface TransactionOptions {
@@ -184,7 +187,7 @@ export const getQuoteExecutionDetails = (
 
   if (sellTokenAddress === ETH_ADDRESS) {
     return {
-      method: instance.fillQuoteEthToToken,
+      method: instance.estimateGas['fillQuoteEthToToken'],
       methodArgs: [buyTokenAddress, to, data, sellAmountMinusFees, fee],
       params: {
         ...transactionOptions,
@@ -193,7 +196,7 @@ export const getQuoteExecutionDetails = (
     };
   } else if (buyTokenAddress === ETH_ADDRESS) {
     return {
-      method: instance.fillQuoteTokenToEth,
+      method: instance.estimateGas['fillQuoteTokenToEth'],
       methodArgs: [
         sellTokenAddress,
         allowanceTarget,
@@ -209,7 +212,7 @@ export const getQuoteExecutionDetails = (
     };
   } else {
     return {
-      method: instance.fillQuoteTokenToToken,
+      method: instance.estimateGas['fillQuoteTokenToToken'],
       methodArgs: [
         sellTokenAddress,
         buyTokenAddress,

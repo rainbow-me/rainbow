@@ -8,7 +8,13 @@ import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
 import { loadWallet } from '../model/wallet';
 import { estimateGasWithPadding, getProviderForNetwork } from './web3';
 import { Asset } from '@rainbow-me/entities';
-import { add, divide, multiply, subtract } from '@rainbow-me/helpers/utilities';
+import {
+  add,
+  convertRawAmountToDecimalFormat,
+  divide,
+  multiply,
+  subtract,
+} from '@rainbow-me/helpers/utilities';
 import { Network } from '@rainbow-me/networkTypes';
 import store from '@rainbow-me/redux/store';
 import {
@@ -66,7 +72,7 @@ export const estimateSwapGasLimit = async ({
     const gasLimit = await estimateGasWithPadding(
       params,
       method,
-      methodArgs,
+      methodArgs as any,
       provider
     );
     return gasLimit;
@@ -81,26 +87,29 @@ export const computeSlippageAdjustedAmounts = (
   trade: any,
   allowedSlippageInBlips: string
 ): { [field in Field]: BigNumberish } => {
-  logger.debug('computeSlippageAdjustedAmounts ::  trade?', trade);
   let input = trade?.sellAmount;
   let output = trade?.buyAmount;
   if (trade?.tradeType === 'exact_input' && trade?.buyAmount) {
-    logger.debug('exact_input');
     const product = multiply(trade.buyAmount, allowedSlippageInBlips);
     const result = divide(product, '10000');
-    output = subtract(output, result);
+    output = convertRawAmountToDecimalFormat(
+      subtract(output, result),
+      trade.outputTokenDecimals
+    );
   } else if (trade?.tradeType === 'exact_output' && trade?.sellAmount) {
     const product = multiply(trade.sellAmount, allowedSlippageInBlips);
     const result = divide(product, '10000');
-    input = add(input, result);
-    logger.debug('exact_output');
+
+    input = convertRawAmountToDecimalFormat(
+      add(input, result),
+      trade.outputTokenDecimals
+    );
   }
 
   const results = {
     [Field.INPUT]: input,
     [Field.OUTPUT]: output,
   };
-  logger.debug({ input, output });
   return results;
 };
 

@@ -15,7 +15,7 @@ const animationColorsFactory = colors => [
   colors.alpha(colors.blueGreyDark, 0.8),
   colors.uniswapPink,
 ];
-const labels = [...times(8, constant('Uniswap v2')), 'that unicorn one'];
+const labels = [...times(8, constant('Uniswap ')), 'that unicorn one'];
 const emojis = [
   ...times(5, constant('unicorn')),
   'socks',
@@ -44,33 +44,55 @@ function useUniswapLabelEasterEgg() {
   }, [prevShouldAnimate, setStep, shouldAnimate]);
   return {
     color,
-    label: `${labels[step]} 🦄`,
+    label: labels[step],
     startAnimation,
   };
 }
 
 export default function SwapDetailsUniswapRow(props) {
+  const { protocols } = props;
   const { color, label, startAnimation } = useUniswapLabelEasterEgg();
 
-  return (
-    <FloatingEmojisTapper
-      activeScale={1.06}
-      disableRainbow
-      distance={150}
-      duration={1500}
-      emojis={emojis}
-      onPress={startAnimation}
-      radiusAndroid={30}
-      scaleTo={0}
-      size={50}
-      wiggleFactor={0}
-      {...props}
-    >
-      <SwapDetailsRow label="Swapping via">
-        <AnimatedSwapDetailsValue color={color}>
-          {label}
-        </AnimatedSwapDetailsValue>
+  if (protocols[0].name === 'UNISWAP_v2' && protocols[0].part === '100') {
+    return (
+      <FloatingEmojisTapper
+        activeScale={1.06}
+        disableRainbow
+        distance={150}
+        duration={1500}
+        emojis={emojis}
+        onPress={startAnimation}
+        radiusAndroid={30}
+        scaleTo={0}
+        size={50}
+        wiggleFactor={0}
+        {...props}
+      >
+        <SwapDetailsRow label="Swapping via">
+          <AnimatedSwapDetailsValue color={color}>
+            {label}
+          </AnimatedSwapDetailsValue>
+        </SwapDetailsRow>
+      </FloatingEmojisTapper>
+    );
+  } else if (protocols.length > 1) {
+    return (
+      <SwapDetailsRow label="Swapping via:" truncated={false}>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{`\n\n`}
+        {protocols.map(({ name, part }) => (
+          <SwapDetailsValue color={color} key={`${name}_${part}`}>
+            {name.replace('_', ' ')} {Number(part).toFixed(2)}% {`\n`}
+          </SwapDetailsValue>
+        ))}
       </SwapDetailsRow>
-    </FloatingEmojisTapper>
-  );
+    );
+  } else {
+    return (
+      <SwapDetailsRow label="Swapping via">
+        <SwapDetailsValue color={color}>
+          {protocols[0].name.replace('_', ' ')}
+        </SwapDetailsValue>
+      </SwapDetailsRow>
+    );
+  }
 }
