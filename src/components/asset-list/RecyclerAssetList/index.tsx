@@ -57,7 +57,7 @@ const extractCollectiblesIdFromRow = (row: {
             asset_contract: { address: EthereumAddress };
             id: string;
           }) => {
-            tokenAddresses += `${individualToken?.asset_contract?.address}|${individualToken.id}||`;
+            tokenAddresses += `${individualToken?.asset_contract?.address}|${individualToken?.id}||`;
           }
         );
       }
