@@ -112,7 +112,7 @@ export default function UniswapPools({
   const { network } = useAccountSettings();
   const [showAllState, setShowAll] = useState(false);
   const showAll = forceShowAll === undefined ? showAllState : forceShowAll;
-  const [selectedList, setSelectedList] = useState(listData[0].id);
+  const [selectedList, setSelectedList] = useState(listData[0]?.id);
   const [sortDirection, setSortDirection] = useState(SORT_DIRECTION.DESC);
   const { pairs, error, is30DayEnabled, isEmpty } = useUniswapPools(
     selectedList,
@@ -122,7 +122,7 @@ export default function UniswapPools({
 
   const listDataFiltered = useMemo(() => {
     if (!is30DayEnabled) {
-      return listData.filter(item => item.id !== 'profit30d');
+      return listData.filter(item => item?.id !== 'profit30d');
     }
     return listData;
   }, [is30DayEnabled]);
@@ -212,22 +212,22 @@ export default function UniswapPools({
   const renderTypeItem = useCallback(
     ({ item: list, index }) => (
       <PoolListButton
-        disabled={pairsSorted.length === 1 && selectedList === list.id}
-        key={`list-${list.id}`}
-        onPress={() => handleSwitchList(list.id, index)}
-        selected={selectedList === list.id}
-        testID={`pools-list-${list.id}`}
-        titleColor={getTitleColor(selectedList === list.id, list.id)}
+        disabled={pairsSorted.length === 1 && selectedList === list?.id}
+        key={`list-${list?.id}`}
+        onPress={() => handleSwitchList(list?.id, index)}
+        selected={selectedList === list?.id}
+        testID={`pools-list-${list?.id}`}
+        titleColor={getTitleColor(selectedList === list?.id, list?.id)}
       >
         <Row>
           <ListName
-            color={getTitleColor(selectedList === list.id, list.id)}
+            color={getTitleColor(selectedList === list?.id, list?.id)}
             lineHeight="paragraphSmall"
             size="lmedium"
             weight="bold"
           >
             {list.name}{' '}
-            {selectedList === list.id && pairsSorted.length !== 1
+            {selectedList === list?.id && pairsSorted.length !== 1
               ? sortDirection === 'desc'
                 ? '􀄩'
                 : '􀄨'
@@ -267,7 +267,7 @@ export default function UniswapPools({
             }}
             data={listDataFiltered}
             horizontal
-            keyExtractor={item => item.id}
+            keyExtractor={item => item?.id}
             ref={listRef}
             renderItem={renderTypeItem}
             scrollsToTop={false}

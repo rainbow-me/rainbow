@@ -37,7 +37,7 @@ const getItemLayout = (data, index) => {
   };
 };
 
-const keyExtractor = item => `${item.walletId}-${item.id}`;
+const keyExtractor = item => `${item.walletId}-${item?.id}`;
 
 const skeletonTransition = (
   <Transition.Sequence>
@@ -131,14 +131,14 @@ export default function WalletList({
           isReadOnly: wallet.type === WalletTypes.readOnly,
           isSelected:
             accountAddress === account.address &&
-            (watchOnly || wallet.id === get(currentWallet, 'id')),
+            (watchOnly || wallet?.id === get(currentWallet, 'id')),
           label:
             network !== networkTypes.mainnet && account.ens === account.label
               ? address(account.address, 6, 4)
               : account.label,
-          onPress: () => onChangeAccount(wallet.id, account.address),
+          onPress: () => onChangeAccount(wallet?.id, account.address),
           rowType: RowTypes.ADDRESS,
-          walletId: wallet.id,
+          walletId: wallet?.id,
         };
         switch (wallet.type) {
           case WalletTypes.mnemonic:
