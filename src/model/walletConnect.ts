@@ -10,7 +10,7 @@ import { enableActionsOnReadOnlyWallet } from '../config/debug';
 import { isSigningMethod } from '../utils/signingMethods';
 import { sendRpcCall } from '@rainbow-me/handlers/web3';
 import { getDappMetadata } from '@rainbow-me/helpers/dappNameHandler';
-import { delay } from '@rainbow-me/helpers/utilities';
+import { convertHexToString, delay } from '@rainbow-me/helpers/utilities';
 import walletConnectApprovalSheetTypes from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
 import { walletConnectSupportedChainIds } from '@rainbow-me/helpers/walletConnectNetworks';
 import walletTypes from '@rainbow-me/helpers/walletTypes';
@@ -228,9 +228,12 @@ export const walletConnectInit = async (store: any) => {
           const session: SessionTypes.Settled = await client.session.get(
             requestEvent.topic
           );
-          if (request.method === 'wallet_addEthereumChain') {
-            const chains = session.permissions.blockchain.chains;
-            const chainId = fromEIP55Format(chains?.[0]);
+          if (
+            request.method === 'wallet_addEthereumChain' ||
+            request.method === 'wallet_switchEthereumChain'
+          ) {
+            const hexChainId = request.params.chainId;
+            const chainId = convertHexToString(hexChainId);
             if (walletConnectSupportedChainIds.includes(chainId)) {
               wcLogger('wallet_addEthereumChain');
               const metadata = getDappMetadata(session.peer.metadata);
@@ -241,16 +244,11 @@ export const walletConnectInit = async (store: any) => {
                   accountAddress: string
                 ) => {
                   if (approved) {
-                    const walletConnectAccount = generateWalletConnectAccount(
-                      accountAddress,
-                      chainId
-                    );
                     walletConnectUpdateSessionByUrl(
                       session.peer.metadata.url,
                       accountAddress,
-                      fromEIP55Format(chains?.[0])
+                      chainId
                     );
-                    wcLogger('approve  connection', walletConnectAccount);
                     walletConnectV2HandleAction('connect');
                     const response = {
                       response: {
@@ -390,7 +388,6 @@ export const walletConnectUpdateSessionByUrl = async (
   newChainId: string
 ) => {
   const sessions = client?.session?.values;
-  console.log('walletConnectUpdateSessionByUrl', sessions?.[0].peer);
   const session = sessions?.find(value => topic === value?.peer.metadata.url);
   const eip55ChainId = toEIP55Format(newChainId);
   const newAccount = generateWalletConnectAccount(address, newChainId);
