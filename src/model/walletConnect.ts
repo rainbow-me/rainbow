@@ -193,32 +193,6 @@ export const walletConnectInit = async (store: any) => {
 
     wcLogger('Client started! on 1');
 
-    // client.on(
-    //   CLIENT_EVENTS.session.created,
-    //   async (session: SessionTypes.Settled) => {
-    // // axios post push url
-    // axios.post("<PUSH_URL>", {
-    //   bridge: "https://relay.walletconnect.org",
-    //   topic: session.topic,
-    //   type,
-    //   token,
-    //   peerName: session.peer.metadata.name,
-    //   language
-    // })
-    //     console.log('🚗 🚗 🚗  CLIENT_EVENTS.session.created', client);
-    //   }
-    // );
-
-    // client.on(CLIENT_EVENTS.pairing.created,
-    // // axios post push url
-    // axios.post("<PUSH_URL>", {
-    //   bridge: "https://relay.walletconnect.org",
-    //   topic: session.topic,
-    //   type,
-    //   token,
-    //   language
-    // })
-
     client.on(
       CLIENT_EVENTS.session.request,
       async (requestEvent: SessionTypes.RequestEvent) => {
