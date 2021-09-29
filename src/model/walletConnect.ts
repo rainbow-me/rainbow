@@ -15,7 +15,10 @@ import walletConnectApprovalSheetTypes from '@rainbow-me/helpers/walletConnectAp
 import { walletConnectSupportedChainIds } from '@rainbow-me/helpers/walletConnectNetworks';
 import walletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
-import { addRequestToApproveV2 } from '@rainbow-me/redux/requests';
+import {
+  addRequestToApproveV2,
+  WC_VERSION_2,
+} from '@rainbow-me/redux/requests';
 import {
   RAINBOW_METADATA,
   saveWalletConnectV2Sessions,
@@ -30,9 +33,9 @@ const wcTrack = (
   opts?: object
 ) =>
   analytics.track(event, {
-    dappName: metadata?.name || metadata.url,
-    dappUrl: metadata.url,
-    version: 'v2',
+    dappName: metadata?.name || metadata?.url,
+    dappUrl: metadata?.url,
+    version: WC_VERSION_2,
     ...opts,
   });
 
@@ -160,7 +163,7 @@ export const walletConnectInit = async (store: any) => {
             chainId: fromEIP55Format(chains?.[0]),
             meta: {
               dappName: metadata.name,
-              dappUrl: metadata.url,
+              dappUrl: metadata?.url,
               imageUrl: metadata.icons?.[0],
             },
             version: 'v2',
@@ -205,7 +208,7 @@ export const walletConnectInit = async (store: any) => {
                 ) => {
                   if (approved) {
                     walletConnectUpdateSessionByUrl(
-                      session.peer.metadata.url,
+                      metadata.dappUrl,
                       accountAddress,
                       chainId
                     );
@@ -374,7 +377,7 @@ export const walletConnectUpdateSessionByUrl = async (
 
 export const walletConnectDisconnectByUrl = async (url: string) => {
   const sessions = client?.session?.values;
-  const session = sessions?.find(value => url === value?.peer.metadata.url);
+  const session = sessions?.find(value => url === value?.peer?.metadata?.url);
   await walletConnectDisconnect(session.topic);
   return client.session.values;
 };

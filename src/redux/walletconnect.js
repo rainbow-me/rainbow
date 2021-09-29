@@ -203,10 +203,10 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         const { peerId, peerMeta, chainId } = payload.params[0];
 
         const imageUrl =
-          dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
-        const dappName = dappNameOverride(peerMeta.url) || peerMeta.name;
-        const dappUrl = peerMeta.url;
-        const dappScheme = peerMeta.scheme;
+          dappLogoOverride(peerMeta?.url) || get(peerMeta, 'icons[0]');
+        const dappName = dappNameOverride(peerMeta?.url) || peerMeta?.name;
+        const dappUrl = peerMeta?.url;
+        const dappScheme = peerMeta?.scheme;
 
         analytics.track('Showing Walletconnect session request', {
           dappName,
@@ -418,7 +418,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     if (error) {
       throw error;
     }
-    dispatch(walletConnectDisconnectByDappUrl(walletConnector.peerMeta.url));
+    dispatch(walletConnectDisconnectByDappUrl(walletConnector.peerMeta?.url));
   });
   return walletConnector;
 };
@@ -651,7 +651,7 @@ export const walletConnectDisconnectByDappUrl = dappUrl => async (
 ) => {
   const { walletConnectors } = getState().walletconnect;
   const matchingWalletConnectors = values(
-    pickBy(walletConnectors, connector => connector.peerMeta.url === dappUrl)
+    pickBy(walletConnectors, connector => connector.peerMeta?.url === dappUrl)
   );
   try {
     const peerIds = values(
@@ -665,7 +665,7 @@ export const walletConnectDisconnectByDappUrl = dappUrl => async (
     dispatch({
       payload: omitBy(
         walletConnectors,
-        connector => connector.peerMeta.url === dappUrl
+        connector => connector?.peerMeta?.url === dappUrl
       ),
       type: WALLETCONNECT_REMOVE_SESSION,
     });
