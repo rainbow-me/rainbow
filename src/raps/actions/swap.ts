@@ -42,7 +42,7 @@ const swap = async (
   let gasPrice = selectedGasPrice?.value?.amount;
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
   if (currentRap.actions.length - 1 > index || !gasPrice) {
-    const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+    const fastPrice = get(gasPrices, `[${gasUtils.FAST}].gasPrice.amount`);
     if (greaterThan(fastPrice, gasPrice)) {
       gasPrice = fastPrice;
     }

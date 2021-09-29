@@ -116,7 +116,7 @@ const unlock = async (
   try {
     // approvals should always use fast gas or custom (whatever is faster)
     gasPrice = selectedGasPrice?.value?.amount;
-    const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+    const fastPrice = get(gasPrices, `[${gasUtils.FAST}].gasPrice.amount`);
     if (greaterThan(fastPrice, gasPrice)) {
       gasPrice = fastPrice;
     }

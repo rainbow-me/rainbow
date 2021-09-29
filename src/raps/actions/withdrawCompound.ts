@@ -54,9 +54,9 @@ const withdrawCompound = async (
   logger.log(`[${actionName}] is max`, isMax);
   logger.log(`[${actionName}] raw input amount`, rawInputAmount);
 
-  let gasPrice = selectedGasPrice?.value.amount;
+  let gasPrice = selectedGasPrice?.gasPrice.amount;
   if (!gasPrice) {
-    gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+    gasPrice = get(gasPrices, `[${gasUtils.FAST}].gasPrice.amount`);
   }
 
   logger.log(`[${actionName}] gas price`, gasPrice);

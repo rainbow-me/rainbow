@@ -15,8 +15,10 @@ import {
 } from 'react-native-dotenv';
 import {
   ARBITRUM_ETH_ADDRESS,
+  EIP1559_TRANSACTION_TYPE,
   ETH_ADDRESS,
   ethUnits,
+  LEGACY_TRANSACTION_TYPE,
   MATIC_POLYGON_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
   smartContractMethods,
@@ -301,11 +303,11 @@ export const getTxGasParams = (selectedGasParams, network) => {
     ? {
         maxFeePerGas: selectedGasParams?.maxFeePerGas.amount,
         maxPriorityFeePerGas: selectedGasParams?.priorityFeePerGas.amount,
-        type: 2,
+        type: LEGACY_TRANSACTION_TYPE,
       }
     : {
         gasPrice: selectedGasParams?.value?.amount,
-        type: 0,
+        type: EIP1559_TRANSACTION_TYPE,
       };
   return gasParams;
 };

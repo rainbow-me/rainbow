@@ -383,7 +383,7 @@ const getSelectedGasPrice = (
   // If no custom price is set we default to FAST
   if (
     selectedGasPriceOption === gasUtils.CUSTOM &&
-    get(txFee, 'txFee.value.amount') === 'NaN'
+    get(txFee, 'txFee.gasPrice.amount') === 'NaN'
   ) {
     txFee = txFees[gasUtils.FAST];
   }
@@ -391,7 +391,7 @@ const getSelectedGasPrice = (
   const nativeAsset = ethereumUtils.getAsset(assets, nativeAssetAddress);
 
   const balanceAmount = get(nativeAsset, 'balance.amount', 0);
-  const txFeeAmount = fromWei(get(txFee, 'maxTxFee.value.amount', 0));
+  const txFeeAmount = fromWei(get(txFee, 'maxTxFee.gasPrice.amount', 0));
 
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
 
@@ -415,7 +415,7 @@ const getLegacySelectedGasPrice = (
   // If no custom price is set we default to FAST
   if (
     selectedGasPriceOption === gasUtils.CUSTOM &&
-    get(txFee, 'txFee.value.amount') === 'NaN'
+    get(txFee, 'txFee.gasPrice.amount') === 'NaN'
   ) {
     txFee = txFees[gasUtils.FAST];
   }
@@ -438,7 +438,7 @@ const getLegacySelectedGasPrice = (
   const nativeAsset = ethereumUtils.getAsset(assets, nativeAssetAddress);
 
   const balanceAmount = get(nativeAsset, 'balance.amount', 0);
-  const txFeeAmount = fromWei(get(txFee, 'txFee.value.amount', 0));
+  const txFeeAmount = fromWei(get(txFee, 'txFee.gasPrice.amount', 0));
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
 
   return {

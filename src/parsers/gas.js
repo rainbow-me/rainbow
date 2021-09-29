@@ -39,7 +39,7 @@ export const parseEIP1559GasData = data => {
   estimatedPrices.forEach(({ confidence, maxPriorityFeePerGas }) => {
     parsedFees[GAS_CONFIDENCE[confidence]] = defaultGasParamsFormat(
       GAS_CONFIDENCE[confidence],
-      0,
+      0, // time
       baseFeePerGas,
       baseFee,
       maxPriorityFeePerGas
@@ -123,11 +123,11 @@ export const defaultGasPriceFormat = (option, timeWait, value) => {
       amount: timeAmount,
       display: getMinimalTimeUnitStringForMs(timeAmount),
     },
-    option,
-    value: {
+    gasPrice: {
       amount: Math.round(weiAmount),
       display: `${parseInt(value, 10)} Gwei`,
     },
+    option,
   };
 };
 
@@ -174,7 +174,7 @@ export const defaultGasParamsFormat = (
  */
 export const parseTxFees = (gasPrices, priceUnit, gasLimit, nativeCurrency) => {
   const txFees = map(GasSpeedOrder, speed => {
-    const gasPrice = get(gasPrices, `${speed}.value.amount`);
+    const gasPrice = get(gasPrices, `${speed}.gasPrice.amount`);
     const txFee = getTxFee(gasPrice, gasLimit, priceUnit, nativeCurrency);
     return {
       txFee,
