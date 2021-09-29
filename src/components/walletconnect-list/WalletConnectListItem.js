@@ -28,6 +28,7 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
+import { WC_VERSION_2 } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
@@ -121,7 +122,7 @@ export default function WalletConnectListItem({
   const walletConnectUpdateSession = useCallback(
     (dappUrl, address, chainId) => {
       const updateSession =
-        version === 'v2'
+        version === WC_VERSION_2
           ? walletConnectV2UpdateSessionByDappUrl
           : walletConnectUpdateSessionConnectorByDappUrl;
       updateSession(dappUrl, address, chainId);
@@ -136,7 +137,7 @@ export default function WalletConnectListItem({
   const walletConnectDisconnect = useCallback(
     dappUrl => {
       const disconnectSession =
-        version === 'v2'
+        version === WC_VERSION_2
           ? walletConnectV2DisconnectByDappUrl
           : walletConnectDisconnectByDappUrl;
       disconnectSession(dappUrl);

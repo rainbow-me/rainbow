@@ -82,6 +82,7 @@ import {
   signTypedDataMessage,
 } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
+import { WC_VERSION_2 } from '@rainbow-me/redux/requests';
 import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
@@ -214,9 +215,10 @@ export default function TransactionConfirmationScreen() {
   const isMessageRequest = isMessageDisplayType(method);
   const [ready, setReady] = useState(isMessageRequest);
 
-  const isWalletConnectV2Request = useMemo(() => requestVersion === 'v2', [
-    requestVersion,
-  ]);
+  const isWalletConnectV2Request = useMemo(
+    () => requestVersion === WC_VERSION_2,
+    [requestVersion]
+  );
 
   const accountInfo = useMemo(() => {
     const selectedWallet = findWalletWithAccount(wallets, address);

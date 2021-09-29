@@ -40,6 +40,7 @@ import {
 } from '@rainbow-me/helpers/walletConnectNetworks';
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
+import { WC_VERSION_2 } from '@rainbow-me/redux/requests';
 import { walletConnectV2UpdateSessions } from '@rainbow-me/redux/walletconnect';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -109,7 +110,7 @@ export default function WalletConnectApprovalSheet() {
     wallet: selectedWallet,
   });
 
-  const isWalletConnectV2Request = params?.version === 'v2';
+  const isWalletConnectV2Request = params?.version === WC_VERSION_2;
 
   const type = params?.type || WalletConnectApprovalSheetType.connect;
   const chainId = params?.chainId || 1;

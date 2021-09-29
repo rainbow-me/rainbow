@@ -1,14 +1,10 @@
-import { filter, get, omit, values } from 'lodash';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
+import { filter, omit, values } from 'lodash';
 import {
   getLocalRequests,
   removeLocalRequest,
   saveLocalRequests,
 } from '@rainbow-me/handlers/localstorage/walletconnectRequests';
-import {
-  dappLogoOverride,
-  dappNameOverride,
-} from '@rainbow-me/helpers/dappNameHandler';
+import { getDappMetadata } from '@rainbow-me/helpers/dappNameHandler';
 import { getAddressAndChainIdFromWCAccount } from '@rainbow-me/model/walletConnect';
 import { getRequestDisplayDetails } from '@rainbow-me/parsers';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -21,6 +17,9 @@ const REQUESTS_CLEAR_STATE = 'requests/REQUESTS_CLEAR_STATE';
 
 // Requests expire automatically after 1 hour
 const EXPIRATION_THRESHOLD_IN_MS = 1000 * 60 * 60;
+
+export const WC_VERSION_2 = 'v2';
+export const WC_VERSION_1 = 'v1';
 
 export const requestsLoadState = () => async (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
@@ -55,12 +54,7 @@ export const addRequestToApprove = (
     logger.log('request expired!');
     return;
   }
-  const unsafeImageUrl =
-    dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
-  const imageUrl = maybeSignUri(unsafeImageUrl);
-  const dappName =
-    dappNameOverride(peerMeta.url) || peerMeta.name || 'Unknown Dapp';
-  const dappUrl = peerMeta.url || 'Unknown Url';
+  const { imageUrl, dappName, dappUrl } = getDappMetadata();
   const dappScheme = peerMeta.scheme || null;
 
   const request = {
@@ -73,7 +67,7 @@ export const addRequestToApprove = (
     payload,
     peerId,
     requestId,
-    version: 'v1',
+    version: WC_VERSION_1,
   };
   const updatedRequests = { ...requests, [requestId]: request };
   dispatch({
@@ -104,12 +98,7 @@ export const addRequestToApproveV2 = (requestId, session, payload) => (
     return;
   }
   const peerMeta = session.peer.metadata;
-  const unsafeImageUrl =
-    dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
-  const imageUrl = maybeSignUri(unsafeImageUrl);
-  const dappName =
-    dappNameOverride(peerMeta.url) || peerMeta.name || 'Unknown Dapp';
-  const dappUrl = peerMeta.url || 'Unknown Url';
+  const { imageUrl, dappName, dappUrl } = getDappMetadata(peerMeta);
   const dappScheme = peerMeta.scheme || null;
   const request = {
     address,
@@ -121,7 +110,7 @@ export const addRequestToApproveV2 = (requestId, session, payload) => (
     imageUrl,
     payload,
     requestId,
-    version: 'v2',
+    version: WC_VERSION_2,
   };
   const updatedRequests = { ...requests, [requestId]: request };
   dispatch({
