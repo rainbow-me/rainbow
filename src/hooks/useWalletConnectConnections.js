@@ -12,7 +12,7 @@ import {
   walletConnectV2DisconnectByDappUrl as rawwalletConnectV2DisconnectByDappUrl,
   walletConnectV2UpdateSessionByDappUrl as rawwalletConnectV2UpdateSessionByDappUrl,
 } from '../redux/walletconnect';
-import { WC_VERSION_1 } from '@rainbow-me/redux/requests';
+import { WC_VERSION_1, WC_VERSION_2 } from '@rainbow-me/redux/requests';
 
 const formatDappData = connections =>
   values(
