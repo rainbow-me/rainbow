@@ -2,7 +2,7 @@ import analytics from '@segment/analytics-react-native';
 import { isValidAddress } from 'ethereumjs-util';
 import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, InteractionManager } from 'react-native';
+import { Alert, InteractionManager, Keyboard } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import useAccountSettings from './useAccountSettings';
 import useInitializeWallet from './useInitializeWallet';
@@ -76,6 +76,7 @@ export default function useImportingWallet() {
 
   const showWalletProfileModal = useCallback(
     (name, forceColor, address = null) => {
+      android && Keyboard.dismiss();
       navigate(Routes.MODAL_SCREEN, {
         actionType: 'Import',
         additionalPadding: true,

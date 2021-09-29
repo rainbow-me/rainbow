@@ -74,6 +74,10 @@ const InnerWrapper = styled(Centered).attrs({
   background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 
+const Spacer = styled.View`
+  height: 20;
+`;
+
 const getInputHeaderTitle = (type, defaultInputAsset) => {
   switch (type) {
     case ExchangeModalTypes.deposit:
@@ -575,6 +579,7 @@ export default function ExchangeModal({
               type={type}
             />
           )}
+          {isWithdrawal && <Spacer />}
           {showConfirmButton && (
             <ConfirmExchangeButton
               {...confirmButtonProps}

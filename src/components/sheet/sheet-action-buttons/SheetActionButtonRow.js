@@ -16,6 +16,7 @@ const Container = styled(Row).attrs({
     paddingBottom ? `padding-bottom: ${paddingBottom};` : ``}
   width: 100%;
   z-index: 2;
+  elevation: -1;
 `;
 
 function renderButton(child) {
