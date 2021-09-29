@@ -57,7 +57,9 @@ const UniqueTokenImage = ({
     toLower(item.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
   const image = isENS ? `${item.image_url}=s1` : imageUrl;
   const [error, setError] = useState(null);
-  const handleError = useCallback(error => setError(error), [setError]);
+  const handleError = useCallback(error => {
+    setError(error), [setError]
+  });
   const { isDarkMode, colors } = useTheme();
   const isSVG = isSupportedUriExtension(imageUrl, ['.svg']);
   const [loadedImg, setLoadedImg] = useState(false);
@@ -69,8 +71,8 @@ const UniqueTokenImage = ({
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
-      {isSVG ? (
-        <RemoteSvg style={remoteSvgStyle} uri={imageUrl} />
+      {isSVG && !error ? (
+        <RemoteSvg style={remoteSvgStyle} uri={imageUrl} onError={handleError}  />
       ) : imageUrl && !error ? (
         <Fragment>
           <ImageTile
