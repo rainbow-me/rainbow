@@ -76,7 +76,6 @@ class SvgImage extends Component {
             this.mounted && this.setState({ fetchingUrl: uri, svgContent: text });
           } else {
             logger.log('invalid svg', { uri, text });
-            logger.log(props.onError);
             this.mounted && props.onError && props.onError('invalid svg');
           }
         } catch (err) {
