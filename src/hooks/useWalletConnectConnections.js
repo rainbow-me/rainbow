@@ -38,7 +38,7 @@ const formatSessionsData = clientV2Sessions =>
       return {
         account: address,
         chainId,
-        dappIcon: icons[0],
+        dappIcon: icons?.[0],
         dappName: name,
         dappUrl: url,
         id: session.topic,
