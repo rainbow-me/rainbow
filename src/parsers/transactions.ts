@@ -308,11 +308,11 @@ const parseTransactionWithEmptyChanges = async (
     {
       address: ETH_ADDRESS,
       balance: convertRawAmountToBalance(valueUnit, updatedAsset),
-      description: methodName || 'Contract interaction',
+      description: methodName || 'Signed',
       from: txn.address_from,
       hash: `${txn.hash}-${0}`,
       minedAt: txn.mined_at,
-      name: methodName || 'Contract interaction',
+      name: methodName || 'Signed',
       native: nativeDisplay,
       nonce: txn.nonce,
       pending: false,
