@@ -38,8 +38,8 @@ import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApp
 import { walletConnectSupportedChainIds } from '@rainbow-me/helpers/walletConnectNetworks';
 import {
   walletConnectDisconnectAllSessions,
-  walletConnectDisconnectByTopic,
-  walletConnectUpdateSessionByTopic,
+  walletConnectDisconnectByUrl,
+  walletConnectUpdateSessionByUrl,
 } from '@rainbow-me/model/walletConnect';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';
@@ -418,7 +418,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     if (error) {
       throw error;
     }
-    dispatch(walletConnectDisconnectAllByDappUrl(walletConnector.peerMeta.url));
+    dispatch(walletConnectDisconnectByDappUrl(walletConnector.peerMeta.url));
   });
   return walletConnector;
 };
@@ -486,13 +486,13 @@ export const walletConnectV2DisconnectAllSessions = () => async dispatch => {
   });
 };
 
-export const walletConnectV2UpdateSessionByTopic = (
-  topic,
+export const walletConnectV2UpdateSessionByDappUrl = (
+  url,
   accountAddress,
   chainId
 ) => async dispatch => {
-  const sessions = await walletConnectUpdateSessionByTopic(
-    topic,
+  const sessions = await walletConnectUpdateSessionByUrl(
+    url,
     accountAddress,
     chainId
   );
@@ -502,8 +502,8 @@ export const walletConnectV2UpdateSessionByTopic = (
   });
 };
 
-export const walletConnectV2DisconnectByTopic = topic => async dispatch => {
-  const sessions = await walletConnectDisconnectByTopic(topic);
+export const walletConnectV2DisconnectByDappUrl = url => async dispatch => {
+  const sessions = await walletConnectDisconnectByUrl(url);
   dispatch({
     payload: clone(sessions),
     type: WALLETCONNECT_V2_UPDATE_SESSIONS,
@@ -645,7 +645,7 @@ export const walletConnectRejectSession = (
   dispatch(removePendingRequest(peerId));
 };
 
-export const walletConnectDisconnectAllByDappUrl = dappUrl => async (
+export const walletConnectDisconnectByDappUrl = dappUrl => async (
   dispatch,
   getState
 ) => {

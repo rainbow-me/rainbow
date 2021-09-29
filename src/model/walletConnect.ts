@@ -245,8 +245,8 @@ export const walletConnectInit = async (store: any) => {
                       accountAddress,
                       chainId
                     );
-                    walletConnectUpdateSessionByTopic(
-                      session.topic,
+                    walletConnectUpdateSessionByUrl(
+                      session.peer.metadata.url,
                       accountAddress,
                       fromEIP55Format(chains?.[0])
                     );
@@ -384,13 +384,14 @@ export const walletConnectDisconnectAllSessions = async () => {
   return client.session.values;
 };
 
-export const walletConnectUpdateSessionByTopic = async (
+export const walletConnectUpdateSessionByUrl = async (
   topic: string,
   address: string,
   newChainId: string
 ) => {
   const sessions = client?.session?.values;
-  const session = sessions?.find(value => topic === value?.topic);
+  console.log('walletConnectUpdateSessionByUrl', sessions?.[0].peer);
+  const session = sessions?.find(value => topic === value?.peer.metadata.url);
   const eip55ChainId = toEIP55Format(newChainId);
   const newAccount = generateWalletConnectAccount(address, newChainId);
   session.permissions = {
@@ -416,10 +417,9 @@ export const walletConnectUpdateSessionByTopic = async (
   return client.session.values;
 };
 
-export const walletConnectDisconnectByTopic = async (topic: string) => {
-  const session = client?.session?.values?.find(
-    value => topic === value?.topic
-  );
+export const walletConnectDisconnectByUrl = async (url: string) => {
+  const sessions = client?.session?.values;
+  const session = sessions?.find(value => url === value?.peer.metadata.url);
   await walletConnectDisconnect(session.topic);
   return client.session.values;
 };

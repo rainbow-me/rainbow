@@ -72,9 +72,9 @@ export default function WalletConnectListItem({
   version,
 }) {
   const {
-    walletConnectV2DisconnectByTopic,
-    walletConnectV2UpdateSessionByTopic,
-    walletConnectDisconnectAllByDappUrl,
+    walletConnectV2DisconnectByDappUrl,
+    walletConnectV2UpdateSessionByDappUrl,
+    walletConnectDisconnectByDappUrl,
     walletConnectUpdateSessionConnectorByDappUrl,
   } = useWalletConnectConnections();
 
@@ -119,32 +119,32 @@ export default function WalletConnectListItem({
   }, [chainId, colors.networkColors]);
 
   const walletConnectUpdateSession = useCallback(
-    (id, address, chainId) => {
+    (dappUrl, address, chainId) => {
       const updateSession =
         version === 'v2'
-          ? walletConnectV2UpdateSessionByTopic
+          ? walletConnectV2UpdateSessionByDappUrl
           : walletConnectUpdateSessionConnectorByDappUrl;
-      updateSession(id, address, chainId);
+      updateSession(dappUrl, address, chainId);
     },
     [
       version,
       walletConnectUpdateSessionConnectorByDappUrl,
-      walletConnectV2UpdateSessionByTopic,
+      walletConnectV2UpdateSessionByDappUrl,
     ]
   );
 
   const walletConnectDisconnect = useCallback(
-    id => {
+    dappUrl => {
       const disconnectSession =
         version === 'v2'
-          ? walletConnectV2DisconnectByTopic
-          : walletConnectDisconnectAllByDappUrl;
-      disconnectSession(id);
+          ? walletConnectV2DisconnectByDappUrl
+          : walletConnectDisconnectByDappUrl;
+      disconnectSession(dappUrl);
     },
     [
       version,
-      walletConnectDisconnectAllByDappUrl,
-      walletConnectV2DisconnectByTopic,
+      walletConnectDisconnectByDappUrl,
+      walletConnectV2DisconnectByDappUrl,
     ]
   );
 
@@ -152,12 +152,12 @@ export default function WalletConnectListItem({
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
       currentAccountAddress: account,
       onChangeWallet: address => {
-        walletConnectUpdateSession(connectionId, address, chainId);
+        walletConnectUpdateSession(dappUrl, address, chainId);
         goBack();
       },
       watchOnly: true,
     });
-  }, [account, chainId, connectionId, goBack, walletConnectUpdateSession]);
+  }, [account, chainId, dappUrl, goBack, walletConnectUpdateSession]);
 
   const onPressAndroid = useCallback(() => {
     showActionSheetWithOptions(
@@ -169,7 +169,7 @@ export default function WalletConnectListItem({
       idx => {
         if (idx === 0 && networksAvailable.length > 1) {
           androidShowNetworksActionSheet(({ chainId }) => {
-            walletConnectUpdateSession(connectionId, account, chainId);
+            walletConnectUpdateSession(dappUrl, account, chainId);
           });
         } else if ((idx === 0 && networksAvailable.length === 1) || idx === 1) {
           handlePressChangeWallet();
@@ -212,7 +212,7 @@ export default function WalletConnectListItem({
           ''
         );
         const chainId = ethereumUtils.getChainIdFromNetwork(networkValue);
-        walletConnectUpdateSession(connectionId, account, chainId);
+        walletConnectUpdateSession(dappUrl, account, chainId);
       }
     },
     [

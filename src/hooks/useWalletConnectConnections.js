@@ -5,12 +5,12 @@ import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
 import { getAddressAndChainIdFromWCAccount } from '../model/walletConnect';
 import {
-  walletConnectDisconnectAllByDappUrl as rawWalletConnectDisconnectAllByDappUrl,
+  walletConnectDisconnectByDappUrl as rawwalletConnectDisconnectByDappUrl,
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
   walletConnectUpdateSessionConnectorByDappUrl as rawWalletConnectUpdateSessionConnectorByDappUrl,
   walletConnectV2DisconnectAllSessions as rawWalletConnectV2DisconnectAllSessions,
-  walletConnectV2DisconnectByTopic as rawWalletConnectV2DisconnectByTopic,
-  walletConnectV2UpdateSessionByTopic as rawWalletConnectV2UpdateSessionByTopic,
+  walletConnectV2DisconnectByDappUrl as rawwalletConnectV2DisconnectByDappUrl,
+  walletConnectV2UpdateSessionByDappUrl as rawwalletConnectV2UpdateSessionByDappUrl,
 } from '../redux/walletconnect';
 
 const formatDappData = connections =>
@@ -79,8 +79,8 @@ export default function useWalletConnectConnections() {
     walletConnectV2Selector
   );
 
-  const walletConnectDisconnectAllByDappUrl = useCallback(
-    dappUrl => dispatch(rawWalletConnectDisconnectAllByDappUrl(dappUrl)),
+  const walletConnectDisconnectByDappUrl = useCallback(
+    dappUrl => dispatch(rawwalletConnectDisconnectByDappUrl(dappUrl)),
     [dispatch]
   );
 
@@ -107,33 +107,33 @@ export default function useWalletConnectConnections() {
     [dispatch]
   );
 
-  const walletConnectV2UpdateSessionByTopic = useCallback(
-    (id, accountAddress, chainId) => {
+  const walletConnectV2UpdateSessionByDappUrl = useCallback(
+    (url, accountAddress, chainId) => {
       dispatch(
-        rawWalletConnectV2UpdateSessionByTopic(id, accountAddress, chainId)
+        rawwalletConnectV2UpdateSessionByDappUrl(url, accountAddress, chainId)
       );
     },
     [dispatch]
   );
 
-  const walletConnectV2DisconnectByTopic = useCallback(
-    id => {
-      dispatch(rawWalletConnectV2DisconnectByTopic(id));
+  const walletConnectV2DisconnectByDappUrl = useCallback(
+    url => {
+      dispatch(rawwalletConnectV2DisconnectByDappUrl(url));
     },
     [dispatch]
   );
 
   return {
     sortedWalletConnectors,
-    walletConnectDisconnectAllByDappUrl,
+    walletConnectDisconnectByDappUrl,
     walletConnectOnSessionRequest,
     walletConnectorsByDappName,
     walletConnectorsCount,
     walletConnectUpdateSessionConnectorByDappUrl,
     walletConnectV2DisconnectAllSessions,
-    walletConnectV2DisconnectByTopic,
+    walletConnectV2DisconnectByDappUrl,
     walletConnectV2Sessions,
     walletConnectV2SessionsCount,
-    walletConnectV2UpdateSessionByTopic,
+    walletConnectV2UpdateSessionByDappUrl,
   };
 }
