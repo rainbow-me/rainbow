@@ -12,6 +12,7 @@ import {
   walletConnectV2DisconnectByDappUrl as rawwalletConnectV2DisconnectByDappUrl,
   walletConnectV2UpdateSessionByDappUrl as rawwalletConnectV2UpdateSessionByDappUrl,
 } from '../redux/walletconnect';
+import { WC_VERSION_1 } from '@rainbow-me/redux/requests';
 
 const formatDappData = connections =>
   values(
@@ -22,7 +23,7 @@ const formatDappData = connections =>
       dappName: connection?.[0].peerMeta?.name,
       dappUrl: connection?.[0].peerMeta?.url,
       peerId: connection?.[0].peerId,
-      version: 'v1',
+      version: WC_VERSION_1,
     }))
   );
 
@@ -41,7 +42,7 @@ const formatSessionsData = clientV2Sessions =>
         dappName: name,
         dappUrl: url,
         id: session.topic,
-        version: 'v2',
+        version: WC_VERSION_2,
       };
     })
   );
