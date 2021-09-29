@@ -10,7 +10,7 @@ import styled from 'styled-components';
 import Divider from '../components/Divider';
 import { ButtonPressAnimation } from '../components/animations';
 import WalletList from '../components/change-wallet/WalletList';
-import { Column } from '../components/layout';
+import { Centered, Column, Row } from '../components/layout';
 import { Sheet, SheetTitle } from '../components/sheet';
 import { Text } from '../components/text';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
@@ -52,27 +52,21 @@ const walletRowHeight = 59;
 const maxListHeight = deviceHeight - 220;
 
 const EditButton = styled(ButtonPressAnimation).attrs(({ editMode }) => ({
-  radiusAndroid: 24,
   scaleTo: 0.96,
   wrapperStyle: {
-    alignSelf: 'flex-end',
-    height: 40,
-    marginRight: 7,
     width: editMode ? 70 : 58,
   },
 }))`
-  padding: 12px;
   ${ios
     ? `
-  position: absolute;
-  right: 7px;
-  top: 6px;
-  `
+    position: absolute;
+    right: 20px;
+    top: -11px;`
     : `
     position: relative;
-    right: 0px;
-    top: -10px;
-    z-index: 99999;
+    right: 20px;
+    top: 6px;
+    elevation: 10;
   `}
 `;
 
@@ -135,14 +129,14 @@ export default function ChangeWalletSheet() {
 
   const walletRowCount = useMemo(() => getWalletRowCount(wallets), [wallets]);
 
-  let headerHeight = android ? 0 : 30;
+  let headerHeight = 30;
   let listHeight =
     walletRowHeight * walletRowCount +
-    (!watchOnly ? footerHeight + listPaddingBottom : 0);
+    (!watchOnly ? footerHeight + listPaddingBottom : android ? 20 : 0);
   let scrollEnabled = false;
   let showDividers = false;
   if (listHeight > maxListHeight) {
-    headerHeight = android ? 0 : 40;
+    headerHeight = 40;
     listHeight = maxListHeight;
     scrollEnabled = true;
     showDividers = true;
@@ -512,18 +506,24 @@ export default function ChangeWalletSheet() {
     <Sheet borderRadius={30}>
       {android && <Whitespace />}
       <Column height={headerHeight} justify="space-between">
-        <SheetTitle>Wallets</SheetTitle>
+        <Centered>
+          <SheetTitle>Wallets</SheetTitle>
+
+          {!watchOnly && (
+            <Row style={{ position: 'absolute', right: 0 }}>
+              <EditButton editMode={editMode} onPress={onPressEditMode}>
+                <EditButtonLabel editMode={editMode}>
+                  {editMode ? 'Done' : 'Edit'}
+                </EditButtonLabel>
+              </EditButton>
+            </Row>
+          )}
+        </Centered>
         {showDividers && (
           <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
         )}
       </Column>
-      {!watchOnly && (
-        <EditButton editMode={editMode} onPress={onPressEditMode}>
-          <EditButtonLabel editMode={editMode}>
-            {editMode ? 'Done' : 'Edit'}
-          </EditButtonLabel>
-        </EditButton>
-      )}
+
       <WalletList
         accountAddress={currentAddress}
         allWallets={walletsWithBalancesAndNames}

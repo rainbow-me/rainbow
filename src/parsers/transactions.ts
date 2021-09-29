@@ -34,6 +34,7 @@ import {
   ZerionTransactionStatus,
 } from '@rainbow-me/entities';
 import { isL2Network, toChecksumAddress } from '@rainbow-me/handlers/web3';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 import { ETH_ADDRESS, savingsAssetsList } from '@rainbow-me/references';
 import {
   convertRawAmountToBalance,
@@ -70,7 +71,7 @@ export const parseTransactions = (
   nativeCurrency: string,
   existingTransactions: RainbowTransaction[],
   purchaseTransactions: RainbowTransaction[],
-  network: string,
+  network: Network,
   appended = false
 ) => {
   const purchaseTransactionHashes = map(purchaseTransactions, txn =>
@@ -295,7 +296,7 @@ const parseTransaction = (
   accountAddress: EthereumAddress,
   nativeCurrency: string,
   purchaseTransactionsHashes: string[],
-  network: string
+  network: Network
 ): RainbowTransaction[] => {
   let txn = {
     ...transaction,

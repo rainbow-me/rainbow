@@ -337,6 +337,15 @@ export const exchangePreset = {
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
+export const androidRecievePreset = {
+  cardStyle: { backgroundColor: 'transparent' },
+  cardStyleInterpolator: expandStyleInterpolator(0.9),
+  gestureDirection: 'vertical',
+  gestureEnabled: true,
+  gestureResponseDistance,
+  transitionSpec: { close: closeSpec, open: sheetOpenSpec },
+};
+
 export const wcPromptPreset = {
   ...exchangePreset,
   cardStyleInterpolator: expandStyleInterpolator(0.7),

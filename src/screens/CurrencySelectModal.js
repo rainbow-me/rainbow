@@ -1,7 +1,7 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { map, toLower } from 'lodash';
-import matchSorter from 'match-sorter';
+import { matchSorter } from 'match-sorter';
 import React, {
   Fragment,
   useCallback,

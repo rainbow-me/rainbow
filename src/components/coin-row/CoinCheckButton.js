@@ -53,6 +53,7 @@ const CoinCheckButton = ({
         isAbsolute={isAbsolute}
         onPress={onPress}
         opacityTouchable
+        reanimatedButton
       >
         {isHidden || isPinned ? null : <CircleOutline />}
         {!toggle && (isHidden || isPinned) ? (

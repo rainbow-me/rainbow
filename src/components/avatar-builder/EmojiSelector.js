@@ -1,4 +1,4 @@
-/* eslint-disable sort-keys */
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 /* eslint-disable react-native/no-unused-styles */
 import { BlurView } from '@react-native-community/blur';
 import emoji from 'emoji-datasource';

@@ -54,7 +54,7 @@ export default class SizeToggler extends Component {
     tension: 200,
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const { endingWidth, startingWidth, toggle } = this.props;
 
     if (!toggle === true) {
@@ -64,7 +64,7 @@ export default class SizeToggler extends Component {
     }
   }
 
-  componentWillUpdate(prevProps) {
+  UNSAFE_componentWillUpdate(prevProps) {
     const {
       animationNode,
       endingWidth,
