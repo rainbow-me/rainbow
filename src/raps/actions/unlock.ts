@@ -29,8 +29,8 @@ export const estimateApprove = async (
       spender,
       tokenAddress,
     });
-    const exchange = new Contract(tokenAddress, erc20ABI, web3Provider);
-    const gasLimit = await exchange.estimateGas.approve(spender, MaxUint256, {
+    const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider);
+    const gasLimit = await tokenContract.estimateGas.approve(spender, MaxUint256, {
       from: owner,
     });
     return gasLimit ? gasLimit.toString() : ethUnits.basic_approval;

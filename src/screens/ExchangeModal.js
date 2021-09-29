@@ -249,14 +249,12 @@ export default function ExchangeModal({
         outputAmount,
         tradeDetails,
       };
-      logger.debug('SWAP PARAMS', tradeDetails);
       const gasLimit = await getRapEstimationByType(type, swapParams);
       if (gasLimit) {
         logger.debug('GOT GAS LIMIT', gasLimit);
         updateTxFee(gasLimit);
       }
     } catch (error) {
-      logger.debug('GAS LIMIT ERROR', error);
       updateTxFee(defaultGasLimit);
     }
   }, [
@@ -273,7 +271,6 @@ export default function ExchangeModal({
   // Set default gas limit
   useEffect(() => {
     if (isEmpty(prevGasPrices) && !isEmpty(gasPrices)) {
-      logger.debug('SETTING DEFAULT GAS LIMIT', defaultGasLimit);
       updateTxFee(defaultGasLimit);
     }
   }, [gasPrices, defaultGasLimit, updateTxFee, prevGasPrices]);

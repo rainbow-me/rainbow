@@ -73,11 +73,12 @@ export const estimateSwapGasLimit = async ({
       params,
       method,
       methodArgs as any,
-      provider
+      provider,
+      1.01
     );
-    return gasLimit;
+    return gasLimit || ethUnits.basic_swap;
   } catch (error) {
-    logger.sentry('error executing estimateSwapGasLimit');
+    logger.debug('error executing estimateSwapGasLimit');
     captureException(error);
     return ethUnits.basic_swap;
   }

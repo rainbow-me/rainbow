@@ -36,7 +36,7 @@ const DevSection = () => {
       logger.log('connected to hardhat', ready);
     } catch (e) {
       await web3SetHttpProvider(networkTypes.mainnet);
-      logger.log('error connecting to hardhat');
+      logger.log('error connecting to hardhat', e);
     }
     navigate(Routes.PROFILE_SCREEN);
   }, [navigate]);

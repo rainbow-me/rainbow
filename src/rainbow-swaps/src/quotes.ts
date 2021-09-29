@@ -118,7 +118,8 @@ export const fillQuote = async (
     allowanceTarget,
   } = quote;
 
-  if (sellTokenAddress === ETH_ADDRESS) {
+  if (sellTokenAddress?.toLowerCase() === ETH_ADDRESS.toLowerCase()) {
+    console.log('ETH TO TOKEN ===> ', quote);
     swapTx = await instance.fillQuoteEthToToken(
       buyTokenAddress,
       to,
@@ -130,7 +131,8 @@ export const fillQuote = async (
         value: sellAmount,
       }
     );
-  } else if (buyTokenAddress === ETH_ADDRESS) {
+  } else if (buyTokenAddress?.toLowerCase() === ETH_ADDRESS.toLowerCase()) {
+    console.log('TOKEN TO ETH ===> ', quote);
     swapTx = await instance.fillQuoteTokenToEth(
       sellTokenAddress,
       allowanceTarget,
@@ -144,6 +146,7 @@ export const fillQuote = async (
       }
     );
   } else {
+    console.log('TOKEN TO TOKEN ===> ', quote);
     swapTx = await instance.fillQuoteTokenToToken(
       sellTokenAddress,
       buyTokenAddress,
@@ -185,7 +188,8 @@ export const getQuoteExecutionDetails = (
     allowanceTarget,
   } = quote;
 
-  if (sellTokenAddress === ETH_ADDRESS) {
+  if (sellTokenAddress?.toLowerCase() === ETH_ADDRESS.toLowerCase()) {
+    console.log('ETH TO TOKEN ===> ', quote);
     return {
       method: instance.estimateGas['fillQuoteEthToToken'],
       methodArgs: [buyTokenAddress, to, data, sellAmountMinusFees, fee],
@@ -194,7 +198,8 @@ export const getQuoteExecutionDetails = (
         value: sellAmount,
       },
     };
-  } else if (buyTokenAddress === ETH_ADDRESS) {
+  } else if (buyTokenAddress?.toLowerCase() === ETH_ADDRESS.toLowerCase()) {
+    console.log('TOKEN TO ETH ===> ', quote);
     return {
       method: instance.estimateGas['fillQuoteTokenToEth'],
       methodArgs: [
@@ -211,6 +216,7 @@ export const getQuoteExecutionDetails = (
       },
     };
   } else {
+    console.log('TOKEN TO TOKEN ===> ', quote);
     return {
       method: instance.estimateGas['fillQuoteTokenToToken'],
       methodArgs: [

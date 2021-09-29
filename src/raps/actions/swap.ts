@@ -45,14 +45,13 @@ const swap = async (
   }
   let gasLimit, methodName;
   try {
+    logger.debug('ESTIMATING GAS LIMIT ON SWAP.TS')
     const newGasLimit = await estimateSwapGasLimit({
       chainId,
       requiresApprove: false,
-      tradeDetails,
+      tradeDetails
     });
-    gasLimit = requiresApprove
-      ? ethUnits.basic_swap_require_approval
-      : newGasLimit;
+    gasLimit = newGasLimit;
   } catch (e) {
     logger.sentry(`[${actionName}] error estimateSwapGasLimit`);
     captureException(e);
@@ -98,7 +97,7 @@ const swap = async (
     type: TransactionType.trade,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
-  await dispatch(dataAddNewTransaction(newTransaction, accountAddress, true));
+  await dispatch(dataAddNewTransaction(newTransaction, accountAddress, false, wallet.provider));
   return swap?.nonce;
 };
 

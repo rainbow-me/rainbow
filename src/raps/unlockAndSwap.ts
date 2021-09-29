@@ -11,6 +11,7 @@ import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
 import store from '@rainbow-me/redux/store';
 import { ethUnits } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
+import { logger } from '@rainbow-me/utils';
 import { RAINBOW_ROUTER_CONTRACT_ADDRESS } from 'rainbow-swaps';
 
 export const estimateUnlockAndSwap = async (

@@ -58,6 +58,8 @@ export let web3Provider = new JsonRpcProvider(
 export const web3SetHttpProvider = async network => {
   if (network.startsWith('http://')) {
     web3Provider = new JsonRpcProvider(network, NetworkTypes.mainnet);
+    // override mainnet for ganache / hardhat
+    networkProviders[NetworkTypes.mainnet] = web3Provider;
   } else {
     web3Provider = new JsonRpcProvider(replace(infuraUrl, 'network', network));
   }
@@ -122,7 +124,9 @@ export const getProviderForNetwork = async (network = NetworkTypes.mainnet) => {
         url = replace(infuraUrl, 'network', network);
     }
     const provider = new JsonRpcProvider(url);
-    networkProviders[network] = provider;
+    if(!networkProviders[network]){
+      networkProviders[network] = provider;
+    }
     await provider.ready;
     return provider;
   }
@@ -219,7 +223,7 @@ export const estimateGasWithPadding = async (
     txPayloadToEstimate[contractCallEstimateGas ? 'gasLimit' : 'gas'] = toHex(
       saferGasLimit
     );
-
+    
     const estimatedGas = await (contractCallEstimateGas
       ? contractCallEstimateGas(...callArguments, txPayloadToEstimate)
       : p.estimateGas(txPayloadToEstimate));
