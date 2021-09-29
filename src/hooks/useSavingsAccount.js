@@ -82,6 +82,19 @@ const getUnderlyingData = marketData => {
   };
 };
 
+const getUnderlyingPrice = token => {
+  const underlyingPrice = ethereumUtils.getAssetPrice(token.underlying.address);
+  const underlyingBalanceNativeValue =
+    underlyingPrice && token.supplyBalanceUnderlying
+      ? multiply(underlyingPrice, token.supplyBalanceUnderlying)
+      : 0;
+  return {
+    ...token,
+    underlyingBalanceNativeValue,
+    underlyingPrice,
+  };
+};
+
 export default function useSavingsAccount(includeDefaultDai) {
   const [result, setResult] = useState({});
   const [backupSavings, setBackupSavings] = useState(null);
@@ -163,7 +176,7 @@ export default function useSavingsAccount(includeDefaultDai) {
         accountTokens,
         token => token?.underlying?.address
       );
-      dispatch(emitAssetRequest(underlyingAddresses));
+      dispatch(emitAssetRequest([DAI_ADDRESS, ...underlyingAddresses]));
       saveSavings(result, accountAddress, network);
       setResult(result);
     } else if (loading && !isNil(backupSavings)) {
@@ -182,20 +195,7 @@ export default function useSavingsAccount(includeDefaultDai) {
     if (isEmpty(result)) return [];
 
     const { accountTokens, daiMarketData } = result;
-    const accountTokensWithPrices = map(accountTokens, token => {
-      const underlyingPrice = ethereumUtils.getAssetPrice(
-        token.underlying.address
-      );
-      const underlyingBalanceNativeValue =
-        underlyingPrice && token.supplyBalanceUnderlying
-          ? multiply(underlyingPrice, token.supplyBalanceUnderlying)
-          : 0;
-      return {
-        ...token,
-        underlyingBalanceNativeValue,
-        underlyingPrice,
-      };
-    });
+    const accountTokensWithPrices = map(accountTokens, getUnderlyingPrice);
 
     const orderedAccountTokens = orderBy(
       accountTokensWithPrices,
@@ -214,9 +214,7 @@ export default function useSavingsAccount(includeDefaultDai) {
       includeDefaultDai && !accountHasCDAI && !isEmpty(daiMarketData);
 
     if (shouldAddDai) {
-      savings = concat(orderedAccountTokens, {
-        ...daiMarketData,
-      });
+      savings = concat(orderedAccountTokens, getUnderlyingPrice(daiMarketData));
     }
     return savings;
   }, [genericAssets, includeDefaultDai, result]);
