@@ -1,7 +1,7 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
-import { ChainId, Token } from '@uniswap/sdk';
+import { ChainId } from '../helpers/chainIds';
 import { get, mapKeys, mapValues, toLower } from 'lodash';
 import { uniswapClient } from '../apollo/client';
 import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
@@ -25,6 +25,7 @@ import { ethUnits, UNISWAP_TESTNET_TOKEN_LIST } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 import { fillQuote, getQuoteExecutionDetails, Quote } from 'rainbow-swaps';
+import { Token } from 'src/entities/tokens';
 
 export enum Field {
   INPUT = 'INPUT',
@@ -172,11 +173,5 @@ export const getTokenForCurrency = (
   currency: Asset,
   chainId: ChainId
 ): Token => {
-  return new Token(
-    chainId,
-    currency.address,
-    currency.decimals,
-    currency.symbol,
-    currency.name
-  );
+  return { ...currency, chainId } as Token;
 };

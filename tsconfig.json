@@ -40,7 +40,7 @@
       "react-native-yet-another-bottom-sheet": ["src/react-native-yet-another-bottom-sheet"],
       "@rainbow-me/animated-charts": ["src/react-native-animated-charts/src"],
       "react-native-shadow-stack": ["src/react-native-shadow-stack"],
-      "rainbow-swaps": ["src/rainbow-swaps/dist"]
+      "rainbow-swaps": ["src/rainbow-swaps"]
     },
     "resolveJsonModule": true
   },

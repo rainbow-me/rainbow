@@ -1,4 +1,3 @@
-import { Token } from '@uniswap/sdk';
 import { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
@@ -15,11 +14,12 @@ import {
   isZero,
   updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';
-import { ethereumUtils, logger } from '@rainbow-me/utils';
+import { ethereumUtils } from '@rainbow-me/utils';
 import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   getQuote,
 } from 'rainbow-swaps';
+import { Token } from 'src/entities/tokens';
 
 enum DisplayValue {
   input = 'inputAmountDisplay',
@@ -66,6 +66,13 @@ const getInputAmount = async (
       slippage: 0.5,
     };
     const quote = await getQuote(quoteParams);
+    if (!quote){
+      return {
+        inputAmount: null,
+        inputAmountDisplay: null,
+        tradeDetails: null,
+      };
+    }
 
     const inputAmount = convertRawAmountToDecimalFormat(
       quote.sellAmount.toString(),
@@ -89,8 +96,8 @@ const getInputAmount = async (
     };
   } catch (e) {
     return {
-      outputAmount: null,
-      outputAmountDisplay: null,
+      inputAmount: null,
+      inputAmountDisplay: null,
       tradeDetails: null,
     };
   }
@@ -137,6 +144,13 @@ const getOutputAmount = async (
       slippage: 0.5,
     };
     const quote = await getQuote(quoteParams);
+    if (!quote){
+      return {
+        outputAmount: null,
+        outputAmountDisplay: null,
+        tradeDetails: null,
+      };
+    }
 
     const outputAmount = convertRawAmountToDecimalFormat(
       quote.buyAmount.toString(),

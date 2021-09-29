@@ -1,4 +1,3 @@
-import { Trade } from '@uniswap/sdk';
 import { useSelector } from 'react-redux';
 import {
   computeSlippageAdjustedAmounts,
@@ -7,8 +6,9 @@ import {
 import { AppState } from '@rainbow-me/redux/store';
 import { SwapModalField } from '@rainbow-me/redux/swap';
 import { updatePrecisionToDisplay } from '@rainbow-me/utilities';
+import { Quote } from 'rainbow-swaps';
 
-export default function useSwapAdjustedAmounts(tradeDetails: Trade) {
+export default function useSwapAdjustedAmounts(tradeDetails: Quote) {
   const genericAssets = useSelector(
     (state: AppState) => state.data.genericAssets
   );

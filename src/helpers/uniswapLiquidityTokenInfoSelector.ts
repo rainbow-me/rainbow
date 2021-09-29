@@ -1,4 +1,4 @@
-import { ChainId, WETH } from '@uniswap/sdk';
+import { ChainId } from '../helpers/chainIds';
 import {
   compact,
   find,
@@ -26,6 +26,7 @@ import {
   multiply,
 } from '@rainbow-me/utilities';
 import { getTokenMetadata } from '@rainbow-me/utils';
+import { WETH } from 'rainbow-swaps';
 
 const accountAddressSelector = (state: AppState) =>
   state.settings.accountAddress;
@@ -65,7 +66,7 @@ interface UniswapCard {
 }
 
 const switchWethToEth = (token: Token, chainId: ChainId): Token => {
-  if (toLower(token.address) === toLower(WETH[chainId].address)) {
+  if (toLower(token.address) === toLower(WETH[chainId])) {
     return {
       ...token,
       address: ETH_ADDRESS,

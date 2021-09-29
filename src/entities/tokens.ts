@@ -1,3 +1,4 @@
+import { ChainId } from '@rainbow-me/helpers/chainIds';
 import { AssetType } from './assetTypes';
 
 interface ZerionAssetPrice {
@@ -12,6 +13,11 @@ export interface Asset {
   name: string;
   symbol: string;
 }
+
+export interface Token extends Asset {
+  chainId: ChainId;
+}
+
 
 export interface ZerionAsset {
   asset_code: string;
