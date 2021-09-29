@@ -1,4 +1,6 @@
+import { get } from 'lodash';
 import URL from 'url-parse';
+import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 
 const buildAssetUrl = hostname =>
   `https://raw.githubusercontent.com/rainbow-me/rainbow/develop/src/assets/dappLogos/${hostname}.jpg`;
@@ -249,4 +251,18 @@ export const getDappHostname = url => {
     }`;
   }
   return hostname;
+};
+
+export const getDappMetadata = peerMeta => {
+  const unsafeImageUrl =
+    dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
+  const imageUrl = maybeSignUri(unsafeImageUrl);
+  const dappName =
+    dappNameOverride(peerMeta.url) || peerMeta.name || 'Unknown Dapp';
+  const dappUrl = peerMeta.url || 'Unknown Url';
+  return {
+    dappName,
+    dappUrl,
+    imageUrl,
+  };
 };

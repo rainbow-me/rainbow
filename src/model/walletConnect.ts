@@ -9,7 +9,10 @@ import { Alert, InteractionManager, Linking } from 'react-native';
 import { enableActionsOnReadOnlyWallet } from '../config/debug';
 import { isSigningMethod } from '../utils/signingMethods';
 import { sendRpcCall } from '@rainbow-me/handlers/web3';
+import { getDappMetadata } from '@rainbow-me/helpers/dappNameHandler';
 import { delay } from '@rainbow-me/helpers/utilities';
+import walletConnectApprovalSheetTypes from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
+import { walletConnectSupportedChainIds } from '@rainbow-me/helpers/walletConnectNetworks';
 import walletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { addRequestToApproveV2 } from '@rainbow-me/redux/requests';
@@ -65,7 +68,6 @@ const isSupportedChain = (chain: string) =>
 export const getAddressAndChainIdFromWCAccount = (
   account: string
 ): { address: string; chainId: number } => {
-  wcLogger('getAddressAndChainIdFromWCAccount', account);
   const [, chainId, address] = account.split(':');
   return { address, chainId: Number(chainId) };
 };
@@ -145,7 +147,7 @@ export const walletConnectInit = async (store: any) => {
                   accountAddress,
                   chainId
                 );
-                const response: SessionTypes.Response = {
+                const response = {
                   metadata: RAINBOW_METADATA,
                   state: {
                     accounts: [walletConnectAccount],
@@ -223,10 +225,65 @@ export const walletConnectInit = async (store: any) => {
         wcLogger('🚗 🚗 🚗  CLIENT_EVENTS.session.request', client);
         try {
           const { topic, request } = requestEvent;
-          const session = await client.session.get(requestEvent.topic);
-
+          const session: SessionTypes.Settled = await client.session.get(
+            requestEvent.topic
+          );
           if (request.method === 'wallet_addEthereumChain') {
-            wcLogger('wallet_addEthereumChain');
+            const chains = session.permissions.blockchain.chains;
+            const chainId = fromEIP55Format(chains?.[0]);
+            if (walletConnectSupportedChainIds.includes(chainId)) {
+              wcLogger('wallet_addEthereumChain');
+              const metadata = getDappMetadata(session.peer.metadata);
+              Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
+                callback: async (
+                  approved: boolean,
+                  chainId: string,
+                  accountAddress: string
+                ) => {
+                  if (approved) {
+                    const walletConnectAccount = generateWalletConnectAccount(
+                      accountAddress,
+                      chainId
+                    );
+                    walletConnectUpdateSessionByTopic(
+                      session.topic,
+                      accountAddress,
+                      fromEIP55Format(chains?.[0])
+                    );
+                    wcLogger('approve  connection', walletConnectAccount);
+                    walletConnectV2HandleAction('connect');
+                    const response = {
+                      response: {
+                        id: request.id,
+                        jsonrpc: '2.0',
+                      },
+                      topic,
+                    };
+                    await client.respond(response);
+                  } else {
+                    // wcTrack('Rejected new WalletConnect session', metadata);
+                    walletConnectV2HandleAction('reject');
+                    const response = {
+                      response: 'User rejected request',
+                      topic,
+                    };
+                    await client.respond(response);
+                  }
+                  return client.session.values;
+                },
+                chainId,
+                meta: metadata,
+                type: walletConnectApprovalSheetTypes.switch_chain,
+                version: 'v2',
+              });
+            } else {
+              const response = {
+                response: 'Chain currently not supported',
+                topic,
+              };
+              await client.respond(response);
+            }
+            return;
           } else if (!isSigningMethod(request.method)) {
             sendRpcCall(request)
               .then(async result => {

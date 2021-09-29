@@ -21,7 +21,11 @@ import {
   saveWalletConnectSession,
 } from '../handlers/localstorage/walletconnectSessions';
 import { sendRpcCall } from '../handlers/web3';
-import { dappLogoOverride, dappNameOverride } from '../helpers/dappNameHandler';
+import {
+  dappLogoOverride,
+  dappNameOverride,
+  getDappMetadata,
+} from '../helpers/dappNameHandler';
 import WalletTypes from '../helpers/walletTypes';
 import { getFCMToken } from '../model/firebase';
 import { Navigation } from '../navigation';
@@ -29,9 +33,9 @@ import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove } from './requests';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { convertHexToString, delay } from '@rainbow-me/helpers/utilities';
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
+import { walletConnectSupportedChainIds } from '@rainbow-me/helpers/walletConnectNetworks';
 import {
   walletConnectDisconnectAllSessions,
   walletConnectDisconnectByTopic,
@@ -299,10 +303,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       throw error;
     }
     const { clientId, peerId, peerMeta } = walletConnector;
-    const imageUrl =
-      dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
-    const dappName = dappNameOverride(peerMeta.url) || peerMeta.name;
-    const dappUrl = peerMeta.url;
+
     const requestId = payload.id;
     if (
       payload.method === 'wallet_addEthereumChain' ||
@@ -312,17 +313,9 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       const currentNetwork = ethereumUtils.getNetworkFromChainId(
         Number(walletConnector._chainId)
       );
-      const supportedChains = [
-        networkTypes.mainnet,
-        networkTypes.ropsten,
-        networkTypes.kovan,
-        networkTypes.goerli,
-        networkTypes.polygon,
-        networkTypes.optimism,
-        networkTypes.arbitrum,
-      ].map(network => ethereumUtils.getChainIdFromNetwork(network).toString());
       const numericChainId = convertHexToString(chainId);
-      if (supportedChains.includes(numericChainId)) {
+      const metadata = getDappMetadata(peerMeta);
+      if (walletConnectSupportedChainIds.includes(numericChainId)) {
         dispatch(walletConnectSetPendingRedirect());
         Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
           callback: async approved => {
@@ -343,8 +336,8 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
               );
               analytics.track('Approved WalletConnect network switch', {
                 chainId,
-                dappName,
-                dappUrl,
+                dappName: metadata.dappName,
+                dappUrl: metadata.dappUrl,
               });
               dispatch(walletConnectRemovePendingRedirect('connect'));
             } else {
@@ -353,18 +346,14 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
                 id: requestId,
               });
               analytics.track('Rejected new WalletConnect chain request', {
-                dappName,
-                dappUrl,
+                dappName: metadata.dappName,
+                dappUrl: metadata.dappUrl,
               });
             }
           },
           chainId: Number(numericChainId),
           currentNetwork,
-          meta: {
-            dappName,
-            dappUrl,
-            imageUrl,
-          },
+          meta: metadata,
           type: WalletConnectApprovalSheetType.switch_chain,
         });
       } else {

@@ -1,5 +1,16 @@
 import networkInfo from './networkInfo';
+import networkTypes from './networkTypes';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+
+export const walletConnectSupportedChainIds = [
+  networkTypes.mainnet,
+  networkTypes.ropsten,
+  networkTypes.kovan,
+  networkTypes.goerli,
+  networkTypes.polygon,
+  networkTypes.optimism,
+  networkTypes.arbitrum,
+].map(network => ethereumUtils.getChainIdFromNetwork(network).toString());
 
 const androidNetworkActions = Object.values(networkInfo)
   .filter(({ disabled, testnet }) => !disabled && !testnet)
