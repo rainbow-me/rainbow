@@ -306,7 +306,7 @@ export const getTxGasParams = (selectedGasParams, network) => {
         type: LEGACY_TRANSACTION_TYPE,
       }
     : {
-        gasPrice: selectedGasParams?.value?.amount,
+        gasPrice: selectedGasParams?.gasPrice?.amount,
         type: EIP1559_TRANSACTION_TYPE,
       };
   return gasParams;
@@ -335,11 +335,11 @@ export const getTxDetails = async transaction => {
     ? {
         maxFeePerGas: toHex(transaction.maxFeePerGas),
         maxPriorityFeePerGas: toHex(transaction.maxPriorityFeePerGas),
-        type: 2,
+        type: LEGACY_TRANSACTION_TYPE,
       }
     : {
         gasPrice: toHex(transaction.gasPrice),
-        type: 0,
+        type: EIP1559_TRANSACTION_TYPE,
       };
 
   const tx = {

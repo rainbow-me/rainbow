@@ -53,6 +53,8 @@ import {
   estimateGas,
   estimateGasWithPadding,
   getProviderForNetwork,
+  getTxGasParams,
+  isEIP1559SupportedNetwork,
   isL2Network,
   toHex,
   web3Provider,
@@ -511,13 +513,14 @@ export default function TransactionConfirmationScreen() {
       return;
     }
 
-    const { txFee } = selectedGasPrice;
-    if (!txFee) {
+    const { txFee, maxTxFee } = selectedGasPrice;
+    const fee = isEIP1559SupportedNetwork(network) ? maxTxFee : txFee;
+    if (!fee) {
       setIsBalanceEnough(false);
       return;
     }
     // Get the TX fee Amount
-    const txFeeAmount = fromWei(txFee?.value?.amount ?? 0);
+    const txFeeAmount = fromWei(fee?.value?.amount ?? 0);
 
     // Get the ETH balance
     const balanceAmount = walletBalance.amount ?? 0;
@@ -537,6 +540,7 @@ export default function TransactionConfirmationScreen() {
     isMessageRequest,
     isSufficientGas,
     method,
+    network,
     params,
     selectedGasPrice,
     walletBalance.amount,
@@ -545,12 +549,8 @@ export default function TransactionConfirmationScreen() {
   const handleConfirmTransaction = useCallback(async () => {
     const sendInsteadOfSign = method === SEND_TRANSACTION;
     const txPayload = params?.[0];
-    let { gas, gasLimit: gasLimitFromPayload, gasPrice } = txPayload;
-
-    const rawGasPrice = selectedGasPrice?.value?.amount;
-    if (rawGasPrice) {
-      gasPrice = toHex(rawGasPrice);
-    }
+    let { gas, gasLimit: gasLimitFromPayload } = txPayload;
+    const gasParams = getTxGasParams(selectedGasPrice, network);
 
     try {
       logger.log('⛽ gas suggested by dapp', {
@@ -586,12 +586,11 @@ export default function TransactionConfirmationScreen() {
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
     let txPayloadUpdated = {
       ...txPayload,
-      gasPrice,
+      ...gasParams,
     };
     if (calculatedGasLimit) {
       txPayloadUpdated.gasLimit = calculatedGasLimit;
     }
-
     txPayloadUpdated = omit(txPayloadUpdated, ['from', 'gas']);
     let response = null;
 
@@ -635,11 +634,11 @@ export default function TransactionConfirmationScreen() {
           dappName,
           from: displayDetails?.request?.from,
           gasLimit,
-          gasPrice,
           hash: result.hash,
           network,
           nonce: result.nonce,
           to: displayDetails?.request?.to,
+          ...gasParams,
         };
         if (toLower(accountAddress) === toLower(txDetails.from)) {
           dispatch(dataAddNewTransaction(txDetails, null, false, provider));
@@ -688,9 +687,9 @@ export default function TransactionConfirmationScreen() {
   }, [
     method,
     params,
-    selectedGasPrice?.value?.amount,
-    gasLimit,
+    selectedGasPrice,
     network,
+    gasLimit,
     provider,
     accountInfo.address,
     callback,
@@ -963,7 +962,7 @@ export default function TransactionConfirmationScreen() {
       network &&
       provider &&
       nativeAsset &&
-      selectedGasPrice?.txFee
+      !isEmpty(selectedGasPrice)
     ) {
       setReady(true);
     }
@@ -973,7 +972,7 @@ export default function TransactionConfirmationScreen() {
     provider,
     ready,
     request?.asset,
-    selectedGasPrice?.txFee,
+    selectedGasPrice,
     walletBalance,
   ]);
 

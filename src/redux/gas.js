@@ -391,7 +391,7 @@ const getSelectedGasPrice = (
   const nativeAsset = ethereumUtils.getAsset(assets, nativeAssetAddress);
 
   const balanceAmount = get(nativeAsset, 'balance.amount', 0);
-  const txFeeAmount = fromWei(get(txFee, 'maxTxFee.gasPrice.amount', 0));
+  const txFeeAmount = fromWei(get(txFee, 'maxTxFee.value.amount', 0));
 
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
 
