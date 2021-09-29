@@ -1594,6 +1594,11 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@capsizecss/core@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@capsizecss/core/-/core-3.0.0.tgz#81b2fb222bd9716d211e4ddd0dc9cc42f71b4f37"
+  integrity sha512-tJNEWMmhHcU5z6ITAiVNN9z+PCTylybVIJqgX7Ts4zN66fe/W2Fe5UWJCCZIP/5uutsl5fYOaVVHZIjsuTVhBQ==
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.4.tgz#f864ae85004d0fcab6f50be9141c4da368d1656a"
@@ -12091,11 +12096,6 @@ react-native-camera@3.40.0:
   integrity sha512-Ur0hZqZcl3SntTVMB9GxuiLYpQxqwgzhQVb+7EGae4WjfDzQEwlGF0bJ7UpZyeUTb1oZmsiSib58xUckn11XMw==
   dependencies:
     prop-types "^15.6.2"
-
-react-native-capsize@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/react-native-capsize/-/react-native-capsize-0.2.2.tgz#677c14c4ad9829e425818684d234d8a95fc18190"
-  integrity sha512-r7sUweHa712Ti6KNTuMNhJBpccsPpnoWwq87Gh451PXI2rR1NWijWc4gPEWJpwd+maaxMR0zbB1d2Q0TYBQfTA==
 
 react-native-circular-progress@1.3.6:
   version "1.3.6"

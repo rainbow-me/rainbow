@@ -1,5 +1,24 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
-import capsize from 'react-native-capsize';
+import { precomputeValues } from '@capsizecss/core';
+import { PixelRatio } from 'react-native';
+
+const capsize = (options: Parameters<typeof precomputeValues>[0]) => {
+  const values = precomputeValues(options);
+  const fontSize = parseFloat(values.fontSize);
+  const baselineTrimEm = parseFloat(values.baselineTrim);
+  const capHeightTrimEm = parseFloat(values.capHeightTrim);
+  const fontScale = PixelRatio.getFontScale();
+
+  return {
+    fontSize,
+    lineHeight:
+      values.lineHeight !== 'normal'
+        ? parseFloat(values.lineHeight)
+        : undefined,
+    marginBottom: baselineTrimEm * fontSize * fontScale,
+    marginTop: capHeightTrimEm * fontSize * fontScale,
+  } as const;
+};
 
 const fonts = {
   SFProRounded: {
@@ -49,7 +68,7 @@ const fontMetrics = {
 const marginCorrectionForFontSize = {
   23: ios ? -0.3 : -0.35,
   20: ios ? -0.5 : -0.2,
-  18: ios ? 0.2 : -0.2,
+  18: ios ? 0.4 : 0.2,
   16: ios ? -0.5 : 1.075,
   14: ios ? -0.3 : -0.1,
 } as const;
@@ -86,7 +105,6 @@ const createTextVariant = <FontFamily extends keyof typeof fonts>({
     ...styles,
     marginTop: styles.marginTop + marginCorrection,
     marginBottom: styles.marginBottom - marginCorrection,
-    paddingTop: undefined, // react-native-capsize adds additional padding, not sure why
   };
 };
 
