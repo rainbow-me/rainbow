@@ -3997,7 +3997,7 @@
   resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.6.5.tgz#31ad1415fc6e1e89e25a10ad5fed6958f56cefa8"
   integrity sha512-S9DsODI35PbIDuOSkIiF8SzTstqCqX/4+kV7n18vyukEFPlpSSHwZMwJUfzo9yJ0pqsqLNZta+jvb88gJRuAaA==
 
-"@walletconnect/types@^2.0.0-beta.18", "@walletconnect/types@npm:@walletconnect/types@2.0.0-beta.18", "@walletconnectv2/types@npm:@walletconnect/types@2.0.0-beta.18":
+"@walletconnect/types@^2.0.0-beta.18", "@walletconnectv2/types@npm:@walletconnect/types@2.0.0-beta.18":
   version "2.0.0-beta.18"
   resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.0.0-beta.18.tgz#6b5ea4bda55576bfe418368ca2e17d8e97d7f6bf"
   integrity sha512-U9fJtnsa3ov6vRolfjQ6aj5MgLFiy/R+54ShJPsbEff6Pcois+fcpns7mOdI2mNxT8apIPasles0OAYWAbssYw==
@@ -4020,7 +4020,7 @@
     js-sha3 "0.8.0"
     query-string "6.13.5"
 
-"@walletconnect/utils@^2.0.0-beta.18", "@walletconnect/utils@npm:@walletconnect/utils@2.0.0-beta.18", "@walletconnectv2/utils@npm:@walletconnect/utils@2.0.0-beta.18":
+"@walletconnect/utils@^2.0.0-beta.18", "@walletconnectv2/utils@npm:@walletconnect/utils@2.0.0-beta.18":
   version "2.0.0-beta.18"
   resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-2.0.0-beta.18.tgz#87738dc46e2e4639ac896caf149517da92defe79"
   integrity sha512-C7VMvgzZ5KHUG6oOKJpXjIs2NFjrKsxUhwWqDb6L06ZceaOtkLKK75R7dhrPT8zS0Y+gbB1fSXYSNvOh1zQfog==

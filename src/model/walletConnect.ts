@@ -24,9 +24,6 @@ import {
 import Routes from '@rainbow-me/routes';
 import { logger, watchingAlert } from '@rainbow-me/utils';
 
-// eslint-disable-next-line no-console
-const wcLogger = (a: String, b?: any) => console.info(`WC 🐞🐞🐞 :: ${a}`, b);
-
 const wcTrack = (
   event: string,
   metadata: { name: string; url: string },
@@ -55,7 +52,6 @@ export const fromEIP55Format = (chain: string) => {
 };
 
 const generateWalletConnectAccount = (address: string, chain: string) => {
-  wcLogger('generateWalletConnectAccount', `${chain}:${address}`);
   return `eip155:${chain}:${address}`;
 };
 
@@ -86,7 +82,6 @@ let client: WalletConnectClient;
 
 export const walletConnectInit = async (store: any) => {
   if (!client) {
-    wcLogger('🚗 🚗 🚗  WC INIT', client);
     client = await WalletConnectClient.init({
       controller: true,
       metadata: RAINBOW_METADATA,
@@ -96,7 +91,6 @@ export const walletConnectInit = async (store: any) => {
       },
     });
     store.dispatch(saveWalletConnectV2Sessions(client));
-    wcLogger('Client started and saved!');
     client.on(
       CLIENT_EVENTS.session.deleted,
       async (session: SessionTypes.Settled) => {
@@ -112,13 +106,10 @@ export const walletConnectInit = async (store: any) => {
     client.on(
       CLIENT_EVENTS.session.proposal,
       async (proposal: SessionTypes.Proposal) => {
-        wcLogger('🚗 🚗 🚗  CLIENT_EVENTS.session.proposal', client);
         try {
-          wcLogger('CLIENT_EVENTS.session.proposal');
           const { proposer, permissions } = proposal;
           const { metadata } = proposer;
           const chains = permissions.blockchain.chains;
-          wcLogger('CLIENT_EVENTS.session.proposal 2');
 
           if (!isSupportedChain(chains[0])) {
             Alert.alert('Chain not supported', `${chains[0]} is not supported`);
@@ -153,7 +144,6 @@ export const walletConnectInit = async (store: any) => {
                     accounts: [walletConnectAccount],
                   },
                 };
-                wcLogger('approve  connection', walletConnectAccount);
                 wcTrack('Approved new WalletConnect session', metadata);
                 walletConnectV2HandleAction('connect');
                 await client.approve({ proposal, response });
@@ -191,12 +181,9 @@ export const walletConnectInit = async (store: any) => {
       }
     );
 
-    wcLogger('Client started! on 1');
-
     client.on(
       CLIENT_EVENTS.session.request,
       async (requestEvent: SessionTypes.RequestEvent) => {
-        wcLogger('🚗 🚗 🚗  CLIENT_EVENTS.session.request', client);
         try {
           const { topic, request } = requestEvent;
           const session: SessionTypes.Settled = await client.session.get(
@@ -209,7 +196,6 @@ export const walletConnectInit = async (store: any) => {
             const hexChainId = request.params.chainId;
             const chainId = convertHexToString(hexChainId);
             if (walletConnectSupportedChainIds.includes(chainId)) {
-              wcLogger('wallet_addEthereumChain');
               const metadata = getDappMetadata(session.peer.metadata);
               Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
                 callback: async (
@@ -309,7 +295,6 @@ export const walletConnectInit = async (store: any) => {
                 Navigation.handleAction(Routes.CONFIRM_REQUEST, {
                   callback: async (res: { error: string; sig: string }) => {
                     const { error, sig } = res;
-                    wcLogger('res', res);
                     await client.respond({
                       response: {
                         id: request.id,
@@ -341,7 +326,6 @@ export const walletConnectInit = async (store: any) => {
         }
       }
     );
-    wcLogger('Client started! on 2');
   }
 
   return client;
@@ -407,9 +391,7 @@ export const walletConnectPair = async (uri: string) => {
   while (!client) {
     delay(300);
   }
-  wcLogger('on about to walletConnectPair dalay out', !!client);
-  const pair = await client.pair({ uri });
-  wcLogger('on walletConnectPair', pair);
+  await client.pair({ uri });
   Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
     callback: () => null,
     chainId: null,
