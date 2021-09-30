@@ -74,7 +74,7 @@ export const userListsClearList = listId => (dispatch, getState) => {
   // Find the list index
   let listIndex = null;
   allNewLists.find((list, index) => {
-    if (list.id === listId) {
+    if (list?.id === listId) {
       listIndex = index;
       return true;
     }
@@ -106,7 +106,7 @@ export const userListsUpdateList = (assetAddress, listId, add = true) => (
     // Find the list index
     let listIndex = null;
     allNewLists.find((list, index) => {
-      if (list.id === listId) {
+      if (list?.id === listId) {
         listIndex = index;
         return true;
       }

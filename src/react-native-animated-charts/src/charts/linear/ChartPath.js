@@ -11,6 +11,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
   runOnJS,
   useAnimatedGestureHandler,
+  useAnimatedReaction,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -209,7 +210,7 @@ export default function ChartPathProvider({
     } else {
       setData(providedData);
     }
-  }, [providedData]);
+  }, [providedData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const smoothingStrategy = useSharedValue(data.smoothingStrategy);
 
@@ -259,7 +260,7 @@ export default function ChartPathProvider({
       currData.value = parsedData;
       curroriginalData.value = parsedoriginalData;
     }
-  }, [data]);
+  }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const isStarted = useSharedValue(false, 'isStarted');
 
@@ -679,6 +680,15 @@ function ChartPath({
     };
   }, undefined);
 
+  const [pathState, setPath] = useState('');
+  useAnimatedReaction(
+    () => path.value === '',
+    () => {
+      runOnJS(setPath)(path.value);
+    },
+    [setPath]
+  );
+
   return (
     <InternalContext.Provider
       value={{
@@ -688,7 +698,9 @@ function ChartPath({
         height,
         longPressGestureHandlerProps,
         onLongPressGestureEvent,
+        pathState,
         props,
+        strokeWidth,
         style,
         width,
       }}
@@ -696,6 +708,16 @@ function ChartPath({
       {__disableRendering ? children : <SvgComponent />}
     </InternalContext.Provider>
   );
+}
+
+function useDelayedValue(value) {
+  const [delayedValue, setValue] = useState(value);
+
+  useEffect(() => {
+    setValue(value);
+  }, [setValue, value]);
+
+  return delayedValue;
 }
 
 export function SvgComponent() {
@@ -709,7 +731,11 @@ export function SvgComponent() {
     onLongPressGestureEvent,
     gestureEnabled,
     longPressGestureHandlerProps,
+    pathState,
+    strokeWidth,
   } = useContext(InternalContext);
+
+  const delayedPathValue = useDelayedValue(pathState === '');
   return (
     <LongPressGestureHandler
       enabled={gestureEnabled}
@@ -726,9 +752,12 @@ export function SvgComponent() {
           width={width}
         >
           <AnimatedPath
-            animatedProps={animatedProps}
+            {...(delayedPathValue ? { animatedProps } : {})}
+            d={pathState}
+            strokeWidth={strokeWidth}
             {...props}
-            style={[style, animatedStyle]}
+            style={[style, ...(delayedPathValue ? [animatedStyle] : [])]}
+            {...props}
           />
         </Svg>
       </Animated.View>

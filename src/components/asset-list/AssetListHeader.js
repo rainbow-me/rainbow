@@ -62,14 +62,16 @@ const WalletSelectButton = ({
         </AccountName>
         {truncatedAccountName ? (
           <DropdownArrow>
-            <LinearGradient
-              borderRadius={15}
-              colors={colors.gradients.lightestGrey}
-              end={{ x: 0.5, y: 1 }}
-              pointerEvents="none"
-              start={{ x: 0.5, y: 0 }}
-              style={[position.coverAsObject, { borderRadius: 15 }]}
-            />
+            {IS_TESTING !== 'true' && (
+              <LinearGradient
+                borderRadius={15}
+                colors={colors.gradients.lightestGrey}
+                end={{ x: 0.5, y: 1 }}
+                pointerEvents="none"
+                start={{ x: 0.5, y: 0 }}
+                style={[position.coverAsObject, { borderRadius: 15 }]}
+              />
+            )}
             <Icon name="walletSwitcherCaret" />
           </DropdownArrow>
         ) : null}
@@ -129,7 +131,7 @@ const AssetListHeader = ({
       totalValue={totalValue}
       {...props}
     >
-      {!title && IS_TESTING !== 'true' && (
+      {!title && (
         <WalletSelectButton
           deviceWidth={deviceWidth}
           onChangeWallet={onChangeWallet}

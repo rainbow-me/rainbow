@@ -42,7 +42,7 @@ export default (state = INITIAL_STATE, action) =>
     if (action.type === LOAD) {
       draft.imageMetadata = action.payload;
     } else if (action.type === MERGE) {
-      draft.imageMetadata[action.id] = action.metadata;
+      draft.imageMetadata[action?.id] = action.metadata;
     } else if (action.type === CLEAR) {
       return INITIAL_STATE;
     }

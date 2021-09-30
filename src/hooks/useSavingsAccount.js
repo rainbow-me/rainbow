@@ -10,7 +10,7 @@ import {
   toLower,
 } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import { compoundClient } from '@rainbow-me/apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@rainbow-me/apollo/queries';
@@ -21,8 +21,13 @@ import {
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import { multiply } from '@rainbow-me/helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '@rainbow-me/parsers';
-import { CDAI_CONTRACT, DAI_ADDRESS } from '@rainbow-me/references';
-import { getTokenMetadata } from '@rainbow-me/utils';
+import { emitAssetRequest } from '@rainbow-me/redux/explorer';
+import {
+  CDAI_CONTRACT,
+  DAI_ADDRESS,
+  ETH_ADDRESS,
+} from '@rainbow-me/references';
+import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 
 const COMPOUND_QUERY_INTERVAL = 120000; // 120 seconds
 
@@ -30,14 +35,13 @@ const getMarketData = marketData => {
   if (!marketData) return {};
   const underlying = getUnderlyingData(marketData);
   const cToken = getCTokenData(marketData);
-  const { exchangeRate, supplyRate, underlyingPrice } = marketData;
+  const { exchangeRate, supplyRate } = marketData;
 
   return {
     cToken,
     exchangeRate,
     supplyRate,
     underlying,
-    underlyingPrice,
   };
 };
 
@@ -71,7 +75,7 @@ const getUnderlyingData = marketData => {
   const symbol = parseAssetSymbol(metadata, underlyingSymbol);
 
   return {
-    address: underlyingAddress,
+    address: symbol === 'ETH' ? ETH_ADDRESS : underlyingAddress,
     decimals: underlyingDecimals,
     name,
     symbol,
@@ -81,7 +85,11 @@ const getUnderlyingData = marketData => {
 export default function useSavingsAccount(includeDefaultDai) {
   const [result, setResult] = useState({});
   const [backupSavings, setBackupSavings] = useState(null);
+  const genericAssets = useSelector(
+    ({ data: { genericAssets } }) => genericAssets
+  );
 
+  const dispatch = useDispatch();
   const { accountAddress, network } = useAccountSettings();
 
   const hasAccountAddress = !!accountAddress;
@@ -120,17 +128,13 @@ export default function useSavingsAccount(includeDefaultDai) {
       const markets = keyBy(data?.markets, 'id');
       const resultTokens = data?.account?.tokens;
 
-      const parsedAccountTokens = map(resultTokens, token => {
+      const accountTokens = map(resultTokens, token => {
         const [cTokenAddress] = token.id.split('-');
         const marketData = markets[cTokenAddress] || {};
 
-        const {
-          cToken,
-          exchangeRate,
-          supplyRate,
-          underlying,
-          underlyingPrice,
-        } = getMarketData(marketData);
+        const { cToken, exchangeRate, supplyRate, underlying } = getMarketData(
+          marketData
+        );
 
         const {
           cTokenBalance,
@@ -138,31 +142,28 @@ export default function useSavingsAccount(includeDefaultDai) {
           supplyBalanceUnderlying,
         } = token;
 
-        const ethPrice = multiply(underlyingPrice, supplyBalanceUnderlying);
-
         return {
           cToken,
           cTokenBalance,
-          ethPrice,
           exchangeRate,
           lifetimeSupplyInterestAccrued,
           supplyBalanceUnderlying,
           supplyRate,
           type: AssetTypes.compound,
           underlying,
-          underlyingPrice,
         };
       });
-      const accountTokens = orderBy(
-        parsedAccountTokens,
-        ['ethPrice'],
-        ['desc']
-      );
+
       const daiMarketData = getMarketData(markets[CDAI_CONTRACT]);
       const result = {
         accountTokens,
         daiMarketData,
       };
+      const underlyingAddresses = map(
+        accountTokens,
+        token => token?.underlying?.address
+      );
+      dispatch(emitAssetRequest(underlyingAddresses));
       saveSavings(result, accountAddress, network);
       setResult(result);
     } else if (loading && !isNil(backupSavings)) {
@@ -170,7 +171,7 @@ export default function useSavingsAccount(includeDefaultDai) {
     } else {
       setResult({});
     }
-  }, [accountAddress, backupSavings, data, error, loading, network]);
+  }, [accountAddress, backupSavings, data, dispatch, error, loading, network]);
 
   useEffect(() => {
     if (!hasAccountAddress) return;
@@ -181,24 +182,44 @@ export default function useSavingsAccount(includeDefaultDai) {
     if (isEmpty(result)) return [];
 
     const { accountTokens, daiMarketData } = result;
+    const accountTokensWithPrices = map(accountTokens, token => {
+      const underlyingPrice = ethereumUtils.getAssetPrice(
+        token.underlying.address
+      );
+      const underlyingBalanceNativeValue =
+        underlyingPrice && token.supplyBalanceUnderlying
+          ? multiply(underlyingPrice, token.supplyBalanceUnderlying)
+          : 0;
+      return {
+        ...token,
+        underlyingBalanceNativeValue,
+        underlyingPrice,
+      };
+    });
+
+    const orderedAccountTokens = orderBy(
+      accountTokensWithPrices,
+      ['underlyingBalanceNativeValue'],
+      ['desc']
+    );
 
     const accountHasCDAI = find(
-      accountTokens,
+      orderedAccountTokens,
       token => token.underlying.address === DAI_ADDRESS
     );
 
-    let savings = accountTokens || [];
+    let savings = orderedAccountTokens || [];
 
     const shouldAddDai =
       includeDefaultDai && !accountHasCDAI && !isEmpty(daiMarketData);
 
     if (shouldAddDai) {
-      savings = concat(accountTokens, {
+      savings = concat(orderedAccountTokens, {
         ...daiMarketData,
       });
     }
     return savings;
-  }, [includeDefaultDai, result]);
+  }, [genericAssets, includeDefaultDai, result]);
 
   return {
     refetchSavings,

@@ -33,14 +33,15 @@ import {
   ZerionTransactionChange,
   ZerionTransactionStatus,
 } from '@rainbow-me/entities';
-import { getTransactionMethodName } from '@rainbow-me/handlers/transactions';
 import { isL2Network, toChecksumAddress } from '@rainbow-me/handlers/web3';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 import { ETH_ADDRESS, savingsAssetsList } from '@rainbow-me/references';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
+import { getTransactionMethodName } from '@rainbow-me/handlers/transactions';
 
 const LAST_TXN_HASH_BUFFER = 20;
 
@@ -71,7 +72,7 @@ export const parseTransactions = async (
   nativeCurrency: string,
   existingTransactions: RainbowTransaction[],
   purchaseTransactions: RainbowTransaction[],
-  network: string,
+  network: Network,
   appended = false
 ) => {
   const purchaseTransactionHashes = map(purchaseTransactions, txn =>
@@ -330,7 +331,7 @@ const parseTransaction = async (
   transaction: ZerionTransaction,
   nativeCurrency: string,
   purchaseTransactionsHashes: string[],
-  network: string
+  network: Network
 ): Promise<RainbowTransaction[]> => {
   let txn = {
     ...transaction,

@@ -1,4 +1,4 @@
-import NetInfo from '@react-native-community/netinfo';
+import * as NetInfo from '@react-native-community/netinfo';
 import analytics from '@segment/analytics-react-native';
 import { isNil } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';

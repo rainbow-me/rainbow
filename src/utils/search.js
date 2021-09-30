@@ -1,5 +1,5 @@
-import { get, toLower } from 'lodash';
-import matchSorter from 'match-sorter';
+import { toLower } from 'lodash';
+import { matchSorter } from 'match-sorter';
 
 export const filterList = (list, searchQuery, keys = null, options = null) =>
   matchSorter(list, searchQuery, {
@@ -12,8 +12,8 @@ export const filterScams = (safeList, nonSafeList) => {
   return nonSafeList.filter(item => {
     for (let i = 0; i < safeList.length; i++) {
       if (
-        toLower(get(safeList[i], 'symbol')) === toLower(item.symbol) ||
-        toLower(get(safeList[i], 'name')) === toLower(item.name)
+        toLower(safeList[i].symbol) === toLower(item.symbol) ||
+        toLower(safeList[i].name) === toLower(item.name)
       ) {
         return false;
       }
