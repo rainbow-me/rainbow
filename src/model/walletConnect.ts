@@ -10,6 +10,7 @@ import { enableActionsOnReadOnlyWallet } from '../config/debug';
 import { isSigningMethod } from '../utils/signingMethods';
 import { sendRpcCall } from '@rainbow-me/handlers/web3';
 import { getDappMetadata } from '@rainbow-me/helpers/dappNameHandler';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { convertHexToString, delay } from '@rainbow-me/helpers/utilities';
 import walletConnectApprovalSheetTypes from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
 import { walletConnectSupportedChainIds } from '@rainbow-me/helpers/walletConnectNetworks';
@@ -26,7 +27,7 @@ import {
   WALLETCONNECT_V2_UPDATE_SESSIONS,
 } from '@rainbow-me/redux/walletconnect';
 import Routes from '@rainbow-me/routes';
-import { logger, watchingAlert } from '@rainbow-me/utils';
+import { ethereumUtils, logger, watchingAlert } from '@rainbow-me/utils';
 
 const wcTrack = (
   event: string,
@@ -40,15 +41,6 @@ const wcTrack = (
     ...opts,
   });
 
-const SUPPORTED_MAIN_CHAINS = [
-  'eip155:1',
-  'eip155:10',
-  'eip155:137',
-  'eip155:42161',
-];
-
-const SUPPORTED_TEST_CHAINS = ['eip155:3', 'eip155:4', 'eip155:5', 'eip155:42'];
-
 const toEIP55Format = (chainId: string | number) => `eip155:${chainId}`;
 export const fromEIP55Format = (chain: string) => {
   const [, chainId] = chain?.split(':');
@@ -59,11 +51,13 @@ const generateWalletConnectAccount = (address: string, chain: string) => {
   return `eip155:${chain}:${address}`;
 };
 
-const isSupportedChain = (chain: string) =>
-  SUPPORTED_MAIN_CHAINS.includes(chain) ||
-  SUPPORTED_TEST_CHAINS.includes(chain);
-
-// const getPush =
+const isSupportedChainId = (chainId: string) => {
+  const network = ethereumUtils.getNetworkFromChainId(Number(chainId));
+  if (networkInfo[network] && !networkInfo[network]?.testnet) {
+    return true;
+  }
+  return false;
+};
 
 export const getAddressAndChainIdFromWCAccount = (
   account: string
@@ -114,8 +108,8 @@ export const walletConnectInit = async () => {
           const { proposer, permissions } = proposal;
           const { metadata } = proposer;
           const chains = permissions.blockchain.chains;
-
-          if (!isSupportedChain(chains[0])) {
+          const chainId = fromEIP55Format(chains[0]);
+          if (!isSupportedChainId(chainId)) {
             Alert.alert('Chain not supported', `${chains[0]} is not supported`);
             wcTrack('Walletconnect chain not supported', metadata, {
               chain: chains[0],
