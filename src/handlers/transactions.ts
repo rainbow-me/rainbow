@@ -2,8 +2,7 @@ import { Contract } from '@ethersproject/contracts';
 import { RainbowFetchClient } from '../rainbow-fetch';
 import { web3Provider } from './web3';
 import { ZerionTransaction } from '@rainbow-me/entities';
-import { saveTransactionSignatures } from '@rainbow-me/handlers/localstorage/globalSettings';
-import { DATA_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS } from '@rainbow-me/redux/data';
+import { dataAddNewTransactionSignature } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import {
   SIGNATURE_REGISTRY_ADDRESS,
@@ -72,20 +71,9 @@ export const getTransactionMethodName = async (
       } catch (e) {}
     }
     const parsedSignature = parseSignatureToTitle(signature);
-    if (parsedSignature) {
-      const newTransactionSignatures = {
-        ...transactionSignatures,
-        [bytes]: parsedSignature,
-      };
-      try {
-        store.dispatch({
-          payload: newTransactionSignatures,
-          type: DATA_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS,
-        });
-        saveTransactionSignatures(newTransactionSignatures);
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
-    }
+    await store.dispatch(
+      dataAddNewTransactionSignature(parsedSignature, bytes)
+    );
     return parsedSignature;
   } catch (e) {
     return '';

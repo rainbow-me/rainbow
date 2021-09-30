@@ -49,7 +49,10 @@ import {
   saveAssets,
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
-import { getTransactionSignatures } from '@rainbow-me/handlers/localstorage/globalSettings';
+import {
+  getTransactionSignatures,
+  saveTransactionSignatures,
+} from '@rainbow-me/handlers/localstorage/globalSettings';
 import { isL2Network, web3Provider } from '@rainbow-me/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
@@ -740,6 +743,27 @@ export const assetPricesChanged = message => (dispatch, getState) => {
     payload: updatedAssets,
     type: DATA_UPDATE_GENERIC_ASSETS,
   });
+};
+
+export const dataAddNewTransactionSignature = (
+  parsedSignature,
+  bytes
+) => async (dispatch, getState) => {
+  const { transactionSignatures } = getState().data;
+  if (parsedSignature) {
+    const newTransactionSignatures = {
+      ...transactionSignatures,
+      [bytes]: parsedSignature,
+    };
+    try {
+      dispatch({
+        payload: newTransactionSignatures,
+        type: DATA_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS,
+      });
+      saveTransactionSignatures(newTransactionSignatures);
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
+  }
 };
 
 export const dataAddNewTransaction = (
