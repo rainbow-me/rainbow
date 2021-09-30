@@ -21,7 +21,7 @@ import useLoadGlobalData from './useLoadGlobalData';
 import useResetAccountState from './useResetAccountState';
 import { runKeychainIntegrityChecks } from '@rainbow-me/handlers/walletReadyEvents';
 import { additionalDataCoingeckoIds } from '@rainbow-me/redux/additionalAssetsData';
-import { watchPendingTransactionsOnInitialize } from '@rainbow-me/redux/data';
+import { checkPendingTransactionsOnInitialize } from '@rainbow-me/redux/data';
 import logger from 'logger';
 
 export default function useInitializeWallet() {
@@ -132,7 +132,7 @@ export default function useInitializeWallet() {
 
         logger.sentry('💰 Wallet initialized');
 
-        dispatch(watchPendingTransactionsOnInitialize(walletAddress));
+        dispatch(checkPendingTransactionsOnInitialize(walletAddress));
         return walletAddress;
       } catch (error) {
         logger.sentry('Error while initializing wallet');

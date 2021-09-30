@@ -942,7 +942,7 @@ const updatePurchases = updatedTransactions => dispatch => {
   dispatch(addCashUpdatePurchases(confirmedPurchases));
 };
 
-export const watchPendingTransactionsOnInitialize = (
+export const checkPendingTransactionsOnInitialize = (
   accountAddressToWatch,
   provider = null
 ) => async (dispatch, getState) => {
