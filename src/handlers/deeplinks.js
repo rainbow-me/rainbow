@@ -11,6 +11,7 @@ import {
 import { delay } from '@rainbow-me/helpers/utilities';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';
+import { WC_REQUEST_VERSION_2 } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 
@@ -53,7 +54,7 @@ function handleWalletConnect(uri) {
   const { query, pathname } = new URL(uri);
   if (uri && query) {
     const [, version] = pathname.split('@');
-    if (version === '2') {
+    if (version === WC_REQUEST_VERSION_2) {
       walletConnectPair(uri);
     } else {
       dispatch(walletConnectSetPendingRedirect());

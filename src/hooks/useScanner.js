@@ -14,6 +14,7 @@ import usePrevious from './usePrevious';
 import useWalletConnectConnections from './useWalletConnectConnections';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';
+import { WC_REQUEST_VERSION_2 } from '@rainbow-me/redux/requests';
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { addressUtils, ethereumUtils, haptics } from '@rainbow-me/utils';
@@ -140,7 +141,7 @@ export default function useScanner(enabled) {
       const { query, pathname } = new URL(qrCodeData);
       if (qrCodeData && query) {
         const [, version] = pathname.split('@');
-        if (version === '2') {
+        if (version === WC_REQUEST_VERSION_2) {
           walletConnectPair(qrCodeData);
         } else {
           try {
