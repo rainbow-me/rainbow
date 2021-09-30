@@ -1,86 +1,87 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
-import React, { ReactNode, useMemo } from 'react';
+import React, { ElementRef, forwardRef, ReactNode, useMemo } from 'react';
 import { Text as NativeText } from 'react-native';
-import { useColorModeValue } from '../../contexts/ColorMode/ColorMode';
-import { foreground } from '../../tokens/palette';
-import { textVariants } from '../../tokens/typography';
+import { useColorModeValue } from '../../color/ColorModeContext';
+import { foreground } from '../../color/palette';
+import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';
+import { textSizes, textWeights } from '../../typography/typography';
 
-const tones = {
+const colors = {
   neutral: foreground.neutral,
   secondary: foreground.secondary,
-  tertiary: foreground.tertiary,
-  action: foreground.action,
+  secondary30: foreground.secondary30,
+  secondary40: foreground.secondary40,
+  secondary50: foreground.secondary50,
+  secondary60: foreground.secondary60,
+  secondary70: foreground.secondary70,
+  secondary80: foreground.secondary80,
 } as const;
 
 interface TextStyle {
-  align?: 'auto' | 'center' | 'left' | 'justify' | 'right';
-  tone?: keyof typeof tones;
-  variant: keyof typeof textVariants;
-  numeric?: boolean;
+  align?: 'center' | 'left' | 'right';
+  color?: keyof typeof colors;
+  size?: keyof typeof textSizes;
+  weight?: keyof typeof textWeights;
+  tabularNumbers?: boolean;
+  uppercase?: boolean;
 }
 
-export const useTextStyle = ({
+const useTextStyle = ({
   align: textAlign,
-  tone = 'neutral',
-  variant = 'title',
-  numeric = false,
+  color = 'neutral',
+  size = 'body',
+  weight = 'bold',
+  tabularNumbers = false,
+  uppercase = false,
 }: TextStyle) => {
   const colorModeValue = useColorModeValue();
-  const variantStyles = textVariants[variant];
+  const sizeStyles = textSizes[size];
+  const weightStyles = textWeights[weight];
 
   return useMemo(
     () => ({
+      lineHeightFixNode: createLineHeightFixNode(sizeStyles.lineHeight),
       textStyle: {
+        color: colorModeValue(colors[color]),
         textAlign,
-        color: colorModeValue(tones[tone]),
-        ...variantStyles,
-        ...(numeric
-          ? {
-              fontVariant: ['tabular-nums' as const],
-            }
-          : {}),
+        ...sizeStyles,
+        ...weightStyles,
+        ...(uppercase ? { textTransform: 'uppercase' as const } : null),
+        ...(tabularNumbers ? { fontVariant: ['tabular-nums' as const] } : null),
       },
-      // https://github.com/facebook/react-native/issues/29232#issuecomment-889767516
-      // On Android, space between lines of multiline text seems to be irregular
-      // when using certain fonts.
-      // The workaround posted on GitHub adds 1 to the line height correction node but
-      // this adds a noticeable amount of space below the baseline. The workaround still
-      // seems to work as long as the line height differs from the parent node.
-      // To remove this additional space we've dropped the line height offset to an
-      // arbitrarily small number that's close to zero.
-      lineHeightFixNode:
-        android && variantStyles.lineHeight !== undefined ? (
-          <NativeText
-            style={{ lineHeight: variantStyles.lineHeight - 0.001 }}
-          />
-        ) : null,
     }),
-    [variantStyles, textAlign, colorModeValue, tone, numeric]
+    [
+      sizeStyles,
+      weightStyles,
+      textAlign,
+      colorModeValue,
+      color,
+      tabularNumbers,
+      uppercase,
+    ]
   );
 };
 
-interface TextProps extends TextStyle {
+export interface TextProps extends TextStyle {
+  numberOfLines?: number;
   children: ReactNode;
 }
 
-export const Text = ({
-  align,
-  tone,
-  children,
-  variant,
-  numeric,
-}: TextProps) => {
-  const { textStyle, lineHeightFixNode } = useTextStyle({
-    align,
-    tone,
-    variant,
-    numeric,
-  });
+export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
+  ({ numberOfLines, children, ...textStyleProps }, ref) => {
+    const { textStyle, lineHeightFixNode } = useTextStyle(textStyleProps);
 
-  return (
-    <NativeText allowFontScaling={false} style={textStyle}>
-      {children}
-      {lineHeightFixNode}
-    </NativeText>
-  );
-};
+    return (
+      <NativeText
+        allowFontScaling={false}
+        numberOfLines={numberOfLines}
+        ref={ref}
+        style={textStyle}
+      >
+        {children}
+        {lineHeightFixNode}
+      </NativeText>
+    );
+  }
+);
+
+Text.displayName = 'Text';

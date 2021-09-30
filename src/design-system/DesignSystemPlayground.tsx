@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useHideSplashScreen } from '../hooks';
-import { Text } from '.';
+import { Heading, HeadingProps, Text, TextProps } from '.';
 
 const pink = 'rgba(255,0,0,0.2)';
 
@@ -13,7 +13,7 @@ const Spacer = ({ size = 'large' }: { size?: 'small' | 'large' }) => (
   <View style={{ height: size === 'large' ? 44 : 12 }} />
 );
 
-const MockButton = ({ children }: { children: ReactNode }) => (
+const MockBadge = ({ children }: { children: ReactNode }) => (
   <View style={{ display: 'flex', flexDirection: 'row' }}>
     <View
       style={{
@@ -33,14 +33,26 @@ const MockButton = ({ children }: { children: ReactNode }) => (
 const loremIpsum =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
 
-const text = [
-  { tagline: 'Title text', variant: 'title' },
-  { tagline: 'Heading text', variant: 'heading' },
-  { tagline: 'Body text (large)', variant: 'bodyLarge' },
-  { tagline: 'Body text', variant: 'body' },
-  { tagline: 'Body text (thick)', variant: 'bodyThick' },
-  { tagline: 'Body text (small, thick)', variant: 'smallBodyThick' },
-] as const;
+const titleCase = (string: string) =>
+  `${string[0].toUpperCase()}${string.slice(1)}`;
+
+const headingExamples: Required<Pick<HeadingProps, 'size' | 'weight'>>[] = [
+  { size: 'title', weight: 'heavy' },
+  { size: 'heading', weight: 'heavy' },
+];
+
+const textExamples: Required<Pick<TextProps, 'size' | 'weight'>>[] = [
+  { size: 'body', weight: 'regular' },
+  { size: 'body', weight: 'medium' },
+  { size: 'body', weight: 'semibold' },
+  { size: 'body', weight: 'bold' },
+  { size: 'body', weight: 'heavy' },
+  { size: 'small', weight: 'regular' },
+  { size: 'small', weight: 'medium' },
+  { size: 'small', weight: 'semibold' },
+  { size: 'small', weight: 'bold' },
+  { size: 'small', weight: 'heavy' },
+];
 
 export const DesignSystemPlayground = () => {
   useHideSplashScreen()();
@@ -48,22 +60,72 @@ export const DesignSystemPlayground = () => {
   return (
     <ScrollView>
       <View style={{ paddingHorizontal: 8, paddingVertical: 50 }}>
-        {text.map(({ variant, tagline }, i) => (
+        <TypeSeparator />
+        <Heading>Default heading</Heading>
+        <TypeSeparator />
+        <Text>Default text</Text>
+        <TypeSeparator />
+
+        {headingExamples.map(({ size, weight }) => (
           <>
-            {i > 0 ? <Spacer /> : null}
+            <Spacer />
             <TypeSeparator />
-            <Text variant={variant}>{tagline}</Text>
+            <Heading size={size} weight={weight}>
+              {titleCase(size)} ({weight})
+            </Heading>
             <TypeSeparator />
-            <Text variant={variant}>{loremIpsum}</Text>
+            <Heading size={size} weight={weight}>
+              {loremIpsum}
+            </Heading>
+            <TypeSeparator />
+            <Heading numberOfLines={1} size={size} weight={weight}>
+              Truncated text truncated text truncated text truncated text
+              truncated text truncated text
+            </Heading>
             <TypeSeparator />
             <Spacer size="small" />
-            <MockButton>
-              <Text variant={variant}>CENTERED TEXT</Text>
-            </MockButton>
+            <MockBadge>
+              <Heading size={size} weight={weight}>
+                CENTERED TEXT
+              </Heading>
+            </MockBadge>
             <Spacer size="small" />
-            <MockButton>
-              <Text variant={variant}>Centered text</Text>
-            </MockButton>
+            <MockBadge>
+              <Heading size={size} weight={weight}>
+                Centered text
+              </Heading>
+            </MockBadge>
+          </>
+        ))}
+        {textExamples.map(({ size, weight }) => (
+          <>
+            <Spacer />
+            <TypeSeparator />
+            <Text size={size} weight={weight}>
+              {titleCase(size)} text ({weight})
+            </Text>
+            <TypeSeparator />
+            <Text size={size} weight={weight}>
+              {loremIpsum}
+            </Text>
+            <TypeSeparator />
+            <Text numberOfLines={1} size={size} weight={weight}>
+              Truncated text truncated text truncated text truncated text
+              truncated text truncated text
+            </Text>
+            <TypeSeparator />
+            <Spacer size="small" />
+            <MockBadge>
+              <Text size={size} weight={weight}>
+                CENTERED TEXT
+              </Text>
+            </MockBadge>
+            <Spacer size="small" />
+            <MockBadge>
+              <Text size={size} weight={weight}>
+                Centered text
+              </Text>
+            </MockBadge>
           </>
         ))}
       </View>

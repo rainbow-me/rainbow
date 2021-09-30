@@ -1,5 +1,6 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import { precomputeValues } from '@capsizecss/core';
+import { pick } from 'lodash';
 import { PixelRatio } from 'react-native';
 
 const capsize = (options: Parameters<typeof precomputeValues>[0]) => {
@@ -56,6 +57,9 @@ const fonts = {
   },
 } as const;
 
+export const headingWeights = pick(fonts.SFProRounded, ['heavy']);
+export const textWeights = fonts.SFProRounded;
+
 // Sourced from https://seek-oss.github.io/capsize
 const fontMetrics = {
   capHeight: 1443,
@@ -73,22 +77,17 @@ const marginCorrectionForFontSize = {
   14: ios ? -0.3 : -0.1,
 } as const;
 
-const createTextVariant = <FontFamily extends keyof typeof fonts>({
-  fontFamily,
-  fontWeight,
+const createTextSize = ({
   fontSize,
   lineHeight: leading,
   letterSpacing,
 }: {
-  fontFamily: FontFamily;
-  fontWeight: keyof typeof fonts[FontFamily];
   fontSize: keyof typeof marginCorrectionForFontSize;
   lineHeight: number;
   letterSpacing: number;
 }) => {
   const styles = {
     letterSpacing,
-    ...fonts[fontFamily][fontWeight],
     ...capsize({
       fontMetrics,
       fontSize,
@@ -108,45 +107,26 @@ const createTextVariant = <FontFamily extends keyof typeof fonts>({
   };
 };
 
-export const textVariants = {
-  title: createTextVariant({
-    fontFamily: 'SFProRounded',
-    fontWeight: 'bold',
+export const headingSizes = {
+  title: createTextSize({
     fontSize: 23,
     lineHeight: 27,
     letterSpacing: 0.5,
   }),
-  heading: createTextVariant({
-    fontFamily: 'SFProRounded',
-    fontWeight: 'bold',
+  heading: createTextSize({
     fontSize: 20,
     lineHeight: 24,
     letterSpacing: 0.5,
   }),
-  bodyLarge: createTextVariant({
-    fontFamily: 'SFProRounded',
-    fontWeight: 'regular',
-    fontSize: 18,
-    lineHeight: 20,
-    letterSpacing: 0.5,
-  }),
-  body: createTextVariant({
-    fontFamily: 'SFProRounded',
-    fontWeight: 'medium',
+};
+
+export const textSizes = {
+  body: createTextSize({
     fontSize: 16,
     lineHeight: 22,
     letterSpacing: 0.5,
   }),
-  bodyThick: createTextVariant({
-    fontFamily: 'SFProRounded',
-    fontWeight: 'bold',
-    fontSize: 16,
-    lineHeight: 22,
-    letterSpacing: 0.6,
-  }),
-  smallBodyThick: createTextVariant({
-    fontFamily: 'SFProRounded',
-    fontWeight: 'semibold',
+  small: createTextSize({
     fontSize: 14,
     lineHeight: 17,
     letterSpacing: 0.6,
