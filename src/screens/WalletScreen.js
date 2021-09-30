@@ -44,6 +44,7 @@ const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
 }))`
   padding-top: 5;
   z-index: 1;
+  elevation: 1;
 `;
 
 const WalletPage = styled(Page)`

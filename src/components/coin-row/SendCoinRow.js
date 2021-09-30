@@ -19,8 +19,7 @@ const isTinyPhone = deviceUtils.dimensions.height <= 568;
 const selectedHeight = isTinyPhone ? 50 : android || isSmallPhone ? 64 : 70;
 
 const containerStyles = `
-  padding-left: 19;
-  padding-top: 19;
+  padding-top: ${android ? 9 : 19};
 `;
 
 const NativeAmountBubble = styled(LinearGradient).attrs(

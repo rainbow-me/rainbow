@@ -5,7 +5,7 @@ import {
   ChartPath,
   ChartPathProvider,
   monotoneCubicInterpolation,
-} from 'react-native-animated-charts';
+} from '@rainbow-me/animated-charts';
 
 export const {width: SIZE} = Dimensions.get('window');
 

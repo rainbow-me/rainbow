@@ -16,7 +16,7 @@ const NameInput = styled(Input).attrs({
   spellCheck: false,
 })`
   ${fontWithWidth(fonts.weight.heavy)};
-  ${android ? 'height: 70; margin-vertical: -8;' : ''}
+  ${android && 'height: 70; margin-top: -12; margin-bottom: -20;'}
   width: 100%;
 `;
 

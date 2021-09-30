@@ -57,7 +57,7 @@ const extractCollectiblesIdFromRow = (row: {
             asset_contract: { address: EthereumAddress };
             id: string;
           }) => {
-            tokenAddresses += `${individualToken?.asset_contract?.address}|${individualToken.id}||`;
+            tokenAddresses += `${individualToken?.asset_contract?.address}|${individualToken?.id}||`;
           }
         );
       }
@@ -160,10 +160,6 @@ const StyledContainer = styled(View)`
   flex: 1;
   background-color: ${({ theme: { colors } }) => colors.white};
   overflow: hidden;
-`;
-
-const StyledRefreshControl = styled(RefreshControl)`
-  ${ios ? '' : 'padding-top: 20;'}
 `;
 
 type RecyclerListViewRef = RecyclerListView<
@@ -684,8 +680,9 @@ function RecyclerAssetList({
         ? {}
         : {
             refreshControl: (
-              <StyledRefreshControl
+              <RefreshControl
                 onRefresh={handleRefresh}
+                progressViewOffset={android ? 30 : 0}
                 refreshing={isRefreshing}
                 tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
               />

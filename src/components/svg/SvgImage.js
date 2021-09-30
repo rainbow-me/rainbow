@@ -47,7 +47,7 @@ class SvgImage extends Component {
     this.doFetch(this.props);
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     const prevUri = this.props.source && this.props.source.uri;
     const nextUri = nextProps.source && nextProps.source.uri;
 
@@ -72,9 +72,18 @@ class SvgImage extends Component {
         try {
           const res = await fetch(uri);
           const text = await res.text();
-          this.mounted && this.setState({ fetchingUrl: uri, svgContent: text });
+          if (text.toLowerCase().indexOf('<svg') !== -1) {
+            this.mounted &&
+              this.setState({ fetchingUrl: uri, svgContent: text });
+          } else {
+            logger.log('invalid svg', { text, uri });
+            this.mounted && props.onError && props.onError('invalid svg');
+          }
         } catch (err) {
           logger.log('error loading remote svg image', err);
+          this.mounted &&
+            props.onError &&
+            props.onError('error loading remote svg image');
         }
       }
       this.mounted && props.onLoadEnd && props.onLoadEnd();
