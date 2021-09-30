@@ -29,6 +29,8 @@ import {
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, logger, watchingAlert } from '@rainbow-me/utils';
 
+const WC_RELAY_PROVIDER = 'wss://relay.walletconnect.org';
+
 const wcTrack = (
   event: string,
   metadata: { name: string; url: string },
@@ -83,7 +85,7 @@ export const walletConnectInit = async () => {
     client = await WalletConnectClient.init({
       controller: true,
       metadata: RAINBOW_METADATA,
-      relayProvider: 'wss://relay.walletconnect.org',
+      relayProvider: WC_RELAY_PROVIDER,
       storageOptions: {
         asyncStorage: AsyncStorage as any,
       },

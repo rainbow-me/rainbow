@@ -219,7 +219,7 @@ export default function useSavingsAccount(includeDefaultDai) {
       });
     }
     return savings;
-  }, [includeDefaultDai, result]);
+  }, [genericAssets, includeDefaultDai, result]);
 
   return {
     refetchSavings,
