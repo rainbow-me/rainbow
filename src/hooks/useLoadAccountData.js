@@ -13,6 +13,7 @@ import { uniswapLiquidityLoadState } from '../redux/uniswapLiquidity';
 import { uniswapPositionsLoadState } from '../redux/usersPositions';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { promiseUtils } from '../utils';
+import { transactionSignaturesLoadState } from '@rainbow-me/redux/transactionSignatures';
 import logger from 'logger';
 
 export default function useLoadAccountData() {
@@ -27,7 +28,8 @@ export default function useLoadAccountData() {
       if (network === networkTypes.mainnet) {
         const p1 = dispatch(dataLoadState());
         const p2 = dispatch(uniqueTokensLoadState());
-        promises.push(p1, p2);
+        const p3 = dispatch(transactionSignaturesLoadState());
+        promises.push(p1, p2, p3);
       }
       const p3 = dispatch(requestsLoadState());
       const p4 = dispatch(walletConnectLoadState());

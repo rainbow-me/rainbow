@@ -49,10 +49,6 @@ import {
   saveAssets,
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
-import {
-  getTransactionSignatures,
-  saveTransactionSignatures,
-} from '@rainbow-me/handlers/localstorage/globalSettings';
 import { isL2Network, web3Provider } from '@rainbow-me/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
@@ -120,11 +116,6 @@ const DATA_LOAD_TRANSACTIONS_REQUEST = 'data/DATA_LOAD_TRANSACTIONS_REQUEST';
 const DATA_LOAD_TRANSACTIONS_SUCCESS = 'data/DATA_LOAD_TRANSACTIONS_SUCCESS';
 const DATA_LOAD_TRANSACTIONS_FAILURE = 'data/DATA_LOAD_TRANSACTIONS_FAILURE';
 
-const DATA_LOAD_TRANSACTION_SIGNATURES_SUCCESS =
-  'data/DATA_LOAD_TRANSACTION_SIGNATURES_SUCCESS';
-export const DATA_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS =
-  'data/DATA_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS';
-
 const DATA_ADD_NEW_TRANSACTION_SUCCESS =
   'data/DATA_ADD_NEW_TRANSACTION_SUCCESS';
 
@@ -167,14 +158,6 @@ export const dataLoadState = () => async (dispatch, getState) => {
   } catch (error) {
     dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
   }
-  try {
-    const transactionSignatures = await getTransactionSignatures();
-    dispatch({
-      payload: transactionSignatures,
-      type: DATA_LOAD_TRANSACTION_SIGNATURES_SUCCESS,
-    });
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
   genericAssetsHandle = setTimeout(() => {
     dispatch(genericAssetsFallback());
   }, GENERIC_ASSETS_FALLBACK_TIMEOUT);
@@ -745,27 +728,6 @@ export const assetPricesChanged = message => (dispatch, getState) => {
   });
 };
 
-export const dataAddNewTransactionSignature = (
-  parsedSignature,
-  bytes
-) => async (dispatch, getState) => {
-  const { transactionSignatures } = getState().data;
-  if (parsedSignature) {
-    const newTransactionSignatures = {
-      ...transactionSignatures,
-      [bytes]: parsedSignature,
-    };
-    try {
-      dispatch({
-        payload: newTransactionSignatures,
-        type: DATA_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS,
-      });
-      saveTransactionSignatures(newTransactionSignatures);
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
-  }
-};
-
 export const dataAddNewTransaction = (
   txDetails,
   accountAddressToUpdate = null,
@@ -1011,7 +973,6 @@ const INITIAL_STATE = {
     received: [],
   },
   transactions: [],
-  transactionSignatures: {},
   uniswapPricesQuery: null,
   uniswapPricesSubscription: null,
 };
@@ -1052,16 +1013,6 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         ethUSDCharts: action.payload,
-      };
-    case DATA_LOAD_TRANSACTION_SIGNATURES_SUCCESS:
-      return {
-        ...state,
-        transactionSignatures: action.payload,
-      };
-    case DATA_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS:
-      return {
-        ...state,
-        transactionSignatures: action.payload,
       };
     case DATA_LOAD_TRANSACTIONS_REQUEST:
       return {

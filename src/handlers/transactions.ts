@@ -2,8 +2,8 @@ import { Contract } from '@ethersproject/contracts';
 import { RainbowFetchClient } from '../rainbow-fetch';
 import { web3Provider } from './web3';
 import { ZerionTransaction } from '@rainbow-me/entities';
-import { dataAddNewTransactionSignature } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
+import { transactionSignaturesDataAddNewSignature } from '@rainbow-me/redux/transactionSignatures';
 import {
   SIGNATURE_REGISTRY_ADDRESS,
   signatureRegistryABI,
@@ -41,11 +41,11 @@ export const getTransactionMethodName = async (
   transaction: ZerionTransaction
 ) => {
   try {
-    const { transactionSignatures } = store.getState().data;
+    const { signatures } = store.getState().transactionSignatures;
     // only being used on mainnet transactions, so we can use the default web3 provider
     const txn = await web3Provider.getTransaction(transaction.hash);
     const bytes = txn?.data?.substring(0, 10) || '';
-    let signature = transactionSignatures[bytes] || '';
+    let signature = signatures[bytes] || '';
     if (signature) return signature;
     try {
       const response = await fourByteApi.get(`/?hex_signature=${bytes}`);
@@ -72,7 +72,7 @@ export const getTransactionMethodName = async (
     }
     const parsedSignature = parseSignatureToTitle(signature);
     await store.dispatch(
-      dataAddNewTransactionSignature(parsedSignature, bytes)
+      transactionSignaturesDataAddNewSignature(parsedSignature, bytes)
     );
     return parsedSignature;
   } catch (e) {
