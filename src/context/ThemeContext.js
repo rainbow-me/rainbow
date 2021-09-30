@@ -1,4 +1,3 @@
-import { ColorModeProvider } from '@rainbow-me/design-system';
 import React, {
   createContext,
   useContext,
@@ -17,6 +16,7 @@ import { ThemeProvider } from 'styled-components';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
 import { darkModeThemeColors, lightModeThemeColors } from '../styles/colors';
 import currentColors from './currentColors';
+import { ColorModeProvider } from '@rainbow-me/design-system';
 
 export const THEMES = {
   DARK: 'dark',
