@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
@@ -10,7 +10,7 @@ import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
-import { TruncatedAddress, TruncatedText } from '../text';
+import { Text, TruncatedAddress, TruncatedText } from '../text';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -61,7 +61,7 @@ const sx = StyleSheet.create({
     letterSpacing: fonts.letterSpacing.roundedTight,
     lineHeight: 22,
     paddingHorizontal: 6.5,
-    paddingVertical: 3,
+    paddingVertical: 1,
     textAlign: 'center',
   },
   rightContent: {
@@ -212,15 +212,7 @@ export default function AddressRow({
                 {...linearGradientProps}
                 marginRight={editMode || isSelected ? -9 : 19}
               >
-                <ReadOnlyText
-                  style={[
-                    sx.readOnlyText,
-                    {
-                      color: colors.alpha(colors.blueGreyDark, 0.5),
-                      ...fontWithWidth(sx.readOnlyText.fontWeight),
-                    },
-                  ]}
-                >
+                <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
                   Watching
                 </ReadOnlyText>
               </LinearGradient>
