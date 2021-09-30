@@ -309,7 +309,6 @@
     "**/css-what": "5.0.1",
     "**/socket.io-parser": "3.3.2",
     "**/tar": "6.1.11",
-    "**/ws": "7.4.6",
     "**/path-parse": "1.0.7",
     "@walletconnectv2/**/@walletconnect/types": "npm:@walletconnect/types@2.0.0-beta.18",
     "@walletconnectv2/**/@walletconnect/utils": "npm:@walletconnect/utils@2.0.0-beta.18"
