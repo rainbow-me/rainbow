@@ -219,7 +219,6 @@ export const walletConnectInit = async () => {
                     };
                     await client.respond(response);
                   } else {
-                    wcTrack('Rejected new WalletConnect session', metadata);
                     walletConnectV2HandleAction('reject');
                     const response = {
                       response: 'User rejected request',
