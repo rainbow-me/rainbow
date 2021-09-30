@@ -11,7 +11,6 @@ import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
 import store from '@rainbow-me/redux/store';
 import { ethUnits, ETH_ADDRESS } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
-import { logger } from '@rainbow-me/utils';
 import { RAINBOW_ROUTER_CONTRACT_ADDRESS, WETH } from 'rainbow-swaps';
 
 export const estimateUnlockAndSwap = async (
@@ -26,18 +25,10 @@ export const estimateUnlockAndSwap = async (
   const { accountAddress, chainId } = store.getState().settings;
 
   const isWethUnwrapping = toLower(inputCurrency.address) === toLower(WETH['1']) && toLower(outputCurrency.address) === toLower(ETH_ADDRESS);
-  
-  logger.debug({
-    isWethUnwrapping,
-    inputAddress: inputCurrency.address,
-    outputAddress: outputCurrency.address,
-    wethAddress: WETH['1'],
-  })
 
   let gasLimits: (string | number)[] = [];
   let swapAssetNeedsUnlocking = false;
   if(!isWethUnwrapping){
-    logger.debug('CHECKING UNLOCKING');
     swapAssetNeedsUnlocking = await assetNeedsUnlocking(
       accountAddress,
       inputAmount,
@@ -47,7 +38,6 @@ export const estimateUnlockAndSwap = async (
   }
 
   if (swapAssetNeedsUnlocking) {
-    logger.debug('ESTIMATING APPROVAL');
     const unlockGasLimit = await estimateApprove(
       accountAddress,
       inputCurrency.address,
@@ -55,7 +45,6 @@ export const estimateUnlockAndSwap = async (
     );
     gasLimits = concat(gasLimits, unlockGasLimit, ethUnits.basic_swap);
   } else {
-    logger.debug('ESTIMATING SWAP GAS LIMIT');
     const swapGasLimit = await estimateSwapGasLimit({
       chainId,
       requiresApprove: swapAssetNeedsUnlocking,
