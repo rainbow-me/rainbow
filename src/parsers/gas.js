@@ -10,7 +10,7 @@ import ethUnits from '../references/ethereum-units.json';
 import timeUnits from '../references/time-units.json';
 import { gasUtils } from '../utils';
 
-const { CUSTOM, FAST, NORMAL, SLOW, GasSpeedOrder } = gasUtils;
+const { CUSTOM, FAST, NORMAL, SLOW, GasSpeedOrder, GAS_CONFIDENCE } = gasUtils;
 
 /**
  * @desc parse ether gas prices
@@ -30,6 +30,24 @@ const parseGasPricesEtherscan = data => ({
   [NORMAL]: defaultGasPriceFormat(NORMAL, data.avgWait, data.average, true),
   [SLOW]: defaultGasPriceFormat(SLOW, data.safeLowWait, data.safeLow, true),
 });
+
+export const parseEIP1559GasData = data => {
+  const { baseFeePerGas, estimatedPrices } = data?.blockPrices?.[0];
+  // temp multiplier
+  const baseFee = baseFeePerGas * 1.5;
+  const parsedFees = {};
+  estimatedPrices.forEach(({ confidence, maxPriorityFeePerGas }) => {
+    parsedFees[GAS_CONFIDENCE[confidence]] = defaultGasParamsFormat(
+      GAS_CONFIDENCE[confidence],
+      0, // time
+      baseFeePerGas,
+      baseFee,
+      maxPriorityFeePerGas
+    );
+  });
+
+  return parsedFees;
+};
 
 const parseGasPricesEthGasStation = data => ({
   [CUSTOM]: null,
@@ -105,10 +123,45 @@ export const defaultGasPriceFormat = (option, timeWait, value) => {
       amount: timeAmount,
       display: getMinimalTimeUnitStringForMs(timeAmount),
     },
-    option,
-    value: {
+    gasPrice: {
       amount: Math.round(weiAmount),
       display: `${parseInt(value, 10)} Gwei`,
+    },
+    option,
+  };
+};
+
+export const defaultGasParamsFormat = (
+  option,
+  timeWait,
+  baseFeePerGas,
+  maxFeePerGas,
+  priorityFeePerGas
+) => {
+  const timeAmount = multiply(timeWait, timeUnits.ms.minute);
+  const baseFeePerGasWeiAmount = multiply(baseFeePerGas, ethUnits.gwei);
+  const maxFeePerGasWeiAmount = multiply(maxFeePerGas, ethUnits.gwei);
+  const priorityFeePerGasWeiAmount = multiply(priorityFeePerGas, ethUnits.gwei);
+  return {
+    baseFeePerGas: {
+      amount: Math.round(baseFeePerGasWeiAmount),
+      display: `${parseInt(baseFeePerGas, 10)} Gwei`,
+      gwei: baseFeePerGas.toFixed(2),
+    },
+    estimatedTime: {
+      amount: timeAmount,
+      display: getMinimalTimeUnitStringForMs(timeAmount),
+    },
+    maxFeePerGas: {
+      amount: Math.round(maxFeePerGasWeiAmount),
+      display: `${parseInt(maxFeePerGas, 10)} Gwei`,
+      gwei: maxFeePerGas.toFixed(2),
+    },
+    option,
+    priorityFeePerGas: {
+      amount: Math.round(priorityFeePerGasWeiAmount),
+      display: `${parseInt(priorityFeePerGas, 10)} Gwei`,
+      gwei: priorityFeePerGas.toFixed(2),
     },
   };
 };
@@ -121,7 +174,7 @@ export const defaultGasPriceFormat = (option, timeWait, value) => {
  */
 export const parseTxFees = (gasPrices, priceUnit, gasLimit, nativeCurrency) => {
   const txFees = map(GasSpeedOrder, speed => {
-    const gasPrice = get(gasPrices, `${speed}.value.amount`);
+    const gasPrice = get(gasPrices, `${speed}.gasPrice.amount`);
     const txFee = getTxFee(gasPrice, gasLimit, priceUnit, nativeCurrency);
     return {
       txFee,
@@ -140,19 +193,19 @@ export const parseEip1559TxFees = (
     // using blocknative max fee for now
     const priorityFee = get(
       eip1559GasPrices,
-      `estimatedFees.${speed}.priorityFee`
+      `${speed}.priorityFeePerGas.amount`
     );
 
-    const maxFee = get(eip1559GasPrices, `estimatedFees.${speed}.maxBaseFee`);
-    const baseFee = get(eip1559GasPrices, `baseFee`);
+    const maxFee = get(eip1559GasPrices, `${speed}.maxFeePerGas.amount`);
+    const baseFee = get(eip1559GasPrices, `${speed}.baseFeePerGas.amount`);
     const maxTxFee = getTxFee(
-      multiply(maxFee + priorityFee, ethUnits.gwei),
+      maxFee + priorityFee,
       gasLimit,
       priceUnit,
       nativeCurrency
     );
     const baseTxFee = getTxFee(
-      multiply(baseFee + priorityFee, ethUnits.gwei),
+      baseFee + priorityFee,
       gasLimit,
       priceUnit,
       nativeCurrency

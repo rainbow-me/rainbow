@@ -315,12 +315,14 @@ const GasSpeedButton = ({
     if (selectedGasPriceOption === CUSTOM) {
       if (!customGasPriceInput) {
         return `${defaultCustomGasPriceNative} ~ ${defaultCustomGasConfirmationTime}`;
-      } else if (gasPricesAvailable[CUSTOM]?.value) {
-        const priceInWei = Number(gasPricesAvailable[CUSTOM].value.amount);
+      } else if (gasPricesAvailable[CUSTOM]?.gasPrice) {
+        const priceInWei = Number(gasPricesAvailable[CUSTOM].gasPrice.amount);
         const minGasPriceSlow = gasPricesAvailable[SLOW]
-          ? Number(gasPricesAvailable[SLOW].value.amount)
-          : Number(gasPricesAvailable[FAST].value.amount);
-        const maxGasPriceFast = Number(gasPricesAvailable[FAST].value.amount);
+          ? Number(gasPricesAvailable[SLOW].gasPrice.amount)
+          : Number(gasPricesAvailable[FAST].gasPrice.amount);
+        const maxGasPriceFast = Number(
+          gasPricesAvailable[FAST].gasPrice.amount
+        );
         if (priceInWei < minGasPriceSlow) {
           timeSymbol = '>';
         } else if (priceInWei > maxGasPriceFast) {

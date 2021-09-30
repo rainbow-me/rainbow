@@ -115,22 +115,7 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
   ]);
 
   const [currentGasTrend] = useState('stable');
-  const [maxBaseFee, setMaxBaseFee] = useState(0);
-  const [minerTip, setMinerTip] = useState(0);
-  const {
-    selectedGasPrice,
-    selectedGasPriceOption,
-    eip1559GasPrices,
-  } = useGas();
-
-  const { baseFee, estimatedFees } = eip1559GasPrices;
-
-  useEffect(() => {
-    const maxFee = estimatedFees[selectedGasPriceOption]?.maxBaseFee || 50;
-    const priorityFee = estimatedFees[selectedGasPriceOption]?.priorityFee || 2;
-    setMaxBaseFee(maxFee);
-    setMinerTip(priorityFee);
-  }, [selectedGasPriceOption, estimatedFees]);
+  const { selectedGasPrice } = useGas();
 
   return (
     <SheetKeyboardAnimation
@@ -148,13 +133,10 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
         </Header> */}
         <PanelWrapper>
           <FeesPanel
-            currentBaseFee={baseFee}
             currentGasTrend={currentGasTrend}
-            estimatedFee={selectedGasPrice?.maxTxFee}
-            maxBaseFee={maxBaseFee}
-            minerTip={minerTip}
-            setMaxBaseFee={setMaxBaseFee}
-            setMinerTip={setMinerTip}
+            selectedGasPrice={selectedGasPrice}
+            // setMaxBaseFee={setMaxBaseFee}
+            // setMinerTip={setMinerTip}
           />
           <Divider />
           <FeesPanelTabs />

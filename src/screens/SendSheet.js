@@ -25,6 +25,8 @@ import {
   createSignableTransaction,
   estimateGasLimit,
   getProviderForNetwork,
+  getTxGasParams,
+  isEIP1559SupportedNetwork,
   isL2Network,
   resolveNameOrAddress,
   web3Provider,
@@ -118,7 +120,6 @@ export default function SendSheet(props) {
     updateTxFee,
   } = useGas();
   const isDismissing = useRef(false);
-
   const recipientFieldRef = useRef();
 
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
@@ -437,9 +438,16 @@ export default function SendSheet(props) {
   const onSubmit = useCallback(async () => {
     const validTransaction =
       isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
-    if (!selectedGasPrice.txFee || !validTransaction) {
+    const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
+    if (
+      (isEIP1559SupportedNetwork(assetNetwork)
+        ? !selectedGasPrice?.maxTxFee
+        : !selectedGasPrice?.txFee) ||
+      !validTransaction
+    ) {
       logger.sentry('preventing tx submit for one of the following reasons:');
-      logger.sentry('selectedGasPrice.txFee ? ', selectedGasPrice?.txFee);
+      logger.sentry('selectedGasPrice ? ', selectedGasPrice);
+      logger.sentry('selectedGasPrice.maxFee ? ', selectedGasPrice?.maxFee);
       logger.sentry('validTransaction ? ', validTransaction);
       captureEvent('Preventing tx submit');
       return false;
@@ -482,10 +490,12 @@ export default function SendSheet(props) {
       asset: selected,
       from: accountAddress,
       gasLimit: gasLimitToUse,
-      gasPrice: selectedGasPrice.value?.amount,
+      network: assetNetwork,
       nonce: null,
       to: toAddress,
+      ...getTxGasParams(selectedGasPrice, assetNetwork),
     };
+
     try {
       const signableTransaction = await createSignableTransaction(txDetails);
       const { result: txResult } = await sendTransaction({
@@ -521,6 +531,7 @@ export default function SendSheet(props) {
     gasLimit,
     isSufficientGas,
     isValidAddress,
+    network,
     selected,
     selectedGasPrice,
     toAddress,
@@ -589,7 +600,13 @@ export default function SendSheet(props) {
     if (network === networkTypes.polygon) {
       nativeToken = 'MATIC';
     }
-    if (isEmpty(eip1559GasPrices) || !selectedGasPrice || isEmpty(txFees)) {
+    const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
+
+    const gasrices = isEIP1559SupportedNetwork(assetNetwork)
+      ? eip1559GasPrices
+      : gasPrices;
+
+    if (isEmpty(gasrices) || !selectedGasPrice || isEmpty(txFees)) {
       label = `Loading...`;
       disabled = true;
     } else if (!isZeroAssetAmount && !isSufficientGas) {
@@ -607,11 +624,13 @@ export default function SendSheet(props) {
   }, [
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
-    eip1559GasPrices,
-    isSufficientGas,
     network,
+    selected.type,
+    eip1559GasPrices,
+    gasPrices,
     selectedGasPrice,
     txFees,
+    isSufficientGas,
   ]);
 
   const showConfirmationSheet = useCallback(async () => {

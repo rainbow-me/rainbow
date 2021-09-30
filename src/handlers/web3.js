@@ -15,8 +15,10 @@ import {
 } from 'react-native-dotenv';
 import {
   ARBITRUM_ETH_ADDRESS,
+  EIP1559_TRANSACTION_TYPE,
   ETH_ADDRESS,
   ethUnits,
+  LEGACY_TRANSACTION_TYPE,
   MATIC_POLYGON_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
   smartContractMethods,
@@ -62,6 +64,21 @@ export const web3SetHttpProvider = async network => {
     web3Provider = new JsonRpcProvider(replace(infuraUrl, 'network', network));
   }
   return web3Provider.ready;
+};
+
+/**
+ * @desc returns true if the given network is EIP1559 supported
+ * @param {String} network
+ */
+export const isEIP1559SupportedNetwork = network => {
+  switch (network) {
+    case NetworkTypes.arbitrum:
+    case NetworkTypes.optimism:
+    case NetworkTypes.polygon:
+      return false;
+    default:
+      return true;
+  }
 };
 
 /**
@@ -281,6 +298,20 @@ export const getTransaction = hash => web3Provider.getTransaction(hash);
 export const getTransactionCount = address =>
   web3Provider.getTransactionCount(address, 'pending');
 
+export const getTxGasParams = (selectedGasParams, network) => {
+  const gasParams = isEIP1559SupportedNetwork(network)
+    ? {
+        maxFeePerGas: selectedGasParams?.maxFeePerGas.amount,
+        maxPriorityFeePerGas: selectedGasParams?.priorityFeePerGas.amount,
+        type: LEGACY_TRANSACTION_TYPE,
+      }
+    : {
+        gasPrice: selectedGasParams?.gasPrice?.amount,
+        type: EIP1559_TRANSACTION_TYPE,
+      };
+  return gasParams;
+};
+
 /**
  * @desc get transaction details
  * @param  {Object} transaction { from, to, data, value, gasPrice, gasLimit }
@@ -293,13 +324,27 @@ export const getTxDetails = async transaction => {
   const gasLimit = transaction.gasLimit
     ? toHex(transaction.gasLimit)
     : undefined;
-  const gasPrice = toHex(transaction.gasPrice) || undefined;
-  const tx = {
+  const baseTx = {
     data,
     gasLimit,
-    gasPrice,
     to,
     value,
+  };
+
+  const gasParams = isEIP1559SupportedNetwork(transaction.network)
+    ? {
+        maxFeePerGas: toHex(transaction.maxFeePerGas),
+        maxPriorityFeePerGas: toHex(transaction.maxPriorityFeePerGas),
+        type: LEGACY_TRANSACTION_TYPE,
+      }
+    : {
+        gasPrice: toHex(transaction.gasPrice),
+        type: EIP1559_TRANSACTION_TYPE,
+      };
+
+  const tx = {
+    ...baseTx,
+    ...gasParams,
   };
   return tx;
 };

@@ -10,11 +10,16 @@ import {
   maticGasStationGetGasPrices,
   maticGetGasEstimates,
 } from '@rainbow-me/handlers/gasPrices';
-import { getProviderForNetwork, isL2Network } from '@rainbow-me/handlers/web3';
+import {
+  getProviderForNetwork,
+  isEIP1559SupportedNetwork,
+  isL2Network,
+} from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasPriceFormat,
   getFallbackGasPrices,
+  parseEIP1559GasData,
   parseEip1559TxFees,
   parseGasPrices,
   parseTxFees,
@@ -49,7 +54,7 @@ const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
 // -- Actions --------------------------------------------------------------- //
 let gasPricesHandle = null;
 
-const { GAS_PRICE_SOURCES, GAS_CONFIDENCE } = gasUtils;
+const { GAS_PRICE_SOURCES } = gasUtils;
 
 const getDefaultTxFees = () => (dispatch, getState) => {
   const { defaultGasLimit } = getState().gas;
@@ -143,31 +148,12 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
     return priceData;
   };
 
-  const parseEIP1559GasData = data => {
-    const { baseFeePerGas, estimatedPrices } = data?.blockPrices?.[0];
-    // temp multiplier
-    const maxBaseFee = baseFeePerGas * 1.5;
-    const confidenceLevels = {};
-    estimatedPrices.forEach(
-      ({ confidence, maxPriorityFeePerGas, maxFeePerGas }) => {
-        confidenceLevels[GAS_CONFIDENCE[confidence]] = {
-          maxBaseFee: maxBaseFee,
-          maxFee: maxBaseFee + maxPriorityFeePerGas,
-          maxFeePerGas,
-          priorityFee: maxPriorityFeePerGas,
-        };
-      }
-    );
-
-    return { baseFee: baseFeePerGas, estimatedFees: confidenceLevels };
-  };
-
   const getEIP1559GasParams = async () => {
     const { data } = await blockNativeGetGasParams();
     return parseEIP1559GasData(data);
   };
 
-  const getGasPrices = () =>
+  const getGasPrices = network =>
     new Promise(async (fetchResolve, fetchReject) => {
       try {
         const {
@@ -267,23 +253,20 @@ export const gasUpdateGasPriceOption = (
   const { gasPrices, eip1559GasPrices, txFees } = getState().gas;
   if (isEmpty(gasPrices)) return;
   const { assets } = getState().data;
-  const isL2 =
-    network === networkTypes.polygon ||
-    network === networkTypes.arbitrum ||
-    network === networkTypes.optimism;
-  const results = isL2
+
+  const results = isEIP1559SupportedNetwork(network)
     ? getSelectedGasPrice(
+        assetsOverride || assets,
+        eip1559GasPrices,
+        txFees,
+        newGasPriceOption
+      )
+    : getLegacySelectedGasPrice(
         assetsOverride || assets,
         gasPrices,
         txFees,
         newGasPriceOption,
         network
-      )
-    : getEip1559SelectedGasPrice(
-        assetsOverride || assets,
-        eip1559GasPrices,
-        txFees,
-        newGasPriceOption
       );
 
   dispatch({
@@ -346,10 +329,6 @@ export const gasUpdateTxFee = (network, gasLimit, overrideGasOption) => (
   } = getState().gas;
   const _gasLimit = gasLimit || defaultGasLimit;
   const _selectedGasPriceOption = overrideGasOption || selectedGasPriceOption;
-  const isL2 =
-    network === networkTypes.polygon ||
-    network === networkTypes.arbitrum ||
-    network === networkTypes.optimism;
 
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
@@ -357,33 +336,36 @@ export const gasUpdateTxFee = (network, gasLimit, overrideGasOption) => (
   if (network === networkTypes.polygon) {
     nativeTokenPriceUnit = ethereumUtils.getMaticPriceUnit();
   }
-  if (isEmpty(gasPrices)) return;
-  const txFees = isL2
-    ? parseTxFees(gasPrices, nativeTokenPriceUnit, _gasLimit, nativeCurrency)
-    : parseEip1559TxFees(
-        eip1559GasPrices,
-        nativeTokenPriceUnit,
-        _gasLimit,
-        nativeCurrency
-      );
-  const results = isL2
-    ? getSelectedGasPrice(
-        assets,
-        gasPrices,
-        txFees,
-        _selectedGasPriceOption,
-        network
-      )
-    : getEip1559SelectedGasPrice(
-        assets,
-        eip1559GasPrices,
-        txFees,
-        _selectedGasPriceOption
-      );
+  const gasParams = isEIP1559SupportedNetwork(network)
+    ? eip1559GasPrices
+    : gasPrices;
+  if (isEmpty(gasParams)) return;
+
+  const parseFees = isEIP1559SupportedNetwork(network)
+    ? parseEip1559TxFees
+    : parseTxFees;
+  const getSelectedGasParams = isEIP1559SupportedNetwork(network)
+    ? getSelectedGasPrice
+    : getLegacySelectedGasPrice;
+
+  const txFees = parseFees(
+    gasParams,
+    nativeTokenPriceUnit,
+    _gasLimit,
+    nativeCurrency
+  );
+
+  const selectedGasParams = getSelectedGasParams(
+    assets,
+    gasParams,
+    txFees,
+    _selectedGasPriceOption,
+    network
+  );
 
   dispatch({
     payload: {
-      ...results,
+      ...selectedGasParams,
       gasLimit,
       txFees,
     },
@@ -391,7 +373,7 @@ export const gasUpdateTxFee = (network, gasLimit, overrideGasOption) => (
   });
 };
 
-const getEip1559SelectedGasPrice = (
+const getSelectedGasPrice = (
   assets,
   eip1559GasPrices,
   txFees,
@@ -401,7 +383,7 @@ const getEip1559SelectedGasPrice = (
   // If no custom price is set we default to FAST
   if (
     selectedGasPriceOption === gasUtils.CUSTOM &&
-    get(txFee, 'txFee.value.amount') === 'NaN'
+    get(txFee, 'txFee.gasPrice.amount') === 'NaN'
   ) {
     txFee = txFees[gasUtils.FAST];
   }
@@ -410,7 +392,9 @@ const getEip1559SelectedGasPrice = (
 
   const balanceAmount = get(nativeAsset, 'balance.amount', 0);
   const txFeeAmount = fromWei(get(txFee, 'maxTxFee.value.amount', 0));
+
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
+
   return {
     isSufficientGas,
     selectedGasPrice: {
@@ -420,7 +404,7 @@ const getEip1559SelectedGasPrice = (
   };
 };
 
-const getSelectedGasPrice = (
+const getLegacySelectedGasPrice = (
   assets,
   gasPrices,
   txFees,
@@ -431,7 +415,7 @@ const getSelectedGasPrice = (
   // If no custom price is set we default to FAST
   if (
     selectedGasPriceOption === gasUtils.CUSTOM &&
-    get(txFee, 'txFee.value.amount') === 'NaN'
+    get(txFee, 'txFee.gasPrice.amount') === 'NaN'
   ) {
     txFee = txFees[gasUtils.FAST];
   }
@@ -454,7 +438,7 @@ const getSelectedGasPrice = (
   const nativeAsset = ethereumUtils.getAsset(assets, nativeAssetAddress);
 
   const balanceAmount = get(nativeAsset, 'balance.amount', 0);
-  const txFeeAmount = fromWei(get(txFee, 'txFee.value.amount', 0));
+  const txFeeAmount = fromWei(get(txFee, 'txFee.gasPrice.amount', 0));
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
 
   return {

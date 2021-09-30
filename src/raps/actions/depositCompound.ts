@@ -57,7 +57,7 @@ const depositCompound = async (
 
   let gasPrice = selectedGasPrice?.value?.amount;
   if (!gasPrice) {
-    gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+    gasPrice = get(gasPrices, `[${gasUtils.FAST}].gasPrice.amount`);
   }
   logger.log(`[${actionName}] gas price`, gasPrice);
 
