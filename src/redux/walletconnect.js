@@ -614,7 +614,7 @@ export const walletConnectDisconnectAllByDappUrl = dappUrl => async (
       )
     );
     await removeWalletConnectSessions(peerIds);
-    forEach(matchingWalletConnectors, connector => connector.killSession());
+    forEach(matchingWalletConnectors, connector => connector?.killSession());
     dispatch({
       payload: omitBy(
         walletConnectors,
