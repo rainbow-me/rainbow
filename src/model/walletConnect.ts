@@ -166,13 +166,13 @@ export const walletConnectInit = async (store: any) => {
               dappUrl: metadata?.url,
               imageUrl: metadata.icons?.[0],
             },
-            version: 'v2',
+            version: WC_VERSION_2,
           });
         } catch (error) {
           logger.log('Exception during wc session.proposal');
           analytics.track('Exception on wc session.proposal', {
             error,
-            version: 'v2',
+            version: WC_VERSION_2,
           });
           await client.reject({
             proposal,
@@ -235,7 +235,7 @@ export const walletConnectInit = async (store: any) => {
                 chainId,
                 meta: metadata,
                 type: walletConnectApprovalSheetTypes.switch_chain,
-                version: 'v2',
+                version: WC_VERSION_2,
               });
             } else {
               const response = {
@@ -317,7 +317,7 @@ export const walletConnectInit = async (store: any) => {
           logger.log('Exception during wc session.request');
           analytics.track('Exception on wc session.request', {
             error,
-            version: 'v2',
+            version: WC_VERSION_2,
           });
           await client.respond({
             response: { error, id: requestEvent.request.id, jsonrpc: '2.0' },
@@ -399,6 +399,6 @@ export const walletConnectPair = async (uri: string) => {
     callback: () => null,
     chainId: null,
     meta: null,
-    version: 'v2',
+    version: WC_VERSION_2,
   });
 };
