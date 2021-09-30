@@ -88,17 +88,17 @@ export const uniswapPositionsLoadState = () => async (
 
 function formatPricesForEarlyTimestamps(position: any): Position {
   if (position.timestamp < PRICE_DISCOVERY_START_TIMESTAMP) {
-    if (priceOverrides.includes(position?.pair?.token0.id)) {
+    if (priceOverrides.includes(position?.pair?.token0?.id)) {
       position.token0PriceUSD = 1;
     }
-    if (priceOverrides.includes(position?.pair?.token1.id)) {
+    if (priceOverrides.includes(position?.pair?.token1?.id)) {
       position.token1PriceUSD = 1;
     }
     // WETH price
-    if (position.pair?.token0.id === WETH_ADDRESS) {
+    if (position.pair?.token0?.id === WETH_ADDRESS) {
       position.token0PriceUSD = 203;
     }
-    if (position.pair?.token1.id === WETH_ADDRESS) {
+    if (position.pair?.token1?.id === WETH_ADDRESS) {
       position.token1PriceUSD = 203;
     }
   }
@@ -190,8 +190,8 @@ async function getPrincipalForUserPerPair(user: string, pairAddress: string) {
   });
   for (const index in results.data.mints) {
     const mint = results.data.mints[index];
-    const mintToken0 = mint.pair.token0.id;
-    const mintToken1 = mint.pair.token1.id;
+    const mintToken0 = mint.pair.token0?.id;
+    const mintToken1 = mint.pair.token1?.id;
 
     // if tracking before prices were discovered (pre-launch days), hardcode stablecoins
     if (
@@ -213,8 +213,8 @@ async function getPrincipalForUserPerPair(user: string, pairAddress: string) {
 
   for (const index in results.data.burns) {
     const burn = results.data.burns[index];
-    const burnToken0 = burn.pair.token0.id;
-    const burnToken1 = burn.pair.token1.id;
+    const burnToken0 = burn.pair.token0?.id;
+    const burnToken1 = burn.pair.token1?.id;
 
     // if tracking before prices were discovered (pre-launch days), hardcode stablecoins
     if (
@@ -245,14 +245,14 @@ async function getLPReturnsOnPair(
   snapshots: any
 ) {
   // initialize values
-  const principal = await getPrincipalForUserPerPair(user, pair.id);
+  const principal = await getPrincipalForUserPerPair(user, pair?.id);
   let hodlReturn = 0;
   let netReturn = 0;
   let uniswapReturn = 0;
   let fees = 0;
 
   snapshots = snapshots.filter((entry: any) => {
-    return entry.pair.id === pair.id;
+    return entry.pair?.id === pair?.id;
   });
 
   // get data about the current position

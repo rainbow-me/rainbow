@@ -77,19 +77,19 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
       current &&
         current.data.pairs.map(async pair => {
           let data = pair;
-          let oneDayHistory = oneDayData?.[pair.id];
+          let oneDayHistory = oneDayData?.[pair?.id];
           if (!oneDayHistory) {
             const newData = await uniswapClient.query({
               fetchPolicy: 'no-cache',
-              query: UNISWAP_PAIR_DATA_QUERY(pair.id, b1),
+              query: UNISWAP_PAIR_DATA_QUERY(pair?.id, b1),
             });
             oneDayHistory = newData?.data?.pairs[0];
           }
-          let oneMonthHistory = oneMonthData?.[pair.id];
+          let oneMonthHistory = oneMonthData?.[pair?.id];
           if (!oneMonthHistory) {
             const newData = await uniswapClient.query({
               fetchPolicy: 'no-cache',
-              query: UNISWAP_PAIR_DATA_QUERY(pair.id, b2),
+              query: UNISWAP_PAIR_DATA_QUERY(pair?.id, b2),
             });
             oneMonthHistory = newData?.data?.pairs[0];
           }
@@ -155,7 +155,7 @@ function parseData(
     (newData.oneDayVolumeUSD * 0.003 * 365 * 100) / newData.trackedReserveUSD;
 
   return {
-    address: newData.id,
+    address: newData?.id,
     annualized_fees: newData.annualized_fees,
     liquidity: Number(Number(newData.reserveUSD).toFixed(2)),
     oneDayVolumeUSD: newData.oneDayVolumeUSD,
@@ -298,7 +298,7 @@ export default function useUniswapPools(sortField, sortDirection, token) {
     // get data for every pair in list
     try {
       const topPairs = await getBulkPairData(
-        pairsFromQuery.map(item => item.id),
+        pairsFromQuery.map(item => item?.id),
         Number(priceOfEther),
         Number(ethereumPriceOneMonthAgo)
       );
@@ -328,22 +328,22 @@ export default function useUniswapPools(sortField, sortDirection, token) {
     const tmpAllTokens = [];
     // Override with tokens from generic assets
     sortedPairs = sortedPairs.map(pair => {
-      const token0 = (toLower(pair.token0.id) === WETH_ADDRESS
+      const token0 = (toLower(pair.token0?.id) === WETH_ADDRESS
         ? genericAssets['eth']
-        : genericAssets[toLower(pair.token0.id)]) || {
+        : genericAssets[toLower(pair.token0?.id)]) || {
         ...pair.token0,
-        address: pair.token0.id,
+        address: pair.token0?.id,
       };
       const token1 =
-        toLower(pair.token1.id) === WETH_ADDRESS
+        toLower(pair.token1?.id) === WETH_ADDRESS
           ? genericAssets['eth']
-          : genericAssets[toLower(pair.token1.id)] || {
+          : genericAssets[toLower(pair.token1?.id)] || {
               ...pair.token1,
-              address: pair.token1.id,
+              address: pair.token1?.id,
             };
       pair.tokens = [token0, token1];
-      tmpAllTokens.push(toLower(pair.tokens[0].id));
-      tmpAllTokens.push(toLower(pair.tokens[1].id));
+      tmpAllTokens.push(toLower(pair.tokens[0]?.id));
+      tmpAllTokens.push(toLower(pair.tokens[1]?.id));
       const pairAdjustedForCurrency = {
         ...pair,
         liquidity: pair.liquidity * currenciesRate,

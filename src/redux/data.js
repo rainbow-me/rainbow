@@ -244,7 +244,7 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
     if (coingeckoAsset) {
       allAssets.push({
         asset_code: address,
-        coingecko_id: coingeckoAsset.id,
+        coingecko_id: coingeckoAsset?.id,
         name: coingeckoAsset.name,
         symbol: toUpper(coingeckoAsset.symbol),
       });
