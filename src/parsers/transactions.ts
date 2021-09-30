@@ -33,6 +33,7 @@ import {
   ZerionTransactionChange,
   ZerionTransactionStatus,
 } from '@rainbow-me/entities';
+import { getTransactionMethodName } from '@rainbow-me/handlers/transactions';
 import { isL2Network, toChecksumAddress } from '@rainbow-me/handlers/web3';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { ETH_ADDRESS, savingsAssetsList } from '@rainbow-me/references';
@@ -41,7 +42,6 @@ import {
   convertRawAmountToNativeDisplay,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
-import { getTransactionMethodName } from '@rainbow-me/handlers/transactions';
 
 const LAST_TXN_HASH_BUFFER = 20;
 

@@ -394,35 +394,35 @@ export const transactionsReceived = (message, appended = false) => async (
       dispatch(checkForConfirmedSavingsActions(transactionData));
     }
 
-  const { accountAddress, nativeCurrency, network } = getState().settings;
-  const { purchaseTransactions } = getState().addCash;
-  const { transactions } = getState().data;
-  const { selected } = getState().wallets;
+    const { accountAddress, nativeCurrency, network } = getState().settings;
+    const { purchaseTransactions } = getState().addCash;
+    const { transactions } = getState().data;
+    const { selected } = getState().wallets;
 
-  const {
-    parsedTransactions,
-    potentialNftTransaction,
-  } = await parseTransactions(
-    transactionData,
-    accountAddress,
-    nativeCurrency,
-    transactions,
-    purchaseTransactions,
-    network,
-    appended
-  );
-  if (appended && potentialNftTransaction) {
-    setTimeout(() => {
-      dispatch(uniqueTokensRefreshState());
-    }, 60000);
-  }
-  dispatch({
-    payload: parsedTransactions,
-    type: DATA_UPDATE_TRANSACTIONS,
-  });
-  dispatch(updatePurchases(parsedTransactions));
-  saveLocalTransactions(parsedTransactions, accountAddress, network);
-    
+    const {
+      parsedTransactions,
+      potentialNftTransaction,
+    } = await parseTransactions(
+      transactionData,
+      accountAddress,
+      nativeCurrency,
+      transactions,
+      purchaseTransactions,
+      network,
+      appended
+    );
+    if (appended && potentialNftTransaction) {
+      setTimeout(() => {
+        dispatch(uniqueTokensRefreshState());
+      }, 60000);
+    }
+    dispatch({
+      payload: parsedTransactions,
+      type: DATA_UPDATE_TRANSACTIONS,
+    });
+    dispatch(updatePurchases(parsedTransactions));
+    saveLocalTransactions(parsedTransactions, accountAddress, network);
+
     if (appended && parsedTransactions.length) {
       if (
         selected &&
