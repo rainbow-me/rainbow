@@ -71,7 +71,7 @@ export const getTransactionMethodName = async (
       } catch (e) {}
     }
     const parsedSignature = parseSignatureToTitle(signature);
-    await store.dispatch(
+    store.dispatch(
       transactionSignaturesDataAddNewSignature(parsedSignature, bytes)
     );
     return parsedSignature;
