@@ -435,19 +435,19 @@ export default function TransactionConfirmationScreen() {
 
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
-  // useEffect(() => {
-  //   if (!peerId) {
-  //     Alert.alert(
-  //       'Connection Expired',
-  //       'Please go back to the dapp and reconnect it to your wallet',
-  //       [
-  //         {
-  //           onPress: () => onCancel(),
-  //         },
-  //       ]
-  //     );
-  //   }
-  // }, [goBack, onCancel, peerId]);
+  useEffect(() => {
+    if (!isWalletConnectV2Request && !peerId) {
+      Alert.alert(
+        'Connection Expired',
+        'Please go back to the dapp and reconnect it to your wallet',
+        [
+          {
+            onPress: () => onCancel(),
+          },
+        ]
+      );
+    }
+  }, [goBack, onCancel, peerId, isWalletConnectV2Request]);
 
   const calculateGasLimit = useCallback(async () => {
     calculatingGasLimit.current = true;

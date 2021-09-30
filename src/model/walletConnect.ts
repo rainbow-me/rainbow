@@ -19,6 +19,7 @@ import {
   addRequestToApproveV2,
   WC_VERSION_2,
 } from '@rainbow-me/redux/requests';
+import store from '@rainbow-me/redux/store';
 import {
   RAINBOW_METADATA,
   saveWalletConnectV2Sessions,
@@ -83,7 +84,7 @@ export const walletConnectV2HandleAction = (type: string, scheme?: string) => {
 
 let client: WalletConnectClient;
 
-export const walletConnectInit = async (store: any) => {
+export const walletConnectInit = async () => {
   if (!client) {
     client = await WalletConnectClient.init({
       controller: true,

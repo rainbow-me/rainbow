@@ -93,7 +93,7 @@ class App extends Component {
     AppState.addEventListener('change', this.handleAppStateChange);
 
     // Wallet connect v2
-    walletConnectInit(store);
+    walletConnectInit();
 
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
     await this.handleInitializeAnalytics();
