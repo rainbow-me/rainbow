@@ -817,15 +817,19 @@ export const dataWatchPendingTransactions = (
       txn => txn.pending
     );
 
+    if (isEmpty(pending)) {
+      return true;
+    }
     let txStatusesDidChange = false;
-    if (isEmpty(pending)) return true;
 
-    const p = provider || web3Provider;
     const updatedPendingTransactions = await Promise.all(
       pending.map(async tx => {
         const updatedPending = { ...tx };
         const txHash = ethereumUtils.getHash(tx);
         try {
+          logger.log('Checking pending tx with hash', txHash);
+          const p =
+            provider || (await getProviderForNetwork(updatedPending.network));
           const txObj = await p.getTransaction(txHash);
           // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
           const nonceAlreadyIncluded = currentNonce > tx.nonce;
