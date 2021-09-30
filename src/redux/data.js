@@ -810,7 +810,9 @@ export const dataWatchPendingTransactions = (
           // When speeding up a non "normal tx" we need to resubscribe
           // because zerion "append" event isn't reliable
           logger.log('TX CONFIRMED!', txObj);
-          appEvents.emit('transactionConfirmed', txObj);
+          if (!nonceAlreadyIncluded) {
+            appEvents.emit('transactionConfirmed', txObj);
+          }
           const minedAt = Math.floor(Date.now() / 1000);
           txStatusesDidChange = true;
           if (txObj && !isZero(txObj.status)) {
