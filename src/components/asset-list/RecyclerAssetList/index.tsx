@@ -811,21 +811,15 @@ function RecyclerAssetList({
             collectibles.data[i].familyName + (showcase ? '-showcase' : '')
           ]
         ) {
-          const familyIndex = i;
-          const layout = ref?.getLayout(familyIndex);
+          const startOfDesiredComponent =
+            colleciblesStartHeight + AssetListHeaderHeight + heightOnTop;
+          const endOfDesiredComponent = startOfDesiredComponent + familyHeight;
 
-          if (layout) {
-            const startOfDesiredComponent =
-              colleciblesStartHeight + AssetListHeaderHeight + heightOnTop;
-            const endOfDesiredComponent =
-              startOfDesiredComponent + familyHeight;
-
-            if (endOfDesiredComponent > bottomHorizonOfScreen) {
-              setTimeout(
-                () => ref?.scrollToOffset(0, startOfDesiredComponent, true),
-                100
-              );
-            }
+          if (endOfDesiredComponent > bottomHorizonOfScreen) {
+            setTimeout(
+              () => ref?.scrollToOffset(0, startOfDesiredComponent, true),
+              100
+            );
           }
 
           break;
