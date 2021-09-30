@@ -55,7 +55,7 @@ const walletConnectSelector = createSelector(
     return {
       sortedWalletConnectors: sorted,
       walletConnectorsByDappName: formatDappData(groupedByDappName),
-      walletConnectorsCount: sorted.length,
+      walletConnectorsCount: sorted?.length,
     };
   }
 );
@@ -64,7 +64,7 @@ const walletConnectV2Selector = createSelector(
   state => state.walletconnect.clientV2Sessions,
   clientV2Sessions => ({
     walletConnectV2Sessions: formatSessionsData(clientV2Sessions),
-    walletConnectV2SessionsCount: clientV2Sessions.length,
+    walletConnectV2SessionsCount: clientV2Sessions?.length,
   })
 );
 

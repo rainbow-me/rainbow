@@ -19,7 +19,7 @@ const REQUESTS_CLEAR_STATE = 'requests/REQUESTS_CLEAR_STATE';
 const EXPIRATION_THRESHOLD_IN_MS = 1000 * 60 * 60;
 
 export const WC_VERSION_2 = 'v2';
-export const WC_REQUEST_VERSION_2 = 2;
+export const WC_REQUEST_VERSION_2 = '2';
 export const WC_VERSION_1 = 'v1';
 
 export const requestsLoadState = () => async (dispatch, getState) => {
