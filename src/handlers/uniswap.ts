@@ -67,7 +67,6 @@ export const estimateSwapGasLimit = async ({
 
   const isWrapEth = sellTokenAddress === ETH_ADDRESS_AGGREGATORS && buyTokenAddress === WETH['1'];
   const isUnwrapWeth = sellTokenAddress === WETH['1'] && buyTokenAddress === ETH_ADDRESS_AGGREGATORS;
-
   // Wrap / Unwrap Eth
   if (isWrapEth || isUnwrapWeth) {
       const default_estimate = isWrapEth ? ethUnits.weth_wrap : ethUnits.weth_unwrap;

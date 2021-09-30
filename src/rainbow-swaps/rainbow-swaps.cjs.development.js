@@ -912,7 +912,7 @@ var WethAbi = [
 ];
 
 var ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
-var API_BASE_URL = 'http://localhost:8080';
+var API_BASE_URL = 'https://swap-aggregator.api.p.rainbow.me';
 var RAINBOW_ROUTER_CONTRACT_ADDRESS = '0xdbC43Ba45381e02825b14322cDdd15eC4B3164E6';
 var VAULT_ADDRESS = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
 var RAINBOW_ROUTER_OWNER_ADDRESS = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
@@ -953,9 +953,7 @@ var unwrapWeth = /*#__PURE__*/function () {
         switch (_context2.prev = _context2.next) {
           case 0:
             instance = new contracts.Contract(WETH['1'], JSON.stringify(WethAbi), wallet);
-            return _context2.abrupt("return", instance.withdraw({
-              value: amount
-            }));
+            return _context2.abrupt("return", instance.withdraw(amount));
 
           case 2:
           case "end":

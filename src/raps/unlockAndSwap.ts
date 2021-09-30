@@ -25,17 +25,29 @@ export const estimateUnlockAndSwap = async (
 
   const { accountAddress, chainId } = store.getState().settings;
 
-  const isWethUnrwapping = toLower(inputCurrency.address) === toLower(WETH['1']) && toLower(outputCurrency.address) === toLower(ETH_ADDRESS);
+  const isWethUnwrapping = toLower(inputCurrency.address) === toLower(WETH['1']) && toLower(outputCurrency.address) === toLower(ETH_ADDRESS);
   
+  logger.debug({
+    isWethUnwrapping,
+    inputAddress: inputCurrency.address,
+    outputAddress: outputCurrency.address,
+    wethAddress: WETH['1'],
+  })
+
   let gasLimits: (string | number)[] = [];
-  const swapAssetNeedsUnlocking = isWethUnrwapping ? false : await assetNeedsUnlocking(
-    accountAddress,
-    inputAmount,
-    inputCurrency,
-    RAINBOW_ROUTER_CONTRACT_ADDRESS
-  );
+  let swapAssetNeedsUnlocking = false;
+  if(!isWethUnwrapping){
+    logger.debug('CHECKING UNLOCKING');
+    swapAssetNeedsUnlocking = await assetNeedsUnlocking(
+      accountAddress,
+      inputAmount,
+      inputCurrency,
+      RAINBOW_ROUTER_CONTRACT_ADDRESS
+    );
+  }
 
   if (swapAssetNeedsUnlocking) {
+    logger.debug('ESTIMATING APPROVAL');
     const unlockGasLimit = await estimateApprove(
       accountAddress,
       inputCurrency.address,
@@ -43,6 +55,7 @@ export const estimateUnlockAndSwap = async (
     );
     gasLimits = concat(gasLimits, unlockGasLimit, ethUnits.basic_swap);
   } else {
+    logger.debug('ESTIMATING SWAP GAS LIMIT');
     const swapGasLimit = await estimateSwapGasLimit({
       chainId,
       requiresApprove: swapAssetNeedsUnlocking,
@@ -58,20 +71,27 @@ export const estimateUnlockAndSwap = async (
 export const createUnlockAndSwapRap = async (
   swapParameters: SwapActionParameters
 ) => {
-  const { inputAmount, tradeDetails } = swapParameters;
-  const { inputCurrency } = store.getState().swap;
-
-  // create unlock rap
-  const { accountAddress } = store.getState().settings;
-
   let actions: RapAction[] = [];
 
-  const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
-    accountAddress,
-    inputAmount,
-    inputCurrency,
-    RAINBOW_ROUTER_CONTRACT_ADDRESS
-  );
+  const { inputAmount, tradeDetails } = swapParameters;
+  const { inputCurrency, outputCurrency } = store.getState().swap;
+
+  if (!inputCurrency || !outputCurrency || !inputAmount)
+    return ethUnits.basic_swap;
+
+  const { accountAddress, chainId } = store.getState().settings;
+  const isWethUnwrapping = toLower(inputCurrency.address) === toLower(WETH['1']) && toLower(outputCurrency.address) === toLower(ETH_ADDRESS);
+  
+  let swapAssetNeedsUnlocking = false;
+
+  if(!isWethUnwrapping){
+    swapAssetNeedsUnlocking = await assetNeedsUnlocking(
+      accountAddress,
+      inputAmount,
+      inputCurrency,
+      RAINBOW_ROUTER_CONTRACT_ADDRESS
+    );
+  }
 
   if (swapAssetNeedsUnlocking) {
     const unlock = createNewAction(RapActionTypes.unlock, {
