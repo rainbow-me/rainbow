@@ -25,9 +25,6 @@ export { default as shitcoins } from './shitcoins.json';
 export { default as smartContractMethods } from './smartcontract-methods.json';
 export {
   CURATED_UNISWAP_TOKENS,
-  PAIR_GET_RESERVES_CALL_DATA,
-  PAIR_GET_RESERVES_FRAGMENT,
-  PAIR_INTERFACE,
   RAINBOW_TOKEN_LIST,
   TOKEN_SAFE_LIST,
   UNISWAP_TESTNET_TOKEN_LIST,

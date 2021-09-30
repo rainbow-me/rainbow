@@ -24,7 +24,7 @@ import {
 import { ethUnits, UNISWAP_TESTNET_TOKEN_LIST } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-import { fillQuote, getQuoteExecutionDetails, Quote } from 'rainbow-swaps';
+import { fillQuote, getQuoteExecutionDetails, Quote, wrapEth, unwrapWeth, ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS, WETH, geWethMethod } from 'rainbow-swaps';
 import { Token } from 'src/entities/tokens';
 
 export enum Field {
@@ -63,25 +63,51 @@ export const estimateSwapGasLimit = async ({
   if (!provider || !tradeDetails || requiresApprove) {
     return ethUnits.basic_swap;
   }
-  try {
-    const { params, method, methodArgs } = getQuoteExecutionDetails(
-      tradeDetails,
-      { from: tradeDetails.from },
-      provider
-    );
+  const { sellTokenAddress, buyTokenAddress } = tradeDetails;
 
-    const gasLimit = await estimateGasWithPadding(
-      params,
-      method,
-      methodArgs as any,
-      provider,
-      1.01
-    );
-    return gasLimit || ethUnits.basic_swap;
-  } catch (error) {
-    logger.debug('error executing estimateSwapGasLimit');
-    captureException(error);
-    return ethUnits.basic_swap;
+  const isWrapEth = sellTokenAddress === ETH_ADDRESS_AGGREGATORS && buyTokenAddress === WETH['1'];
+  const isUnwrapWeth = sellTokenAddress === WETH['1'] && buyTokenAddress === ETH_ADDRESS_AGGREGATORS;
+
+  // Wrap / Unwrap Eth
+  if (isWrapEth || isUnwrapWeth) {
+      const default_estimate = isWrapEth ? ethUnits.weth_wrap : ethUnits.weth_unwrap;
+      try {
+        const gasLimit = await estimateGasWithPadding(
+          { 
+            from: tradeDetails.from,
+            value: isWrapEth ? tradeDetails.buyAmount : '0' 
+          },
+          geWethMethod(isWrapEth ? 'deposit' : 'withdraw', provider),
+          // @ts-ignore
+          isUnwrapWeth ? [tradeDetails.buyAmount] : null, 
+          provider,
+          1.01
+        );
+        
+        return gasLimit || default_estimate;
+      } catch(e){
+        return default_estimate;
+      }
+    // Swap
+  } else {
+    try {
+      const { params, method, methodArgs } = getQuoteExecutionDetails(
+        tradeDetails,
+        { from: tradeDetails.from },
+        provider
+      );
+
+      const gasLimit = await estimateGasWithPadding(
+        params,
+        method,
+        methodArgs as any,
+        provider,
+        1.01
+      );
+      return gasLimit || ethUnits.basic_swap;
+    } catch (error) {
+      return ethUnits.basic_swap;
+    }
   }
 };
 
@@ -136,8 +162,21 @@ export const executeSwap = async ({
     const provider = await getProviderForNetwork(network);
     walletToUse = await loadWallet(provider);
   }
+
   if (!walletToUse || !tradeDetails) return null;
-  return fillQuote(tradeDetails, { gasLimit, gasPrice, nonce }, walletToUse);
+
+  const { sellTokenAddress, buyTokenAddress } = tradeDetails;
+
+  // Wrap Eth
+  if (sellTokenAddress === ETH_ADDRESS_AGGREGATORS && buyTokenAddress === WETH['1']) {
+      return wrapEth(tradeDetails.buyAmount, walletToUse);
+  // Unwrap Weth
+  } else if(sellTokenAddress === WETH['1'] && buyTokenAddress === ETH_ADDRESS_AGGREGATORS) {
+    return unwrapWeth(tradeDetails.sellAmount, walletToUse);
+  // Swap
+  } else {
+    return fillQuote(tradeDetails, { gasLimit, gasPrice, nonce }, walletToUse);
+  }
 };
 
 export const getAllTokens = async () => {

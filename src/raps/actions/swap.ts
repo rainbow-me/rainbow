@@ -45,7 +45,6 @@ const swap = async (
   }
   let gasLimit, methodName;
   try {
-    logger.debug('ESTIMATING GAS LIMIT ON SWAP.TS')
     const newGasLimit = await estimateSwapGasLimit({
       chainId,
       requiresApprove: false,

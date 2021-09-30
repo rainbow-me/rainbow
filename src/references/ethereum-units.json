@@ -5,6 +5,8 @@
   "basic_swap": 300000,
   "basic_tx": 21000,
   "basic_withdrawal": 550000,
+  "weth_wrap": 40000,
+  "weth_unwrap": 40000,
   "noether": 0,
   "wei": 1,
   "kwei": 1000,

@@ -1,4 +1,4 @@
-import { concat, reduce } from 'lodash';
+import { concat, reduce, toLower } from 'lodash';
 import { assetNeedsUnlocking, estimateApprove } from './actions';
 import {
   createNewAction,
@@ -9,10 +9,10 @@ import {
 } from './common';
 import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
 import store from '@rainbow-me/redux/store';
-import { ethUnits } from '@rainbow-me/references';
+import { ethUnits, ETH_ADDRESS } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
 import { logger } from '@rainbow-me/utils';
-import { RAINBOW_ROUTER_CONTRACT_ADDRESS } from 'rainbow-swaps';
+import { RAINBOW_ROUTER_CONTRACT_ADDRESS, WETH } from 'rainbow-swaps';
 
 export const estimateUnlockAndSwap = async (
   swapParameters: SwapActionParameters
@@ -25,13 +25,16 @@ export const estimateUnlockAndSwap = async (
 
   const { accountAddress, chainId } = store.getState().settings;
 
+  const isWethUnrwapping = toLower(inputCurrency.address) === toLower(WETH['1']) && toLower(outputCurrency.address) === toLower(ETH_ADDRESS);
+  
   let gasLimits: (string | number)[] = [];
-  const swapAssetNeedsUnlocking = await assetNeedsUnlocking(
+  const swapAssetNeedsUnlocking = isWethUnrwapping ? false : await assetNeedsUnlocking(
     accountAddress,
     inputAmount,
     inputCurrency,
     RAINBOW_ROUTER_CONTRACT_ADDRESS
   );
+
   if (swapAssetNeedsUnlocking) {
     const unlockGasLimit = await estimateApprove(
       accountAddress,
@@ -45,6 +48,7 @@ export const estimateUnlockAndSwap = async (
       requiresApprove: swapAssetNeedsUnlocking,
       tradeDetails,
     });
+
     gasLimits = concat(gasLimits, swapGasLimit);
   }
 

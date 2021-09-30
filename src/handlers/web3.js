@@ -225,7 +225,7 @@ export const estimateGasWithPadding = async (
     );
     
     const estimatedGas = await (contractCallEstimateGas
-      ? contractCallEstimateGas(...callArguments, txPayloadToEstimate)
+      ? callArguments ? contractCallEstimateGas(...callArguments, txPayloadToEstimate) : contractCallEstimateGas(...[], txPayloadToEstimate)
       : p.estimateGas(txPayloadToEstimate));
 
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);

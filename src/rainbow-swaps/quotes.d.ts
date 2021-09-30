@@ -22,12 +22,12 @@ export interface ProtocolShare {
     part: number;
 }
 export interface Quote {
-    source: Sources;
+    source?: Sources;
     from: EthereumAddress;
-    to: EthereumAddress;
-    data: string;
-    value: BigNumberish;
-    allowanceTarget: EthereumAddress;
+    to?: EthereumAddress;
+    data?: string;
+    value?: BigNumberish;
+    allowanceTarget?: EthereumAddress;
     sellAmount: BigNumberish;
     sellAmountMinusFees: BigNumberish;
     sellTokenAddress: EthereumAddress;
@@ -35,7 +35,7 @@ export interface Quote {
     buyAmount: BigNumberish;
     fee: BigNumberish;
     feePercentageBasisPoints: number;
-    protocols: ProtocolShare[];
+    protocols?: ProtocolShare[];
     inputTokenDecimals?: number;
     outputTokenDecimals?: number;
 }

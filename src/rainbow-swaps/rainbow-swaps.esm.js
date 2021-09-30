@@ -814,6 +814,162 @@ try {
 }
 });
 
+var WethAbi = [
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			}
+		],
+		name: "approve",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "owner",
+				type: "address"
+			}
+		],
+		name: "balanceOf",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "deposit",
+		outputs: [
+		],
+		stateMutability: "payable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "transfer",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		name: "withdraw",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	}
+];
+
+var ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+var API_BASE_URL = 'http://localhost:8080';
+var RAINBOW_ROUTER_CONTRACT_ADDRESS = '0xdbC43Ba45381e02825b14322cDdd15eC4B3164E6';
+var VAULT_ADDRESS = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
+var RAINBOW_ROUTER_OWNER_ADDRESS = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
+var WETH = {
+  '1': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+  '3': '0xb603cea165119701b58d56d10d2060fbfb3efad8'
+};
+
+var wrapEth = /*#__PURE__*/function () {
+  var _ref = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee(amount, wallet) {
+    var instance;
+    return runtime_1.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            instance = new Contract(WETH['1'], JSON.stringify(WethAbi), wallet);
+            return _context.abrupt("return", instance.deposit({
+              value: amount
+            }));
+
+          case 2:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+
+  return function wrapEth(_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}();
+var unwrapWeth = /*#__PURE__*/function () {
+  var _ref2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee2(amount, wallet) {
+    var instance;
+    return runtime_1.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            instance = new Contract(WETH['1'], JSON.stringify(WethAbi), wallet);
+            return _context2.abrupt("return", instance.withdraw({
+              value: amount
+            }));
+
+          case 2:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2);
+  }));
+
+  return function unwrapWeth(_x3, _x4) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+var geWethMethod = function geWethMethod(name, provider) {
+  var instance = new Contract(WETH['1'], JSON.stringify(WethAbi), provider);
+  return instance.estimateGas[name];
+};
+
 var RainbowRouterABI = [
 	{
 		inputs: [
@@ -1055,16 +1211,6 @@ var RainbowRouterABI = [
 	}
 ];
 
-var ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
-var API_BASE_URL = 'http://localhost:8080';
-var RAINBOW_ROUTER_CONTRACT_ADDRESS = '0xdbC43Ba45381e02825b14322cDdd15eC4B3164E6';
-var VAULT_ADDRESS = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
-var RAINBOW_ROUTER_OWNER_ADDRESS = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
-var WETH = {
-  1: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-  3: '0xb603cea165119701b58d56d10d2060fbfb3efad8'
-};
-
 var Sources;
 
 (function (Sources) {
@@ -1081,6 +1227,26 @@ var getQuote = /*#__PURE__*/function () {
         switch (_context.prev = _context.next) {
           case 0:
             source = _ref.source, _ref$chainId = _ref.chainId, chainId = _ref$chainId === void 0 ? 1 : _ref$chainId, fromAddress = _ref.fromAddress, sellTokenAddress = _ref.sellTokenAddress, buyTokenAddress = _ref.buyTokenAddress, sellAmount = _ref.sellAmount, buyAmount = _ref.buyAmount, slippage = _ref.slippage;
+
+            if (!(sellTokenAddress === ETH_ADDRESS && buyTokenAddress === WETH['1'] || sellTokenAddress === WETH['1'] && buyTokenAddress === ETH_ADDRESS)) {
+              _context.next = 3;
+              break;
+            }
+
+            return _context.abrupt("return", {
+              buyAmount: sellAmount || buyAmount,
+              buyTokenAddress: buyTokenAddress,
+              fee: 0,
+              feePercentageBasisPoints: 0,
+              from: fromAddress,
+              inputTokenDecimals: 18,
+              outputTokenDecimals: 18,
+              sellAmount: sellAmount || buyAmount,
+              sellAmountMinusFees: sellAmount || buyAmount,
+              sellTokenAddress: sellTokenAddress
+            });
+
+          case 3:
             url = API_BASE_URL + "/quote?chainId=" + chainId + "&fromAddress=" + fromAddress + "&buyToken=" + buyTokenAddress + "&sellToken=" + sellTokenAddress + "&slippage=" + slippage;
 
             if (source) {
@@ -1094,22 +1260,22 @@ var getQuote = /*#__PURE__*/function () {
             }
 
             if (!(isNaN(Number(sellAmount)) && isNaN(Number(buyAmount)))) {
-              _context.next = 6;
+              _context.next = 8;
               break;
             }
 
             return _context.abrupt("return", null);
 
-          case 6:
-            _context.next = 8;
+          case 8:
+            _context.next = 10;
             return fetch(url);
 
-          case 8:
+          case 10:
             response = _context.sent;
-            _context.next = 11;
+            _context.next = 13;
             return response.json();
 
-          case 11:
+          case 13:
             quote = _context.sent;
 
             if (!quote.data) {
@@ -1118,7 +1284,7 @@ var getQuote = /*#__PURE__*/function () {
 
             return _context.abrupt("return", quote);
 
-          case 14:
+          case 16:
           case "end":
             return _context.stop();
         }
@@ -1211,6 +1377,7 @@ var getQuoteExecutionDetails = function getQuoteExecutionDetails(quote, transact
   if ((sellTokenAddress == null ? void 0 : sellTokenAddress.toLowerCase()) === ETH_ADDRESS.toLowerCase()) {
     return {
       method: instance.estimateGas['fillQuoteEthToToken'],
+      // @ts-ignore
       methodArgs: [buyTokenAddress, to, data, sellAmountMinusFees, fee],
       params: _extends({}, transactionOptions, {
         value: sellAmount
@@ -1235,5 +1402,5 @@ var getQuoteExecutionDetails = function getQuoteExecutionDetails(quote, transact
   }
 };
 
-export { API_BASE_URL, ETH_ADDRESS, RAINBOW_ROUTER_CONTRACT_ADDRESS, RAINBOW_ROUTER_OWNER_ADDRESS, Sources, VAULT_ADDRESS, WETH, fillQuote, getQuote, getQuoteExecutionDetails };
+export { API_BASE_URL, ETH_ADDRESS, RAINBOW_ROUTER_CONTRACT_ADDRESS, RAINBOW_ROUTER_OWNER_ADDRESS, Sources, VAULT_ADDRESS, WETH, fillQuote, geWethMethod, getQuote, getQuoteExecutionDetails, unwrapWeth, wrapEth };
 //# sourceMappingURL=rainbow-swaps.esm.js.map

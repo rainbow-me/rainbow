@@ -14,10 +14,10 @@ import {
   isZero,
   updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';
-import { ethereumUtils } from '@rainbow-me/utils';
+import { ethereumUtils, logger } from '@rainbow-me/utils'; 
 import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
-  getQuote,
+  getQuote
 } from 'rainbow-swaps';
 import { Token } from 'src/entities/tokens';
 
@@ -318,8 +318,8 @@ export default function useSwapDerivedOutputs() {
       );
       tradeDetails = newTradeDetails;
       derivedValues[SwapModalField.input] = inputAmount || '0';
+      // @ts-ignore next-line
       displayValues[DisplayValue.input] = inputAmountDisplay;
-
       const nativeValue =
         inputPrice && inputAmount
           ? convertAmountToNativeAmount(inputAmount, inputPrice)
@@ -353,6 +353,7 @@ export default function useSwapDerivedOutputs() {
         tradeDetails: data.tradeDetails,
       })
     );
+    // @ts-ignore next-line
     setResult(data);
   }, [dispatch, getTradeDetails]);
 

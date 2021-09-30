@@ -255,7 +255,6 @@ export default function ExchangeModal({
       };
       const gasLimit = await getRapEstimationByType(type, swapParams);
       if (gasLimit) {
-        logger.debug('GOT GAS LIMIT', gasLimit);
         updateTxFee(gasLimit);
       }
     } catch (error) {
