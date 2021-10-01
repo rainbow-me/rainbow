@@ -1,7 +1,7 @@
 import React, { ElementRef, forwardRef, ReactNode, useMemo } from 'react';
 import { Text as NativeText } from 'react-native';
-import { useColorModeValue } from '../../color/ColorModeContext';
-import { foreground } from '../../color/palette';
+import { useColorModeValue } from '../../color/ColorModeValue';
+import { foregroundPalette } from '../../color/palette';
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';
 import { headingSizes, headingWeights } from '../../typography/typography';
 
@@ -21,15 +21,16 @@ const useHeadingStyle = ({
   const weightStyles = headingWeights[weight];
 
   return useMemo(
-    () => ({
-      lineHeightFixNode: createLineHeightFixNode(sizeStyles.lineHeight),
-      textStyle: {
-        color: colorModeValue(foreground.neutral),
-        textAlign,
-        ...sizeStyles,
-        ...weightStyles,
-      },
-    }),
+    () =>
+      ({
+        lineHeightFixNode: createLineHeightFixNode(sizeStyles.lineHeight),
+        textStyle: {
+          color: colorModeValue(foregroundPalette.neutral),
+          textAlign,
+          ...sizeStyles,
+          ...weightStyles,
+        },
+      } as const),
     [sizeStyles, weightStyles, textAlign, colorModeValue]
   );
 };

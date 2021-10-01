@@ -1,9 +1,11 @@
 import React, { ReactNode } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useHideSplashScreen } from '../hooks';
-import { Heading, HeadingProps, Text, TextProps } from '.';
+import { palette } from './color/palette';
+import { ColorModeProvider, Heading, HeadingProps, Text, TextProps } from '.';
 
 const pink = 'rgba(255,0,0,0.2)';
+const customTextColor = { darkMode: 'pink', lightMode: 'red' } as const;
 
 const TypeSeparator = () => (
   <View style={{ backgroundColor: pink, height: 16 }} />
@@ -78,6 +80,16 @@ export const DesignSystemPlayground = () => {
               {loremIpsum}
             </Heading>
             <TypeSeparator />
+            <View style={{ backgroundColor: palette.greyDark, padding: 20 }}>
+              <ColorModeProvider value="darkMode">
+                <TypeSeparator />
+                <Heading size={size} weight={weight}>
+                  Dark mode
+                </Heading>
+                <TypeSeparator />
+              </ColorModeProvider>
+            </View>
+            <TypeSeparator />
             <Heading numberOfLines={1} size={size} weight={weight}>
               Truncated text truncated text truncated text truncated text
               truncated text truncated text
@@ -108,6 +120,36 @@ export const DesignSystemPlayground = () => {
             <Text size={size} weight={weight}>
               {loremIpsum}
             </Text>
+            <TypeSeparator />
+            <Text color="action" size={size} weight={weight}>
+              Palette color
+            </Text>
+            <TypeSeparator />
+            <Text
+              color={{ custom: customTextColor }}
+              size={size}
+              weight={weight}
+            >
+              Custom color
+            </Text>
+            <TypeSeparator />
+            <View style={{ backgroundColor: palette.greyDark, padding: 20 }}>
+              <ColorModeProvider value="darkMode">
+                <TypeSeparator />
+                <Text size={size} weight={weight}>
+                  Dark mode
+                </Text>
+                <TypeSeparator />
+                <Text
+                  color={{ custom: customTextColor }}
+                  size={size}
+                  weight={weight}
+                >
+                  Custom color
+                </Text>
+                <TypeSeparator />
+              </ColorModeProvider>
+            </View>
             <TypeSeparator />
             <Text numberOfLines={1} size={size} weight={weight}>
               Truncated text truncated text truncated text truncated text

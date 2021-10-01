@@ -19,7 +19,7 @@ export const palette = {
   white: '#FFFFFF',
 } as const;
 
-export const foreground = {
+export const foregroundPalette = {
   neutral: { lightMode: palette.greyDark, darkMode: palette.sky100 },
   secondary: { lightMode: palette.grey100, darkMode: palette.sky100 },
   secondary80: { lightMode: palette.grey80, darkMode: palette.sky80 },
