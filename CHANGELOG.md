@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
-## [1.5.27](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.27)
+## [1.5.26](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.26)
 
 ### Added
 * Hide scam tokens
