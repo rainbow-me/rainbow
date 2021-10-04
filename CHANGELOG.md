@@ -18,15 +18,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 * Hide scam tokens
 * Support for .com style ENS domains and new Unstoppable TLDs
 
-
 ### Changed
 * WC data safety check
 * Locked deps
-* Reanimated & Camera dimming refactor
+* Reanimated & Camera dimming refactorß
 * Search improvements, Fetch by volume
 * Savings native token fixes
 * Improved NFT family sorting
-
 
 ## [1.5.25](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.25)
 
