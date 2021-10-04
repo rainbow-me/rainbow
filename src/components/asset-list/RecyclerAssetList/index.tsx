@@ -18,7 +18,6 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { scrollTo } from 'react-native-reanimated';
 import { connect } from 'react-redux';
 import {
   DataProvider,
@@ -34,11 +33,8 @@ import styled from 'styled-components';
 import { withThemeContext } from '../../../context/ThemeContext';
 import { CoinDivider, CoinDividerHeight } from '../../coin-divider';
 import { CoinRowHeight } from '../../coin-row';
-import { TokenFamilyHeaderHeight } from '../../token-family';
 import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
-
-//import { UniqueTokenRow } from '../../../components/un';
 import LayoutItemAnimator from './LayoutItemAnimator';
 import { EthereumAddress } from '@rainbow-me/entities';
 import { usePrevious } from '@rainbow-me/hooks';
@@ -713,8 +709,8 @@ function RecyclerAssetList({
     let collectibles: RecyclerAssetListSection = {} as RecyclerAssetListSection;
     let prevCollectibles: RecyclerAssetListSection = {} as RecyclerAssetListSection;
     let balances: RecyclerAssetListSection = {} as RecyclerAssetListSection;
-    let smallBalances = {};
-    let savings = {};
+    let smallBalances: any = {};
+    let savings: any = {};
     let pools: RecyclerAssetListSection = {} as RecyclerAssetListSection;
 
     const bottomHorizonOfScreen =
@@ -817,7 +813,9 @@ function RecyclerAssetList({
 
           if (endOfDesiredComponent > bottomHorizonOfScreen) {
             setTimeout(
-              () => ref?.scrollToOffset(0, startOfDesiredComponent, true),
+              () =>
+                !disableAutoScrolling &&
+                ref?.scrollToOffset(0, startOfDesiredComponent, true),
               100
             );
           }
@@ -845,10 +843,15 @@ function RecyclerAssetList({
         prevCollectibles.data[0]?.familyName !== 'Showcase')
     ) {
       const showcaseHeight = colleciblesStartHeight + AssetListHeaderHeight;
-      setTimeout(() => ref?.scrollToOffset(0, showcaseHeight, true), 100);
+      setTimeout(
+        () =>
+          !disableAutoScrolling && ref?.scrollToOffset(0, showcaseHeight, true),
+        100
+      );
     }
   }, [
     ref,
+    disableAutoScrolling,
     globalDeviceDimensions,
     dataProvider,
     lastIsCoinListEdited,
