@@ -204,18 +204,22 @@ export default function BackupSheet() {
     deviceHeight +
     (android && !nativeScreen ? AndroidHeight : longFormHeight) +
     getSoftMenuBarHeight();
+  let additionalTopPadding = android && !nativeScreen;
 
-  // This sheet is a bit taller due to an extra line of text
-  if (android && step === WalletBackupStepTypes.existing_user) {
-    sheetHeight += 40;
-    wrapperHeight += 40;
+  //If the sheet is full screen we should handle the sheet heights and padding differently
+  if (
+    (android && step === WalletBackupStepTypes.cloud) ||
+    step === WalletBackupStepTypes.manual
+  ) {
+    sheetHeight = deviceHeight - 40;
+    additionalTopPadding = true;
   }
 
   return (
     <Column height={wrapperHeight} testID="backup-sheet">
       <StatusBar barStyle="light-content" />
       <SlackSheet
-        additionalTopPadding={android && !nativeScreen}
+        additionalTopPadding={additionalTopPadding}
         contentHeight={sheetHeight}
       >
         {renderStep()}

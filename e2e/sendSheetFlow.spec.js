@@ -83,11 +83,7 @@ describe('Send Sheet Interaction Flow', () => {
 
   it('Should say correct address in the Profile Screen header', async () => {
     await Helpers.swipe('wallet-screen', 'right');
-    if (device.getPlatform() === 'android') {
-      await Helpers.checkIfElementByTextToExist('0x3C...f608');
-    } else {
-      await Helpers.checkIfElementByTextIsVisible('0x3C...f608');
-    }
+    await Helpers.checkIfVisible('profileAddress-0x3C...f608');
     await Helpers.swipe('profile-screen', 'left');
   });
 

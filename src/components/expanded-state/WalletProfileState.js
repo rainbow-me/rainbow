@@ -33,7 +33,7 @@ const WalletProfileAddressText = styled(TruncatedAddress).attrs(
     weight: 'bold',
   })
 )`
-  ${margin(6, 0, 5)};
+  ${margin(android ? 0 : 6, 0, android ? 0 : 5)};
   width: 100%;
 `;
 
@@ -144,7 +144,7 @@ export default function WalletProfileState({
     <WalletProfileModal>
       <Centered
         direction="column"
-        paddingBottom={30}
+        paddingBottom={android ? 15 : 30}
         testID="wallet-info-modal"
         width="100%"
       >

@@ -229,8 +229,8 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
       });
     });
   }
-
-  rows = sortBy(rows, ['familyName']);
+  const regex = RegExp(/\s*(the)\s/, 'i');
+  rows = sortBy(rows, row => row.familyName.replace(regex, '').toLowerCase());
 
   showcaseTokens.sort(function (a, b) {
     return (

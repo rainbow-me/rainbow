@@ -251,7 +251,7 @@ export default async function runMigrations() {
     try {
       const userLists = await getUserLists();
       const newLists = userLists.map(list => {
-        if (list.id !== 'dollars') {
+        if (list?.id !== 'dollars') {
           return list;
         }
         return DefaultTokenLists['mainnet'].find(

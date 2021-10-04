@@ -190,4 +190,4 @@ const getTransactionDisplayDetails = (
 };
 
 const getTimestampFromPayload = payload =>
-  parseInt(payload.id.toString().slice(0, -3), 10);
+  parseInt(payload?.id.toString().slice(0, -3), 10);

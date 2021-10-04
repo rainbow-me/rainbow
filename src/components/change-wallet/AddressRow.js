@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
@@ -9,12 +10,12 @@ import { ContactAvatar } from '../contacts';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
-import { TruncatedAddress, TruncatedText } from '../text';
+import { Text, TruncatedAddress, TruncatedText } from '../text';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
-import { fonts, getFontSize } from '@rainbow-me/styles';
+import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
 import { deviceUtils, profileUtils } from '@rainbow-me/utils';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
@@ -58,8 +59,9 @@ const sx = StyleSheet.create({
     fontFamily: fonts.family.SFProRounded,
     fontWeight: fonts.weight.semibold,
     letterSpacing: fonts.letterSpacing.roundedTight,
+    lineHeight: 22,
     paddingHorizontal: 6.5,
-    paddingVertical: 3,
+    paddingVertical: 1,
     textAlign: 'center',
   },
   rightContent: {
@@ -73,6 +75,21 @@ const gradientProps = {
   pointerEvents: 'none',
   style: sx.gradient,
 };
+
+const StyledTruncatedText = styled(TruncatedText)`
+  ${sx.accountLabel}
+  ${fontWithWidth(sx.accountLabel.fontWeight)}
+`;
+
+const StyledBottomRowText = styled(BottomRowText)`
+  ${sx.bottomRowText}
+  ${fontWithWidth(sx.bottomRowText.fontWeight)}
+`;
+
+const ReadOnlyText = styled(Text)`
+  ${sx.readOnlyText}
+  ${fontWithWidth(sx.readOnlyText.fontWeight)}
+`;
 
 const OptionsIcon = ({ onPress }) => {
   const { colors } = useTheme();
@@ -166,11 +183,11 @@ export default function AddressRow({
                 }
               />
             )}
-            <ColumnWithMargins margin={3}>
+            <ColumnWithMargins margin={android ? -6 : 3}>
               {cleanedUpLabel || ens ? (
-                <TruncatedText color={colors.dark} style={sx.accountLabel}>
+                <StyledTruncatedText color={colors.dark}>
                   {cleanedUpLabel || ens}
-                </TruncatedText>
+                </StyledTruncatedText>
               ) : (
                 <TruncatedAddress
                   address={address}
@@ -182,12 +199,11 @@ export default function AddressRow({
                   weight="medium"
                 />
               )}
-              <BottomRowText
+              <StyledBottomRowText
                 color={colors.alpha(colors.blueGreyDark, 0.5)}
-                style={sx.bottomRowText}
               >
                 {cleanedUpBalance || 0} ETH
-              </BottomRowText>
+              </StyledBottomRowText>
             </ColumnWithMargins>
           </Row>
           <Column style={sx.rightContent}>
@@ -196,14 +212,9 @@ export default function AddressRow({
                 {...linearGradientProps}
                 marginRight={editMode || isSelected ? -9 : 19}
               >
-                <Text
-                  style={[
-                    sx.readOnlyText,
-                    { color: colors.alpha(colors.blueGreyDark, 0.5) },
-                  ]}
-                >
+                <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
                   Watching
-                </Text>
+                </ReadOnlyText>
               </LinearGradient>
             )}
             {!editMode && isSelected && (

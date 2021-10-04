@@ -5,7 +5,7 @@ import isEqual from 'react-fast-compare';
 /* eslint-disable-next-line import/no-cycle */
 import { arbitrumExplorerInit } from './arbitrumExplorer';
 // eslint-disable-next-line import/no-cycle
-import { addressAssetsReceived, fetchAssetPrices } from './data';
+import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
 import { optimismExplorerInit } from './optimismExplorer';
 // eslint-disable-next-line import/no-cycle
@@ -270,7 +270,7 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
       return;
     }
 
-    const prices = await fetchAssetPrices(
+    const prices = await fetchAssetPricesWithCoingecko(
       assets.map(({ asset: { coingecko_id } }) => coingecko_id),
       formattedNativeCurrency
     );

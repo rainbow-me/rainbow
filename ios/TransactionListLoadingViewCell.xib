@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16097"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18122"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -16,7 +16,6 @@
                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PBL-s8-ejb" customClass="FBShimmeringView">
                     <rect key="frame" x="-20" y="-20" width="415" height="552"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hm9-ij-ZS0" userLabel="Skeleton View">
                     <rect key="frame" x="-20" y="-20" width="415" height="552"/>
@@ -90,7 +89,6 @@
                                     </userDefinedRuntimeAttributes>
                                 </view>
                             </subviews>
-                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             <constraints>
                                 <constraint firstItem="Gd5-ef-nsg" firstAttribute="leading" secondItem="IJp-fz-mmy" secondAttribute="trailing" constant="10" id="2F0-M1-7Cu"/>
                                 <constraint firstItem="RRs-KY-UrF" firstAttribute="leading" secondItem="IJp-fz-mmy" secondAttribute="trailing" constant="10" id="Jah-29-ZzH"/>
@@ -177,7 +175,6 @@
                                     </userDefinedRuntimeAttributes>
                                 </view>
                             </subviews>
-                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             <constraints>
                                 <constraint firstItem="HEL-x0-kJr" firstAttribute="top" secondItem="hBS-PW-8e7" secondAttribute="top" constant="14" id="Chc-Sd-NbQ"/>
                                 <constraint firstAttribute="trailing" secondItem="HEL-x0-kJr" secondAttribute="trailing" constant="19" id="GC1-NX-lZg"/>
@@ -264,7 +261,6 @@
                                     </userDefinedRuntimeAttributes>
                                 </view>
                             </subviews>
-                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             <constraints>
                                 <constraint firstItem="Bbe-Nz-XaQ" firstAttribute="leading" secondItem="qGJ-Od-Fbi" secondAttribute="trailing" constant="10" id="0ey-wp-S0T"/>
                                 <constraint firstItem="qGJ-Od-Fbi" firstAttribute="leading" secondItem="Jsj-Ha-94t" secondAttribute="leading" constant="19" id="2Eg-0K-9Ge"/>
@@ -351,7 +347,6 @@
                                     </userDefinedRuntimeAttributes>
                                 </view>
                             </subviews>
-                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             <constraints>
                                 <constraint firstItem="Duz-4x-kOp" firstAttribute="top" secondItem="YCR-KR-iuz" secondAttribute="bottom" constant="10" id="0Op-tp-VA7"/>
                                 <constraint firstItem="YCR-KR-iuz" firstAttribute="top" secondItem="iFF-1y-Vb2" secondAttribute="top" id="6Dv-LR-lVF"/>
@@ -438,7 +433,6 @@
                                     </userDefinedRuntimeAttributes>
                                 </view>
                             </subviews>
-                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             <constraints>
                                 <constraint firstItem="yIl-kx-ymI" firstAttribute="leading" secondItem="zfc-rT-A7u" secondAttribute="leading" constant="19" id="7IB-y9-RVv"/>
                                 <constraint firstAttribute="trailing" secondItem="Twt-rh-tLc" secondAttribute="trailing" constant="19" id="AcY-Up-rYV"/>
@@ -525,7 +519,6 @@
                                     </userDefinedRuntimeAttributes>
                                 </view>
                             </subviews>
-                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             <constraints>
                                 <constraint firstItem="TpE-YU-NA9" firstAttribute="top" secondItem="aVl-SC-Pze" secondAttribute="top" constant="10" id="0Wk-TX-Cvo"/>
                                 <constraint firstAttribute="trailing" secondItem="DCi-vC-IpT" secondAttribute="trailing" constant="19" id="7cw-aE-tJr"/>
@@ -612,7 +605,6 @@
                                     </userDefinedRuntimeAttributes>
                                 </view>
                             </subviews>
-                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             <constraints>
                                 <constraint firstItem="F8k-4q-Z3q" firstAttribute="top" secondItem="vHE-Aa-aH4" secondAttribute="bottom" constant="10" id="1s6-2J-Oah"/>
                                 <constraint firstItem="vHE-Aa-aH4" firstAttribute="top" secondItem="NRc-o4-pAM" secondAttribute="top" id="3V6-Iy-LhL"/>
@@ -699,7 +691,6 @@
                                     </userDefinedRuntimeAttributes>
                                 </view>
                             </subviews>
-                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             <constraints>
                                 <constraint firstItem="4u9-EO-KDQ" firstAttribute="top" secondItem="pEz-2l-24b" secondAttribute="top" constant="10" id="KUs-ja-MFN"/>
                                 <constraint firstItem="pBr-4l-wc0" firstAttribute="leading" secondItem="4u9-EO-KDQ" secondAttribute="trailing" constant="10" id="L1d-E2-zZ6"/>
@@ -718,7 +709,6 @@
                             </constraints>
                         </view>
                     </subviews>
-                    <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                     <constraints>
                         <constraint firstItem="zfc-rT-A7u" firstAttribute="leading" secondItem="aVl-SC-Pze" secondAttribute="leading" id="136-Vn-Zwa"/>
                         <constraint firstAttribute="trailing" secondItem="CZL-OR-ywV" secondAttribute="trailing" constant="20" id="3pG-un-xhN"/>
@@ -747,7 +737,6 @@
                     </constraints>
                 </view>
             </subviews>
-            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
             <constraints>
                 <constraint firstItem="hm9-ij-ZS0" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="3Ly-eU-Ije"/>
                 <constraint firstAttribute="bottom" secondItem="hm9-ij-ZS0" secondAttribute="bottom" constant="-32" id="djZ-S3-5s8"/>

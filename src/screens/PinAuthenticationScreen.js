@@ -164,6 +164,7 @@ const PinAuthenticationScreen = () => {
             // Clear the pin
             setTimeout(() => {
               setValue('');
+              return;
             }, 300);
           } else {
             // Confirmation
