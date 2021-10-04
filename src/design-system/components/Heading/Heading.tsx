@@ -3,6 +3,11 @@ import { Text as NativeText } from 'react-native';
 import { useColorModeValue } from '../../color/ColorModeValue';
 import { foregroundPalette } from '../../color/palette';
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';
+import {
+  nodeHasEmoji,
+  nodeIsString,
+  renderEmoji,
+} from '../../typography/renderEmoji';
 import { headingSizes, headingWeights } from '../../typography/typography';
 
 interface HeadingStyle {
@@ -35,13 +40,39 @@ const useHeadingStyle = ({
   );
 };
 
-export interface HeadingProps extends HeadingStyle {
+export type HeadingProps = HeadingStyle & {
   numberOfLines?: number;
-  children: ReactNode;
-}
+} & (
+    | {
+        containsEmoji: true;
+        children: string | (string | null)[];
+      }
+    | { containsEmoji?: false; children: ReactNode }
+  );
 
 export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
-  ({ numberOfLines, children, ...textStyleProps }, ref) => {
+  (
+    {
+      numberOfLines,
+      containsEmoji: containsEmojiProp = false,
+      children,
+      ...textStyleProps
+    },
+    ref
+  ) => {
+    if (__DEV__) {
+      if (!containsEmojiProp && nodeHasEmoji(children)) {
+        throw new Error(
+          `Heading: Emoji characters detected when "containsEmoji" prop isn't set to true: "${children}"\n\nYou must set the "containsEmoji" prop to true, otherwise vertical text alignment will be broken on iOS.`
+        );
+      }
+      if (containsEmojiProp && !nodeIsString(children)) {
+        throw new Error(
+          'Heading: When "containsEmoji" is set to true, children can only be strings. If you need low-level control of emoji rendering, you can also use the "renderEmoji" function directly which accepts a string.'
+        );
+      }
+    }
+
     const { textStyle, lineHeightFixNode } = useHeadingStyle(textStyleProps);
 
     return (
@@ -51,7 +82,9 @@ export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
         ref={ref}
         style={textStyle}
       >
-        {children}
+        {ios && containsEmojiProp && nodeIsString(children)
+          ? renderEmoji(children)
+          : children}
         {lineHeightFixNode}
       </NativeText>
     );

@@ -114,6 +114,7 @@
     "dns.js": "1.0.1",
     "domain-browser": "1.2.0",
     "emoji-datasource": "4.1.0",
+    "emoji-regex": "^10.0.0",
     "eth-contract-metadata": "1.16.0",
     "eth-sig-util": "2.5.3",
     "eth-url-parser": "1.0.4",

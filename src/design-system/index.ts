@@ -4,6 +4,8 @@ export type { ColorMode } from './color/ColorMode';
 export { useColorModeValue } from './color/ColorModeValue';
 export type { ColorModeValue } from './color/ColorModeValue';
 
+export { renderEmoji } from './typography/renderEmoji';
+
 export { Text } from './components/Text/Text';
 export type { TextProps } from './components/Text/Text';
 

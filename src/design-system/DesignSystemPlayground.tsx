@@ -95,6 +95,10 @@ export const DesignSystemPlayground = () => {
               truncated text truncated text
             </Heading>
             <TypeSeparator />
+            <Heading containsEmoji size={size} weight={weight}>
+              Heading containing emoji 🌈
+            </Heading>
+            <TypeSeparator />
             <Spacer size="small" />
             <MockBadge>
               <Heading size={size} weight={weight}>
@@ -154,6 +158,10 @@ export const DesignSystemPlayground = () => {
             <Text numberOfLines={1} size={size} weight={weight}>
               Truncated text truncated text truncated text truncated text
               truncated text truncated text
+            </Text>
+            <TypeSeparator />
+            <Text containsEmoji size={size} weight={weight}>
+              Text containing emoji 🌈
             </Text>
             <TypeSeparator />
             <Spacer size="small" />
