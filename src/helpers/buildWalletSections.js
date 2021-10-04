@@ -122,7 +122,7 @@ const withBalanceSavingsSection = savings => {
     } = asset;
     totalUnderlyingNativeValue = add(
       totalUnderlyingNativeValue,
-      underlyingBalanceNativeValue
+      underlyingBalanceNativeValue || 0
     );
     const lifetimeSupplyInterestAccruedNative = lifetimeSupplyInterestAccrued
       ? multiply(lifetimeSupplyInterestAccrued, underlyingPrice)

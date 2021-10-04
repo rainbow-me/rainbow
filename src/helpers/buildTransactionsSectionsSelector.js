@@ -69,6 +69,16 @@ const buildTransactionsSections = (
       renderItem: renderItemElement(TransactionCoinRow),
       title: section,
     }));
+    const pendingSectionIndex = sectionedTransactions.findIndex(
+      ({ title }) => title === 'Pending'
+    );
+    if (pendingSectionIndex > 0) {
+      const pendingSection = sectionedTransactions.splice(
+        pendingSectionIndex,
+        1
+      );
+      sectionedTransactions.unshift(pendingSection[0]);
+    }
   }
 
   let requestsToApprove = [];
