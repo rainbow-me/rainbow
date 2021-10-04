@@ -1,5 +1,5 @@
 import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
-import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
+import { DATA_API_KEY, DATA_ENDPOINT, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 // eslint-disable-next-line import/no-cycle
 import { arbitrumExplorerInit } from './arbitrumExplorer';
@@ -84,7 +84,7 @@ const messages = {
 
 // -- Actions ---------------------------------------- //
 const createSocket = endpoint =>
-  io(`wss://api-v4.zerion.io/${endpoint}`, {
+  io(`${DATA_ENDPOINT || 'wss://api-v4.zerion.io'}/${endpoint}`, {
     extraHeaders: { origin: DATA_ORIGIN },
     query: {
       api_token: `${DATA_API_KEY}`,
