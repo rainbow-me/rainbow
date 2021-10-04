@@ -403,7 +403,10 @@ export const transactionsReceived = (message, appended = false) => async (
     const { transactions } = getState().data;
     const { selected } = getState().wallets;
 
-    const { parsedTransactions, potentialNftTransaction } = parseTransactions(
+    const {
+      parsedTransactions,
+      potentialNftTransaction,
+    } = await parseTransactions(
       transactionData,
       accountAddress,
       nativeCurrency,
@@ -423,6 +426,7 @@ export const transactionsReceived = (message, appended = false) => async (
     });
     dispatch(updatePurchases(parsedTransactions));
     saveLocalTransactions(parsedTransactions, accountAddress, network);
+
     if (appended && parsedTransactions.length) {
       if (
         selected &&
