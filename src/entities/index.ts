@@ -1,7 +1,8 @@
 export { default as AssetTypes, AssetType } from './assetTypes';
 export type {
   TxFee,
-  SelectedGasPrice,
+  SelectedGasFee,
+  LegacyTxFees,
   EstimatedLegacyGasFees,
   EstimatedGasFees,
   TxFees,

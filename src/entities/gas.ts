@@ -3,19 +3,19 @@ export interface TxFee {
   value: { amount: string; display: { amount: string; display: string } };
 }
 
-export interface TxFees {
-  [key: string]: {
-    txFee?: TxFee;
-    baseTxFee?: TxFee;
-    maxTxFee?: TxFee;
-  };
-}
-
-export interface SelectedGasPrice {
-  estimatedTime: { amount: string; display: string };
+export interface SelectedGasFee {
+  estimatedTime: { amount: number; display: string };
   option: string;
   txFee: TxFee;
   value: { amount: string; display: string };
+  gasFeeParams:
+    | {
+        maxFeePerGas: number;
+        maxPriorityFeePerGas: number;
+      }
+    | {
+        gasPrice: number;
+      };
 }
 
 export interface GasFeeBaseParams {
@@ -39,4 +39,17 @@ export interface EstimatedLegacyGasFees {
 
 export interface EstimatedGasFees {
   [key: string]: GasFeeParams;
+}
+
+export interface LegacyTxFees {
+  [key: string]: {
+    txFee: TxFee;
+  };
+}
+
+export interface TxFees {
+  [key: string]: {
+    baseTxFee: TxFee;
+    maxTxFee: TxFee;
+  };
 }

@@ -24,7 +24,6 @@ export default function useGas() {
         gasPrices,
         isSufficientGas,
         selectedGasFee,
-        txFees,
       },
     }) => ({
       eip1559GasPrices,
@@ -33,7 +32,7 @@ export default function useGas() {
       isSufficientGas,
       selectedGasFee,
       selectedGasPriceOption: selectedGasFee.option,
-      txFees,
+      txFees: selectedGasFee.txFee,
     })
   );
 

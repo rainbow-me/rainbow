@@ -25,7 +25,6 @@ import {
   createSignableTransaction,
   estimateGasLimit,
   getProviderForNetwork,
-  getTransactionGasParams,
   isEIP1559SupportedNetwork,
   isL2Network,
   resolveNameOrAddress,
@@ -439,12 +438,7 @@ export default function SendSheet(props) {
     const validTransaction =
       isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
     const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
-    if (
-      (isEIP1559SupportedNetwork(assetNetwork)
-        ? !selectedGasFee?.maxTxFee
-        : !selectedGasFee?.txFee) ||
-      !validTransaction
-    ) {
+    if (!selectedGasFee?.txFee || !validTransaction) {
       logger.sentry('preventing tx submit for one of the following reasons:');
       logger.sentry('selectedGasFee ? ', selectedGasFee);
       logger.sentry('selectedGasFee.maxFee ? ', selectedGasFee?.maxFee);
@@ -493,7 +487,7 @@ export default function SendSheet(props) {
       network: assetNetwork,
       nonce: null,
       to: toAddress,
-      ...getTransactionGasParams(selectedGasFee, assetNetwork),
+      ...selectedGasFee.gasFeeParams,
     };
 
     try {

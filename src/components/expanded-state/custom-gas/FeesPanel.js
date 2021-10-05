@@ -51,7 +51,7 @@ export default function FeesPanel({
   selectedGasFee,
   setMinerTip,
 }) {
-  const maxTxFee = get(selectedGasFee, 'maxTxFee.native.value.display', 0);
+  const txFee = get(selectedGasFee, 'txFee.native.value.display', 0);
   const currentBaseFee = get(selectedGasFee, 'baseFeePerGas.display', 0);
   const maxBaseFee = get(selectedGasFee, 'maxFeePerGas.gwei', 0);
   const minerTip = get(selectedGasFee, 'priorityFeePerGas.gwei', 0);
@@ -100,7 +100,7 @@ export default function FeesPanel({
             <PanelLabel>Max Transaction Fee</PanelLabel>
           </PanelColumn>
           <PanelColumn>
-            <PanelLabel>{maxTxFee}</PanelLabel>
+            <PanelLabel>{txFee}</PanelLabel>
           </PanelColumn>
         </PanelRow>
       </InnerWrapper>

@@ -16,10 +16,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
-import {
-  isEIP1559SupportedNetwork,
-  isL2Network,
-} from '@rainbow-me/handlers/web3';
+import { isL2Network } from '@rainbow-me/handlers/web3';
 import { useAccountSettings, useGas } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 // import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
@@ -149,12 +146,7 @@ const GasSpeedButton = ({
   // we need to trim the native currency symbol
   // (and leave the number only!)
   // which gets added later in the formatGasPrice function
-  const gasPrice = get(
-    selectedGasFee,
-    `${
-      isEIP1559SupportedNetwork(currentNetwork) ? 'baseTxFee' : 'txFee'
-    }.native.value.display`
-  );
+  const gasPrice = get(selectedGasFee, `txFee.native.value.display`);
 
   const price = (isNil(gasPrice) ? '0.00' : gasPrice)
     .replace(',', '') // In case gas price is > 1k!
@@ -274,7 +266,7 @@ const GasSpeedButton = ({
 
   const formatTransactionTime = useCallback(() => {
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
-    let gasPriceGwei = get(selectedGasFee, 'value.display');
+    let gasPriceGwei = get(selectedGasFee, 'txFee.value.display.display');
     if (gasPriceGwei === '0 Gwei') {
       gasPriceGwei = '< 1 Gwei';
     }
@@ -513,7 +505,7 @@ const GasSpeedButton = ({
                   theme={theme}
                   value={{
                     estimatedTimeValue,
-                    price: selectedGasFee?.value?.display,
+                    price,
                   }}
                 />
               </Column>

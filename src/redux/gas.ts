@@ -6,6 +6,8 @@ import { AppDispatch, AppGetState } from './store';
 import {
   EstimatedGasFees,
   EstimatedLegacyGasFees,
+  LegacyTxFees,
+  SelectedGasFee,
   TxFees,
 } from '@rainbow-me/entities';
 import {
@@ -52,7 +54,7 @@ interface GasState {
   gasPrices: EstimatedLegacyGasFees | null;
   eip1559GasPrices: EstimatedGasFees;
   isSufficientGas: Boolean | null;
-  selectedGasFee: Object;
+  selectedGasFee: SelectedGasFee;
   txFees: Object;
 }
 
@@ -356,41 +358,58 @@ export const gasUpdateTxFee = (
   if (network === networkTypes.polygon) {
     nativeTokenPriceUnit = ethereumUtils.getMaticPriceUnit();
   }
-  const gasParams = isEIP1559SupportedNetwork(network)
-    ? eip1559GasPrices
-    : gasPrices;
-  if (isEmpty(gasParams)) return;
-
-  const parseFees = isEIP1559SupportedNetwork(network)
-    ? parseEip1559TxFees
-    : parseTxFees;
-  const getSelectedGasParams = isEIP1559SupportedNetwork(network)
-    ? getSelectedGasPrice
-    : getLegacySelectedGasPrice;
-
-  const txFees = parseFees(
-    gasParams,
-    nativeTokenPriceUnit,
-    _gasLimit,
-    nativeCurrency
-  );
-
-  const selectedGasParams = getSelectedGasParams(
-    assets,
-    gasParams,
-    txFees,
-    _selectedGasPriceOption,
-    network
-  );
-
-  dispatch({
-    payload: {
-      ...selectedGasParams,
-      gasLimit,
+  if (isEIP1559SupportedNetwork(network)) {
+    const gasParams = eip1559GasPrices;
+    if (isEmpty(gasParams)) return;
+    const parseFees = parseEip1559TxFees;
+    const getSelectedGasParams = getSelectedGasPrice;
+    const txFees = parseFees(
+      gasParams,
+      nativeTokenPriceUnit,
+      _gasLimit,
+      nativeCurrency
+    );
+    const selectedGasParams = getSelectedGasParams(
+      assets,
+      gasParams,
       txFees,
-    },
-    type: GAS_UPDATE_TX_FEE,
-  });
+      _selectedGasPriceOption
+    );
+    dispatch({
+      payload: {
+        ...selectedGasParams,
+        gasLimit,
+        txFees,
+      },
+      type: GAS_UPDATE_TX_FEE,
+    });
+  } else {
+    const gasParams = gasPrices;
+    if (isEmpty(gasParams)) return;
+    const parseFees = parseTxFees;
+    const getSelectedGasParams = getLegacySelectedGasPrice;
+    const txFees = parseFees(
+      gasParams,
+      nativeTokenPriceUnit,
+      _gasLimit,
+      nativeCurrency
+    );
+    const selectedGasParams = getSelectedGasParams(
+      assets,
+      gasParams,
+      txFees,
+      _selectedGasPriceOption,
+      network
+    );
+    dispatch({
+      payload: {
+        ...selectedGasParams,
+        gasLimit,
+        txFees,
+      },
+      type: GAS_UPDATE_TX_FEE,
+    });
+  }
 };
 
 const getSelectedGasPrice = (
@@ -398,7 +417,7 @@ const getSelectedGasPrice = (
   eip1559GasPrices: EstimatedGasFees,
   txFees: TxFees,
   selectedGasPriceOption: string
-) => {
+): { isSufficientGas: boolean; selectedGasFee: SelectedGasFee } => {
   let txFee = txFees[selectedGasPriceOption];
   // If no custom price is set we default to FAST
   if (
@@ -414,12 +433,18 @@ const getSelectedGasPrice = (
   const txFeeAmount = fromWei(get(txFee, 'maxTxFee.value.amount', 0));
 
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
+  const selectedGasParams = eip1559GasPrices[selectedGasPriceOption];
 
   return {
     isSufficientGas,
     selectedGasFee: {
-      ...txFee,
-      ...eip1559GasPrices[selectedGasPriceOption],
+      ...selectedGasParams,
+      gasFeeParams: {
+        maxFeePerGas: selectedGasParams?.maxFeePerGas.amount,
+        maxPriorityFeePerGas: selectedGasParams?.priorityFeePerGas.amount,
+      },
+      txFee: txFee.maxTxFee,
+      value: txFee.baseTxFee.value.display,
     },
   };
 };
@@ -427,10 +452,10 @@ const getSelectedGasPrice = (
 const getLegacySelectedGasPrice = (
   assets: any[],
   gasPrices: EstimatedLegacyGasFees,
-  txFees: TxFees,
+  txFees: LegacyTxFees,
   selectedGasPriceOption: string,
   network: Network
-) => {
+): { isSufficientGas: boolean; selectedGasFee: SelectedGasFee } => {
   let txFee = txFees[selectedGasPriceOption];
   // If no custom price is set we default to FAST
   if (
@@ -460,11 +485,14 @@ const getLegacySelectedGasPrice = (
   const balanceAmount = get(nativeAsset, 'balance.amount', 0);
   const txFeeAmount = fromWei(get(txFee, 'txFee.gasPrice.amount', 0));
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
+  const selectedGasParams = gasPrices[selectedGasPriceOption];
   return {
     isSufficientGas,
     selectedGasFee: {
-      ...txFee,
-      ...gasPrices[selectedGasPriceOption],
+      ...selectedGasParams,
+      gasFeeParams: { gasPrice: selectedGasParams?.gasPrice?.amount },
+      txFee: txFee.txFee,
+      value: txFee.txFee.value.display,
     },
   };
 };
@@ -496,7 +524,7 @@ const INITIAL_STATE: GasState = {
   gasLimit: null,
   gasPrices: {},
   isSufficientGas: null,
-  selectedGasFee: {},
+  selectedGasFee: {} as SelectedGasFee,
   txFees: {},
 };
 
