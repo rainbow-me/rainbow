@@ -53,7 +53,6 @@ import {
   estimateGas,
   estimateGasWithPadding,
   getProviderForNetwork,
-  isEIP1559SupportedNetwork,
   isL2Network,
   toHex,
   web3Provider,
@@ -512,14 +511,13 @@ export default function TransactionConfirmationScreen() {
       return;
     }
 
-    const { txFee, maxTxFee } = selectedGasFee;
-    const fee = isEIP1559SupportedNetwork(network) ? maxTxFee : txFee;
-    if (!fee) {
+    const { txFee } = selectedGasFee;
+    if (!txFee) {
       setIsBalanceEnough(false);
       return;
     }
     // Get the TX fee Amount
-    const txFeeAmount = fromWei(fee?.value?.amount ?? 0);
+    const txFeeAmount = fromWei(txFee?.value?.amount ?? 0);
 
     // Get the ETH balance
     const balanceAmount = walletBalance.amount ?? 0;

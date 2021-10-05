@@ -25,7 +25,6 @@ import {
   createSignableTransaction,
   estimateGasLimit,
   getProviderForNetwork,
-  isEIP1559SupportedNetwork,
   isL2Network,
   resolveNameOrAddress,
   web3Provider,
@@ -108,7 +107,6 @@ export default function SendSheet(props) {
   const {
     gasFees,
     gasLimit,
-    legacyGasFees,
     isSufficientGas,
     prevSelectedGasPrice,
     selectedGasFee,
@@ -168,6 +166,10 @@ export default function SendSheet(props) {
   const isL2 = useMemo(() => {
     return isL2Network(currentNetwork);
   }, [currentNetwork]);
+
+  const transactionNetwork = useMemo(() => {
+    return isL2Asset(selected?.type) ? selected.type : network;
+  }, [selected?.type, network]);
 
   const { triggerFocus } = useMagicAutofocus(recipientFieldRef);
 
@@ -284,10 +286,17 @@ export default function SendSheet(props) {
     // belongs to
     if (prevNetwork !== currentNetwork) {
       InteractionManager.runAfterInteractions(() => {
-        startPollingGasPrices(currentNetwork);
+        startPollingGasPrices(transactionNetwork);
       });
     }
-  }, [currentNetwork, prevNetwork, startPollingGasPrices]);
+  }, [
+    currentNetwork,
+    prevNetwork,
+    startPollingGasPrices,
+    selected.type,
+    network,
+    transactionNetwork,
+  ]);
 
   // Stop polling when the sheet is unmounted
   useEffect(() => {
@@ -467,7 +476,7 @@ export default function SendSheet(props) {
         );
 
         if (!lessThan(updatedGasLimit, gasLimit)) {
-          updateTxFee(updatedGasLimit, null, currentNetwork);
+          updateTxFee(updatedGasLimit, null, transactionNetwork);
         }
         // eslint-disable-next-line no-empty
       } catch (e) {}
@@ -529,6 +538,7 @@ export default function SendSheet(props) {
     selected,
     selectedGasFee,
     toAddress,
+    transactionNetwork,
     updateTxFee,
   ]);
 
@@ -594,13 +604,11 @@ export default function SendSheet(props) {
     if (network === networkTypes.polygon) {
       nativeToken = 'MATIC';
     }
-    const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
 
-    const gasrices = isEIP1559SupportedNetwork(assetNetwork)
-      ? gasFees
-      : legacyGasFees;
+    // check asset network somehow
+    // const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
 
-    if (isEmpty(gasrices) || !selectedGasFee || isEmpty(txFees)) {
+    if (isEmpty(gasFees) || !selectedGasFee || isEmpty(txFees)) {
       label = `Loading...`;
       disabled = true;
     } else if (!isZeroAssetAmount && !isSufficientGas) {
@@ -619,9 +627,7 @@ export default function SendSheet(props) {
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
     network,
-    selected.type,
     gasFees,
-    legacyGasFees,
     selectedGasFee,
     txFees,
     isSufficientGas,
@@ -694,8 +700,8 @@ export default function SendSheet(props) {
   }, []);
 
   useEffect(() => {
-    updateDefaultGasLimit(network);
-  }, [updateDefaultGasLimit, network]);
+    updateDefaultGasLimit(transactionNetwork);
+  }, [updateDefaultGasLimit, network, selected.type, transactionNetwork]);
 
   useEffect(() => {
     if (
@@ -744,7 +750,7 @@ export default function SendSheet(props) {
       currentProviderNetwork === currentNetwork &&
       isValidAddress &&
       !isEmpty(selected) &&
-      !isEmpty(legacyGasFees)
+      !isEmpty(gasFees)
     ) {
       estimateGasLimit(
         {
@@ -758,10 +764,10 @@ export default function SendSheet(props) {
         currentNetwork
       )
         .then(gasLimit => {
-          updateTxFee(gasLimit, null, currentNetwork);
+          updateTxFee(gasLimit, null, transactionNetwork);
         })
         .catch(() => {
-          updateTxFee(null, null, currentNetwork);
+          updateTxFee(null, null, transactionNetwork);
         });
     }
   }, [
@@ -775,7 +781,8 @@ export default function SendSheet(props) {
     toAddress,
     updateTxFee,
     network,
-    legacyGasFees,
+    gasFees,
+    transactionNetwork,
   ]);
 
   return (

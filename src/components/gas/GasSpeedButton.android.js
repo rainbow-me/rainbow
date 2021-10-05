@@ -149,7 +149,7 @@ const GasSpeedButton = ({
   const { colors } = useTheme();
   const inputRef = useRef(null);
   const {
-    legacyGasFees,
+    gasFees,
     updateCustomValues,
     isSufficientGas,
     updateGasPriceOption,
@@ -160,15 +160,15 @@ const GasSpeedButton = ({
 
   const gasPricesAvailable = useMemo(() => {
     if (!options || !minGasPrice) {
-      return legacyGasFees;
+      return gasFees;
     }
 
     const filteredGasPrices = {};
     options.forEach(speed => {
-      filteredGasPrices[speed] = legacyGasFees[speed];
+      filteredGasPrices[speed] = gasFees[speed];
     });
     return filteredGasPrices;
-  }, [legacyGasFees, minGasPrice, options]);
+  }, [gasFees, minGasPrice, options]);
 
   const gasPrice = get(selectedGasFee, 'txFee.native.value.display');
   const customGasPriceTimeEstimateHandler = useRef(null);
