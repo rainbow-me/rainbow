@@ -1,9 +1,10 @@
 export { default as AssetTypes, AssetType } from './assetTypes';
 export type {
   TxFee,
-  SelectedGasPrice,
-  GasPrices,
-  EIP1559GasPrices,
+  SelectedGasFee,
+  LegacyTxFees,
+  EstimatedLegacyGasFees,
+  EstimatedGasFees,
   TxFees,
 } from './gas';
 export type Numberish = string | number;

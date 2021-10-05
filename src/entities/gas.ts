@@ -2,35 +2,56 @@ export interface TxFee {
   native: { value: { amount: string; display: string } };
   value: { amount: string; display: { amount: string; display: string } };
 }
-export interface SelectedGasPrice {
-  estimatedTime: { amount: string; display: string };
+
+export interface SelectedGasFee {
+  estimatedTime: { amount: number; display: string };
   option: string;
   txFee: TxFee;
   value: { amount: string; display: string };
+  gasFeeParams:
+    | {
+        maxFeePerGas: number;
+        maxPriorityFeePerGas: number;
+      }
+    | {
+        gasPrice: number;
+      };
 }
 
-export interface GasPrices {
-  [key: string]: {
-    estimatedTime: { amount: number; display: string };
-    gasPrice: { amount: number; display: string };
-    option: any;
-  };
+export interface GasFeeBaseParams {
+  estimatedTime: { amount: number; display: string };
+  option: string;
 }
 
-export interface EIP1559GasPrices {
+export interface GasFeeLegacyParams extends GasFeeBaseParams {
+  type?: 0;
+  gasPrice: { amount: number; display: string };
+}
+
+export interface GasFeeParams extends GasFeeBaseParams {
+  type?: 2;
+  baseFeePerGas: { amount: number; display: string; gwei: string };
+  maxFeePerGas: { amount: number; display: string; gwei: string };
+  priorityFeePerGas: { amount: number; display: string; gwei: string };
+}
+
+export interface EstimatedLegacyGasFees {
+  [key: string]: GasFeeLegacyParams;
+}
+
+export interface EstimatedGasFees {
+  [key: string]: GasFeeParams;
+}
+
+export interface LegacyTxFees {
   [key: string]: {
-    estimatedTime: { amount: number; display: string };
-    option: any;
-    baseFeePerGas: { amount: number; display: string; gwei: string };
-    maxFeePerGas: { amount: number; display: string; gwei: string };
-    priorityFeePerGas: { amount: number; display: string; gwei: string };
+    txFee: TxFee;
   };
 }
 
 export interface TxFees {
   [key: string]: {
-    txFee?: TxFee;
-    baseTxFee?: TxFee;
-    maxTxFee?: TxFee;
+    baseTxFee: TxFee;
+    maxTxFee: TxFee;
   };
 }

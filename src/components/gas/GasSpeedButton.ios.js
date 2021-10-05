@@ -16,10 +16,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
-import {
-  isEIP1559SupportedNetwork,
-  isL2Network,
-} from '@rainbow-me/handlers/web3';
+import { isL2Network } from '@rainbow-me/handlers/web3';
 import { useAccountSettings, useGas } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 // import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
@@ -107,26 +104,26 @@ const GasSpeedButton = ({
   const { navigate, goBack } = useNavigation();
 
   const {
-    gasPrices,
+    gasFees,
     updateCustomValues,
     isSufficientGas,
     updateGasPriceOption,
-    selectedGasPrice,
+    selectedGasFee,
     selectedGasPriceOption,
     txFees,
   } = useGas();
 
   const gasPricesAvailable = useMemo(() => {
     if (!options || !minGasPrice) {
-      return gasPrices;
+      return gasFees;
     }
 
     const filteredGasPrices = {};
     options.forEach(speed => {
-      filteredGasPrices[speed] = gasPrices[speed];
+      filteredGasPrices[speed] = gasFees[speed];
     });
     return filteredGasPrices;
-  }, [gasPrices, minGasPrice, options]);
+  }, [gasFees, minGasPrice, options]);
 
   const customGasPriceTimeEstimateHandler = useRef(null);
   const [customGasPriceInput] = useState(0);
@@ -149,12 +146,7 @@ const GasSpeedButton = ({
   // we need to trim the native currency symbol
   // (and leave the number only!)
   // which gets added later in the formatGasPrice function
-  const gasPrice = get(
-    selectedGasPrice,
-    `${
-      isEIP1559SupportedNetwork(currentNetwork) ? 'baseTxFee' : 'txFee'
-    }.native.value.display`
-  );
+  const gasPrice = get(selectedGasFee, `txFee.native.value.display`);
 
   const price = (isNil(gasPrice) ? '0.00' : gasPrice)
     .replace(',', '') // In case gas price is > 1k!
@@ -185,14 +177,14 @@ const GasSpeedButton = ({
 
   useEffect(() => {
     const estimatedTime = get(
-      selectedGasPrice,
+      selectedGasFee,
       'estimatedTime.display',
       ''
     ).split(' ');
 
     setEstimatedTimeValue(estimatedTime[0] || 0);
     setEstimatedTimeUnit(estimatedTime[1] || 'min');
-  }, [selectedGasPrice, selectedGasPriceOption]);
+  }, [selectedGasFee, selectedGasPriceOption]);
 
   const calculateCustomPriceEstimatedTime = useCallback(
     async price => {
@@ -274,7 +266,7 @@ const GasSpeedButton = ({
 
   const formatTransactionTime = useCallback(() => {
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
-    let gasPriceGwei = get(selectedGasPrice, 'value.display');
+    let gasPriceGwei = get(selectedGasFee, 'txFee.value.display.display');
     if (gasPriceGwei === '0 Gwei') {
       gasPriceGwei = '< 1 Gwei';
     }
@@ -315,7 +307,7 @@ const GasSpeedButton = ({
     estimatedTimeUnit,
     estimatedTimeValue,
     gasPricesAvailable,
-    selectedGasPrice,
+    selectedGasFee,
     selectedGasPriceOption,
   ]);
 
@@ -513,7 +505,7 @@ const GasSpeedButton = ({
                   theme={theme}
                   value={{
                     estimatedTimeValue,
-                    price: selectedGasPrice?.value?.display,
+                    price,
                   }}
                 />
               </Column>

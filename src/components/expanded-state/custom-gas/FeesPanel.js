@@ -48,13 +48,13 @@ const PanelColumn = styled(Column).attrs(() => ({
 export default function FeesPanel({
   currentGasTrend,
   setMaxBaseFee,
-  selectedGasPrice,
+  selectedGasFee,
   setMinerTip,
 }) {
-  const maxTxFee = get(selectedGasPrice, 'maxTxFee.native.value.display', 0);
-  const currentBaseFee = get(selectedGasPrice, 'baseFeePerGas.display', 0);
-  const maxBaseFee = get(selectedGasPrice, 'maxFeePerGas.gwei', 0);
-  const minerTip = get(selectedGasPrice, 'priorityFeePerGas.gwei', 0);
+  const txFee = get(selectedGasFee, 'txFee.native.value.display', 0);
+  const currentBaseFee = get(selectedGasFee, 'baseFeePerGas.display', 0);
+  const maxBaseFee = get(selectedGasFee, 'maxFeePerGas.gwei', 0);
+  const minerTip = get(selectedGasFee, 'priorityFeePerGas.gwei', 0);
 
   return (
     <OuterWrapper>
@@ -100,7 +100,7 @@ export default function FeesPanel({
             <PanelLabel>Max Transaction Fee</PanelLabel>
           </PanelColumn>
           <PanelColumn>
-            <PanelLabel>{maxTxFee}</PanelLabel>
+            <PanelLabel>{txFee}</PanelLabel>
           </PanelColumn>
         </PanelRow>
       </InnerWrapper>

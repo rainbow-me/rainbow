@@ -8,11 +8,10 @@ import {
   gasPricesStopPolling,
   gasUpdateCustomValues,
   gasUpdateDefaultGasLimit,
-  gasUpdateGasPriceOption,
+  gasUpdateGasFeeOption,
   gasUpdateTxFee,
 } from '@rainbow-me/redux/gas';
 
-// EIP1559 WIP
 export default function useGas() {
   const dispatch = useDispatch();
   const { network: currentNetwork } = useAccountSettings();
@@ -20,26 +19,24 @@ export default function useGas() {
   const gasData = useSelector(
     ({
       gas: {
-        eip1559GasPrices,
+        gasFees,
         gasLimit,
-        gasPrices,
+        legacyGasFees,
         isSufficientGas,
-        selectedGasPrice,
-        selectedGasPriceOption,
-        txFees,
+        selectedGasFee,
       },
     }) => ({
-      eip1559GasPrices,
+      gasFees,
       gasLimit,
-      gasPrices,
       isSufficientGas,
-      selectedGasPrice,
-      selectedGasPriceOption,
-      txFees,
+      legacyGasFees,
+      selectedGasFee,
+      selectedGasPriceOption: selectedGasFee.option,
+      txFees: selectedGasFee.txFee,
     })
   );
 
-  const prevSelectedGasPrice = usePrevious(gasData?.selectedGasPrice);
+  const prevSelectedGasPrice = usePrevious(gasData?.selectedGasFee);
 
   const startPollingGasPrices = useCallback(
     (network = networkTypes.mainnet) =>
@@ -59,7 +56,7 @@ export default function useGas() {
 
   const updateGasPriceOption = useCallback(
     (option, network = currentNetwork, assetsOverride = null) =>
-      dispatch(gasUpdateGasPriceOption(option, network, assetsOverride)),
+      dispatch(gasUpdateGasFeeOption(option, network, assetsOverride)),
     [currentNetwork, dispatch]
   );
 

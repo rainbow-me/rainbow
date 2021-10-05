@@ -86,7 +86,7 @@ const unlock = async (
   logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
-  const { gasPrices, selectedGasPrice } = store.getState().gas;
+  const { legacyGasFees, selectedGasFee } = store.getState().gas;
   const {
     assetToUnlock,
     contractAddress,
@@ -115,8 +115,8 @@ const unlock = async (
   let gasPrice;
   try {
     // approvals should always use fast gas or custom (whatever is faster)
-    gasPrice = selectedGasPrice?.value?.amount;
-    const fastPrice = get(gasPrices, `[${gasUtils.FAST}].gasPrice.amount`);
+    gasPrice = selectedGasFee?.value?.amount;
+    const fastPrice = get(legacyGasFees, `[${gasUtils.FAST}].gasPrice.amount`);
     if (greaterThan(fastPrice, gasPrice)) {
       gasPrice = fastPrice;
     }

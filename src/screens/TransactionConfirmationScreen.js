@@ -53,8 +53,6 @@ import {
   estimateGas,
   estimateGasWithPadding,
   getProviderForNetwork,
-  getTransactionGasParams,
-  isEIP1559SupportedNetwork,
   isL2Network,
   toHex,
   web3Provider,
@@ -264,18 +262,18 @@ export default function TransactionConfirmationScreen() {
 
   const {
     gasLimit,
-    gasPrices,
+    legacyGasFees,
     isSufficientGas,
     startPollingGasPrices,
     stopPollingGasPrices,
     updateGasPriceOption,
     updateTxFee,
-    selectedGasPrice,
+    selectedGasFee,
     selectedGasPriceOption,
   } = useGas();
 
   useEffect(() => {
-    const { txFee } = selectedGasPrice;
+    const { txFee } = selectedGasFee;
     if (!txFee || !nativeAsset || !network || isSufficientGasChecked) return;
     updateGasPriceOption(selectedGasPriceOption, network, [nativeAsset]);
     setIsSufficientGasChecked(true);
@@ -284,7 +282,7 @@ export default function TransactionConfirmationScreen() {
     isSufficientGasChecked,
     nativeAsset,
     network,
-    selectedGasPrice,
+    selectedGasFee,
     selectedGasPriceOption,
     updateGasPriceOption,
   ]);
@@ -466,7 +464,7 @@ export default function TransactionConfirmationScreen() {
 
   useEffect(() => {
     if (
-      !isEmpty(gasPrices) &&
+      !isEmpty(legacyGasFees) &&
       !calculatingGasLimit.current &&
       !isMessageRequest &&
       provider
@@ -478,7 +476,7 @@ export default function TransactionConfirmationScreen() {
   }, [
     calculateGasLimit,
     gasLimit,
-    gasPrices,
+    legacyGasFees,
     isMessageRequest,
     method,
     params,
@@ -513,14 +511,13 @@ export default function TransactionConfirmationScreen() {
       return;
     }
 
-    const { txFee, maxTxFee } = selectedGasPrice;
-    const fee = isEIP1559SupportedNetwork(network) ? maxTxFee : txFee;
-    if (!fee) {
+    const { txFee } = selectedGasFee;
+    if (!txFee) {
       setIsBalanceEnough(false);
       return;
     }
     // Get the TX fee Amount
-    const txFeeAmount = fromWei(fee?.value?.amount ?? 0);
+    const txFeeAmount = fromWei(txFee?.value?.amount ?? 0);
 
     // Get the ETH balance
     const balanceAmount = walletBalance.amount ?? 0;
@@ -542,7 +539,7 @@ export default function TransactionConfirmationScreen() {
     method,
     network,
     params,
-    selectedGasPrice,
+    selectedGasFee,
     walletBalance.amount,
   ]);
 
@@ -550,7 +547,6 @@ export default function TransactionConfirmationScreen() {
     const sendInsteadOfSign = method === SEND_TRANSACTION;
     const txPayload = params?.[0];
     let { gas, gasLimit: gasLimitFromPayload } = txPayload;
-    const gasParams = getTransactionGasParams(selectedGasPrice, network);
 
     try {
       logger.log('⛽ gas suggested by dapp', {
@@ -586,7 +582,7 @@ export default function TransactionConfirmationScreen() {
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
     let txPayloadUpdated = {
       ...txPayload,
-      ...gasParams,
+      ...selectedGasFee.gasFeeParams,
     };
     if (calculatedGasLimit) {
       txPayloadUpdated.gasLimit = calculatedGasLimit;
@@ -638,7 +634,7 @@ export default function TransactionConfirmationScreen() {
           network,
           nonce: result.nonce,
           to: displayDetails?.request?.to,
-          ...gasParams,
+          ...selectedGasFee.gasFeeParams,
         };
         if (toLower(accountAddress) === toLower(txDetails.from)) {
           dispatch(dataAddNewTransaction(txDetails, null, false, provider));
@@ -687,7 +683,7 @@ export default function TransactionConfirmationScreen() {
   }, [
     method,
     params,
-    selectedGasPrice,
+    selectedGasFee,
     network,
     gasLimit,
     provider,
@@ -962,7 +958,7 @@ export default function TransactionConfirmationScreen() {
       network &&
       provider &&
       nativeAsset &&
-      !isEmpty(selectedGasPrice)
+      !isEmpty(selectedGasFee)
     ) {
       setReady(true);
     }
@@ -972,7 +968,7 @@ export default function TransactionConfirmationScreen() {
     provider,
     ready,
     request?.asset,
-    selectedGasPrice,
+    selectedGasFee,
     walletBalance,
   ]);
 
