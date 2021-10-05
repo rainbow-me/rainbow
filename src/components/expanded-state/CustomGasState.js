@@ -115,7 +115,7 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
   ]);
 
   const [currentGasTrend] = useState('stable');
-  const { selectedGasPrice } = useGas();
+  const { selectedGasFee } = useGas();
 
   return (
     <SheetKeyboardAnimation
@@ -134,7 +134,7 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
         <PanelWrapper>
           <FeesPanel
             currentGasTrend={currentGasTrend}
-            selectedGasPrice={selectedGasPrice}
+            selectedGasFee={selectedGasFee}
             // setMaxBaseFee={setMaxBaseFee}
             // setMinerTip={setMinerTip}
           />

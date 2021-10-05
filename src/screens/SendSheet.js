@@ -112,7 +112,7 @@ export default function SendSheet(props) {
     gasPrices,
     isSufficientGas,
     prevSelectedGasPrice,
-    selectedGasPrice,
+    selectedGasFee,
     startPollingGasPrices,
     stopPollingGasPrices,
     txFees,
@@ -304,11 +304,11 @@ export default function SendSheet(props) {
     if (
       selected?.address === ETH_ADDRESS &&
       (prevSelectedGasPrice?.txFee?.value?.amount ?? 0) !==
-        (selectedGasPrice?.txFee?.value?.amount ?? 0)
+        (selectedGasFee?.txFee?.value?.amount ?? 0)
     ) {
       updateMaxInputBalance(selected);
     }
-  }, [prevSelectedGasPrice, selected, selectedGasPrice, updateMaxInputBalance]);
+  }, [prevSelectedGasPrice, selected, selectedGasFee, updateMaxInputBalance]);
 
   useEffect(() => {
     const updateNetworkAndProvider = async () => {
@@ -441,13 +441,13 @@ export default function SendSheet(props) {
     const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
     if (
       (isEIP1559SupportedNetwork(assetNetwork)
-        ? !selectedGasPrice?.maxTxFee
-        : !selectedGasPrice?.txFee) ||
+        ? !selectedGasFee?.maxTxFee
+        : !selectedGasFee?.txFee) ||
       !validTransaction
     ) {
       logger.sentry('preventing tx submit for one of the following reasons:');
-      logger.sentry('selectedGasPrice ? ', selectedGasPrice);
-      logger.sentry('selectedGasPrice.maxFee ? ', selectedGasPrice?.maxFee);
+      logger.sentry('selectedGasFee ? ', selectedGasFee);
+      logger.sentry('selectedGasFee.maxFee ? ', selectedGasFee?.maxFee);
       logger.sentry('validTransaction ? ', validTransaction);
       captureEvent('Preventing tx submit');
       return false;
@@ -493,7 +493,7 @@ export default function SendSheet(props) {
       network: assetNetwork,
       nonce: null,
       to: toAddress,
-      ...getTransactionGasParams(selectedGasPrice, assetNetwork),
+      ...getTransactionGasParams(selectedGasFee, assetNetwork),
     };
 
     try {
@@ -533,7 +533,7 @@ export default function SendSheet(props) {
     isValidAddress,
     network,
     selected,
-    selectedGasPrice,
+    selectedGasFee,
     toAddress,
     updateTxFee,
   ]);
@@ -606,7 +606,7 @@ export default function SendSheet(props) {
       ? eip1559GasPrices
       : gasPrices;
 
-    if (isEmpty(gasrices) || !selectedGasPrice || isEmpty(txFees)) {
+    if (isEmpty(gasrices) || !selectedGasFee || isEmpty(txFees)) {
       label = `Loading...`;
       disabled = true;
     } else if (!isZeroAssetAmount && !isSufficientGas) {
@@ -628,7 +628,7 @@ export default function SendSheet(props) {
     selected.type,
     eip1559GasPrices,
     gasPrices,
-    selectedGasPrice,
+    selectedGasFee,
     txFees,
     isSufficientGas,
   ]);
@@ -663,7 +663,7 @@ export default function SendSheet(props) {
       currentInput,
       from: accountAddress,
       gasLimit: gasLimit,
-      gasPrice: selectedGasPrice.value?.amount,
+      gasPrice: selectedGasFee.value?.amount,
       isL2,
       isNft,
       isSufficientGas,
@@ -684,7 +684,7 @@ export default function SendSheet(props) {
     navigate,
     recipient,
     selected,
-    selectedGasPrice.value?.amount,
+    selectedGasFee.value?.amount,
     submitTransaction,
     validateRecipient,
   ]);

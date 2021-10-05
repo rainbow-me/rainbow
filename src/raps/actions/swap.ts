@@ -37,9 +37,9 @@ const swap = async (
     outputCurrency,
     slippageInBips: slippage,
   } = store.getState().swap;
-  const { gasPrices, selectedGasPrice } = store.getState().gas;
+  const { gasPrices, selectedGasFee } = store.getState().gas;
 
-  let gasPrice = selectedGasPrice?.value?.amount;
+  let gasPrice = selectedGasFee?.value?.amount;
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
   if (currentRap.actions.length - 1 > index || !gasPrice) {
     const fastPrice = get(gasPrices, `[${gasUtils.FAST}].gasPrice.amount`);

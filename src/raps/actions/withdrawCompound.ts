@@ -39,7 +39,7 @@ const withdrawCompound = async (
   const { dispatch } = store;
   const { accountAddress, network } = store.getState().settings;
   const { inputCurrency, typeSpecificParameters } = store.getState().swap;
-  const { gasPrices, selectedGasPrice } = store.getState().gas;
+  const { gasPrices, selectedGasFee } = store.getState().gas;
 
   const {
     cTokenBalance,
@@ -54,7 +54,7 @@ const withdrawCompound = async (
   logger.log(`[${actionName}] is max`, isMax);
   logger.log(`[${actionName}] raw input amount`, rawInputAmount);
 
-  let gasPrice = selectedGasPrice?.gasPrice.amount;
+  let gasPrice = selectedGasFee?.gasPrice.amount;
   if (!gasPrice) {
     gasPrice = get(gasPrices, `[${gasUtils.FAST}].gasPrice.amount`);
   }

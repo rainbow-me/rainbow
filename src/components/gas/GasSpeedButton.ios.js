@@ -111,7 +111,7 @@ const GasSpeedButton = ({
     updateCustomValues,
     isSufficientGas,
     updateGasPriceOption,
-    selectedGasPrice,
+    selectedGasFee,
     selectedGasPriceOption,
     txFees,
   } = useGas();
@@ -150,7 +150,7 @@ const GasSpeedButton = ({
   // (and leave the number only!)
   // which gets added later in the formatGasPrice function
   const gasPrice = get(
-    selectedGasPrice,
+    selectedGasFee,
     `${
       isEIP1559SupportedNetwork(currentNetwork) ? 'baseTxFee' : 'txFee'
     }.native.value.display`
@@ -185,14 +185,14 @@ const GasSpeedButton = ({
 
   useEffect(() => {
     const estimatedTime = get(
-      selectedGasPrice,
+      selectedGasFee,
       'estimatedTime.display',
       ''
     ).split(' ');
 
     setEstimatedTimeValue(estimatedTime[0] || 0);
     setEstimatedTimeUnit(estimatedTime[1] || 'min');
-  }, [selectedGasPrice, selectedGasPriceOption]);
+  }, [selectedGasFee, selectedGasPriceOption]);
 
   const calculateCustomPriceEstimatedTime = useCallback(
     async price => {
@@ -274,7 +274,7 @@ const GasSpeedButton = ({
 
   const formatTransactionTime = useCallback(() => {
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
-    let gasPriceGwei = get(selectedGasPrice, 'value.display');
+    let gasPriceGwei = get(selectedGasFee, 'value.display');
     if (gasPriceGwei === '0 Gwei') {
       gasPriceGwei = '< 1 Gwei';
     }
@@ -315,7 +315,7 @@ const GasSpeedButton = ({
     estimatedTimeUnit,
     estimatedTimeValue,
     gasPricesAvailable,
-    selectedGasPrice,
+    selectedGasFee,
     selectedGasPriceOption,
   ]);
 
@@ -513,7 +513,7 @@ const GasSpeedButton = ({
                   theme={theme}
                   value={{
                     estimatedTimeValue,
-                    price: selectedGasPrice?.value?.display,
+                    price: selectedGasFee?.value?.display,
                   }}
                 />
               </Column>

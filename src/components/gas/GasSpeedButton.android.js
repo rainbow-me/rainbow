@@ -153,7 +153,7 @@ const GasSpeedButton = ({
     updateCustomValues,
     isSufficientGas,
     updateGasPriceOption,
-    selectedGasPrice,
+    selectedGasFee,
     selectedGasPriceOption,
     txFees,
   } = useGas();
@@ -170,7 +170,7 @@ const GasSpeedButton = ({
     return filteredGasPrices;
   }, [gasPrices, minGasPrice, options]);
 
-  const gasPrice = get(selectedGasPrice, 'txFee.native.value.display');
+  const gasPrice = get(selectedGasFee, 'txFee.native.value.display');
   const customGasPriceTimeEstimateHandler = useRef(null);
   useEffect(() => {
     listener = () => {
@@ -231,14 +231,14 @@ const GasSpeedButton = ({
 
   useEffect(() => {
     const estimatedTime = get(
-      selectedGasPrice,
+      selectedGasFee,
       'estimatedTime.display',
       ''
     ).split(' ');
 
     setEstimatedTimeValue(estimatedTime[0] || 0);
     setEstimatedTimeUnit(estimatedTime[1] || 'min');
-  }, [selectedGasPrice, selectedGasPriceOption]);
+  }, [selectedGasFee, selectedGasPriceOption]);
 
   const calculateCustomPriceEstimatedTime = useCallback(
     async price => {
@@ -306,7 +306,7 @@ const GasSpeedButton = ({
   const formatBottomRightLabel = useCallback(() => {
     const actionLabel = getActionLabel(type);
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
-    let gasPriceGwei = get(selectedGasPrice, 'value.display');
+    let gasPriceGwei = get(selectedGasFee, 'value.display');
     if (gasPriceGwei === '0 Gwei') {
       gasPriceGwei = '< 1 Gwei';
     }
@@ -349,7 +349,7 @@ const GasSpeedButton = ({
     estimatedTimeValue,
     gasPrice,
     gasPricesAvailable,
-    selectedGasPrice,
+    selectedGasFee,
     selectedGasPriceOption,
     type,
   ]);
@@ -602,7 +602,7 @@ const GasSpeedButton = ({
             theme={theme}
             value={{
               estimatedTimeValue,
-              price: selectedGasPrice?.value?.display,
+              price: selectedGasFee?.value?.display,
             }}
           />
         </Row>

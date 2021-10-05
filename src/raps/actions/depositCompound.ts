@@ -47,7 +47,7 @@ const depositCompound = async (
   const tokenToDeposit = requiresSwap ? outputCurrency : inputCurrency;
 
   const { accountAddress, network } = store.getState().settings;
-  const { gasPrices, selectedGasPrice } = store.getState().gas;
+  const { gasPrices, selectedGasFee } = store.getState().gas;
   logger.log(`[${actionName}] amount`, amountToDeposit);
   const rawInputAmount = convertAmountToRawAmount(
     amountToDeposit,
@@ -55,7 +55,7 @@ const depositCompound = async (
   );
   logger.log(`[${actionName}] raw input amount`, rawInputAmount);
 
-  let gasPrice = selectedGasPrice?.value?.amount;
+  let gasPrice = selectedGasFee?.value?.amount;
   if (!gasPrice) {
     gasPrice = get(gasPrices, `[${gasUtils.FAST}].gasPrice.amount`);
   }

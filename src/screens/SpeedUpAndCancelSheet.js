@@ -122,7 +122,7 @@ export default function SpeedUpAndCancelSheet() {
   const {
     gasPrices,
     updateGasPriceOption,
-    selectedGasPrice,
+    selectedGasFee,
     startPollingGasPrices,
     stopPollingGasPrices,
     updateTxFee,
@@ -146,14 +146,14 @@ export default function SpeedUpAndCancelSheet() {
   const [value, setValue] = useState(null);
 
   const getNewGasPrice = useCallback(() => {
-    const rawGasPrice = get(selectedGasPrice, 'gasPrice.amount');
+    const rawGasPrice = get(selectedGasFee, 'gasPrice.amount');
     const minGasPriceAllowed = gweiToWei(minGasPrice);
     const rawGasPriceBN = new BigNumber(rawGasPrice);
     const minGasPriceAllowedBN = new BigNumber(minGasPriceAllowed);
     return rawGasPriceBN.isGreaterThan(minGasPriceAllowedBN)
       ? toHex(rawGasPrice)
       : toHex(minGasPriceAllowed);
-  }, [minGasPrice, selectedGasPrice]);
+  }, [minGasPrice, selectedGasFee]);
 
   const handleCancellation = useCallback(async () => {
     try {

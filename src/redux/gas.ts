@@ -3,7 +3,11 @@ import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { get, isEmpty } from 'lodash';
 import { AppDispatch, AppGetState } from './store';
-import { EIP1559GasPrices, GasPrices, TxFees } from '@rainbow-me/entities';
+import {
+  EstimatedGasFees,
+  EstimatedLegacyGasFees,
+  TxFees,
+} from '@rainbow-me/entities';
 import {
   blockNativeGetGasParams,
   // etherscanGetGasEstimates,
@@ -45,10 +49,10 @@ const { CUSTOM, NORMAL } = gasUtils;
 interface GasState {
   defaultGasLimit: number;
   gasLimit: number | null;
-  gasPrices: GasPrices | null;
-  eip1559GasPrices: EIP1559GasPrices;
+  gasPrices: EstimatedLegacyGasFees | null;
+  eip1559GasPrices: EstimatedGasFees;
   isSufficientGas: Boolean | null;
-  selectedGasPrice: Object;
+  selectedGasFee: Object;
   txFees: Object;
 }
 
@@ -83,13 +87,13 @@ const { GAS_PRICE_SOURCES } = gasUtils;
 //     defaultGasLimit,
 //     nativeCurrency
 //   );
-//   const selectedGasPrice = {
+//   const selectedGasFee = {
 //     ...txFees[NORMAL],
 //     ...fallbackGasPrices[NORMAL],
 //   };
 //   return {
 //     fallbackGasPrices,
-//     selectedGasPrice,
+//     selectedGasFee,
 //     txFees,
 //   };
 // };
@@ -219,8 +223,6 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
           }
         }
 
-        console.log('gasPricesStartPolling', )
-
         const gasPrices = parseGasPrices(adjustedGasPrices, source);
         if (existingGasPrices[CUSTOM] !== null) {
           // Preserve custom values while updating prices
@@ -263,7 +265,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   watchGasPrices(network);
 };
 
-export const gasUpdateGasPriceOption = (
+export const gasUpdateGasFeeOption = (
   newGasPriceOption: string,
   network: Network,
   assetsOverride: any[]
@@ -286,8 +288,6 @@ export const gasUpdateGasPriceOption = (
         newGasPriceOption,
         network
       );
-
-      console.log('🤪🤪🤪🤪🤪🤪 gasUpdateGasPriceOption', results)
 
   dispatch({
     payload: {
@@ -344,10 +344,11 @@ export const gasUpdateTxFee = (
     defaultGasLimit,
     gasPrices,
     eip1559GasPrices,
-    selectedGasPrice
+    selectedGasFee,
   } = getState().gas;
   const _gasLimit = gasLimit || defaultGasLimit;
-  const _selectedGasPriceOption = overrideGasOption || selectedGasPrice.option || gasUtils.NORMAL;
+  const _selectedGasPriceOption =
+    overrideGasOption || selectedGasFee.option || NORMAL;
 
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
@@ -394,7 +395,7 @@ export const gasUpdateTxFee = (
 
 const getSelectedGasPrice = (
   assets: any[],
-  eip1559GasPrices: EIP1559GasPrices,
+  eip1559GasPrices: EstimatedGasFees,
   txFees: TxFees,
   selectedGasPriceOption: string
 ) => {
@@ -416,7 +417,7 @@ const getSelectedGasPrice = (
 
   return {
     isSufficientGas,
-    selectedGasPrice: {
+    selectedGasFee: {
       ...txFee,
       ...eip1559GasPrices[selectedGasPriceOption],
     },
@@ -425,7 +426,7 @@ const getSelectedGasPrice = (
 
 const getLegacySelectedGasPrice = (
   assets: any[],
-  gasPrices: GasPrices,
+  gasPrices: EstimatedLegacyGasFees,
   txFees: TxFees,
   selectedGasPriceOption: string,
   network: Network
@@ -459,10 +460,9 @@ const getLegacySelectedGasPrice = (
   const balanceAmount = get(nativeAsset, 'balance.amount', 0);
   const txFeeAmount = fromWei(get(txFee, 'txFee.gasPrice.amount', 0));
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
-  console.log('🤡🤡🤡🤡🤡 getLegacySelectedGasPrice', txFee)
   return {
     isSufficientGas,
-    selectedGasPrice: {
+    selectedGasFee: {
       ...txFee,
       ...gasPrices[selectedGasPriceOption],
     },
@@ -496,7 +496,7 @@ const INITIAL_STATE: GasState = {
   gasLimit: null,
   gasPrices: {},
   isSufficientGas: null,
-  selectedGasPrice: {},
+  selectedGasFee: {},
   txFees: {},
 };
 
@@ -515,7 +515,7 @@ export default (
         ...state,
         eip1559GasPrices: action.payload.eip1559GasPrices,
         gasPrices: action.payload.gasPrices,
-        selectedGasPrice: action.payload.selectedGasPrice,
+        selectedGasFee: action.payload.selectedGasFee,
         txFees: action.payload.txFees,
       };
     case GAS_PRICES_SUCCESS:
@@ -534,14 +534,14 @@ export default (
         ...state,
         gasLimit: action.payload.gasLimit,
         isSufficientGas: action.payload.isSufficientGas,
-        selectedGasPrice: action.payload.selectedGasPrice,
+        selectedGasFee: action.payload.selectedGasFee,
         txFees: action.payload.txFees,
       };
     case GAS_UPDATE_GAS_PRICE_OPTION:
       return {
         ...state,
         isSufficientGas: action.payload.isSufficientGas,
-        selectedGasPrice: action.payload.selectedGasPrice,
+        selectedGasFee: action.payload.selectedGasFee,
       };
     case GAS_PRICES_RESET:
       return INITIAL_STATE;

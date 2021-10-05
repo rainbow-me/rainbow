@@ -135,7 +135,7 @@ export default function ExchangeModal({
 
   const {
     gasPrices,
-    selectedGasPrice,
+    selectedGasFee,
     startPollingGasPrices,
     stopPollingGasPrices,
     updateDefaultGasLimit,
@@ -373,7 +373,7 @@ export default function ExchangeModal({
     }
 
     const outputInUSD = outputPriceValue * outputAmount;
-    const gasPrice = selectedGasPrice?.txFee?.native?.value?.amount;
+    const gasPrice = selectedGasFee?.txFee?.native?.value?.amount;
     const cancelTransaction = await checkGasVsOutput(gasPrice, outputInUSD);
 
     if (cancelTransaction) {
@@ -437,7 +437,7 @@ export default function ExchangeModal({
     outputPriceValue,
     priceImpactPercentDisplay,
     priceOfEther,
-    selectedGasPrice?.txFee?.native?.value?.amount,
+    selectedGasFee?.txFee?.native?.value?.amount,
     setParams,
     tradeDetails,
     type,
