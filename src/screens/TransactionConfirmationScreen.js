@@ -53,7 +53,6 @@ import {
   estimateGas,
   estimateGasWithPadding,
   getProviderForNetwork,
-  getTransactionGasParams,
   isEIP1559SupportedNetwork,
   isL2Network,
   toHex,
@@ -550,7 +549,6 @@ export default function TransactionConfirmationScreen() {
     const sendInsteadOfSign = method === SEND_TRANSACTION;
     const txPayload = params?.[0];
     let { gas, gasLimit: gasLimitFromPayload } = txPayload;
-    const gasParams = getTransactionGasParams(selectedGasFee, network);
 
     try {
       logger.log('⛽ gas suggested by dapp', {
@@ -586,7 +584,7 @@ export default function TransactionConfirmationScreen() {
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
     let txPayloadUpdated = {
       ...txPayload,
-      ...gasParams,
+      ...selectedGasFee.gasFeeParams,
     };
     if (calculatedGasLimit) {
       txPayloadUpdated.gasLimit = calculatedGasLimit;
@@ -638,7 +636,7 @@ export default function TransactionConfirmationScreen() {
           network,
           nonce: result.nonce,
           to: displayDetails?.request?.to,
-          ...gasParams,
+          ...selectedGasFee.gasFeeParams,
         };
         if (toLower(accountAddress) === toLower(txDetails.from)) {
           dispatch(dataAddNewTransaction(txDetails, null, false, provider));
