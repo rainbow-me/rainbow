@@ -15,7 +15,7 @@ import {
   getEstimatedTimeForGasPrice,
   maticGasStationGetGasPrices,
   maticGetGasEstimates,
-} from '@rainbow-me/handlers/gasPrices';
+} from '@rainbow-me/handlers/gasFees';
 import {
   getProviderForNetwork,
   isEIP1559SupportedNetwork,
