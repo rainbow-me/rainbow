@@ -53,7 +53,7 @@ import {
   estimateGas,
   estimateGasWithPadding,
   getProviderForNetwork,
-  getTxGasParams,
+  getTransactionGasParams,
   isEIP1559SupportedNetwork,
   isL2Network,
   toHex,
@@ -550,7 +550,7 @@ export default function TransactionConfirmationScreen() {
     const sendInsteadOfSign = method === SEND_TRANSACTION;
     const txPayload = params?.[0];
     let { gas, gasLimit: gasLimitFromPayload } = txPayload;
-    const gasParams = getTxGasParams(selectedGasPrice, network);
+    const gasParams = getTransactionGasParams(selectedGasPrice, network);
 
     try {
       logger.log('⛽ gas suggested by dapp', {
