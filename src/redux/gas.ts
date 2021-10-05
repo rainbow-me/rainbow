@@ -458,7 +458,8 @@ const getSelectedGasFee = (
         maxFeePerGas: selectedGasParams?.maxFeePerGas.amount,
         maxPriorityFeePerGas: selectedGasParams?.priorityFeePerGas.amount,
       },
-      txFee: maxTxFee,
+      maxTxFee,
+      txFee: txFee?.baseTxFee,
       value,
     },
   };

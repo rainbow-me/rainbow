@@ -7,6 +7,7 @@ export interface SelectedGasFee {
   estimatedTime: { amount: number; display: string };
   option: string;
   txFee: TxFee;
+  maxTxFee?: TxFee;
   value: { amount: string; display: string };
   gasFeeParams:
     | {
