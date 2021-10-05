@@ -25,7 +25,7 @@ import {
   createSignableTransaction,
   estimateGasLimit,
   getProviderForNetwork,
-  getTxGasParams,
+  getTransactionGasParams,
   isEIP1559SupportedNetwork,
   isL2Network,
   resolveNameOrAddress,
@@ -493,7 +493,7 @@ export default function SendSheet(props) {
       network: assetNetwork,
       nonce: null,
       to: toAddress,
-      ...getTxGasParams(selectedGasPrice, assetNetwork),
+      ...getTransactionGasParams(selectedGasPrice, assetNetwork),
     };
 
     try {

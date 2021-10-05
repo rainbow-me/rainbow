@@ -298,7 +298,7 @@ export const getTransaction = hash => web3Provider.getTransaction(hash);
 export const getTransactionCount = address =>
   web3Provider.getTransactionCount(address, 'pending');
 
-export const getTxGasParams = (selectedGasParams, network) => {
+export const getTransactionGasParams = (selectedGasParams, network) => {
   const gasParams = isEIP1559SupportedNetwork(network)
     ? {
         maxFeePerGas: selectedGasParams?.maxFeePerGas.amount,
