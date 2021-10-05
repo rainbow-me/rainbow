@@ -146,7 +146,7 @@ export default function SpeedUpAndCancelSheet() {
   const [value, setValue] = useState(null);
 
   const getNewGasPrice = useCallback(() => {
-    const rawGasPrice = get(selectedGasPrice, 'value.amount');
+    const rawGasPrice = get(selectedGasPrice, 'gasPrice.amount');
     const minGasPriceAllowed = gweiToWei(minGasPrice);
     const rawGasPriceBN = new BigNumber(rawGasPrice);
     const minGasPriceAllowedBN = new BigNumber(minGasPriceAllowed);

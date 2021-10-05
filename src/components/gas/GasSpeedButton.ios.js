@@ -1,5 +1,5 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
-import { get, isEmpty, isNil } from 'lodash';
+import { get, isEmpty, isNil, upperFirst } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -8,29 +8,51 @@ import React, {
   useState,
 } from 'react';
 import { LayoutAnimation } from 'react-native';
-import {
-  BorderlessButton,
-  TouchableOpacity,
-} from 'react-native-gesture-handler';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+// import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
-import { Alert } from '../alerts';
 import { ButtonPressAnimation } from '../animations';
-import { Input } from '../inputs';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
-import { isL2Network } from '@rainbow-me/handlers/web3';
-import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
+import {
+  isEIP1559SupportedNetwork,
+  isL2Network,
+} from '@rainbow-me/handlers/web3';
 import { useAccountSettings, useGas } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
+// import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
-import { padding } from '@rainbow-me/styles';
-import { gasUtils, magicMemo } from '@rainbow-me/utils';
+import { margin, padding } from '@rainbow-me/styles';
+import {
+  gasUtils,
+  magicMemo,
+  showActionSheetWithOptions,
+} from '@rainbow-me/utils';
 
-const { GasSpeedOrder, CUSTOM, FAST, NORMAL, SLOW } = gasUtils;
+const { GAS_ICONS, GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
+
+const Symbol = styled(Text).attrs({
+  align: 'right',
+  size: 'lmedium',
+  weight: 'heavy',
+})`
+  margin-left: ${({ nextToText }) => (nextToText ? 5 : 0)};
+`;
+
+const CustomGasButton = styled(ButtonPressAnimation).attrs({
+  hapticType: 'impactHeavy',
+  scaleTo: 0.9,
+})`
+  // border: ${({ theme: { colors } }) => `2px solid ${colors.mediumGrey}`};
+  // TODO: put this shade in theme colors
+  border: 2px solid rgba(224, 232, 255, 0.15);
+  border-radius: 15px;
+  ${padding(3, 5)};
+  ${margin(0, 0, 0, 8)}
+  )
+`;
 
 const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
@@ -42,33 +64,12 @@ const Container = styled(Column).attrs({
   width: 100%;
 `;
 
-const Label = styled(Text).attrs({
-  size: 'smedium',
-  weight: 'semibold',
-})``;
+const Label = styled(Text).attrs(({ size, weight }) => ({
+  size: size || 'lmedium',
+  weight: weight || 'semibold',
+}))``;
 
-const ButtonLabel = styled(BorderlessButton).attrs(({ theme: { colors } }) => ({
-  color: colors.appleBlue,
-  hitSlop: 40,
-  opacity: 1,
-  size: 'smedium',
-  weight: 'bold',
-}))`
-  padding-bottom: 10;
-`;
-
-const LittleBorderlessButton = ({ onPress, children, testID }) => {
-  const { colors } = useTheme();
-  return (
-    <ButtonLabel onPress={onPress} testID={testID} width={120}>
-      <Text color={colors.appleBlue} size="smedium" weight="bold">
-        {children}
-      </Text>
-    </ButtonLabel>
-  );
-};
-
-const BottomRightLabel = ({ formatter, theme }) => {
+const TransactionTimeLabel = ({ formatter, theme }) => {
   const { colors } = useTheme();
   return (
     <Label
@@ -78,32 +79,22 @@ const BottomRightLabel = ({ formatter, theme }) => {
           ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
           : colors.alpha(colors.blueGreyDark, 0.6)
       }
+      size="lmedium"
+      weight="bold"
     >
       {formatter()}
     </Label>
   );
 };
 
-const getActionLabel = type => {
-  switch (type) {
-    case ExchangeModalTypes.deposit:
-      return 'Deposits in';
-    case ExchangeModalTypes.withdrawal:
-      return 'Withdraws in';
-    case 'transaction':
-      return 'Confirms in';
-    default:
-      return 'Swaps in';
-  }
-};
-
 const GasSpeedButton = ({
-  dontBlur,
+  // dontBlur,
+  hideDropdown = null,
   horizontalPadding = 19,
-  onCustomGasBlur,
-  onCustomGasFocus,
+  // onCustomGasBlur,
+  // onCustomGasFocus,
   testID,
-  type,
+  // type,
   theme = 'dark',
   topPadding = 15,
   options = null,
@@ -111,7 +102,10 @@ const GasSpeedButton = ({
   currentNetwork,
 }) => {
   const { colors } = useTheme();
-  const inputRef = useRef(null);
+  // const inputRef = useRef(null);
+  // eip 1559
+  const { navigate, goBack } = useNavigation();
+
   const {
     gasPrices,
     updateCustomValues,
@@ -134,22 +128,20 @@ const GasSpeedButton = ({
     return filteredGasPrices;
   }, [gasPrices, minGasPrice, options]);
 
-  const gasPrice = get(selectedGasPrice, 'txFee.native.value.display');
   const customGasPriceTimeEstimateHandler = useRef(null);
-
-  const [customGasPriceInput, setCustomGasPriceInput] = useState(0);
+  const [customGasPriceInput] = useState(0);
   const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
   const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
-  const [inputFocused, setInputFocused] = useState(false);
+  const [inputFocused] = useState(false);
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
 
-  const defaultCustomGasPrice = Math.round(
-    weiToGwei(gasPricesAvailable?.fast?.value?.amount)
-  );
-  const defaultCustomGasPriceNative = get(
-    txFees?.fast,
-    'txFee.native.value.display'
-  );
+  // const defaultCustomGasPrice = Math.round(
+  //   weiToGwei(gasPricesAvailable?.fast?.value?.amount)
+  // );
+  // const defaultCustomGasPriceNative = get(
+  //   txFees?.fast,
+  //   'txFee.native.value.display'
+  // );
   const defaultCustomGasConfirmationTime =
     gasPricesAvailable?.fast?.estimatedTime?.display;
 
@@ -157,6 +149,13 @@ const GasSpeedButton = ({
   // we need to trim the native currency symbol
   // (and leave the number only!)
   // which gets added later in the formatGasPrice function
+  const gasPrice = get(
+    selectedGasPrice,
+    `${
+      isEIP1559SupportedNetwork(currentNetwork) ? 'baseTxFee' : 'txFee'
+    }.native.value.display`
+  );
+
   const price = (isNil(gasPrice) ? '0.00' : gasPrice)
     .replace(',', '') // In case gas price is > 1k!
     .replace(nativeCurrencySymbol, '')
@@ -219,9 +218,26 @@ const GasSpeedButton = ({
     }, 1000);
   }, [calculateCustomPriceEstimatedTime, customGasPriceInput]);
 
-  const handleCustomGasChange = useCallback(async price => {
-    setCustomGasPriceInput(price);
-  }, []);
+  // const handleCustomGasChange = useCallback(async price => {
+  //   setCustomGasPriceInput(price);
+  // }, []);
+
+  const openCustomGasSheet = useCallback(() => {
+    navigate(Routes.CUSTOM_GAS_SHEET, {
+      // restoreFocusOnSwapModal: () => {
+      //   android &&
+      //     (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
+      //   setParams({ focused: true });
+      // },
+      type: 'custom_gas',
+    });
+  }, [navigate]);
+
+  useEffect(() => {
+    if (selectedGasPriceOption === gasUtils.CUSTOM) {
+      openCustomGasSheet();
+    }
+  }, [navigate, openCustomGasSheet, selectedGasPriceOption]);
 
   const renderGasPriceText = useCallback(
     animatedNumber => (
@@ -245,21 +261,18 @@ const GasSpeedButton = ({
     [colors, gasPricesAvailable, isSufficientGas, theme, txFees]
   );
 
-  const handlePress = useCallback(() => {
-    if (inputFocused) {
-      return;
-    }
-    LayoutAnimation.easeInEaseOut();
-    const gasOptions = options || GasSpeedOrder;
-    const currentSpeedIndex = gasOptions?.indexOf(selectedGasPriceOption);
-    const nextSpeedIndex = (currentSpeedIndex + 1) % gasOptions?.length;
+  const handlePress = useCallback(
+    selectedSpeed => {
+      if (inputFocused) {
+        return;
+      }
+      LayoutAnimation.easeInEaseOut();
+      updateGasPriceOption(selectedSpeed);
+    },
+    [inputFocused, updateGasPriceOption]
+  );
 
-    const nextSpeed = gasOptions[nextSpeedIndex];
-    updateGasPriceOption(nextSpeed);
-  }, [inputFocused, options, selectedGasPriceOption, updateGasPriceOption]);
-
-  const formatBottomRightLabel = useCallback(() => {
-    const actionLabel = getActionLabel(type);
+  const formatTransactionTime = useCallback(() => {
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
     let gasPriceGwei = get(selectedGasPrice, 'value.display');
     if (gasPriceGwei === '0 Gwei') {
@@ -269,42 +282,41 @@ const GasSpeedButton = ({
 
     if (selectedGasPriceOption === CUSTOM) {
       if (!customGasPriceInput) {
-        return `${defaultCustomGasPriceNative} ~ ${defaultCustomGasConfirmationTime}`;
-      } else if (gasPricesAvailable[CUSTOM]?.value) {
-        const priceInWei = Number(gasPricesAvailable[CUSTOM].value.amount);
+        return ` ${timeSymbol}${defaultCustomGasConfirmationTime}`;
+      } else if (gasPricesAvailable[CUSTOM]?.gasPrice) {
+        const priceInWei = Number(gasPricesAvailable[CUSTOM].gasPrice.amount);
         const minGasPriceSlow = gasPricesAvailable[SLOW]
-          ? Number(gasPricesAvailable[SLOW].value.amount)
-          : Number(gasPricesAvailable[FAST].value.amount);
-        const maxGasPriceFast = Number(gasPricesAvailable[FAST].value.amount);
+          ? Number(gasPricesAvailable[SLOW].gasPrice.amount)
+          : Number(gasPricesAvailable[FAST].gasPrice.amount);
+        const maxGasPriceFast = Number(
+          gasPricesAvailable[FAST].gasPrice.amount
+        );
         if (priceInWei < minGasPriceSlow) {
           timeSymbol = '>';
         } else if (priceInWei > maxGasPriceFast) {
           timeSymbol = '<';
         }
 
-        return `${gasPrice} ${timeSymbol} ${time} ${estimatedTimeUnit}`;
+        return ` ${timeSymbol}${time} ${estimatedTimeUnit}`;
       } else {
-        return `${actionLabel} ...`;
+        return ``;
       }
     }
 
     // If it's still loading show `...`
     if (time === '0' && estimatedTimeUnit === 'min') {
-      return `${actionLabel} ...`;
+      return ``;
     }
 
-    return `${gasPriceGwei} ${timeSymbol} ${time} ${estimatedTimeUnit}`;
+    return ` ${timeSymbol}${time} ${estimatedTimeUnit}`;
   }, [
     customGasPriceInput,
     defaultCustomGasConfirmationTime,
-    defaultCustomGasPriceNative,
     estimatedTimeUnit,
     estimatedTimeValue,
-    gasPrice,
     gasPricesAvailable,
     selectedGasPrice,
     selectedGasPriceOption,
-    type,
   ]);
 
   useEffect(() => {
@@ -316,243 +328,267 @@ const GasSpeedButton = ({
     }
   }, [handlePress, options, selectedGasPriceOption]);
 
-  const handleCustomGasFocus = useCallback(() => {
-    setInputFocused(true);
-    onCustomGasFocus?.();
-  }, [onCustomGasFocus]);
+  // const handleCustomGasFocus = useCallback(() => {
+  //   setInputFocused(true);
+  //   onCustomGasFocus?.();
+  // }, [onCustomGasFocus]);
 
-  const handleCustomGasBlur = useCallback(() => {
-    setInputFocused(false);
-    onCustomGasBlur?.();
-  }, [onCustomGasBlur]);
+  // const handleCustomGasBlur = useCallback(() => {
+  //   setInputFocused(false);
+  //   onCustomGasBlur?.();
+  // }, [onCustomGasBlur]);
 
-  const handleInputButtonManager = useCallback(() => {
-    const complete = () => {
-      if (inputFocused) {
-        if (dontBlur) {
-          handleCustomGasBlur();
-        } else {
-          inputRef.current?.blur();
-        }
-      } else {
-        inputRef.current?.focus();
-      }
-    };
+  // const handleInputButtonManager = useCallback(() => {
+  //   const complete = () => {
+  //     if (inputFocused) {
+  //       if (dontBlur) {
+  //         handleCustomGasBlur();
+  //       } else {
+  //         inputRef.current?.blur();
+  //       }
+  //     } else {
+  //       inputRef.current?.focus();
+  //     }
+  //   };
 
-    if (customGasPriceInput === '0') {
-      Alert({
-        buttons: [
-          {
-            onPress: () => inputRef.current?.focus(),
-            text: 'OK',
-          },
-        ],
-        message: 'You need to enter a valid amount',
-        title: 'Invalid Gas Price',
-      });
-      return;
-    }
+  //   if (customGasPriceInput === '0') {
+  //     Alert({
+  //       buttons: [
+  //         {
+  //           onPress: () => inputRef.current?.focus(),
+  //           text: 'OK',
+  //         },
+  //       ],
+  //       message: 'You need to enter a valid amount',
+  //       title: 'Invalid Gas Price',
+  //     });
+  //     return;
+  //   }
 
-    if (!customGasPriceInput || !inputFocused) {
-      complete();
-      ReactNativeHapticFeedback.trigger('impactMedium');
-      return;
-    }
+  //   if (!customGasPriceInput || !inputFocused) {
+  //     complete();
+  //     ReactNativeHapticFeedback.trigger('impactMedium');
+  //     return;
+  //   }
 
-    const minKey = options?.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
+  //   const minKey = options?.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
 
-    const minGasPriceAllowed = Number(
-      gasPricesAvailable?.[minKey]?.value?.amount || 0
-    );
+  //   const minGasPriceAllowed = Number(
+  //     gasPricesAvailable?.[minKey]?.value?.amount || 0
+  //   );
 
-    // The minimum gas for the tx is the higher amount between:
-    // - 10% more than the submitted gas of the previous tx (If speeding up / cancelling)
-    // - The new "normal" gas price from our third party API
+  //   // The minimum gas for the tx is the higher amount between:
+  //   // - 10% more than the submitted gas of the previous tx (If speeding up / cancelling)
+  //   // - The new "normal" gas price from our third party API
 
-    const minimumGasAcceptedForTx = minGasPrice
-      ? Math.max(minGasPrice, minGasPriceAllowed)
-      : minGasPriceAllowed;
+  //   const minimumGasAcceptedForTx = minGasPrice
+  //     ? Math.max(minGasPrice, minGasPriceAllowed)
+  //     : minGasPriceAllowed;
 
-    if (minGasPrice && Number(customGasPriceInput) < minimumGasAcceptedForTx) {
-      Alert({
-        buttons: [
-          {
-            onPress: () => inputRef.current?.focus(),
-            text: 'OK',
-          },
-        ],
-        message: `The minimum gas price valid allowed is ${minimumGasAcceptedForTx} GWEI`,
-        title: 'Gas Price Too Low',
-      });
-      return;
-    }
+  //   if (minGasPrice && Number(customGasPriceInput) < minimumGasAcceptedForTx) {
+  //     Alert({
+  //       buttons: [
+  //         {
+  //           onPress: () => inputRef.current?.focus(),
+  //           text: 'OK',
+  //         },
+  //       ],
+  //       message: `The minimum gas price valid allowed is ${minimumGasAcceptedForTx} GWEI`,
+  //       title: 'Gas Price Too Low',
+  //     });
+  //     return;
+  //   }
 
-    const priceInWei = gweiToWei(customGasPriceInput);
-    const maxGasPriceFast = Number(
-      gasPricesAvailable?.fast?.value?.amount || 0
-    );
-    let tooLow = priceInWei < minGasPriceAllowed;
-    let tooHigh = priceInWei > maxGasPriceFast * 2.5;
+  //   const priceInWei = gweiToWei(customGasPriceInput);
+  //   const maxGasPriceFast = Number(
+  //     gasPricesAvailable?.fast?.value?.amount || 0
+  //   );
+  //   let tooLow = priceInWei < minGasPriceAllowed;
+  //   let tooHigh = priceInWei > maxGasPriceFast * 2.5;
 
-    if (tooLow || tooHigh) {
-      Alert({
-        buttons: [
-          {
-            onPress: complete,
-            text: 'Proceed Anyway',
-          },
-          {
-            onPress: () => inputRef.current?.focus(),
-            style: 'cancel',
-            text: 'Edit Gas Price',
-          },
-        ],
-        message: tooLow
-          ? 'Setting a higher gas price is recommended to avoid issues.'
-          : 'Double check that you entered the correct amount—you’re likely paying more than you need to!',
-        title: tooLow
-          ? 'Low gas price–transaction might get stuck!'
-          : 'High gas price!',
-      });
-    } else {
-      complete();
-    }
-  }, [
-    customGasPriceInput,
-    inputFocused,
-    options,
-    gasPricesAvailable,
-    minGasPrice,
-    dontBlur,
-    handleCustomGasBlur,
-  ]);
+  //   if (tooLow || tooHigh) {
+  //     Alert({
+  //       buttons: [
+  //         {
+  //           onPress: complete,
+  //           text: 'Proceed Anyway',
+  //         },
+  //         {
+  //           onPress: () => inputRef.current?.focus(),
+  //           style: 'cancel',
+  //           text: 'Edit Gas Price',
+  //         },
+  //       ],
+  //       message: tooLow
+  //         ? 'Setting a higher gas price is recommended to avoid issues.'
+  //         : 'Double check that you entered the correct amount—you’re likely paying more than you need to!',
+  //       title: tooLow
+  //         ? 'Low gas price–transaction might get stuck!'
+  //         : 'High gas price!',
+  //     });
+  //   } else {
+  //     complete();
+  //   }
+  // }, [
+  //   customGasPriceInput,
+  //   inputFocused,
+  //   options,
+  //   gasPricesAvailable,
+  //   minGasPrice,
+  //   dontBlur,
+  //   handleCustomGasBlur,
+  // ]);
 
-  const focusOnInput = useCallback(() => inputRef.current?.focus(), []);
-  const isCustom = selectedGasPriceOption === CUSTOM ? true : false;
-
-  const { navigate } = useNavigation();
-
+  // const focusOnInput = useCallback(() => inputRef.current?.focus(), []);
+  // const isCustom = selectedGasPriceOption === CUSTOM ? true : false;
   const openGasHelper = useCallback(
     () => navigate(Routes.EXPLAIN_SHEET, { type: 'gas' }),
     [navigate]
   );
 
+  const handlePressMenuItem = useCallback(
+    ({ nativeEvent: { actionKey } }) => {
+      handlePress(actionKey);
+    },
+    [handlePress]
+  );
+
+  const menuConfig = useMemo(() => {
+    const menuOptions = (options || GasSpeedOrder).map(gasOption => ({
+      actionKey: gasOption,
+      actionTitle: upperFirst(gasOption),
+      icon: {
+        iconType: 'SYSTEM',
+        iconValue: GAS_ICONS[gasOption],
+      },
+    }));
+    return {
+      menuItems: menuOptions,
+      menuTitle: `Transaction Speed`,
+    };
+  }, [options]);
+  const onPressAndroid = useCallback(() => {
+    const androidContractActions = ['Copy Contract Address', 'x', 'Cancel'];
+    showActionSheetWithOptions(
+      {
+        cancelButtonIndex: 2,
+        options: androidContractActions,
+        showSeparators: true,
+        title: `hi`,
+      },
+      idx => {
+        if (idx === 0) {
+          // handleCopyAddress(item?.address);
+        }
+        if (idx === 1) {
+          // ethereumUtils.openAddressInBlockExplorer(item?.address, network);
+        }
+      }
+    );
+  }, []);
+
   return (
     <Container
-      as={ButtonPressAnimation}
       horizontalPadding={horizontalPadding}
-      onPress={handlePress}
       testID={testID}
       topPadding={topPadding}
     >
-      <Row align="end" justify="space-between" marginBottom={1.5}>
-        {!isCustom ? (
-          <AnimateNumber
-            formatter={formatGasPrice}
-            interval={6}
-            renderContent={renderGasPriceText}
-            steps={6}
-            timing="linear"
-            value={price}
-          />
-        ) : (
-          <BorderlessButton onPress={focusOnInput}>
+      <Row align="center" justify="space-between" marginBottom={1.5}>
+        <Column>
+          <ButtonPressAnimation onPress={openGasHelper}>
             <Row>
-              <Input
-                color={
-                  theme === 'dark'
-                    ? colors.whiteLabel
-                    : colors.alpha(colors.blueGreyDark, 0.8)
-                }
-                height={19}
-                keyboardAppearance="dark"
-                keyboardType="numeric"
-                letterSpacing="roundedMedium"
-                maxLength={5}
-                onBlur={handleCustomGasBlur}
-                onChangeText={handleCustomGasChange}
-                onFocus={handleCustomGasFocus}
-                onSubmitEditing={handleInputButtonManager}
-                placeholder={`${defaultCustomGasPrice}`}
-                placeholderTextColor={
-                  theme === 'dark'
-                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.3)
-                    : colors.alpha(colors.blueGreyDark, 0.3)
-                }
-                ref={inputRef}
-                size="lmedium"
-                testID="custom-gas-input"
-                value={customGasPriceInput}
-                weight="bold"
-              />
-              <Text
-                color={
-                  customGasPriceInput
-                    ? theme === 'dark'
-                      ? colors.whiteLabel
-                      : colors.alpha(colors.blueGreyDark, 0.8)
-                    : theme === 'dark'
-                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.3)
-                    : colors.alpha(colors.blueGreyDark, 0.3)
-                }
-                size="lmedium"
-                weight="bold"
-              >
-                {' '}
-                Gwei
-              </Text>
+              <Column>
+                <AnimateNumber
+                  formatter={formatGasPrice}
+                  interval={6}
+                  renderContent={renderGasPriceText}
+                  steps={6}
+                  timing="linear"
+                  value={price}
+                />
+              </Column>
+              <Column>
+                <TransactionTimeLabel
+                  formatter={formatTransactionTime}
+                  theme={theme}
+                  value={{
+                    estimatedTimeValue,
+                    price: selectedGasPrice?.value?.display,
+                  }}
+                />
+              </Column>
             </Row>
-          </BorderlessButton>
-        )}
-
-        <GasSpeedLabelPager
-          label={selectedGasPriceOption}
-          options={options}
-          showPager={!inputFocused}
-          theme={theme}
-        />
-      </Row>
-      <Row justify="space-between">
-        {!isCustom ? (
-          <TouchableOpacity onPress={openGasHelper}>
-            <Label
-              color={
-                theme === 'dark'
-                  ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
-                  : colors.alpha(colors.blueGreyDark, 0.6)
-              }
-            >
-              Network Fee{' '}
+            <Row justify="space-between">
               <Label
                 color={
                   theme === 'dark'
-                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
-                    : colors.alpha(colors.blueGreyDark, 0.4)
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
+                    : colors.alpha(colors.blueGreyDark, 0.6)
                 }
+                size="smedium"
               >
-                􀅵
+                Estimated Fee{' '}
+                <Label
+                  color={
+                    theme === 'dark'
+                      ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
+                      : colors.alpha(colors.blueGreyDark, 0.4)
+                  }
+                  size="smedium"
+                >
+                  􀅵
+                </Label>
               </Label>
-            </Label>
-          </TouchableOpacity>
-        ) : (
-          <LittleBorderlessButton
-            onPress={handleInputButtonManager}
-            testID="custom-gas-edit-button"
-          >
-            {inputFocused
-              ? 'Done'
-              : `${customGasPriceInput ? 'Edit' : 'Enter'} Gas Price`}
-          </LittleBorderlessButton>
-        )}
-
-        <BottomRightLabel
-          formatter={formatBottomRightLabel}
-          theme={theme}
-          value={{
-            estimatedTimeValue,
-            price: selectedGasPrice?.value?.display,
-          }}
-        />
+            </Row>
+          </ButtonPressAnimation>
+        </Column>
+        <Column>
+          {hideDropdown ? (
+            <GasSpeedLabelPager
+              hideDropdown={hideDropdown}
+              label={selectedGasPriceOption}
+              onPress={goBack}
+              showPager={!inputFocused}
+              theme={theme}
+            />
+          ) : (
+            <Row>
+              <Column>
+                <ContextMenuButton
+                  activeOpacity={0}
+                  menuConfig={menuConfig}
+                  {...(android ? { onPress: onPressAndroid } : {})}
+                  isMenuPrimaryAction
+                  onPressMenuItem={handlePressMenuItem}
+                  useActionSheetFallback={false}
+                  wrapNativeComponent={false}
+                >
+                  <GasSpeedLabelPager
+                    hideDropdown={hideDropdown}
+                    label={selectedGasPriceOption}
+                    showPager={!inputFocused}
+                    theme={theme}
+                  />
+                </ContextMenuButton>
+              </Column>
+              {!hideDropdown && (
+                <Column justify="center">
+                  <CustomGasButton onPress={openCustomGasSheet}>
+                    <Symbol
+                      color={
+                        theme !== 'light'
+                          ? colors.whiteLabel
+                          : colors.alpha(colors.blueGreyDark, 0.8)
+                      }
+                    >
+                      􀌆
+                    </Symbol>
+                  </CustomGasButton>
+                </Column>
+              )}
+            </Row>
+          )}
+        </Column>
       </Row>
     </Container>
   );
