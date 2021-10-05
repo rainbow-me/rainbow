@@ -172,9 +172,14 @@ export const defaultGasParamsFormat = (
  * @param {Object} prices
  * @param {Number} gasLimit
  */
-export const parseTxFees = (gasPrices, priceUnit, gasLimit, nativeCurrency) => {
+export const parseTxFees = (
+  legacyGasFees,
+  priceUnit,
+  gasLimit,
+  nativeCurrency
+) => {
   const txFees = map(GasSpeedOrder, speed => {
-    const gasPrice = get(gasPrices, `${speed}.gasPrice.amount`);
+    const gasPrice = get(legacyGasFees, `${speed}.gasPrice.amount`);
     const txFee = getTxFee(gasPrice, gasLimit, priceUnit, nativeCurrency);
     return {
       txFee,
@@ -184,20 +189,17 @@ export const parseTxFees = (gasPrices, priceUnit, gasLimit, nativeCurrency) => {
 };
 
 export const parseEip1559TxFees = (
-  eip1559GasPrices,
+  gasFees,
   priceUnit,
   gasLimit,
   nativeCurrency
 ) => {
   const txFees = map(GasSpeedOrder, speed => {
     // using blocknative max fee for now
-    const priorityFee = get(
-      eip1559GasPrices,
-      `${speed}.priorityFeePerGas.amount`
-    );
+    const priorityFee = get(gasFees, `${speed}.priorityFeePerGas.amount`);
 
-    const maxFee = get(eip1559GasPrices, `${speed}.maxFeePerGas.amount`);
-    const baseFee = get(eip1559GasPrices, `${speed}.baseFeePerGas.amount`);
+    const maxFee = get(gasFees, `${speed}.maxFeePerGas.amount`);
+    const baseFee = get(gasFees, `${speed}.baseFeePerGas.amount`);
     const maxTxFee = getTxFee(
       maxFee + priorityFee,
       gasLimit,

@@ -106,9 +106,9 @@ export default function SendSheet(props) {
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const { allAssets } = useAccountAssets();
   const {
-    eip1559GasPrices,
+    gasFees,
     gasLimit,
-    gasPrices,
+    legacyGasFees,
     isSufficientGas,
     prevSelectedGasPrice,
     selectedGasFee,
@@ -597,8 +597,8 @@ export default function SendSheet(props) {
     const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
 
     const gasrices = isEIP1559SupportedNetwork(assetNetwork)
-      ? eip1559GasPrices
-      : gasPrices;
+      ? gasFees
+      : legacyGasFees;
 
     if (isEmpty(gasrices) || !selectedGasFee || isEmpty(txFees)) {
       label = `Loading...`;
@@ -620,8 +620,8 @@ export default function SendSheet(props) {
     amountDetails.isSufficientBalance,
     network,
     selected.type,
-    eip1559GasPrices,
-    gasPrices,
+    gasFees,
+    legacyGasFees,
     selectedGasFee,
     txFees,
     isSufficientGas,
@@ -744,7 +744,7 @@ export default function SendSheet(props) {
       currentProviderNetwork === currentNetwork &&
       isValidAddress &&
       !isEmpty(selected) &&
-      !isEmpty(gasPrices)
+      !isEmpty(legacyGasFees)
     ) {
       estimateGasLimit(
         {
@@ -775,7 +775,7 @@ export default function SendSheet(props) {
     toAddress,
     updateTxFee,
     network,
-    gasPrices,
+    legacyGasFees,
   ]);
 
   return (

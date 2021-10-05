@@ -134,7 +134,7 @@ export default function ExchangeModal({
     : ethUnits.basic_swap;
 
   const {
-    gasPrices,
+    legacyGasFees,
     selectedGasFee,
     startPollingGasPrices,
     stopPollingGasPrices,
@@ -147,7 +147,7 @@ export default function ExchangeModal({
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
-  const prevGasPrices = usePrevious(gasPrices);
+  const prevGasPrices = usePrevious(legacyGasFees);
 
   useAndroidBackHandler(() => {
     navigate(Routes.WALLET_SCREEN);
@@ -271,17 +271,17 @@ export default function ExchangeModal({
 
   // Set default gas limit
   useEffect(() => {
-    if (isEmpty(prevGasPrices) && !isEmpty(gasPrices)) {
+    if (isEmpty(prevGasPrices) && !isEmpty(legacyGasFees)) {
       updateTxFee(defaultGasLimit);
     }
-  }, [gasPrices, defaultGasLimit, updateTxFee, prevGasPrices]);
+  }, [legacyGasFees, defaultGasLimit, updateTxFee, prevGasPrices]);
 
   // Update gas limit
   useEffect(() => {
-    if (!isEmpty(gasPrices)) {
+    if (!isEmpty(legacyGasFees)) {
       updateGasLimit();
     }
-  }, [gasPrices, updateGasLimit]);
+  }, [legacyGasFees, updateGasLimit]);
 
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {

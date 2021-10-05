@@ -263,7 +263,7 @@ export default function TransactionConfirmationScreen() {
 
   const {
     gasLimit,
-    gasPrices,
+    legacyGasFees,
     isSufficientGas,
     startPollingGasPrices,
     stopPollingGasPrices,
@@ -465,7 +465,7 @@ export default function TransactionConfirmationScreen() {
 
   useEffect(() => {
     if (
-      !isEmpty(gasPrices) &&
+      !isEmpty(legacyGasFees) &&
       !calculatingGasLimit.current &&
       !isMessageRequest &&
       provider
@@ -477,7 +477,7 @@ export default function TransactionConfirmationScreen() {
   }, [
     calculateGasLimit,
     gasLimit,
-    gasPrices,
+    legacyGasFees,
     isMessageRequest,
     method,
     params,

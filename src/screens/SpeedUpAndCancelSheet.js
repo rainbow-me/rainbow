@@ -120,7 +120,7 @@ export default function SpeedUpAndCancelSheet() {
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const {
-    gasPrices,
+    legacyGasFees,
     updateGasPriceOption,
     selectedGasFee,
     startPollingGasPrices,
@@ -268,12 +268,18 @@ export default function SpeedUpAndCancelSheet() {
 
   // Update gas limit
   useEffect(() => {
-    if (!isEmpty(gasPrices) && gasLimit) {
+    if (!isEmpty(legacyGasFees) && gasLimit) {
       updateTxFee(gasLimit, null, currentNetwork);
       // Always default to fast
       updateGasPriceOption('fast');
     }
-  }, [currentNetwork, gasLimit, gasPrices, updateGasPriceOption, updateTxFee]);
+  }, [
+    currentNetwork,
+    gasLimit,
+    legacyGasFees,
+    updateGasPriceOption,
+    updateTxFee,
+  ]);
 
   useEffect(() => {
     const init = async () => {
@@ -329,9 +335,9 @@ export default function SpeedUpAndCancelSheet() {
   ]);
 
   useEffect(() => {
-    if (!isEmpty(gasPrices) && !calculatingGasLimit.current) {
+    if (!isEmpty(legacyGasFees) && !calculatingGasLimit.current) {
       calculatingGasLimit.current = true;
-      if (Number(gweiToWei(minGasPrice)) > Number(gasPrices.fast.value)) {
+      if (Number(gweiToWei(minGasPrice)) > Number(legacyGasFees.fast.value)) {
         dispatch(updateGasPriceForSpeed('fast', gweiToWei(minGasPrice)));
       }
       const gasLimitForNewTx =
@@ -339,7 +345,15 @@ export default function SpeedUpAndCancelSheet() {
       updateTxFee(gasLimitForNewTx);
       calculatingGasLimit.current = false;
     }
-  }, [dispatch, gasPrices, minGasPrice, tx, tx.gasLimit, type, updateTxFee]);
+  }, [
+    dispatch,
+    legacyGasFees,
+    minGasPrice,
+    tx,
+    tx.gasLimit,
+    type,
+    updateTxFee,
+  ]);
 
   const offset = useSharedValue(0);
 
