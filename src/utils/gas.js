@@ -17,10 +17,10 @@ const GAS_PRICE_SOURCES = {
 };
 
 const GAS_CONFIDENCE = {
-  80: [SLOW],
-  90: [NORMAL],
-  95: [FAST],
-  99: [URGENT],
+  80: SLOW,
+  90: NORMAL,
+  95: FAST,
+  99: URGENT,
 };
 
 const GAS_ICONS = {

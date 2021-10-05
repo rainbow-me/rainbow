@@ -13,14 +13,14 @@ export interface GasPrices {
   [key: string]: {
     estimatedTime: { amount: number; display: string };
     gasPrice: { amount: number; display: string };
-    option: any;
+    option: string;
   };
 }
 
 export interface EIP1559GasPrices {
   [key: string]: {
     estimatedTime: { amount: number; display: string };
-    option: any;
+    option: string;
     baseFeePerGas: { amount: number; display: string; gwei: string };
     maxFeePerGas: { amount: number; display: string; gwei: string };
     priorityFeePerGas: { amount: number; display: string; gwei: string };

@@ -49,7 +49,6 @@ interface GasState {
   eip1559GasPrices: EIP1559GasPrices;
   isSufficientGas: Boolean | null;
   selectedGasPrice: Object;
-  selectedGasPriceOption: string;
   txFees: Object;
 }
 
@@ -220,6 +219,8 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
           }
         }
 
+        console.log('gasPricesStartPolling', )
+
         const gasPrices = parseGasPrices(adjustedGasPrices, source);
         if (existingGasPrices[CUSTOM] !== null) {
           // Preserve custom values while updating prices
@@ -286,10 +287,11 @@ export const gasUpdateGasPriceOption = (
         network
       );
 
+      console.log('🤪🤪🤪🤪🤪🤪 gasUpdateGasPriceOption', results)
+
   dispatch({
     payload: {
       ...results,
-      selectedGasPriceOption: newGasPriceOption,
     },
     type: GAS_UPDATE_GAS_PRICE_OPTION,
   });
@@ -341,11 +343,11 @@ export const gasUpdateTxFee = (
   const {
     defaultGasLimit,
     gasPrices,
-    selectedGasPriceOption,
     eip1559GasPrices,
+    selectedGasPrice
   } = getState().gas;
   const _gasLimit = gasLimit || defaultGasLimit;
-  const _selectedGasPriceOption = overrideGasOption || selectedGasPriceOption;
+  const _selectedGasPriceOption = overrideGasOption || selectedGasPrice.option || gasUtils.NORMAL;
 
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
@@ -457,7 +459,7 @@ const getLegacySelectedGasPrice = (
   const balanceAmount = get(nativeAsset, 'balance.amount', 0);
   const txFeeAmount = fromWei(get(txFee, 'txFee.gasPrice.amount', 0));
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
-
+  console.log('🤡🤡🤡🤡🤡 getLegacySelectedGasPrice', txFee)
   return {
     isSufficientGas,
     selectedGasPrice: {
@@ -495,7 +497,6 @@ const INITIAL_STATE: GasState = {
   gasPrices: {},
   isSufficientGas: null,
   selectedGasPrice: {},
-  selectedGasPriceOption: NORMAL,
   txFees: {},
 };
 
@@ -541,7 +542,6 @@ export default (
         ...state,
         isSufficientGas: action.payload.isSufficientGas,
         selectedGasPrice: action.payload.selectedGasPrice,
-        selectedGasPriceOption: action.payload.selectedGasPriceOption,
       };
     case GAS_PRICES_RESET:
       return INITIAL_STATE;

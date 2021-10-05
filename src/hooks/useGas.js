@@ -12,7 +12,6 @@ import {
   gasUpdateTxFee,
 } from '@rainbow-me/redux/gas';
 
-// EIP1559 WIP
 export default function useGas() {
   const dispatch = useDispatch();
   const { network: currentNetwork } = useAccountSettings();
@@ -25,7 +24,6 @@ export default function useGas() {
         gasPrices,
         isSufficientGas,
         selectedGasPrice,
-        selectedGasPriceOption,
         txFees,
       },
     }) => ({
@@ -34,7 +32,7 @@ export default function useGas() {
       gasPrices,
       isSufficientGas,
       selectedGasPrice,
-      selectedGasPriceOption,
+      selectedGasPriceOption: selectedGasPrice.option,
       txFees,
     })
   );
