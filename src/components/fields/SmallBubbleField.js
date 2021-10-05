@@ -50,7 +50,6 @@ const BubbleField = (
     onBlur,
     onChange,
     onFocus,
-    onPressButton,
     placeholder,
     testID,
     value: valueProp,
