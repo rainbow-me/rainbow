@@ -1,6 +1,6 @@
 type Numberish = number | string;
 
-export interface TxFee {
+export interface Fee {
   native: { value: { amount: string; display: string } };
   value: { amount: string; display: { amount: string; display: string } };
 }
@@ -42,11 +42,11 @@ export interface LegacyEstimatedGasFees {
 }
 
 export interface LegacyGasFee {
-  estimatedFee: TxFee;
+  estimatedFee: Fee;
 }
 
 export interface GasFee extends LegacyGasFee {
-  maxFee: TxFee;
+  maxFee: Fee;
 }
 
 export interface TxFees {

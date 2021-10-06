@@ -109,7 +109,6 @@ export const parseGasPrices = (
   data: GasPricesAPIData,
   source = gasUtils.GAS_PRICE_SOURCES.ETHERSCAN
 ) => {
-  console.log('---- parseGasPricesEtherscan', data);
   if (!data) return getFallbackGasPrices();
   switch (source) {
     case gasUtils.GAS_PRICE_SOURCES.ETH_GAS_STATION:
@@ -126,7 +125,6 @@ export const defaultGasPriceFormat = (
   timeWait: Numberish,
   value: Numberish
 ) => {
-  console.log('😥😥 defaultGasPriceFormat', option, timeWait, value);
   const timeAmount = multiply(timeWait, timeUnits.ms.minute);
   const weiAmount = multiply(value, ethUnits.gwei);
   return {
