@@ -4,12 +4,13 @@ import { get, isEmpty } from 'lodash';
 import { AppDispatch, AppGetState } from './store';
 import {
   EstimatedGasFees,
+  GasFee,
   GasFeesBlockNativeData,
   LegacyEstimatedGasFees,
+  LegacyGasFee,
   LegacySelectedGasFee,
   LegacyTxFees,
   SelectedGasFee,
-  TxFee,
   TxFees,
 } from '@rainbow-me/entities';
 import {
@@ -93,10 +94,10 @@ const getnetworkNativeAsset = (assets: any[], network: Network) => {
 
 const checkIsSufficientGas = (
   assets: any[],
-  txFee: { txFee: TxFee; maxTxFee?: TxFee },
+  txFee: LegacyGasFee | GasFee,
   network: Network
 ) => {
-  const txFeeKey = txFee?.maxTxFee ? `maxTxFee` : `txFee`;
+  const txFeeKey = (txFee as GasFee)?.maxFee ? `maxTxFee` : `txFee`;
   const nativeAsset = getnetworkNativeAsset(assets, network);
   const balanceAmount = get(nativeAsset, 'balance.amount', 0);
   const txFeeAmount = fromWei(get(txFee, `${txFeeKey}.value.amount`, 0));
@@ -125,8 +126,8 @@ const getSelectedGasFee = (
     isSufficientGas,
     selectedGasFee: {
       estimatedTime: selectedGasParams.estimatedTime,
-      gasFee: { ...selectedTxFee, maxTxFee },
       gasFeeParams: selectedGasParams,
+      gasFees: { ...selectedTxFee, maxTxFee },
       option: selectedGasPriceOption,
     } as SelectedGasFee | LegacySelectedGasFee,
   };
@@ -248,7 +249,6 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
         const { gasFees: existingGasFees } = getState().gas;
 
         const isLegacy = isEIP1559LegacyNetwork(network);
-
         if (isLegacy) {
           let adjustedGasFees;
           let source = GAS_PRICE_SOURCES.ETHERSCAN;
@@ -262,16 +262,15 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
             source = GAS_PRICE_SOURCES.OPTIMISM_NODE;
             adjustedGasFees = await getOptimismGasPrices();
           }
-
-          const legacyGasFees = parseGasPrices(adjustedGasFees, source);
+          const gasFees = parseGasPrices(adjustedGasFees, source);
           if (existingGasFees[CUSTOM] !== null) {
             // Preserve custom values while updating prices
-            legacyGasFees[CUSTOM] = existingGasFees[CUSTOM];
+            gasFees[CUSTOM] = existingGasFees[CUSTOM];
           }
 
           dispatch({
             payload: {
-              legacyGasFees,
+              gasFees,
             },
             type: GAS_FEES_SUCCESS,
           });

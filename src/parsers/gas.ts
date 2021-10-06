@@ -15,7 +15,9 @@ import {
   GasFeesBlockNativeData,
   GasPricesAPIData,
   LegacyEstimatedGasFees,
+  LegacyTxFees,
   Numberish,
+  TxFees,
 } from '@rainbow-me/entities';
 
 type BigNumberish = number | string | BigNumber;
@@ -107,6 +109,7 @@ export const parseGasPrices = (
   data: GasPricesAPIData,
   source = gasUtils.GAS_PRICE_SOURCES.ETHERSCAN
 ) => {
+  console.log('---- parseGasPricesEtherscan', data);
   if (!data) return getFallbackGasPrices();
   switch (source) {
     case gasUtils.GAS_PRICE_SOURCES.ETH_GAS_STATION:
@@ -123,6 +126,7 @@ export const defaultGasPriceFormat = (
   timeWait: Numberish,
   value: Numberish
 ) => {
+  console.log('😥😥 defaultGasPriceFormat', option, timeWait, value);
   const timeAmount = multiply(timeWait, timeUnits.ms.minute);
   const weiAmount = multiply(value, ethUnits.gwei);
   return {
@@ -186,12 +190,17 @@ export const parseLegacyFees = (
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
   nativeCurrency: string
-) => {
+): LegacyTxFees => {
   const txFees = map(GasSpeedOrder, speed => {
     const gasPrice = legacyGasFees?.[speed]?.gasPrice?.amount || 0;
-    const txFee = getTxFee(gasPrice, gasLimit, priceUnit, nativeCurrency);
+    const estimatedFee = getTxFee(
+      gasPrice,
+      gasLimit,
+      priceUnit,
+      nativeCurrency
+    );
     return {
-      txFee,
+      estimatedFee,
     };
   });
   return zipObject(GasSpeedOrder, txFees);
@@ -202,30 +211,30 @@ export const parseTxFees = (
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
   nativeCurrency: string
-) => {
+): TxFees => {
   const txFees = map(GasSpeedOrder, speed => {
     // using blocknative max fee for now
     const { priorityFeePerGas, maxFeePerGas, baseFeePerGas } =
       gasFees?.[speed] || {};
 
     const priorityFee = priorityFeePerGas?.amount || 0;
-    const maxFee = maxFeePerGas?.amount || 0;
-    const baseFee = baseFeePerGas?.amount || 0;
-    const maxTxFee = getTxFee(
-      maxFee + priorityFee,
+    const maxFeePerGasAmount = maxFeePerGas?.amount || 0;
+    const baseFeePerGasAmount = baseFeePerGas?.amount || 0;
+    const maxFee = getTxFee(
+      maxFeePerGasAmount + priorityFee,
       gasLimit,
       priceUnit,
       nativeCurrency
     );
-    const txFee = getTxFee(
-      baseFee + priorityFee,
+    const estimatedFee = getTxFee(
+      baseFeePerGasAmount + priorityFee,
       gasLimit,
       priceUnit,
       nativeCurrency
     );
     return {
-      maxTxFee,
-      txFee,
+      estimatedFee,
+      maxFee,
     };
   });
   return zipObject(GasSpeedOrder, txFees);

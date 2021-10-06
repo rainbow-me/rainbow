@@ -137,7 +137,7 @@ const GasSpeedButton = ({
   // );
   // const defaultCustomGasPriceNative = get(
   //   txFees?.fast,
-  //   'txFee.native.value.display'
+  //   'estimatedFee.native.value.display'
   // );
   const defaultCustomGasConfirmationTime =
     gasPricesAvailable?.fast?.estimatedTime?.display;
@@ -146,7 +146,10 @@ const GasSpeedButton = ({
   // we need to trim the native currency symbol
   // (and leave the number only!)
   // which gets added later in the formatGasPrice function
-  const gasPrice = get(selectedGasFee, `txFee.native.value.display`);
+  const gasPrice = get(
+    selectedGasFee,
+    `gasFees.estimatedFee.native.value.display`
+  );
 
   const price = (isNil(gasPrice) ? '0.00' : gasPrice)
     .replace(',', '') // In case gas price is > 1k!
@@ -266,7 +269,10 @@ const GasSpeedButton = ({
 
   const formatTransactionTime = useCallback(() => {
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
-    let gasPriceGwei = get(selectedGasFee, 'txFee.value.display.display');
+    let gasPriceGwei = get(
+      selectedGasFee,
+      'estimatedFee.value.display.display'
+    );
     if (gasPriceGwei === '0 Gwei') {
       gasPriceGwei = '< 1 Gwei';
     }

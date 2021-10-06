@@ -32,7 +32,7 @@ export default function useGas() {
       legacyGasFees,
       selectedGasFee,
       selectedGasPriceOption: selectedGasFee.option,
-      txFees: selectedGasFee.txFee,
+      txFees: selectedGasFee.gasFees,
     })
   );
 
