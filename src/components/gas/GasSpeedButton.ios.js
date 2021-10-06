@@ -148,7 +148,7 @@ const GasSpeedButton = ({
   // which gets added later in the formatGasPrice function
   const gasPrice = get(
     selectedGasFee,
-    `gasFees.estimatedFee.native.value.display`
+    `txFees.estimatedFee.native.value.display`
   );
 
   const price = (isNil(gasPrice) ? '0.00' : gasPrice)

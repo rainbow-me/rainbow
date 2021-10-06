@@ -311,8 +311,8 @@ export default function SendSheet(props) {
   useEffect(() => {
     if (
       selected?.address === ETH_ADDRESS &&
-      (prevSelectedGasPrice?.gasFees?.estimatedFee?.value?.amount ?? 0) !==
-        (selectedGasFee?.gasFees?.estimatedFee?.value?.amount ?? 0)
+      (prevSelectedGasPrice?.txFees?.estimatedFee?.value?.amount ?? 0) !==
+        (selectedGasFee?.txFees?.estimatedFee?.value?.amount ?? 0)
     ) {
       updateMaxInputBalance(selected);
     }
@@ -447,7 +447,7 @@ export default function SendSheet(props) {
     const validTransaction =
       isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
     const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
-    if (!selectedGasFee?.gasFees?.estimatedFee || !validTransaction) {
+    if (!selectedGasFee?.txFees?.estimatedFee || !validTransaction) {
       logger.sentry('preventing tx submit for one of the following reasons:');
       logger.sentry('selectedGasFee ? ', selectedGasFee);
       logger.sentry('selectedGasFee.maxFee ? ', selectedGasFee?.maxFee);

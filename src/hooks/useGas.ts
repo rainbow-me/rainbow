@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from '../redux/store';
 import useAccountSettings from './useAccountSettings';
 import usePrevious from './usePrevious';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
@@ -18,21 +19,14 @@ export default function useGas() {
 
   const gasData = useSelector(
     ({
-      gas: {
-        gasFees,
-        gasLimit,
-        legacyGasFees,
-        isSufficientGas,
-        selectedGasFee,
-      },
-    }) => ({
+      gas: { gasFees, gasLimit, isSufficientGas, selectedGasFee },
+    }: AppState) => ({
       gasFees,
       gasLimit,
       isSufficientGas,
-      legacyGasFees,
       selectedGasFee,
       selectedGasPriceOption: selectedGasFee.option,
-      txFees: selectedGasFee.gasFees,
+      txFees: selectedGasFee.txFees,
     })
   );
 
@@ -67,9 +61,8 @@ export default function useGas() {
     [currentNetwork, dispatch]
   );
   const updateCustomValues = useCallback(
-    (price, network = currentNetwork) =>
-      dispatch(gasUpdateCustomValues(price, network)),
-    [currentNetwork, dispatch]
+    price => dispatch(gasUpdateCustomValues(price)),
+    [dispatch]
   );
 
   return {

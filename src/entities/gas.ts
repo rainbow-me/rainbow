@@ -8,14 +8,14 @@ export interface Fee {
 export interface SelectedGasFee {
   estimatedTime: { amount: number; display: string };
   option: string;
-  gasFees: GasFee;
+  txFees: GasFee;
   gasFeeParams: GasFeeParams;
 }
 
 export interface LegacySelectedGasFee {
   estimatedTime: { amount: number; display: string };
   option: string;
-  gasFees: LegacyGasFee;
+  txFees: LegacyGasFee;
   gasFeeParams: LegacyGasFeeParams;
 }
 
