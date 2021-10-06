@@ -1,3 +1,5 @@
+type Numberish = number | string;
+
 export interface TxFee {
   native: { value: { amount: string; display: string } };
   value: { amount: string; display: { amount: string; display: string } };
@@ -6,47 +8,78 @@ export interface TxFee {
 export interface SelectedGasFee {
   estimatedTime: { amount: number; display: string };
   option: string;
-  txFee: TxFee;
-  maxTxFee?: TxFee;
-  gasFeeParams:
-    | {
-        baseFeePerGas: { amount: number; display: string; gwei: number };
-        maxFeePerGas: { amount: number; display: string; gwei: number };
-        maxPriorityFeePerGas: { amount: number; display: string; gwei: number };
-      }
-    | {
-        gasPrice: { amount: number; display: string };
-      };
+  gasFee: GasFee;
+  gasFeeParams: GasFeeParams;
 }
 
-export interface GasFeeBaseParams {
+export interface LegacySelectedGasFee {
   estimatedTime: { amount: number; display: string };
   option: string;
+  gasFee: LegacyGasFee;
+  gasFeeParams: LegacyGasFeeParams;
 }
 
-export interface GasFeeLegacyParams extends GasFeeBaseParams {
-  type?: 0;
-  gasPrice: { amount: number; display: string };
-}
-
-export interface GasFeeParams extends GasFeeBaseParams {
-  type?: 2;
+export interface GasFeeParams {
   baseFeePerGas: { amount: number; display: string; gwei: number };
   maxFeePerGas: { amount: number; display: string; gwei: number };
   priorityFeePerGas: { amount: number; display: string; gwei: number };
+  option: string;
+  estimatedTime: { amount: number; display: string };
 }
 
-export interface EstimatedLegacyGasFees {
-  [key: string]: GasFeeLegacyParams;
+export interface LegacyGasFeeParams {
+  gasPrice: { amount: number; display: string };
+  option: string;
+  estimatedTime: { amount: number; display: string };
 }
 
 export interface EstimatedGasFees {
   [key: string]: GasFeeParams;
 }
 
+export interface LegacyEstimatedGasFees {
+  [key: string]: LegacyGasFeeParams;
+}
+
+export interface LegacyGasFee {
+  txFee: TxFee;
+}
+
+export interface GasFee extends LegacyGasFee {
+  maxTxFee: TxFee;
+}
+
 export interface TxFees {
-  [key: string]: {
-    txFee: TxFee;
-    maxTxFee?: TxFee;
-  };
+  [key: string]: GasFee;
+}
+
+export interface LegacyTxFees {
+  [key: string]: LegacyGasFee;
+}
+
+// API
+
+export interface GasPricesAPIData {
+  average: Numberish;
+  avgWait: Numberish;
+  fast: Numberish;
+  fastWait: Numberish;
+  safeLow: Numberish;
+  safeLowWait: Numberish;
+  fastest: Numberish;
+  fastestWait: Numberish;
+}
+
+export interface GasFeesBlockNativeData {
+  blockPrices: {
+    blockNumber: number;
+    baseFeePerGas: number;
+    estimatedTransactionCount: number;
+    estimatedPrices: {
+      confidence: number;
+      price: number;
+      maxPriorityFeePerGas: number;
+      maxFeePerGas: number;
+    }[];
+  }[];
 }

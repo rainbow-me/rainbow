@@ -16,7 +16,7 @@ const GAS_PRICE_SOURCES = {
   OPTIMISM_NODE: 'optimismNode',
 };
 
-const GAS_CONFIDENCE = {
+const GAS_CONFIDENCE: { [key: number]: string } = {
   80: SLOW,
   90: NORMAL,
   95: FAST,

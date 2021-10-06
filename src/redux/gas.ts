@@ -1,11 +1,13 @@
-import { BigNumberish } from '@ethersproject/bignumber';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { get, isEmpty } from 'lodash';
 import { AppDispatch, AppGetState } from './store';
 import {
   EstimatedGasFees,
-  EstimatedLegacyGasFees,
+  GasFeesBlockNativeData,
+  LegacyEstimatedGasFees,
+  LegacySelectedGasFee,
+  LegacyTxFees,
   SelectedGasFee,
   TxFee,
   TxFees,
@@ -44,15 +46,15 @@ import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const { CUSTOM, NORMAL } = gasUtils;
+type Numberish = number | string;
 
 interface GasState {
   defaultGasLimit: number;
   gasLimit: number | null;
-  legacyGasFees: EstimatedLegacyGasFees;
-  gasFees: EstimatedGasFees | EstimatedLegacyGasFees;
+  gasFees: EstimatedGasFees | LegacyEstimatedGasFees;
   isSufficientGas: Boolean | null;
-  selectedGasFee: SelectedGasFee;
-  txFees: Object;
+  selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
+  txFees: TxFees | LegacyTxFees;
   txNetwork: Network | null;
 }
 
@@ -62,6 +64,7 @@ const OPTIMISM_GAS_PRICE_GWEI = 0.015;
 const GAS_UPDATE_DEFAULT_GAS_LIMIT = 'gas/GAS_UPDATE_DEFAULT_GAS_LIMIT';
 const GAS_PRICES_DEFAULT = 'gas/GAS_PRICES_DEFAULT';
 const GAS_PRICES_SUCCESS = 'gas/GAS_PRICES_SUCCESS';
+const GAS_FEES_SUCCESS = 'gas/GAS_FEES_SUCCESS';
 const GAS_PRICES_FAILURE = 'gas/GAS_PRICES_FAILURE';
 
 const GAS_PRICES_RESET = 'gas/GAS_PRICES_RESET';
@@ -103,11 +106,14 @@ const checkIsSufficientGas = (
 
 const getSelectedGasFee = (
   assets: any[],
-  gasFees: EstimatedGasFees,
-  txFees: TxFees,
+  gasFees: EstimatedGasFees | LegacyEstimatedGasFees,
+  txFees: TxFees | LegacyTxFees,
   selectedGasPriceOption: string,
   network: Network
-): { isSufficientGas: boolean; selectedGasFee: SelectedGasFee } => {
+): {
+  isSufficientGas: boolean;
+  selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
+} => {
   const selectedGasParams = gasFees[selectedGasPriceOption];
   const selectedTxFee = txFees[selectedGasPriceOption];
 
@@ -119,15 +125,10 @@ const getSelectedGasFee = (
     isSufficientGas,
     selectedGasFee: {
       estimatedTime: selectedGasParams.estimatedTime,
-      gasFeeParams: {
-        baseFeePerGas: selectedGasParams?.baseFeePerGas,
-        maxFeePerGas: selectedGasParams?.maxFeePerGas,
-        maxPriorityFeePerGas: selectedGasParams?.priorityFeePerGas,
-      },
-      maxTxFee,
-      option: selectedGasParams.option,
-      txFee: selectedTxFee?.txFee,
-    },
+      gasFee: { ...selectedTxFee, maxTxFee },
+      gasFeeParams: selectedGasParams,
+      option: selectedGasPriceOption,
+    } as SelectedGasFee | LegacySelectedGasFee,
   };
 };
 
@@ -165,11 +166,11 @@ export const updateGasPriceForSpeed = (
   speed: string,
   newPrice: number
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
-  const { legacyGasFees } = getState().gas;
+  const { gasFees } = getState().gas;
 
   // TODO handle updates
 
-  const newGasParams = { ...legacyGasFees };
+  const newGasParams = { ...gasFees };
   newGasParams[speed].value = {
     amount: newPrice,
     display: `${newPrice} Gwei`,
@@ -177,7 +178,7 @@ export const updateGasPriceForSpeed = (
 
   dispatch({
     payload: {
-      legacyGasFees,
+      gasFees,
     },
     type: GAS_PRICES_SUCCESS,
   });
@@ -192,7 +193,6 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
     payload: network,
     type: GAS_UPDATE_TRANSACTION_NETWORK,
   });
-
   const getPolygonGasPrices = async () => {
     const { data: maticGasStationPrices } = await maticGasStationGetGasPrices();
 
@@ -237,9 +237,9 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
     return priceData;
   };
 
-  const getEIP1559GasParams = async () => {
+  const getEIP1559GasParams = async (): Promise<EstimatedGasFees> => {
     const { data } = await blockNativeGetGasParams();
-    return parseEIP1559GasData(data);
+    return parseEIP1559GasData(data as GasFeesBlockNativeData);
   };
 
   const getGasPrices = (network: Network) =>
@@ -271,9 +271,9 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
 
           dispatch({
             payload: {
-              gasFees: legacyGasFees,
+              legacyGasFees,
             },
-            type: GAS_PRICES_SUCCESS,
+            type: GAS_FEES_SUCCESS,
           });
         } else {
           try {
@@ -296,7 +296,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
               payload: {
                 gasFees,
               },
-              type: GAS_PRICES_SUCCESS,
+              type: GAS_FEES_SUCCESS,
             });
           } catch (e) {
             captureException(new Error('Etherscan gas estimates failed'));
@@ -344,35 +344,35 @@ export const gasUpdateGasFeeOption = (
   network: Network,
   assetsOverride: any[]
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
-  const { legacyGasFees, gasFees, txFees, txNetwork } = getState().gas;
+  const { gasFees, txFees, txNetwork } = getState().gas;
   const { assets } = getState().data;
-  const _gasFees = isEIP1559LegacyNetwork(txNetwork) ? legacyGasFees : gasFees;
 
-  if (isEmpty(_gasFees)) return;
+  const gasPriceOption = newGasPriceOption || NORMAL;
+  if (isEmpty(gasFees)) return;
   const selectedGasFee = getSelectedGasFee(
     assetsOverride || assets,
-    _gasFees,
+    gasFees,
     txFees,
-    newGasPriceOption,
+    gasPriceOption,
     txNetwork
   );
   dispatch({
     payload: selectedGasFee,
     type: GAS_UPDATE_GAS_PRICE_OPTION,
   });
-  analytics.track('Updated Gas Price', { gasPriceOption: newGasPriceOption });
+  analytics.track('Updated Gas Price', { gasPriceOption: gasPriceOption });
 };
 
 export const gasUpdateCustomValues = (
-  price: BigNumberish
+  price: Numberish
   // network: Network
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
-  const { legacyGasFees, gasLimit, txNetwork } = getState().gas;
+  const { gasFees, gasLimit, txNetwork } = getState().gas;
 
   const estimateInMinutes = isL2Network(txNetwork)
     ? 0.5
     : await getEstimatedTimeForGasPrice(price);
-  const newGasPrices = { ...legacyGasFees };
+  const newGasPrices = { ...gasFees };
   newGasPrices[CUSTOM] = defaultGasPriceFormat(
     CUSTOM,
     estimateInMinutes,
@@ -381,7 +381,7 @@ export const gasUpdateCustomValues = (
 
   await dispatch({
     payload: {
-      legacyGasFees: newGasPrices,
+      gasFees: newGasPrices,
     },
     type: GAS_PRICES_SUCCESS,
   });
@@ -408,7 +408,6 @@ export const gasUpdateTxFee = (
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const {
     defaultGasLimit,
-    legacyGasFees,
     gasFees,
     selectedGasFee,
     txNetwork,
@@ -426,12 +425,11 @@ export const gasUpdateTxFee = (
 
   const isLegacyNetwork = isEIP1559LegacyNetwork(txNetwork);
   const parseFees = isLegacyNetwork ? parseLegacyFees : parseTxFees;
-  const fees = isLegacyNetwork ? legacyGasFees : gasFees;
 
-  if (isEmpty(fees)) return;
+  if (isEmpty(gasFees)) return;
 
   const txFees = parseFees(
-    fees,
+    gasFees,
     nativeTokenPriceUnit,
     _gasLimit,
     nativeCurrency
@@ -479,7 +477,6 @@ const INITIAL_STATE: GasState = {
   gasFees: {},
   gasLimit: null,
   isSufficientGas: null,
-  legacyGasFees: {},
   selectedGasFee: {} as SelectedGasFee,
   txFees: {},
   txNetwork: null,
@@ -507,10 +504,15 @@ export default (
         ...state,
         gasFees: action.payload.gasFees,
       };
+    case GAS_FEES_SUCCESS:
+      return {
+        ...state,
+        gasFees: action.payload.gasFees,
+      };
     case GAS_PRICES_FAILURE:
       return {
         ...state,
-        legacyGasFees: action.payload,
+        gasFees: action.payload.gasFees,
       };
     case GAS_UPDATE_TX_FEE:
       return {
