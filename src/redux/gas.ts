@@ -67,7 +67,85 @@ const GAS_PRICES_FAILURE = 'gas/GAS_PRICES_FAILURE';
 const GAS_PRICES_RESET = 'gas/GAS_PRICES_RESET';
 const GAS_UPDATE_TX_FEE = 'gas/GAS_UPDATE_TX_FEE';
 const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
-const GAS_UPDATE_TRANACTION_NETWORK = 'gas/GAS_UPDATE_TRANACTION_NETWORK';
+const GAS_UPDATE_TRANSACTION_NETWORK = 'gas/GAS_UPDATE_TRANSACTION_NETWORK';
+
+const getSelectedGasFee = (
+  assets: any[],
+  gasFees: EstimatedGasFees,
+  txFees: TxFees,
+  selectedGasPriceOption: string
+): { isSufficientGas: boolean; selectedGasFee: SelectedGasFee } => {
+  const txFee = txFees[selectedGasPriceOption];
+  const selectedGasParams = gasFees[selectedGasPriceOption];
+  const nativeAsset = ethereumUtils.getAsset(assets, ETH_ADDRESS);
+
+  const balanceAmount = get(nativeAsset, 'balance.amount', 0);
+  const txFeeAmount = fromWei(get(txFee, 'maxTxFee.value.amount', 0));
+  const maxTxFee = get(txFee, 'maxTxFee');
+
+  const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
+
+  return {
+    isSufficientGas,
+    selectedGasFee: {
+      estimatedTime: selectedGasParams.estimatedTime,
+      gasFeeParams: {
+        maxFeePerGas: selectedGasParams?.maxFeePerGas.amount,
+        maxPriorityFeePerGas: selectedGasParams?.priorityFeePerGas.amount,
+      },
+      maxTxFee,
+      option: selectedGasParams.option,
+      txFee: txFee?.baseTxFee,
+    },
+  };
+};
+
+const getLegacySelectedGasFee = (
+  assets: any[],
+  legacyGasFees: EstimatedLegacyGasFees,
+  txFees: LegacyTxFees,
+  selectedGasPriceOption: string,
+  network: Network
+): { isSufficientGas: boolean; selectedGasFee: SelectedGasFee } => {
+  let txFee = txFees[selectedGasPriceOption];
+  // If no custom price is set we default to FAST
+  if (
+    selectedGasPriceOption === gasUtils.CUSTOM &&
+    get(txFee, 'txFee.gasPrice.amount') === 'NaN'
+  ) {
+    txFee = txFees[gasUtils.FAST];
+  }
+  let nativeAssetAddress;
+
+  switch (network) {
+    case networkTypes.polygon:
+      nativeAssetAddress = MATIC_POLYGON_ADDRESS;
+      break;
+    case networkTypes.arbitrum:
+      nativeAssetAddress = ARBITRUM_ETH_ADDRESS;
+      break;
+    case networkTypes.optimism:
+      nativeAssetAddress = OPTIMISM_ETH_ADDRESS;
+      break;
+    default:
+      nativeAssetAddress = ETH_ADDRESS;
+  }
+
+  const nativeAsset = ethereumUtils.getAsset(assets, nativeAssetAddress);
+
+  const balanceAmount = get(nativeAsset, 'balance.amount', 0);
+  const txFeeAmount = fromWei(get(txFee, 'txFee.gasPrice.amount', 0));
+  const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
+  const selectedGasParams = legacyGasFees[selectedGasPriceOption];
+  return {
+    isSufficientGas,
+    selectedGasFee: {
+      ...selectedGasParams,
+      gasFeeParams: { gasPrice: selectedGasParams?.gasPrice?.amount },
+      txFee: txFee.txFee,
+    },
+  };
+};
 
 // -- Actions --------------------------------------------------------------- //
 let gasPricesHandle: number | null = null;
@@ -126,6 +204,10 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   getState: AppGetState
 ) => {
   dispatch(gasPricesStopPolling());
+  dispatch({
+    payload: network,
+    type: GAS_UPDATE_TRANSACTION_NETWORK,
+  });
 
   const getPolygonGasPrices = async () => {
     const { data: maticGasStationPrices } = await maticGasStationGetGasPrices();
@@ -133,11 +215,6 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
     // Override required to make it compatible with other responses
     maticGasStationPrices['average'] = maticGasStationPrices['standard'];
     delete maticGasStationPrices.standard;
-
-    dispatch({
-      payload: network,
-      type: GAS_UPDATE_TRANACTION_NETWORK,
-    });
 
     return maticGetGasEstimates(maticGasStationPrices);
   };
@@ -426,93 +503,6 @@ export const gasUpdateTxFee = (
   }
 };
 
-const getSelectedGasFee = (
-  assets: any[],
-  gasFees: EstimatedGasFees,
-  txFees: TxFees,
-  selectedGasPriceOption: string
-): { isSufficientGas: boolean; selectedGasFee: SelectedGasFee } => {
-  let txFee = txFees[selectedGasPriceOption];
-  // If no custom price is set we default to FAST
-  if (
-    selectedGasPriceOption === gasUtils.CUSTOM &&
-    get(txFee, 'txFee.gasPrice.amount') === 'NaN'
-  ) {
-    txFee = txFees[gasUtils.FAST];
-  }
-  const nativeAssetAddress = ETH_ADDRESS;
-  const nativeAsset = ethereumUtils.getAsset(assets, nativeAssetAddress);
-  const balanceAmount = get(nativeAsset, 'balance.amount', 0);
-  const txFeeAmount = fromWei(get(txFee, 'maxTxFee.value.amount', 0));
-  const maxTxFee = get(txFee, 'maxTxFee');
-  const value = get(txFee, 'baseTxFee.value.display');
-
-  const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
-  const selectedGasParams = gasFees[selectedGasPriceOption];
-
-  return {
-    isSufficientGas,
-    selectedGasFee: {
-      ...selectedGasParams,
-      gasFeeParams: {
-        maxFeePerGas: selectedGasParams?.maxFeePerGas.amount,
-        maxPriorityFeePerGas: selectedGasParams?.priorityFeePerGas.amount,
-      },
-      maxTxFee,
-      txFee: txFee?.baseTxFee,
-      value,
-    },
-  };
-};
-
-const getLegacySelectedGasFee = (
-  assets: any[],
-  legacyGasFees: EstimatedLegacyGasFees,
-  txFees: LegacyTxFees,
-  selectedGasPriceOption: string,
-  network: Network
-): { isSufficientGas: boolean; selectedGasFee: SelectedGasFee } => {
-  let txFee = txFees[selectedGasPriceOption];
-  // If no custom price is set we default to FAST
-  if (
-    selectedGasPriceOption === gasUtils.CUSTOM &&
-    get(txFee, 'txFee.gasPrice.amount') === 'NaN'
-  ) {
-    txFee = txFees[gasUtils.FAST];
-  }
-  let nativeAssetAddress;
-
-  switch (network) {
-    case networkTypes.polygon:
-      nativeAssetAddress = MATIC_POLYGON_ADDRESS;
-      break;
-    case networkTypes.arbitrum:
-      nativeAssetAddress = ARBITRUM_ETH_ADDRESS;
-      break;
-    case networkTypes.optimism:
-      nativeAssetAddress = OPTIMISM_ETH_ADDRESS;
-      break;
-    default:
-      nativeAssetAddress = ETH_ADDRESS;
-  }
-
-  const nativeAsset = ethereumUtils.getAsset(assets, nativeAssetAddress);
-
-  const balanceAmount = get(nativeAsset, 'balance.amount', 0);
-  const txFeeAmount = fromWei(get(txFee, 'txFee.gasPrice.amount', 0));
-  const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
-  const selectedGasParams = legacyGasFees[selectedGasPriceOption];
-  return {
-    isSufficientGas,
-    selectedGasFee: {
-      ...selectedGasParams,
-      gasFeeParams: { gasPrice: selectedGasParams?.gasPrice?.amount },
-      txFee: txFee.txFee,
-      value: txFee.txFee.value.display,
-    },
-  };
-};
-
 // const bumpGasPrices = data => {
 //   const processedData = { ...data };
 //   const gasPricesKeys = ['average', 'fast', 'fastest', 'safeLow'];
@@ -586,7 +576,7 @@ export default (
         isSufficientGas: action.payload.isSufficientGas,
         selectedGasFee: action.payload.selectedGasFee,
       };
-    case GAS_UPDATE_TRANACTION_NETWORK:
+    case GAS_UPDATE_TRANSACTION_NETWORK:
       return {
         ...state,
         txNetwork: action.payload,

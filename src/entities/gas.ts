@@ -8,7 +8,6 @@ export interface SelectedGasFee {
   option: string;
   txFee: TxFee;
   maxTxFee?: TxFee;
-  value: { amount: string; display: string };
   gasFeeParams:
     | {
         maxFeePerGas: number;
