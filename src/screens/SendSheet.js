@@ -604,7 +604,11 @@ export default function SendSheet(props) {
       nativeToken = 'MATIC';
     }
 
-    if (isEmpty(gasFees) || !selectedGasFee || isEmpty(selectedGasFee.gasFee)) {
+    if (
+      isEmpty(gasFees) ||
+      !selectedGasFee ||
+      isEmpty(selectedGasFee?.gasFee)
+    ) {
       label = `Loading...`;
       disabled = true;
     } else if (!isZeroAssetAmount && !isSufficientGas) {

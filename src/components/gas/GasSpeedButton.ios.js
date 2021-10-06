@@ -246,13 +246,13 @@ const GasSpeedButton = ({
         weight="bold"
       >
         {isEmpty(gasPricesAvailable) ||
-        isEmpty(selectedGasFee.gasFee) ||
+        isEmpty(selectedGasFee?.gasFee) ||
         typeof isSufficientGas === 'undefined'
           ? 'Loading...'
           : animatedNumber}
       </Text>
     ),
-    [theme, colors, gasPricesAvailable, selectedGasFee.gasFee, isSufficientGas]
+    [theme, colors, gasPricesAvailable, selectedGasFee?.gasFee, isSufficientGas]
   );
 
   const handlePress = useCallback(
