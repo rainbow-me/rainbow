@@ -126,9 +126,9 @@ const getSelectedGasFee = (
     isSufficientGas,
     selectedGasFee: {
       estimatedTime: selectedGasParams.estimatedTime,
+      gasFee: { ...selectedTxFee, maxTxFee },
       gasFeeParams: selectedGasParams,
       option: selectedGasPriceOption,
-      txFees: { ...selectedTxFee, maxTxFee },
     } as SelectedGasFee | LegacySelectedGasFee,
   };
 };

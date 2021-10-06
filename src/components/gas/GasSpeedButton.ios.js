@@ -110,7 +110,7 @@ const GasSpeedButton = ({
     updateGasPriceOption,
     selectedGasFee,
     selectedGasPriceOption,
-    txFees,
+    gasFee,
   } = useGas();
 
   const gasPricesAvailable = useMemo(() => {
@@ -148,7 +148,7 @@ const GasSpeedButton = ({
   // which gets added later in the formatGasPrice function
   const gasPrice = get(
     selectedGasFee,
-    `txFees.estimatedFee.native.value.display`
+    `gasFee.estimatedFee.native.value.display`
   );
 
   const price = (isNil(gasPrice) ? '0.00' : gasPrice)
@@ -247,13 +247,13 @@ const GasSpeedButton = ({
         weight="bold"
       >
         {isEmpty(gasPricesAvailable) ||
-        isEmpty(txFees) ||
+        isEmpty(gasFee) ||
         typeof isSufficientGas === 'undefined'
           ? 'Loading...'
           : animatedNumber}
       </Text>
     ),
-    [colors, gasPricesAvailable, isSufficientGas, theme, txFees]
+    [colors, gasPricesAvailable, isSufficientGas, theme, gasFee]
   );
 
   const handlePress = useCallback(
