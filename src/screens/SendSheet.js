@@ -112,7 +112,6 @@ export default function SendSheet(props) {
     selectedGasFee,
     startPollingGasPrices,
     stopPollingGasPrices,
-    gasFee,
     updateDefaultGasLimit,
     updateTxFee,
   } = useGas();
@@ -605,7 +604,7 @@ export default function SendSheet(props) {
       nativeToken = 'MATIC';
     }
 
-    if (isEmpty(gasFees) || !selectedGasFee || isEmpty(gasFee)) {
+    if (isEmpty(gasFees) || !selectedGasFee || isEmpty(selectedGasFee.gasFee)) {
       label = `Loading...`;
       disabled = true;
     } else if (!isZeroAssetAmount && !isSufficientGas) {
@@ -626,7 +625,6 @@ export default function SendSheet(props) {
     network,
     gasFees,
     selectedGasFee,
-    gasFee,
     isSufficientGas,
   ]);
 

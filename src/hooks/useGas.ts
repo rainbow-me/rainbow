@@ -21,7 +21,6 @@ export default function useGas() {
     ({
       gas: { gasFees, gasLimit, isSufficientGas, selectedGasFee },
     }: AppState) => ({
-      gasFee: selectedGasFee.gasFee,
       gasFees,
       gasLimit,
       isSufficientGas,
