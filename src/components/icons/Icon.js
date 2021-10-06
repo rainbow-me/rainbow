@@ -119,6 +119,7 @@ const IconTypes = {
   progress: ProgressIcon,
   qrCode: QRCodeIcon,
   reddit: RedditIcon,
+  robot: Emoji,
   scanner: ScannerIcon,
   search: SearchIcon,
   send: SendIcon,

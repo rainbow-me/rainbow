@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.5.26-1",
+  "version": "1.5.27-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn allow-scripts && yarn postinstall",

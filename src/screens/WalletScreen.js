@@ -187,7 +187,6 @@ export default function WalletScreen() {
           </Header>
         </HeaderOpacityToggler>
         <AssetList
-          disableAutoScrolling
           disableRefreshControl={isLoadingAssets}
           fetchData={refreshAccountData}
           isEmpty={isAccountEmpty || !!params?.emptyWallet}
