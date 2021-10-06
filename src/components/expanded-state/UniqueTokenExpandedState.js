@@ -11,7 +11,6 @@ import {
   SheetDivider,
   SlackSheet,
 } from '../sheet';
-import { MarkdownText } from '../text';
 import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes } from '../unique-token';
 import ExpandedStateSection from './ExpandedStateSection';
@@ -19,6 +18,7 @@ import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
 } from './unique-token';
+import { MarkdownText } from '@rainbow-me/design-system';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import {
   useAccountProfile,
@@ -128,13 +128,7 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
           {!!familyDescription && (
             <NftExpandedStateSection title={`About ${familyName}`}>
               <Column>
-                <MarkdownText
-                  color={colors.alpha(colors.blueGreyDark, 0.5)}
-                  lineHeight="paragraphSmall"
-                  size="lmedium"
-                >
-                  {familyDescription}
-                </MarkdownText>
+                <MarkdownText>{familyDescription}</MarkdownText>
                 {familyLink && <Link url={familyLink} />}
               </Column>
             </NftExpandedStateSection>

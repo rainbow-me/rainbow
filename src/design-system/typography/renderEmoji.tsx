@@ -1,9 +1,14 @@
 import createEmojiRegex from 'emoji-regex';
 import React, { Fragment, ReactNode } from 'react';
-import { Text as NativeText } from 'react-native';
+import { Text as NativeText, StyleSheet } from 'react-native';
 
 const emojiRegex = createEmojiRegex();
-const systemFontStyle = { fontFamily: 'System' } as const;
+const styles = StyleSheet.create({
+  emoji: {
+    color: 'black', // Ensures emoji don't inherit the alpha channel of rgba colors
+    fontFamily: 'System',
+  },
+});
 
 type StringNode = string | (string | null)[];
 
@@ -46,7 +51,7 @@ export const renderEmoji = (stringNode: StringNode) => {
           <Fragment key={index}>
             {stringPart}
             {emojis[index] ? (
-              <NativeText style={systemFontStyle}>{emojis[index]}</NativeText>
+              <NativeText style={styles.emoji}>{emojis[index]}</NativeText>
             ) : null}
           </Fragment>
         ));

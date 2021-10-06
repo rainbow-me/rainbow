@@ -36,7 +36,7 @@ const useTextStyle = ({
   align: textAlign,
   color = 'neutral',
   size = 'body',
-  weight = 'bold',
+  weight = 'regular',
   tabularNumbers = false,
   uppercase = false,
 }: TextStyle) => {

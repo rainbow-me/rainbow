@@ -21,7 +21,7 @@ const capsize = (options: Parameters<typeof precomputeValues>[0]) => {
   } as const;
 };
 
-const fonts = {
+export const fonts = {
   SFProRounded: {
     regular: {
       fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Regular',

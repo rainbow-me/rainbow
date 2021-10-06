@@ -2,14 +2,19 @@ import React, { ReactNode } from 'react';
 import { ScrollView, View } from 'react-native';
 import { useHideSplashScreen } from '../hooks';
 import { palette } from './color/palette';
-import { ColorModeProvider, Heading, HeadingProps, Text, TextProps } from '.';
+import {
+  ColorModeProvider,
+  Heading,
+  HeadingProps,
+  MarkdownText,
+  Text,
+  TextProps,
+} from '.';
 
 const pink = 'rgba(255,0,0,0.2)';
 const customTextColor = { darkMode: 'pink', lightMode: 'red' } as const;
 
-const TypeSeparator = () => (
-  <View style={{ backgroundColor: pink, height: 16 }} />
-);
+const Guide = () => <View style={{ backgroundColor: pink, height: 16 }} />;
 
 const Spacer = ({ size = 'large' }: { size?: 'small' | 'large' }) => (
   <View style={{ height: size === 'large' ? 44 : 12 }} />
@@ -56,49 +61,121 @@ const textExamples: Required<Pick<TextProps, 'size' | 'weight'>>[] = [
   { size: 'small', weight: 'heavy' },
 ];
 
+const markdown = `
+  # Heading 1
+
+  ## Heading 2
+
+  ### Heading 3
+
+  #### Heading 4
+
+  ##### Heading 5
+
+  ###### Heading 6
+
+  Paragraph. ${loremIpsum}
+
+  > Blockquote paragraph. ${loremIpsum}
+
+  Text with **bold words.**
+
+  Text with *italicised words.*
+
+  Text with ~~strikethrough.~~
+
+  Text with a [link.](http://rainbow.me)
+
+  Text with emoji. 🌈🌈🌈
+
+  - Bullet list
+  - Bullet list
+  - Bullet list with rich content
+
+    ${loremIpsum}
+
+    - Nested bullet list
+    - Nested bullet list
+    - Nested bullet list
+
+  1. Ordered list
+  2. Ordered list
+  3. Ordered list with rich content
+
+     ${loremIpsum}
+
+     1. Nested bullet list
+     2. Nested bullet list
+     3. Nested bullet list
+
+  ---
+
+  11. Ordered list with offset
+  12. Ordered list with offset
+
+  Text with inline code. \`<MarkdownText>\`
+
+  \`\`\`
+  Multiline code block
+  Multiline code block
+  Multiline code block
+  \`\`\`
+
+  | Table  | Table |
+  | ------ | ----------- |
+  | Lorem  | ${loremIpsum} |
+  | Ipsum  | ${loremIpsum} |
+`;
+
 export const DesignSystemPlayground = () => {
   useHideSplashScreen()();
 
   return (
     <ScrollView>
       <View style={{ paddingHorizontal: 8, paddingVertical: 50 }}>
-        <TypeSeparator />
+        <Guide />
+        <MarkdownText>{markdown}</MarkdownText>
+        <Guide />
+
+        <Spacer />
+
+        <Guide />
         <Heading>Default heading</Heading>
-        <TypeSeparator />
+        <Guide />
         <Text>Default text</Text>
-        <TypeSeparator />
+        <Guide />
 
         {headingExamples.map(({ size, weight }) => (
           <>
             <Spacer />
-            <TypeSeparator />
+            <Guide />
             <Heading size={size} weight={weight}>
               {titleCase(size)} ({weight})
             </Heading>
-            <TypeSeparator />
+            <Guide />
             <Heading size={size} weight={weight}>
               {loremIpsum}
             </Heading>
-            <TypeSeparator />
+            <Guide />
             <View style={{ backgroundColor: palette.greyDark, padding: 20 }}>
               <ColorModeProvider value="darkMode">
-                <TypeSeparator />
+                <Guide />
                 <Heading size={size} weight={weight}>
                   Dark mode
                 </Heading>
-                <TypeSeparator />
+                <Guide />
               </ColorModeProvider>
             </View>
-            <TypeSeparator />
+            <Guide />
             <Heading numberOfLines={1} size={size} weight={weight}>
               Truncated text truncated text truncated text truncated text
               truncated text truncated text
             </Heading>
-            <TypeSeparator />
+            <Guide />
             <Heading containsEmoji size={size} weight={weight}>
               Heading containing emoji 🌈
             </Heading>
-            <TypeSeparator />
+            <Guide />
             <Spacer size="small" />
             <MockBadge>
               <Heading size={size} weight={weight}>
@@ -116,19 +193,19 @@ export const DesignSystemPlayground = () => {
         {textExamples.map(({ size, weight }) => (
           <>
             <Spacer />
-            <TypeSeparator />
+            <Guide />
             <Text size={size} weight={weight}>
               {titleCase(size)} text ({weight})
             </Text>
-            <TypeSeparator />
+            <Guide />
             <Text size={size} weight={weight}>
               {loremIpsum}
             </Text>
-            <TypeSeparator />
+            <Guide />
             <Text color="action" size={size} weight={weight}>
               Palette color
             </Text>
-            <TypeSeparator />
+            <Guide />
             <Text
               color={{ custom: customTextColor }}
               size={size}
@@ -136,14 +213,14 @@ export const DesignSystemPlayground = () => {
             >
               Custom color
             </Text>
-            <TypeSeparator />
+            <Guide />
             <View style={{ backgroundColor: palette.greyDark, padding: 20 }}>
               <ColorModeProvider value="darkMode">
-                <TypeSeparator />
+                <Guide />
                 <Text size={size} weight={weight}>
                   Dark mode
                 </Text>
-                <TypeSeparator />
+                <Guide />
                 <Text
                   color={{ custom: customTextColor }}
                   size={size}
@@ -151,19 +228,19 @@ export const DesignSystemPlayground = () => {
                 >
                   Custom color
                 </Text>
-                <TypeSeparator />
+                <Guide />
               </ColorModeProvider>
             </View>
-            <TypeSeparator />
+            <Guide />
             <Text numberOfLines={1} size={size} weight={weight}>
               Truncated text truncated text truncated text truncated text
               truncated text truncated text
             </Text>
-            <TypeSeparator />
+            <Guide />
             <Text containsEmoji size={size} weight={weight}>
               Text containing emoji 🌈
             </Text>
-            <TypeSeparator />
+            <Guide />
             <Spacer size="small" />
             <MockBadge>
               <Text size={size} weight={weight}>
