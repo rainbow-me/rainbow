@@ -172,7 +172,7 @@ export const defaultGasParamsFormat = (
  * @param {Object} prices
  * @param {Number} gasLimit
  */
-export const parseTxFees = (
+export const parseLegacyFees = (
   legacyGasFees,
   priceUnit,
   gasLimit,
@@ -188,12 +188,7 @@ export const parseTxFees = (
   return zipObject(GasSpeedOrder, txFees);
 };
 
-export const parseEip1559TxFees = (
-  gasFees,
-  priceUnit,
-  gasLimit,
-  nativeCurrency
-) => {
+export const parseTxFees = (gasFees, priceUnit, gasLimit, nativeCurrency) => {
   const txFees = map(GasSpeedOrder, speed => {
     // using blocknative max fee for now
     const priorityFee = get(gasFees, `${speed}.priorityFeePerGas.amount`);
@@ -206,15 +201,15 @@ export const parseEip1559TxFees = (
       priceUnit,
       nativeCurrency
     );
-    const baseTxFee = getTxFee(
+    const txFee = getTxFee(
       baseFee + priorityFee,
       gasLimit,
       priceUnit,
       nativeCurrency
     );
     return {
-      baseTxFee,
       maxTxFee,
+      txFee,
     };
   });
   return zipObject(GasSpeedOrder, txFees);

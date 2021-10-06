@@ -85,7 +85,7 @@ export default function GweiInput({ value, setValue }) {
       </InputColumn>
       <InputColumn>
         <GweiInputPill value={value} />
-        {/* <Text>{value}</Text> */}
+        <Text>{value}</Text>
       </InputColumn>
       <InputColumn justify="center">
         <GweiStepButton setValue={setValue} type="plus" />
