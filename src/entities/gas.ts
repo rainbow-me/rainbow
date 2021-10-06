@@ -10,9 +10,9 @@ export interface SelectedGasFee {
   maxTxFee?: TxFee;
   gasFeeParams:
     | {
-        baseFeePerGas: { amount: number; display: string; gwei: string };
-        maxFeePerGas: { amount: number; display: string; gwei: string };
-        maxPriorityFeePerGas: { amount: number; display: string; gwei: string };
+        baseFeePerGas: { amount: number; display: string; gwei: number };
+        maxFeePerGas: { amount: number; display: string; gwei: number };
+        maxPriorityFeePerGas: { amount: number; display: string; gwei: number };
       }
     | {
         gasPrice: { amount: number; display: string };
@@ -31,9 +31,9 @@ export interface GasFeeLegacyParams extends GasFeeBaseParams {
 
 export interface GasFeeParams extends GasFeeBaseParams {
   type?: 2;
-  baseFeePerGas: { amount: number; display: string; gwei: string };
-  maxFeePerGas: { amount: number; display: string; gwei: string };
-  priorityFeePerGas: { amount: number; display: string; gwei: string };
+  baseFeePerGas: { amount: number; display: string; gwei: number };
+  maxFeePerGas: { amount: number; display: string; gwei: number };
+  priorityFeePerGas: { amount: number; display: string; gwei: number };
 }
 
 export interface EstimatedLegacyGasFees {

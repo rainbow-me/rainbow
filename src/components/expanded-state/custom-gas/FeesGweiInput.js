@@ -35,7 +35,6 @@ const GweiNumber = styled(AnimatedNumber).attrs(
     steps: 1,
     textAlign: 'left',
     timing: 'linear',
-    value: value,
     weight: 'heavy',
   })
 )`
@@ -85,7 +84,6 @@ export default function GweiInput({ value, setValue }) {
       </InputColumn>
       <InputColumn>
         <GweiInputPill value={value} />
-        <Text>{value}</Text>
       </InputColumn>
       <InputColumn justify="center">
         <GweiStepButton setValue={setValue} type="plus" />

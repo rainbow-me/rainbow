@@ -146,7 +146,7 @@ export const defaultGasParamsFormat = (
     baseFeePerGas: {
       amount: Math.round(baseFeePerGasWeiAmount),
       display: `${parseInt(baseFeePerGas, 10)} Gwei`,
-      gwei: baseFeePerGas.toFixed(2),
+      gwei: Number(baseFeePerGas.toFixed(2)),
     },
     estimatedTime: {
       amount: timeAmount,
@@ -155,13 +155,13 @@ export const defaultGasParamsFormat = (
     maxFeePerGas: {
       amount: Math.round(maxFeePerGasWeiAmount),
       display: `${parseInt(maxFeePerGas, 10)} Gwei`,
-      gwei: maxFeePerGas.toFixed(2),
+      gwei: Number(maxFeePerGas.toFixed(2)),
     },
     option,
     priorityFeePerGas: {
       amount: Math.round(priorityFeePerGasWeiAmount),
       display: `${parseInt(priorityFeePerGas, 10)} Gwei`,
-      gwei: priorityFeePerGas.toFixed(2),
+      gwei: Number(priorityFeePerGas.toFixed(2)),
     },
   };
 };
