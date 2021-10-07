@@ -168,7 +168,6 @@ export const updateGasFeeForSpeed = (
   newMaxPriorityFeePerGas: number
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
   const { gasFeeParamsBySpeed } = getState().gas;
-
   const newGasFeeParams = { ...gasFeeParamsBySpeed };
   newGasFeeParams[speed].maxPriorityFeePerGas = parseGasFeeParam(
     newMaxPriorityFeePerGas
@@ -176,7 +175,7 @@ export const updateGasFeeForSpeed = (
 
   dispatch({
     payload: {
-      newGasFeeParamsBySpeed: newGasFeeParams,
+      gasFeeParamsBySpeed: newGasFeeParams,
     },
     type: GAS_PRICES_SUCCESS,
   });

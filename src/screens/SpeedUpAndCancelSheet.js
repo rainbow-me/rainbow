@@ -106,7 +106,7 @@ const calcGasParamRetryValue = prevWeiValue => {
   const prevWeiValueBN = new BigNumber(prevWeiValue);
 
   const newWeiValueBN = prevWeiValueBN
-    .times(new BigNumber('125'))
+    .times(new BigNumber('110'))
     .dividedBy(new BigNumber('100'));
 
   const newWeiValue = newWeiValueBN.toFixed(0);
@@ -181,7 +181,6 @@ export default function SpeedUpAndCancelSheet() {
   const handleCancellation = useCallback(async () => {
     try {
       const { maxFeePerGas, maxPriorityFeePerGas } = getNewGasParams();
-
       const cancelTxPayload = {
         maxFeePerGas,
         maxPriorityFeePerGas,
