@@ -12,6 +12,7 @@ import timeUnits from '../references/time-units.json';
 import { gasUtils } from '../utils';
 import {
   GasFeeParam,
+  GasFeeParams,
   GasFeeParamsBySpeed,
   GasFeesBlockNativeData,
   GasFeesBySpeed,
@@ -63,6 +64,7 @@ export const parseEIP1559GasData = (
       maxPriorityFeePerGas
     );
   });
+  parsedFees[CUSTOM] = {} as GasFeeParams;
 
   return parsedFees;
 };
@@ -203,37 +205,50 @@ export const parseLegacyGasFeesBySpeed = (
   return zipObject(GasSpeedOrder, gasFeesBySpeed);
 };
 
+export const parseGasFees = (
+  gasFeeParams: GasFeeParams,
+  gasLimit: BigNumberish,
+  priceUnit: BigNumberish,
+  nativeCurrency: string
+) => {
+  const { maxPriorityFeePerGas, maxFeePerGas, baseFeePerGas } =
+    gasFeeParams || {};
+
+  const priorityFee = maxPriorityFeePerGas?.amount || 0;
+  const maxFeePerGasAmount = maxFeePerGas?.amount || 0;
+  const baseFeePerGasAmount = baseFeePerGas?.amount || 0;
+  const maxFee = getTxFee(
+    maxFeePerGasAmount + priorityFee,
+    gasLimit,
+    priceUnit,
+    nativeCurrency
+  );
+  const estimatedFee = getTxFee(
+    baseFeePerGasAmount + priorityFee,
+    gasLimit,
+    priceUnit,
+    nativeCurrency
+  );
+  return {
+    estimatedFee,
+    maxFee,
+  };
+};
+
 export const parseGasFeesBySpeed = (
   gasFeeParamsBySpeed: GasFeeParamsBySpeed,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
   nativeCurrency: string
 ): GasFeesBySpeed => {
-  const gasFeesBySpeed = map(GasSpeedOrder, speed => {
-    // using blocknative max fee for now
-    const { maxPriorityFeePerGas, maxFeePerGas, baseFeePerGas } =
-      gasFeeParamsBySpeed?.[speed] || {};
-
-    const priorityFee = maxPriorityFeePerGas?.amount || 0;
-    const maxFeePerGasAmount = maxFeePerGas?.amount || 0;
-    const baseFeePerGasAmount = baseFeePerGas?.amount || 0;
-    const maxFee = getTxFee(
-      maxFeePerGasAmount + priorityFee,
+  const gasFeesBySpeed = map(GasSpeedOrder, speed =>
+    parseGasFees(
+      gasFeeParamsBySpeed[speed],
       gasLimit,
       priceUnit,
       nativeCurrency
-    );
-    const estimatedFee = getTxFee(
-      baseFeePerGasAmount + priorityFee,
-      gasLimit,
-      priceUnit,
-      nativeCurrency
-    );
-    return {
-      estimatedFee,
-      maxFee,
-    };
-  });
+    )
+  );
   return zipObject(GasSpeedOrder, gasFeesBySpeed);
 };
 

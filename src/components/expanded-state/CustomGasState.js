@@ -1,5 +1,5 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
@@ -21,6 +21,7 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { gweiToWei, parseGasFeeParam, weiToGwei } from '@rainbow-me/parsers';
 import { padding, position } from '@rainbow-me/styles';
 
 const springConfig = {
@@ -70,7 +71,7 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
   const contentScroll = useSharedValue(0);
 
   const [currentGasTrend] = useState('stable');
-  const { selectedGasFee } = useGas();
+  const { selectedGasFee, updateToCustomGasFee } = useGas();
 
   useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
   useAndroidDisableGesturesOnFocus();
@@ -95,6 +96,34 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
         insets.bottom -
         (sheetHeightWithoutKeyboard + keyboardOffset)
       : 0;
+
+  const updateGasFee = useCallback(
+    ({ priorityFeePerGas = 0, feePerGas = 0 }) => {
+      const {
+        gasFeeParams: { maxFeePerGas, maxPriorityFeePerGas },
+      } = selectedGasFee;
+      const gweiMaxPriorityFeePerGas = Number(
+        weiToGwei(maxPriorityFeePerGas.amount)
+      );
+      const gweiMaxFeePerGas = Number(weiToGwei(maxFeePerGas.amount));
+      const newGweiMaxPriorityFeePerGas =
+        gweiMaxPriorityFeePerGas + priorityFeePerGas;
+      const newGweiMaxFeePerGas = gweiMaxFeePerGas + feePerGas;
+
+      const newMaxPriorityFeePerGas = parseGasFeeParam(
+        gweiToWei(newGweiMaxPriorityFeePerGas)
+      );
+      const newMaxFeePerGas = parseGasFeeParam(gweiToWei(newGweiMaxFeePerGas));
+
+      const newGasParams = {
+        ...selectedGasFee.gasFeeParams,
+        maxFeePerGas: newMaxFeePerGas,
+        maxPriorityFeePerGas: newMaxPriorityFeePerGas,
+      };
+      updateToCustomGasFee(newGasParams);
+    },
+    [selectedGasFee, updateToCustomGasFee]
+  );
 
   useEffect(() => {
     if (isKeyboardVisible) {
@@ -135,7 +164,7 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
             currentGasTrend={currentGasTrend}
             selectedGasFee={selectedGasFee}
             // setMaxBaseFee={setMaxBaseFee}
-            // setMinerTip={setMinerTip}
+            updateGasFee={updateGasFee}
           />
           <Divider />
           <FeesPanelTabs />

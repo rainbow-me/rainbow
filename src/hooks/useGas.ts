@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/store';
 import usePrevious from './usePrevious';
+import { GasFeeParams } from '@rainbow-me/entities';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   gasPricesStartPolling,
@@ -9,6 +10,7 @@ import {
   gasUpdateCustomValues,
   gasUpdateDefaultGasLimit,
   gasUpdateGasFeeOption,
+  gasUpdateToCustomGasFee,
   gasUpdateTxFee,
 } from '@rainbow-me/redux/gas';
 
@@ -68,6 +70,11 @@ export default function useGas() {
     [dispatch]
   );
 
+  const updateToCustomGasFee = useCallback(
+    (gasParams: GasFeeParams) => dispatch(gasUpdateToCustomGasFee(gasParams)),
+    [dispatch]
+  );
+
   return {
     prevSelectedGasFee,
     startPollingGasFees,
@@ -75,6 +82,7 @@ export default function useGas() {
     updateCustomValues,
     updateDefaultGasLimit,
     updateGasFeeOption,
+    updateToCustomGasFee,
     updateTxFee,
     ...gasData,
   };

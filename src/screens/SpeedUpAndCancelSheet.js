@@ -148,7 +148,7 @@ export default function SpeedUpAndCancelSheet() {
   const [to, setTo] = useState(tx.to);
   const [value, setValue] = useState(null);
 
-  const getNewGasParams = useCallback(() => {
+  const getNewTransactionGasParams = useCallback(() => {
     const rawMaxPriorityFeePerGas = get(
       selectedGasFee,
       'gasFeeParams.maxPriorityFeePerGas.amount'
@@ -180,7 +180,10 @@ export default function SpeedUpAndCancelSheet() {
 
   const handleCancellation = useCallback(async () => {
     try {
-      const { maxFeePerGas, maxPriorityFeePerGas } = getNewGasParams();
+      const {
+        maxFeePerGas,
+        maxPriorityFeePerGas,
+      } = getNewTransactionGasParams();
       const cancelTxPayload = {
         maxFeePerGas,
         maxPriorityFeePerGas,
@@ -215,7 +218,7 @@ export default function SpeedUpAndCancelSheet() {
     accountAddress,
     currentProvider,
     dispatch,
-    getNewGasParams,
+    getNewTransactionGasParams,
     goBack,
     nonce,
     tx,
@@ -223,7 +226,10 @@ export default function SpeedUpAndCancelSheet() {
 
   const handleSpeedUp = useCallback(async () => {
     try {
-      const { maxFeePerGas, maxPriorityFeePerGas } = getNewGasParams();
+      const {
+        maxFeePerGas,
+        maxPriorityFeePerGas,
+      } = getNewTransactionGasParams();
       const fasterTxPayload = {
         data,
         gasLimit,
@@ -261,7 +267,7 @@ export default function SpeedUpAndCancelSheet() {
     data,
     dispatch,
     gasLimit,
-    getNewGasParams,
+    getNewTransactionGasParams,
     goBack,
     nonce,
     to,

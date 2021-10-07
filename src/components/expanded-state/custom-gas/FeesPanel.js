@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import React from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
@@ -45,26 +45,57 @@ const PanelColumn = styled(Column).attrs(() => ({
   justify: 'center',
 }))``;
 
+const MAX_GAS_FEE_VAR_AMOUNT = 1;
+const MAX_FEE_PRIORITY_FEE_VAR_AMOUNT = 0.5;
+
 export default function FeesPanel({
   currentGasTrend,
-  setMaxBaseFee,
   selectedGasFee,
-  setMinerTip,
+  updateGasFee,
 }) {
-  const maxFee = get(selectedGasFee, 'gasFee.maxFee.native.value.display', 0);
-  const currentBaseFee = get(
-    selectedGasFee,
-    'gasFeeParams.baseFeePerGas.display',
-    0
+  const { maxFee, currentBaseFee, maxBaseFee, minerTip } = useMemo(() => {
+    const maxFee = get(selectedGasFee, 'gasFee.maxFee.native.value.display', 0);
+    const currentBaseFee = get(
+      selectedGasFee,
+      'gasFeeParams.baseFeePerGas.display',
+      0
+    );
+    const maxBaseFee = parseInt(
+      get(selectedGasFee, 'gasFeeParams.maxFeePerGas.gwei', 0),
+      10
+    );
+    const minerTip = get(
+      selectedGasFee,
+      'gasFeeParams.maxPriorityFeePerGas.gwei',
+      0
+    );
+    return { currentBaseFee, maxBaseFee, maxFee, minerTip };
+  }, [selectedGasFee]);
+
+  const addMinerTip = useCallback(
+    () =>
+      updateGasFee({
+        priorityFeePerGas: MAX_FEE_PRIORITY_FEE_VAR_AMOUNT,
+      }),
+    [updateGasFee]
   );
-  const maxBaseFee = parseInt(
-    get(selectedGasFee, 'gasFeeParams.maxFeePerGas.gwei', 0),
-    10
+
+  const substMinerTip = useCallback(
+    () =>
+      updateGasFee({
+        priorityFeePerGas: -MAX_FEE_PRIORITY_FEE_VAR_AMOUNT,
+      }),
+    [updateGasFee]
   );
-  const minerTip = get(
-    selectedGasFee,
-    'gasFeeParams.maxPriorityFeePerGas.gwei',
-    0
+
+  const addMaxFee = useCallback(
+    () => updateGasFee({ feePerGas: MAX_GAS_FEE_VAR_AMOUNT }),
+    [updateGasFee]
+  );
+
+  const substMaxFee = useCallback(
+    () => updateGasFee({ feePerGas: -MAX_GAS_FEE_VAR_AMOUNT }),
+    [updateGasFee]
   );
 
   return (
@@ -93,7 +124,11 @@ export default function FeesPanel({
             <PanelLabel>Max Base Fee</PanelLabel>
           </PanelColumn>
           <PanelColumn>
-            <FeesGweiInput setValue={setMaxBaseFee} value={maxBaseFee} />
+            <FeesGweiInput
+              minusAction={substMaxFee}
+              plusAction={addMaxFee}
+              value={maxBaseFee}
+            />
           </PanelColumn>
         </PanelRow>
         {/* miner tip */}
@@ -102,7 +137,11 @@ export default function FeesPanel({
             <PanelLabel>Miner Tip</PanelLabel>
           </PanelColumn>
           <PanelColumn>
-            <FeesGweiInput setValue={setMinerTip} value={minerTip} />
+            <FeesGweiInput
+              minusAction={substMinerTip}
+              plusAction={addMinerTip}
+              value={minerTip}
+            />
           </PanelColumn>
         </PanelRow>
         {/* max transaction fee */}

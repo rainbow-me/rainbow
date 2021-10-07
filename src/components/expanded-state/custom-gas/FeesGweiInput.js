@@ -76,17 +76,17 @@ const GweiInputPill = ({ value }) => {
   );
 };
 
-export default function GweiInput({ value, setValue }) {
+export default function GweiInput({ value, plusAction, minusAction }) {
   return (
     <Row>
       <InputColumn justify="center">
-        <GweiStepButton setValue={setValue} type="minus" />
+        <GweiStepButton setValue={minusAction} type="minus" />
       </InputColumn>
       <InputColumn>
         <GweiInputPill value={value} />
       </InputColumn>
       <InputColumn justify="center">
-        <GweiStepButton setValue={setValue} type="plus" />
+        <GweiStepButton setValue={plusAction} type="plus" />
       </InputColumn>
     </Row>
   );

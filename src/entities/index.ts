@@ -14,6 +14,7 @@ export type {
   GasPricesAPIData,
   GasFeesBlockNativeData,
   GasFeeParam,
+  TransactionGasParams,
 } from './gas';
 export type Numberish = string | number;
 export { default as ProtocolTypeNames, ProtocolType } from './protocolTypes';
