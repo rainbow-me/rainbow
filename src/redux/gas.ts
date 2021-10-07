@@ -3,15 +3,15 @@ import { captureException } from '@sentry/react-native';
 import { get, isEmpty } from 'lodash';
 import { AppDispatch, AppGetState } from './store';
 import {
-  EstimatedGasFees,
   GasFee,
+  GasFeeParamsByVelocity,
   GasFeesBlockNativeData,
-  LegacyEstimatedGasFees,
   LegacyGasFee,
+  LegacyGasFeeParamsByVelocity,
   LegacySelectedGasFee,
-  LegacyTxFees,
+  LegacyTxFeesByVelocity,
   SelectedGasFee,
-  TxFees,
+  TxFeesByVelocity,
 } from '@rainbow-me/entities';
 import {
   blockNativeGetGasParams,
@@ -52,10 +52,10 @@ type Numberish = number | string;
 interface GasState {
   defaultGasLimit: number;
   gasLimit: number | null;
-  gasFees: EstimatedGasFees | LegacyEstimatedGasFees;
+  gasFees: GasFeeParamsByVelocity | LegacyGasFeeParamsByVelocity;
   isSufficientGas: Boolean | null;
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
-  txFees: TxFees | LegacyTxFees;
+  txFees: TxFeesByVelocity | LegacyTxFeesByVelocity;
   txNetwork: Network | null;
 }
 
@@ -107,8 +107,8 @@ const checkIsSufficientGas = (
 
 const getSelectedGasFee = (
   assets: any[],
-  gasFees: EstimatedGasFees | LegacyEstimatedGasFees,
-  txFees: TxFees | LegacyTxFees,
+  gasFees: GasFeeParamsByVelocity | LegacyGasFeeParamsByVelocity,
+  txFees: TxFeesByVelocity | LegacyTxFeesByVelocity,
   selectedGasPriceOption: string,
   network: Network
 ): {
@@ -238,7 +238,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
     return priceData;
   };
 
-  const getEIP1559GasParams = async (): Promise<EstimatedGasFees> => {
+  const getEIP1559GasParams = async (): Promise<GasFeeParamsByVelocity> => {
     const { data } = await blockNativeGetGasParams();
     return parseEIP1559GasData(data as GasFeesBlockNativeData);
   };

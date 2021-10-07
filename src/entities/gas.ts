@@ -33,14 +33,6 @@ export interface LegacyGasFeeParams {
   estimatedTime: { amount: number; display: string };
 }
 
-export interface EstimatedGasFees {
-  [key: string]: GasFeeParams;
-}
-
-export interface LegacyEstimatedGasFees {
-  [key: string]: LegacyGasFeeParams;
-}
-
 export interface LegacyGasFee {
   estimatedFee: Fee;
 }
@@ -49,11 +41,19 @@ export interface GasFee extends LegacyGasFee {
   maxFee: Fee;
 }
 
-export interface TxFees {
+export interface GasFeeParamsByVelocity {
+  [key: string]: GasFeeParams;
+}
+
+export interface LegacyGasFeeParamsByVelocity {
+  [key: string]: LegacyGasFeeParams;
+}
+
+export interface TxFeesByVelocity {
   [key: string]: GasFee;
 }
 
-export interface LegacyTxFees {
+export interface LegacyTxFeesByVelocity {
   [key: string]: LegacyGasFee;
 }
 
