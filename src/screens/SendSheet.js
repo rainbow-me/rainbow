@@ -55,6 +55,7 @@ import {
 } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import {
   chainAssets,
   ETH_ADDRESS,
@@ -216,6 +217,7 @@ export default function SendSheet(props) {
 
       const _isSufficientBalance =
         Number(_assetAmount) <= Number(maxInputBalance);
+
       setAmountDetails({
         assetAmount: _assetAmount,
         isSufficientBalance: _isSufficientBalance,
@@ -405,7 +407,6 @@ export default function SendSheet(props) {
 
       const _isSufficientBalance =
         Number(_assetAmount) <= Number(maxInputBalance);
-
       setAmountDetails({
         assetAmount: _assetAmount,
         isSufficientBalance: _isSufficientBalance,
@@ -486,7 +487,7 @@ export default function SendSheet(props) {
         ? updatedGasLimit
         : gasLimit;
 
-    logger.log('gasLimit', gasLimitToUse);
+    const gasParams = parseGasParamsForTransaction(selectedGasFee);
     const txDetails = {
       amount: amountDetails.assetAmount,
       asset: selected,
@@ -495,7 +496,7 @@ export default function SendSheet(props) {
       network: assetNetwork,
       nonce: null,
       to: toAddress,
-      ...selectedGasFee.gasFeeParams,
+      ...gasParams,
     };
 
     try {
@@ -603,7 +604,6 @@ export default function SendSheet(props) {
     if (network === networkTypes.polygon) {
       nativeToken = 'MATIC';
     }
-
     if (
       isEmpty(gasFeeParamsBySpeed) ||
       !selectedGasFee ||

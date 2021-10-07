@@ -60,7 +60,7 @@ export default function FeesPanel({
   const maxBaseFee = get(selectedGasFee, 'gasFeeParams.maxFeePerGas.gwei', 0);
   const minerTip = get(
     selectedGasFee,
-    'gasFeeParams.priorityFeePerGas.gwei',
+    'gasFeeParams.maxPriorityFeePerGas.gwei',
     0
   );
 

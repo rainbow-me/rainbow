@@ -169,7 +169,7 @@ const getBalanceAmount = (selectedGasFee, selected) => {
 
   if (selected?.address === ETH_ADDRESS) {
     if (!isEmpty(selectedGasFee)) {
-      const txFeeRaw = selectedGasFee?.txFee?.value?.amount;
+      const txFeeRaw = selectedGasFee?.gasFee?.estimatedFee?.value.amount;
       const txFeeAmount = fromWei(txFeeRaw);
       const remaining = subtract(amount, txFeeAmount);
       amount = greaterThan(remaining, 0) ? remaining : '0';

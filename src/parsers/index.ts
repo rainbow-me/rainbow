@@ -15,6 +15,7 @@ export {
   parseLegacyGasFeesBySpeed,
   gweiToWei,
   weiToGwei,
+  parseGasParamsForTransaction,
 } from './gas';
 export { parseNewTransaction } from './newTransaction';
 export { getRequestDisplayDetails } from './requests';

@@ -17,7 +17,9 @@ import {
   GasPricesAPIData,
   LegacyGasFeeParamsBySpeed,
   LegacyGasFeesBySpeed,
+  LegacySelectedGasFee,
   Numberish,
+  SelectedGasFee,
 } from '@rainbow-me/entities';
 
 type BigNumberish = number | string | BigNumber;
@@ -145,13 +147,13 @@ export const defaultGasParamsFormat = (
   timeWait: Numberish,
   baseFeePerGas: number,
   maxFeePerGas: number,
-  priorityFeePerGas: number
+  maxPriorityFeePerGas: number
 ) => {
   const timeAmount = multiply(timeWait, timeUnits.ms.minute);
   const baseFeePerGasWeiAmount = Number(multiply(baseFeePerGas, ethUnits.gwei));
   const maxFeePerGasWeiAmount = Number(multiply(maxFeePerGas, ethUnits.gwei));
   const priorityFeePerGasWeiAmount = Number(
-    multiply(priorityFeePerGas, ethUnits.gwei)
+    multiply(maxPriorityFeePerGas, ethUnits.gwei)
   );
   return {
     baseFeePerGas: {
@@ -168,12 +170,12 @@ export const defaultGasParamsFormat = (
       display: `${parseInt(maxFeePerGas.toString(), 10)} Gwei`,
       gwei: Number(maxFeePerGas.toFixed(2)),
     },
-    option,
-    priorityFeePerGas: {
+    maxPriorityFeePerGas: {
       amount: Math.round(priorityFeePerGasWeiAmount),
-      display: `${parseInt(priorityFeePerGas.toString(), 10)} Gwei`,
-      gwei: Number(priorityFeePerGas.toFixed(2)),
+      display: `${parseInt(maxPriorityFeePerGas.toString(), 10)} Gwei`,
+      gwei: Number(maxPriorityFeePerGas.toFixed(2)),
     },
+    option,
   };
 };
 
@@ -212,10 +214,10 @@ export const parseGasFeesBySpeed = (
 ): GasFeesBySpeed => {
   const gasFeesBySpeed = map(GasSpeedOrder, speed => {
     // using blocknative max fee for now
-    const { priorityFeePerGas, maxFeePerGas, baseFeePerGas } =
+    const { maxPriorityFeePerGas, maxFeePerGas, baseFeePerGas } =
       gasFeeParamsBySpeed?.[speed] || {};
 
-    const priorityFee = priorityFeePerGas?.amount || 0;
+    const priorityFee = maxPriorityFeePerGas?.amount || 0;
     const maxFeePerGasAmount = maxFeePerGas?.amount || 0;
     const baseFeePerGasAmount = baseFeePerGas?.amount || 0;
     const maxFee = getTxFee(
@@ -260,6 +262,24 @@ const getTxFee = (
         decimals: 18,
       }),
     },
+  };
+};
+
+export const parseGasParamsForTransaction = (
+  selectedGasFee: SelectedGasFee | LegacySelectedGasFee
+) => {
+  const legacyGasFeeParams = (selectedGasFee as LegacySelectedGasFee)
+    .gasFeeParams;
+  const gasPrice = legacyGasFeeParams?.gasPrice;
+  if (gasPrice) {
+    return {
+      gasPrice: gasPrice.amount,
+    };
+  }
+  const gasFeeParams = (selectedGasFee as SelectedGasFee).gasFeeParams;
+  return {
+    maxFeePerGas: gasFeeParams.maxFeePerGas.amount,
+    maxPriorityFeePerGas: gasFeeParams.maxPriorityFeePerGas.amount,
   };
 };
 

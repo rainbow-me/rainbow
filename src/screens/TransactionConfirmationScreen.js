@@ -81,6 +81,7 @@ import {
   signTypedDataMessage,
 } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
+import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
@@ -579,10 +580,11 @@ export default function TransactionConfirmationScreen() {
       logger.log('⛽ error estimating gas', error);
     }
 
+    const gasParams = parseGasParamsForTransaction(selectedGasFee);
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
     let txPayloadUpdated = {
       ...txPayload,
-      ...selectedGasFee.gasFeeParams,
+      ...gasParams,
     };
     if (calculatedGasLimit) {
       txPayloadUpdated.gasLimit = calculatedGasLimit;

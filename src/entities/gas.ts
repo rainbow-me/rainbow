@@ -22,7 +22,7 @@ export interface LegacySelectedGasFee {
 export interface GasFeeParams {
   baseFeePerGas: { amount: number; display: string; gwei: number };
   maxFeePerGas: { amount: number; display: string; gwei: number };
-  priorityFeePerGas: { amount: number; display: string; gwei: number };
+  maxPriorityFeePerGas: { amount: number; display: string; gwei: number };
   option: string;
   estimatedTime: { amount: number; display: string };
 }
