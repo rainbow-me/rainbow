@@ -117,7 +117,6 @@ const getSelectedGasFee = (
 } => {
   const selectedGasParams = gasFeeParamsBySpeed[selectedGasPriceOption];
   const selectedTxFee = gasFeesBySpeed[selectedGasPriceOption];
-
   const isSufficientGas = checkIsSufficientGas(assets, selectedTxFee, network);
   // this is going to be undefined on type 0 transactions
   const maxTxFee = get(selectedTxFee, 'maxTxFee');
@@ -238,16 +237,16 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
     return priceData;
   };
 
-  const getEIP1559GasParams = async (): Promise<GasFeeParamsBySpeed> => {
+  const getEIP1559GasParams = async () => {
     const { data } = await blockNativeGetGasParams();
-    return parseEIP1559GasData(data as GasFeesBlockNativeData);
+    const gasData = parseEIP1559GasData(data as GasFeesBlockNativeData);
+    return gasData;
   };
 
   const getGasPrices = (network: Network) =>
     new Promise(async (fetchResolve, fetchReject) => {
       try {
         const { gasFeeParamsBySpeed: existingGasFees } = getState().gas;
-
         const isLegacy = isEIP1559LegacyNetwork(network);
         if (isLegacy) {
           let adjustedGasFees;

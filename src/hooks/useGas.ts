@@ -19,9 +19,16 @@ export default function useGas() {
 
   const gasData = useSelector(
     ({
-      gas: { gasFeeParamsBySpeed, gasLimit, isSufficientGas, selectedGasFee },
+      gas: {
+        gasFeeParamsBySpeed,
+        gasFeesBySpeed,
+        gasLimit,
+        isSufficientGas,
+        selectedGasFee,
+      },
     }: AppState) => ({
       gasFeeParamsBySpeed,
+      gasFeesBySpeed,
       gasLimit,
       isSufficientGas,
       selectedGasFee,

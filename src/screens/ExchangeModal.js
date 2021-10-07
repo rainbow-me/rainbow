@@ -134,20 +134,20 @@ export default function ExchangeModal({
     : ethUnits.basic_swap;
 
   const {
-    legacyGasFees,
     selectedGasFee,
+    gasFeesBySpeed,
+    gasFeeParamsBySpeed,
     startPollingGasPrices,
     stopPollingGasPrices,
     updateDefaultGasLimit,
     updateTxFee,
   } = useGas();
-
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const { nativeCurrency, network } = useAccountSettings();
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
-  const prevGasPrices = usePrevious(legacyGasFees);
+  const prevGasPrices = usePrevious(gasFeesBySpeed);
 
   useAndroidBackHandler(() => {
     navigate(Routes.WALLET_SCREEN);
@@ -271,17 +271,17 @@ export default function ExchangeModal({
 
   // Set default gas limit
   useEffect(() => {
-    if (isEmpty(prevGasPrices) && !isEmpty(legacyGasFees)) {
+    if (isEmpty(prevGasPrices) && !isEmpty(gasFeeParamsBySpeed)) {
       updateTxFee(defaultGasLimit);
     }
-  }, [legacyGasFees, defaultGasLimit, updateTxFee, prevGasPrices]);
+  }, [gasFeeParamsBySpeed, defaultGasLimit, updateTxFee, prevGasPrices]);
 
   // Update gas limit
   useEffect(() => {
-    if (!isEmpty(legacyGasFees)) {
+    if (isEmpty(gasFeeParamsBySpeed)) {
       updateGasLimit();
     }
-  }, [legacyGasFees, updateGasLimit]);
+  }, [gasFeeParamsBySpeed, gasFeesBySpeed, updateGasLimit]);
 
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
@@ -437,7 +437,7 @@ export default function ExchangeModal({
     outputPriceValue,
     priceImpactPercentDisplay,
     priceOfEther,
-    selectedGasFee?.txFee?.native?.value?.amount,
+    selectedGasFee,
     setParams,
     tradeDetails,
     type,
