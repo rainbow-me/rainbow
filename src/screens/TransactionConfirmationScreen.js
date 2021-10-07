@@ -276,7 +276,7 @@ export default function TransactionConfirmationScreen() {
   useEffect(() => {
     const { txFee } = selectedGasFee;
     if (!txFee || !nativeAsset || !network || isSufficientGasChecked) return;
-    updateGasFeeOption(selectedGasFeeOption, network, [nativeAsset]);
+    updateGasFeeOption(selectedGasFeeOption, [nativeAsset]);
     setIsSufficientGasChecked(true);
   }, [
     isSufficientGas,
@@ -460,8 +460,8 @@ export default function TransactionConfirmationScreen() {
       logger.log('error estimating gas', error);
     }
     logger.log('Setting gas limit to', convertHexToString(gas));
-    updateTxFee(gas, null, network);
-  }, [network, params, provider, updateTxFee]);
+    updateTxFee(gas);
+  }, [params, provider, updateTxFee]);
 
   useEffect(() => {
     if (

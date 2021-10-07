@@ -336,7 +336,6 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
 
 export const gasUpdateGasFeeOption = (
   newGasPriceOption: string,
-  network: Network,
   assetsOverride: any[]
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const { gasFeeParamsBySpeed, gasFeesBySpeed, txNetwork } = getState().gas;
@@ -385,19 +384,16 @@ export const gasUpdateCustomValues = (
 };
 
 export const gasUpdateDefaultGasLimit = (
-  network: Network,
   defaultGasLimit = ethUnits.basic_tx
-) => (dispatch: AppDispatch, getState: AppGetState) => {
-  const { txNetwork } = getState().gas;
+) => (dispatch: AppDispatch) => {
   dispatch({
     payload: defaultGasLimit,
     type: GAS_UPDATE_DEFAULT_GAS_LIMIT,
   });
-  dispatch(gasUpdateTxFee(txNetwork, defaultGasLimit));
+  dispatch(gasUpdateTxFee(defaultGasLimit));
 };
 
 export const gasUpdateTxFee = (
-  network: Network,
   gasLimit: number,
   overrideGasOption?: string
 ) => (dispatch: AppDispatch, getState: AppGetState) => {

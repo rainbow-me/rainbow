@@ -67,6 +67,10 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
   const [footerHeight, setFooterHeight] = useHeight(FOOTER_MIN_HEIGHT);
   const [slippageMessageHeight] = useHeight();
   const [contentHeight] = useHeight(FOOTER_CONTENT_MIN_HEIGHT);
+  const contentScroll = useSharedValue(0);
+
+  const [currentGasTrend] = useState('stable');
+  const { selectedGasFee } = useGas();
 
   useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
   useAndroidDisableGesturesOnFocus();
@@ -92,8 +96,6 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
         (sheetHeightWithoutKeyboard + keyboardOffset)
       : 0;
 
-  const contentScroll = useSharedValue(0);
-
   useEffect(() => {
     if (isKeyboardVisible) {
       contentScroll.value = withSpring(
@@ -113,9 +115,6 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
     sheetHeightWithoutKeyboard,
     setParams,
   ]);
-
-  const [currentGasTrend] = useState('stable');
-  const { selectedGasFee } = useGas();
 
   return (
     <SheetKeyboardAnimation

@@ -294,7 +294,7 @@ export default function SpeedUpAndCancelSheet() {
   // Update gas limit
   useEffect(() => {
     if (!isEmpty(gasFeeParamsBySpeed) && gasLimit) {
-      updateTxFee(gasLimit, null, currentNetwork);
+      updateTxFee(gasLimit);
       // Always default to fast
       updateGasFeeOption('fast');
     }

@@ -476,7 +476,7 @@ export default function SendSheet(props) {
         );
 
         if (!lessThan(updatedGasLimit, gasLimit)) {
-          updateTxFee(updatedGasLimit, null, transactionNetwork);
+          updateTxFee(updatedGasLimit);
         }
         // eslint-disable-next-line no-empty
       } catch (e) {}
@@ -498,8 +498,6 @@ export default function SendSheet(props) {
       to: toAddress,
       ...gasParams,
     };
-
-    console.log('👹👹👹👹👹👹 SEND', gasParams);
 
     try {
       const signableTransaction = await createSignableTransaction(txDetails);
@@ -701,8 +699,8 @@ export default function SendSheet(props) {
   }, []);
 
   useEffect(() => {
-    updateDefaultGasLimit(transactionNetwork);
-  }, [updateDefaultGasLimit, network, selected.type, transactionNetwork]);
+    updateDefaultGasLimit();
+  }, [updateDefaultGasLimit, network, selected.type]);
 
   useEffect(() => {
     if (
@@ -765,10 +763,10 @@ export default function SendSheet(props) {
         currentNetwork
       )
         .then(gasLimit => {
-          updateTxFee(gasLimit, null, transactionNetwork);
+          updateTxFee(gasLimit);
         })
         .catch(() => {
-          updateTxFee(null, null, transactionNetwork);
+          updateTxFee();
         });
     }
   }, [

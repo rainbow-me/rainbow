@@ -247,7 +247,7 @@ const GasSpeedButton = ({
     async price => {
       try {
         await updateCustomValues(price, currentNetwork);
-        updateGasFeeOption(CUSTOM, currentNetwork);
+        updateGasFeeOption(CUSTOM);
       } catch (e) {
         setEstimatedTimeValue(0);
         setEstimatedTimeUnit('min');

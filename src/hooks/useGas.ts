@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/store';
-import useAccountSettings from './useAccountSettings';
 import usePrevious from './usePrevious';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
@@ -15,7 +14,6 @@ import {
 
 export default function useGas() {
   const dispatch = useDispatch();
-  const { network: currentNetwork } = useAccountSettings();
 
   const gasData = useSelector(
     ({
@@ -49,22 +47,21 @@ export default function useGas() {
   );
 
   const updateDefaultGasLimit = useCallback(
-    (network, defaultGasLimit) =>
-      dispatch(gasUpdateDefaultGasLimit(network, defaultGasLimit)),
+    defaultGasLimit => dispatch(gasUpdateDefaultGasLimit(defaultGasLimit)),
     [dispatch]
   );
 
   const updateGasFeeOption = useCallback(
-    (option, network = currentNetwork, assetsOverride = null) =>
-      dispatch(gasUpdateGasFeeOption(option, network, assetsOverride)),
-    [currentNetwork, dispatch]
+    (option, assetsOverride = null) =>
+      dispatch(gasUpdateGasFeeOption(option, assetsOverride)),
+    [dispatch]
   );
 
   const updateTxFee = useCallback(
-    (newGasLimit, overrideGasOption, network = currentNetwork) => {
-      dispatch(gasUpdateTxFee(network, newGasLimit, overrideGasOption));
+    (newGasLimit, overrideGasOption) => {
+      dispatch(gasUpdateTxFee(newGasLimit, overrideGasOption));
     },
-    [currentNetwork, dispatch]
+    [dispatch]
   );
   const updateCustomValues = useCallback(
     price => dispatch(gasUpdateCustomValues(price)),
