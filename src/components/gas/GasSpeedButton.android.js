@@ -8,9 +8,7 @@ import React, {
 } from 'react';
 import { Keyboard, LayoutAnimation, View } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import styled from 'styled-components';
-import { Alert } from '../alerts';
 import {
   ButtonPressAnimation,
   ScaleButtonZoomableAndroid,
@@ -23,13 +21,13 @@ import { isL2Network } from '@rainbow-me/handlers/web3';
 import ExchangeModalTypes from '@rainbow-me/helpers/exchangeModalTypes';
 import { useAccountSettings, useGas } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
+import { weiToGwei } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { darkModeThemeColors } from '@rainbow-me/styles/colors';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
-const { GasSpeedOrder, CUSTOM, FAST, NORMAL, SLOW } = gasUtils;
+const { GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
 
 const Container = styled(Row).attrs({
   justify: 'space-between',
@@ -134,7 +132,7 @@ let listener;
 Keyboard.addListener('keyboardDidHide', () => listener?.());
 
 const GasSpeedButton = ({
-  dontBlur,
+  // dontBlur,
   horizontalPadding = 19,
   onCustomGasBlur,
   onCustomGasFocus,
@@ -143,7 +141,7 @@ const GasSpeedButton = ({
   theme = 'dark',
   topPadding = 15,
   options = null,
-  minGasPrice = null,
+  minMaxPriorityFeePerGas = null,
   currentNetwork,
 }) => {
   const { colors } = useTheme();
@@ -155,11 +153,10 @@ const GasSpeedButton = ({
     updateGasFeeOption,
     selectedGasFee,
     selectedGasFeeOption,
-    gasFeesBySpeed,
   } = useGas();
 
   const gasPricesAvailable = useMemo(() => {
-    if (!options || !minGasPrice) {
+    if (!options || !minMaxPriorityFeePerGas) {
       return gasFeeParamsBySpeed;
     }
 
@@ -168,9 +165,8 @@ const GasSpeedButton = ({
       filteredGasPrices[speed] = gasFeeParamsBySpeed[speed];
     });
     return filteredGasPrices;
-  }, [gasFeeParamsBySpeed, minGasPrice, options]);
+  }, [gasFeeParamsBySpeed, minMaxPriorityFeePerGas, options]);
 
-  const gasPrice = get(selectedGasFee, 'txFee.native.value.display');
   const customGasPriceTimeEstimateHandler = useRef(null);
   useEffect(() => {
     listener = () => {
@@ -182,7 +178,7 @@ const GasSpeedButton = ({
     };
   }, []);
 
-  const [customGasPriceInput, setCustomGasPriceInput] = useState(0);
+  const [customGasPriceInput] = useState(0);
   const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
   const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
   const [inputFocused, setInputFocused] = useState(false);
@@ -191,10 +187,10 @@ const GasSpeedButton = ({
   const defaultCustomGasPrice = Math.round(
     weiToGwei(gasPricesAvailable?.fast?.value?.amount)
   );
-  const defaultCustomGasPriceNative = get(
-    gasFeesBySpeed?.fast,
-    'txFee.native.value.display'
-  );
+  // const defaultCustomGasPriceNative = get(
+  //   gasFeesBySpeed?.fast,
+  //   'txFee.native.value.display'
+  // );
   const defaultCustomGasConfirmationTime =
     gasPricesAvailable?.fast?.estimatedTime?.display;
 
@@ -202,16 +198,23 @@ const GasSpeedButton = ({
   // we need to trim the native currency symbol
   // (and leave the number only!)
   // which gets added later in the formatGasPrice function
+  const gasPrice = get(
+    selectedGasFee,
+    `gasFee.estimatedFee.native.value.display`
+  );
+
   const price = (isNil(gasPrice) ? '0.00' : gasPrice)
     .replace(',', '') // In case gas price is > 1k!
     .replace(nativeCurrencySymbol, '')
     .trim();
 
+  const isL2 = useMemo(() => isL2Network(currentNetwork), [currentNetwork]);
+
   const formatGasPrice = useCallback(
     animatedValue => {
       // L2's are very cheap,
       // so let's default to the last 2 significant decimals
-      if (isL2Network(currentNetwork)) {
+      if (isL2) {
         const numAnimatedValue = Number.parseFloat(animatedValue);
         if (numAnimatedValue < 0.01) {
           return `${nativeCurrencySymbol}${numAnimatedValue.toPrecision(2)}`;
@@ -226,7 +229,7 @@ const GasSpeedButton = ({
         }`;
       }
     },
-    [currentNetwork, nativeCurrencySymbol, nativeCurrency]
+    [isL2, nativeCurrencySymbol, nativeCurrency]
   );
 
   useEffect(() => {
@@ -264,9 +267,9 @@ const GasSpeedButton = ({
     }, 1000);
   }, [calculateCustomPriceEstimatedTime, customGasPriceInput]);
 
-  const handleCustomGasChange = useCallback(async price => {
-    setCustomGasPriceInput(price);
-  }, []);
+  // const handleCustomGasChange = useCallback(async price => {
+  //   setCustomGasPriceInput(price);
+  // }, []);
 
   const renderGasPriceText = useCallback(
     animatedNumber => (
@@ -281,13 +284,13 @@ const GasSpeedButton = ({
         weight="bold"
       >
         {isEmpty(gasPricesAvailable) ||
-        isEmpty(gasFeesBySpeed) ||
+        isEmpty(gasFeeParamsBySpeed) ||
         typeof isSufficientGas === 'undefined'
           ? 'Loading...'
           : animatedNumber}
       </Text>
     ),
-    [colors, gasPricesAvailable, isSufficientGas, theme, gasFeesBySpeed]
+    [colors, gasFeeParamsBySpeed, gasPricesAvailable, isSufficientGas, theme]
   );
 
   const handlePress = useCallback(() => {
@@ -314,7 +317,7 @@ const GasSpeedButton = ({
 
     if (selectedGasFeeOption === CUSTOM) {
       if (!customGasPriceInput) {
-        return `${defaultCustomGasPriceNative} ~ ${defaultCustomGasConfirmationTime}`;
+        return `${'--'} ~ ${defaultCustomGasConfirmationTime}`;
       } else if (gasPricesAvailable[CUSTOM]?.gasPrice) {
         const priceInWei = Number(gasPricesAvailable[CUSTOM].gasPrice.amount);
         const minGasPriceSlow = gasPricesAvailable[SLOW]
@@ -344,7 +347,6 @@ const GasSpeedButton = ({
   }, [
     customGasPriceInput,
     defaultCustomGasConfirmationTime,
-    defaultCustomGasPriceNative,
     estimatedTimeUnit,
     estimatedTimeValue,
     gasPrice,
@@ -373,106 +375,106 @@ const GasSpeedButton = ({
     onCustomGasBlur?.();
   }, [onCustomGasBlur]);
 
-  const handleInputButtonManager = useCallback(() => {
-    const complete = () => {
-      if (inputFocused) {
-        if (dontBlur) {
-          handleCustomGasBlur();
-        } else {
-          inputRef.current?.blur();
-        }
-      } else {
-        inputRef.current?.focus();
-      }
-    };
+  // const handleInputButtonManager = useCallback(() => {
+  //   const complete = () => {
+  //     if (inputFocused) {
+  //       if (dontBlur) {
+  //         handleCustomGasBlur();
+  //       } else {
+  //         inputRef.current?.blur();
+  //       }
+  //     } else {
+  //       inputRef.current?.focus();
+  //     }
+  //   };
 
-    if (customGasPriceInput === '0') {
-      Alert({
-        buttons: [
-          {
-            onPress: () => inputRef.current?.focus(),
-            text: 'OK',
-          },
-        ],
-        message: 'You need to enter a valid amount',
-        title: 'Invalid Gas Price',
-      });
-      return;
-    }
+  //   if (customGasPriceInput === '0') {
+  //     Alert({
+  //       buttons: [
+  //         {
+  //           onPress: () => inputRef.current?.focus(),
+  //           text: 'OK',
+  //         },
+  //       ],
+  //       message: 'You need to enter a valid amount',
+  //       title: 'Invalid Gas Price',
+  //     });
+  //     return;
+  //   }
 
-    if (!customGasPriceInput || !inputFocused) {
-      complete();
-      ReactNativeHapticFeedback.trigger('impactMedium');
-      return;
-    }
+  //   if (!customGasPriceInput || !inputFocused) {
+  //     complete();
+  //     ReactNativeHapticFeedback.trigger('impactMedium');
+  //     return;
+  //   }
 
-    const minKey = options?.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
+  //   const minKey = options?.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
 
-    const minGasPriceAllowed = Number(
-      gasPricesAvailable?.[minKey]?.value?.amount || 0
-    );
+  //   const minGasPriceAllowed = Number(
+  //     gasPricesAvailable?.[minKey]?.value?.amount || 0
+  //   );
 
-    // The minimum gas for the tx is the higher amount between:
-    // - 10% more than the submitted gas of the previous tx (If speeding up / cancelling)
-    // - The new "normal" gas price from our third party API
+  //   // The minimum gas for the tx is the higher amount between:
+  //   // - 10% more than the submitted gas of the previous tx (If speeding up / cancelling)
+  //   // - The new "normal" gas price from our third party API
 
-    const minimumGasAcceptedForTx = minGasPrice
-      ? Math.max(minGasPrice, minGasPriceAllowed)
-      : minGasPriceAllowed;
+  //   const minimumGasAcceptedForTx = minGasPrice
+  //     ? Math.max(minGasPrice, minGasPriceAllowed)
+  //     : minGasPriceAllowed;
 
-    if (minGasPrice && Number(customGasPriceInput) < minimumGasAcceptedForTx) {
-      Alert({
-        buttons: [
-          {
-            onPress: () => inputRef.current?.focus(),
-            text: 'OK',
-          },
-        ],
-        message: `The minimum gas price valid allowed is ${minimumGasAcceptedForTx} GWEI`,
-        title: 'Gas Price Too Low',
-      });
-      return;
-    }
+  //   if (minGasPrice && Number(customGasPriceInput) < minimumGasAcceptedForTx) {
+  //     Alert({
+  //       buttons: [
+  //         {
+  //           onPress: () => inputRef.current?.focus(),
+  //           text: 'OK',
+  //         },
+  //       ],
+  //       message: `The minimum gas price valid allowed is ${minimumGasAcceptedForTx} GWEI`,
+  //       title: 'Gas Price Too Low',
+  //     });
+  //     return;
+  //   }
 
-    const priceInWei = gweiToWei(customGasPriceInput);
-    const maxGasPriceFast = Number(
-      gasPricesAvailable?.fast?.value?.amount || 0
-    );
-    let tooLow = priceInWei < minGasPriceAllowed;
-    let tooHigh = priceInWei > maxGasPriceFast * 2.5;
+  //   const priceInWei = gweiToWei(customGasPriceInput);
+  //   const maxGasPriceFast = Number(
+  //     gasPricesAvailable?.fast?.value?.amount || 0
+  //   );
+  //   let tooLow = priceInWei < minGasPriceAllowed;
+  //   let tooHigh = priceInWei > maxGasPriceFast * 2.5;
 
-    if (tooLow || tooHigh) {
-      Alert({
-        buttons: [
-          {
-            onPress: complete,
-            text: 'Proceed Anyway',
-          },
-          {
-            onPress: () => inputRef.current?.focus(),
-            style: 'cancel',
-            text: 'Edit Gas Price',
-          },
-        ],
-        message: tooLow
-          ? 'Setting a higher gas price is recommended to avoid issues.'
-          : 'Double check that you entered the correct amount—you’re likely paying more than you need to!',
-        title: tooLow
-          ? 'Low gas price–transaction might get stuck!'
-          : 'High gas price!',
-      });
-    } else {
-      complete();
-    }
-  }, [
-    customGasPriceInput,
-    inputFocused,
-    options,
-    gasPricesAvailable,
-    minGasPrice,
-    dontBlur,
-    handleCustomGasBlur,
-  ]);
+  //   if (tooLow || tooHigh) {
+  //     Alert({
+  //       buttons: [
+  //         {
+  //           onPress: complete,
+  //           text: 'Proceed Anyway',
+  //         },
+  //         {
+  //           onPress: () => inputRef.current?.focus(),
+  //           style: 'cancel',
+  //           text: 'Edit Gas Price',
+  //         },
+  //       ],
+  //       message: tooLow
+  //         ? 'Setting a higher gas price is recommended to avoid issues.'
+  //         : 'Double check that you entered the correct amount—you’re likely paying more than you need to!',
+  //       title: tooLow
+  //         ? 'Low gas price–transaction might get stuck!'
+  //         : 'High gas price!',
+  //     });
+  //   } else {
+  //     complete();
+  //   }
+  // }, [
+  //   customGasPriceInput,
+  //   inputFocused,
+  //   options,
+  //   gasPricesAvailable,
+  //   minGasPrice,
+  //   dontBlur,
+  //   handleCustomGasBlur,
+  // ]);
 
   const focusOnInput = useCallback(() => inputRef.current?.focus(), []);
   const isCustom = selectedGasFeeOption === CUSTOM ? true : false;
@@ -514,9 +516,9 @@ const GasSpeedButton = ({
                 <GasInput
                   gasTheme={theme}
                   onBlur={handleCustomGasBlur}
-                  onChangeText={handleCustomGasChange}
+                  // onChangeText={handleCustomGasChange}
                   onFocus={handleCustomGasFocus}
-                  onSubmitEditing={handleInputButtonManager} // see PR #1385
+                  // onSubmitEditing={handleInputButtonManager} // see PR #1385
                   placeholder={`${defaultCustomGasPrice} `}
                   ref={inputRef}
                   value={customGasPriceInput}
@@ -570,7 +572,7 @@ const GasSpeedButton = ({
             </ButtonPressAnimation>
           ) : (
             <LittleBorderlessButton
-              onPress={handleInputButtonManager}
+              // onPress={handleInputButtonManager}
               testID="custom-gas-edit-button"
             >
               {inputFocused
