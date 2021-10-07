@@ -13,6 +13,7 @@ import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
+import { ChainBadge } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
@@ -47,6 +48,15 @@ const CustomGasButton = styled(ButtonPressAnimation).attrs({
   border: 2px solid rgba(224, 232, 255, 0.15);
   border-radius: 15px;
   ${padding(3, 5)};
+  ${margin(0, 0, 0, 8)}
+  )
+`;
+
+const ChainBadgeContainer = styled.View.attrs({
+  hapticType: 'impactHeavy',
+  scaleTo: 0.9,
+})`
+  ${padding(3, 0)};
   ${margin(0, 0, 0, 8)}
   )
 `;
@@ -155,11 +165,13 @@ const GasSpeedButton = ({
     .replace(nativeCurrencySymbol, '')
     .trim();
 
+  const isL2 = useMemo(() => isL2Network(currentNetwork), [currentNetwork]);
+
   const formatGasPrice = useCallback(
     animatedValue => {
       // L2's are very cheap,
       // so let's default to the last 2 significant decimals
-      if (isL2Network(currentNetwork)) {
+      if (isL2) {
         const numAnimatedValue = Number.parseFloat(animatedValue);
         if (numAnimatedValue < 0.01) {
           return `${nativeCurrencySymbol}${numAnimatedValue.toPrecision(2)}`;
@@ -174,7 +186,7 @@ const GasSpeedButton = ({
         }`;
       }
     },
-    [currentNetwork, nativeCurrencySymbol, nativeCurrency]
+    [isL2, nativeCurrencySymbol, nativeCurrency]
   );
 
   useEffect(() => {
@@ -568,8 +580,15 @@ const GasSpeedButton = ({
                   />
                 </ContextMenuButton>
               </Column>
-              {!hideDropdown && (
-                <Column justify="center">
+              <Column justify="center">
+                {isL2 ? (
+                  <ChainBadgeContainer>
+                    <ChainBadge
+                      assetType={currentNetwork}
+                      position="relative"
+                    />
+                  </ChainBadgeContainer>
+                ) : (
                   <CustomGasButton onPress={openCustomGasSheet}>
                     <Symbol
                       color={
@@ -581,8 +600,8 @@ const GasSpeedButton = ({
                       􀌆
                     </Symbol>
                   </CustomGasButton>
-                </Column>
-              )}
+                )}
+              </Column>
             </Row>
           )}
         </Column>
