@@ -183,7 +183,7 @@ export const defaultGasParamsFormat = (
  * @param {Object} prices
  * @param {Number} gasLimit
  */
-export const parseLegacyFees = (
+export const parseLegacyGasFeesBySpeed = (
   legacyGasFees: LegacyGasFeeParamsBySpeed,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
@@ -204,7 +204,7 @@ export const parseLegacyFees = (
   return zipObject(GasSpeedOrder, gasFeesBySpeed);
 };
 
-export const parseTxFees = (
+export const parseGasFeesBySpeed = (
   gasFeeParamsBySpeed: GasFeeParamsBySpeed,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,

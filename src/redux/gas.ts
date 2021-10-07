@@ -29,9 +29,9 @@ import {
   defaultGasPriceFormat,
   getFallbackGasPrices,
   parseEIP1559GasData,
+  parseGasFeesBySpeed,
   parseGasPrices,
-  parseLegacyFees,
-  parseTxFees,
+  parseLegacyGasFeesBySpeed,
   weiToGwei,
 } from '@rainbow-me/parsers';
 import {
@@ -146,7 +146,7 @@ const { GAS_PRICE_SOURCES } = gasUtils;
 //   const { nativeCurrency } = getState().settings;
 //   const fallbackGasPrices = getFallbackGasPrices();
 //   const ethPriceUnit = ethereumUtils.getEthPriceUnit();
-//   const gasFeesBySpeed = parseLegacyFees(
+//   const gasFeesBySpeed = parseLegacyGasFeesBySpeed(
 //     fallbackGasPrices,
 //     ethPriceUnit,
 //     defaultGasLimit,
@@ -423,11 +423,13 @@ export const gasUpdateTxFee = (
       : ethereumUtils.getMaticPriceUnit();
 
   const isLegacyNetwork = isEIP1559LegacyNetwork(txNetwork);
-  const parseFees = isLegacyNetwork ? parseLegacyFees : parseTxFees;
+  const parseGasFees = isLegacyNetwork
+    ? parseLegacyGasFeesBySpeed
+    : parseGasFeesBySpeed;
 
   if (isEmpty(gasFeeParamsBySpeed)) return;
 
-  const gasFeesBySpeed = parseFees(
+  const gasFeesBySpeed = parseGasFees(
     gasFeeParamsBySpeed,
     nativeTokenPriceUnit,
     _gasLimit,
