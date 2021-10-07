@@ -111,8 +111,8 @@ export default function SendSheet(props) {
     isSufficientGas,
     prevSelectedGasPrice,
     selectedGasFee,
-    startPollingGasPrices,
-    stopPollingGasPrices,
+    startPollingGasFees,
+    stopPollingGasFees,
     updateDefaultGasLimit,
     updateTxFee,
   } = useGas();
@@ -287,13 +287,13 @@ export default function SendSheet(props) {
     // belongs to
     if (prevNetwork !== currentNetwork) {
       InteractionManager.runAfterInteractions(() => {
-        startPollingGasPrices(transactionNetwork);
+        startPollingGasFees(transactionNetwork);
       });
     }
   }, [
     currentNetwork,
     prevNetwork,
-    startPollingGasPrices,
+    startPollingGasFees,
     selected.type,
     network,
     transactionNetwork,
@@ -303,10 +303,10 @@ export default function SendSheet(props) {
   useEffect(() => {
     return () => {
       InteractionManager.runAfterInteractions(() => {
-        stopPollingGasPrices();
+        stopPollingGasFees();
       });
     };
-  }, [stopPollingGasPrices]);
+  }, [stopPollingGasFees]);
 
   // Recalculate balance when gas price changes
   useEffect(() => {

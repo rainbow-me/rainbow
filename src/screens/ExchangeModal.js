@@ -137,8 +137,8 @@ export default function ExchangeModal({
     selectedGasFee,
     gasFeesBySpeed,
     gasFeeParamsBySpeed,
-    startPollingGasPrices,
-    stopPollingGasPrices,
+    startPollingGasFees,
+    stopPollingGasFees,
     updateDefaultGasLimit,
     updateTxFee,
   } = useGas();
@@ -286,18 +286,18 @@ export default function ExchangeModal({
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
     updateDefaultGasLimit(network, defaultGasLimit);
-    startPollingGasPrices();
+    startPollingGasFees();
     initWeb3Listener();
     return () => {
-      stopPollingGasPrices();
+      stopPollingGasFees();
       stopWeb3Listener();
     };
   }, [
     defaultGasLimit,
     network,
     initWeb3Listener,
-    startPollingGasPrices,
-    stopPollingGasPrices,
+    startPollingGasFees,
+    stopPollingGasFees,
     stopWeb3Listener,
     updateDefaultGasLimit,
   ]);

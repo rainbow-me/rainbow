@@ -123,8 +123,8 @@ export default function SpeedUpAndCancelSheet() {
     legacyGasFees,
     updateGasPriceOption,
     selectedGasFee,
-    startPollingGasPrices,
-    stopPollingGasPrices,
+    startPollingGasFees,
+    stopPollingGasFees,
     updateTxFee,
   } = useGas();
   const calculatingGasLimit = useRef(false);
@@ -252,7 +252,7 @@ export default function SpeedUpAndCancelSheet() {
   // Set the provider
   useEffect(() => {
     if (currentNetwork) {
-      startPollingGasPrices(currentNetwork);
+      startPollingGasFees(currentNetwork);
       const updateProvider = async () => {
         const provider = await getProviderForNetwork(currentNetwork);
         setCurrentProvider(provider);
@@ -261,10 +261,10 @@ export default function SpeedUpAndCancelSheet() {
       updateProvider();
 
       return () => {
-        stopPollingGasPrices();
+        stopPollingGasFees();
       };
     }
-  }, [currentNetwork, startPollingGasPrices, stopPollingGasPrices]);
+  }, [currentNetwork, startPollingGasFees, stopPollingGasFees]);
 
   // Update gas limit
   useEffect(() => {

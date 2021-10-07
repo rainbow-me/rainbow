@@ -265,8 +265,8 @@ export default function TransactionConfirmationScreen() {
     gasLimit,
     legacyGasFees,
     isSufficientGas,
-    startPollingGasPrices,
-    stopPollingGasPrices,
+    startPollingGasFees,
+    stopPollingGasFees,
     updateGasPriceOption,
     updateTxFee,
     selectedGasFee,
@@ -342,7 +342,7 @@ export default function TransactionConfirmationScreen() {
     InteractionManager.runAfterInteractions(() => {
       if (network) {
         if (!isMessageRequest) {
-          startPollingGasPrices(network);
+          startPollingGasFees(network);
           fetchMethodName(params[0].data);
         } else {
           setMethodName(lang.t('wallet.message_signing.request'));
@@ -358,14 +358,14 @@ export default function TransactionConfirmationScreen() {
     network,
     openAutomatically,
     params,
-    startPollingGasPrices,
+    startPollingGasFees,
   ]);
 
   const closeScreen = useCallback(
     canceled => {
       goBack();
       if (!isMessageRequest) {
-        stopPollingGasPrices();
+        stopPollingGasFees();
       }
       if (pendingRedirect) {
         InteractionManager.runAfterInteractions(() => {
@@ -382,7 +382,7 @@ export default function TransactionConfirmationScreen() {
       goBack,
       isMessageRequest,
       pendingRedirect,
-      stopPollingGasPrices,
+      stopPollingGasFees,
       method,
       dappScheme,
       dispatch,
