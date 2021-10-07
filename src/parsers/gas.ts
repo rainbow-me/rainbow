@@ -11,6 +11,7 @@ import ethUnits from '../references/ethereum-units.json';
 import timeUnits from '../references/time-units.json';
 import { gasUtils } from '../utils';
 import {
+  GasFeeParam,
   GasFeeParamsBySpeed,
   GasFeesBlockNativeData,
   GasFeesBySpeed,
@@ -142,39 +143,35 @@ export const defaultGasPriceFormat = (
   };
 };
 
+export const parseGasFeeParam = (weiAmount: number): GasFeeParam => {
+  return {
+    amount: Math.round(weiAmount),
+    display: `${parseInt(weiAmount.toString(), 10)} Gwei`,
+    gwei: Number(weiAmount.toFixed(2)),
+  };
+};
+
 export const defaultGasParamsFormat = (
   option: string,
   timeWait: Numberish,
-  baseFeePerGas: number,
-  maxFeePerGas: number,
-  maxPriorityFeePerGas: number
+  gweiBaseFeePerGas: number,
+  gweiMaxFeePerGas: number,
+  gweiMaxPriorityFeePerGas: number
 ) => {
-  const timeAmount = multiply(timeWait, timeUnits.ms.minute);
-  const baseFeePerGasWeiAmount = Number(multiply(baseFeePerGas, ethUnits.gwei));
-  const maxFeePerGasWeiAmount = Number(multiply(maxFeePerGas, ethUnits.gwei));
-  const priorityFeePerGasWeiAmount = Number(
-    multiply(maxPriorityFeePerGas, ethUnits.gwei)
+  const baseFeePerGas = Number(multiply(gweiBaseFeePerGas, ethUnits.gwei));
+  const maxFeePerGas = Number(multiply(gweiMaxFeePerGas, ethUnits.gwei));
+  const maxPriorityFeePerGas = Number(
+    multiply(gweiMaxPriorityFeePerGas, ethUnits.gwei)
   );
+  const timeAmount = multiply(timeWait, timeUnits.ms.minute);
   return {
-    baseFeePerGas: {
-      amount: Math.round(baseFeePerGasWeiAmount),
-      display: `${parseInt(baseFeePerGas.toString(), 10)} Gwei`,
-      gwei: Number(baseFeePerGas.toFixed(2)),
-    },
+    baseFeePerGas: parseGasFeeParam(baseFeePerGas),
     estimatedTime: {
       amount: Number(timeAmount),
       display: getMinimalTimeUnitStringForMs(timeAmount),
     },
-    maxFeePerGas: {
-      amount: Math.round(maxFeePerGasWeiAmount),
-      display: `${parseInt(maxFeePerGas.toString(), 10)} Gwei`,
-      gwei: Number(maxFeePerGas.toFixed(2)),
-    },
-    maxPriorityFeePerGas: {
-      amount: Math.round(priorityFeePerGasWeiAmount),
-      display: `${parseInt(maxPriorityFeePerGas.toString(), 10)} Gwei`,
-      gwei: Number(maxPriorityFeePerGas.toFixed(2)),
-    },
+    maxFeePerGas: parseGasFeeParam(maxFeePerGas),
+    maxPriorityFeePerGas: parseGasFeeParam(maxPriorityFeePerGas),
     option,
   };
 };

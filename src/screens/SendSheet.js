@@ -109,7 +109,7 @@ export default function SendSheet(props) {
     gasFeeParamsBySpeed,
     gasLimit,
     isSufficientGas,
-    prevSelectedGasPrice,
+    prevSelectedGasFee,
     selectedGasFee,
     startPollingGasFees,
     stopPollingGasFees,
@@ -312,12 +312,12 @@ export default function SendSheet(props) {
   useEffect(() => {
     if (
       selected?.address === ETH_ADDRESS &&
-      (prevSelectedGasPrice?.gasFee?.estimatedFee?.value?.amount ?? 0) !==
+      (prevSelectedGasFee?.gasFee?.estimatedFee?.value?.amount ?? 0) !==
         (selectedGasFee?.gasFee?.estimatedFee?.value?.amount ?? 0)
     ) {
       updateMaxInputBalance(selected);
     }
-  }, [prevSelectedGasPrice, selected, selectedGasFee, updateMaxInputBalance]);
+  }, [prevSelectedGasFee, selected, selectedGasFee, updateMaxInputBalance]);
 
   useEffect(() => {
     const updateNetworkAndProvider = async () => {
@@ -498,6 +498,8 @@ export default function SendSheet(props) {
       to: toAddress,
       ...gasParams,
     };
+
+    console.log('👹👹👹👹👹👹 SEND', gasParams);
 
     try {
       const signableTransaction = await createSignableTransaction(txDetails);

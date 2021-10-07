@@ -152,7 +152,7 @@ const GasSpeedButton = ({
     gasFeeParamsBySpeed,
     updateCustomValues,
     isSufficientGas,
-    updateGasPriceOption,
+    updateGasFeeOption,
     selectedGasFee,
     selectedGasFeeOption,
     gasFeesBySpeed,
@@ -244,13 +244,13 @@ const GasSpeedButton = ({
     async price => {
       try {
         await updateCustomValues(price, currentNetwork);
-        updateGasPriceOption(CUSTOM, currentNetwork);
+        updateGasFeeOption(CUSTOM, currentNetwork);
       } catch (e) {
         setEstimatedTimeValue(0);
         setEstimatedTimeUnit('min');
       }
     },
-    [currentNetwork, updateCustomValues, updateGasPriceOption]
+    [currentNetwork, updateCustomValues, updateGasFeeOption]
   );
 
   useEffect(() => {
@@ -300,8 +300,8 @@ const GasSpeedButton = ({
     const nextSpeedIndex = (currentSpeedIndex + 1) % gasOptions?.length;
 
     const nextSpeed = gasOptions[nextSpeedIndex];
-    updateGasPriceOption(nextSpeed);
-  }, [inputFocused, options, selectedGasFeeOption, updateGasPriceOption]);
+    updateGasFeeOption(nextSpeed);
+  }, [inputFocused, options, selectedGasFeeOption, updateGasFeeOption]);
 
   const formatBottomRightLabel = useCallback(() => {
     const actionLabel = getActionLabel(type);

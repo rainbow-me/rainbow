@@ -20,7 +20,6 @@ import GasSpeedLabelPager from './GasSpeedLabelPager';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import { useAccountSettings, useGas } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-// import { gweiToWei, weiToGwei } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 import { margin, padding } from '@rainbow-me/styles';
 import {
@@ -105,7 +104,7 @@ const GasSpeedButton = ({
   theme = 'dark',
   topPadding = 15,
   options = null,
-  minGasPrice = null,
+  minMaxPriorityFeePerGas = null,
   currentNetwork,
 }) => {
   const { colors } = useTheme();
@@ -117,13 +116,13 @@ const GasSpeedButton = ({
     gasFeeParamsBySpeed,
     updateCustomValues,
     isSufficientGas,
-    updateGasPriceOption,
+    updateGasFeeOption,
     selectedGasFee,
     selectedGasFeeOption,
   } = useGas();
 
   const gasPricesAvailable = useMemo(() => {
-    if (!options || !minGasPrice) {
+    if (!options || !minMaxPriorityFeePerGas) {
       return gasFeeParamsBySpeed;
     }
 
@@ -132,7 +131,7 @@ const GasSpeedButton = ({
       filteredGasPrices[speed] = gasFeeParamsBySpeed[speed];
     });
     return filteredGasPrices;
-  }, [gasFeeParamsBySpeed, minGasPrice, options]);
+  }, [gasFeeParamsBySpeed, minMaxPriorityFeePerGas, options]);
 
   const customGasPriceTimeEstimateHandler = useRef(null);
   const [customGasPriceInput] = useState(0);
@@ -204,13 +203,13 @@ const GasSpeedButton = ({
     async price => {
       try {
         await updateCustomValues(price, currentNetwork);
-        updateGasPriceOption(CUSTOM, currentNetwork);
+        updateGasFeeOption(CUSTOM, currentNetwork);
       } catch (e) {
         setEstimatedTimeValue(0);
         setEstimatedTimeUnit('min');
       }
     },
-    [currentNetwork, updateCustomValues, updateGasPriceOption]
+    [currentNetwork, updateCustomValues, updateGasFeeOption]
   );
 
   useEffect(() => {
@@ -273,9 +272,9 @@ const GasSpeedButton = ({
         return;
       }
       LayoutAnimation.easeInEaseOut();
-      updateGasPriceOption(selectedSpeed);
+      updateGasFeeOption(selectedSpeed);
     },
-    [inputFocused, updateGasPriceOption]
+    [inputFocused, updateGasFeeOption]
   );
 
   const formatTransactionTime = useCallback(() => {
@@ -390,11 +389,11 @@ const GasSpeedButton = ({
   //   // - 10% more than the submitted gas of the previous tx (If speeding up / cancelling)
   //   // - The new "normal" gas price from our third party API
 
-  //   const minimumGasAcceptedForTx = minGasPrice
-  //     ? Math.max(minGasPrice, minGasPriceAllowed)
+  //   const minimumGasAcceptedForTx = minMaxPriorityFeePerGas
+  //     ? Math.max(minMaxPriorityFeePerGas, minGasPriceAllowed)
   //     : minGasPriceAllowed;
 
-  //   if (minGasPrice && Number(customGasPriceInput) < minimumGasAcceptedForTx) {
+  //   if (minMaxPriorityFeePerGas && Number(customGasPriceInput) < minimumGasAcceptedForTx) {
   //     Alert({
   //       buttons: [
   //         {
@@ -443,7 +442,7 @@ const GasSpeedButton = ({
   //   inputFocused,
   //   options,
   //   gasPricesAvailable,
-  //   minGasPrice,
+  //   minMaxPriorityFeePerGas,
   //   dontBlur,
   //   handleCustomGasBlur,
   // ]);

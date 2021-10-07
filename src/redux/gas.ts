@@ -29,6 +29,7 @@ import {
   defaultGasPriceFormat,
   getFallbackGasPrices,
   parseEIP1559GasData,
+  parseGasFeeParam,
   parseGasFeesBySpeed,
   parseGasPrices,
   parseLegacyGasFeesBySpeed,
@@ -109,14 +110,14 @@ const getSelectedGasFee = (
   assets: any[],
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed,
   gasFeesBySpeed: GasFeesBySpeed | LegacyGasFeesBySpeed,
-  selectedGasPriceOption: string,
+  selectedGasFeeOption: string,
   network: Network
 ): {
   isSufficientGas: boolean;
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
 } => {
-  const selectedGasParams = gasFeeParamsBySpeed[selectedGasPriceOption];
-  const selectedTxFee = gasFeesBySpeed[selectedGasPriceOption];
+  const selectedGasParams = gasFeeParamsBySpeed[selectedGasFeeOption];
+  const selectedTxFee = gasFeesBySpeed[selectedGasFeeOption];
   const isSufficientGas = checkIsSufficientGas(assets, selectedTxFee, network);
   // this is going to be undefined on type 0 transactions
   const maxTxFee = get(selectedTxFee, 'maxTxFee');
@@ -127,7 +128,7 @@ const getSelectedGasFee = (
       estimatedTime: selectedGasParams.estimatedTime,
       gasFee: { ...selectedTxFee, maxTxFee },
       gasFeeParams: selectedGasParams,
-      option: selectedGasPriceOption,
+      option: selectedGasFeeOption,
     } as SelectedGasFee | LegacySelectedGasFee,
   };
 };
@@ -162,23 +163,20 @@ const { GAS_PRICE_SOURCES } = gasUtils;
 //   };
 // };
 
-export const updateGasPriceForSpeed = (
+export const updateGasFeeForSpeed = (
   speed: string,
-  newPrice: number
+  newMaxPriorityFeePerGas: number
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
   const { gasFeeParamsBySpeed } = getState().gas;
 
-  // TODO handle updates
-
-  const newGasParams = { ...gasFeeParamsBySpeed };
-  newGasParams[speed].value = {
-    amount: newPrice,
-    display: `${newPrice} Gwei`,
-  };
+  const newGasFeeParams = { ...gasFeeParamsBySpeed };
+  newGasFeeParams[speed].maxPriorityFeePerGas = parseGasFeeParam(
+    newMaxPriorityFeePerGas
+  );
 
   dispatch({
     payload: {
-      gasFeeParamsBySpeed,
+      newGasFeeParamsBySpeed: newGasFeeParams,
     },
     type: GAS_PRICES_SUCCESS,
   });
@@ -411,7 +409,7 @@ export const gasUpdateTxFee = (
     txNetwork,
   } = getState().gas;
   const _gasLimit = gasLimit || defaultGasLimit;
-  const _selectedGasPriceOption =
+  const _selectedGasFeeOption =
     overrideGasOption || selectedGasFee.option || NORMAL;
 
   const { assets } = getState().data;
@@ -438,7 +436,7 @@ export const gasUpdateTxFee = (
     assets,
     gasFeeParamsBySpeed,
     gasFeesBySpeed,
-    _selectedGasPriceOption,
+    _selectedGasFeeOption,
     txNetwork
   );
   dispatch({

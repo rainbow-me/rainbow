@@ -5,6 +5,12 @@ export interface Fee {
   value: { amount: string; display: { amount: string; display: string } };
 }
 
+export interface GasFeeParam {
+  amount: number;
+  display: string;
+  gwei: number;
+}
+
 export interface SelectedGasFee {
   estimatedTime: { amount: number; display: string };
   option: string;
@@ -20,9 +26,9 @@ export interface LegacySelectedGasFee {
 }
 
 export interface GasFeeParams {
-  baseFeePerGas: { amount: number; display: string; gwei: number };
-  maxFeePerGas: { amount: number; display: string; gwei: number };
-  maxPriorityFeePerGas: { amount: number; display: string; gwei: number };
+  baseFeePerGas: GasFeeParam;
+  maxFeePerGas: GasFeeParam;
+  maxPriorityFeePerGas: GasFeeParam;
   option: string;
   estimatedTime: { amount: number; display: string };
 }

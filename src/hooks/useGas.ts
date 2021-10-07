@@ -36,7 +36,7 @@ export default function useGas() {
     })
   );
 
-  const prevSelectedGasPrice = usePrevious(gasData?.selectedGasFee);
+  const prevSelectedGasFee = usePrevious(gasData?.selectedGasFee);
 
   const startPollingGasFees = useCallback(
     (network = networkTypes.mainnet) =>
@@ -54,7 +54,7 @@ export default function useGas() {
     [dispatch]
   );
 
-  const updateGasPriceOption = useCallback(
+  const updateGasFeeOption = useCallback(
     (option, network = currentNetwork, assetsOverride = null) =>
       dispatch(gasUpdateGasFeeOption(option, network, assetsOverride)),
     [currentNetwork, dispatch]
@@ -72,12 +72,12 @@ export default function useGas() {
   );
 
   return {
-    prevSelectedGasPrice,
+    prevSelectedGasFee,
     startPollingGasFees,
     stopPollingGasFees,
     updateCustomValues,
     updateDefaultGasLimit,
-    updateGasPriceOption,
+    updateGasFeeOption,
     updateTxFee,
     ...gasData,
   };

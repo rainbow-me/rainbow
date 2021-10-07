@@ -15,10 +15,8 @@ import {
 } from 'react-native-dotenv';
 import {
   ARBITRUM_ETH_ADDRESS,
-  EIP1559_TRANSACTION_TYPE,
   ETH_ADDRESS,
   ethUnits,
-  LEGACY_TRANSACTION_TYPE,
   MATIC_POLYGON_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
   smartContractMethods,
@@ -320,12 +318,10 @@ export const getTxDetails = async transaction => {
   const gasParams = isEIP1559LegacyNetwork(transaction.network)
     ? {
         gasPrice: toHex(transaction.gasPrice),
-        type: EIP1559_TRANSACTION_TYPE,
       }
     : {
         maxFeePerGas: toHex(transaction.maxFeePerGas),
         maxPriorityFeePerGas: toHex(transaction.maxPriorityFeePerGas),
-        type: LEGACY_TRANSACTION_TYPE,
       };
 
   const tx = {

@@ -16,6 +16,7 @@ export {
   gweiToWei,
   weiToGwei,
   parseGasParamsForTransaction,
+  parseGasFeeParam,
 } from './gas';
 export { parseNewTransaction } from './newTransaction';
 export { getRequestDisplayDetails } from './requests';

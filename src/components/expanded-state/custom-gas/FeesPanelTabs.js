@@ -43,9 +43,9 @@ const TabPill = ({ label, isSelected, handleOnPressTabPill }) => {
 };
 
 export default function FeesPanelTabs() {
-  const { updateGasPriceOption, selectedGasFeeOption } = useGas();
+  const { updateGasFeeOption, selectedGasFeeOption } = useGas();
   const handleOnPressTabPill = label => {
-    updateGasPriceOption(label);
+    updateGasFeeOption(label);
   };
   return (
     <Row align="center">

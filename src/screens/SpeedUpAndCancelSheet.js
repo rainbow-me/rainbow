@@ -36,9 +36,9 @@ import {
 } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
-import { getTitle, gweiToWei, weiToGwei } from '@rainbow-me/parsers';
+import { getTitle } from '@rainbow-me/parsers';
 import { dataUpdateTransaction } from '@rainbow-me/redux/data';
-import { updateGasPriceForSpeed } from '@rainbow-me/redux/gas';
+import { updateGasFeeForSpeed } from '@rainbow-me/redux/gas';
 import { ethUnits } from '@rainbow-me/references';
 import { position } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
@@ -102,15 +102,15 @@ const text = {
   [SPEED_UP]: `This will speed up your pending transaction by replacing it. There’s still a chance your original transaction will confirm first!`,
 };
 
-const calcMinGasPriceAllowed = prevGasPrice => {
-  const prevGasPriceBN = new BigNumber(prevGasPrice);
+const calcGasParamRetryValue = prevWeiValue => {
+  const prevWeiValueBN = new BigNumber(prevWeiValue);
 
-  const newGasPriceBN = prevGasPriceBN
-    .times(new BigNumber('110'))
+  const newWeiValueBN = prevWeiValueBN
+    .times(new BigNumber('125'))
     .dividedBy(new BigNumber('100'));
 
-  const newGasPrice = newGasPriceBN.toFixed();
-  return Number(weiToGwei(newGasPrice));
+  const newWeiValue = newWeiValueBN.toFixed(0);
+  return Number(newWeiValue);
 };
 
 export default function SpeedUpAndCancelSheet() {
@@ -120,8 +120,8 @@ export default function SpeedUpAndCancelSheet() {
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const {
-    legacyGasFees,
-    updateGasPriceOption,
+    gasFeeParamsBySpeed,
+    updateGasFeeOption,
     selectedGasFee,
     startPollingGasFees,
     stopPollingGasFees,
@@ -133,8 +133,11 @@ export default function SpeedUpAndCancelSheet() {
   } = useRoute();
   const [ready, setReady] = useState(false);
   const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
-  const [minGasPrice, setMinGasPrice] = useState(
-    calcMinGasPriceAllowed(tx.gasPrice)
+  const [minMaxPriorityFeePerGas, setMinMaxPriorityFeePerGas] = useState(
+    calcGasParamRetryValue(tx.maxPriorityFeePerGas)
+  );
+  const [minMaxFeePerGas, setMinMaxFeePerGas] = useState(
+    calcGasParamRetryValue(tx.maxFeePerGas)
   );
   const fetchedTx = useRef(false);
   const [currentNetwork, setCurrentNetwork] = useState(null);
@@ -145,21 +148,43 @@ export default function SpeedUpAndCancelSheet() {
   const [to, setTo] = useState(tx.to);
   const [value, setValue] = useState(null);
 
-  const getNewGasPrice = useCallback(() => {
-    const rawGasPrice = get(selectedGasFee, 'gasPrice.amount');
-    const minGasPriceAllowed = gweiToWei(minGasPrice);
-    const rawGasPriceBN = new BigNumber(rawGasPrice);
-    const minGasPriceAllowedBN = new BigNumber(minGasPriceAllowed);
-    return rawGasPriceBN.isGreaterThan(minGasPriceAllowedBN)
-      ? toHex(rawGasPrice)
-      : toHex(minGasPriceAllowed);
-  }, [minGasPrice, selectedGasFee]);
+  const getNewGasParams = useCallback(() => {
+    const rawMaxPriorityFeePerGas = get(
+      selectedGasFee,
+      'gasFeeParams.maxPriorityFeePerGas.amount'
+    );
+    const minMaxPriorityFeePerGasAllowed = minMaxPriorityFeePerGas;
+    const rawMaxPriorityFeePerGasBN = new BigNumber(rawMaxPriorityFeePerGas);
+    const minMaxPriorityFeePerGasAllowedBN = new BigNumber(
+      minMaxPriorityFeePerGasAllowed
+    );
+    const maxPriorityFeePerGas = rawMaxPriorityFeePerGasBN.isGreaterThan(
+      minMaxPriorityFeePerGasAllowedBN
+    )
+      ? toHex(rawMaxPriorityFeePerGas)
+      : toHex(minMaxPriorityFeePerGasAllowed);
+    const rawMaxFeePerGas = get(
+      selectedGasFee,
+      'gasFeeParams.maxFeePerGas.amount'
+    );
+    const minMaxFeePerGasAllowed = minMaxFeePerGas;
+    const rawMaxFeePerGasBN = new BigNumber(rawMaxFeePerGas);
+    const minMaxFeePerGasAllowedBN = new BigNumber(minMaxFeePerGasAllowed);
+    const maxFeePerGas = rawMaxFeePerGasBN.isGreaterThan(
+      minMaxFeePerGasAllowedBN
+    )
+      ? toHex(rawMaxFeePerGas)
+      : toHex(minMaxFeePerGasAllowed);
+    return { maxFeePerGas, maxPriorityFeePerGas };
+  }, [minMaxPriorityFeePerGas, minMaxFeePerGas, selectedGasFee]);
 
   const handleCancellation = useCallback(async () => {
     try {
-      const gasPrice = getNewGasPrice();
+      const { maxFeePerGas, maxPriorityFeePerGas } = getNewGasParams();
+
       const cancelTxPayload = {
-        gasPrice,
+        maxFeePerGas,
+        maxPriorityFeePerGas,
         nonce,
         to: accountAddress,
       };
@@ -191,7 +216,7 @@ export default function SpeedUpAndCancelSheet() {
     accountAddress,
     currentProvider,
     dispatch,
-    getNewGasPrice,
+    getNewGasParams,
     goBack,
     nonce,
     tx,
@@ -199,11 +224,12 @@ export default function SpeedUpAndCancelSheet() {
 
   const handleSpeedUp = useCallback(async () => {
     try {
-      const gasPrice = getNewGasPrice();
+      const { maxFeePerGas, maxPriorityFeePerGas } = getNewGasParams();
       const fasterTxPayload = {
         data,
         gasLimit,
-        gasPrice,
+        maxFeePerGas,
+        maxPriorityFeePerGas,
         nonce,
         to,
         value,
@@ -236,7 +262,7 @@ export default function SpeedUpAndCancelSheet() {
     data,
     dispatch,
     gasLimit,
-    getNewGasPrice,
+    getNewGasParams,
     goBack,
     nonce,
     to,
@@ -268,16 +294,16 @@ export default function SpeedUpAndCancelSheet() {
 
   // Update gas limit
   useEffect(() => {
-    if (!isEmpty(legacyGasFees) && gasLimit) {
+    if (!isEmpty(gasFeeParamsBySpeed) && gasLimit) {
       updateTxFee(gasLimit, null, currentNetwork);
       // Always default to fast
-      updateGasPriceOption('fast');
+      updateGasFeeOption('fast');
     }
   }, [
     currentNetwork,
     gasLimit,
-    legacyGasFees,
-    updateGasPriceOption,
+    gasFeeParamsBySpeed,
+    updateGasFeeOption,
     updateTxFee,
   ]);
 
@@ -290,7 +316,10 @@ export default function SpeedUpAndCancelSheet() {
           const txObj = await currentProvider.getTransaction(txHash);
           if (txObj) {
             const hexGasLimit = toHex(txObj.gasLimit.toString());
-            const hexGasPrice = toHex(txObj.gasPrice.toString());
+            const hexMaxFeePerGas = toHex(txObj.maxFeePerGas.toString());
+            const hexMaxPriorityFeePerGas = toHex(
+              txObj.maxPriorityFeePerGas.toString()
+            );
             const hexValue = toHex(txObj.value.toString());
             const hexData = txObj.data;
             setReady(true);
@@ -299,7 +328,10 @@ export default function SpeedUpAndCancelSheet() {
             setData(hexData);
             setTo(txObj.to);
             setGasLimit(hexGasLimit);
-            setMinGasPrice(calcMinGasPriceAllowed(hexGasPrice));
+            setMinMaxPriorityFeePerGas(
+              calcGasParamRetryValue(hexMaxPriorityFeePerGas)
+            );
+            setMinMaxFeePerGas(calcGasParamRetryValue(hexMaxFeePerGas));
           }
         } catch (e) {
           logger.log('something went wrong while fetching tx info ', e);
@@ -328,17 +360,20 @@ export default function SpeedUpAndCancelSheet() {
     network,
     tx,
     tx.gasLimit,
-    tx.gasPrice,
     tx.hash,
     type,
-    updateGasPriceOption,
+    updateGasFeeOption,
   ]);
 
   useEffect(() => {
-    if (!isEmpty(legacyGasFees) && !calculatingGasLimit.current) {
+    if (!isEmpty(gasFeeParamsBySpeed) && !calculatingGasLimit.current) {
       calculatingGasLimit.current = true;
-      if (Number(gweiToWei(minGasPrice)) > Number(legacyGasFees.fast.value)) {
-        dispatch(updateGasPriceForSpeed('fast', gweiToWei(minGasPrice)));
+      // we only speed up / cancel for eip1559 supported networks
+      if (
+        Number(minMaxPriorityFeePerGas) >
+        Number(gasFeeParamsBySpeed.fast.maxPriorityFeePerGas.amount)
+      ) {
+        dispatch(updateGasFeeForSpeed('fast', minMaxPriorityFeePerGas));
       }
       const gasLimitForNewTx =
         type === CANCEL_TX ? ethUnits.basic_tx : tx.gasLimit;
@@ -347,8 +382,8 @@ export default function SpeedUpAndCancelSheet() {
     }
   }, [
     dispatch,
-    legacyGasFees,
-    minGasPrice,
+    gasFeeParamsBySpeed,
+    minMaxPriorityFeePerGas,
     tx,
     tx.gasLimit,
     type,
@@ -503,7 +538,7 @@ export default function SpeedUpAndCancelSheet() {
                   <GasSpeedButtonContainer>
                     <GasSpeedButton
                       currentNetwork={currentNetwork}
-                      minGasPrice={minGasPrice}
+                      minMaxPriorityFeePerGas={minMaxPriorityFeePerGas}
                       onCustomGasBlur={hideKeyboard}
                       onCustomGasFocus={showKeyboard}
                       options={['fast', 'custom']}
