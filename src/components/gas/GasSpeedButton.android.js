@@ -155,7 +155,7 @@ const GasSpeedButton = ({
     updateGasPriceOption,
     selectedGasFee,
     selectedGasPriceOption,
-    txFees,
+    gasFeesBySpeed,
   } = useGas();
 
   const gasPricesAvailable = useMemo(() => {
@@ -192,7 +192,7 @@ const GasSpeedButton = ({
     weiToGwei(gasPricesAvailable?.fast?.value?.amount)
   );
   const defaultCustomGasPriceNative = get(
-    txFees?.fast,
+    gasFeesBySpeed?.fast,
     'txFee.native.value.display'
   );
   const defaultCustomGasConfirmationTime =
@@ -281,13 +281,13 @@ const GasSpeedButton = ({
         weight="bold"
       >
         {isEmpty(gasPricesAvailable) ||
-        isEmpty(txFees) ||
+        isEmpty(gasFeesBySpeed) ||
         typeof isSufficientGas === 'undefined'
           ? 'Loading...'
           : animatedNumber}
       </Text>
     ),
-    [colors, gasPricesAvailable, isSufficientGas, theme, txFees]
+    [colors, gasPricesAvailable, isSufficientGas, theme, gasFeesBySpeed]
   );
 
   const handlePress = useCallback(() => {

@@ -6,12 +6,12 @@ import {
   GasFee,
   GasFeeParamsBySpeed,
   GasFeesBlockNativeData,
+  GasFeesBySpeed,
   LegacyGasFee,
   LegacyGasFeeParamsBySpeed,
+  LegacyGasFeesBySpeed,
   LegacySelectedGasFee,
-  LegacyTxFeesBySpeed,
   SelectedGasFee,
-  TxFeesBySpeed,
 } from '@rainbow-me/entities';
 import {
   blockNativeGetGasParams,
@@ -55,7 +55,7 @@ interface GasState {
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
   isSufficientGas: Boolean | null;
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
-  txFees: TxFeesBySpeed | LegacyTxFeesBySpeed;
+  gasFeesBySpeed: GasFeesBySpeed | LegacyGasFeesBySpeed;
   txNetwork: Network | null;
 }
 
@@ -108,7 +108,7 @@ const checkIsSufficientGas = (
 const getSelectedGasFee = (
   assets: any[],
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed,
-  txFees: TxFeesBySpeed | LegacyTxFeesBySpeed,
+  gasFeesBySpeed: GasFeesBySpeed | LegacyGasFeesBySpeed,
   selectedGasPriceOption: string,
   network: Network
 ): {
@@ -116,7 +116,7 @@ const getSelectedGasFee = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
 } => {
   const selectedGasParams = gasFeeParamsBySpeed[selectedGasPriceOption];
-  const selectedTxFee = txFees[selectedGasPriceOption];
+  const selectedTxFee = gasFeesBySpeed[selectedGasPriceOption];
 
   const isSufficientGas = checkIsSufficientGas(assets, selectedTxFee, network);
   // this is going to be undefined on type 0 transactions
@@ -146,20 +146,20 @@ const { GAS_PRICE_SOURCES } = gasUtils;
 //   const { nativeCurrency } = getState().settings;
 //   const fallbackGasPrices = getFallbackGasPrices();
 //   const ethPriceUnit = ethereumUtils.getEthPriceUnit();
-//   const txFees = parseLegacyFees(
+//   const gasFeesBySpeed = parseLegacyFees(
 //     fallbackGasPrices,
 //     ethPriceUnit,
 //     defaultGasLimit,
 //     nativeCurrency
 //   );
 //   const selectedGasFee = {
-//     ...txFees[NORMAL],
+//     ...gasFeesBySpeed[NORMAL],
 //     ...fallbackGasPrices[NORMAL],
 //   };
 //   return {
 //     fallbackGasPrices,
 //     selectedGasFee,
-//     txFees,
+//     gasFeesBySpeed,
 //   };
 // };
 
@@ -343,7 +343,7 @@ export const gasUpdateGasFeeOption = (
   network: Network,
   assetsOverride: any[]
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
-  const { gasFeeParamsBySpeed, txFees, txNetwork } = getState().gas;
+  const { gasFeeParamsBySpeed, gasFeesBySpeed, txNetwork } = getState().gas;
   const { assets } = getState().data;
 
   const gasPriceOption = newGasPriceOption || NORMAL;
@@ -351,7 +351,7 @@ export const gasUpdateGasFeeOption = (
   const selectedGasFee = getSelectedGasFee(
     assetsOverride || assets,
     gasFeeParamsBySpeed,
-    txFees,
+    gasFeesBySpeed,
     gasPriceOption,
     txNetwork
   );
@@ -427,7 +427,7 @@ export const gasUpdateTxFee = (
 
   if (isEmpty(gasFeeParamsBySpeed)) return;
 
-  const txFees = parseFees(
+  const gasFeesBySpeed = parseFees(
     gasFeeParamsBySpeed,
     nativeTokenPriceUnit,
     _gasLimit,
@@ -436,15 +436,15 @@ export const gasUpdateTxFee = (
   const selectedGasParams = getSelectedGasFee(
     assets,
     gasFeeParamsBySpeed,
-    txFees,
+    gasFeesBySpeed,
     _selectedGasPriceOption,
     txNetwork
   );
   dispatch({
     payload: {
       ...selectedGasParams,
+      gasFeesBySpeed,
       gasLimit,
-      txFees,
     },
     type: GAS_UPDATE_TX_FEE,
   });
@@ -474,10 +474,10 @@ export const gasPricesStopPolling = () => (dispatch: AppDispatch) => {
 const INITIAL_STATE: GasState = {
   defaultGasLimit: ethUnits.basic_tx,
   gasFeeParamsBySpeed: {},
+  gasFeesBySpeed: {},
   gasLimit: null,
   isSufficientGas: null,
   selectedGasFee: {} as SelectedGasFee,
-  txFees: {},
   txNetwork: null,
 };
 
@@ -495,8 +495,8 @@ export default (
       return {
         ...state,
         gasFeeParamsBySpeed: action.payload.gasFeeParamsBySpeed,
+        gasFeesBySpeed: action.payload.gasFeesBySpeed,
         selectedGasFee: action.payload.selectedGasFee,
-        txFees: action.payload.txFees,
       };
     case GAS_PRICES_SUCCESS:
       return {
@@ -516,10 +516,10 @@ export default (
     case GAS_UPDATE_TX_FEE:
       return {
         ...state,
+        gasFeesBySpeed: action.payload.gasFeesBySpeed,
         gasLimit: action.payload.gasLimit,
         isSufficientGas: action.payload.isSufficientGas,
         selectedGasFee: action.payload.selectedGasFee,
-        txFees: action.payload.txFees,
       };
     case GAS_UPDATE_GAS_PRICE_OPTION:
       return {

@@ -9,8 +9,8 @@ export type {
   GasFeeParamsBySpeed,
   LegacyGasFee,
   GasFee,
-  TxFeesBySpeed,
-  LegacyTxFeesBySpeed,
+  GasFeesBySpeed,
+  LegacyGasFeesBySpeed,
   GasPricesAPIData,
   GasFeesBlockNativeData,
 } from './gas';

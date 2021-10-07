@@ -49,11 +49,11 @@ export interface LegacyGasFeeParamsBySpeed {
   [key: string]: LegacyGasFeeParams;
 }
 
-export interface TxFeesBySpeed {
+export interface GasFeesBySpeed {
   [key: string]: GasFee;
 }
 
-export interface LegacyTxFeesBySpeed {
+export interface LegacyGasFeesBySpeed {
   [key: string]: LegacyGasFee;
 }
 

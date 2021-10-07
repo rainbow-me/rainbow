@@ -135,7 +135,7 @@ const GasSpeedButton = ({
   //   weiToGwei(gasPricesAvailable?.fast?.value?.amount)
   // );
   // const defaultCustomGasPriceNative = get(
-  //   txFees?.fast,
+  //   gasFeesBySpeed?.fast,
   //   'estimatedFee.native.value.display'
   // );
   const defaultCustomGasConfirmationTime =

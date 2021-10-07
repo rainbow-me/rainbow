@@ -13,11 +13,11 @@ import { gasUtils } from '../utils';
 import {
   GasFeeParamsBySpeed,
   GasFeesBlockNativeData,
+  GasFeesBySpeed,
   GasPricesAPIData,
   LegacyGasFeeParamsBySpeed,
-  LegacyTxFeesBySpeed,
+  LegacyGasFeesBySpeed,
   Numberish,
-  TxFeesBySpeed,
 } from '@rainbow-me/entities';
 
 type BigNumberish = number | string | BigNumber;
@@ -188,8 +188,8 @@ export const parseLegacyFees = (
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
   nativeCurrency: string
-): LegacyTxFeesBySpeed => {
-  const txFees = map(GasSpeedOrder, speed => {
+): LegacyGasFeesBySpeed => {
+  const gasFeesBySpeed = map(GasSpeedOrder, speed => {
     const gasPrice = legacyGasFees?.[speed]?.gasPrice?.amount || 0;
     const estimatedFee = getTxFee(
       gasPrice,
@@ -201,7 +201,7 @@ export const parseLegacyFees = (
       estimatedFee,
     };
   });
-  return zipObject(GasSpeedOrder, txFees);
+  return zipObject(GasSpeedOrder, gasFeesBySpeed);
 };
 
 export const parseTxFees = (
@@ -209,8 +209,8 @@ export const parseTxFees = (
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
   nativeCurrency: string
-): TxFeesBySpeed => {
-  const txFees = map(GasSpeedOrder, speed => {
+): GasFeesBySpeed => {
+  const gasFeesBySpeed = map(GasSpeedOrder, speed => {
     // using blocknative max fee for now
     const { priorityFeePerGas, maxFeePerGas, baseFeePerGas } =
       gasFeeParamsBySpeed?.[speed] || {};
@@ -235,7 +235,7 @@ export const parseTxFees = (
       maxFee,
     };
   });
-  return zipObject(GasSpeedOrder, txFees);
+  return zipObject(GasSpeedOrder, gasFeesBySpeed);
 };
 
 const getTxFee = (
