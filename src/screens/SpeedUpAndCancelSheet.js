@@ -153,28 +153,28 @@ export default function SpeedUpAndCancelSheet() {
       selectedGasFee,
       'gasFeeParams.maxPriorityFeePerGas.amount'
     );
-    const minMaxPriorityFeePerGasAllowed = minMaxPriorityFeePerGas;
-    const rawMaxPriorityFeePerGasBN = new BigNumber(rawMaxPriorityFeePerGas);
-    const minMaxPriorityFeePerGasAllowedBN = new BigNumber(
-      minMaxPriorityFeePerGasAllowed
-    );
-    const maxPriorityFeePerGas = rawMaxPriorityFeePerGasBN.isGreaterThan(
-      minMaxPriorityFeePerGasAllowedBN
-    )
-      ? toHex(rawMaxPriorityFeePerGas)
-      : toHex(minMaxPriorityFeePerGasAllowed);
     const rawMaxFeePerGas = get(
       selectedGasFee,
       'gasFeeParams.maxFeePerGas.amount'
     );
-    const minMaxFeePerGasAllowed = minMaxFeePerGas;
+    const rawMaxPriorityFeePerGasBN = new BigNumber(rawMaxPriorityFeePerGas);
+    const minMaxPriorityFeePerGasAllowedBN = new BigNumber(
+      minMaxPriorityFeePerGas
+    );
     const rawMaxFeePerGasBN = new BigNumber(rawMaxFeePerGas);
-    const minMaxFeePerGasAllowedBN = new BigNumber(minMaxFeePerGasAllowed);
+    const minMaxFeePerGasAllowedBN = new BigNumber(minMaxFeePerGas);
+
+    const maxPriorityFeePerGas = rawMaxPriorityFeePerGasBN.isGreaterThan(
+      minMaxPriorityFeePerGasAllowedBN
+    )
+      ? toHex(rawMaxPriorityFeePerGas)
+      : toHex(minMaxPriorityFeePerGas);
+
     const maxFeePerGas = rawMaxFeePerGasBN.isGreaterThan(
       minMaxFeePerGasAllowedBN
     )
       ? toHex(rawMaxFeePerGas)
-      : toHex(minMaxFeePerGasAllowed);
+      : toHex(minMaxFeePerGas);
     return { maxFeePerGas, maxPriorityFeePerGas };
   }, [minMaxPriorityFeePerGas, minMaxFeePerGas, selectedGasFee]);
 
