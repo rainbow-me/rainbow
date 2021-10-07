@@ -292,6 +292,7 @@ export default function UniswapPools({
             data={pairsSorted}
             keyExtractor={(item, index) => index}
             renderItem={renderUniswapPoolListRow}
+            scrollsToTop={false}
           />
           {(!showAll || alwaysShowMoreButton) &&
             initialPageAmount < allPairs.length && (
