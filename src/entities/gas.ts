@@ -41,19 +41,19 @@ export interface GasFee extends LegacyGasFee {
   maxFee: Fee;
 }
 
-export interface GasFeeParamsByVelocity {
+export interface GasFeeParamsBySpeed {
   [key: string]: GasFeeParams;
 }
 
-export interface LegacyGasFeeParamsByVelocity {
+export interface LegacyGasFeeParamsBySpeed {
   [key: string]: LegacyGasFeeParams;
 }
 
-export interface TxFeesByVelocity {
+export interface TxFeesBySpeed {
   [key: string]: GasFee;
 }
 
-export interface LegacyTxFeesByVelocity {
+export interface LegacyTxFeesBySpeed {
   [key: string]: LegacyGasFee;
 }
 

@@ -104,7 +104,7 @@ const GasSpeedButton = ({
   const { navigate, goBack } = useNavigation();
 
   const {
-    gasFees,
+    gasFeeParamsBySpeed,
     updateCustomValues,
     isSufficientGas,
     updateGasPriceOption,
@@ -114,15 +114,15 @@ const GasSpeedButton = ({
 
   const gasPricesAvailable = useMemo(() => {
     if (!options || !minGasPrice) {
-      return gasFees;
+      return gasFeeParamsBySpeed;
     }
 
     const filteredGasPrices = {};
     options.forEach(speed => {
-      filteredGasPrices[speed] = gasFees[speed];
+      filteredGasPrices[speed] = gasFeeParamsBySpeed[speed];
     });
     return filteredGasPrices;
-  }, [gasFees, minGasPrice, options]);
+  }, [gasFeeParamsBySpeed, minGasPrice, options]);
 
   const customGasPriceTimeEstimateHandler = useRef(null);
   const [customGasPriceInput] = useState(0);

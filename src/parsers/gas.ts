@@ -11,13 +11,13 @@ import ethUnits from '../references/ethereum-units.json';
 import timeUnits from '../references/time-units.json';
 import { gasUtils } from '../utils';
 import {
-  GasFeeParamsByVelocity,
+  GasFeeParamsBySpeed,
   GasFeesBlockNativeData,
   GasPricesAPIData,
-  LegacyGasFeeParamsByVelocity,
-  LegacyTxFeesByVelocity,
+  LegacyGasFeeParamsBySpeed,
+  LegacyTxFeesBySpeed,
   Numberish,
-  TxFeesByVelocity,
+  TxFeesBySpeed,
 } from '@rainbow-me/entities';
 
 type BigNumberish = number | string | BigNumber;
@@ -45,11 +45,11 @@ const parseGasPricesEtherscan = (data: GasPricesAPIData) => ({
 
 export const parseEIP1559GasData = (
   data: GasFeesBlockNativeData
-): GasFeeParamsByVelocity => {
+): GasFeeParamsBySpeed => {
   const { baseFeePerGas, estimatedPrices } = data?.blockPrices?.[0];
   // temp multiplier
   const baseFee = baseFeePerGas * 1.5;
-  const parsedFees: GasFeeParamsByVelocity = {};
+  const parsedFees: GasFeeParamsBySpeed = {};
   estimatedPrices.forEach(({ confidence, maxPriorityFeePerGas }) => {
     const option: string = GAS_CONFIDENCE[confidence];
     parsedFees[option] = defaultGasParamsFormat(
@@ -184,11 +184,11 @@ export const defaultGasParamsFormat = (
  * @param {Number} gasLimit
  */
 export const parseLegacyFees = (
-  legacyGasFees: LegacyGasFeeParamsByVelocity,
+  legacyGasFees: LegacyGasFeeParamsBySpeed,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
   nativeCurrency: string
-): LegacyTxFeesByVelocity => {
+): LegacyTxFeesBySpeed => {
   const txFees = map(GasSpeedOrder, speed => {
     const gasPrice = legacyGasFees?.[speed]?.gasPrice?.amount || 0;
     const estimatedFee = getTxFee(
@@ -205,15 +205,15 @@ export const parseLegacyFees = (
 };
 
 export const parseTxFees = (
-  gasFees: GasFeeParamsByVelocity,
+  gasFeeParamsBySpeed: GasFeeParamsBySpeed,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
   nativeCurrency: string
-): TxFeesByVelocity => {
+): TxFeesBySpeed => {
   const txFees = map(GasSpeedOrder, speed => {
     // using blocknative max fee for now
     const { priorityFeePerGas, maxFeePerGas, baseFeePerGas } =
-      gasFees?.[speed] || {};
+      gasFeeParamsBySpeed?.[speed] || {};
 
     const priorityFee = priorityFeePerGas?.amount || 0;
     const maxFeePerGasAmount = maxFeePerGas?.amount || 0;
