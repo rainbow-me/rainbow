@@ -270,13 +270,13 @@ export default function TransactionConfirmationScreen() {
     updateGasPriceOption,
     updateTxFee,
     selectedGasFee,
-    selectedGasPriceOption,
+    selectedGasFeeOption,
   } = useGas();
 
   useEffect(() => {
     const { txFee } = selectedGasFee;
     if (!txFee || !nativeAsset || !network || isSufficientGasChecked) return;
-    updateGasPriceOption(selectedGasPriceOption, network, [nativeAsset]);
+    updateGasPriceOption(selectedGasFeeOption, network, [nativeAsset]);
     setIsSufficientGasChecked(true);
   }, [
     isSufficientGas,
@@ -284,7 +284,7 @@ export default function TransactionConfirmationScreen() {
     nativeAsset,
     network,
     selectedGasFee,
-    selectedGasPriceOption,
+    selectedGasFeeOption,
     updateGasPriceOption,
   ]);
 

@@ -32,7 +32,7 @@ export default function useGas() {
       gasLimit,
       isSufficientGas,
       selectedGasFee,
-      selectedGasPriceOption: selectedGasFee.option,
+      selectedGasFeeOption: selectedGasFee.option,
     })
   );
 

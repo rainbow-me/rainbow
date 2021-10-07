@@ -154,7 +154,7 @@ const GasSpeedButton = ({
     isSufficientGas,
     updateGasPriceOption,
     selectedGasFee,
-    selectedGasPriceOption,
+    selectedGasFeeOption,
     gasFeesBySpeed,
   } = useGas();
 
@@ -238,7 +238,7 @@ const GasSpeedButton = ({
 
     setEstimatedTimeValue(estimatedTime[0] || 0);
     setEstimatedTimeUnit(estimatedTime[1] || 'min');
-  }, [selectedGasFee, selectedGasPriceOption]);
+  }, [selectedGasFee, selectedGasFeeOption]);
 
   const calculateCustomPriceEstimatedTime = useCallback(
     async price => {
@@ -296,12 +296,12 @@ const GasSpeedButton = ({
     }
     LayoutAnimation.easeInEaseOut();
     const gasOptions = options || GasSpeedOrder;
-    const currentSpeedIndex = gasOptions?.indexOf(selectedGasPriceOption);
+    const currentSpeedIndex = gasOptions?.indexOf(selectedGasFeeOption);
     const nextSpeedIndex = (currentSpeedIndex + 1) % gasOptions?.length;
 
     const nextSpeed = gasOptions[nextSpeedIndex];
     updateGasPriceOption(nextSpeed);
-  }, [inputFocused, options, selectedGasPriceOption, updateGasPriceOption]);
+  }, [inputFocused, options, selectedGasFeeOption, updateGasPriceOption]);
 
   const formatBottomRightLabel = useCallback(() => {
     const actionLabel = getActionLabel(type);
@@ -312,7 +312,7 @@ const GasSpeedButton = ({
     }
     let timeSymbol = '~';
 
-    if (selectedGasPriceOption === CUSTOM) {
+    if (selectedGasFeeOption === CUSTOM) {
       if (!customGasPriceInput) {
         return `${defaultCustomGasPriceNative} ~ ${defaultCustomGasConfirmationTime}`;
       } else if (gasPricesAvailable[CUSTOM]?.gasPrice) {
@@ -350,18 +350,18 @@ const GasSpeedButton = ({
     gasPrice,
     gasPricesAvailable,
     selectedGasFee,
-    selectedGasPriceOption,
+    selectedGasFeeOption,
     type,
   ]);
 
   useEffect(() => {
     const gasOptions = options || GasSpeedOrder;
-    const currentSpeedIndex = gasOptions?.indexOf(selectedGasPriceOption);
+    const currentSpeedIndex = gasOptions?.indexOf(selectedGasFeeOption);
     // If the option isn't available anymore, we need to reset it
     if (currentSpeedIndex === -1) {
       handlePress();
     }
-  }, [handlePress, options, selectedGasPriceOption]);
+  }, [handlePress, options, selectedGasFeeOption]);
 
   const handleCustomGasFocus = useCallback(() => {
     setInputFocused(true);
@@ -475,7 +475,7 @@ const GasSpeedButton = ({
   ]);
 
   const focusOnInput = useCallback(() => inputRef.current?.focus(), []);
-  const isCustom = selectedGasPriceOption === CUSTOM ? true : false;
+  const isCustom = selectedGasFeeOption === CUSTOM ? true : false;
 
   const { navigate } = useNavigation();
 
@@ -589,7 +589,7 @@ const GasSpeedButton = ({
       >
         <Row align="end" justify="end" marginBottom={1}>
           <GasSpeedLabelPager
-            label={selectedGasPriceOption}
+            label={selectedGasFeeOption}
             options={options}
             showPager={!inputFocused}
             theme={theme}

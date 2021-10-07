@@ -43,7 +43,7 @@ const TabPill = ({ label, isSelected, handleOnPressTabPill }) => {
 };
 
 export default function FeesPanelTabs() {
-  const { updateGasPriceOption, selectedGasPriceOption } = useGas();
+  const { updateGasPriceOption, selectedGasFeeOption } = useGas();
   const handleOnPressTabPill = label => {
     updateGasPriceOption(label);
   };
@@ -54,7 +54,7 @@ export default function FeesPanelTabs() {
           <Column key={speed}>
             <TabPill
               handleOnPressTabPill={handleOnPressTabPill}
-              isSelected={selectedGasPriceOption === speed}
+              isSelected={selectedGasFeeOption === speed}
               label={speed}
             />
           </Column>
