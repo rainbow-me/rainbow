@@ -146,8 +146,8 @@ export const defaultGasPriceFormat = (
 export const parseGasFeeParam = (weiAmount: number): GasFeeParam => {
   return {
     amount: Math.round(weiAmount),
-    display: `${parseInt(weiAmount.toString(), 10)} Gwei`,
-    gwei: Number(weiAmount.toFixed(2)),
+    display: `${parseInt(weiToGwei(weiAmount), 10)} Gwei`,
+    gwei: Number(weiToGwei(weiAmount)),
   };
 };
 
