@@ -210,6 +210,7 @@ workflows:
             echo "INFURA_PROJECT_ID_DEV=$INFURA_PROJECT_ID_DEV" >> .env
             echo "REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY" >> .env
             echo "DATA_API_KEY=$DATA_API_KEY" >> .env
+            echo "DATA_ENDPOINT=$DATA_ENDPOINT" >> .env
             echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
             echo "SENTRY_ENVIRONMENT=$SENTRY_ENVIRONMENT" >> .env
             echo "WYRE_ENDPOINT=$WYRE_ENDPOINT" >> .env
@@ -266,6 +267,7 @@ workflows:
             echo "INFURA_PROJECT_ID_DEV=$INFURA_PROJECT_ID_DEV" >> .env
             echo "REACT_APP_SEGMENT_API_WRITE_KEY=$REACT_APP_SEGMENT_API_WRITE_KEY" >> .env
             echo "DATA_API_KEY=$DATA_API_KEY" >> .env
+            echo "DATA_ENDPOINT=$DATA_ENDPOINT" >> .env
             echo "SENTRY_ENDPOINT=$SENTRY_ENDPOINT" >> .env
             echo "SENTRY_ENVIRONMENT=$SENTRY_ENVIRONMENT" >> .env
             echo "WYRE_ENDPOINT=$WYRE_ENDPOINT" >> .env

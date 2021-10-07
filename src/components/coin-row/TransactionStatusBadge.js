@@ -68,6 +68,10 @@ const StatusProps = {
     small: true,
     style: position.maxSizeAsObject(12),
   },
+  [TransactionStatusTypes.contract_interaction]: {
+    name: 'robot',
+    style: { fontSize: 11, left: -1.3, marginBottom: 1.5, marginRight: 1 },
+  },
   [TransactionStatusTypes.swapping]: {
     marginRight: 4,
   },

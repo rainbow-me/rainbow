@@ -188,6 +188,11 @@ class TransactionListViewCell: TransactionListBaseCell {
     if transaction.status == "swapping" {
         transactionIcon.image = UIImage.init(named: "swapping")
     }
+
+    if transaction.status == "contract interaction" {
+        transactionIcon.image = UIImage.init(named: "contractInteraction")
+        statusFrame = CGRect(x: 84, y: 9, width: 206, height: 16)
+    }
     
     transactionIcon.tintAdjustmentMode = .normal
     transactionIcon.frame = iconFrame
