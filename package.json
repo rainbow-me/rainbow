@@ -306,7 +306,12 @@
     "**/css-what": "5.0.1",
     "**/socket.io-parser": "3.3.1",
     "**/tar": "6.1.11",
-    "**/path-parse": "1.0.7"
+    "**/path-parse": "1.0.7",
+    "**/ansi-regex": "5.0.1",
+    "**/color-string": "1.6.0",
+    "**/tmpl": "1.0.5",
+    "**/nth-check": "2.0.1",
+    "**/is-svg": "4.3.1"
   },
   "jest": {
     "preset": "react-native",
