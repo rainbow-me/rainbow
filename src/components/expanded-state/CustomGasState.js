@@ -106,14 +106,16 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
       const gweiMaxFeePerGas = maxFeePerGas.gwei;
 
       const newGweiMaxPriorityFeePerGas =
-        Math.round(gweiMaxPriorityFeePerGas + priorityFeePerGas * 100) / 100;
+        Math.round((gweiMaxPriorityFeePerGas + priorityFeePerGas) * 100) / 100;
       const newGweiMaxFeePerGas =
-        Math.round(gweiMaxFeePerGas + feePerGas * 100) / 100;
+        Math.round((gweiMaxFeePerGas + feePerGas) * 100) / 100;
 
       const newMaxPriorityFeePerGas = parseGasFeeParam(
         Number(gweiToWei(newGweiMaxPriorityFeePerGas))
       );
-      const newMaxFeePerGas = parseGasFeeParam(gweiToWei(newGweiMaxFeePerGas));
+      const newMaxFeePerGas = parseGasFeeParam(
+        Number(gweiToWei(newGweiMaxFeePerGas))
+      );
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
