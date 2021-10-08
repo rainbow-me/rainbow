@@ -35,7 +35,7 @@ export const ethGasStationGetGasPrices = () =>
  * @type RainbowFetchClient instance
  */
 const maticGasstationApi = new RainbowFetchClient({
-  baseURL: 'https://gasstation-mainnet.matic.network',
+  baseURL: 'https://gpoly.blockscan.com',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ const maticGasstationApi = new RainbowFetchClient({
  * @desc get Matic gas prices
  * @return {Promise}
  */
-export const maticGasStationGetGasPrices = () => maticGasstationApi.get(`/`);
+export const maticGasStationGetGasPrices = () => maticGasstationApi.get(`/gasapi.ashx?apikey=key&method=gasoracle`);
 
 /**
  * Configuration for Etherscan API

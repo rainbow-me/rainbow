@@ -98,11 +98,13 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   dispatch(gasPricesStopPolling());
 
   const getPolygonGasPrices = async () => {
-    const { data: maticGasStationPrices } = await maticGasStationGetGasPrices();
+    const { result } = await maticGasStationGetGasPrices();
 
     // Override required to make it compatible with other responses
-    maticGasStationPrices['average'] = maticGasStationPrices['standard'];
-    delete maticGasStationPrices['standard'];
+    maticGasStationPrices['slow'] = Math.ceil(Number(result['SafeGasPrice']));
+    maticGasStationPrices['average'] = Math.ceil(result['SafeGasPrice']);
+    maticGasStationPrices['fast'] = Math.ceil(result['ProposeGasPrice']);
+    maticGasStationPrices['fastest'] = Math.ceil(result['FastGasPrice']);
 
     return maticGetGasEstimates(maticGasStationPrices);
   };

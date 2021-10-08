@@ -53,25 +53,25 @@ const parseGasPricesEthGasStation = data => ({
   ),
 });
 const parseGasPricesMaticGasStation = data => {
-  const maticGasPriceBumpFactor = 1.15;
+  const maticGasPriceBumpFactor = 1.05;
   return {
     [CUSTOM]: null,
     [FAST]: defaultGasPriceFormat(
       FAST,
       0.2,
-      Math.ceil((Number(data.fastest) / 10) * maticGasPriceBumpFactor),
+      Math.ceil((Number(data.fastest)) * maticGasPriceBumpFactor),
       true
     ),
     [NORMAL]: defaultGasPriceFormat(
       NORMAL,
       0.5,
-      Math.ceil((Number(data.fast) / 10) * maticGasPriceBumpFactor),
+      Math.ceil((Number(data.fast)) * maticGasPriceBumpFactor),
       true
     ),
     [SLOW]: defaultGasPriceFormat(
       SLOW,
       1,
-      Math.ceil((Number(data.average) / 10) * maticGasPriceBumpFactor) / 10,
+      Math.ceil((Number(data.average)) * maticGasPriceBumpFactor),
       true
     ),
   };
