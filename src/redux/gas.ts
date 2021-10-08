@@ -17,6 +17,7 @@ import {
 } from '@rainbow-me/entities';
 import {
   blockNativeGetGasParams,
+  etherscanGetGasFeesEstimates,
   getEstimatedTimeForGasPrice,
   maticGasStationGetGasPrices,
   maticGetGasEstimates,
@@ -314,40 +315,28 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
           });
         } else {
           try {
-            // // Use etherscan as our Gas Price Oracle
-            // const {
-            //   data: { result: etherscanGasPrices },
-            // } = await etherscanGetGasPrices();
             const {
               gasFeeParamsBySpeed,
               baseFeePerGas,
             } = await getEIP1559GasParams();
-            // const priceData = {
-            //   average: Number(etherscanGasPrices.ProposeGasPrice),
-            //   fast: Number(etherscanGasPrices.FastGasPrice),
-            //   safeLow: Number(etherscanGasPrices.SafeGasPrice),
-            // };
-
-            // should add multiplier logic here
-
-            // Add gas estimated times
-            // adjustedGasPrices = await etherscanGetGasEstimates(priceData);
-
+            const newGasFeeParamsBySpeed = await etherscanGetGasFeesEstimates(
+              gasFeeParamsBySpeed
+            );
             if (!isEmpty(existingGasFees[CUSTOM])) {
               // Preserve custom values while updating prices
-              gasFeeParamsBySpeed[CUSTOM] = {
+              newGasFeeParamsBySpeed[CUSTOM] = {
                 ...existingGasFees[CUSTOM],
                 baseFeePerGas,
               };
-            } else if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
+            } else if (isEmpty(newGasFeeParamsBySpeed[CUSTOM])) {
               // set CUSTOM to NORMAL if not defined
-              gasFeeParamsBySpeed[CUSTOM] = gasFeeParamsBySpeed[NORMAL];
+              newGasFeeParamsBySpeed[CUSTOM] = newGasFeeParamsBySpeed[NORMAL];
             }
 
             dispatch({
               payload: {
                 baseFeePerGas,
-                gasFeeParamsBySpeed,
+                gasFeeParamsBySpeed: newGasFeeParamsBySpeed,
               },
               type: GAS_FEES_SUCCESS,
             });

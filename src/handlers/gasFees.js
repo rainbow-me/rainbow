@@ -5,6 +5,7 @@ import {
 } from 'react-native-dotenv';
 import { multiply } from '../helpers/utilities';
 import { RainbowFetchClient } from '../rainbow-fetch';
+import { defaultGasParamsFormat } from '@rainbow-me/parsers';
 import { ethUnits } from '@rainbow-me/references';
 
 /**
@@ -104,6 +105,47 @@ export const maticGetGasEstimates = data => {
     fastWait: 0.2,
     safeLowWait: 1,
   };
+};
+
+/**
+ * @desc get ethereum gas prices from Etherscan
+ * @params {data}
+ * @return {Promise}
+ */
+export const etherscanGetGasFeesEstimates = async gasFeeParamsBySpeed => {
+  const requests = Object.keys(gasFeeParamsBySpeed).map(speed => {
+    return new Promise(async resolve => {
+      try {
+        const totalGasFee =
+          gasFeeParamsBySpeed[speed].baseFeePerGas.gwei +
+          gasFeeParamsBySpeed[speed].maxPriorityFeePerGas.gwei;
+
+        const time = await getEstimatedTimeForGasPrice(Math.round(totalGasFee));
+        resolve({
+          speed,
+          time,
+        });
+        return;
+      } catch (e) {
+        resolve();
+      }
+    });
+  });
+  const estimates = await Promise.all(requests);
+  const newGasFeeParamsBySpeed = { ...gasFeeParamsBySpeed };
+  estimates
+    .filter(estimate => estimate)
+    .forEach(({ speed, time }) => {
+      newGasFeeParamsBySpeed[speed] = defaultGasParamsFormat(
+        speed,
+        time,
+        newGasFeeParamsBySpeed[speed].baseFeePerGas.gwei,
+        newGasFeeParamsBySpeed[speed].maxFeePerGas.gwei,
+        newGasFeeParamsBySpeed[speed].maxPriorityFeePerGas.gwei
+      );
+    });
+
+  return newGasFeeParamsBySpeed;
 };
 
 /**

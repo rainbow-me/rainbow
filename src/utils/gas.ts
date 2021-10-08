@@ -5,6 +5,7 @@ const URGENT = 'urgent';
 const FAST = 'fast';
 const NORMAL = 'normal';
 const SLOW = 'slow';
+const SLOWER = 'slower';
 
 const GasSpeedOrder = [NORMAL, FAST, URGENT, CUSTOM];
 
@@ -17,6 +18,7 @@ const GAS_PRICE_SOURCES = {
 };
 
 const GAS_CONFIDENCE: { [key: number]: string } = {
+  70: SLOWER,
   80: SLOW,
   90: NORMAL,
   95: FAST,
