@@ -913,7 +913,7 @@ var WethAbi = [
 
 var ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 var API_BASE_URL = 'https://swap-aggregator.api.p.rainbow.me';
-var RAINBOW_ROUTER_CONTRACT_ADDRESS = '0xdbC43Ba45381e02825b14322cDdd15eC4B3164E6';
+var RAINBOW_ROUTER_CONTRACT_ADDRESS = '0x21dF544947ba3E8b3c32561399E88B52Dc8b2823';
 var VAULT_ADDRESS = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
 var RAINBOW_ROUTER_OWNER_ADDRESS = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
 var WETH = {
@@ -975,20 +975,6 @@ var geWethMethod = function geWethMethod(name, provider) {
 var RainbowRouterABI = [
 	{
 		inputs: [
-		],
-		name: "baseAggregatorTest",
-		outputs: [
-			{
-				internalType: "string",
-				name: "",
-				type: "string"
-			}
-		],
-		stateMutability: "pure",
-		type: "function"
-	},
-	{
-		inputs: [
 			{
 				internalType: "address",
 				name: "buyTokenAddress",
@@ -1003,11 +989,6 @@ var RainbowRouterABI = [
 				internalType: "bytes",
 				name: "swapCallData",
 				type: "bytes"
-			},
-			{
-				internalType: "uint256",
-				name: "sellAmount",
-				type: "uint256"
 			},
 			{
 				internalType: "uint256",
@@ -1153,20 +1134,6 @@ var RainbowRouterABI = [
 	},
 	{
 		inputs: [
-		],
-		name: "rainbowRouterTest",
-		outputs: [
-			{
-				internalType: "string",
-				name: "",
-				type: "string"
-			}
-		],
-		stateMutability: "pure",
-		type: "function"
-	},
-	{
-		inputs: [
 			{
 				internalType: "uint8",
 				name: "_forwardFees",
@@ -1277,14 +1244,9 @@ var getQuote = /*#__PURE__*/function () {
 
           case 13:
             quote = _context.sent;
-
-            if (!quote.data) {
-              Logger.log('ERROR from API', quote);
-            }
-
             return _context.abrupt("return", quote);
 
-          case 16:
+          case 15:
           case "end":
             return _context.stop();
         }
@@ -1298,13 +1260,13 @@ var getQuote = /*#__PURE__*/function () {
 }();
 var fillQuote = /*#__PURE__*/function () {
   var _ref3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee2(quote, transactionOptions, wallet) {
-    var instance, swapTx, sellTokenAddress, buyTokenAddress, to, data, sellAmountMinusFees, fee, value, sellAmount, feePercentageBasisPoints, allowanceTarget;
+    var instance, swapTx, sellTokenAddress, buyTokenAddress, to, data, fee, value, sellAmount, feePercentageBasisPoints, allowanceTarget;
     return runtime_1.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
             instance = new contracts.Contract(RAINBOW_ROUTER_CONTRACT_ADDRESS, RainbowRouterABI, wallet);
-            sellTokenAddress = quote.sellTokenAddress, buyTokenAddress = quote.buyTokenAddress, to = quote.to, data = quote.data, sellAmountMinusFees = quote.sellAmountMinusFees, fee = quote.fee, value = quote.value, sellAmount = quote.sellAmount, feePercentageBasisPoints = quote.feePercentageBasisPoints, allowanceTarget = quote.allowanceTarget;
+            sellTokenAddress = quote.sellTokenAddress, buyTokenAddress = quote.buyTokenAddress, to = quote.to, data = quote.data, fee = quote.fee, value = quote.value, sellAmount = quote.sellAmount, feePercentageBasisPoints = quote.feePercentageBasisPoints, allowanceTarget = quote.allowanceTarget;
 
             if (!((sellTokenAddress == null ? void 0 : sellTokenAddress.toLowerCase()) === ETH_ADDRESS.toLowerCase())) {
               _context2.next = 8;
@@ -1312,8 +1274,8 @@ var fillQuote = /*#__PURE__*/function () {
             }
 
             _context2.next = 5;
-            return instance.fillQuoteEthToToken(buyTokenAddress, to, data, sellAmountMinusFees, fee, _extends({}, transactionOptions, {
-              value: sellAmount
+            return instance.fillQuoteEthToToken(buyTokenAddress, to, data, fee, _extends({}, transactionOptions, {
+              value: value
             }));
 
           case 5:
@@ -1367,7 +1329,6 @@ var getQuoteExecutionDetails = function getQuoteExecutionDetails(quote, transact
       buyTokenAddress = quote.buyTokenAddress,
       to = quote.to,
       data = quote.data,
-      sellAmountMinusFees = quote.sellAmountMinusFees,
       fee = quote.fee,
       value = quote.value,
       sellAmount = quote.sellAmount,
@@ -1378,9 +1339,9 @@ var getQuoteExecutionDetails = function getQuoteExecutionDetails(quote, transact
     return {
       method: instance.estimateGas['fillQuoteEthToToken'],
       // @ts-ignore
-      methodArgs: [buyTokenAddress, to, data, sellAmountMinusFees, fee],
+      methodArgs: [buyTokenAddress, to, data, fee],
       params: _extends({}, transactionOptions, {
-        value: sellAmount
+        value: value
       })
     };
   } else if ((buyTokenAddress == null ? void 0 : buyTokenAddress.toLowerCase()) === ETH_ADDRESS.toLowerCase()) {

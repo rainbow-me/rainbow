@@ -63,7 +63,7 @@ const getInputAmount = async (
       chainId: Number(chainId),
       fromAddress,
       sellTokenAddress,
-      slippage: 0.5,
+      slippage: 1,
     };
     const quote = await getQuote(quoteParams);
     if (!quote){
@@ -141,7 +141,7 @@ const getOutputAmount = async (
       fromAddress,
       sellAmount,
       sellTokenAddress,
-      slippage: 0.5,
+      slippage: 1,
     };
     const quote = await getQuote(quoteParams);
     if (!quote){
