@@ -538,7 +538,6 @@ export default function SendSheet(props) {
     selected,
     selectedGasFee,
     toAddress,
-    transactionNetwork,
     updateTxFee,
   ]);
 

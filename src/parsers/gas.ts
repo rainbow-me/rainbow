@@ -47,9 +47,9 @@ const parseGasPricesEtherscan = (data: GasPricesAPIData) => ({
   [SLOW]: defaultGasPriceFormat(SLOW, data.safeLowWait, data.safeLow),
 });
 
-export const parseEIP1559GasData = (
+export const parseBlockNativeGasData = (
   data: GasFeesBlockNativeData
-): GasFeeParamsBySpeed => {
+): { gasFeeParamsBySpeed: GasFeeParamsBySpeed; baseFeePerGas: GasFeeParam } => {
   const { baseFeePerGas, estimatedPrices } = data?.blockPrices?.[0];
   // temp multiplier
   const baseFee = baseFeePerGas * 1.5;
@@ -65,8 +65,14 @@ export const parseEIP1559GasData = (
     );
   });
   parsedFees[CUSTOM] = {} as GasFeeParams;
+  const parsedBaseFeePerGas = parseGasFeeParam(
+    Number(gweiToWei(baseFeePerGas))
+  );
 
-  return parsedFees;
+  return {
+    baseFeePerGas: parsedBaseFeePerGas,
+    gasFeeParamsBySpeed: parsedFees,
+  };
 };
 
 const parseGasPricesEthGasStation = (data: GasPricesAPIData) => ({

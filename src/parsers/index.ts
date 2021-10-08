@@ -10,7 +10,7 @@ export {
   getFallbackGasPrices,
   parseGasPrices,
   parseGasFeesBySpeed,
-  parseEIP1559GasData,
+  parseBlockNativeGasData,
   defaultGasPriceFormat,
   parseLegacyGasFeesBySpeed,
   gweiToWei,

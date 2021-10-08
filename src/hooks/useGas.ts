@@ -13,6 +13,7 @@ import {
   gasUpdateToCustomGasFee,
   gasUpdateTxFee,
 } from '@rainbow-me/redux/gas';
+import { gasUtils } from '@rainbow-me/utils';
 
 export default function useGas() {
   const dispatch = useDispatch();
@@ -32,7 +33,7 @@ export default function useGas() {
       gasLimit,
       isSufficientGas,
       selectedGasFee,
-      selectedGasFeeOption: selectedGasFee.option,
+      selectedGasFeeOption: selectedGasFee.option || gasUtils.NORMAL,
     })
   );
 

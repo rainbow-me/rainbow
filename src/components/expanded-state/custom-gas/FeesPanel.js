@@ -45,8 +45,8 @@ const PanelColumn = styled(Column).attrs(() => ({
   justify: 'center',
 }))``;
 
-const MAX_GAS_FEE_VAR_AMOUNT = 1;
-const MAX_FEE_PRIORITY_FEE_VAR_AMOUNT = 0.5;
+const MAX_GAS_FEE_INCREMENT = 1;
+const MAX_FEE_PRIORITY_FEE_INCREMENT = 0.5;
 
 export default function FeesPanel({
   currentGasTrend,
@@ -75,7 +75,7 @@ export default function FeesPanel({
   const addMinerTip = useCallback(
     () =>
       updateGasFee({
-        priorityFeePerGas: MAX_FEE_PRIORITY_FEE_VAR_AMOUNT,
+        priorityFeePerGas: MAX_FEE_PRIORITY_FEE_INCREMENT,
       }),
     [updateGasFee]
   );
@@ -83,18 +83,18 @@ export default function FeesPanel({
   const substMinerTip = useCallback(
     () =>
       updateGasFee({
-        priorityFeePerGas: -MAX_FEE_PRIORITY_FEE_VAR_AMOUNT,
+        priorityFeePerGas: -MAX_FEE_PRIORITY_FEE_INCREMENT,
       }),
     [updateGasFee]
   );
 
   const addMaxFee = useCallback(
-    () => updateGasFee({ feePerGas: MAX_GAS_FEE_VAR_AMOUNT }),
+    () => updateGasFee({ feePerGas: MAX_GAS_FEE_INCREMENT }),
     [updateGasFee]
   );
 
   const substMaxFee = useCallback(
-    () => updateGasFee({ feePerGas: -MAX_GAS_FEE_VAR_AMOUNT }),
+    () => updateGasFee({ feePerGas: -MAX_GAS_FEE_INCREMENT }),
     [updateGasFee]
   );
 

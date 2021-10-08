@@ -156,14 +156,10 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
         borderRadius={39}
         contentHeight={ios ? longFormHeight : sheetHeightWithoutKeyboard}
       >
-        {/* <Header>
-          <SheetTitle weight="heavy">Custom Gas</SheetTitle>
-        </Header> */}
         <PanelWrapper>
           <FeesPanel
             currentGasTrend={currentGasTrend}
             selectedGasFee={selectedGasFee}
-            // setMaxBaseFee={setMaxBaseFee}
             updateGasFee={updateGasFee}
           />
           <Divider />
