@@ -41,16 +41,9 @@ const GweiNumber = styled(AnimatedNumber).attrs(
   flex-grow: 1;
 `;
 
-const GweiStepButton = ({ type, setValue }) => {
-  const changeValue = () => {
-    if (type === 'plus') {
-      setValue(value => value + 1);
-    } else {
-      setValue(value => value - 1);
-    }
-  };
+const GweiStepButton = ({ type, changeValue }) => {
   return (
-    <ButtonPressAnimation onPress={changeValue}>
+    <ButtonPressAnimation onLongPress={changeValue} onPress={changeValue}>
       <StepButton>{type === 'plus' ? '􀁍' : '􀁏'}</StepButton>
     </ButtonPressAnimation>
   );
@@ -80,13 +73,13 @@ export default function GweiInput({ value, plusAction, minusAction }) {
   return (
     <Row>
       <InputColumn justify="center">
-        <GweiStepButton setValue={minusAction} type="minus" />
+        <GweiStepButton changeValue={minusAction} type="minus" />
       </InputColumn>
       <InputColumn>
         <GweiInputPill value={value} />
       </InputColumn>
       <InputColumn justify="center">
-        <GweiStepButton setValue={plusAction} type="plus" />
+        <GweiStepButton changeValue={plusAction} type="plus" />
       </InputColumn>
     </Row>
   );
