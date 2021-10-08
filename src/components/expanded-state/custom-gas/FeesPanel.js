@@ -7,8 +7,6 @@ import FeesGweiInput from './FeesGweiInput';
 import { padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
-Text;
-
 const OuterWrapper = styled.View`
   margin-top: 0px;
 `;
@@ -45,8 +43,27 @@ const PanelColumn = styled(Column).attrs(() => ({
   justify: 'center',
 }))``;
 
-const MAX_GAS_FEE_INCREMENT = 1;
-const MAX_FEE_PRIORITY_FEE_INCREMENT = 0.5;
+const GAS_FEE_INCREMENT = 1;
+const PRIORITY_FEE_INCREMENT = 0.5;
+const PRIORITY_FEE_THRESHOLD = 0.15;
+
+const calculateMinerTipAddDifference = minerTip => {
+  const diff = Math.round((minerTip % PRIORITY_FEE_INCREMENT) * 100) / 100;
+  if (diff > PRIORITY_FEE_INCREMENT - PRIORITY_FEE_THRESHOLD) {
+    return 2 * PRIORITY_FEE_INCREMENT - diff;
+  } else {
+    return PRIORITY_FEE_INCREMENT - diff;
+  }
+};
+
+const calculateMinerTipSubstDifference = minerTip => {
+  const diff = Math.round((minerTip % PRIORITY_FEE_INCREMENT) * 100) / 100;
+  if (diff < PRIORITY_FEE_THRESHOLD) {
+    return PRIORITY_FEE_INCREMENT + diff;
+  } else {
+    return diff || PRIORITY_FEE_INCREMENT;
+  }
+};
 
 export default function FeesPanel({
   currentGasTrend,
@@ -72,29 +89,25 @@ export default function FeesPanel({
     return { currentBaseFee, maxBaseFee, maxFee, minerTip };
   }, [selectedGasFee]);
 
-  const addMinerTip = useCallback(
-    () =>
-      updateGasFee({
-        priorityFeePerGas: MAX_FEE_PRIORITY_FEE_INCREMENT,
-      }),
-    [updateGasFee]
-  );
+  const addMinerTip = useCallback(() => {
+    updateGasFee({
+      priorityFeePerGas: calculateMinerTipAddDifference(minerTip),
+    });
+  }, [updateGasFee, minerTip]);
 
-  const substMinerTip = useCallback(
-    () =>
-      updateGasFee({
-        priorityFeePerGas: -MAX_FEE_PRIORITY_FEE_INCREMENT,
-      }),
-    [updateGasFee]
-  );
+  const substMinerTip = useCallback(() => {
+    updateGasFee({
+      priorityFeePerGas: -calculateMinerTipSubstDifference(minerTip),
+    });
+  }, [updateGasFee, minerTip]);
 
   const addMaxFee = useCallback(
-    () => updateGasFee({ feePerGas: MAX_GAS_FEE_INCREMENT }),
+    () => updateGasFee({ feePerGas: GAS_FEE_INCREMENT }),
     [updateGasFee]
   );
 
   const substMaxFee = useCallback(
-    () => updateGasFee({ feePerGas: -MAX_GAS_FEE_INCREMENT }),
+    () => updateGasFee({ feePerGas: -GAS_FEE_INCREMENT }),
     [updateGasFee]
   );
 

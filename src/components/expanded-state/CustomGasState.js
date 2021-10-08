@@ -21,7 +21,7 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { gweiToWei, parseGasFeeParam, weiToGwei } from '@rainbow-me/parsers';
+import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
 import { padding, position } from '@rainbow-me/styles';
 
 const springConfig = {
@@ -102,16 +102,16 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
       const {
         gasFeeParams: { maxFeePerGas, maxPriorityFeePerGas },
       } = selectedGasFee;
-      const gweiMaxPriorityFeePerGas = Number(
-        weiToGwei(maxPriorityFeePerGas.amount)
-      );
-      const gweiMaxFeePerGas = Number(weiToGwei(maxFeePerGas.amount));
+      const gweiMaxPriorityFeePerGas = maxPriorityFeePerGas.gwei;
+      const gweiMaxFeePerGas = maxFeePerGas.gwei;
+
       const newGweiMaxPriorityFeePerGas =
-        gweiMaxPriorityFeePerGas + priorityFeePerGas;
-      const newGweiMaxFeePerGas = gweiMaxFeePerGas + feePerGas;
+        Math.round(gweiMaxPriorityFeePerGas + priorityFeePerGas * 100) / 100;
+      const newGweiMaxFeePerGas =
+        Math.round(gweiMaxFeePerGas + feePerGas * 100) / 100;
 
       const newMaxPriorityFeePerGas = parseGasFeeParam(
-        gweiToWei(newGweiMaxPriorityFeePerGas)
+        Number(gweiToWei(newGweiMaxPriorityFeePerGas))
       );
       const newMaxFeePerGas = parseGasFeeParam(gweiToWei(newGweiMaxFeePerGas));
 
