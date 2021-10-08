@@ -333,11 +333,13 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
             // Add gas estimated times
             // adjustedGasPrices = await etherscanGetGasEstimates(priceData);
 
-            if (existingGasFees[CUSTOM] !== null) {
+            if (!isEmpty(existingGasFees[CUSTOM])) {
               // Preserve custom values while updating prices
-              gasFeeParamsBySpeed[CUSTOM] = existingGasFees[CUSTOM];
-            }
-            if (!gasFeeParamsBySpeed[CUSTOM]) {
+              gasFeeParamsBySpeed[CUSTOM] = {
+                ...existingGasFees[CUSTOM],
+                baseFeePerGas,
+              };
+            } else if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
               // set CUSTOM to NORMAL if not defined
               gasFeeParamsBySpeed[CUSTOM] = gasFeeParamsBySpeed[NORMAL];
             }
