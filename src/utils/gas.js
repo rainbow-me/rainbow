@@ -9,7 +9,7 @@ const GAS_PRICE_SOURCES = {
   ARBITRUM_NODE: 'arbitrumNode',
   ETH_GAS_STATION: 'ethGasStation',
   ETHERSCAN: 'etherscan',
-  MATIC_GAS_STATION: 'maticGasStation',
+  POLYGON_GAS_STATION: 'polygonGasStation',
   OPTIMISM_NODE: 'optimismNode',
 };
 
