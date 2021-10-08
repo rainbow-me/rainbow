@@ -27,6 +27,7 @@ import {
   useHeight,
   useKeyboardHeight,
   usePriceImpactDetails,
+  useSwapCurrencies,
   useSwapDerivedOutputs,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -98,6 +99,7 @@ export default function SwapDetailsState({
   const keyboardHeight = useKeyboardHeight();
   const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const insets = useSafeArea();
+  const { outputCurrency } = useSwapCurrencies();
 
   const {
     derivedValues: { inputAmount, outputAmount },
@@ -222,6 +224,7 @@ export default function SwapDetailsState({
             width={deviceWidth - 10}
           >
             <GasSpeedButton
+              asset={outputCurrency}
               currentNetwork={network}
               onCustomGasBlur={hideKeyboard}
               onCustomGasFocus={showKeyboard}

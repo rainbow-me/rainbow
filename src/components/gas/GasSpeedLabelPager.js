@@ -12,7 +12,8 @@ const SpeedButton = styled(ButtonPressAnimation).attrs({
   hapticType: 'impactHeavy',
   scaleTo: 0.9,
 })`
-  border: ${({ theme: { colors } }) => `2px solid ${colors.appleBlue}`};
+  border: ${({ colorForAsset, theme: { colors } }) =>
+    `2px solid ${colorForAsset || colors.appleBlue}`};
   border-radius: 15px;
   ${padding(0, 5, 5)};
 )
@@ -33,7 +34,13 @@ const DoneCustomGas = styled(Text).attrs({
   ${margin(3, 2, 0, 3)}
 `;
 
-const GasSpeedLabelPager = ({ hideDropdown, label, theme, onPress }) => {
+const GasSpeedLabelPager = ({
+  hideDropdown,
+  label,
+  theme,
+  onPress,
+  colorForAsset,
+}) => {
   const [touched, setTouched] = useState(false);
   useEffect(() => setTouched(true), [label]);
   const { colors } = useTheme();
@@ -41,11 +48,12 @@ const GasSpeedLabelPager = ({ hideDropdown, label, theme, onPress }) => {
   return (
     <Row align="center" justify="end">
       <Column>
-        <SpeedButton onPress={onPress}>
+        <SpeedButton colorForAsset={colorForAsset} onPress={onPress}>
           {!hideDropdown ? (
             <Row align="end">
               <Column>
                 <GasSpeedLabelPagerItem
+                  colorForAsset={colorForAsset}
                   key={label}
                   label={label}
                   selected

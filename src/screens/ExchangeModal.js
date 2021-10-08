@@ -589,6 +589,7 @@ export default function ExchangeModal({
             />
           )}
           <GasSpeedButton
+            asset={outputCurrency}
             currentNetwork={network}
             dontBlur
             onCustomGasBlur={handleCustomGasBlur}

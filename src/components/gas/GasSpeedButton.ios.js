@@ -18,7 +18,11 @@ import { Column, Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
 import { isL2Network } from '@rainbow-me/handlers/web3';
-import { useAccountSettings, useGas } from '@rainbow-me/hooks';
+import {
+  useAccountSettings,
+  useColorForAsset,
+  useGas,
+} from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { margin, padding } from '@rainbow-me/styles';
@@ -106,10 +110,10 @@ const GasSpeedButton = ({
   options = null,
   minMaxPriorityFeePerGas = null,
   currentNetwork,
+  asset,
 }) => {
   const { colors } = useTheme();
-  // const inputRef = useRef(null);
-  // eip 1559
+  const colorForAsset = useColorForAsset(asset || {});
   const { navigate, goBack } = useNavigation();
 
   const {
@@ -229,6 +233,7 @@ const GasSpeedButton = ({
 
   const openCustomGasSheet = useCallback(() => {
     navigate(Routes.CUSTOM_GAS_SHEET, {
+      asset,
       // restoreFocusOnSwapModal: () => {
       //   android &&
       //     (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
@@ -236,7 +241,7 @@ const GasSpeedButton = ({
       // },
       type: 'custom_gas',
     });
-  }, [navigate]);
+  }, [navigate, asset]);
 
   useEffect(() => {
     if (selectedGasFeeOption === gasUtils.CUSTOM) {
@@ -475,6 +480,7 @@ const GasSpeedButton = ({
       menuTitle: `Transaction Speed`,
     };
   }, [options]);
+
   const onPressAndroid = useCallback(() => {
     const androidContractActions = ['Copy Contract Address', 'x', 'Cancel'];
     showActionSheetWithOptions(
@@ -553,6 +559,7 @@ const GasSpeedButton = ({
         <Column>
           {hideDropdown ? (
             <GasSpeedLabelPager
+              colorForAsset={colorForAsset}
               hideDropdown={hideDropdown}
               label={selectedGasFeeOption}
               onPress={goBack}
@@ -572,6 +579,7 @@ const GasSpeedButton = ({
                   wrapNativeComponent={false}
                 >
                   <GasSpeedLabelPager
+                    colorForAsset={colorForAsset}
                     hideDropdown={hideDropdown}
                     label={selectedGasFeeOption}
                     showPager={!inputFocused}

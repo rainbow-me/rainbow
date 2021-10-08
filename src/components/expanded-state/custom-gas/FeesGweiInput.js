@@ -16,8 +16,8 @@ const GweiPill = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   ${margin(0, 6)}
 `;
 
-const StepButton = styled(Text).attrs(({ theme: { colors } }) => ({
-  color: colors.purple,
+const StepButton = styled(Text).attrs(({ theme: { colors }, color }) => ({
+  color: color || colors.appleBlue,
   size: 'lmedium',
   weight: 'heavy',
 }))``;
@@ -41,10 +41,10 @@ const GweiNumber = styled(AnimatedNumber).attrs(
   flex-grow: 1;
 `;
 
-const GweiStepButton = ({ type, changeValue }) => {
+const GweiStepButton = ({ type, changeValue, buttonColor }) => {
   return (
     <ButtonPressAnimation onLongPress={changeValue} onPress={changeValue}>
-      <StepButton>{type === 'plus' ? '􀁍' : '􀁏'}</StepButton>
+      <StepButton color={buttonColor}>{type === 'plus' ? '􀁍' : '􀁏'}</StepButton>
     </ButtonPressAnimation>
   );
 };
@@ -69,17 +69,30 @@ const GweiInputPill = ({ value }) => {
   );
 };
 
-export default function GweiInput({ value, plusAction, minusAction }) {
+export default function GweiInput({
+  value,
+  plusAction,
+  minusAction,
+  buttonColor,
+}) {
   return (
     <Row>
       <InputColumn justify="center">
-        <GweiStepButton changeValue={minusAction} type="minus" />
+        <GweiStepButton
+          buttonColor={buttonColor}
+          changeValue={minusAction}
+          type="minus"
+        />
       </InputColumn>
       <InputColumn>
         <GweiInputPill value={value} />
       </InputColumn>
       <InputColumn justify="center">
-        <GweiStepButton changeValue={plusAction} type="plus" />
+        <GweiStepButton
+          buttonColor={buttonColor}
+          changeValue={plusAction}
+          type="plus"
+        />
       </InputColumn>
     </Row>
   );

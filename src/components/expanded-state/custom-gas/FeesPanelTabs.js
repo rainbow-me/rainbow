@@ -15,26 +15,31 @@ const PillScrollViewStyle = { flexGrow: 1, justifyContent: 'center' };
 export const TabPillWrapper = styled(View).attrs({})`
   ${padding(4, 8)};
   ${margin(15, 4, 4)};
-  border: ${({ isSelected, theme: { colors } }) =>
-    `2px solid ${isSelected ? colors.appleBlue : colors.rowDivider}`};
+  border: ${({ isSelected, color, theme: { colors } }) =>
+    `2px solid ${isSelected ? color || colors.appleBlue : colors.rowDivider}`};
   border-radius: 15px;
 `;
 export const TabPillText = styled(Text).attrs({
   size: 'lmedium',
   weight: 'heavy',
 })`
-  color: ${({ isSelected, theme: { colors } }) =>
-    `${isSelected ? colors.appleBlue : colors.blueGreyDark50}`};
+  color: ${({ isSelected, theme: { colors }, color }) =>
+    `${isSelected ? color || colors.appleBlue : colors.blueGreyDark50}`};
 `;
 
-const TabPill = ({ label, isSelected, handleOnPressTabPill }) => {
+const TabPill = ({ label, isSelected, handleOnPressTabPill, color }) => {
   const handleOnPress = () => {
     handleOnPressTabPill(label);
   };
   return (
     <ButtonPressAnimation onPress={handleOnPress}>
-      <TabPillWrapper isSelected={isSelected}>
-        <TabPillText isSelected={isSelected} size="lmedium" weight="bold">
+      <TabPillWrapper color={color} isSelected={isSelected}>
+        <TabPillText
+          color={color}
+          isSelected={isSelected}
+          size="lmedium"
+          weight="bold"
+        >
           {upperFirst(label)}
         </TabPillText>
       </TabPillWrapper>
@@ -42,7 +47,7 @@ const TabPill = ({ label, isSelected, handleOnPressTabPill }) => {
   );
 };
 
-export default function FeesPanelTabs() {
+export default function FeesPanelTabs({ colorForAsset }) {
   const { updateGasFeeOption, selectedGasFeeOption } = useGas();
   const handleOnPressTabPill = label => {
     updateGasFeeOption(label);
@@ -53,6 +58,7 @@ export default function FeesPanelTabs() {
         {gasUtils.GasSpeedOrder.map(speed => (
           <Column key={speed}>
             <TabPill
+              color={colorForAsset}
               handleOnPressTabPill={handleOnPressTabPill}
               isSelected={selectedGasFeeOption === speed}
               label={speed}

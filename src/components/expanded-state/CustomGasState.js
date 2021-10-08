@@ -15,6 +15,7 @@ import { FeesPanel, FeesPanelTabs } from './custom-gas';
 import {
   useAccountSettings,
   useBooleanState,
+  useColorForAsset,
   useDimensions,
   useGas,
   useHeight,
@@ -57,7 +58,7 @@ function useAndroidDisableGesturesOnFocus() {
   }, [isFocused, params]);
 }
 
-export default function CustomGasState({ restoreFocusOnSwapModal }) {
+export default function CustomGasState({ restoreFocusOnSwapModal, asset }) {
   const { network } = useAccountSettings();
   const { setParams } = useNavigation();
   const { params: { longFormHeight } = {} } = useRoute();
@@ -69,7 +70,7 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
   const [slippageMessageHeight] = useHeight();
   const [contentHeight] = useHeight(FOOTER_CONTENT_MIN_HEIGHT);
   const contentScroll = useSharedValue(0);
-
+  const colorForAsset = useColorForAsset(asset || {});
   const [currentGasTrend] = useState('stable');
   const { selectedGasFee, updateToCustomGasFee } = useGas();
 
@@ -160,12 +161,13 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
       >
         <PanelWrapper>
           <FeesPanel
+            colorForAsset={colorForAsset}
             currentGasTrend={currentGasTrend}
             selectedGasFee={selectedGasFee}
             updateGasFee={updateGasFee}
           />
           <Divider />
-          <FeesPanelTabs />
+          <FeesPanelTabs colorForAsset={colorForAsset} />
         </PanelWrapper>
         <Footer onLayout={setFooterHeight}>
           <Column
@@ -174,6 +176,7 @@ export default function CustomGasState({ restoreFocusOnSwapModal }) {
             width={deviceWidth - 10}
           >
             <GasSpeedButton
+              asset={asset}
               currentNetwork={network}
               hideDropdown
               onCustomGasBlur={hideKeyboard}

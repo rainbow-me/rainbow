@@ -69,6 +69,7 @@ export default function FeesPanel({
   currentGasTrend,
   selectedGasFee,
   updateGasFee,
+  colorForAsset,
 }) {
   const { maxFee, currentBaseFee, maxBaseFee, minerTip } = useMemo(() => {
     const maxFee = get(selectedGasFee, 'gasFee.maxFee.native.value.display', 0);
@@ -138,6 +139,7 @@ export default function FeesPanel({
           </PanelColumn>
           <PanelColumn>
             <FeesGweiInput
+              buttonColor={colorForAsset}
               minusAction={substMaxFee}
               plusAction={addMaxFee}
               value={maxBaseFee}
@@ -151,6 +153,7 @@ export default function FeesPanel({
           </PanelColumn>
           <PanelColumn>
             <FeesGweiInput
+              buttonColor={colorForAsset}
               minusAction={substMinerTip}
               plusAction={addMinerTip}
               value={minerTip}
