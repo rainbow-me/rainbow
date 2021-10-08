@@ -718,13 +718,13 @@ function RecyclerAssetList({
 
     if (sections) {
       sections.forEach(section => {
-        if (section.collectibles) {
+        if (section?.collectibles) {
           collectibles = section;
         }
-        if (section.balances) {
+        if (section?.balances) {
           balances = section;
         }
-        if (section.pools) {
+        if (section?.pools) {
           pools = section;
         }
       });
@@ -732,12 +732,12 @@ function RecyclerAssetList({
       let balancesRows = [];
       let coinDividerHeight = 0;
 
-      balances.data.forEach(element => {
-        if (element.smallBalancesContainer) {
+      balances?.data?.forEach(element => {
+        if (element?.smallBalancesContainer) {
           smallBalances = element;
-        } else if (element.savingsContainer) {
+        } else if (element?.savingsContainer) {
           savings = element;
-        } else if (element.coinDivider) {
+        } else if (element?.coinDivider) {
           coinDividerHeight = CoinDividerHeight;
         } else {
           balancesRows.push(element);
@@ -755,7 +755,7 @@ function RecyclerAssetList({
         3;
 
       const savingsHeight = ViewTypes.COIN_SAVINGS.calculateHeight({
-        amountOfRows: savings.assets?.length || 0,
+        amountOfRows: savings?.assets?.length || 0,
         isLast: false,
         isOpen: openSavings,
       });
