@@ -23,7 +23,12 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
-import { padding, position } from '@rainbow-me/styles';
+import {
+  colors,
+  lightModeThemeColors,
+  padding,
+  position,
+} from '@rainbow-me/styles';
 
 const springConfig = {
   damping: 500,
@@ -98,6 +103,14 @@ export default function CustomGasState({ restoreFocusOnSwapModal, asset }) {
         (sheetHeightWithoutKeyboard + keyboardOffset)
       : 0;
 
+  // if ETH color, use blueApple
+  const assetColor = useMemo(() => {
+    if (colorForAsset === colors.brighten(lightModeThemeColors.dark)) {
+      return colors.appleBlue;
+    }
+    return colorForAsset;
+  }, [colorForAsset]);
+
   const updateGasFee = useCallback(
     ({ priorityFeePerGas = 0, feePerGas = 0 }) => {
       const {
@@ -161,13 +174,13 @@ export default function CustomGasState({ restoreFocusOnSwapModal, asset }) {
       >
         <PanelWrapper>
           <FeesPanel
-            colorForAsset={colorForAsset}
+            colorForAsset={assetColor}
             currentGasTrend={currentGasTrend}
             selectedGasFee={selectedGasFee}
             updateGasFee={updateGasFee}
           />
           <Divider />
-          <FeesPanelTabs colorForAsset={colorForAsset} />
+          <FeesPanelTabs colorForAsset={assetColor} />
         </PanelWrapper>
         <Footer onLayout={setFooterHeight}>
           <Column

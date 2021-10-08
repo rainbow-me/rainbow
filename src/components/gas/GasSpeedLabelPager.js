@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 // import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPagerItem from './GasSpeedLabelPagerItem';
-import { margin, padding } from '@rainbow-me/styles';
+import { lightModeThemeColors, margin, padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const SpeedButton = styled(ButtonPressAnimation).attrs({
   hapticType: 'impactHeavy',
   scaleTo: 0.9,
 })`
-  border: ${({ colorForAsset, theme: { colors } }) =>
-    `2px solid ${colorForAsset || colors.appleBlue}`};
+  border: ${({ color, theme: { colors } }) =>
+    `2px solid ${color || colors.appleBlue}`};
   border-radius: 15px;
   ${padding(0, 5, 5)};
 )
@@ -42,13 +42,14 @@ const GasSpeedLabelPager = ({
   colorForAsset,
 }) => {
   const [touched, setTouched] = useState(false);
-  useEffect(() => setTouched(true), [label]);
   const { colors } = useTheme();
+
+  useEffect(() => setTouched(true), [label]);
 
   return (
     <Row align="center" justify="end">
       <Column>
-        <SpeedButton colorForAsset={colorForAsset} onPress={onPress}>
+        <SpeedButton color={colorForAsset} onPress={onPress}>
           {!showGasOptions ? (
             <Row align="end">
               <Column>

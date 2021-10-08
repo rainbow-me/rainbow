@@ -11,7 +11,7 @@ import { LayoutAnimation } from 'react-native';
 // import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
-import { darkModeThemeColors } from '../../styles/colors';
+import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { ChainBadge } from '../coin-icon';
 import { Column, Row } from '../layout';
@@ -114,9 +114,17 @@ const GasSpeedButton = ({
 }) => {
   const customGasPriceTimeEstimateHandler = useRef(null);
   const { colors } = useTheme();
-  const colorForAsset = useColorForAsset(asset || {});
   const { navigate, goBack } = useNavigation();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
+  const colorForAsset = useColorForAsset(asset || {});
+
+  // if ETH color, use blueApple
+  const assetColor = useMemo(() => {
+    if (colorForAsset === colors.brighten(lightModeThemeColors.dark)) {
+      return colors.appleBlue;
+    }
+    return colorForAsset;
+  }, [colorForAsset, colors]);
 
   const {
     gasFeeParamsBySpeed,
@@ -565,7 +573,7 @@ const GasSpeedButton = ({
         <Column>
           {showGasOptions ? (
             <GasSpeedLabelPager
-              colorForAsset={colorForAsset}
+              colorForAsset={assetColor}
               label={selectedGasFeeOption}
               onPress={goBack}
               showGasOptions={showGasOptions}
@@ -585,7 +593,7 @@ const GasSpeedButton = ({
                   wrapNativeComponent={false}
                 >
                   <GasSpeedLabelPager
-                    colorForAsset={colorForAsset}
+                    colorForAsset={assetColor}
                     label={selectedGasFeeOption}
                     showGasOptions={showGasOptions}
                     showPager={!inputFocused}
