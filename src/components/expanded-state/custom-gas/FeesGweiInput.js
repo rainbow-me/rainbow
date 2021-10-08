@@ -49,9 +49,9 @@ const GweiStepButton = ({ type, changeValue, buttonColor }) => {
   );
 };
 
-const GweiInputPill = ({ value }) => {
+const GweiInputPill = ({ value, onPress }) => {
   return (
-    <ButtonPressAnimation>
+    <ButtonPressAnimation onPress={onPress}>
       <GweiPill>
         <Row>
           <Column>
@@ -73,6 +73,7 @@ export default function GweiInput({
   value,
   plusAction,
   minusAction,
+  onPressValue,
   buttonColor,
 }) {
   return (
@@ -85,7 +86,7 @@ export default function GweiInput({
         />
       </InputColumn>
       <InputColumn>
-        <GweiInputPill value={value} />
+        <GweiInputPill onPress={onPressValue} value={value} />
       </InputColumn>
       <InputColumn justify="center">
         <GweiStepButton

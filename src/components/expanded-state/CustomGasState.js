@@ -178,9 +178,9 @@ export default function CustomGasState({ restoreFocusOnSwapModal, asset }) {
             <GasSpeedButton
               asset={asset}
               currentNetwork={network}
-              hideDropdown
               onCustomGasBlur={hideKeyboard}
               onCustomGasFocus={showKeyboard}
+              showGasOptions
               testID="swap-details-gas"
               theme="light"
             />

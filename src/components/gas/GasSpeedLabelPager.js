@@ -35,7 +35,7 @@ const DoneCustomGas = styled(Text).attrs({
 `;
 
 const GasSpeedLabelPager = ({
-  hideDropdown,
+  showGasOptions,
   label,
   theme,
   onPress,
@@ -49,7 +49,7 @@ const GasSpeedLabelPager = ({
     <Row align="center" justify="end">
       <Column>
         <SpeedButton colorForAsset={colorForAsset} onPress={onPress}>
-          {!hideDropdown ? (
+          {!showGasOptions ? (
             <Row align="end">
               <Column>
                 <GasSpeedLabelPagerItem

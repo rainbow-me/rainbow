@@ -99,7 +99,7 @@ const TransactionTimeLabel = ({ formatter, theme }) => {
 
 const GasSpeedButton = ({
   // dontBlur,
-  hideDropdown = null,
+  showGasOptions = null,
   horizontalPadding = 19,
   // onCustomGasBlur,
   // onCustomGasFocus,
@@ -112,9 +112,11 @@ const GasSpeedButton = ({
   currentNetwork,
   asset,
 }) => {
+  const customGasPriceTimeEstimateHandler = useRef(null);
   const { colors } = useTheme();
   const colorForAsset = useColorForAsset(asset || {});
   const { navigate, goBack } = useNavigation();
+  const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
 
   const {
     gasFeeParamsBySpeed,
@@ -124,6 +126,19 @@ const GasSpeedButton = ({
     selectedGasFee,
     selectedGasFeeOption,
   } = useGas();
+
+  const [customGasPriceInput] = useState(0);
+  const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
+  const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
+  const [inputFocused] = useState(false);
+
+  // const defaultCustomGasPrice = Math.round(
+  //   weiToGwei(gasPricesAvailable?.fast?.value?.amount)
+  // );
+  // const defaultCustomGasPriceNative = get(
+  //   gasFeesBySpeed?.fast,
+  //   'estimatedFee.native.value.display'
+  // );
 
   const gasPricesAvailable = useMemo(() => {
     if (!options || !minMaxPriorityFeePerGas) {
@@ -137,20 +152,6 @@ const GasSpeedButton = ({
     return filteredGasPrices;
   }, [gasFeeParamsBySpeed, minMaxPriorityFeePerGas, options]);
 
-  const customGasPriceTimeEstimateHandler = useRef(null);
-  const [customGasPriceInput] = useState(0);
-  const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
-  const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
-  const [inputFocused] = useState(false);
-  const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
-
-  // const defaultCustomGasPrice = Math.round(
-  //   weiToGwei(gasPricesAvailable?.fast?.value?.amount)
-  // );
-  // const defaultCustomGasPriceNative = get(
-  //   gasFeesBySpeed?.fast,
-  //   'estimatedFee.native.value.display'
-  // );
   const defaultCustomGasConfirmationTime =
     gasPricesAvailable?.fast?.estimatedTime?.display;
 
@@ -158,15 +159,17 @@ const GasSpeedButton = ({
   // we need to trim the native currency symbol
   // (and leave the number only!)
   // which gets added later in the formatGasPrice function
-  const gasPrice = get(
-    selectedGasFee,
-    `gasFee.estimatedFee.native.value.display`
-  );
-
-  const price = (isNil(gasPrice) ? '0.00' : gasPrice)
-    .replace(',', '') // In case gas price is > 1k!
-    .replace(nativeCurrencySymbol, '')
-    .trim();
+  const price = useMemo(() => {
+    const gasPrice = get(
+      selectedGasFee,
+      `gasFee.estimatedFee.native.value.display`
+    );
+    const price = (isNil(gasPrice) ? '0.00' : gasPrice)
+      .replace(',', '') // In case gas price is > 1k!
+      .replace(nativeCurrencySymbol, '')
+      .trim();
+    return price;
+  }, [nativeCurrencySymbol, selectedGasFee]);
 
   const isL2 = useMemo(() => isL2Network(currentNetwork), [currentNetwork]);
 
@@ -192,17 +195,6 @@ const GasSpeedButton = ({
     [isL2, nativeCurrencySymbol, nativeCurrency]
   );
 
-  useEffect(() => {
-    const estimatedTime = get(
-      selectedGasFee,
-      'estimatedTime.display',
-      ''
-    ).split(' ');
-
-    setEstimatedTimeValue(estimatedTime[0] || 0);
-    setEstimatedTimeUnit(estimatedTime[1] || 'min');
-  }, [selectedGasFee, selectedGasFeeOption]);
-
   const calculateCustomPriceEstimatedTime = useCallback(
     async price => {
       try {
@@ -215,17 +207,6 @@ const GasSpeedButton = ({
     },
     [currentNetwork, updateCustomValues, updateGasFeeOption]
   );
-
-  useEffect(() => {
-    // Cancel any queued estimation
-    customGasPriceTimeEstimateHandler.current &&
-      clearTimeout(customGasPriceTimeEstimateHandler.current);
-    // Add a new one to the queue
-    customGasPriceTimeEstimateHandler.current = setTimeout(() => {
-      customGasPriceInput &&
-        calculateCustomPriceEstimatedTime(customGasPriceInput);
-    }, 1000);
-  }, [calculateCustomPriceEstimatedTime, customGasPriceInput]);
 
   // const handleCustomGasChange = useCallback(async price => {
   //   setCustomGasPriceInput(price);
@@ -242,12 +223,6 @@ const GasSpeedButton = ({
       type: 'custom_gas',
     });
   }, [navigate, asset]);
-
-  useEffect(() => {
-    if (selectedGasFeeOption === gasUtils.CUSTOM) {
-      openCustomGasSheet();
-    }
-  }, [navigate, openCustomGasSheet, selectedGasFeeOption]);
 
   const renderGasPriceText = useCallback(
     animatedNumber => (
@@ -282,6 +257,7 @@ const GasSpeedButton = ({
     [inputFocused, updateGasFeeOption]
   );
 
+  // TODO
   const formatTransactionTime = useCallback(() => {
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
     let gasPriceGwei = get(
@@ -331,15 +307,6 @@ const GasSpeedButton = ({
     selectedGasFee,
     selectedGasFeeOption,
   ]);
-
-  useEffect(() => {
-    const gasOptions = options || GasSpeedOrder;
-    const currentSpeedIndex = gasOptions?.indexOf(selectedGasFeeOption);
-    // If the option isn't available anymore, we need to reset it
-    if (currentSpeedIndex === -1) {
-      handlePress();
-    }
-  }, [handlePress, options, selectedGasFeeOption]);
 
   // const handleCustomGasFocus = useCallback(() => {
   //   setInputFocused(true);
@@ -454,6 +421,7 @@ const GasSpeedButton = ({
 
   // const focusOnInput = useCallback(() => inputRef.current?.focus(), []);
   // const isCustom = selectedGasFeeOption === CUSTOM ? true : false;
+
   const openGasHelper = useCallback(
     () => navigate(Routes.EXPLAIN_SHEET, { type: 'gas' }),
     [navigate]
@@ -481,6 +449,7 @@ const GasSpeedButton = ({
     };
   }, [options]);
 
+  // TODO
   const onPressAndroid = useCallback(() => {
     const androidContractActions = ['Copy Contract Address', 'x', 'Cancel'];
     showActionSheetWithOptions(
@@ -500,6 +469,43 @@ const GasSpeedButton = ({
       }
     );
   }, []);
+
+  useEffect(() => {
+    const gasOptions = options || GasSpeedOrder;
+    const currentSpeedIndex = gasOptions?.indexOf(selectedGasFeeOption);
+    // If the option isn't available anymore, we need to reset it
+    if (currentSpeedIndex === -1) {
+      handlePress();
+    }
+  }, [handlePress, options, selectedGasFeeOption]);
+
+  useEffect(() => {
+    if (selectedGasFeeOption === gasUtils.CUSTOM) {
+      openCustomGasSheet();
+    }
+  }, [navigate, openCustomGasSheet, selectedGasFeeOption]);
+
+  useEffect(() => {
+    // Cancel any queued estimation
+    customGasPriceTimeEstimateHandler.current &&
+      clearTimeout(customGasPriceTimeEstimateHandler.current);
+    // Add a new one to the queue
+    customGasPriceTimeEstimateHandler.current = setTimeout(() => {
+      customGasPriceInput &&
+        calculateCustomPriceEstimatedTime(customGasPriceInput);
+    }, 1000);
+  }, [calculateCustomPriceEstimatedTime, customGasPriceInput]);
+
+  useEffect(() => {
+    const estimatedTime = get(
+      selectedGasFee,
+      'estimatedTime.display',
+      ''
+    ).split(' ');
+
+    setEstimatedTimeValue(estimatedTime[0] || 0);
+    setEstimatedTimeUnit(estimatedTime[1] || 'min');
+  }, [selectedGasFee, selectedGasFeeOption]);
 
   return (
     <Container
@@ -557,12 +563,12 @@ const GasSpeedButton = ({
           </ButtonPressAnimation>
         </Column>
         <Column>
-          {hideDropdown ? (
+          {showGasOptions ? (
             <GasSpeedLabelPager
               colorForAsset={colorForAsset}
-              hideDropdown={hideDropdown}
               label={selectedGasFeeOption}
               onPress={goBack}
+              showGasOptions={showGasOptions}
               showPager={!inputFocused}
               theme={theme}
             />
@@ -580,8 +586,8 @@ const GasSpeedButton = ({
                 >
                   <GasSpeedLabelPager
                     colorForAsset={colorForAsset}
-                    hideDropdown={hideDropdown}
                     label={selectedGasFeeOption}
+                    showGasOptions={showGasOptions}
                     showPager={!inputFocused}
                     theme={theme}
                   />
