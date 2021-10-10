@@ -52,5 +52,5 @@ export interface QuoteExecutionDetails {
     params: TransactionOptions;
 }
 export declare const getQuote: ({ source, chainId, fromAddress, sellTokenAddress, buyTokenAddress, sellAmount, buyAmount, slippage, }: QuoteParams) => Promise<Quote | null>;
-export declare const fillQuote: (quote: Quote, transactionOptions: TransactionOptions, wallet: Wallet) => Promise<Transaction>;
+export declare const fillQuote: (quote: Quote, transactionOptions: TransactionOptions, wallet: Wallet, permit: boolean) => Promise<Transaction>;
 export declare const getQuoteExecutionDetails: (quote: Quote, transactionOptions: TransactionOptions, provider: Provider) => QuoteExecutionDetails;

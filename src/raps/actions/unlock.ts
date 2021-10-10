@@ -17,6 +17,7 @@ import { erc20ABI, ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import { convertAmountToRawAmount, greaterThan } from '@rainbow-me/utilities';
 import { AllowancesCache, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
+import { ALLOWS_PERMIT, PermitSupportedTokenList } from 'rainbow-swaps';
 
 export const estimateApprove = async (
   owner: string,
@@ -24,6 +25,11 @@ export const estimateApprove = async (
   spender: string
 ): Promise<number | string> => {
   try {
+
+    if(ALLOWS_PERMIT[toLower(tokenAddress) as keyof PermitSupportedTokenList]){
+      return '0';
+    }
+
     logger.sentry('exchange estimate approve', {
       owner,
       spender,

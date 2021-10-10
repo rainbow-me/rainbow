@@ -6,7 +6,7 @@ import { get, mapKeys, mapValues, toLower } from 'lodash';
 import { uniswapClient } from '../apollo/client';
 import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
 import { loadWallet } from '../model/wallet';
-import { estimateGasWithPadding, getProviderForNetwork } from './web3';
+import { estimateGasWithPadding, getFlashbotsProvider, getProviderForNetwork } from './web3';
 import { Asset } from '@rainbow-me/entities';
 import {
   add,
@@ -15,7 +15,7 @@ import {
   multiply,
   subtract,
 } from '@rainbow-me/helpers/utilities';
-import { Network } from '@rainbow-me/networkTypes';
+import networkTypes, { Network } from '@rainbow-me/networkTypes';
 import store from '@rainbow-me/redux/store';
 import {
   uniswapLoadedAllTokens,
@@ -147,6 +147,7 @@ export const executeSwap = async ({
   nonce,
   tradeDetails,
   wallet,
+  permit = false
 }: {
   chainId: ChainId;
   gasLimit: string | number;
@@ -154,12 +155,17 @@ export const executeSwap = async ({
   nonce?: number;
   tradeDetails: Quote | null;
   wallet: Wallet | null;
+  permit: boolean;
 }) => {
   let walletToUse = wallet;
+  // Switch to the flashbots provider!
+  const provider = await getProviderForNetwork(networkTypes.mainnet);
+  // We can move to flashbots once we get EIP-1559 support
+  // const provider = await getFlashbotsProvider();
   if (!walletToUse) {
-    const network = ethereumUtils.getNetworkFromChainId(chainId);
-    const provider = await getProviderForNetwork(network);
-    walletToUse = await loadWallet(provider);
+    walletToUse = await loadWallet(undefined, true, provider)
+  } else {
+    walletToUse = new Wallet(walletToUse.privateKey, provider);
   }
 
   if (!walletToUse || !tradeDetails) return null;
@@ -174,7 +180,7 @@ export const executeSwap = async ({
     return unwrapWeth(tradeDetails.sellAmount, walletToUse);
   // Swap
   } else {
-    return fillQuote(tradeDetails, { gasLimit, gasPrice, nonce }, walletToUse);
+    return fillQuote(tradeDetails, { gasLimit, gasPrice, nonce }, walletToUse, permit);
   }
 };
 

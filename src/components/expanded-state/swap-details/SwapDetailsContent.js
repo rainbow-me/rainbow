@@ -81,7 +81,7 @@ export default function SwapDetailsContent({
           onCopySwapDetailsText={onCopySwapDetailsText}
         />
       )}
-      <SwapDetailsUniswapRow protocols={tradeDetails.protocols} />
+      <SwapDetailsUniswapRow protocols={tradeDetails?.protocols} />
     </Container>
   );
 }

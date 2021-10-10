@@ -98,6 +98,10 @@ export const isTestnet = network => {
   }
 };
 
+export const getFlashbotsProvider = async () => {
+  return new JsonRpcProvider('https://rpc.flashbots.net', NetworkTypes.mainnet);
+}
+
 /**
  * @desc returns a web3 provider for the specified network
  * @param {String} network

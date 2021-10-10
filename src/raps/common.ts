@@ -33,6 +33,7 @@ export interface RapActionParameters {
   inputAmount?: string | null;
   outputAmount?: string | null;
   tradeDetails?: Quote;
+  permit?: boolean;
 }
 
 export interface UnlockActionParameters {
@@ -45,6 +46,7 @@ export interface SwapActionParameters {
   inputAmount: string;
   outputAmount: string;
   tradeDetails: Quote;
+  permit?: boolean;
 }
 
 export interface RapActionTransaction {

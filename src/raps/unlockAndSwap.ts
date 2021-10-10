@@ -11,7 +11,7 @@ import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
 import store from '@rainbow-me/redux/store';
 import { ethUnits, ETH_ADDRESS } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
-import { RAINBOW_ROUTER_CONTRACT_ADDRESS, WETH } from 'rainbow-swaps';
+import { ALLOWS_PERMIT, PermitSupportedTokenList, RAINBOW_ROUTER_CONTRACT_ADDRESS, WETH } from 'rainbow-swaps';
 
 export const estimateUnlockAndSwap = async (
   swapParameters: SwapActionParameters
@@ -81,8 +81,9 @@ export const createUnlockAndSwapRap = async (
       RAINBOW_ROUTER_CONTRACT_ADDRESS
     );
   }
+  const allowsPermit = ALLOWS_PERMIT[toLower(inputCurrency.address) as keyof PermitSupportedTokenList];
 
-  if (swapAssetNeedsUnlocking) {
+  if (swapAssetNeedsUnlocking && !allowsPermit) {
     const unlock = createNewAction(RapActionTypes.unlock, {
       amount: inputAmount,
       assetToUnlock: inputCurrency,
@@ -95,6 +96,7 @@ export const createUnlockAndSwapRap = async (
   const swap = createNewAction(RapActionTypes.swap, {
     inputAmount,
     tradeDetails,
+    permit: swapAssetNeedsUnlocking && allowsPermit
   });
   actions = concat(actions, swap);
 

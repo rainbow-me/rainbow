@@ -29,7 +29,7 @@ const swap = async (
 ): Promise<number | undefined> => {
   logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
   const requiresApprove = index > 0;
-  const { inputAmount, tradeDetails } = parameters as SwapActionParameters;
+  const { inputAmount, tradeDetails, permit } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { accountAddress, chainId } = store.getState().settings;
   const { inputCurrency } = store.getState().swap;
@@ -72,6 +72,7 @@ const swap = async (
       nonce,
       tradeDetails,
       wallet,
+      permit: !!permit,
     });
   } catch (e) {
     logger.sentry('Error', e);
