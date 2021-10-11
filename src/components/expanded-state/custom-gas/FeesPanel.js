@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import FeesGweiInput from './FeesGweiInput';
+import { useGas } from '@rainbow-me/hooks';
+import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
 import { padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
@@ -67,12 +69,12 @@ const calculateMinerTipSubstDifference = minerTip => {
 
 export default function FeesPanel({
   currentGasTrend,
-  selectedGasFee,
-  updateGasFee,
   colorForAsset,
   // onCustomGasBlur,
   onCustomGasFocus,
 }) {
+  const { selectedGasFee, updateToCustomGasFee } = useGas();
+
   const { maxFee, currentBaseFee, maxBaseFee, minerTip } = useMemo(() => {
     const maxFee = get(selectedGasFee, 'gasFee.maxFee.native.value.display', 0);
     const currentBaseFee = get(
@@ -101,6 +103,35 @@ export default function FeesPanel({
   //   // setInputFocused(false);
   //   onCustomGasBlur?.();
   // }, [onCustomGasBlur]);
+  const updateGasFee = useCallback(
+    ({ priorityFeePerGas = 0, feePerGas = 0 }) => {
+      const {
+        gasFeeParams: { maxFeePerGas, maxPriorityFeePerGas },
+      } = selectedGasFee;
+      const gweiMaxPriorityFeePerGas = maxPriorityFeePerGas.gwei;
+      const gweiMaxFeePerGas = maxFeePerGas.gwei;
+
+      const newGweiMaxPriorityFeePerGas =
+        Math.round((gweiMaxPriorityFeePerGas + priorityFeePerGas) * 100) / 100;
+      const newGweiMaxFeePerGas =
+        Math.round((gweiMaxFeePerGas + feePerGas) * 100) / 100;
+
+      const newMaxPriorityFeePerGas = parseGasFeeParam(
+        Number(gweiToWei(newGweiMaxPriorityFeePerGas))
+      );
+      const newMaxFeePerGas = parseGasFeeParam(
+        Number(gweiToWei(newGweiMaxFeePerGas))
+      );
+
+      const newGasParams = {
+        ...selectedGasFee.gasFeeParams,
+        maxFeePerGas: newMaxFeePerGas,
+        maxPriorityFeePerGas: newMaxPriorityFeePerGas,
+      };
+      updateToCustomGasFee(newGasParams);
+    },
+    [selectedGasFee, updateToCustomGasFee]
+  );
 
   const addMinerTip = useCallback(() => {
     updateGasFee({
@@ -122,6 +153,47 @@ export default function FeesPanel({
   const substMaxFee = useCallback(
     () => updateGasFee({ feePerGas: -GAS_FEE_INCREMENT }),
     [updateGasFee]
+  );
+
+  const onMaxBaseFeeChange = useCallback(
+    ({ nativeEvent: { text } }) => {
+      const maxFeePerGas = parseGasFeeParam(Number(gweiToWei(text)));
+      const gweiMaxFeePerGas = maxFeePerGas.gwei;
+
+      const newGweiMaxFeePerGas = Math.round(gweiMaxFeePerGas * 100) / 100;
+
+      const newMaxFeePerGas = parseGasFeeParam(
+        Number(gweiToWei(newGweiMaxFeePerGas))
+      );
+
+      const newGasParams = {
+        ...selectedGasFee.gasFeeParams,
+        maxFeePerGas: newMaxFeePerGas,
+      };
+      updateToCustomGasFee(newGasParams);
+    },
+    [selectedGasFee.gasFeeParams, updateToCustomGasFee]
+  );
+
+  const onMinerTipChange = useCallback(
+    ({ nativeEvent: { text } }) => {
+      const maxPriorityFeePerGas = parseGasFeeParam(Number(gweiToWei(text)));
+      const gweiMaxPriorityFeePerGas = maxPriorityFeePerGas.gwei;
+
+      const newGweiMaxPriorityFeePerGas =
+        Math.round(gweiMaxPriorityFeePerGas * 100) / 100;
+
+      const newMaxPriorityFeePerGas = parseGasFeeParam(
+        Number(gweiToWei(newGweiMaxPriorityFeePerGas))
+      );
+
+      const newGasParams = {
+        ...selectedGasFee.gasFeeParams,
+        maxPriorityFeePerGas: newMaxPriorityFeePerGas,
+      };
+      updateToCustomGasFee(newGasParams);
+    },
+    [selectedGasFee.gasFeeParams, updateToCustomGasFee]
   );
 
   return (
@@ -153,6 +225,7 @@ export default function FeesPanel({
             <FeesGweiInput
               buttonColor={colorForAsset}
               minusAction={substMaxFee}
+              onChange={onMaxBaseFeeChange}
               onPress={handleCustomGasFocus}
               plusAction={addMaxFee}
               value={maxBaseFee}
@@ -168,6 +241,7 @@ export default function FeesPanel({
             <FeesGweiInput
               buttonColor={colorForAsset}
               minusAction={substMinerTip}
+              onChange={onMinerTipChange}
               onPress={handleCustomGasFocus}
               plusAction={addMinerTip}
               value={minerTip}

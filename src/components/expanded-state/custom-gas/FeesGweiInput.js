@@ -23,10 +23,11 @@ const GweiStepButton = ({ type, changeValue, buttonColor }) => {
   );
 };
 
-export default function GweiInput({
+export default function FeesGweiInput({
   value,
   plusAction,
   minusAction,
+  onChange,
   onPress,
   buttonColor,
 }) {
@@ -48,6 +49,7 @@ export default function GweiInput({
       </InputColumn>
       <InputColumn>
         <GweiInputPill
+          onChange={onChange}
           onFocus={onInputPress}
           onPress={onInputPress}
           ref={inputRef}

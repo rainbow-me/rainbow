@@ -111,36 +111,6 @@ export default function CustomGasState({ restoreFocusOnSwapModal, asset }) {
     return colorForAsset;
   }, [colorForAsset]);
 
-  const updateGasFee = useCallback(
-    ({ priorityFeePerGas = 0, feePerGas = 0 }) => {
-      const {
-        gasFeeParams: { maxFeePerGas, maxPriorityFeePerGas },
-      } = selectedGasFee;
-      const gweiMaxPriorityFeePerGas = maxPriorityFeePerGas.gwei;
-      const gweiMaxFeePerGas = maxFeePerGas.gwei;
-
-      const newGweiMaxPriorityFeePerGas =
-        Math.round((gweiMaxPriorityFeePerGas + priorityFeePerGas) * 100) / 100;
-      const newGweiMaxFeePerGas =
-        Math.round((gweiMaxFeePerGas + feePerGas) * 100) / 100;
-
-      const newMaxPriorityFeePerGas = parseGasFeeParam(
-        Number(gweiToWei(newGweiMaxPriorityFeePerGas))
-      );
-      const newMaxFeePerGas = parseGasFeeParam(
-        Number(gweiToWei(newGweiMaxFeePerGas))
-      );
-
-      const newGasParams = {
-        ...selectedGasFee.gasFeeParams,
-        maxFeePerGas: newMaxFeePerGas,
-        maxPriorityFeePerGas: newMaxPriorityFeePerGas,
-      };
-      updateToCustomGasFee(newGasParams);
-    },
-    [selectedGasFee, updateToCustomGasFee]
-  );
-
   useEffect(() => {
     if (isKeyboardVisible) {
       contentScroll.value = withSpring(
@@ -182,7 +152,6 @@ export default function CustomGasState({ restoreFocusOnSwapModal, asset }) {
             onCustomGasBlur={hideKeyboard}
             onCustomGasFocus={showKeyboard}
             selectedGasFee={selectedGasFee}
-            updateGasFee={updateGasFee}
           />
           <Divider />
           <FeesPanelTabs colorForAsset={assetColor} />

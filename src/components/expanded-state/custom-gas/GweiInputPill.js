@@ -32,7 +32,7 @@ const InputColumn = styled(Column).attrs({
   justify: 'center',
 })``;
 
-function GweiInputPill({ value, onPress, onFocus }, ref) {
+function GweiInputPill({ value, onPress, onChange, onFocus }, ref) {
   return (
     <ButtonPressAnimation onPress={onPress}>
       <GweiPill>
@@ -40,6 +40,7 @@ function GweiInputPill({ value, onPress, onFocus }, ref) {
           <InputColumn>
             <GweiNumberInput
               keyboardType="numeric"
+              onChange={onChange}
               onFocus={onFocus}
               ref={ref}
               value={`${value}`}
