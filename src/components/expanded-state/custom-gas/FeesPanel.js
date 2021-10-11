@@ -49,8 +49,9 @@ const GAS_FEE_INCREMENT = 1;
 const PRIORITY_FEE_INCREMENT = 0.5;
 const PRIORITY_FEE_THRESHOLD = 0.15;
 
-const calculateMinerTipAddDifference = minerTip => {
-  const diff = Math.round((minerTip % PRIORITY_FEE_INCREMENT) * 100) / 100;
+const calculateMinerTipAddDifference = maxPriorityFee => {
+  const diff =
+    Math.round((maxPriorityFee % PRIORITY_FEE_INCREMENT) * 100) / 100;
   if (diff > PRIORITY_FEE_INCREMENT - PRIORITY_FEE_THRESHOLD) {
     return 2 * PRIORITY_FEE_INCREMENT - diff;
   } else {
@@ -58,8 +59,9 @@ const calculateMinerTipAddDifference = minerTip => {
   }
 };
 
-const calculateMinerTipSubstDifference = minerTip => {
-  const diff = Math.round((minerTip % PRIORITY_FEE_INCREMENT) * 100) / 100;
+const calculateMinerTipSubstDifference = maxPriorityFee => {
+  const diff =
+    Math.round((maxPriorityFee % PRIORITY_FEE_INCREMENT) * 100) / 100;
   if (diff < PRIORITY_FEE_THRESHOLD) {
     return PRIORITY_FEE_INCREMENT + diff;
   } else {
@@ -74,8 +76,11 @@ export default function FeesPanel({
   onCustomGasFocus,
 }) {
   const { selectedGasFee, updateToCustomGasFee } = useGas();
+  const [customMaxPriorityFee, setCustomMaxPriorityFee] = useState(
+    get(selectedGasFee, 'gasFeeParams.maxPriorityFeePerGas.gwei', 0)
+  );
 
-  const { maxFee, currentBaseFee, maxBaseFee, minerTip } = useMemo(() => {
+  const { maxFee, currentBaseFee, maxBaseFee, maxPriorityFee } = useMemo(() => {
     const maxFee = get(selectedGasFee, 'gasFee.maxFee.native.value.display', 0);
     const currentBaseFee = get(
       selectedGasFee,
@@ -86,23 +91,28 @@ export default function FeesPanel({
       get(selectedGasFee, 'gasFeeParams.maxFeePerGas.gwei', 0),
       10
     );
-    const minerTip = get(
-      selectedGasFee,
-      'gasFeeParams.maxPriorityFeePerGas.gwei',
-      0
-    );
-    return { currentBaseFee, maxBaseFee, maxFee, minerTip };
-  }, [selectedGasFee]);
+    let maxPriorityFee;
+    if (selectedGasFee?.option === 'custom') {
+      // block more thn 2 decimals on gwei value
+      const decimals = Number(customMaxPriorityFee) % 1;
+      maxPriorityFee =
+        `${decimals}`.length > 4
+          ? Number(customMaxPriorityFee).toFixed(2)
+          : customMaxPriorityFee;
+    } else {
+      maxPriorityFee = get(
+        selectedGasFee,
+        'gasFeeParams.maxPriorityFeePerGas.gwei',
+        0
+      );
+    }
+    return { currentBaseFee, maxBaseFee, maxFee, maxPriorityFee };
+  }, [customMaxPriorityFee, selectedGasFee]);
 
   const handleCustomGasFocus = useCallback(() => {
-    // setInputFocused(true);
     onCustomGasFocus?.();
   }, [onCustomGasFocus]);
 
-  // const handleCustomGasBlur = useCallback(() => {
-  //   // setInputFocused(false);
-  //   onCustomGasBlur?.();
-  // }, [onCustomGasBlur]);
   const updateGasFee = useCallback(
     ({ priorityFeePerGas = 0, feePerGas = 0 }) => {
       const {
@@ -123,6 +133,11 @@ export default function FeesPanel({
         Number(gweiToWei(newGweiMaxFeePerGas))
       );
 
+      if (newMaxPriorityFeePerGas.amount < 0 || newMaxFeePerGas.amount < 0)
+        return;
+
+      setCustomMaxPriorityFee(newMaxPriorityFeePerGas.gwei);
+
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
         maxFeePerGas: newMaxFeePerGas,
@@ -135,15 +150,15 @@ export default function FeesPanel({
 
   const addMinerTip = useCallback(() => {
     updateGasFee({
-      priorityFeePerGas: calculateMinerTipAddDifference(minerTip),
+      priorityFeePerGas: calculateMinerTipAddDifference(maxPriorityFee),
     });
-  }, [updateGasFee, minerTip]);
+  }, [updateGasFee, maxPriorityFee]);
 
   const substMinerTip = useCallback(() => {
     updateGasFee({
-      priorityFeePerGas: -calculateMinerTipSubstDifference(minerTip),
+      priorityFeePerGas: -calculateMinerTipSubstDifference(maxPriorityFee),
     });
-  }, [updateGasFee, minerTip]);
+  }, [updateGasFee, maxPriorityFee]);
 
   const addMaxFee = useCallback(
     () => updateGasFee({ feePerGas: GAS_FEE_INCREMENT }),
@@ -186,6 +201,7 @@ export default function FeesPanel({
       const newMaxPriorityFeePerGas = parseGasFeeParam(
         Number(gweiToWei(newGweiMaxPriorityFeePerGas))
       );
+      setCustomMaxPriorityFee(text);
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
@@ -244,7 +260,7 @@ export default function FeesPanel({
               onChange={onMinerTipChange}
               onPress={handleCustomGasFocus}
               plusAction={addMinerTip}
-              value={minerTip}
+              value={maxPriorityFee}
             />
           </PanelColumn>
         </PanelRow>
