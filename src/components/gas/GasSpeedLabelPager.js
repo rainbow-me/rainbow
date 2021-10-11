@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 // import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPagerItem from './GasSpeedLabelPagerItem';
-import { lightModeThemeColors, margin, padding } from '@rainbow-me/styles';
+import { margin, padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const SpeedButton = styled(ButtonPressAnimation).attrs({

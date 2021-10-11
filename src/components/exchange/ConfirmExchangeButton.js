@@ -79,12 +79,21 @@ export default function ConfirmExchangeButton({
   );
 
   const colorForAsset = useColorForAsset(asset, undefined, true);
+
+  // if ETH color, use blueApple
+  const assetColor = useMemo(() => {
+    if (colorForAsset === colors.brighten(lightModeThemeColors.dark)) {
+      return colors.appleBlue;
+    }
+    return colorForAsset;
+  }, [colorForAsset, colors]);
+
   const { buttonColor, shadowsForAsset } = useMemo(() => {
     const color =
       asset.address === ETH_ADDRESS
         ? colors.appleBlue
         : isSwapDetailsRoute
-        ? colorForAsset
+        ? assetColor
         : makeColorMoreChill(
             colorForAsset,
             (isSwapDetailsRoute ? colors : darkModeThemeColors).light
@@ -97,7 +106,14 @@ export default function ConfirmExchangeButton({
         [0, 5, 15, isDarkMode ? colors.trueBlack : color, 0.4],
       ],
     };
-  }, [asset.address, colorForAsset, colors, isDarkMode, isSwapDetailsRoute]);
+  }, [
+    asset.address,
+    assetColor,
+    colorForAsset,
+    colors,
+    isDarkMode,
+    isSwapDetailsRoute,
+  ]);
 
   let label = '';
   if (type === ExchangeModalTypes.deposit) {
