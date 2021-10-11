@@ -13,8 +13,8 @@ import { gasUtils } from '@rainbow-me/utils';
 const PillScrollViewStyle = { flexGrow: 1, justifyContent: 'center' };
 
 export const TabPillWrapper = styled(View).attrs({})`
-  ${padding(4, 8)};
-  ${margin(15, 4, 4)};
+  ${padding(5, 10)};
+  ${margin(20, 4, 24, 4)};
   border: ${({ isSelected, color, theme: { colors } }) =>
     `2px solid ${isSelected ? color || colors.appleBlue : colors.rowDivider}`};
   border-radius: 15px;

@@ -4,6 +4,8 @@ import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import Divider from '../Divider';
+import { ExchangeHeader } from '../exchange';
+import { FloatingPanel } from '../floating-panels';
 import { GasSpeedButton } from '../gas';
 import { Column } from '../layout';
 import {
@@ -47,10 +49,8 @@ const Footer = styled(Column).attrs({
   shrink: 0,
 })`
   ${padding(6, 0, 0)};
-  background-color: transparent;
+  background-color: black;
 `;
-
-const PanelWrapper = styled.View``;
 
 const FOOTER_MIN_HEIGHT = 143;
 const FOOTER_CONTENT_MIN_HEIGHT = 241;
@@ -168,11 +168,14 @@ export default function CustomGasState({ restoreFocusOnSwapModal, asset }) {
       translateY={contentScroll}
     >
       <SlackSheet
-        additionalTopPadding={android}
-        borderRadius={39}
+        backgroundColor={colors.black}
         contentHeight={ios ? longFormHeight : sheetHeightWithoutKeyboard}
+        hideHandle
+        removeTopPadding
+        scrollEnabled={false}
       >
-        <PanelWrapper>
+        <FloatingPanel radius={38}>
+          <ExchangeHeader />
           <FeesPanel
             colorForAsset={assetColor}
             currentGasTrend={currentGasTrend}
@@ -181,13 +184,9 @@ export default function CustomGasState({ restoreFocusOnSwapModal, asset }) {
           />
           <Divider />
           <FeesPanelTabs colorForAsset={assetColor} />
-        </PanelWrapper>
+        </FloatingPanel>
         <Footer onLayout={setFooterHeight}>
-          <Column
-            justify="center"
-            marginHorizontal={5}
-            width={deviceWidth - 10}
-          >
+          <Column justify="center" width={deviceWidth}>
             <GasSpeedButton
               asset={asset}
               currentNetwork={network}
@@ -195,7 +194,7 @@ export default function CustomGasState({ restoreFocusOnSwapModal, asset }) {
               onCustomGasFocus={showKeyboard}
               showGasOptions
               testID="swap-details-gas"
-              theme="light"
+              theme="dark"
             />
           </Column>
         </Footer>

@@ -76,7 +76,15 @@ const GasSpeedLabelPager = ({
               </Column>
             </Row>
           ) : (
-            <DoneCustomGas>Done</DoneCustomGas>
+            <DoneCustomGas
+              color={
+                theme !== 'light'
+                  ? colors.whiteLabel
+                  : colors.alpha(colors.blueGreyDark, 0.8)
+              }
+            >
+              Done
+            </DoneCustomGas>
           )}
         </SpeedButton>
       </Column>
