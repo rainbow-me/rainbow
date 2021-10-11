@@ -155,6 +155,9 @@ export default function FeesPanel({
             <FeesGweiInput
               buttonColor={colorForAsset}
               minusAction={substMinerTip}
+              onPressValue={() => {
+                console.log('aaaaa');
+              }}
               plusAction={addMinerTip}
               value={minerTip}
             />

@@ -2,8 +2,9 @@ import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../../animations';
+import { Input } from '../../inputs';
 import { Column, Row } from '../../layout';
-import { AnimatedNumber, Text } from '../../text';
+import { Text } from '../../text';
 import { margin, padding } from '@rainbow-me/styles';
 
 const GweiPill = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
@@ -26,20 +27,16 @@ const InputColumn = styled(Column).attrs({
   justify: 'center',
 })``;
 
-const GweiNumber = styled(AnimatedNumber).attrs(
-  ({ theme: { colors }, value }) => ({
-    color: !value && colors.grey,
-    interval: 1,
-    letterSpacing: 'roundedTight',
-    size: 'lmedium',
-    steps: 1,
-    textAlign: 'left',
-    timing: 'linear',
-    weight: 'heavy',
-  })
-)`
-  flex-grow: 1;
-`;
+const GweiNumber = styled(Input).attrs(({ theme: { colors }, value }) => ({
+  color: !value && colors.grey,
+  interval: 1,
+  letterSpacing: 'roundedTight',
+  size: 'lmedium',
+  steps: 1,
+  textAlign: 'left',
+  timing: 'linear',
+  weight: 'heavy',
+}))``;
 
 const GweiStepButton = ({ type, changeValue, buttonColor }) => {
   return (
@@ -54,15 +51,15 @@ const GweiInputPill = ({ value, onPress }) => {
     <ButtonPressAnimation onPress={onPress}>
       <GweiPill>
         <Row>
-          <Column>
-            <GweiNumber value={value} />
-          </Column>
-          <Column>
+          <InputColumn>
+            <GweiNumber keyboardType="numeric" value={`${value}`} />
+          </InputColumn>
+          <InputColumn>
             <Text size="lmedium" weight="heavy">
               {' '}
               Gwei
             </Text>
-          </Column>
+          </InputColumn>
         </Row>
       </GweiPill>
     </ButtonPressAnimation>
