@@ -70,6 +70,8 @@ export default function FeesPanel({
   selectedGasFee,
   updateGasFee,
   colorForAsset,
+  // onCustomGasBlur,
+  onCustomGasFocus,
 }) {
   const { maxFee, currentBaseFee, maxBaseFee, minerTip } = useMemo(() => {
     const maxFee = get(selectedGasFee, 'gasFee.maxFee.native.value.display', 0);
@@ -89,6 +91,16 @@ export default function FeesPanel({
     );
     return { currentBaseFee, maxBaseFee, maxFee, minerTip };
   }, [selectedGasFee]);
+
+  const handleCustomGasFocus = useCallback(() => {
+    // setInputFocused(true);
+    onCustomGasFocus?.();
+  }, [onCustomGasFocus]);
+
+  // const handleCustomGasBlur = useCallback(() => {
+  //   // setInputFocused(false);
+  //   onCustomGasBlur?.();
+  // }, [onCustomGasBlur]);
 
   const addMinerTip = useCallback(() => {
     updateGasFee({
@@ -141,6 +153,7 @@ export default function FeesPanel({
             <FeesGweiInput
               buttonColor={colorForAsset}
               minusAction={substMaxFee}
+              onPress={handleCustomGasFocus}
               plusAction={addMaxFee}
               value={maxBaseFee}
             />
@@ -155,9 +168,7 @@ export default function FeesPanel({
             <FeesGweiInput
               buttonColor={colorForAsset}
               minusAction={substMinerTip}
-              onPressValue={() => {
-                console.log('aaaaa');
-              }}
+              onPress={handleCustomGasFocus}
               plusAction={addMinerTip}
               value={minerTip}
             />

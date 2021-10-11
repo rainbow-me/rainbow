@@ -66,11 +66,10 @@ const ChainBadgeContainer = styled.View.attrs({
 
 const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
-  scaleTo: 1.0666,
 })`
   ${({ horizontalPadding, topPadding }) =>
     padding(topPadding, horizontalPadding, 0)};
-  height: 76;
+  height: 91;
   width: 100%;
 `;
 
@@ -101,8 +100,6 @@ const GasSpeedButton = ({
   // dontBlur,
   showGasOptions = null,
   horizontalPadding = 19,
-  // onCustomGasBlur,
-  // onCustomGasFocus,
   testID,
   // type,
   theme = 'dark',
@@ -316,16 +313,6 @@ const GasSpeedButton = ({
     selectedGasFeeOption,
   ]);
 
-  // const handleCustomGasFocus = useCallback(() => {
-  //   setInputFocused(true);
-  //   onCustomGasFocus?.();
-  // }, [onCustomGasFocus]);
-
-  // const handleCustomGasBlur = useCallback(() => {
-  //   setInputFocused(false);
-  //   onCustomGasBlur?.();
-  // }, [onCustomGasBlur]);
-
   // const handleInputButtonManager = useCallback(() => {
   //   const complete = () => {
   //     if (inputFocused) {
@@ -521,7 +508,7 @@ const GasSpeedButton = ({
       testID={testID}
       topPadding={topPadding}
     >
-      <Row align="center" justify="space-between" marginBottom={1.5}>
+      <Row align="center" justify="space-between">
         <Column>
           <ButtonPressAnimation onPress={openGasHelper}>
             <Row>

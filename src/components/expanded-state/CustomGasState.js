@@ -48,7 +48,7 @@ const Footer = styled(Column).attrs({
   justify: 'end',
   shrink: 0,
 })`
-  ${padding(6, 0, 0)};
+  ${padding(0, 0, 0)};
   background-color: black;
 `;
 
@@ -67,7 +67,7 @@ export default function CustomGasState({ restoreFocusOnSwapModal, asset }) {
   const { network } = useAccountSettings();
   const { setParams } = useNavigation();
   const { params: { longFormHeight } = {} } = useRoute();
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
+  const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const insets = useSafeArea();
@@ -92,7 +92,7 @@ export default function CustomGasState({ restoreFocusOnSwapModal, asset }) {
     30;
 
   const sheetHeightWithKeyboard =
-    sheetHeightWithoutKeyboard + keyboardHeight - 23;
+    sheetHeightWithoutKeyboard + keyboardHeight - 15;
 
   const additionalScrollForKeyboard =
     sheetHeightWithoutKeyboard + keyboardOffset >
@@ -179,6 +179,8 @@ export default function CustomGasState({ restoreFocusOnSwapModal, asset }) {
           <FeesPanel
             colorForAsset={assetColor}
             currentGasTrend={currentGasTrend}
+            onCustomGasBlur={hideKeyboard}
+            onCustomGasFocus={showKeyboard}
             selectedGasFee={selectedGasFee}
             updateGasFee={updateGasFee}
           />
@@ -186,17 +188,13 @@ export default function CustomGasState({ restoreFocusOnSwapModal, asset }) {
           <FeesPanelTabs colorForAsset={assetColor} />
         </FloatingPanel>
         <Footer onLayout={setFooterHeight}>
-          <Column justify="center" width={deviceWidth}>
-            <GasSpeedButton
-              asset={asset}
-              currentNetwork={network}
-              onCustomGasBlur={hideKeyboard}
-              onCustomGasFocus={showKeyboard}
-              showGasOptions
-              testID="swap-details-gas"
-              theme="dark"
-            />
-          </Column>
+          <GasSpeedButton
+            asset={asset}
+            currentNetwork={network}
+            showGasOptions
+            testID="swap-details-gas"
+            theme="dark"
+          />
         </Footer>
       </SlackSheet>
     </SheetKeyboardAnimation>
