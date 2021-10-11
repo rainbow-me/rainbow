@@ -1,5 +1,5 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
@@ -24,7 +24,6 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
 import {
   colors,
   lightModeThemeColors,
@@ -77,7 +76,7 @@ export default function CustomGasState({ restoreFocusOnSwapModal, asset }) {
   const contentScroll = useSharedValue(0);
   const colorForAsset = useColorForAsset(asset || {});
   const [currentGasTrend] = useState('stable');
-  const { selectedGasFee, updateToCustomGasFee } = useGas();
+  const { selectedGasFee } = useGas();
 
   useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
   useAndroidDisableGesturesOnFocus();
