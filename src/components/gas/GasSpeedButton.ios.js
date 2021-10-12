@@ -18,6 +18,7 @@ import { Column, Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
 import { isL2Network } from '@rainbow-me/handlers/web3';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   useAccountSettings,
   useColorForAsset,
@@ -32,7 +33,7 @@ import {
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
 
-const { GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL } = gasUtils;
+const { GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST } = gasUtils;
 
 const Symbol = styled(Text).attrs({
   align: 'right',
@@ -414,8 +415,21 @@ const GasSpeedButton = ({
     [handlePress]
   );
 
+  const speedOptions = useMemo(() => {
+    if (options) return options;
+    switch (currentNetwork) {
+      case networkTypes.polygon:
+        return [NORMAL, FAST, URGENT];
+      case networkTypes.optimism:
+      case networkTypes.arbitrum:
+        return ['normal'];
+      default:
+        return GasSpeedOrder;
+    }
+  }, [currentNetwork, options]);
+
   const menuConfig = useMemo(() => {
-    const menuOptions = (options || GasSpeedOrder).map(gasOption => ({
+    const menuOptions = speedOptions.map(gasOption => ({
       actionKey: gasOption,
       actionTitle: upperFirst(gasOption),
       icon: {
@@ -427,7 +441,7 @@ const GasSpeedButton = ({
       menuItems: menuOptions,
       menuTitle: `Transaction Speed`,
     };
-  }, [options]);
+  }, [speedOptions]);
 
   // TODO
   const onPressAndroid = useCallback(() => {

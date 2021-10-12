@@ -217,7 +217,6 @@ export const parseLegacyGasFeesBySpeed = (
   priceUnit: BigNumberish,
   nativeCurrency: string
 ): LegacyGasFeesBySpeed => {
-  console.log('----- parseLegacyGasFeesBySpeed', legacyGasFees);
   const gasFeesBySpeed = map(GasSpeedOrder, speed => {
     const gasPrice = legacyGasFees?.[speed]?.gasPrice?.amount || 0;
     const estimatedFee = getTxFee(
