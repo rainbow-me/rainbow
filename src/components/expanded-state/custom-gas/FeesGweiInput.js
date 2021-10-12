@@ -20,8 +20,8 @@ const GweiStepButton = ({ type, changeValue, buttonColor }) => {
     <ButtonPressAnimation
       onLongPress={changeValue}
       onPress={changeValue}
-      onPressEnd={() => console.log('onPressEnd')}
-      onPressStart={() => console.log('onpresstate')}
+      // onPressEnd={() => console.log('onPressEnd')}
+      // onPressStart={() => console.log('onpresstate')}
     >
       <StepButton color={buttonColor}>{type === 'plus' ? '􀁍' : '􀁏'}</StepButton>
     </ButtonPressAnimation>
