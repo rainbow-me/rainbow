@@ -217,7 +217,16 @@ const GasSpeedButton = ({
   //   setCustomGasPriceInput(price);
   // }, []);
 
+  const gasIsNotReady = useMemo(
+    () =>
+      isEmpty(gasPricesAvailable) ||
+      isEmpty(selectedGasFee?.gasFee) ||
+      typeof isSufficientGas === 'undefined',
+    [gasPricesAvailable, selectedGasFee?.gasFee, isSufficientGas]
+  );
+
   const openCustomGasSheet = useCallback(() => {
+    if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
       asset,
       // restoreFocusOnSwapModal: () => {
@@ -227,7 +236,7 @@ const GasSpeedButton = ({
       // },
       type: 'custom_gas',
     });
-  }, [navigate, asset]);
+  }, [navigate, asset, gasIsNotReady]);
 
   const renderGasPriceText = useCallback(
     animatedNumber => (
@@ -241,14 +250,10 @@ const GasSpeedButton = ({
         size="lmedium"
         weight="bold"
       >
-        {isEmpty(gasPricesAvailable) ||
-        isEmpty(selectedGasFee?.gasFee) ||
-        typeof isSufficientGas === 'undefined'
-          ? 'Loading...'
-          : animatedNumber}
+        {gasIsNotReady ? 'Loading...' : animatedNumber}
       </Text>
     ),
-    [theme, colors, gasPricesAvailable, selectedGasFee?.gasFee, isSufficientGas]
+    [theme, colors, gasIsNotReady]
   );
 
   const handlePress = useCallback(
