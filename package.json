@@ -139,6 +139,7 @@
     "match-sorter": "6.3.0",
     "mnemonist": "0.38.1",
     "nanoid": "2.1.11",
+    "parse-domain": "^4.1.0",
     "parse-ms": "2.1.0",
     "patch-package": "6.4.7",
     "path-browserify": "0.0.0",
