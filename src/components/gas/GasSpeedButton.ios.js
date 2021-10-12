@@ -98,7 +98,7 @@ const TransactionTimeLabel = ({ formatter, theme }) => {
 
 const GasSpeedButton = ({
   // dontBlur,
-  showGasOptions = null,
+  showGasOptions = false,
   horizontalPadding = 19,
   testID,
   // type,

@@ -1,11 +1,8 @@
 import { useNavigation } from '@react-navigation/core';
 import { get } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import styled, { useTheme } from 'styled-components';
-import colors, {
-  darkModeThemeColors,
-  lightModeThemeColors,
-} from '../../../styles/colors';
+import styled from 'styled-components';
+import colors, { darkModeThemeColors } from '../../../styles/colors';
 import { ButtonPressAnimation } from '../../animations';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';

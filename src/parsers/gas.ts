@@ -26,7 +26,14 @@ import {
 
 type BigNumberish = number | string | BigNumber;
 
-const { CUSTOM, FAST, NORMAL, SLOW, GasSpeedOrder, GAS_CONFIDENCE } = gasUtils;
+const {
+  CUSTOM,
+  FAST,
+  NORMAL,
+  URGENT,
+  GasSpeedOrder,
+  GAS_CONFIDENCE,
+} = gasUtils;
 
 /**
  * @desc parse ether gas prices
@@ -35,16 +42,16 @@ const { CUSTOM, FAST, NORMAL, SLOW, GasSpeedOrder, GAS_CONFIDENCE } = gasUtils;
  */
 export const getFallbackGasPrices = () => ({
   [CUSTOM]: null,
-  [FAST]: defaultGasPriceFormat(FAST, '0.5', '200'),
+  [FAST]: defaultGasPriceFormat(FAST, '2.5', '100'),
   [NORMAL]: defaultGasPriceFormat(NORMAL, '2.5', '100'),
-  [SLOW]: defaultGasPriceFormat(SLOW, '2.5', '100'),
+  [URGENT]: defaultGasPriceFormat(URGENT, '0.5', '200'),
 });
 
 const parseGasPricesEtherscan = (data: GasPricesAPIData) => ({
   [CUSTOM]: null,
-  [FAST]: defaultGasPriceFormat(FAST, data.fastWait, data.fast),
-  [NORMAL]: defaultGasPriceFormat(NORMAL, data.avgWait, data.average),
-  [SLOW]: defaultGasPriceFormat(SLOW, data.safeLowWait, data.safeLow),
+  [FAST]: defaultGasPriceFormat(FAST, data.avgWait, data.average),
+  [NORMAL]: defaultGasPriceFormat(NORMAL, data.safeLowWait, data.safeLow),
+  [URGENT]: defaultGasPriceFormat(URGENT, data.fastWait, data.fast),
 });
 
 export const parseBlockNativeGasData = (
@@ -77,17 +84,17 @@ export const parseBlockNativeGasData = (
 
 const parseGasPricesEthGasStation = (data: GasPricesAPIData) => ({
   [CUSTOM]: null,
-  [FAST]: defaultGasPriceFormat(
-    FAST,
+  [FAST]: defaultGasPriceFormat(FAST, data.fastWait, Number(data.fast) / 10),
+  [NORMAL]: defaultGasPriceFormat(
+    NORMAL,
+    data.avgWait,
+    Number(data.average) / 10
+  ),
+  [URGENT]: defaultGasPriceFormat(
+    URGENT,
     data.fastestWait,
     Number(data.fastest) / 10
   ),
-  [NORMAL]: defaultGasPriceFormat(
-    NORMAL,
-    data.fastWait,
-    Number(data.fast) / 10
-  ),
-  [SLOW]: defaultGasPriceFormat(SLOW, data.avgWait, Number(data.average) / 10),
 });
 const parseGasPricesMaticGasStation = (data: GasPricesAPIData) => {
   const maticGasPriceBumpFactor = 1.15;
@@ -95,18 +102,18 @@ const parseGasPricesMaticGasStation = (data: GasPricesAPIData) => {
     [CUSTOM]: null,
     [FAST]: defaultGasPriceFormat(
       FAST,
-      0.2,
-      Math.ceil((Number(data.fastest) / 10) * maticGasPriceBumpFactor)
-    ),
-    [NORMAL]: defaultGasPriceFormat(
-      NORMAL,
       0.5,
       Math.ceil((Number(data.fast) / 10) * maticGasPriceBumpFactor)
     ),
-    [SLOW]: defaultGasPriceFormat(
-      SLOW,
+    [NORMAL]: defaultGasPriceFormat(
+      NORMAL,
       1,
       Math.ceil((Number(data.average) / 10) * maticGasPriceBumpFactor) / 10
+    ),
+    [URGENT]: defaultGasPriceFormat(
+      URGENT,
+      0.2,
+      Math.ceil((Number(data.fastest) / 10) * maticGasPriceBumpFactor)
     ),
   };
 };
@@ -210,6 +217,7 @@ export const parseLegacyGasFeesBySpeed = (
   priceUnit: BigNumberish,
   nativeCurrency: string
 ): LegacyGasFeesBySpeed => {
+  console.log('----- parseLegacyGasFeesBySpeed', legacyGasFees);
   const gasFeesBySpeed = map(GasSpeedOrder, speed => {
     const gasPrice = legacyGasFees?.[speed]?.gasPrice?.amount || 0;
     const estimatedFee = getTxFee(

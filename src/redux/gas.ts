@@ -236,7 +236,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   });
   const getPolygonGasPrices = async () => {
     const { data: maticGasStationPrices } = await maticGasStationGetGasPrices();
-
+    console.log('maticGasStationPrices', maticGasStationPrices);
     // Override required to make it compatible with other responses
     maticGasStationPrices['average'] = maticGasStationPrices['standard'];
     delete maticGasStationPrices.standard;
@@ -297,6 +297,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
           if (network === networkTypes.polygon) {
             source = GAS_PRICE_SOURCES.MATIC_GAS_STATION;
             adjustedGasFees = await getPolygonGasPrices();
+            console.log('------ adjustedGasFees', adjustedGasFees);
           } else if (network === networkTypes.arbitrum) {
             source = GAS_PRICE_SOURCES.ARBITRUM_NODE;
             adjustedGasFees = await getArbitrumGasPrices();
