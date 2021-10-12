@@ -39,7 +39,7 @@ import {
 import { MainThemeProvider } from './context/ThemeContext';
 import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
-import { DesignSystemPlayground } from './design-system/DesignSystemPlayground';
+import { Playground } from './design-system/playground/Playground';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
@@ -281,7 +281,5 @@ const AppWithRedux = connect(
 const AppWithReduxStore = () => <AppWithRedux store={store} />;
 
 AppRegistry.registerComponent('Rainbow', () =>
-  ENABLE_DESIGN_SYSTEM_PLAYGROUND === 'true'
-    ? DesignSystemPlayground
-    : AppWithReduxStore
+  ENABLE_DESIGN_SYSTEM_PLAYGROUND === 'true' ? Playground : AppWithReduxStore
 );

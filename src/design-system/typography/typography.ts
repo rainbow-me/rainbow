@@ -57,7 +57,7 @@ export const fonts = {
   },
 } as const;
 
-export const headingWeights = pick(fonts.SFProRounded, ['heavy']);
+export const headingWeights = pick(fonts.SFProRounded, ['heavy', 'bold']);
 export const textWeights = fonts.SFProRounded;
 
 // Sourced from https://seek-oss.github.io/capsize
@@ -73,7 +73,7 @@ const marginCorrectionForFontSize = {
   23: ios ? -0.3 : -0.35,
   20: ios ? -0.5 : -0.2,
   18: ios ? 0.4 : 0.2,
-  16: ios ? -0.5 : 1.075,
+  16: ios ? -0.5 : 1.9,
   14: ios ? -0.3 : -0.1,
 } as const;
 
@@ -111,19 +111,19 @@ export const headingSizes = {
   title: createTextSize({
     fontSize: 23,
     lineHeight: 27,
-    letterSpacing: 0.5,
+    letterSpacing: 0.6,
   }),
   heading: createTextSize({
     fontSize: 20,
     lineHeight: 24,
-    letterSpacing: 0.5,
+    letterSpacing: 0.6,
   }),
 };
 
 export const textSizes = {
   body: createTextSize({
     fontSize: 16,
-    lineHeight: 22,
+    lineHeight: 24,
     letterSpacing: 0.5,
   }),
   small: createTextSize({
