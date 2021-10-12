@@ -80,7 +80,7 @@ const GAS_UPDATE_TX_FEE = 'gas/GAS_UPDATE_TX_FEE';
 const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
 const GAS_UPDATE_TRANSACTION_NETWORK = 'gas/GAS_UPDATE_TRANSACTION_NETWORK';
 
-const getnetworkNativeAsset = (assets: any[], network: Network) => {
+const getNetworkNativeAsset = (assets: any[], network: Network) => {
   let nativeAssetAddress;
   switch (network) {
     case networkTypes.polygon:
@@ -104,8 +104,8 @@ const checkIsSufficientGas = (
   txFee: LegacyGasFee | GasFee,
   network: Network
 ) => {
-  const txFeeKey = (txFee as GasFee)?.maxFee ? `maxTxFee` : `txFee`;
-  const nativeAsset = getnetworkNativeAsset(assets, network);
+  const txFeeKey = (txFee as GasFee)?.maxFee ? `maxFee` : `estimatedFee`;
+  const nativeAsset = getNetworkNativeAsset(assets, network);
   const balanceAmount = get(nativeAsset, 'balance.amount', 0);
   const txFeeAmount = fromWei(get(txFee, `${txFeeKey}.value.amount`, 0));
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
@@ -126,13 +126,13 @@ const getSelectedGasFee = (
   const selectedTxFee = gasFeesBySpeed[selectedGasFeeOption];
   const isSufficientGas = checkIsSufficientGas(assets, selectedTxFee, network);
   // this is going to be undefined on type 0 transactions
-  const maxTxFee = get(selectedTxFee, 'maxTxFee');
+  const maxFee = get(selectedTxFee, 'maxFee');
 
   return {
     isSufficientGas,
     selectedGasFee: {
       estimatedTime: selectedGasParams?.estimatedTime,
-      gasFee: { ...selectedTxFee, maxTxFee },
+      gasFee: { ...selectedTxFee, maxFee },
       gasFeeParams: selectedGasParams,
       option: selectedGasFeeOption,
     } as SelectedGasFee | LegacySelectedGasFee,
@@ -472,8 +472,8 @@ export const gasUpdateTxFee = (
 
   const gasFeesBySpeed = parseFeesBySpeed(
     gasFeeParamsBySpeed,
-    nativeTokenPriceUnit,
     _gasLimit,
+    nativeTokenPriceUnit,
     nativeCurrency
   );
   const selectedGasParams = getSelectedGasFee(
