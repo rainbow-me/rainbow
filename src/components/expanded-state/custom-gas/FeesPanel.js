@@ -91,7 +91,6 @@ const calculateMinerTipSubstDifference = maxPriorityFee => {
 export default function FeesPanel({
   currentGasTrend,
   colorForAsset,
-  // onCustomGasBlur,
   onCustomGasFocus,
 }) {
   const {
@@ -104,7 +103,7 @@ export default function FeesPanel({
     get(selectedGasFee, 'gasFeeParams.maxPriorityFeePerGas.gwei', 0)
   );
   const [customMaxBaseFee, setCustomMaxBaseFee] = useState(
-    get(selectedGasFee, 'gasFeeParams.maxBaseFee.gwei', 0)
+    get(selectedGasFee, 'gasFeeParams.maxFeePerGas.gwei', 0)
   );
   const [maxPriorityFeeWarning, setMaxPriorityFeeWarning] = useState(null);
   const [maxPriorityFeeError, setMaxPriorityFeeError] = useState(null);
@@ -125,7 +124,7 @@ export default function FeesPanel({
       const decimals = Number(customMaxBaseFee) % 1;
       maxBaseFee =
         `${decimals}`.length > 4
-          ? Number(customMaxBaseFee).toFixed(2)
+          ? parseInt(customMaxBaseFee, 10)
           : customMaxBaseFee;
     } else {
       maxBaseFee = parseInt(
@@ -158,7 +157,7 @@ export default function FeesPanel({
 
   useEffect(() => {
     // validate not zero
-    if (!maxBaseFee || maxBaseFee === 0) {
+    if (!maxBaseFee || maxBaseFee === '0') {
       setMaxBaseFeeError('1 Gwei to avoid failure');
     } else {
       setMaxBaseFeeError(null);
@@ -174,16 +173,18 @@ export default function FeesPanel({
 
   useEffect(() => {
     // validate not zero
-    if (!maxPriorityFee || maxPriorityFee === 0) {
+    if (!maxPriorityFee || maxPriorityFee === '0') {
       setMaxPriorityFeeError('1 Gwei to avoid failure');
     } else {
       setMaxPriorityFeeError(null);
     }
-    if (maxPriorityFee < gasFeeParamsBySpeed.normal.maxPriorityFeePerGas.gwei) {
+    if (
+      maxPriorityFee < gasFeeParamsBySpeed?.normal?.maxPriorityFeePerGas?.gwei
+    ) {
       setMaxPriorityFeeWarning('Lower than recommended');
     } else if (
       maxPriorityFee >
-      3 * gasFeeParamsBySpeed.normal.maxPriorityFeePerGas.gwei
+      2 * gasFeeParamsBySpeed?.urgent?.maxPriorityFeePerGas?.gwei
     ) {
       setMaxPriorityFeeWarning('Higher than necessary');
     } else {
@@ -193,7 +194,8 @@ export default function FeesPanel({
     maxBaseFee,
     currentBaseFee,
     maxPriorityFee,
-    gasFeeParamsBySpeed.normal.maxPriorityFeePerGas.gwei,
+    gasFeeParamsBySpeed?.urgent?.maxPriorityFeePerGas?.gwei,
+    gasFeeParamsBySpeed?.normal?.maxPriorityFeePerGas?.gwei,
   ]);
 
   const handleCustomGasFocus = useCallback(() => {

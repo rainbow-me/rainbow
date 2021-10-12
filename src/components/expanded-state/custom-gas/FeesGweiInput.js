@@ -30,7 +30,6 @@ export default function FeesGweiInput({
   onChange,
   onPress,
   buttonColor,
-  placeholder,
 }) {
   const inputRef = useRef(null);
 
