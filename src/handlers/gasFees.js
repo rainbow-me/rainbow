@@ -117,7 +117,7 @@ export const etherscanGetGasFeesEstimates = async gasFeeParamsBySpeed => {
     return new Promise(async resolve => {
       try {
         const totalGasFee =
-          gasFeeParamsBySpeed[speed].baseFeePerGas.gwei +
+          gasFeeParamsBySpeed[speed].maxFeePerGas.gwei +
           gasFeeParamsBySpeed[speed].maxPriorityFeePerGas.gwei;
 
         const time = await getEstimatedTimeForGasPrice(Math.round(totalGasFee));
