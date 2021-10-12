@@ -32,7 +32,7 @@ import {
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
 
-const { GAS_ICONS, GasSpeedOrder, CUSTOM, FAST, SLOW } = gasUtils;
+const { GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL } = gasUtils;
 
 const Symbol = styled(Text).attrs({
   align: 'right',
@@ -105,7 +105,6 @@ const GasSpeedButton = ({
   theme = 'dark',
   topPadding = 15,
   options = null,
-  minMaxPriorityFeePerGas = null,
   currentNetwork,
   asset,
 }) => {
@@ -125,6 +124,7 @@ const GasSpeedButton = ({
 
   const {
     gasFeeParamsBySpeed,
+    gasFeesBySpeed,
     updateCustomValues,
     isSufficientGas,
     updateGasFeeOption,
@@ -136,29 +136,6 @@ const GasSpeedButton = ({
   const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
   const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
   const [inputFocused] = useState(false);
-
-  // const defaultCustomGasPrice = Math.round(
-  //   weiToGwei(gasPricesAvailable?.fast?.value?.amount)
-  // );
-  // const defaultCustomGasPriceNative = get(
-  //   gasFeesBySpeed?.fast,
-  //   'estimatedFee.native.value.display'
-  // );
-
-  const gasPricesAvailable = useMemo(() => {
-    if (!options || !minMaxPriorityFeePerGas) {
-      return gasFeeParamsBySpeed;
-    }
-
-    const filteredGasPrices = {};
-    options.forEach(speed => {
-      filteredGasPrices[speed] = gasFeeParamsBySpeed[speed];
-    });
-    return filteredGasPrices;
-  }, [gasFeeParamsBySpeed, minMaxPriorityFeePerGas, options]);
-
-  const defaultCustomGasConfirmationTime =
-    gasPricesAvailable?.fast?.estimatedTime?.display;
 
   // Because of the animated number component
   // we need to trim the native currency symbol
@@ -219,10 +196,10 @@ const GasSpeedButton = ({
 
   const gasIsNotReady = useMemo(
     () =>
-      isEmpty(gasPricesAvailable) ||
+      isEmpty(gasFeeParamsBySpeed) ||
       isEmpty(selectedGasFee?.gasFee) ||
       typeof isSufficientGas === 'undefined',
-    [gasPricesAvailable, selectedGasFee?.gasFee, isSufficientGas]
+    [gasFeeParamsBySpeed, selectedGasFee?.gasFee, isSufficientGas]
   );
 
   const openCustomGasSheet = useCallback(() => {
@@ -270,29 +247,34 @@ const GasSpeedButton = ({
   // TODO
   const formatTransactionTime = useCallback(() => {
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
-    let gasPriceGwei = get(
+    let selectedGasFeeGwei = get(
       selectedGasFee,
       'estimatedFee.value.display.display'
     );
-    if (gasPriceGwei === '0 Gwei') {
-      gasPriceGwei = '< 1 Gwei';
+    if (selectedGasFeeGwei === '0 Gwei') {
+      selectedGasFeeGwei = '< 1 Gwei';
     }
     let timeSymbol = '~';
 
     if (selectedGasFeeOption === CUSTOM) {
-      if (!customGasPriceInput) {
-        return ` ${timeSymbol}${defaultCustomGasConfirmationTime}`;
-      } else if (gasPricesAvailable[CUSTOM]?.gasPrice) {
-        const priceInWei = Number(gasPricesAvailable[CUSTOM].gasPrice.amount);
-        const minGasPriceSlow = gasPricesAvailable[SLOW]
-          ? Number(gasPricesAvailable[SLOW].gasPrice.amount)
-          : Number(gasPricesAvailable[FAST].gasPrice.amount);
-        const maxGasPriceFast = Number(
-          gasPricesAvailable[FAST].gasPrice.amount
+      const customWei = get(
+        gasFeesBySpeed,
+        `${CUSTOM}.estimatedFee.value.amount`
+      );
+      if (customWei) {
+        const normalWei = get(
+          gasFeesBySpeed,
+          `${NORMAL}.estimatedFee.value.amount`
         );
-        if (priceInWei < minGasPriceSlow) {
+        const urgentWei = get(
+          gasFeesBySpeed,
+          `${URGENT}.estimatedFee.value.amount`
+        );
+        const minGasPriceSlow = normalWei | urgentWei;
+        const maxGasPriceFast = urgentWei;
+        if (normalWei < minGasPriceSlow) {
           timeSymbol = '>';
-        } else if (priceInWei > maxGasPriceFast) {
+        } else if (normalWei > maxGasPriceFast) {
           timeSymbol = '<';
         }
 
@@ -309,11 +291,9 @@ const GasSpeedButton = ({
 
     return ` ${timeSymbol}${time} ${estimatedTimeUnit}`;
   }, [
-    customGasPriceInput,
-    defaultCustomGasConfirmationTime,
     estimatedTimeUnit,
     estimatedTimeValue,
-    gasPricesAvailable,
+    gasFeesBySpeed,
     selectedGasFee,
     selectedGasFeeOption,
   ]);
