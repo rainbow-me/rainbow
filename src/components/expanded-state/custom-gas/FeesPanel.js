@@ -98,7 +98,6 @@ export default function FeesPanel({
     selectedGasFee,
     updateToCustomGasFee,
     gasFeeParamsBySpeed,
-    updateGasFeeOption,
   } = useGas();
 
   const [customMaxPriorityFee, setCustomMaxPriorityFee] = useState(
