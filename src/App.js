@@ -235,9 +235,9 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   handleTransactionConfirmed = () => {
-    logger.log('Reloading all data from zerion in 10!');
+    logger.log('Reloading all data from L2 explorers in 10!');
     setTimeout(() => {
-      logger.log('Reloading all data from zerion NOW!');
+      logger.log('Reloading all data from L2 explorers NOW!');
       store.dispatch(explorerInitL2());
     }, 10000);
   };
