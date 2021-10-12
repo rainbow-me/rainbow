@@ -42,8 +42,9 @@ function GweiInputPill({ value, onPress, onChange, onFocus }, ref) {
               keyboardType="numeric"
               onChange={onChange}
               onFocus={onFocus}
+              placeholder="0"
               ref={ref}
-              value={`${value}`}
+              value={!!value && `${value}`}
             />
           </InputColumn>
           <InputColumn>
