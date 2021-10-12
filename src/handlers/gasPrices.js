@@ -47,7 +47,8 @@ const polygonGasStationApi = new RainbowFetchClient({
  * @desc get Polygon gas prices
  * @return {Promise}
  */
-export const polygonGasStationGetGasPrices = () => polygonGasStationApi.get(`/gasapi.ashx?apikey=key&method=gasoracle`);
+export const polygonGasStationGetGasPrices = () =>
+  polygonGasStationApi.get(`/gasapi.ashx?apikey=key&method=gasoracle`);
 
 /**
  * Configuration for Etherscan API

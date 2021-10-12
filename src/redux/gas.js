@@ -98,7 +98,9 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   dispatch(gasPricesStopPolling());
 
   const getPolygonGasPrices = async () => {
-    const { data : { result }}  = await polygonGasStationGetGasPrices();
+    const {
+      data: { result },
+    } = await polygonGasStationGetGasPrices();
     // Override required to make it compatible with other responses
     const polygonGasStationPrices = {};
     polygonGasStationPrices['slow'] = Math.ceil(Number(result['SafeGasPrice']));

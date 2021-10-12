@@ -59,19 +59,19 @@ const parseGasPricesPolygonGasStation = data => {
     [FAST]: defaultGasPriceFormat(
       FAST,
       0.2,
-      Math.ceil((Number(data.fastest)) * polygonGasPriceBumpFactor),
+      Math.ceil(Number(data.fastest) * polygonGasPriceBumpFactor),
       true
     ),
     [NORMAL]: defaultGasPriceFormat(
       NORMAL,
       0.5,
-      Math.ceil((Number(data.fast)) * polygonGasPriceBumpFactor),
+      Math.ceil(Number(data.fast) * polygonGasPriceBumpFactor),
       true
     ),
     [SLOW]: defaultGasPriceFormat(
       SLOW,
       1,
-      Math.ceil((Number(data.average)) * polygonGasPriceBumpFactor),
+      Math.ceil(Number(data.average) * polygonGasPriceBumpFactor),
       true
     ),
   };
