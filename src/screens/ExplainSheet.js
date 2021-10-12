@@ -38,6 +38,18 @@ const GAS_EXPLAINER = `This is the "gas fee" used by the Ethereum blockchain to 
 
 This fee varies depending on the complexity of your transaction and how busy the network is!`;
 
+const CURRENT_BASE_FEE_EXPLAINER = `The base fee is set by the Ethereum network and changes depending on how busy the network is.
+
+Network traffic is stable right now. Have fun!`;
+
+const MAX_BASE_FEE_EXPLAINER = `This is the maximum base fee you’re willing to pay for this transaction.
+
+Setting a higher max base fee prevents your transaction from getting stuck if fees rise.`;
+
+const MINER_TIP_EXPLAINER = `The miner tip goes directly to the miner who confirms your transaction on the network.
+
+A higher tip makes your transaction more likely to be confirmed quickly.`;
+
 const VERIFIED_EXPLAINER = `Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.
 
 Always do your own research to ensure you are interacting with a token you trust.`;
@@ -60,6 +72,24 @@ export const explainers = {
     extraHeight: 2,
     text: GAS_EXPLAINER,
     title: 'Ethereum network fee',
+  },
+  currentBaseFee: {
+    emoji: '🌞',
+    extraHeight: 2,
+    text: CURRENT_BASE_FEE_EXPLAINER,
+    title: 'Current base fee',
+  },
+  maxBaseFee: {
+    emoji: '📈',
+    extraHeight: 2,
+    text: MAX_BASE_FEE_EXPLAINER,
+    title: 'Max base fee',
+  },
+  minerTip: {
+    emoji: '⛏',
+    extraHeight: 2,
+    text: MINER_TIP_EXPLAINER,
+    title: 'Miner tip',
   },
   sending_funds_to_contract: {
     emoji: '✋',

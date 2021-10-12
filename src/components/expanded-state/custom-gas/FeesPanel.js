@@ -1,11 +1,18 @@
+import { useNavigation } from '@react-navigation/core';
 import { get } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
+import colors, {
+  darkModeThemeColors,
+  lightModeThemeColors,
+} from '../../../styles/colors';
+import { ButtonPressAnimation } from '../../animations';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import FeesGweiInput from './FeesGweiInput';
 import { useGas } from '@rainbow-me/hooks';
 import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
+import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
@@ -64,6 +71,11 @@ const PanelColumn = styled(Column).attrs(() => ({
   justify: 'center',
 }))``;
 
+const Label = styled(Text).attrs(({ size, weight }) => ({
+  size: size || 'lmedium',
+  weight: weight || 'semibold',
+}))``;
+
 const GAS_FEE_INCREMENT = 1;
 const PRIORITY_FEE_INCREMENT = 0.5;
 const PRIORITY_FEE_THRESHOLD = 0.15;
@@ -92,12 +104,14 @@ export default function FeesPanel({
   currentGasTrend,
   colorForAsset,
   onCustomGasFocus,
+  theme = 'dark',
 }) {
   const {
     selectedGasFee,
     updateToCustomGasFee,
     gasFeeParamsBySpeed,
   } = useGas();
+  const { navigate } = useNavigation();
 
   const [customMaxPriorityFee, setCustomMaxPriorityFee] = useState(
     get(selectedGasFee, 'gasFeeParams.maxPriorityFeePerGas.gwei', 0)
@@ -151,51 +165,37 @@ export default function FeesPanel({
     return { currentBaseFee, maxBaseFee, maxFee, maxPriorityFee };
   }, [customMaxBaseFee, customMaxPriorityFee, selectedGasFee]);
 
+  const renderRowLabel = useCallback(
+    (label, type) => {
+      const openGasHelper = () => navigate(Routes.EXPLAIN_SHEET, { type });
+      return (
+        <PanelColumn>
+          <ButtonPressAnimation onPress={openGasHelper}>
+            <Row>
+              <PanelLabel>
+                {`${label} `}
+                <Label
+                  color={
+                    theme === 'dark'
+                      ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
+                      : colors.alpha(colors.blueGreyDark, 0.4)
+                  }
+                  size="smedium"
+                  weight="bold"
+                >
+                  􀅵
+                </Label>
+              </PanelLabel>
+            </Row>
+          </ButtonPressAnimation>
+        </PanelColumn>
+      );
+    },
+    [navigate, theme]
+  );
+
   const formattedBaseFee = useMemo(() => `${parseInt(currentBaseFee)} Gwei`, [
     currentBaseFee,
-  ]);
-
-  useEffect(() => {
-    // validate not zero
-    if (!maxBaseFee || maxBaseFee === '0') {
-      setMaxBaseFeeError('1 Gwei to avoid failure');
-    } else {
-      setMaxBaseFeeError(null);
-    }
-    if (maxBaseFee < currentBaseFee) {
-      setMaxBaseFeeWarning('Lower than recommended');
-    } else if (maxBaseFee > 3 * currentBaseFee) {
-      setMaxBaseFeeWarning('Higher than necessary');
-    } else {
-      setMaxBaseFeeWarning(null);
-    }
-  }, [maxBaseFee, currentBaseFee, gasFeeParamsBySpeed.normal]);
-
-  useEffect(() => {
-    // validate not zero
-    if (!maxPriorityFee || maxPriorityFee === '0') {
-      setMaxPriorityFeeError('1 Gwei to avoid failure');
-    } else {
-      setMaxPriorityFeeError(null);
-    }
-    if (
-      maxPriorityFee < gasFeeParamsBySpeed?.normal?.maxPriorityFeePerGas?.gwei
-    ) {
-      setMaxPriorityFeeWarning('Lower than recommended');
-    } else if (
-      maxPriorityFee >
-      2 * gasFeeParamsBySpeed?.urgent?.maxPriorityFeePerGas?.gwei
-    ) {
-      setMaxPriorityFeeWarning('Higher than necessary');
-    } else {
-      setMaxPriorityFeeWarning(null);
-    }
-  }, [
-    maxBaseFee,
-    currentBaseFee,
-    maxPriorityFee,
-    gasFeeParamsBySpeed?.urgent?.maxPriorityFeePerGas?.gwei,
-    gasFeeParamsBySpeed?.normal?.maxPriorityFeePerGas?.gwei,
   ]);
 
   const handleCustomGasFocus = useCallback(() => {
@@ -308,6 +308,49 @@ export default function FeesPanel({
     [selectedGasFee.gasFeeParams, updateToCustomGasFee]
   );
 
+  useEffect(() => {
+    // validate not zero
+    if (!maxBaseFee || maxBaseFee === '0') {
+      setMaxBaseFeeError('1 Gwei to avoid failure');
+    } else {
+      setMaxBaseFeeError(null);
+    }
+    if (maxBaseFee < currentBaseFee) {
+      setMaxBaseFeeWarning('Lower than recommended');
+    } else if (maxBaseFee > 3 * currentBaseFee) {
+      setMaxBaseFeeWarning('Higher than necessary');
+    } else {
+      setMaxBaseFeeWarning(null);
+    }
+  }, [maxBaseFee, currentBaseFee, gasFeeParamsBySpeed.normal]);
+
+  useEffect(() => {
+    // validate not zero
+    if (!maxPriorityFee || maxPriorityFee === '0') {
+      setMaxPriorityFeeError('1 Gwei to avoid failure');
+    } else {
+      setMaxPriorityFeeError(null);
+    }
+    if (
+      maxPriorityFee < gasFeeParamsBySpeed?.normal?.maxPriorityFeePerGas?.gwei
+    ) {
+      setMaxPriorityFeeWarning('Lower than recommended');
+    } else if (
+      maxPriorityFee >
+      2 * gasFeeParamsBySpeed?.urgent?.maxPriorityFeePerGas?.gwei
+    ) {
+      setMaxPriorityFeeWarning('Higher than necessary');
+    } else {
+      setMaxPriorityFeeWarning(null);
+    }
+  }, [
+    maxBaseFee,
+    currentBaseFee,
+    maxPriorityFee,
+    gasFeeParamsBySpeed?.urgent?.maxPriorityFeePerGas?.gwei,
+    gasFeeParamsBySpeed?.normal?.maxPriorityFeePerGas?.gwei,
+  ]);
+
   return (
     <OuterWrapper>
       <InnerWrapper>
@@ -321,18 +364,13 @@ export default function FeesPanel({
           </PanelColumn>
         </PanelRowThin>
         <PanelRow justify="space-between">
-          <PanelColumn>
-            <PanelLabel>Current Base Fee</PanelLabel>
-          </PanelColumn>
+          {renderRowLabel('Current Base Fee', 'currentBaseFee')}
           <PanelColumn>
             <PanelLabel>{formattedBaseFee}</PanelLabel>
           </PanelColumn>
         </PanelRow>
-        {/* max base fee */}
         <PanelRow>
-          <PanelColumn>
-            <PanelLabel>Max Base Fee</PanelLabel>
-          </PanelColumn>
+          {renderRowLabel('Max Base Fee', 'maxBaseFee')}
           {(maxBaseFeeError && <PanelError>{maxBaseFeeError}</PanelError>) ||
             (maxBaseFeeWarning && (
               <PanelWarning>{maxBaseFeeWarning}</PanelWarning>
@@ -349,11 +387,8 @@ export default function FeesPanel({
             />
           </PanelColumn>
         </PanelRow>
-        {/* miner tip */}
         <PanelRow>
-          <PanelColumn>
-            <PanelLabel>Miner Tip</PanelLabel>
-          </PanelColumn>
+          {renderRowLabel('Miner Tip', `minerTip`)}
           {(maxPriorityFeeError && (
             <PanelError>{maxPriorityFeeError}</PanelError>
           )) ||
