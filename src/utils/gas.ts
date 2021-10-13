@@ -13,8 +13,8 @@ const GAS_PRICE_SOURCES = {
   ARBITRUM_NODE: 'arbitrumNode',
   ETH_GAS_STATION: 'ethGasStation',
   ETHERSCAN: 'etherscan',
-  MATIC_GAS_STATION: 'maticGasStation',
   OPTIMISM_NODE: 'optimismNode',
+  POLYGON_GAS_STATION: 'polygonGasStation',
 };
 
 const GAS_CONFIDENCE: { [key: number]: string } = {

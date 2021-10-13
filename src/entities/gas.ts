@@ -85,6 +85,18 @@ export interface GasPricesAPIData {
   fastestWait: Numberish;
 }
 
+export interface GasFeesPolygonGasStationData {
+  status: string;
+  message: string;
+  result: {
+    LastBlock: string;
+    SafeGasPrice: string;
+    ProposeGasPrice: string;
+    FastGasPrice: string;
+    UsdPrice: string;
+  };
+}
+
 export interface GasFeesBlockNativeData {
   blockPrices: {
     blockNumber: number;

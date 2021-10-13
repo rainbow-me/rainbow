@@ -716,138 +716,142 @@ function RecyclerAssetList({
     const bottomHorizonOfScreen =
       (ref?.getCurrentScrollOffset() || 0) + globalDeviceDimensions;
 
-    sections.forEach(section => {
-      if (section.collectibles) {
-        collectibles = section;
-      }
-      if (section.balances) {
-        balances = section;
-      }
-      if (section.pools) {
-        pools = section;
-      }
-    });
-
-    let balancesRows = [];
-    let coinDividerHeight = 0;
-
-    balances.data.forEach(element => {
-      if (element.smallBalancesContainer) {
-        smallBalances = element;
-      } else if (element.savingsContainer) {
-        savings = element;
-      } else if (element.coinDivider) {
-        coinDividerHeight = CoinDividerHeight;
-      } else {
-        balancesRows.push(element);
-      }
-    });
-    const balancesHeight = balancesRows.length * CoinRowHeight;
-    //-3 for pixel perfection
-    const smallBalancesHeight =
-      ViewTypes.COIN_SMALL_BALANCES.calculateHeight({
-        isCoinListEdited: isCoinListEdited,
-        isOpen: openSmallBalances,
-        smallBalancesLength: smallBalances?.assets?.length || 0,
-      }) +
-      coinDividerHeight -
-      3;
-
-    const savingsHeight = ViewTypes.COIN_SAVINGS.calculateHeight({
-      amountOfRows: savings.assets?.length || 0,
-      isLast: false,
-      isOpen: openSavings,
-    });
-
-    const poolsHeight = ViewTypes.POOLS.calculateHeight({
-      amountOfRows: pools?.data?.length || 0,
-      isLast: !!pools.data,
-      isOpen: openInvestmentCards,
-    });
-
-    const colleciblesStartHeight =
-      balancesHeight + smallBalancesHeight + savingsHeight + poolsHeight;
-
-    // Auto-scroll to opened family logic 👇
-    if (openFamilyTabs !== lastOpenFamilyTabs && collectibles.data) {
-      let i = 0;
-      //the height of the families above the selected family
-      let heightOnTop = 0;
-      while (i < collectibles.data.length) {
-        let familyHeight = 0;
-        if (
-          openFamilyTabs[
-            collectibles.data[i].familyName + (showcase ? '-showcase' : '')
-          ] === true
-        ) {
-          familyHeight = ViewTypes.UNIQUE_TOKEN_ROW.calculateHeight({
-            amountOfRows: Math.ceil(
-              Number(collectibles.data[i].childrenAmount) / 2
-            ),
-            isFirst: i === 0 ? true : false,
-            isHeader: true,
-            isOpen: true,
-          });
-        } else {
-          familyHeight = ViewTypes.UNIQUE_TOKEN_ROW.calculateHeight({
-            amountOfRows: Math.ceil(
-              Number(collectibles.data[i].childrenAmount) / 2
-            ),
-            isFirst: i === 0 ? true : false,
-            isHeader: true,
-            isOpen: false,
-          });
+    if (sections) {
+      sections.forEach(section => {
+        if (section?.collectibles) {
+          collectibles = section;
         }
+        if (section?.balances) {
+          balances = section;
+        }
+        if (section?.pools) {
+          pools = section;
+        }
+      });
 
-        if (
-          openFamilyTabs[
-            collectibles.data[i].familyName + (showcase ? '-showcase' : '')
-          ] === true &&
-          !lastOpenFamilyTabs[
-            collectibles.data[i].familyName + (showcase ? '-showcase' : '')
-          ]
-        ) {
-          const startOfDesiredComponent =
-            colleciblesStartHeight + AssetListHeaderHeight + heightOnTop;
-          const endOfDesiredComponent = startOfDesiredComponent + familyHeight;
+      let balancesRows = [];
+      let coinDividerHeight = 0;
 
-          if (endOfDesiredComponent > bottomHorizonOfScreen) {
-            setTimeout(
-              () =>
-                !disableAutoScrolling &&
-                ref?.scrollToOffset(0, startOfDesiredComponent, true),
-              100
-            );
+      balances?.data?.forEach(element => {
+        if (element?.smallBalancesContainer) {
+          smallBalances = element;
+        } else if (element?.savingsContainer) {
+          savings = element;
+        } else if (element?.coinDivider) {
+          coinDividerHeight = CoinDividerHeight;
+        } else {
+          balancesRows.push(element);
+        }
+      });
+      const balancesHeight = balancesRows.length * CoinRowHeight;
+      //-3 for pixel perfection
+      const smallBalancesHeight =
+        ViewTypes.COIN_SMALL_BALANCES.calculateHeight({
+          isCoinListEdited: isCoinListEdited,
+          isOpen: openSmallBalances,
+          smallBalancesLength: smallBalances?.assets?.length || 0,
+        }) +
+        coinDividerHeight -
+        3;
+
+      const savingsHeight = ViewTypes.COIN_SAVINGS.calculateHeight({
+        amountOfRows: savings?.assets?.length || 0,
+        isLast: false,
+        isOpen: openSavings,
+      });
+
+      const poolsHeight = ViewTypes.POOLS.calculateHeight({
+        amountOfRows: pools?.data?.length || 0,
+        isLast: !!pools.data,
+        isOpen: openInvestmentCards,
+      });
+
+      const colleciblesStartHeight =
+        balancesHeight + smallBalancesHeight + savingsHeight + poolsHeight;
+
+      // Auto-scroll to opened family logic 👇
+      if (openFamilyTabs !== lastOpenFamilyTabs && collectibles.data) {
+        let i = 0;
+        //the height of the families above the selected family
+        let heightOnTop = 0;
+        while (i < collectibles.data.length) {
+          let familyHeight = 0;
+          if (
+            openFamilyTabs[
+              collectibles.data[i].familyName + (showcase ? '-showcase' : '')
+            ] === true
+          ) {
+            familyHeight = ViewTypes.UNIQUE_TOKEN_ROW.calculateHeight({
+              amountOfRows: Math.ceil(
+                Number(collectibles.data[i].childrenAmount) / 2
+              ),
+              isFirst: i === 0 ? true : false,
+              isHeader: true,
+              isOpen: true,
+            });
+          } else {
+            familyHeight = ViewTypes.UNIQUE_TOKEN_ROW.calculateHeight({
+              amountOfRows: Math.ceil(
+                Number(collectibles.data[i].childrenAmount) / 2
+              ),
+              isFirst: i === 0 ? true : false,
+              isHeader: true,
+              isOpen: false,
+            });
           }
 
-          break;
+          if (
+            openFamilyTabs[
+              collectibles.data[i].familyName + (showcase ? '-showcase' : '')
+            ] === true &&
+            !lastOpenFamilyTabs[
+              collectibles.data[i].familyName + (showcase ? '-showcase' : '')
+            ]
+          ) {
+            const startOfDesiredComponent =
+              colleciblesStartHeight + AssetListHeaderHeight + heightOnTop;
+            const endOfDesiredComponent =
+              startOfDesiredComponent + familyHeight;
+
+            if (endOfDesiredComponent > bottomHorizonOfScreen) {
+              setTimeout(
+                () =>
+                  !disableAutoScrolling &&
+                  ref?.scrollToOffset(0, startOfDesiredComponent, true),
+                100
+              );
+            }
+
+            break;
+          }
+          heightOnTop += familyHeight;
+          i++;
         }
-        heightOnTop += familyHeight;
-        i++;
       }
-    }
 
-    lastSections.forEach(section => {
-      if (section.collectibles) {
-        prevCollectibles = section;
+      lastSections.forEach(section => {
+        if (section.collectibles) {
+          prevCollectibles = section;
+        }
+      });
+
+      // Auto-scroll to showcase family if something was added/removed 👇
+      if (
+        collectibles.data &&
+        prevCollectibles.data &&
+        collectibles.data[0]?.familyName === 'Showcase' &&
+        (collectibles.data[0]?.childrenAmount !==
+          prevCollectibles.data[0]?.childrenAmount ||
+          prevCollectibles.data[0]?.familyName !== 'Showcase')
+      ) {
+        const showcaseHeight = colleciblesStartHeight + AssetListHeaderHeight;
+        setTimeout(
+          () =>
+            !disableAutoScrolling &&
+            ref?.scrollToOffset(0, showcaseHeight, true),
+          100
+        );
       }
-    });
-
-    // Auto-scroll to showcase family if something was added/removed 👇
-    if (
-      collectibles.data &&
-      prevCollectibles.data &&
-      collectibles.data[0]?.familyName === 'Showcase' &&
-      (collectibles.data[0]?.childrenAmount !==
-        prevCollectibles.data[0]?.childrenAmount ||
-        prevCollectibles.data[0]?.familyName !== 'Showcase')
-    ) {
-      const showcaseHeight = colleciblesStartHeight + AssetListHeaderHeight;
-      setTimeout(
-        () =>
-          !disableAutoScrolling && ref?.scrollToOffset(0, showcaseHeight, true),
-        100
-      );
     }
   }, [
     ref,

@@ -49,11 +49,11 @@ export const blockNativeGetGasParams = () =>
   });
 
 /**
- * Configuration for Matic GAS Station API
+ * Configuration for Polygon GAS Station API
  * @type RainbowFetchClient instance
  */
-const maticGasstationApi = new RainbowFetchClient({
-  baseURL: 'https://gasstation-mainnet.matic.network',
+const polygonGasStationApi = new RainbowFetchClient({
+  baseURL: 'https://gpoly.blockscan.com',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -62,10 +62,11 @@ const maticGasstationApi = new RainbowFetchClient({
 });
 
 /**
- * @desc get Matic gas prices
+ * @desc get Polygon gas prices
  * @return {Promise}
  */
-export const maticGasStationGetGasPrices = () => maticGasstationApi.get(`/`);
+export const polygonGasStationGetGasPrices = () =>
+  polygonGasStationApi.get(`/gasapi.ashx?apikey=key&method=gasoracle`);
 
 /**
  * Configuration for Etherscan API
@@ -94,11 +95,11 @@ export const etherscanGetGasPrices = () =>
   });
 
 /**
- * @desc get matic time estimates
+ * @desc get Polygon time estimates
  * @params {data}
  * @return {Promise}
  */
-export const maticGetGasEstimates = data => {
+export const polygonGetGasEstimates = data => {
   return {
     ...data,
     avgWait: 0.5,

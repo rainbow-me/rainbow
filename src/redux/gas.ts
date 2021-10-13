@@ -9,6 +9,7 @@ import {
   GasFeeParamsBySpeed,
   GasFeesBlockNativeData,
   GasFeesBySpeed,
+  GasFeesPolygonGasStationData,
   LegacyGasFee,
   LegacyGasFeeParamsBySpeed,
   LegacyGasFeesBySpeed,
@@ -19,8 +20,8 @@ import {
   blockNativeGetGasParams,
   etherscanGetGasFeesEstimates,
   getEstimatedTimeForGasPrice,
-  maticGasStationGetGasPrices,
-  maticGetGasEstimates,
+  polygonGasStationGetGasPrices,
+  polygonGetGasEstimates,
 } from '@rainbow-me/handlers/gasFees';
 import {
   getProviderForNetwork,
@@ -235,12 +236,18 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
     type: GAS_UPDATE_TRANSACTION_NETWORK,
   });
   const getPolygonGasPrices = async () => {
-    const { data: maticGasStationPrices } = await maticGasStationGetGasPrices();
+    const {
+      data: { result },
+    }: {
+      data: GasFeesPolygonGasStationData;
+    } = await polygonGasStationGetGasPrices();
     // Override required to make it compatible with other responses
-    maticGasStationPrices['average'] = maticGasStationPrices['standard'];
-    delete maticGasStationPrices.standard;
-
-    return maticGetGasEstimates(maticGasStationPrices);
+    const polygonGasStationPrices = {
+      average: Math.ceil(Number(result['SafeGasPrice'])),
+      fast: Math.ceil(Number(result['ProposeGasPrice'])),
+      fastest: Math.ceil(Number(result['FastGasPrice'])),
+    };
+    return polygonGetGasEstimates(polygonGasStationPrices);
   };
 
   const getArbitrumGasPrices = async () => {
@@ -294,7 +301,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
           let adjustedGasFees;
           let source = GAS_PRICE_SOURCES.ETHERSCAN;
           if (network === networkTypes.polygon) {
-            source = GAS_PRICE_SOURCES.MATIC_GAS_STATION;
+            source = GAS_PRICE_SOURCES.POLYGON_GAS_STATION;
             adjustedGasFees = await getPolygonGasPrices();
           } else if (network === networkTypes.arbitrum) {
             source = GAS_PRICE_SOURCES.ARBITRUM_NODE;
@@ -308,7 +315,6 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
             // Preserve custom values while updating prices
             gasFeeParamsBySpeed[CUSTOM] = existingGasFees[CUSTOM];
           }
-
           dispatch({
             payload: {
               gasFeeParamsBySpeed,
