@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-// import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
@@ -34,15 +33,13 @@ const Symbol = styled(Text).attrs({
   align: 'right',
   size: 'lmedium',
   weight: 'heavy',
-})`
-  margin-left: ${({ nextToText }) => (nextToText ? 5 : 0)};
-`;
+})``;
 
 const DoneCustomGas = styled(Text).attrs({
   size: 'lmedium',
   weight: 'heavy',
 })`
-  ${margin(3, 2, 0, 3)}
+  ${margin(0, 0, 0, 0)}
 `;
 
 const GasSpeedLabelPager = ({
@@ -77,7 +74,7 @@ const GasSpeedLabelPager = ({
       <Column>
         {!showGasOptions ? (
           renderPager(
-            <Row align="end">
+            <Row align={(ios && 'end') || 'stretch'}>
               <Column>
                 <GasSpeedLabelPagerItem
                   colorForAsset={colorForAsset}
@@ -89,17 +86,15 @@ const GasSpeedLabelPager = ({
                 />
               </Column>
               {enabled && (
-                <Column>
-                  <Symbol
-                    color={
-                      theme !== 'light'
-                        ? colors.whiteLabel
-                        : colors.alpha(colors.blueGreyDark, 0.8)
-                    }
-                  >
-                    􀁰
-                  </Symbol>
-                </Column>
+                <Symbol
+                  color={
+                    theme !== 'light'
+                      ? colors.whiteLabel
+                      : colors.alpha(colors.blueGreyDark, 0.8)
+                  }
+                >
+                  􀁰
+                </Symbol>
               )}
             </Row>,
             { color: colorForAsset, onPress }

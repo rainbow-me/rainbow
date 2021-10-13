@@ -71,9 +71,7 @@ const NativeCoinIconWrapper = styled(Column)`
 const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
 })`
-  ${({ horizontalPadding, topPadding }) =>
-    padding(topPadding, horizontalPadding, 0)};
-  height: 91;
+  ${margin(19, 0, 19, 0)};
   width: 100%;
 `;
 
@@ -103,11 +101,9 @@ const TransactionTimeLabel = ({ formatter, theme }) => {
 const GasSpeedButton = ({
   // dontBlur,
   showGasOptions = false,
-  horizontalPadding = 19,
   testID,
   // type,
   theme = 'dark',
-  topPadding = 15,
   options = null,
   currentNetwork,
   asset,
@@ -448,11 +444,7 @@ const GasSpeedButton = ({
   }, [selectedGasFee, selectedGasFeeOption]);
 
   return (
-    <Container
-      horizontalPadding={horizontalPadding}
-      testID={testID}
-      topPadding={topPadding}
-    >
+    <Container testID={testID}>
       <Row align="center" justify="space-between">
         <Column>
           <ButtonPressAnimation onPress={openGasHelper}>

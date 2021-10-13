@@ -17,12 +17,7 @@ const InputColumn = styled(Column).attrs({
 
 const GweiStepButton = ({ type, changeValue, buttonColor }) => {
   return (
-    <ButtonPressAnimation
-      onLongPress={changeValue}
-      onPress={changeValue}
-      // onPressEnd={() => console.log('onPressEnd')}
-      // onPressStart={() => console.log('onpresstate')}
-    >
+    <ButtonPressAnimation onLongPress={changeValue} onPress={changeValue}>
       <StepButton color={buttonColor}>{type === 'plus' ? '􀁍' : '􀁏'}</StepButton>
     </ButtonPressAnimation>
   );

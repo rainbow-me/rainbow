@@ -863,7 +863,7 @@ export default function SendSheet(props) {
               <GasSpeedButton
                 asset={selected}
                 currentNetwork={currentNetwork}
-                horizontalPadding={isTinyPhone ? 0 : 5}
+                horizontalPadding={0}
                 options={
                   currentNetwork === networkTypes.optimism ||
                   currentNetwork === networkTypes.arbitrum
