@@ -339,7 +339,7 @@ const GasSpeedButton = ({
       actionKey: gasOption,
       actionTitle: upperFirst(gasOption),
       icon: {
-        iconType: 'SYSTEM',
+        iconType: 'ASSET',
         iconValue: GAS_ICONS[gasOption],
       },
     }));
