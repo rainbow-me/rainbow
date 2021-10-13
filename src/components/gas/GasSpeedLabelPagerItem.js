@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import { Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedEmoji from './GasSpeedEmoji';
+import { margin } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
 const AnimatedRow = Animated.createAnimatedComponent(Row);
@@ -41,7 +42,9 @@ const GasSpeedLabel = styled(Text).attrs({
   align: 'right',
   size: 'lmedium',
   weight: 'heavy',
-})``;
+})`
+  ${margin(0, 5, 0, 0)}
+`;
 
 const duration = 150;
 const transition = (

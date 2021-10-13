@@ -370,6 +370,51 @@ const GasSpeedButton = ({
     );
   }, []);
 
+  const renderGasSpeedPager = useMemo(() => {
+    const moreThanOneOption = speedOptions.length > 1;
+    const pager = (
+      <GasSpeedLabelPager
+        colorForAsset={
+          moreThanOneOption
+            ? assetColor
+            : colors.alpha(colors.blueGreyDark, 0.4)
+        }
+        enabled={moreThanOneOption}
+        label={selectedGasFeeOption}
+        showGasOptions={showGasOptions}
+        showPager={!inputFocused}
+        theme={theme}
+      />
+    );
+    if (moreThanOneOption) {
+      return (
+        <ContextMenuButton
+          activeOpacity={0}
+          menuConfig={menuConfig}
+          {...(android ? { onPress: onPressAndroid } : {})}
+          isMenuPrimaryAction
+          onPressMenuItem={handlePressMenuItem}
+          useActionSheetFallback={false}
+          wrapNativeComponent={false}
+        >
+          {pager}
+        </ContextMenuButton>
+      );
+    }
+    return pager;
+  }, [
+    assetColor,
+    colors,
+    handlePressMenuItem,
+    inputFocused,
+    menuConfig,
+    onPressAndroid,
+    selectedGasFeeOption,
+    showGasOptions,
+    speedOptions.length,
+    theme,
+  ]);
+
   useEffect(() => {
     const gasOptions = options || GasSpeedOrder;
     const currentSpeedIndex = gasOptions?.indexOf(selectedGasFeeOption);
@@ -481,25 +526,7 @@ const GasSpeedButton = ({
             />
           ) : (
             <Row>
-              <Column>
-                <ContextMenuButton
-                  activeOpacity={0}
-                  menuConfig={menuConfig}
-                  {...(android ? { onPress: onPressAndroid } : {})}
-                  isMenuPrimaryAction
-                  onPressMenuItem={handlePressMenuItem}
-                  useActionSheetFallback={false}
-                  wrapNativeComponent={false}
-                >
-                  <GasSpeedLabelPager
-                    colorForAsset={assetColor}
-                    label={selectedGasFeeOption}
-                    showGasOptions={showGasOptions}
-                    showPager={!inputFocused}
-                    theme={theme}
-                  />
-                </ContextMenuButton>
-              </Column>
+              <Column>{renderGasSpeedPager}</Column>
               <Column justify="center">
                 {isL2 ? (
                   <ChainBadgeContainer>

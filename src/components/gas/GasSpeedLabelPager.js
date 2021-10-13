@@ -19,6 +19,17 @@ const SpeedButton = styled(ButtonPressAnimation).attrs({
 )
 `;
 
+const SpeedContainer = styled(Column).attrs({
+  hapticType: 'impactHeavy',
+  scaleTo: 0.9,
+})`
+  border: ${({ color, theme: { colors } }) =>
+    `2px solid ${color || colors.appleBlue}`};
+  border-radius: 15px;
+  ${padding(0, 5, 5)};
+)
+`;
+
 const Symbol = styled(Text).attrs({
   align: 'right',
   size: 'lmedium',
@@ -40,17 +51,32 @@ const GasSpeedLabelPager = ({
   theme,
   onPress,
   colorForAsset,
+  enabled,
 }) => {
   const [touched, setTouched] = useState(false);
   const { colors } = useTheme();
 
   useEffect(() => setTouched(true), [label]);
 
+  const renderPager = useCallback(
+    (children, props) => {
+      if (enabled) {
+        return (
+          <SpeedButton color={colorForAsset} {...props}>
+            {children}
+          </SpeedButton>
+        );
+      }
+      return <SpeedContainer color={colorForAsset}>{children}</SpeedContainer>;
+    },
+    [colorForAsset, enabled]
+  );
+
   return (
     <Row align="center" justify="end">
       <Column>
-        <SpeedButton color={colorForAsset} onPress={onPress}>
-          {!showGasOptions ? (
+        {!showGasOptions ? (
+          renderPager(
             <Row align="end">
               <Column>
                 <GasSpeedLabelPagerItem
@@ -62,31 +88,33 @@ const GasSpeedLabelPager = ({
                   theme={theme}
                 />
               </Column>
-              <Column>
-                <Symbol
-                  color={
-                    theme !== 'light'
-                      ? colors.whiteLabel
-                      : colors.alpha(colors.blueGreyDark, 0.8)
-                  }
-                  nextToText
-                >
-                  􀁰
-                </Symbol>
-              </Column>
-            </Row>
-          ) : (
-            <DoneCustomGas
-              color={
-                theme !== 'light'
-                  ? colors.whiteLabel
-                  : colors.alpha(colors.blueGreyDark, 0.8)
-              }
-            >
-              Done
-            </DoneCustomGas>
-          )}
-        </SpeedButton>
+              {enabled && (
+                <Column>
+                  <Symbol
+                    color={
+                      theme !== 'light'
+                        ? colors.whiteLabel
+                        : colors.alpha(colors.blueGreyDark, 0.8)
+                    }
+                  >
+                    􀁰
+                  </Symbol>
+                </Column>
+              )}
+            </Row>,
+            { color: colorForAsset, onPress }
+          )
+        ) : (
+          <DoneCustomGas
+            color={
+              theme !== 'light'
+                ? colors.whiteLabel
+                : colors.alpha(colors.blueGreyDark, 0.8)
+            }
+          >
+            Done
+          </DoneCustomGas>
+        )}
       </Column>
     </Row>
   );
