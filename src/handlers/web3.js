@@ -372,6 +372,7 @@ export const getTransferNftTransaction = async transaction => {
   const contractAddress = get(transaction, 'asset.asset_contract.address');
   const data = getDataForNftTransfer(from, recipient, transaction.asset);
   return {
+    ...transaction,
     data,
     from,
     gasLimit: transaction.gasLimit,
@@ -393,6 +394,7 @@ export const getTransferTokenTransaction = async transaction => {
   const recipient = await resolveNameOrAddress(transaction.to);
   const data = getDataForTokenTransfer(value, recipient);
   return {
+    ...transaction,
     data,
     from: transaction.from,
     gasLimit: transaction.gasLimit,

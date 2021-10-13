@@ -338,9 +338,7 @@ export default function SpeedUpAndCancelSheet() {
           const txObj = await currentProvider.getTransaction(txHash);
           if (txObj) {
             const hexGasLimit = toHex(txObj.gasLimit.toString());
-            const hexMaxPriorityFeePerGas = toHex(
-              txObj.maxPriorityFeePerGas.toString()
-            );
+
             const hexValue = toHex(txObj.value.toString());
             const hexData = txObj.data;
             setReady(true);
@@ -351,6 +349,9 @@ export default function SpeedUpAndCancelSheet() {
             setGasLimit(hexGasLimit);
             if (txObj.type === EIP1559_TRANSACTION_TYPE) {
               setTxType(EIP1559_TRANSACTION_TYPE);
+              const hexMaxPriorityFeePerGas = toHex(
+                txObj.maxPriorityFeePerGas.toString()
+              );
               setMinMaxPriorityFeePerGas(
                 calcGasParamRetryValue(hexMaxPriorityFeePerGas)
               );
