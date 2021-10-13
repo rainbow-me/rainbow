@@ -8,12 +8,11 @@ import React, {
   useState,
 } from 'react';
 import { LayoutAnimation } from 'react-native';
-// import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
 import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
-import { ChainBadge } from '../coin-icon';
+import { ChainBadge, CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
@@ -25,6 +24,7 @@ import {
   useGas,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { margin, padding } from '@rainbow-me/styles';
 import {
@@ -61,8 +61,11 @@ const ChainBadgeContainer = styled.View.attrs({
   scaleTo: 0.9,
 })`
   ${padding(3, 0)};
-  ${margin(0, 0, 0, 8)}
-  )
+  ${margin(0, 0, 0, 8)};
+`;
+
+const NativeCoinIconWrapper = styled(Column)`
+  ${margin(0, 5, 0, 0)};
 `;
 
 const Container = styled(Column).attrs({
@@ -307,6 +310,17 @@ const GasSpeedButton = ({
     [handlePress]
   );
 
+  const nativeFeeCurrencySymbol = useMemo(() => {
+    switch (currentNetwork) {
+      case networkTypes.polygon:
+        return { address: ETH_ADDRESS, symbol: 'MATIC' };
+      case networkTypes.optimism:
+      case networkTypes.arbitrum:
+      default:
+        return { address: ETH_ADDRESS, symbol: 'ETH' };
+    }
+  }, [currentNetwork]);
+
   const speedOptions = useMemo(() => {
     if (options) return options;
     switch (currentNetwork) {
@@ -403,6 +417,13 @@ const GasSpeedButton = ({
         <Column>
           <ButtonPressAnimation onPress={openGasHelper}>
             <Row>
+              <NativeCoinIconWrapper>
+                <CoinIcon
+                  address={nativeFeeCurrencySymbol.address}
+                  size={18}
+                  symbol={nativeFeeCurrencySymbol.symbol}
+                />
+              </NativeCoinIconWrapper>
               <Column>
                 <AnimateNumber
                   formatter={formatGasPrice}
