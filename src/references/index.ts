@@ -86,8 +86,8 @@ export const WBTC_ADDRESS = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
 export const TRANSFER_EVENT_TOPIC_LENGTH = 3;
 export const TRANSFER_EVENT_KECCAK =
   '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
-export const LEGACY_TRANSACTION_TYPE = 2;
-export const EIP1559_TRANSACTION_TYPE = 0;
+export const EIP1559_TRANSACTION_TYPE = 2;
+export const LEGACY_TRANSACTION_TYPE = 0;
 
 export const AddCashCurrencies = {
   kovan: {

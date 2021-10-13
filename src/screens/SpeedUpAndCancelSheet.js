@@ -39,7 +39,11 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { getTitle } from '@rainbow-me/parsers';
 import { dataUpdateTransaction } from '@rainbow-me/redux/data';
 import { updateGasFeeForSpeed } from '@rainbow-me/redux/gas';
-import { ethUnits } from '@rainbow-me/references';
+import {
+  EIP1559_TRANSACTION_TYPE,
+  ethUnits,
+  LEGACY_TRANSACTION_TYPE,
+} from '@rainbow-me/references';
 import { position } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -133,6 +137,10 @@ export default function SpeedUpAndCancelSheet() {
   } = useRoute();
   const [ready, setReady] = useState(false);
   const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
+  const [txType, setTxType] = useState();
+  const [minGasPrice, setMinGasPrice] = useState(
+    calcGasParamRetryValue(tx.gasPrice)
+  );
   const [minMaxPriorityFeePerGas, setMinMaxPriorityFeePerGas] = useState(
     calcGasParamRetryValue(tx.maxPriorityFeePerGas)
   );
@@ -149,46 +157,59 @@ export default function SpeedUpAndCancelSheet() {
   const [value, setValue] = useState(null);
 
   const getNewTransactionGasParams = useCallback(() => {
-    const rawMaxPriorityFeePerGas = get(
-      selectedGasFee,
-      'gasFeeParams.maxPriorityFeePerGas.amount'
-    );
-    const rawMaxFeePerGas = get(
-      selectedGasFee,
-      'gasFeeParams.maxFeePerGas.amount'
-    );
-    const rawMaxPriorityFeePerGasBN = new BigNumber(rawMaxPriorityFeePerGas);
-    const minMaxPriorityFeePerGasAllowedBN = new BigNumber(
-      minMaxPriorityFeePerGas
-    );
-    const rawMaxFeePerGasBN = new BigNumber(rawMaxFeePerGas);
-    const minMaxFeePerGasAllowedBN = new BigNumber(minMaxFeePerGas);
+    if (txType === EIP1559_TRANSACTION_TYPE) {
+      const rawMaxPriorityFeePerGas = get(
+        selectedGasFee,
+        'gasFeeParams.maxPriorityFeePerGas.amount'
+      );
+      const rawMaxFeePerGas = get(
+        selectedGasFee,
+        'gasFeeParams.maxFeePerGas.amount'
+      );
+      const rawMaxPriorityFeePerGasBN = new BigNumber(rawMaxPriorityFeePerGas);
+      const minMaxPriorityFeePerGasAllowedBN = new BigNumber(
+        minMaxPriorityFeePerGas
+      );
+      const rawMaxFeePerGasBN = new BigNumber(rawMaxFeePerGas);
+      const minMaxFeePerGasAllowedBN = new BigNumber(minMaxFeePerGas);
 
-    const maxPriorityFeePerGas = rawMaxPriorityFeePerGasBN.isGreaterThan(
-      minMaxPriorityFeePerGasAllowedBN
-    )
-      ? toHex(rawMaxPriorityFeePerGas)
-      : toHex(minMaxPriorityFeePerGas);
+      const maxPriorityFeePerGas = rawMaxPriorityFeePerGasBN.isGreaterThan(
+        minMaxPriorityFeePerGasAllowedBN
+      )
+        ? toHex(rawMaxPriorityFeePerGas)
+        : toHex(minMaxPriorityFeePerGas);
 
-    const maxFeePerGas = rawMaxFeePerGasBN.isGreaterThan(
-      minMaxFeePerGasAllowedBN
-    )
-      ? toHex(rawMaxFeePerGas)
-      : toHex(minMaxFeePerGas);
-    return { maxFeePerGas, maxPriorityFeePerGas };
-  }, [minMaxPriorityFeePerGas, minMaxFeePerGas, selectedGasFee]);
+      const maxFeePerGas = rawMaxFeePerGasBN.isGreaterThan(
+        minMaxFeePerGasAllowedBN
+      )
+        ? toHex(rawMaxFeePerGas)
+        : toHex(minMaxFeePerGas);
+      return { maxFeePerGas, maxPriorityFeePerGas };
+    } else {
+      const rawGasPrice = get(selectedGasFee, 'gasFeeParams.gasPrice.amount');
+      const rawGasPriceBN = new BigNumber(rawGasPrice);
+      const minGasPriceAllowedBN = new BigNumber(minGasPrice);
+      return {
+        gasPrice: rawGasPriceBN.isGreaterThan(minGasPriceAllowedBN)
+          ? toHex(rawGasPrice)
+          : toHex(minGasPrice),
+      };
+    }
+  }, [
+    txType,
+    selectedGasFee,
+    minMaxPriorityFeePerGas,
+    minMaxFeePerGas,
+    minGasPrice,
+  ]);
 
   const handleCancellation = useCallback(async () => {
     try {
-      const {
-        maxFeePerGas,
-        maxPriorityFeePerGas,
-      } = getNewTransactionGasParams();
+      const newGasParams = getNewTransactionGasParams();
       const cancelTxPayload = {
-        maxFeePerGas,
-        maxPriorityFeePerGas,
         nonce,
         to: accountAddress,
+        ...newGasParams,
       };
       const originalHash = tx.hash;
       const {
@@ -226,18 +247,14 @@ export default function SpeedUpAndCancelSheet() {
 
   const handleSpeedUp = useCallback(async () => {
     try {
-      const {
-        maxFeePerGas,
-        maxPriorityFeePerGas,
-      } = getNewTransactionGasParams();
+      const newGasParams = getNewTransactionGasParams();
       const fasterTxPayload = {
         data,
         gasLimit,
-        maxFeePerGas,
-        maxPriorityFeePerGas,
         nonce,
         to,
         value,
+        ...newGasParams,
       };
       const originalHash = tx.hash;
       const {
@@ -321,7 +338,6 @@ export default function SpeedUpAndCancelSheet() {
           const txObj = await currentProvider.getTransaction(txHash);
           if (txObj) {
             const hexGasLimit = toHex(txObj.gasLimit.toString());
-            const hexMaxFeePerGas = toHex(txObj.maxFeePerGas.toString());
             const hexMaxPriorityFeePerGas = toHex(
               txObj.maxPriorityFeePerGas.toString()
             );
@@ -333,10 +349,18 @@ export default function SpeedUpAndCancelSheet() {
             setData(hexData);
             setTo(txObj.to);
             setGasLimit(hexGasLimit);
-            setMinMaxPriorityFeePerGas(
-              calcGasParamRetryValue(hexMaxPriorityFeePerGas)
-            );
-            setMinMaxFeePerGas(calcGasParamRetryValue(hexMaxFeePerGas));
+            if (txObj.type === EIP1559_TRANSACTION_TYPE) {
+              setTxType(EIP1559_TRANSACTION_TYPE);
+              setMinMaxPriorityFeePerGas(
+                calcGasParamRetryValue(hexMaxPriorityFeePerGas)
+              );
+              const hexMaxFeePerGas = toHex(txObj.maxFeePerGas.toString());
+              setMinMaxFeePerGas(calcGasParamRetryValue(hexMaxFeePerGas));
+            } else {
+              setTxType(LEGACY_TRANSACTION_TYPE);
+              const hexGasPrice = toHex(txObj.gasPrice.toString());
+              setMinGasPrice(calcGasParamRetryValue(hexGasPrice));
+            }
           }
         } catch (e) {
           logger.log('something went wrong while fetching tx info ', e);
@@ -376,7 +400,7 @@ export default function SpeedUpAndCancelSheet() {
       // we only speed up / cancel for eip1559 supported networks
       if (
         Number(minMaxPriorityFeePerGas) >
-        Number(gasFeeParamsBySpeed.fast.maxPriorityFeePerGas.amount)
+        Number(gasFeeParamsBySpeed?.fast?.maxPriorityFeePerGas?.amount)
       ) {
         dispatch(updateGasFeeForSpeed('fast', minMaxPriorityFeePerGas));
       }
