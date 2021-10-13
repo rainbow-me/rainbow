@@ -100,7 +100,7 @@ export const isTestnet = network => {
 
 export const getFlashbotsProvider = async () => {
   return new JsonRpcProvider('https://rpc.flashbots.net', NetworkTypes.mainnet);
-}
+};
 
 /**
  * @desc returns a web3 provider for the specified network
@@ -128,7 +128,7 @@ export const getProviderForNetwork = async (network = NetworkTypes.mainnet) => {
         url = replace(infuraUrl, 'network', network);
     }
     const provider = new JsonRpcProvider(url);
-    if(!networkProviders[network]){
+    if (!networkProviders[network]) {
       networkProviders[network] = provider;
     }
     await provider.ready;
@@ -227,9 +227,11 @@ export const estimateGasWithPadding = async (
     txPayloadToEstimate[contractCallEstimateGas ? 'gasLimit' : 'gas'] = toHex(
       saferGasLimit
     );
-    
+
     const estimatedGas = await (contractCallEstimateGas
-      ? callArguments ? contractCallEstimateGas(...callArguments, txPayloadToEstimate) : contractCallEstimateGas(...[], txPayloadToEstimate)
+      ? callArguments
+        ? contractCallEstimateGas(...callArguments, txPayloadToEstimate)
+        : contractCallEstimateGas(...[], txPayloadToEstimate)
       : p.estimateGas(txPayloadToEstimate));
 
     const lastBlockGasLimit = addBuffer(gasLimit.toString(), 0.9);

@@ -2,7 +2,7 @@
   "basic_approval": 55000,
   "basic_deposit": 420000,
   "basic_deposit_eth": 200000,
-  "basic_swap": 400000,
+  "basic_swap": 300000,
   "basic_tx": 21000,
   "basic_withdrawal": 550000,
   "weth_wrap": 40000,

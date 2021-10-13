@@ -25,8 +25,9 @@ export const estimateApprove = async (
   spender: string
 ): Promise<number | string> => {
   try {
-
-    if(ALLOWS_PERMIT[toLower(tokenAddress) as keyof PermitSupportedTokenList]){
+    if (
+      ALLOWS_PERMIT[toLower(tokenAddress) as keyof PermitSupportedTokenList]
+    ) {
       return '0';
     }
 
@@ -36,9 +37,13 @@ export const estimateApprove = async (
       tokenAddress,
     });
     const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider);
-    const gasLimit = await tokenContract.estimateGas.approve(spender, MaxUint256, {
-      from: owner,
-    });
+    const gasLimit = await tokenContract.estimateGas.approve(
+      spender,
+      MaxUint256,
+      {
+        from: owner,
+      }
+    );
     return gasLimit ? gasLimit.toString() : ethUnits.basic_approval;
   } catch (error) {
     logger.sentry('error estimateApproveWithExchange');

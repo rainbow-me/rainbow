@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Token } from '../entities/tokens';
 import useAccountSettings from './useAccountSettings';
 import { EthereumAddress } from '@rainbow-me/entities';
 import { AppState } from '@rainbow-me/redux/store';
@@ -14,12 +15,11 @@ import {
   isZero,
   updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';
-import { ethereumUtils, logger } from '@rainbow-me/utils'; 
+import { ethereumUtils } from '@rainbow-me/utils';
 import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
-  getQuote
+  getQuote,
 } from 'rainbow-swaps';
-import { Token } from 'src/entities/tokens';
 
 enum DisplayValue {
   input = 'inputAmountDisplay',
@@ -66,7 +66,7 @@ const getInputAmount = async (
       slippage: 1,
     };
     const quote = await getQuote(quoteParams);
-    if (!quote){
+    if (!quote) {
       return {
         inputAmount: null,
         inputAmountDisplay: null,
@@ -144,7 +144,7 @@ const getOutputAmount = async (
       slippage: 1,
     };
     const quote = await getQuote(quoteParams);
-    if (!quote){
+    if (!quote) {
       return {
         outputAmount: null,
         outputAmountDisplay: null,

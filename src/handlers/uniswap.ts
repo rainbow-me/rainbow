@@ -1,12 +1,16 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Wallet } from '@ethersproject/wallet';
-import { captureException } from '@sentry/react-native';
-import { ChainId } from '../helpers/chainIds';
 import { get, mapKeys, mapValues, toLower } from 'lodash';
 import { uniswapClient } from '../apollo/client';
 import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
+import { Token } from '../entities/tokens';
+import { ChainId } from '../helpers/chainIds';
 import { loadWallet } from '../model/wallet';
-import { estimateGasWithPadding, getFlashbotsProvider, getProviderForNetwork } from './web3';
+import {
+  estimateGasWithPadding,
+  getFlashbotsProvider,
+  getProviderForNetwork,
+} from './web3';
 import { Asset } from '@rainbow-me/entities';
 import {
   add,
@@ -15,7 +19,7 @@ import {
   multiply,
   subtract,
 } from '@rainbow-me/helpers/utilities';
-import networkTypes, { Network } from '@rainbow-me/networkTypes';
+import { Network } from '@rainbow-me/networkTypes';
 import store from '@rainbow-me/redux/store';
 import {
   uniswapLoadedAllTokens,
@@ -24,8 +28,16 @@ import {
 import { ethUnits, UNISWAP_TESTNET_TOKEN_LIST } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-import { fillQuote, getQuoteExecutionDetails, Quote, wrapEth, unwrapWeth, ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS, WETH, geWethMethod } from 'rainbow-swaps';
-import { Token } from 'src/entities/tokens';
+import {
+  ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
+  fillQuote,
+  getQuoteExecutionDetails,
+  geWethMethod,
+  Quote,
+  unwrapWeth,
+  WETH,
+  wrapEth,
+} from 'rainbow-swaps';
 
 export enum Field {
   INPUT = 'INPUT',
@@ -65,28 +77,34 @@ export const estimateSwapGasLimit = async ({
   }
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;
 
-  const isWrapEth = sellTokenAddress === ETH_ADDRESS_AGGREGATORS && buyTokenAddress === WETH['1'];
-  const isUnwrapWeth = sellTokenAddress === WETH['1'] && buyTokenAddress === ETH_ADDRESS_AGGREGATORS;
+  const isWrapEth =
+    sellTokenAddress === ETH_ADDRESS_AGGREGATORS &&
+    buyTokenAddress === WETH['1'];
+  const isUnwrapWeth =
+    sellTokenAddress === WETH['1'] &&
+    buyTokenAddress === ETH_ADDRESS_AGGREGATORS;
   // Wrap / Unwrap Eth
   if (isWrapEth || isUnwrapWeth) {
-      const default_estimate = isWrapEth ? ethUnits.weth_wrap : ethUnits.weth_unwrap;
-      try {
-        const gasLimit = await estimateGasWithPadding(
-          { 
-            from: tradeDetails.from,
-            value: isWrapEth ? tradeDetails.buyAmount : '0' 
-          },
-          geWethMethod(isWrapEth ? 'deposit' : 'withdraw', provider),
-          // @ts-ignore
-          isUnwrapWeth ? [tradeDetails.buyAmount] : null, 
-          provider,
-          1.01
-        );
-        
-        return gasLimit || default_estimate;
-      } catch(e){
-        return default_estimate;
-      }
+    const default_estimate = isWrapEth
+      ? ethUnits.weth_wrap
+      : ethUnits.weth_unwrap;
+    try {
+      const gasLimit = await estimateGasWithPadding(
+        {
+          from: tradeDetails.from,
+          value: isWrapEth ? tradeDetails.buyAmount : '0',
+        },
+        geWethMethod(isWrapEth ? 'deposit' : 'withdraw', provider),
+        // @ts-ignore
+        isUnwrapWeth ? [tradeDetails.buyAmount] : null,
+        provider,
+        1.01
+      );
+
+      return gasLimit || default_estimate;
+    } catch (e) {
+      return default_estimate;
+    }
     // Swap
   } else {
     try {
@@ -147,7 +165,7 @@ export const executeSwap = async ({
   nonce,
   tradeDetails,
   wallet,
-  permit = false
+  permit = false,
 }: {
   chainId: ChainId;
   gasLimit: string | number;
@@ -157,13 +175,17 @@ export const executeSwap = async ({
   wallet: Wallet | null;
   permit: boolean;
 }) => {
+  const useFlashbots = false;
   let walletToUse = wallet;
+  const network = ethereumUtils.getNetworkFromChainId(chainId);
   // Switch to the flashbots provider!
-  const provider = await getProviderForNetwork(networkTypes.mainnet);
-  // We can move to flashbots once we get EIP-1559 support
-  // const provider = await getFlashbotsProvider();
+  let provider = await getProviderForNetwork(network);
+  if (useFlashbots) {
+    provider = await getFlashbotsProvider();
+  }
+
   if (!walletToUse) {
-    walletToUse = await loadWallet(undefined, true, provider)
+    walletToUse = await loadWallet(undefined, true, provider);
   } else {
     walletToUse = new Wallet(walletToUse.privateKey, provider);
   }
@@ -173,14 +195,26 @@ export const executeSwap = async ({
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;
 
   // Wrap Eth
-  if (sellTokenAddress === ETH_ADDRESS_AGGREGATORS && buyTokenAddress === WETH['1']) {
-      return wrapEth(tradeDetails.buyAmount, walletToUse);
-  // Unwrap Weth
-  } else if(sellTokenAddress === WETH['1'] && buyTokenAddress === ETH_ADDRESS_AGGREGATORS) {
+  if (
+    sellTokenAddress === ETH_ADDRESS_AGGREGATORS &&
+    buyTokenAddress === WETH['1']
+  ) {
+    return wrapEth(tradeDetails.buyAmount, walletToUse);
+    // Unwrap Weth
+  } else if (
+    sellTokenAddress === WETH['1'] &&
+    buyTokenAddress === ETH_ADDRESS_AGGREGATORS
+  ) {
     return unwrapWeth(tradeDetails.sellAmount, walletToUse);
-  // Swap
+    // Swap
   } else {
-    return fillQuote(tradeDetails, { gasLimit, gasPrice, nonce }, walletToUse, permit);
+    return fillQuote(
+      tradeDetails,
+      { gasLimit, gasPrice, nonce },
+      walletToUse,
+      permit,
+      chainId
+    );
   }
 };
 

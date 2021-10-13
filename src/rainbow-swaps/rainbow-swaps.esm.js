@@ -1,5 +1,8 @@
 import { Contract } from '@ethersproject/contracts';
-import { signDaiPermit, signERC2612Permit } from 'eth-permit-ethers';
+import { BigNumber } from '@ethersproject/bignumber';
+import { splitSignature } from '@ethersproject/bytes';
+import { signTypedData_v4, TypedDataUtils } from 'eth-sig-util';
+import { toBuffer, addHexPrefix } from 'ethereumjs-util';
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
   try {
@@ -918,35 +921,42 @@ var WETH = {
   '3': '0xb603cea165119701b58d56d10d2060fbfb3efad8'
 };
 var DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
+var USDC_ADDRESS = '0x111111111117dc0aa78b770fa6a738034120c302';
+var TORN_ADDRESS = '0x77777feddddffc19ff86db637967013e6c6a116c';
+var WNXM_ADDRESS = '0x0d438f3b5175bebc262bf23753c1e53d03432bde';
+var VSP_ADDRESS = '0x1b40183efb4dd766f11bda7a7c3ad8982e998421';
 var ALLOWS_PERMIT = {
-  // VSP
+  // wNXM
   '0x0d438f3b5175bebc262bf23753c1e53d03432bde': true,
-  // USDC
+  // INCH
   '0x111111111117dc0aa78b770fa6a738034120c302': true,
-  // TORN
+  // VSP
   '0x1b40183efb4dd766f11bda7a7c3ad8982e998421': true,
-  // DAI
-  '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984': true,
-  // AAVE
-  '0x31c8eacbffdd875c74b94b077895bd78cf1e64a3': true,
-  '0x6b175474e89094c44da98b954eedeac495271d0f': true,
-  // FEI
-  '0x6dea81c8171d0ba574754ef6f8b412f2ed88c54d': true,
-  // OPIUM
-  '0x77777feddddffc19ff86db637967013e6c6a116c': true,
-  // DFX
-  '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9': true,
-  // BAL
-  '0x888888435fde8e7d4c54cab67f206e4199454c60': true,
-  // MIST
-  '0x888888888889c00c67689029d7856aac1065ec11': true,
-  // LQTY
-  '0x88acdd2a6425c3faae4bc9650fd7e27e0bebb7ab': true,
   // UNI
-  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': true,
-  // 1INCH
-  '0xba100000625a3754423978a60c9317c58a424e3d': true,
+  '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984': true,
   // RAD
+  '0x31c8eacbffdd875c74b94b077895bd78cf1e64a3': true,
+  // DAI
+  '0x6b175474e89094c44da98b954eedeac495271d0f': true,
+  // LQTY
+  '0x6dea81c8171d0ba574754ef6f8b412f2ed88c54d': true,
+  // TORN
+  '0x77777feddddffc19ff86db637967013e6c6a116c': true,
+  // AAVE
+  '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9': true,
+  // DFX
+  '0x888888435fde8e7d4c54cab67f206e4199454c60': true,
+  // OPIUM
+  '0x888888888889c00c67689029d7856aac1065ec11': true,
+  // MIST
+  '0x88acdd2a6425c3faae4bc9650fd7e27e0bebb7ab': true,
+  // FEI
+  '0x956f47f50a910163d8bf957cf5846d573e7f87ca': true,
+  // USDC
+  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': true,
+  // BAL
+  '0xba100000625a3754423978a60c9317c58a424e3d': true,
+  // TRIBE
   '0xc7283b66eb1eb5fb86327f08e1b5816b0720212b': true
 };
 
@@ -1403,7 +1413,7 @@ var getQuote = /*#__PURE__*/function () {
   };
 }();
 var fillQuote = /*#__PURE__*/function () {
-  var _ref3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee2(quote, transactionOptions, wallet, permit) {
+  var _ref3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee2(quote, transactionOptions, wallet, permit, chainId) {
     var instance, swapTx, sellTokenAddress, buyTokenAddress, to, data, fee, value, sellAmount, feePercentageBasisPoints, allowanceTarget, _yield$wallet$provide, timestamp, deadline, permitSignature, _yield$wallet$provide2, _timestamp, _deadline, _permitSignature;
 
     return runtime_1.wrap(function _callee2$(_context2) {
@@ -1447,7 +1457,7 @@ var fillQuote = /*#__PURE__*/function () {
             timestamp = _yield$wallet$provide.timestamp;
             deadline = timestamp + 3600;
             _context2.next = 17;
-            return signPermit(wallet, sellTokenAddress, quote.from, instance.address, quote.sellAmount.toString(), deadline);
+            return signPermit(wallet, sellTokenAddress, quote.from, instance.address, quote.sellAmount.toString(), deadline, chainId);
 
           case 17:
             permitSignature = _context2.sent;
@@ -1488,7 +1498,7 @@ var fillQuote = /*#__PURE__*/function () {
             _timestamp = _yield$wallet$provide2.timestamp;
             _deadline = _timestamp + 3600;
             _context2.next = 36;
-            return signPermit(wallet, sellTokenAddress, quote.from, instance.address, quote.sellAmount.toString(), _deadline);
+            return signPermit(wallet, sellTokenAddress, quote.from, instance.address, quote.sellAmount.toString(), _deadline, chainId);
 
           case 36:
             _permitSignature = _context2.sent;
@@ -1522,7 +1532,7 @@ var fillQuote = /*#__PURE__*/function () {
     }, _callee2);
   }));
 
-  return function fillQuote(_x2, _x3, _x4, _x5) {
+  return function fillQuote(_x2, _x3, _x4, _x5, _x6) {
     return _ref3.apply(this, arguments);
   };
 }();
@@ -1566,13 +1576,938 @@ var getQuoteExecutionDetails = function getQuoteExecutionDetails(quote, transact
   }
 };
 
-function signPermit(wallet, tokenAddress, holder, spender, amount, deadline) {
-  if (tokenAddress.toLowerCase() === DAI_ADDRESS) {
-    return signDaiPermit(wallet, tokenAddress, holder, spender, deadline);
-  } else {
-    return signERC2612Permit(wallet, tokenAddress, holder, spender, amount, deadline);
-  }
+var DAIAbi = [
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "owner",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "Approval",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "from",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "Transfer",
+		type: "event"
+	},
+	{
+		inputs: [
+		],
+		name: "DOMAIN_SEPARATOR",
+		outputs: [
+			{
+				internalType: "bytes32",
+				name: "",
+				type: "bytes32"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "PERMIT_TYPEHASH",
+		outputs: [
+			{
+				internalType: "bytes32",
+				name: "",
+				type: "bytes32"
+			}
+		],
+		stateMutability: "pure",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "owner",
+				type: "address"
+			},
+			{
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			}
+		],
+		name: "allowance",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "approve",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "owner",
+				type: "address"
+			}
+		],
+		name: "balanceOf",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "decimals",
+		outputs: [
+			{
+				internalType: "uint8",
+				name: "",
+				type: "uint8"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "name",
+		outputs: [
+			{
+				internalType: "string",
+				name: "",
+				type: "string"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "owner",
+				type: "address"
+			}
+		],
+		name: "nonces",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "holder",
+				type: "address"
+			},
+			{
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "nonce",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "expiry",
+				type: "uint256"
+			},
+			{
+				internalType: "bool",
+				name: "allowed",
+				type: "bool"
+			},
+			{
+				internalType: "uint8",
+				name: "v",
+				type: "uint8"
+			},
+			{
+				internalType: "bytes32",
+				name: "r",
+				type: "bytes32"
+			},
+			{
+				internalType: "bytes32",
+				name: "s",
+				type: "bytes32"
+			}
+		],
+		name: "permit",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "symbol",
+		outputs: [
+			{
+				internalType: "string",
+				name: "",
+				type: "string"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "totalSupply",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "transfer",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "from",
+				type: "address"
+			},
+			{
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "transferFrom",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "version",
+		outputs: [
+			{
+				internalType: "string",
+				name: "",
+				type: "string"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	}
+];
+
+var IERC2612Abi = [
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "owner",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "Approval",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "from",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "Transfer",
+		type: "event"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "owner",
+				type: "address"
+			},
+			{
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			}
+		],
+		name: "allowance",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "approve",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "owner",
+				type: "address"
+			}
+		],
+		name: "balanceOf",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "decimals",
+		outputs: [
+			{
+				internalType: "uint8",
+				name: "",
+				type: "uint8"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "name",
+		outputs: [
+			{
+				internalType: "string",
+				name: "",
+				type: "string"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "owner",
+				type: "address"
+			}
+		],
+		name: "nonces",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "owner",
+				type: "address"
+			},
+			{
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			},
+			{
+				internalType: "uint256",
+				name: "deadline",
+				type: "uint256"
+			},
+			{
+				internalType: "uint8",
+				name: "v",
+				type: "uint8"
+			},
+			{
+				internalType: "bytes32",
+				name: "r",
+				type: "bytes32"
+			},
+			{
+				internalType: "bytes32",
+				name: "s",
+				type: "bytes32"
+			}
+		],
+		name: "permit",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "symbol",
+		outputs: [
+			{
+				internalType: "string",
+				name: "",
+				type: "string"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "totalSupply",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "transfer",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "from",
+				type: "address"
+			},
+			{
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "transferFrom",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "version",
+		outputs: [
+			{
+				internalType: "string",
+				name: "",
+				type: "string"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	}
+];
+
+var EIP712_DOMAIN_TYPE = [{
+  name: 'name',
+  type: 'string'
+}, {
+  name: 'version',
+  type: 'string'
+}, {
+  name: 'chainId',
+  type: 'uint256'
+}, {
+  name: 'verifyingContract',
+  type: 'address'
+}];
+
+var getDomainSeparator = /*#__PURE__*/function () {
+  var _ref = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee(name, version, chainId, verifyingContract) {
+    return runtime_1.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            return _context.abrupt("return", '0x' + TypedDataUtils.hashStruct('EIP712Domain', {
+              chainId: chainId,
+              name: name,
+              verifyingContract: verifyingContract,
+              version: version
+            }, {
+              EIP712Domain: EIP712_DOMAIN_TYPE
+            }).toString('hex'));
+
+          case 1:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+
+  return function getDomainSeparator(_x, _x2, _x3, _x4) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var getPermitVersion = /*#__PURE__*/function () {
+  var _ref2 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee2(token, name, chainId, verifyingContract) {
+    var version, _version, domainSeparator, domainSeparatorValidation;
+
+    return runtime_1.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.prev = 0;
+            _context2.next = 3;
+            return token.version();
+
+          case 3:
+            version = _context2.sent;
+            return _context2.abrupt("return", version);
+
+          case 7:
+            _context2.prev = 7;
+            _context2.t0 = _context2["catch"](0);
+            _version = '1';
+            _context2.prev = 10;
+            _context2.next = 13;
+            return token.DOMAIN_SEPARATOR();
+
+          case 13:
+            domainSeparator = _context2.sent;
+            _context2.next = 16;
+            return getDomainSeparator(name, _version, chainId, verifyingContract);
+
+          case 16:
+            domainSeparatorValidation = _context2.sent;
+
+            if (!(domainSeparator === domainSeparatorValidation)) {
+              _context2.next = 19;
+              break;
+            }
+
+            return _context2.abrupt("return", _version);
+
+          case 19:
+            _context2.next = 26;
+            break;
+
+          case 21:
+            _context2.prev = 21;
+            _context2.t1 = _context2["catch"](10);
+
+            if (!([TORN_ADDRESS, WNXM_ADDRESS, VSP_ADDRESS].map(function (t) {
+              return t.toLowerCase();
+            }).indexOf(token.address.toLowerCase()) !== -1)) {
+              _context2.next = 25;
+              break;
+            }
+
+            return _context2.abrupt("return", '1');
+
+          case 25:
+            return _context2.abrupt("return", null);
+
+          case 26:
+            return _context2.abrupt("return", null);
+
+          case 27:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, null, [[0, 7], [10, 21]]);
+  }));
+
+  return function getPermitVersion(_x5, _x6, _x7, _x8) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+var getNonces = /*#__PURE__*/function () {
+  var _ref3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee3(token, owner) {
+    var nonce, _nonce;
+
+    return runtime_1.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.prev = 0;
+            _context3.next = 3;
+            return token.nonces(owner);
+
+          case 3:
+            nonce = _context3.sent;
+            return _context3.abrupt("return", nonce);
+
+          case 7:
+            _context3.prev = 7;
+            _context3.t0 = _context3["catch"](0);
+            _context3.prev = 9;
+            _context3.next = 12;
+            return token._nonces(owner);
+
+          case 12:
+            _nonce = _context3.sent;
+            return _context3.abrupt("return", _nonce);
+
+          case 16:
+            _context3.prev = 16;
+            _context3.t1 = _context3["catch"](9);
+            return _context3.abrupt("return", 0);
+
+          case 19:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3, null, [[0, 7], [9, 16]]);
+  }));
+
+  return function getNonces(_x9, _x10) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+var EIP712_DOMAIN_TYPE_NO_VERSION = [{
+  name: 'name',
+  type: 'string'
+}, {
+  name: 'chainId',
+  type: 'uint256'
+}, {
+  name: 'verifyingContract',
+  type: 'address'
+}];
+var EIP2612_TYPE = [{
+  name: 'owner',
+  type: 'address'
+}, {
+  name: 'spender',
+  type: 'address'
+}, {
+  name: 'value',
+  type: 'uint256'
+}, {
+  name: 'nonce',
+  type: 'uint256'
+}, {
+  name: 'deadline',
+  type: 'uint256'
+}];
+var PERMIT_ALLOWED_TYPE = [{
+  name: 'holder',
+  type: 'address'
+}, {
+  name: 'spender',
+  type: 'address'
+}, {
+  name: 'nonce',
+  type: 'uint256'
+}, {
+  name: 'expiry',
+  type: 'uint256'
+}, {
+  name: 'allowed',
+  type: 'bool'
+}];
+function signPermit(_x11, _x12, _x13, _x14, _x15, _x16, _x17) {
+  return _signPermit.apply(this, arguments);
 }
 
-export { ALLOWS_PERMIT, API_BASE_URL, DAI_ADDRESS, ETH_ADDRESS, RAINBOW_ROUTER_CONTRACT_ADDRESS, RAINBOW_ROUTER_OWNER_ADDRESS, Sources, VAULT_ADDRESS, WETH, fillQuote, geWethMethod, getQuote, getQuoteExecutionDetails, signPermit, unwrapWeth, wrapEth };
+function _signPermit() {
+  _signPermit = _asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee4(wallet, tokenAddress, holder, spender, amount, deadline, chainId) {
+    var token, isPermitAllowedType, name, _yield$Promise$all, nonce, version, message, domain, types, data, privateKeyBuffer, signature, _splitSignature, v, r, s;
+
+    return runtime_1.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            token = new Contract(tokenAddress, tokenAddress.toLowerCase() === DAI_ADDRESS ? DAIAbi : IERC2612Abi, wallet);
+            isPermitAllowedType = token.address.toLowerCase() === DAI_ADDRESS.toLowerCase();
+            _context4.next = 4;
+            return token.name();
+
+          case 4:
+            name = _context4.sent;
+            _context4.next = 7;
+            return Promise.all([getNonces(token, holder), getPermitVersion(token, name, chainId, token.address)]);
+
+          case 7:
+            _yield$Promise$all = _context4.sent;
+            nonce = _yield$Promise$all[0];
+            version = _yield$Promise$all[1];
+            message = {
+              nonce: Number(nonce.toString()),
+              spender: spender
+            };
+
+            if (isPermitAllowedType) {
+              message.holder = holder;
+              message.allowed = true;
+              message.expiry = deadline;
+            } else {
+              message.value = BigNumber.from(amount).toHexString();
+              message.deadline = deadline;
+              message.owner = holder;
+            }
+
+            domain = {
+              chainId: chainId,
+              name: name,
+              verifyingContract: token.address
+            };
+
+            if (version !== null) {
+              domain.version = version;
+            }
+
+            types = {
+              EIP712Domain: version !== null ? EIP712_DOMAIN_TYPE : EIP712_DOMAIN_TYPE_NO_VERSION,
+              Permit: isPermitAllowedType ? PERMIT_ALLOWED_TYPE : EIP2612_TYPE
+            };
+            data = {
+              domain: domain,
+              message: message,
+              primaryType: 'Permit',
+              types: types
+            };
+            privateKeyBuffer = toBuffer(addHexPrefix(wallet.privateKey));
+            signature = signTypedData_v4(privateKeyBuffer, {
+              data: data
+            });
+            _splitSignature = splitSignature(signature), v = _splitSignature.v, r = _splitSignature.r, s = _splitSignature.s;
+            return _context4.abrupt("return", {
+              deadline: deadline,
+              nonce: nonce,
+              r: r,
+              s: s,
+              v: v
+            });
+
+          case 20:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4);
+  }));
+  return _signPermit.apply(this, arguments);
+}
+
+export { ALLOWS_PERMIT, API_BASE_URL, DAI_ADDRESS, ETH_ADDRESS, RAINBOW_ROUTER_CONTRACT_ADDRESS, RAINBOW_ROUTER_OWNER_ADDRESS, Sources, TORN_ADDRESS, USDC_ADDRESS, VAULT_ADDRESS, VSP_ADDRESS, WETH, WNXM_ADDRESS, fillQuote, geWethMethod, getQuote, getQuoteExecutionDetails, signPermit, unwrapWeth, wrapEth };
 //# sourceMappingURL=rainbow-swaps.esm.js.map

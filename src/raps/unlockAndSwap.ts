@@ -9,9 +9,14 @@ import {
 } from './common';
 import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
 import store from '@rainbow-me/redux/store';
-import { ethUnits, ETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
-import { ALLOWS_PERMIT, PermitSupportedTokenList, RAINBOW_ROUTER_CONTRACT_ADDRESS, WETH } from 'rainbow-swaps';
+import {
+  ALLOWS_PERMIT,
+  PermitSupportedTokenList,
+  RAINBOW_ROUTER_CONTRACT_ADDRESS,
+  WETH,
+} from 'rainbow-swaps';
 
 export const estimateUnlockAndSwap = async (
   swapParameters: SwapActionParameters
@@ -24,11 +29,13 @@ export const estimateUnlockAndSwap = async (
 
   const { accountAddress, chainId } = store.getState().settings;
 
-  const isWethUnwrapping = toLower(inputCurrency.address) === toLower(WETH['1']) && toLower(outputCurrency.address) === toLower(ETH_ADDRESS);
+  const isWethUnwrapping =
+    toLower(inputCurrency.address) === toLower(WETH['1']) &&
+    toLower(outputCurrency.address) === toLower(ETH_ADDRESS);
 
   let gasLimits: (string | number)[] = [];
   let swapAssetNeedsUnlocking = false;
-  if(!isWethUnwrapping){
+  if (!isWethUnwrapping) {
     swapAssetNeedsUnlocking = await assetNeedsUnlocking(
       accountAddress,
       inputAmount,
@@ -68,12 +75,14 @@ export const createUnlockAndSwapRap = async (
   if (!inputCurrency || !outputCurrency || !inputAmount)
     return ethUnits.basic_swap;
 
-  const { accountAddress, chainId } = store.getState().settings;
-  const isWethUnwrapping = toLower(inputCurrency.address) === toLower(WETH['1']) && toLower(outputCurrency.address) === toLower(ETH_ADDRESS);
-  
+  const { accountAddress } = store.getState().settings;
+  const isWethUnwrapping =
+    toLower(inputCurrency.address) === toLower(WETH['1']) &&
+    toLower(outputCurrency.address) === toLower(ETH_ADDRESS);
+
   let swapAssetNeedsUnlocking = false;
 
-  if(!isWethUnwrapping){
+  if (!isWethUnwrapping) {
     swapAssetNeedsUnlocking = await assetNeedsUnlocking(
       accountAddress,
       inputAmount,
@@ -81,7 +90,10 @@ export const createUnlockAndSwapRap = async (
       RAINBOW_ROUTER_CONTRACT_ADDRESS
     );
   }
-  const allowsPermit = ALLOWS_PERMIT[toLower(inputCurrency.address) as keyof PermitSupportedTokenList];
+  const allowsPermit =
+    ALLOWS_PERMIT[
+      toLower(inputCurrency.address) as keyof PermitSupportedTokenList
+    ];
 
   if (swapAssetNeedsUnlocking && !allowsPermit) {
     const unlock = createNewAction(RapActionTypes.unlock, {
@@ -95,8 +107,8 @@ export const createUnlockAndSwapRap = async (
   // create a swap rap
   const swap = createNewAction(RapActionTypes.swap, {
     inputAmount,
+    permit: swapAssetNeedsUnlocking && allowsPermit,
     tradeDetails,
-    permit: swapAssetNeedsUnlocking && allowsPermit
   });
   actions = concat(actions, swap);
 

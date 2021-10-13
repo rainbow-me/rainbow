@@ -13,7 +13,6 @@ import {
 } from '@rainbow-me/handlers/uniswap';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
-import { ethUnits } from '@rainbow-me/references';
 import { greaterThan } from '@rainbow-me/utilities';
 import { gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -28,8 +27,11 @@ const swap = async (
   baseNonce?: number
 ): Promise<number | undefined> => {
   logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
-  const requiresApprove = index > 0;
-  const { inputAmount, tradeDetails, permit } = parameters as SwapActionParameters;
+  const {
+    inputAmount,
+    tradeDetails,
+    permit,
+  } = parameters as SwapActionParameters;
   const { dispatch } = store;
   const { accountAddress, chainId } = store.getState().settings;
   const { inputCurrency } = store.getState().swap;
@@ -48,7 +50,7 @@ const swap = async (
     const newGasLimit = await estimateSwapGasLimit({
       chainId,
       requiresApprove: false,
-      tradeDetails
+      tradeDetails,
     });
     gasLimit = newGasLimit;
   } catch (e) {
@@ -70,9 +72,9 @@ const swap = async (
       gasLimit,
       gasPrice,
       nonce,
+      permit: !!permit,
       tradeDetails,
       wallet,
-      permit: !!permit,
     });
   } catch (e) {
     logger.sentry('Error', e);
@@ -97,7 +99,14 @@ const swap = async (
     type: TransactionType.trade,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
-  await dispatch(dataAddNewTransaction(newTransaction, accountAddress, false, wallet.provider));
+  await dispatch(
+    dataAddNewTransaction(
+      newTransaction,
+      accountAddress,
+      false,
+      wallet?.provider
+    )
+  );
   return swap?.nonce;
 };
 
