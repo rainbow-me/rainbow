@@ -206,11 +206,6 @@ const GasSpeedButton = ({
     if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
       asset,
-      // restoreFocusOnSwapModal: () => {
-      //   android &&
-      //     (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
-      //   setParams({ focused: true });
-      // },
       type: 'custom_gas',
     });
   }, [navigate, asset, gasIsNotReady]);

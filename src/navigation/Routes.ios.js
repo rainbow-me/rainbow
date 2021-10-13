@@ -35,6 +35,7 @@ import {
   addTokenSheetConfig,
   backupSheetConfig,
   basicSheetConfig,
+  customGasSheetConfig,
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
   expandedAssetSheetConfigWithLimit,
@@ -365,7 +366,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.CUSTOM_GAS_SHEET}
-        {...expandedAssetSheetConfig}
+        {...customGasSheetConfig}
       />
       <NativeStack.Screen
         component={WithdrawModal}

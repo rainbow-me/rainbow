@@ -81,6 +81,15 @@ export const backupSheetConfig = {
   },
 };
 
+export const customGasSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      longFormHeight: 394,
+    }),
+  }),
+};
+
 export const addTokenSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
