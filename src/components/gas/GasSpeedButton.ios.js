@@ -191,10 +191,6 @@ const GasSpeedButton = ({
     [currentNetwork, updateCustomValues, updateGasFeeOption]
   );
 
-  // const handleCustomGasChange = useCallback(async price => {
-  //   setCustomGasPriceInput(price);
-  // }, []);
-
   const gasIsNotReady = useMemo(
     () =>
       isEmpty(gasFeeParamsBySpeed) ||
@@ -298,110 +294,6 @@ const GasSpeedButton = ({
     selectedGasFee,
     selectedGasFeeOption,
   ]);
-
-  // const handleInputButtonManager = useCallback(() => {
-  //   const complete = () => {
-  //     if (inputFocused) {
-  //       if (dontBlur) {
-  //         handleCustomGasBlur();
-  //       } else {
-  //         inputRef.current?.blur();
-  //       }
-  //     } else {
-  //       inputRef.current?.focus();
-  //     }
-  //   };
-
-  //   if (customGasPriceInput === '0') {
-  //     Alert({
-  //       buttons: [
-  //         {
-  //           onPress: () => inputRef.current?.focus(),
-  //           text: 'OK',
-  //         },
-  //       ],
-  //       message: 'You need to enter a valid amount',
-  //       title: 'Invalid Gas Price',
-  //     });
-  //     return;
-  //   }
-
-  //   if (!customGasPriceInput || !inputFocused) {
-  //     complete();
-  //     ReactNativeHapticFeedback.trigger('impactMedium');
-  //     return;
-  //   }
-
-  //   const minKey = options?.indexOf(SLOW) !== -1 ? SLOW : NORMAL;
-
-  //   const minGasPriceAllowed = Number(
-  //     gasPricesAvailable?.[minKey]?.value?.amount || 0
-  //   );
-
-  //   // The minimum gas for the tx is the higher amount between:
-  //   // - 10% more than the submitted gas of the previous tx (If speeding up / cancelling)
-  //   // - The new "normal" gas price from our third party API
-
-  //   const minimumGasAcceptedForTx = minMaxPriorityFeePerGas
-  //     ? Math.max(minMaxPriorityFeePerGas, minGasPriceAllowed)
-  //     : minGasPriceAllowed;
-
-  //   if (minMaxPriorityFeePerGas && Number(customGasPriceInput) < minimumGasAcceptedForTx) {
-  //     Alert({
-  //       buttons: [
-  //         {
-  //           onPress: () => inputRef.current?.focus(),
-  //           text: 'OK',
-  //         },
-  //       ],
-  //       message: `The minimum gas price valid allowed is ${minimumGasAcceptedForTx} GWEI`,
-  //       title: 'Gas Price Too Low',
-  //     });
-  //     return;
-  //   }
-
-  //   const priceInWei = gweiToWei(customGasPriceInput);
-  //   const maxGasPriceFast = Number(
-  //     gasPricesAvailable?.fast?.value?.amount || 0
-  //   );
-  //   let tooLow = priceInWei < minGasPriceAllowed;
-  //   let tooHigh = priceInWei > maxGasPriceFast * 2.5;
-
-  //   if (tooLow || tooHigh) {
-  //     Alert({
-  //       buttons: [
-  //         {
-  //           onPress: complete,
-  //           text: 'Proceed Anyway',
-  //         },
-  //         {
-  //           onPress: () => inputRef.current?.focus(),
-  //           style: 'cancel',
-  //           text: 'Edit Gas Price',
-  //         },
-  //       ],
-  //       message: tooLow
-  //         ? 'Setting a higher gas price is recommended to avoid issues.'
-  //         : 'Double check that you entered the correct amount—you’re likely paying more than you need to!',
-  //       title: tooLow
-  //         ? 'Low gas price–transaction might get stuck!'
-  //         : 'High gas price!',
-  //     });
-  //   } else {
-  //     complete();
-  //   }
-  // }, [
-  //   customGasPriceInput,
-  //   inputFocused,
-  //   options,
-  //   gasPricesAvailable,
-  //   minMaxPriorityFeePerGas,
-  //   dontBlur,
-  //   handleCustomGasBlur,
-  // ]);
-
-  // const focusOnInput = useCallback(() => inputRef.current?.focus(), []);
-  // const isCustom = selectedGasFeeOption === CUSTOM ? true : false;
 
   const openGasHelper = useCallback(
     () => navigate(Routes.EXPLAIN_SHEET, { type: 'gas' }),
