@@ -48,10 +48,8 @@ const CustomGasButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.9,
 })`
   // border: ${({ theme: { colors } }) => `2px solid ${colors.mediumGrey}`};
-  // TODO: put this shade in theme colors
-  border: 2px solid rgba(224, 232, 255, 0.15);
   border-radius: 15px;
-  ${padding(3, 5)};
+  ${padding(0, 0)};
   ${margin(0, 0, 0, 8)}
   )
 `;
