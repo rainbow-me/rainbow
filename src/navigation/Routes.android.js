@@ -32,7 +32,9 @@ import WyreWebview from '../screens/WyreWebview';
 import { SwipeNavigator } from './SwipeNavigator';
 import { createBottomSheetNavigator } from './bottom-sheet';
 import {
+  addTokenSheetConfig,
   closeKeyboardOnClose,
+  customGasSheetConfig,
   defaultScreenStackOptions,
   restoreSheetConfig,
   stackNavigationConfig,
@@ -138,6 +140,11 @@ function MainNavigator() {
         component={TransactionConfirmationScreen}
         name={Routes.CONFIRM_REQUEST}
         options={exchangePreset}
+      />
+      <Stack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.CUSTOM_GAS_SHEET}
+        {...customGasSheetConfig}
       />
       <Stack.Screen
         component={SpeedUpAndCancelSheet}
@@ -286,9 +293,8 @@ function BSNavigator() {
       <BSStack.Screen
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
-        options={{
-          height: '100%',
-        }}
+        options={bottomSheetPreset}
+
       />
       <BSStack.Screen
         component={ModalScreen}
