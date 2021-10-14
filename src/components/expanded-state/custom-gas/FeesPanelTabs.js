@@ -54,10 +54,11 @@ const TabPill = ({ label, isSelected, handleOnPressTabPill, color }) => {
   );
 };
 
-export default function FeesPanelTabs({ colorForAsset }) {
+export default function FeesPanelTabs({ onPressTabPill, colorForAsset }) {
   const { updateGasFeeOption, selectedGasFeeOption } = useGas();
   const handleOnPressTabPill = label => {
     updateGasFeeOption(label);
+    onPressTabPill();
   };
   return (
     <Row align="center">

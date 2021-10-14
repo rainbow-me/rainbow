@@ -123,8 +123,6 @@ export default function CustomGasState({ asset }) {
     setParams,
   ]);
 
-  useEffect(() => showKeyboard(), [showKeyboard]);
-
   return (
     <SheetKeyboardAnimation
       as={AnimatedContainer}
@@ -149,7 +147,10 @@ export default function CustomGasState({ asset }) {
             selectedGasFee={selectedGasFee}
           />
           <Divider />
-          <FeesPanelTabs colorForAsset={assetColor} />
+          <FeesPanelTabs
+            colorForAsset={assetColor}
+            onPressTabPill={hideKeyboard}
+          />
         </FloatingPanel>
         <Footer onLayout={setFooterHeight}>
           <GasSpeedButton
