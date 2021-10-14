@@ -1,7 +1,7 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 import { Docs } from '../../playground/Docs';
-import { PlaceHolder } from '../../playground/Placeholder';
+import { Placeholder } from '../../playground/Placeholder';
 import { Inline } from './Inline';
 
 const docs: Docs = {
@@ -11,14 +11,14 @@ const docs: Docs = {
       name: 'Basic usage',
       example: (
         <Inline space="19dp">
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
         </Inline>
       ),
     },
@@ -27,14 +27,14 @@ const docs: Docs = {
       name: 'Center-aligned horizontally',
       example: (
         <Inline alignHorizontal="center" space="19dp">
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
         </Inline>
       ),
     },
@@ -43,14 +43,14 @@ const docs: Docs = {
       name: 'Right-aligned horizontally',
       example: (
         <Inline alignHorizontal="right" space="19dp">
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
         </Inline>
       ),
     },
@@ -59,15 +59,15 @@ const docs: Docs = {
       name: 'Center-aligned vertically',
       example: (
         <Inline alignVertical="center" space="19dp">
-          <PlaceHolder height={20} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={60} width={40} />
-          <PlaceHolder height={30} width={40} />
-          <PlaceHolder height={50} width={40} />
-          <PlaceHolder height={20} width={40} />
-          <PlaceHolder height={70} width={40} />
-          <PlaceHolder height={10} width={40} />
-          <PlaceHolder height={50} width={40} />
+          <Placeholder height={20} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={60} width={40} />
+          <Placeholder height={30} width={40} />
+          <Placeholder height={50} width={40} />
+          <Placeholder height={20} width={40} />
+          <Placeholder height={70} width={40} />
+          <Placeholder height={10} width={40} />
+          <Placeholder height={50} width={40} />
         </Inline>
       ),
     },
@@ -76,15 +76,15 @@ const docs: Docs = {
       name: 'Bottom-aligned vertically',
       example: (
         <Inline alignVertical="bottom" space="19dp">
-          <PlaceHolder height={20} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={60} width={40} />
-          <PlaceHolder height={30} width={40} />
-          <PlaceHolder height={50} width={40} />
-          <PlaceHolder height={20} width={40} />
-          <PlaceHolder height={70} width={40} />
-          <PlaceHolder height={10} width={40} />
-          <PlaceHolder height={50} width={40} />
+          <Placeholder height={20} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={60} width={40} />
+          <Placeholder height={30} width={40} />
+          <Placeholder height={50} width={40} />
+          <Placeholder height={20} width={40} />
+          <Placeholder height={70} width={40} />
+          <Placeholder height={10} width={40} />
+          <Placeholder height={50} width={40} />
         </Inline>
       ),
     },
@@ -93,15 +93,15 @@ const docs: Docs = {
       name: 'Center-aligned horizontally and vertically',
       example: (
         <Inline alignHorizontal="center" alignVertical="center" space="19dp">
-          <PlaceHolder height={20} width={40} />
-          <PlaceHolder height={40} width={40} />
-          <PlaceHolder height={60} width={40} />
-          <PlaceHolder height={30} width={40} />
-          <PlaceHolder height={50} width={40} />
-          <PlaceHolder height={20} width={40} />
-          <PlaceHolder height={70} width={40} />
-          <PlaceHolder height={10} width={40} />
-          <PlaceHolder height={50} width={40} />
+          <Placeholder height={20} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={60} width={40} />
+          <Placeholder height={30} width={40} />
+          <Placeholder height={50} width={40} />
+          <Placeholder height={20} width={40} />
+          <Placeholder height={70} width={40} />
+          <Placeholder height={10} width={40} />
+          <Placeholder height={50} width={40} />
         </Inline>
       ),
     },

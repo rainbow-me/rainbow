@@ -3,7 +3,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { Docs } from '../../playground/Docs';
 import { Guide } from '../../playground/Guide';
-import { PlaceHolder } from '../../playground/Placeholder';
+import { Placeholder } from '../../playground/Placeholder';
 import { Text } from '../Text/Text';
 import { Stack } from './Stack';
 
@@ -18,9 +18,9 @@ const docs: Docs = {
       name: 'Basic usage',
       example: (
         <Stack space="12dp">
-          <PlaceHolder />
-          <PlaceHolder />
-          <PlaceHolder />
+          <Placeholder />
+          <Placeholder />
+          <Placeholder />
         </Stack>
       ),
     },
@@ -42,9 +42,9 @@ const docs: Docs = {
       name: 'With center alignment',
       example: (
         <Stack alignHorizontal="center" space="19dp">
-          <PlaceHolder width={30} />
-          <PlaceHolder width={90} />
-          <PlaceHolder width={60} />
+          <Placeholder width={30} />
+          <Placeholder width={90} />
+          <Placeholder width={60} />
         </Stack>
       ),
     },
@@ -52,9 +52,9 @@ const docs: Docs = {
       name: 'With dividers',
       example: (
         <Stack divider={<MockDivider />} space="19dp">
-          <PlaceHolder />
-          <PlaceHolder />
-          <PlaceHolder />
+          <Placeholder />
+          <Placeholder />
+          <Placeholder />
         </Stack>
       ),
     },
@@ -62,9 +62,9 @@ const docs: Docs = {
       name: 'With center alignment and dividers',
       example: (
         <Stack alignHorizontal="center" divider={<MockDivider />} space="19dp">
-          <PlaceHolder width={30} />
-          <PlaceHolder width={90} />
-          <PlaceHolder width={60} />
+          <Placeholder width={30} />
+          <Placeholder width={90} />
+          <Placeholder width={60} />
         </Stack>
       ),
     },
@@ -72,9 +72,9 @@ const docs: Docs = {
       name: 'With right alignment and dividers',
       example: (
         <Stack alignHorizontal="right" divider={<MockDivider />} space="19dp">
-          <PlaceHolder width={30} />
-          <PlaceHolder width={90} />
-          <PlaceHolder width={60} />
+          <Placeholder width={30} />
+          <Placeholder width={90} />
+          <Placeholder width={60} />
         </Stack>
       ),
     },

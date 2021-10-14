@@ -9,10 +9,12 @@ import {
 import { useHideSplashScreen } from '../../hooks';
 import { Heading, Inline, Inset, Stack } from '../';
 import bleedDocs from '../components/Bleed/Bleed.docs';
+import columnsDocs from '../components/Columns/Columns.docs';
 import headingDocs from '../components/Heading/Heading.docs';
 import inlineDocs from '../components/Inline/Inline.docs';
 import insetDocs from '../components/Inset/Inset.docs';
 import markdownTextDocs from '../components/MarkdownText/MarkdownText.docs';
+import rowDocs from '../components/Row/Row.docs';
 import stackDocs from '../components/Stack/Stack.docs';
 import textDocs from '../components/Text/Text.docs';
 import textLinkDocs from '../components/TextLink/TextLink.docs';
@@ -20,10 +22,12 @@ import { Docs } from './Docs';
 
 const allDocs = [
   bleedDocs,
+  columnsDocs,
   headingDocs,
   inlineDocs,
   insetDocs,
   markdownTextDocs,
+  rowDocs,
   stackDocs,
   textDocs,
   textLinkDocs,
@@ -71,7 +75,7 @@ export const Playground = () => {
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
       {android ? <View style={{ height: StatusBar.currentHeight }} /> : null}
-      <Inset space="gutter">
+      <Inset space="19dp">
         <Stack space="30dp">
           {allDocs.map(({ name, examples }, index) => (
             <DocsRow examples={examples} key={index} name={name} />

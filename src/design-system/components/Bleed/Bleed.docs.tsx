@@ -2,7 +2,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Docs } from '../../playground/Docs';
-import { PlaceHolder } from '../../playground/Placeholder';
+import { Placeholder } from '../../playground/Placeholder';
 import { Inset } from '../Inset/Inset';
 import { Stack } from '../Stack/Stack';
 import { Bleed } from './Bleed';
@@ -16,13 +16,13 @@ const docs: Docs = {
       name: 'Basic usage',
       example: (
         <View style={{ backgroundColor: pink }}>
-          <Inset space="gutter">
-            <Stack space="gutter">
-              <PlaceHolder height={100} />
-              <Bleed horizontal="gutter">
-                <PlaceHolder height={100} />
+          <Inset space="19dp">
+            <Stack space="19dp">
+              <Placeholder height={100} />
+              <Bleed horizontal="19dp">
+                <Placeholder height={100} />
               </Bleed>
-              <PlaceHolder height={100} />
+              <Placeholder height={100} />
             </Stack>
           </Inset>
         </View>
@@ -33,13 +33,13 @@ const docs: Docs = {
       name: 'Right',
       example: (
         <View style={{ backgroundColor: pink }}>
-          <Inset space="gutter">
-            <Stack space="gutter">
-              <PlaceHolder height={100} />
-              <Bleed right="gutter">
-                <PlaceHolder height={100} />
+          <Inset space="19dp">
+            <Stack space="19dp">
+              <Placeholder height={100} />
+              <Bleed right="19dp">
+                <Placeholder height={100} />
               </Bleed>
-              <PlaceHolder height={100} />
+              <Placeholder height={100} />
             </Stack>
           </Inset>
         </View>
@@ -50,13 +50,13 @@ const docs: Docs = {
       name: 'Left',
       example: (
         <View style={{ backgroundColor: pink }}>
-          <Inset space="gutter">
-            <Stack space="gutter">
-              <PlaceHolder height={100} />
-              <Bleed left="gutter">
-                <PlaceHolder height={100} />
+          <Inset space="19dp">
+            <Stack space="19dp">
+              <Placeholder height={100} />
+              <Bleed left="19dp">
+                <Placeholder height={100} />
               </Bleed>
-              <PlaceHolder height={100} />
+              <Placeholder height={100} />
             </Stack>
           </Inset>
         </View>
@@ -67,13 +67,13 @@ const docs: Docs = {
       name: 'Top',
       example: (
         <View style={{ backgroundColor: pink }}>
-          <Inset space="gutter">
-            <Stack space="gutter">
-              <Bleed top="gutter">
-                <PlaceHolder height={100} />
+          <Inset space="19dp">
+            <Stack space="19dp">
+              <Bleed top="19dp">
+                <Placeholder height={100} />
               </Bleed>
-              <PlaceHolder height={100} />
-              <PlaceHolder height={100} />
+              <Placeholder height={100} />
+              <Placeholder height={100} />
             </Stack>
           </Inset>
         </View>
@@ -84,12 +84,12 @@ const docs: Docs = {
       name: 'Bottom',
       example: (
         <View style={{ backgroundColor: pink }}>
-          <Inset space="gutter">
-            <Stack space="gutter">
-              <PlaceHolder height={100} />
-              <PlaceHolder height={100} />
-              <Bleed bottom="gutter">
-                <PlaceHolder height={100} />
+          <Inset space="19dp">
+            <Stack space="19dp">
+              <Placeholder height={100} />
+              <Placeholder height={100} />
+              <Bleed bottom="19dp">
+                <Placeholder height={100} />
               </Bleed>
             </Stack>
           </Inset>

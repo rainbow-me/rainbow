@@ -1,10 +1,5 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
-const semanticSpace = {
-  gutter: 19,
-};
-
 export const space = {
-  gutter: semanticSpace.gutter, // eslint-disable-line prettier/prettier
   '3dp': 3,
   '6dp': 6,
   '10dp': 10,
@@ -19,7 +14,6 @@ export const space = {
 export type Space = keyof typeof space;
 
 export const negativeSpace = {
-  '-gutter': -semanticSpace.gutter,
   '-3dp': -3,
   '-6dp': -6,
   '-10dp': -10,
@@ -34,7 +28,6 @@ export const negativeSpace = {
 export type NegativeSpace = keyof typeof negativeSpace;
 
 const spaceToNegativeSpace: Record<Space, NegativeSpace> = {
-  gutter: '-gutter', // eslint-disable-line prettier/prettier
   '3dp': '-3dp',
   '6dp': '-6dp',
   '10dp': '-10dp',

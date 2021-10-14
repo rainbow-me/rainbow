@@ -1,10 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
 
-export const PlaceHolder = ({
+export const Placeholder = ({
   height = 40,
-  width = '100%',
+  width,
+  flexGrow,
 }: {
+  flexGrow?: number;
   height?: number;
   width?: number | '100%';
 }) => (
@@ -13,6 +15,7 @@ export const PlaceHolder = ({
       backgroundColor: '#eee',
       borderColor: '#aaa',
       borderWidth: 1,
+      flexGrow,
       height,
       width,
     }}

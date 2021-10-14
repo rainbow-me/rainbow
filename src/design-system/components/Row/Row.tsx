@@ -1,7 +1,9 @@
 import React, { Children, ReactNode } from 'react';
 import flattenChildren from 'react-flatten-children';
-import { negateSpace, Space } from '../../layout/space';
-import { Box } from '../Box/Box';
+import { negateSpace } from '../../layout/space';
+import { Box, BoxProps } from '../Box/Box';
+
+type Space = NonNullable<BoxProps['paddingTop']>;
 
 const alignHorizontalToFlexAlign = {
   center: 'center',
@@ -18,33 +20,31 @@ const alignVerticalToFlexAlign = {
 } as const;
 type AlignVertical = keyof typeof alignVerticalToFlexAlign;
 
-export type InlineProps = {
+export type RowProps = {
   children: ReactNode;
+  space: Space;
   alignHorizontal?: AlignHorizontal;
   alignVertical?: AlignVertical;
-  space: Space;
 };
 
-export const Inline = ({
+export const Row = ({
   children,
   alignHorizontal,
   alignVertical,
   space,
-}: InlineProps) => (
+}: RowProps) => (
   <Box
     alignItems={
       alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined
     }
     flexDirection="row"
-    flexWrap="wrap"
     justifyContent={
       alignHorizontal ? alignHorizontalToFlexAlign[alignHorizontal] : undefined
     }
-    marginBottom={negateSpace(space)}
-    marginLeft={negateSpace(space)}
+    marginRight={negateSpace(space)}
   >
     {Children.map(flattenChildren(children), child => (
-      <Box paddingBottom={space} paddingLeft={space}>
+      <Box flexShrink={1} paddingRight={space}>
         {child}
       </Box>
     ))}

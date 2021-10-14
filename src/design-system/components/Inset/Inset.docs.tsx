@@ -2,7 +2,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Docs } from '../../playground/Docs';
-import { PlaceHolder } from '../../playground/Placeholder';
+import { Placeholder } from '../../playground/Placeholder';
 import { Inset } from './Inset';
 
 const pink = 'rgba(255,0,0,0.2)';
@@ -14,8 +14,8 @@ const docs: Docs = {
       name: 'Basic usage',
       example: (
         <View style={{ backgroundColor: pink }}>
-          <Inset space="gutter">
-            <PlaceHolder height={100} />
+          <Inset space="19dp">
+            <Placeholder height={100} />
           </Inset>
         </View>
       ),
@@ -25,8 +25,8 @@ const docs: Docs = {
       name: 'Horizontal space',
       example: (
         <View style={{ backgroundColor: pink }}>
-          <Inset horizontal="gutter">
-            <PlaceHolder height={100} />
+          <Inset horizontal="19dp">
+            <Placeholder height={100} />
           </Inset>
         </View>
       ),
@@ -36,8 +36,8 @@ const docs: Docs = {
       name: 'Vertical space',
       example: (
         <View style={{ backgroundColor: pink }}>
-          <Inset vertical="gutter">
-            <PlaceHolder height={100} />
+          <Inset vertical="19dp">
+            <Placeholder height={100} />
           </Inset>
         </View>
       ),

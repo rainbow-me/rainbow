@@ -5,9 +5,8 @@ import React, {
   ReactNode,
 } from 'react';
 import flattenChildren from 'react-flatten-children';
-import { Box, BoxProps } from '../Box/Box';
-
-type Space = NonNullable<BoxProps['paddingTop']>;
+import { Space } from '../../layout/space';
+import { Box } from '../Box/Box';
 
 const alignHorizontalToFlexAlign = {
   center: 'center',
