@@ -39,7 +39,12 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
             ? deviceHeight - contentHeight
             : 0
         };`};
-  ${android ? 'border-top-left-radius: 20; border-top-right-radius: 20;' : ''}
+  ${({ borderRadius }) =>
+    android || ios
+      ? `border-top-left-radius: ${
+          borderRadius || '20'
+        }; border-top-right-radius: ${borderRadius || '20'};`
+      : ''}
   background-color: ${({ backgroundColor }) => backgroundColor};
   bottom: 0;
   left: 0;
@@ -98,6 +103,7 @@ export default forwardRef(function SlackSheet(
   },
   ref
 ) {
+  console.log('borderRadiusborderRadiusborderRadius', borderRadius);
   const yPosition = useSharedValue(0);
   const { height: deviceHeight } = useDimensions();
   const { goBack } = useNavigation();
@@ -152,6 +158,7 @@ export default forwardRef(function SlackSheet(
       <Container
         additionalTopPadding={additionalTopPadding}
         backgroundColor={bg}
+        borderRadius={borderRadius}
         contentHeight={contentHeight}
         deferredHeight={deferredHeight}
         deviceHeight={deviceHeight}

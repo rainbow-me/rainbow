@@ -138,12 +138,13 @@ export default function CustomGasState({ restoreFocusOnSwapModal, asset }) {
     >
       <SlackSheet
         backgroundColor={colors.black}
+        borderRadius={38}
         contentHeight={ios ? longFormHeight : sheetHeightWithoutKeyboard}
         hideHandle
         removeTopPadding
         scrollEnabled={false}
       >
-        <FloatingPanel radius={38}>
+        <FloatingPanel radius={36}>
           <ExchangeHeader />
           <FeesPanel
             colorForAsset={assetColor}

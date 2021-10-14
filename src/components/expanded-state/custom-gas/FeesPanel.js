@@ -13,11 +13,7 @@ import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
-const OuterWrapper = styled.View`
-  margin-top: 0px;
-`;
-
-const InnerWrapper = styled.View`
+const Wrapper = styled.View`
   ${padding(10, 24)}
 `;
 
@@ -355,70 +351,67 @@ export default function FeesPanel({
   ]);
 
   return (
-    <OuterWrapper>
-      <InnerWrapper>
-        {/* current base fee */}
-        <PanelRowThin>
-          <PanelColumn />
-          <PanelColumn>
-            <GasTrendHeader color={gasUtils.GAS_TRENDS[currentGasTrend].color}>
-              {gasUtils.GAS_TRENDS[currentGasTrend].label}
-            </GasTrendHeader>
-          </PanelColumn>
-        </PanelRowThin>
-        <PanelRow justify="space-between">
-          {renderRowLabel('Current Base Fee', 'currentBaseFee')}
-          <PanelColumn>
-            <PanelLabel>{formattedBaseFee}</PanelLabel>
-          </PanelColumn>
-        </PanelRow>
-        <PanelRow>
-          {renderRowLabel('Max Base Fee', 'maxBaseFee')}
-          {(maxBaseFeeError && <PanelError>{maxBaseFeeError}</PanelError>) ||
-            (maxBaseFeeWarning && (
-              <PanelWarning>{maxBaseFeeWarning}</PanelWarning>
-            ))}
+    <Wrapper>
+      <PanelRowThin>
+        <PanelColumn />
+        <PanelColumn>
+          <GasTrendHeader color={gasUtils.GAS_TRENDS[currentGasTrend].color}>
+            {gasUtils.GAS_TRENDS[currentGasTrend].label}
+          </GasTrendHeader>
+        </PanelColumn>
+      </PanelRowThin>
+      <PanelRow justify="space-between">
+        {renderRowLabel('Current Base Fee', 'currentBaseFee')}
+        <PanelColumn>
+          <PanelLabel>{formattedBaseFee}</PanelLabel>
+        </PanelColumn>
+      </PanelRow>
+      <PanelRow>
+        {renderRowLabel('Max Base Fee', 'maxBaseFee')}
+        {(maxBaseFeeError && <PanelError>{maxBaseFeeError}</PanelError>) ||
+          (maxBaseFeeWarning && (
+            <PanelWarning>{maxBaseFeeWarning}</PanelWarning>
+          ))}
 
-          <PanelColumn>
-            <FeesGweiInput
-              buttonColor={colorForAsset}
-              minusAction={substMaxFee}
-              onChange={onMaxBaseFeeChange}
-              onPress={handleCustomGasFocus}
-              plusAction={addMaxFee}
-              value={maxBaseFee}
-            />
-          </PanelColumn>
-        </PanelRow>
-        <PanelRow>
-          {renderRowLabel('Miner Tip', `minerTip`)}
-          {(maxPriorityFeeError && (
-            <PanelError>{maxPriorityFeeError}</PanelError>
-          )) ||
-            (maxPriorityFeeWarning && (
-              <PanelWarning>{maxPriorityFeeWarning}</PanelWarning>
-            ))}
+        <PanelColumn>
+          <FeesGweiInput
+            buttonColor={colorForAsset}
+            minusAction={substMaxFee}
+            onChange={onMaxBaseFeeChange}
+            onPress={handleCustomGasFocus}
+            plusAction={addMaxFee}
+            value={maxBaseFee}
+          />
+        </PanelColumn>
+      </PanelRow>
+      <PanelRow>
+        {renderRowLabel('Miner Tip', `minerTip`)}
+        {(maxPriorityFeeError && (
+          <PanelError>{maxPriorityFeeError}</PanelError>
+        )) ||
+          (maxPriorityFeeWarning && (
+            <PanelWarning>{maxPriorityFeeWarning}</PanelWarning>
+          ))}
 
-          <PanelColumn>
-            <FeesGweiInput
-              buttonColor={colorForAsset}
-              minusAction={substMinerTip}
-              onChange={onMinerTipChange}
-              onPress={handleCustomGasFocus}
-              plusAction={addMinerTip}
-              value={maxPriorityFee}
-            />
-          </PanelColumn>
-        </PanelRow>
-        <PanelRow>
-          <PanelColumn>
-            <PanelLabel>Max Transaction Fee</PanelLabel>
-          </PanelColumn>
-          <PanelColumn>
-            <PanelLabel>{maxFee}</PanelLabel>
-          </PanelColumn>
-        </PanelRow>
-      </InnerWrapper>
-    </OuterWrapper>
+        <PanelColumn>
+          <FeesGweiInput
+            buttonColor={colorForAsset}
+            minusAction={substMinerTip}
+            onChange={onMinerTipChange}
+            onPress={handleCustomGasFocus}
+            plusAction={addMinerTip}
+            value={maxPriorityFee}
+          />
+        </PanelColumn>
+      </PanelRow>
+      <PanelRow>
+        <PanelColumn>
+          <PanelLabel>Max Transaction Fee</PanelLabel>
+        </PanelColumn>
+        <PanelColumn>
+          <PanelLabel>{maxFee}</PanelLabel>
+        </PanelColumn>
+      </PanelRow>
+    </Wrapper>
   );
 }
