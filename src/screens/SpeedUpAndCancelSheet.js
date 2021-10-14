@@ -87,11 +87,7 @@ const AnimatedSheet = Animated.createAnimatedComponent(CenteredSheet);
 
 const GasSpeedButtonContainer = styled(Row).attrs({
   justify: 'center',
-})`
-  margin-bottom: 19px;
-  margin-top: 4px;
-  width: ${deviceUtils.dimensions.width - 10};
-`;
+})``;
 
 const CANCEL_TX = 'cancel';
 const SPEED_UP = 'speed_up';

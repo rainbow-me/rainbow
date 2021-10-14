@@ -81,9 +81,13 @@ const NativeCoinIconWrapper = styled(Column)`
 `;
 
 const Container = styled(Column).attrs({
+  alignItems: 'center',
   hapticType: 'impactHeavy',
+  justifyContent: 'center',
 })`
   ${margin(android ? 8 : 15, 0)};
+  ${({ horizontalPadding }) => padding(0, horizontalPadding)};
+
   width: 100%;
 `;
 
@@ -117,6 +121,7 @@ const GasSpeedButton = ({
   options = null,
   currentNetwork,
   asset,
+  horizontalPadding = 20,
 }) => {
   const customGasPriceTimeEstimateHandler = useRef(null);
   const { colors } = useTheme();
@@ -459,7 +464,7 @@ const GasSpeedButton = ({
   }, [selectedGasFee, selectedGasFeeOption]);
 
   return (
-    <Container testID={testID}>
+    <Container horizontalPadding={horizontalPadding} testID={testID}>
       <Row align="center" justify="space-between">
         <Column>
           <ButtonPressAnimation onPress={openGasHelper}>

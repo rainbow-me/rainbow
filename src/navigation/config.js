@@ -85,7 +85,6 @@ export const customGasSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
-      longFormHeight: 394,
     }),
   }),
 };

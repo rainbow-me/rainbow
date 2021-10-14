@@ -30,6 +30,7 @@ import {
   margin,
   position,
 } from '@rainbow-me/styles';
+import { deviceUtils } from '@rainbow-me/utils';
 
 const springConfig = {
   damping: 500,
@@ -47,7 +48,6 @@ const Footer = styled(Column).attrs({
   justify: 'end',
   shrink: 0,
 })`
-  ${margin(0, 20)};
   background-color: black;
 `;
 
@@ -62,7 +62,7 @@ function useAndroidDisableGesturesOnFocus() {
   }, [isFocused, params]);
 }
 
-export default function CustomGasState({ restoreFocusOnSwapModal, asset }) {
+export default function CustomGasState({ asset }) {
   const { network } = useAccountSettings();
   const { setParams } = useNavigation();
   const { params: { longFormHeight } = {} } = useRoute();
@@ -78,20 +78,19 @@ export default function CustomGasState({ restoreFocusOnSwapModal, asset }) {
   const [currentGasTrend] = useState('stable');
   const { selectedGasFee } = useGas();
 
-  useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
   useAndroidDisableGesturesOnFocus();
 
   const keyboardOffset = keyboardHeight + insets.bottom + 10;
 
   const sheetHeightWithoutKeyboard =
     SheetHandleFixedToTopHeight +
+    71 +
     contentHeight +
     slippageMessageHeight +
-    footerHeight +
-    30;
+    footerHeight;
 
   const sheetHeightWithKeyboard =
-    sheetHeightWithoutKeyboard + keyboardHeight - 15;
+    sheetHeightWithoutKeyboard + keyboardHeight - 23;
 
   const additionalScrollForKeyboard =
     sheetHeightWithoutKeyboard + keyboardOffset >
@@ -130,10 +129,12 @@ export default function CustomGasState({ restoreFocusOnSwapModal, asset }) {
     setParams,
   ]);
 
+  useEffect(() => showKeyboard(), [showKeyboard]);
+
   return (
     <SheetKeyboardAnimation
       as={AnimatedContainer}
-      isKeyboardVisible={isKeyboardVisible}
+      isKeyboardVisible
       translateY={contentScroll}
     >
       <SlackSheet

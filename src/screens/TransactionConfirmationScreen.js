@@ -139,9 +139,7 @@ const AnimatedSheet = Animated.createAnimatedComponent(Centered);
 
 const GasSpeedButtonContainer = styled(Column).attrs({
   justify: 'start',
-})`
-  margin-bottom: 19px;
-`;
+})``;
 
 const WalletLabel = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.5),

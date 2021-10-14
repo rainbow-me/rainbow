@@ -218,21 +218,15 @@ export default function SwapDetailsState({
             {...confirmButtonProps}
             testID="swap-details-confirm-button"
           />
-          <Column
-            justify="center"
-            marginHorizontal={5}
-            width={deviceWidth - 10}
-          >
-            <GasSpeedButton
-              asset={outputCurrency}
-              currentNetwork={network}
-              onCustomGasBlur={hideKeyboard}
-              onCustomGasFocus={showKeyboard}
-              testID="swap-details-gas"
-              theme="light"
-              type={ExchangeModalTypes.swap}
-            />
-          </Column>
+          <GasSpeedButton
+            asset={outputCurrency}
+            currentNetwork={network}
+            onCustomGasBlur={hideKeyboard}
+            onCustomGasFocus={showKeyboard}
+            testID="swap-details-gas"
+            theme="light"
+            type={ExchangeModalTypes.swap}
+          />
         </Footer>
         <ToastPositionContainer>
           <CopyToast copiedText={copiedText} copyCount={copyCount} />
