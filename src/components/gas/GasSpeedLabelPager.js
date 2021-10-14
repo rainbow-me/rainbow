@@ -9,23 +9,25 @@ import { magicMemo } from '@rainbow-me/utils';
 
 const SpeedButton = styled(ButtonPressAnimation).attrs({
   hapticType: 'impactHeavy',
+  height: 30,
   scaleTo: 0.9,
 })`
   border: ${({ color, theme: { colors } }) =>
     `2px solid ${color || colors.appleBlue}`};
-  border-radius: 15px;
-  ${padding(0, 5, 5)};
+  border-radius: 19px;
+  ${padding(android ? 0 : 3, 6, 0, 6)};
 )
 `;
 
 const SpeedContainer = styled(Column).attrs({
   hapticType: 'impactHeavy',
+  height: 30,
   scaleTo: 0.9,
 })`
   border: ${({ color, theme: { colors } }) =>
     `2px solid ${color || colors.appleBlue}`};
   border-radius: 15px;
-  ${padding(0, 5, 5)};
+  ${padding(android ? 0 : 2, 5, 5)};
 )
 `;
 
@@ -48,7 +50,7 @@ const GasSpeedLabelPager = ({
   theme,
   onPress,
   colorForAsset,
-  enabled,
+  dropdownEnabled,
 }) => {
   const [touched, setTouched] = useState(false);
   const { colors } = useTheme();
@@ -57,7 +59,7 @@ const GasSpeedLabelPager = ({
 
   const renderPager = useCallback(
     (children, props) => {
-      if (enabled) {
+      if (dropdownEnabled) {
         return (
           <SpeedButton color={colorForAsset} {...props}>
             {children}
@@ -66,7 +68,7 @@ const GasSpeedLabelPager = ({
       }
       return <SpeedContainer color={colorForAsset}>{children}</SpeedContainer>;
     },
-    [colorForAsset, enabled]
+    [colorForAsset, dropdownEnabled]
   );
 
   return (
@@ -75,17 +77,15 @@ const GasSpeedLabelPager = ({
         {!showGasOptions ? (
           renderPager(
             <Row align={(ios && 'end') || 'stretch'}>
-              <Column>
-                <GasSpeedLabelPagerItem
-                  colorForAsset={colorForAsset}
-                  key={label}
-                  label={label}
-                  selected
-                  shouldAnimate={touched}
-                  theme={theme}
-                />
-              </Column>
-              {enabled && (
+              <GasSpeedLabelPagerItem
+                colorForAsset={colorForAsset}
+                key={label}
+                label={label}
+                selected
+                shouldAnimate={touched}
+                theme={theme}
+              />
+              {dropdownEnabled && (
                 <Symbol
                   color={
                     theme !== 'light'

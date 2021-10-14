@@ -22,28 +22,16 @@ const springConfig = {
   stiffness: 1200,
 };
 
-export const GasSpeedLabelPagerItemHeight = 23.5;
+const GasSpeedRow = styled(AnimatedRow)``;
 
-const GasSpeedRow = styled(AnimatedRow).attrs({
-  align: 'end',
-  justify: 'end',
-})`
-  height: ${GasSpeedLabelPagerItemHeight};
-`;
-
-const TransitionContainer = styled(Transitioning.View)`
-  // bottom: 0;
-  // position: absolute;
-  // right: 0;
-  // top: 0;
-`;
+const TransitionContainer = styled(Transitioning.View)``;
 
 const GasSpeedLabel = styled(Text).attrs({
   align: 'right',
   size: 'lmedium',
   weight: 'heavy',
 })`
-  ${margin(0, 5, 0, 0)}
+  ${margin(0, 4, 0, 4)}
 `;
 
 const duration = 150;
@@ -78,10 +66,7 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate, theme }) => {
   return (
     <TransitionContainer transition={transition}>
       <GasSpeedRow style={animatedStyle}>
-        <GasSpeedEmoji
-          containerHeight={GasSpeedLabelPagerItemHeight}
-          label={label}
-        />
+        <GasSpeedEmoji label={label} />
         <GasSpeedLabel
           color={
             theme !== 'light'

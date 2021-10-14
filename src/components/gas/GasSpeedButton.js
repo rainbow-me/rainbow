@@ -47,7 +47,6 @@ const CustomGasButton = styled(ButtonPressAnimation).attrs({
   hapticType: 'impactHeavy',
   scaleTo: 0.9,
 })`
-  // border: ${({ theme: { colors } }) => `2px solid ${colors.mediumGrey}`};
   border-radius: 15px;
   ${padding(0, 0)};
   ${margin(0, 0, 0, 8)}
@@ -58,18 +57,18 @@ const ChainBadgeContainer = styled.View.attrs({
   hapticType: 'impactHeavy',
   scaleTo: 0.9,
 })`
-  ${padding(3, 0)};
+  ${padding(0, 0)};
   ${margin(0, 0, 0, 8)};
 `;
 
 const NativeCoinIconWrapper = styled(Column)`
-  ${margin(0, 5, 0, 0)};
+  ${margin(android ? 5 : 0, 5, 0, 0)};
 `;
 
 const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
 })`
-  ${margin(19, 0, 19, 0)};
+  ${margin(android ? 5 : 15, 0)};
   width: 100%;
 `;
 
@@ -97,10 +96,8 @@ const TransactionTimeLabel = ({ formatter, theme }) => {
 };
 
 const GasSpeedButton = ({
-  // dontBlur,
   showGasOptions = false,
   testID,
-  // type,
   theme = 'dark',
   options = null,
   currentNetwork,
@@ -108,7 +105,7 @@ const GasSpeedButton = ({
 }) => {
   const customGasPriceTimeEstimateHandler = useRef(null);
   const { colors } = useTheme();
-  const { navigate, goBack } = useNavigation();
+  const { navigate } = useNavigation();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const colorForAsset = useColorForAsset(asset || {});
 
@@ -368,7 +365,7 @@ const GasSpeedButton = ({
             ? assetColor
             : colors.alpha(colors.blueGreyDark, 0.4)
         }
-        enabled={moreThanOneOption}
+        dropdownEnabled={moreThanOneOption}
         label={selectedGasFeeOption}
         showGasOptions={showGasOptions}
         showPager={!inputFocused}
@@ -475,7 +472,7 @@ const GasSpeedButton = ({
                 />
               </Column>
             </Row>
-            <Row justify="space-between">
+            <Row justify="space-between" marginTop={android ? -10 : 0}>
               <Label
                 color={
                   theme === 'dark'
@@ -500,42 +497,28 @@ const GasSpeedButton = ({
           </ButtonPressAnimation>
         </Column>
         <Column>
-          {showGasOptions ? (
-            <GasSpeedLabelPager
-              colorForAsset={assetColor}
-              label={selectedGasFeeOption}
-              onPress={goBack}
-              showGasOptions={showGasOptions}
-              showPager={!inputFocused}
-              theme={theme}
-            />
-          ) : (
-            <Row>
-              <Column>{renderGasSpeedPager}</Column>
-              <Column justify="center">
-                {isL2 ? (
-                  <ChainBadgeContainer>
-                    <ChainBadge
-                      assetType={currentNetwork}
-                      position="relative"
-                    />
-                  </ChainBadgeContainer>
-                ) : (
-                  <CustomGasButton onPress={openCustomGasSheet}>
-                    <Symbol
-                      color={
-                        theme !== 'light'
-                          ? colors.whiteLabel
-                          : colors.alpha(colors.blueGreyDark, 0.8)
-                      }
-                    >
-                      􀌆
-                    </Symbol>
-                  </CustomGasButton>
-                )}
-              </Column>
-            </Row>
-          )}
+          <Row>
+            <Column>{renderGasSpeedPager}</Column>
+            <Column justify="center">
+              {isL2 ? (
+                <ChainBadgeContainer>
+                  <ChainBadge assetType={currentNetwork} position="relative" />
+                </ChainBadgeContainer>
+              ) : (
+                <CustomGasButton onPress={openCustomGasSheet}>
+                  <Symbol
+                    color={
+                      theme !== 'light'
+                        ? colors.whiteLabel
+                        : colors.alpha(colors.blueGreyDark, 0.8)
+                    }
+                  >
+                    􀌆
+                  </Symbol>
+                </CustomGasButton>
+              )}
+            </Column>
+          </Row>
         </Column>
       </Row>
     </Container>
