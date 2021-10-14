@@ -19,18 +19,6 @@ const SpeedButton = styled(ButtonPressAnimation).attrs({
 )
 `;
 
-const SpeedContainer = styled(Column).attrs({
-  hapticType: 'impactHeavy',
-  height: 30,
-  scaleTo: 0.9,
-})`
-  border: ${({ color, theme: { colors } }) =>
-    `2px solid ${color || colors.appleBlue}`};
-  border-radius: 15px;
-  ${padding(android ? 0 : 2, 5, 5)};
-)
-`;
-
 const Symbol = styled(Text).attrs({
   align: 'right',
   size: 'lmedium',
@@ -57,25 +45,15 @@ const GasSpeedLabelPager = ({
 
   useEffect(() => setTouched(true), [label]);
 
-  const renderPager = useCallback(
-    (children, props) => {
-      if (dropdownEnabled) {
-        return (
-          <SpeedButton color={colorForAsset} {...props}>
-            {children}
-          </SpeedButton>
-        );
-      }
-      return <SpeedContainer color={colorForAsset}>{children}</SpeedContainer>;
-    },
-    [colorForAsset, dropdownEnabled]
-  );
-
   return (
     <Row align="center" justify="end">
       <Column>
         {!showGasOptions ? (
-          renderPager(
+          <SpeedButton
+            color={colorForAsset}
+            disabled={!dropdownEnabled}
+            onPress={onPress}
+          >
             <Row align={(ios && 'end') || 'stretch'}>
               <GasSpeedLabelPagerItem
                 colorForAsset={colorForAsset}
@@ -96,9 +74,8 @@ const GasSpeedLabelPager = ({
                   􀁰
                 </Symbol>
               )}
-            </Row>,
-            { color: colorForAsset, onPress }
-          )
+            </Row>
+          </SpeedButton>
         ) : (
           <DoneCustomGas
             color={

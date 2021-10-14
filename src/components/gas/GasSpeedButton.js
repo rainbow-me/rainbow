@@ -230,7 +230,6 @@ const GasSpeedButton = ({
     [inputFocused, updateGasFeeOption]
   );
 
-  // TODO
   const formatTransactionTime = useCallback(() => {
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
     let selectedGasFeeGwei = get(
@@ -337,13 +336,15 @@ const GasSpeedButton = ({
 
   // TODO
   const onPressAndroid = useCallback(() => {
-    const androidContractActions = ['Copy Contract Address', 'x', 'Cancel'];
+    const uppercasedSpeedOptions = speedOptions.map(speed => upperFirst(speed));
+    const androidContractActions = [...uppercasedSpeedOptions, 'Cancel'];
+
     showActionSheetWithOptions(
       {
-        cancelButtonIndex: 2,
+        cancelButtonIndex: androidContractActions.length,
         options: androidContractActions,
         showSeparators: true,
-        title: `hi`,
+        title: `Transaction Speed`,
       },
       idx => {
         if (idx === 0) {
@@ -354,7 +355,7 @@ const GasSpeedButton = ({
         }
       }
     );
-  }, []);
+  }, [speedOptions]);
 
   const renderGasSpeedPager = useMemo(() => {
     const moreThanOneOption = speedOptions.length > 1;
@@ -372,22 +373,21 @@ const GasSpeedButton = ({
         theme={theme}
       />
     );
-    if (moreThanOneOption) {
-      return (
-        <ContextMenuButton
-          activeOpacity={0}
-          menuConfig={menuConfig}
-          {...(android ? { onPress: onPressAndroid } : {})}
-          isMenuPrimaryAction
-          onPressMenuItem={handlePressMenuItem}
-          useActionSheetFallback={false}
-          wrapNativeComponent={false}
-        >
-          {pager}
-        </ContextMenuButton>
-      );
-    }
-    return pager;
+    if (!moreThanOneOption) return pager;
+    return (
+      <ContextMenuButton
+        activeOpacity={0}
+        enableContextMenu
+        menuConfig={menuConfig}
+        {...(android ? { onPress: onPressAndroid } : {})}
+        isMenuPrimaryAction
+        onPressMenuItem={handlePressMenuItem}
+        useActionSheetFallback={false}
+        wrapNativeComponent={false}
+      >
+        {pager}
+      </ContextMenuButton>
+    );
   }, [
     assetColor,
     colors,
