@@ -11,9 +11,7 @@ const StepButton = styled(Text).attrs(({ theme: { colors }, color }) => ({
   weight: 'heavy',
 }))``;
 
-const InputColumn = styled(Column).attrs({
-  justify: 'center',
-})``;
+const InputColumn = styled(Column).attrs({})``;
 
 const GweiStepButton = ({ type, changeValue, buttonColor }) => {
   return (

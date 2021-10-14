@@ -27,11 +27,10 @@ const GasSpeedRow = styled(AnimatedRow)``;
 const TransitionContainer = styled(Transitioning.View)``;
 
 const GasSpeedLabel = styled(Text).attrs({
-  align: 'right',
   size: 'lmedium',
   weight: 'heavy',
 })`
-  ${margin(0, 4, 0, 4)}
+  ${margin(0, 4)}
 `;
 
 const duration = 150;

@@ -26,7 +26,7 @@ const EmojiForGasSpeedType = {
 const GasEmoji = styled(Emoji).attrs({
   size: 'lmedium',
 })`
-  ${margin(android ? 3 : 0, 0, 0, 0)}
+  ${margin(android ? 3 : -1, 0, 0, 0)}
 `;
 
 const GasSpeedEmoji = ({ label }) => {

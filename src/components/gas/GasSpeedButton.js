@@ -35,22 +35,37 @@ import {
 
 const { GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST } = gasUtils;
 
+const CustomGasButton = styled(ButtonPressAnimation).attrs({
+  alignItems: 'center',
+  hapticType: 'impactHeavy',
+  height: 30,
+  justifyContent: 'center',
+  scaleTo: 0.9,
+})`
+  border: ${({ borderColor, color, theme: { colors } }) =>
+    `2px solid ${borderColor || color || colors.blueGreyDark}`};
+  border-radius: 19px;
+  ${margin(0, 0, 0, 8)}
+  ${padding(0, 0, 0, 0)}
+`;
+
 const Symbol = styled(Text).attrs({
-  align: 'right',
+  alignItems: 'center',
+  flex: 1,
   size: 'lmedium',
   weight: 'heavy',
 })`
-  margin-left: ${({ nextToText }) => (nextToText ? 5 : 0)};
+  ${margin(0, 8, 0, 8)}
 `;
 
-const CustomGasButton = styled(ButtonPressAnimation).attrs({
-  hapticType: 'impactHeavy',
-  scaleTo: 0.9,
+const DoneCustomGas = styled(Text).attrs({
+  alignItems: 'center',
+  justifyContent: 'center',
+  size: 'lmedium',
+  weight: 'heavy',
 })`
-  border-radius: 15px;
-  ${padding(0, 0)};
-  ${margin(0, 0, 0, 8)}
-  )
+  ${padding(0, 0, 0, 0)}
+  ${margin(0, 10, 0, 10)}
 `;
 
 const ChainBadgeContainer = styled.View.attrs({
@@ -68,7 +83,7 @@ const NativeCoinIconWrapper = styled(Column)`
 const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
 })`
-  ${margin(android ? 5 : 15, 0)};
+  ${margin(android ? 8 : 15, 0)};
   width: 100%;
 `;
 
@@ -105,7 +120,7 @@ const GasSpeedButton = ({
 }) => {
   const customGasPriceTimeEstimateHandler = useRef(null);
   const { colors } = useTheme();
-  const { navigate } = useNavigation();
+  const { navigate, goBack } = useNavigation();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
   const colorForAsset = useColorForAsset(asset || {});
 
@@ -357,23 +372,29 @@ const GasSpeedButton = ({
     );
   }, [speedOptions]);
 
+  const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
+    speedOptions,
+  ]);
+
   const renderGasSpeedPager = useMemo(() => {
-    const moreThanOneOption = speedOptions.length > 1;
+    if (showGasOptions) return;
     const pager = (
       <GasSpeedLabelPager
         colorForAsset={
-          moreThanOneOption
+          gasOptionsAvailable
             ? assetColor
             : colors.alpha(colors.blueGreyDark, 0.4)
         }
-        dropdownEnabled={moreThanOneOption}
+        currentNetwork={currentNetwork}
+        dropdownEnabled={gasOptionsAvailable}
         label={selectedGasFeeOption}
+        openCustomGasSheet={openCustomGasSheet}
         showGasOptions={showGasOptions}
         showPager={!inputFocused}
         theme={theme}
       />
     );
-    if (!moreThanOneOption) return pager;
+    if (!gasOptionsAvailable) return pager;
     return (
       <ContextMenuButton
         activeOpacity={0}
@@ -391,13 +412,15 @@ const GasSpeedButton = ({
   }, [
     assetColor,
     colors,
+    currentNetwork,
+    gasOptionsAvailable,
     handlePressMenuItem,
     inputFocused,
     menuConfig,
     onPressAndroid,
+    openCustomGasSheet,
     selectedGasFeeOption,
     showGasOptions,
-    speedOptions.length,
     theme,
   ]);
 
@@ -504,8 +527,23 @@ const GasSpeedButton = ({
                 <ChainBadgeContainer>
                   <ChainBadge assetType={currentNetwork} position="relative" />
                 </ChainBadgeContainer>
+              ) : showGasOptions ? (
+                <CustomGasButton borderColor={colorForAsset} onPress={goBack}>
+                  <DoneCustomGas
+                    color={
+                      theme !== 'light'
+                        ? colors.whiteLabel
+                        : colors.alpha(colors.blueGreyDark, 0.8)
+                    }
+                  >
+                    Done
+                  </DoneCustomGas>
+                </CustomGasButton>
               ) : (
-                <CustomGasButton onPress={openCustomGasSheet}>
+                <CustomGasButton
+                  borderColor={colorForAsset}
+                  onPress={openCustomGasSheet}
+                >
                   <Symbol
                     color={
                       theme !== 'light'

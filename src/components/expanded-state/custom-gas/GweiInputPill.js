@@ -7,6 +7,8 @@ import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import { margin, padding } from '@rainbow-me/styles';
 
+const ANDROID_EXTRA_LINE_HEIGHT = 6;
+
 const GweiPill = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   colors: colors.gradients.lighterGrey,
   end: { x: 0.5, y: 1 },
@@ -26,11 +28,29 @@ const GweiNumberInput = styled(Input).attrs(({ theme: { colors }, value }) => ({
   textAlign: 'left',
   timing: 'linear',
   weight: 'heavy',
-}))``;
+}))`
+  ${padding(0, 0, 0, 0)}
+  ${margin(
+    android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
+    0,
+    android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
+    0
+  )}
+`;
 
-const InputColumn = styled(Column).attrs({
-  justify: 'center',
-})``;
+const GweiLabel = styled(Text).attrs(() => ({
+  size: 'lmedium',
+  weight: 'heavy',
+}))`
+  ${margin(
+    android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
+    0,
+    android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
+    0
+  )}
+`;
+
+const InputColumn = styled(Column).attrs({})``;
 
 function GweiInputPill({ value, onPress, onChange, onFocus }, ref) {
   return (
@@ -48,10 +68,7 @@ function GweiInputPill({ value, onPress, onChange, onFocus }, ref) {
             />
           </InputColumn>
           <InputColumn>
-            <Text size="lmedium" weight="heavy">
-              {' '}
-              Gwei
-            </Text>
+            <GweiLabel> Gwei</GweiLabel>
           </InputColumn>
         </Row>
       </GweiPill>

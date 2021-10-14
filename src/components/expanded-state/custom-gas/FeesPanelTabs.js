@@ -11,6 +11,7 @@ import { margin, padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
 const PillScrollViewStyle = { flexGrow: 1, justifyContent: 'center' };
+const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
 export const TabPillWrapper = styled(View).attrs({})`
   ${padding(5, 10)};
@@ -25,6 +26,12 @@ export const TabPillText = styled(Text).attrs({
 })`
   color: ${({ isSelected, theme: { colors }, color }) =>
     `${isSelected ? color || colors.appleBlue : colors.blueGreyDark50}`};
+  ${margin(
+    android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
+    0,
+    android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
+    0
+  )}
 `;
 
 const TabPill = ({ label, isSelected, handleOnPressTabPill, color }) => {

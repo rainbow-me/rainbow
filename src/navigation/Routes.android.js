@@ -141,11 +141,7 @@ function MainNavigator() {
         name={Routes.CONFIRM_REQUEST}
         options={exchangePreset}
       />
-      <Stack.Screen
-        component={ExpandedAssetSheet}
-        name={Routes.CUSTOM_GAS_SHEET}
-        {...customGasSheetConfig}
-      />
+
       <Stack.Screen
         component={SpeedUpAndCancelSheet}
         name={Routes.SPEED_UP_AND_CANCEL_SHEET}
@@ -304,6 +300,11 @@ function BSNavigator() {
       <BSStack.Screen
         component={SendConfirmationSheet}
         name={Routes.SEND_CONFIRMATION_SHEET}
+        options={sheetPreset}
+      />
+      <BSStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.CUSTOM_GAS_SHEET}
         options={sheetPreset}
       />
       <BSStack.Screen

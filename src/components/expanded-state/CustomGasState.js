@@ -27,7 +27,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import {
   colors,
   lightModeThemeColors,
-  padding,
+  margin,
   position,
 } from '@rainbow-me/styles';
 
@@ -47,7 +47,7 @@ const Footer = styled(Column).attrs({
   justify: 'end',
   shrink: 0,
 })`
-  ${padding(0, 0, 0)};
+  ${margin(0, 20)};
   background-color: black;
 `;
 
