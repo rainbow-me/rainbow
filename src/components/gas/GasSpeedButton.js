@@ -349,7 +349,12 @@ const GasSpeedButton = ({
     };
   }, [speedOptions]);
 
+  const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
+    speedOptions,
+  ]);
+
   const onPressAndroid = useCallback(() => {
+    if (gasIsNotReady) return;
     const uppercasedSpeedOptions = speedOptions.map(speed => upperFirst(speed));
     const androidContractActions = [...uppercasedSpeedOptions, 'Cancel'];
 
@@ -366,11 +371,7 @@ const GasSpeedButton = ({
         }
       }
     );
-  }, [speedOptions, handlePress]);
-
-  const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
-    speedOptions,
-  ]);
+  }, [gasIsNotReady, speedOptions, handlePress]);
 
   const renderGasSpeedPager = useMemo(() => {
     if (showGasOptions) return;

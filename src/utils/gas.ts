@@ -27,9 +27,9 @@ const GAS_CONFIDENCE: { [key: number]: string } = {
 
 const GAS_ICONS = {
   [CUSTOM]: 'gear',
-  [FAST]: 'policeCarLight',
+  [FAST]: 'rocket',
   [NORMAL]: 'stopwatch',
-  [URGENT]: 'rocket',
+  [URGENT]: 'policeCarLight',
 };
 
 const GAS_TRENDS = {

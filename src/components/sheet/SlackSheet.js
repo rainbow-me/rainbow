@@ -103,7 +103,6 @@ export default forwardRef(function SlackSheet(
   },
   ref
 ) {
-  console.log('borderRadiusborderRadiusborderRadius', borderRadius);
   const yPosition = useSharedValue(0);
   const { height: deviceHeight } = useDimensions();
   const { goBack } = useNavigation();
