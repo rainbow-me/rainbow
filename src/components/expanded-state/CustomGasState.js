@@ -24,13 +24,7 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import {
-  colors,
-  lightModeThemeColors,
-  margin,
-  position,
-} from '@rainbow-me/styles';
-import { deviceUtils } from '@rainbow-me/utils';
+import { colors, lightModeThemeColors, position } from '@rainbow-me/styles';
 
 const springConfig = {
   damping: 500,

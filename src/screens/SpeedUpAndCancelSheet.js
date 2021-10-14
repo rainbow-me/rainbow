@@ -45,7 +45,7 @@ import {
   LEGACY_TRANSACTION_TYPE,
 } from '@rainbow-me/references';
 import { position } from '@rainbow-me/styles';
-import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+import { safeAreaInsetValues } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const springConfig = {

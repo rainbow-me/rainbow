@@ -396,7 +396,7 @@ const GasSpeedButton = ({
         theme={theme}
       />
     );
-    if (!gasOptionsAvailable) return pager;
+    if (!gasOptionsAvailable || gasIsNotReady) return pager;
     return (
       <ContextMenuButton
         activeOpacity={0}
@@ -415,6 +415,7 @@ const GasSpeedButton = ({
     assetColor,
     colors,
     currentNetwork,
+    gasIsNotReady,
     gasOptionsAvailable,
     handlePressMenuItem,
     inputFocused,

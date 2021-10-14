@@ -95,7 +95,7 @@ export default function SwapDetailsState({
   const { network } = useAccountSettings();
   const { setParams } = useNavigation();
   const { params: { longFormHeight } = {} } = useRoute();
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
+  const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const insets = useSafeArea();
