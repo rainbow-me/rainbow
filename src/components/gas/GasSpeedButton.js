@@ -1,5 +1,5 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
-import { get, isEmpty, isNil, upperFirst } from 'lodash';
+import { get, isEmpty, isNil, lowerCase, upperFirst } from 'lodash';
 import React, {
   useCallback,
   useEffect,
@@ -349,7 +349,6 @@ const GasSpeedButton = ({
     };
   }, [speedOptions]);
 
-  // TODO
   const onPressAndroid = useCallback(() => {
     const uppercasedSpeedOptions = speedOptions.map(speed => upperFirst(speed));
     const androidContractActions = [...uppercasedSpeedOptions, 'Cancel'];
@@ -362,15 +361,12 @@ const GasSpeedButton = ({
         title: `Transaction Speed`,
       },
       idx => {
-        if (idx === 0) {
-          // handleCopyAddress(item?.address);
-        }
-        if (idx === 1) {
-          // ethereumUtils.openAddressInBlockExplorer(item?.address, network);
+        if (idx !== androidContractActions) {
+          handlePress(lowerCase(androidContractActions[idx]));
         }
       }
     );
-  }, [speedOptions]);
+  }, [speedOptions, handlePress]);
 
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
     speedOptions,
