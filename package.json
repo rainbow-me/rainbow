@@ -112,7 +112,6 @@
     "domain-browser": "1.2.0",
     "emoji-datasource": "4.1.0",
     "eth-contract-metadata": "1.16.0",
-    "eth-permit-ethers": "0.2.1",
     "eth-sig-util": "2.5.3",
     "eth-url-parser": "1.0.4",
     "ethereumjs-util": "6.2.1",

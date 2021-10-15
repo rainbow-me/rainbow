@@ -3517,11 +3517,6 @@
   resolved "https://registry.yarnpkg.com/@types/url-parse/-/url-parse-1.4.3.tgz#fba49d90f834951cb000a674efee3d6f20968329"
   integrity sha512-4kHAkbV/OfW2kb5BLVUuUMoumB3CP8rHqlw48aHvFy5tf9ER0AfOonBlX29l/DD68G70DmyhRlSYfQPSYpC5Vw==
 
-"@types/utf8@3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@types/utf8/-/utf8-3.0.0.tgz#8f4875063d2ea966c57a34a25c11333520e83980"
-  integrity sha512-QrhvCktdm5wD48axAnjqSzPH9lOj0MiCYfMX6MSqGs2Jv+txwvdxviXiCEj8zSCWIEDU9SIJ7g9pU5KtxRgYSg==
-
 "@types/yargs-parser@*":
   version "15.0.0"
   resolved "https://registry.yarnpkg.com/@types/yargs-parser/-/yargs-parser-15.0.0.tgz#cb3f9f741869e20cce330ffbeb9271590483882d"
@@ -6898,16 +6893,6 @@ eth-contract-metadata@1.16.0:
   version "1.16.0"
   resolved "https://registry.yarnpkg.com/eth-contract-metadata/-/eth-contract-metadata-1.16.0.tgz#a7d643795ba5318f86ce1aae9c4522888aa92d78"
   integrity sha512-WnwYkkIl0RbDQgnV/4V6E8a84fVkP/qmYCUde1UKLQekOFeZXhs/7KgPBAWdZ7otJRo0bPQf4UjAOfESAV3gtw==
-
-eth-permit-ethers@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/eth-permit-ethers/-/eth-permit-ethers-0.2.0.tgz#e57d4306c9e4743345d3836599b6ff97252d7235"
-  integrity sha512-9aWHA1dBP/e8piNAoNN+ipdmtVzKKS3l7lijNhIk9KkQ+lRfN+iRP0wGXwuYsr6zgdm3Zd9JJtHXJ5oAIKrjEg==
-  dependencies:
-    "@types/utf8" "3.0.0"
-    eth-sig-util "2.5.3"
-    ethereumjs-util "6.2.1"
-    utf8 "3.0.0"
 
 eth-sig-util@2.5.3:
   version "2.5.3"
@@ -14526,7 +14511,7 @@ utf8-byte-length@^1.0.1:
   resolved "https://registry.yarnpkg.com/utf8-byte-length/-/utf8-byte-length-1.0.4.tgz#f45f150c4c66eee968186505ab93fcbb8ad6bf61"
   integrity sha1-9F8VDExm7uloGGUFq5P8u4rWv2E=
 
-utf8@3.0.0, utf8@^3.0.0:
+utf8@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/utf8/-/utf8-3.0.0.tgz#f052eed1364d696e769ef058b183df88c87f69d1"
   integrity sha512-E8VjFIQ/TyQgp+TZfS6l8yp/xWppSAHzidGiRrqe4bK4XP9pTRyKFgGJpO3SN7zdX4DeomTrwaseCHovfpFcqQ==
