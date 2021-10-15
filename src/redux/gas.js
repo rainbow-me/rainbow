@@ -6,8 +6,8 @@ import {
   etherscanGetGasPrices,
   ethGasStationGetGasPrices,
   getEstimatedTimeForGasPrice,
-  maticGasStationGetGasPrices,
-  maticGetGasEstimates,
+  polygonGasStationGetGasPrices,
+  polygonGetGasEstimates,
 } from '@rainbow-me/handlers/gasPrices';
 import { getProviderForNetwork, isL2Network } from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
@@ -98,13 +98,17 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   dispatch(gasPricesStopPolling());
 
   const getPolygonGasPrices = async () => {
-    const { data: maticGasStationPrices } = await maticGasStationGetGasPrices();
-
+    const {
+      data: { result },
+    } = await polygonGasStationGetGasPrices();
     // Override required to make it compatible with other responses
-    maticGasStationPrices['average'] = maticGasStationPrices['standard'];
-    delete maticGasStationPrices['standard'];
+    const polygonGasStationPrices = {};
+    polygonGasStationPrices['slow'] = Math.ceil(Number(result['SafeGasPrice']));
+    polygonGasStationPrices['average'] = Math.ceil(result['SafeGasPrice']);
+    polygonGasStationPrices['fast'] = Math.ceil(result['ProposeGasPrice']);
+    polygonGasStationPrices['fastest'] = Math.ceil(result['FastGasPrice']);
 
-    return maticGetGasEstimates(maticGasStationPrices);
+    return polygonGetGasEstimates(polygonGasStationPrices);
   };
 
   const getArbitrumGasPrices = async () => {
@@ -149,7 +153,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
         let adjustedGasPrices;
         let source = GAS_PRICE_SOURCES.ETHERSCAN;
         if (network === networkTypes.polygon) {
-          source = GAS_PRICE_SOURCES.MATIC_GAS_STATION;
+          source = GAS_PRICE_SOURCES.POLYGON_GAS_STATION;
           adjustedGasPrices = await getPolygonGasPrices();
         } else if (network === networkTypes.arbitrum) {
           source = GAS_PRICE_SOURCES.ARBITRUM_NODE;

@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.5.26-1",
+  "version": "1.5.28-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn allow-scripts && yarn postinstall",
@@ -25,7 +25,7 @@
     "install-pods-no-flipper": "cd ios && bundle exec env SKIP_FLIPPER=true pod install --repo-update && cd ..",
     "ios": "react-native run-ios --simulator='iPhone 11'",
     "lint": "yarn lint:ts && yarn lint:js",
-    "lint:js": "eslint --ext '.ts,.tsx,.js,.jsx' .",
+    "lint:js": "eslint --cache --ext '.ts,.tsx,.js,.jsx' .",
     "lint:ts": "yarn tsc --skipLibCheck --noEmit",
     "postinstall": "./scripts/postinstall.sh",
     "start": "react-native start",
@@ -304,7 +304,13 @@
     "**/css-what": "5.0.1",
     "**/socket.io-parser": "3.3.1",
     "**/tar": "6.1.11",
-    "**/path-parse": "1.0.7"
+    "**/path-parse": "1.0.7",
+    "**/ansi-regex": "5.0.1",
+    "**/color-string": "1.6.0",
+    "**/tmpl": "1.0.5",
+    "**/nth-check": "2.0.1",
+    "**/is-svg": "4.3.1",
+    "**/set-value": "4.1.0"
   },
   "jest": {
     "preset": "react-native",

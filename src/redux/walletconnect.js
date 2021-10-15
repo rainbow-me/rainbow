@@ -188,10 +188,10 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         const { peerId, peerMeta, chainId } = payload.params[0];
 
         const imageUrl =
-          dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
-        const dappName = dappNameOverride(peerMeta.url) || peerMeta.name;
-        const dappUrl = peerMeta.url;
-        const dappScheme = peerMeta.scheme;
+          dappLogoOverride(peerMeta?.url) || get(peerMeta, 'icons[0]');
+        const dappName = dappNameOverride(peerMeta?.url) || peerMeta?.name;
+        const dappUrl = peerMeta?.url;
+        const dappScheme = peerMeta?.scheme;
 
         analytics.track('Showing Walletconnect session request', {
           dappName,
@@ -289,9 +289,9 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
     }
     const { clientId, peerId, peerMeta } = walletConnector;
     const imageUrl =
-      dappLogoOverride(peerMeta.url) || get(peerMeta, 'icons[0]');
-    const dappName = dappNameOverride(peerMeta.url) || peerMeta.name;
-    const dappUrl = peerMeta.url;
+      dappLogoOverride(peerMeta?.url) || get(peerMeta, 'icons[0]');
+    const dappName = dappNameOverride(peerMeta?.url) || peerMeta?.name;
+    const dappUrl = peerMeta?.url;
     const requestId = payload.id;
     if (
       payload.method === 'wallet_addEthereumChain' ||
@@ -545,7 +545,7 @@ export const walletConnectUpdateSessionConnectorByDappUrl = (
 ) => (dispatch, getState) => {
   const { walletConnectors } = getState().walletconnect;
   const connectors = pickBy(walletConnectors, connector => {
-    return connector.peerMeta.url === dappUrl;
+    return connector?.peerMeta?.url === dappUrl;
   });
   const newSessionData = {
     accounts: [accountAddress],
@@ -601,7 +601,10 @@ export const walletConnectDisconnectAllByDappUrl = dappUrl => async (
 ) => {
   const { walletConnectors } = getState().walletconnect;
   const matchingWalletConnectors = values(
-    pickBy(walletConnectors, connector => connector.peerMeta.url === dappUrl)
+    pickBy(
+      walletConnectors,
+      connector => connector?.peerMeta?.url === dappUrl || !connector?.peerMeta
+    )
   );
   try {
     const peerIds = values(
@@ -611,11 +614,11 @@ export const walletConnectDisconnectAllByDappUrl = dappUrl => async (
       )
     );
     await removeWalletConnectSessions(peerIds);
-    forEach(matchingWalletConnectors, connector => connector.killSession());
+    forEach(matchingWalletConnectors, connector => connector?.killSession());
     dispatch({
       payload: omitBy(
         walletConnectors,
-        connector => connector.peerMeta.url === dappUrl
+        connector => connector?.peerMeta?.url === dappUrl
       ),
       type: WALLETCONNECT_REMOVE_SESSION,
     });
