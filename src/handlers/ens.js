@@ -1,4 +1,4 @@
-import { debounce, isEmpty, sortBy, uniqBy } from 'lodash';
+import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
 import { ENS_SUGGESTIONS } from '../apollo/queries';
 import { profileUtils } from '@rainbow-me/utils';
@@ -33,10 +33,12 @@ const fetchSuggestions = async (
           uniqueId: ensDomain?.resolver?.addr?.id || ensDomain.name,
         }))
         .filter(domain => !domain?.nickname?.includes?.('['));
-      const sortedEnsSuggestions = uniqBy(
-        sortBy(ensSuggestions, domain => domain.nickname.length, ['asc']),
-        'address'
+      const sortedEnsSuggestions = sortBy(
+        ensSuggestions,
+        domain => domain.nickname.length,
+        ['asc']
       );
+
       const slicedSortedSuggestions = sortedEnsSuggestions.slice(0, 3);
       setSuggestions(slicedSortedSuggestions);
     }
