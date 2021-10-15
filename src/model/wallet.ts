@@ -10,7 +10,11 @@ import { Provider } from '@ethersproject/providers';
 import { SigningKey } from '@ethersproject/signing-key';
 import { Transaction } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
-import { signTypedData } from '@metamask/eth-sig-util';
+import {
+  signTypedData,
+  SignTypedDataVersion,
+  TypedMessage,
+} from '@metamask/eth-sig-util';
 import { captureException, captureMessage } from '@sentry/react-native';
 import { generateMnemonic } from 'bip39';
 import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
@@ -416,9 +420,9 @@ export const signTypedDataMessage = async (
 
       return {
         result: signTypedData({
-          data: parsedData,
+          data: parsedData as TypedMessage<TypedDataTypes>,
           privateKey: pkeyBuffer,
-          version: version.toUpperCase(),
+          version: version.toUpperCase() as SignTypedDataVersion,
         }),
       };
     } catch (error) {
