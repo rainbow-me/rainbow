@@ -3,7 +3,7 @@ import { ensClient } from '../apollo/client';
 import { ENS_SUGGESTIONS } from '../apollo/queries';
 import { profileUtils } from '@rainbow-me/utils';
 
-const fetchSuggestions = async (
+export const fetchSuggestions = async (
   recipient,
   setSuggestions,
   // eslint-disable-next-line no-unused-vars
