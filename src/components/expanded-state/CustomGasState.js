@@ -104,47 +104,41 @@ export default function CustomGasState({ asset }) {
     setParams,
   ]);
   return (
-    <SheetKeyboardAnimation
-      as={AnimatedContainer}
-      isKeyboardVisible
-      translateY={contentScroll}
+    <SlackSheet
+      additionalTopPadding
+      backgroundColor={colors.black}
+      borderBottomRadius={0}
+      borderRadius={39}
+      contentHeight={longFormHeight}
+      deviceHeight={deviceHeight}
+      hideHandle
+      removeTopPadding
+      scrollEnabled={false}
     >
-      <SlackSheet
-        additionalTopPadding
-        backgroundColor={colors.black}
-        borderBottomRadius={0}
-        borderRadius={39}
-        contentHeight={longFormHeight}
-        deviceHeight={deviceHeight}
-        hideHandle
-        removeTopPadding
-        scrollEnabled={false}
-      >
-        <FloatingPanel onLayout={setContentHeight} radius={39}>
-          <ExchangeHeader />
-          <FeesPanel
-            colorForAsset={assetColor}
-            currentGasTrend={currentGasTrend}
-            onCustomGasBlur={hideKeyboard}
-            onCustomGasFocus={showKeyboard}
-            selectedGasFee={selectedGasFee}
-          />
-          <Divider />
-          <FeesPanelTabs
-            colorForAsset={assetColor}
-            onPressTabPill={hideKeyboard}
-          />
-        </FloatingPanel>
-        <Footer onLayout={setFooterHeight}>
-          <GasSpeedButton
-            asset={asset}
-            currentNetwork={network}
-            showGasOptions
-            testID="swap-details-gas"
-            theme="dark"
-          />
-        </Footer>
-      </SlackSheet>
-    </SheetKeyboardAnimation>
+      <FloatingPanel onLayout={setContentHeight} radius={39}>
+        <ExchangeHeader />
+        <FeesPanel
+          colorForAsset={assetColor}
+          currentGasTrend={currentGasTrend}
+          onCustomGasBlur={hideKeyboard}
+          onCustomGasFocus={showKeyboard}
+          selectedGasFee={selectedGasFee}
+        />
+        <Divider />
+        <FeesPanelTabs
+          colorForAsset={assetColor}
+          onPressTabPill={hideKeyboard}
+        />
+      </FloatingPanel>
+      <Footer onLayout={setFooterHeight}>
+        <GasSpeedButton
+          asset={asset}
+          currentNetwork={network}
+          showGasOptions
+          testID="swap-details-gas"
+          theme="dark"
+        />
+      </Footer>
+    </SlackSheet>
   );
 }

@@ -224,7 +224,7 @@ const GasSpeedButton = ({
     });
   }, [navigate, gasIsNotReady]);
 
-  const openIt = useCallback(() => {
+  const openCustomOptions = useCallback(() => {
     Keyboard.dismiss();
     setShouldOpenCustomGasSheet(true);
   }, [setShouldOpenCustomGasSheet]);
@@ -364,6 +364,10 @@ const GasSpeedButton = ({
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
     speedOptions,
   ]);
+
+  const onDonePress = useCallback(() => {
+    goBack();
+  }, [goBack]);
 
   const onPressAndroid = useCallback(() => {
     if (gasIsNotReady) return;
@@ -553,7 +557,10 @@ const GasSpeedButton = ({
                   <ChainBadge assetType={currentNetwork} position="relative" />
                 </ChainBadgeContainer>
               ) : showGasOptions ? (
-                <CustomGasButton borderColor={colorForAsset} onPress={goBack}>
+                <CustomGasButton
+                  borderColor={colorForAsset}
+                  onPress={onDonePress}
+                >
                   <DoneCustomGas
                     color={
                       theme !== 'light'
@@ -565,7 +572,10 @@ const GasSpeedButton = ({
                   </DoneCustomGas>
                 </CustomGasButton>
               ) : (
-                <CustomGasButton borderColor={colorForAsset} onPress={openIt}>
+                <CustomGasButton
+                  borderColor={colorForAsset}
+                  onPress={openCustomOptions}
+                >
                   <Symbol
                     color={
                       theme !== 'light'
