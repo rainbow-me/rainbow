@@ -10,9 +10,13 @@ import { Provider } from '@ethersproject/providers';
 import { SigningKey } from '@ethersproject/signing-key';
 import { Transaction } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
+import {
+  signTypedData,
+  SignTypedDataVersion,
+  TypedMessage,
+} from '@metamask/eth-sig-util';
 import { captureException, captureMessage } from '@sentry/react-native';
 import { generateMnemonic } from 'bip39';
-import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
 import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
 import {
   hdkey as EthereumHDKey,
@@ -414,18 +418,13 @@ export const signTypedDataMessage = async (
         version = 'v4';
       }
 
-      switch (version) {
-        case 'v4':
-          return {
-            result: signTypedData_v4(pkeyBuffer, {
-              data: parsedData,
-            }),
-          };
-        default:
-          return {
-            result: signTypedDataLegacy(pkeyBuffer, { data: parsedData }),
-          };
-      }
+      return {
+        result: signTypedData({
+          data: parsedData as TypedMessage<TypedDataTypes>,
+          privateKey: pkeyBuffer,
+          version: version.toUpperCase() as SignTypedDataVersion,
+        }),
+      };
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
       logger.sentry('Error', error);
