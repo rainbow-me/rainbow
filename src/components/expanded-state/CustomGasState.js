@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
+import { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import Divider from '../Divider';
@@ -8,7 +8,7 @@ import { ExchangeHeader } from '../exchange';
 import { FloatingPanel } from '../floating-panels';
 import { GasSpeedButton } from '../gas';
 import { Column } from '../layout';
-import { SheetKeyboardAnimation, SlackSheet } from '../sheet';
+import { SlackSheet } from '../sheet';
 import { FeesPanel, FeesPanelTabs } from './custom-gas';
 import {
   useAccountSettings,
@@ -20,17 +20,13 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors, lightModeThemeColors, position } from '@rainbow-me/styles';
+import { colors, lightModeThemeColors } from '@rainbow-me/styles';
 
 const springConfig = {
   damping: 500,
   mass: 3,
   stiffness: 1000,
 };
-
-const AnimatedContainer = styled(Animated.View)`
-  ${position.size('100%')};
-`;
 
 const Footer = styled(Column).attrs({})``;
 
