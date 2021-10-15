@@ -7,6 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { Keyboard } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
 import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
@@ -85,9 +86,8 @@ const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
   justifyContent: 'center',
 })`
-  ${margin(android ? 8 : 15, 0)};
+  ${margin(android ? 6 : 15, 0)};
   ${({ horizontalPadding }) => padding(0, horizontalPadding)};
-
   width: 100%;
 `;
 
@@ -225,6 +225,7 @@ const GasSpeedButton = ({
   }, [navigate, gasIsNotReady]);
 
   const openIt = useCallback(() => {
+    Keyboard.dismiss();
     setShouldOpenCustomGasSheet(true);
   }, [setShouldOpenCustomGasSheet]);
 

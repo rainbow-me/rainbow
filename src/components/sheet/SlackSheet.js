@@ -40,10 +40,12 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
             : 0
         };`};
   ${({ borderRadius }) =>
-    android || ios
-      ? `border-top-left-radius: ${
-          borderRadius || '20'
-        }; border-top-right-radius: ${borderRadius || '20'};`
+    `border-top-left-radius: ${
+      borderRadius || '20'
+    }; border-top-right-radius: ${borderRadius || '20'};`}
+  ${({ borderBottomRadius }) =>
+    typeof borderBottomRadius === 'number'
+      ? `border-bottom-left-radius: ${borderBottomRadius}; border-bottom-right-radius: ${borderBottomRadius};`
       : ''}
   background-color: ${({ backgroundColor }) => backgroundColor};
   bottom: 0;

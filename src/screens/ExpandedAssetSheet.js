@@ -28,7 +28,11 @@ const ScreenTypes = {
 };
 
 const Container = styled(Centered).attrs({
+  alignItems: 'flex-end',
+  bottom: 0,
   direction: 'column',
+  flex: 1,
+  justifyContent: 'flex-end',
 })`
   ${position.cover};
   ${({ deviceHeight, height }) =>

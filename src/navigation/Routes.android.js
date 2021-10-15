@@ -173,7 +173,7 @@ function MainNavigator() {
       <Stack.Screen
         component={AddCashSheet}
         name={Routes.ADD_CASH_SHEET}
-        options={sheetPreset}
+        options={addTokenSheetConfig}
       />
       <Stack.Screen
         component={ImportSeedPhraseSheet}
@@ -290,7 +290,6 @@ function BSNavigator() {
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
         options={bottomSheetPreset}
-
       />
       <BSStack.Screen
         component={ModalScreen}
@@ -305,7 +304,6 @@ function BSNavigator() {
       <BSStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.CUSTOM_GAS_SHEET}
-        options={sheetPreset}
       />
       <BSStack.Screen
         component={WalletDiagnosticsSheet}

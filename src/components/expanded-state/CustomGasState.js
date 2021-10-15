@@ -32,14 +32,7 @@ const AnimatedContainer = styled(Animated.View)`
   ${position.size('100%')};
 `;
 
-const Footer = styled(Column).attrs({
-  align: 'end',
-  grow: 1,
-  justify: 'end',
-  shrink: 0,
-})`
-  background-color: black;
-`;
+const Footer = styled(Column).attrs({})``;
 
 const FOOTER_MIN_HEIGHT = 66;
 const CONTENT_MIN_HEIGHT = 330;
@@ -72,8 +65,7 @@ export default function CustomGasState({ asset }) {
   const keyboardOffset = keyboardHeight + insets.bottom + 10;
   const sheetHeightWithoutKeyboard = contentHeight + footerHeight;
 
-  const sheetHeightWithKeyboard =
-    sheetHeightWithoutKeyboard + keyboardHeight - 23;
+  const sheetHeightWithKeyboard = sheetHeightWithoutKeyboard + keyboardHeight;
 
   const additionalScrollForKeyboard =
     sheetHeightWithoutKeyboard + keyboardOffset >
@@ -111,7 +103,6 @@ export default function CustomGasState({ asset }) {
     sheetHeightWithoutKeyboard,
     setParams,
   ]);
-
   return (
     <SheetKeyboardAnimation
       as={AnimatedContainer}
@@ -119,9 +110,12 @@ export default function CustomGasState({ asset }) {
       translateY={contentScroll}
     >
       <SlackSheet
+        additionalTopPadding
         backgroundColor={colors.black}
-        borderRadius={38}
-        contentHeight={ios ? longFormHeight : sheetHeightWithoutKeyboard}
+        borderBottomRadius={0}
+        borderRadius={39}
+        contentHeight={longFormHeight}
+        deviceHeight={deviceHeight}
         hideHandle
         removeTopPadding
         scrollEnabled={false}
