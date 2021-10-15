@@ -8,11 +8,7 @@ import { ExchangeHeader } from '../exchange';
 import { FloatingPanel } from '../floating-panels';
 import { GasSpeedButton } from '../gas';
 import { Column } from '../layout';
-import {
-  SheetHandleFixedToTopHeight,
-  SheetKeyboardAnimation,
-  SlackSheet,
-} from '../sheet';
+import { SheetKeyboardAnimation, SlackSheet } from '../sheet';
 import { FeesPanel, FeesPanelTabs } from './custom-gas';
 import {
   useAccountSettings,
@@ -130,7 +126,7 @@ export default function CustomGasState({ asset }) {
         removeTopPadding
         scrollEnabled={false}
       >
-        <FloatingPanel onLayout={setContentHeight} radius={36}>
+        <FloatingPanel onLayout={setContentHeight} radius={39}>
           <ExchangeHeader />
           <FeesPanel
             colorForAsset={assetColor}

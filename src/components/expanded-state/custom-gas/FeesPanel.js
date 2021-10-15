@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/core';
 import { get } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { KeyboardAvoidingView } from 'react-native';
 import styled from 'styled-components';
 import colors, { darkModeThemeColors } from '../../../styles/colors';
 import { ButtonPressAnimation } from '../../animations';
@@ -13,7 +14,7 @@ import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
-const Wrapper = styled.View`
+const Wrapper = styled(KeyboardAvoidingView)`
   ${padding(10, 24)}
 `;
 
