@@ -1,13 +1,13 @@
+import { addHexPrefix } from '@walletconnect/utils';
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import styled from 'styled-components';
 import { PERSONAL_SIGN, SIGN_TYPED_DATA } from '../../utils/signingMethods';
 import { Row } from '../layout';
 import { Text } from '../text';
+import { isHexString } from '@rainbow-me/handlers/web3';
 import { padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
-import { isHexString } from '@rainbow-me/handlers/web3';
-import { addHexPrefix } from '@walletconnect/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
 const horizontalPadding = 24;
