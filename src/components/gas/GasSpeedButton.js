@@ -7,7 +7,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { LayoutAnimation } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
 import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
@@ -22,6 +21,7 @@ import {
   useAccountSettings,
   useColorForAsset,
   useGas,
+  usePrevious,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS } from '@rainbow-me/references';
@@ -151,6 +151,10 @@ const GasSpeedButton = ({
   const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
   const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
   const [inputFocused] = useState(false);
+  const [shouldOpenCustomGasSheet, setShouldOpenCustomGasSheet] = useState(
+    false
+  );
+  const prevShouldOpenCustomGasSheet = usePrevious(shouldOpenCustomGasSheet);
 
   // Because of the animated number component
   // we need to trim the native currency symbol
@@ -216,10 +220,13 @@ const GasSpeedButton = ({
   const openCustomGasSheet = useCallback(() => {
     if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
-      asset,
       type: 'custom_gas',
     });
-  }, [navigate, asset, gasIsNotReady]);
+  }, [navigate, gasIsNotReady]);
+
+  const openIt = useCallback(() => {
+    setShouldOpenCustomGasSheet(true);
+  }, [setShouldOpenCustomGasSheet]);
 
   const renderGasPriceText = useCallback(
     animatedNumber => (
@@ -239,12 +246,11 @@ const GasSpeedButton = ({
     [theme, colors, gasIsNotReady]
   );
 
-  const handlePress = useCallback(
+  const handlePressSpeedOption = useCallback(
     selectedSpeed => {
       if (inputFocused) {
         return;
       }
-      LayoutAnimation.easeInEaseOut();
       updateGasFeeOption(selectedSpeed);
     },
     [inputFocused, updateGasFeeOption]
@@ -310,9 +316,9 @@ const GasSpeedButton = ({
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
-      handlePress(actionKey);
+      handlePressSpeedOption(actionKey);
     },
-    [handlePress]
+    [handlePressSpeedOption]
   );
 
   const nativeFeeCurrencySymbol = useMemo(() => {
@@ -372,11 +378,11 @@ const GasSpeedButton = ({
       },
       idx => {
         if (idx !== androidContractActions) {
-          handlePress(lowerCase(androidContractActions[idx]));
+          handlePressSpeedOption(lowerCase(androidContractActions[idx]));
         }
       }
     );
-  }, [gasIsNotReady, speedOptions, handlePress]);
+  }, [gasIsNotReady, speedOptions, handlePressSpeedOption]);
 
   const renderGasSpeedPager = useMemo(() => {
     if (showGasOptions) return;
@@ -390,7 +396,6 @@ const GasSpeedButton = ({
         currentNetwork={currentNetwork}
         dropdownEnabled={gasOptionsAvailable}
         label={selectedGasFeeOption}
-        openCustomGasSheet={openCustomGasSheet}
         showGasOptions={showGasOptions}
         showPager={!inputFocused}
         theme={theme}
@@ -421,7 +426,6 @@ const GasSpeedButton = ({
     inputFocused,
     menuConfig,
     onPressAndroid,
-    openCustomGasSheet,
     selectedGasFeeOption,
     showGasOptions,
     theme,
@@ -432,9 +436,26 @@ const GasSpeedButton = ({
     const currentSpeedIndex = gasOptions?.indexOf(selectedGasFeeOption);
     // If the option isn't available anymore, we need to reset it
     if (currentSpeedIndex === -1) {
-      handlePress();
+      handlePressSpeedOption();
     }
-  }, [handlePress, options, selectedGasFeeOption]);
+  }, [handlePressSpeedOption, options, selectedGasFeeOption]);
+
+  // had to do this hack because calling it directly from `onPress`
+  // would make the expanded sheet come up with too much force
+  // instead calling it from `useEffect` makes it appear smoothly
+  useEffect(() => {
+    if (
+      shouldOpenCustomGasSheet &&
+      prevShouldOpenCustomGasSheet !== shouldOpenCustomGasSheet
+    ) {
+      openCustomGasSheet();
+      setShouldOpenCustomGasSheet(false);
+    }
+  }, [
+    openCustomGasSheet,
+    prevShouldOpenCustomGasSheet,
+    shouldOpenCustomGasSheet,
+  ]);
 
   useEffect(() => {
     if (selectedGasFeeOption === gasUtils.CUSTOM) {
@@ -543,10 +564,7 @@ const GasSpeedButton = ({
                   </DoneCustomGas>
                 </CustomGasButton>
               ) : (
-                <CustomGasButton
-                  borderColor={colorForAsset}
-                  onPress={openCustomGasSheet}
-                >
+                <CustomGasButton borderColor={colorForAsset} onPress={openIt}>
                   <Symbol
                     color={
                       theme !== 'light'

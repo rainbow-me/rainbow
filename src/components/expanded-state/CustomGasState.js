@@ -45,8 +45,8 @@ const Footer = styled(Column).attrs({
   background-color: black;
 `;
 
-const FOOTER_MIN_HEIGHT = 143;
-const FOOTER_CONTENT_MIN_HEIGHT = 241;
+const FOOTER_MIN_HEIGHT = 66;
+const CONTENT_MIN_HEIGHT = 330;
 
 function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();
@@ -65,8 +65,7 @@ export default function CustomGasState({ asset }) {
   const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const insets = useSafeArea();
   const [footerHeight, setFooterHeight] = useHeight(FOOTER_MIN_HEIGHT);
-  const [slippageMessageHeight] = useHeight();
-  const [contentHeight] = useHeight(FOOTER_CONTENT_MIN_HEIGHT);
+  const [contentHeight, setContentHeight] = useHeight(CONTENT_MIN_HEIGHT);
   const contentScroll = useSharedValue(0);
   const colorForAsset = useColorForAsset(asset || {});
   const [currentGasTrend] = useState('stable');
@@ -75,13 +74,7 @@ export default function CustomGasState({ asset }) {
   useAndroidDisableGesturesOnFocus();
 
   const keyboardOffset = keyboardHeight + insets.bottom + 10;
-
-  const sheetHeightWithoutKeyboard =
-    SheetHandleFixedToTopHeight +
-    71 +
-    contentHeight +
-    slippageMessageHeight +
-    footerHeight;
+  const sheetHeightWithoutKeyboard = contentHeight + footerHeight;
 
   const sheetHeightWithKeyboard =
     sheetHeightWithoutKeyboard + keyboardHeight - 23;
@@ -137,7 +130,7 @@ export default function CustomGasState({ asset }) {
         removeTopPadding
         scrollEnabled={false}
       >
-        <FloatingPanel radius={36}>
+        <FloatingPanel onLayout={setContentHeight} radius={36}>
           <ExchangeHeader />
           <FeesPanel
             colorForAsset={assetColor}
