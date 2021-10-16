@@ -18,7 +18,7 @@ class Button : RCTView {
   }
   @objc var duration: TimeInterval = 0.16
   @objc var pressOutDuration: TimeInterval = -1
-  @objc var scaleTo: CGFloat = 0.01
+  @objc var scaleTo: CGFloat = 0.97
   @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5) {
     didSet {
       self.setAnchorPoint(CGPoint(x: transformOrigin.x, y: transformOrigin.y))

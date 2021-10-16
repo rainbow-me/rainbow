@@ -201,7 +201,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
       gasParams.maxFeePerGas.gwei + gasParams.maxPriorityFeePerGas.gwei
     ),
     new Promise(res =>
-      setTimeout(() => res(selectedGasFee.estimatedTime.amount), 200)
+      setTimeout(() => res(selectedGasFee?.estimatedTime?.amount || 45000), 200)
     ),
   ]);
   newGasFeeParamsBySpeed[CUSTOM] = defaultGasParamsFormat(

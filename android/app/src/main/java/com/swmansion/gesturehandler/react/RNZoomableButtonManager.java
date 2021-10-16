@@ -63,6 +63,8 @@ public class RNZoomableButtonManager extends
             if (ev.getAction() == MotionEvent.ACTION_UP) {
                 if (mIsTaskScheduled) {
                     onReceivePressEvent(false);
+                } else {
+                    onReceivePressEndedEvent();
                 }
                 mLongPressTimer.cancel();
                 mLongPressTimer = new Timer();
@@ -99,6 +101,16 @@ public class RNZoomableButtonManager extends
         public void onReceivePressEvent(boolean longPress) {
             WritableMap event = Arguments.createMap();
             event.putString("type", longPress ? "longPress" : "press");
+            ReactContext reactContext = (ReactContext)getContext();
+            reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
+                    getId(),
+                    "topPress",
+                    event);
+        }
+
+        public void onReceivePressEndedEvent() {
+            WritableMap event = Arguments.createMap();
+            event.putString("type", "longPressEnded");
             ReactContext reactContext = (ReactContext)getContext();
             reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
                     getId(),

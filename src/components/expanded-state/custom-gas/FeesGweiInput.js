@@ -53,6 +53,16 @@ export default function FeesGweiInput({
   const [actionType, setActionType] = useState(null);
   const prevTrigger = usePrevious(trigger);
 
+  const onMinusPress = useCallback(() => {
+    longPressHandle.current = false;
+    minusAction();
+  }, [minusAction]);
+
+  const onPlusPress = useCallback(() => {
+    longPressHandle.current = false;
+    plusAction();
+  }, [plusAction]);
+
   const onLongPressEnded = useCallback(() => {
     longPressHandle.current = false;
     setActionType(null);
@@ -102,7 +112,7 @@ export default function FeesGweiInput({
           buttonColor={buttonColor}
           onLongPress={onMinusLongPress}
           onLongPressEnded={onLongPressEnded}
-          onPress={minusAction}
+          onPress={onMinusPress}
           type={MINUS_ACTION_TYPE}
         />
       </InputColumn>
@@ -121,7 +131,7 @@ export default function FeesGweiInput({
           buttonColor={buttonColor}
           onLongPress={onPlusLongPress}
           onLongPressEnded={onLongPressEnded}
-          onPress={plusAction}
+          onPress={onPlusPress}
           type={PLUS_ACTION_TYPE}
         />
       </InputColumn>
