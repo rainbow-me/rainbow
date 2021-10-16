@@ -123,7 +123,6 @@ const GasSpeedButton = ({
   asset,
   horizontalPadding = 20,
 }) => {
-  const customGasPriceTimeEstimateHandler = useRef(null);
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
@@ -140,14 +139,12 @@ const GasSpeedButton = ({
   const {
     gasFeeParamsBySpeed,
     gasFeesBySpeed,
-    updateCustomValues,
     isSufficientGas,
     updateGasFeeOption,
     selectedGasFee,
     selectedGasFeeOption,
   } = useGas();
 
-  const [customGasPriceInput] = useState(0);
   const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
   const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
   const [inputFocused] = useState(false);
@@ -195,19 +192,6 @@ const GasSpeedButton = ({
     },
     [isL2, nativeCurrencySymbol, nativeCurrency]
   );
-
-  // const calculateCustomPriceEstimatedTime = useCallback(
-  //   async price => {
-  //     try {
-  //       // await updateCustomValues(price, currentNetwork);
-  //       updateGasFeeOption(CUSTOM);
-  //     } catch (e) {
-  //       setEstimatedTimeValue(0);
-  //       setEstimatedTimeUnit('min');
-  //     }
-  //   },
-  //   [currentNetwork, updateCustomValues, updateGasFeeOption]
-  // );
 
   const gasIsNotReady = useMemo(
     () =>
