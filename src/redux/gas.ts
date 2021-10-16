@@ -26,12 +26,10 @@ import {
 import {
   getProviderForNetwork,
   isEIP1559LegacyNetwork,
-  isL2Network,
 } from '@rainbow-me/handlers/web3';
 import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasParamsFormat,
-  defaultGasPriceFormat,
   getFallbackGasPrices,
   parseBlockNativeGasData,
   parseGasFeeParam,
@@ -54,7 +52,6 @@ import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const { CUSTOM, NORMAL } = gasUtils;
-type Numberish = number | string;
 
 interface GasState {
   defaultGasLimit: number;
@@ -400,7 +397,6 @@ export const gasUpdateGasFeeOption = (
     selectedGasFee: oldSelectedFee,
   } = getState().gas;
   if (oldSelectedFee.option === newGasPriceOption) return;
-  console.log('✨✨✨ gasUpdateGasFeeOption', newGasPriceOption);
 
   const { assets } = getState().data;
 

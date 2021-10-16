@@ -30,7 +30,7 @@ const springConfig = {
 
 const Footer = styled(Column).attrs({})``;
 
-const FOOTER_MIN_HEIGHT = 66;
+const FOOTER_MIN_HEIGHT = 60;
 const CONTENT_MIN_HEIGHT = 330;
 
 function useAndroidDisableGesturesOnFocus() {
@@ -55,7 +55,6 @@ export default function CustomGasState({ asset }) {
   const colorForAsset = useColorForAsset(asset || {});
   const [currentGasTrend] = useState('stable');
   const { selectedGasFee } = useGas();
-
   useAndroidDisableGesturesOnFocus();
 
   const keyboardOffset = keyboardHeight + insets.bottom + 10;

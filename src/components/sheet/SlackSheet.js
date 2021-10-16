@@ -44,9 +44,9 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
       borderRadius || '20'
     }; border-top-right-radius: ${borderRadius || '20'};`}
   ${({ borderBottomRadius }) =>
-    typeof borderBottomRadius === 'number'
-      ? `border-bottom-left-radius: ${borderBottomRadius}; border-bottom-right-radius: ${borderBottomRadius};`
-      : ''}
+    `border-bottom-left-radius: ${
+      borderBottomRadius || 0
+    }; border-bottom-right-radius: ${borderBottomRadius || 0};`}
   background-color: ${({ backgroundColor }) => backgroundColor};
   bottom: 0;
   left: 0;

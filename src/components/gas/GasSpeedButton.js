@@ -1,12 +1,6 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { get, isEmpty, isNil, lowerCase, upperFirst } from 'lodash';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
