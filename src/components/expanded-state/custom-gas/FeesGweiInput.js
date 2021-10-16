@@ -27,6 +27,7 @@ export default function FeesGweiInput({
   minusAction,
   onChange,
   onPress,
+  onBlur,
   buttonColor,
 }) {
   const inputRef = useRef(null);
@@ -47,6 +48,7 @@ export default function FeesGweiInput({
       </InputColumn>
       <InputColumn>
         <GweiInputPill
+          onBlur={onBlur}
           onChange={onChange}
           onFocus={onInputPress}
           onPress={onInputPress}

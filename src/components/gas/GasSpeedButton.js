@@ -196,18 +196,18 @@ const GasSpeedButton = ({
     [isL2, nativeCurrencySymbol, nativeCurrency]
   );
 
-  const calculateCustomPriceEstimatedTime = useCallback(
-    async price => {
-      try {
-        await updateCustomValues(price, currentNetwork);
-        updateGasFeeOption(CUSTOM);
-      } catch (e) {
-        setEstimatedTimeValue(0);
-        setEstimatedTimeUnit('min');
-      }
-    },
-    [currentNetwork, updateCustomValues, updateGasFeeOption]
-  );
+  // const calculateCustomPriceEstimatedTime = useCallback(
+  //   async price => {
+  //     try {
+  //       // await updateCustomValues(price, currentNetwork);
+  //       updateGasFeeOption(CUSTOM);
+  //     } catch (e) {
+  //       setEstimatedTimeValue(0);
+  //       setEstimatedTimeUnit('min');
+  //     }
+  //   },
+  //   [currentNetwork, updateCustomValues, updateGasFeeOption]
+  // );
 
   const gasIsNotReady = useMemo(
     () =>
@@ -468,16 +468,16 @@ const GasSpeedButton = ({
     }
   }, [navigate, openCustomGasSheet, selectedGasFeeOption]);
 
-  useEffect(() => {
-    // Cancel any queued estimation
-    customGasPriceTimeEstimateHandler.current &&
-      clearTimeout(customGasPriceTimeEstimateHandler.current);
-    // Add a new one to the queue
-    customGasPriceTimeEstimateHandler.current = setTimeout(() => {
-      customGasPriceInput &&
-        calculateCustomPriceEstimatedTime(customGasPriceInput);
-    }, 1000);
-  }, [calculateCustomPriceEstimatedTime, customGasPriceInput]);
+  // useEffect(() => {
+  //   // Cancel any queued estimation
+  //   customGasPriceTimeEstimateHandler.current &&
+  //     clearTimeout(customGasPriceTimeEstimateHandler.current);
+  //   // Add a new one to the queue
+  //   customGasPriceTimeEstimateHandler.current = setTimeout(() => {
+  //     customGasPriceInput &&
+  //       calculateCustomPriceEstimatedTime(customGasPriceInput);
+  //   }, 1000);
+  // }, [calculateCustomPriceEstimatedTime, customGasPriceInput]);
 
   useEffect(() => {
     const estimatedTime = get(

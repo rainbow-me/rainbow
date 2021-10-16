@@ -123,6 +123,7 @@ export default function FeesPanel({
 
   const [maxBaseFeeWarning, setMaxBaseFeeWarning] = useState(null);
   const [maxBaseFeeError, setMaxBaseFeeError] = useState(null);
+  const [feesGweiInputFocused, setFeesGweiInputFocused] = useState(false);
 
   const selectedOptionIsCustom = useMemo(
     () => selectedGasFee?.option === 'custom',
@@ -152,12 +153,12 @@ export default function FeesPanel({
     }
 
     let maxPriorityFee;
-    if (selectedOptionIsCustom) {
+    if (feesGweiInputFocused) {
       // block more thn 2 decimals on gwei value
       const decimals = Number(customMaxPriorityFee) % 1;
       maxPriorityFee =
         `${decimals}`.length > 4
-          ? Number(customMaxPriorityFee).toFixed(2)
+          ? Number(parseFloat(customMaxPriorityFee).toFixed(2))
           : customMaxPriorityFee;
     } else {
       maxPriorityFee = get(
@@ -172,6 +173,7 @@ export default function FeesPanel({
     customMaxPriorityFee,
     selectedGasFee,
     selectedOptionIsCustom,
+    feesGweiInputFocused,
   ]);
 
   const renderRowLabel = useCallback(
@@ -207,19 +209,38 @@ export default function FeesPanel({
     currentBaseFee,
   ]);
 
-  const handleCustomGasFocus = useCallback(() => {
+  const handleFeesGweiInputFocus = useCallback(() => {
     onCustomGasFocus?.();
-    updateGasFeeOption('custom');
-  }, [onCustomGasFocus, updateGasFeeOption]);
+    !selectedOptionIsCustom && updateGasFeeOption('custom');
+    const {
+      gasFeeParams: { maxFeePerGas, maxPriorityFeePerGas },
+    } = selectedGasFee;
+    setCustomMaxPriorityFee(maxPriorityFeePerGas.gwei);
+    setCustomMaxBaseFee(parseInt(maxFeePerGas.gwei));
+  }, [
+    onCustomGasFocus,
+    selectedGasFee,
+    updateGasFeeOption,
+    selectedOptionIsCustom,
+  ]);
+
+  const handleCustomPriorityFeeFocus = useCallback(() => {
+    setFeesGweiInputFocused(true);
+    handleFeesGweiInputFocus();
+  }, [handleFeesGweiInputFocus, setFeesGweiInputFocused]);
+
+  const handleCustomPriorityFeeBlur = useCallback(() => {
+    setFeesGweiInputFocused(false);
+  }, [setFeesGweiInputFocused]);
 
   const updateGasFee = useCallback(
     ({ priorityFeePerGas = 0, feePerGas = 0 }) => {
       const {
         gasFeeParams: { maxFeePerGas, maxPriorityFeePerGas },
       } = selectedGasFee;
+
       const gweiMaxPriorityFeePerGas = maxPriorityFeePerGas.gwei || 0;
       const gweiMaxFeePerGas = maxFeePerGas.gwei || 0;
-
       const newGweiMaxPriorityFeePerGas =
         Math.round((gweiMaxPriorityFeePerGas + priorityFeePerGas) * 100) / 100;
       const newGweiMaxFeePerGas =
@@ -234,7 +255,6 @@ export default function FeesPanel({
 
       if (newMaxPriorityFeePerGas.amount < 0 || newMaxFeePerGas.amount < 0)
         return;
-
       setCustomMaxPriorityFee(newMaxPriorityFeePerGas.gwei);
       setCustomMaxBaseFee(parseInt(newMaxFeePerGas.gwei));
 
@@ -400,7 +420,7 @@ export default function FeesPanel({
             buttonColor={colorForAsset}
             minusAction={substMaxFee}
             onChange={onMaxBaseFeeChange}
-            onPress={handleCustomGasFocus}
+            onPress={handleFeesGweiInputFocus}
             plusAction={addMaxFee}
             value={maxBaseFee}
           />
@@ -414,8 +434,9 @@ export default function FeesPanel({
           <FeesGweiInput
             buttonColor={colorForAsset}
             minusAction={substMinerTip}
+            onBlur={handleCustomPriorityFeeBlur}
             onChange={onMinerTipChange}
-            onPress={handleCustomGasFocus}
+            onPress={handleCustomPriorityFeeFocus}
             plusAction={addMinerTip}
             value={maxPriorityFee}
           />

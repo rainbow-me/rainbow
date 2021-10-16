@@ -393,7 +393,15 @@ export const gasUpdateGasFeeOption = (
   newGasPriceOption: string,
   assetsOverride?: any[]
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
-  const { gasFeeParamsBySpeed, gasFeesBySpeed, txNetwork } = getState().gas;
+  const {
+    gasFeeParamsBySpeed,
+    gasFeesBySpeed,
+    txNetwork,
+    selectedGasFee: oldSelectedFee,
+  } = getState().gas;
+  if (oldSelectedFee.option === newGasPriceOption) return;
+  console.log('✨✨✨ gasUpdateGasFeeOption', newGasPriceOption);
+
   const { assets } = getState().data;
 
   const gasPriceOption = newGasPriceOption || NORMAL;
@@ -410,32 +418,6 @@ export const gasUpdateGasFeeOption = (
     type: GAS_UPDATE_GAS_PRICE_OPTION,
   });
   analytics.track('Updated Gas Price', { gasPriceOption: gasPriceOption });
-};
-
-export const gasUpdateCustomValues = (
-  price: Numberish
-  // network: Network
-) => async (dispatch: AppDispatch, getState: AppGetState) => {
-  const { gasFeeParamsBySpeed, gasLimit, txNetwork } = getState().gas;
-
-  const estimateInMinutes = isL2Network(txNetwork)
-    ? 0.5
-    : await getEstimatedTimeForGasPrice(price);
-  const newGasPrices = { ...gasFeeParamsBySpeed };
-  newGasPrices[CUSTOM] = defaultGasPriceFormat(
-    CUSTOM,
-    estimateInMinutes,
-    price
-  );
-
-  await dispatch({
-    payload: {
-      gasFeeParamsBySpeed: newGasPrices,
-    },
-    type: GAS_PRICES_SUCCESS,
-  });
-
-  dispatch(gasUpdateTxFee(txNetwork, gasLimit));
 };
 
 export const gasUpdateDefaultGasLimit = (

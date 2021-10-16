@@ -7,7 +7,6 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   gasPricesStartPolling,
   gasPricesStopPolling,
-  gasUpdateCustomValues,
   gasUpdateDefaultGasLimit,
   gasUpdateGasFeeOption,
   gasUpdateToCustomGasFee,
@@ -66,10 +65,6 @@ export default function useGas() {
     },
     [dispatch]
   );
-  const updateCustomValues = useCallback(
-    price => dispatch(gasUpdateCustomValues(price)),
-    [dispatch]
-  );
 
   const updateToCustomGasFee = useCallback(
     (gasParams: GasFeeParams) => dispatch(gasUpdateToCustomGasFee(gasParams)),
@@ -80,7 +75,6 @@ export default function useGas() {
     prevSelectedGasFee,
     startPollingGasFees,
     stopPollingGasFees,
-    updateCustomValues,
     updateDefaultGasLimit,
     updateGasFeeOption,
     updateToCustomGasFee,

@@ -52,7 +52,7 @@ const GweiLabel = styled(Text).attrs(() => ({
 
 const InputColumn = styled(Column).attrs({})``;
 
-function GweiInputPill({ value, onPress, onChange, onFocus }, ref) {
+function GweiInputPill({ value, onPress, onChange, onFocus, onBlur }, ref) {
   return (
     <ButtonPressAnimation onPress={onPress}>
       <GweiPill>
@@ -60,6 +60,7 @@ function GweiInputPill({ value, onPress, onChange, onFocus }, ref) {
           <InputColumn>
             <GweiNumberInput
               keyboardType="numeric"
+              onBlur={onBlur}
               onChange={onChange}
               onFocus={onFocus}
               placeholder="0"
