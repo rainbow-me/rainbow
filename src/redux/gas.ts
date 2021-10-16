@@ -175,6 +175,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     gasFeesBySpeed,
     gasFeeParamsBySpeed,
     gasLimit,
+    selectedGasFee,
   } = getState().gas;
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
@@ -195,9 +196,14 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   const newGasFeeParamsBySpeed = { ...gasFeeParamsBySpeed };
 
   newGasFeesBySpeed[CUSTOM] = customGasFees;
-  const estimatedTime = await getEstimatedTimeForGasPrice(
-    gasParams.maxFeePerGas.gwei + gasParams.maxPriorityFeePerGas.gwei
-  );
+  const estimatedTime = await Promise.race([
+    await getEstimatedTimeForGasPrice(
+      gasParams.maxFeePerGas.gwei + gasParams.maxPriorityFeePerGas.gwei
+    ),
+    new Promise(res =>
+      setTimeout(() => res(selectedGasFee.estimatedTime.amount), 200)
+    ),
+  ]);
   newGasFeeParamsBySpeed[CUSTOM] = defaultGasParamsFormat(
     CUSTOM,
     estimatedTime,
@@ -206,7 +212,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     gasParams.maxPriorityFeePerGas.gwei
   );
 
-  const selectedGasFee = getSelectedGasFee(
+  const newSelectedGasFee = getSelectedGasFee(
     assets,
     newGasFeeParamsBySpeed,
     newGasFeesBySpeed,
@@ -217,7 +223,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     payload: {
       gasFeeParamsBySpeed: newGasFeeParamsBySpeed,
       gasFeesBySpeed: newGasFeesBySpeed,
-      selectedGasFee: selectedGasFee.selectedGasFee,
+      selectedGasFee: newSelectedGasFee.selectedGasFee,
     },
     type: GAS_PRICES_CUSTOM_UPDATE_FAILURE,
   });
@@ -349,13 +355,6 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
             captureException(new Error('Etherscan gas estimates failed'));
             logger.sentry('Etherscan gas estimates error:', e);
             logger.sentry('falling back to eth gas station');
-            // source = GAS_PRICE_SOURCES.ETH_GAS_STATION;
-            // Fallback to ETHGasStation if Etherscan fails
-            // const {
-            //   data: ethGasStationPrices,
-            // } = await ethGasStationGetGasPrices();
-            // // Only bumping for ETHGasStation
-            // adjustedGasPrices = bumpGasPrices(ethGasStationPrices);
           }
         }
         fetchResolve(true);

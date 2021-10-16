@@ -1,9 +1,15 @@
-import React, { useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../../animations';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import GweiInputPill from './GweiInputPill';
+import { delay } from '@rainbow-me/helpers/utilities';
+import { usePrevious } from '@rainbow-me/hooks';
+
+const PLUS_ACTION_TYPE = 'plus';
+const MINUS_ACTION_TYPE = 'minus';
+const DELAY_THRESHOLD = 200;
 
 const StepButton = styled(Text).attrs(({ theme: { colors }, color }) => ({
   color: color || colors.appleBlue,
@@ -13,9 +19,19 @@ const StepButton = styled(Text).attrs(({ theme: { colors }, color }) => ({
 
 const InputColumn = styled(Column).attrs({})``;
 
-const GweiStepButton = ({ type, changeValue, buttonColor }) => {
+const GweiStepButton = ({
+  type,
+  onLongPress,
+  onLongPressEnded,
+  onPress,
+  buttonColor,
+}) => {
   return (
-    <ButtonPressAnimation onLongPress={changeValue} onPress={changeValue}>
+    <ButtonPressAnimation
+      onLongPress={onLongPress}
+      onLongPressEnded={onLongPressEnded}
+      onPress={onPress}
+    >
       <StepButton color={buttonColor}>{type === 'plus' ? '􀁍' : '􀁏'}</StepButton>
     </ButtonPressAnimation>
   );
@@ -32,18 +48,62 @@ export default function FeesGweiInput({
 }) {
   const inputRef = useRef(null);
 
+  const longPressHandle = useRef(null);
+  const [trigger, setTrigger] = useState(false);
+  const [actionType, setActionType] = useState(null);
+  const prevTrigger = usePrevious(trigger);
+
+  const onLongPressEnded = useCallback(() => {
+    longPressHandle.current = false;
+    setActionType(null);
+  }, [longPressHandle]);
+
+  const onLongPressLoop = useCallback(async () => {
+    setTrigger(true);
+    setTrigger(false);
+    await delay(DELAY_THRESHOLD);
+    longPressHandle.current && onLongPressLoop();
+  }, []);
+
+  const onLongPress = useCallback(async () => {
+    longPressHandle.current = true;
+    onLongPressLoop();
+  }, [onLongPressLoop]);
+
+  const onPlusLongPress = useCallback(() => {
+    setActionType(PLUS_ACTION_TYPE);
+    onLongPress();
+  }, [onLongPress]);
+
+  const onMinusLongPress = useCallback(() => {
+    setActionType(MINUS_ACTION_TYPE);
+    onLongPress();
+  }, [onLongPress]);
+
   const onInputPress = useCallback(() => {
     inputRef?.current?.focus();
     onPress?.();
   }, [inputRef, onPress]);
+
+  useEffect(() => {
+    if (!prevTrigger && trigger) {
+      if (actionType === PLUS_ACTION_TYPE) {
+        plusAction();
+      } else if (actionType === MINUS_ACTION_TYPE) {
+        minusAction();
+      }
+    }
+  }, [trigger, prevTrigger, actionType, plusAction, minusAction]);
 
   return (
     <Row>
       <InputColumn justify="center">
         <GweiStepButton
           buttonColor={buttonColor}
-          changeValue={minusAction}
-          type="minus"
+          onLongPress={onMinusLongPress}
+          onLongPressEnded={onLongPressEnded}
+          onPress={minusAction}
+          type={MINUS_ACTION_TYPE}
         />
       </InputColumn>
       <InputColumn>
@@ -59,8 +119,10 @@ export default function FeesGweiInput({
       <InputColumn justify="center">
         <GweiStepButton
           buttonColor={buttonColor}
-          changeValue={plusAction}
-          type="plus"
+          onLongPress={onPlusLongPress}
+          onLongPressEnded={onLongPressEnded}
+          onPress={plusAction}
+          type={PLUS_ACTION_TYPE}
         />
       </InputColumn>
     </Row>

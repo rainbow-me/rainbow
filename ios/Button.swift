@@ -10,6 +10,7 @@ class Button : RCTView {
   @objc lazy var onCancel: RCTBubblingEventBlock = { _ in }
   @objc lazy var onPressStart: RCTBubblingEventBlock = { _ in }
   @objc lazy var onLongPress: RCTBubblingEventBlock = { _ in };
+  @objc lazy var onLongPressEnded: RCTBubblingEventBlock = { _ in };
   @objc var disabled: Bool = false {
     didSet {
       isUserInteractionEnabled = !disabled
@@ -17,7 +18,7 @@ class Button : RCTView {
   }
   @objc var duration: TimeInterval = 0.16
   @objc var pressOutDuration: TimeInterval = -1
-  @objc var scaleTo: CGFloat = 0.97
+  @objc var scaleTo: CGFloat = 0.01
   @objc var transformOrigin: CGPoint = CGPoint(x: 0.5, y: 0.5) {
     didSet {
       self.setAnchorPoint(CGPoint(x: transformOrigin.x, y: transformOrigin.y))
@@ -43,6 +44,9 @@ class Button : RCTView {
       switch sender!.state {
       case .began:
         onLongPress([:])
+      case .ended:
+        onLongPressEnded([:])
+        animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
       default: break
       }
     }
@@ -146,7 +150,9 @@ class Button : RCTView {
       let location = touch.location(in: self)
       onCancel(["close":Button.isClose(locationA: location, locationB: tapLocation!), "state": self.longPress?.value(forKey: "_state")])
     }
-    animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
+    if onLongPressEnded == nil {
+      animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
+    }
     if throttle {
       blocked = true;
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {

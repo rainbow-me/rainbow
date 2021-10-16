@@ -235,12 +235,12 @@ export default function FeesPanel({
 
   const updateGasFee = useCallback(
     ({ priorityFeePerGas = 0, feePerGas = 0 }) => {
-      const {
-        gasFeeParams: { maxFeePerGas, maxPriorityFeePerGas },
-      } = selectedGasFee;
+      const maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas;
+      const maxPriorityFeePerGas =
+        selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas;
 
-      const gweiMaxPriorityFeePerGas = maxPriorityFeePerGas.gwei || 0;
-      const gweiMaxFeePerGas = maxFeePerGas.gwei || 0;
+      const gweiMaxPriorityFeePerGas = maxPriorityFeePerGas?.gwei || 0;
+      const gweiMaxFeePerGas = maxFeePerGas?.gwei || 0;
       const newGweiMaxPriorityFeePerGas =
         Math.round((gweiMaxPriorityFeePerGas + priorityFeePerGas) * 100) / 100;
       const newGweiMaxFeePerGas =
@@ -265,7 +265,7 @@ export default function FeesPanel({
       };
       updateToCustomGasFee(newGasParams);
     },
-    [selectedGasFee, updateToCustomGasFee]
+    [selectedGasFee.gasFeeParams, updateToCustomGasFee]
   );
 
   const addMinerTip = useCallback(() => {
@@ -280,10 +280,9 @@ export default function FeesPanel({
     });
   }, [updateGasFee, maxPriorityFee]);
 
-  const addMaxFee = useCallback(
-    () => updateGasFee({ feePerGas: GAS_FEE_INCREMENT }),
-    [updateGasFee]
-  );
+  const addMaxFee = useCallback(() => {
+    updateGasFee({ feePerGas: GAS_FEE_INCREMENT });
+  }, [updateGasFee]);
 
   const substMaxFee = useCallback(
     () => updateGasFee({ feePerGas: -GAS_FEE_INCREMENT }),
