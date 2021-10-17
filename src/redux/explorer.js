@@ -410,7 +410,18 @@ const listenOnAssetMessages = socket => dispatch => {
   });
 };
 
-const listenOnAddressMessages = socket => (dispatch, getState) => {
+export const explorerInitL2 = () => (dispatch, getState) => {
+  if (getState().settings.network === NetworkTypes.mainnet) {
+    // Start watching arbitrum assets
+    dispatch(arbitrumExplorerInit());
+    // Start watching optimism assets
+    dispatch(optimismExplorerInit());
+    // Start watching polygon assets
+    dispatch(polygonExplorerInit());
+  }
+};
+
+const listenOnAddressMessages = socket => dispatch => {
   socket.on(messages.ADDRESS_PORTFOLIO.RECEIVED, message => {
     dispatch(portfolioReceived(message));
   });
@@ -442,14 +453,7 @@ const listenOnAddressMessages = socket => (dispatch, getState) => {
         '😬 Cancelling fallback data provider listener. Zerion is good!'
       );
       dispatch(disableFallbackIfNeeded());
-      if (getState().settings.network === NetworkTypes.mainnet) {
-        // Start watching arbitrum assets
-        dispatch(arbitrumExplorerInit());
-        // Start watching optimism assets
-        dispatch(optimismExplorerInit());
-        // Start watching polygon assets
-        dispatch(polygonExplorerInit());
-      }
+      dispatch(explorerInitL2());
     }
   });
 

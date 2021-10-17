@@ -49,7 +49,7 @@ import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
-import { explorerInit } from './redux/explorer';
+import { explorerInitL2 } from './redux/explorer';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
@@ -237,10 +237,10 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   handleTransactionConfirmed = () => {
-    logger.log('Reloading all data from zerion in 10!');
+    logger.log('Reloading all data from L2 explorers in 10!');
     setTimeout(() => {
-      logger.log('Reloading all data from zerion NOW!');
-      store.dispatch(explorerInit());
+      logger.log('Reloading all data from L2 explorers NOW!');
+      store.dispatch(explorerInitL2());
     }, 10000);
   };
 

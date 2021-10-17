@@ -21,7 +21,7 @@ import { CurrencySelectionList } from '../exchange';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
-import { debouncedFetchSuggestions } from '@rainbow-me/handlers/ens';
+import { fetchSuggestions } from '@rainbow-me/handlers/ens';
 import {
   useAccountAssets,
   useTimeout,
@@ -225,15 +225,12 @@ export default function DiscoverSearch() {
   );
 
   useEffect(() => {
-    if (searchQuery?.length > 2) {
-      debouncedFetchSuggestions(searchQuery, addEnsResults, setIsFetchingEns);
-    }
     stopQueryDebounce();
     startQueryDebounce(
       () => {
         setIsSearching(true);
         setSearchQueryForSearch(searchQuery);
-
+        fetchSuggestions(searchQuery, addEnsResults, setIsFetchingEns);
         filterCurrencyList(searchQuery);
       },
       searchQuery === '' ? 1 : 500
