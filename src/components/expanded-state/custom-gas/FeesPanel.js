@@ -178,7 +178,12 @@ export default function FeesPanel({
 
   const renderRowLabel = useCallback(
     (label, type) => {
-      const openGasHelper = () => navigate(Routes.EXPLAIN_SHEET, { type });
+      const openGasHelper = () =>
+        navigate(Routes.EXPLAIN_SHEET, {
+          currentBaseFee,
+          currentGasTrend,
+          type,
+        });
       return (
         <PanelColumn>
           <ButtonPressAnimation onPress={openGasHelper}>

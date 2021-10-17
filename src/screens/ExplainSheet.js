@@ -11,9 +11,26 @@ import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useDimensions } from '@rainbow-me/hooks';
-import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
+import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
+import { gasUtils } from '@rainbow-me/utils';
 
 export const ExplainSheetHeight = android ? 454 : 434;
+
+const GasTrendContainer = styled(Centered).attrs(() => ({}))``;
+
+const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
+  color: color || colors.appleBlue,
+  size: 'lmedium',
+  weight: 'heavy',
+  alignItems: 'center',
+  textAlign: 'center',
+  width: '50%',
+}))`
+  ${padding(10)}
+  border-color: ${({ theme: { colors }, color }) => colors.alpha(color, 0.2)};
+  border-radius: 20;
+  border-width: 2;
+`;
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   ${position.cover};
@@ -75,7 +92,7 @@ export const explainers = {
   },
   currentBaseFee: {
     emoji: '🌞',
-    extraHeight: 2,
+    extraHeight: 30,
     text: CURRENT_BASE_FEE_EXPLAINER,
     title: 'Current base fee',
   },
@@ -162,9 +179,26 @@ export const explainers = {
 const ExplainSheet = () => {
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const insets = useSafeArea();
-  const { params: { type = 'gas', onClose } = {} } = useRoute();
+  const { params: { type = 'gas', onClose } = {}, params = {} } = useRoute();
   const { colors } = useTheme();
   const { goBack } = useNavigation();
+
+  const renderBaseFeeInficator = useMemo(() => {
+    if (type !== 'currentBaseFee') return null;
+    const { currentGasTrend, currentBaseFee } = params;
+    return (
+      <GasTrendContainer>
+        <GasTrendHeader
+          align="center"
+          color={gasUtils.GAS_TRENDS[currentGasTrend].color}
+        >
+          {`${gasUtils.GAS_TRENDS[currentGasTrend].label} • ${parseInt(
+            currentBaseFee
+          )} Gwei`}
+        </GasTrendHeader>
+      </GasTrendContainer>
+    );
+  }, [params, type]);
 
   const handleClose = useCallback(() => {
     goBack();
@@ -217,6 +251,10 @@ const ExplainSheet = () => {
             <Title align="center" lineHeight="big" size="big" weight="heavy">
               {explainers[type].title}
             </Title>
+
+            {/** base fee explainer */}
+            {renderBaseFeeInficator}
+
             <Text
               align="center"
               color={colors.alpha(colors.blueGreyDark, 0.6)}
