@@ -93,6 +93,7 @@ const customSpaceMarkdown = `
 
 const docs: Docs = {
   name: 'MarkdownText',
+  category: 'Content',
   examples: [
     {
       name: 'Basic usage',

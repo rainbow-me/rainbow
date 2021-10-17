@@ -2,7 +2,6 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Docs } from '../../playground/Docs';
-import { Guide } from '../../playground/Guide';
 import { Placeholder } from '../../playground/Placeholder';
 import { Text } from '../Text/Text';
 import { Stack } from './Stack';
@@ -13,6 +12,7 @@ const MockDivider = () => (
 
 const docs: Docs = {
   name: 'Stack',
+  category: 'Layout',
   examples: [
     {
       name: 'Basic usage',
@@ -27,15 +27,11 @@ const docs: Docs = {
     {
       name: 'With text',
       example: (
-        <View>
-          <Guide />
-          <Stack space="19dp">
-            <Text>Lorem ipsum</Text>
-            <Text>Lorem ipsum</Text>
-            <Text>Lorem ipsum</Text>
-          </Stack>
-          <Guide />
-        </View>
+        <Stack space="19dp">
+          <Text>Lorem ipsum</Text>
+          <Text>Lorem ipsum</Text>
+          <Text>Lorem ipsum</Text>
+        </Stack>
       ),
     },
     {
@@ -49,9 +45,9 @@ const docs: Docs = {
       ),
     },
     {
-      name: 'With dividers',
+      name: 'With separators',
       example: (
-        <Stack divider={<MockDivider />} space="19dp">
+        <Stack separator={<MockDivider />} space="19dp">
           <Placeholder />
           <Placeholder />
           <Placeholder />
@@ -61,7 +57,11 @@ const docs: Docs = {
     {
       name: 'With center alignment and dividers',
       example: (
-        <Stack alignHorizontal="center" divider={<MockDivider />} space="19dp">
+        <Stack
+          alignHorizontal="center"
+          separator={<MockDivider />}
+          space="19dp"
+        >
           <Placeholder width={30} />
           <Placeholder width={90} />
           <Placeholder width={60} />
@@ -71,7 +71,7 @@ const docs: Docs = {
     {
       name: 'With right alignment and dividers',
       example: (
-        <Stack alignHorizontal="right" divider={<MockDivider />} space="19dp">
+        <Stack alignHorizontal="right" separator={<MockDivider />} space="19dp">
           <Placeholder width={30} />
           <Placeholder width={90} />
           <Placeholder width={60} />

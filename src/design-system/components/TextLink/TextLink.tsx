@@ -8,7 +8,7 @@ export interface TextLinkProps {
   children: ReactNode;
 }
 
-export const TextLink = ({ children, url }: TextLinkProps) => {
+export function TextLink({ children, url }: TextLinkProps) {
   const actionColor = useColorModeValue()(foregroundPalette.action);
 
   return (
@@ -19,4 +19,4 @@ export const TextLink = ({ children, url }: TextLinkProps) => {
       {children}
     </NativeText>
   );
-};
+}

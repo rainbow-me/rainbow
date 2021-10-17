@@ -20,21 +20,26 @@ export type StackProps = {
   children: ReactNode;
   alignHorizontal?: AlignHorizontal;
 } & (
-  | { space?: never; divider: ReactElement }
+  | { space?: never; separator: ReactElement }
   | {
       space: Space;
-      divider?: ReactElement;
+      separator?: ReactElement;
     }
 );
 
-export const Stack = ({
+/**
+ * @description Arranges child nodes vertically with equal spacing between
+ * them, plus an optional `separator` element. Items can optionally be aligned
+ * horizontally and/or vertically.
+ */
+export function Stack({
   children,
   alignHorizontal,
-  divider,
+  separator,
   space,
-}: StackProps) => {
-  if (__DEV__ && divider && !isValidElement(divider)) {
-    throw new Error(`Stack: The 'divider' prop must be a React element`);
+}: StackProps) {
+  if (__DEV__ && separator && !isValidElement(separator)) {
+    throw new Error(`Stack: The 'separator' prop must be a React element`);
   }
 
   return (
@@ -47,7 +52,7 @@ export const Stack = ({
     >
       {Children.map(flattenChildren(children), (child, index) => (
         <>
-          {divider && index > 0 ? (
+          {separator && index > 0 ? (
             <Box
               alignItems={
                 alignHorizontal
@@ -57,7 +62,7 @@ export const Stack = ({
               paddingTop={space}
               width="full"
             >
-              {divider}
+              {separator}
             </Box>
           ) : null}
           {space && index > 0 ? <Box paddingTop={space}>{child}</Box> : child}
@@ -65,4 +70,4 @@ export const Stack = ({
       ))}
     </Box>
   );
-};
+}

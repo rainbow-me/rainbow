@@ -39,9 +39,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 14,
   },
+  layoutContainer: {
+    backgroundColor: 'rgba(0,0,0,0.05)',
+  },
 });
 
-const DocsRow = ({ name, examples }: Docs) => {
+const DocsRow = ({ name, category, examples }: Docs) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -60,7 +63,13 @@ const DocsRow = ({ name, examples }: Docs) => {
         ? examples.map((example, index) => (
             <Stack key={index} space="30dp">
               <Heading weight="bold">{example.name}</Heading>
-              <View>{example.example}</View>
+              <View
+                style={
+                  category === 'Layout' ? styles.layoutContainer : undefined
+                }
+              >
+                {example.example}
+              </View>
             </Stack>
           ))
         : null}
@@ -77,8 +86,13 @@ export const Playground = () => {
       {android ? <View style={{ height: StatusBar.currentHeight }} /> : null}
       <Inset space="19dp">
         <Stack space="30dp">
-          {allDocs.map(({ name, examples }, index) => (
-            <DocsRow examples={examples} key={index} name={name} />
+          {allDocs.map(({ name, category, examples }, index) => (
+            <DocsRow
+              category={category}
+              examples={examples}
+              key={index}
+              name={name}
+            />
           ))}
         </Stack>
       </Inset>

@@ -25,28 +25,36 @@ export type InlineProps = {
   space: Space;
 };
 
-export const Inline = ({
+/**
+ * @description Renders flowing content with equal spacing between items
+ * both horizontally and vertically, wrapping to multiple lines if needed.
+ */
+export function Inline({
   children,
   alignHorizontal,
   alignVertical,
   space,
-}: InlineProps) => (
-  <Box
-    alignItems={
-      alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined
-    }
-    flexDirection="row"
-    flexWrap="wrap"
-    justifyContent={
-      alignHorizontal ? alignHorizontalToFlexAlign[alignHorizontal] : undefined
-    }
-    marginBottom={negateSpace(space)}
-    marginLeft={negateSpace(space)}
-  >
-    {Children.map(flattenChildren(children), child => (
-      <Box paddingBottom={space} paddingLeft={space}>
-        {child}
-      </Box>
-    ))}
-  </Box>
-);
+}: InlineProps) {
+  return (
+    <Box
+      alignItems={
+        alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined
+      }
+      flexDirection="row"
+      flexWrap="wrap"
+      justifyContent={
+        alignHorizontal
+          ? alignHorizontalToFlexAlign[alignHorizontal]
+          : undefined
+      }
+      marginBottom={negateSpace(space)}
+      marginLeft={negateSpace(space)}
+    >
+      {Children.map(flattenChildren(children), child => (
+        <Box paddingBottom={space} paddingLeft={space}>
+          {child}
+        </Box>
+      ))}
+    </Box>
+  );
+}

@@ -1,6 +1,5 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
-import { View } from 'react-native';
 import { Docs } from '../../playground/Docs';
 import { Placeholder } from '../../playground/Placeholder';
 import { Stack } from '../Stack/Stack';
@@ -12,12 +11,12 @@ const loremIpsum =
 
 const docs: Docs = {
   name: 'Columns',
+  category: 'Layout',
   examples: [
     {
       name: 'Basic usage',
       example: (
         <Columns space="19dp">
-          <Placeholder />
           <Placeholder />
           <Placeholder />
         </Columns>
@@ -272,30 +271,6 @@ const docs: Docs = {
           <Text>Lorem</Text>
           <Text>{loremIpsum}</Text>
         </Columns>
-      ),
-    },
-
-    {
-      name: 'Content overflowing column',
-      example: (
-        <Columns space="19dp">
-          <Placeholder width={200} />
-          <Placeholder />
-          <Placeholder />
-        </Columns>
-      ),
-    },
-
-    {
-      name: 'Test bounds',
-      example: (
-        <View style={{ backgroundColor: 'rgba(255,0,0,0.1)' }}>
-          <Columns space="19dp">
-            <Placeholder />
-            <Placeholder />
-            <Placeholder />
-          </Columns>
-        </View>
       ),
     },
   ],

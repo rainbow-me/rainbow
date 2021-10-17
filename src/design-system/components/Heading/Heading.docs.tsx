@@ -40,12 +40,13 @@ const loremIpsum =
 
 const docs: Docs = {
   name: 'Heading',
+  category: 'Content',
   examples: headingExamples.map(({ size, weight }) => ({
     name: `${titleCase(size)} (${weight})`,
     example: (
       <>
         <Stack space="12dp">
-          <Stack divider={<Guide />}>
+          <Stack separator={<Guide />}>
             <Heading size={size} weight={weight}>
               {loremIpsum}
             </Heading>

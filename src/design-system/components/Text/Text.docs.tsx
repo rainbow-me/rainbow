@@ -48,12 +48,13 @@ const customTextColor = { darkMode: 'pink', lightMode: 'red' } as const;
 
 const docs: Docs = {
   name: 'Text',
+  category: 'Content',
   examples: textExamples.map(({ size, weight }) => ({
     name: `${titleCase(size)} (${weight})`,
     example: (
       <>
         <Stack space="12dp">
-          <Stack divider={<Guide />}>
+          <Stack separator={<Guide />}>
             <Text size={size} weight={weight}>
               {loremIpsum}
             </Text>

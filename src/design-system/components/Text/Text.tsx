@@ -32,14 +32,14 @@ interface TextStyle {
   uppercase?: boolean;
 }
 
-const useTextStyle = ({
+function useTextStyle({
   align: textAlign,
   color = 'neutral',
   size = 'body',
   weight = 'regular',
   tabularNumbers = false,
   uppercase = false,
-}: TextStyle) => {
+}: TextStyle) {
   const colorModeValue = useColorModeValue();
   const sizeStyles = textSizes[size];
   const weightStyles = textWeights[weight];
@@ -64,7 +64,7 @@ const useTextStyle = ({
       } as const),
     [sizeStyles, weightStyles, textAlign, colorValue, tabularNumbers, uppercase]
   );
-};
+}
 
 export type TextProps = TextStyle & {
   numberOfLines?: number;
@@ -77,7 +77,7 @@ export type TextProps = TextStyle & {
   );
 
 export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
-  (
+  function Text(
     {
       numberOfLines,
       containsEmoji: containsEmojiProp = false,
@@ -85,7 +85,7 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
       ...textStyleProps
     },
     ref
-  ) => {
+  ) {
     if (__DEV__) {
       if (!containsEmojiProp && nodeHasEmoji(children)) {
         throw new Error(
@@ -116,5 +116,3 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
     );
   }
 );
-
-Text.displayName = 'Text';

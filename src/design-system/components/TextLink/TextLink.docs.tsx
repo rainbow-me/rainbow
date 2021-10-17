@@ -6,6 +6,7 @@ import { TextLink } from './TextLink';
 
 const docs: Docs = {
   name: 'TextLink',
+  category: 'Content',
   examples: [
     {
       name: 'Basic usage',

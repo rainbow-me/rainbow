@@ -16,11 +16,11 @@ interface HeadingStyle {
   weight?: keyof typeof headingWeights;
 }
 
-const useHeadingStyle = ({
+function useHeadingStyle({
   align: textAlign,
   size = 'heading',
   weight = 'heavy',
-}: HeadingStyle) => {
+}: HeadingStyle) {
   const colorModeValue = useColorModeValue();
   const sizeStyles = headingSizes[size];
   const weightStyles = headingWeights[weight];
@@ -38,7 +38,7 @@ const useHeadingStyle = ({
       } as const),
     [sizeStyles, weightStyles, textAlign, colorModeValue]
   );
-};
+}
 
 export type HeadingProps = HeadingStyle & {
   numberOfLines?: number;
@@ -51,7 +51,7 @@ export type HeadingProps = HeadingStyle & {
   );
 
 export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
-  (
+  function Heading(
     {
       numberOfLines,
       containsEmoji: containsEmojiProp = false,
@@ -59,7 +59,7 @@ export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
       ...textStyleProps
     },
     ref
-  ) => {
+  ) {
     if (__DEV__) {
       if (!containsEmojiProp && nodeHasEmoji(children)) {
         throw new Error(
@@ -90,5 +90,3 @@ export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
     );
   }
 );
-
-Heading.displayName = 'Heading';

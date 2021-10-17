@@ -16,7 +16,7 @@ const widths = {
   '3/4': fraction(3, 4),
   '3/5': fraction(3, 5),
   '4/5': fraction(4, 5),
-  full: fraction(1, 1), // eslint-disable-line prettier/prettier
+  full: '100%', // eslint-disable-line prettier/prettier
 } as const;
 
 export interface BoxProps extends ComponentProps<typeof View> {
@@ -46,7 +46,7 @@ export interface BoxProps extends ComponentProps<typeof View> {
   children?: ReactNode;
 }
 
-export const Box = ({
+export function Box({
   flexDirection,
   flexWrap,
   flexGrow,
@@ -73,7 +73,7 @@ export const Box = ({
   style: styleProp,
   children,
   ...restProps
-}: BoxProps) => {
+}: BoxProps) {
   const styles = useMemo(() => {
     const paddingValues = mapValues(
       {
@@ -149,4 +149,4 @@ export const Box = ({
       {children}
     </View>
   );
-};
+}

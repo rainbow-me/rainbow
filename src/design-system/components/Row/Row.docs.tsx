@@ -10,6 +10,7 @@ const loremIpsum =
 
 const docs: Docs = {
   name: 'Row',
+  category: 'Layout',
   examples: [
     {
       name: 'Basic usage',

@@ -27,13 +27,30 @@ export interface ColumnProps {
   children: ReactNode;
 }
 
-export const Column = (_props: ColumnProps) => {
+/**
+ * @description Provides manual control of column widths within `Columns`.
+ * Children of `Columns` are equal-width by default, but you can optionally
+ * render a `Column` element instead which allows you to specify a `width`
+ * prop. Note that `Column` must be rendered as an immediate child of
+ * `Columns` or it will throw an error. You can set a fractional width, e.g.
+ * `<Column width="1/3">`, or make the column shrink to fit the size of the
+ * content with `<Column width="content">`. Any columns without an
+ * explicit width will share the remaining space equally.
+ */
+export function Column(_props: ColumnProps): JSX.Element {
   throw new Error(
-    'Column: Must be a direct child of Columns within the same component'
+    'Column: Must be a direct child of Columns within the same component.'
   );
-};
+}
 Column.__isColumn__ = true;
-Column.displayName = 'Column';
+
+const getColumnProps = (node: NonNullable<ReactNode>): ColumnProps | null =>
+  typeof node === 'object' &&
+  'type' in node &&
+  // @ts-expect-error
+  node.type.__isColumn__
+    ? (node.props as ColumnProps)
+    : null;
 
 interface PrivateColumnProps extends ColumnProps {
   space: Space;
@@ -45,31 +62,20 @@ const PrivateColumn = ({
   width,
   alignVertical,
   children,
-}: PrivateColumnProps) => {
-  const columnContainerProps: BoxProps = {
-    flexBasis: width ? undefined : 0,
-    flexGrow: width ? 0 : 1,
-    flexShrink: width ? 0 : 1,
-  };
-
-  const contentContainerProps: BoxProps = {
-    flexGrow: width ? 0 : 1,
-    justifyContent: alignVertical
-      ? alignVerticalToFlexAlign[alignVertical]
-      : undefined,
-    paddingRight: space,
-  };
-
-  return !width || width === 'content' ? (
-    <Box {...columnContainerProps} {...contentContainerProps}>
-      {children}
-    </Box>
-  ) : (
-    <Box {...columnContainerProps} width={width}>
-      <Box {...contentContainerProps}>{children}</Box>
-    </Box>
-  );
-};
+}: PrivateColumnProps) => (
+  <Box
+    flexBasis={width ? undefined : 0}
+    flexGrow={width ? 0 : 1}
+    flexShrink={width ? 0 : 1}
+    justifyContent={
+      alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined
+    }
+    paddingRight={space}
+    width={width !== 'content' ? width : undefined}
+  >
+    {children}
+  </Box>
+);
 PrivateColumn.displayName = 'Column';
 
 export interface ColumnsProps {
@@ -79,39 +85,53 @@ export interface ColumnsProps {
   alignVertical?: AlignVertical;
 }
 
-export const Columns = ({
+/**
+ * @description Renders children in equal-width columns with consistent
+ * spacing between them. You can optionally control column widths by
+ * manually rendering a `Column` as a direct child of `Columns`, which allows
+ * you to set an explicit `width` prop, e.g. `<Column width="content">` will
+ * cause the column to shrink to the size of its content. When setting custom
+ * widths, any columns without an explicit width will share the remaining space
+ * equally. Columns can optionally be aligned horizontally and/or vertically,
+ * but note that this only affects the columns themselves relative to the
+ * container, not the content within the column. To align content within a
+ * column, you'll need to nest another layout component inside, e.g.
+ * `<Stack alignHorizontal="center">...</Stack>`.
+ */
+export function Columns({
   children,
   alignHorizontal,
   alignVertical,
   space,
-}: ColumnsProps) => (
-  <Box
-    alignItems={
-      alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined
-    }
-    flexDirection="row"
-    justifyContent={
-      alignHorizontal ? alignHorizontalToFlexAlign[alignHorizontal] : undefined
-    }
-    marginRight={negateSpace(space)}
-  >
-    {Children.map(flattenChildren(children), child =>
-      typeof child === 'object' &&
-      'type' in child &&
-      // @ts-expect-error
-      child.type.__isColumn__ ? (
-        <PrivateColumn
-          {...(child.props as ColumnProps)}
-          alignVertical={alignVertical}
-          space={space}
-        />
-      ) : (
-        <PrivateColumn alignVertical={alignVertical} space={space}>
-          {child}
-        </PrivateColumn>
-      )
-    )}
-  </Box>
-);
+}: ColumnsProps) {
+  return (
+    <Box
+      alignItems={
+        alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined
+      }
+      flexDirection="row"
+      justifyContent={
+        alignHorizontal
+          ? alignHorizontalToFlexAlign[alignHorizontal]
+          : undefined
+      }
+      marginRight={negateSpace(space)}
+    >
+      {Children.map(flattenChildren(children), child => {
+        const columnProps = getColumnProps(child);
 
-Columns.displayName = 'Columns';
+        return columnProps ? (
+          <PrivateColumn
+            {...columnProps}
+            alignVertical={alignVertical}
+            space={space}
+          />
+        ) : (
+          <PrivateColumn alignVertical={alignVertical} space={space}>
+            {child}
+          </PrivateColumn>
+        );
+      })}
+    </Box>
+  );
+}

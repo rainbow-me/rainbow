@@ -53,11 +53,11 @@ interface MarkdownStackProps {
   children: ReactNode;
 }
 
-const MarkdownStack = ({
+function MarkdownStack({
   space = defaultProps.space,
   nestedSpace = defaultProps.nestedSpace,
   children,
-}: MarkdownStackProps) => {
+}: MarkdownStackProps) {
   const depth = useContext(MarkdownStackContext).depth + 1;
 
   return (
@@ -73,21 +73,21 @@ const MarkdownStack = ({
       </Box>
     </MarkdownStackContext.Provider>
   );
-};
+}
 
 interface MarkdownStackItemProps {
   children: ReactNode;
 }
 
-const MarkdownStackItem = ({ children }: MarkdownStackItemProps) => {
+function MarkdownStackItem({ children }: MarkdownStackItemProps) {
   const { depth, space, nestedSpace } = useContext(MarkdownStackContext);
 
   return (
     <Box paddingBottom={depth === 1 ? space : nestedSpace}>{children}</Box>
   );
-};
+}
 
-const renderBullet = (parents: ASTNode[], index: number): ReactNode => {
+function renderBullet(parents: ASTNode[], index: number): ReactNode {
   const orderedListIndex = parents.findIndex(el => el.type === 'ordered_list');
 
   if (orderedListIndex > -1) {
@@ -102,13 +102,16 @@ const renderBullet = (parents: ASTNode[], index: number): ReactNode => {
   }
 
   return `${ios ? '\u00B7' : '\u2022'}`;
-};
+}
 
-const isNativeText = (child: ReactNode) =>
-  typeof child === 'object' &&
-  child !== null &&
-  'type' in child &&
-  child.type === NativeText;
+function isNativeText(child: ReactNode) {
+  return (
+    typeof child === 'object' &&
+    child !== null &&
+    'type' in child &&
+    child.type === NativeText
+  );
+}
 
 export type MarkdownTextProps = {
   children: string;

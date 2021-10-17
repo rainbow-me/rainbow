@@ -149,9 +149,9 @@ const UniqueTokenExpandedState = ({
           </SheetActionButtonRow>
         )}
         <SheetDivider />
-        <Stack divider={<SheetDivider />}>
+        <Stack separator={<SheetDivider />}>
           {!!description && (
-            <Inset horizontal="gutter" vertical="24dp">
+            <Inset horizontal="19dp" vertical="24dp">
               <Stack space="24dp">
                 <Heading>Description</Heading>
                 <Text color="secondary50">{description}</Text>
@@ -159,7 +159,7 @@ const UniqueTokenExpandedState = ({
             </Inset>
           )}
           {!!traits && traits.length > 0 && (
-            <Inset horizontal="gutter" vertical="24dp">
+            <Inset horizontal="19dp" vertical="24dp">
               <Stack space="24dp">
                 <Heading>Attributes</Heading>
                 <UniqueTokenAttributes {...asset} />
@@ -167,7 +167,7 @@ const UniqueTokenExpandedState = ({
             </Inset>
           )}
           {!!familyDescription && (
-            <Inset horizontal="gutter" vertical="24dp">
+            <Inset horizontal="19dp" vertical="24dp">
               <Stack space="24dp">
                 <Heading>About {familyName}</Heading>
                 <MarkdownText nestedSpace="19dp" space="24dp">

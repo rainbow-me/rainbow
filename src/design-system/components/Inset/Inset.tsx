@@ -21,17 +21,17 @@ export type InsetProps = {
     }
 );
 
-export const Inset = ({
-  space,
-  horizontal,
-  vertical,
-  children,
-}: InsetProps) => (
-  <Box
-    padding={space}
-    paddingHorizontal={horizontal}
-    paddingVertical={vertical}
-  >
-    {children}
-  </Box>
-);
+/**
+ * @description Renders a container with equal padding on each axis.
+ */
+export function Inset({ space, horizontal, vertical, children }: InsetProps) {
+  return (
+    <Box
+      padding={space}
+      paddingHorizontal={horizontal}
+      paddingVertical={vertical}
+    >
+      {children}
+    </Box>
+  );
+}

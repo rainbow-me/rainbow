@@ -6,11 +6,14 @@ import { Inline } from './Inline';
 
 const docs: Docs = {
   name: 'Inline',
+  category: 'Layout',
   examples: [
     {
       name: 'Basic usage',
       example: (
-        <Inline space="19dp">
+        <Inline space="12dp">
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
           <Placeholder height={40} width={40} />
           <Placeholder height={40} width={40} />
           <Placeholder height={40} width={40} />
