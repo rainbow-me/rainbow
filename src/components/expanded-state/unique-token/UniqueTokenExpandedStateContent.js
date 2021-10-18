@@ -1,5 +1,5 @@
 import { toLower } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -126,7 +126,7 @@ const UniqueTokenExpandedStateImage = ({
   const [loading, setLoading] = React.useState(supports3d || supportsVideo);
 
   return (
-    <>
+    <Fragment>
       <Container
         height={containerHeight}
         maxWidth={maxImageWidth}
@@ -158,7 +158,6 @@ const UniqueTokenExpandedStateImage = ({
                 item={asset}
                 lowResUrl={lowResUrl}
                 resizeMode={resizeMode}
-                shouldRasterizeIOS
                 size={maxImageWidth}
               />
             )}
@@ -170,7 +169,7 @@ const UniqueTokenExpandedStateImage = ({
           </View>
         </ImageWrapper>
       </Container>
-    </>
+    </Fragment>
   );
 };
 

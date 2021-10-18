@@ -24,7 +24,7 @@ import {
 import { MarkdownText, Text } from '../text';
 import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { TokenInfoItem, TokenInfoRow, TokenInfoSection } from '../token-info';
-import { UniqueTokenAttributes } from '../unique-token';
+import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
 import ExpandedStateSection from './ExpandedStateSection';
 import {
   UniqueTokenExpandedStateContent,
@@ -32,6 +32,7 @@ import {
 } from './unique-token';
 import { apiGetUniqueTokenFloorPrice } from '@rainbow-me/handlers/opensea-api';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
+import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   useAccountProfile,
   useAccountSettings,
@@ -125,6 +126,7 @@ const UniqueTokenExpandedState = ({
     showcaseTokens,
     uniqueId,
   ]);
+  const isSVG = isSupportedUriExtension(lowResUrl, ['.svg']);
 
   const imageColorWithFallback =
     imageColor || fallbackImageColor || colors.paleBlue;
@@ -199,11 +201,20 @@ const UniqueTokenExpandedState = ({
   return (
     <Fragment>
       <BackgroundImage>
-        <ImgixImage
-          resizeMode="cover"
-          source={{ uri: lowResUrl }}
-          style={{ height: deviceHeight, width: deviceWidth }}
-        />
+        {isSVG ? (
+          <UniqueTokenImage
+            backgroundColor={asset.background}
+            imageUrl={lowResUrl}
+            item={asset}
+            size={deviceHeight}
+          />
+        ) : (
+          <ImgixImage
+            resizeMode="cover"
+            source={{ uri: lowResUrl }}
+            style={{ height: deviceHeight, width: deviceWidth }}
+          />
+        )}
         <BackgroundBlur />
       </BackgroundImage>
       <SlackSheet
@@ -339,15 +350,15 @@ const UniqueTokenExpandedState = ({
         </TokenInfoSection>
         <Column>
           {!!description && (
-            <>
+            <Fragment>
               <SheetDivider deviceWidth={deviceWidth} />
               <NftExpandedStateSection title="Description">
                 {description}
               </NftExpandedStateSection>
-            </>
+            </Fragment>
           )}
           {!!traits.length && (
-            <>
+            <Fragment>
               <SheetDivider deviceWidth={deviceWidth} />
               <NftExpandedStateSection title="Properties">
                 <UniqueTokenAttributes
@@ -356,10 +367,10 @@ const UniqueTokenExpandedState = ({
                   slug={asset.collection.slug}
                 />
               </NftExpandedStateSection>
-            </>
+            </Fragment>
           )}
           {!!familyDescription && (
-            <>
+            <Fragment>
               <SheetDivider deviceWidth={deviceWidth} />
               <NftExpandedStateSection title={`About ${familyName}`}>
                 <Column>
@@ -373,7 +384,7 @@ const UniqueTokenExpandedState = ({
                   {familyLink && <Link url={familyLink} />}
                 </Column>
               </NftExpandedStateSection>
-            </>
+            </Fragment>
           )}
         </Column>
         <Spacer />
