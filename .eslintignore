@@ -1,6 +1,10 @@
 src/react-native-animated-charts/node_modules/*
 src/react-native-animated-charts/Example/node_modules/*
 src/react-native-animated-charts/Example/*
+src/rainbow-list/node_modules/*
+src/rainbow-list/example/*
+src/rainbow-list/scripts/*
+src/rainbow-list/lib/*
 patches/reanimated/*
 ios/*
 node_modules/*

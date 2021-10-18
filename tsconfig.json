@@ -48,6 +48,10 @@
     "ios",
     "patches/reanimated",
     "node_modules",
+    "src/rainbow-list/example",
+    "src/rainbow-list/lib",
+    "src/rainbow-list/node_modules",
+    "src/rainbow-list/scripts",
     "babel.config.js",
     "metro.config.js",
     "jest.config.js"
