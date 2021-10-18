@@ -55,17 +55,22 @@ const UniqueTokenImage = ({
   const { isTinyPhone } = useDimensions();
   const isENS =
     toLower(item.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
-  const image = isENS ? `${item.image_url}=s1` : imageUrl;
+  const isSVG = isSupportedUriExtension(imageUrl, ['.svg']);
+  const image = isENS && !isSVG ? `${item.image_url}=s1` : imageUrl;
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
   const { isDarkMode, colors } = useTheme();
-  const isSVG = isSupportedUriExtension(imageUrl, ['.svg']);
   const [loadedImg, setLoadedImg] = useState(false);
   const onLoad = useCallback(() => setLoadedImg(true), [setLoadedImg]);
   const remoteSvgStyle = useMemo(() => {
     // I know... This shit is mad weird :|
-    return { height: size + 0.1, width: size + 0.1 };
-  }, [size]);
+    // I know... This shit even weirder but it's ENS's fault :/
+    const style =
+      isENS && isSVG
+        ? { height: size * 1.1 + 0.1, width: size * 1.1 + 0.1 }
+        : { height: size + 0.1, width: size + 0.1 };
+    return style;
+  }, [isENS, isSVG, size]);
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
@@ -84,7 +89,7 @@ const UniqueTokenImage = ({
             source={{ uri: image }}
             style={position.coverAsObject}
           >
-            {isENS && (
+            {isENS && !isSVG && (
               <ENSText isTinyPhone={isTinyPhone} small={small}>
                 {item.name}
               </ENSText>

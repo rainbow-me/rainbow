@@ -52,26 +52,26 @@ const parseGasPricesEthGasStation = data => ({
     true
   ),
 });
-const parseGasPricesMaticGasStation = data => {
-  const maticGasPriceBumpFactor = 1.15;
+const parseGasPricesPolygonGasStation = data => {
+  const polygonGasPriceBumpFactor = 1.05;
   return {
     [CUSTOM]: null,
     [FAST]: defaultGasPriceFormat(
       FAST,
       0.2,
-      Math.ceil((Number(data.fastest) / 10) * maticGasPriceBumpFactor),
+      Math.ceil(Number(data.fastest) * polygonGasPriceBumpFactor),
       true
     ),
     [NORMAL]: defaultGasPriceFormat(
       NORMAL,
       0.5,
-      Math.ceil((Number(data.fast) / 10) * maticGasPriceBumpFactor),
+      Math.ceil(Number(data.fast) * polygonGasPriceBumpFactor),
       true
     ),
     [SLOW]: defaultGasPriceFormat(
       SLOW,
       1,
-      Math.ceil((Number(data.average) / 10) * maticGasPriceBumpFactor) / 10,
+      Math.ceil(Number(data.average) * polygonGasPriceBumpFactor),
       true
     ),
   };
@@ -90,8 +90,8 @@ export const parseGasPrices = (
   switch (source) {
     case gasUtils.GAS_PRICE_SOURCES.ETH_GAS_STATION:
       return parseGasPricesEthGasStation(data);
-    case gasUtils.GAS_PRICE_SOURCES.MATIC_GAS_STATION:
-      return parseGasPricesMaticGasStation(data);
+    case gasUtils.GAS_PRICE_SOURCES.POLYGON_GAS_STATION:
+      return parseGasPricesPolygonGasStation(data);
     default:
       return parseGasPricesEtherscan(data);
   }

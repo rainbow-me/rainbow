@@ -2,14 +2,10 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { get, toLower, uniqBy } from 'lodash';
 import isEqual from 'react-fast-compare';
-/* eslint-disable-next-line import/no-cycle */
-import { arbitrumExplorerInit } from './arbitrumExplorer';
 // eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
-import { optimismExplorerInit } from './optimismExplorer';
-// eslint-disable-next-line import/no-cycle
-import { polygonExplorerInit } from './polygonExplorer';
+import { explorerInitL2 } from './explorer';
 import { AssetTypes } from '@rainbow-me/entities';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
@@ -363,14 +359,7 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
     });
   };
   fetchAssetsBalancesAndPrices();
-  if (network === NetworkTypes.mainnet) {
-    // Start watching arbitrum assets
-    dispatch(arbitrumExplorerInit());
-    // Start watching optimism assets
-    dispatch(optimismExplorerInit());
-    // Start watching polygon assets
-    dispatch(polygonExplorerInit());
-  }
+  dispatch(explorerInitL2());
 };
 
 export const fallbackExplorerClearState = () => (dispatch, getState) => {
