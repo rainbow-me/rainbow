@@ -21,7 +21,6 @@ const pixelRatio = PixelRatio.get();
 const Container = styled(Centered)`
   ${({ horizontalPadding }) => padding(0, horizontalPadding)};
   height: ${({ height }) => height};
-  ${android ? `margin-bottom: 10;` : ``}
 `;
 
 const ImageWrapper = styled(Centered)`
