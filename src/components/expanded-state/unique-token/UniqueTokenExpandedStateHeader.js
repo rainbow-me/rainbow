@@ -29,7 +29,7 @@ const Container = styled(Row).attrs({
 const HeadingColumn = styled(ColumnWithMargins).attrs({
   align: 'start',
   justify: 'start',
-  margin: 3,
+  margin: android ? -5 : 3,
   shrink: 1,
 })`
   padding-right: ${paddingHorizontal};
@@ -68,7 +68,9 @@ const UniqueTokenExpandedStateHeader = ({ asset }) => {
           >
             {asset.familyName}
           </Text>
-          <Pill maxWidth={125}>#{asset.id}</Pill>
+          <Pill lineHeight={20} maxWidth={125}>
+            #{asset.id}
+          </Pill>
         </RowWithMargins>
         <FlexItem flex={1}>
           <Text
