@@ -9,3 +9,6 @@ project(':react-native-code-push').projectDir = new File(rootProject.projectDir,
 
 include ':detox'
 project(':detox').projectDir = new File(rootProject.projectDir, '../node_modules/detox/android/detox')
+
+include ':rainbow-list'
+project(':rainbow-list').projectDir = new File(rootProject.projectDir, '../src/rainbow-list/android')

@@ -20,6 +20,7 @@ import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage;
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage;
 
 import com.facebook.react.bridge.JSIModulePackage;
+import com.rainbowmeultimatelist.UltimateListPackage;
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 
 
@@ -43,6 +44,7 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new RNTextAnimatorPackage());
           packages.add(new RNZoomableButtonPackage());
           packages.add(new InternalPackage());
+          packages.add(new UltimateListPackage());
           return packages;
         }
 

@@ -21,6 +21,18 @@
 		3CBE29CD2381E43900BE05AC /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBE29CC2381E43900BE05AC /* Dummy.swift */; };
 		6630540924A38A1900E5B030 /* RainbowText.m in Sources */ = {isa = PBXBuildFile; fileRef = 6630540824A38A1900E5B030 /* RainbowText.m */; };
 		6635730624939991006ACFA6 /* SafeStoreReview.m in Sources */ = {isa = PBXBuildFile; fileRef = 6635730524939991006ACFA6 /* SafeStoreReview.m */; };
+		6635D3EA271DC4E200188DD5 /* UltraFastTextWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 6635D3D5271DC4E100188DD5 /* UltraFastTextWrapper.mm */; };
+		6635D3EB271DC4E200188DD5 /* OnRecycle.m in Sources */ = {isa = PBXBuildFile; fileRef = 6635D3D8271DC4E100188DD5 /* OnRecycle.m */; };
+		6635D3EC271DC4E200188DD5 /* UltimateList.mm in Sources */ = {isa = PBXBuildFile; fileRef = 6635D3DA271DC4E100188DD5 /* UltimateList.mm */; };
+		6635D3ED271DC4E200188DD5 /* RecyclerController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 6635D3DB271DC4E100188DD5 /* RecyclerController.mm */; };
+		6635D3EE271DC4E200188DD5 /* RecyclerRow.m in Sources */ = {isa = PBXBuildFile; fileRef = 6635D3DE271DC4E200188DD5 /* RecyclerRow.m */; };
+		6635D3EF271DC4E200188DD5 /* RecyclerRowWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 6635D3DF271DC4E200188DD5 /* RecyclerRowWrapper.m */; };
+		6635D3F0271DC4E200188DD5 /* StickyGridCollectionViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 6635D3E3271DC4E200188DD5 /* StickyGridCollectionViewLayout.m */; };
+		6635D3F1271DC4E200188DD5 /* RecyclerList.mm in Sources */ = {isa = PBXBuildFile; fileRef = 6635D3E7271DC4E200188DD5 /* RecyclerList.mm */; };
+		6635D3F2271DC4E200188DD5 /* CellStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6635D3E8271DC4E200188DD5 /* CellStorage.m */; };
+		6635D3F3271DC4E200188DD5 /* UltraFastAbstractComponentWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 6635D3E9271DC4E200188DD5 /* UltraFastAbstractComponentWrapper.m */; };
+		6635D3F8271DC50B00188DD5 /* rainbow-me-ultimate-list.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6635D3F4271DC50B00188DD5 /* rainbow-me-ultimate-list.cpp */; };
+		6635D3F9271DC50B00188DD5 /* ShareableNativeValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6635D3F7271DC50B00188DD5 /* ShareableNativeValue.cpp */; };
 		6655FFB425BB2B0700642961 /* ThemeModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 6655FFB325BB2B0700642961 /* ThemeModule.m */; };
 		66A1FEB424AB641100C3F539 /* RNCMScreenStack.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEB024AB641100C3F539 /* RNCMScreenStack.m */; };
 		66A1FEB524AB641100C3F539 /* UIViewController+slack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEB124AB641100C3F539 /* UIViewController+slack.swift */; };
@@ -120,6 +132,30 @@
 		3CBE29CC2381E43900BE05AC /* Dummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dummy.swift; sourceTree = "<group>"; };
 		6630540824A38A1900E5B030 /* RainbowText.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RainbowText.m; sourceTree = "<group>"; };
 		6635730524939991006ACFA6 /* SafeStoreReview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SafeStoreReview.m; sourceTree = "<group>"; };
+		6635D3D5271DC4E100188DD5 /* UltraFastTextWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = UltraFastTextWrapper.mm; path = "../../src/rainbow-list/ios/UltraFastTextWrapper.mm"; sourceTree = "<group>"; };
+		6635D3D6271DC4E100188DD5 /* UltimateList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UltimateList.h; path = "../../src/rainbow-list/ios/UltimateList.h"; sourceTree = "<group>"; };
+		6635D3D8271DC4E100188DD5 /* OnRecycle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OnRecycle.m; sourceTree = "<group>"; };
+		6635D3D9271DC4E100188DD5 /* OnRecycle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OnRecycle.h; sourceTree = "<group>"; };
+		6635D3DA271DC4E100188DD5 /* UltimateList.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = UltimateList.mm; path = "../../src/rainbow-list/ios/UltimateList.mm"; sourceTree = "<group>"; };
+		6635D3DB271DC4E100188DD5 /* RecyclerController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RecyclerController.mm; path = "../../src/rainbow-list/ios/RecyclerController.mm"; sourceTree = "<group>"; };
+		6635D3DC271DC4E200188DD5 /* CellStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CellStorage.h; path = "../../src/rainbow-list/ios/CellStorage.h"; sourceTree = "<group>"; };
+		6635D3DD271DC4E200188DD5 /* UltraFastTextWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UltraFastTextWrapper.h; path = "../../src/rainbow-list/ios/UltraFastTextWrapper.h"; sourceTree = "<group>"; };
+		6635D3DE271DC4E200188DD5 /* RecyclerRow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RecyclerRow.m; path = "../../src/rainbow-list/ios/RecyclerRow.m"; sourceTree = "<group>"; };
+		6635D3DF271DC4E200188DD5 /* RecyclerRowWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RecyclerRowWrapper.m; path = "../../src/rainbow-list/ios/RecyclerRowWrapper.m"; sourceTree = "<group>"; };
+		6635D3E0271DC4E200188DD5 /* RecyclerRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RecyclerRow.h; path = "../../src/rainbow-list/ios/RecyclerRow.h"; sourceTree = "<group>"; };
+		6635D3E1271DC4E200188DD5 /* UltraFastAbstractComponentWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UltraFastAbstractComponentWrapper.h; path = "../../src/rainbow-list/ios/UltraFastAbstractComponentWrapper.h"; sourceTree = "<group>"; };
+		6635D3E2271DC4E200188DD5 /* RecyclerRowWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RecyclerRowWrapper.h; path = "../../src/rainbow-list/ios/RecyclerRowWrapper.h"; sourceTree = "<group>"; };
+		6635D3E3271DC4E200188DD5 /* StickyGridCollectionViewLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = StickyGridCollectionViewLayout.m; path = "../../src/rainbow-list/ios/StickyGridCollectionViewLayout.m"; sourceTree = "<group>"; };
+		6635D3E4271DC4E200188DD5 /* RecyclerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RecyclerController.h; path = "../../src/rainbow-list/ios/RecyclerController.h"; sourceTree = "<group>"; };
+		6635D3E5271DC4E200188DD5 /* RecyclerList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RecyclerList.h; path = "../../src/rainbow-list/ios/RecyclerList.h"; sourceTree = "<group>"; };
+		6635D3E6271DC4E200188DD5 /* StickyGridCollectionViewLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StickyGridCollectionViewLayout.h; path = "../../src/rainbow-list/ios/StickyGridCollectionViewLayout.h"; sourceTree = "<group>"; };
+		6635D3E7271DC4E200188DD5 /* RecyclerList.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RecyclerList.mm; path = "../../src/rainbow-list/ios/RecyclerList.mm"; sourceTree = "<group>"; };
+		6635D3E8271DC4E200188DD5 /* CellStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CellStorage.m; path = "../../src/rainbow-list/ios/CellStorage.m"; sourceTree = "<group>"; };
+		6635D3E9271DC4E200188DD5 /* UltraFastAbstractComponentWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UltraFastAbstractComponentWrapper.m; path = "../../src/rainbow-list/ios/UltraFastAbstractComponentWrapper.m"; sourceTree = "<group>"; };
+		6635D3F4271DC50B00188DD5 /* rainbow-me-ultimate-list.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = "rainbow-me-ultimate-list.cpp"; path = "../../src/rainbow-list/cpp/rainbow-me-ultimate-list.cpp"; sourceTree = "<group>"; };
+		6635D3F5271DC50B00188DD5 /* ShareableNativeValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShareableNativeValue.h; path = "../../src/rainbow-list/cpp/ShareableNativeValue.h"; sourceTree = "<group>"; };
+		6635D3F6271DC50B00188DD5 /* rainbow-me-ultimate-list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "rainbow-me-ultimate-list.h"; path = "../../src/rainbow-list/cpp/rainbow-me-ultimate-list.h"; sourceTree = "<group>"; };
+		6635D3F7271DC50B00188DD5 /* ShareableNativeValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ShareableNativeValue.cpp; path = "../../src/rainbow-list/cpp/ShareableNativeValue.cpp"; sourceTree = "<group>"; };
 		6655FFB325BB2B0700642961 /* ThemeModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThemeModule.m; sourceTree = "<group>"; };
 		668A9E253DAF444A90ECB997 /* SFMono-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Medium.otf"; path = "../src/assets/fonts/SFMono-Medium.otf"; sourceTree = "<group>"; };
 		668ADB2C25A4E3A40050859D /* Stickers.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Stickers.xcassets; sourceTree = "<group>"; };
@@ -212,6 +248,7 @@
 		13B07FAE1A68108700A75B9A /* Rainbow */ = {
 			isa = PBXGroup;
 			children = (
+				6635D3D4271DC48F00188DD5 /* RainbowList */,
 				66F889D0260CEE0E00E27D6E /* DiscoverSheet */,
 				1539422B24C7CF7B00E4A9D1 /* Settings */,
 				66A1FEAE24AB63D600C3F539 /* RNCoolModals */,
@@ -311,6 +348,46 @@
 				AABE38CA1F2EC5AE4936119E /* libPods-Rainbow.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6635D3D4271DC48F00188DD5 /* RainbowList */ = {
+			isa = PBXGroup;
+			children = (
+				6635D3F4271DC50B00188DD5 /* rainbow-me-ultimate-list.cpp */,
+				6635D3F6271DC50B00188DD5 /* rainbow-me-ultimate-list.h */,
+				6635D3F7271DC50B00188DD5 /* ShareableNativeValue.cpp */,
+				6635D3F5271DC50B00188DD5 /* ShareableNativeValue.h */,
+				6635D3DC271DC4E200188DD5 /* CellStorage.h */,
+				6635D3E8271DC4E200188DD5 /* CellStorage.m */,
+				6635D3D7271DC4E100188DD5 /* events */,
+				6635D3E4271DC4E200188DD5 /* RecyclerController.h */,
+				6635D3DB271DC4E100188DD5 /* RecyclerController.mm */,
+				6635D3E5271DC4E200188DD5 /* RecyclerList.h */,
+				6635D3E7271DC4E200188DD5 /* RecyclerList.mm */,
+				6635D3E0271DC4E200188DD5 /* RecyclerRow.h */,
+				6635D3DE271DC4E200188DD5 /* RecyclerRow.m */,
+				6635D3E2271DC4E200188DD5 /* RecyclerRowWrapper.h */,
+				6635D3DF271DC4E200188DD5 /* RecyclerRowWrapper.m */,
+				6635D3E6271DC4E200188DD5 /* StickyGridCollectionViewLayout.h */,
+				6635D3E3271DC4E200188DD5 /* StickyGridCollectionViewLayout.m */,
+				6635D3D6271DC4E100188DD5 /* UltimateList.h */,
+				6635D3DA271DC4E100188DD5 /* UltimateList.mm */,
+				6635D3E1271DC4E200188DD5 /* UltraFastAbstractComponentWrapper.h */,
+				6635D3E9271DC4E200188DD5 /* UltraFastAbstractComponentWrapper.m */,
+				6635D3DD271DC4E200188DD5 /* UltraFastTextWrapper.h */,
+				6635D3D5271DC4E100188DD5 /* UltraFastTextWrapper.mm */,
+			);
+			path = RainbowList;
+			sourceTree = "<group>";
+		};
+		6635D3D7271DC4E100188DD5 /* events */ = {
+			isa = PBXGroup;
+			children = (
+				6635D3D8271DC4E100188DD5 /* OnRecycle.m */,
+				6635D3D9271DC4E100188DD5 /* OnRecycle.h */,
+			);
+			name = events;
+			path = "../../src/rainbow-list/ios/events";
 			sourceTree = "<group>";
 		};
 		668ADB2B25A4E3A20050859D /* Rainbow Stickers */ = {
@@ -693,15 +770,19 @@
 			files = (
 				66A28EB024CAF1B500410A88 /* TestFlight.m in Sources */,
 				6630540924A38A1900E5B030 /* RainbowText.m in Sources */,
+				6635D3F0271DC4E200188DD5 /* StickyGridCollectionViewLayout.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				3CBE29CD2381E43900BE05AC /* Dummy.swift in Sources */,
 				153D1AAC24777130007E4723 /* TransactionListLoadingViewCell.swift in Sources */,
 				6635730624939991006ACFA6 /* SafeStoreReview.m in Sources */,
+				6635D3ED271DC4E200188DD5 /* RecyclerController.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				66F889DB260CEF1E00E27D6E /* UIViewController+PanModalPresenter.swift in Sources */,
 				A49B52B623DB5D5600A00918 /* TransactionViewModelProtocol.swift in Sources */,
 				15E531DA242DAB7100797B89 /* NotificationManager.m in Sources */,
 				A4F8DACB23DF85DF00560E47 /* TransactionListBaseCell.swift in Sources */,
+				6635D3F9271DC50B00188DD5 /* ShareableNativeValue.cpp in Sources */,
+				6635D3EF271DC4E200188DD5 /* RecyclerRowWrapper.m in Sources */,
 				A49B52C023DCCDA800A00918 /* TransactionRequestSection.swift in Sources */,
 				66A1FEB524AB641100C3F539 /* UIViewController+slack.swift in Sources */,
 				A4704B4823C546DA00E50E4B /* TransactionListViewCell.swift in Sources */,
@@ -712,10 +793,15 @@
 				66A1FEB424AB641100C3F539 /* RNCMScreenStack.m in Sources */,
 				66F889DC260CEF1E00E27D6E /* SlackBottomSheet.m in Sources */,
 				A477567C23DB2FAA005AE8FD /* Transaction.swift in Sources */,
+				6635D3F3271DC4E200188DD5 /* UltraFastAbstractComponentWrapper.m in Sources */,
 				A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */,
+				6635D3EE271DC4E200188DD5 /* RecyclerRow.m in Sources */,
+				6635D3F1271DC4E200188DD5 /* RecyclerList.mm in Sources */,
 				15E531D5242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift in Sources */,
 				A4277D9F23CBD1910042BAF4 /* Extensions.swift in Sources */,
+				6635D3EC271DC4E200188DD5 /* UltimateList.mm in Sources */,
 				A4D04BAC23D12FD5008C1DEC /* ButtonManager.m in Sources */,
+				6635D3EA271DC4E200188DD5 /* UltraFastTextWrapper.mm in Sources */,
 				6655FFB425BB2B0700642961 /* ThemeModule.m in Sources */,
 				1539422D24C7CF9300E4A9D1 /* SettingsBundleHelper.swift in Sources */,
 				66A1FEB624AB641100C3F539 /* RNCMScreen.m in Sources */,
@@ -723,9 +809,12 @@
 				A44A4EEE23EC928900B543F1 /* CoinIconWithProgressBar.swift in Sources */,
 				A4AF3CD023DA3A0F00F230F3 /* TransactionListRequestViewCell.swift in Sources */,
 				A4D04BA923D12F99008C1DEC /* Button.swift in Sources */,
+				6635D3EB271DC4E200188DD5 /* OnRecycle.m in Sources */,
+				6635D3F8271DC50B00188DD5 /* rainbow-me-ultimate-list.cpp in Sources */,
 				66A1FEBC24ACBBE600C3F539 /* RNCMPortal.m in Sources */,
 				A4704B4923C546DA00E50E4B /* TransactionListView.swift in Sources */,
 				A49B52BC23DBA61200A00918 /* TransactionData.swift in Sources */,
+				6635D3F2271DC4E200188DD5 /* CellStorage.m in Sources */,
 				A49B52AF23DB411900A00918 /* TransactionRequest.swift in Sources */,
 				A49B52C223DCD11D00A00918 /* TransactionSection.swift in Sources */,
 			);
