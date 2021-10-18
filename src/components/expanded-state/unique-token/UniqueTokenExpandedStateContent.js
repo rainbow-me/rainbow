@@ -1,6 +1,14 @@
-import React from 'react';
-import { ActivityIndicator, PixelRatio, StyleSheet, View } from 'react-native';
+import { toLower } from 'lodash';
+import React, { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  PixelRatio,
+  StyleSheet,
+  View,
+} from 'react-native';
 import styled from 'styled-components';
+import { ENS_NFT_CONTRACT_ADDRESS } from '../../../references';
 import { magicMemo } from '../../../utils';
 import { SimpleModelView } from '../../3d';
 import { AudioPlayer } from '../../audio';
@@ -8,27 +16,26 @@ import { Centered } from '../../layout';
 import { UniqueTokenImage } from '../../unique-token';
 import { SimpleVideo } from '../../video';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
-import {
-  useDimensions,
-  useImageMetadata,
-  useUniqueToken,
-} from '@rainbow-me/hooks';
-import { margin, padding, position } from '@rainbow-me/styles';
+import { useDimensions, useUniqueToken } from '@rainbow-me/hooks';
+import { position } from '@rainbow-me/styles';
 
-const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
+export const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
 const pixelRatio = PixelRatio.get();
 
 const Container = styled(Centered)`
-  ${({ horizontalPadding }) => padding(0, horizontalPadding)};
+  align-self: center;
   height: ${({ height }) => height};
   ${android ? `margin-bottom: 10;` : ``}
+  shadow-color: ${({ theme: { colors } }) => colors.shadowBlack};
+  shadow-offset: 0 20px;
+  shadow-opacity: 0.4;
+  shadow-radius: 30px;
+  width: ${({ width }) => width};
 `;
 
 const ImageWrapper = styled(Centered)`
-  ${({ isImageHuge, horizontalPadding }) =>
-    margin(isImageHuge ? horizontalPadding : 0, 0)};
   ${position.size('100%')};
-  border-radius: ${({ borderRadius }) => borderRadius || 10};
+  border-radius: ${({ borderRadius }) => borderRadius || 16};
   overflow: hidden;
 `;
 
@@ -37,24 +44,33 @@ const ModelView = styled(SimpleModelView)`
 `;
 
 const LoadingWrapper = styled(View)`
-  position: absolute;
-  width: 100%;
+  align-items: flex-end;
   height: 100%;
+  justify-content: flex-end;
   padding-bottom: 10;
   padding-right: 10;
-  align-items: flex-end;
-  justify-content: flex-end;
+  position: absolute;
 `;
 
 const UniqueTokenExpandedStateImage = ({
+  aspectRatio,
   asset,
   borderRadius,
-  height,
-  horizontalPadding = 19,
-  resizeMode = 'contain',
+  horizontalPadding = 24,
+  lowResUrl,
+  resizeMode = 'cover',
 }) => {
-  const { width: deviceWidth } = useDimensions();
+  const { height: deviceHeight, width: deviceWidth } = useDimensions();
 
+  const maxImageWidth = deviceWidth - horizontalPadding * 2;
+  const maxImageHeight = deviceHeight / 2;
+
+  const [containerWidth, setContainerWidth] = useState(maxImageWidth);
+  const [containerHeight, setContainerHeight] = useState(maxImageWidth);
+  const [fallbackAspectRatio, setFallbackAspectRatio] = useState(null);
+
+  const isENS =
+    toLower(asset.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
   const isSVG = isSupportedUriExtension(asset.image_url, ['.svg']);
   const imageUrl = isSVG
     ? asset.image_preview_url
@@ -62,8 +78,7 @@ const UniqueTokenExpandedStateImage = ({
       asset.image_original_url ||
       asset.image_preview_url ||
       asset.image_thumbnail_url;
-  const { dimensions: imageDimensions } = useImageMetadata(imageUrl);
-  const size = Math.ceil((deviceWidth * pixelRatio) / 100) * 100;
+  const size = Math.ceil((deviceWidth - horizontalPadding * 2) * pixelRatio);
   const url = useMemo(() => {
     if (asset.image_url?.startsWith?.(GOOGLE_USER_CONTENT_URL) && size > 0) {
       return `${asset.image_url}=w${size}`;
@@ -71,21 +86,39 @@ const UniqueTokenExpandedStateImage = ({
     return asset.image_url;
   }, [asset.image_url, size]);
 
-  const lowResUrl = useMemo(() => {
-    if (asset.image_url?.startsWith?.(GOOGLE_USER_CONTENT_URL) && size > 0) {
-      return `${asset.image_url}=w${12}`;
+  const aspectRatioWithFallback = aspectRatio || fallbackAspectRatio || 1;
+
+  useEffect(() => {
+    Image.getSize(lowResUrl, (width, height) => {
+      setFallbackAspectRatio(width / height);
+    });
+  }, [lowResUrl]);
+
+  useEffect(() => {
+    const isSquare = aspectRatioWithFallback === 1 || isENS;
+    const isLandscape = aspectRatioWithFallback > 1;
+    const isPortrait = aspectRatioWithFallback < 1;
+
+    if (isSquare) {
+      setContainerHeight(maxImageWidth);
+      setContainerWidth(maxImageWidth);
     }
-    return null;
-  }, [asset.image_url, size]);
 
-  const maxImageWidth = deviceWidth - horizontalPadding * 2;
-  const maxImageHeight = maxImageWidth * 1.5;
+    if (isLandscape) {
+      setContainerHeight(maxImageWidth / aspectRatioWithFallback);
+      setContainerWidth(maxImageWidth);
+    }
 
-  const heightForDeviceSize =
-    (maxImageWidth * imageDimensions.height) / imageDimensions.width;
-
-  const containerHeight =
-    heightForDeviceSize > maxImageHeight ? maxImageWidth : heightForDeviceSize;
+    if (isPortrait) {
+      if (maxImageWidth / aspectRatioWithFallback > maxImageHeight) {
+        setContainerHeight(maxImageHeight);
+        setContainerWidth(aspectRatioWithFallback * maxImageHeight);
+      } else {
+        setContainerHeight(maxImageWidth / aspectRatioWithFallback);
+        setContainerWidth(maxImageWidth);
+      }
+    }
+  }, [aspectRatioWithFallback, isENS, maxImageHeight, maxImageWidth]);
 
   const { supports3d, supportsVideo, supportsAudio } = useUniqueToken(asset);
 
@@ -93,51 +126,51 @@ const UniqueTokenExpandedStateImage = ({
   const [loading, setLoading] = React.useState(supports3d || supportsVideo);
 
   return (
-    <Container
-      height={height || containerHeight}
-      horizontalPadding={horizontalPadding}
-    >
-      <ImageWrapper
-        borderRadius={borderRadius}
-        horizontalPadding={horizontalPadding}
-        isImageHuge={heightForDeviceSize > maxImageHeight}
+    <>
+      <Container
+        height={containerHeight}
+        maxWidth={maxImageWidth}
+        width={containerWidth}
       >
-        <View style={StyleSheet.absoluteFill}>
-          {supportsVideo ? (
-            <SimpleVideo
-              loading={loading}
-              posterUri={imageUrl}
-              setLoading={setLoading}
-              style={StyleSheet.absoluteFill}
-              uri={asset.animation_url || imageUrl}
-            />
-          ) : supports3d ? (
-            <ModelView
-              fallbackUri={imageUrl}
-              loading={loading}
-              setLoading={setLoading}
-              uri={asset.animation_url || imageUrl}
-            />
-          ) : supportsAudio ? (
-            <AudioPlayer uri={asset.animation_url || imageUrl} />
-          ) : (
-            <UniqueTokenImage
-              backgroundColor={asset.background}
-              imageUrl={url}
-              item={asset}
-              lowResUrl={lowResUrl}
-              resizeMode={resizeMode}
-              size={maxImageWidth}
-            />
-          )}
-          {!!loading && (
-            <LoadingWrapper>
-              <ActivityIndicator />
-            </LoadingWrapper>
-          )}
-        </View>
-      </ImageWrapper>
-    </Container>
+        <ImageWrapper borderRadius={borderRadius}>
+          <View style={StyleSheet.absoluteFill}>
+            {supportsVideo ? (
+              <SimpleVideo
+                loading={loading}
+                posterUri={imageUrl}
+                setLoading={setLoading}
+                style={StyleSheet.absoluteFill}
+                uri={asset.animation_url || imageUrl}
+              />
+            ) : supports3d ? (
+              <ModelView
+                fallbackUri={imageUrl}
+                loading={loading}
+                setLoading={setLoading}
+                uri={asset.animation_url || imageUrl}
+              />
+            ) : supportsAudio ? (
+              <AudioPlayer uri={asset.animation_url || imageUrl} />
+            ) : (
+              <UniqueTokenImage
+                backgroundColor={asset.background}
+                imageUrl={url}
+                item={asset}
+                lowResUrl={lowResUrl}
+                resizeMode={resizeMode}
+                shouldRasterizeIOS
+                size={maxImageWidth}
+              />
+            )}
+            {!!loading && (
+              <LoadingWrapper>
+                <ActivityIndicator />
+              </LoadingWrapper>
+            )}
+          </View>
+        </ImageWrapper>
+      </Container>
+    </>
   );
 };
 

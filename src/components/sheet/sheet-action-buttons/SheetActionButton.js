@@ -25,7 +25,7 @@ const Content = styled(RowWithMargins).attrs({
   margin: 4,
 })`
   height: ${({ size }) => (size === 'big' ? 56 : 46)};
-  padding-bottom: ${({ label }) => (label && containsEmoji(label) ? 5.5 : 4)};
+  padding-bottom: ${({ label }) => (label && containsEmoji(label) ? 5.5 : 3)};
   padding-horizontal: 19;
   z-index: 1;
 `;
@@ -61,6 +61,7 @@ const SheetActionButton = ({
   isCharts = false,
   isTransparent = false,
   label = null,
+  nftShadows,
   scaleTo = 0.9,
   size = null,
   testID = null,
@@ -75,7 +76,9 @@ const SheetActionButton = ({
   const shadowsForButtonColor = useMemo(() => {
     const isWhite = color === colors.white;
 
-    if (!forceShadows && (disabled || isTransparent)) {
+    if (nftShadows) {
+      return [[0, 10, 30, colors.alpha(colors.shadowBlack, 0.3)]];
+    } else if (!forceShadows && (disabled || isTransparent)) {
       return [[0, 0, 0, colors.transparent, 0]];
     } else
       return [
@@ -88,7 +91,15 @@ const SheetActionButton = ({
           isWhite ? 0.08 : 0.4,
         ],
       ];
-  }, [color, colors, disabled, forceShadows, isTransparent, isDarkMode]);
+  }, [
+    color,
+    colors,
+    disabled,
+    forceShadows,
+    isTransparent,
+    isDarkMode,
+    nftShadows,
+  ]);
 
   const androidButtonWidth =
     androidWidth || (fullWidth ? deviceWidth - 38 : (deviceWidth - 53) / 2);
@@ -122,7 +133,7 @@ const SheetActionButton = ({
           {...((android || fullWidth) && { width: androidButtonWidth })}
         >
           {color === colors.white && <WhiteButtonGradient colors={colors} />}
-          {color !== colors.white && !isTransparent && (
+          {color !== colors.white && !isTransparent && !nftShadows && (
             <InnerBorder
               color={disabled ? textColor : null}
               opacity={disabled ? 0.02 : null}

@@ -1,63 +1,147 @@
 import { upperCase, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Linking } from 'react-native';
+import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
-import { magicMemo } from '../utils';
+import { magicMemo, showActionSheetWithOptions } from '../utils';
+import { ButtonPressAnimation } from './animations';
 import { Centered, Column } from './layout';
 import { Text as TextElement } from './text';
 import { padding } from '@rainbow-me/styles';
+import logger from 'logger';
 
-const TagBorderRadius = 12;
+const PropertyActionsEnum = {
+  viewTraitOnOpensea: 'viewTraitOnOpensea',
+};
+
+const viewTraitOnOpenseaAction = {
+  actionKey: PropertyActionsEnum.viewTraitOnOpensea,
+  actionTitle: 'View All With Property',
+  discoverabilityTitle: 'OpenSea',
+  icon: {
+    iconType: 'SYSTEM',
+    iconValue: 'magnifyingglass.circle.fill',
+  },
+};
+
+const TagBorderRadius = 16;
 
 const Container = styled(Column)`
   ${padding(8, 10)};
-  background-color: ${({ theme: { colors } }) => colors.white};
   border-radius: ${TagBorderRadius};
   text-align: left;
   z-index: 1;
 `;
 
 const OuterBorder = styled(Centered)`
-  border-color: ${({ theme: { colors } }) =>
-    colors.alpha(colors.blueGreyDark, 0.06)};
+  border-color: ${({ color, theme: { colors } }) =>
+    color || colors.alpha(colors.whiteLabel, 0.15)};
   border-radius: ${TagBorderRadius};
-  border-width: 1;
+  border-width: 2;
   flex: none;
   overflow: hidden;
   z-index: 2;
 `;
 
 const Text = styled(TextElement).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  letterSpacing: 'roundedMedium',
+  color: colors.whiteLabel,
   size: 'lmedium',
-  weight: 'medium',
+  weight: 'semibold',
 }))`
   line-height: 18;
 `;
 
-const Title = styled(TextElement).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.blueGreyDark, 0.4),
-  letterSpacing: 'roundedMedium',
+const Title = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
+  color: color || colors.alpha(colors.whiteLabel, 0.5),
   size: 'tiny',
-  weight: 'semibold',
+  weight: 'heavy',
 }))`
   line-height: 13;
   margin-bottom: 1;
 `;
 
-const Tag = ({ text, title, ...props }) => (
-  <OuterBorder {...props}>
-    <Container>
-      <Title>{upperCase(title)}</Title>
-      <Text>{upperFirst(text)}</Text>
-    </Container>
-  </OuterBorder>
-);
+const Tag = ({ color, slug, text, title, ...props }) => {
+  const handlePressMenuItem = useCallback(
+    ({ nativeEvent: { actionKey } }) => {
+      if (actionKey === PropertyActionsEnum.viewTraitOnOpensea) {
+        Linking.openURL(
+          'https://opensea.io/collection/' +
+            slug +
+            '?search[stringTraits][0][name]=' +
+            title +
+            '&search[stringTraits][0][values][0]=' +
+            text
+        );
+      }
+    },
+    [slug, text, title]
+  );
+
+  const menuConfig = useMemo(() => {
+    return {
+      menuItems: [
+        {
+          ...viewTraitOnOpenseaAction,
+        },
+      ],
+      menuTitle: '',
+    };
+  }, []);
+
+  const onPressAndroid = useCallback(() => {
+    const blockExplorerText = 'View on Etherscan';
+    const androidContractActions = [
+      'Copy Contract Address',
+      blockExplorerText,
+      'Cancel',
+    ];
+
+    showActionSheetWithOptions(
+      {
+        cancelButtonIndex: 2,
+        options: androidContractActions,
+        showSeparators: true,
+        title: '',
+      },
+      idx => {
+        if (idx === 0) {
+          logger.log('menu0');
+        }
+        if (idx === 1) {
+          logger.log('menu1');
+        }
+      }
+    );
+  }, []);
+
+  return (
+    <ContextMenuButton
+      activeOpacity={0}
+      menuConfig={menuConfig}
+      {...(android ? { onPress: onPressAndroid } : {})}
+      isMenuPrimaryAction
+      onPressMenuItem={handlePressMenuItem}
+      useActionSheetFallback={false}
+      wrapNativeComponent={false}
+    >
+      <ButtonPressAnimation>
+        <OuterBorder {...props} color={color}>
+          <Container>
+            <Title color={color}>{upperCase(title)}</Title>
+            <Text>{upperFirst(text)}</Text>
+          </Container>
+        </OuterBorder>
+      </ButtonPressAnimation>
+    </ContextMenuButton>
+  );
+};
 
 Tag.propTypes = {
+  color: PropTypes.string.isRequired,
+  slug: PropTypes.string.isRequired,
   text: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
 };
 
-export default magicMemo(Tag, ['text', 'title']);
+export default magicMemo(Tag, ['color', 'slug', 'text', 'title']);

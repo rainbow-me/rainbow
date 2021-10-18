@@ -1,10 +1,23 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { Image, PixelRatio } from 'react-native';
 import styled from 'styled-components';
-import { magicMemo } from '../../utils';
+import { deviceUtils, getDominantColorFromImage, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
+import { GOOGLE_USER_CONTENT_URL } from '../expanded-state/unique-token/UniqueTokenExpandedStateContent';
 import { InnerBorder } from '../layout';
 import UniqueTokenImage from './UniqueTokenImage';
 import { shadow as shadowUtil } from '@rainbow-me/styles';
+
+const pixelRatio = PixelRatio.get();
+
+const UniqueTokenCardMargin = 15;
+const UniqueTokenRowPadding = 19;
+
+const CardSize =
+  (deviceUtils.dimensions.width -
+    UniqueTokenRowPadding * 2 -
+    UniqueTokenCardMargin) /
+  2;
 
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadowFactory = colors => [0, 2, 6, colors.shadow, 0.08];
@@ -35,11 +48,35 @@ const UniqueTokenCard = ({
   width,
   ...props
 }) => {
+  const [aspectRatio, setAspectRatio] = useState(1);
+  const [imageColor, setImageColor] = useState(null);
+
+  const size = Math.ceil(CardSize) * pixelRatio;
+
+  const lowResUrl = useMemo(() => {
+    if (item.image_url?.startsWith?.(GOOGLE_USER_CONTENT_URL)) {
+      return `${item.image_url}=w${size}`;
+    }
+    return item.image_url;
+  }, [item.image_url, size]);
+
+  useEffect(() => {
+    Image.getSize(lowResUrl, (width, height) => {
+      setAspectRatio(width / height);
+    });
+  }, [lowResUrl]);
+
+  useEffect(() => {
+    getDominantColorFromImage(lowResUrl, '#333333').then(result => {
+      setImageColor(result);
+    });
+  }, [lowResUrl]);
+
   const handlePress = useCallback(() => {
     if (onPress) {
-      onPress(item);
+      onPress(aspectRatio, item, imageColor, lowResUrl);
     }
-  }, [item, onPress]);
+  }, [aspectRatio, item, imageColor, lowResUrl, onPress]);
 
   const { colors } = useTheme();
 
@@ -47,8 +84,6 @@ const UniqueTokenCard = ({
     colors,
   ]);
 
-  const imageUrl =
-    item.image_preview_url || item.image_url || item.image_original_url;
   return (
     <Container
       as={ButtonPressAnimation}
@@ -61,7 +96,7 @@ const UniqueTokenCard = ({
       <Content {...props} height={height} style={style} width={width}>
         <UniqueTokenImage
           backgroundColor={item.background || colors.lightestGrey}
-          imageUrl={imageUrl}
+          imageUrl={lowResUrl}
           item={item}
           resizeMode={resizeMode}
           size={width}

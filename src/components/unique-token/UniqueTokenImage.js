@@ -92,6 +92,7 @@ const UniqueTokenImage = ({
           </ImageTile>
           {!loadedImg && lowResUrl && (
             <ImageTile
+              playing={false}
               resizeMode={ImgixImage.resizeMode[resizeMode]}
               source={{ uri: lowResUrl }}
               style={position.coverAsObject}

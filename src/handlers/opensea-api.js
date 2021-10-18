@@ -31,3 +31,30 @@ export const apiGetAccountUniqueTokens = async (network, address, page) => {
     throw error;
   }
 };
+
+export const apiGetUniqueTokenFloorPrice = async (
+  network,
+  urlSuffixForAsset
+) => {
+  try {
+    const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
+    const url = `https://${networkPrefix}api.opensea.io/api/v1/asset/${urlSuffixForAsset}`;
+    const EthSuffix = ' ETH';
+    const data = await rainbowFetch(url, {
+      headers: {
+        'Accept': 'application/json',
+        'X-Api-Key': OPENSEA_API_KEY,
+      },
+      method: 'get',
+      timeout: 5000, // 5 secs
+    });
+    if (JSON.stringify(data.data.collection.stats.floor_price) === '0') {
+      return 'None';
+    }
+    const formattedFloorPrice =
+      JSON.stringify(data.data.collection.stats.floor_price) + EthSuffix;
+    return formattedFloorPrice;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -9,21 +9,25 @@ import { useWallets } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { padding, position } from '@rainbow-me/styles';
 
-const CardMargin = 15;
-const RowPadding = 19;
+const UniqueTokenCardMargin = 15;
+const UniqueTokenRowPadding = 19;
+
 const CardSize =
-  (deviceUtils.dimensions.width - RowPadding * 2 - CardMargin) / 2;
+  (deviceUtils.dimensions.width -
+    UniqueTokenRowPadding * 2 -
+    UniqueTokenCardMargin) /
+  2;
 
 const Container = styled(Row).attrs({ align: 'center' })`
-  ${padding(0, RowPadding)};
-  margin-bottom: ${CardMargin};
+  ${padding(0, UniqueTokenRowPadding)};
+  margin-bottom: ${UniqueTokenCardMargin};
   width: 100%;
 `;
 
 const UniqueTokenCardItem = styled(UniqueTokenCard).attrs({
   ...position.sizeAsObject(CardSize),
 })`
-  margin-left: ${({ index }) => (index >= 1 ? CardMargin : 0)};
+  margin-left: ${({ index }) => (index >= 1 ? UniqueTokenCardMargin : 0)};
 `;
 
 const UniqueTokenRow = magicMemo(({ item, external = false }) => {
@@ -31,12 +35,19 @@ const UniqueTokenRow = magicMemo(({ item, external = false }) => {
   const { navigate } = useNavigation();
 
   const handleItemPress = useCallback(
-    asset =>
+    (aspectRatio, asset, imageColor, lowResUrl) =>
       navigate(Routes.EXPANDED_ASSET_SHEET, {
+        aspectRatio,
         asset,
-        cornerRadius: 30,
+        backgroundOpacity: 1,
+        cornerRadius: 'device',
         external,
+        imageColor,
         isReadOnlyWallet,
+        lowResUrl,
+        springDamping: 1,
+        topOffset: 0,
+        transitionDuration: 0.25,
         type: 'unique_token',
       }),
     [external, isReadOnlyWallet, navigate]
@@ -61,9 +72,9 @@ UniqueTokenRow.propTypes = {
   item: PropTypes.array,
 };
 
-UniqueTokenRow.height = CardSize + CardMargin;
+UniqueTokenRow.height = CardSize + UniqueTokenCardMargin;
 UniqueTokenRow.cardSize = CardSize;
-UniqueTokenRow.cardMargin = CardMargin;
-UniqueTokenRow.rowPadding = RowPadding;
+UniqueTokenRow.cardMargin = UniqueTokenCardMargin;
+UniqueTokenRow.rowPadding = UniqueTokenRowPadding;
 
 export default UniqueTokenRow;

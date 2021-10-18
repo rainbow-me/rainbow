@@ -36,6 +36,8 @@ target 'Rainbow' do
     use_flipper!()
     pod 'RNExitApp', :path => '../node_modules/react-native-exit-app'
 
+    pod 'react-native-palette-full', :path => '../node_modules/react-native-palette-full'
+
   end
 
   post_install do |installer|

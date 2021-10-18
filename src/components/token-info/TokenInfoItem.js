@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components';
-import { ShimmerAnimation } from '../animations';
+import { ButtonPressAnimation, ShimmerAnimation } from '../animations';
 import { ColumnWithMargins, RowWithMargins } from '../layout';
 import TokenInfoBalanceValue from './TokenInfoBalanceValue';
 import TokenInfoHeading from './TokenInfoHeading';
@@ -20,6 +20,7 @@ const VerticalDivider = styled.View`
 `;
 
 const WrapperView = styled.View`
+  align-self: ${({ align }) => (align === 'left' ? 'flex-start' : 'flex-end')};
   border-radius: 12;
   height: 24;
   margin-top: -17;
@@ -33,7 +34,11 @@ export default function TokenInfoItem({
   asset,
   color,
   children,
+  isNft,
+  onInfoPress,
+  onPress,
   showDivider,
+  showInfoButton,
   size,
   title,
   weight,
@@ -59,17 +64,36 @@ export default function TokenInfoItem({
       <ColumnWithMargins
         flex={asset ? 1 : 0}
         justify={align === 'left' ? 'start' : 'end'}
-        margin={android ? -6 : 3}
+        margin={android ? (isNft ? -3 : -6) : isNft ? 6 : 3}
         {...props}
       >
-        <TokenInfoHeading align={align}>{title}</TokenInfoHeading>
+        <ButtonPressAnimation
+          disabled={!showInfoButton}
+          onPress={showInfoButton && onInfoPress}
+          scaleTo={0.88}
+        >
+          <TokenInfoHeading align={align} isNft={isNft}>
+            {title}
+            {showInfoButton ? (
+              <TokenInfoHeading
+                color={colors.alpha(colors.whiteLabel, 0.25)}
+                isNft
+              >
+                {' '}
+                􀅵
+              </TokenInfoHeading>
+            ) : null}
+          </TokenInfoHeading>
+        </ButtonPressAnimation>
         {asset ? (
-          <TokenInfoBalanceValue align={align} asset={asset} />
+          <TokenInfoBalanceValue align={align} asset={asset} isNft={isNft} />
         ) : (
           <TokenInfoValue
             align={align}
             color={color}
+            isNft={isNft}
             lineHeight={lineHeight}
+            onPress={onPress}
             size={size}
             weight={weight}
           >
@@ -78,6 +102,7 @@ export default function TokenInfoItem({
         )}
         {loading && (
           <WrapperView
+            align={align}
             backgroundColor={colors.alpha(colors.blueGreyDark, 0.04)}
           >
             <ShimmerAnimation

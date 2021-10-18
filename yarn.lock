@@ -12281,6 +12281,11 @@ react-native-os@software-mansion-labs/react-native-os#41a08e45260b8c1c53c77ad00e
   version "1.2.8"
   resolved "https://codeload.github.com/software-mansion-labs/react-native-os/tar.gz/41a08e45260b8c1c53c77ad00e13ae954cb9337c"
 
+react-native-palette-full@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-palette-full/-/react-native-palette-full-1.2.0.tgz#db912894a6dfb1352a263a2c8bcb9bdd979c3231"
+  integrity sha512-l7X96pdRGoMiS1+BXm8K1XvvezxFxA05QA68IM8PM8qvG0cV4S/EUC124UVS8TcgjMkWZpAda67Hpf8oYB5bwg==
+
 react-native-permissions@3.0.5:
   version "3.0.5"
   resolved "https://registry.yarnpkg.com/react-native-permissions/-/react-native-permissions-3.0.5.tgz#94542a343abdac801fa0a4593ea2c751cb45c41f"

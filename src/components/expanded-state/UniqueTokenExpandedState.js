@@ -1,32 +1,52 @@
-import React, { Fragment, useCallback, useMemo } from 'react';
-import { Share } from 'react-native';
+import { VibrancyView } from '@react-native-community/blur';
+import c from 'chroma-js';
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import { Linking, Share } from 'react-native';
 import styled from 'styled-components';
 import useWallets from '../../hooks/useWallets';
+import { lightModeThemeColors } from '../../styles/colors';
 import Link from '../Link';
-import { Column, ColumnWithDividers } from '../layout';
+import { ButtonPressAnimation } from '../animations';
+import { Centered, Column, Row } from '../layout';
 import {
   SendActionButton,
   SheetActionButton,
   SheetActionButtonRow,
-  SheetDivider,
+  SheetHandle,
   SlackSheet,
 } from '../sheet';
-import { MarkdownText } from '../text';
+import { MarkdownText, Text } from '../text';
 import { ToastPositionContainer, ToggleStateToast } from '../toasts';
+import { TokenInfoItem, TokenInfoRow, TokenInfoSection } from '../token-info';
 import { UniqueTokenAttributes } from '../unique-token';
 import ExpandedStateSection from './ExpandedStateSection';
 import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
 } from './unique-token';
+import { apiGetUniqueTokenFloorPrice } from '@rainbow-me/handlers/opensea-api';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import {
   useAccountProfile,
+  useAccountSettings,
   useDimensions,
   useShowcaseTokens,
 } from '@rainbow-me/hooks';
+import { ImgixImage } from '@rainbow-me/images';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
+import { position } from '@rainbow-me/styles';
+import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 import {
   buildRainbowUrl,
+  ethereumUtils,
+  getDominantColorFromImage,
   magicMemo,
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
@@ -35,18 +55,58 @@ const NftExpandedStateSection = styled(ExpandedStateSection).attrs({
   isNft: true,
 })``;
 
+const BackgroundBlur = styled(VibrancyView).attrs({
+  blurAmount: 100,
+  blurType: 'light',
+  overlayColor: 'transparent',
+})`
+  ${position.cover};
+`;
+
+const BackgroundImage = styled.View`
+  background: black;
+  height: 844px;
+  position: absolute;
+  width: 390px;
+`;
+
+const SheetDivider = styled(Row)`
+  align-self: center;
+  background-color: ${({ theme: { colors } }) =>
+    colors.alpha(colors.whiteLabel, 0.01)};
+  border-radius: 1;
+  height: 2;
+  width: ${({ deviceWidth }) => deviceWidth - 48};
+`;
+
 const Spacer = styled.View`
   height: ${safeAreaInsetValues.bottom + 20};
 `;
 
-const UniqueTokenExpandedState = ({ asset, external }) => {
+const UniqueTokenExpandedState = ({
+  aspectRatio,
+  asset,
+  imageColor,
+  external,
+  lowResUrl,
+}) => {
+  const { accountAddress, accountENS } = useAccountProfile();
+  const { nativeCurrency, network } = useAccountSettings();
+  const { height: deviceHeight, width: deviceWidth } = useDimensions();
+  const { navigate } = useNavigation();
+  const { colors } = useTheme();
+  const { isReadOnlyWallet } = useWallets();
+
   const {
     collection: { description: familyDescription, external_link: familyLink },
+    currentPrice,
     description,
     familyName,
     isSendable,
+    lastPrice,
     traits,
     uniqueId,
+    urlSuffixForAsset,
   } = asset;
 
   const {
@@ -55,12 +115,58 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
     showcaseTokens,
   } = useShowcaseTokens();
 
-  const { isReadOnlyWallet } = useWallets();
+  const [fallbackImageColor, setFallbackImageColor] = useState(null);
+  const [textColor, setTextColor] = useState('#FFFFFF');
+  const [floorPrice, setFloorPrice] = useState(null);
+  const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
+  const [showFloorInEth, setShowFloorInEth] = useState(true);
 
   const isShowcaseAsset = useMemo(() => showcaseTokens.includes(uniqueId), [
     showcaseTokens,
     uniqueId,
   ]);
+
+  const imageColorWithFallback =
+    imageColor || fallbackImageColor || colors.paleBlue;
+
+  const lastSalePrice = lastPrice || 'None';
+  const priceOfEth = ethereumUtils.getEthPriceUnit();
+
+  useEffect(() => {
+    getDominantColorFromImage(lowResUrl, '#333333').then(result => {
+      setFallbackImageColor(result);
+    });
+  }, [lowResUrl]);
+
+  useEffect(() => {
+    const contrastWithWhite = c.contrast(
+      imageColorWithFallback,
+      colors.whiteLabel
+    );
+
+    if (contrastWithWhite < 2.125) {
+      setTextColor(lightModeThemeColors.dark);
+    } else {
+      setTextColor(colors.whiteLabel);
+    }
+  }, [colors.whiteLabel, imageColorWithFallback]);
+
+  useEffect(() => {
+    apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then(result => {
+      setFloorPrice(result);
+    });
+  }, [network, urlSuffixForAsset]);
+
+  const handlePressCollectionFloor = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: 'floor_price',
+    });
+  }, [navigate]);
+
+  const handlePressOpensea = useCallback(
+    () => Linking.openURL(asset.permalink),
+    [asset.permalink]
+  );
 
   const handlePressShowcase = useCallback(() => {
     if (isShowcaseAsset) {
@@ -70,8 +176,6 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
     }
   }, [addShowcaseToken, isShowcaseAsset, removeShowcaseToken, uniqueId]);
 
-  const { accountAddress, accountENS } = useAccountProfile();
-
   const handlePressShare = useCallback(() => {
     Share.share({
       title: `Share ${buildUniqueTokenName(asset)} Info`,
@@ -79,69 +183,204 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
     });
   }, [accountAddress, accountENS, asset]);
 
-  const { height: screenHeight } = useDimensions();
-  const { colors, isDarkMode } = useTheme();
+  const toggleCurrentPriceDisplayCurrency = useCallback(
+    () =>
+      showCurrentPriceInEth
+        ? setShowCurrentPriceInEth(false)
+        : setShowCurrentPriceInEth(true),
+    [showCurrentPriceInEth, setShowCurrentPriceInEth]
+  );
+
+  const toggleFloorDisplayCurrency = useCallback(
+    () => (showFloorInEth ? setShowFloorInEth(false) : setShowFloorInEth(true)),
+    [showFloorInEth, setShowFloorInEth]
+  );
 
   return (
     <Fragment>
+      <BackgroundImage>
+        <ImgixImage
+          resizeMode="cover"
+          source={{ uri: lowResUrl }}
+          style={{ height: deviceHeight, width: deviceWidth }}
+        />
+        <BackgroundBlur />
+      </BackgroundImage>
       <SlackSheet
+        backgroundColor="rgba(26, 26, 26, 0.4)"
         bottomInset={42}
+        hideHandle
         {...(ios
           ? { height: '100%' }
-          : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
+          : { additionalTopPadding: true, contentHeight: deviceHeight - 80 })}
         scrollEnabled
       >
-        <UniqueTokenExpandedStateHeader asset={asset} />
-        <UniqueTokenExpandedStateContent asset={asset} />
-        {!external && !isReadOnlyWallet ? (
-          <SheetActionButtonRow>
-            <SheetActionButton
-              color={isDarkMode ? colors.darkModeDark : colors.dark}
-              label={isShowcaseAsset ? '􀁏 Showcase' : '􀁍 Showcase'}
-              onPress={handlePressShowcase}
-              weight="bold"
+        <Centered paddingBottom={30} paddingTop={33}>
+          <SheetHandle color={colors.alpha(colors.whiteLabel, 0.24)} />
+        </Centered>
+        <UniqueTokenExpandedStateContent
+          aspectRatio={aspectRatio}
+          asset={asset}
+          imageColor={imageColorWithFallback}
+          lowResUrl={lowResUrl}
+        />
+        <Row justify="space-between" marginTop={14} paddingHorizontal={19}>
+          <ButtonPressAnimation
+            onPress={handlePressShowcase}
+            padding={5}
+            scaleTo={0.88}
+          >
+            <Text
+              color={imageColorWithFallback}
+              lineHeight="loosest"
+              size="lmedium"
+              weight="heavy"
+            >
+              {isShowcaseAsset ? '􀫝 In Showcase' : '􀐇 Showcase'}
+            </Text>
+          </ButtonPressAnimation>
+          <ButtonPressAnimation
+            onPress={handlePressShare}
+            padding={5}
+            scaleTo={0.88}
+          >
+            <Text
+              align="right"
+              color={imageColorWithFallback}
+              lineHeight="loosest"
+              size="lmedium"
+              weight="heavy"
+            >
+              􀈂 Share
+            </Text>
+          </ButtonPressAnimation>
+        </Row>
+        <UniqueTokenExpandedStateHeader
+          asset={asset}
+          imageColor={imageColorWithFallback}
+        />
+        <SheetActionButtonRow
+          ignorePaddingTop
+          paddingBottom={24}
+          paddingHorizontal={16.5}
+        >
+          <SheetActionButton
+            color={imageColorWithFallback}
+            label={
+              !external && !isReadOnlyWallet && isSendable
+                ? '􀮶 OpenSea'
+                : '􀮶 View on OpenSea'
+            }
+            nftShadows
+            onPress={handlePressOpensea}
+            textColor={textColor}
+            weight="heavy"
+          />
+          {!external && !isReadOnlyWallet && isSendable ? (
+            <SendActionButton
+              asset={asset}
+              color={imageColorWithFallback}
+              nftShadows
+              textColor={textColor}
             />
-            {isSendable && <SendActionButton asset={asset} />}
-          </SheetActionButtonRow>
-        ) : (
-          <SheetActionButtonRow>
-            <SheetActionButton
-              color={isDarkMode ? colors.darkModeDark : colors.dark}
-              label="􀈂 Share"
-              onPress={handlePressShare}
-              weight="bold"
-            />
-          </SheetActionButtonRow>
-        )}
-        <SheetDivider />
-        <ColumnWithDividers dividerRenderer={SheetDivider}>
+          ) : null}
+        </SheetActionButtonRow>
+        <TokenInfoSection isNft>
+          <TokenInfoRow>
+            <TokenInfoItem
+              color={
+                lastSalePrice === 'None' && !currentPrice
+                  ? colors.alpha(colors.whiteLabel, 0.5)
+                  : colors.whiteLabel
+              }
+              isNft
+              onPress={toggleCurrentPriceDisplayCurrency}
+              size="big"
+              title={currentPrice ? '􀋢 For sale' : 'Last sale price'}
+              weight={
+                lastSalePrice === 'None' && !currentPrice ? 'bold' : 'heavy'
+              }
+            >
+              {showCurrentPriceInEth ||
+              nativeCurrency === 'ETH' ||
+              !currentPrice
+                ? currentPrice || lastSalePrice
+                : convertAmountToNativeDisplay(
+                    parseFloat(currentPrice) * priceOfEth,
+                    nativeCurrency
+                  )}
+            </TokenInfoItem>
+            <TokenInfoItem
+              align="right"
+              color={
+                floorPrice === 'None'
+                  ? colors.alpha(colors.whiteLabel, 0.5)
+                  : colors.whiteLabel
+              }
+              isNft
+              loading={!floorPrice}
+              onInfoPress={handlePressCollectionFloor}
+              onPress={toggleFloorDisplayCurrency}
+              showInfoButton
+              size="big"
+              title="Collection floor"
+              weight={floorPrice === 'None' ? 'bold' : 'heavy'}
+            >
+              {showFloorInEth ||
+              nativeCurrency === 'ETH' ||
+              floorPrice === 'None'
+                ? floorPrice
+                : convertAmountToNativeDisplay(
+                    parseFloat(floorPrice) * priceOfEth,
+                    nativeCurrency
+                  )}
+            </TokenInfoItem>
+          </TokenInfoRow>
+        </TokenInfoSection>
+        <Column>
           {!!description && (
-            <NftExpandedStateSection title="Description">
-              {description}
-            </NftExpandedStateSection>
+            <>
+              <SheetDivider deviceWidth={deviceWidth} />
+              <NftExpandedStateSection title="Description">
+                {description}
+              </NftExpandedStateSection>
+            </>
           )}
           {!!traits.length && (
-            <NftExpandedStateSection paddingBottom={14} title="Attributes">
-              <UniqueTokenAttributes {...asset} />
-            </NftExpandedStateSection>
+            <>
+              <SheetDivider deviceWidth={deviceWidth} />
+              <NftExpandedStateSection title="Properties">
+                <UniqueTokenAttributes
+                  {...asset}
+                  color={imageColorWithFallback}
+                  slug={asset.collection.slug}
+                />
+              </NftExpandedStateSection>
+            </>
           )}
           {!!familyDescription && (
-            <NftExpandedStateSection title={`About ${familyName}`}>
-              <Column>
-                <MarkdownText
-                  color={colors.alpha(colors.blueGreyDark, 0.5)}
-                  lineHeight="paragraphSmall"
-                  size="lmedium"
-                >
-                  {familyDescription}
-                </MarkdownText>
-                {familyLink && <Link url={familyLink} />}
-              </Column>
-            </NftExpandedStateSection>
+            <>
+              <SheetDivider deviceWidth={deviceWidth} />
+              <NftExpandedStateSection title={`About ${familyName}`}>
+                <Column>
+                  <MarkdownText
+                    color={colors.alpha(colors.whiteLabel, 0.5)}
+                    lineHeight="big"
+                    size="large"
+                  >
+                    {familyDescription}
+                  </MarkdownText>
+                  {familyLink && <Link url={familyLink} />}
+                </Column>
+              </NftExpandedStateSection>
+            </>
           )}
-        </ColumnWithDividers>
+        </Column>
         <Spacer />
       </SlackSheet>
+      {/* <HeaderBlurContainer>
+        <HeaderBlur />
+      </HeaderBlurContainer> */}
       <ToastPositionContainer>
         <ToggleStateToast
           addCopy="Added to showcase"

@@ -186,6 +186,7 @@
     "react-native-mail": "4.1.0",
     "react-native-markdown-display": "7.0.0-alpha.2",
     "react-native-os": "software-mansion-labs/react-native-os#41a08e45260b8c1c53c77ad00e13ae954cb9337c",
+    "react-native-palette-full": "1.2.0",
     "react-native-permissions": "3.0.5",
     "react-native-qrcode-svg": "mikedemarais/react-native-qrcode-svg#c0302a698ea4fa0bb9b506a11ef39905674f2221",
     "react-native-radial-gradient": "rainbow-me/react-native-radial-gradient#1266cd8f6ac3321bcf27357f8771bd088f9f27ef",
