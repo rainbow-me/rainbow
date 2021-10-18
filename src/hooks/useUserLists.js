@@ -5,19 +5,19 @@ import {
   userListsSetSelectedList,
   userListsUpdateList,
 } from '../redux/userLists';
-import useUniswapAssets from './useUniswapAssets';
 
 const userListsSelector = state => state.userLists.lists;
 const userListsReadySelector = state => state.userLists.ready;
 const userListsSelectedListSelector = state => state.userLists.selectedList;
+const uniswapFavoritesSelector = state => state.uniswap.favorites;
 
 export default function useUserLists() {
   const dispatch = useDispatch();
   const lists = useSelector(userListsSelector);
   const ready = useSelector(userListsReadySelector);
   const selectedList = useSelector(userListsSelectedListSelector);
+  const favorites = useSelector(uniswapFavoritesSelector);
 
-  const { favorites } = useUniswapAssets();
   const updateList = useCallback(
     (...data) => dispatch(userListsUpdateList(...data)),
     [dispatch]

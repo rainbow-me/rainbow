@@ -1,0 +1,17 @@
+diff --git a/node_modules/@metamask/eth-sig-util/package.json b/node_modules/@metamask/eth-sig-util/package.json
+index 842a364..68abe4f 100644
+--- a/node_modules/@metamask/eth-sig-util/package.json
++++ b/node_modules/@metamask/eth-sig-util/package.json
+@@ -16,12 +16,6 @@
+   },
+   "license": "ISC",
+   "author": "Dan Finlay",
+-  "exports": {
+-    ".": "./dist/index.js",
+-    "./encryption": "./dist/encryption.js",
+-    "./personal-sign": "./dist/personal-sign.js",
+-    "./sign-typed-data": "./dist/sign-typed-data.js"
+-  },
+   "main": "./dist/index.js",
+   "files": [
+     "dist"

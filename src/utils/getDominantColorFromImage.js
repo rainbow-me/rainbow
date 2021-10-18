@@ -3,7 +3,7 @@ import { IS_TESTING } from 'react-native-dotenv';
 import { getColorFromURL } from 'rn-dominant-color';
 
 export default async function getDominantColorFromImage(imageUrl) {
-  if (IS_TESTING) return undefined;
+  if (IS_TESTING === 'true') return undefined;
   const { background, secondary } = await getColorFromURL(imageUrl);
 
   // if rn-dominant-color returned '#00000000' it means the color doesnt exist, in this

@@ -236,6 +236,14 @@
   NSUInteger changeRootIndex = 0;
   UIViewController *changeRootController = _controller;
   
+  // I noticed that sometimes makeOldClass was not called correctly
+  // Before traversing UIViewControllers it restores the previous class
+  UIViewController *someViewController = changeRootController.presentedViewController;
+  while (someViewController != nil) {
+    UIView *view = someViewController.view.superview.superview;
+    someViewController = someViewController.presentedViewController;
+  }
+  
 
   // for QR scanner Bottom Sheet!
   UIViewController *presentedRootViewController = changeRootController.presentedViewController;

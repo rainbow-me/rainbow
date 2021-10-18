@@ -44,7 +44,7 @@ const GasSpeedLabelPager = ({
 
   return (
     <Row align="center" height={GasSpeedLabelPagerItemHeight} justify="end">
-      {showPager && (
+      {showPager && (!options || options?.length > 1) && (
         <Row self="start">
           {(options || gasUtils.GasSpeedOrder).map((speed, i) => (
             <PagerItem

@@ -3,7 +3,7 @@ import { compact, find, get, isEmpty, keys, map, toLower } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { useValue } from 'react-native-redash';
+import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { OpacityToggler } from '../components/animations';
@@ -44,6 +44,7 @@ const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
 }))`
   padding-top: 5;
   z-index: 1;
+  elevation: 1;
 `;
 
 const WalletPage = styled(Page)`
@@ -80,8 +81,8 @@ export default function WalletScreen() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    eth && dispatch(updatePositions);
-  }, [dispatch, eth, numberOfPools]);
+    eth?.price?.value && dispatch(updatePositions());
+  }, [dispatch, eth?.price?.value, numberOfPools]);
 
   const { addressSocket, assetsSocket } = useSelector(
     ({ explorer: { addressSocket, assetsSocket } }) => ({
@@ -103,7 +104,7 @@ export default function WalletScreen() {
   useEffect(() => {
     if (!initialized || (params?.emptyWallet && initialized)) {
       // We run the migrations only once on app launch
-      initializeWallet(null, null, null, true);
+      initializeWallet(null, null, null, !params?.emptyWallet);
       setInitialized(true);
       setParams({ emptyWallet: false });
     }
@@ -164,6 +165,8 @@ export default function WalletScreen() {
 
   const isCoinListEditedValue = useCoinListEditedValue();
 
+  const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);
+
   return (
     <WalletPage testID="wallet-screen">
       {ios && <StatusBar barStyle="dark-content" />}
@@ -184,6 +187,7 @@ export default function WalletScreen() {
           </Header>
         </HeaderOpacityToggler>
         <AssetList
+          disableRefreshControl={isLoadingAssets}
           fetchData={refreshAccountData}
           isEmpty={isAccountEmpty || !!params?.emptyWallet}
           isWalletEthZero={isWalletEthZero}

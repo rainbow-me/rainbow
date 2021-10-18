@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { InteractionManager, Keyboard, StyleSheet } from 'react-native';
 import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
-import Animated, { Value } from 'react-native-reanimated';
-import { ScrollPagerContext } from '../navigation/ScrollPagerContext';
-
-const { event, divide, onChange, cond, eq, round, call } = Animated;
+import Animated, {
+  useAnimatedScrollHandler,
+  Value,
+} from 'react-native-reanimated';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(GHScrollView);
 
-export default class ScrollPager extends React.Component {
+class ScrollPager extends React.Component {
   static defaultProps = {
     bounces: true,
     id: '',
@@ -120,19 +120,13 @@ export default class ScrollPager extends React.Component {
     this.props.navigationState.index * this.props.layout.width
   );
 
-  onScroll = event([
-    {
-      nativeEvent: {
-        contentOffset: {
-          x: this.position,
-        },
-      },
-    },
-  ]);
-
   layoutWidthNode = new Value(this.props.layout.width);
 
-  relativePosition = divide(this.position, this.layoutWidthNode);
+  changeIndexIfNeeded = newIndex => {
+    if (this.props.navigationState.index !== newIndex) {
+      this.props.onIndexChange(newIndex);
+    }
+  };
 
   handleMomentumScrollEnd = ({ nativeEvent }) => {
     this.props.onMomentumScrollEnd?.(nativeEvent.contentOffset.x);
@@ -140,6 +134,11 @@ export default class ScrollPager extends React.Component {
       InteractionManager.clearInteractionHandle(this.interactionHandle);
       this.interactionHandle = null;
     }
+    this.changeIndexIfNeeded(
+      Math.round(
+        nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width
+      )
+    );
   };
 
   render() {
@@ -149,7 +148,6 @@ export default class ScrollPager extends React.Component {
       onSwipeStart,
       onSwipeEnd,
       overscroll,
-      onIndexChange,
       navigationState,
     } = this.props;
 
@@ -169,12 +167,17 @@ export default class ScrollPager extends React.Component {
         InteractionManager.clearInteractionHandle(this.interactionHandle);
         this.interactionHandle = null;
       }
+      const maybeIndex =
+        nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width;
+      if (maybeIndex === Math.round(maybeIndex)) {
+        // we are finished with moving
+        this.changeIndexIfNeeded(Math.round(maybeIndex));
+      }
     };
 
     return children({
       addListener: this.addListener,
       jumpTo: this.jumpTo,
-      position: this.relativePosition,
       removeListener: this.removeListener,
       render: children => (
         <AnimatedScrollView
@@ -193,7 +196,7 @@ export default class ScrollPager extends React.Component {
           directionalLockEnabled
           keyboardShouldPersistTaps="always"
           onMomentumScrollEnd={this.handleMomentumScrollEnd}
-          onScroll={this.onScroll}
+          onScroll={this.props.scrollHandler}
           onScrollBeginDrag={handleSwipeStart}
           onScrollEndDrag={handleSwipeEnd}
           overScrollMode="never"
@@ -206,26 +209,19 @@ export default class ScrollPager extends React.Component {
           showsHorizontalScrollIndicator={false}
           style={styles.container}
         >
-          <ScrollPagerContext.Provider value={this.relativePosition}>
-            {children}
-          </ScrollPagerContext.Provider>
-          <Animated.Code
-            exec={onChange(
-              this.relativePosition,
-              cond(eq(round(this.relativePosition), this.relativePosition), [
-                call([this.relativePosition], ([relativePosition]) => {
-                  if (this.wasTouched) {
-                    onIndexChange(relativePosition);
-                    this.wasTouched = false;
-                  }
-                }),
-              ])
-            )}
-          />
+          {children}
         </AnimatedScrollView>
       ),
     });
   }
+}
+
+export default function ScrollPagerWrapperWithScrollHandler(props) {
+  const scrollHandler = useAnimatedScrollHandler(event => {
+    props.position.value =
+      event.contentOffset.x / event.layoutMeasurement.width;
+  });
+  return <ScrollPager {...props} scrollHandler={scrollHandler} />;
 }
 
 const styles = StyleSheet.create({

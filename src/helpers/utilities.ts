@@ -399,3 +399,17 @@ export const fromWei = (number: BigNumberish): string =>
 export const delay = (ms: number): Promise<void> => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
+
+/**
+ * @desc Array.prototype.some repurposed for async iteration
+ */
+export const asyncSome = async (
+  arr: any[],
+  callback: (element: any, index: number) => any
+) => {
+  if (!arr || !callback) return null;
+  for (let [index, element] of arr.entries()) {
+    if (await callback(element, index)) return true;
+  }
+  return false;
+};

@@ -25,7 +25,7 @@ const AccountName = styled(TruncatedText).attrs({
   letterSpacing: 'roundedMedium',
   size: 'big',
   truncationLength: 4,
-  weight: 'bold',
+  weight: 'heavy',
 })`
   height: ${android ? '35' : '30'};
   margin-top: 2;
@@ -56,20 +56,22 @@ const WalletSelectButton = ({
         <AccountName
           deviceWidth={deviceWidth}
           textWidth={textWidth}
-          totalValueLength={totalValue.length}
+          totalValueLength={totalValue?.length}
         >
           {truncatedAccountName}
         </AccountName>
         {truncatedAccountName ? (
           <DropdownArrow>
-            <LinearGradient
-              borderRadius={15}
-              colors={colors.gradients.lightestGrey}
-              end={{ x: 0.5, y: 1 }}
-              pointerEvents="none"
-              start={{ x: 0.5, y: 0 }}
-              style={[position.coverAsObject, { borderRadius: 15 }]}
-            />
+            {IS_TESTING !== 'true' && (
+              <LinearGradient
+                borderRadius={15}
+                colors={colors.gradients.lightestGrey}
+                end={{ x: 0.5, y: 1 }}
+                pointerEvents="none"
+                start={{ x: 0.5, y: 0 }}
+                style={[position.coverAsObject, { borderRadius: 15 }]}
+              />
+            )}
             <Icon name="walletSwitcherCaret" />
           </DropdownArrow>
         ) : null}
@@ -103,7 +105,7 @@ const AssetListHeader = ({
     async function measure() {
       const { width } = await measureText(accountName, {
         fontSize: parseFloat(fonts.size.big),
-        fontWeight: fonts.weight.bold,
+        fontWeight: fonts.weight.heavy,
         letterSpacing: fonts.letterSpacing.roundedMedium,
       });
       setTextWidth(width);
@@ -129,7 +131,7 @@ const AssetListHeader = ({
       totalValue={totalValue}
       {...props}
     >
-      {!title && IS_TESTING !== 'true' && (
+      {!title && (
         <WalletSelectButton
           deviceWidth={deviceWidth}
           onChangeWallet={onChangeWallet}

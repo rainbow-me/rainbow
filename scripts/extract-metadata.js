@@ -24,7 +24,7 @@ let allItems = {};
 const init = async () => {
   for (let i = 0; i < tokenAddresses.length; i++) {
     const address = tokenAddresses[i];
-    const imageUrl = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
+    const imageUrl = `https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/ethereum/assets/${address}/logo.png`;
     let metadata = {};
     try {
       const filePath = `${assets_dir}/${address}/logo.png`;

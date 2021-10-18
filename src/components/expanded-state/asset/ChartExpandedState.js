@@ -12,12 +12,12 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import useAdditionalAssetData from '../../../hooks/useAdditionalAssetData';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
+import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
 import { CoinDividerHeight } from '../../coin-divider';
 import CoinDividerOpenButton from '../../coin-divider/CoinDividerOpenButton';
 import EdgeFade from '../../discover-sheet/EdgeFade';
 import UniswapPools from '../../discover-sheet/UniswapPoolsSection';
-
 import {
   BuyActionButton,
   SendActionButton,
@@ -26,7 +26,7 @@ import {
   SlackSheet,
   SwapActionButton,
 } from '../../sheet';
-import { Bold, Text } from '../../text';
+import { Text } from '../../text';
 import {
   TokenInfoBalanceValue,
   TokenInfoItem,
@@ -37,6 +37,7 @@ import { Chart } from '../../value-chart';
 import ExpandedStateSection from '../ExpandedStateSection';
 import SocialLinks from './SocialLinks';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
+import { isL2Network } from '@rainbow-me/handlers/web3';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
   useAccountSettings,
@@ -45,6 +46,8 @@ import {
   useDimensions,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
 const defaultCarouselHeight = 60;
@@ -77,9 +80,12 @@ const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
 
 const TIMEOUT = 15000;
 
-const ReadMoreBotton = styled(Bold)`
-  margin-top: 12;
-`;
+const ReadMoreButton = styled(Text).attrs(({ theme: { colors } }) => ({
+  color: colors.alpha(colors.blueGreyDark, 0.8),
+  lineHeight: 37,
+  size: 'lmedium',
+  weight: 'heavy',
+}))``;
 
 function CarouselWrapper({
   style,
@@ -120,13 +126,13 @@ function CarouselWrapper({
 }
 
 const Spacer = styled.View`
-  height: ${safeAreaInsetValues.bottom + 20};
+  height: ${safeAreaInsetValues.bottom + 20 + getSoftMenuBarHeight()};
 `;
 
 // truncate after the first paragraph or 4th dot
 function truncate(text) {
-  const firstParagraph = text.split('\n')[0];
-  const first4Sentences = text.split('.').slice(0, 4).join('.') + '.';
+  const firstParagraph = text?.split('\n')[0];
+  const first4Sentences = text?.split('.').slice(0, 4).join('.') + '.';
   const shorterOne =
     first4Sentences.length < firstParagraph.length
       ? first4Sentences
@@ -151,9 +157,9 @@ function Description({ text }) {
   const { colors } = useTheme();
   return (
     <ButtonPressAnimation
-      disabled={!needToTruncate}
+      disabled={!needToTruncate || !truncated}
       onPress={() => setTruncated(prev => !prev)}
-      scaleTo={0.99}
+      scaleTo={1}
     >
       <Text
         color={colors.alpha(colors.blueGreyDark, 0.5)}
@@ -163,7 +169,7 @@ function Description({ text }) {
         {delayedTruncated ? truncatedText : text}
       </Text>
       {truncated && needToTruncate && (
-        <ReadMoreBotton>Read more 􀯼</ReadMoreBotton>
+        <ReadMoreButton>Read more 􀯼</ReadMoreButton>
       )}
     </ButtonPressAnimation>
   );
@@ -189,6 +195,16 @@ export default function ChartExpandedState({ asset }) {
         nativeCurrency
       )
     : asset;
+
+  if (assetWithPrice?.mainnet_address) {
+    assetWithPrice.address = assetWithPrice.mainnet_address;
+  }
+
+  // This one includes the original l2 address if exists
+  const ogAsset = { ...assetWithPrice, address: assetWithPrice.uniqueId };
+  const isL2 = useMemo(() => isL2Network(assetWithPrice.type), [
+    assetWithPrice.type,
+  ]);
 
   const { height: screenHeight } = useDimensions();
   const {
@@ -244,7 +260,7 @@ export default function ChartExpandedState({ asset }) {
     ),
   });
 
-  const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
+  const uniswapAssetsInWallet = useUniswapAssetsInWallet();
   const showSwapButton = find(uniswapAssetsInWallet, [
     'uniqueId',
     asset?.uniqueId,
@@ -265,6 +281,14 @@ export default function ChartExpandedState({ asset }) {
     ChartExpandedStateSheetHeight -= 60;
   }
 
+  const { navigate } = useNavigation();
+
+  const handleL2DisclaimerPress = useCallback(() => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      type: assetWithPrice.type,
+    });
+  }, [assetWithPrice.type, navigate]);
+
   const { layout } = useContext(ModalContext) || {};
 
   const [morePoolsVisible, setMorePoolsVisible] = useState(false);
@@ -273,6 +297,8 @@ export default function ChartExpandedState({ asset }) {
     morePoolsVisible
   );
 
+  const { colors } = useTheme();
+
   const MoreButton = useCallback(() => {
     return (
       <CoinDividerOpenButton
@@ -280,7 +306,8 @@ export default function ChartExpandedState({ asset }) {
         isActive
         isSendSheet
         isSmallBalancesOpen={delayedMorePoolsVisible}
-        marginLeft={18}
+        marginLeft={19}
+        marginTop={5}
         onPress={() => setMorePoolsVisible(prev => !prev)}
       />
     );
@@ -314,7 +341,7 @@ export default function ChartExpandedState({ asset }) {
         <TokenInfoSection>
           <TokenInfoRow>
             <TokenInfoItem asset={asset} title="Balance">
-              <TokenInfoBalanceValue />
+              <TokenInfoBalanceValue asset={asset} />
             </TokenInfoItem>
             <TokenInfoItem
               title={asset?.native?.balance.display ? 'Value' : ' '}
@@ -326,16 +353,20 @@ export default function ChartExpandedState({ asset }) {
         </TokenInfoSection>
       )}
       {needsEth ? (
-        <SheetActionButtonRow>
+        <SheetActionButtonRow paddingBottom={isL2 && 19}>
           <BuyActionButton color={color} fullWidth />
         </SheetActionButtonRow>
       ) : (
-        <SheetActionButtonRow>
+        <SheetActionButtonRow paddingBottom={isL2 && 19}>
           {showSwapButton && (
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
           {hasBalance ? (
-            <SendActionButton color={color} fullWidth={!showSwapButton} />
+            <SendActionButton
+              asset={ogAsset}
+              color={color}
+              fullWidth={!showSwapButton}
+            />
           ) : (
             <SwapActionButton
               color={color}
@@ -349,40 +380,51 @@ export default function ChartExpandedState({ asset }) {
           )}
         </SheetActionButtonRow>
       )}
-      <CarouselWrapper
-        isAnyItemLoading={
-          totalVolumeLoading || totalLiquidityLoading || marketCapLoading
-        }
-        isAnyItemVisible={!!(totalVolume || totalLiquidity || marketCap)}
-        setCarouselHeight={setCarouselHeight}
-      >
-        <Carousel>
-          <CarouselItem
-            loading={totalVolumeLoading}
-            showDivider
-            title="24h volume"
-            weight="bold"
-          >
-            {totalVolume}
-          </CarouselItem>
-          <CarouselItem
-            loading={totalLiquidityLoading}
-            showDivider
-            title="Uniswap liquidity"
-            weight="bold"
-          >
-            {totalLiquidity}
-          </CarouselItem>
-          <CarouselItem
-            loading={marketCapLoading}
-            title="Market cap"
-            weight="bold"
-          >
-            {marketCap}
-          </CarouselItem>
-        </Carousel>
-        <EdgeFade />
-      </CarouselWrapper>
+      {isL2 && (
+        <L2Disclaimer
+          assetType={assetWithPrice.type}
+          colors={colors}
+          onPress={handleL2DisclaimerPress}
+          symbol={assetWithPrice.symbol}
+        />
+      )}
+
+      {!isL2 && (
+        <CarouselWrapper
+          isAnyItemLoading={
+            totalVolumeLoading || totalLiquidityLoading || marketCapLoading
+          }
+          isAnyItemVisible={!!(totalVolume || totalLiquidity || marketCap)}
+          setCarouselHeight={setCarouselHeight}
+        >
+          <Carousel>
+            <CarouselItem
+              loading={totalVolumeLoading}
+              showDivider
+              title="24h volume"
+              weight="bold"
+            >
+              {totalVolume}
+            </CarouselItem>
+            <CarouselItem
+              loading={totalLiquidityLoading}
+              showDivider
+              title="Uniswap liquidity"
+              weight="bold"
+            >
+              {totalLiquidity}
+            </CarouselItem>
+            <CarouselItem
+              loading={marketCapLoading}
+              title="Market cap"
+              weight="bold"
+            >
+              {marketCap}
+            </CarouselItem>
+          </Carousel>
+          <EdgeFade />
+        </CarouselWrapper>
+      )}
       <AdditionalContentWrapper
         onLayout={({
           nativeEvent: {
@@ -393,21 +435,29 @@ export default function ChartExpandedState({ asset }) {
           layout?.();
         }}
       >
-        <UniswapPools
-          ShowMoreButton={MoreButton}
-          alwaysShowMoreButton
-          forceShowAll={delayedMorePoolsVisible}
-          hideIfEmpty
-          initialPageAmount={3}
-          token={asset?.address}
-        />
+        {!isL2 && (
+          <UniswapPools
+            ShowMoreButton={MoreButton}
+            alwaysShowMoreButton
+            forceShowAll={delayedMorePoolsVisible}
+            hideIfEmpty
+            initialPageAmount={3}
+            token={asset?.address}
+          />
+        )}
 
         {!!delayedDescriptions && (
-          <ExpandedStateSection title={`About ${asset?.name}`}>
+          <ExpandedStateSection isL2 title={`About ${asset?.name}`}>
             <Description text={description} />
           </ExpandedStateSection>
         )}
-        <SocialLinks address={asset?.address} color={color} links={links} />
+        <SocialLinks
+          color={color}
+          links={links}
+          marginTop={!delayedDescriptions && 19}
+          type={asset?.type}
+          uniqueId={asset?.uniqueId}
+        />
         <Spacer />
       </AdditionalContentWrapper>
     </SlackSheet>

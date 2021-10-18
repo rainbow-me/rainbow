@@ -4,7 +4,7 @@ import Text from './Text';
 const H1 = styled(Text).attrs(
   ({
     letterSpacing = 'rounded',
-    weight = 'bold',
+    weight = 'heavy',
     color,
     theme: { colors },
   }) => ({

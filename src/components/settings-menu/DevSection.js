@@ -76,6 +76,12 @@ const DevSection = () => {
     Restart();
   };
 
+  const [errorObj, setErrorObj] = useState(null);
+
+  const throwRenderError = () => {
+    setErrorObj({ error: 'this throws render error' });
+  };
+
   return (
     <ScrollView testID="developer-settings-modal">
       <ListItem label="💥 Clear async storage" onPress={AsyncStorage.clear} />
@@ -89,6 +95,12 @@ const DevSection = () => {
         testID="reset-keychain-section"
       />
       <ListItem label="🔄 Restart app" onPress={() => Restart.Restart()} />
+      <ListItem
+        label="💥 Crash app (render error)"
+        onPress={throwRenderError}
+        testID="crash-app-section"
+      />
+      {errorObj}
       <ListItem label="🗑️ Remove all backups" onPress={removeBackups} />
       <ListItem
         label="🤷 Restore default experimental config"

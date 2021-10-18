@@ -6,12 +6,17 @@ import {
   joinSignature,
 } from '@ethersproject/bytes';
 import { HDNode } from '@ethersproject/hdnode';
+import { Provider } from '@ethersproject/providers';
 import { SigningKey } from '@ethersproject/signing-key';
 import { Transaction } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
+import {
+  signTypedData,
+  SignTypedDataVersion,
+  TypedMessage,
+} from '@metamask/eth-sig-util';
 import { captureException, captureMessage } from '@sentry/react-native';
 import { generateMnemonic } from 'bip39';
-import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
 import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
 import {
   hdkey as EthereumHDKey,
@@ -21,7 +26,7 @@ import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
 import { ACCESSIBLE, getSupportedBiometryType } from 'react-native-keychain';
-import { getRandomColor, lightModeThemeColors } from '../styles/colors';
+import { lightModeThemeColors } from '../styles/colors';
 import {
   addressKey,
   allWalletsKey,
@@ -31,6 +36,7 @@ import {
   seedPhraseKey,
   selectedWalletKey,
 } from '../utils/keychainConstants';
+import { addressHashedColorIndex } from '../utils/profileUtils';
 import * as keychain from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
 import { EthereumAddress } from '@rainbow-me/entities';
@@ -76,6 +82,7 @@ interface WalletInitialized {
 interface TransactionRequestParam {
   transaction: TransactionRequest;
   existingWallet?: Wallet;
+  provider?: Provider;
 }
 
 interface MessageTypeProperty {
@@ -116,13 +123,14 @@ interface EthereumWalletFromSeed {
 
 type EthereumWallet = Wallet | ReadOnlyWallet;
 
-interface RainbowAccount {
+export interface RainbowAccount {
   index: number;
   label: string;
   address: EthereumAddress;
   avatar: null | string;
   color: number;
   visible: boolean;
+  image: string | null;
 }
 
 export interface RainbowWallet {
@@ -222,14 +230,15 @@ export const walletInit = async (
 
 export const loadWallet = async (
   address?: EthereumAddress | undefined,
-  showErrorIfNotLoaded = true
+  showErrorIfNotLoaded = true,
+  provider?: Provider
 ): Promise<null | Wallet> => {
   const privateKey = await loadPrivateKey(address);
   if (privateKey === -1 || privateKey === -2) {
     return null;
   }
   if (privateKey) {
-    return new Wallet(privateKey, web3Provider);
+    return new Wallet(privateKey, provider || web3Provider);
   }
   if (ios && showErrorIfNotLoaded) {
     showWalletErrorAlert();
@@ -240,21 +249,27 @@ export const loadWallet = async (
 export const sendTransaction = async ({
   transaction,
   existingWallet,
-}: TransactionRequestParam): Promise<null | Transaction> => {
+  provider,
+}: TransactionRequestParam): Promise<null | {
+  result?: Transaction;
+  error?: any;
+}> => {
   try {
     logger.sentry('about to send transaction', transaction);
-    const wallet = existingWallet || (await loadWallet());
+    const wallet =
+      existingWallet || (await loadWallet(undefined, true, provider));
     if (!wallet) return null;
     try {
       const result = await wallet.sendTransaction(transaction);
       logger.log('tx result', result);
-      return result;
+      return { result };
     } catch (error) {
       logger.log('Failed to SEND transaction', error);
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
-      logger.sentry('Failed to SEND transaction, alerted user');
-      captureException(error);
-      return null;
+      logger.sentry('Error', error);
+      const fakeError = new Error('Failed to send transaction');
+      captureException(fakeError);
+      return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
@@ -268,18 +283,26 @@ export const sendTransaction = async ({
 
 export const signTransaction = async ({
   transaction,
-}: TransactionRequestParam): Promise<null | string> => {
+  existingWallet,
+  provider,
+}: TransactionRequestParam): Promise<null | {
+  result?: string;
+  error?: any;
+}> => {
   try {
     logger.sentry('about to sign transaction', transaction);
-    const wallet = await loadWallet();
+    const wallet =
+      existingWallet || (await loadWallet(undefined, true, provider));
     if (!wallet) return null;
     try {
-      return wallet.signTransaction(transaction);
+      const result = await wallet.signTransaction(transaction);
+      return { result };
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_transaction'));
-      logger.sentry('Failed to SIGN transaction, alerted user');
-      captureException(error);
-      return null;
+      logger.sentry('Error', error);
+      const fakeError = new Error('Failed to sign transaction');
+      captureException(fakeError);
+      return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
@@ -292,21 +315,28 @@ export const signTransaction = async ({
 };
 
 export const signMessage = async (
-  message: BytesLike | Hexable | number
-): Promise<null | string> => {
+  message: BytesLike | Hexable | number,
+  existingWallet?: Wallet,
+  provider?: Provider
+): Promise<null | {
+  result?: string;
+  error?: any;
+}> => {
   try {
     logger.sentry('about to sign message', message);
-    const wallet = await loadWallet();
+    const wallet =
+      existingWallet || (await loadWallet(undefined, true, provider));
     try {
       if (!wallet) return null;
       const signingKey = new SigningKey(wallet.privateKey);
       const sigParams = await signingKey.signDigest(arrayify(message));
-      return joinSignature(sigParams);
+      return { result: joinSignature(sigParams) };
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
-      logger.sentry('Failed to SIGN message, alerted user');
-      captureException(error);
-      return null;
+      logger.sentry('Error', error);
+      const fakeError = new Error('Failed to sign message');
+      captureException(fakeError);
+      return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
@@ -317,23 +347,31 @@ export const signMessage = async (
 };
 
 export const signPersonalMessage = async (
-  message: string | Uint8Array
-): Promise<null | string> => {
+  message: string | Uint8Array,
+  existingWallet?: Wallet,
+  provider?: Provider
+): Promise<null | {
+  result?: string;
+  error?: any;
+}> => {
   try {
     logger.sentry('about to sign personal message', message);
-    const wallet = await loadWallet();
+    const wallet =
+      existingWallet || (await loadWallet(undefined, true, provider));
     try {
       if (!wallet) return null;
-      return wallet.signMessage(
-        typeof message === 'string' && isHexString(message)
-          ? arrayify(message)
+      const result = await wallet.signMessage(
+        typeof message === 'string' && isHexString(addHexPrefix(message))
+          ? arrayify(addHexPrefix(message))
           : message
       );
+      return { result };
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
-      logger.sentry('Failed to SIGN personal message, alerted user');
-      captureException(error);
-      return null;
+      logger.sentry('Error', error);
+      const fakeError = new Error('Failed to sign personal message');
+      captureException(fakeError);
+      return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
@@ -346,11 +384,17 @@ export const signPersonalMessage = async (
 };
 
 export const signTypedDataMessage = async (
-  message: string | TypedData
-): Promise<null | string> => {
+  message: string | TypedData,
+  existingWallet?: Wallet,
+  provider?: Provider
+): Promise<null | {
+  result?: string;
+  error?: any;
+}> => {
   try {
     logger.sentry('about to sign typed data  message', message);
-    const wallet = await loadWallet();
+    const wallet =
+      existingWallet || (await loadWallet(undefined, true, provider));
     if (!wallet) return null;
     try {
       const pkeyBuffer = toBuffer(addHexPrefix(wallet.privateKey));
@@ -374,19 +418,19 @@ export const signTypedDataMessage = async (
         version = 'v4';
       }
 
-      switch (version) {
-        case 'v4':
-          return signTypedData_v4(pkeyBuffer, {
-            data: parsedData,
-          });
-        default:
-          return signTypedDataLegacy(pkeyBuffer, { data: parsedData });
-      }
+      return {
+        result: signTypedData({
+          data: parsedData as TypedMessage<TypedDataTypes>,
+          privateKey: pkeyBuffer,
+          version: version.toUpperCase() as SignTypedDataVersion,
+        }),
+      };
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
-      logger.sentry('Failed to SIGN typed data message, alerted user');
-      captureException(error);
-      return null;
+      logger.sentry('Error', error);
+      const fakeError = new Error('Failed to sign typed data');
+      captureException(fakeError);
+      return { error };
     }
   } catch (error) {
     Alert.alert(lang.t('wallet.transaction.alert.authentication'));
@@ -639,11 +683,13 @@ export const createWallet = async (
     }
     logger.sentry('[createWallet] - saved private key');
 
-    const colorForWallet = color !== null ? color : getRandomColor();
+    const colorIndexForWallet =
+      color !== null ? color : addressHashedColorIndex(walletAddress) || 0;
     addresses.push({
       address: walletAddress,
       avatar: null,
-      color: colorForWallet,
+      color: colorIndexForWallet,
+      image: null,
       index: 0,
       label: name || '',
       visible: true,
@@ -657,7 +703,8 @@ export const createWallet = async (
       store.dispatch(updateWebDataEnabled(true, walletAddress));
       // Save the color
       setPreference(PreferenceActionType.init, 'profile', address, {
-        accountColor: lightModeThemeColors.avatarColor[colorForWallet],
+        accountColor:
+          lightModeThemeColors.avatarBackgrounds[colorIndexForWallet],
       });
       logger.sentry(`[createWallet] - enabled web profile`);
     }
@@ -704,12 +751,13 @@ export const createWallet = async (
 
         // Remove any discovered wallets if they already exist
         // and copy over label and color if account was visible
-        let color = getRandomColor();
+        let colorIndexForWallet =
+          addressHashedColorIndex(nextWallet.address) || 0;
         let label = '';
 
         if (discoveredAccount && discoveredWalletId) {
           if (discoveredAccount.visible) {
-            color = discoveredAccount.color;
+            colorIndexForWallet = discoveredAccount.color;
             label = discoveredAccount.label ?? '';
           }
           // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
@@ -739,7 +787,8 @@ export const createWallet = async (
           addresses.push({
             address: nextWallet.address,
             avatar: null,
-            color,
+            color: colorIndexForWallet,
+            image: null,
             index,
             label,
             visible: true,
@@ -756,7 +805,8 @@ export const createWallet = async (
             'profile',
             nextWallet.address,
             {
-              accountColor: lightModeThemeColors.avatarColor[color],
+              accountColor:
+                lightModeThemeColors.avatarBackgrounds[colorIndexForWallet],
             }
           );
 

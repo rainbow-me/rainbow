@@ -13,26 +13,25 @@ export default function useColorForAsset(
   fallbackColor,
   forceLightMode = false
 ) {
-  const { address, color } = asset;
-  const token = getTokenMetadata(address);
+  const { isDarkMode: isDarkModeTheme, colors } = useTheme();
+  const { address, color, mainnet_address } = asset;
+  const token = getTokenMetadata(mainnet_address || address);
   const tokenListColor = token?.color;
 
   const { color: imageColor } = useImageMetadata(
     getUrlForTrustIconFallback(address)
   );
 
-  const { isDarkMode: isDarkModeTheme, colors } = useTheme();
   const isDarkMode = forceLightMode || isDarkModeTheme;
 
-  const colorDerivedFromAddress = useMemo(
-    () =>
-      isETH(address)
-        ? isDarkMode
-          ? colors.brighten(lightModeThemeColors.dark)
-          : colors.dark
-        : pseudoRandomArrayItemFromString(address, colors.avatarColor),
-    [address, colors, isDarkMode]
-  );
+  const colorDerivedFromAddress = useMemo(() => {
+    let color = isETH(address)
+      ? isDarkMode
+        ? colors.brighten(lightModeThemeColors.dark)
+        : colors.dark
+      : pseudoRandomArrayItemFromString(address, colors.avatarBackgrounds);
+    return color;
+  }, [address, colors, isDarkMode]);
 
   return useMemo(() => {
     let color2Return;

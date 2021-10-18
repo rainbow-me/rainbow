@@ -62,7 +62,7 @@ const transition = (
   </Transition.Sequence>
 );
 
-const ClearInputDecorator = ({ inputHeight, isVisible, onPress }) => {
+const ClearInputDecorator = ({ inputHeight, isVisible, onPress, testID }) => {
   const transitionRef = useRef();
 
   useEffect(() => transitionRef.current?.animateNextTransition(), [isVisible]);
@@ -75,6 +75,7 @@ const ClearInputDecorator = ({ inputHeight, isVisible, onPress }) => {
             as={ButtonPressAnimation}
             onPress={onPress}
             size={inputHeight}
+            testID={testID}
           >
             <TextIcon>􀁡</TextIcon>
           </Button>

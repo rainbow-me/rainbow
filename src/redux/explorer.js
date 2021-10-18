@@ -1,6 +1,8 @@
 import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
-import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
+import { DATA_API_KEY, DATA_ENDPOINT, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
+// eslint-disable-next-line import/no-cycle
+import { arbitrumExplorerInit } from './arbitrumExplorer';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
 /* eslint-disable-next-line import/no-cycle */
 import {
@@ -16,12 +18,20 @@ import {
   fallbackExplorerClearState,
   fallbackExplorerInit,
 } from './fallbackExplorer';
+// eslint-disable-next-line import/no-cycle
+import { optimismExplorerInit } from './optimismExplorer';
+// eslint-disable-next-line import/no-cycle
+import { polygonExplorerInit } from './polygonExplorer';
 import { updateTopMovers } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import currencyTypes from '@rainbow-me/helpers/currencyTypes';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
-import { DPI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
+import {
+  DPI_ADDRESS,
+  ETH_ADDRESS,
+  MATIC_MAINNET_ADDRESS,
+} from '@rainbow-me/references';
 import { TokensListenedCache } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -74,7 +84,7 @@ const messages = {
 
 // -- Actions ---------------------------------------- //
 const createSocket = endpoint =>
-  io(`wss://api-v4.zerion.io/${endpoint}`, {
+  io(`${DATA_ENDPOINT || 'wss://api-v4.zerion.io'}/${endpoint}`, {
     extraHeaders: { origin: DATA_ORIGIN },
     query: {
       api_token: `${DATA_API_KEY}`,
@@ -111,7 +121,12 @@ const assetPricesSubscription = (
   currency,
   action = 'subscribe'
 ) => {
-  const assetCodes = concat(tokenAddresses, ETH_ADDRESS, DPI_ADDRESS);
+  const assetCodes = concat(
+    tokenAddresses,
+    ETH_ADDRESS,
+    DPI_ADDRESS,
+    MATIC_MAINNET_ADDRESS
+  );
   return [
     action,
     {
@@ -177,7 +192,7 @@ export const fetchAssetPrices = assetAddress => (dispatch, getState) => {
       scope: ['prices'],
     },
   ];
-  assetsSocket.emit(...payload);
+  assetsSocket?.emit(...payload);
 };
 
 const explorerUnsubscribe = () => (dispatch, getState) => {
@@ -327,12 +342,15 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
     : [assetAddress];
 
   const newAssetsCodes = assetCodes.filter(
-    code => !TokensListenedCache[code + nativeCurrency]
+    code => !TokensListenedCache?.[nativeCurrency]?.[code]
   );
 
-  newAssetsCodes.forEach(
-    code => (TokensListenedCache[code + nativeCurrency] = true)
-  );
+  newAssetsCodes.forEach(code => {
+    if (!TokensListenedCache?.[nativeCurrency]) {
+      TokensListenedCache[nativeCurrency] = {};
+    }
+    TokensListenedCache[nativeCurrency][code] = true;
+  });
 
   if (newAssetsCodes.length > 0) {
     assetsSocket?.emit(
@@ -392,6 +410,17 @@ const listenOnAssetMessages = socket => dispatch => {
   });
 };
 
+export const explorerInitL2 = () => (dispatch, getState) => {
+  if (getState().settings.network === NetworkTypes.mainnet) {
+    // Start watching arbitrum assets
+    dispatch(arbitrumExplorerInit());
+    // Start watching optimism assets
+    dispatch(optimismExplorerInit());
+    // Start watching polygon assets
+    dispatch(polygonExplorerInit());
+  }
+};
+
 const listenOnAddressMessages = socket => dispatch => {
   socket.on(messages.ADDRESS_PORTFOLIO.RECEIVED, message => {
     dispatch(portfolioReceived(message));
@@ -424,6 +453,7 @@ const listenOnAddressMessages = socket => dispatch => {
         '😬 Cancelling fallback data provider listener. Zerion is good!'
       );
       dispatch(disableFallbackIfNeeded());
+      dispatch(explorerInitL2());
     }
   });
 

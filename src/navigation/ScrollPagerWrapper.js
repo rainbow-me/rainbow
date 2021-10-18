@@ -1,20 +1,27 @@
 import React, { forwardRef } from 'react';
-import { Platform } from 'react-native';
-import { Value } from 'react-native-reanimated';
+import { useSharedValue } from 'react-native-reanimated';
 import ScrollPager from '../helpers/ScrollPager';
+import { ScrollPositionContext } from './ScrollPositionContext';
 import ViewPagerAdapter from './ViewPagerAdapter';
 
-export const scrollPosition = new Value(1);
-
 export default forwardRef(function ScrollPagerWrapper(props, ref) {
-  return Platform.select({
-    android: (
-      <ViewPagerAdapter
-        {...props}
-        keyboardDismissMode="none"
-        overScrollMode="never"
-      />
-    ),
-    ios: <ScrollPager {...props} overscroll={false} ref={ref} />,
-  });
+  const position = useSharedValue(props.initialScrollPosition ?? 0);
+  return (
+    <ScrollPositionContext.Provider value={position}>
+      {android ? (
+        <ViewPagerAdapter
+          {...props}
+          keyboardDismissMode="none"
+          overScrollMode="never"
+        />
+      ) : (
+        <ScrollPager
+          {...props}
+          overscroll={false}
+          position={position}
+          ref={ref}
+        />
+      )}
+    </ScrollPositionContext.Provider>
+  );
 });

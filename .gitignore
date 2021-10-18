@@ -12,6 +12,7 @@ ios/debug.xcconfig
 ios/release.xcconfig
 ios/localrelease.xcconfig
 ios/staging.xcconfig
+ios/Frameworks/GoogleService-Info.plist
 
 # Xcode
 #
@@ -90,4 +91,4 @@ rainbow-scripts
 # Patches
 patches/react-native-webview+11.2.3.patch
 
-
+.eslintcache

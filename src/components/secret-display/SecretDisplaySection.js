@@ -22,19 +22,21 @@ import logger from 'logger';
 
 const Title = styled(Text).attrs({
   align: 'center',
-  size: 'larger',
+  size: 'lmedium',
   weight: 'bold',
 })`
   padding-top: 20;
 `;
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
-  color: colors.alpha(colors.blueGreyDark, 0.5),
-  lineHeight: 'loosest',
-  size: 'large',
+  color: colors.alpha(colors.blueGreyDark, 0.6),
+  lineHeight: 'loose',
+  size: 'lmedium',
+  weight: 'semibold',
 }))`
   margin-bottom: 42;
-  padding-horizontal: 23;
+  margin-top: 5;
+  padding-horizontal: 3;
 `;
 
 const AuthenticationText = styled(Text).attrs({
@@ -67,7 +69,7 @@ const CopyButtonText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
   letterSpacing: 'roundedMedium',
   lineHeight: 19,
-  size: 'large',
+  size: 'lmedium',
   weight: 'bold',
 }))``;
 
@@ -128,7 +130,7 @@ export default function SecretDisplaySection({
     <ColumnWithMargins
       align="center"
       justify="center"
-      margin={24}
+      margin={16}
       paddingHorizontal={30}
     >
       {visible ? (
@@ -141,12 +143,13 @@ export default function SecretDisplaySection({
                   <CopyButtonText>Copy to clipboard</CopyButtonText>
                 </CopyButtonRow>
               </CopyFloatingEmojis>
-              <SecretDisplayCard seed={seed} type={type} />
               <Column>
-                <Title>⚠️ Reminder:</Title>
+                <SecretDisplayCard seed={seed} type={type} />
+              </Column>
+              <Column>
+                <Title>👆For your eyes only 👆</Title>
                 <DescriptionText>
-                  These words are for your eyes only. Your secret phrase gives
-                  access to your entire wallet. Be very careful with it.
+                  Anyone who has these words can access your entire wallet!
                 </DescriptionText>
               </Column>
             </Fragment>

@@ -52,18 +52,50 @@ const parseGasPricesEthGasStation = data => ({
     true
   ),
 });
+const parseGasPricesPolygonGasStation = data => {
+  const polygonGasPriceBumpFactor = 1.05;
+  return {
+    [CUSTOM]: null,
+    [FAST]: defaultGasPriceFormat(
+      FAST,
+      0.2,
+      Math.ceil(Number(data.fastest) * polygonGasPriceBumpFactor),
+      true
+    ),
+    [NORMAL]: defaultGasPriceFormat(
+      NORMAL,
+      0.5,
+      Math.ceil(Number(data.fast) * polygonGasPriceBumpFactor),
+      true
+    ),
+    [SLOW]: defaultGasPriceFormat(
+      SLOW,
+      1,
+      Math.ceil(Number(data.average) * polygonGasPriceBumpFactor),
+      true
+    ),
+  };
+};
 
 /**
  * @desc parse ether gas prices
  * @param {Object} data
- * @param {Boolean} short - use short format or not
+ * @param {String} source
  */
-export const parseGasPrices = (data, source = 'etherscan') =>
-  !data
-    ? getFallbackGasPrices()
-    : source === 'etherscan'
-    ? parseGasPricesEtherscan(data)
-    : parseGasPricesEthGasStation(data);
+export const parseGasPrices = (
+  data,
+  source = gasUtils.GAS_PRICE_SOURCES.ETHERSCAN
+) => {
+  if (!data) return getFallbackGasPrices();
+  switch (source) {
+    case gasUtils.GAS_PRICE_SOURCES.ETH_GAS_STATION:
+      return parseGasPricesEthGasStation(data);
+    case gasUtils.GAS_PRICE_SOURCES.POLYGON_GAS_STATION:
+      return parseGasPricesPolygonGasStation(data);
+    default:
+      return parseGasPricesEtherscan(data);
+  }
+};
 
 export const defaultGasPriceFormat = (option, timeWait, value) => {
   const timeAmount = multiply(timeWait, timeUnits.ms.minute);
@@ -75,7 +107,7 @@ export const defaultGasPriceFormat = (option, timeWait, value) => {
     },
     option,
     value: {
-      amount: weiAmount,
+      amount: Math.round(weiAmount),
       display: `${parseInt(value, 10)} Gwei`,
     },
   };
@@ -90,8 +122,9 @@ export const defaultGasPriceFormat = (option, timeWait, value) => {
 export const parseTxFees = (gasPrices, priceUnit, gasLimit, nativeCurrency) => {
   const txFees = map(GasSpeedOrder, speed => {
     const gasPrice = get(gasPrices, `${speed}.value.amount`);
+    const txFee = getTxFee(gasPrice, gasLimit, priceUnit, nativeCurrency);
     return {
-      txFee: getTxFee(gasPrice, gasLimit, priceUnit, nativeCurrency),
+      txFee,
     };
   });
   return zipObject(GasSpeedOrder, txFees);

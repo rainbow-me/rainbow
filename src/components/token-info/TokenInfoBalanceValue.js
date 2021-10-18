@@ -1,9 +1,14 @@
 import React from 'react';
+import styled from 'styled-components';
 import { CoinIcon } from '../coin-icon';
 import { RowWithMargins } from '../layout';
 import TokenInfoValue from './TokenInfoValue';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { magicMemo } from '@rainbow-me/utils';
+
+const InfoValue = styled(TokenInfoValue)`
+  ${android ? 'height: 37.7;' : ''}
+`;
 
 const TokenInfoBalanceValue = ({ align, asset, ...props }) => {
   const { address, balance, symbol, value } = asset;
@@ -18,7 +23,7 @@ const TokenInfoBalanceValue = ({ align, asset, ...props }) => {
       marginKey={align === 'left' ? 'marginRight' : 'marginLeft'}
     >
       <CoinIcon address={address} size={20} symbol={symbol} />
-      <TokenInfoValue color={color}>{balance?.display || value}</TokenInfoValue>
+      <InfoValue color={color}>{balance?.display || value}</InfoValue>
     </RowWithMargins>
   );
 };

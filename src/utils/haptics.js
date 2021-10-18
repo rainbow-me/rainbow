@@ -6,6 +6,7 @@ export const HapticFeedbackTypes = {
   impactHeavy: 'impactHeavy',
   impactLight: 'impactLight',
   impactMedium: 'impactMedium',
+  keyboardPress: 'keyboardPress', // Android Only
   notificationError: 'notificationError',
   notificationSuccess: 'notificationSuccess',
   notificationWarning: 'notificationWarning',

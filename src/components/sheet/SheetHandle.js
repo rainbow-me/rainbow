@@ -5,7 +5,9 @@ export const HandleHeight = 5;
 
 const defaultColor = (colors, showBlur) =>
   android
-    ? colors.alpha(colors.blueGreyDark, showBlur ? 0.7 : 1.0)
+    ? showBlur
+      ? colors.alpha(colors.blueGreyDark, 0.3)
+      : colors.blueGreyDark30
     : colors.alpha(colors.blueGreyDark30, showBlur ? 0.7 : 1.0);
 
 const Handle = styled.View`

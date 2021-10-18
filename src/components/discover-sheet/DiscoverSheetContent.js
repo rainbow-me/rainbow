@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components';
-import { ColumnWithMargins } from '../layout';
+import { ColumnWithMargins, FlexItem } from '../layout';
 import { Text } from '../text';
 import DiscoverHome from './DiscoverHome';
 import DiscoverSearch from './DiscoverSearch';
@@ -24,7 +24,7 @@ function Switcher({ showSearch, children }) {
   return (
     <>
       <View style={{ display: showSearch ? 'flex' : 'none' }}>
-        {children[0]}
+        {showSearch ? children[0] : <FlexItem />}
       </View>
       <View style={{ display: showSearch ? 'none' : 'flex' }}>
         {children[1]}

@@ -16,7 +16,7 @@ const IndicatorIcon = styled(Icon).attrs(({ isPinned, theme: { colors } }) => ({
 `;
 
 const IndicatorIconContainer = styled(Centered)`
-  ${borders.buildCircle(20)};
+  ${borders.buildCircle(22)};
   ${({ theme: { isDarkMode, colors } }) =>
     shadow.build(
       0,
@@ -25,19 +25,20 @@ const IndicatorIconContainer = styled(Centered)`
       isDarkMode ? colors.shadow : colors.blueGreyDark,
       0.4
     )}
+  align-self: center;
   background-color: ${({ theme: { colors } }) => colors.blueGreyDark50};
-  bottom: 3;
-  left: 10;
+  bottom: 9;
+  left: 19;
   position: absolute;
-  z-index: 10;
 `;
 
-export default function CoinIconIndicator({ isPinned }) {
+export default function CoinIconIndicator({ isFirstCoinRow, isPinned }) {
   const isCoinListEditedValue = useCoinListEditedValue();
 
   return (
     <IndicatorIconContainer
       as={Animated.View}
+      isFirstCoinRow={isFirstCoinRow}
       style={{ opacity: isCoinListEditedValue }}
     >
       <IndicatorIcon isPinned={isPinned} />

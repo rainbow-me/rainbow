@@ -1,7 +1,3 @@
-const cache: Record<string, string> = {};
-
-const TokensListenedCache = {
-  cache,
-};
+const TokensListenedCache: Record<string, Record<string, boolean>> = {};
 
 export default TokensListenedCache;

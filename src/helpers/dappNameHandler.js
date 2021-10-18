@@ -4,9 +4,9 @@ const buildAssetUrl = hostname =>
   `https://raw.githubusercontent.com/rainbow-me/rainbow/develop/src/assets/dappLogos/${hostname}.jpg`;
 
 const DisplayDappNames = Object.freeze({
-  '1inch.exchange': {
+  '1inch.io': {
     name: '1inch',
-    uri: null,
+    uri: buildAssetUrl('1inch.io'),
   },
   '88mph.app': {
     name: '88mph',
@@ -16,6 +16,14 @@ const DisplayDappNames = Object.freeze({
     name: 'Aave',
     uri: buildAssetUrl('aave.com'),
   },
+  'artblocks.io': {
+    name: 'Art Blocks',
+    uri: buildAssetUrl('artblocks.io'),
+  },
+  'astrofrens.com': {
+    name: 'Astro Frens',
+    uri: buildAssetUrl('astrofrens.com'),
+  },
   'badger.finance': {
     name: 'Badger DAO',
     uri: null,
@@ -23,6 +31,18 @@ const DisplayDappNames = Object.freeze({
   'balancer.exchange': {
     name: 'Balancer',
     uri: null,
+  },
+  'blit.house': {
+    name: 'Blit House',
+    uri: buildAssetUrl('blit.house'),
+  },
+  'blitmap.com': {
+    name: 'Blitmap',
+    uri: buildAssetUrl('blitmap.com'),
+  },
+  'collab.land': {
+    name: 'Collab.Land',
+    uri: buildAssetUrl('collab.land'),
   },
   'compound.finance': {
     name: 'Compound',
@@ -34,7 +54,7 @@ const DisplayDappNames = Object.freeze({
   },
   'curve.fi': {
     name: 'Curve',
-    uri: null,
+    uri: buildAssetUrl('curve.fi'),
   },
   'defisaver.com': {
     name: 'DeFi Saver',
@@ -45,8 +65,16 @@ const DisplayDappNames = Object.freeze({
     uri: buildAssetUrl('dydx.exchange'),
   },
   'ens.domains': {
-    name: 'ENS App',
-    uri: null,
+    name: 'ENS',
+    uri: buildAssetUrl('ens.domains'),
+  },
+  'etherscan.io': {
+    name: 'Etherscan',
+    uri: buildAssetUrl('etherscan.io'),
+  },
+  'flexa.network': {
+    name: 'Flexa',
+    uri: buildAssetUrl('flexa.network'),
   },
   'foundation.app': {
     name: 'Foundation',
@@ -57,12 +85,16 @@ const DisplayDappNames = Object.freeze({
     uri: buildAssetUrl('furucombo.app'),
   },
   'gnosis-safe.io': {
-    name: 'Gnosis Safe Multisig',
-    uri: null,
+    name: 'Gnosis Safe',
+    uri: buildAssetUrl('gnosis-safe.io'),
+  },
+  'indexcoop.com': {
+    name: 'Index',
+    uri: buildAssetUrl('indexcoop.com'),
   },
   'instadapp.io': {
     name: 'Instadapp',
-    uri: null,
+    uri: buildAssetUrl('instadapp.io'),
   },
   'kyberswap.com': {
     name: 'KyberSwap',
@@ -72,6 +104,10 @@ const DisplayDappNames = Object.freeze({
     name: 'Matcha',
     uri: buildAssetUrl('matcha.xyz'),
   },
+  'mirror.xyz': {
+    name: 'Mirror',
+    uri: buildAssetUrl('mirror.xyz'),
+  },
   'mstable.org': {
     name: 'mStable',
     uri: buildAssetUrl('mstable.org'),
@@ -80,13 +116,29 @@ const DisplayDappNames = Object.freeze({
     name: 'MyCrypto',
     uri: buildAssetUrl('mycrypto.com'),
   },
+  'nft20.io': {
+    name: 'NFT20',
+    uri: buildAssetUrl('nft20.io'),
+  },
+  'niftygateway.com': {
+    name: 'Nifty Gateway',
+    uri: buildAssetUrl('niftygateway.com'),
+  },
   'oasis.app': {
     name: 'Oasis',
-    uri: null,
+    uri: buildAssetUrl('oasis.app'),
   },
   'opensea.io': {
     name: 'OpenSea',
     uri: buildAssetUrl('opensea.io'),
+  },
+  'optimism.io': {
+    name: 'Optimism Gateway',
+    uri: buildAssetUrl('optimism.io'),
+  },
+  'partybid.app': {
+    name: 'PartyBid',
+    uri: buildAssetUrl('partybid.app'),
   },
   'piedao.org': {
     name: 'PieDAO',
@@ -96,12 +148,28 @@ const DisplayDappNames = Object.freeze({
     name: 'PoolTogether',
     uri: buildAssetUrl('pooltogether.com'),
   },
+  'punks.house': {
+    name: 'Punk House',
+    uri: buildAssetUrl('punks.house'),
+  },
+  'quickswap.exchange': {
+    name: 'QuickSwap',
+    uri: null,
+  },
   'rarible.com': {
     name: 'Rarible',
     uri: buildAssetUrl('rarible.com'),
   },
-  'sushiswap.fi': {
-    name: 'SushiSwap',
+  'snapshot.org': {
+    name: 'Snapshot',
+    uri: buildAssetUrl('snapshot.org'),
+  },
+  'superrare.com': {
+    name: 'SuperRare',
+    uri: buildAssetUrl('superrare.com'),
+  },
+  'sushi.com': {
+    name: 'Sushi',
     uri: null,
   },
   'swerve.fi': {

@@ -1,4 +1,6 @@
+import { Mutex } from 'async-mutex';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
+import isValidDomain from 'is-valid-domain';
 import {
   concat,
   filter,
@@ -26,7 +28,8 @@ import {
 } from '../apollo/queries';
 /* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
-/* eslint-disable-next-line import/no-cycle */
+import { addCoinsToHiddenList } from './editOptions';
+// eslint-disable-next-line import/no-cycle
 import { uniqueTokensRefreshState } from './uniqueTokens';
 /* eslint-disable-next-line import/no-cycle */
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
@@ -36,6 +39,8 @@ import {
   TransactionStatusTypes,
   TransactionTypes,
 } from '@rainbow-me/entities';
+import appEvents from '@rainbow-me/handlers/appEvents';
+import { isL2Asset } from '@rainbow-me/handlers/assets';
 import {
   getAssetPricesFromUniswap,
   getAssets,
@@ -45,7 +50,11 @@ import {
   saveAssets,
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
-import { getTransactionReceipt } from '@rainbow-me/handlers/web3';
+import {
+  getProviderForNetwork,
+  isL2Network,
+  web3Provider,
+} from '@rainbow-me/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
@@ -80,6 +89,7 @@ const BACKUP_SHEET_DELAY_MS = 3000;
 let pendingTransactionsHandle = null;
 let genericAssetsHandle = null;
 const TXN_WATCHER_MAX_TRIES = 60;
+const TXN_WATCHER_MAX_TRIES_LAYER_2 = 200;
 const TXN_WATCHER_POLL_INTERVAL = 5000; // 5 seconds
 const GENERIC_ASSETS_REFRESH_INTERVAL = 60000; // 1 minute
 const GENERIC_ASSETS_FALLBACK_TIMEOUT = 10000; // 10 seconds
@@ -119,46 +129,54 @@ const DATA_UPDATE_REFETCH_SAVINGS = 'data/DATA_UPDATE_REFETCH_SAVINGS';
 
 const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
 
-// -- Actions ---------------------------------------- //
-export const dataLoadState = () => async (dispatch, getState) => {
-  const { accountAddress, network } = getState().settings;
-  try {
-    const assetPricesFromUniswap = await getAssetPricesFromUniswap(
-      accountAddress,
-      network
-    );
-    dispatch({
-      payload: assetPricesFromUniswap,
-      type: DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS,
-    });
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
-  try {
-    dispatch({ type: DATA_LOAD_ASSETS_REQUEST });
-    const assets = await getAssets(accountAddress, network);
-    dispatch({
-      payload: assets,
-      type: DATA_LOAD_ASSETS_SUCCESS,
-    });
-  } catch (error) {
-    dispatch({ type: DATA_LOAD_ASSETS_FAILURE });
-  }
-  try {
-    dispatch({ type: DATA_LOAD_TRANSACTIONS_REQUEST });
-    const transactions = await getLocalTransactions(accountAddress, network);
-    dispatch({
-      payload: transactions,
-      type: DATA_LOAD_TRANSACTIONS_SUCCESS,
-    });
-  } catch (error) {
-    dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
-  }
-  genericAssetsHandle = setTimeout(() => {
-    dispatch(genericAssetsFallback());
-  }, GENERIC_ASSETS_FALLBACK_TIMEOUT);
-};
+const mutex = new Mutex();
 
-export const fetchAssetPrices = async (coingeckoIds, nativeCurrency) => {
+const withRunExclusive = async callback => await mutex.runExclusive(callback);
+
+// -- Actions ---------------------------------------- //
+export const dataLoadState = () => async (dispatch, getState) =>
+  withRunExclusive(async () => {
+    const { accountAddress, network } = getState().settings;
+    try {
+      const assetPricesFromUniswap = await getAssetPricesFromUniswap(
+        accountAddress,
+        network
+      );
+      dispatch({
+        payload: assetPricesFromUniswap,
+        type: DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS,
+      });
+      // eslint-disable-next-line no-empty
+    } catch (error) {}
+    try {
+      dispatch({ type: DATA_LOAD_ASSETS_REQUEST });
+      const assets = await getAssets(accountAddress, network);
+      dispatch({
+        payload: assets,
+        type: DATA_LOAD_ASSETS_SUCCESS,
+      });
+    } catch (error) {
+      dispatch({ type: DATA_LOAD_ASSETS_FAILURE });
+    }
+    try {
+      dispatch({ type: DATA_LOAD_TRANSACTIONS_REQUEST });
+      const transactions = await getLocalTransactions(accountAddress, network);
+      dispatch({
+        payload: transactions,
+        type: DATA_LOAD_TRANSACTIONS_SUCCESS,
+      });
+    } catch (error) {
+      dispatch({ type: DATA_LOAD_TRANSACTIONS_FAILURE });
+    }
+    genericAssetsHandle = setTimeout(() => {
+      dispatch(genericAssetsFallback());
+    }, GENERIC_ASSETS_FALLBACK_TIMEOUT);
+  });
+
+export const fetchAssetPricesWithCoingecko = async (
+  coingeckoIds,
+  nativeCurrency
+) => {
   try {
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoIds
       .filter(val => !!val)
@@ -171,6 +189,25 @@ export const fetchAssetPrices = async (coingeckoIds, nativeCurrency) => {
   } catch (e) {
     logger.log(`Error trying to fetch ${coingeckoIds} prices`, e);
   }
+};
+
+export const fetchCoingeckoIds = async () => {
+  let ids;
+  try {
+    const request = await fetch(COINGECKO_IDS_ENDPOINT);
+    ids = await request.json();
+  } catch (e) {
+    ids = coingeckoIdsFallback;
+  }
+
+  const idsMap = {};
+  ids.forEach(({ id, platforms: { ethereum: tokenAddress } }) => {
+    const address = tokenAddress && toLower(tokenAddress);
+    if (address && address.substr(0, 2) === '0x') {
+      idsMap[address] = id;
+    }
+  });
+  return idsMap;
 };
 
 const genericAssetsFallback = () => async (dispatch, getState) => {
@@ -202,7 +239,7 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
     },
   ];
 
-  keys(TokensListenedCache).forEach(address => {
+  keys(TokensListenedCache?.[nativeCurrency]).forEach(address => {
     const coingeckoAsset = ids.find(
       ({ platforms: { ethereum: tokenAddress } }) =>
         toLower(tokenAddress) === address
@@ -211,7 +248,7 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
     if (coingeckoAsset) {
       allAssets.push({
         asset_code: address,
-        coingecko_id: coingeckoAsset.id,
+        coingecko_id: coingeckoAsset?.id,
         name: coingeckoAsset.name,
         symbol: toUpper(coingeckoAsset.symbol),
       });
@@ -231,7 +268,7 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
         .slice(from, to)
         .map(({ coingecko_id }) => coingecko_id);
 
-      const pricesForCurrentPage = await fetchAssetPrices(
+      const pricesForCurrentPage = await fetchAssetPricesWithCoingecko(
         currentPageIds,
         formattedNativeCurrency
       );
@@ -295,6 +332,7 @@ export const dataResetState = () => (dispatch, getState) => {
     uniswapPricesSubscription.unsubscribe &&
     uniswapPricesSubscription.unsubscribe();
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
+  genericAssetsHandle && clearTimeout(genericAssetsHandle);
   dispatch({ type: DATA_CLEAR_STATE });
 };
 
@@ -351,83 +389,91 @@ export const portfolioReceived = message => async (dispatch, getState) => {
 export const transactionsReceived = (message, appended = false) => async (
   dispatch,
   getState
-) => {
-  const isValidMeta = dispatch(checkMeta(message));
-  if (!isValidMeta) return;
-  const transactionData = message?.payload?.transactions ?? [];
-  if (appended) {
-    dispatch(checkForConfirmedSavingsActions(transactionData));
-  }
-
-  const { accountAddress, nativeCurrency, network } = getState().settings;
-  const { purchaseTransactions } = getState().addCash;
-  const { transactions } = getState().data;
-  const { selected } = getState().wallets;
-
-  const { parsedTransactions, potentialNftTransaction } = parseTransactions(
-    transactionData,
-    accountAddress,
-    nativeCurrency,
-    transactions,
-    purchaseTransactions,
-    network,
-    appended
-  );
-  if (appended && potentialNftTransaction) {
-    setTimeout(() => {
-      dispatch(uniqueTokensRefreshState());
-    }, 60000);
-  }
-  dispatch({
-    payload: parsedTransactions,
-    type: DATA_UPDATE_TRANSACTIONS,
-  });
-  dispatch(updatePurchases(parsedTransactions));
-  saveLocalTransactions(parsedTransactions, accountAddress, network);
-
-  if (appended && parsedTransactions.length) {
-    if (
-      selected &&
-      !selected.backedUp &&
-      !selected.imported &&
-      selected.type !== WalletTypes.readOnly
-    ) {
-      setTimeout(() => {
-        triggerOnSwipeLayout(() =>
-          Navigation.handleAction(Routes.BACKUP_SHEET, { single: true })
-        );
-      }, BACKUP_SHEET_DELAY_MS);
+) =>
+  withRunExclusive(async () => {
+    const isValidMeta = dispatch(checkMeta(message));
+    if (!isValidMeta) return;
+    const transactionData = message?.payload?.transactions ?? [];
+    if (appended) {
+      dispatch(checkForConfirmedSavingsActions(transactionData));
     }
-  }
-};
 
-export const transactionsRemoved = message => (dispatch, getState) => {
-  const isValidMeta = dispatch(checkMeta(message));
-  if (!isValidMeta) return;
+    const { accountAddress, nativeCurrency, network } = getState().settings;
+    const { purchaseTransactions } = getState().addCash;
+    const { transactions } = getState().data;
+    const { selected } = getState().wallets;
 
-  const transactionData = message?.payload?.transactions ?? [];
-  if (!transactionData.length) return;
-  const { accountAddress, network } = getState().settings;
-  const { transactions } = getState().data;
-  const removeHashes = map(transactionData, txn => txn.hash);
-  logger.log('[data] - remove txn hashes', removeHashes);
-  const updatedTransactions = filter(
-    transactions,
-    txn => !includes(removeHashes, ethereumUtils.getHash(txn))
-  );
+    const {
+      parsedTransactions,
+      potentialNftTransaction,
+    } = await parseTransactions(
+      transactionData,
+      accountAddress,
+      nativeCurrency,
+      transactions,
+      purchaseTransactions,
+      network,
+      appended
+    );
+    if (appended && potentialNftTransaction) {
+      setTimeout(() => {
+        dispatch(uniqueTokensRefreshState());
+      }, 60000);
+    }
+    dispatch({
+      payload: parsedTransactions,
+      type: DATA_UPDATE_TRANSACTIONS,
+    });
+    dispatch(updatePurchases(parsedTransactions));
+    saveLocalTransactions(parsedTransactions, accountAddress, network);
 
-  dispatch({
-    payload: updatedTransactions,
-    type: DATA_UPDATE_TRANSACTIONS,
+    if (appended && parsedTransactions.length) {
+      if (
+        selected &&
+        !selected.backedUp &&
+        !selected.imported &&
+        selected.type !== WalletTypes.readOnly
+      ) {
+        setTimeout(() => {
+          triggerOnSwipeLayout(() =>
+            Navigation.handleAction(Routes.BACKUP_SHEET, { single: true })
+          );
+        }, BACKUP_SHEET_DELAY_MS);
+      }
+    }
   });
-  saveLocalTransactions(updatedTransactions, accountAddress, network);
-};
+
+export const transactionsRemoved = message => async (dispatch, getState) =>
+  withRunExclusive(() => {
+    const isValidMeta = dispatch(checkMeta(message));
+    if (!isValidMeta) return;
+
+    const transactionData = message?.payload?.transactions ?? [];
+    if (!transactionData.length) {
+      return;
+    }
+    const { accountAddress, network } = getState().settings;
+    const { transactions } = getState().data;
+    const removeHashes = map(transactionData, txn => txn.hash);
+    logger.log('[data] - remove txn hashes', removeHashes);
+    const updatedTransactions = filter(
+      transactions,
+      txn => !includes(removeHashes, ethereumUtils.getHash(txn))
+    );
+
+    dispatch({
+      payload: updatedTransactions,
+      type: DATA_UPDATE_TRANSACTIONS,
+    });
+    saveLocalTransactions(updatedTransactions, accountAddress, network);
+  });
 
 export const addressAssetsReceived = (
   message,
   append = false,
   change = false,
-  removed = false
+  removed = false,
+  assetsNetwork = null
 ) => (dispatch, getState) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
@@ -457,21 +503,46 @@ export const addressAssetsReceived = (
 
   let parsedAssets = parseAccountAssets(assets, uniqueTokens);
 
-  // remove LP tokens
+  // remove V2 LP tokens
   const liquidityTokens = remove(
     parsedAssets,
-    asset =>
-      asset?.type === AssetTypes.uniswap || asset?.type === AssetTypes.uniswapV2
+    asset => asset?.type === AssetTypes.uniswapV2
   );
 
-  dispatch(
-    uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
-  );
+  const isL2 = assetsNetwork && isL2Network(assetsNetwork);
 
+  if (!isL2) {
+    dispatch(
+      uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
+    );
+  }
+
+  const { assets: existingAssets } = getState().data;
   if (append || change || removed) {
-    const { assets: existingAssets } = getState().data;
     parsedAssets = uniqBy(
       concat(parsedAssets, existingAssets),
+      item => item.uniqueId
+    );
+  } else if (isL2) {
+    // We need to replace all the assets for that network completely
+    const { assets: existingAssets } = getState().data;
+    const restOfTheAssets = existingAssets.filter(
+      asset => asset.network !== assetsNetwork
+    );
+
+    parsedAssets = uniqBy(
+      concat(parsedAssets, restOfTheAssets),
+      item => item.uniqueId
+    );
+  } else {
+    // We need to merge the response with all l2 assets
+    // to prevent L2 assets temporarily dissapearing
+    const { assets: existingAssets } = getState().data;
+    const l2Assets = existingAssets.filter(asset => isL2Asset(asset.type));
+    parsedAssets = uniqBy(
+      network === networkTypes.mainnet
+        ? concat(parsedAssets, l2Assets)
+        : parsedAssets,
       item => item.uniqueId
     );
   }
@@ -483,6 +554,7 @@ export const addressAssetsReceived = (
     // Change the state since the account isn't empty anymore
     saveAccountEmptyState(false, accountAddress, network);
   }
+
   dispatch({
     payload: parsedAssets,
     type: DATA_UPDATE_ASSETS,
@@ -493,6 +565,20 @@ export const addressAssetsReceived = (
       property('address')
     );
     dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
+  }
+
+  //Hide tokens with a url as their token name
+  const assetsWithScamURL = parsedAssets
+    .filter(asset => isValidDomain(asset.name) && !asset.isVerified)
+    .map(({ address }) => address);
+  dispatch(addCoinsToHiddenList(assetsWithScamURL));
+
+  // Hide coins with price = 0 that are currently not pinned
+  if (isL2) {
+    const assetsWithNoPrice = parsedAssets
+      .filter(asset => asset.price?.value === 0)
+      .map(({ address }) => address);
+    dispatch(addCoinsToHiddenList(assetsWithNoPrice));
   }
 };
 
@@ -662,34 +748,48 @@ export const assetPricesChanged = message => (dispatch, getState) => {
 export const dataAddNewTransaction = (
   txDetails,
   accountAddressToUpdate = null,
-  disableTxnWatcher = false
-) => async (dispatch, getState) => {
-  const { transactions } = getState().data;
-  const { accountAddress, nativeCurrency, network } = getState().settings;
-  if (
-    accountAddressToUpdate &&
-    toLower(accountAddressToUpdate) !== toLower(accountAddress)
-  )
-    return;
-
-  try {
-    const parsedTransaction = await parseNewTransaction(
-      txDetails,
-      nativeCurrency
-    );
-    const _transactions = [parsedTransaction, ...transactions];
-    dispatch({
-      payload: _transactions,
-      type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
-    });
-    saveLocalTransactions(_transactions, accountAddress, network);
-    if (!disableTxnWatcher || network !== networkTypes.mainnet) {
-      dispatch(watchPendingTransactions(accountAddress));
-    }
-    return parsedTransaction;
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
-};
+  disableTxnWatcher = false,
+  provider = null
+) => async (dispatch, getState) =>
+  withRunExclusive(async () => {
+    const { transactions } = getState().data;
+    const { accountAddress, nativeCurrency, network } = getState().settings;
+    if (
+      accountAddressToUpdate &&
+      toLower(accountAddressToUpdate) !== toLower(accountAddress)
+    )
+      return;
+    try {
+      const parsedTransaction = await parseNewTransaction(
+        txDetails,
+        nativeCurrency
+      );
+      const _transactions = [parsedTransaction, ...transactions];
+      dispatch({
+        payload: _transactions,
+        type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
+      });
+      saveLocalTransactions(_transactions, accountAddress, network);
+      if (
+        !disableTxnWatcher ||
+        network !== networkTypes.mainnet ||
+        parsedTransaction?.network
+      ) {
+        dispatch(
+          watchPendingTransactions(
+            accountAddress,
+            parsedTransaction.network
+              ? TXN_WATCHER_MAX_TRIES_LAYER_2
+              : TXN_WATCHER_MAX_TRIES,
+            null,
+            provider
+          )
+        );
+      }
+      return parsedTransaction;
+      // eslint-disable-next-line no-empty
+    } catch (error) {}
+  });
 
 const getConfirmedState = type => {
   switch (type) {
@@ -708,117 +808,137 @@ const getConfirmedState = type => {
   }
 };
 
-export const dataWatchPendingTransactions = (cb = null) => async (
-  dispatch,
-  getState
-) => {
-  const { transactions } = getState().data;
-  if (!transactions.length) return true;
-  let txStatusesDidChange = false;
+export const dataWatchPendingTransactions = (
+  provider = null,
+  currentNonce = -1
+) => async (dispatch, getState) =>
+  withRunExclusive(async () => {
+    const { transactions } = getState().data;
+    if (!transactions.length) return true;
 
-  const [pending, remainingTransactions] = partition(
-    transactions,
-    txn => txn.pending
-  );
+    const [pending, remainingTransactions] = partition(
+      transactions,
+      txn => txn.pending
+    );
 
-  if (isEmpty(pending)) return true;
+    if (isEmpty(pending)) {
+      return true;
+    }
+    let txStatusesDidChange = false;
 
-  const updatedPendingTransactions = await Promise.all(
-    pending.map(async tx => {
-      const updatedPending = { ...tx };
-      const txHash = ethereumUtils.getHash(tx);
-      try {
-        logger.log('Checking pending tx with hash', txHash);
-        const txObj = await getTransactionReceipt(txHash);
-        if (txObj && txObj.blockNumber) {
-          // When speeding up a non "normal tx" we need to resubscribe
-          // because zerion "append" event isn't reliable
-          logger.log('TX CONFIRMED!', tx);
-          if (cb) {
-            logger.log('executing cb', cb);
-            cb(tx);
-            return;
-          }
-          const minedAt = Math.floor(Date.now() / 1000);
-          txStatusesDidChange = true;
-          const isSelf = toLower(tx?.from) === toLower(tx?.to);
-          if (!isZero(txObj.status)) {
-            const newStatus = getTransactionLabel({
-              direction: isSelf
-                ? TransactionDirections.self
-                : TransactionDirections.out,
-              pending: false,
-              protocol: tx?.protocol,
-              status:
-                tx.status === TransactionStatusTypes.cancelling
-                  ? TransactionStatusTypes.cancelled
-                  : getConfirmedState(tx.type),
-              type: tx?.type,
+    const updatedPendingTransactions = await Promise.all(
+      pending.map(async tx => {
+        const updatedPending = { ...tx };
+        const txHash = ethereumUtils.getHash(tx);
+        try {
+          logger.log('Checking pending tx with hash', txHash);
+          const p =
+            provider || (await getProviderForNetwork(updatedPending.network));
+          const txObj = await p.getTransaction(txHash);
+          // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
+          const nonceAlreadyIncluded = currentNonce > tx.nonce;
+          if (
+            (txObj && txObj.blockNumber && txObj.blockHash) ||
+            nonceAlreadyIncluded
+          ) {
+            // When speeding up a non "normal tx" we need to resubscribe
+            // because zerion "append" event isn't reliable
+            logger.log('TX CONFIRMED!', txObj);
+            if (!nonceAlreadyIncluded) {
+              appEvents.emit('transactionConfirmed', txObj);
+            }
+            const minedAt = Math.floor(Date.now() / 1000);
+            txStatusesDidChange = true;
+            if (txObj && !isZero(txObj.status)) {
+              const isSelf = toLower(tx?.from) === toLower(tx?.to);
+              const newStatus = getTransactionLabel({
+                direction: isSelf
+                  ? TransactionDirections.self
+                  : TransactionDirections.out,
+                pending: false,
+                protocol: tx?.protocol,
+                status:
+                  tx.status === TransactionStatusTypes.cancelling
+                    ? TransactionStatusTypes.cancelled
+                    : getConfirmedState(tx.type),
+                type: tx?.type,
+              });
+              updatedPending.status = newStatus;
+            } else if (nonceAlreadyIncluded) {
+              updatedPending.status = TransactionStatusTypes.unknown;
+            } else {
+              updatedPending.status = TransactionStatusTypes.failed;
+            }
+            const title = getTitle({
+              protocol: tx.protocol,
+              status: updatedPending.status,
+              type: tx.type,
             });
-            updatedPending.status = newStatus;
-          } else {
-            updatedPending.status = TransactionStatusTypes.failed;
+            updatedPending.title = title;
+            updatedPending.pending = false;
+            updatedPending.minedAt = minedAt;
           }
-          const title = getTitle({
-            protocol: tx.protocol,
-            status: updatedPending.status,
-            type: tx.type,
-          });
-          updatedPending.title = title;
-          updatedPending.pending = false;
-          updatedPending.minedAt = minedAt;
+        } catch (error) {
+          logger.log('Error watching pending txn', error);
         }
-      } catch (error) {
-        logger.log('Error watching pending txn', error);
-      }
-      return updatedPending;
-    })
-  );
-  const updatedTransactions = concat(
-    updatedPendingTransactions,
-    remainingTransactions
-  );
+        return updatedPending;
+      })
+    );
 
-  if (txStatusesDidChange) {
-    dispatch(updatePurchases(updatedTransactions));
-    const { accountAddress, network } = getState().settings;
+    if (txStatusesDidChange) {
+      const filteredPendingTransactions = updatedPendingTransactions?.filter(
+        ({ status }) => status !== TransactionStatusTypes.unknown
+      );
+      const updatedTransactions = concat(
+        filteredPendingTransactions,
+        remainingTransactions
+      );
+
+      dispatch(updatePurchases(updatedTransactions));
+      const { accountAddress, network } = getState().settings;
+      dispatch({
+        payload: updatedTransactions,
+        type: DATA_UPDATE_TRANSACTIONS,
+      });
+      saveLocalTransactions(updatedTransactions, accountAddress, network);
+
+      const pendingTx = updatedTransactions.find(tx => tx.pending);
+      if (!pendingTx) {
+        return true;
+      }
+    }
+    return false;
+  });
+
+export const dataUpdateTransaction = (
+  txHash,
+  txObj,
+  watch,
+  provider = null
+) => async (dispatch, getState) =>
+  withRunExclusive(async () => {
+    const { transactions } = getState().data;
+
+    const allOtherTx = transactions.filter(tx => tx.hash !== txHash);
+    const updatedTransactions = [txObj].concat(allOtherTx);
+
     dispatch({
       payload: updatedTransactions,
       type: DATA_UPDATE_TRANSACTIONS,
     });
+    const { accountAddress, network } = getState().settings;
     saveLocalTransactions(updatedTransactions, accountAddress, network);
-
-    const pendingTx = updatedTransactions.find(tx => tx.pending);
-    if (!pendingTx) {
-      return true;
+    // Always watch cancellation and speed up
+    if (watch) {
+      dispatch(
+        watchPendingTransactions(
+          accountAddress,
+          txObj.network ? TXN_WATCHER_MAX_TRIES_LAYER_2 : TXN_WATCHER_MAX_TRIES,
+          provider
+        )
+      );
     }
-  }
-
-  return false;
-};
-
-export const dataUpdateTransaction = (txHash, txObj, watch, cb) => (
-  dispatch,
-  getState
-) => {
-  const { transactions } = getState().data;
-
-  const allOtherTx = transactions.filter(tx => tx.hash !== txHash);
-  const updatedTransactions = [txObj].concat(allOtherTx);
-
-  dispatch({
-    payload: updatedTransactions,
-    type: DATA_UPDATE_TRANSACTIONS,
   });
-  const { accountAddress, network } = getState().settings;
-  saveLocalTransactions(updatedTransactions, accountAddress, network);
-  // Always watch cancellation and speed up
-  if (watch) {
-    dispatch(
-      watchPendingTransactions(accountAddress, TXN_WATCHER_MAX_TRIES, cb)
-    );
-  }
-};
 
 const updatePurchases = updatedTransactions => dispatch => {
   const confirmedPurchases = filter(updatedTransactions, txn => {
@@ -830,10 +950,23 @@ const updatePurchases = updatedTransactions => dispatch => {
   dispatch(addCashUpdatePurchases(confirmedPurchases));
 };
 
-const watchPendingTransactions = (
+export const checkPendingTransactionsOnInitialize = (
+  accountAddressToWatch,
+  provider = null
+) => async (dispatch, getState) => {
+  const { accountAddress: currentAccountAddress } = getState().settings;
+  if (currentAccountAddress !== accountAddressToWatch) return;
+  const currentNonce = await (provider || web3Provider).getTransactionCount(
+    currentAccountAddress,
+    'latest'
+  );
+  await dispatch(dataWatchPendingTransactions(provider, currentNonce));
+};
+
+export const watchPendingTransactions = (
   accountAddressToWatch,
   remainingTries = TXN_WATCHER_MAX_TRIES,
-  cb = null
+  provider = null
 ) => async (dispatch, getState) => {
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
   if (remainingTries === 0) return;
@@ -841,12 +974,16 @@ const watchPendingTransactions = (
   const { accountAddress: currentAccountAddress } = getState().settings;
   if (currentAccountAddress !== accountAddressToWatch) return;
 
-  const done = await dispatch(dataWatchPendingTransactions(cb));
+  const done = await dispatch(dataWatchPendingTransactions(provider));
 
   if (!done) {
     pendingTransactionsHandle = setTimeout(() => {
       dispatch(
-        watchPendingTransactions(accountAddressToWatch, remainingTries - 1, cb)
+        watchPendingTransactions(
+          accountAddressToWatch,
+          remainingTries - 1,
+          provider
+        )
       );
     }, TXN_WATCHER_POLL_INTERVAL);
   }

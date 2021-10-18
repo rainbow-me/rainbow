@@ -30,6 +30,8 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>rainbow</string>
+				<string>wc</string>
+				<string>ethereum</string>
 			</array>
 		</dict>
 	</array>
@@ -108,6 +110,7 @@
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>

@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { FloatingEmojis } from '../floating-emojis';
-import { Centered, ColumnWithMargins } from '../layout';
+import { ColumnWithMargins, Row } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
@@ -40,13 +40,17 @@ const FloatingFavoriteEmojis = styled(FloatingEmojis).attrs({
   z-index: 100;
 `;
 
+const ExchangeCoinName = styled(CoinName)`
+  width: ${({ showBalance }) => (showBalance ? '100%' : '90%')};
+`;
+
 const BottomRow = ({ showBalance, symbol }) =>
   showBalance ? null : <BottomRowText>{symbol}</BottomRowText>;
 
 const TopRow = ({ name, showBalance }) => (
-  <Centered height={showBalance ? CoinIconSize : null}>
-    <CoinName>{name}</CoinName>
-  </Centered>
+  <Row align="center" height={showBalance ? CoinIconSize : null}>
+    <ExchangeCoinName showBalance={showBalance}>{name}</ExchangeCoinName>
+  </Row>
 );
 
 const ExchangeCoinRow = ({
@@ -103,7 +107,7 @@ const ExchangeCoinRow = ({
           )}
         </CoinRow>
       </ButtonPressAnimation>
-      {item.address !== ETH_ADDRESS && (
+      {item.address !== ETH_ADDRESS && !showBalance && (
         <CoinRowInfoButton
           item={item}
           onCopySwapDetailsText={onCopySwapDetailsText}

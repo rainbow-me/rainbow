@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import Animated from 'react-native-reanimated';
+
 import ChartContext from '../../helpers/ChartContext';
 import withReanimatedFallback from '../../helpers/withReanimatedFallback';
 

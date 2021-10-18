@@ -77,6 +77,37 @@ export async function loadString(
     if (err.toString() === 'Error: Wrapped error: User not authenticated') {
       return -2;
     }
+    if (
+      err.toString() ===
+      'Error: The user name or passphrase you entered is not correct.'
+    ) {
+      // Try reading from keychain once more
+      captureMessage('Keychain read first attempt failed');
+      await delay(1000);
+      try {
+        const credentials = await getInternetCredentials(key, options);
+        if (credentials) {
+          logger.log(
+            `Keychain: loaded string for key on second attempt: ${key}`
+          );
+          return credentials.password;
+        }
+        logger.sentry(`Keychain: string does not exist for key: ${key}`);
+      } catch (e) {
+        if (err.toString() === 'Error: User canceled the operation.') {
+          return -1;
+        }
+        if (err.toString() === 'Error: Wrapped error: User not authenticated') {
+          return -2;
+        }
+        captureMessage('Keychain read second attempt failed');
+        logger.sentry(
+          `Keychain: failed to load string for key: ${key} error: ${err}`
+        );
+        captureException(err);
+      }
+      return null;
+    }
     logger.sentry(
       `Keychain: failed to load string for key: ${key} error: ${err}`
     );

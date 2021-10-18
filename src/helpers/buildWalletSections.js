@@ -24,9 +24,7 @@ import { ImgixImage } from '@rainbow-me/images';
 import { setIsCoinListEdited } from '@rainbow-me/redux/editOptions';
 import { setOpenSmallBalances } from '@rainbow-me/redux/openStateSettings';
 import store from '@rainbow-me/redux/store';
-import { ETH_ICON_URL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { ethereumUtils } from '@rainbow-me/utils';
 
 const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
@@ -79,61 +77,14 @@ const filterWalletSections = sections =>
     data ? get(header, 'totalItems') : true
   );
 
-const addEth = section => {
-  const assets = store.getState().data.genericAssets;
-
-  if (assets.eth) {
-    const { relative_change_24h, value } = assets?.eth?.price || {};
-    const zeroEthRow = {
-      address: 'eth',
-      balance: {
-        amount: '0',
-        display: '0 ETH',
-      },
-      color: '#29292E',
-      decimals: 18,
-      icon_url: ETH_ICON_URL,
-      isCoin: true,
-      isPinned: true,
-      isPlaceholder: true,
-      isSmall: false,
-      name: 'Ethereum',
-      native: {
-        balance: {
-          amount: '0',
-          display: '0.00',
-        },
-        change: relative_change_24h ? `${relative_change_24h.toFixed(2)}%` : '',
-        price: {
-          amount: value,
-          display: String(value),
-        },
-      },
-      price: assets.eth.price,
-      symbol: 'ETH',
-      type: 'token',
-      uniqueId: 'eth',
-    };
-
-    if (section.data.length === 1) {
-      section.data.unshift(zeroEthRow);
-    }
-  }
-
-  return section;
-};
-
 const buildWalletSections = (
   balanceSection,
   uniqueTokenFamiliesSection,
   uniswapSection
 ) => {
-  const sections = [uniswapSection, uniqueTokenFamiliesSection];
+  const sections = [balanceSection, uniswapSection, uniqueTokenFamiliesSection];
 
-  const filteredSections =
-    filterWalletSections(sections).length > 0
-      ? [addEth(balanceSection), ...filterWalletSections(sections)]
-      : filterWalletSections([balanceSection]);
+  const filteredSections = filterWalletSections(sections);
   const isEmpty = !filteredSections.length;
 
   return {
@@ -162,39 +113,27 @@ const withUniswapSection = (
 };
 
 const withBalanceSavingsSection = savings => {
-  const priceOfEther = ethereumUtils.getEthPriceUnit();
-
-  let savingsAssets = savings;
   let totalUnderlyingNativeValue = '0';
-  if (priceOfEther) {
-    savingsAssets = map(savings, asset => {
-      const {
-        supplyBalanceUnderlying,
-        underlyingPrice,
-        lifetimeSupplyInterestAccrued,
-      } = asset;
-      const underlyingNativePrice =
-        asset.underlying.symbol === 'ETH'
-          ? priceOfEther
-          : multiply(underlyingPrice, priceOfEther);
-      const underlyingBalanceNativeValue = supplyBalanceUnderlying
-        ? multiply(supplyBalanceUnderlying, underlyingNativePrice)
-        : 0;
-      totalUnderlyingNativeValue = add(
-        totalUnderlyingNativeValue,
-        underlyingBalanceNativeValue
-      );
-      const lifetimeSupplyInterestAccruedNative = lifetimeSupplyInterestAccrued
-        ? multiply(lifetimeSupplyInterestAccrued, underlyingNativePrice)
-        : 0;
+  const savingsAssets = map(savings, asset => {
+    const {
+      lifetimeSupplyInterestAccrued,
+      underlyingBalanceNativeValue,
+      underlyingPrice,
+    } = asset;
+    totalUnderlyingNativeValue = add(
+      totalUnderlyingNativeValue,
+      underlyingBalanceNativeValue || 0
+    );
+    const lifetimeSupplyInterestAccruedNative = lifetimeSupplyInterestAccrued
+      ? multiply(lifetimeSupplyInterestAccrued, underlyingPrice)
+      : 0;
 
-      return {
-        ...asset,
-        lifetimeSupplyInterestAccruedNative,
-        underlyingBalanceNativeValue,
-      };
-    });
-  }
+    return {
+      ...asset,
+      lifetimeSupplyInterestAccruedNative,
+      underlyingBalanceNativeValue,
+    };
+  });
 
   const savingsSection = {
     assets: savingsAssets,
@@ -211,7 +150,8 @@ const coinEditContextMenu = (
   currentAction,
   isLoadingAssets,
   allAssetsCount,
-  totalValue
+  totalValue,
+  addedEth
 ) => {
   const noSmallBalances = !find(balanceSectionData, 'smallBalancesContainer');
 
@@ -235,7 +175,7 @@ const coinEditContextMenu = (
           }
         : undefined,
     title: null,
-    totalItems: isLoadingAssets ? 1 : allAssetsCount,
+    totalItems: isLoadingAssets ? 1 : (addedEth ? 1 : 0) + allAssetsCount,
     totalValue: totalValue,
   };
 };
@@ -254,15 +194,17 @@ const withBalanceSection = (
   pinnedCoins,
   hiddenCoins,
   currentAction,
-  uniswapTotal
+  uniswapTotal,
+  collectibles
 ) => {
-  const { assets, totalBalancesValue } = buildCoinsList(
+  const { addedEth, assets, totalBalancesValue } = buildCoinsList(
     allAssets,
     nativeCurrency,
     isCoinListEdited,
     pinnedCoins,
     hiddenCoins,
-    true
+    true,
+    !collectibles.length
   );
   let balanceSectionData = [...assets];
 
@@ -298,7 +240,8 @@ const withBalanceSection = (
       currentAction,
       isLoadingAssets,
       allAssetsCount,
-      totalValue
+      totalValue,
+      addedEth
     ),
     name: 'balances',
     renderItem: isLoadingAssets
@@ -415,6 +358,7 @@ const balanceSectionSelector = createSelector(
     hiddenCoinsSelector,
     currentActionSelector,
     uniswapTotalSelector,
+    uniqueTokensSelector,
   ],
   withBalanceSection
 );
