@@ -120,7 +120,7 @@ describe('Ganache Transaction Flow', () => {
   //   await Helpers.tapAndLongPress('exchange-modal-confirm');
   //   await Helpers.swipe('profile-screen', 'left', 'slow');
   // });
-  /*
+
   it('Should send ERC20 (cSAI)', async () => {
     await Helpers.tap('send-fab');
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
@@ -132,7 +132,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
- 
+  /*
   it('Should show completed swap ETH -> ERC20 (DAI)', async () => {
     try {
       await Helpers.checkIfVisible('Swapped-Ethereum');
@@ -347,7 +347,7 @@ describe('Ganache Transaction Flow', () => {
       await Helpers.checkIfVisible('Sending-Compound Sai');
     }
   });*/
-  /*
+
   it('Should show completed send ERC20 (cSAI)', async () => {
     try {
       await Helpers.checkIfVisible('Sent-Compound SAI-1.69 cSAI');
@@ -355,7 +355,7 @@ describe('Ganache Transaction Flow', () => {
       await Helpers.checkIfVisible('Sending-Compound SAI-1.69 cSAI');
     }
   });
-*/
+
   it('Should show completed send NFT (Cryptokitties)', async () => {
     try {
       await Helpers.checkIfVisible('Sent-Arun Cattybinky-1.00 CryptoKitties');
