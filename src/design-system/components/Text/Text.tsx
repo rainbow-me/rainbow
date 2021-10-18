@@ -68,6 +68,7 @@ function useTextStyle({
 
 export type TextProps = TextStyle & {
   numberOfLines?: number;
+  testID?: string;
 } & (
     | {
         containsEmoji: true;
@@ -82,6 +83,7 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
       numberOfLines,
       containsEmoji: containsEmojiProp = false,
       children,
+      testID,
       ...textStyleProps
     },
     ref
@@ -107,6 +109,7 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
         numberOfLines={numberOfLines}
         ref={ref}
         style={textStyle}
+        testID={testID}
       >
         {ios && containsEmojiProp && nodeIsString(children)
           ? renderEmoji(children)

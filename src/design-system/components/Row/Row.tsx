@@ -1,6 +1,6 @@
-import React, { Children, ReactNode } from 'react';
+import React, { Children, ReactElement, ReactNode } from 'react';
 import flattenChildren from 'react-flatten-children';
-import { negateSpace, Space } from '../../layout/space';
+import { Space } from '../../layout/space';
 import { Box } from '../Box/Box';
 
 const alignHorizontalToFlexAlign = {
@@ -20,19 +20,26 @@ type AlignVertical = keyof typeof alignVerticalToFlexAlign;
 
 export type RowProps = {
   children: ReactNode;
-  space: Space;
   alignHorizontal?: AlignHorizontal;
   alignVertical?: AlignVertical;
-};
+} & (
+  | { space?: never; separator: ReactElement }
+  | {
+      space: Space;
+      separator?: ReactElement;
+    }
+);
 
 /**
  * @description Arranges child nodes horizontally with equal spacing between
- * them. Items can optionally be aligned horizontally and/or vertically.
+ * them, plus an optional `separator` element. Items can optionally be aligned
+ * horizontally and/or vertically.
  */
 export function Row({
   children,
   alignHorizontal,
   alignVertical,
+  separator,
   space,
 }: RowProps) {
   return (
@@ -46,12 +53,14 @@ export function Row({
           ? alignHorizontalToFlexAlign[alignHorizontal]
           : undefined
       }
-      marginRight={negateSpace(space)}
     >
-      {Children.map(flattenChildren(children), child => (
-        <Box flexShrink={1} paddingRight={space}>
-          {child}
-        </Box>
+      {Children.map(flattenChildren(children), (child, index) => (
+        <>
+          {separator && index > 0 ? (
+            <Box paddingLeft={space}>{separator}</Box>
+          ) : null}
+          {space && index > 0 ? <Box paddingLeft={space}>{child}</Box> : child}
+        </>
       ))}
     </Box>
   );

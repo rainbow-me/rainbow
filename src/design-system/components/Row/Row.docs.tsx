@@ -1,12 +1,9 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
+import { View } from 'react-native';
 import { Docs } from '../../playground/Docs';
 import { Placeholder } from '../../playground/Placeholder';
-import { Text } from '../Text/Text';
 import { Row } from './Row';
-
-const loremIpsum =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
 
 const docs: Docs = {
   name: 'Row',
@@ -79,59 +76,84 @@ const docs: Docs = {
     },
 
     {
-      name: 'With text and placeholder',
+      name: 'With fixed-height separators',
       example: (
-        <Row alignHorizontal="justify" alignVertical="center" space="19dp">
-          <Text>Lorem ipsum</Text>
+        <Row
+          separator={
+            <View style={{ backgroundColor: '#999', height: 20, width: 1 }} />
+          }
+          space="19dp"
+        >
+          <Placeholder width={40} />
+          <Placeholder width={40} />
           <Placeholder width={40} />
         </Row>
       ),
     },
 
     {
-      name: 'With text and multiple placeholders',
+      name: 'With fixed-height separators and vertical alignment',
       example: (
-        <Row alignHorizontal="justify" alignVertical="center" space="19dp">
-          <Text>Lorem ipsum</Text>
-          <Row space="12dp">
-            <Placeholder width={40} />
-            <Placeholder width={40} />
-            <Placeholder width={40} />
-          </Row>
+        <Row
+          alignVertical="center"
+          separator={
+            <View style={{ backgroundColor: '#999', height: 20, width: 1 }} />
+          }
+          space="19dp"
+        >
+          <Placeholder height={40} width={40} />
+          <Placeholder height={60} width={40} />
+          <Placeholder height={20} width={40} />
         </Row>
       ),
     },
 
     {
-      name: 'With paragraph and placeholder',
+      name: 'With fixed-height separators and horizontal alignment',
       example: (
-        <Row alignHorizontal="justify" alignVertical="center" space="19dp">
-          <Text>{loremIpsum}</Text>
+        <Row
+          alignHorizontal="center"
+          separator={
+            <View style={{ backgroundColor: '#999', height: 20, width: 1 }} />
+          }
+          space="19dp"
+        >
+          <Placeholder width={40} />
+          <Placeholder width={40} />
           <Placeholder width={40} />
         </Row>
       ),
     },
 
     {
-      name: 'With paragraph and multiple placeholders',
+      name: 'With full-height separators',
       example: (
-        <Row alignHorizontal="justify" alignVertical="center" space="19dp">
-          <Text>{loremIpsum}</Text>
-          <Row space="12dp">
-            <Placeholder width={40} />
-            <Placeholder width={40} />
-            <Placeholder width={40} />
-          </Row>
+        <Row
+          alignVertical="center"
+          separator={
+            <View style={{ backgroundColor: '#999', flexGrow: 1, width: 1 }} />
+          }
+          space="19dp"
+        >
+          <Placeholder height={40} width={40} />
+          <Placeholder height={60} width={40} />
+          <Placeholder height={20} width={40} />
         </Row>
       ),
     },
 
     {
-      name: 'With only text',
+      name: 'With no space and separators',
       example: (
-        <Row alignVertical="center" space="19dp">
-          <Text>{loremIpsum}</Text>
-          <Text>{loremIpsum}</Text>
+        <Row
+          alignVertical="center"
+          separator={
+            <View style={{ backgroundColor: '#999', height: 20, width: 1 }} />
+          }
+        >
+          <Placeholder width={40} />
+          <Placeholder width={40} />
+          <Placeholder width={40} />
         </Row>
       ),
     },

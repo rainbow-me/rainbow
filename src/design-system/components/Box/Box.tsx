@@ -24,7 +24,6 @@ export interface BoxProps extends ComponentProps<typeof View> {
   flexWrap?: 'wrap';
   flexGrow?: 0 | 1;
   flexShrink?: 0 | 1;
-  minWidth?: 0;
   flexBasis?: 0;
   alignItems?: 'flex-start' | 'flex-end' | 'center' | 'stretch';
   justifyContent?: 'flex-start' | 'flex-end' | 'center' | 'space-between';
@@ -61,7 +60,6 @@ export function Box({
   marginRight,
   marginTop,
   marginVertical,
-  minWidth,
   padding,
   paddingBottom,
   paddingHorizontal,
@@ -109,7 +107,6 @@ export function Box({
       flexShrink,
       flexWrap,
       justifyContent,
-      minWidth: minWidth === 0 ? 0 : undefined,
       width: width ? widths[width] : undefined,
       ...paddingValues,
       ...marginValues,
@@ -129,7 +126,6 @@ export function Box({
     marginRight,
     marginTop,
     marginVertical,
-    minWidth,
     padding,
     paddingBottom,
     paddingHorizontal,

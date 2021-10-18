@@ -78,6 +78,16 @@ const docs: Docs = {
         </Stack>
       ),
     },
+    {
+      name: 'With no space and separators',
+      example: (
+        <Stack alignHorizontal="center" separator={<MockDivider />}>
+          <Placeholder width={30} />
+          <Placeholder width={90} />
+          <Placeholder width={60} />
+        </Stack>
+      ),
+    },
   ],
 };
 

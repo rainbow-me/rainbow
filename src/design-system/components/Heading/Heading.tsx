@@ -42,6 +42,7 @@ function useHeadingStyle({
 
 export type HeadingProps = HeadingStyle & {
   numberOfLines?: number;
+  testID?: string;
 } & (
     | {
         containsEmoji: true;
@@ -56,6 +57,7 @@ export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
       numberOfLines,
       containsEmoji: containsEmojiProp = false,
       children,
+      testID,
       ...textStyleProps
     },
     ref
@@ -81,6 +83,7 @@ export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
         numberOfLines={numberOfLines}
         ref={ref}
         style={textStyle}
+        testID={testID}
       >
         {ios && containsEmojiProp && nodeIsString(children)
           ? renderEmoji(children)
