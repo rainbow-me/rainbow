@@ -88,7 +88,7 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
         bottomInset={42}
         {...(ios
           ? { height: '100%' }
-          : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
+          : { additionalTopPadding: true, contentHeight: screenHeight - 30 })}
         scrollEnabled
       >
         <UniqueTokenExpandedStateHeader asset={asset} />
@@ -97,6 +97,7 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
           <SheetActionButtonRow>
             <SheetActionButton
               color={isDarkMode ? colors.darkModeDark : colors.dark}
+              fullWidth={!isSendable}
               label={isShowcaseAsset ? '􀁏 Showcase' : '􀁍 Showcase'}
               onPress={handlePressShowcase}
               weight="bold"
@@ -107,6 +108,7 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
           <SheetActionButtonRow>
             <SheetActionButton
               color={isDarkMode ? colors.darkModeDark : colors.dark}
+              fullWidth
               label="􀈂 Share"
               onPress={handlePressShare}
               weight="bold"
