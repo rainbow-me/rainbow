@@ -356,7 +356,6 @@ const UniqueTokenExpandedState = ({
             <NftExpandedStateSection title="📍 History">
               <TokenHistory 
                 contractAndToken={urlSuffixForAsset}
-                network={network}
               />
             </NftExpandedStateSection>
           </Fragment>

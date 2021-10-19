@@ -62,14 +62,11 @@ export const apiGetUniqueTokenFloorPrice = async (
 
 
 export const apiGetTokenHistory = async (
-  network,
   contractAddress,
   tokenID
 ) => {
   try {
-    // const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
     const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=20`;
-    console.log(url); // eslint-disable-line no-console
     const data = await rainbowFetch(url, {
       headers: {
         'Accept': 'application/json',
@@ -82,13 +79,11 @@ export const apiGetTokenHistory = async (
     var result = new Array();
 
     for(var i = 0; i < 20; i++) {
-      // console.log(JSON.stringify(data.data.asset_events[i].event_type)); // eslint-disable-line no-console
       result.push(JSON.stringify(data.data.asset_events[i].event_type));
     }
 
     return result;
 
-  
   } catch (error) {
     throw error;
   }

@@ -14,8 +14,7 @@ import { apiGetTokenHistory } from '@rainbow-me/handlers/opensea-api';
  */
 
 const TokenHistory = ({ 
-    contractAndToken,
-    network
+    contractAndToken
   }) => {
 
   const [tokenHistory, setTokenHistory] = useState(null);
@@ -31,7 +30,7 @@ const TokenHistory = ({
 
   //Query opensea using the contract address + tokenID
   useEffect(() => {
-    apiGetTokenHistory(network, contractAddress, tokenID).then(result => {
+    apiGetTokenHistory(contractAddress, tokenID).then(result => {
       setTokenHistory(result);
     });
   }, [contractAddress, tokenID]);
