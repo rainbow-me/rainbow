@@ -18,7 +18,7 @@ const TokenHistory = ({
     network
   }) => {
 
-  const [tokenHistory, setTokenHistory] = useState("yo");
+  const [tokenHistory, setTokenHistory] = useState(null);
   const [contractAddress, setContractAddress] = useState("");
   const [tokenID, setTokenID] = useState("");
 

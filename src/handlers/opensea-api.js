@@ -78,11 +78,15 @@ export const apiGetTokenHistory = async (
       method: 'get',
       timeout: 5000, // 5 secs
     });
-    
-    // console.log(tokenHistory); // eslint-disable-line no-console
+
+    var result = new Array();
+
     for(var i = 0; i < 20; i++) {
-      console.log(JSON.stringify(data.data.asset_events[i].event_type)); // eslint-disable-line no-console
+      // console.log(JSON.stringify(data.data.asset_events[i].event_type)); // eslint-disable-line no-console
+      result.push(JSON.stringify(data.data.asset_events[i].event_type));
     }
+
+    return result;
 
   
   } catch (error) {
