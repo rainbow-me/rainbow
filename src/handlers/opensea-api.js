@@ -88,3 +88,31 @@ export const apiGetTokenHistory = async (
     throw error;
   }
 };
+
+export const apiGetTokenHistoryPagination = async (
+  contractAddress,
+  tokenID
+) => {
+  try {
+    const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=20`;
+    const data = await rainbowFetch(url, {
+      headers: {
+        'Accept': 'application/json',
+        'X-Api-Key': OPENSEA_API_KEY,
+      },
+      method: 'get',
+      timeout: 5000, // 5 secs
+    });
+
+    var result = new Array();
+
+    for(var i = 0; i < 20; i++) {
+      result.push(JSON.stringify(data.data.asset_events[i].event_type));
+    }
+
+    return result;
+
+  } catch (error) {
+    throw error;
+  }
+};
