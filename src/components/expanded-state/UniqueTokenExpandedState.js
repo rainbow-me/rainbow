@@ -26,6 +26,7 @@ import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { TokenInfoItem, TokenInfoRow, TokenInfoSection } from '../token-info';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
 import ExpandedStateSection from './ExpandedStateSection';
+import TokenHistory from './TokenHistory';
 import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
@@ -349,6 +350,17 @@ const UniqueTokenExpandedState = ({
           </TokenInfoRow>
         </TokenInfoSection>
         <Column>
+          
+          <Fragment>
+            <SheetDivider deviceWidth={deviceWidth} />
+            <NftExpandedStateSection title="📍 History">
+              <TokenHistory 
+                contractAndToken={urlSuffixForAsset}
+                network={network}
+              />
+            </NftExpandedStateSection>
+          </Fragment>
+          
           {!!description && (
             <Fragment>
               <SheetDivider deviceWidth={deviceWidth} />
