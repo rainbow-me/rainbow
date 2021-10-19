@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { FloatingEmojis } from '../floating-emojis';
@@ -13,11 +13,13 @@ import CoinRowFavoriteButton from './CoinRowFavoriteButton';
 import CoinRowInfoButton from './CoinRowInfoButton';
 import { useDimensions } from '@rainbow-me/hooks';
 import { ETH_ADDRESS } from '@rainbow-me/references';
-import { padding } from '@rainbow-me/styles';
 import { haptics, neverRerender } from '@rainbow-me/utils';
 
 const CoinRowPaddingTop = 9.5;
 const CoinRowPaddingBottom = 9.5;
+const containerStyles = {
+  height: CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom,
+};
 
 const FloatingFavoriteEmojis = styled(FloatingEmojis).attrs({
   centerVertically: true,
@@ -76,31 +78,33 @@ const ExchangeCoinRow = ({
     }
   }, [isVerified, item, onPress, onUnverifiedTokenPress, showBalance]);
 
+  const toggleFavorite = onNewEmoji => {
+    setLocalFavorite(prevLocalFavorite => {
+      const newLocalFavorite = !prevLocalFavorite;
+      if (newLocalFavorite) {
+        haptics.notificationSuccess();
+        ios && onNewEmoji();
+      } else {
+        haptics.selection();
+      }
+      onActionAsset(item, newLocalFavorite);
+      return newLocalFavorite;
+    });
+  };
+
   return (
     <>
-      <ButtonPressAnimation
-        height={CoinIconSize + CoinRowPaddingTop + CoinRowPaddingBottom}
-        onPress={handlePress}
-        scaleTo={0.96}
-        throttle
-      >
+      <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} throttle>
         <CoinRow
           {...item}
           bottomRowRender={BottomRow}
-          containerStyles={css(
-            padding(
-              CoinRowPaddingTop,
-              showFavoriteButton || showAddButton ? 38 : 0,
-              CoinRowPaddingBottom,
-              15
-            )
-          )}
+          containerStyles={containerStyles}
           showBalance={showBalance}
           testID={`${testID}-exchange-coin-row`}
           topRowRender={TopRow}
         >
           {showBalance && (
-            <ColumnWithMargins align="end" margin={4}>
+            <ColumnWithMargins align="end" margin={android ? -6 : 4}>
               <BalanceText>{item?.native?.balance?.display || '–'}</BalanceText>
               <BottomRowText>{item?.balance?.display || ''}</BottomRowText>
             </ColumnWithMargins>
@@ -113,27 +117,21 @@ const ExchangeCoinRow = ({
           onCopySwapDetailsText={onCopySwapDetailsText}
         />
       )}
-      {showFavoriteButton && (
+      {showFavoriteButton && ios && (
         <FloatingFavoriteEmojis deviceWidth={deviceWidth}>
           {({ onNewEmoji }) => (
             <CoinRowFavoriteButton
               isFavorited={localFavorite}
-              onPress={() => {
-                setLocalFavorite(prevLocalFavorite => {
-                  const newLocalFavorite = !prevLocalFavorite;
-                  if (newLocalFavorite) {
-                    haptics.notificationSuccess();
-                    onNewEmoji();
-                  } else {
-                    haptics.selection();
-                  }
-                  onActionAsset(item, newLocalFavorite);
-                  return newLocalFavorite;
-                });
-              }}
+              onPress={() => toggleFavorite(onNewEmoji)}
             />
           )}
         </FloatingFavoriteEmojis>
+      )}
+      {showFavoriteButton && android && (
+        <CoinRowFavoriteButton
+          isFavorited={localFavorite}
+          onPress={() => toggleFavorite}
+        />
       )}
       {showAddButton && (
         <CoinRowAddButton
