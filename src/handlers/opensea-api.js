@@ -91,10 +91,11 @@ export const apiGetTokenHistory = async (
 
 export const apiGetTokenHistoryPagination = async (
   contractAddress,
-  tokenID
+  tokenID,
+  offset
 ) => {
   try {
-    const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=20`;
+    const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=20`;
     const data = await rainbowFetch(url, {
       headers: {
         'Accept': 'application/json',
