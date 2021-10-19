@@ -112,6 +112,7 @@
     "delay": "4.4.0",
     "dns.js": "1.0.1",
     "domain-browser": "1.2.0",
+    "eip1559-fee-suggestions-ethers": "^1.0.1",
     "emoji-datasource": "4.1.0",
     "eth-contract-metadata": "1.16.0",
     "eth-sig-util": "2.5.3",

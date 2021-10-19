@@ -1,5 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
+import { suggestFees } from 'eip1559-fee-suggestions-ethers';
 import { get, isEmpty } from 'lodash';
 import { AppDispatch, AppGetState } from './store';
 import {
@@ -26,6 +27,7 @@ import {
 import {
   getProviderForNetwork,
   isEIP1559LegacyNetwork,
+  web3Provider,
 } from '@rainbow-me/handlers/web3';
 import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
 import {
@@ -288,9 +290,20 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   };
 
   const getEIP1559GasParams = async () => {
+    const suggestedFees: { maxFeePerGas: number }[] = await suggestFees(
+      web3Provider
+    );
+    // add fallback to blocknative baseFeePerGas
+    const suggestedMaxFeesPerGas = suggestedFees.map(
+      ({ maxFeePerGas }) => maxFeePerGas
+    );
+    const suggestedMaxFeePerGas = Math.max(...suggestedMaxFeesPerGas);
+    const suggestedGweiMaxFeePerGas = Number(weiToGwei(suggestedMaxFeePerGas));
+
     const { data } = await blockNativeGetGasParams();
     const { gasFeeParamsBySpeed, baseFeePerGas } = parseBlockNativeGasData(
-      data as GasFeesBlockNativeData
+      data as GasFeesBlockNativeData,
+      suggestedGweiMaxFeePerGas
     );
     return { baseFeePerGas, gasFeeParamsBySpeed };
   };
