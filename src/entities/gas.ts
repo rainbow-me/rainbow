@@ -35,7 +35,6 @@ export interface LegacyTransactionGasParams {
 }
 
 export interface GasFeeParams {
-  baseFeePerGas: GasFeeParam;
   maxFeePerGas: GasFeeParam;
   maxPriorityFeePerGas: GasFeeParam;
   option: string;
@@ -70,6 +69,11 @@ export interface GasFeesBySpeed {
 
 export interface LegacyGasFeesBySpeed {
   [key: string]: LegacyGasFee;
+}
+
+export interface CurrentBlockParams {
+  baseFeePerGas: GasFeeParam;
+  trend: number;
 }
 
 // API

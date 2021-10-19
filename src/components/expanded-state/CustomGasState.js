@@ -21,6 +21,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { colors, lightModeThemeColors } from '@rainbow-me/styles';
+import { gasUtils } from '@rainbow-me/utils';
 
 const springConfig = {
   damping: 500,
@@ -53,8 +54,10 @@ export default function CustomGasState({ asset }) {
   const [contentHeight, setContentHeight] = useHeight(CONTENT_MIN_HEIGHT);
   const contentScroll = useSharedValue(0);
   const colorForAsset = useColorForAsset(asset || {});
-  const [currentGasTrend] = useState('stable');
-  const { selectedGasFee } = useGas();
+  const { selectedGasFee, currentBlockParams } = useGas();
+  const [currentGasTrend] = useState(
+    gasUtils.getTrendKey(currentBlockParams?.trend)
+  );
   useAndroidDisableGesturesOnFocus();
 
   const keyboardOffset = keyboardHeight + insets.bottom + 10;

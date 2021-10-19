@@ -105,6 +105,7 @@ export default function FeesPanel({
 }) {
   const {
     selectedGasFee,
+    currentBlockParams,
     updateToCustomGasFee,
     gasFeeParamsBySpeed,
   } = useGas();
@@ -132,11 +133,7 @@ export default function FeesPanel({
 
   const { maxFee, currentBaseFee, maxBaseFee, maxPriorityFee } = useMemo(() => {
     const maxFee = get(selectedGasFee, 'gasFee.maxFee.native.value.display', 0);
-    const currentBaseFee = get(
-      selectedGasFee,
-      'gasFeeParams.baseFeePerGas.gwei',
-      0
-    );
+    const currentBaseFee = get(currentBlockParams, 'baseFeePerGas.gwei', 0);
     let maxBaseFee;
     if (selectedOptionIsCustom) {
       // block more thn 2 decimals on gwei value
@@ -169,11 +166,12 @@ export default function FeesPanel({
     }
     return { currentBaseFee, maxBaseFee, maxFee, maxPriorityFee };
   }, [
-    customMaxBaseFee,
-    customMaxPriorityFee,
     selectedGasFee,
+    currentBlockParams,
     selectedOptionIsCustom,
     feesGweiInputFocused,
+    customMaxBaseFee,
+    customMaxPriorityFee,
   ]);
 
   const renderRowLabel = useCallback(

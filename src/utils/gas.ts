@@ -31,7 +31,19 @@ const GAS_ICONS = {
   [NORMAL]: 'stopwatch',
   [URGENT]: 'policeCarLight',
 };
-
+const getTrendKey = (trend: number) => {
+  // missing rising still
+  switch (trend) {
+    case -1:
+      return 'falling';
+    case 0:
+      return 'stable';
+    case 1:
+      return 'rising';
+    default:
+      return 'stable';
+  }
+};
 const GAS_TRENDS = {
   falling: { color: colors.green, label: '􀄱 Falling' },
   rising: { color: colors.orange, label: '􀰾 Rising' },
@@ -47,6 +59,7 @@ export default {
   GAS_PRICE_SOURCES,
   GAS_TRENDS,
   GasSpeedOrder,
+  getTrendKey,
   NORMAL,
   SLOW,
   URGENT,

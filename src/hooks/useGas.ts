@@ -25,8 +25,10 @@ export default function useGas() {
         gasLimit,
         isSufficientGas,
         selectedGasFee,
+        currentBlockParams,
       },
     }: AppState) => ({
+      currentBlockParams,
       gasFeeParamsBySpeed,
       gasFeesBySpeed,
       gasLimit,

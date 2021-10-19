@@ -4,8 +4,8 @@ import { suggestFees } from 'eip1559-fee-suggestions-ethers';
 import { get, isEmpty } from 'lodash';
 import { AppDispatch, AppGetState } from './store';
 import {
+  CurrentBlockParams,
   GasFee,
-  GasFeeParam,
   GasFeeParams,
   GasFeeParamsBySpeed,
   GasFeesBlockNativeData,
@@ -63,7 +63,7 @@ interface GasState {
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
   gasFeesBySpeed: GasFeesBySpeed | LegacyGasFeesBySpeed;
   txNetwork: Network | null;
-  baseFeePerGas: GasFeeParam | null;
+  currentBlockParams: CurrentBlockParams;
 }
 
 // -- Constants ------------------------------------------------------------- //
@@ -178,6 +178,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     gasFeeParamsBySpeed,
     gasLimit,
     selectedGasFee,
+    currentBlockParams,
   } = getState().gas;
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
@@ -209,7 +210,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   newGasFeeParamsBySpeed[CUSTOM] = defaultGasParamsFormat(
     CUSTOM,
     estimatedTime,
-    gasParams.baseFeePerGas.gwei,
+    currentBlockParams.baseFeePerGas.gwei,
     gasParams.maxFeePerGas.gwei,
     gasParams.maxPriorityFeePerGas.gwei
   );
@@ -290,9 +291,8 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   };
 
   const getEIP1559GasParams = async () => {
-    const suggestedFees: { maxFeePerGas: number }[] = await suggestFees(
-      web3Provider
-    );
+    const { suggestions, trend } = await suggestFees(web3Provider);
+    const suggestedFees: { maxFeePerGas: number }[] = suggestions;
     // add fallback to blocknative baseFeePerGas
     const suggestedMaxFeesPerGas = suggestedFees.map(
       ({ maxFeePerGas }) => maxFeePerGas
@@ -305,7 +305,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
       data as GasFeesBlockNativeData,
       suggestedGweiMaxFeePerGas
     );
-    return { baseFeePerGas, gasFeeParamsBySpeed };
+    return { baseFeePerGas, gasFeeParamsBySpeed, trend };
   };
 
   const getGasPrices = (network: Network) =>
@@ -342,6 +342,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
             const {
               gasFeeParamsBySpeed,
               baseFeePerGas,
+              trend,
             } = await getEIP1559GasParams();
             const newGasFeeParamsBySpeed = await etherscanGetGasFeesEstimates(
               gasFeeParamsBySpeed
@@ -356,10 +357,9 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
               // set CUSTOM to NORMAL if not defined
               newGasFeeParamsBySpeed[CUSTOM] = newGasFeeParamsBySpeed[NORMAL];
             }
-
             dispatch({
               payload: {
-                baseFeePerGas,
+                currentBlockParams: { baseFeePerGas, trend },
                 gasFeeParamsBySpeed: newGasFeeParamsBySpeed,
               },
               type: GAS_FEES_SUCCESS,
@@ -498,7 +498,7 @@ export const gasPricesStopPolling = () => (dispatch: AppDispatch) => {
 
 // -- Reducer --------------------------------------------------------------- //
 const INITIAL_STATE: GasState = {
-  baseFeePerGas: null,
+  currentBlockParams: {} as CurrentBlockParams,
   defaultGasLimit: ethUnits.basic_tx,
   gasFeeParamsBySpeed: {},
   gasFeesBySpeed: {},
@@ -526,7 +526,7 @@ export default (
     case GAS_FEES_SUCCESS:
       return {
         ...state,
-        baseFeePerGas: action.payload.baseFeePerGas,
+        currentBlockParams: action.payload.currentBlockParams,
         gasFeeParamsBySpeed: action.payload.gasFeeParamsBySpeed,
       };
     case GAS_PRICES_FAILURE:
