@@ -67,7 +67,6 @@ export const parseBlockNativeGasData = (
     parsedFees[option] = defaultGasParamsFormat(
       option,
       '0', // time
-      baseFeePerGas,
       suggestedMaxFeePerGas,
       maxPriorityFeePerGas
     );
@@ -184,18 +183,15 @@ export const parseGasFeeParam = (weiAmount: number): GasFeeParam => {
 export const defaultGasParamsFormat = (
   option: string,
   timeWait: Numberish,
-  gweiBaseFeePerGas: number,
   gweiMaxFeePerGas: number,
   gweiMaxPriorityFeePerGas: number
 ): GasFeeParams => {
-  const weiBaseFeePerGas = Number(multiply(gweiBaseFeePerGas, ethUnits.gwei));
   const weiMaxFeePerGas = Number(multiply(gweiMaxFeePerGas, ethUnits.gwei));
   const weiMaxPriorityFeePerGas = Number(
     multiply(gweiMaxPriorityFeePerGas, ethUnits.gwei)
   );
   const timeAmount = multiply(timeWait, timeUnits.ms.minute);
   return {
-    baseFeePerGas: parseGasFeeParam(weiBaseFeePerGas),
     estimatedTime: {
       amount: Number(timeAmount),
       display: getMinimalTimeUnitStringForMs(timeAmount),
@@ -235,12 +231,12 @@ export const parseLegacyGasFeesBySpeed = (
 
 export const parseGasFees = (
   gasFeeParams: GasFeeParams,
+  baseFeePerGas: GasFeeParam,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
   nativeCurrency: string
 ) => {
-  const { maxPriorityFeePerGas, maxFeePerGas, baseFeePerGas } =
-    gasFeeParams || {};
+  const { maxPriorityFeePerGas, maxFeePerGas } = gasFeeParams || {};
 
   const priorityFee = maxPriorityFeePerGas?.amount || 0;
   const maxFeePerGasAmount = maxFeePerGas?.amount || 0;
@@ -265,6 +261,7 @@ export const parseGasFees = (
 
 export const parseGasFeesBySpeed = (
   gasFeeParamsBySpeed: GasFeeParamsBySpeed,
+  baseFeePerGas: GasFeeParam,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
   nativeCurrency: string
@@ -272,6 +269,7 @@ export const parseGasFeesBySpeed = (
   const gasFeesBySpeed = map(GasSpeedOrder, speed =>
     parseGasFees(
       gasFeeParamsBySpeed[speed],
+      baseFeePerGas,
       gasLimit,
       priceUnit,
       nativeCurrency

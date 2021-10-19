@@ -34,7 +34,6 @@ import { createBottomSheetNavigator } from './bottom-sheet';
 import {
   addTokenSheetConfig,
   closeKeyboardOnClose,
-  customGasSheetConfig,
   defaultScreenStackOptions,
   restoreSheetConfig,
   stackNavigationConfig,

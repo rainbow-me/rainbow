@@ -19,8 +19,8 @@ import {
 } from '@rainbow-me/entities';
 import {
   blockNativeGetGasParams,
-  etherscanGetGasFeesEstimates,
   getEstimatedTimeForGasPrice,
+  getGasFeesEstimates,
   polygonGasStationGetGasPrices,
   polygonGetGasEstimates,
 } from '@rainbow-me/handlers/gasFees';
@@ -191,6 +191,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
 
   const customGasFees = parseGasFees(
     gasParams,
+    currentBlockParams?.baseFeePerGas,
     _gasLimit,
     nativeTokenPriceUnit,
     nativeCurrency
@@ -210,7 +211,6 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   newGasFeeParamsBySpeed[CUSTOM] = defaultGasParamsFormat(
     CUSTOM,
     estimatedTime,
-    currentBlockParams.baseFeePerGas.gwei,
     gasParams.maxFeePerGas.gwei,
     gasParams.maxPriorityFeePerGas.gwei
   );
@@ -344,7 +344,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
               baseFeePerGas,
               trend,
             } = await getEIP1559GasParams();
-            const newGasFeeParamsBySpeed = await etherscanGetGasFeesEstimates(
+            const newGasFeeParamsBySpeed = await getGasFeesEstimates(
               gasFeeParamsBySpeed
             );
             if (!isEmpty(existingGasFees[CUSTOM])) {
@@ -447,6 +447,7 @@ export const gasUpdateTxFee = (
     gasFeeParamsBySpeed,
     selectedGasFee,
     txNetwork,
+    currentBlockParams,
   } = getState().gas;
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
@@ -459,19 +460,24 @@ export const gasUpdateTxFee = (
       ? ethereumUtils.getEthPriceUnit()
       : ethereumUtils.getMaticPriceUnit();
 
-  const isLegacyNetwork = isEIP1559LegacyNetwork(txNetwork);
-  const parseFeesBySpeed = isLegacyNetwork
-    ? parseLegacyGasFeesBySpeed
-    : parseGasFeesBySpeed;
-
   if (isEmpty(gasFeeParamsBySpeed)) return;
 
-  const gasFeesBySpeed = parseFeesBySpeed(
-    gasFeeParamsBySpeed,
-    _gasLimit,
-    nativeTokenPriceUnit,
-    nativeCurrency
-  );
+  const isLegacyNetwork = isEIP1559LegacyNetwork(txNetwork);
+
+  const gasFeesBySpeed = isLegacyNetwork
+    ? parseLegacyGasFeesBySpeed(
+        gasFeeParamsBySpeed,
+        _gasLimit,
+        nativeTokenPriceUnit,
+        nativeCurrency
+      )
+    : parseGasFeesBySpeed(
+        gasFeeParamsBySpeed,
+        currentBlockParams?.baseFeePerGas,
+        _gasLimit,
+        nativeTokenPriceUnit,
+        nativeCurrency
+      );
   const selectedGasParams = getSelectedGasFee(
     assets,
     gasFeeParamsBySpeed,

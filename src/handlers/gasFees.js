@@ -109,11 +109,11 @@ export const polygonGetGasEstimates = data => {
 };
 
 /**
- * @desc get ethereum gas prices from Etherscan
+ * @desc get ethereum gas params from BlockNative
  * @params {data}
  * @return {Promise}
  */
-export const etherscanGetGasFeesEstimates = async gasFeeParamsBySpeed => {
+export const getGasFeesEstimates = async gasFeeParamsBySpeed => {
   const requests = Object.keys(gasFeeParamsBySpeed).map(speed => {
     return new Promise(async resolve => {
       try {
@@ -140,7 +140,6 @@ export const etherscanGetGasFeesEstimates = async gasFeeParamsBySpeed => {
       newGasFeeParamsBySpeed[speed] = defaultGasParamsFormat(
         speed,
         time,
-        newGasFeeParamsBySpeed[speed].baseFeePerGas.gwei,
         newGasFeeParamsBySpeed[speed].maxFeePerGas.gwei,
         newGasFeeParamsBySpeed[speed].maxPriorityFeePerGas.gwei
       );

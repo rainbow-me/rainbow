@@ -205,7 +205,7 @@ export default function FeesPanel({
         </PanelColumn>
       );
     },
-    [navigate, theme]
+    [currentBaseFee, currentGasTrend, navigate, theme]
   );
 
   const formattedBaseFee = useMemo(() => `${parseInt(currentBaseFee)} Gwei`, [
