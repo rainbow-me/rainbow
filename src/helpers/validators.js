@@ -1,4 +1,5 @@
 import { isValidAddress } from 'ethereumjs-util';
+import { parseDomain, ParseResultType } from 'parse-domain';
 import {
   isHexStringIgnorePrefix,
   isValidMnemonic,
@@ -35,6 +36,9 @@ export const isENSAddressFormat = address => {
   if (
     !parts ||
     parts.length === 1 ||
+    (parseDomain(parts[parts.length - 1].toLowerCase()).type ===
+      ParseResultType.NotListed &&
+      parts[parts.length - 1].toLowerCase() !== 'eth') ||
     supportedUnstoppableDomains.includes(parts[parts.length - 1].toLowerCase())
   ) {
     return false;

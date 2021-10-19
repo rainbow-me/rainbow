@@ -1,9 +1,11 @@
+import { addHexPrefix } from '@walletconnect/utils';
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import styled from 'styled-components';
-import { SIGN_TYPED_DATA } from '../../utils/signingMethods';
+import { PERSONAL_SIGN, SIGN_TYPED_DATA } from '../../utils/signingMethods';
 import { Row } from '../layout';
 import { Text } from '../text';
+import { isHexString } from '@rainbow-me/handlers/web3';
 import { padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
@@ -37,6 +39,13 @@ const TransactionMessage = ({ maxHeight = 150, message, method }) => {
       // eslint-disable-next-line no-empty
     } catch (e) {}
     msg = JSON.stringify(msg, null, 4);
+  } else if (method === PERSONAL_SIGN) {
+    if (isHexString(addHexPrefix(msg))) {
+      const normalizedMsg = addHexPrefix(msg);
+      const stripped = normalizedMsg.substring(2);
+      const buff = Buffer.from(stripped, 'hex');
+      msg = buff.toString('utf8');
+    }
   }
 
   return (
