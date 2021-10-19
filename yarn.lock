@@ -6205,10 +6205,10 @@ ee-first@1.1.1:
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
   integrity sha1-WQxhFWsK4vTwJVcyoViyZrxWsh0=
 
-eip1559-fee-suggestions-ethers@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/eip1559-fee-suggestions-ethers/-/eip1559-fee-suggestions-ethers-1.0.1.tgz#02b4187f68241c01def03cd6bc6b7acdd48c38ec"
-  integrity sha512-F3Azv3FVFfw2W3gFcA9Q3d2+Pwg1sl/olpi3RvyZj7e1xrI5Hd4w7mHhv4Jz4rSYx+h3JW7PXiGHXZILpzQkWg==
+eip1559-fee-suggestions-ethers@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/eip1559-fee-suggestions-ethers/-/eip1559-fee-suggestions-ethers-1.0.2.tgz#018c2dbfa26b611e11ab0f993933eecc110574ac"
+  integrity sha512-1+P2Gq32AJYRSNZwGnEjArDXS90igydp1Ts0JfLzCdjaUYzsyK6oScdSHBqPQc8ehYvo9J7WmQe203ic4VcyWg==
   dependencies:
     ethers "^5.4.2"
 
