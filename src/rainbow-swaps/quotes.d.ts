@@ -27,7 +27,6 @@ export interface Quote {
     to?: EthereumAddress;
     data?: string;
     value?: BigNumberish;
-    allowanceTarget?: EthereumAddress;
     sellAmount: BigNumberish;
     sellAmountMinusFees: BigNumberish;
     sellTokenAddress: EthereumAddress;

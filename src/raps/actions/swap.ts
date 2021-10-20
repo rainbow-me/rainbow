@@ -1,6 +1,6 @@
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
-import { get } from 'lodash';
+import { get, toLower } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
 import {
   ProtocolType,
@@ -14,7 +14,7 @@ import {
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { greaterThan } from '@rainbow-me/utilities';
-import { gasUtils } from '@rainbow-me/utils';
+import { AllowancesCache, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const actionName = 'swap';
@@ -76,6 +76,16 @@ const swap = async (
       tradeDetails,
       wallet,
     });
+
+    if (permit) {
+      // Clear the allowance
+      const cacheKey = toLower(
+        `${wallet.address}|${tradeDetails.sellTokenAddress}|${tradeDetails.to}`
+      );
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete AllowancesCache.cache[cacheKey];
+      logger.debug('CLEARED ALLOWANCE CACHE ');
+    }
   } catch (e) {
     logger.sentry('Error', e);
     const fakeError = new Error('Failed to execute swap');
@@ -104,7 +114,7 @@ const swap = async (
       newTransaction,
       accountAddress,
       false,
-      wallet?.provider
+      wallet?.provider as any
     )
   );
   return swap?.nonce;

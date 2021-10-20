@@ -10,12 +10,16 @@ import {
   TransactionStatus,
   TransactionType,
 } from '@rainbow-me/entities';
-import { toHex, web3Provider } from '@rainbow-me/handlers/web3';
+import {
+  getProviderForNetwork,
+  toHex,
+  web3Provider,
+} from '@rainbow-me/handlers/web3';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { erc20ABI, ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import { convertAmountToRawAmount, greaterThan } from '@rainbow-me/utilities';
-import { AllowancesCache, gasUtils } from '@rainbow-me/utils';
+import { AllowancesCache, ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 import { ALLOWS_PERMIT, PermitSupportedTokenList } from 'rainbow-swaps';
 
@@ -55,11 +59,14 @@ export const estimateApprove = async (
 const getRawAllowance = async (
   owner: string,
   token: Asset,
-  spender: string
+  spender: string,
+  chainId: number = 1
 ) => {
   try {
+    const network = ethereumUtils.getNetworkFromChainId(chainId);
+    const provider = await getProviderForNetwork(network);
     const { address: tokenAddress } = token;
-    const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider);
+    const tokenContract = new Contract(tokenAddress, erc20ABI, provider);
     const allowance = await tokenContract.allowance(owner, spender);
     return allowance.toString();
   } catch (error) {
@@ -182,7 +189,8 @@ export const assetNeedsUnlocking = async (
   accountAddress: string,
   amount: string,
   assetToUnlock: Asset,
-  contractAddress: string
+  contractAddress: string,
+  chainId = 1
 ) => {
   logger.log('checking asset needs unlocking');
   const { address } = assetToUnlock;
@@ -192,24 +200,31 @@ export const assetNeedsUnlocking = async (
 
   let allowance;
   // Check on cache first
-  if (AllowancesCache.cache[cacheKey]) {
-    allowance = AllowancesCache.cache[cacheKey];
-  } else {
-    allowance = await getRawAllowance(
-      accountAddress,
-      assetToUnlock,
-      contractAddress
-    );
+  // if (AllowancesCache.cache[cacheKey]) {
+  //   allowance = AllowancesCache.cache[cacheKey];
+  // } else {
+  allowance = await getRawAllowance(
+    accountAddress,
+    assetToUnlock,
+    contractAddress,
+    chainId
+  );
 
-    // Cache that value
-    if (!isNull(allowance)) {
-      AllowancesCache.cache[cacheKey] = allowance;
-    }
+  // Cache that value
+  // if (!isNull(allowance)) {
+  //   AllowancesCache.cache[cacheKey] = allowance;
+  // }
+  //}
+
+  logger.log('raw allowance', allowance.toString());
+  // Cache that value
+  if (!isNull(allowance)) {
+    AllowancesCache.cache[cacheKey] = allowance;
   }
 
   const rawAmount = convertAmountToRawAmount(amount, assetToUnlock.decimals);
   const needsUnlocking = !greaterThan(allowance, rawAmount);
-  logger.log('asset needs unlocking?', needsUnlocking);
+  logger.log('asset needs unlocking?', needsUnlocking, allowance.toString());
   return needsUnlocking;
 };
 

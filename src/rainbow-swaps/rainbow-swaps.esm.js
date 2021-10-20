@@ -820,6 +820,80 @@ try {
 
 var WethAbi = [
 	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "owner",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "Approval",
+		type: "event"
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				internalType: "address",
+				name: "from",
+				type: "address"
+			},
+			{
+				indexed: true,
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				indexed: false,
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "Transfer",
+		type: "event"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "owner",
+				type: "address"
+			},
+			{
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			}
+		],
+		name: "allowance",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
 		inputs: [
 			{
 				internalType: "address",
@@ -828,7 +902,7 @@ var WethAbi = [
 			},
 			{
 				internalType: "uint256",
-				name: "amount",
+				name: "value",
 				type: "uint256"
 			}
 		],
@@ -865,10 +939,66 @@ var WethAbi = [
 	{
 		inputs: [
 		],
+		name: "decimals",
+		outputs: [
+			{
+				internalType: "uint8",
+				name: "",
+				type: "uint8"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
 		name: "deposit",
 		outputs: [
 		],
 		stateMutability: "payable",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "name",
+		outputs: [
+			{
+				internalType: "string",
+				name: "",
+				type: "string"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "symbol",
+		outputs: [
+			{
+				internalType: "string",
+				name: "",
+				type: "string"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+		],
+		name: "totalSupply",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
 		type: "function"
 	},
 	{
@@ -898,6 +1028,35 @@ var WethAbi = [
 	{
 		inputs: [
 			{
+				internalType: "address",
+				name: "from",
+				type: "address"
+			},
+			{
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "value",
+				type: "uint256"
+			}
+		],
+		name: "transferFrom",
+		outputs: [
+			{
+				internalType: "bool",
+				name: "",
+				type: "bool"
+			}
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
 				internalType: "uint256",
 				name: "",
 				type: "uint256"
@@ -913,9 +1072,7 @@ var WethAbi = [
 
 var ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 var API_BASE_URL = 'https://swap-aggregator.api.p.rainbow.me';
-var RAINBOW_ROUTER_CONTRACT_ADDRESS = '0xb57E870996B60F81636eFcC7659463ADFE9abEf3';
-var VAULT_ADDRESS = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8';
-var RAINBOW_ROUTER_OWNER_ADDRESS = '0x7a3d05c70581bd345fe117c06e45f9669205384f';
+var RAINBOW_ROUTER_CONTRACT_ADDRESS = '0x21dF544947ba3E8b3c32561399E88B52Dc8b2823';
 var WETH = {
   '1': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
   '3': '0xb603cea165119701b58d56d10d2060fbfb3efad8'
@@ -925,6 +1082,7 @@ var USDC_ADDRESS = '0x111111111117dc0aa78b770fa6a738034120c302';
 var TORN_ADDRESS = '0x77777feddddffc19ff86db637967013e6c6a116c';
 var WNXM_ADDRESS = '0x0d438f3b5175bebc262bf23753c1e53d03432bde';
 var VSP_ADDRESS = '0x1b40183efb4dd766f11bda7a7c3ad8982e998421';
+var MAX_INT = /*#__PURE__*/BigNumber.from('2').pow('256').sub('1').toString();
 var ALLOWS_PERMIT = {
   // wNXM
   '0x0d438f3b5175bebc262bf23753c1e53d03432bde': true,
@@ -1014,6 +1172,36 @@ var geWethMethod = function geWethMethod(name, provider) {
 var RainbowRouterABI = [
 	{
 		inputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "constructor"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "token",
+				type: "address"
+			},
+			{
+				internalType: "address",
+				name: "spender",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
+			}
+		],
+		name: "approveToken",
+		outputs: [
+		],
+		stateMutability: "nonpayable",
+		type: "function"
+	},
+	{
+		inputs: [
 			{
 				internalType: "address",
 				name: "buyTokenAddress",
@@ -1046,11 +1234,6 @@ var RainbowRouterABI = [
 			{
 				internalType: "address",
 				name: "sellTokenAddress",
-				type: "address"
-			},
-			{
-				internalType: "address",
-				name: "spender",
 				type: "address"
 			},
 			{
@@ -1088,11 +1271,6 @@ var RainbowRouterABI = [
 				type: "address"
 			},
 			{
-				internalType: "address",
-				name: "spender",
-				type: "address"
-			},
-			{
 				internalType: "address payable",
 				name: "swapTarget",
 				type: "address"
@@ -1113,19 +1291,41 @@ var RainbowRouterABI = [
 				type: "uint256"
 			},
 			{
-				internalType: "uint256[]",
-				name: "nonceAndDeadline",
-				type: "uint256[]"
-			},
-			{
-				internalType: "uint8",
-				name: "v",
-				type: "uint8"
-			},
-			{
-				internalType: "bytes32[]",
-				name: "rAndS",
-				type: "bytes32[]"
+				components: [
+					{
+						internalType: "uint256",
+						name: "value",
+						type: "uint256"
+					},
+					{
+						internalType: "uint256",
+						name: "nonce",
+						type: "uint256"
+					},
+					{
+						internalType: "uint256",
+						name: "deadline",
+						type: "uint256"
+					},
+					{
+						internalType: "uint8",
+						name: "v",
+						type: "uint8"
+					},
+					{
+						internalType: "bytes32",
+						name: "r",
+						type: "bytes32"
+					},
+					{
+						internalType: "bytes32",
+						name: "s",
+						type: "bytes32"
+					}
+				],
+				internalType: "struct TransferHelper.Permit",
+				name: "permitSignature",
+				type: "tuple"
 			}
 		],
 		name: "fillQuoteTokenToEthWithPermit",
@@ -1144,11 +1344,6 @@ var RainbowRouterABI = [
 			{
 				internalType: "address",
 				name: "buyTokenAddress",
-				type: "address"
-			},
-			{
-				internalType: "address",
-				name: "spender",
 				type: "address"
 			},
 			{
@@ -1191,11 +1386,6 @@ var RainbowRouterABI = [
 				type: "address"
 			},
 			{
-				internalType: "address",
-				name: "spender",
-				type: "address"
-			},
-			{
 				internalType: "address payable",
 				name: "swapTarget",
 				type: "address"
@@ -1216,58 +1406,47 @@ var RainbowRouterABI = [
 				type: "uint256"
 			},
 			{
-				internalType: "uint256[]",
-				name: "nonceAndDeadline",
-				type: "uint256[]"
-			},
-			{
-				internalType: "uint8",
-				name: "v",
-				type: "uint8"
-			},
-			{
-				internalType: "bytes32[]",
-				name: "rAndS",
-				type: "bytes32[]"
+				components: [
+					{
+						internalType: "uint256",
+						name: "value",
+						type: "uint256"
+					},
+					{
+						internalType: "uint256",
+						name: "nonce",
+						type: "uint256"
+					},
+					{
+						internalType: "uint256",
+						name: "deadline",
+						type: "uint256"
+					},
+					{
+						internalType: "uint8",
+						name: "v",
+						type: "uint8"
+					},
+					{
+						internalType: "bytes32",
+						name: "r",
+						type: "bytes32"
+					},
+					{
+						internalType: "bytes32",
+						name: "s",
+						type: "bytes32"
+					}
+				],
+				internalType: "struct TransferHelper.Permit",
+				name: "permitSignature",
+				type: "tuple"
 			}
 		],
 		name: "fillQuoteTokenToTokenWithPermit",
 		outputs: [
 		],
 		stateMutability: "payable",
-		type: "function"
-	},
-	{
-		inputs: [
-		],
-		name: "forwardFees",
-		outputs: [
-			{
-				internalType: "uint8",
-				name: "",
-				type: "uint8"
-			}
-		],
-		stateMutability: "view",
-		type: "function"
-	},
-	{
-		inputs: [
-			{
-				internalType: "address",
-				name: "_vault",
-				type: "address"
-			},
-			{
-				internalType: "uint8",
-				name: "_forwardFees",
-				type: "uint8"
-			}
-		],
-		name: "initialize",
-		outputs: [
-		],
-		stateMutability: "nonpayable",
 		type: "function"
 	},
 	{
@@ -1287,12 +1466,17 @@ var RainbowRouterABI = [
 	{
 		inputs: [
 			{
-				internalType: "uint8",
-				name: "_forwardFees",
-				type: "uint8"
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
 			}
 		],
-		name: "updateFeeForwarding",
+		name: "withdrawEthFees",
 		outputs: [
 		],
 		stateMutability: "nonpayable",
@@ -1302,28 +1486,24 @@ var RainbowRouterABI = [
 		inputs: [
 			{
 				internalType: "address",
-				name: "_vault",
+				name: "token",
 				type: "address"
+			},
+			{
+				internalType: "address",
+				name: "to",
+				type: "address"
+			},
+			{
+				internalType: "uint256",
+				name: "amount",
+				type: "uint256"
 			}
 		],
-		name: "updateVaultAddress",
+		name: "withdrawTokenFees",
 		outputs: [
 		],
 		stateMutability: "nonpayable",
-		type: "function"
-	},
-	{
-		inputs: [
-		],
-		name: "vault",
-		outputs: [
-			{
-				internalType: "address",
-				name: "",
-				type: "address"
-			}
-		],
-		stateMutability: "view",
 		type: "function"
 	},
 	{
@@ -1414,117 +1594,122 @@ var getQuote = /*#__PURE__*/function () {
 }();
 var fillQuote = /*#__PURE__*/function () {
   var _ref3 = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/runtime_1.mark(function _callee2(quote, transactionOptions, wallet, permit, chainId) {
-    var instance, swapTx, sellTokenAddress, buyTokenAddress, to, data, fee, value, sellAmount, feePercentageBasisPoints, allowanceTarget, _yield$wallet$provide, timestamp, deadline, permitSignature, _yield$wallet$provide2, _timestamp, _deadline, _permitSignature;
+    var instance, swapTx, sellTokenAddress, buyTokenAddress, to, data, fee, value, sellAmount, feePercentageBasisPoints, _yield$wallet$provide, timestamp, deadline, permitSignature, _yield$wallet$provide2, _timestamp, _deadline, _permitSignature;
 
     return runtime_1.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
             instance = new Contract(RAINBOW_ROUTER_CONTRACT_ADDRESS, RainbowRouterABI, wallet);
-            sellTokenAddress = quote.sellTokenAddress, buyTokenAddress = quote.buyTokenAddress, to = quote.to, data = quote.data, fee = quote.fee, value = quote.value, sellAmount = quote.sellAmount, feePercentageBasisPoints = quote.feePercentageBasisPoints, allowanceTarget = quote.allowanceTarget;
+            sellTokenAddress = quote.sellTokenAddress, buyTokenAddress = quote.buyTokenAddress, to = quote.to, data = quote.data, fee = quote.fee, value = quote.value, sellAmount = quote.sellAmount, feePercentageBasisPoints = quote.feePercentageBasisPoints;
 
             if (!((sellTokenAddress == null ? void 0 : sellTokenAddress.toLowerCase()) === ETH_ADDRESS.toLowerCase())) {
-              _context2.next = 8;
+              _context2.next = 9;
               break;
             }
 
-            _context2.next = 5;
+            console.log('🔹🔹🔹 calling fillQuoteEthToToken');
+            _context2.next = 6;
             return instance.fillQuoteEthToToken(buyTokenAddress, to, data, fee, _extends({}, transactionOptions, {
               value: value
             }));
 
-          case 5:
+          case 6:
             swapTx = _context2.sent;
-            _context2.next = 45;
+            _context2.next = 50;
             break;
 
-          case 8:
+          case 9:
             if (!((buyTokenAddress == null ? void 0 : buyTokenAddress.toLowerCase()) === ETH_ADDRESS.toLowerCase())) {
-              _context2.next = 28;
+              _context2.next = 31;
               break;
             }
 
             if (!permit) {
-              _context2.next = 23;
+              _context2.next = 25;
               break;
             }
 
-            _context2.next = 12;
+            _context2.next = 13;
             return wallet.provider.getBlock('latest');
 
-          case 12:
+          case 13:
             _yield$wallet$provide = _context2.sent;
             timestamp = _yield$wallet$provide.timestamp;
             deadline = timestamp + 3600;
-            _context2.next = 17;
-            return signPermit(wallet, sellTokenAddress, quote.from, instance.address, quote.sellAmount.toString(), deadline, chainId);
+            _context2.next = 18;
+            return signPermit(wallet, sellTokenAddress, quote.from, instance.address, MAX_INT, deadline, chainId);
 
-          case 17:
+          case 18:
             permitSignature = _context2.sent;
-            _context2.next = 20;
-            return instance.fillQuoteTokenToEthWithPermit(sellTokenAddress, allowanceTarget, to, data, sellAmount, feePercentageBasisPoints, [permitSignature.nonce, deadline], permitSignature.v, [permitSignature.r, permitSignature.s], _extends({}, transactionOptions, {
+            console.log('🔹🔹🔹 calling fillQuoteTokenToEthWithPermit');
+            _context2.next = 22;
+            return instance.fillQuoteTokenToEthWithPermit(sellTokenAddress, to, data, sellAmount, feePercentageBasisPoints, permitSignature, _extends({}, transactionOptions, {
               value: value
             }));
 
-          case 20:
+          case 22:
             swapTx = _context2.sent;
-            _context2.next = 26;
+            _context2.next = 29;
             break;
-
-          case 23:
-            _context2.next = 25;
-            return instance.fillQuoteTokenToEth(sellTokenAddress, allowanceTarget, to, data, sellAmount, feePercentageBasisPoints, _extends({}, transactionOptions, {
-              value: value
-            }));
 
           case 25:
-            swapTx = _context2.sent;
-
-          case 26:
-            _context2.next = 45;
-            break;
+            console.log('🔹🔹🔹 calling fillQuoteTokenToEth');
+            _context2.next = 28;
+            return instance.fillQuoteTokenToEth(sellTokenAddress, to, data, sellAmount, feePercentageBasisPoints, _extends({}, transactionOptions, {
+              value: value
+            }));
 
           case 28:
+            swapTx = _context2.sent;
+
+          case 29:
+            _context2.next = 50;
+            break;
+
+          case 31:
             if (!permit) {
-              _context2.next = 42;
+              _context2.next = 46;
               break;
             }
 
-            _context2.next = 31;
+            _context2.next = 34;
             return wallet.provider.getBlock('latest');
 
-          case 31:
+          case 34:
             _yield$wallet$provide2 = _context2.sent;
             _timestamp = _yield$wallet$provide2.timestamp;
             _deadline = _timestamp + 3600;
-            _context2.next = 36;
-            return signPermit(wallet, sellTokenAddress, quote.from, instance.address, quote.sellAmount.toString(), _deadline, chainId);
-
-          case 36:
-            _permitSignature = _context2.sent;
             _context2.next = 39;
-            return instance.fillQuoteTokenToToken(sellTokenAddress, buyTokenAddress, allowanceTarget, to, data, sellAmount, fee, [_permitSignature.nonce, _deadline], _permitSignature.v, [_permitSignature.r, _permitSignature.s], _extends({}, transactionOptions, {
-              value: value
-            }));
+            return signPermit(wallet, sellTokenAddress, quote.from, instance.address, MAX_INT, _deadline, chainId);
 
           case 39:
-            swapTx = _context2.sent;
-            _context2.next = 45;
-            break;
-
-          case 42:
-            _context2.next = 44;
-            return instance.fillQuoteTokenToToken(sellTokenAddress, buyTokenAddress, allowanceTarget, to, data, sellAmount, fee, _extends({}, transactionOptions, {
+            _permitSignature = _context2.sent;
+            console.log('🔹🔹🔹 calling fillQuoteTokenToTokenWithPermit');
+            _context2.next = 43;
+            return instance.fillQuoteTokenToTokenWithPermit(sellTokenAddress, buyTokenAddress, to, data, sellAmount, fee, _permitSignature, _extends({}, transactionOptions, {
               value: value
             }));
 
-          case 44:
+          case 43:
             swapTx = _context2.sent;
-
-          case 45:
-            return _context2.abrupt("return", swapTx);
+            _context2.next = 50;
+            break;
 
           case 46:
+            console.log('🔹🔹🔹 calling fillQuoteTokenToToken');
+            _context2.next = 49;
+            return instance.fillQuoteTokenToToken(sellTokenAddress, buyTokenAddress, to, data, sellAmount, fee, _extends({}, transactionOptions, {
+              value: value
+            }));
+
+          case 49:
+            swapTx = _context2.sent;
+
+          case 50:
+            return _context2.abrupt("return", swapTx);
+
+          case 51:
           case "end":
             return _context2.stop();
         }
@@ -1545,8 +1730,7 @@ var getQuoteExecutionDetails = function getQuoteExecutionDetails(quote, transact
       fee = quote.fee,
       value = quote.value,
       sellAmount = quote.sellAmount,
-      feePercentageBasisPoints = quote.feePercentageBasisPoints,
-      allowanceTarget = quote.allowanceTarget;
+      feePercentageBasisPoints = quote.feePercentageBasisPoints;
 
   if ((sellTokenAddress == null ? void 0 : sellTokenAddress.toLowerCase()) === ETH_ADDRESS.toLowerCase()) {
     return {
@@ -1560,7 +1744,7 @@ var getQuoteExecutionDetails = function getQuoteExecutionDetails(quote, transact
   } else if ((buyTokenAddress == null ? void 0 : buyTokenAddress.toLowerCase()) === ETH_ADDRESS.toLowerCase()) {
     return {
       method: instance.estimateGas['fillQuoteTokenToEth'],
-      methodArgs: [sellTokenAddress, allowanceTarget, to, data, sellAmount, feePercentageBasisPoints],
+      methodArgs: [sellTokenAddress, to, data, sellAmount, feePercentageBasisPoints],
       params: _extends({}, transactionOptions, {
         value: value
       })
@@ -1568,7 +1752,7 @@ var getQuoteExecutionDetails = function getQuoteExecutionDetails(quote, transact
   } else {
     return {
       method: instance.estimateGas['fillQuoteTokenToToken'],
-      methodArgs: [sellTokenAddress, buyTokenAddress, allowanceTarget, to, data, sellAmount, fee],
+      methodArgs: [sellTokenAddress, buyTokenAddress, to, data, sellAmount, fee],
       params: _extends({}, transactionOptions, {
         value: value
       })
@@ -1965,6 +2149,39 @@ var IERC2612Abi = [
 		],
 		name: "Transfer",
 		type: "event"
+	},
+	{
+		inputs: [
+		],
+		name: "DOMAIN_SEPARATOR",
+		outputs: [
+			{
+				internalType: "bytes32",
+				name: "",
+				type: "bytes32"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
+	},
+	{
+		inputs: [
+			{
+				internalType: "address",
+				name: "owner",
+				type: "address"
+			}
+		],
+		name: "_nonces",
+		outputs: [
+			{
+				internalType: "uint256",
+				name: "",
+				type: "uint256"
+			}
+		],
+		stateMutability: "view",
+		type: "function"
 	},
 	{
 		inputs: [
@@ -2459,10 +2676,10 @@ function _signPermit() {
             if (isPermitAllowedType) {
               message.holder = holder;
               message.allowed = true;
-              message.expiry = deadline;
+              message.expiry = Number(deadline.toString());
             } else {
               message.value = BigNumber.from(amount).toHexString();
-              message.deadline = deadline;
+              message.deadline = Number(deadline.toString());
               message.owner = holder;
             }
 
@@ -2496,7 +2713,8 @@ function _signPermit() {
               nonce: nonce,
               r: r,
               s: s,
-              v: v
+              v: v,
+              value: message.value || BigNumber.from('0').toHexString()
             });
 
           case 20:
@@ -2509,5 +2727,5 @@ function _signPermit() {
   return _signPermit.apply(this, arguments);
 }
 
-export { ALLOWS_PERMIT, API_BASE_URL, DAI_ADDRESS, ETH_ADDRESS, RAINBOW_ROUTER_CONTRACT_ADDRESS, RAINBOW_ROUTER_OWNER_ADDRESS, Sources, TORN_ADDRESS, USDC_ADDRESS, VAULT_ADDRESS, VSP_ADDRESS, WETH, WNXM_ADDRESS, fillQuote, geWethMethod, getQuote, getQuoteExecutionDetails, signPermit, unwrapWeth, wrapEth };
+export { ALLOWS_PERMIT, API_BASE_URL, DAI_ADDRESS, ETH_ADDRESS, MAX_INT, RAINBOW_ROUTER_CONTRACT_ADDRESS, Sources, TORN_ADDRESS, USDC_ADDRESS, VSP_ADDRESS, WETH, WNXM_ADDRESS, fillQuote, geWethMethod, getQuote, getQuoteExecutionDetails, signPermit, unwrapWeth, wrapEth };
 //# sourceMappingURL=rainbow-swaps.esm.js.map

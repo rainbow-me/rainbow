@@ -53,7 +53,11 @@ export default function SwapDetailsUniswapRow(props) {
   const { protocols } = props;
   const { color, label, startAnimation } = useUniswapLabelEasterEgg();
 
-  if (protocols[0].name === 'UNISWAP_v2' && protocols[0].part === '100') {
+  if (
+    protocols?.length &&
+    protocols[0]?.name === 'UNISWAP_v2' &&
+    protocols[0]?.part === '100'
+  ) {
     return (
       <FloatingEmojisTapper
         activeScale={1.06}
@@ -75,7 +79,7 @@ export default function SwapDetailsUniswapRow(props) {
         </SwapDetailsRow>
       </FloatingEmojisTapper>
     );
-  } else if (protocols.length > 1) {
+  } else if (protocols?.length > 1) {
     return (
       <SwapDetailsRow label="Swapping via:" truncated={false}>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{`\n\n`}
@@ -86,7 +90,7 @@ export default function SwapDetailsUniswapRow(props) {
         ))}
       </SwapDetailsRow>
     );
-  } else {
+  } else if (protocols?.length > 0) {
     return (
       <SwapDetailsRow label="Swapping via">
         <SwapDetailsValue color={color}>
@@ -95,4 +99,5 @@ export default function SwapDetailsUniswapRow(props) {
       </SwapDetailsRow>
     );
   }
+  return null;
 }

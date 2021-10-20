@@ -40,7 +40,8 @@ export const estimateUnlockAndSwap = async (
       accountAddress,
       inputAmount,
       inputCurrency,
-      RAINBOW_ROUTER_CONTRACT_ADDRESS
+      RAINBOW_ROUTER_CONTRACT_ADDRESS,
+      chainId
     );
   }
 
@@ -71,11 +72,7 @@ export const createUnlockAndSwapRap = async (
 
   const { inputAmount, tradeDetails } = swapParameters;
   const { inputCurrency, outputCurrency } = store.getState().swap;
-
-  if (!inputCurrency || !outputCurrency || !inputAmount)
-    return ethUnits.basic_swap;
-
-  const { accountAddress } = store.getState().settings;
+  const { accountAddress, chainId } = store.getState().settings;
   const isWethUnwrapping =
     toLower(inputCurrency.address) === toLower(WETH['1']) &&
     toLower(outputCurrency.address) === toLower(ETH_ADDRESS);
@@ -87,7 +84,8 @@ export const createUnlockAndSwapRap = async (
       accountAddress,
       inputAmount,
       inputCurrency,
-      RAINBOW_ROUTER_CONTRACT_ADDRESS
+      RAINBOW_ROUTER_CONTRACT_ADDRESS,
+      chainId
     );
   }
   const allowsPermit =

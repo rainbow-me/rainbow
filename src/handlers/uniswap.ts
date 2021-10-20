@@ -29,10 +29,12 @@ import { ethUnits, UNISWAP_TESTNET_TOKEN_LIST } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 import {
+  ALLOWS_PERMIT,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   fillQuote,
   getQuoteExecutionDetails,
   geWethMethod,
+  PermitSupportedTokenList,
   Quote,
   unwrapWeth,
   WETH,
@@ -61,6 +63,19 @@ export const getTestnetUniswapPairs = (
   }));
 };
 
+const getBasicSwapGasLimitForTrade = (tradeDetails: Quote): number => {
+  const allowsPermit =
+    ALLOWS_PERMIT[
+      toLower(tradeDetails.sellTokenAddress) as keyof PermitSupportedTokenList
+    ];
+
+  if (allowsPermit) {
+    return ethUnits.basic_swap_permit;
+  } else {
+    return ethUnits.basic_swap;
+  }
+};
+
 export const estimateSwapGasLimit = async ({
   chainId,
   requiresApprove,
@@ -72,9 +87,14 @@ export const estimateSwapGasLimit = async ({
 }): Promise<string | number> => {
   const network = ethereumUtils.getNetworkFromChainId(chainId);
   const provider = await getProviderForNetwork(network);
-  if (!provider || !tradeDetails || requiresApprove) {
+  if (!provider || !tradeDetails) {
     return ethUnits.basic_swap;
   }
+
+  if (requiresApprove) {
+    return getBasicSwapGasLimitForTrade(tradeDetails);
+  }
+
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;
 
   const isWrapEth =
@@ -121,9 +141,9 @@ export const estimateSwapGasLimit = async ({
         provider,
         1.01
       );
-      return gasLimit || ethUnits.basic_swap;
+      return gasLimit || getBasicSwapGasLimitForTrade(tradeDetails);
     } catch (error) {
-      return ethUnits.basic_swap;
+      return getBasicSwapGasLimitForTrade(tradeDetails);
     }
   }
 };
