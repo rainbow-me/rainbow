@@ -95,7 +95,7 @@ const UniqueTokenExpandedState = ({
   const { nativeCurrency, network } = useAccountSettings();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
 
   const {
@@ -218,7 +218,9 @@ const UniqueTokenExpandedState = ({
         <BackgroundBlur />
       </BackgroundImage>
       <SlackSheet
-        backgroundColor="rgba(26, 26, 26, 0.4)"
+        backgroundColor={
+          isDarkMode ? 'rgba(22, 22, 22, 0.4)' : 'rgba(26, 26, 26, 0.4)'
+        }
         bottomInset={42}
         hideHandle
         {...(ios
