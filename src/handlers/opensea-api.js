@@ -66,7 +66,7 @@ export const apiGetTokenHistory = async (
   tokenID
 ) => {
   try {
-    const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=20`;
+    const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=100`;
     const data = await rainbowFetch(url, {
       headers: {
         'Accept': 'application/json',
@@ -95,7 +95,7 @@ export const apiGetTokenHistoryPagination = async (
   offset
 ) => {
   try {
-    const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=20`;
+    const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=100`;
     const data = await rainbowFetch(url, {
       headers: {
         'Accept': 'application/json',

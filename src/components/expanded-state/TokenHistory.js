@@ -1,4 +1,4 @@
-import React, { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import { apiGetTokenHistory } from '@rainbow-me/handlers/opensea-api';
