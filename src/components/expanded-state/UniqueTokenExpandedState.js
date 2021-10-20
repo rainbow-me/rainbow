@@ -1,4 +1,4 @@
-import { VibrancyView } from '@react-native-community/blur';
+import { BlurView } from '@react-native-community/blur';
 import c from 'chroma-js';
 import React, {
   Fragment,
@@ -56,19 +56,26 @@ const NftExpandedStateSection = styled(ExpandedStateSection).attrs({
   isNft: true,
 })``;
 
-const BackgroundBlur = styled(VibrancyView).attrs({
+const BackgroundBlur = styled(BlurView).attrs({
   blurAmount: 100,
   blurType: 'light',
-  overlayColor: 'transparent',
 })`
   ${position.cover};
 `;
 
 const BackgroundImage = styled.View`
-  background: black;
-  height: 844px;
+  ${position.cover};
+`;
+
+const BlurWrapper = styled.View.attrs({
+  shouldRasterizeIOS: true,
+})`
+  height: ${({ height }) => height};
+  left: 0;
+  overflow: hidden;
   position: absolute;
-  width: 390px;
+  top: 0;
+  width: ${({ width }) => width};
 `;
 
 const SheetDivider = styled(Row)`
@@ -95,7 +102,7 @@ const UniqueTokenExpandedState = ({
   const { nativeCurrency, network } = useAccountSettings();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
 
   const {
@@ -200,25 +207,29 @@ const UniqueTokenExpandedState = ({
 
   return (
     <Fragment>
-      <BackgroundImage>
-        {isSVG ? (
-          <UniqueTokenImage
-            backgroundColor={asset.background}
-            imageUrl={lowResUrl}
-            item={asset}
-            size={deviceHeight}
-          />
-        ) : (
-          <ImgixImage
-            resizeMode="cover"
-            source={{ uri: lowResUrl }}
-            style={{ height: deviceHeight, width: deviceWidth }}
-          />
-        )}
-        <BackgroundBlur />
-      </BackgroundImage>
+      <BlurWrapper height={deviceHeight} width={deviceWidth}>
+        <BackgroundImage>
+          {isSVG ? (
+            <UniqueTokenImage
+              backgroundColor={asset.background}
+              imageUrl={lowResUrl}
+              item={asset}
+              size={deviceHeight}
+            />
+          ) : (
+            <ImgixImage
+              resizeMode="cover"
+              source={{ uri: lowResUrl }}
+              style={{ height: deviceHeight, width: deviceWidth }}
+            />
+          )}
+          <BackgroundBlur />
+        </BackgroundImage>
+      </BlurWrapper>
       <SlackSheet
-        backgroundColor="rgba(26, 26, 26, 0.4)"
+        backgroundColor={
+          isDarkMode ? 'rgba(22, 22, 22, 0.4)' : 'rgba(26, 26, 26, 0.4)'
+        }
         bottomInset={42}
         hideHandle
         {...(ios

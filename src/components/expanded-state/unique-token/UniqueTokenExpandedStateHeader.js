@@ -7,20 +7,33 @@ import { buildUniqueTokenName } from '../../../helpers/assets';
 import { ButtonPressAnimation } from '../../animations';
 import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import { Text, TruncatedText } from '../../text';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useAccountProfile, useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { padding, position } from '@rainbow-me/styles';
-import { magicMemo, showActionSheetWithOptions } from '@rainbow-me/utils';
+import {
+  buildRainbowUrl,
+  magicMemo,
+  showActionSheetWithOptions,
+} from '@rainbow-me/utils';
 import logger from 'logger';
 
 const AssetActionsEnum = {
   etherscan: 'etherscan',
+  rainbowWeb: 'rainbowWeb',
 };
 
 const AssetActions = {
   [AssetActionsEnum.etherscan]: {
     actionKey: AssetActionsEnum.etherscan,
     actionTitle: 'View on Etherscan',
+    icon: {
+      iconType: 'SYSTEM',
+      iconValue: 'link',
+    },
+  },
+  [AssetActionsEnum.rainbowWeb]: {
+    actionKey: AssetActionsEnum.rainbowWeb,
+    actionTitle: 'View on Web',
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'safari.fill',
@@ -120,6 +133,7 @@ const HeadingColumn = styled(ColumnWithMargins).attrs({
 `;
 
 const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
+  const { accountAddress, accountENS } = useAccountProfile();
   const { width: deviceWidth } = useDimensions();
 
   const { colors } = useTheme();
@@ -158,6 +172,10 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
     return {
       menuItems: [
         {
+          ...AssetActions[AssetActionsEnum.rainbowWeb],
+          discoverabilityTitle: 'rainbow.me',
+        },
+        {
           ...AssetActions[AssetActionsEnum.etherscan],
         },
       ],
@@ -195,9 +213,11 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
             '?a=' +
             asset.id
         );
+      } else if (actionKey === AssetActionsEnum.rainbowWeb) {
+        Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
       }
     },
-    [asset]
+    [accountAddress, accountENS, asset]
   );
 
   const onPressAndroid = useCallback(() => {

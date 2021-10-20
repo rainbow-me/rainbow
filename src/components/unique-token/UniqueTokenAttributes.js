@@ -10,7 +10,7 @@ const AttributeItem = ({ color, trait_type: type, slug, value }) =>
   type ? (
     <Tag
       color={color}
-      css={margin(10, 10, 0, 0)}
+      css={margin(7, 10, 3, 0)}
       key={`${type}${value}`}
       slug={slug}
       text={value}

@@ -88,17 +88,19 @@ export default function TokenInfoItem({
         {asset ? (
           <TokenInfoBalanceValue align={align} asset={asset} isNft={isNft} />
         ) : (
-          <TokenInfoValue
-            align={align}
-            color={color}
-            isNft={isNft}
-            lineHeight={lineHeight}
-            onPress={onPress}
-            size={size}
-            weight={weight}
-          >
-            {!loading && children}
-          </TokenInfoValue>
+          <ButtonPressAnimation onPress={onPress} scaleTo={1}>
+            <TokenInfoValue
+              activeOpacity={0}
+              align={align}
+              color={color}
+              isNft={isNft}
+              lineHeight={lineHeight}
+              size={size}
+              weight={weight}
+            >
+              {!loading && children}
+            </TokenInfoValue>
+          </ButtonPressAnimation>
         )}
         {loading && (
           <WrapperView
