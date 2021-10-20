@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import { apiGetTokenHistory } from '@rainbow-me/handlers/opensea-api';
+import { FlatList } from "react-native";
 
 /**
  * Requirements: 
@@ -35,6 +36,12 @@ const TokenHistory = ({
     });
   }, [contractAddress, tokenID]);
 
+  const renderItem = ({ item }) => {
+    return (
+      <Text color={'#FFFFFF'}>{tokenHistory}</Text>
+    );
+  };
+
   return (
     <Column>
       <Row>
@@ -44,7 +51,13 @@ const TokenHistory = ({
         <Text>{tokenID}</Text>  
       </Row>
       <Row>
-        <Text>{tokenHistory}</Text>  
+        <FlatList
+          data={tokenHistory}
+          renderItem={renderItem}
+          horizontal={true}
+          inverted={true}
+          showsHorizontalScrollIndicator={false}
+        />
       </Row>
     </Column>
   )
