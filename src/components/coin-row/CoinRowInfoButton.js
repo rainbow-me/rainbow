@@ -81,7 +81,7 @@ const buildBlockExplorerAction = type => {
     actionTitle: blockExplorerText,
     icon: {
       iconType: 'SYSTEM',
-      iconValue: 'safari',
+      iconValue: 'link',
     },
   };
 };
