@@ -12,10 +12,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.28](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.28)
+
+### Added
+* Handle dropped transactions
+
+### Changed
+* Changed source of token list
+* ENS & Unstoppable validation fixes
+* Seperate out L2 explorer init
+
 ## [1.5.27](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.27)
 
 ### Added
 * Handle dropped transactions
+
 ### Changed
 * Switched polygon gas api 
 * Autoscrolling & RLV jumping fixes
