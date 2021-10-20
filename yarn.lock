@@ -10002,7 +10002,15 @@ madge@4.0.2, madge@^3.12.0:
     typescript "^3.9.5"
     walkdir "^0.4.1"
 
-make-color-more-chill@0.2.1, make-color-more-chill@^0.2.0:
+make-color-more-chill@0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/make-color-more-chill/-/make-color-more-chill-0.2.2.tgz#53829a817d7410dd854c7e81270e85f8a1224a06"
+  integrity sha512-vbeMRwJhACNL77aNjTMAwyAEanvUlA9Q8gxZoDWSpnMKaeltmFRmCjXjv/EJCCDMnryqh7x7+35aFxX03azJYw==
+  dependencies:
+    chroma-js "^2.1.0"
+    zod "^1.11.11"
+
+make-color-more-chill@^0.2.0:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/make-color-more-chill/-/make-color-more-chill-0.2.1.tgz#87d88d157c7042ee7b6db4c1b1248a6bc5c345ea"
   integrity sha512-8ub4T8r1g+pcKtslbyszpY0TsIPQCuqVAhaR5/HLH2y1ZnXbqYmGuwqvWOTUuX6eRYOZhzwozz3WrdkMfxIGlA==
