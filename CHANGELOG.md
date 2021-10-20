@@ -14,9 +14,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ## [1.5.28](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.28)
 
-### Added
-* Handle dropped transactions
-
 ### Changed
 * Changed source of token list
 * ENS & Unstoppable validation fixes
