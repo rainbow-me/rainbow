@@ -66,9 +66,9 @@ const BackgroundBlur = styled(VibrancyView).attrs({
 
 const BackgroundImage = styled.View`
   background: black;
-  height: 844px;
+  height: 100%;
   position: absolute;
-  width: 390px;
+  width: 100%;
 `;
 
 const SheetDivider = styled(Row)`
