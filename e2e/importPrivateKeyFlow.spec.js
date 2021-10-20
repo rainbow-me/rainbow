@@ -71,7 +71,7 @@ describe('Import from private key flow', () => {
 
   it('Should reset keychain & reopen app', async () => {
     await Helpers.waitAndTap('reset-keychain-section');
-    await device.launchApp({ newInstance: true });
+    await Helpers.relaunchApp();
     await Helpers.checkIfVisible('welcome-screen');
   });
 
