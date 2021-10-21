@@ -258,10 +258,10 @@ describe('Swap Sheet Interaction Flow', () => {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
     }
     await Helpers.waitAndTap('exchange-fab');
-    await Helpers.typeText('exchange-modal-input', '0.546', false);
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'ZRX', false);
     await Helpers.waitAndTap('currency-select-list-exchange-coin-row-ZRX');
+    await Helpers.typeText('exchange-modal-input', '0.546', false);
     await Helpers.checkForElementByLabel('Insufficient Funds');
   });
 
