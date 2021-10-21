@@ -61,58 +61,98 @@ export const apiGetUniqueTokenFloorPrice = async (
 };
 
 
+// console.log(result); // eslint-disable-line no-console
+// export const apiGetTokenHistory = async (
+//   contractAddress,
+//   tokenID
+// ) => {
+//   try {
+//     const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0`;
+//     logger.log(url); // eslint-disable-line no-console
+//     const data = await rainbowFetch(url, {
+//       headers: {
+//         'Accept': 'application/json',
+//         'X-Api-Key': OPENSEA_API_KEY,
+//       },
+//       method: 'get',
+//       timeout: 25000, // 5 secs
+//     })
+
+//     var result;
+
+//     data.data.asset_events.forEach(function(asset_event) {
+
+//       var event = asset_event.event_type;
+//       var created_date = JSON.stringify(asset_event.created_date);
+//       var from_address = JSON.stringify(asset_event.from_account.address);
+//       // var owner_address = JSON.stringify(asset_event.to_account.address);
+//       // var total_price = JSON.stringify(asset_event.total_price);
+
+    
+//       if (event == '"created"' || event == '"successful"' || event == '"cancelled"'|| event == '"transfer"') {
+//         const eventObject = {
+//           event,
+//           created_date,
+//           from_address,
+//         };
+//         result.push(eventObject);
+//         logger.log(eventObject.event);
+//       }
+//     })
+
+//     logger.log("hi mike");
+//     return result;
+
+//   } catch (error) {
+//     throw error;
+//   }
+// };
+
 export const apiGetTokenHistory = async (
   contractAddress,
   tokenID
 ) => {
   try {
-    const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=100`;
+    const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0`;
+    logger.log(url);
     const data = await rainbowFetch(url, {
       headers: {
         'Accept': 'application/json',
         'X-Api-Key': OPENSEA_API_KEY,
       },
       method: 'get',
-      timeout: 5000, // 5 secs
-    });
+      timeout: 15000, // 15 secs. Way too long but lets try it
+    })
 
-    var result = new Array();
+    const array = data.data.asset_events;
+    // logger.log(JSON.stringify(data.data.asset_events[0].from_account.address));
+    return ( 
+      array.map(function(event) {
+          var event_type = event.event_type;
+          var created_date = JSON.stringify(event.created_date);
+          var from_address = JSON.stringify(event.from_account.address);
+          // var owner_address = JSON.stringify(event.to_account.address);
+          // logger.log(JSON.stringify("event: " + event.event_type));
+          // logger.log(JSON.stringify("date: " + created_date));
+          // logger.log(JSON.stringify("from: " + from_address));
 
-    for(var i = 0; i < 20; i++) {
-      result.push(JSON.stringify(data.data.asset_events[i].event_type));
-    }
+          const eventObject = {
+            event_type,
+            created_date,
+            from_address,
+            owner_address,
+            // total_price
+          };
+  
+          return eventObject;
+        
+        // var total_price = event.total_price;
+        // logger.log(JSON.stringify("to: " + event.to_account.address));
+        // logger.log(JSON.stringify("price: " + event.total_price));
 
-    return result;
-
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const apiGetTokenHistoryPagination = async (
-  contractAddress,
-  tokenID,
-  offset
-) => {
-  try {
-    const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=100`;
-    const data = await rainbowFetch(url, {
-      headers: {
-        'Accept': 'application/json',
-        'X-Api-Key': OPENSEA_API_KEY,
-      },
-      method: 'get',
-      timeout: 5000, // 5 secs
-    });
-
-    var result = new Array();
-
-    for(var i = 0; i < 20; i++) {
-      result.push(JSON.stringify(data.data.asset_events[i].event_type));
-    }
-
-    return result;
-
+        
+      })
+    )
   } catch (error) {
     throw error;
   }

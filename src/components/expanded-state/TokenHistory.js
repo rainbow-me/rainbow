@@ -3,6 +3,8 @@ import { Column, Row } from '../layout';
 import { Text } from '../text';
 import { apiGetTokenHistory } from '@rainbow-me/handlers/opensea-api';
 import { FlatList } from "react-native";
+import logger from 'logger';
+// import { getHumanReadableDate } from '@rainbow-me/helpers/transactions';
 
 /**
  * Requirements: 
@@ -15,10 +17,11 @@ import { FlatList } from "react-native";
  */
 
 const TokenHistory = ({ 
-    contractAndToken
+    contractAndToken,
+    color
   }) => {
 
-  const [tokenHistory, setTokenHistory] = useState(null);
+  const [tokenHistory, setTokenHistory] = useState([]);
   const [contractAddress, setContractAddress] = useState("");
   const [tokenID, setTokenID] = useState("");
 
@@ -30,34 +33,106 @@ const TokenHistory = ({
 
 
   //Query opensea using the contract address + tokenID
-  useEffect(() => {
-    apiGetTokenHistory(contractAddress, tokenID).then(result => {
+  useEffect(async() => {
+    await apiGetTokenHistory(contractAddress, tokenID).then(result => {
       setTokenHistory(result);
     });
   }, [contractAddress, tokenID]);
 
   const renderItem = ({ item }) => {
+    switch (item.event_type) {
+      case "created":
+        
+    }
     return (
-      <Text color={'#FFFFFF'}>{tokenHistory}</Text>
+      <Column>
+        <Row>
+          <Text color={'#FFFFFF'}>{item.event_type}</Text>
+        </Row>
+        <Row>
+          <Text color={'#FFFFFF'}>{item.created_date}</Text>
+        </Row>
+        <Row>
+          <Text color={'#FFFFFF'}>{item.from_address}</Text>
+        </Row> 
+      </Column>
+      
     );
   };
+
+  renderCreatedEventType = ({ item }) => {
+    return (
+      <Column>
+        <Row>
+          <Text color={'#FFFFFF'}>item created on {item.created_date} by {item.from_address}</Text>
+        </Row>
+      </Column>
+      
+    );
+  }
+
+  renderSuccessfulEventType = ({ item }) => {
+    return (
+      <Column>
+        <Row>
+          <Text color={'#FFFFFF'}>item created on {item.created_date} by {item.from_address}</Text>
+        </Row>
+      </Column>
+      
+    );
+  }
+
+  render = ({ item }) => {
+    return (
+      <Column>
+        <Row>
+          <Text color={'#FFFFFF'}>item created on {item.created_date} by {item.from_address}</Text>
+        </Row>
+      </Column>
+      
+    );
+  }
+
+  // renderTextBasedOnEvent = ({ event_type, item }) => {
+  //   if (event_type == "successful") {
+      
+  //   }
+  //   else if (event_type == "created") {
+
+  //   }
+  //   else if (event_type == "cancelled") {
+      
+  //   }
+  //   else if (event_type == "transfer") {
+      
+  //   }
+    
+  // }
+
+  /**
+   *  Minting - " Minted"
+   *  Listed - " Listed for ____"
+   *  Transfer - " Sent to address"
+   *  Sale - " Sold for amount"
+   *  List Price Adjustment " Price raised/lowered to amount"
+   *  Setting number of decimals based on price using the package
+   *  
+   * */
 
   return (
     <Column>
       <Row>
-        <Text>{contractAddress}</Text>  
-      </Row>
-      <Row>
-        <Text>{tokenID}</Text>  
-      </Row>
-      <Row>
-        <FlatList
+        {
+          tokenHistory.length > 0 ? 
+          <FlatList
           data={tokenHistory}
           renderItem={renderItem}
           horizontal={true}
           inverted={true}
           showsHorizontalScrollIndicator={false}
-        />
+        /> : <Text>No History!</Text>
+        }
+        
       </Row>
     </Column>
   )
