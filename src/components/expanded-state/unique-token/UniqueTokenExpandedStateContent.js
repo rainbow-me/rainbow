@@ -74,7 +74,10 @@ const ZoomableWrapper = ({
 
   const maxImageWidth = deviceWidth - horizontalPadding * 2;
   const maxImageHeight = deviceHeight / 2;
-  const [containerWidth, containerHeight] = useMemo(() => {
+  const [
+    containerWidth = maxImageWidth,
+    containerHeight = maxImageWidth,
+  ] = useMemo(() => {
     const isSquare = aspectRatio === 1 || isENS;
     const isLandscape = aspectRatio > 1;
     const isPortrait = aspectRatio < 1;
