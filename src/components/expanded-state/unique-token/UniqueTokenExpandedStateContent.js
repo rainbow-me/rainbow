@@ -35,11 +35,16 @@ import { position } from '@rainbow-me/styles';
 export const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
 const pixelRatio = PixelRatio.get();
 
-const springConfig = {
+const enterConfig = {
   damping: 40,
   mass: 1.5,
-  overshootClamping: true,
   stiffness: 600,
+};
+
+const exitConfig = {
+  damping: 68,
+  mass: 2,
+  stiffness: 800,
 };
 
 const Container = styled(Animated.View)`
@@ -122,7 +127,7 @@ const ZoomableWrapper = ({
       containerHeightValue.value +
       animationProgress.value * (fullSizeHeight - containerHeightValue.value),
     marginBottom:
-      (deviceHeight - (fullSizeHeight - containerHeightValue.value)) *
+      ((deviceHeight - containerHeightValue.value) / 2) *
       animationProgress.value,
     marginTop:
       yPosition.value +
@@ -144,12 +149,12 @@ const ZoomableWrapper = ({
     'worklet';
     let targetScale = scale.value;
     if (scale.value < 1) {
-      scale.value = withSpring(1, springConfig);
+      scale.value = withSpring(1, exitConfig);
       targetScale = 1;
     }
 
     if (scale.value > 3) {
-      scale.value = withSpring(3, springConfig);
+      scale.value = withSpring(3, exitConfig);
       targetScale = 3;
     }
 
@@ -160,26 +165,26 @@ const ZoomableWrapper = ({
       const maxDisplacementX =
         (deviceWidth * (targetScale / breakingScaleX - 1)) / 2;
       if (translateX.value > maxDisplacementX) {
-        translateX.value = withSpring(maxDisplacementX, springConfig);
+        translateX.value = withSpring(maxDisplacementX, exitConfig);
       }
       if (translateX.value < -maxDisplacementX) {
-        translateX.value = withSpring(-maxDisplacementX, springConfig);
+        translateX.value = withSpring(-maxDisplacementX, exitConfig);
       }
     } else {
-      translateX.value = withSpring(0);
+      translateX.value = withSpring(0, exitConfig);
     }
 
     if (targetScale > breakingScaleY) {
       const maxDisplacementY =
         (deviceHeight * (targetScale / breakingScaleY - 1)) / 2;
       if (translateY.value > maxDisplacementY) {
-        translateY.value = withSpring(maxDisplacementY, springConfig);
+        translateY.value = withSpring(maxDisplacementY, exitConfig);
       }
       if (translateY.value < -maxDisplacementY) {
-        translateY.value = withSpring(-maxDisplacementY, springConfig);
+        translateY.value = withSpring(-maxDisplacementY, exitConfig);
       }
     } else {
-      translateY.value = withSpring(0);
+      translateY.value = withSpring(0, exitConfig);
     }
 
     if (
@@ -189,9 +194,9 @@ const ZoomableWrapper = ({
       isZoomedValue.value = false;
       runOnJS(setIsZoomed)(false);
       scale.value = 1;
-      animationProgress.value = withSpring(0, springConfig);
-      translateX.value = withSpring(0);
-      translateY.value = withSpring(0);
+      animationProgress.value = withSpring(0, exitConfig);
+      translateX.value = withSpring(0, exitConfig);
+      translateY.value = withSpring(0, exitConfig);
     }
   });
 
@@ -250,13 +255,15 @@ const ZoomableWrapper = ({
     <ButtonPressAnimation
       onPress={() => {
         scale.value = 1;
-        isZoomedValue.value = !isZoomed;
-        setIsZoomed(!isZoomed);
-        translateX.value = withSpring(0);
-        animationProgress.value = withSpring(
-          isZoomedValue.value ? 1 : 0,
-          springConfig
-        );
+        if (isZoomed) {
+          isZoomedValue.value = false;
+          setIsZoomed(false);
+          animationProgress.value = withSpring(0, exitConfig);
+        } else {
+          isZoomedValue.value = true;
+          setIsZoomed(true);
+          animationProgress.value = withSpring(1, enterConfig);
+        }
       }}
       scaleTo={1}
       style={{ alignItems: 'center' }}
