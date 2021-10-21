@@ -141,6 +141,16 @@ const ZoomableWrapper = ({
     borderRadius: (1 - animationProgress.value) * (borderRadius ?? 16),
   }));
 
+
+  const borderStyleLeft = useAnimatedStyle(() => ({
+    borderRadius: (1 - animationProgress.value) * (borderRadius ?? 16),
+  }));
+
+  const borderStyleRight = useAnimatedStyle(() => ({
+    borderRadius: (1 - animationProgress.value) * (borderRadius ?? 16),
+  }));
+
+
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
@@ -248,6 +258,17 @@ const ZoomableWrapper = ({
     };
   });
 
+
+  const rightAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: translateX.value,
+        },
+      ],
+    };
+  });
+
   const pan = useRef();
   const pinch = useRef();
 
@@ -281,8 +302,32 @@ const ZoomableWrapper = ({
             ref={pinch}
             simultaneousHandlers={[pan]}
           >
-            <ImageWrapper style={[borderStyle, animatedStyle]}>
-              {children}
+            <ImageWrapper style={[animatedStyle, { overflow: 'visible' }]}>
+              <Animated.View
+                style={[
+                  borderStyle,
+                  { overflow: 'hidden'},
+                  StyleSheet.absoluteFillObject,
+                ]}
+              >
+                {children}
+              </Animated.View>
+              <Animated.View
+                style={[
+                  { overflow: 'hidden', transform: [{ translateX: deviceWidth}, { translateX: 2 }]},
+                  StyleSheet.absoluteFillObject,
+                ]}
+              >
+                {children}
+              </Animated.View>
+              <Animated.View
+                style={[
+                  { overflow: 'hidden', transform: [{ translateX: -deviceWidth }, { translateX: -2 }]},
+                  StyleSheet.absoluteFillObject,
+                ]}
+              >
+                {children}
+              </Animated.View>
             </ImageWrapper>
           </PinchGestureHandler>
         </Container>
