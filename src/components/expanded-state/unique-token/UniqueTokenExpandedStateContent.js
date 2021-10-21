@@ -211,9 +211,9 @@ const ZoomableWrapper = ({
     //   //   animationProgress.value = withSpring(0, springConfig);
     //   // }
     // },
-    // onStart: (_, ctx) => {
-    //   ctx.start = scale.value;
-    // },
+    onStart: (_, ctx) => {
+      ctx.start = scale.value;
+    },
   });
 
   const animatedStyle = useAnimatedStyle(() => {
