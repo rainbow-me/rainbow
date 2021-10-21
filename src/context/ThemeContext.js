@@ -124,9 +124,7 @@ export const MainThemeProvider = props => {
   return (
     <ThemeProvider theme={currentTheme}>
       <ThemeContext.Provider value={currentTheme}>
-        <ColorModeProvider
-          value={currentTheme.isDarkMode ? 'darkMode' : 'lightMode'}
-        >
+        <ColorModeProvider value={currentTheme.isDarkMode ? 'dark' : 'light'}>
           {props.children}
         </ColorModeProvider>
       </ThemeContext.Provider>

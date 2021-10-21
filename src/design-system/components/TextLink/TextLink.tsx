@@ -1,7 +1,6 @@
 import React, { ReactNode, useCallback, useMemo } from 'react';
 import { Linking, Text as NativeText } from 'react-native';
-import { useColorModeValue } from '../../color/ColorModeValue';
-import { foregroundPalette } from '../../color/palette';
+import { useForegroundColor } from '../../color/useForegroundColor';
 
 export interface TextLinkProps {
   url: string;
@@ -9,7 +8,7 @@ export interface TextLinkProps {
 }
 
 export function TextLink({ children, url }: TextLinkProps) {
-  const actionColor = useColorModeValue()(foregroundPalette.action);
+  const actionColor = useForegroundColor('action');
 
   return (
     <NativeText

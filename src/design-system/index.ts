@@ -1,5 +1,5 @@
 export { Box } from './components/Box/Box';
-export { ColorModeProvider, useColorMode } from './color/ColorMode';
+export { ColorModeProvider } from './color/ColorMode';
 export { Heading } from './components/Heading/Heading';
 export { Inline } from './components/Inline/Inline';
 export { Columns, Column } from './components/Columns/Columns';
@@ -11,11 +11,8 @@ export { Row } from './components/Row/Row';
 export { Stack } from './components/Stack/Stack';
 export { Text } from './components/Text/Text';
 export { TextLink } from './components/TextLink/TextLink';
-export { useColorModeValue } from './color/ColorModeValue';
 export type { BoxProps } from './components/Box/Box';
 export type { BleedProps } from './components/Bleed/Bleed';
-export type { ColorMode } from './color/ColorMode';
-export type { ColorModeValue } from './color/ColorModeValue';
 export type { HeadingProps } from './components/Heading/Heading';
 export type { InlineProps } from './components/Inline/Inline';
 export type { ColumnsProps, ColumnProps } from './components/Columns/Columns';

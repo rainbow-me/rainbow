@@ -2,7 +2,8 @@
 import React, { ReactNode } from 'react';
 import { View } from 'react-native';
 import { ColorModeProvider } from '../../color/ColorMode';
-import { palette } from '../../color/palette';
+import { basePalette } from '../../color/palette';
+import { CustomColor } from '../../color/useForegroundColor';
 import { Docs } from '../../playground/Docs';
 import { Guide } from '../../playground/Guide';
 import { Stack } from '../Stack/Stack';
@@ -44,7 +45,13 @@ const titleCase = (string: string) =>
 const loremIpsum =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
 
-const customTextColor = { darkMode: 'pink', lightMode: 'red' } as const;
+const customTextColor: CustomColor = {
+  custom: {
+    dark: 'salmon',
+    darkTinted: 'pink',
+    light: 'red',
+  },
+};
 
 const docs: Docs = {
   name: 'Text',
@@ -68,24 +75,32 @@ const docs: Docs = {
             <Text color="action" size={size} weight={weight}>
               Palette color
             </Text>
-            <Text
-              color={{ custom: customTextColor }}
-              size={size}
-              weight={weight}
-            >
+            <Text color={customTextColor} size={size} weight={weight}>
               Custom color
             </Text>
-            <View style={{ backgroundColor: palette.greyDark, padding: 20 }}>
-              <ColorModeProvider value="darkMode">
+            <View
+              style={{ backgroundColor: basePalette.greyDark, padding: 20 }}
+            >
+              <ColorModeProvider value="dark">
                 <Stack space="12dp">
-                  <Text size={size} weight={weight}>
+                  <Text color="secondary50" size={size} weight={weight}>
                     Dark mode
                   </Text>
-                  <Text
-                    color={{ custom: customTextColor }}
-                    size={size}
-                    weight={weight}
-                  >
+                  <Text color={customTextColor} size={size} weight={weight}>
+                    Custom color
+                  </Text>
+                </Stack>
+              </ColorModeProvider>
+            </View>
+            <View
+              style={{ backgroundColor: basePalette.greyDark, padding: 20 }}
+            >
+              <ColorModeProvider value="darkTinted">
+                <Stack space="12dp">
+                  <Text color="secondary50" size={size} weight={weight}>
+                    Dark tinted mode
+                  </Text>
+                  <Text color={customTextColor} size={size} weight={weight}>
                     Custom color
                   </Text>
                 </Stack>
