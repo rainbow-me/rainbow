@@ -1,5 +1,5 @@
 import { toLower } from 'lodash';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -16,6 +16,7 @@ import Animated, {
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
+  useWorkletCallback,
   withSpring,
 } from 'react-native-reanimated';
 import styled from 'styled-components';
@@ -102,22 +103,22 @@ const ZoomableWrapper = ({
   const [isZoomed, setIsZoomed] = useState(false);
   const isZoomedValue = useSharedValue(false);
 
+  const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
+  const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
+
   const containerStyle = useAnimatedStyle(() => ({
     height:
       containerHeightValue.value +
-      animationProgress.value *
-        (deviceWidth / aspectRatio - containerHeightValue.value),
+      animationProgress.value * (fullSizeHeight - containerHeightValue.value),
     marginBottom:
-      (deviceHeight -
-        (deviceWidth / aspectRatio - containerHeightValue.value)) *
+      (deviceHeight - (fullSizeHeight - containerHeightValue.value)) *
       animationProgress.value,
     marginTop:
       yPosition.value +
-      animationProgress.value *
-        ((deviceHeight - deviceWidth / aspectRatio) / 2 - 85),
+      animationProgress.value * ((deviceHeight - fullSizeHeight) / 2 - 85),
     width:
       containerWidthValue.value +
-      animationProgress.value * (deviceWidth - containerWidthValue.value),
+      animationProgress.value * (fullSizeWidth - containerWidthValue.value),
   }));
 
   const borderStyle = useAnimatedStyle(() => ({
@@ -126,25 +127,93 @@ const ZoomableWrapper = ({
 
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
+  const scale = useSharedValue(1);
 
-  const gestureHandler = useAnimatedGestureHandler({
+  const endGesture = useWorkletCallback(event => {
+    'worklet';
+    let targetScale = scale.value;
+    if (scale.value < 1) {
+      scale.value = withSpring(1, springConfig);
+      targetScale = 1;
+    }
+
+    if (scale.value > 3) {
+      scale.value = withSpring(3, springConfig);
+      targetScale = 3;
+    }
+
+    const breakingScaleX = deviceWidth / fullSizeWidth;
+    const breakingScaleY = deviceHeight / fullSizeHeight;
+
+    if (targetScale > breakingScaleX) {
+      const maxDisplacementX =
+        (deviceWidth * (targetScale / breakingScaleX - 1)) / 2;
+      if (translateX.value > maxDisplacementX) {
+        translateX.value = withSpring(maxDisplacementX, springConfig);
+      }
+      if (translateX.value < -maxDisplacementX) {
+        translateX.value = withSpring(-maxDisplacementX, springConfig);
+      }
+    } else {
+      translateX.value = withSpring(0);
+    }
+
+    if (targetScale > breakingScaleY) {
+      const maxDisplacementY =
+        (deviceHeight * (targetScale / breakingScaleY - 1)) / 2;
+      if (translateY.value > maxDisplacementY) {
+        translateY.value = withSpring(maxDisplacementY, springConfig);
+      }
+      if (translateY.value < -maxDisplacementY) {
+        translateY.value = withSpring(-maxDisplacementY, springConfig);
+      }
+    } else {
+      translateY.value = withSpring(0);
+    }
+
+    if (
+      translateY.value + (event?.velocityY ?? 0) >
+      THRESHOLD * targetScale * targetScale
+    ) {
+      isZoomedValue.value = false;
+      runOnJS(setIsZoomed)(false);
+      scale.value = 1;
+      animationProgress.value = withSpring(0, springConfig);
+      translateX.value = withSpring(0);
+      translateY.value = withSpring(0);
+    }
+  });
+
+  const panGestureHandler = useAnimatedGestureHandler({
     onActive: (event, ctx) => {
       translateX.value = ctx.startX + event.translationX;
       translateY.value = ctx.startY + event.translationY;
     },
-    onEnd: event => {
-      translateX.value = withSpring(0);
-      translateY.value = withSpring(0);
-      if (event.translationY + event.velocityY > THRESHOLD) {
-        isZoomedValue.value = false;
-        runOnJS(setIsZoomed)(false);
-        animationProgress.value = withSpring(0, springConfig);
-      }
-    },
+    onCancel: endGesture,
+    onEnd: endGesture,
+    onFail: endGesture,
     onStart: (_, ctx) => {
       ctx.startX = translateX.value;
       ctx.startY = translateY.value;
     },
+  });
+
+  const pinchGestureHandler = useAnimatedGestureHandler({
+    onActive: (event, ctx) => {
+      scale.value = ctx.start * event.scale;
+    },
+    // onEnd: () => {
+    //   // translateX.value = withSpring(0);
+    //   // translateY.value = withSpring(0);
+    //   // if (event.translationY + event.velocityY > THRESHOLD) {
+    //   //   isZoomedValue.value = false;
+    //   //   runOnJS(setIsZoomed)(false);
+    //   //   animationProgress.value = withSpring(0, springConfig);
+    //   // }
+    // },
+    // onStart: (_, ctx) => {
+    //   ctx.start = scale.value;
+    // },
   });
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -156,30 +225,47 @@ const ZoomableWrapper = ({
         {
           translateY: translateY.value,
         },
+        {
+          scale: scale.value,
+        },
       ],
     };
   });
 
+  const pan = useRef();
+  const pinch = useRef();
+
   return (
     <ButtonPressAnimation
       onPress={() => {
-        if (isZoomed) {
-          isZoomedValue.value = false;
-          setIsZoomed(false);
-          animationProgress.value = withSpring(0, springConfig);
-        } else {
-          isZoomedValue.value = true;
-          setIsZoomed(true);
-          animationProgress.value = withSpring(1, springConfig);
-        }
+        scale.value = 1;
+        isZoomedValue.value = !isZoomed;
+        setIsZoomed(!isZoomed);
+        translateX.value = withSpring(0);
+        animationProgress.value = withSpring(
+          isZoomedValue.value ? 1 : 0,
+          springConfig
+        );
       }}
       scaleTo={1}
       style={{ alignItems: 'center' }}
     >
-      <PanGestureHandler enabled={isZoomed} onGestureEvent={gestureHandler}>
-        <Animated.View style={[containerStyle, animatedStyle]}>
-          <PinchGestureHandler enabled={isZoomed}>
-            <ImageWrapper style={[borderStyle]}>{children}</ImageWrapper>
+      <PanGestureHandler
+        enabled={isZoomed}
+        onGestureEvent={panGestureHandler}
+        ref={pan}
+        simultaneousHandlers={[pinch]}
+      >
+        <Animated.View style={[containerStyle]}>
+          <PinchGestureHandler
+            enabled={isZoomed}
+            onGestureEvent={pinchGestureHandler}
+            ref={pinch}
+            simultaneousHandlers={[pan]}
+          >
+            <ImageWrapper style={[borderStyle, animatedStyle]}>
+              {children}
+            </ImageWrapper>
           </PinchGestureHandler>
         </Animated.View>
       </PanGestureHandler>
