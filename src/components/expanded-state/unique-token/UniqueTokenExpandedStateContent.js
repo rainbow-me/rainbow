@@ -163,12 +163,15 @@ const ZoomableWrapper = ({
   return (
     <ButtonPressAnimation
       onPress={() => {
-        isZoomedValue.value = !isZoomed;
-        setIsZoomed(!isZoomed);
-        animationProgress.value = withSpring(
-          isZoomedValue.value ? 1 : 0,
-          springConfig
-        );
+        if (isZoomed) {
+          isZoomedValue.value = false;
+          setIsZoomed(false);
+          animationProgress.value = withSpring(0, springConfig);
+        } else {
+          isZoomedValue.value = true;
+          setIsZoomed(true);
+          animationProgress.value = withSpring(1, springConfig);
+        }
       }}
       scaleTo={1}
       style={{ alignItems: 'center' }}
