@@ -937,11 +937,7 @@ export default function TransactionConfirmationScreen() {
       ? TallSheetHeight
       : ShortSheetHeight) * (android ? 1.5 : 1);
 
-  let marginTop = android
-    ? method === SIGN_TYPED_DATA
-      ? deviceHeight - sheetHeight + 275
-      : deviceHeight - sheetHeight + (isMessageRequest ? 265 : 210)
-    : null;
+  let marginTop = android ? deviceHeight - sheetHeight + 275 : null;
 
   if (isTransactionDisplayType(method) && !request?.asset) {
     marginTop += 50;
@@ -1006,7 +1002,7 @@ export default function TransactionConfirmationScreen() {
                 ? safeAreaInsetValues.bottom + (android ? 20 : 0)
                 : 0
             }
-            paddingTop={android && isTransactionDisplayType(method) ? 84 : 24}
+            paddingTop={24}
             style={[
               animatedSheetStyles,
               android && isMessageRequest
@@ -1027,7 +1023,7 @@ export default function TransactionConfirmationScreen() {
                   imageUrl={imageUrl || ''}
                   network={network}
                 />
-                <Row marginBottom={5}>
+                <Row marginBottom={android ? -6 : 5}>
                   <Text
                     align="center"
                     color={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -1053,7 +1049,10 @@ export default function TransactionConfirmationScreen() {
                     )
                   }
                 </Row>
-                <Centered marginBottom={24} paddingHorizontal={24}>
+                <Centered
+                  marginBottom={android ? 10 : 24}
+                  paddingHorizontal={24}
+                >
                   <Text
                     align="center"
                     color={methodName ? 'dark' : 'white'}
@@ -1069,8 +1068,8 @@ export default function TransactionConfirmationScreen() {
                 )}
                 {renderTransactionSection()}
                 {isL2 && !isMessageRequest && (
-                  <Column marginTop={0} width="100%">
-                    <Row height={19} />
+                  <Column margin={android ? 24 : 0} width="100%">
+                    <Row height={android ? 0 : 19} />
                     <L2Disclaimer
                       assetType={network}
                       colors={colors}
