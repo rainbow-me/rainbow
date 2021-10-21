@@ -40,31 +40,55 @@ const TokenHistory = ({
   }, [contractAddress, tokenID]);
 
   const renderItem = ({ item }) => {
-    switch (item.event_type) {
-      case "created":
-        
+    if (item != null) {
+      return (
+        <Column>
+          <Row>
+            <Text color={'#FFFFFF'}>{item.event_type}</Text>
+          </Row>
+          <Row>
+            <Text color={'#FFFFFF'}>{item.created_date}</Text>
+          </Row>
+          <Row>
+            <Text color={'#FFFFFF'}>{item.from_address}</Text>
+          </Row> 
+        </Column>
+  
+      );
     }
-    return (
-      <Column>
-        <Row>
-          <Text color={'#FFFFFF'}>{item.event_type}</Text>
-        </Row>
-        <Row>
-          <Text color={'#FFFFFF'}>{item.created_date}</Text>
-        </Row>
-        <Row>
-          <Text color={'#FFFFFF'}>{item.from_address}</Text>
-        </Row> 
-      </Column>
-      
-    );
+    
   };
+  // const renderItem = ({ item }) => {
+    // switch (item.event_type) {
+    //   case "created":
+    //     renderCreatedEventType(item);
+    //     break;
+    //   case "successful":
+    //     renderSuccessfulEventType(item);
+    //     break;
+    //   case "cancelled": 
+    //     renderCancelledEventType(item);
+    //     break;
+    //   case "transfer":
+    //     renderTransferEventType(item);
+    //     break;
+    //   default:
+    //     return (
+    //       <Column>
+    //         <Row>
+    //           <Text color={'#FFFFFF'}>{item.event_type}</Text>
+    //         </Row>
+    //       </Column>
+    //     )
+    // }
+  // };
 
   renderCreatedEventType = ({ item }) => {
+    logger.log("render created");
     return (
       <Column>
         <Row>
-          <Text color={'#FFFFFF'}>item created on {item.created_date} by {item.from_address}</Text>
+          <Text color={'#FFFFFF'}>sold on {item.created_date} by {item.from_address}</Text>
         </Row>
       </Column>
       
@@ -72,42 +96,40 @@ const TokenHistory = ({
   }
 
   renderSuccessfulEventType = ({ item }) => {
+    logger.log("render successful");
     return (
       <Column>
         <Row>
-          <Text color={'#FFFFFF'}>item created on {item.created_date} by {item.from_address}</Text>
+          <Text color={'#FFFFFF'}>listed on {item.created_date} by {item.from_address}</Text>
         </Row>
       </Column>
       
     );
   }
 
-  render = ({ item }) => {
+  renderCancelledEventType = ({ item }) => {
+    logger.log("render cancelled");
     return (
       <Column>
         <Row>
-          <Text color={'#FFFFFF'}>item created on {item.created_date} by {item.from_address}</Text>
+          <Text color={'#FFFFFF'}>delisted on {item.created_date} by {item.from_address}</Text>
         </Row>
       </Column>
       
     );
   }
 
-  // renderTextBasedOnEvent = ({ event_type, item }) => {
-  //   if (event_type == "successful") {
+  renderTransferEventType = ({ item }) => {
+    logger.log("render transfer");
+    return (
+      <Column>
+        <Row>
+          <Text color={'#FFFFFF'}>sent on {item.created_date} by {item.from_address}</Text>
+        </Row>
+      </Column>
       
-  //   }
-  //   else if (event_type == "created") {
-
-  //   }
-  //   else if (event_type == "cancelled") {
-      
-  //   }
-  //   else if (event_type == "transfer") {
-      
-  //   }
-    
-  // }
+    );
+  }
 
   /**
    *  Minting - " Minted"
@@ -122,6 +144,7 @@ const TokenHistory = ({
   return (
     <Column>
       <Row>
+      {/* <Text>No History!</Text> */}
         {
           tokenHistory.length > 0 ? 
           <FlatList

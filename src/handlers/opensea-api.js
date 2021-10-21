@@ -113,7 +113,7 @@ export const apiGetTokenHistory = async (
   tokenID
 ) => {
   try {
-    const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0`;
+    const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=100`;
     logger.log(url);
     const data = await rainbowFetch(url, {
       headers: {
@@ -127,29 +127,29 @@ export const apiGetTokenHistory = async (
     const array = data.data.asset_events;
     // logger.log(JSON.stringify(data.data.asset_events[0].from_account.address));
     return ( 
-      array.map(function(event) {
-          var event_type = event.event_type;
-          var created_date = JSON.stringify(event.created_date);
-          var from_address = JSON.stringify(event.from_account.address);
-          // var owner_address = JSON.stringify(event.to_account.address);
-          // logger.log(JSON.stringify("event: " + event.event_type));
-          // logger.log(JSON.stringify("date: " + created_date));
-          // logger.log(JSON.stringify("from: " + from_address));
+      array.filter(function(event) {
+        var event_type = event.event_type;
+        logger.log("filtered event: " + event_type);
+        if (event_type == "created" || event_type == "transfer" || event_type == "successful" || event_type == "cancelled") {
+          return true;
+        }
+        return false;
+      })
+      .map(function(event) {
+        var event_type = event.event_type;
+        var created_date = event.created_date;
+        var from_address = event.from_account.address;
+        logger.log("mapped event: " + event.event_type);
+        logger.log("mapped date: " + created_date);
+        logger.log("mapped from: " + from_address);
 
-          const eventObject = {
-            event_type,
-            created_date,
-            from_address,
-            owner_address,
-            // total_price
-          };
-  
-          return eventObject;
-        
-        // var total_price = event.total_price;
-        // logger.log(JSON.stringify("to: " + event.to_account.address));
-        // logger.log(JSON.stringify("price: " + event.total_price));
+        const eventObject = {
+          event_type,
+          created_date,
+          from_address,
+        };
 
+        return eventObject;
         
       })
     )
