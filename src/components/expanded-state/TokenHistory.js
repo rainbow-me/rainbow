@@ -31,6 +31,10 @@ const TokenHistory = ({
     setTokenID(tokenInfoArray[1]);
   });
 
+  useEffect(() => {
+    logger.log("token history array updated")
+  }, [tokenHistory]);
+
 
   //Query opensea using the contract address + tokenID
   useEffect(async() => {
@@ -40,23 +44,21 @@ const TokenHistory = ({
   }, [contractAddress, tokenID]);
 
   const renderItem = ({ item }) => {
-    if (item != null) {
-      return (
-        <Column>
-          <Row>
-            <Text color={'#FFFFFF'}>{item.event_type}</Text>
-          </Row>
-          <Row>
-            <Text color={'#FFFFFF'}>{item.created_date}</Text>
-          </Row>
-          <Row>
-            <Text color={'#FFFFFF'}>{item.from_address}</Text>
-          </Row> 
-        </Column>
-  
-      );
-    }
-    
+    return (
+      <Column>
+        <Text>|</Text>
+        <Row>
+          <Text color={'#FFFFFF'}>{item.event_type}</Text>
+        </Row>
+        <Row>
+          <Text color={'#FFFFFF'}>{item.created_date}</Text>
+        </Row>
+        {/* <Row>
+          <Text color={'#FFFFFF'}>{item.from_address}</Text>
+        </Row>  */}
+      </Column>
+
+    );
   };
   // const renderItem = ({ item }) => {
     // switch (item.event_type) {
@@ -144,18 +146,13 @@ const TokenHistory = ({
   return (
     <Column>
       <Row>
-      {/* <Text>No History!</Text> */}
-        {
-          tokenHistory.length > 0 ? 
-          <FlatList
+        <FlatList
           data={tokenHistory}
           renderItem={renderItem}
           horizontal={true}
           inverted={true}
           showsHorizontalScrollIndicator={false}
-        /> : <Text>No History!</Text>
-        }
-        
+        />
       </Row>
     </Column>
   )

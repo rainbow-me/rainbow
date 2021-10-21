@@ -60,60 +60,12 @@ export const apiGetUniqueTokenFloorPrice = async (
   }
 };
 
-
-// console.log(result); // eslint-disable-line no-console
-// export const apiGetTokenHistory = async (
-//   contractAddress,
-//   tokenID
-// ) => {
-//   try {
-//     const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0`;
-//     logger.log(url); // eslint-disable-line no-console
-//     const data = await rainbowFetch(url, {
-//       headers: {
-//         'Accept': 'application/json',
-//         'X-Api-Key': OPENSEA_API_KEY,
-//       },
-//       method: 'get',
-//       timeout: 25000, // 5 secs
-//     })
-
-//     var result;
-
-//     data.data.asset_events.forEach(function(asset_event) {
-
-//       var event = asset_event.event_type;
-//       var created_date = JSON.stringify(asset_event.created_date);
-//       var from_address = JSON.stringify(asset_event.from_account.address);
-//       // var owner_address = JSON.stringify(asset_event.to_account.address);
-//       // var total_price = JSON.stringify(asset_event.total_price);
-
-    
-//       if (event == '"created"' || event == '"successful"' || event == '"cancelled"'|| event == '"transfer"') {
-//         const eventObject = {
-//           event,
-//           created_date,
-//           from_address,
-//         };
-//         result.push(eventObject);
-//         logger.log(eventObject.event);
-//       }
-//     })
-
-//     logger.log("hi mike");
-//     return result;
-
-//   } catch (error) {
-//     throw error;
-//   }
-// };
-
 export const apiGetTokenHistory = async (
   contractAddress,
   tokenID
 ) => {
   try {
-    const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=100`;
+    const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=299`;
     logger.log(url);
     const data = await rainbowFetch(url, {
       headers: {
@@ -121,13 +73,13 @@ export const apiGetTokenHistory = async (
         'X-Api-Key': OPENSEA_API_KEY,
       },
       method: 'get',
-      timeout: 15000, // 15 secs. Way too long but lets try it
+      timeout: 45000, // 45 secs. Way too long but lets try it
     })
 
     const array = data.data.asset_events;
-    // logger.log(JSON.stringify(data.data.asset_events[0].from_account.address));
-    return ( 
-      array.filter(function(event) {
+
+    const result = 
+      await array.filter(function(event) {
         var event_type = event.event_type;
         logger.log("filtered event: " + event_type);
         if (event_type == "created" || event_type == "transfer" || event_type == "successful" || event_type == "cancelled") {
@@ -138,22 +90,25 @@ export const apiGetTokenHistory = async (
       .map(function(event) {
         var event_type = event.event_type;
         var created_date = event.created_date;
-        var from_address = event.from_account.address;
+        // var from_address = event.from_account.address;
         logger.log("mapped event: " + event.event_type);
         logger.log("mapped date: " + created_date);
-        logger.log("mapped from: " + from_address);
+        // logger.log("mapped from: " + from_address);
 
         const eventObject = {
           event_type,
           created_date,
-          from_address,
+          // from_address,
         };
 
         return eventObject;
         
       })
-    )
+
+      return result;
+    
   } catch (error) {
+    logger.log(error);
     throw error;
   }
 };
