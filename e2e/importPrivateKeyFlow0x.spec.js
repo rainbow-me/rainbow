@@ -3,26 +3,22 @@
 import * as Helpers from './helpers';
 
 describe('Import from private key flow', () => {
-  it('without 0x - Should show the welcome screen', async () => {
+  it('with 0x - Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
 
-  it('without 0x - Should show the "Restore Sheet" after tapping on "I already have a wallet"', async () => {
+  it('with 0x - Should show the "Restore Sheet" after tapping on "I already have a wallet"', async () => {
     await Helpers.waitAndTap('already-have-wallet-button');
     await Helpers.checkIfExists('restore-sheet');
   });
 
-  it('without 0x - Show the "Import Sheet" when tapping on "Restore with a recovery phrase or private key"', async () => {
+  it('with 0x - Show the "Import Sheet" when tapping on "Restore with a recovery phrase or private key"', async () => {
     await Helpers.waitAndTap('restore-with-key-button');
     await Helpers.checkIfExists('import-sheet');
   });
 
-  it('without 0x - Should show the "Add wallet modal" after tapping import with a valid private key"', async () => {
-    await Helpers.typeText(
-      'import-sheet-input',
-      process.env.DEV_PKEY.substring(2),
-      false
-    );
+  it('with 0x - Should show the "Add wallet modal" after tapping import with a valid private key"', async () => {
+    await Helpers.typeText('import-sheet-input', process.env.DEV_PKEY, false);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
       'Import'
@@ -31,10 +27,10 @@ describe('Import from private key flow', () => {
     await Helpers.checkIfVisible('wallet-info-modal');
   });
 
-  it('without 0x - Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
+  it('with 0x - Should navigate to the Wallet screen after tapping on "Import Wallet"', async () => {
     await Helpers.disableSynchronization();
     await Helpers.checkIfVisible('wallet-info-input');
-    await Helpers.typeText('wallet-info-input', 'TKEY', false);
+    await Helpers.typeText('wallet-info-input', 'PKEY', false);
     await Helpers.waitAndTap('wallet-info-submit-button');
     if (device.getPlatform() === 'android') {
       await Helpers.checkIfVisible('pin-authentication-screen');
@@ -49,16 +45,17 @@ describe('Import from private key flow', () => {
 
   // Saving for now in case we want to test iCloud back up sheet
   // it('Should show the backup sheet', async () => {
+  //   await Helpers.delay(3000);
   //   await Helpers.checkIfVisible('backup-sheet');
   //   await Helpers.waitAndTap('backup-sheet-imported-cancel-button');
   // });
 
-  it('without 0x - Should say "TKEY" in the Profile Screen header', async () => {
+  it('with 0x - Should say "PKEY" in the Profile Screen header', async () => {
     await Helpers.swipe('wallet-screen', 'right');
     if (device.getPlatform() === 'android') {
-      await Helpers.checkIfExistsByText('TKEY');
+      await Helpers.checkIfExistsByText('PKEY');
     } else {
-      await Helpers.checkIfElementByTextIsVisible('TKEY');
+      await Helpers.checkIfElementByTextIsVisible('PKEY');
     }
   });
 
