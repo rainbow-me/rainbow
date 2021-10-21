@@ -42,6 +42,14 @@ const springConfig = {
   stiffness: 600,
 };
 
+const Container = styled(Animated.View)`
+  align-self: center;
+  shadow-color: ${({ theme: { colors } }) => colors.shadowBlack};
+  shadow-offset: 0 20px;
+  shadow-opacity: 0.4;
+  shadow-radius: 30px;
+`;
+
 const ImageWrapper = styled(Animated.View)`
   ${position.size('100%')};
   overflow: hidden;
@@ -259,7 +267,7 @@ const ZoomableWrapper = ({
         ref={pan}
         simultaneousHandlers={[pinch]}
       >
-        <Animated.View style={[containerStyle]}>
+        <Container style={[containerStyle]}>
           <PinchGestureHandler
             enabled={isZoomed}
             onGestureEvent={pinchGestureHandler}
@@ -270,7 +278,7 @@ const ZoomableWrapper = ({
               {children}
             </ImageWrapper>
           </PinchGestureHandler>
-        </Animated.View>
+        </Container>
       </PanGestureHandler>
     </ButtonPressAnimation>
   );
