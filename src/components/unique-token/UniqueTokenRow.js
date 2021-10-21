@@ -2,21 +2,17 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { useNavigation } from '../../navigation/Navigation';
-import { deviceUtils, magicMemo } from '../../utils';
+import { magicMemo } from '../../utils';
 import { Row } from '../layout';
+import {
+  CardSize,
+  UniqueTokenCardMargin,
+  UniqueTokenRowPadding,
+} from './CardSize';
 import UniqueTokenCard from './UniqueTokenCard';
 import { useWallets } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { padding, position } from '@rainbow-me/styles';
-
-const UniqueTokenCardMargin = 15;
-const UniqueTokenRowPadding = 19;
-
-const CardSize =
-  (deviceUtils.dimensions.width -
-    UniqueTokenRowPadding * 2 -
-    UniqueTokenCardMargin) /
-  2;
 
 const Container = styled(Row).attrs({ align: 'center' })`
   ${padding(0, UniqueTokenRowPadding)};
@@ -35,9 +31,8 @@ const UniqueTokenRow = magicMemo(({ item, external = false }) => {
   const { navigate } = useNavigation();
 
   const handleItemPress = useCallback(
-    (aspectRatio, asset, imageColor, lowResUrl) =>
+    (asset, imageColor, lowResUrl) =>
       navigate(Routes.EXPANDED_ASSET_SHEET, {
-        aspectRatio,
         asset,
         backgroundOpacity: 1,
         cornerRadius: 'device',

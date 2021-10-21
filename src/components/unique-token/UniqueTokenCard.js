@@ -1,23 +1,16 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { Image, PixelRatio } from 'react-native';
+import { PixelRatio } from 'react-native';
 import styled from 'styled-components';
-import { deviceUtils, getDominantColorFromImage, magicMemo } from '../../utils';
+import { getDominantColorFromImage, magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { GOOGLE_USER_CONTENT_URL } from '../expanded-state/unique-token/UniqueTokenExpandedStateContent';
 import { InnerBorder } from '../layout';
+import { CardSize } from './CardSize';
 import UniqueTokenImage from './UniqueTokenImage';
+import { usePersistentAspectRatio } from '@rainbow-me/hooks';
 import { shadow as shadowUtil } from '@rainbow-me/styles';
 
 const pixelRatio = PixelRatio.get();
-
-const UniqueTokenCardMargin = 15;
-const UniqueTokenRowPadding = 19;
-
-const CardSize =
-  (deviceUtils.dimensions.width -
-    UniqueTokenRowPadding * 2 -
-    UniqueTokenCardMargin) /
-  2;
 
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadowFactory = colors => [0, 2, 6, colors.shadow, 0.08];
@@ -48,7 +41,6 @@ const UniqueTokenCard = ({
   width,
   ...props
 }) => {
-  const [aspectRatio, setAspectRatio] = useState(1);
   const [imageColor, setImageColor] = useState(null);
 
   const size = Math.ceil(CardSize) * pixelRatio;
@@ -60,11 +52,7 @@ const UniqueTokenCard = ({
     return item.image_url;
   }, [item.image_url, size]);
 
-  useEffect(() => {
-    Image.getSize(lowResUrl, (width, height) => {
-      setAspectRatio(width / height);
-    });
-  }, [lowResUrl]);
+  usePersistentAspectRatio(item.image_url);
 
   useEffect(() => {
     getDominantColorFromImage(lowResUrl, '#333333').then(result => {
@@ -74,9 +62,9 @@ const UniqueTokenCard = ({
 
   const handlePress = useCallback(() => {
     if (onPress) {
-      onPress(aspectRatio, item, imageColor, lowResUrl);
+      onPress(item, imageColor, lowResUrl);
     }
-  }, [aspectRatio, item, imageColor, lowResUrl, onPress]);
+  }, [item, imageColor, lowResUrl, onPress]);
 
   const { colors } = useTheme();
 

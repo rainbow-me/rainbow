@@ -137,6 +137,9 @@ PODS:
   - lottie-react-native (4.0.2):
     - lottie-ios (~> 3.2.3)
     - React-Core
+  - MMKV (1.2.10):
+    - MMKVCore (~> 1.2.10)
+  - MMKVCore (1.2.10)
   - nanopb (2.30908.0):
     - nanopb/decode (= 2.30908.0)
     - nanopb/encode (= 2.30908.0)
@@ -385,6 +388,9 @@ PODS:
     - React-Core
   - react-native-mail (4.1.0):
     - React
+  - react-native-mmkv (1.5.2):
+    - MMKV
+    - React-Core
   - react-native-netinfo (5.9.7):
     - React-Core
   - react-native-palette-full (1.2.0):
@@ -542,7 +548,7 @@ PODS:
     - React-Core
   - RNReactNativeHapticFeedback (1.11.0):
     - React-Core
-  - RNReanimated (2.2.0):
+  - RNReanimated (2.2.3):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -668,6 +674,7 @@ DEPENDENCIES:
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-ios-context-menu (from `../node_modules/react-native-ios-context-menu`)
   - react-native-mail (from `../node_modules/react-native-mail`)
+  - react-native-mmkv (from `../node_modules/react-native-mmkv`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-palette-full (from `../node_modules/react-native-palette-full`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
@@ -756,6 +763,8 @@ SPEC REPOS:
     - KTVHTTPCache
     - libevent
     - libwebp
+    - MMKV
+    - MMKVCore
     - nanopb
     - OpenSSL-Universal
     - pop
@@ -832,6 +841,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-ios-context-menu"
   react-native-mail:
     :path: "../node_modules/react-native-mail"
+  react-native-mmkv:
+    :path: "../node_modules/react-native-mmkv"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-palette-full:
@@ -964,7 +975,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   FBLazyVector: e686045572151edef46010a6f819ade377dfeb4b
-  FBReactNativeSpec: 0d272b19869dba0763bb19c080fcce2c5d277547
+  FBReactNativeSpec: 568a16701fc9c730028cabe29159c0473d717ba6
   Firebase: 4bb49ae87756034cef870fa3c4006235eb46f475
   FirebaseCore: 389c4ce9a7cce4a7e25eb22326b4bee0050557b2
   FirebaseCoreDiagnostics: 7e873baabcfaa9512f538554ae4fa0817aaafbdb
@@ -989,6 +1000,8 @@ SPEC CHECKSUMS:
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
   lottie-ios: c058aeafa76daa4cf64d773554bccc8385d0150e
   lottie-react-native: 336c6d26b1951496d75adbde3d3278b8cfca6b21
+  MMKV: 76033b9ace2006623308910a3afcc0e25eba3140
+  MMKVCore: b00e7a09ec77a1b916aef336eedd3b99ec249978
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
@@ -1017,6 +1030,7 @@ SPEC CHECKSUMS:
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
   react-native-ios-context-menu: 1ccf4d6aa1c0e7dc596613eb9a36f8c0c23ca56f
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
+  react-native-mmkv: 27029f9f3a30dc798726cfc92775f4cbedcb7dd7
   react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
   react-native-palette-full: 99a6fd796d16fab6a2d3770649070e31c2602fad
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
@@ -1065,7 +1079,7 @@ SPEC CHECKSUMS:
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: 7043bacbf928eae25808275cfe73799b8f618911
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
-  RNReanimated: 9c13c86454bfd54dab7505c1a054470bfecd2563
+  RNReanimated: 64c38d47ffcc29c97fc1d8cfde9e8a73d7be7cc8
   RNScreens: c526239bbe0e957b988dacc8d75ac94ec9cb19da
   RNSentry: a2b02b326ae4fce91ce7c57d3f7dcf8df4f72269
   RNStoreReview: 62d6afd7c37db711a594bbffca6b0ea3a812b7a8

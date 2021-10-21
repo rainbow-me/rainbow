@@ -92,7 +92,6 @@ const Spacer = styled.View`
 `;
 
 const UniqueTokenExpandedState = ({
-  aspectRatio,
   asset,
   imageColor,
   external,
@@ -241,7 +240,6 @@ const UniqueTokenExpandedState = ({
           <SheetHandle color={colors.alpha(colors.whiteLabel, 0.24)} />
         </Centered>
         <UniqueTokenExpandedStateContent
-          aspectRatio={aspectRatio}
           asset={asset}
           imageColor={imageColorWithFallback}
           lowResUrl={lowResUrl}

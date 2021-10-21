@@ -1,12 +1,6 @@
 import { toLower } from 'lodash';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  PixelRatio,
-  StyleSheet,
-  View,
-} from 'react-native';
+import React, { useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, PixelRatio, StyleSheet, View } from 'react-native';
 import {
   PanGestureHandler,
   PinchGestureHandler,
@@ -27,9 +21,14 @@ import { SimpleModelView } from '../../3d';
 import { ButtonPressAnimation } from '../../animations';
 import { AudioPlayer } from '../../audio';
 import { UniqueTokenImage } from '../../unique-token';
+import { CardSize } from '../../unique-token/CardSize';
 import { SimpleVideo } from '../../video';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
-import { useDimensions, useUniqueToken } from '@rainbow-me/hooks';
+import {
+  useDimensions,
+  usePersistentAspectRatio,
+  useUniqueToken,
+} from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
 
 export const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
@@ -58,6 +57,7 @@ const Container = styled(Animated.View)`
 const ImageWrapper = styled(Animated.View)`
   ${position.size('100%')};
   overflow: hidden;
+  flex-direction: row;
 `;
 
 const ModelView = styled(SimpleModelView)`
@@ -291,12 +291,19 @@ const ZoomableWrapper = ({
   );
 };
 
+const size = Math.ceil(CardSize) * PixelRatio.get();
+
+const getLowResUrl = url => {
+  if (url?.startsWith?.(GOOGLE_USER_CONTENT_URL)) {
+    return `${url}=w${size}`;
+  }
+  return url;
+};
+
 const UniqueTokenExpandedStateImage = ({
-  aspectRatio,
   asset,
   borderRadius,
   horizontalPadding = 24,
-  lowResUrl,
   resizeMode = 'cover',
 }) => {
   const { width: deviceWidth } = useDimensions();
@@ -320,16 +327,10 @@ const UniqueTokenExpandedStateImage = ({
     return asset.image_url;
   }, [asset.image_url, size]);
 
-  const [fallbackAspectRatio, setFallbackAspectRatio] = useState(null);
+  const aspectRatio = usePersistentAspectRatio(asset.image_url);
+  const aspectRatioWithFallback = aspectRatio.result || 1;
 
-  const aspectRatioWithFallback = aspectRatio || fallbackAspectRatio || 1;
-
-  useEffect(() => {
-    Image.getSize(lowResUrl, (width, height) => {
-      setTimeout(() => setFallbackAspectRatio(width / height), 5000);
-    });
-  }, [lowResUrl]);
-
+  const lowResUrl = getLowResUrl(asset.image_url);
   const { supports3d, supportsVideo, supportsAudio } = useUniqueToken(asset);
 
   // When rendering a 3D/Video assets, we'll default to rendering a loading icon.
