@@ -76,7 +76,7 @@ const UniqueTokenExpandedStateContent = ({
   const aspectRatio = usePersistentAspectRatio(asset.image_url);
   const aspectRatioWithFallback = aspectRatio.result || 1;
 
-  const lowResUrl = getLowResUrl(asset.image_url);
+  const lowResUrl = isENS ? url : getLowResUrl(asset.image_url);
   const { supports3d, supportsVideo, supportsAudio } = useUniqueToken(asset);
 
   // When rendering a 3D/Video assets, we'll default to rendering a loading icon.
