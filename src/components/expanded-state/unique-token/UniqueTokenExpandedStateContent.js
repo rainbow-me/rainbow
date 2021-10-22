@@ -103,6 +103,7 @@ const ZoomableWrapper = ({
   isENS,
   borderRadius,
   disableAnimations,
+  onZoomIn,
 }) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const animationProgress = givenAnimationProgress || useSharedValue(0);
@@ -306,6 +307,7 @@ const ZoomableWrapper = ({
       if (!isZoomedValue.value) {
         isZoomedValue.value = true;
         runOnJS(setIsZoomed)(true);
+        runOnJS(onZoomIn)();
         animationProgress.value = withSpring(1, enterConfig);
       }
     },
@@ -421,6 +423,7 @@ const UniqueTokenExpandedStateContent = ({
   horizontalPadding = 24,
   resizeMode = 'cover',
   disablePreview,
+  sheetRef,
 }) => {
   const { width: deviceWidth } = useDimensions();
 
@@ -459,6 +462,7 @@ const UniqueTokenExpandedStateContent = ({
       disableAnimations={disablePreview}
       horizontalPadding={horizontalPadding}
       isENS={isENS}
+      onZoomIn={sheetRef.current?.scrollTo}
     >
       <View style={StyleSheet.absoluteFill}>
         {supportsVideo ? (

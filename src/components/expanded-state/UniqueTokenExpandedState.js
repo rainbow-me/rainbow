@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { Linking, Share } from 'react-native';
@@ -215,6 +216,8 @@ const UniqueTokenExpandedState = ({
     [showFloorInEth, setShowFloorInEth]
   );
 
+  const sheetRef = useRef();
+
   return (
     <Fragment>
       <BlurWrapper height={deviceHeight} width={deviceWidth}>
@@ -245,6 +248,7 @@ const UniqueTokenExpandedState = ({
         {...(ios
           ? { height: '100%' }
           : { additionalTopPadding: true, contentHeight: deviceHeight - 80 })}
+        ref={sheetRef}
         scrollEnabled
       >
         <Centered paddingBottom={30} paddingTop={33}>
@@ -257,6 +261,7 @@ const UniqueTokenExpandedState = ({
           asset={asset}
           imageColor={imageColorWithFallback}
           lowResUrl={lowResUrl}
+          sheetRef={sheetRef}
         />
         <Animated.View style={opacityStyle}>
           <Row justify="space-between" marginTop={14} paddingHorizontal={19}>
