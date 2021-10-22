@@ -52,8 +52,7 @@ const exitConfig = {
   stiffness: 800,
 };
 
-const BlackBackground = styled(Animated.View)`
-  background-color: ${({ theme: { colors } }) => colors.shadowBlack};
+const GestureBlocker = styled(View)`
   height: ${({ height }) => height};
   left: ${({ containerWidth, width }) => -(width - containerWidth) / 2};
   position: absolute;
@@ -157,10 +156,6 @@ const ZoomableWrapper = ({
 
   const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
   const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
-
-  const backgroundStyle = useAnimatedStyle(() => ({
-    opacity: animationProgress.value,
-  }));
 
   const containerStyle = useAnimatedStyle(() => ({
     height:
@@ -336,12 +331,11 @@ const ZoomableWrapper = ({
         simultaneousHandlers={[pinch]}
       >
         <ZoomContainer height={containerHeight} width={containerWidth}>
-          <BlackBackground
+          <GestureBlocker
             containerHeight={containerHeight}
             containerWidth={containerWidth}
             height={deviceHeight}
             pointerEvents={isZoomed ? 'auto' : 'none'}
-            style={[backgroundStyle]}
             width={deviceWidth}
           />
           <Container style={[containerStyle]}>
