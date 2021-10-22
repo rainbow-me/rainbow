@@ -1,4 +1,3 @@
-import config from '../model/config';
 import { getAddress } from '@ethersproject/address';
 import { BigNumber } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
@@ -7,6 +6,7 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import UnstoppableResolution from '@unstoppabledomains/resolution';
 import { get, replace, startsWith } from 'lodash';
+import config from '../model/config';
 import {
   ARBITRUM_ETH_ADDRESS,
   ETH_ADDRESS,
@@ -32,15 +32,13 @@ import {
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-
-
 export const networkProviders = {};
 
 /**
  * @desc web3 http instance
  */
 export let web3Provider = new JsonRpcProvider(
-  replace(infuraUrl, 'network', NetworkTypes.mainnet),
+  replace(config.ethereum_mainnet_rpc, 'network', NetworkTypes.mainnet),
   NetworkTypes.mainnet
 );
 
@@ -52,7 +50,9 @@ export const web3SetHttpProvider = async network => {
   if (network.startsWith('http://')) {
     web3Provider = new JsonRpcProvider(network, NetworkTypes.mainnet);
   } else {
-    web3Provider = new JsonRpcProvider(replace(infuraUrl, 'network', network));
+    web3Provider = new JsonRpcProvider(
+      replace(config.ethereum_mainnet_rpc, 'network', network)
+    );
   }
   return web3Provider.ready;
 };
@@ -111,7 +111,11 @@ export const getProviderForNetwork = async (network = NetworkTypes.mainnet) => {
         url = config.polygon_mainnet_rpc;
         break;
       default:
-        url = replace(config.ethereum_mainnet_rpc, networkTypes.mainnet, network);
+        url = replace(
+          config.ethereum_mainnet_rpc,
+          NetworkTypes.mainnet,
+          network
+        );
     }
     const provider = new JsonRpcProvider(url);
     networkProviders[network] = provider;
@@ -302,7 +306,11 @@ export const resolveUnstoppableDomain = async domain => {
     blockchain: {
       cns: {
         network: 'mainnet',
-        url: replace(infuraUrl, 'network', NetworkTypes.mainnet),
+        url: replace(
+          config.ethereum_mainnet_rpc,
+          'network',
+          NetworkTypes.mainnet
+        ),
       },
     },
   });
