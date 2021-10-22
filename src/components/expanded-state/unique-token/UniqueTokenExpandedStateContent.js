@@ -10,6 +10,7 @@ import {
 import {
   PanGestureHandler,
   PinchGestureHandler,
+  TapGestureHandler,
 } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
@@ -92,7 +93,7 @@ const ZoomContainer = styled(Animated.View)`
   width: ${({ width }) => width};
 `;
 
-const THRESHOLD = 250;
+const THRESHOLD = 500;
 
 const ZoomableWrapper = ({
   animationProgress: givenAnimationProgress,
@@ -205,6 +206,8 @@ const ZoomableWrapper = ({
       }
     }
 
+    ctx.initEventScale = undefined;
+
     if (scale.value > 3) {
       scale.value = withSpring(3, exitConfig);
       targetScale = 3;
@@ -240,14 +243,16 @@ const ZoomableWrapper = ({
     }
 
     if (
-      Math.abs(translateY.value) + (Math.abs(event?.velocityY) ?? 0) >
-        THRESHOLD * targetScale * targetScale &&
+      Math.abs(translateY.value) + 3 * (Math.abs(event?.velocityY) ?? 0) >
+        THRESHOLD * Math.pow(targetScale, 5) &&
       fullSizeHeight * scale.value < deviceHeight
     ) {
       isZoomedValue.value = false;
       runOnJS(setIsZoomed)(false);
-      animationProgress.value = withSpring(0, exitConfig);
+    }
+    if (!isZoomedValue.value) {
       scale.value = withSpring(1, exitConfig);
+      animationProgress.value = withSpring(0, exitConfig);
       translateX.value = withSpring(0, exitConfig);
       translateY.value = withSpring(0, exitConfig);
     }
@@ -278,7 +283,11 @@ const ZoomableWrapper = ({
 
   const pinchGestureHandler = useAnimatedGestureHandler({
     onActive: (event, ctx) => {
-      scale.value = ctx.start * event.scale;
+      if (!ctx.initEventScale) {
+        ctx.initEventScale = event.scale;
+      }
+
+      scale.value = ctx.start * (event.scale / ctx.initEventScale);
       if (ctx.prevScale) {
         const delta = event.scale / ctx.prevScale;
         translateX.value +=
@@ -289,6 +298,29 @@ const ZoomableWrapper = ({
     onEnd: endGesture,
     onStart: (_, ctx) => {
       ctx.start = scale.value;
+    },
+  });
+
+  const singleTapGestureHandler = useAnimatedGestureHandler({
+    onActive: () => {
+      if (!isZoomedValue.value) {
+        isZoomedValue.value = true;
+        runOnJS(setIsZoomed)(true);
+        animationProgress.value = withSpring(1, enterConfig);
+      }
+    },
+  });
+
+  const doubleTapGestureHandler = useAnimatedGestureHandler({
+    onActive: () => {
+      if (isZoomedValue.value) {
+        isZoomedValue.value = false;
+        runOnJS(setIsZoomed)(false);
+        animationProgress.value = withSpring(0, exitConfig);
+        scale.value = withSpring(1, exitConfig);
+        translateX.value = withSpring(0, exitConfig);
+        translateY.value = withSpring(0, exitConfig);
+      }
     },
   });
 
@@ -310,27 +342,14 @@ const ZoomableWrapper = ({
 
   const pan = useRef();
   const pinch = useRef();
+  const doubleTap = useRef();
+  const singleTap = useRef();
 
   return (
     <ButtonPressAnimation
       disabled={disableAnimations}
       enableHapticFeedback={false}
-      onPress={() => {
-        if (isZoomed) {
-          if (scale.value === 1) {
-            isZoomedValue.value = false;
-            setIsZoomed(false);
-            animationProgress.value = withSpring(0, exitConfig);
-            scale.value = withSpring(1, exitConfig);
-            translateX.value = withSpring(0, exitConfig);
-            translateY.value = withSpring(0, exitConfig);
-          }
-        } else {
-          isZoomedValue.value = true;
-          setIsZoomed(true);
-          animationProgress.value = withSpring(1, enterConfig);
-        }
-      }}
+      onPress={() => {}}
       scaleTo={1}
       style={{ alignItems: 'center', zIndex: 10 }}
     >
@@ -339,7 +358,7 @@ const ZoomableWrapper = ({
         maxPointers={5}
         onGestureEvent={panGestureHandler}
         ref={pan}
-        simultaneousHandlers={[pinch]}
+        simultaneousHandlers={[pinch, doubleTap, singleTap]}
       >
         <ZoomContainer height={containerHeight} width={containerWidth}>
           <GestureBlocker
@@ -349,18 +368,37 @@ const ZoomableWrapper = ({
             pointerEvents={isZoomed ? 'auto' : 'none'}
             width={deviceWidth}
           />
-          <Container style={[containerStyle]}>
-            <PinchGestureHandler
-              enabled={!disableAnimations && isZoomed}
-              onGestureEvent={pinchGestureHandler}
-              ref={pinch}
-              simultaneousHandlers={[pan]}
-            >
-              <ImageWrapper style={[borderStyle, animatedStyle]}>
-                {children}
-              </ImageWrapper>
-            </PinchGestureHandler>
-          </Container>
+          <TapGestureHandler
+            enabled={!disableAnimations && !isZoomed}
+            numberOfTaps={1}
+            onHandlerStateChange={singleTapGestureHandler}
+            ref={singleTap}
+            simultaneousHandlers={[pinch, pan, singleTap]}
+          >
+            <Animated.View>
+              <TapGestureHandler
+                enabled={!disableAnimations && isZoomed}
+                maxDurationMs={200}
+                numberOfTaps={2}
+                onHandlerStateChange={doubleTapGestureHandler}
+                ref={doubleTap}
+                simultaneousHandlers={[pinch, pan, doubleTap]}
+              >
+                <Container style={[containerStyle]}>
+                  <PinchGestureHandler
+                    enabled={!disableAnimations && isZoomed}
+                    onGestureEvent={pinchGestureHandler}
+                    ref={pinch}
+                    simultaneousHandlers={[pan, doubleTap, singleTap]}
+                  >
+                    <ImageWrapper style={[borderStyle, animatedStyle]}>
+                      {children}
+                    </ImageWrapper>
+                  </PinchGestureHandler>
+                </Container>
+              </TapGestureHandler>
+            </Animated.View>
+          </TapGestureHandler>
         </ZoomContainer>
       </PanGestureHandler>
     </ButtonPressAnimation>
