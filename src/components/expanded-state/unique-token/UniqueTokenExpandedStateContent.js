@@ -1,6 +1,12 @@
 import { toLower } from 'lodash';
 import React, { useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, PixelRatio, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  PixelRatio,
+  StatusBar,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {
   PanGestureHandler,
   PinchGestureHandler,
@@ -46,6 +52,15 @@ const exitConfig = {
   stiffness: 800,
 };
 
+const BlackBackground = styled(Animated.View)`
+  background-color: ${({ theme: { colors } }) => colors.shadowBlack};
+  height: ${({ height }) => height};
+  left: ${({ containerWidth, width }) => -(width - containerWidth) / 2};
+  position: absolute;
+  top: -85;
+  width: ${({ width }) => width};
+`;
+
 const Container = styled(Animated.View)`
   align-self: center;
   shadow-color: ${({ theme: { colors } }) => colors.shadowBlack};
@@ -71,6 +86,11 @@ const LoadingWrapper = styled(View)`
   padding-bottom: 10;
   padding-right: 10;
   position: absolute;
+`;
+
+const ZoomContainer = styled(Animated.View)`
+  height: ${({ height }) => height};
+  width: ${({ width }) => width};
 `;
 
 const THRESHOLD = 250;
@@ -116,23 +136,45 @@ const ZoomableWrapper = ({
     }
   }, [aspectRatio, isENS, maxImageHeight, maxImageWidth]);
 
-  const containerWidthValue = useReactiveSharedValue(containerWidth);
-  const containerHeightValue = useReactiveSharedValue(containerHeight);
+  const containerWidthValue = useReactiveSharedValue(
+    containerWidth || maxImageWidth
+  );
+  const containerHeightValue = useReactiveSharedValue(
+    containerHeight || maxImageWidth
+  );
   const yPosition = useSharedValue(0);
 
   const [isZoomed, setIsZoomed] = useState(false);
   const isZoomedValue = useSharedValue(false);
 
+  useEffect(() => {
+    if (isZoomed) {
+      StatusBar.setHidden(true);
+    } else {
+      StatusBar.setHidden(false);
+    }
+  }, [isZoomed]);
+
   const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
   const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
+
+  const backgroundStyle = useAnimatedStyle(() => ({
+    opacity: animationProgress.value,
+  }));
 
   const containerStyle = useAnimatedStyle(() => ({
     height:
       containerHeightValue.value +
       animationProgress.value * (fullSizeHeight - containerHeightValue.value),
-    marginTop:
-      yPosition.value +
-      animationProgress.value * ((deviceHeight - fullSizeHeight) / 2 - 85),
+    marginBottom:
+      -animationProgress.value * (fullSizeHeight - containerHeightValue.value),
+    transform: [
+      {
+        translateY:
+          yPosition.value +
+          animationProgress.value * ((deviceHeight - fullSizeHeight) / 2 - 85),
+      },
+    ],
     width:
       containerWidthValue.value +
       animationProgress.value * (fullSizeWidth - containerWidthValue.value),
@@ -146,12 +188,23 @@ const ZoomableWrapper = ({
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
 
-  const endGesture = useWorkletCallback(event => {
+  const endGesture = useWorkletCallback((event, ctx) => {
     'worklet';
     let targetScale = scale.value;
     if (scale.value < 1) {
-      scale.value = withSpring(1, exitConfig);
-      targetScale = 1;
+      if (ctx.start <= 1) {
+        isZoomedValue.value = false;
+        runOnJS(setIsZoomed)(false);
+        animationProgress.value = withSpring(0, exitConfig);
+        scale.value = withSpring(1, exitConfig);
+        translateX.value = withSpring(0, exitConfig);
+        translateY.value = withSpring(0, exitConfig);
+      } else {
+        scale.value = withSpring(1, exitConfig);
+        translateX.value = withSpring(0, exitConfig);
+        translateY.value = withSpring(0, exitConfig);
+        targetScale = 1;
+      }
     }
 
     if (scale.value > 3) {
@@ -189,13 +242,14 @@ const ZoomableWrapper = ({
     }
 
     if (
-      translateY.value + (event?.velocityY ?? 0) >
-      THRESHOLD * targetScale * targetScale
+      Math.abs(translateY.value) + (Math.abs(event?.velocityY) ?? 0) >
+        THRESHOLD * targetScale * targetScale &&
+      fullSizeHeight * scale.value < deviceHeight
     ) {
       isZoomedValue.value = false;
       runOnJS(setIsZoomed)(false);
-      scale.value = 1;
       animationProgress.value = withSpring(0, exitConfig);
+      scale.value = withSpring(1, exitConfig);
       translateX.value = withSpring(0, exitConfig);
       translateY.value = withSpring(0, exitConfig);
     }
@@ -203,6 +257,12 @@ const ZoomableWrapper = ({
 
   const panGestureHandler = useAnimatedGestureHandler({
     onActive: (event, ctx) => {
+      if (fullSizeHeight * ctx.startScale < deviceHeight) {
+        scale.value =
+          ctx.startScale -
+          ((ctx.startY + Math.abs(event.translationY)) / deviceHeight / 2) *
+            ctx.startScale;
+      }
       translateX.value = ctx.startX + event.translationX;
       translateY.value = ctx.startY + event.translationY;
     },
@@ -210,6 +270,7 @@ const ZoomableWrapper = ({
     onEnd: endGesture,
     onFail: endGesture,
     onStart: (_, ctx) => {
+      ctx.startScale = scale.value;
       ctx.startX = translateX.value;
       ctx.startY = translateY.value;
     },
@@ -219,15 +280,7 @@ const ZoomableWrapper = ({
     onActive: (event, ctx) => {
       scale.value = ctx.start * event.scale;
     },
-    // onEnd: () => {
-    //   // translateX.value = withSpring(0);
-    //   // translateY.value = withSpring(0);
-    //   // if (event.translationY + event.velocityY > THRESHOLD) {
-    //   //   isZoomedValue.value = false;
-    //   //   runOnJS(setIsZoomed)(false);
-    //   //   animationProgress.value = withSpring(0, springConfig);
-    //   // }
-    // },
+    onEnd: endGesture,
     onStart: (_, ctx) => {
       ctx.start = scale.value;
     },
@@ -255,12 +308,17 @@ const ZoomableWrapper = ({
   return (
     <ButtonPressAnimation
       disabled={disableAnimations}
+      enableHapticFeedback={false}
       onPress={() => {
-        scale.value = 1;
         if (isZoomed) {
-          isZoomedValue.value = false;
-          setIsZoomed(false);
-          animationProgress.value = withSpring(0, exitConfig);
+          if (scale.value === 1) {
+            isZoomedValue.value = false;
+            setIsZoomed(false);
+            animationProgress.value = withSpring(0, exitConfig);
+            scale.value = withSpring(1, exitConfig);
+            translateX.value = withSpring(0, exitConfig);
+            translateY.value = withSpring(0, exitConfig);
+          }
         } else {
           isZoomedValue.value = true;
           setIsZoomed(true);
@@ -268,26 +326,37 @@ const ZoomableWrapper = ({
         }
       }}
       scaleTo={1}
-      style={{ alignItems: 'center' }}
+      style={{ alignItems: 'center', zIndex: 10 }}
     >
       <PanGestureHandler
         enabled={!disableAnimations && isZoomed}
+        maxPointers={5}
         onGestureEvent={panGestureHandler}
         ref={pan}
         simultaneousHandlers={[pinch]}
       >
-        <Container style={[containerStyle]}>
-          <PinchGestureHandler
-            enabled={!disableAnimations && isZoomed}
-            onGestureEvent={pinchGestureHandler}
-            ref={pinch}
-            simultaneousHandlers={[pan]}
-          >
-            <ImageWrapper style={[borderStyle, animatedStyle]}>
-              {children}
-            </ImageWrapper>
-          </PinchGestureHandler>
-        </Container>
+        <ZoomContainer height={containerHeight} width={containerWidth}>
+          <BlackBackground
+            containerHeight={containerHeight}
+            containerWidth={containerWidth}
+            height={deviceHeight}
+            pointerEvents={isZoomed ? 'auto' : 'none'}
+            style={[backgroundStyle]}
+            width={deviceWidth}
+          />
+          <Container style={[containerStyle]}>
+            <PinchGestureHandler
+              enabled={!disableAnimations && isZoomed}
+              onGestureEvent={pinchGestureHandler}
+              ref={pinch}
+              simultaneousHandlers={[pan]}
+            >
+              <ImageWrapper style={[borderStyle, animatedStyle]}>
+                {children}
+              </ImageWrapper>
+            </PinchGestureHandler>
+          </Container>
+        </ZoomContainer>
       </PanGestureHandler>
     </ButtonPressAnimation>
   );
@@ -322,7 +391,7 @@ const UniqueTokenExpandedStateContent = ({
       asset.image_original_url ||
       asset.image_preview_url ||
       asset.image_thumbnail_url;
-  const size = Math.ceil((deviceWidth - horizontalPadding * 2) * pixelRatio);
+  const size = deviceWidth * pixelRatio;
   const url = useMemo(() => {
     if (asset.image_url?.startsWith?.(GOOGLE_USER_CONTENT_URL) && size > 0) {
       return `${asset.image_url}=w${size}`;
