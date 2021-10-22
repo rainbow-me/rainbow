@@ -60,6 +60,7 @@ export const apiGetUniqueTokenFloorPrice = async (
   }
 };
 
+//This is currently O(n) time complexity, is there a way to improve performance?
 export const apiGetTokenHistory = async (
   contractAddress,
   tokenID
@@ -73,32 +74,33 @@ export const apiGetTokenHistory = async (
         'X-Api-Key': OPENSEA_API_KEY,
       },
       method: 'get',
-      timeout: 45000, // 45 secs. Way too long but lets try it
+      timeout: 10000, // 10 secs
     })
 
     const array = data.data.asset_events;
 
     const result = 
       await array.filter(function(event) {
+        //TODO: If events are maxed out and there are no mappable events, run the next X amount
+        //TODO: Error handling?
         var event_type = event.event_type;
         logger.log("filtered event: " + event_type);
         if (event_type == "created" || event_type == "transfer" || event_type == "successful" || event_type == "cancelled") {
           return true;
         }
         return false;
+        
       })
       .map(function(event) {
+        //TODO: Based on event, craft event object with different fields
         var event_type = event.event_type;
         var created_date = event.created_date;
-        // var from_address = event.from_account.address;
         logger.log("mapped event: " + event.event_type);
         logger.log("mapped date: " + created_date);
-        // logger.log("mapped from: " + from_address);
 
         const eventObject = {
           event_type,
           created_date,
-          // from_address,
         };
 
         return eventObject;
@@ -112,3 +114,46 @@ export const apiGetTokenHistory = async (
     throw error;
   }
 };
+
+/**
+ * Fetch a tokens entire history
+ * 
+ */
+  function apiGetAllEventsForToken (
+  contractAddress, 
+  tokenID) {
+
+  const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=299`;
+    logger.log(url);
+    const data = await rainbowFetch(url, {
+      headers: {
+        'Accept': 'application/json',
+        'X-Api-Key': OPENSEA_API_KEY,
+      },
+      method: 'get',
+      timeout: 10000, // 10 secs
+    })
+
+    var array = data.data.asset_events;
+    var offset = 0;
+    var tempResponse = array;
+
+    while (tempResponse.length != 0) {
+      offset = array.length;
+      const urlPage = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`;
+      // logger.log(url);
+      const nextPage = await rainbowFetch(urlPage, {
+        headers: {
+          'Accept': 'application/json',
+          'X-Api-Key': OPENSEA_API_KEY,
+        },
+        method: 'get',
+        timeout: 10000, // 10 secs
+      })
+
+      tempResponse = nextPage.data.asset_events;
+      array.concat(tempResponse);
+    }
+
+    return array;
+}
