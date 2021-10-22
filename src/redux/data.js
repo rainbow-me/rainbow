@@ -834,7 +834,6 @@ export const dataWatchPendingTransactions = (
           logger.log('Checking pending tx with hash', txHash);
           const p =
             provider || (await getProviderForNetwork(updatedPending.network));
-          logger.debug('GETTING TX AT updatedPendingTransactions');
           const txObj = await p.getTransaction(txHash);
           // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
           const nonceAlreadyIncluded = currentNonce > tx.nonce;

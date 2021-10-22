@@ -17,10 +17,6 @@ const TestnetToast = () => {
 
   useEffect(() => {
     if (network === networkTypes.mainnet) {
-      if (providerUrl?.startsWith('http://') && providerUrl?.endsWith('7545')) {
-        setVisible(true);
-        setNetworkName('Ganache');
-      }
       if (providerUrl?.startsWith('http://') && providerUrl?.endsWith('8545')) {
         setVisible(true);
         setNetworkName('Hardhat');

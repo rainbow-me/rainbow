@@ -5,7 +5,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var contracts = require('@ethersproject/contracts');
 var bignumber = require('@ethersproject/bignumber');
 var bytes = require('@ethersproject/bytes');
-var ethSigUtil = require('eth-sig-util');
+var ethSigUtil = require('@metamask/eth-sig-util');
 var ethereumjsUtil = require('ethereumjs-util');
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
@@ -1076,7 +1076,7 @@ var WethAbi = [
 
 var ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 var API_BASE_URL = 'https://swap-aggregator.api.p.rainbow.me';
-var RAINBOW_ROUTER_CONTRACT_ADDRESS = '0x21dF544947ba3E8b3c32561399E88B52Dc8b2823';
+var RAINBOW_ROUTER_CONTRACT_ADDRESS = '0x2E2Ed0Cfd3AD2f1d34481277b3204d807Ca2F8c2';
 var WETH = {
   '1': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
   '3': '0xb603cea165119701b58d56d10d2060fbfb3efad8'
@@ -2467,7 +2467,7 @@ var getDomainSeparator = /*#__PURE__*/function () {
               version: version
             }, {
               EIP712Domain: EIP712_DOMAIN_TYPE
-            }).toString('hex'));
+            }, ethSigUtil.SignTypedDataVersion.V4).toString('hex'));
 
           case 1:
           case "end":
@@ -2706,8 +2706,10 @@ function _signPermit() {
               types: types
             };
             privateKeyBuffer = ethereumjsUtil.toBuffer(ethereumjsUtil.addHexPrefix(wallet.privateKey));
-            signature = ethSigUtil.signTypedData_v4(privateKeyBuffer, {
-              data: data
+            signature = ethSigUtil.signTypedData({
+              data: data,
+              privateKey: privateKeyBuffer,
+              version: ethSigUtil.SignTypedDataVersion.V4
             });
             _splitSignature = bytes.splitSignature(signature), v = _splitSignature.v, r = _splitSignature.r, s = _splitSignature.s;
             return _context4.abrupt("return", {

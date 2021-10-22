@@ -181,18 +181,18 @@ const getOutputAmount = async (
   }
 };
 
-const derivedValues: { [key in SwapModalField]: string | null } = {
-  [SwapModalField.input]: null,
-  [SwapModalField.native]: null,
-  [SwapModalField.output]: null,
-};
-
-const displayValues: { [key in DisplayValue]: string | null } = {
-  [DisplayValue.input]: null,
-  [DisplayValue.output]: null,
-};
-
 export default function useSwapDerivedOutputs() {
+  const derivedValues: { [key in SwapModalField]: string | null } = {
+    [SwapModalField.input]: null,
+    [SwapModalField.native]: null,
+    [SwapModalField.output]: null,
+  };
+
+  const displayValues: { [key in DisplayValue]: string | null } = {
+    [DisplayValue.input]: null,
+    [DisplayValue.output]: null,
+  };
+
   const dispatch = useDispatch();
   const [result, setResult] = useState({
     derivedValues,
@@ -221,79 +221,19 @@ export default function useSwapDerivedOutputs() {
 
   const { chainId, accountAddress } = useAccountSettings();
 
-  const getTradeDetails = useCallback(async () => {
-    let tradeDetails = null;
-    if (!independentValue || !inputCurrency) {
-      return {
-        derivedValues,
-        displayValues,
-        doneLoadingReserves: true,
-        tradeDetails,
-      };
-    }
-    const inputToken = inputCurrency;
-    const outputToken = outputCurrency;
-
-    if (independentField === SwapModalField.input) {
-      derivedValues[SwapModalField.input] = independentValue;
-      displayValues[DisplayValue.input] = independentValue;
-
-      const nativeValue =
-        inputPrice && !isZero(independentValue)
-          ? convertAmountToNativeAmount(independentValue, inputPrice)
-          : null;
-
-      derivedValues[SwapModalField.native] = nativeValue;
-      const {
-        outputAmount,
-        outputAmountDisplay,
-        tradeDetails: newTradeDetails,
-      } = await getOutputAmount(
-        independentValue,
-        inputToken,
-        outputToken,
-        outputPrice,
-        accountAddress,
-        chainId
-      );
-      tradeDetails = newTradeDetails;
-      derivedValues[SwapModalField.output] = outputAmount;
-      displayValues[DisplayValue.output] =
-        outputAmountDisplay?.toString() || null;
-    } else if (independentField === SwapModalField.native) {
-      const inputAmount =
-        independentValue && !isZero(independentValue) && inputPrice
-          ? convertAmountFromNativeValue(
-              independentValue,
-              inputPrice,
-              inputCurrency.decimals
-            )
-          : null;
-      derivedValues[SwapModalField.native] = independentValue;
-      derivedValues[SwapModalField.input] = inputAmount;
-      const inputAmountDisplay =
-        inputAmount && inputPrice
-          ? updatePrecisionToDisplay(inputAmount, inputPrice, true)
-          : inputAmount;
-      displayValues[DisplayValue.input] = inputAmountDisplay;
-      const {
-        outputAmount,
-        outputAmountDisplay,
-        tradeDetails: newTradeDetails,
-      } = await getOutputAmount(
-        inputAmount,
-        inputToken,
-        outputToken,
-        outputPrice,
-        accountAddress,
-        chainId
-      );
-      tradeDetails = newTradeDetails;
-      derivedValues[SwapModalField.output] = outputAmount;
-      displayValues[DisplayValue.output] =
-        outputAmountDisplay?.toString() || null;
-    } else {
-      if (!outputToken || !inputToken) {
+  const getTradeDetails = useCallback(
+    async (
+      accountAddress,
+      chainId,
+      independentField,
+      independentValue,
+      inputCurrency,
+      inputPrice,
+      outputCurrency,
+      outputPrice
+    ) => {
+      let tradeDetails = null;
+      if (!independentValue || !inputCurrency) {
         return {
           derivedValues,
           displayValues,
@@ -301,51 +241,125 @@ export default function useSwapDerivedOutputs() {
           tradeDetails,
         };
       }
-      derivedValues[SwapModalField.output] = independentValue;
-      displayValues[DisplayValue.output] = independentValue;
+      const inputToken = inputCurrency;
+      const outputToken = outputCurrency;
 
-      const {
-        inputAmount,
-        inputAmountDisplay,
-        tradeDetails: newTradeDetails,
-      } = await getInputAmount(
-        independentValue,
-        inputToken,
-        outputToken,
-        inputPrice,
-        accountAddress,
-        chainId
-      );
-      tradeDetails = newTradeDetails;
-      derivedValues[SwapModalField.input] = inputAmount || '0';
-      // @ts-ignore next-line
-      displayValues[DisplayValue.input] = inputAmountDisplay;
-      const nativeValue =
-        inputPrice && inputAmount
-          ? convertAmountToNativeAmount(inputAmount, inputPrice)
-          : null;
+      if (independentField === SwapModalField.input) {
+        derivedValues[SwapModalField.input] = independentValue;
+        displayValues[DisplayValue.input] = independentValue;
 
-      derivedValues[SwapModalField.native] = nativeValue;
-    }
-    return {
-      derivedValues,
-      displayValues,
-      doneLoadingReserves: true,
-      tradeDetails,
-    };
-  }, [
-    accountAddress,
-    chainId,
-    independentField,
-    independentValue,
-    inputCurrency,
-    inputPrice,
-    outputCurrency,
-    outputPrice,
-  ]);
+        const nativeValue =
+          inputPrice && !isZero(independentValue)
+            ? convertAmountToNativeAmount(independentValue, inputPrice)
+            : null;
+
+        derivedValues[SwapModalField.native] = nativeValue;
+        const {
+          outputAmount,
+          outputAmountDisplay,
+          tradeDetails: newTradeDetails,
+        } = await getOutputAmount(
+          independentValue,
+          inputToken,
+          outputToken,
+          outputPrice,
+          accountAddress,
+          chainId
+        );
+        tradeDetails = newTradeDetails;
+        derivedValues[SwapModalField.output] = outputAmount;
+        displayValues[DisplayValue.output] =
+          outputAmountDisplay?.toString() || null;
+      } else if (independentField === SwapModalField.native) {
+        const inputAmount =
+          independentValue && !isZero(independentValue) && inputPrice
+            ? convertAmountFromNativeValue(
+                independentValue,
+                inputPrice,
+                inputCurrency.decimals
+              )
+            : null;
+        derivedValues[SwapModalField.native] = independentValue;
+        derivedValues[SwapModalField.input] = inputAmount;
+        const inputAmountDisplay =
+          inputAmount && inputPrice
+            ? updatePrecisionToDisplay(inputAmount, inputPrice, true)
+            : inputAmount;
+        displayValues[DisplayValue.input] = inputAmountDisplay;
+        const {
+          outputAmount,
+          outputAmountDisplay,
+          tradeDetails: newTradeDetails,
+        } = await getOutputAmount(
+          inputAmount,
+          inputToken,
+          outputToken,
+          outputPrice,
+          accountAddress,
+          chainId
+        );
+        tradeDetails = newTradeDetails;
+        derivedValues[SwapModalField.output] = outputAmount;
+        displayValues[DisplayValue.output] =
+          outputAmountDisplay?.toString() || null;
+      } else {
+        if (!outputToken || !inputToken) {
+          return {
+            derivedValues,
+            displayValues,
+            doneLoadingReserves: true,
+            tradeDetails,
+          };
+        }
+        derivedValues[SwapModalField.output] = independentValue;
+        displayValues[DisplayValue.output] = independentValue;
+
+        const {
+          inputAmount,
+          inputAmountDisplay,
+          tradeDetails: newTradeDetails,
+        } = await getInputAmount(
+          independentValue,
+          inputToken,
+          outputToken,
+          inputPrice,
+          accountAddress,
+          chainId
+        );
+
+        tradeDetails = newTradeDetails;
+        derivedValues[SwapModalField.input] = inputAmount || '0';
+        // @ts-ignore next-line
+        displayValues[DisplayValue.input] = inputAmountDisplay;
+        const nativeValue =
+          inputPrice && inputAmount
+            ? convertAmountToNativeAmount(inputAmount, inputPrice)
+            : null;
+
+        derivedValues[SwapModalField.native] = nativeValue;
+      }
+      return {
+        derivedValues,
+        displayValues,
+        doneLoadingReserves: true,
+        tradeDetails,
+      };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   useMemo(async () => {
-    const data = await getTradeDetails();
+    const data = await getTradeDetails(
+      accountAddress,
+      chainId,
+      independentField,
+      independentValue,
+      inputCurrency,
+      inputPrice,
+      outputCurrency,
+      outputPrice
+    );
     dispatch(
       updateSwapQuote({
         derivedValues: data.derivedValues,
@@ -355,7 +369,18 @@ export default function useSwapDerivedOutputs() {
     );
     // @ts-ignore next-line
     setResult(data);
-  }, [dispatch, getTradeDetails]);
+  }, [
+    dispatch,
+    getTradeDetails,
+    accountAddress,
+    chainId,
+    independentField,
+    independentValue,
+    inputCurrency,
+    inputPrice,
+    outputCurrency,
+    outputPrice,
+  ]);
 
   return result;
 }

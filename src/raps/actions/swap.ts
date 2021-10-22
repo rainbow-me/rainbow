@@ -84,7 +84,6 @@ const swap = async (
       );
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete AllowancesCache.cache[cacheKey];
-      logger.debug('CLEARED ALLOWANCE CACHE ');
     }
   } catch (e) {
     logger.sentry('Error', e);
