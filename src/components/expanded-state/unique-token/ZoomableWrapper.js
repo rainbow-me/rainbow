@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar, View } from 'react-native';
+import { StatusBar } from 'react-native';
 import {
   PanGestureHandler,
   PinchGestureHandler,
@@ -29,13 +29,7 @@ const exitConfig = {
   mass: 2,
   stiffness: 800,
 };
-const GestureBlocker = styled(View)`
-  height: ${({ height }) => height};
-  left: ${({ containerWidth, width }) => -(width - containerWidth) / 2};
-  position: absolute;
-  top: -85;
-  width: ${({ width }) => width};
-`;
+
 const Container = styled(Animated.View)`
   align-self: center;
   shadow-color: ${({ theme: { colors } }) => colors.shadowBlack};
@@ -321,13 +315,6 @@ export const ZoomableWrapper = ({
         simultaneousHandlers={[pinch, doubleTap, singleTap]}
       >
         <ZoomContainer height={containerHeight} width={containerWidth}>
-          <GestureBlocker
-            containerHeight={containerHeight}
-            containerWidth={containerWidth}
-            height={deviceHeight}
-            pointerEvents={isZoomed ? 'auto' : 'none'}
-            width={deviceWidth}
-          />
           <TapGestureHandler
             enabled={!disableAnimations && !isZoomed}
             numberOfTaps={1}
