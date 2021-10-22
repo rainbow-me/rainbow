@@ -9,6 +9,8 @@ let connector = null;
 let uri = null;
 let account = null;
 
+const RAINBOW_WALLET_DOT_ETH = '0x7a3d05c70581bd345fe117c06e45f9669205384f';
+
 beforeAll(async () => {
   // Connect to hardhat
   await exec('yarn hardhat');
@@ -25,8 +27,9 @@ const acceptAlertIfGasPriceIsHigh = async () => {
   } catch (e) {}
 };
 
+// eslint-disable-next-line no-unused-vars
 const checkIfSwapCompleted = async (assetName, amount) => {
-  // await Helpers.delay(5000);
+  // Disabling this because there's a view blocking (The portal)
   // await Helpers.checkIfVisible(`Swapped-${assetName}-${amount}`);
   return true;
 };
@@ -173,10 +176,10 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-USDC');
-    await Helpers.typeText('exchange-modal-input', '0.005', true);
+    await Helpers.typeText('exchange-modal-input', '0.0005', true);
     await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     await acceptAlertIfGasPriceIsHigh();
-    await checkIfSwapCompleted('Ethereum', '0.005 ETH');
+    await checkIfSwapCompleted('Ethereum', '0.0005 ETH');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -187,10 +190,10 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'WETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-WETH');
-    await Helpers.typeText('exchange-modal-input', '1', true);
+    await Helpers.typeText('exchange-modal-input', '10', true);
     await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     await acceptAlertIfGasPriceIsHigh();
-    await checkIfSwapCompleted('USD Coin', '1 USDC');
+    await checkIfSwapCompleted('USD Coin', '10 USDC');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -200,28 +203,19 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tap('currency-select-list-exchange-coin-row-USDC');
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.tap('currency-select-list-exchange-coin-row-ETH');
-    await Helpers.typeText('exchange-modal-input', '1', true);
+    await Helpers.typeText('exchange-modal-input', '10', true);
     await Helpers.tapAndLongPress('exchange-modal-confirm-button');
-    await checkIfSwapCompleted('USD Coin', '1 USDC');
+    await checkIfSwapCompleted('USD Coin', '10 USDC');
     await acceptAlertIfGasPriceIsHigh();
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  // it('Should send ERC20 (cSAI)', async () => {
-  //   await Helpers.tap('send-fab');
-  //   await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
-  //   await Helpers.tap('send-savings-cSAI');
-  //   await Helpers.typeText('selected-asset-field-input', '1.69', true);
-  //   await Helpers.tap('send-sheet-confirm-action-button');
-  //   await Helpers.tapAndLongPress('send-confirmation-button');
-  //   await acceptAlertIfGasPriceIsHigh();
-  //   await Helpers.checkIfVisible('profile-screen');
-  //   await Helpers.swipe('profile-screen', 'left', 'slow');
-  // });
-
   it('Should send (Cryptokitties)', async () => {
     await Helpers.tap('send-fab');
-    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
+    await Helpers.typeTextAndHideKeyboard(
+      'send-asset-form-field',
+      RAINBOW_WALLET_DOT_ETH
+    );
     await Helpers.tap('CryptoKitties-family-header');
     await Helpers.tapByText('Arun Cattybinky');
     await Helpers.tap('send-sheet-confirm-action-button');
@@ -232,7 +226,10 @@ describe('Hardhat Transaction Flow', () => {
 
   it('Should send ERC20 (BAT)', async () => {
     await Helpers.tap('send-fab');
-    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
+    await Helpers.typeTextAndHideKeyboard(
+      'send-asset-form-field',
+      RAINBOW_WALLET_DOT_ETH
+    );
     await Helpers.tap('send-asset-BAT');
     await Helpers.typeText('selected-asset-field-input', '1.02', true);
     await Helpers.tap('send-sheet-confirm-action-button');
@@ -243,7 +240,10 @@ describe('Hardhat Transaction Flow', () => {
 
   it('Should send ETH', async () => {
     await Helpers.tap('send-fab');
-    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
+    await Helpers.typeTextAndHideKeyboard(
+      'send-asset-form-field',
+      RAINBOW_WALLET_DOT_ETH
+    );
     await Helpers.tap('send-asset-ETH');
     await Helpers.typeText('selected-asset-field-input', '0.003', true);
     await Helpers.tap('send-sheet-confirm-action-button');

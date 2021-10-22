@@ -57,7 +57,7 @@ export let web3Provider = new JsonRpcProvider(
  */
 export const web3SetHttpProvider = async network => {
   if (network.startsWith('http://')) {
-    web3Provider = new JsonRpcProvider(network, NetworkTypes.mainnet);
+    web3Provider = new JsonRpcProvider(network, 'any');
     // override mainnet for hardhat
     networkProviders[NetworkTypes.mainnet] = web3Provider;
   } else {
