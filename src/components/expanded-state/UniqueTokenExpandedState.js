@@ -135,6 +135,9 @@ const UniqueTokenExpandedState = ({
   const opacityStyle = useAnimatedStyle(() => ({
     opacity: 1 - animationProgress.value,
   }));
+  const sheetHandleStyle = useAnimatedStyle(() => ({
+    opacity: 1 - animationProgress.value,
+  }));
 
   const isShowcaseAsset = useMemo(() => showcaseTokens.includes(uniqueId), [
     showcaseTokens,
@@ -245,7 +248,9 @@ const UniqueTokenExpandedState = ({
         scrollEnabled
       >
         <Centered paddingBottom={30} paddingTop={33}>
-          <SheetHandle color={colors.alpha(colors.whiteLabel, 0.24)} />
+          <Animated.View style={sheetHandleStyle}>
+            <SheetHandle color={colors.alpha(colors.whiteLabel, 0.24)} />
+          </Animated.View>
         </Centered>
         <UniqueTokenExpandedStateContent
           animationProgress={animationProgress}
