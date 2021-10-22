@@ -191,6 +191,9 @@ const ZoomableWrapper = ({
   const endGesture = useWorkletCallback((event, ctx) => {
     'worklet';
     let targetScale = scale.value;
+    ctx.prevScale = undefined;
+    ctx.prevTranslateX = 0;
+    ctx.prevTranslateY = 0;
     if (scale.value < 1) {
       if (ctx.start <= 1) {
         isZoomedValue.value = false;
@@ -263,8 +266,10 @@ const ZoomableWrapper = ({
           ((ctx.startY + Math.abs(event.translationY)) / deviceHeight / 2) *
             ctx.startScale;
       }
-      translateX.value = ctx.startX + event.translationX;
-      translateY.value = ctx.startY + event.translationY;
+      translateX.value += event.translationX - (ctx.prevTranslateX ?? 0);
+      translateY.value += event.translationY - (ctx.prevTranslateY ?? 0);
+      ctx.prevTranslateX = event.translationX;
+      ctx.prevTranslateY = event.translationY;
     },
     onCancel: endGesture,
     onEnd: endGesture,
@@ -279,6 +284,12 @@ const ZoomableWrapper = ({
   const pinchGestureHandler = useAnimatedGestureHandler({
     onActive: (event, ctx) => {
       scale.value = ctx.start * event.scale;
+      if (ctx.prevScale) {
+        const delta = event.scale / ctx.prevScale;
+        translateX.value +=
+          (delta - 1) * (containerWidthValue.value / 2 - event.focalX);
+      }
+      ctx.prevScale = event.scale;
     },
     onEnd: endGesture,
     onStart: (_, ctx) => {
