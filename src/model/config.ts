@@ -17,6 +17,8 @@ import {
   // @ts-ignore
   POLYGON_MAINNET_RPC,
 } from 'react-native-dotenv';
+import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import Logger from 'logger';
 
 export interface RainbowConfig extends Record<string, any> {
@@ -29,24 +31,27 @@ export interface RainbowConfig extends Record<string, any> {
   data_origin?: string;
 }
 
-const config: RainbowConfig = {};
+const DEFAULT_CONFIG = {
+  arbitrum_mainnet_rpc: ARBITRUM_MAINNET_RPC,
+  data_api_key: DATA_API_KEY,
+  data_endpoint: DATA_ENDPOINT || 'wss://api-v4.zerion.io',
+  data_origin: DATA_ORIGIN,
+  ethereum_mainnet_rpc: __DEV__
+    ? ETHEREUM_MAINNET_RPC_DEV
+    : ETHEREUM_MAINNET_RPC,
+  optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
+  polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
+};
+
+// Initialize with defaults in case firebase doesn't respond
+const config: RainbowConfig = DEFAULT_CONFIG;
 
 const init = async () => {
   await remoteConfig().setConfigSettings({
     minimumFetchIntervalMillis: 120000,
   });
 
-  await remoteConfig().setDefaults({
-    arbitrum_mainnet_rpc: ARBITRUM_MAINNET_RPC,
-    data_api_key: DATA_API_KEY,
-    data_endpoint: DATA_ENDPOINT || 'wss://api-v4.zerion.io',
-    data_origin: DATA_ORIGIN,
-    ethereum_mainnet_rpc: __DEV__
-      ? ETHEREUM_MAINNET_RPC_DEV
-      : ETHEREUM_MAINNET_RPC,
-    optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
-    polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
-  });
+  await remoteConfig().setDefaults(DEFAULT_CONFIG);
 
   const fetchedRemotely = await remoteConfig().fetchAndActivate();
 
@@ -64,6 +69,8 @@ const init = async () => {
   });
 
   Logger.debug('CURRENT CONFIG', JSON.stringify(config, null, 2));
+  // SET THE DEFAULT PROVIDER AFTER LOADING THE CONFIG
+  web3SetHttpProvider(networkTypes.mainnet);
 };
 
 init();

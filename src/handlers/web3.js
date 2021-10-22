@@ -37,10 +37,7 @@ export const networkProviders = {};
 /**
  * @desc web3 http instance
  */
-export let web3Provider = new JsonRpcProvider(
-  replace(config.ethereum_mainnet_rpc, 'network', NetworkTypes.mainnet),
-  NetworkTypes.mainnet
-);
+export let web3Provider = null;
 
 /**
  * @desc set a different web3 provider
@@ -51,7 +48,7 @@ export const web3SetHttpProvider = async network => {
     web3Provider = new JsonRpcProvider(network, NetworkTypes.mainnet);
   } else {
     web3Provider = new JsonRpcProvider(
-      replace(config.ethereum_mainnet_rpc, 'network', network)
+      replace(config.ethereum_mainnet_rpc, NetworkTypes.mainnet, network)
     );
   }
   return web3Provider.ready;
@@ -308,7 +305,7 @@ export const resolveUnstoppableDomain = async domain => {
         network: 'mainnet',
         url: replace(
           config.ethereum_mainnet_rpc,
-          'network',
+          NetworkTypes.mainnet,
           NetworkTypes.mainnet
         ),
       },
