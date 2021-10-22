@@ -707,7 +707,7 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     updateDefaultGasLimit();
-  }, [updateDefaultGasLimit, network, selected.type]);
+  }, [updateDefaultGasLimit]);
 
   useEffect(() => {
     if (

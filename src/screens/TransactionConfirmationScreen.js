@@ -137,10 +137,6 @@ const Container = styled(Column)`
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent(Centered);
 
-const GasSpeedButtonContainer = styled(Column).attrs({
-  justify: 'start',
-})``;
-
 const WalletLabel = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.5),
   letterSpacing: 'roundedMedium',
@@ -261,7 +257,6 @@ export default function TransactionConfirmationScreen() {
 
   const {
     gasLimit,
-    gasFeesBySpeed,
     isSufficientGas,
     startPollingGasFees,
     stopPollingGasFees,
@@ -269,6 +264,7 @@ export default function TransactionConfirmationScreen() {
     updateTxFee,
     selectedGasFee,
     selectedGasFeeOption,
+    gasFeeParamsBySpeed,
   } = useGas();
 
   useEffect(() => {
@@ -463,7 +459,7 @@ export default function TransactionConfirmationScreen() {
 
   useEffect(() => {
     if (
-      !isEmpty(gasFeesBySpeed) &&
+      !isEmpty(gasFeeParamsBySpeed) &&
       !calculatingGasLimit.current &&
       !isMessageRequest &&
       provider
@@ -475,7 +471,7 @@ export default function TransactionConfirmationScreen() {
   }, [
     calculateGasLimit,
     gasLimit,
-    gasFeesBySpeed,
+    gasFeeParamsBySpeed,
     isMessageRequest,
     method,
     params,
@@ -951,7 +947,6 @@ export default function TransactionConfirmationScreen() {
   }
 
   useEffect(() => {
-    if (ready) return;
     if (
       request?.asset &&
       walletBalance &&
@@ -1116,25 +1111,23 @@ export default function TransactionConfirmationScreen() {
                     </WalletText>
                   </Column>
                 </RowWithMargins>
+                {!isMessageRequest && (
+                  <GasSpeedButton
+                    currentNetwork={network}
+                    onCustomGasBlur={hideKeyboard}
+                    onCustomGasFocus={showKeyboard}
+                    options={
+                      network === networkTypes.optimism ||
+                      network === networkTypes.arbitrum
+                        ? ['normal']
+                        : undefined
+                    }
+                    type="transaction"
+                  />
+                )}
               </Fragment>
             )}
           </AnimatedSheet>
-          {!isMessageRequest && (
-            <GasSpeedButtonContainer>
-              <GasSpeedButton
-                currentNetwork={network}
-                onCustomGasBlur={hideKeyboard}
-                onCustomGasFocus={showKeyboard}
-                options={
-                  network === networkTypes.optimism ||
-                  network === networkTypes.arbitrum
-                    ? ['normal']
-                    : undefined
-                }
-                type="transaction"
-              />
-            </GasSpeedButtonContainer>
-          )}
         </Column>
       </SlackSheet>
     </SheetKeyboardAnimation>
