@@ -76,13 +76,17 @@ const LoadingWrapper = styled(View)`
 const THRESHOLD = 250;
 
 const ZoomableWrapper = ({
-  animationProgress,
+  animationProgress: givenAnimationProgress,
   children,
   horizontalPadding,
   aspectRatio,
   isENS,
   borderRadius,
+  disableAnimations,
 }) => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const animationProgress = givenAnimationProgress || useSharedValue(0);
+
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
 
   const maxImageWidth = deviceWidth - horizontalPadding * 2;
@@ -126,9 +130,6 @@ const ZoomableWrapper = ({
     height:
       containerHeightValue.value +
       animationProgress.value * (fullSizeHeight - containerHeightValue.value),
-    marginBottom:
-      ((deviceHeight - containerHeightValue.value) / 2) *
-      animationProgress.value,
     marginTop:
       yPosition.value +
       animationProgress.value * ((deviceHeight - fullSizeHeight) / 2 - 85),
@@ -253,6 +254,7 @@ const ZoomableWrapper = ({
 
   return (
     <ButtonPressAnimation
+      disabled={disableAnimations}
       onPress={() => {
         scale.value = 1;
         if (isZoomed) {
@@ -269,14 +271,14 @@ const ZoomableWrapper = ({
       style={{ alignItems: 'center' }}
     >
       <PanGestureHandler
-        enabled={isZoomed}
+        enabled={!disableAnimations && isZoomed}
         onGestureEvent={panGestureHandler}
         ref={pan}
         simultaneousHandlers={[pinch]}
       >
         <Container style={[containerStyle]}>
           <PinchGestureHandler
-            enabled={isZoomed}
+            enabled={!disableAnimations && isZoomed}
             onGestureEvent={pinchGestureHandler}
             ref={pinch}
             simultaneousHandlers={[pan]}
@@ -300,14 +302,15 @@ const getLowResUrl = url => {
   return url;
 };
 
-const UniqueTokenExpandedStateImage = ({
+const UniqueTokenExpandedStateContent = ({
+  animationProgress,
   asset,
   borderRadius,
   horizontalPadding = 24,
   resizeMode = 'cover',
+  disablePreview,
 }) => {
   const { width: deviceWidth } = useDimensions();
-  const animationProgress = useSharedValue(0);
 
   const maxImageWidth = deviceWidth - horizontalPadding * 2;
   const isENS =
@@ -341,6 +344,7 @@ const UniqueTokenExpandedStateImage = ({
       animationProgress={animationProgress}
       aspectRatio={aspectRatioWithFallback}
       borderRadius={borderRadius}
+      disableAnimations={disablePreview}
       horizontalPadding={horizontalPadding}
       isENS={isENS}
     >
@@ -382,4 +386,4 @@ const UniqueTokenExpandedStateImage = ({
   );
 };
 
-export default magicMemo(UniqueTokenExpandedStateImage, 'asset.uniqueId');
+export default magicMemo(UniqueTokenExpandedStateContent, 'asset.uniqueId');

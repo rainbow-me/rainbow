@@ -8,6 +8,10 @@ import React, {
   useState,
 } from 'react';
 import { Linking, Share } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 import styled from 'styled-components';
 import useWallets from '../../hooks/useWallets';
 import { lightModeThemeColors } from '../../styles/colors';
@@ -127,6 +131,10 @@ const UniqueTokenExpandedState = ({
   const [floorPrice, setFloorPrice] = useState(null);
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const [showFloorInEth, setShowFloorInEth] = useState(true);
+  const animationProgress = useSharedValue(0);
+  const opacityStyle = useAnimatedStyle(() => ({
+    opacity: 1 - animationProgress.value,
+  }));
 
   const isShowcaseAsset = useMemo(() => showcaseTokens.includes(uniqueId), [
     showcaseTokens,
@@ -240,163 +248,166 @@ const UniqueTokenExpandedState = ({
           <SheetHandle color={colors.alpha(colors.whiteLabel, 0.24)} />
         </Centered>
         <UniqueTokenExpandedStateContent
+          animationProgress={animationProgress}
           asset={asset}
           imageColor={imageColorWithFallback}
           lowResUrl={lowResUrl}
         />
-        <Row justify="space-between" marginTop={14} paddingHorizontal={19}>
-          <ButtonPressAnimation
-            onPress={handlePressShowcase}
-            padding={5}
-            scaleTo={0.88}
-          >
-            <Text
-              color={imageColorWithFallback}
-              lineHeight="loosest"
-              size="lmedium"
-              weight="heavy"
+        <Animated.View style={opacityStyle}>
+          <Row justify="space-between" marginTop={14} paddingHorizontal={19}>
+            <ButtonPressAnimation
+              onPress={handlePressShowcase}
+              padding={5}
+              scaleTo={0.88}
             >
-              {isShowcaseAsset ? '􀫝 In Showcase' : '􀐇 Showcase'}
-            </Text>
-          </ButtonPressAnimation>
-          <ButtonPressAnimation
-            onPress={handlePressShare}
-            padding={5}
-            scaleTo={0.88}
-          >
-            <Text
-              align="right"
-              color={imageColorWithFallback}
-              lineHeight="loosest"
-              size="lmedium"
-              weight="heavy"
+              <Text
+                color={imageColorWithFallback}
+                lineHeight="loosest"
+                size="lmedium"
+                weight="heavy"
+              >
+                {isShowcaseAsset ? '􀫝 In Showcase' : '􀐇 Showcase'}
+              </Text>
+            </ButtonPressAnimation>
+            <ButtonPressAnimation
+              onPress={handlePressShare}
+              padding={5}
+              scaleTo={0.88}
             >
-              􀈂 Share
-            </Text>
-          </ButtonPressAnimation>
-        </Row>
-        <UniqueTokenExpandedStateHeader
-          asset={asset}
-          imageColor={imageColorWithFallback}
-        />
-        <SheetActionButtonRow
-          ignorePaddingTop
-          paddingBottom={24}
-          paddingHorizontal={16.5}
-        >
-          <SheetActionButton
-            color={imageColorWithFallback}
-            label={
-              !external && !isReadOnlyWallet && isSendable
-                ? '􀮶 OpenSea'
-                : '􀮶 View on OpenSea'
-            }
-            nftShadows
-            onPress={handlePressOpensea}
-            textColor={textColor}
-            weight="heavy"
+              <Text
+                align="right"
+                color={imageColorWithFallback}
+                lineHeight="loosest"
+                size="lmedium"
+                weight="heavy"
+              >
+                􀈂 Share
+              </Text>
+            </ButtonPressAnimation>
+          </Row>
+          <UniqueTokenExpandedStateHeader
+            asset={asset}
+            imageColor={imageColorWithFallback}
           />
-          {!external && !isReadOnlyWallet && isSendable ? (
-            <SendActionButton
-              asset={asset}
+          <SheetActionButtonRow
+            ignorePaddingTop
+            paddingBottom={24}
+            paddingHorizontal={16.5}
+          >
+            <SheetActionButton
               color={imageColorWithFallback}
+              label={
+                !external && !isReadOnlyWallet && isSendable
+                  ? '􀮶 OpenSea'
+                  : '􀮶 View on OpenSea'
+              }
               nftShadows
+              onPress={handlePressOpensea}
               textColor={textColor}
+              weight="heavy"
             />
-          ) : null}
-        </SheetActionButtonRow>
-        <TokenInfoSection isNft>
-          <TokenInfoRow>
-            <TokenInfoItem
-              color={
-                lastSalePrice === 'None' && !currentPrice
-                  ? colors.alpha(colors.whiteLabel, 0.5)
-                  : colors.whiteLabel
-              }
-              isNft
-              onPress={toggleCurrentPriceDisplayCurrency}
-              size="big"
-              title={currentPrice ? '􀋢 For sale' : 'Last sale price'}
-              weight={
-                lastSalePrice === 'None' && !currentPrice ? 'bold' : 'heavy'
-              }
-            >
-              {showCurrentPriceInEth ||
-              nativeCurrency === 'ETH' ||
-              !currentPrice
-                ? currentPrice || lastSalePrice
-                : convertAmountToNativeDisplay(
-                    parseFloat(currentPrice) * priceOfEth,
-                    nativeCurrency
-                  )}
-            </TokenInfoItem>
-            <TokenInfoItem
-              align="right"
-              color={
+            {!external && !isReadOnlyWallet && isSendable ? (
+              <SendActionButton
+                asset={asset}
+                color={imageColorWithFallback}
+                nftShadows
+                textColor={textColor}
+              />
+            ) : null}
+          </SheetActionButtonRow>
+          <TokenInfoSection isNft>
+            <TokenInfoRow>
+              <TokenInfoItem
+                color={
+                  lastSalePrice === 'None' && !currentPrice
+                    ? colors.alpha(colors.whiteLabel, 0.5)
+                    : colors.whiteLabel
+                }
+                isNft
+                onPress={toggleCurrentPriceDisplayCurrency}
+                size="big"
+                title={currentPrice ? '􀋢 For sale' : 'Last sale price'}
+                weight={
+                  lastSalePrice === 'None' && !currentPrice ? 'bold' : 'heavy'
+                }
+              >
+                {showCurrentPriceInEth ||
+                nativeCurrency === 'ETH' ||
+                !currentPrice
+                  ? currentPrice || lastSalePrice
+                  : convertAmountToNativeDisplay(
+                      parseFloat(currentPrice) * priceOfEth,
+                      nativeCurrency
+                    )}
+              </TokenInfoItem>
+              <TokenInfoItem
+                align="right"
+                color={
+                  floorPrice === 'None'
+                    ? colors.alpha(colors.whiteLabel, 0.5)
+                    : colors.whiteLabel
+                }
+                isNft
+                loading={!floorPrice}
+                onInfoPress={handlePressCollectionFloor}
+                onPress={toggleFloorDisplayCurrency}
+                showInfoButton
+                size="big"
+                title="Collection floor"
+                weight={floorPrice === 'None' ? 'bold' : 'heavy'}
+              >
+                {showFloorInEth ||
+                nativeCurrency === 'ETH' ||
                 floorPrice === 'None'
-                  ? colors.alpha(colors.whiteLabel, 0.5)
-                  : colors.whiteLabel
-              }
-              isNft
-              loading={!floorPrice}
-              onInfoPress={handlePressCollectionFloor}
-              onPress={toggleFloorDisplayCurrency}
-              showInfoButton
-              size="big"
-              title="Collection floor"
-              weight={floorPrice === 'None' ? 'bold' : 'heavy'}
-            >
-              {showFloorInEth ||
-              nativeCurrency === 'ETH' ||
-              floorPrice === 'None'
-                ? floorPrice
-                : convertAmountToNativeDisplay(
-                    parseFloat(floorPrice) * priceOfEth,
-                    nativeCurrency
-                  )}
-            </TokenInfoItem>
-          </TokenInfoRow>
-        </TokenInfoSection>
-        <Column>
-          {!!description && (
-            <Fragment>
-              <SheetDivider deviceWidth={deviceWidth} />
-              <NftExpandedStateSection title="Description">
-                {description}
-              </NftExpandedStateSection>
-            </Fragment>
-          )}
-          {!!traits.length && (
-            <Fragment>
-              <SheetDivider deviceWidth={deviceWidth} />
-              <NftExpandedStateSection title="Properties">
-                <UniqueTokenAttributes
-                  {...asset}
-                  color={imageColorWithFallback}
-                  slug={asset.collection.slug}
-                />
-              </NftExpandedStateSection>
-            </Fragment>
-          )}
-          {!!familyDescription && (
-            <Fragment>
-              <SheetDivider deviceWidth={deviceWidth} />
-              <NftExpandedStateSection title={`About ${familyName}`}>
-                <Column>
-                  <MarkdownText
-                    color={colors.alpha(colors.whiteLabel, 0.5)}
-                    lineHeight="big"
-                    size="large"
-                  >
-                    {familyDescription}
-                  </MarkdownText>
-                  {familyLink && <Link url={familyLink} />}
-                </Column>
-              </NftExpandedStateSection>
-            </Fragment>
-          )}
-        </Column>
-        <Spacer />
+                  ? floorPrice
+                  : convertAmountToNativeDisplay(
+                      parseFloat(floorPrice) * priceOfEth,
+                      nativeCurrency
+                    )}
+              </TokenInfoItem>
+            </TokenInfoRow>
+          </TokenInfoSection>
+          <Column>
+            {!!description && (
+              <Fragment>
+                <SheetDivider deviceWidth={deviceWidth} />
+                <NftExpandedStateSection title="Description">
+                  {description}
+                </NftExpandedStateSection>
+              </Fragment>
+            )}
+            {!!traits.length && (
+              <Fragment>
+                <SheetDivider deviceWidth={deviceWidth} />
+                <NftExpandedStateSection title="Properties">
+                  <UniqueTokenAttributes
+                    {...asset}
+                    color={imageColorWithFallback}
+                    slug={asset.collection.slug}
+                  />
+                </NftExpandedStateSection>
+              </Fragment>
+            )}
+            {!!familyDescription && (
+              <Fragment>
+                <SheetDivider deviceWidth={deviceWidth} />
+                <NftExpandedStateSection title={`About ${familyName}`}>
+                  <Column>
+                    <MarkdownText
+                      color={colors.alpha(colors.whiteLabel, 0.5)}
+                      lineHeight="big"
+                      size="large"
+                    >
+                      {familyDescription}
+                    </MarkdownText>
+                    {familyLink && <Link url={familyLink} />}
+                  </Column>
+                </NftExpandedStateSection>
+              </Fragment>
+            )}
+          </Column>
+          <Spacer />
+        </Animated.View>
       </SlackSheet>
       {/* <HeaderBlurContainer>
         <HeaderBlur />
