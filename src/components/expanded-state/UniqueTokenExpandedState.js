@@ -35,7 +35,6 @@ import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
 } from './unique-token';
-import MoreActionsButton from './unique-token/MoreActionsButton';
 import { apiGetUniqueTokenFloorPrice } from '@rainbow-me/handlers/opensea-api';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
@@ -71,13 +70,6 @@ const BackgroundBlur = styled(BlurView).attrs({
 
 const BackgroundImage = styled.View`
   ${position.cover};
-`;
-
-const MoreActionsButtonWrapper = styled(Animated.View)`
-  position: absolute;
-  align-self: flex-end;
-  right: 30;
-  top: 30;
 `;
 
 const BlurWrapper = styled.View.attrs({
@@ -144,12 +136,8 @@ const UniqueTokenExpandedState = ({
   const opacityStyle = useAnimatedStyle(() => ({
     opacity: 1 - animationProgress.value,
   }));
-  const counterOpacityStyle = useAnimatedStyle(() => ({
-    opacity: animationProgress.value,
-  }));
   const sheetHandleStyle = useAnimatedStyle(() => ({
     opacity: 1 - animationProgress.value,
-    zIndex: 10,
   }));
 
   const isShowcaseAsset = useMemo(() => showcaseTokens.includes(uniqueId), [
@@ -268,9 +256,6 @@ const UniqueTokenExpandedState = ({
             <SheetHandle color={colors.alpha(colors.whiteLabel, 0.24)} />
           </Animated.View>
         </Centered>
-        <MoreActionsButtonWrapper style={counterOpacityStyle}>
-          <MoreActionsButton asset={asset} imageColor={imageColor} />
-        </MoreActionsButtonWrapper>
         <UniqueTokenExpandedStateContent
           animationProgress={animationProgress}
           asset={asset}
