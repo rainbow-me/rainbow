@@ -15,7 +15,7 @@
     "detox:ios:release": "detox build -c ios.sim.release && detox test -R 1 -c ios.sim.release --bail",
     "fast": "yarn setup && yarn install-pods-fast",
     "gradle": "cd android && ./gradlew",
-    "ganache": "source .env && ganache-cli --f https://mainnet.infura.io/v3/${INFURA_PROJECT_ID_DEV} -p 7545 -i 1 -b 10",
+    "ganache": "source .env && ganache-cli --f ${ETHEREUM_MAINNET_RPC_DEV} -p 7545 -i 1 -b 10",
     "install-all": "yarn setup && yarn install-pods",
     "install-all-no-flipper": "yarn setup && yarn install-pods-no-flipper",
     "install-bundle": "cd ios && bundle install && cd ..",
