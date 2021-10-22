@@ -256,7 +256,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
             </Text>
           </Column>
           <ContextMenuButton
-            activeOpacity={0}
+            activeOpacity={1}
             menuConfig={assetMenuConfig}
             {...(android ? { onPress: onPressAndroid } : {})}
             isMenuPrimaryAction
