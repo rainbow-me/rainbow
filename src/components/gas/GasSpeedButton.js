@@ -198,9 +198,10 @@ const GasSpeedButton = ({
   const openCustomGasSheet = useCallback(() => {
     if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
+      asset,
       type: 'custom_gas',
     });
-  }, [navigate, gasIsNotReady]);
+  }, [asset, navigate, gasIsNotReady]);
 
   const openCustomOptions = useCallback(() => {
     Keyboard.dismiss();
