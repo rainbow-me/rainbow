@@ -1,11 +1,33 @@
 import remoteConfig from '@react-native-firebase/remote-config';
-// @ts-ignore next-line
-import { DATA_API_KEY, DATA_ENDPOINT, DATA_ORIGIN } from 'react-native-dotenv';
+import {
+  // @ts-ignore
+  ARBITRUM_MAINNET_RPC,
+  // @ts-ignore
+  DATA_API_KEY,
+  // @ts-ignore
+  DATA_ENDPOINT,
+  // @ts-ignore
+  DATA_ORIGIN,
+  // @ts-ignore
+  ETHEREUM_MAINNET_RPC,
+  // @ts-ignore
+  ETHEREUM_MAINNET_RPC_DEV,
+  // @ts-ignore
+  OPTIMISM_MAINNET_RPC,
+  // @ts-ignore
+  POLYGON_MAINNET_RPC,
+} from 'react-native-dotenv';
 import Logger from 'logger';
 
-export declare type RainbowConfig = {
-  [key: string]: string;
-};
+export interface RainbowConfig extends Record<string, any> {
+  arbitrum_mainnet_rpc?: string;
+  ethereum_mainnet_rpc?: string;
+  optimism_mainnet_rpc?: string;
+  polygon_mainnet_rpc?: string;
+  data_api_key?: string;
+  data_endpoint?: string;
+  data_origin?: string;
+}
 
 const config: RainbowConfig = {};
 
@@ -15,9 +37,15 @@ const init = async () => {
   });
 
   await remoteConfig().setDefaults({
+    arbitrum_mainnet_rpc: ARBITRUM_MAINNET_RPC,
     data_api_key: DATA_API_KEY,
     data_endpoint: DATA_ENDPOINT || 'wss://api-v4.zerion.io',
     data_origin: DATA_ORIGIN,
+    ethereum_mainnet_rpc: __DEV__
+      ? ETHEREUM_MAINNET_RPC_DEV
+      : ETHEREUM_MAINNET_RPC,
+    optimism_mainnet_rpc: OPTIMISM_MAINNET_RPC,
+    polygon_mainnet_rpc: POLYGON_MAINNET_RPC,
   });
 
   const fetchedRemotely = await remoteConfig().fetchAndActivate();

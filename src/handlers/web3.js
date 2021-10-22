@@ -1,3 +1,4 @@
+import config from '../model/config';
 import { getAddress } from '@ethersproject/address';
 import { BigNumber } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
@@ -6,13 +7,6 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import UnstoppableResolution from '@unstoppabledomains/resolution';
 import { get, replace, startsWith } from 'lodash';
-import {
-  ARBITRUM_MAINNET_RPC,
-  INFURA_PROJECT_ID,
-  INFURA_PROJECT_ID_DEV,
-  OPTIMISM_MAINNET_RPC,
-  POLYGON_MAINNET_RPC,
-} from 'react-native-dotenv';
 import {
   ARBITRUM_ETH_ADDRESS,
   ETH_ADDRESS,
@@ -38,8 +32,7 @@ import {
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const infuraProjectId = __DEV__ ? INFURA_PROJECT_ID_DEV : INFURA_PROJECT_ID;
-const infuraUrl = `https://network.infura.io/v3/${infuraProjectId}`;
+
 
 export const networkProviders = {};
 
@@ -109,16 +102,16 @@ export const getProviderForNetwork = async (network = NetworkTypes.mainnet) => {
     let url;
     switch (network) {
       case NetworkTypes.arbitrum:
-        url = ARBITRUM_MAINNET_RPC;
+        url = config.arbitrum_mainnet_rpc;
         break;
       case NetworkTypes.optimism:
-        url = OPTIMISM_MAINNET_RPC;
+        url = config.optimism_mainnet_rpc;
         break;
       case NetworkTypes.polygon:
-        url = POLYGON_MAINNET_RPC;
+        url = config.polygon_mainnet_rpc;
         break;
       default:
-        url = replace(infuraUrl, 'network', network);
+        url = replace(config.ethereum_mainnet_rpc, networkTypes.mainnet, network);
     }
     const provider = new JsonRpcProvider(url);
     networkProviders[network] = provider;
