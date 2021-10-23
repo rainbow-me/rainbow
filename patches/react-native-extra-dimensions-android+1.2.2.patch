@@ -1,175 +1,167 @@
-diff --git a/node_modules/rn-dominant-color/android/build.gradle b/node_modules/rn-dominant-color/android/build.gradle
-index 005f905..36ff5db 100644
---- a/node_modules/rn-dominant-color/android/build.gradle
-+++ b/node_modules/rn-dominant-color/android/build.gradle
-@@ -17,7 +17,7 @@ android {
-     buildToolsVersion "28.0.3"
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build.gradle b/node_modules/react-native-extra-dimensions-android/android/build.gradle
+index c470e07..29a4e7b 100644
+--- a/node_modules/react-native-extra-dimensions-android/android/build.gradle
++++ b/node_modules/react-native-extra-dimensions-android/android/build.gradle
+@@ -14,7 +14,7 @@ android {
+     buildToolsVersion rootProject.hasProperty('buildToolsVersion') ? rootProject.buildToolsVersion : DEFAULT_BUILD_TOOLS_VERSION
  
      defaultConfig {
 -        minSdkVersion 16
 +        minSdkVersion 21
-         targetSdkVersion 28
+         targetSdkVersion rootProject.hasProperty('targetSdkVersion') ? rootProject.targetSdkVersion : DEFAULT_TARGET_SDK_VERSION
          versionCode 1
          versionName "1.0"
-diff --git a/node_modules/rn-dominant-color/android/build/.transforms/62d5d3a28f34507ef764e4f82307486f.bin b/node_modules/rn-dominant-color/android/build/.transforms/62d5d3a28f34507ef764e4f82307486f.bin
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/.transforms/69a59888721dc93bb4cd423ed4324fab.bin b/node_modules/react-native-extra-dimensions-android/android/build/.transforms/69a59888721dc93bb4cd423ed4324fab.bin
 new file mode 100644
 index 0000000..0d259dd
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/.transforms/62d5d3a28f34507ef764e4f82307486f.bin
++++ b/node_modules/react-native-extra-dimensions-android/android/build/.transforms/69a59888721dc93bb4cd423ed4324fab.bin
 @@ -0,0 +1 @@
 +o/classes
-diff --git a/node_modules/rn-dominant-color/android/build/.transforms/62d5d3a28f34507ef764e4f82307486f/classes/classes.dex b/node_modules/rn-dominant-color/android/build/.transforms/62d5d3a28f34507ef764e4f82307486f/classes/classes.dex
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/.transforms/69a59888721dc93bb4cd423ed4324fab/classes/classes.dex b/node_modules/react-native-extra-dimensions-android/android/build/.transforms/69a59888721dc93bb4cd423ed4324fab/classes/classes.dex
 new file mode 100644
-index 0000000..aabee91
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/.transforms/62d5d3a28f34507ef764e4f82307486f/classes/classes.dex differ
-diff --git a/node_modules/rn-dominant-color/android/build/.transforms/69320216adb4c698b774329ace27d289.bin b/node_modules/rn-dominant-color/android/build/.transforms/69320216adb4c698b774329ace27d289.bin
+index 0000000..1e84206
+Binary files /dev/null and b/node_modules/react-native-extra-dimensions-android/android/build/.transforms/69a59888721dc93bb4cd423ed4324fab/classes/classes.dex differ
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/.transforms/c3b918e6ad2ce3941921d0a4a75e5570.bin b/node_modules/react-native-extra-dimensions-android/android/build/.transforms/c3b918e6ad2ce3941921d0a4a75e5570.bin
 new file mode 100644
 index 0000000..0d259dd
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/.transforms/69320216adb4c698b774329ace27d289.bin
++++ b/node_modules/react-native-extra-dimensions-android/android/build/.transforms/c3b918e6ad2ce3941921d0a4a75e5570.bin
 @@ -0,0 +1 @@
 +o/classes
-diff --git a/node_modules/rn-dominant-color/android/build/.transforms/69320216adb4c698b774329ace27d289/classes/classes.dex b/node_modules/rn-dominant-color/android/build/.transforms/69320216adb4c698b774329ace27d289/classes/classes.dex
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/.transforms/c3b918e6ad2ce3941921d0a4a75e5570/classes/classes.dex b/node_modules/react-native-extra-dimensions-android/android/build/.transforms/c3b918e6ad2ce3941921d0a4a75e5570/classes/classes.dex
 new file mode 100644
-index 0000000..57efa5c
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/.transforms/69320216adb4c698b774329ace27d289/classes/classes.dex differ
-diff --git a/node_modules/rn-dominant-color/android/build/generated/source/buildConfig/debug/cl/hasaezs/rndominantcolor/BuildConfig.java b/node_modules/rn-dominant-color/android/build/generated/source/buildConfig/debug/cl/hasaezs/rndominantcolor/BuildConfig.java
-new file mode 100644
-index 0000000..1a2e229
---- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/generated/source/buildConfig/debug/cl/hasaezs/rndominantcolor/BuildConfig.java
-@@ -0,0 +1,18 @@
-+/**
-+ * Automatically generated file. DO NOT MODIFY
-+ */
-+package cl.hasaezs.rndominantcolor;
-+
-+public final class BuildConfig {
-+  public static final boolean DEBUG = Boolean.parseBoolean("true");
-+  public static final String LIBRARY_PACKAGE_NAME = "cl.hasaezs.rndominantcolor";
+index 0000000..c796a28
+Binary files /dev/null and b/node_modules/react-native-extra-dimensions-android/android/build/.transforms/c3b918e6ad2ce3941921d0a4a75e5570/classes/classes.dex differ
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/generated/source/buildConfig/debug/ca/jaysoo/extradimensions/BuildConfig.java b/node_modules/react-native-extra-dimensions-android/android/build/generated/source/buildConfig/debug/ca/jaysoo/extradimensions/BuildConfig.java
+index b419da4..7a59645 100644
+--- a/node_modules/react-native-extra-dimensions-android/android/build/generated/source/buildConfig/debug/ca/jaysoo/extradimensions/BuildConfig.java
++++ b/node_modules/react-native-extra-dimensions-android/android/build/generated/source/buildConfig/debug/ca/jaysoo/extradimensions/BuildConfig.java
+@@ -5,6 +5,11 @@ package ca.jaysoo.extradimensions;
+ 
+ public final class BuildConfig {
+   public static final boolean DEBUG = Boolean.parseBoolean("true");
++  public static final String LIBRARY_PACKAGE_NAME = "ca.jaysoo.extradimensions";
 +  /**
 +   * @deprecated APPLICATION_ID is misleading in libraries. For the library package name use LIBRARY_PACKAGE_NAME
 +   */
 +  @Deprecated
-+  public static final String APPLICATION_ID = "cl.hasaezs.rndominantcolor";
-+  public static final String BUILD_TYPE = "debug";
-+  public static final String FLAVOR = "";
-+  public static final int VERSION_CODE = 1;
-+  public static final String VERSION_NAME = "1.0";
-+}
-diff --git a/node_modules/rn-dominant-color/android/build/generated/source/buildConfig/release/cl/hasaezs/rndominantcolor/BuildConfig.java b/node_modules/rn-dominant-color/android/build/generated/source/buildConfig/release/cl/hasaezs/rndominantcolor/BuildConfig.java
+   public static final String APPLICATION_ID = "ca.jaysoo.extradimensions";
+   public static final String BUILD_TYPE = "debug";
+   public static final String FLAVOR = "";
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/generated/source/buildConfig/release/ca/jaysoo/extradimensions/BuildConfig.java b/node_modules/react-native-extra-dimensions-android/android/build/generated/source/buildConfig/release/ca/jaysoo/extradimensions/BuildConfig.java
 new file mode 100644
-index 0000000..5278a6c
+index 0000000..ac905d7
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/generated/source/buildConfig/release/cl/hasaezs/rndominantcolor/BuildConfig.java
++++ b/node_modules/react-native-extra-dimensions-android/android/build/generated/source/buildConfig/release/ca/jaysoo/extradimensions/BuildConfig.java
 @@ -0,0 +1,18 @@
 +/**
 + * Automatically generated file. DO NOT MODIFY
 + */
-+package cl.hasaezs.rndominantcolor;
++package ca.jaysoo.extradimensions;
 +
 +public final class BuildConfig {
 +  public static final boolean DEBUG = false;
-+  public static final String LIBRARY_PACKAGE_NAME = "cl.hasaezs.rndominantcolor";
++  public static final String LIBRARY_PACKAGE_NAME = "ca.jaysoo.extradimensions";
 +  /**
 +   * @deprecated APPLICATION_ID is misleading in libraries. For the library package name use LIBRARY_PACKAGE_NAME
 +   */
 +  @Deprecated
-+  public static final String APPLICATION_ID = "cl.hasaezs.rndominantcolor";
++  public static final String APPLICATION_ID = "ca.jaysoo.extradimensions";
 +  public static final String BUILD_TYPE = "release";
 +  public static final String FLAVOR = "";
 +  public static final int VERSION_CODE = 1;
 +  public static final String VERSION_NAME = "1.0";
 +}
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml
 new file mode 100644
-index 0000000..880e5c0
+index 0000000..cb055db
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml
 @@ -0,0 +1,11 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-+    package="cl.hasaezs.rndominantcolor"
++    package="ca.jaysoo.extradimensions"
 +    android:versionCode="1"
 +    android:versionName="1.0" >
 +
 +    <uses-sdk
 +        android:minSdkVersion="16"
-+        android:targetSdkVersion="28" />
++        android:targetSdkVersion="29" />
 +
 +</manifest>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json
 new file mode 100644
-index 0000000..109ef5e
+index 0000000..f640efb
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json
 @@ -0,0 +1 @@
-+[{"outputType":{"type":"AAPT_FRIENDLY_MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"rn-dominant-color-debug.aar","fullName":"debug","baseName":"debug","dirName":""},"path":"AndroidManifest.xml","properties":{"packageId":"cl.hasaezs.rndominantcolor","split":""}}]
++[{"outputType":{"type":"AAPT_FRIENDLY_MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"react-native-extra-dimensions-android-debug.aar","fullName":"debug","baseName":"debug","dirName":""},"path":"AndroidManifest.xml","properties":{"packageId":"ca.jaysoo.extradimensions","split":""}}]
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml
 new file mode 100644
-index 0000000..880e5c0
+index 0000000..cb055db
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml
 @@ -0,0 +1,11 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-+    package="cl.hasaezs.rndominantcolor"
++    package="ca.jaysoo.extradimensions"
 +    android:versionCode="1"
 +    android:versionName="1.0" >
 +
 +    <uses-sdk
 +        android:minSdkVersion="16"
-+        android:targetSdkVersion="28" />
++        android:targetSdkVersion="29" />
 +
 +</manifest>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/output.json b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/output.json
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/output.json b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/output.json
 new file mode 100644
-index 0000000..3196a41
+index 0000000..d91b243
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/output.json
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/output.json
 @@ -0,0 +1 @@
-+[{"outputType":{"type":"AAPT_FRIENDLY_MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"rn-dominant-color-release.aar","fullName":"release","baseName":"release","dirName":""},"path":"AndroidManifest.xml","properties":{"packageId":"cl.hasaezs.rndominantcolor","split":""}}]
++[{"outputType":{"type":"AAPT_FRIENDLY_MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"react-native-extra-dimensions-android-release.aar","fullName":"release","baseName":"release","dirName":""},"path":"AndroidManifest.xml","properties":{"packageId":"ca.jaysoo.extradimensions","split":""}}]
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json b/node_modules/rn-dominant-color/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json
 new file mode 100644
 index 0000000..9e26dfe
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json
 @@ -0,0 +1 @@
 +{}
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/annotation_processor_list/release/annotationProcessors.json b/node_modules/rn-dominant-color/android/build/intermediates/annotation_processor_list/release/annotationProcessors.json
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/annotation_processor_list/release/annotationProcessors.json b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/annotation_processor_list/release/annotationProcessors.json
 new file mode 100644
 index 0000000..9e26dfe
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/annotation_processor_list/release/annotationProcessors.json
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/annotation_processor_list/release/annotationProcessors.json
 @@ -0,0 +1 @@
 +{}
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/compile_library_classes/debug/classes.jar b/node_modules/rn-dominant-color/android/build/intermediates/compile_library_classes/debug/classes.jar
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/compile_library_classes/debug/classes.jar b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/compile_library_classes/debug/classes.jar
 new file mode 100644
-index 0000000..3c85050
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/compile_library_classes/debug/classes.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/compile_library_classes/release/classes.jar b/node_modules/rn-dominant-color/android/build/intermediates/compile_library_classes/release/classes.jar
+index 0000000..53a4e4d
+Binary files /dev/null and b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/compile_library_classes/debug/classes.jar differ
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/compile_library_classes/release/classes.jar b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/compile_library_classes/release/classes.jar
 new file mode 100644
-index 0000000..76f5c1e
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/compile_library_classes/release/classes.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar b/node_modules/rn-dominant-color/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar
+index 0000000..8fd5545
+Binary files /dev/null and b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/compile_library_classes/release/classes.jar differ
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar
 new file mode 100644
-index 0000000..bd190ec
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/compile_only_not_namespaced_r_class_jar/release/R.jar b/node_modules/rn-dominant-color/android/build/intermediates/compile_only_not_namespaced_r_class_jar/release/R.jar
+index 0000000..fd1a69d
+Binary files /dev/null and b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar differ
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/compile_only_not_namespaced_r_class_jar/release/R.jar b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/compile_only_not_namespaced_r_class_jar/release/R.jar
 new file mode 100644
-index 0000000..bd190ec
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/compile_only_not_namespaced_r_class_jar/release/R.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/compile_symbol_list/debug/R.txt b/node_modules/rn-dominant-color/android/build/intermediates/compile_symbol_list/debug/R.txt
+index 0000000..fd1a69d
+Binary files /dev/null and b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/compile_only_not_namespaced_r_class_jar/release/R.jar differ
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/compile_symbol_list/debug/R.txt b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/compile_symbol_list/debug/R.txt
 new file mode 100644
 index 0000000..a8801e1
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/compile_symbol_list/debug/R.txt
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/compile_symbol_list/debug/R.txt
 @@ -0,0 +1,1789 @@
 +int anim abc_fade_in 0x0
 +int anim abc_fade_out 0x0
@@ -1960,11 +1952,11 @@ index 0000000..a8801e1
 +int styleable ViewStubCompat_android_inflatedId 1
 +int styleable ViewStubCompat_android_layout 2
 +int xml rn_dev_preferences 0x0
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/compile_symbol_list/release/R.txt b/node_modules/rn-dominant-color/android/build/intermediates/compile_symbol_list/release/R.txt
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/compile_symbol_list/release/R.txt b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/compile_symbol_list/release/R.txt
 new file mode 100644
 index 0000000..a8801e1
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/compile_symbol_list/release/R.txt
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/compile_symbol_list/release/R.txt
 @@ -0,0 +1,1789 @@
 +int anim abc_fade_in 0x0
 +int anim abc_fade_out 0x0
@@ -3755,277 +3747,273 @@ index 0000000..a8801e1
 +int styleable ViewStubCompat_android_inflatedId 1
 +int styleable ViewStubCompat_android_layout 2
 +int xml rn_dev_preferences 0x0
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state b/node_modules/rn-dominant-color/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state
 new file mode 100644
-index 0000000..d26d8f0
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+index 0000000..4a9be5f
+Binary files /dev/null and b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state differ
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+index 371ff3b..254e6bc 100644
+--- a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+@@ -1,2 +1,2 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/debug/jniLibs"/></dataSet></merger>
+\ No newline at end of file
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/debug/jniLibs"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+index 0f97ef3..bc84aaf 100644
+--- a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+@@ -1,2 +1,2 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/debug/shaders"/></dataSet></merger>
+\ No newline at end of file
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/debug/shaders"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml
 new file mode 100644
-index 0000000..2f2722b
+index 0000000..f07825a
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/debug/jniLibs"/></dataSet></merger>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/jniLibs"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/release/jniLibs"/></dataSet></merger>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml
 new file mode 100644
-index 0000000..e0771ab
+index 0000000..c1a898c
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/debug/shaders"/></dataSet></merger>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/shaders"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/release/shaders"/></dataSet></merger>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageDebugAssets/merger.xml b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageDebugAssets/merger.xml
+index c82b73a..57050aa 100644
+--- a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageDebugAssets/merger.xml
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageDebugAssets/merger.xml
+@@ -1,2 +1,2 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/assets"/><source path="/Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/build/intermediates/shader_assets/debug/compileDebugShaders/out"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/debug/assets"/></dataSet></merger>
+\ No newline at end of file
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/assets"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/build/intermediates/shader_assets/debug/out"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/debug/assets"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties
+index e026ef2..723ee00 100644
+--- a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties
+@@ -1 +1 @@
+-#Thu Feb 21 12:04:07 GMT 2019
++#Fri Oct 22 23:38:07 EDT 2021
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageDebugResources/merger.xml b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageDebugResources/merger.xml
+index 32adfe3..8ee29ec 100644
+--- a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageDebugResources/merger.xml
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageDebugResources/merger.xml
+@@ -1,2 +1,2 @@
+ <?xml version="1.0" encoding="utf-8"?>
+-<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/res"/><source path="/Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/build/generated/res/rs/debug"/><source path="/Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/res"/><source path="/Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/build/generated/res/rs/debug"/><source path="/Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/debug/res"/></dataSet><mergedItems/></merger>
+\ No newline at end of file
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/build/generated/res/rs/debug"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/build/generated/res/rs/debug"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/debug/res"/></dataSet><mergedItems/></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageReleaseAssets/merger.xml b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageReleaseAssets/merger.xml
 new file mode 100644
-index 0000000..2452e85
+index 0000000..3e7bc29
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageReleaseAssets/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/jniLibs"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/release/jniLibs"/></dataSet></merger>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/assets"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/build/intermediates/shader_assets/release/out"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/release/assets"/></dataSet></merger>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties
 new file mode 100644
-index 0000000..8e7d033
+index 0000000..5b7e443
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml
-@@ -0,0 +1,2 @@
-+<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/shaders"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/release/shaders"/></dataSet></merger>
-\ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugAssets/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugAssets/merger.xml
-new file mode 100644
-index 0000000..6eba3c5
---- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugAssets/merger.xml
-@@ -0,0 +1,2 @@
-+<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/assets"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/intermediates/shader_assets/debug/out"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/debug/assets"/></dataSet></merger>
-\ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties
-new file mode 100644
-index 0000000..9d75107
---- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties
 @@ -0,0 +1 @@
-+#Fri Oct 22 23:38:18 EDT 2021
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugResources/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugResources/merger.xml
++#Fri Oct 22 23:38:50 EDT 2021
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageReleaseResources/merger.xml b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageReleaseResources/merger.xml
 new file mode 100644
-index 0000000..6526d1e
+index 0000000..6f718ff
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugResources/merger.xml
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/packageReleaseResources/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/rs/debug"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/rs/debug"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/debug/res"/></dataSet><mergedItems/></merger>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/build/generated/res/rs/release"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/build/generated/res/resValues/release"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/build/generated/res/rs/release"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/build/generated/res/resValues/release"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="release$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/release/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="release" generated-set="release$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/release/res"/></dataSet><mergedItems/></merger>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseAssets/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseAssets/merger.xml
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/release-mergeNativeLibs/merge-state b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/release-mergeNativeLibs/merge-state
 new file mode 100644
-index 0000000..b465a38
---- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseAssets/merger.xml
-@@ -0,0 +1,2 @@
-+<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/assets"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/intermediates/shader_assets/release/out"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/release/assets"/></dataSet></merger>
-\ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties
+index 0000000..e4fe87a
+Binary files /dev/null and b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/incremental/release-mergeNativeLibs/merge-state differ
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/javac/debug/classes/ca/jaysoo/extradimensions/BuildConfig.class b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/javac/debug/classes/ca/jaysoo/extradimensions/BuildConfig.class
 new file mode 100644
-index 0000000..3779ba3
---- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties
-@@ -0,0 +1 @@
-+#Fri Oct 22 23:38:59 EDT 2021
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseResources/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseResources/merger.xml
+index 0000000..62cdbcb
+Binary files /dev/null and b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/javac/debug/classes/ca/jaysoo/extradimensions/BuildConfig.class differ
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/javac/debug/classes/ca/jaysoo/extradimensions/ExtraDimensionsModule.class b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/javac/debug/classes/ca/jaysoo/extradimensions/ExtraDimensionsModule.class
 new file mode 100644
-index 0000000..e65cf80
---- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseResources/merger.xml
-@@ -0,0 +1,2 @@
-+<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/rs/release"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/resValues/release"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/rs/release"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/resValues/release"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="release$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/release/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="release" generated-set="release$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/release/res"/></dataSet><mergedItems/></merger>
-\ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/release-mergeNativeLibs/merge-state b/node_modules/rn-dominant-color/android/build/intermediates/incremental/release-mergeNativeLibs/merge-state
+index 0000000..6cefa28
+Binary files /dev/null and b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/javac/debug/classes/ca/jaysoo/extradimensions/ExtraDimensionsModule.class differ
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/javac/debug/classes/ca/jaysoo/extradimensions/ExtraDimensionsPackage.class b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/javac/debug/classes/ca/jaysoo/extradimensions/ExtraDimensionsPackage.class
 new file mode 100644
-index 0000000..5c1107d
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/incremental/release-mergeNativeLibs/merge-state differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/BuildConfig.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/BuildConfig.class
+index 0000000..336cbf6
+Binary files /dev/null and b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/javac/debug/classes/ca/jaysoo/extradimensions/ExtraDimensionsPackage.class differ
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/javac/release/classes/ca/jaysoo/extradimensions/BuildConfig.class b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/javac/release/classes/ca/jaysoo/extradimensions/BuildConfig.class
 new file mode 100644
-index 0000000..d5580d1
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/BuildConfig.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule$1.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule$1.class
+index 0000000..eea8209
+Binary files /dev/null and b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/javac/release/classes/ca/jaysoo/extradimensions/BuildConfig.class differ
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/javac/release/classes/ca/jaysoo/extradimensions/ExtraDimensionsModule.class b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/javac/release/classes/ca/jaysoo/extradimensions/ExtraDimensionsModule.class
 new file mode 100644
-index 0000000..4f06109
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule$1.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule.class
+index 0000000..6cefa28
+Binary files /dev/null and b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/javac/release/classes/ca/jaysoo/extradimensions/ExtraDimensionsModule.class differ
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/javac/release/classes/ca/jaysoo/extradimensions/ExtraDimensionsPackage.class b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/javac/release/classes/ca/jaysoo/extradimensions/ExtraDimensionsPackage.class
 new file mode 100644
-index 0000000..5ab8dbb
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorPackage.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorPackage.class
-new file mode 100644
-index 0000000..acf9542
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorPackage.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/BuildConfig.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/BuildConfig.class
-new file mode 100644
-index 0000000..61cd0a9
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/BuildConfig.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule$1.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule$1.class
-new file mode 100644
-index 0000000..4f06109
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule$1.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule.class
-new file mode 100644
-index 0000000..5ab8dbb
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorPackage.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorPackage.class
-new file mode 100644
-index 0000000..acf9542
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorPackage.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/library_java_res/debug/res.jar b/node_modules/rn-dominant-color/android/build/intermediates/library_java_res/debug/res.jar
+index 0000000..336cbf6
+Binary files /dev/null and b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/javac/release/classes/ca/jaysoo/extradimensions/ExtraDimensionsPackage.class differ
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/library_java_res/debug/res.jar b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/library_java_res/debug/res.jar
 new file mode 100644
 index 0000000..15cb0ec
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/library_java_res/debug/res.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/library_java_res/release/res.jar b/node_modules/rn-dominant-color/android/build/intermediates/library_java_res/release/res.jar
+Binary files /dev/null and b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/library_java_res/debug/res.jar differ
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/library_java_res/release/res.jar b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/library_java_res/release/res.jar
 new file mode 100644
 index 0000000..15cb0ec
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/library_java_res/release/res.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/library_manifest/debug/AndroidManifest.xml b/node_modules/rn-dominant-color/android/build/intermediates/library_manifest/debug/AndroidManifest.xml
+Binary files /dev/null and b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/library_java_res/release/res.jar differ
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/library_manifest/debug/AndroidManifest.xml b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/library_manifest/debug/AndroidManifest.xml
 new file mode 100644
-index 0000000..880e5c0
+index 0000000..cb055db
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/library_manifest/debug/AndroidManifest.xml
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/library_manifest/debug/AndroidManifest.xml
 @@ -0,0 +1,11 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-+    package="cl.hasaezs.rndominantcolor"
++    package="ca.jaysoo.extradimensions"
 +    android:versionCode="1"
 +    android:versionName="1.0" >
 +
 +    <uses-sdk
 +        android:minSdkVersion="16"
-+        android:targetSdkVersion="28" />
++        android:targetSdkVersion="29" />
 +
 +</manifest>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/library_manifest/release/AndroidManifest.xml b/node_modules/rn-dominant-color/android/build/intermediates/library_manifest/release/AndroidManifest.xml
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/library_manifest/release/AndroidManifest.xml b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/library_manifest/release/AndroidManifest.xml
 new file mode 100644
-index 0000000..880e5c0
+index 0000000..cb055db
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/library_manifest/release/AndroidManifest.xml
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/library_manifest/release/AndroidManifest.xml
 @@ -0,0 +1,11 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-+    package="cl.hasaezs.rndominantcolor"
++    package="ca.jaysoo.extradimensions"
 +    android:versionCode="1"
 +    android:versionName="1.0" >
 +
 +    <uses-sdk
 +        android:minSdkVersion="16"
-+        android:targetSdkVersion="28" />
++        android:targetSdkVersion="29" />
 +
 +</manifest>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/local_only_symbol_list/debug/R-def.txt b/node_modules/rn-dominant-color/android/build/intermediates/local_only_symbol_list/debug/R-def.txt
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/local_only_symbol_list/debug/R-def.txt b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/local_only_symbol_list/debug/R-def.txt
 new file mode 100644
 index 0000000..78ac5b8
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/local_only_symbol_list/debug/R-def.txt
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/local_only_symbol_list/debug/R-def.txt
 @@ -0,0 +1,2 @@
 +R_DEF: Internal format may change without notice
 +local
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/local_only_symbol_list/release/R-def.txt b/node_modules/rn-dominant-color/android/build/intermediates/local_only_symbol_list/release/R-def.txt
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/local_only_symbol_list/release/R-def.txt b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/local_only_symbol_list/release/R-def.txt
 new file mode 100644
 index 0000000..78ac5b8
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/local_only_symbol_list/release/R-def.txt
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/local_only_symbol_list/release/R-def.txt
 @@ -0,0 +1,2 @@
 +R_DEF: Internal format may change without notice
 +local
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt b/node_modules/rn-dominant-color/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
 new file mode 100644
-index 0000000..0099900
+index 0000000..3e208c8
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
 @@ -0,0 +1,13 @@
 +1<?xml version="1.0" encoding="utf-8"?>
 +2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-+3    package="cl.hasaezs.rndominantcolor"
++3    package="ca.jaysoo.extradimensions"
 +4    android:versionCode="1"
 +5    android:versionName="1.0" >
 +6
 +7    <uses-sdk
 +8        android:minSdkVersion="16"
-+8-->/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+9        android:targetSdkVersion="28" />
-+9-->/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++8-->/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++9        android:targetSdkVersion="29" />
++9-->/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
 +10
 +11</manifest>
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/manifest_merge_blame_file/release/manifest-merger-blame-release-report.txt b/node_modules/rn-dominant-color/android/build/intermediates/manifest_merge_blame_file/release/manifest-merger-blame-release-report.txt
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/manifest_merge_blame_file/release/manifest-merger-blame-release-report.txt b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/manifest_merge_blame_file/release/manifest-merger-blame-release-report.txt
 new file mode 100644
-index 0000000..0099900
+index 0000000..3e208c8
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/manifest_merge_blame_file/release/manifest-merger-blame-release-report.txt
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/manifest_merge_blame_file/release/manifest-merger-blame-release-report.txt
 @@ -0,0 +1,13 @@
 +1<?xml version="1.0" encoding="utf-8"?>
 +2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-+3    package="cl.hasaezs.rndominantcolor"
++3    package="ca.jaysoo.extradimensions"
 +4    android:versionCode="1"
 +5    android:versionName="1.0" >
 +6
 +7    <uses-sdk
 +8        android:minSdkVersion="16"
-+8-->/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+9        android:targetSdkVersion="28" />
-+9-->/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++8-->/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++9        android:targetSdkVersion="29" />
++9-->/Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
 +10
 +11</manifest>
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/merged_manifests/debug/output.json b/node_modules/rn-dominant-color/android/build/intermediates/merged_manifests/debug/output.json
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/merged_manifests/debug/output.json b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/merged_manifests/debug/output.json
 new file mode 100644
-index 0000000..658ce9b
+index 0000000..83fe0e0
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/merged_manifests/debug/output.json
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/merged_manifests/debug/output.json
 @@ -0,0 +1 @@
-+[{"outputType":{"type":"MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"rn-dominant-color-debug.aar","fullName":"debug","baseName":"debug","dirName":""},"path":"../../library_manifest/debug/AndroidManifest.xml","properties":{"packageId":"cl.hasaezs.rndominantcolor","split":""}}]
++[{"outputType":{"type":"MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"react-native-extra-dimensions-android-debug.aar","fullName":"debug","baseName":"debug","dirName":""},"path":"../../library_manifest/debug/AndroidManifest.xml","properties":{"packageId":"ca.jaysoo.extradimensions","split":""}}]
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/merged_manifests/release/output.json b/node_modules/rn-dominant-color/android/build/intermediates/merged_manifests/release/output.json
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/merged_manifests/release/output.json b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/merged_manifests/release/output.json
 new file mode 100644
-index 0000000..70d24f7
+index 0000000..3a9b11a
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/merged_manifests/release/output.json
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/merged_manifests/release/output.json
 @@ -0,0 +1 @@
-+[{"outputType":{"type":"MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"rn-dominant-color-release.aar","fullName":"release","baseName":"release","dirName":""},"path":"../../library_manifest/release/AndroidManifest.xml","properties":{"packageId":"cl.hasaezs.rndominantcolor","split":""}}]
++[{"outputType":{"type":"MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"react-native-extra-dimensions-android-release.aar","fullName":"release","baseName":"release","dirName":""},"path":"../../library_manifest/release/AndroidManifest.xml","properties":{"packageId":"ca.jaysoo.extradimensions","split":""}}]
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/navigation_json/debug/navigation.json b/node_modules/rn-dominant-color/android/build/intermediates/navigation_json/debug/navigation.json
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/navigation_json/debug/navigation.json b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/navigation_json/debug/navigation.json
 new file mode 100644
 index 0000000..0637a08
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/navigation_json/debug/navigation.json
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/navigation_json/debug/navigation.json
 @@ -0,0 +1 @@
 +[]
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/navigation_json/release/navigation.json b/node_modules/rn-dominant-color/android/build/intermediates/navigation_json/release/navigation.json
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/navigation_json/release/navigation.json b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/navigation_json/release/navigation.json
 new file mode 100644
 index 0000000..0637a08
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/navigation_json/release/navigation.json
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/navigation_json/release/navigation.json
 @@ -0,0 +1 @@
 +[]
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/runtime_library_classes/debug/classes.jar b/node_modules/rn-dominant-color/android/build/intermediates/runtime_library_classes/debug/classes.jar
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/runtime_library_classes/debug/classes.jar b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/runtime_library_classes/debug/classes.jar
 new file mode 100644
-index 0000000..3f15a12
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/runtime_library_classes/debug/classes.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/runtime_library_classes/release/classes.jar b/node_modules/rn-dominant-color/android/build/intermediates/runtime_library_classes/release/classes.jar
+index 0000000..ad91c15
+Binary files /dev/null and b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/runtime_library_classes/debug/classes.jar differ
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/runtime_library_classes/release/classes.jar b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/runtime_library_classes/release/classes.jar
 new file mode 100644
-index 0000000..39f0708
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/runtime_library_classes/release/classes.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt b/node_modules/rn-dominant-color/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt
+index 0000000..2ba35eb
+Binary files /dev/null and b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/runtime_library_classes/release/classes.jar differ
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt
 new file mode 100644
-index 0000000..e0e2ab5
+index 0000000..cab6333
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt
 @@ -0,0 +1,1315 @@
-+cl.hasaezs.rndominantcolor
++ca.jaysoo.extradimensions
 +anim abc_fade_in
 +anim abc_fade_out
 +anim abc_grow_fade_in_from_bottom
@@ -5340,13 +5328,13 @@ index 0000000..e0e2ab5
 +styleable ViewBackgroundHelper android_background backgroundTint backgroundTintMode
 +styleable ViewStubCompat android_id android_inflatedId android_layout
 +xml rn_dev_preferences
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/symbol_list_with_package_name/release/package-aware-r.txt b/node_modules/rn-dominant-color/android/build/intermediates/symbol_list_with_package_name/release/package-aware-r.txt
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/intermediates/symbol_list_with_package_name/release/package-aware-r.txt b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/symbol_list_with_package_name/release/package-aware-r.txt
 new file mode 100644
-index 0000000..e0e2ab5
+index 0000000..cab6333
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/symbol_list_with_package_name/release/package-aware-r.txt
++++ b/node_modules/react-native-extra-dimensions-android/android/build/intermediates/symbol_list_with_package_name/release/package-aware-r.txt
 @@ -0,0 +1,1315 @@
-+cl.hasaezs.rndominantcolor
++ca.jaysoo.extradimensions
 +anim abc_fade_in
 +anim abc_fade_out
 +anim abc_grow_fade_in_from_bottom
@@ -6661,152 +6649,140 @@ index 0000000..e0e2ab5
 +styleable ViewBackgroundHelper android_background backgroundTint backgroundTintMode
 +styleable ViewStubCompat android_id android_inflatedId android_layout
 +xml rn_dev_preferences
-diff --git a/node_modules/rn-dominant-color/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/rn-dominant-color/android/build/outputs/logs/manifest-merger-debug-report.txt
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/react-native-extra-dimensions-android/android/build/outputs/logs/manifest-merger-debug-report.txt
+index 67193a8..f5198ec 100644
+--- a/node_modules/react-native-extra-dimensions-android/android/build/outputs/logs/manifest-merger-debug-report.txt
++++ b/node_modules/react-native-extra-dimensions-android/android/build/outputs/logs/manifest-merger-debug-report.txt
+@@ -1,37 +1,37 @@
+ -- Merging decision tree log ---
+ manifest
+-ADDED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
+-INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
+-INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
+-INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
+-INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
+-INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
+-INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
++ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
+ 	package
+-		ADDED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:2:11-46
+-		INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
+-		INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:2:11-46
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
+ 	android:versionName
+-		INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
+-		ADDED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
+-		INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
+ 	android:versionCode
+-		INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
+-		ADDED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
+-		INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
+ 	xmlns:android
+-		ADDED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:11-69
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:11-69
+ uses-sdk
+-INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
+-INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
+-INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
+-INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
+-INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
+ 	android:targetSdkVersion
+-		INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
+-		ADDED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
+-		INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
+ 	android:minSdkVersion
+-		INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
+-		ADDED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
+-		INJECTED from /Users/marcus/Projects/Personal/extradimensionstestproject/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/outputs/logs/manifest-merger-release-report.txt b/node_modules/react-native-extra-dimensions-android/android/build/outputs/logs/manifest-merger-release-report.txt
 new file mode 100644
-index 0000000..a06827b
+index 0000000..f5198ec
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/outputs/logs/manifest-merger-debug-report.txt
++++ b/node_modules/react-native-extra-dimensions-android/android/build/outputs/logs/manifest-merger-release-report.txt
 @@ -0,0 +1,37 @@
 +-- Merging decision tree log ---
 +manifest
-+ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
++ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
 +	package
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:3:11-47
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:2:11-46
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
 +	android:versionName
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
 +	android:versionCode
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:1-3:12
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
 +	xmlns:android
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:11-69
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml:1:11-69
 +uses-sdk
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
 +	android:targetSdkVersion
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
 +	android:minSdkVersion
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-diff --git a/node_modules/rn-dominant-color/android/build/outputs/logs/manifest-merger-release-report.txt b/node_modules/rn-dominant-color/android/build/outputs/logs/manifest-merger-release-report.txt
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-extra-dimensions-android/android/src/main/AndroidManifest.xml
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/tmp/compileDebugJavaWithJavac/source-classes-mapping.txt b/node_modules/react-native-extra-dimensions-android/android/build/tmp/compileDebugJavaWithJavac/source-classes-mapping.txt
 new file mode 100644
-index 0000000..a06827b
+index 0000000..68ca082
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/outputs/logs/manifest-merger-release-report.txt
-@@ -0,0 +1,37 @@
-+-- Merging decision tree log ---
-+manifest
-+ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+	package
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:3:11-47
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+	android:versionName
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+	android:versionCode
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+	xmlns:android
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:11-69
-+uses-sdk
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+	android:targetSdkVersion
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+	android:minSdkVersion
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-diff --git a/node_modules/rn-dominant-color/android/build/tmp/compileDebugJavaWithJavac/source-classes-mapping.txt b/node_modules/rn-dominant-color/android/build/tmp/compileDebugJavaWithJavac/source-classes-mapping.txt
++++ b/node_modules/react-native-extra-dimensions-android/android/build/tmp/compileDebugJavaWithJavac/source-classes-mapping.txt
+@@ -0,0 +1,6 @@
++ca/jaysoo/extradimensions/BuildConfig.java
++ ca.jaysoo.extradimensions.BuildConfig
++ca/jaysoo/extradimensions/ExtraDimensionsPackage.java
++ ca.jaysoo.extradimensions.ExtraDimensionsPackage
++ca/jaysoo/extradimensions/ExtraDimensionsModule.java
++ ca.jaysoo.extradimensions.ExtraDimensionsModule
+diff --git a/node_modules/react-native-extra-dimensions-android/android/build/tmp/compileReleaseJavaWithJavac/source-classes-mapping.txt b/node_modules/react-native-extra-dimensions-android/android/build/tmp/compileReleaseJavaWithJavac/source-classes-mapping.txt
 new file mode 100644
-index 0000000..a5546b5
+index 0000000..68ca082
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/tmp/compileDebugJavaWithJavac/source-classes-mapping.txt
-@@ -0,0 +1,7 @@
-+cl/hasaezs/rndominantcolor/RNDominantColorModule.java
-+ cl.hasaezs.rndominantcolor.RNDominantColorModule
-+ cl.hasaezs.rndominantcolor.RNDominantColorModule$1
-+cl/hasaezs/rndominantcolor/RNDominantColorPackage.java
-+ cl.hasaezs.rndominantcolor.RNDominantColorPackage
-+cl/hasaezs/rndominantcolor/BuildConfig.java
-+ cl.hasaezs.rndominantcolor.BuildConfig
-diff --git a/node_modules/rn-dominant-color/android/build/tmp/compileReleaseJavaWithJavac/source-classes-mapping.txt b/node_modules/rn-dominant-color/android/build/tmp/compileReleaseJavaWithJavac/source-classes-mapping.txt
-new file mode 100644
-index 0000000..a5546b5
---- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/tmp/compileReleaseJavaWithJavac/source-classes-mapping.txt
-@@ -0,0 +1,7 @@
-+cl/hasaezs/rndominantcolor/RNDominantColorModule.java
-+ cl.hasaezs.rndominantcolor.RNDominantColorModule
-+ cl.hasaezs.rndominantcolor.RNDominantColorModule$1
-+cl/hasaezs/rndominantcolor/RNDominantColorPackage.java
-+ cl.hasaezs.rndominantcolor.RNDominantColorPackage
-+cl/hasaezs/rndominantcolor/BuildConfig.java
-+ cl.hasaezs.rndominantcolor.BuildConfig
-diff --git a/node_modules/rn-dominant-color/ios/RNDominantColor/RNDominantColor.swift b/node_modules/rn-dominant-color/ios/RNDominantColor/RNDominantColor.swift
-index 1e5eb94..644fb25 100644
---- a/node_modules/rn-dominant-color/ios/RNDominantColor/RNDominantColor.swift
-+++ b/node_modules/rn-dominant-color/ios/RNDominantColor/RNDominantColor.swift
-@@ -17,17 +17,22 @@ class RNDominantColor : NSObject {
-     }
-     
-     @objc func getColorFromURL(_ imageURL: NSString,callback successCallback: RCTResponseSenderBlock ) {
--        let url = URL(string: imageURL as String)
--        let data = try? Data(contentsOf: url!)
--        guard let colors = UIImage(data: data!)?.getColors() else {
--          return successCallback(["#00000000", "#00000000", "#00000000", "#00000000", "#00000000"])
-+        guard let url = URL(string: imageURL as String) else {
-+            return successCallback(["#00000000", "#00000000", "#00000000", "#00000000", "#00000000"])
-+        }
-+        if let data = try? Data(contentsOf: url) {
-+            guard let colors = UIImage(data: data)?.getColors() else {
-+              return successCallback(["#00000000", "#00000000", "#00000000", "#00000000", "#00000000"])
-+            }
-+            successCallback([
-+              colors.primaryHex,
-+              colors.secondaryHex,
-+              colors.backgroundHex,
-+              colors.detailHex
-+            ])
-+        } else {
-+            return successCallback(["#00000000", "#00000000", "#00000000", "#00000000", "#00000000"])
-         }
--        successCallback([
--          colors.primaryHex,
--          colors.secondaryHex,
--          colors.backgroundHex,
--          colors.detailHex
--        ])
-     }
-     
- }
++++ b/node_modules/react-native-extra-dimensions-android/android/build/tmp/compileReleaseJavaWithJavac/source-classes-mapping.txt
+@@ -0,0 +1,6 @@
++ca/jaysoo/extradimensions/BuildConfig.java
++ ca.jaysoo.extradimensions.BuildConfig
++ca/jaysoo/extradimensions/ExtraDimensionsPackage.java
++ ca.jaysoo.extradimensions.ExtraDimensionsPackage
++ca/jaysoo/extradimensions/ExtraDimensionsModule.java
++ ca.jaysoo.extradimensions.ExtraDimensionsModule

@@ -6,7 +6,7 @@
     "setup": "yarn install && yarn allow-scripts && yarn postinstall",
     "android": "yarn gradle assembleDevDebug && yarn android:load-debug-apk",
     "android:apk": "yarn gradle assembleLocalRelease && yarn uninstall:android && yarn android:load-release-apk",
-    "android:bundle": "./scripts/check-env.sh && yarn update-tokens && yarn gradle bundleLocalRelease && open android/app/build/outputs/bundle/local/release/",
+    "android:bundle": "./scripts/check-env.sh && yarn update-tokens && yarn gradle bundleLocalRelease && open android/app/build/outputs/bundle/localRelease/",
     "android:load-release-apk": "adb install android/app/build/outputs/apk/local/release/app-local-release.apk",
     "android:load-debug-apk": "adb install android/app/build/outputs/apk/dev/debug/app-dev-debug.apk",
     "clean:android": "yarn uninstall:android && yarn gradle clean",
@@ -360,16 +360,16 @@
         "device": "simulator"
       },
       "android.emu.debug": {
-        "binaryPath": "./android/app/build/outputs/apk/debug/app-debug.apk",
+        "binaryPath": "./android/app/build/outputs/apk/dev/debug/app-dev-debug.apk",
         "build": "cd ./android && ./gradlew assembleLocalDebug assembleAndroidTest -DtestBuildType=debug && cd ..",
         "type": "android.emulator",
-        "name": "Pixel_3_API_29"
+        "name": "Pixel_3a_API_31_arm64-v8a"
       },
       "android.emu.release": {
         "binaryPath": "./android/app/build/outputs/apk/local/release/app-local-release.apk",
         "build": "cd ./android && ./gradlew -q assembleLocalRelease assembleAndroidTest -DtestBuildType=release&& cd ..",
         "type": "android.emulator",
-        "name": "Pixel_3_API_29"
+        "name": "Pixel_3a_API_31_arm64-v8a"
       },
       "android.emu.release.bitrise": {
         "binaryPath": "./android/app/build/outputs/apk/bitrise/release/app-bitrise-release.apk",

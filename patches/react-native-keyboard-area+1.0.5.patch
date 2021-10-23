@@ -1,176 +1,176 @@
-diff --git a/node_modules/rn-dominant-color/android/build.gradle b/node_modules/rn-dominant-color/android/build.gradle
-index 005f905..36ff5db 100644
---- a/node_modules/rn-dominant-color/android/build.gradle
-+++ b/node_modules/rn-dominant-color/android/build.gradle
-@@ -17,7 +17,7 @@ android {
-     buildToolsVersion "28.0.3"
+diff --git a/node_modules/react-native-keyboard-area/android/build.gradle b/node_modules/react-native-keyboard-area/android/build.gradle
+index d4a2cb8..9ff23bd 100644
+--- a/node_modules/react-native-keyboard-area/android/build.gradle
++++ b/node_modules/react-native-keyboard-area/android/build.gradle
+@@ -26,7 +26,7 @@ android {
+     compileSdkVersion 28
  
      defaultConfig {
--        minSdkVersion 16
+-        minSdkVersion 19
 +        minSdkVersion 21
          targetSdkVersion 28
          versionCode 1
-         versionName "1.0"
-diff --git a/node_modules/rn-dominant-color/android/build/.transforms/62d5d3a28f34507ef764e4f82307486f.bin b/node_modules/rn-dominant-color/android/build/.transforms/62d5d3a28f34507ef764e4f82307486f.bin
+         versionName "1.0.0"
+diff --git a/node_modules/react-native-keyboard-area/android/build/.transforms/536fd8daee98ca93a7cee275f1a2ba97.bin b/node_modules/react-native-keyboard-area/android/build/.transforms/536fd8daee98ca93a7cee275f1a2ba97.bin
 new file mode 100644
 index 0000000..0d259dd
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/.transforms/62d5d3a28f34507ef764e4f82307486f.bin
++++ b/node_modules/react-native-keyboard-area/android/build/.transforms/536fd8daee98ca93a7cee275f1a2ba97.bin
 @@ -0,0 +1 @@
 +o/classes
-diff --git a/node_modules/rn-dominant-color/android/build/.transforms/62d5d3a28f34507ef764e4f82307486f/classes/classes.dex b/node_modules/rn-dominant-color/android/build/.transforms/62d5d3a28f34507ef764e4f82307486f/classes/classes.dex
+diff --git a/node_modules/react-native-keyboard-area/android/build/.transforms/536fd8daee98ca93a7cee275f1a2ba97/classes/classes.dex b/node_modules/react-native-keyboard-area/android/build/.transforms/536fd8daee98ca93a7cee275f1a2ba97/classes/classes.dex
 new file mode 100644
-index 0000000..aabee91
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/.transforms/62d5d3a28f34507ef764e4f82307486f/classes/classes.dex differ
-diff --git a/node_modules/rn-dominant-color/android/build/.transforms/69320216adb4c698b774329ace27d289.bin b/node_modules/rn-dominant-color/android/build/.transforms/69320216adb4c698b774329ace27d289.bin
+index 0000000..173e14c
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/.transforms/536fd8daee98ca93a7cee275f1a2ba97/classes/classes.dex differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/.transforms/784859af880592f59301f915b705a5dc.bin b/node_modules/react-native-keyboard-area/android/build/.transforms/784859af880592f59301f915b705a5dc.bin
 new file mode 100644
 index 0000000..0d259dd
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/.transforms/69320216adb4c698b774329ace27d289.bin
++++ b/node_modules/react-native-keyboard-area/android/build/.transforms/784859af880592f59301f915b705a5dc.bin
 @@ -0,0 +1 @@
 +o/classes
-diff --git a/node_modules/rn-dominant-color/android/build/.transforms/69320216adb4c698b774329ace27d289/classes/classes.dex b/node_modules/rn-dominant-color/android/build/.transforms/69320216adb4c698b774329ace27d289/classes/classes.dex
+diff --git a/node_modules/react-native-keyboard-area/android/build/.transforms/784859af880592f59301f915b705a5dc/classes/classes.dex b/node_modules/react-native-keyboard-area/android/build/.transforms/784859af880592f59301f915b705a5dc/classes/classes.dex
 new file mode 100644
-index 0000000..57efa5c
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/.transforms/69320216adb4c698b774329ace27d289/classes/classes.dex differ
-diff --git a/node_modules/rn-dominant-color/android/build/generated/source/buildConfig/debug/cl/hasaezs/rndominantcolor/BuildConfig.java b/node_modules/rn-dominant-color/android/build/generated/source/buildConfig/debug/cl/hasaezs/rndominantcolor/BuildConfig.java
+index 0000000..84b6050
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/.transforms/784859af880592f59301f915b705a5dc/classes/classes.dex differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/generated/source/buildConfig/debug/com/rn/keyboard/BuildConfig.java b/node_modules/react-native-keyboard-area/android/build/generated/source/buildConfig/debug/com/rn/keyboard/BuildConfig.java
 new file mode 100644
-index 0000000..1a2e229
+index 0000000..acb3092
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/generated/source/buildConfig/debug/cl/hasaezs/rndominantcolor/BuildConfig.java
++++ b/node_modules/react-native-keyboard-area/android/build/generated/source/buildConfig/debug/com/rn/keyboard/BuildConfig.java
 @@ -0,0 +1,18 @@
 +/**
 + * Automatically generated file. DO NOT MODIFY
 + */
-+package cl.hasaezs.rndominantcolor;
++package com.rn.keyboard;
 +
 +public final class BuildConfig {
 +  public static final boolean DEBUG = Boolean.parseBoolean("true");
-+  public static final String LIBRARY_PACKAGE_NAME = "cl.hasaezs.rndominantcolor";
++  public static final String LIBRARY_PACKAGE_NAME = "com.rn.keyboard";
 +  /**
 +   * @deprecated APPLICATION_ID is misleading in libraries. For the library package name use LIBRARY_PACKAGE_NAME
 +   */
 +  @Deprecated
-+  public static final String APPLICATION_ID = "cl.hasaezs.rndominantcolor";
++  public static final String APPLICATION_ID = "com.rn.keyboard";
 +  public static final String BUILD_TYPE = "debug";
 +  public static final String FLAVOR = "";
 +  public static final int VERSION_CODE = 1;
-+  public static final String VERSION_NAME = "1.0";
++  public static final String VERSION_NAME = "1.0.0";
 +}
-diff --git a/node_modules/rn-dominant-color/android/build/generated/source/buildConfig/release/cl/hasaezs/rndominantcolor/BuildConfig.java b/node_modules/rn-dominant-color/android/build/generated/source/buildConfig/release/cl/hasaezs/rndominantcolor/BuildConfig.java
+diff --git a/node_modules/react-native-keyboard-area/android/build/generated/source/buildConfig/release/com/rn/keyboard/BuildConfig.java b/node_modules/react-native-keyboard-area/android/build/generated/source/buildConfig/release/com/rn/keyboard/BuildConfig.java
 new file mode 100644
-index 0000000..5278a6c
+index 0000000..bafe7ab
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/generated/source/buildConfig/release/cl/hasaezs/rndominantcolor/BuildConfig.java
++++ b/node_modules/react-native-keyboard-area/android/build/generated/source/buildConfig/release/com/rn/keyboard/BuildConfig.java
 @@ -0,0 +1,18 @@
 +/**
 + * Automatically generated file. DO NOT MODIFY
 + */
-+package cl.hasaezs.rndominantcolor;
++package com.rn.keyboard;
 +
 +public final class BuildConfig {
 +  public static final boolean DEBUG = false;
-+  public static final String LIBRARY_PACKAGE_NAME = "cl.hasaezs.rndominantcolor";
++  public static final String LIBRARY_PACKAGE_NAME = "com.rn.keyboard";
 +  /**
 +   * @deprecated APPLICATION_ID is misleading in libraries. For the library package name use LIBRARY_PACKAGE_NAME
 +   */
 +  @Deprecated
-+  public static final String APPLICATION_ID = "cl.hasaezs.rndominantcolor";
++  public static final String APPLICATION_ID = "com.rn.keyboard";
 +  public static final String BUILD_TYPE = "release";
 +  public static final String FLAVOR = "";
 +  public static final int VERSION_CODE = 1;
-+  public static final String VERSION_NAME = "1.0";
++  public static final String VERSION_NAME = "1.0.0";
 +}
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml b/node_modules/react-native-keyboard-area/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml
 new file mode 100644
-index 0000000..880e5c0
+index 0000000..a9bd912
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml
 @@ -0,0 +1,11 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-+    package="cl.hasaezs.rndominantcolor"
++    package="com.rn.keyboard"
 +    android:versionCode="1"
-+    android:versionName="1.0" >
++    android:versionName="1.0.0" >
 +
 +    <uses-sdk
-+        android:minSdkVersion="16"
++        android:minSdkVersion="19"
 +        android:targetSdkVersion="28" />
 +
 +</manifest>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json b/node_modules/react-native-keyboard-area/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json
 new file mode 100644
-index 0000000..109ef5e
+index 0000000..c8fc2ef
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json
 @@ -0,0 +1 @@
-+[{"outputType":{"type":"AAPT_FRIENDLY_MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"rn-dominant-color-debug.aar","fullName":"debug","baseName":"debug","dirName":""},"path":"AndroidManifest.xml","properties":{"packageId":"cl.hasaezs.rndominantcolor","split":""}}]
++[{"outputType":{"type":"AAPT_FRIENDLY_MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0.0","enabled":true,"outputFile":"react-native-keyboard-area-debug.aar","fullName":"debug","baseName":"debug","dirName":""},"path":"AndroidManifest.xml","properties":{"packageId":"com.rn.keyboard","split":""}}]
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml b/node_modules/react-native-keyboard-area/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml
 new file mode 100644
-index 0000000..880e5c0
+index 0000000..a9bd912
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml
 @@ -0,0 +1,11 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-+    package="cl.hasaezs.rndominantcolor"
++    package="com.rn.keyboard"
 +    android:versionCode="1"
-+    android:versionName="1.0" >
++    android:versionName="1.0.0" >
 +
 +    <uses-sdk
-+        android:minSdkVersion="16"
++        android:minSdkVersion="19"
 +        android:targetSdkVersion="28" />
 +
 +</manifest>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/output.json b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/output.json
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/output.json b/node_modules/react-native-keyboard-area/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/output.json
 new file mode 100644
-index 0000000..3196a41
+index 0000000..1a0cdfd
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/output.json
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/output.json
 @@ -0,0 +1 @@
-+[{"outputType":{"type":"AAPT_FRIENDLY_MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"rn-dominant-color-release.aar","fullName":"release","baseName":"release","dirName":""},"path":"AndroidManifest.xml","properties":{"packageId":"cl.hasaezs.rndominantcolor","split":""}}]
++[{"outputType":{"type":"AAPT_FRIENDLY_MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0.0","enabled":true,"outputFile":"react-native-keyboard-area-release.aar","fullName":"release","baseName":"release","dirName":""},"path":"AndroidManifest.xml","properties":{"packageId":"com.rn.keyboard","split":""}}]
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json b/node_modules/rn-dominant-color/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json b/node_modules/react-native-keyboard-area/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json
 new file mode 100644
 index 0000000..9e26dfe
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json
 @@ -0,0 +1 @@
 +{}
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/annotation_processor_list/release/annotationProcessors.json b/node_modules/rn-dominant-color/android/build/intermediates/annotation_processor_list/release/annotationProcessors.json
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/annotation_processor_list/release/annotationProcessors.json b/node_modules/react-native-keyboard-area/android/build/intermediates/annotation_processor_list/release/annotationProcessors.json
 new file mode 100644
 index 0000000..9e26dfe
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/annotation_processor_list/release/annotationProcessors.json
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/annotation_processor_list/release/annotationProcessors.json
 @@ -0,0 +1 @@
 +{}
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/compile_library_classes/debug/classes.jar b/node_modules/rn-dominant-color/android/build/intermediates/compile_library_classes/debug/classes.jar
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/compile_library_classes/debug/classes.jar b/node_modules/react-native-keyboard-area/android/build/intermediates/compile_library_classes/debug/classes.jar
 new file mode 100644
-index 0000000..3c85050
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/compile_library_classes/debug/classes.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/compile_library_classes/release/classes.jar b/node_modules/rn-dominant-color/android/build/intermediates/compile_library_classes/release/classes.jar
+index 0000000..3687687
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/intermediates/compile_library_classes/debug/classes.jar differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/compile_library_classes/release/classes.jar b/node_modules/react-native-keyboard-area/android/build/intermediates/compile_library_classes/release/classes.jar
 new file mode 100644
-index 0000000..76f5c1e
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/compile_library_classes/release/classes.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar b/node_modules/rn-dominant-color/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar
+index 0000000..29b597e
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/intermediates/compile_library_classes/release/classes.jar differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar b/node_modules/react-native-keyboard-area/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar
 new file mode 100644
-index 0000000..bd190ec
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/compile_only_not_namespaced_r_class_jar/release/R.jar b/node_modules/rn-dominant-color/android/build/intermediates/compile_only_not_namespaced_r_class_jar/release/R.jar
+index 0000000..37be3f3
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/compile_only_not_namespaced_r_class_jar/release/R.jar b/node_modules/react-native-keyboard-area/android/build/intermediates/compile_only_not_namespaced_r_class_jar/release/R.jar
 new file mode 100644
-index 0000000..bd190ec
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/compile_only_not_namespaced_r_class_jar/release/R.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/compile_symbol_list/debug/R.txt b/node_modules/rn-dominant-color/android/build/intermediates/compile_symbol_list/debug/R.txt
+index 0000000..37be3f3
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/intermediates/compile_only_not_namespaced_r_class_jar/release/R.jar differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/compile_symbol_list/debug/R.txt b/node_modules/react-native-keyboard-area/android/build/intermediates/compile_symbol_list/debug/R.txt
 new file mode 100644
-index 0000000..a8801e1
+index 0000000..dcf9894
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/compile_symbol_list/debug/R.txt
-@@ -0,0 +1,1789 @@
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/compile_symbol_list/debug/R.txt
+@@ -0,0 +1,1791 @@
 +int anim abc_fade_in 0x0
 +int anim abc_fade_out 0x0
 +int anim abc_grow_fade_in_from_bottom 0x0
@@ -856,6 +856,7 @@ index 0000000..a8801e1
 +int id image 0x0
 +int id info 0x0
 +int id italic 0x0
++int id keyResizeContainer 0x0
 +int id left 0x0
 +int id line1 0x0
 +int id line3 0x0
@@ -965,6 +966,7 @@ index 0000000..a8801e1
 +int layout abc_tooltip 0x0
 +int layout dev_loading_view 0x0
 +int layout fps_view 0x0
++int layout keyboard_popup 0x0
 +int layout notification_action 0x0
 +int layout notification_action_tombstone 0x0
 +int layout notification_template_custom_big 0x0
@@ -1960,12 +1962,12 @@ index 0000000..a8801e1
 +int styleable ViewStubCompat_android_inflatedId 1
 +int styleable ViewStubCompat_android_layout 2
 +int xml rn_dev_preferences 0x0
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/compile_symbol_list/release/R.txt b/node_modules/rn-dominant-color/android/build/intermediates/compile_symbol_list/release/R.txt
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/compile_symbol_list/release/R.txt b/node_modules/react-native-keyboard-area/android/build/intermediates/compile_symbol_list/release/R.txt
 new file mode 100644
-index 0000000..a8801e1
+index 0000000..dcf9894
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/compile_symbol_list/release/R.txt
-@@ -0,0 +1,1789 @@
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/compile_symbol_list/release/R.txt
+@@ -0,0 +1,1791 @@
 +int anim abc_fade_in 0x0
 +int anim abc_fade_out 0x0
 +int anim abc_grow_fade_in_from_bottom 0x0
@@ -2651,6 +2653,7 @@ index 0000000..a8801e1
 +int id image 0x0
 +int id info 0x0
 +int id italic 0x0
++int id keyResizeContainer 0x0
 +int id left 0x0
 +int id line1 0x0
 +int id line3 0x0
@@ -2760,6 +2763,7 @@ index 0000000..a8801e1
 +int layout abc_tooltip 0x0
 +int layout dev_loading_view 0x0
 +int layout fps_view 0x0
++int layout keyboard_popup 0x0
 +int layout notification_action 0x0
 +int layout notification_action_tombstone 0x0
 +int layout notification_template_custom_big 0x0
@@ -3755,277 +3759,295 @@ index 0000000..a8801e1
 +int styleable ViewStubCompat_android_inflatedId 1
 +int styleable ViewStubCompat_android_layout 2
 +int xml rn_dev_preferences 0x0
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state b/node_modules/rn-dominant-color/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/compiled_local_resources/debug/out/layout_keyboard_popup.xml.flat b/node_modules/react-native-keyboard-area/android/build/intermediates/compiled_local_resources/debug/out/layout_keyboard_popup.xml.flat
 new file mode 100644
-index 0000000..d26d8f0
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+index 0000000..20a3036
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/intermediates/compiled_local_resources/debug/out/layout_keyboard_popup.xml.flat differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/compiled_local_resources/release/out/layout_keyboard_popup.xml.flat b/node_modules/react-native-keyboard-area/android/build/intermediates/compiled_local_resources/release/out/layout_keyboard_popup.xml.flat
 new file mode 100644
-index 0000000..2f2722b
+index 0000000..e1ac7f9
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/intermediates/compiled_local_resources/release/out/layout_keyboard_popup.xml.flat differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state
+new file mode 100644
+index 0000000..a100083
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+new file mode 100644
+index 0000000..3ae933f
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/debug/jniLibs"/></dataSet></merger>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/debug/jniLibs"/></dataSet></merger>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
 new file mode 100644
-index 0000000..e0771ab
+index 0000000..f993218
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/debug/shaders"/></dataSet></merger>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/debug/shaders"/></dataSet></merger>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml
 new file mode 100644
-index 0000000..2452e85
+index 0000000..f285d74
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/jniLibs"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/release/jniLibs"/></dataSet></merger>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/jniLibs"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/release/jniLibs"/></dataSet></merger>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml
 new file mode 100644
-index 0000000..8e7d033
+index 0000000..51ccbd7
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/shaders"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/release/shaders"/></dataSet></merger>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/shaders"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/release/shaders"/></dataSet></merger>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugAssets/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugAssets/merger.xml
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/packageDebugAssets/merger.xml b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/packageDebugAssets/merger.xml
 new file mode 100644
-index 0000000..6eba3c5
+index 0000000..1084db4
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugAssets/merger.xml
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/packageDebugAssets/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/assets"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/intermediates/shader_assets/debug/out"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/debug/assets"/></dataSet></merger>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/assets"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/build/intermediates/shader_assets/debug/out"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/debug/assets"/></dataSet></merger>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties
 new file mode 100644
-index 0000000..9d75107
+index 0000000..c44b649
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties
-@@ -0,0 +1 @@
-+#Fri Oct 22 23:38:18 EDT 2021
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugResources/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugResources/merger.xml
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties
+@@ -0,0 +1,2 @@
++#Fri Oct 22 23:38:10 EDT 2021
++/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/res/layout/keyboard_popup.xml=/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/build/intermediates/packaged_res/debug/layout/keyboard_popup.xml
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/packageDebugResources/merger.xml b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/packageDebugResources/merger.xml
 new file mode 100644
-index 0000000..6526d1e
+index 0000000..283392a
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugResources/merger.xml
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/packageDebugResources/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/rs/debug"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/rs/debug"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/debug/res"/></dataSet><mergedItems/></merger>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/build/generated/res/rs/debug"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/res"><file name="keyboard_popup" path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/res/layout/keyboard_popup.xml" qualifiers="" type="layout"/></source><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/build/generated/res/rs/debug"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/debug/res"/></dataSet><mergedItems/></merger>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseAssets/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseAssets/merger.xml
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/packageReleaseAssets/merger.xml b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/packageReleaseAssets/merger.xml
 new file mode 100644
-index 0000000..b465a38
+index 0000000..cc51cdd
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseAssets/merger.xml
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/packageReleaseAssets/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/assets"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/intermediates/shader_assets/release/out"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/release/assets"/></dataSet></merger>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/assets"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/build/intermediates/shader_assets/release/out"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/release/assets"/></dataSet></merger>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties
 new file mode 100644
-index 0000000..3779ba3
+index 0000000..e5050e1
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties
-@@ -0,0 +1 @@
-+#Fri Oct 22 23:38:59 EDT 2021
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseResources/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseResources/merger.xml
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties
+@@ -0,0 +1,2 @@
++#Fri Oct 22 23:38:53 EDT 2021
++/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/res/layout/keyboard_popup.xml=/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/build/intermediates/packaged_res/release/layout/keyboard_popup.xml
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/packageReleaseResources/merger.xml b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/packageReleaseResources/merger.xml
 new file mode 100644
-index 0000000..e65cf80
+index 0000000..b3f4328
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseResources/merger.xml
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/packageReleaseResources/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/rs/release"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/resValues/release"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/rs/release"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/resValues/release"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="release$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/release/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="release" generated-set="release$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/release/res"/></dataSet><mergedItems/></merger>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/build/generated/res/rs/release"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/build/generated/res/resValues/release"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/res"><file name="keyboard_popup" path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/res/layout/keyboard_popup.xml" qualifiers="" type="layout"/></source><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/build/generated/res/rs/release"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/build/generated/res/resValues/release"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="release$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/release/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="release" generated-set="release$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/release/res"/></dataSet><mergedItems/></merger>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/release-mergeNativeLibs/merge-state b/node_modules/rn-dominant-color/android/build/intermediates/incremental/release-mergeNativeLibs/merge-state
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/release-mergeNativeLibs/merge-state b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/release-mergeNativeLibs/merge-state
 new file mode 100644
-index 0000000..5c1107d
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/incremental/release-mergeNativeLibs/merge-state differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/BuildConfig.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/BuildConfig.class
+index 0000000..1421e06
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/intermediates/incremental/release-mergeNativeLibs/merge-state differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/javac/debug/classes/com/rn/keyboard/BuildConfig.class b/node_modules/react-native-keyboard-area/android/build/intermediates/javac/debug/classes/com/rn/keyboard/BuildConfig.class
 new file mode 100644
-index 0000000..d5580d1
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/BuildConfig.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule$1.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule$1.class
+index 0000000..f8da1b9
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/intermediates/javac/debug/classes/com/rn/keyboard/BuildConfig.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/javac/release/classes/com/rn/keyboard/BuildConfig.class b/node_modules/react-native-keyboard-area/android/build/intermediates/javac/release/classes/com/rn/keyboard/BuildConfig.class
 new file mode 100644
-index 0000000..4f06109
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule$1.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule.class
+index 0000000..a9e0bb6
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/intermediates/javac/release/classes/com/rn/keyboard/BuildConfig.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/library_java_res/debug/res.jar b/node_modules/react-native-keyboard-area/android/build/intermediates/library_java_res/debug/res.jar
 new file mode 100644
-index 0000000..5ab8dbb
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorPackage.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorPackage.class
+index 0000000..9d947fa
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/intermediates/library_java_res/debug/res.jar differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/library_java_res/release/res.jar b/node_modules/react-native-keyboard-area/android/build/intermediates/library_java_res/release/res.jar
 new file mode 100644
-index 0000000..acf9542
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorPackage.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/BuildConfig.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/BuildConfig.class
+index 0000000..c3ba740
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/intermediates/library_java_res/release/res.jar differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/library_manifest/debug/AndroidManifest.xml b/node_modules/react-native-keyboard-area/android/build/intermediates/library_manifest/debug/AndroidManifest.xml
 new file mode 100644
-index 0000000..61cd0a9
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/BuildConfig.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule$1.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule$1.class
-new file mode 100644
-index 0000000..4f06109
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule$1.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule.class
-new file mode 100644
-index 0000000..5ab8dbb
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorPackage.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorPackage.class
-new file mode 100644
-index 0000000..acf9542
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorPackage.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/library_java_res/debug/res.jar b/node_modules/rn-dominant-color/android/build/intermediates/library_java_res/debug/res.jar
-new file mode 100644
-index 0000000..15cb0ec
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/library_java_res/debug/res.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/library_java_res/release/res.jar b/node_modules/rn-dominant-color/android/build/intermediates/library_java_res/release/res.jar
-new file mode 100644
-index 0000000..15cb0ec
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/library_java_res/release/res.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/library_manifest/debug/AndroidManifest.xml b/node_modules/rn-dominant-color/android/build/intermediates/library_manifest/debug/AndroidManifest.xml
-new file mode 100644
-index 0000000..880e5c0
+index 0000000..a9bd912
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/library_manifest/debug/AndroidManifest.xml
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/library_manifest/debug/AndroidManifest.xml
 @@ -0,0 +1,11 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-+    package="cl.hasaezs.rndominantcolor"
++    package="com.rn.keyboard"
 +    android:versionCode="1"
-+    android:versionName="1.0" >
++    android:versionName="1.0.0" >
 +
 +    <uses-sdk
-+        android:minSdkVersion="16"
++        android:minSdkVersion="19"
 +        android:targetSdkVersion="28" />
 +
 +</manifest>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/library_manifest/release/AndroidManifest.xml b/node_modules/rn-dominant-color/android/build/intermediates/library_manifest/release/AndroidManifest.xml
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/library_manifest/release/AndroidManifest.xml b/node_modules/react-native-keyboard-area/android/build/intermediates/library_manifest/release/AndroidManifest.xml
 new file mode 100644
-index 0000000..880e5c0
+index 0000000..a9bd912
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/library_manifest/release/AndroidManifest.xml
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/library_manifest/release/AndroidManifest.xml
 @@ -0,0 +1,11 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-+    package="cl.hasaezs.rndominantcolor"
++    package="com.rn.keyboard"
 +    android:versionCode="1"
-+    android:versionName="1.0" >
++    android:versionName="1.0.0" >
 +
 +    <uses-sdk
-+        android:minSdkVersion="16"
++        android:minSdkVersion="19"
 +        android:targetSdkVersion="28" />
 +
 +</manifest>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/local_only_symbol_list/debug/R-def.txt b/node_modules/rn-dominant-color/android/build/intermediates/local_only_symbol_list/debug/R-def.txt
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/local_only_symbol_list/debug/R-def.txt b/node_modules/react-native-keyboard-area/android/build/intermediates/local_only_symbol_list/debug/R-def.txt
 new file mode 100644
-index 0000000..78ac5b8
+index 0000000..97e5138
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/local_only_symbol_list/debug/R-def.txt
-@@ -0,0 +1,2 @@
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/local_only_symbol_list/debug/R-def.txt
+@@ -0,0 +1,4 @@
 +R_DEF: Internal format may change without notice
 +local
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/local_only_symbol_list/release/R-def.txt b/node_modules/rn-dominant-color/android/build/intermediates/local_only_symbol_list/release/R-def.txt
++id keyResizeContainer
++layout keyboard_popup
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/local_only_symbol_list/release/R-def.txt b/node_modules/react-native-keyboard-area/android/build/intermediates/local_only_symbol_list/release/R-def.txt
 new file mode 100644
-index 0000000..78ac5b8
+index 0000000..97e5138
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/local_only_symbol_list/release/R-def.txt
-@@ -0,0 +1,2 @@
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/local_only_symbol_list/release/R-def.txt
+@@ -0,0 +1,4 @@
 +R_DEF: Internal format may change without notice
 +local
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt b/node_modules/rn-dominant-color/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
++id keyResizeContainer
++layout keyboard_popup
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt b/node_modules/react-native-keyboard-area/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
 new file mode 100644
-index 0000000..0099900
+index 0000000..f71948f
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
 @@ -0,0 +1,13 @@
 +1<?xml version="1.0" encoding="utf-8"?>
 +2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-+3    package="cl.hasaezs.rndominantcolor"
++3    package="com.rn.keyboard"
 +4    android:versionCode="1"
-+5    android:versionName="1.0" >
++5    android:versionName="1.0.0" >
 +6
 +7    <uses-sdk
-+8        android:minSdkVersion="16"
-+8-->/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++8        android:minSdkVersion="19"
++8-->/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
 +9        android:targetSdkVersion="28" />
-+9-->/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++9-->/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
 +10
 +11</manifest>
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/manifest_merge_blame_file/release/manifest-merger-blame-release-report.txt b/node_modules/rn-dominant-color/android/build/intermediates/manifest_merge_blame_file/release/manifest-merger-blame-release-report.txt
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/manifest_merge_blame_file/release/manifest-merger-blame-release-report.txt b/node_modules/react-native-keyboard-area/android/build/intermediates/manifest_merge_blame_file/release/manifest-merger-blame-release-report.txt
 new file mode 100644
-index 0000000..0099900
+index 0000000..f71948f
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/manifest_merge_blame_file/release/manifest-merger-blame-release-report.txt
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/manifest_merge_blame_file/release/manifest-merger-blame-release-report.txt
 @@ -0,0 +1,13 @@
 +1<?xml version="1.0" encoding="utf-8"?>
 +2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-+3    package="cl.hasaezs.rndominantcolor"
++3    package="com.rn.keyboard"
 +4    android:versionCode="1"
-+5    android:versionName="1.0" >
++5    android:versionName="1.0.0" >
 +6
 +7    <uses-sdk
-+8        android:minSdkVersion="16"
-+8-->/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++8        android:minSdkVersion="19"
++8-->/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
 +9        android:targetSdkVersion="28" />
-+9-->/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++9-->/Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
 +10
 +11</manifest>
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/merged_manifests/debug/output.json b/node_modules/rn-dominant-color/android/build/intermediates/merged_manifests/debug/output.json
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/merged_manifests/debug/output.json b/node_modules/react-native-keyboard-area/android/build/intermediates/merged_manifests/debug/output.json
 new file mode 100644
-index 0000000..658ce9b
+index 0000000..563d6ba
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/merged_manifests/debug/output.json
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/merged_manifests/debug/output.json
 @@ -0,0 +1 @@
-+[{"outputType":{"type":"MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"rn-dominant-color-debug.aar","fullName":"debug","baseName":"debug","dirName":""},"path":"../../library_manifest/debug/AndroidManifest.xml","properties":{"packageId":"cl.hasaezs.rndominantcolor","split":""}}]
++[{"outputType":{"type":"MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0.0","enabled":true,"outputFile":"react-native-keyboard-area-debug.aar","fullName":"debug","baseName":"debug","dirName":""},"path":"../../library_manifest/debug/AndroidManifest.xml","properties":{"packageId":"com.rn.keyboard","split":""}}]
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/merged_manifests/release/output.json b/node_modules/rn-dominant-color/android/build/intermediates/merged_manifests/release/output.json
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/merged_manifests/release/output.json b/node_modules/react-native-keyboard-area/android/build/intermediates/merged_manifests/release/output.json
 new file mode 100644
-index 0000000..70d24f7
+index 0000000..7799301
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/merged_manifests/release/output.json
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/merged_manifests/release/output.json
 @@ -0,0 +1 @@
-+[{"outputType":{"type":"MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"rn-dominant-color-release.aar","fullName":"release","baseName":"release","dirName":""},"path":"../../library_manifest/release/AndroidManifest.xml","properties":{"packageId":"cl.hasaezs.rndominantcolor","split":""}}]
++[{"outputType":{"type":"MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0.0","enabled":true,"outputFile":"react-native-keyboard-area-release.aar","fullName":"release","baseName":"release","dirName":""},"path":"../../library_manifest/release/AndroidManifest.xml","properties":{"packageId":"com.rn.keyboard","split":""}}]
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/navigation_json/debug/navigation.json b/node_modules/rn-dominant-color/android/build/intermediates/navigation_json/debug/navigation.json
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/navigation_json/debug/navigation.json b/node_modules/react-native-keyboard-area/android/build/intermediates/navigation_json/debug/navigation.json
 new file mode 100644
 index 0000000..0637a08
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/navigation_json/debug/navigation.json
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/navigation_json/debug/navigation.json
 @@ -0,0 +1 @@
 +[]
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/navigation_json/release/navigation.json b/node_modules/rn-dominant-color/android/build/intermediates/navigation_json/release/navigation.json
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/navigation_json/release/navigation.json b/node_modules/react-native-keyboard-area/android/build/intermediates/navigation_json/release/navigation.json
 new file mode 100644
 index 0000000..0637a08
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/navigation_json/release/navigation.json
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/navigation_json/release/navigation.json
 @@ -0,0 +1 @@
 +[]
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/runtime_library_classes/debug/classes.jar b/node_modules/rn-dominant-color/android/build/intermediates/runtime_library_classes/debug/classes.jar
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/packaged_res/debug/layout/keyboard_popup.xml b/node_modules/react-native-keyboard-area/android/build/intermediates/packaged_res/debug/layout/keyboard_popup.xml
 new file mode 100644
-index 0000000..3f15a12
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/runtime_library_classes/debug/classes.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/runtime_library_classes/release/classes.jar b/node_modules/rn-dominant-color/android/build/intermediates/runtime_library_classes/release/classes.jar
-new file mode 100644
-index 0000000..39f0708
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/runtime_library_classes/release/classes.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt b/node_modules/rn-dominant-color/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt
-new file mode 100644
-index 0000000..e0e2ab5
+index 0000000..d0d172d
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt
-@@ -0,0 +1,1315 @@
-+cl.hasaezs.rndominantcolor
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/packaged_res/debug/layout/keyboard_popup.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    android:id="@+id/keyResizeContainer"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent">
++
++</FrameLayout>
+\ No newline at end of file
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/packaged_res/release/layout/keyboard_popup.xml b/node_modules/react-native-keyboard-area/android/build/intermediates/packaged_res/release/layout/keyboard_popup.xml
+new file mode 100644
+index 0000000..d0d172d
+--- /dev/null
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/packaged_res/release/layout/keyboard_popup.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    android:id="@+id/keyResizeContainer"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent">
++
++</FrameLayout>
+\ No newline at end of file
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/runtime_library_classes/debug/classes.jar b/node_modules/react-native-keyboard-area/android/build/intermediates/runtime_library_classes/debug/classes.jar
+new file mode 100644
+index 0000000..f63739c
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/intermediates/runtime_library_classes/debug/classes.jar differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/runtime_library_classes/release/classes.jar b/node_modules/react-native-keyboard-area/android/build/intermediates/runtime_library_classes/release/classes.jar
+new file mode 100644
+index 0000000..808bff7
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/intermediates/runtime_library_classes/release/classes.jar differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt b/node_modules/react-native-keyboard-area/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt
+new file mode 100644
+index 0000000..eeffb58
+--- /dev/null
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt
+@@ -0,0 +1,1317 @@
++com.rn.keyboard
 +anim abc_fade_in
 +anim abc_fade_out
 +anim abc_grow_fade_in_from_bottom
@@ -4711,6 +4733,7 @@ index 0000000..e0e2ab5
 +id image
 +id info
 +id italic
++id keyResizeContainer
 +id left
 +id line1
 +id line3
@@ -4820,6 +4843,7 @@ index 0000000..e0e2ab5
 +layout abc_tooltip
 +layout dev_loading_view
 +layout fps_view
++layout keyboard_popup
 +layout notification_action
 +layout notification_action_tombstone
 +layout notification_template_custom_big
@@ -5340,13 +5364,13 @@ index 0000000..e0e2ab5
 +styleable ViewBackgroundHelper android_background backgroundTint backgroundTintMode
 +styleable ViewStubCompat android_id android_inflatedId android_layout
 +xml rn_dev_preferences
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/symbol_list_with_package_name/release/package-aware-r.txt b/node_modules/rn-dominant-color/android/build/intermediates/symbol_list_with_package_name/release/package-aware-r.txt
+diff --git a/node_modules/react-native-keyboard-area/android/build/intermediates/symbol_list_with_package_name/release/package-aware-r.txt b/node_modules/react-native-keyboard-area/android/build/intermediates/symbol_list_with_package_name/release/package-aware-r.txt
 new file mode 100644
-index 0000000..e0e2ab5
+index 0000000..eeffb58
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/symbol_list_with_package_name/release/package-aware-r.txt
-@@ -0,0 +1,1315 @@
-+cl.hasaezs.rndominantcolor
++++ b/node_modules/react-native-keyboard-area/android/build/intermediates/symbol_list_with_package_name/release/package-aware-r.txt
+@@ -0,0 +1,1317 @@
++com.rn.keyboard
 +anim abc_fade_in
 +anim abc_fade_out
 +anim abc_grow_fade_in_from_bottom
@@ -6032,6 +6056,7 @@ index 0000000..e0e2ab5
 +id image
 +id info
 +id italic
++id keyResizeContainer
 +id left
 +id line1
 +id line3
@@ -6141,6 +6166,7 @@ index 0000000..e0e2ab5
 +layout abc_tooltip
 +layout dev_loading_view
 +layout fps_view
++layout keyboard_popup
 +layout notification_action
 +layout notification_action_tombstone
 +layout notification_template_custom_big
@@ -6661,152 +6687,843 @@ index 0000000..e0e2ab5
 +styleable ViewBackgroundHelper android_background backgroundTint backgroundTintMode
 +styleable ViewStubCompat android_id android_inflatedId android_layout
 +xml rn_dev_preferences
-diff --git a/node_modules/rn-dominant-color/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/rn-dominant-color/android/build/outputs/logs/manifest-merger-debug-report.txt
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/build-history.bin b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/build-history.bin
 new file mode 100644
-index 0000000..a06827b
+index 0000000..7655fe7
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/build-history.bin differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab
+new file mode 100644
+index 0000000..ac27a30
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab.keystream
+new file mode 100644
+index 0000000..8f0fb31
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab.keystream.len
+new file mode 100644
+index 0000000..3085af4
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab.len
+new file mode 100644
+index 0000000..a9f80ae
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab.values.at
+new file mode 100644
+index 0000000..52f9cd6
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab_i
+new file mode 100644
+index 0000000..e08a57f
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/inputs/source-to-output.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab
+new file mode 100644
+index 0000000..02ebd95
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream
+new file mode 100644
+index 0000000..314162f
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream.len
+new file mode 100644
+index 0000000..69ac1cb
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.len
+new file mode 100644
+index 0000000..ec8f944
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.values.at
+new file mode 100644
+index 0000000..b639a18
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i
+new file mode 100644
+index 0000000..0e979ac
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab
+new file mode 100644
+index 0000000..afefac1
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab.keystream
+new file mode 100644
+index 0000000..9fd5855
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab.keystream.len
+new file mode 100644
+index 0000000..a930d6b
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab.len
+new file mode 100644
+index 0000000..2a17e6e
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab.values.at
+new file mode 100644
+index 0000000..d5e463d
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab_i
+new file mode 100644
+index 0000000..66cd0de
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/constants.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab
+new file mode 100644
+index 0000000..4798c94
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream
+new file mode 100644
+index 0000000..1d580e0
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream.len
+new file mode 100644
+index 0000000..21d9b74
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.len
+new file mode 100644
+index 0000000..fd5292d
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.values.at
+new file mode 100644
+index 0000000..880f162
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i
+new file mode 100644
+index 0000000..58d5191
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab
+new file mode 100644
+index 0000000..69468a9
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab.keystream
+new file mode 100644
+index 0000000..19e7264
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab.keystream.len
+new file mode 100644
+index 0000000..4a3c61e
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab.len
+new file mode 100644
+index 0000000..9e27f73
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab.values.at
+new file mode 100644
+index 0000000..5b0054e
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab_i
+new file mode 100644
+index 0000000..b811599
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/proto.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab
+new file mode 100644
+index 0000000..16190c0
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream
+new file mode 100644
+index 0000000..19d8860
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream.len
+new file mode 100644
+index 0000000..3085af4
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.len
+new file mode 100644
+index 0000000..a9f80ae
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.values.at
+new file mode 100644
+index 0000000..31ad38d
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab_i
+new file mode 100644
+index 0000000..2bc5bdc
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab
+new file mode 100644
+index 0000000..21b4a3f
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab.keystream
+new file mode 100644
+index 0000000..49df238
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab.keystream.len
+new file mode 100644
+index 0000000..6309493
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab.len
+new file mode 100644
+index 0000000..a9f80ae
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab.values.at
+new file mode 100644
+index 0000000..6de45c8
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab_i
+new file mode 100644
+index 0000000..c1a8be1
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/subtypes.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab
+new file mode 100644
+index 0000000..6f084c3
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab.keystream
+new file mode 100644
+index 0000000..93301b2
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab.keystream.len
+new file mode 100644
+index 0000000..c32b442
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab.len
+new file mode 100644
+index 0000000..a9f80ae
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab.values.at
+new file mode 100644
+index 0000000..a0beef8
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab_i
+new file mode 100644
+index 0000000..dec28e7
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/jvm/kotlin/supertypes.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/counters.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/counters.tab
+new file mode 100644
+index 0000000..c393a51
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/outputs/logs/manifest-merger-debug-report.txt
++++ b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/counters.tab
+@@ -0,0 +1,2 @@
++3
++0
+\ No newline at end of file
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab
+new file mode 100644
+index 0000000..fa3c567
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab.keystream
+new file mode 100644
+index 0000000..19d8860
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab.keystream.len
+new file mode 100644
+index 0000000..3085af4
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab.len
+new file mode 100644
+index 0000000..a9f80ae
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab.values.at
+new file mode 100644
+index 0000000..9f383b5
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab_i
+new file mode 100644
+index 0000000..84f8f90
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/file-to-id.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab
+new file mode 100644
+index 0000000..2a36ecd
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab.keystream
+new file mode 100644
+index 0000000..636f34a
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab.keystream.len
+new file mode 100644
+index 0000000..29ce11c
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab.len
+new file mode 100644
+index 0000000..a9f80ae
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab.values.at
+new file mode 100644
+index 0000000..4fa440f
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab_i
+new file mode 100644
+index 0000000..e9905b3
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/id-to-file.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab
+new file mode 100644
+index 0000000..7c82391
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab.keystream
+new file mode 100644
+index 0000000..1a00511
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab.keystream.len
+new file mode 100644
+index 0000000..443d0a8
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab.len
+new file mode 100644
+index 0000000..82d60e4
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab.values.at
+new file mode 100644
+index 0000000..42795eb
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab_i
+new file mode 100644
+index 0000000..e90d318
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/caches-jvm/lookups/lookups.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/last-build.bin b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/last-build.bin
+new file mode 100644
+index 0000000..e7c2788
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileDebugKotlin/last-build.bin differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/build-history.bin b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/build-history.bin
+new file mode 100644
+index 0000000..4eb3b6a
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/build-history.bin differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab
+new file mode 100644
+index 0000000..3563030
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab.keystream
+new file mode 100644
+index 0000000..8f0fb31
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab.keystream.len
+new file mode 100644
+index 0000000..3085af4
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab.len
+new file mode 100644
+index 0000000..a9f80ae
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab.values.at
+new file mode 100644
+index 0000000..40c01b9
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab_i
+new file mode 100644
+index 0000000..e08a57f
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/inputs/source-to-output.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab
+new file mode 100644
+index 0000000..02ebd95
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream
+new file mode 100644
+index 0000000..314162f
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream.len
+new file mode 100644
+index 0000000..69ac1cb
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.len
+new file mode 100644
+index 0000000..ec8f944
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.values.at
+new file mode 100644
+index 0000000..b639a18
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i
+new file mode 100644
+index 0000000..0e979ac
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab
+new file mode 100644
+index 0000000..afefac1
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab.keystream
+new file mode 100644
+index 0000000..9fd5855
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab.keystream.len
+new file mode 100644
+index 0000000..a930d6b
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab.len
+new file mode 100644
+index 0000000..2a17e6e
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab.values.at
+new file mode 100644
+index 0000000..d5e463d
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab_i
+new file mode 100644
+index 0000000..66cd0de
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/constants.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab
+new file mode 100644
+index 0000000..4798c94
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream
+new file mode 100644
+index 0000000..1d580e0
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream.len
+new file mode 100644
+index 0000000..21d9b74
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.len
+new file mode 100644
+index 0000000..fd5292d
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.values.at
+new file mode 100644
+index 0000000..880f162
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i
+new file mode 100644
+index 0000000..58d5191
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab
+new file mode 100644
+index 0000000..c95afbd
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab.keystream
+new file mode 100644
+index 0000000..19e7264
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab.keystream.len
+new file mode 100644
+index 0000000..4a3c61e
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab.len
+new file mode 100644
+index 0000000..9e27f73
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab.values.at
+new file mode 100644
+index 0000000..4f2bd71
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab_i
+new file mode 100644
+index 0000000..b811599
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/proto.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab
+new file mode 100644
+index 0000000..16190c0
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream
+new file mode 100644
+index 0000000..19d8860
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream.len
+new file mode 100644
+index 0000000..3085af4
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.len
+new file mode 100644
+index 0000000..a9f80ae
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.values.at
+new file mode 100644
+index 0000000..31ad38d
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab_i
+new file mode 100644
+index 0000000..2bc5bdc
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/source-to-classes.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab
+new file mode 100644
+index 0000000..21b4a3f
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab.keystream
+new file mode 100644
+index 0000000..49df238
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab.keystream.len
+new file mode 100644
+index 0000000..6309493
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab.len
+new file mode 100644
+index 0000000..a9f80ae
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab.values.at
+new file mode 100644
+index 0000000..6de45c8
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab_i
+new file mode 100644
+index 0000000..c1a8be1
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/subtypes.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab
+new file mode 100644
+index 0000000..6f084c3
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab.keystream
+new file mode 100644
+index 0000000..93301b2
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab.keystream.len
+new file mode 100644
+index 0000000..c32b442
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab.len
+new file mode 100644
+index 0000000..a9f80ae
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab.values.at
+new file mode 100644
+index 0000000..a0beef8
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab_i
+new file mode 100644
+index 0000000..dec28e7
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/jvm/kotlin/supertypes.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/counters.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/counters.tab
+new file mode 100644
+index 0000000..c393a51
+--- /dev/null
++++ b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/counters.tab
+@@ -0,0 +1,2 @@
++3
++0
+\ No newline at end of file
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab
+new file mode 100644
+index 0000000..fa3c567
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab.keystream
+new file mode 100644
+index 0000000..19d8860
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab.keystream.len
+new file mode 100644
+index 0000000..3085af4
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab.len
+new file mode 100644
+index 0000000..a9f80ae
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab.values.at
+new file mode 100644
+index 0000000..9f383b5
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab_i
+new file mode 100644
+index 0000000..84f8f90
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/file-to-id.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab
+new file mode 100644
+index 0000000..2a36ecd
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab.keystream
+new file mode 100644
+index 0000000..636f34a
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab.keystream.len
+new file mode 100644
+index 0000000..29ce11c
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab.len
+new file mode 100644
+index 0000000..a9f80ae
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab.values.at
+new file mode 100644
+index 0000000..4fa440f
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab_i
+new file mode 100644
+index 0000000..e9905b3
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/id-to-file.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab
+new file mode 100644
+index 0000000..7c82391
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab.keystream b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab.keystream
+new file mode 100644
+index 0000000..1a00511
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab.keystream differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab.keystream.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab.keystream.len
+new file mode 100644
+index 0000000..443d0a8
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab.keystream.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab.len
+new file mode 100644
+index 0000000..82d60e4
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab.values.at b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab.values.at
+new file mode 100644
+index 0000000..42795eb
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab.values.at differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab_i b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab_i
+new file mode 100644
+index 0000000..e90d318
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab_i differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab_i.len b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab_i.len
+new file mode 100644
+index 0000000..131e265
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/caches-jvm/lookups/lookups.tab_i.len differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/last-build.bin b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/last-build.bin
+new file mode 100644
+index 0000000..0918d0e
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/kotlin/compileReleaseKotlin/last-build.bin differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/react-native-keyboard-area/android/build/outputs/logs/manifest-merger-debug-report.txt
+new file mode 100644
+index 0000000..810ea10
+--- /dev/null
++++ b/node_modules/react-native-keyboard-area/android/build/outputs/logs/manifest-merger-debug-report.txt
 @@ -0,0 +1,37 @@
 +-- Merging decision tree log ---
 +manifest
-+ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
++ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:1-5:12
 +	package
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:3:11-47
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:3:17-42
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
 +	android:versionName
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:1-5:12
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
 +	android:versionCode
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:1-5:12
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
 +	xmlns:android
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:11-69
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:11-69
 +uses-sdk
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
 +	android:targetSdkVersion
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
 +	android:minSdkVersion
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-diff --git a/node_modules/rn-dominant-color/android/build/outputs/logs/manifest-merger-release-report.txt b/node_modules/rn-dominant-color/android/build/outputs/logs/manifest-merger-release-report.txt
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
+diff --git a/node_modules/react-native-keyboard-area/android/build/outputs/logs/manifest-merger-release-report.txt b/node_modules/react-native-keyboard-area/android/build/outputs/logs/manifest-merger-release-report.txt
 new file mode 100644
-index 0000000..a06827b
+index 0000000..810ea10
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/outputs/logs/manifest-merger-release-report.txt
++++ b/node_modules/react-native-keyboard-area/android/build/outputs/logs/manifest-merger-release-report.txt
 @@ -0,0 +1,37 @@
 +-- Merging decision tree log ---
 +manifest
-+ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
++ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:1-5:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:1-5:12
 +	package
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:3:11-47
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:3:17-42
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
 +	android:versionName
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:1-5:12
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
 +	android:versionCode
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:1-5:12
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
 +	xmlns:android
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:11-69
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml:2:11-69
 +uses-sdk
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
 +	android:targetSdkVersion
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
 +	android:minSdkVersion
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-diff --git a/node_modules/rn-dominant-color/android/build/tmp/compileDebugJavaWithJavac/source-classes-mapping.txt b/node_modules/rn-dominant-color/android/build/tmp/compileDebugJavaWithJavac/source-classes-mapping.txt
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-keyboard-area/android/src/main/AndroidManifest.xml
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/compileDebugJavaWithJavac/source-classes-mapping.txt b/node_modules/react-native-keyboard-area/android/build/tmp/compileDebugJavaWithJavac/source-classes-mapping.txt
 new file mode 100644
-index 0000000..a5546b5
+index 0000000..cecd3e3
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/tmp/compileDebugJavaWithJavac/source-classes-mapping.txt
-@@ -0,0 +1,7 @@
-+cl/hasaezs/rndominantcolor/RNDominantColorModule.java
-+ cl.hasaezs.rndominantcolor.RNDominantColorModule
-+ cl.hasaezs.rndominantcolor.RNDominantColorModule$1
-+cl/hasaezs/rndominantcolor/RNDominantColorPackage.java
-+ cl.hasaezs.rndominantcolor.RNDominantColorPackage
-+cl/hasaezs/rndominantcolor/BuildConfig.java
-+ cl.hasaezs.rndominantcolor.BuildConfig
-diff --git a/node_modules/rn-dominant-color/android/build/tmp/compileReleaseJavaWithJavac/source-classes-mapping.txt b/node_modules/rn-dominant-color/android/build/tmp/compileReleaseJavaWithJavac/source-classes-mapping.txt
++++ b/node_modules/react-native-keyboard-area/android/build/tmp/compileDebugJavaWithJavac/source-classes-mapping.txt
+@@ -0,0 +1,2 @@
++com/rn/keyboard/BuildConfig.java
++ com.rn.keyboard.BuildConfig
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/compileReleaseJavaWithJavac/source-classes-mapping.txt b/node_modules/react-native-keyboard-area/android/build/tmp/compileReleaseJavaWithJavac/source-classes-mapping.txt
 new file mode 100644
-index 0000000..a5546b5
+index 0000000..cecd3e3
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/tmp/compileReleaseJavaWithJavac/source-classes-mapping.txt
-@@ -0,0 +1,7 @@
-+cl/hasaezs/rndominantcolor/RNDominantColorModule.java
-+ cl.hasaezs.rndominantcolor.RNDominantColorModule
-+ cl.hasaezs.rndominantcolor.RNDominantColorModule$1
-+cl/hasaezs/rndominantcolor/RNDominantColorPackage.java
-+ cl.hasaezs.rndominantcolor.RNDominantColorPackage
-+cl/hasaezs/rndominantcolor/BuildConfig.java
-+ cl.hasaezs.rndominantcolor.BuildConfig
-diff --git a/node_modules/rn-dominant-color/ios/RNDominantColor/RNDominantColor.swift b/node_modules/rn-dominant-color/ios/RNDominantColor/RNDominantColor.swift
-index 1e5eb94..644fb25 100644
---- a/node_modules/rn-dominant-color/ios/RNDominantColor/RNDominantColor.swift
-+++ b/node_modules/rn-dominant-color/ios/RNDominantColor/RNDominantColor.swift
-@@ -17,17 +17,22 @@ class RNDominantColor : NSObject {
-     }
-     
-     @objc func getColorFromURL(_ imageURL: NSString,callback successCallback: RCTResponseSenderBlock ) {
--        let url = URL(string: imageURL as String)
--        let data = try? Data(contentsOf: url!)
--        guard let colors = UIImage(data: data!)?.getColors() else {
--          return successCallback(["#00000000", "#00000000", "#00000000", "#00000000", "#00000000"])
-+        guard let url = URL(string: imageURL as String) else {
-+            return successCallback(["#00000000", "#00000000", "#00000000", "#00000000", "#00000000"])
-+        }
-+        if let data = try? Data(contentsOf: url) {
-+            guard let colors = UIImage(data: data)?.getColors() else {
-+              return successCallback(["#00000000", "#00000000", "#00000000", "#00000000", "#00000000"])
-+            }
-+            successCallback([
-+              colors.primaryHex,
-+              colors.secondaryHex,
-+              colors.backgroundHex,
-+              colors.detailHex
-+            ])
-+        } else {
-+            return successCallback(["#00000000", "#00000000", "#00000000", "#00000000", "#00000000"])
-         }
--        successCallback([
--          colors.primaryHex,
--          colors.secondaryHex,
--          colors.backgroundHex,
--          colors.detailHex
--        ])
-     }
-     
- }
++++ b/node_modules/react-native-keyboard-area/android/build/tmp/compileReleaseJavaWithJavac/source-classes-mapping.txt
+@@ -0,0 +1,2 @@
++com/rn/keyboard/BuildConfig.java
++ com.rn.keyboard.BuildConfig
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/META-INF/react-native-keyboard-area_debug.kotlin_module b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/META-INF/react-native-keyboard-area_debug.kotlin_module
+new file mode 100644
+index 0000000..2983af7
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/META-INF/react-native-keyboard-area_debug.kotlin_module differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/KeyboardInfo.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/KeyboardInfo.class
+new file mode 100644
+index 0000000..1741968
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/KeyboardInfo.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/KeyboardProvider$1.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/KeyboardProvider$1.class
+new file mode 100644
+index 0000000..c41a8c2
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/KeyboardProvider$1.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/KeyboardProvider$KeyboardListener.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/KeyboardProvider$KeyboardListener.class
+new file mode 100644
+index 0000000..2c2feca
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/KeyboardProvider$KeyboardListener.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/KeyboardProvider$getGlobalLayoutListener$1.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/KeyboardProvider$getGlobalLayoutListener$1.class
+new file mode 100644
+index 0000000..e9d0e01
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/KeyboardProvider$getGlobalLayoutListener$1.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/KeyboardProvider.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/KeyboardProvider.class
+new file mode 100644
+index 0000000..14bb5a6
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/KeyboardProvider.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/RNKeyboardModule$setWindowSoftInputMode$1.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/RNKeyboardModule$setWindowSoftInputMode$1.class
+new file mode 100644
+index 0000000..3aafbfb
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/RNKeyboardModule$setWindowSoftInputMode$1.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/RNKeyboardModule$startKeyboardListener$1$1.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/RNKeyboardModule$startKeyboardListener$1$1.class
+new file mode 100644
+index 0000000..7aeee02
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/RNKeyboardModule$startKeyboardListener$1$1.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/RNKeyboardModule$startKeyboardListener$1.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/RNKeyboardModule$startKeyboardListener$1.class
+new file mode 100644
+index 0000000..13bf7db
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/RNKeyboardModule$startKeyboardListener$1.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/RNKeyboardModule.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/RNKeyboardModule.class
+new file mode 100644
+index 0000000..698fbe6
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/RNKeyboardModule.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/RNKeyboardPackage.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/RNKeyboardPackage.class
+new file mode 100644
+index 0000000..e79b27f
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/debug/com/rn/keyboard/RNKeyboardPackage.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/META-INF/react-native-keyboard-area_release.kotlin_module b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/META-INF/react-native-keyboard-area_release.kotlin_module
+new file mode 100644
+index 0000000..2983af7
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/META-INF/react-native-keyboard-area_release.kotlin_module differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/KeyboardInfo.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/KeyboardInfo.class
+new file mode 100644
+index 0000000..5c16702
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/KeyboardInfo.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/KeyboardProvider$1.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/KeyboardProvider$1.class
+new file mode 100644
+index 0000000..c41a8c2
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/KeyboardProvider$1.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/KeyboardProvider$KeyboardListener.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/KeyboardProvider$KeyboardListener.class
+new file mode 100644
+index 0000000..7be0ce5
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/KeyboardProvider$KeyboardListener.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/KeyboardProvider$getGlobalLayoutListener$1.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/KeyboardProvider$getGlobalLayoutListener$1.class
+new file mode 100644
+index 0000000..e9d0e01
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/KeyboardProvider$getGlobalLayoutListener$1.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/KeyboardProvider.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/KeyboardProvider.class
+new file mode 100644
+index 0000000..2898fec
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/KeyboardProvider.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/RNKeyboardModule$setWindowSoftInputMode$1.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/RNKeyboardModule$setWindowSoftInputMode$1.class
+new file mode 100644
+index 0000000..3aafbfb
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/RNKeyboardModule$setWindowSoftInputMode$1.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/RNKeyboardModule$startKeyboardListener$1$1.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/RNKeyboardModule$startKeyboardListener$1$1.class
+new file mode 100644
+index 0000000..eb15cc6
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/RNKeyboardModule$startKeyboardListener$1$1.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/RNKeyboardModule$startKeyboardListener$1.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/RNKeyboardModule$startKeyboardListener$1.class
+new file mode 100644
+index 0000000..13bf7db
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/RNKeyboardModule$startKeyboardListener$1.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/RNKeyboardModule.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/RNKeyboardModule.class
+new file mode 100644
+index 0000000..08298ad
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/RNKeyboardModule.class differ
+diff --git a/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/RNKeyboardPackage.class b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/RNKeyboardPackage.class
+new file mode 100644
+index 0000000..bac6510
+Binary files /dev/null and b/node_modules/react-native-keyboard-area/android/build/tmp/kotlin-classes/release/com/rn/keyboard/RNKeyboardPackage.class differ

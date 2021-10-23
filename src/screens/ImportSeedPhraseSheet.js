@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { StatusBar } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import styled from 'styled-components';
 import ActivityIndicator from '../components/ActivityIndicator';

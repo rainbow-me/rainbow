@@ -1,176 +1,182 @@
-diff --git a/node_modules/rn-dominant-color/android/build.gradle b/node_modules/rn-dominant-color/android/build.gradle
-index 005f905..36ff5db 100644
---- a/node_modules/rn-dominant-color/android/build.gradle
-+++ b/node_modules/rn-dominant-color/android/build.gradle
-@@ -17,7 +17,7 @@ android {
-     buildToolsVersion "28.0.3"
+diff --git a/node_modules/react-native-splash-screen/android/build.gradle b/node_modules/react-native-splash-screen/android/build.gradle
+index 9591911..ab7a765 100644
+--- a/node_modules/react-native-splash-screen/android/build.gradle
++++ b/node_modules/react-native-splash-screen/android/build.gradle
+@@ -10,7 +10,7 @@ android {
+     buildToolsVersion rootProject.hasProperty('buildToolsVersion') ? rootProject.buildToolsVersion : DEFAULT_BUILD_TOOLS_VERSION
  
      defaultConfig {
 -        minSdkVersion 16
 +        minSdkVersion 21
-         targetSdkVersion 28
+         targetSdkVersion rootProject.hasProperty('targetSdkVersion') ? rootProject.targetSdkVersion : DEFAULT_TARGET_SDK_VERSION
          versionCode 1
          versionName "1.0"
-diff --git a/node_modules/rn-dominant-color/android/build/.transforms/62d5d3a28f34507ef764e4f82307486f.bin b/node_modules/rn-dominant-color/android/build/.transforms/62d5d3a28f34507ef764e4f82307486f.bin
+diff --git a/node_modules/react-native-splash-screen/android/build/.transforms/4f8f88f54fe819bfa6e4f0d76fa85b40.bin b/node_modules/react-native-splash-screen/android/build/.transforms/4f8f88f54fe819bfa6e4f0d76fa85b40.bin
 new file mode 100644
 index 0000000..0d259dd
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/.transforms/62d5d3a28f34507ef764e4f82307486f.bin
++++ b/node_modules/react-native-splash-screen/android/build/.transforms/4f8f88f54fe819bfa6e4f0d76fa85b40.bin
 @@ -0,0 +1 @@
 +o/classes
-diff --git a/node_modules/rn-dominant-color/android/build/.transforms/62d5d3a28f34507ef764e4f82307486f/classes/classes.dex b/node_modules/rn-dominant-color/android/build/.transforms/62d5d3a28f34507ef764e4f82307486f/classes/classes.dex
+diff --git a/node_modules/react-native-splash-screen/android/build/.transforms/4f8f88f54fe819bfa6e4f0d76fa85b40/classes/classes.dex b/node_modules/react-native-splash-screen/android/build/.transforms/4f8f88f54fe819bfa6e4f0d76fa85b40/classes/classes.dex
 new file mode 100644
-index 0000000..aabee91
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/.transforms/62d5d3a28f34507ef764e4f82307486f/classes/classes.dex differ
-diff --git a/node_modules/rn-dominant-color/android/build/.transforms/69320216adb4c698b774329ace27d289.bin b/node_modules/rn-dominant-color/android/build/.transforms/69320216adb4c698b774329ace27d289.bin
+index 0000000..c05275d
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/.transforms/4f8f88f54fe819bfa6e4f0d76fa85b40/classes/classes.dex differ
+diff --git a/node_modules/react-native-splash-screen/android/build/.transforms/6a1ec65631aa6149a44891500c6f59d5.bin b/node_modules/react-native-splash-screen/android/build/.transforms/6a1ec65631aa6149a44891500c6f59d5.bin
 new file mode 100644
 index 0000000..0d259dd
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/.transforms/69320216adb4c698b774329ace27d289.bin
++++ b/node_modules/react-native-splash-screen/android/build/.transforms/6a1ec65631aa6149a44891500c6f59d5.bin
 @@ -0,0 +1 @@
 +o/classes
-diff --git a/node_modules/rn-dominant-color/android/build/.transforms/69320216adb4c698b774329ace27d289/classes/classes.dex b/node_modules/rn-dominant-color/android/build/.transforms/69320216adb4c698b774329ace27d289/classes/classes.dex
+diff --git a/node_modules/react-native-splash-screen/android/build/.transforms/6a1ec65631aa6149a44891500c6f59d5/classes/classes.dex b/node_modules/react-native-splash-screen/android/build/.transforms/6a1ec65631aa6149a44891500c6f59d5/classes/classes.dex
 new file mode 100644
-index 0000000..57efa5c
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/.transforms/69320216adb4c698b774329ace27d289/classes/classes.dex differ
-diff --git a/node_modules/rn-dominant-color/android/build/generated/source/buildConfig/debug/cl/hasaezs/rndominantcolor/BuildConfig.java b/node_modules/rn-dominant-color/android/build/generated/source/buildConfig/debug/cl/hasaezs/rndominantcolor/BuildConfig.java
+index 0000000..b864de6
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/.transforms/6a1ec65631aa6149a44891500c6f59d5/classes/classes.dex differ
+diff --git a/node_modules/react-native-splash-screen/android/build/generated/source/buildConfig/debug/org/devio/rn/splashscreen/BuildConfig.java b/node_modules/react-native-splash-screen/android/build/generated/source/buildConfig/debug/org/devio/rn/splashscreen/BuildConfig.java
 new file mode 100644
-index 0000000..1a2e229
+index 0000000..9142120
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/generated/source/buildConfig/debug/cl/hasaezs/rndominantcolor/BuildConfig.java
++++ b/node_modules/react-native-splash-screen/android/build/generated/source/buildConfig/debug/org/devio/rn/splashscreen/BuildConfig.java
 @@ -0,0 +1,18 @@
 +/**
 + * Automatically generated file. DO NOT MODIFY
 + */
-+package cl.hasaezs.rndominantcolor;
++package org.devio.rn.splashscreen;
 +
 +public final class BuildConfig {
 +  public static final boolean DEBUG = Boolean.parseBoolean("true");
-+  public static final String LIBRARY_PACKAGE_NAME = "cl.hasaezs.rndominantcolor";
++  public static final String LIBRARY_PACKAGE_NAME = "org.devio.rn.splashscreen";
 +  /**
 +   * @deprecated APPLICATION_ID is misleading in libraries. For the library package name use LIBRARY_PACKAGE_NAME
 +   */
 +  @Deprecated
-+  public static final String APPLICATION_ID = "cl.hasaezs.rndominantcolor";
++  public static final String APPLICATION_ID = "org.devio.rn.splashscreen";
 +  public static final String BUILD_TYPE = "debug";
 +  public static final String FLAVOR = "";
 +  public static final int VERSION_CODE = 1;
 +  public static final String VERSION_NAME = "1.0";
 +}
-diff --git a/node_modules/rn-dominant-color/android/build/generated/source/buildConfig/release/cl/hasaezs/rndominantcolor/BuildConfig.java b/node_modules/rn-dominant-color/android/build/generated/source/buildConfig/release/cl/hasaezs/rndominantcolor/BuildConfig.java
+diff --git a/node_modules/react-native-splash-screen/android/build/generated/source/buildConfig/release/org/devio/rn/splashscreen/BuildConfig.java b/node_modules/react-native-splash-screen/android/build/generated/source/buildConfig/release/org/devio/rn/splashscreen/BuildConfig.java
 new file mode 100644
-index 0000000..5278a6c
+index 0000000..d9755d9
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/generated/source/buildConfig/release/cl/hasaezs/rndominantcolor/BuildConfig.java
++++ b/node_modules/react-native-splash-screen/android/build/generated/source/buildConfig/release/org/devio/rn/splashscreen/BuildConfig.java
 @@ -0,0 +1,18 @@
 +/**
 + * Automatically generated file. DO NOT MODIFY
 + */
-+package cl.hasaezs.rndominantcolor;
++package org.devio.rn.splashscreen;
 +
 +public final class BuildConfig {
 +  public static final boolean DEBUG = false;
-+  public static final String LIBRARY_PACKAGE_NAME = "cl.hasaezs.rndominantcolor";
++  public static final String LIBRARY_PACKAGE_NAME = "org.devio.rn.splashscreen";
 +  /**
 +   * @deprecated APPLICATION_ID is misleading in libraries. For the library package name use LIBRARY_PACKAGE_NAME
 +   */
 +  @Deprecated
-+  public static final String APPLICATION_ID = "cl.hasaezs.rndominantcolor";
++  public static final String APPLICATION_ID = "org.devio.rn.splashscreen";
 +  public static final String BUILD_TYPE = "release";
 +  public static final String FLAVOR = "";
 +  public static final int VERSION_CODE = 1;
 +  public static final String VERSION_NAME = "1.0";
 +}
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml b/node_modules/react-native-splash-screen/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml
 new file mode 100644
-index 0000000..880e5c0
+index 0000000..ce9b788
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml
-@@ -0,0 +1,11 @@
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/AndroidManifest.xml
+@@ -0,0 +1,14 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-+    package="cl.hasaezs.rndominantcolor"
++    package="org.devio.rn.splashscreen"
 +    android:versionCode="1"
 +    android:versionName="1.0" >
 +
 +    <uses-sdk
 +        android:minSdkVersion="16"
-+        android:targetSdkVersion="28" />
++        android:targetSdkVersion="29" />
++
++    <application android:label="@string/app_name" >
++    </application>
 +
 +</manifest>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json b/node_modules/react-native-splash-screen/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json
 new file mode 100644
-index 0000000..109ef5e
+index 0000000..b7caeb1
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/aapt_friendly_merged_manifests/debug/aapt/output.json
 @@ -0,0 +1 @@
-+[{"outputType":{"type":"AAPT_FRIENDLY_MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"rn-dominant-color-debug.aar","fullName":"debug","baseName":"debug","dirName":""},"path":"AndroidManifest.xml","properties":{"packageId":"cl.hasaezs.rndominantcolor","split":""}}]
++[{"outputType":{"type":"AAPT_FRIENDLY_MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"react-native-splash-screen-debug.aar","fullName":"debug","baseName":"debug","dirName":""},"path":"AndroidManifest.xml","properties":{"packageId":"org.devio.rn.splashscreen","split":""}}]
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml b/node_modules/react-native-splash-screen/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml
 new file mode 100644
-index 0000000..880e5c0
+index 0000000..ce9b788
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml
-@@ -0,0 +1,11 @@
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/AndroidManifest.xml
+@@ -0,0 +1,14 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-+    package="cl.hasaezs.rndominantcolor"
++    package="org.devio.rn.splashscreen"
 +    android:versionCode="1"
 +    android:versionName="1.0" >
 +
 +    <uses-sdk
 +        android:minSdkVersion="16"
-+        android:targetSdkVersion="28" />
++        android:targetSdkVersion="29" />
++
++    <application android:label="@string/app_name" >
++    </application>
 +
 +</manifest>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/output.json b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/output.json
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/output.json b/node_modules/react-native-splash-screen/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/output.json
 new file mode 100644
-index 0000000..3196a41
+index 0000000..35a6b3e
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/output.json
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/aapt_friendly_merged_manifests/release/aapt/output.json
 @@ -0,0 +1 @@
-+[{"outputType":{"type":"AAPT_FRIENDLY_MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"rn-dominant-color-release.aar","fullName":"release","baseName":"release","dirName":""},"path":"AndroidManifest.xml","properties":{"packageId":"cl.hasaezs.rndominantcolor","split":""}}]
++[{"outputType":{"type":"AAPT_FRIENDLY_MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"react-native-splash-screen-release.aar","fullName":"release","baseName":"release","dirName":""},"path":"AndroidManifest.xml","properties":{"packageId":"org.devio.rn.splashscreen","split":""}}]
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json b/node_modules/rn-dominant-color/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json b/node_modules/react-native-splash-screen/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json
 new file mode 100644
 index 0000000..9e26dfe
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/annotation_processor_list/debug/annotationProcessors.json
 @@ -0,0 +1 @@
 +{}
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/annotation_processor_list/release/annotationProcessors.json b/node_modules/rn-dominant-color/android/build/intermediates/annotation_processor_list/release/annotationProcessors.json
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/annotation_processor_list/release/annotationProcessors.json b/node_modules/react-native-splash-screen/android/build/intermediates/annotation_processor_list/release/annotationProcessors.json
 new file mode 100644
 index 0000000..9e26dfe
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/annotation_processor_list/release/annotationProcessors.json
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/annotation_processor_list/release/annotationProcessors.json
 @@ -0,0 +1 @@
 +{}
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/compile_library_classes/debug/classes.jar b/node_modules/rn-dominant-color/android/build/intermediates/compile_library_classes/debug/classes.jar
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/compile_library_classes/debug/classes.jar b/node_modules/react-native-splash-screen/android/build/intermediates/compile_library_classes/debug/classes.jar
 new file mode 100644
-index 0000000..3c85050
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/compile_library_classes/debug/classes.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/compile_library_classes/release/classes.jar b/node_modules/rn-dominant-color/android/build/intermediates/compile_library_classes/release/classes.jar
+index 0000000..152bb4b
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/compile_library_classes/debug/classes.jar differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/compile_library_classes/release/classes.jar b/node_modules/react-native-splash-screen/android/build/intermediates/compile_library_classes/release/classes.jar
 new file mode 100644
-index 0000000..76f5c1e
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/compile_library_classes/release/classes.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar b/node_modules/rn-dominant-color/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar
+index 0000000..3731375
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/compile_library_classes/release/classes.jar differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar b/node_modules/react-native-splash-screen/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar
 new file mode 100644
-index 0000000..bd190ec
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/compile_only_not_namespaced_r_class_jar/release/R.jar b/node_modules/rn-dominant-color/android/build/intermediates/compile_only_not_namespaced_r_class_jar/release/R.jar
+index 0000000..5b0d5e7
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/compile_only_not_namespaced_r_class_jar/debug/R.jar differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/compile_only_not_namespaced_r_class_jar/release/R.jar b/node_modules/react-native-splash-screen/android/build/intermediates/compile_only_not_namespaced_r_class_jar/release/R.jar
 new file mode 100644
-index 0000000..bd190ec
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/compile_only_not_namespaced_r_class_jar/release/R.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/compile_symbol_list/debug/R.txt b/node_modules/rn-dominant-color/android/build/intermediates/compile_symbol_list/debug/R.txt
+index 0000000..5b0d5e7
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/compile_only_not_namespaced_r_class_jar/release/R.jar differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/compile_symbol_list/debug/R.txt b/node_modules/react-native-splash-screen/android/build/intermediates/compile_symbol_list/debug/R.txt
 new file mode 100644
-index 0000000..a8801e1
+index 0000000..7487aeb
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/compile_symbol_list/debug/R.txt
-@@ -0,0 +1,1789 @@
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/compile_symbol_list/debug/R.txt
+@@ -0,0 +1,1794 @@
 +int anim abc_fade_in 0x0
 +int anim abc_fade_out 0x0
 +int anim abc_grow_fade_in_from_bottom 0x0
@@ -965,6 +971,7 @@ index 0000000..a8801e1
 +int layout abc_tooltip 0x0
 +int layout dev_loading_view 0x0
 +int layout fps_view 0x0
++int layout launch_screen 0x0
 +int layout notification_action 0x0
 +int layout notification_action_tombstone 0x0
 +int layout notification_template_custom_big 0x0
@@ -1018,6 +1025,7 @@ index 0000000..a8801e1
 +int string abc_shareactionprovider_share_with_application 0x0
 +int string abc_toolbar_collapse_description 0x0
 +int string alert_description 0x0
++int string app_name 0x0
 +int string button_description 0x0
 +int string catalyst_change_bundle_location 0x0
 +int string catalyst_copy_button 0x0
@@ -1269,6 +1277,9 @@ index 0000000..a8801e1
 +int style RtlUnderlay_Widget_AppCompat_ActionButton_Overflow 0x0
 +int style SpinnerDatePickerDialog 0x0
 +int style SpinnerDatePickerStyle 0x0
++int style SplashScreen_Fullscreen 0x0
++int style SplashScreen_SplashAnimation 0x0
++int style SplashScreen_SplashTheme 0x0
 +int style TextAppearance_AppCompat 0x0
 +int style TextAppearance_AppCompat_Body1 0x0
 +int style TextAppearance_AppCompat_Body2 0x0
@@ -1960,12 +1971,12 @@ index 0000000..a8801e1
 +int styleable ViewStubCompat_android_inflatedId 1
 +int styleable ViewStubCompat_android_layout 2
 +int xml rn_dev_preferences 0x0
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/compile_symbol_list/release/R.txt b/node_modules/rn-dominant-color/android/build/intermediates/compile_symbol_list/release/R.txt
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/compile_symbol_list/release/R.txt b/node_modules/react-native-splash-screen/android/build/intermediates/compile_symbol_list/release/R.txt
 new file mode 100644
-index 0000000..a8801e1
+index 0000000..7487aeb
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/compile_symbol_list/release/R.txt
-@@ -0,0 +1,1789 @@
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/compile_symbol_list/release/R.txt
+@@ -0,0 +1,1794 @@
 +int anim abc_fade_in 0x0
 +int anim abc_fade_out 0x0
 +int anim abc_grow_fade_in_from_bottom 0x0
@@ -2760,6 +2771,7 @@ index 0000000..a8801e1
 +int layout abc_tooltip 0x0
 +int layout dev_loading_view 0x0
 +int layout fps_view 0x0
++int layout launch_screen 0x0
 +int layout notification_action 0x0
 +int layout notification_action_tombstone 0x0
 +int layout notification_template_custom_big 0x0
@@ -2813,6 +2825,7 @@ index 0000000..a8801e1
 +int string abc_shareactionprovider_share_with_application 0x0
 +int string abc_toolbar_collapse_description 0x0
 +int string alert_description 0x0
++int string app_name 0x0
 +int string button_description 0x0
 +int string catalyst_change_bundle_location 0x0
 +int string catalyst_copy_button 0x0
@@ -3064,6 +3077,9 @@ index 0000000..a8801e1
 +int style RtlUnderlay_Widget_AppCompat_ActionButton_Overflow 0x0
 +int style SpinnerDatePickerDialog 0x0
 +int style SpinnerDatePickerStyle 0x0
++int style SplashScreen_Fullscreen 0x0
++int style SplashScreen_SplashAnimation 0x0
++int style SplashScreen_SplashTheme 0x0
 +int style TextAppearance_AppCompat 0x0
 +int style TextAppearance_AppCompat_Body1 0x0
 +int style TextAppearance_AppCompat_Body2 0x0
@@ -3755,277 +3771,427 @@ index 0000000..a8801e1
 +int styleable ViewStubCompat_android_inflatedId 1
 +int styleable ViewStubCompat_android_layout 2
 +int xml rn_dev_preferences 0x0
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state b/node_modules/rn-dominant-color/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state
 new file mode 100644
-index 0000000..d26d8f0
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+index 0000000..fa9d958
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/debug-mergeNativeLibs/merge-state differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
 new file mode 100644
-index 0000000..2f2722b
+index 0000000..bb0c376
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/debug/jniLibs"/></dataSet></merger>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/debug/jniLibs"/></dataSet></merger>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
 new file mode 100644
-index 0000000..e0771ab
+index 0000000..96fc556
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/debug/shaders"/></dataSet></merger>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/debug/shaders"/></dataSet></merger>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml
 new file mode 100644
-index 0000000..2452e85
+index 0000000..2e5da92
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/mergeReleaseJniLibFolders/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/jniLibs"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/release/jniLibs"/></dataSet></merger>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/jniLibs"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/release/jniLibs"/></dataSet></merger>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml
 new file mode 100644
-index 0000000..8e7d033
+index 0000000..01b0ca3
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/mergeReleaseShaders/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/shaders"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/release/shaders"/></dataSet></merger>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/shaders"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/release/shaders"/></dataSet></merger>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugAssets/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugAssets/merger.xml
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageDebugAssets/merger.xml b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageDebugAssets/merger.xml
 new file mode 100644
-index 0000000..6eba3c5
+index 0000000..e25d5b6
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugAssets/merger.xml
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageDebugAssets/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/assets"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/intermediates/shader_assets/debug/out"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/debug/assets"/></dataSet></merger>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/assets"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/build/intermediates/shader_assets/debug/out"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/debug/assets"/></dataSet></merger>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties
 new file mode 100644
-index 0000000..9d75107
+index 0000000..53e04ba
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageDebugResources/compile-file-map.properties
 @@ -0,0 +1 @@
-+#Fri Oct 22 23:38:18 EDT 2021
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugResources/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugResources/merger.xml
++#Fri Oct 22 23:38:17 EDT 2021
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageDebugResources/merged.dir/values/values.xml b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageDebugResources/merged.dir/values/values.xml
 new file mode 100644
-index 0000000..6526d1e
+index 0000000..30829e2
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageDebugResources/merger.xml
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageDebugResources/merged.dir/values/values.xml
+@@ -0,0 +1,16 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <item name="launch_screen" type="layout">
++        @layout/launch_screen
++    </item>
++    <string name="app_name">SplashScreen</string>
++    <style name="SplashScreen_Fullscreen" parent="SplashScreen_SplashTheme">
++        <item name="android:windowFullscreen">true</item>
++    </style>
++    <style name="SplashScreen_SplashAnimation">
++        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
++    </style>
++    <style name="SplashScreen_SplashTheme" parent="Theme.AppCompat.NoActionBar">
++        <item name="android:windowAnimationStyle">@style/SplashScreen_SplashAnimation</item>
++    </style>
++</resources>
+\ No newline at end of file
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageDebugResources/merger.xml b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageDebugResources/merger.xml
+new file mode 100644
+index 0000000..3620c5d
+--- /dev/null
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageDebugResources/merger.xml
+@@ -0,0 +1,10 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/build/generated/res/rs/debug"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/res"><file path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/res/values/styles.xml" qualifiers=""><style name="SplashScreen_SplashAnimation">
++        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
++    </style><style name="SplashScreen_SplashTheme" parent="Theme.AppCompat.NoActionBar">
++        <item name="android:windowAnimationStyle">@style/SplashScreen_SplashAnimation</item>
++    </style><style name="SplashScreen_Fullscreen" parent="SplashScreen_SplashTheme">
++        <item name="android:windowFullscreen">true</item>
++    </style></file><file path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/res/values/strings.xml" qualifiers=""><string name="app_name">SplashScreen</string></file><file path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/res/values/refs.xml" qualifiers=""><item name="launch_screen" type="layout">
++        @layout/launch_screen
++    </item></file></source><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/build/generated/res/rs/debug"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/debug/res"/></dataSet><mergedItems/></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageReleaseAssets/merger.xml b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageReleaseAssets/merger.xml
+new file mode 100644
+index 0000000..134bf52
+--- /dev/null
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageReleaseAssets/merger.xml
 @@ -0,0 +1,2 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/rs/debug"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/rs/debug"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/debug/res"/></dataSet><mergedItems/></merger>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/assets"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/build/intermediates/shader_assets/release/out"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/release/assets"/></dataSet></merger>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseAssets/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseAssets/merger.xml
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties
 new file mode 100644
-index 0000000..b465a38
+index 0000000..bab3ee5
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseAssets/merger.xml
-@@ -0,0 +1,2 @@
-+<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/assets"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/intermediates/shader_assets/release/out"/></dataSet><dataSet config="release" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/release/assets"/></dataSet></merger>
-\ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties
-new file mode 100644
-index 0000000..3779ba3
---- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageReleaseResources/compile-file-map.properties
 @@ -0,0 +1 @@
-+#Fri Oct 22 23:38:59 EDT 2021
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseResources/merger.xml b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseResources/merger.xml
++#Fri Oct 22 23:38:57 EDT 2021
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageReleaseResources/merged.dir/values/values.xml b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageReleaseResources/merged.dir/values/values.xml
 new file mode 100644
-index 0000000..e65cf80
+index 0000000..30829e2
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/incremental/packageReleaseResources/merger.xml
-@@ -0,0 +1,2 @@
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageReleaseResources/merged.dir/values/values.xml
+@@ -0,0 +1,16 @@
 +<?xml version="1.0" encoding="utf-8"?>
-+<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/rs/release"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/resValues/release"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/rs/release"/><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/build/generated/res/resValues/release"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="release$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/release/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="release" generated-set="release$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/release/res"/></dataSet><mergedItems/></merger>
++<resources>
++    <item name="launch_screen" type="layout">
++        @layout/launch_screen
++    </item>
++    <string name="app_name">SplashScreen</string>
++    <style name="SplashScreen_Fullscreen" parent="SplashScreen_SplashTheme">
++        <item name="android:windowFullscreen">true</item>
++    </style>
++    <style name="SplashScreen_SplashAnimation">
++        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
++    </style>
++    <style name="SplashScreen_SplashTheme" parent="Theme.AppCompat.NoActionBar">
++        <item name="android:windowAnimationStyle">@style/SplashScreen_SplashAnimation</item>
++    </style>
++</resources>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/incremental/release-mergeNativeLibs/merge-state b/node_modules/rn-dominant-color/android/build/intermediates/incremental/release-mergeNativeLibs/merge-state
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageReleaseResources/merger.xml b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageReleaseResources/merger.xml
 new file mode 100644
-index 0000000..5c1107d
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/incremental/release-mergeNativeLibs/merge-state differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/BuildConfig.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/BuildConfig.class
+index 0000000..0fb2c1b
+--- /dev/null
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/packageReleaseResources/merger.xml
+@@ -0,0 +1,10 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/res"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/build/generated/res/rs/release"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/build/generated/res/resValues/release"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/res"><file path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/res/values/styles.xml" qualifiers=""><style name="SplashScreen_SplashAnimation">
++        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
++    </style><style name="SplashScreen_SplashTheme" parent="Theme.AppCompat.NoActionBar">
++        <item name="android:windowAnimationStyle">@style/SplashScreen_SplashAnimation</item>
++    </style><style name="SplashScreen_Fullscreen" parent="SplashScreen_SplashTheme">
++        <item name="android:windowFullscreen">true</item>
++    </style></file><file path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/res/values/strings.xml" qualifiers=""><string name="app_name">SplashScreen</string></file><file path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/res/values/refs.xml" qualifiers=""><item name="launch_screen" type="layout">
++        @layout/launch_screen
++    </item></file></source><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/build/generated/res/rs/release"/><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/build/generated/res/resValues/release"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="release$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/release/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="release" generated-set="release$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/release/res"/></dataSet><mergedItems/></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/incremental/release-mergeNativeLibs/merge-state b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/release-mergeNativeLibs/merge-state
 new file mode 100644
-index 0000000..d5580d1
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/BuildConfig.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule$1.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule$1.class
+index 0000000..ccffff7
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/incremental/release-mergeNativeLibs/merge-state differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/javac/debug/classes/org/devio/rn/splashscreen/BuildConfig.class b/node_modules/react-native-splash-screen/android/build/intermediates/javac/debug/classes/org/devio/rn/splashscreen/BuildConfig.class
 new file mode 100644
-index 0000000..4f06109
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule$1.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule.class
+index 0000000..abe3a77
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/javac/debug/classes/org/devio/rn/splashscreen/BuildConfig.class differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/javac/debug/classes/org/devio/rn/splashscreen/SplashScreen$1.class b/node_modules/react-native-splash-screen/android/build/intermediates/javac/debug/classes/org/devio/rn/splashscreen/SplashScreen$1.class
 new file mode 100644
-index 0000000..5ab8dbb
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorPackage.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorPackage.class
+index 0000000..114ad56
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/javac/debug/classes/org/devio/rn/splashscreen/SplashScreen$1.class differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/javac/debug/classes/org/devio/rn/splashscreen/SplashScreen$2.class b/node_modules/react-native-splash-screen/android/build/intermediates/javac/debug/classes/org/devio/rn/splashscreen/SplashScreen$2.class
 new file mode 100644
-index 0000000..acf9542
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/debug/classes/cl/hasaezs/rndominantcolor/RNDominantColorPackage.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/BuildConfig.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/BuildConfig.class
+index 0000000..7bdce46
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/javac/debug/classes/org/devio/rn/splashscreen/SplashScreen$2.class differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/javac/debug/classes/org/devio/rn/splashscreen/SplashScreen.class b/node_modules/react-native-splash-screen/android/build/intermediates/javac/debug/classes/org/devio/rn/splashscreen/SplashScreen.class
 new file mode 100644
-index 0000000..61cd0a9
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/BuildConfig.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule$1.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule$1.class
+index 0000000..53665f5
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/javac/debug/classes/org/devio/rn/splashscreen/SplashScreen.class differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/javac/debug/classes/org/devio/rn/splashscreen/SplashScreenModule.class b/node_modules/react-native-splash-screen/android/build/intermediates/javac/debug/classes/org/devio/rn/splashscreen/SplashScreenModule.class
 new file mode 100644
-index 0000000..4f06109
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule$1.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule.class
+index 0000000..51cbb28
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/javac/debug/classes/org/devio/rn/splashscreen/SplashScreenModule.class differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/javac/debug/classes/org/devio/rn/splashscreen/SplashScreenReactPackage.class b/node_modules/react-native-splash-screen/android/build/intermediates/javac/debug/classes/org/devio/rn/splashscreen/SplashScreenReactPackage.class
 new file mode 100644
-index 0000000..5ab8dbb
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorModule.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorPackage.class b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorPackage.class
+index 0000000..00d2a3c
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/javac/debug/classes/org/devio/rn/splashscreen/SplashScreenReactPackage.class differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/javac/release/classes/org/devio/rn/splashscreen/BuildConfig.class b/node_modules/react-native-splash-screen/android/build/intermediates/javac/release/classes/org/devio/rn/splashscreen/BuildConfig.class
 new file mode 100644
-index 0000000..acf9542
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/javac/release/classes/cl/hasaezs/rndominantcolor/RNDominantColorPackage.class differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/library_java_res/debug/res.jar b/node_modules/rn-dominant-color/android/build/intermediates/library_java_res/debug/res.jar
+index 0000000..b9c0790
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/javac/release/classes/org/devio/rn/splashscreen/BuildConfig.class differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/javac/release/classes/org/devio/rn/splashscreen/SplashScreen$1.class b/node_modules/react-native-splash-screen/android/build/intermediates/javac/release/classes/org/devio/rn/splashscreen/SplashScreen$1.class
+new file mode 100644
+index 0000000..114ad56
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/javac/release/classes/org/devio/rn/splashscreen/SplashScreen$1.class differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/javac/release/classes/org/devio/rn/splashscreen/SplashScreen$2.class b/node_modules/react-native-splash-screen/android/build/intermediates/javac/release/classes/org/devio/rn/splashscreen/SplashScreen$2.class
+new file mode 100644
+index 0000000..7bdce46
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/javac/release/classes/org/devio/rn/splashscreen/SplashScreen$2.class differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/javac/release/classes/org/devio/rn/splashscreen/SplashScreen.class b/node_modules/react-native-splash-screen/android/build/intermediates/javac/release/classes/org/devio/rn/splashscreen/SplashScreen.class
+new file mode 100644
+index 0000000..53665f5
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/javac/release/classes/org/devio/rn/splashscreen/SplashScreen.class differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/javac/release/classes/org/devio/rn/splashscreen/SplashScreenModule.class b/node_modules/react-native-splash-screen/android/build/intermediates/javac/release/classes/org/devio/rn/splashscreen/SplashScreenModule.class
+new file mode 100644
+index 0000000..51cbb28
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/javac/release/classes/org/devio/rn/splashscreen/SplashScreenModule.class differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/javac/release/classes/org/devio/rn/splashscreen/SplashScreenReactPackage.class b/node_modules/react-native-splash-screen/android/build/intermediates/javac/release/classes/org/devio/rn/splashscreen/SplashScreenReactPackage.class
+new file mode 100644
+index 0000000..00d2a3c
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/javac/release/classes/org/devio/rn/splashscreen/SplashScreenReactPackage.class differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/library_java_res/debug/res.jar b/node_modules/react-native-splash-screen/android/build/intermediates/library_java_res/debug/res.jar
 new file mode 100644
 index 0000000..15cb0ec
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/library_java_res/debug/res.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/library_java_res/release/res.jar b/node_modules/rn-dominant-color/android/build/intermediates/library_java_res/release/res.jar
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/library_java_res/debug/res.jar differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/library_java_res/release/res.jar b/node_modules/react-native-splash-screen/android/build/intermediates/library_java_res/release/res.jar
 new file mode 100644
 index 0000000..15cb0ec
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/library_java_res/release/res.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/library_manifest/debug/AndroidManifest.xml b/node_modules/rn-dominant-color/android/build/intermediates/library_manifest/debug/AndroidManifest.xml
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/library_java_res/release/res.jar differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/library_manifest/debug/AndroidManifest.xml b/node_modules/react-native-splash-screen/android/build/intermediates/library_manifest/debug/AndroidManifest.xml
 new file mode 100644
-index 0000000..880e5c0
+index 0000000..ce9b788
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/library_manifest/debug/AndroidManifest.xml
-@@ -0,0 +1,11 @@
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/library_manifest/debug/AndroidManifest.xml
+@@ -0,0 +1,14 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-+    package="cl.hasaezs.rndominantcolor"
++    package="org.devio.rn.splashscreen"
 +    android:versionCode="1"
 +    android:versionName="1.0" >
 +
 +    <uses-sdk
 +        android:minSdkVersion="16"
-+        android:targetSdkVersion="28" />
++        android:targetSdkVersion="29" />
++
++    <application android:label="@string/app_name" >
++    </application>
 +
 +</manifest>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/library_manifest/release/AndroidManifest.xml b/node_modules/rn-dominant-color/android/build/intermediates/library_manifest/release/AndroidManifest.xml
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/library_manifest/release/AndroidManifest.xml b/node_modules/react-native-splash-screen/android/build/intermediates/library_manifest/release/AndroidManifest.xml
 new file mode 100644
-index 0000000..880e5c0
+index 0000000..ce9b788
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/library_manifest/release/AndroidManifest.xml
-@@ -0,0 +1,11 @@
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/library_manifest/release/AndroidManifest.xml
+@@ -0,0 +1,14 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-+    package="cl.hasaezs.rndominantcolor"
++    package="org.devio.rn.splashscreen"
 +    android:versionCode="1"
 +    android:versionName="1.0" >
 +
 +    <uses-sdk
 +        android:minSdkVersion="16"
-+        android:targetSdkVersion="28" />
++        android:targetSdkVersion="29" />
++
++    <application android:label="@string/app_name" >
++    </application>
 +
 +</manifest>
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/local_only_symbol_list/debug/R-def.txt b/node_modules/rn-dominant-color/android/build/intermediates/local_only_symbol_list/debug/R-def.txt
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/local_only_symbol_list/debug/R-def.txt b/node_modules/react-native-splash-screen/android/build/intermediates/local_only_symbol_list/debug/R-def.txt
 new file mode 100644
-index 0000000..78ac5b8
+index 0000000..685be3c
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/local_only_symbol_list/debug/R-def.txt
-@@ -0,0 +1,2 @@
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/local_only_symbol_list/debug/R-def.txt
+@@ -0,0 +1,7 @@
 +R_DEF: Internal format may change without notice
 +local
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/local_only_symbol_list/release/R-def.txt b/node_modules/rn-dominant-color/android/build/intermediates/local_only_symbol_list/release/R-def.txt
++layout launch_screen
++string app_name
++style SplashScreen_Fullscreen
++style SplashScreen_SplashAnimation
++style SplashScreen_SplashTheme
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/local_only_symbol_list/release/R-def.txt b/node_modules/react-native-splash-screen/android/build/intermediates/local_only_symbol_list/release/R-def.txt
 new file mode 100644
-index 0000000..78ac5b8
+index 0000000..685be3c
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/local_only_symbol_list/release/R-def.txt
-@@ -0,0 +1,2 @@
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/local_only_symbol_list/release/R-def.txt
+@@ -0,0 +1,7 @@
 +R_DEF: Internal format may change without notice
 +local
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt b/node_modules/rn-dominant-color/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
++layout launch_screen
++string app_name
++style SplashScreen_Fullscreen
++style SplashScreen_SplashAnimation
++style SplashScreen_SplashTheme
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt b/node_modules/react-native-splash-screen/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
 new file mode 100644
-index 0000000..0099900
+index 0000000..f24b39b
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
-@@ -0,0 +1,13 @@
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/manifest_merge_blame_file/debug/manifest-merger-blame-debug-report.txt
+@@ -0,0 +1,18 @@
 +1<?xml version="1.0" encoding="utf-8"?>
 +2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-+3    package="cl.hasaezs.rndominantcolor"
++3    package="org.devio.rn.splashscreen"
 +4    android:versionCode="1"
 +5    android:versionName="1.0" >
 +6
 +7    <uses-sdk
 +8        android:minSdkVersion="16"
-+8-->/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+9        android:targetSdkVersion="28" />
-+9-->/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++8-->/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++9        android:targetSdkVersion="29" />
++9-->/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
 +10
-+11</manifest>
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/manifest_merge_blame_file/release/manifest-merger-blame-release-report.txt b/node_modules/rn-dominant-color/android/build/intermediates/manifest_merge_blame_file/release/manifest-merger-blame-release-report.txt
++11    <application android:label="@string/app_name" >
++11-->/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:4:5-7:19
++11-->/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:5:9-41
++12    </application>
++13
++14</manifest>
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/manifest_merge_blame_file/release/manifest-merger-blame-release-report.txt b/node_modules/react-native-splash-screen/android/build/intermediates/manifest_merge_blame_file/release/manifest-merger-blame-release-report.txt
 new file mode 100644
-index 0000000..0099900
+index 0000000..f24b39b
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/manifest_merge_blame_file/release/manifest-merger-blame-release-report.txt
-@@ -0,0 +1,13 @@
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/manifest_merge_blame_file/release/manifest-merger-blame-release-report.txt
+@@ -0,0 +1,18 @@
 +1<?xml version="1.0" encoding="utf-8"?>
 +2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-+3    package="cl.hasaezs.rndominantcolor"
++3    package="org.devio.rn.splashscreen"
 +4    android:versionCode="1"
 +5    android:versionName="1.0" >
 +6
 +7    <uses-sdk
 +8        android:minSdkVersion="16"
-+8-->/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+9        android:targetSdkVersion="28" />
-+9-->/Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++8-->/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++9        android:targetSdkVersion="29" />
++9-->/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
 +10
-+11</manifest>
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/merged_manifests/debug/output.json b/node_modules/rn-dominant-color/android/build/intermediates/merged_manifests/debug/output.json
++11    <application android:label="@string/app_name" >
++11-->/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:4:5-7:19
++11-->/Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:5:9-41
++12    </application>
++13
++14</manifest>
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/merged_manifests/debug/output.json b/node_modules/react-native-splash-screen/android/build/intermediates/merged_manifests/debug/output.json
 new file mode 100644
-index 0000000..658ce9b
+index 0000000..83e152d
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/merged_manifests/debug/output.json
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/merged_manifests/debug/output.json
 @@ -0,0 +1 @@
-+[{"outputType":{"type":"MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"rn-dominant-color-debug.aar","fullName":"debug","baseName":"debug","dirName":""},"path":"../../library_manifest/debug/AndroidManifest.xml","properties":{"packageId":"cl.hasaezs.rndominantcolor","split":""}}]
++[{"outputType":{"type":"MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"react-native-splash-screen-debug.aar","fullName":"debug","baseName":"debug","dirName":""},"path":"../../library_manifest/debug/AndroidManifest.xml","properties":{"packageId":"org.devio.rn.splashscreen","split":""}}]
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/merged_manifests/release/output.json b/node_modules/rn-dominant-color/android/build/intermediates/merged_manifests/release/output.json
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/merged_manifests/release/output.json b/node_modules/react-native-splash-screen/android/build/intermediates/merged_manifests/release/output.json
 new file mode 100644
-index 0000000..70d24f7
+index 0000000..0109f11
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/merged_manifests/release/output.json
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/merged_manifests/release/output.json
 @@ -0,0 +1 @@
-+[{"outputType":{"type":"MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"rn-dominant-color-release.aar","fullName":"release","baseName":"release","dirName":""},"path":"../../library_manifest/release/AndroidManifest.xml","properties":{"packageId":"cl.hasaezs.rndominantcolor","split":""}}]
++[{"outputType":{"type":"MERGED_MANIFESTS"},"apkData":{"type":"MAIN","splits":[],"versionCode":1,"versionName":"1.0","enabled":true,"outputFile":"react-native-splash-screen-release.aar","fullName":"release","baseName":"release","dirName":""},"path":"../../library_manifest/release/AndroidManifest.xml","properties":{"packageId":"org.devio.rn.splashscreen","split":""}}]
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/navigation_json/debug/navigation.json b/node_modules/rn-dominant-color/android/build/intermediates/navigation_json/debug/navigation.json
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/navigation_json/debug/navigation.json b/node_modules/react-native-splash-screen/android/build/intermediates/navigation_json/debug/navigation.json
 new file mode 100644
 index 0000000..0637a08
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/navigation_json/debug/navigation.json
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/navigation_json/debug/navigation.json
 @@ -0,0 +1 @@
 +[]
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/navigation_json/release/navigation.json b/node_modules/rn-dominant-color/android/build/intermediates/navigation_json/release/navigation.json
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/navigation_json/release/navigation.json b/node_modules/react-native-splash-screen/android/build/intermediates/navigation_json/release/navigation.json
 new file mode 100644
 index 0000000..0637a08
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/navigation_json/release/navigation.json
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/navigation_json/release/navigation.json
 @@ -0,0 +1 @@
 +[]
 \ No newline at end of file
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/runtime_library_classes/debug/classes.jar b/node_modules/rn-dominant-color/android/build/intermediates/runtime_library_classes/debug/classes.jar
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/packaged_res/debug/values/values.xml b/node_modules/react-native-splash-screen/android/build/intermediates/packaged_res/debug/values/values.xml
 new file mode 100644
-index 0000000..3f15a12
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/runtime_library_classes/debug/classes.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/runtime_library_classes/release/classes.jar b/node_modules/rn-dominant-color/android/build/intermediates/runtime_library_classes/release/classes.jar
-new file mode 100644
-index 0000000..39f0708
-Binary files /dev/null and b/node_modules/rn-dominant-color/android/build/intermediates/runtime_library_classes/release/classes.jar differ
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt b/node_modules/rn-dominant-color/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt
-new file mode 100644
-index 0000000..e0e2ab5
+index 0000000..30829e2
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt
-@@ -0,0 +1,1315 @@
-+cl.hasaezs.rndominantcolor
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/packaged_res/debug/values/values.xml
+@@ -0,0 +1,16 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <item name="launch_screen" type="layout">
++        @layout/launch_screen
++    </item>
++    <string name="app_name">SplashScreen</string>
++    <style name="SplashScreen_Fullscreen" parent="SplashScreen_SplashTheme">
++        <item name="android:windowFullscreen">true</item>
++    </style>
++    <style name="SplashScreen_SplashAnimation">
++        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
++    </style>
++    <style name="SplashScreen_SplashTheme" parent="Theme.AppCompat.NoActionBar">
++        <item name="android:windowAnimationStyle">@style/SplashScreen_SplashAnimation</item>
++    </style>
++</resources>
+\ No newline at end of file
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/packaged_res/release/values/values.xml b/node_modules/react-native-splash-screen/android/build/intermediates/packaged_res/release/values/values.xml
+new file mode 100644
+index 0000000..30829e2
+--- /dev/null
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/packaged_res/release/values/values.xml
+@@ -0,0 +1,16 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources>
++    <item name="launch_screen" type="layout">
++        @layout/launch_screen
++    </item>
++    <string name="app_name">SplashScreen</string>
++    <style name="SplashScreen_Fullscreen" parent="SplashScreen_SplashTheme">
++        <item name="android:windowFullscreen">true</item>
++    </style>
++    <style name="SplashScreen_SplashAnimation">
++        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
++    </style>
++    <style name="SplashScreen_SplashTheme" parent="Theme.AppCompat.NoActionBar">
++        <item name="android:windowAnimationStyle">@style/SplashScreen_SplashAnimation</item>
++    </style>
++</resources>
+\ No newline at end of file
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/runtime_library_classes/debug/classes.jar b/node_modules/react-native-splash-screen/android/build/intermediates/runtime_library_classes/debug/classes.jar
+new file mode 100644
+index 0000000..f4f4317
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/runtime_library_classes/debug/classes.jar differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/runtime_library_classes/release/classes.jar b/node_modules/react-native-splash-screen/android/build/intermediates/runtime_library_classes/release/classes.jar
+new file mode 100644
+index 0000000..2ea9b22
+Binary files /dev/null and b/node_modules/react-native-splash-screen/android/build/intermediates/runtime_library_classes/release/classes.jar differ
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt b/node_modules/react-native-splash-screen/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt
+new file mode 100644
+index 0000000..f0a2034
+--- /dev/null
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/symbol_list_with_package_name/debug/package-aware-r.txt
+@@ -0,0 +1,1320 @@
++org.devio.rn.splashscreen
 +anim abc_fade_in
 +anim abc_fade_out
 +anim abc_grow_fade_in_from_bottom
@@ -4820,6 +4986,7 @@ index 0000000..e0e2ab5
 +layout abc_tooltip
 +layout dev_loading_view
 +layout fps_view
++layout launch_screen
 +layout notification_action
 +layout notification_action_tombstone
 +layout notification_template_custom_big
@@ -4873,6 +5040,7 @@ index 0000000..e0e2ab5
 +string abc_shareactionprovider_share_with_application
 +string abc_toolbar_collapse_description
 +string alert_description
++string app_name
 +string button_description
 +string catalyst_change_bundle_location
 +string catalyst_copy_button
@@ -5124,6 +5292,9 @@ index 0000000..e0e2ab5
 +style RtlUnderlay_Widget_AppCompat_ActionButton_Overflow
 +style SpinnerDatePickerDialog
 +style SpinnerDatePickerStyle
++style SplashScreen_Fullscreen
++style SplashScreen_SplashAnimation
++style SplashScreen_SplashTheme
 +style TextAppearance_AppCompat
 +style TextAppearance_AppCompat_Body1
 +style TextAppearance_AppCompat_Body2
@@ -5340,13 +5511,13 @@ index 0000000..e0e2ab5
 +styleable ViewBackgroundHelper android_background backgroundTint backgroundTintMode
 +styleable ViewStubCompat android_id android_inflatedId android_layout
 +xml rn_dev_preferences
-diff --git a/node_modules/rn-dominant-color/android/build/intermediates/symbol_list_with_package_name/release/package-aware-r.txt b/node_modules/rn-dominant-color/android/build/intermediates/symbol_list_with_package_name/release/package-aware-r.txt
+diff --git a/node_modules/react-native-splash-screen/android/build/intermediates/symbol_list_with_package_name/release/package-aware-r.txt b/node_modules/react-native-splash-screen/android/build/intermediates/symbol_list_with_package_name/release/package-aware-r.txt
 new file mode 100644
-index 0000000..e0e2ab5
+index 0000000..f0a2034
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/intermediates/symbol_list_with_package_name/release/package-aware-r.txt
-@@ -0,0 +1,1315 @@
-+cl.hasaezs.rndominantcolor
++++ b/node_modules/react-native-splash-screen/android/build/intermediates/symbol_list_with_package_name/release/package-aware-r.txt
+@@ -0,0 +1,1320 @@
++org.devio.rn.splashscreen
 +anim abc_fade_in
 +anim abc_fade_out
 +anim abc_grow_fade_in_from_bottom
@@ -6141,6 +6312,7 @@ index 0000000..e0e2ab5
 +layout abc_tooltip
 +layout dev_loading_view
 +layout fps_view
++layout launch_screen
 +layout notification_action
 +layout notification_action_tombstone
 +layout notification_template_custom_big
@@ -6194,6 +6366,7 @@ index 0000000..e0e2ab5
 +string abc_shareactionprovider_share_with_application
 +string abc_toolbar_collapse_description
 +string alert_description
++string app_name
 +string button_description
 +string catalyst_change_bundle_location
 +string catalyst_copy_button
@@ -6445,6 +6618,9 @@ index 0000000..e0e2ab5
 +style RtlUnderlay_Widget_AppCompat_ActionButton_Overflow
 +style SpinnerDatePickerDialog
 +style SpinnerDatePickerStyle
++style SplashScreen_Fullscreen
++style SplashScreen_SplashAnimation
++style SplashScreen_SplashTheme
 +style TextAppearance_AppCompat
 +style TextAppearance_AppCompat_Body1
 +style TextAppearance_AppCompat_Body2
@@ -6661,152 +6837,129 @@ index 0000000..e0e2ab5
 +styleable ViewBackgroundHelper android_background backgroundTint backgroundTintMode
 +styleable ViewStubCompat android_id android_inflatedId android_layout
 +xml rn_dev_preferences
-diff --git a/node_modules/rn-dominant-color/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/rn-dominant-color/android/build/outputs/logs/manifest-merger-debug-report.txt
+diff --git a/node_modules/react-native-splash-screen/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/react-native-splash-screen/android/build/outputs/logs/manifest-merger-debug-report.txt
 new file mode 100644
-index 0000000..a06827b
+index 0000000..45dd605
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/outputs/logs/manifest-merger-debug-report.txt
-@@ -0,0 +1,37 @@
++++ b/node_modules/react-native-splash-screen/android/build/outputs/logs/manifest-merger-debug-report.txt
+@@ -0,0 +1,41 @@
 +-- Merging decision tree log ---
 +manifest
-+ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
++ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:1-9:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:1-9:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:1-9:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:1-9:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:1-9:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:1-9:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:1-9:12
 +	package
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:3:11-47
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:2:5-40
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
 +	android:versionName
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:1-9:12
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
 +	android:versionCode
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:1-9:12
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
 +	xmlns:android
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:11-69
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:11-69
++application
++ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:4:5-7:19
++	android:label
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:5:9-41
 +uses-sdk
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
 +	android:targetSdkVersion
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
 +	android:minSdkVersion
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-diff --git a/node_modules/rn-dominant-color/android/build/outputs/logs/manifest-merger-release-report.txt b/node_modules/rn-dominant-color/android/build/outputs/logs/manifest-merger-release-report.txt
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
+diff --git a/node_modules/react-native-splash-screen/android/build/outputs/logs/manifest-merger-release-report.txt b/node_modules/react-native-splash-screen/android/build/outputs/logs/manifest-merger-release-report.txt
 new file mode 100644
-index 0000000..a06827b
+index 0000000..45dd605
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/outputs/logs/manifest-merger-release-report.txt
-@@ -0,0 +1,37 @@
++++ b/node_modules/react-native-splash-screen/android/build/outputs/logs/manifest-merger-release-report.txt
+@@ -0,0 +1,41 @@
 +-- Merging decision tree log ---
 +manifest
-+ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
++ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:1-9:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:1-9:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:1-9:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:1-9:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:1-9:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:1-9:12
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:1-9:12
 +	package
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:3:11-47
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:2:5-40
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
 +	android:versionName
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:1-9:12
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
 +	android:versionCode
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:1-5:12
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:1-9:12
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
 +	xmlns:android
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml:2:11-69
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:1:11-69
++application
++ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:4:5-7:19
++	android:label
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml:5:9-41
 +uses-sdk
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
 +	android:targetSdkVersion
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
 +	android:minSdkVersion
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		ADDED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-+		INJECTED from /Users/bruno/repos/rainbow/node_modules/rn-dominant-color/android/src/main/AndroidManifest.xml
-diff --git a/node_modules/rn-dominant-color/android/build/tmp/compileDebugJavaWithJavac/source-classes-mapping.txt b/node_modules/rn-dominant-color/android/build/tmp/compileDebugJavaWithJavac/source-classes-mapping.txt
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++		ADDED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
++		INJECTED from /Users/bruno/repos/rainbow/node_modules/react-native-splash-screen/android/src/main/AndroidManifest.xml
+diff --git a/node_modules/react-native-splash-screen/android/build/tmp/compileDebugJavaWithJavac/source-classes-mapping.txt b/node_modules/react-native-splash-screen/android/build/tmp/compileDebugJavaWithJavac/source-classes-mapping.txt
 new file mode 100644
-index 0000000..a5546b5
+index 0000000..f8296c6
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/tmp/compileDebugJavaWithJavac/source-classes-mapping.txt
-@@ -0,0 +1,7 @@
-+cl/hasaezs/rndominantcolor/RNDominantColorModule.java
-+ cl.hasaezs.rndominantcolor.RNDominantColorModule
-+ cl.hasaezs.rndominantcolor.RNDominantColorModule$1
-+cl/hasaezs/rndominantcolor/RNDominantColorPackage.java
-+ cl.hasaezs.rndominantcolor.RNDominantColorPackage
-+cl/hasaezs/rndominantcolor/BuildConfig.java
-+ cl.hasaezs.rndominantcolor.BuildConfig
-diff --git a/node_modules/rn-dominant-color/android/build/tmp/compileReleaseJavaWithJavac/source-classes-mapping.txt b/node_modules/rn-dominant-color/android/build/tmp/compileReleaseJavaWithJavac/source-classes-mapping.txt
++++ b/node_modules/react-native-splash-screen/android/build/tmp/compileDebugJavaWithJavac/source-classes-mapping.txt
+@@ -0,0 +1,10 @@
++org/devio/rn/splashscreen/SplashScreenModule.java
++ org.devio.rn.splashscreen.SplashScreenModule
++org/devio/rn/splashscreen/SplashScreen.java
++ org.devio.rn.splashscreen.SplashScreen
++ org.devio.rn.splashscreen.SplashScreen$1
++ org.devio.rn.splashscreen.SplashScreen$2
++org/devio/rn/splashscreen/BuildConfig.java
++ org.devio.rn.splashscreen.BuildConfig
++org/devio/rn/splashscreen/SplashScreenReactPackage.java
++ org.devio.rn.splashscreen.SplashScreenReactPackage
+diff --git a/node_modules/react-native-splash-screen/android/build/tmp/compileReleaseJavaWithJavac/source-classes-mapping.txt b/node_modules/react-native-splash-screen/android/build/tmp/compileReleaseJavaWithJavac/source-classes-mapping.txt
 new file mode 100644
-index 0000000..a5546b5
+index 0000000..f8296c6
 --- /dev/null
-+++ b/node_modules/rn-dominant-color/android/build/tmp/compileReleaseJavaWithJavac/source-classes-mapping.txt
-@@ -0,0 +1,7 @@
-+cl/hasaezs/rndominantcolor/RNDominantColorModule.java
-+ cl.hasaezs.rndominantcolor.RNDominantColorModule
-+ cl.hasaezs.rndominantcolor.RNDominantColorModule$1
-+cl/hasaezs/rndominantcolor/RNDominantColorPackage.java
-+ cl.hasaezs.rndominantcolor.RNDominantColorPackage
-+cl/hasaezs/rndominantcolor/BuildConfig.java
-+ cl.hasaezs.rndominantcolor.BuildConfig
-diff --git a/node_modules/rn-dominant-color/ios/RNDominantColor/RNDominantColor.swift b/node_modules/rn-dominant-color/ios/RNDominantColor/RNDominantColor.swift
-index 1e5eb94..644fb25 100644
---- a/node_modules/rn-dominant-color/ios/RNDominantColor/RNDominantColor.swift
-+++ b/node_modules/rn-dominant-color/ios/RNDominantColor/RNDominantColor.swift
-@@ -17,17 +17,22 @@ class RNDominantColor : NSObject {
-     }
-     
-     @objc func getColorFromURL(_ imageURL: NSString,callback successCallback: RCTResponseSenderBlock ) {
--        let url = URL(string: imageURL as String)
--        let data = try? Data(contentsOf: url!)
--        guard let colors = UIImage(data: data!)?.getColors() else {
--          return successCallback(["#00000000", "#00000000", "#00000000", "#00000000", "#00000000"])
-+        guard let url = URL(string: imageURL as String) else {
-+            return successCallback(["#00000000", "#00000000", "#00000000", "#00000000", "#00000000"])
-+        }
-+        if let data = try? Data(contentsOf: url) {
-+            guard let colors = UIImage(data: data)?.getColors() else {
-+              return successCallback(["#00000000", "#00000000", "#00000000", "#00000000", "#00000000"])
-+            }
-+            successCallback([
-+              colors.primaryHex,
-+              colors.secondaryHex,
-+              colors.backgroundHex,
-+              colors.detailHex
-+            ])
-+        } else {
-+            return successCallback(["#00000000", "#00000000", "#00000000", "#00000000", "#00000000"])
-         }
--        successCallback([
--          colors.primaryHex,
--          colors.secondaryHex,
--          colors.backgroundHex,
--          colors.detailHex
--        ])
-     }
-     
- }
++++ b/node_modules/react-native-splash-screen/android/build/tmp/compileReleaseJavaWithJavac/source-classes-mapping.txt
+@@ -0,0 +1,10 @@
++org/devio/rn/splashscreen/SplashScreenModule.java
++ org.devio.rn.splashscreen.SplashScreenModule
++org/devio/rn/splashscreen/SplashScreen.java
++ org.devio.rn.splashscreen.SplashScreen
++ org.devio.rn.splashscreen.SplashScreen$1
++ org.devio.rn.splashscreen.SplashScreen$2
++org/devio/rn/splashscreen/BuildConfig.java
++ org.devio.rn.splashscreen.BuildConfig
++org/devio/rn/splashscreen/SplashScreenReactPackage.java
++ org.devio.rn.splashscreen.SplashScreenReactPackage
