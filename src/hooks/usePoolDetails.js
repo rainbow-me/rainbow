@@ -8,7 +8,7 @@ import {
 } from '../apollo/queries';
 import useAccountSettings from './useAccountSettings';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
-import { get2DayPercentChange } from './useUniswapPools';
+import { getOneDayVolume } from './useUniswapPools';
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
 import { setPoolsDetails } from '@rainbow-me/redux/uniswapLiquidity';
 import { ethereumUtils, getBlocksFromTimestamps } from '@rainbow-me/utils';
@@ -16,12 +16,6 @@ import { ethereumUtils, getBlocksFromTimestamps } from '@rainbow-me/utils';
 function cutIfOver10000(value) {
   return value > 10000 ? Math.round(value) : value;
 }
-
-const getTimestampsForChanges = () => {
-  const t1 = getUnixTime(startOfMinute(sub(Date.now(), { days: 1 })));
-  const t2 = getUnixTime(startOfMinute(sub(Date.now(), { days: 2 })));
-  return [t1, t2];
-};
 
 async function fetchPoolDetails(address, dispatch) {
   const result = await uniswapClient.query({
@@ -39,36 +33,23 @@ async function fetchPoolDetails(address, dispatch) {
     const partialData = {
       liquidity: Number(Number(pair.reserveUSD).toFixed(2)),
       oneDayVolumeUSD: parseFloat(pair.volumeUSD),
-      partial: true,
     };
-    const [t1, t2] = getTimestampsForChanges();
-    const [{ number: b1 }, { number: b2 }] = await getBlocksFromTimestamps([
-      t1,
-      t2,
-    ]);
+    const t1 = getUnixTime(startOfMinute(sub(Date.now(), { days: 1 })));
+    const [{ number: b1 }] = await getBlocksFromTimestamps([t1]);
 
     const oneDayResult = await uniswapClient.query({
       fetchPolicy: 'cache-first',
       query: UNISWAP_PAIR_DATA_QUERY_VOLUME(address, b1),
     });
-    const twoDayResult = await uniswapClient.query({
-      fetchPolicy: 'cache-first',
-      query: UNISWAP_PAIR_DATA_QUERY_VOLUME(address, b2),
-    });
 
     const oneDayHistory = oneDayResult?.data?.pairs[0];
-    const twoDayHistory = twoDayResult?.data?.pairs[0];
 
-    const [oneDayVolumeUSD] = get2DayPercentChange(
-      pair.volumeUSD,
-      oneDayHistory?.volumeUSD ? oneDayHistory.volumeUSD : 0,
-      twoDayHistory?.volumeUSD ? twoDayHistory.volumeUSD : 0
-    );
-
-    partialData.oneDayVolumeUSD = oneDayVolumeUSD;
-
-    if (!oneDayHistory || !twoDayHistory) {
-      partialData.oneDayVolumeUSD = parseFloat(pair.volumeUSD);
+    if (oneDayHistory) {
+      const oneDayVolumeUSD = getOneDayVolume(
+        pair.volumeUSD,
+        oneDayHistory?.volumeUSD ? oneDayHistory.volumeUSD : 0
+      );
+      partialData.oneDayVolumeUSD = oneDayVolumeUSD;
     }
 
     const priceOfEther = ethereumUtils.getEthPriceUnit();

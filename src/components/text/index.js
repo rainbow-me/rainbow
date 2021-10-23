@@ -17,3 +17,4 @@ export { default as Smallcaps } from './Smallcaps';
 export { default as Text } from './Text';
 export { default as TruncatedAddress } from './TruncatedAddress';
 export { default as TruncatedText } from './TruncatedText';
+export { default as TruncatedENS } from './TruncatedENS';

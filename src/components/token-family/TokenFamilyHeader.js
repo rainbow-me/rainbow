@@ -1,6 +1,6 @@
 import React from 'react';
-import Animated, { Easing } from 'react-native-reanimated';
-import { toRad, useTimingTransition } from 'react-native-redash';
+import Animated, { EasingNode } from 'react-native-reanimated';
+import { toRad, useTimingTransition } from 'react-native-redash/src/v1';
 import styled from 'styled-components';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { ButtonPressAnimation, interpolate } from '../animations';
@@ -19,7 +19,7 @@ const Content = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
 })`
-  ${({ isCoinRow }) => padding(0, isCoinRow ? 16 : 19)};
+  ${({ isCoinRow }) => padding(0, isCoinRow ? 19 : 19)};
   background-color: ${({ theme: { colors } }) => colors.white};
   height: ${TokenFamilyHeaderHeight};
   width: 100%;
@@ -51,11 +51,11 @@ const TitleText = styled(TruncatedText).attrs({
   letterSpacing: 'roundedMedium',
   lineHeight: 'normal',
   size: 'large',
-  weight: 'bold',
+  weight: 'heavy',
 })`
   flex: 1;
   margin-bottom: 1;
-  padding-left: ${({ isShowcase }) => (!isShowcase ? 9 : 0)};
+  padding-left: ${({ isShowcase }) => (isShowcase ? 1 : 10)};
   padding-right: 9;
 `;
 
@@ -71,7 +71,7 @@ const TokenFamilyHeader = ({
 }) => {
   const animation = useTimingTransition(!isOpen, {
     duration: TokenFamilyHeaderAnimationDuration,
-    easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    easing: EasingNode.bezier(0.25, 0.1, 0.25, 1),
   });
 
   const rotate = toRad(
@@ -101,7 +101,7 @@ const TokenFamilyHeader = ({
           )}
         </RowWithMargins>
         <TitleText isShowcase={title === 'Showcase'}>{title}</TitleText>
-        <RowWithMargins align="center" margin={13}>
+        <RowWithMargins align="center" margin={10}>
           <Animated.View style={{ opacity: animation }}>
             <ChildrenAmountText>{childrenAmount}</ChildrenAmountText>
           </Animated.View>

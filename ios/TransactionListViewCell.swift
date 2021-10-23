@@ -44,10 +44,18 @@ class TransactionListViewCell: TransactionListBaseCell {
   @IBOutlet weak var balanceDisplay: UILabel!
   @IBOutlet weak var nativeDisplay: UILabel!
   @IBOutlet weak var coinImage: UIImageView!
+  @IBOutlet weak var badge: UIImageView!
   
   override func awakeFromNib() {
     super.awakeFromNib()
     addShadowLayer(coinImage)
+  }
+  
+  override func prepareForReuse() {
+    super.prepareForReuse()
+    coinImage.image = nil;
+    badge.image = nil;
+    transactionIcon.image = nil;
   }
   
   func set(transaction: Transaction) {
@@ -68,13 +76,40 @@ class TransactionListViewCell: TransactionListBaseCell {
     if transaction.title != nil && transaction.transactionDescription != nil && transaction.balanceDisplay != nil {
       transactionType.accessibilityIdentifier = "\(transaction.title!)-\(transaction.transactionDescription!)-\(transaction.balanceDisplay!)"
     }
-
+    
+    if transaction.network != nil {
+      if transaction.network == "optimism" {
+        var imgName = "optimismBadge"
+        if(darkMode){ imgName += "Dark" }
+        if let img = UIImage.init(named:imgName) {
+          badge.image = img
+          badge.isHidden = false
+        }
+      }else if transaction.network == "polygon" {
+        var imgName = "polygonBadge"
+        if(darkMode){ imgName += "Dark" }
+        if let img = UIImage.init(named:imgName) {
+          badge.image = img
+          badge.isHidden = false
+        }
+      }else if transaction.network == "arbitrum" {
+        var imgName = "arbitrumBadge"
+        if(darkMode){ imgName += "Dark" }
+        if let img = UIImage.init(named:imgName) {
+          badge.image = img
+          badge.isHidden = false
+        }
+      } else {
+        badge.image = nil;
+        badge.isHidden = true
+      }
+    }
     
     if transaction.symbol != nil {
       if let img = UIImage.init(named: transaction.symbol.lowercased()) {
         coinImage.image = img
       } else if transaction.address != nil {
-        let url = URL(string: "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/\(transaction.address!)/logo.png");
+        let url = URL(string: "https://raw.githubusercontent.com/rainbow-me/assets/master/blockchains/ethereum/assets/\(transaction.address!)/logo.png");
         coinImage.sd_setImage(with: url) { (image, error, cache, urls) in
           if (error != nil) {
             let colorIndex = transaction.address!.lowercased().utf8.compactMap{ Int($0) }.reduce(0, +) % TransactionListViewCell.avatarColors.count
@@ -152,6 +187,11 @@ class TransactionListViewCell: TransactionListBaseCell {
     }
     if transaction.status == "swapping" {
         transactionIcon.image = UIImage.init(named: "swapping")
+    }
+
+    if transaction.status == "contract interaction" {
+        transactionIcon.image = UIImage.init(named: "contractInteraction")
+        statusFrame = CGRect(x: 84, y: 9, width: 206, height: 16)
     }
     
     transactionIcon.tintAdjustmentMode = .normal

@@ -14,6 +14,7 @@ import {
   useSwapIsSufficientBalance,
   useSwapIsSufficientLiquidity,
 } from '@rainbow-me/hooks';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { lightModeThemeColors, padding } from '@rainbow-me/styles';
 
@@ -39,6 +40,7 @@ export default function ConfirmExchangeButton({
   isHighPriceImpact,
   onPressViewDetails,
   onSubmit,
+  testID,
   tradeDetails,
   type = ExchangeModalTypes.swap,
   ...props
@@ -78,12 +80,15 @@ export default function ConfirmExchangeButton({
 
   const colorForAsset = useColorForAsset(asset, undefined, true);
   const { buttonColor, shadowsForAsset } = useMemo(() => {
-    const color = isSwapDetailsRoute
-      ? colorForAsset
-      : makeColorMoreChill(
-          colorForAsset,
-          (isSwapDetailsRoute ? colors : darkModeThemeColors).light
-        );
+    const color =
+      asset.address === ETH_ADDRESS
+        ? colors.appleBlue
+        : isSwapDetailsRoute
+        ? colorForAsset
+        : makeColorMoreChill(
+            colorForAsset,
+            (isSwapDetailsRoute ? colors : darkModeThemeColors).light
+          );
 
     return {
       buttonColor: color,
@@ -92,7 +97,7 @@ export default function ConfirmExchangeButton({
         [0, 5, 15, isDarkMode ? colors.trueBlack : color, 0.4],
       ],
     };
-  }, [colorForAsset, colors, isDarkMode, isSwapDetailsRoute]);
+  }, [asset.address, colorForAsset, colors, isDarkMode, isSwapDetailsRoute]);
 
   let label = '';
   if (type === ExchangeModalTypes.deposit) {
@@ -147,6 +152,7 @@ export default function ConfirmExchangeButton({
             : shadows.default
         }
         showBiometryIcon={!isDisabled && !isHighPriceImpact}
+        testID={testID}
         {...props}
       />
     </Container>

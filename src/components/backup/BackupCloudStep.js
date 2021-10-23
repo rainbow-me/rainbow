@@ -253,6 +253,7 @@ export default function BackupCloudStep() {
   }, [goBack, isSettingsRoute, password]);
 
   const onConfirmBackup = useCallback(async () => {
+    analytics.track('Tapped "Confirm Backup"');
     await walletCloudBackup({
       onError,
       onSuccess,

@@ -62,7 +62,7 @@ export default class RotationArrow extends Component {
     tension: 200,
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     if (!this.props.isOpen === true) {
       this._transform = new Value(1);
     } else {
@@ -70,7 +70,7 @@ export default class RotationArrow extends Component {
     }
   }
 
-  componentWillUpdate(prevProps) {
+  UNSAFE_componentWillUpdate(prevProps) {
     const { friction, isOpen, tension } = this.props;
 
     if (prevProps.isOpen !== undefined && prevProps.isOpen !== isOpen) {

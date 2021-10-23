@@ -19,6 +19,7 @@ import ModalScreen from '../screens/ModalScreen';
 import ReceiveModal from '../screens/ReceiveModal';
 import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
+import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
 import ShowcaseScreen from '../screens/ShowcaseSheet';
@@ -26,12 +27,14 @@ import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
+import WalletDiagnosticsSheet from '../screens/WalletDiagnosticsSheet';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import { SwipeNavigator } from './SwipeNavigator';
 import {
   addTokenSheetConfig,
   backupSheetConfig,
+  basicSheetConfig,
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
   expandedAssetSheetConfigWithLimit,
@@ -39,14 +42,12 @@ import {
   nativeStackDefaultConfig,
   nativeStackDefaultConfigWithoutStatusBar,
   restoreSheetConfig,
-  savingsSheetConfig,
+  sendConfirmationSheetConfig,
   stackNavigationConfig,
 } from './config';
 import {
-  bottomSheetPreset,
   emojiPreset,
   exchangePreset,
-  expandedPreset,
   overlayExpandedPreset,
   sheetPreset,
 } from './effects';
@@ -137,16 +138,6 @@ function MainNavigator() {
         component={AvatarBuilder}
         name={Routes.AVATAR_BUILDER}
         options={emojiPreset}
-      />
-      <Stack.Screen
-        component={WalletConnectApprovalSheet}
-        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
-        options={expandedPreset}
-      />
-      <Stack.Screen
-        component={WalletConnectRedirectSheet}
-        name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
-        options={bottomSheetPreset}
       />
     </Stack.Navigator>
   );
@@ -290,6 +281,11 @@ function NativeStackNavigator() {
           topOffset: 0,
         }}
       />
+      <Stack.Screen
+        component={SendConfirmationSheet}
+        name={Routes.SEND_CONFIRMATION_SHEET}
+        {...sendConfirmationSheetConfig}
+      />
       <NativeStack.Screen
         component={AddTokenSheet}
         name={Routes.ADD_TOKEN_SHEET}
@@ -299,6 +295,10 @@ function NativeStackNavigator() {
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
         {...explainSheetConfig}
+      />
+      <NativeStack.Screen
+        component={WalletDiagnosticsSheet}
+        name={Routes.WALLET_DIAGNOSTICS_SHEET}
       />
       <NativeStack.Screen
         component={ChangeWalletSheet}
@@ -347,7 +347,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen
         component={SavingsSheet}
         name={Routes.SAVINGS_SHEET}
-        {...savingsSheetConfig}
+        {...basicSheetConfig}
       />
       <NativeStack.Screen
         component={TransactionConfirmationScreen}
@@ -399,6 +399,16 @@ function NativeStackNavigator() {
           options={{ customStack: true }}
         />
       )}
+      <NativeStack.Screen
+        component={WalletConnectApprovalSheet}
+        name={Routes.WALLET_CONNECT_APPROVAL_SHEET}
+        {...basicSheetConfig}
+      />
+      <NativeStack.Screen
+        component={WalletConnectRedirectSheet}
+        name={Routes.WALLET_CONNECT_REDIRECT_SHEET}
+        {...basicSheetConfig}
+      />
     </NativeStack.Navigator>
   );
 }

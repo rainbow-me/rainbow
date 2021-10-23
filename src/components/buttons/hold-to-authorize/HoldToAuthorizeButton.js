@@ -27,6 +27,7 @@ const { ACTIVE, BEGAN, END, FAILED } = State;
 
 const ButtonHeight = 56;
 const SmallButtonHeight = 46;
+const TinyButtonHeight = 40;
 
 const ButtonDisabledBgColor = colors => ({
   dark: colors.darkGrey,
@@ -52,7 +53,8 @@ const Content = styled(Centered).attrs({
   grow: 0,
 })`
   ${position.cover};
-  ${({ smallButton }) => padding(smallButton ? 0 : 15)};
+  ${({ smallButton, tinyButton }) =>
+    padding(smallButton || tinyButton ? 0 : 15)};
   border-radius: ${({ height }) => height};
   height: ${({ height }) => height};
   overflow: hidden;
@@ -60,9 +62,9 @@ const Content = styled(Centered).attrs({
 `;
 
 const Label = styled(BiometricButtonContent).attrs(
-  ({ smallButton, theme: { colors } }) => ({
+  ({ smallButton, theme: { colors }, tinyButton }) => ({
     color: colors.whiteLabel,
-    size: smallButton ? 'large' : 'larger',
+    size: smallButton || tinyButton ? 'large' : 'larger',
     weight: 'heavy',
   })
 )`
@@ -211,6 +213,7 @@ class HoldToAuthorizeButton extends PureComponent {
       smallButton,
       style,
       testID,
+      tinyButton,
       theme,
       ...props
     } = this.props;
@@ -221,7 +224,11 @@ class HoldToAuthorizeButton extends PureComponent {
       ? disabledBackgroundColor || ButtonDisabledBgColor(colors)[theme]
       : backgroundColor || colors.appleBlue;
 
-    const height = smallButton ? SmallButtonHeight : ButtonHeight;
+    const height = tinyButton
+      ? TinyButtonHeight
+      : smallButton
+      ? SmallButtonHeight
+      : ButtonHeight;
     const width = deviceDimensions.width - parentHorizontalPadding * 2;
 
     return (
@@ -234,7 +241,6 @@ class HoldToAuthorizeButton extends PureComponent {
           <Animated.View
             {...props}
             style={[style, { transform: [{ scale: this.buttonScale }] }]}
-            testID={testID}
           >
             <ShadowStack
               backgroundColor={bgColor}
@@ -250,6 +256,7 @@ class HoldToAuthorizeButton extends PureComponent {
                 backgroundColor={bgColor}
                 height={height}
                 smallButton={smallButton}
+                tinyButton={tinyButton}
               >
                 {children || (
                   <Fragment>
@@ -265,6 +272,8 @@ class HoldToAuthorizeButton extends PureComponent {
                       label={isAuthorizing ? 'Authorizing' : label}
                       showIcon={showBiometryIcon && !isAuthorizing}
                       smallButton={smallButton}
+                      testID={testID}
+                      tinyButton={tinyButton}
                     />
                   </Fragment>
                 )}

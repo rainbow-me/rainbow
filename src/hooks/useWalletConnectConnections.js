@@ -4,16 +4,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
 import {
-  walletConnectDisconnectAllByDappName as rawWalletConnectDisconnectAllByDappName,
+  walletConnectDisconnectAllByDappUrl as rawWalletConnectDisconnectAllByDappUrl,
   walletConnectOnSessionRequest as rawWalletConnectOnSessionRequest,
+  walletConnectUpdateSessionConnectorByDappUrl as rawWalletConnectUpdateSessionConnectorByDappUrl,
 } from '../redux/walletconnect';
 
 const formatDappData = connections =>
   values(
     mapValues(connections, connection => ({
-      dappIcon: connection?.[0].peerMeta.icons[0],
-      dappName: connection?.[0].peerMeta.name,
-      dappUrl: connection?.[0].peerMeta.url,
+      account: connection?.[0].accounts?.[0],
+      chainId: connection?.[0].chainId,
+      dappIcon: connection?.[0].peerMeta?.icons?.[0],
+      dappName: connection?.[0].peerMeta?.name,
+      dappUrl: connection?.[0].peerMeta?.url,
+      peerId: connection?.[0].peerId,
     }))
   );
 
@@ -38,8 +42,8 @@ export default function useWalletConnectConnections() {
     walletConnectorsCount,
   } = useSelector(walletConnectSelector);
 
-  const walletConnectDisconnectAllByDappName = useCallback(
-    dappName => dispatch(rawWalletConnectDisconnectAllByDappName(dappName)),
+  const walletConnectDisconnectAllByDappUrl = useCallback(
+    dappUrl => dispatch(rawWalletConnectDisconnectAllByDappUrl(dappUrl)),
     [dispatch]
   );
 
@@ -49,11 +53,24 @@ export default function useWalletConnectConnections() {
     [dispatch]
   );
 
+  const walletConnectUpdateSessionConnectorByDappUrl = useCallback(
+    (dappUrl, accountAddress, chainId) =>
+      dispatch(
+        rawWalletConnectUpdateSessionConnectorByDappUrl(
+          dappUrl,
+          accountAddress,
+          chainId
+        )
+      ),
+    [dispatch]
+  );
+
   return {
     sortedWalletConnectors,
-    walletConnectDisconnectAllByDappName,
+    walletConnectDisconnectAllByDappUrl,
     walletConnectOnSessionRequest,
     walletConnectorsByDappName,
     walletConnectorsCount,
+    walletConnectUpdateSessionConnectorByDappUrl,
   };
 }

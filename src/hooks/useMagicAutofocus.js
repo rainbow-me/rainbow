@@ -30,6 +30,10 @@ export default function useMagicAutofocus(
     lastFocusedInputHandle.current = target.getNativeRef();
   }, []);
 
+  const setLastFocusedInputHandle = useCallback(ref => {
+    lastFocusedInputHandle.current = ref.current;
+  }, []);
+
   const triggerFocus = useCallback(() => {
     if (!lastFocusedInputHandle.current) {
       return focusTextInput(defaultAutofocusInputRef.current);
@@ -92,6 +96,7 @@ export default function useMagicAutofocus(
   return {
     handleFocus,
     lastFocusedInputHandle,
+    setLastFocusedInputHandle,
     triggerFocus,
   };
 }

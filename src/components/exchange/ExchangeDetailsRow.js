@@ -1,7 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useEffect } from 'react';
 import Animated, {
-  NewEasing,
+  Easing,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -16,7 +16,7 @@ import { padding, position } from '@rainbow-me/styles';
 const defaultPriceImpactScale = 1.15;
 const timingConfig = {
   duration: 200,
-  easing: NewEasing.bezier(0.76, 0, 0.24, 1),
+  easing: Easing.bezier(0.76, 0, 0.24, 1),
 };
 
 const Container = styled(Centered)`

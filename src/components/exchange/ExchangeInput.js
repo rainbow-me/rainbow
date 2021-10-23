@@ -31,6 +31,7 @@ const ExchangeInput = (
     editable,
     keyboardAppearance = 'dark',
     letterSpacing = 'roundedTightest',
+    lineHeight,
     mask = '[099999999999999999].[999999999999999999]',
     onBlur,
     onChange,
@@ -115,6 +116,7 @@ const ExchangeInput = (
         editable={editable}
         keyboardAppearance={keyboardAppearance}
         letterSpacing={letterSpacing}
+        lineHeight={lineHeight}
         mask={mask}
         onBlur={handleBlur}
         onChange={handleChange}
@@ -129,7 +131,7 @@ const ExchangeInput = (
         value={value}
         weight={weight}
       />
-      {useCustomAndroidMask && !ref.current?.isFocused() && (
+      {useCustomAndroidMask && value > 0 && !ref.current?.isFocused() && (
         <AndroidMaskWrapper>
           <Text
             color={color}

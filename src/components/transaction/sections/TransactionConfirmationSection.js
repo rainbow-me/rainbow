@@ -24,7 +24,7 @@ const AmountRow = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   ${padding(7, 12, 9, 11)};
   border-radius: 40;
   margin: auto;
-  margin-bottom: 23;
+  margin-bottom: 17;
   overflow: hidden;
 `;
 

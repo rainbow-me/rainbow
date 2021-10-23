@@ -44,11 +44,13 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should display swap modal on swap-fab press', async () => {
     await Helpers.checkIfVisible('wallet-screen');
+    await Helpers.delay(5000);
     await Helpers.waitAndTap('exchange-fab');
     await Helpers.checkIfVisible('exchange-modal-container');
   });
 
   it('Should focus on Asset Input on load', async () => {
+    await Helpers.checkIfVisible('exchange-modal-input');
     await Helpers.typeText('exchange-modal-input', '0.246\n', true);
     await Helpers.checkIfVisible('exchange-modal-input-0.246');
   });
@@ -247,11 +249,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should show Hold to Swap Button & Swap Info Button on completion of all input fields', async () => {
-    if (device.getPlatform() === 'android') {
-      await Helpers.checkIfElementByTextIsVisible('Hold to Swap');
-    } else {
-      await Helpers.checkForElementByLabel('Hold to Swap');
-    }
+    await Helpers.checkIfVisible('exchange-modal-confirm-button');
     await Helpers.checkIfVisible('exchange-details-button');
   });
 
@@ -273,15 +271,11 @@ describe('Swap Sheet Interaction Flow', () => {
       await Helpers.swipe('exchange-modal-header', 'down', 'slow');
     }
     await Helpers.waitAndTap('exchange-fab');
-    await Helpers.typeText('exchange-modal-input', '0.546', false);
     await Helpers.waitAndTap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'ZRX', false);
     await Helpers.waitAndTap('currency-select-list-exchange-coin-row-ZRX');
-    if (device.getPlatform() === 'android') {
-      await Helpers.checkIfElementByTextIsVisible('Insufficient Funds');
-    } else {
-      await Helpers.checkForElementByLabel('Insufficient Funds');
-    }
+    await Helpers.typeText('exchange-modal-input', '0.546', false);
+    await Helpers.checkForElementByLabel('Insufficient Funds');
   });
 
   it('Should prepend 0. to input field on typing .', async () => {
@@ -370,12 +364,13 @@ describe('Swap Sheet Interaction Flow', () => {
 
   it('Should throw alert if gas price is greater than input amount', async () => {
     await Helpers.typeText('exchange-modal-input', '0.000001', false);
-    await Helpers.tapAndLongPress('exchange-modal-confirm');
+    await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     await Helpers.tapAlertWithButton('Cancel');
   });
 
   afterAll(async () => {
     // Reset the app state
     await device.clearKeychain();
+    await Helpers.delay(2000);
   });
 });

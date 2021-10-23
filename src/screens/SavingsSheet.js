@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
-import { Alert, StatusBar } from 'react-native';
+import { StatusBar } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
@@ -33,6 +33,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
+import { watchingAlert } from '@rainbow-me/utils';
 
 export const SavingsSheetEmptyHeight = 313;
 export const SavingsSheetHeight = android
@@ -52,7 +53,7 @@ const SavingsSheet = () => {
   const { params } = useRoute();
   const insets = useSafeArea();
   const { isReadOnlyWallet } = useWallets();
-  const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
+  const { nativeCurrency } = useAccountSettings();
   const cTokenBalance = params['cTokenBalance'];
   const isEmpty = params['isEmpty'];
   const underlyingBalanceNativeValue = params['underlyingBalanceNativeValue'];
@@ -63,7 +64,10 @@ const SavingsSheet = () => {
   const supplyBalanceUnderlying = params['supplyBalanceUnderlying'];
   const supplyRate = params['supplyRate'];
 
-  const balance = nativeCurrencySymbol + underlyingBalanceNativeValue;
+  const balance = convertAmountToNativeDisplay(
+    underlyingBalanceNativeValue,
+    nativeCurrency
+  );
   const lifetimeAccruedInterest = convertAmountToNativeDisplay(
     lifetimeSupplyInterestAccruedNative,
     nativeCurrency
@@ -102,9 +106,15 @@ const SavingsSheet = () => {
   const onWithdraw = useCallback(() => {
     if (!isReadOnlyWallet || enableActionsOnReadOnlyWallet) {
       navigate(Routes.SAVINGS_WITHDRAW_MODAL, {
-        cTokenBalance,
-        defaultInputAsset: underlying,
-        supplyBalanceUnderlying,
+        params: {
+          params: {
+            cTokenBalance,
+            defaultInputAsset: underlying,
+            supplyBalanceUnderlying,
+          },
+          screen: Routes.MAIN_EXCHANGE_SCREEN,
+        },
+        screen: Routes.MAIN_EXCHANGE_NAVIGATOR,
       });
 
       analytics.track('Navigated to SavingsWithdrawModal', {
@@ -112,7 +122,7 @@ const SavingsSheet = () => {
         label: underlying.symbol,
       });
     } else {
-      Alert.alert(`You need to import the wallet in order to do this`);
+      watchingAlert();
     }
   }, [
     cTokenBalance,
@@ -140,7 +150,7 @@ const SavingsSheet = () => {
         label: underlying.symbol,
       });
     } else {
-      Alert.alert(`You need to import the wallet in order to do this`);
+      watchingAlert();
     }
   }, [isEmpty, isReadOnlyWallet, navigate, underlying]);
 

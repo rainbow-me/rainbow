@@ -2,11 +2,13 @@ import { Wallet } from '@ethersproject/wallet';
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
 import { mnemonicToSeed } from 'bip39';
+import { parse } from 'eth-url-parser';
 import {
   addHexPrefix,
   isValidAddress,
   toChecksumAddress,
 } from 'ethereumjs-util';
+
 import { hdkey } from 'ethereumjs-wallet';
 import {
   find,
@@ -16,14 +18,25 @@ import {
   replace,
   toLower,
 } from 'lodash';
-import { Linking, NativeModules } from 'react-native';
+
+import {
+  Alert,
+  InteractionManager,
+  Linking,
+  NativeModules,
+} from 'react-native';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
 import URL from 'url-parse';
+import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
+import { getProviderForNetwork, isTestnet } from '@rainbow-me/handlers/web3';
+import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToPercentageDisplay,
+  convertRawAmountToDecimalFormat,
+  delay,
   fromWei,
   greaterThan,
   isZero,
@@ -35,11 +48,80 @@ import {
   identifyWalletType,
   WalletLibraryType,
 } from '@rainbow-me/model/wallet';
+import { Navigation } from '@rainbow-me/navigation';
+import { parseAssetsNative } from '@rainbow-me/parsers';
 import store from '@rainbow-me/redux/store';
-import { chains, ETH_ADDRESS } from '@rainbow-me/references';
+import {
+  ARBITRUM_BLOCK_EXPLORER_URL,
+  ARBITRUM_ETH_ADDRESS,
+  chains,
+  ETH_ADDRESS,
+  MATIC_MAINNET_ADDRESS,
+  MATIC_POLYGON_ADDRESS,
+  OPTIMISM_BLOCK_EXPLORER_URL,
+  OPTIMISM_ETH_ADDRESS,
+  POLYGON_BLOCK_EXPLORER_URL,
+} from '@rainbow-me/references';
+import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 
 const { RNBip39 } = NativeModules;
+
+const getNativeAssetAddressForNetwork = network => {
+  let nativeAssetAddress;
+  switch (network) {
+    case networkTypes.arbitrum:
+      nativeAssetAddress = ARBITRUM_ETH_ADDRESS;
+      break;
+    case networkTypes.optimism:
+      nativeAssetAddress = OPTIMISM_ETH_ADDRESS;
+      break;
+    case networkTypes.polygon:
+      nativeAssetAddress = MATIC_POLYGON_ADDRESS;
+      break;
+    default:
+      nativeAssetAddress = ETH_ADDRESS;
+  }
+  return nativeAssetAddress;
+};
+
+const getNativeAssetForNetwork = async (network, address) => {
+  const nativeAssetAddress = getNativeAssetAddressForNetwork(network);
+  const { accountAddress } = store.getState().settings;
+  let differentWallet = toLower(address) !== toLower(accountAddress);
+  const { assets } = store.getState().data;
+  let nativeAsset =
+    !differentWallet && getAsset(assets, toLower(nativeAssetAddress));
+
+  // If the asset is on a different wallet, or not available in this wallet
+  if (differentWallet || !nativeAsset) {
+    const { genericAssets } = store.getState().data;
+    const mainnetAddress =
+      network === networkTypes.polygon ? MATIC_MAINNET_ADDRESS : ETH_ADDRESS;
+    nativeAsset = genericAssets[mainnetAddress];
+
+    if (network === networkTypes.polygon) {
+      nativeAsset.mainnet_address = mainnetAddress;
+      nativeAsset.address = MATIC_POLYGON_ADDRESS;
+    }
+
+    const provider = await getProviderForNetwork(network);
+    const balance = await getOnchainAssetBalance(
+      nativeAsset,
+      address,
+      network,
+      provider
+    );
+
+    const assetWithBalance = {
+      ...nativeAsset,
+      balance,
+    };
+
+    return assetWithBalance;
+  }
+  return nativeAsset;
+};
 
 const getAsset = (assets, address = 'eth') =>
   find(assets, matchesProperty('address', toLower(address)));
@@ -68,7 +150,15 @@ export const useEthUSDMonthChart = () => {
   return useSelector(({ charts: { chartsEthUSDMonth } }) => chartsEthUSDMonth);
 };
 
+const getPriceOfNativeAssetForNetwork = network => {
+  return network === networkTypes.polygon
+    ? getMaticPriceUnit()
+    : getEthPriceUnit();
+};
+
 const getEthPriceUnit = () => getAssetPrice();
+
+const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
 
 const getBalanceAmount = (selectedGasPrice, selected) => {
   const { assets } = store.getState().data;
@@ -156,6 +246,15 @@ const getNetworkFromChainId = chainId => {
 };
 
 /**
+ * @desc get network string from chainId
+ * @param  {Number} chainId
+ */
+const getNetworkNameFromChainId = chainId => {
+  const networkData = find(chains, ['chain_id', chainId]);
+  return networkData?.name;
+};
+
+/**
  * @desc get chainId from network string
  * @param  {String} network
  */
@@ -168,13 +267,18 @@ const getChainIdFromNetwork = network => {
  * @desc get etherscan host from network string
  * @param  {String} network
  */
-function getEtherscanHostForNetwork() {
-  const { network } = store.getState().settings;
+function getEtherscanHostForNetwork(network) {
   const base_host = 'etherscan.io';
-  if (network === networkTypes.mainnet) {
-    return base_host;
-  } else {
+  if (network === networkTypes.optimism) {
+    return OPTIMISM_BLOCK_EXPLORER_URL;
+  } else if (network === networkTypes.polygon) {
+    return POLYGON_BLOCK_EXPLORER_URL;
+  } else if (network === networkTypes.arbitrum) {
+    return ARBITRUM_BLOCK_EXPLORER_URL;
+  } else if (isTestnet(network)) {
     return `${network}.${base_host}`;
+  } else {
+    return base_host;
   }
 }
 
@@ -308,17 +412,109 @@ const deriveAccountFromWalletInput = input => {
   return deriveAccountFromMnemonic(input);
 };
 
-function openTokenEtherscanURL(address) {
+function getBlockExplorer(network) {
+  switch (network) {
+    case networkTypes.mainnet:
+      return 'etherscan';
+    case networkTypes.polygon:
+      return 'polygonScan';
+    case networkTypes.optimism:
+      return 'etherscan';
+    case networkTypes.arbitrum:
+      return 'arbiscan';
+    default:
+      return 'etherscan';
+  }
+}
+
+function openAddressInBlockExplorer(address, network) {
+  const etherscanHost = getEtherscanHostForNetwork(network);
+  Linking.openURL(`https://${etherscanHost}/address/${address}`);
+}
+
+function openTokenEtherscanURL(address, network) {
   if (!isString(address)) return;
-  const etherscanHost = getEtherscanHostForNetwork();
+  const etherscanHost = getEtherscanHostForNetwork(network);
   Linking.openURL(`https://${etherscanHost}/token/${address}`);
 }
 
-function openTransactionEtherscanURL(hash) {
-  if (!isString(hash)) return;
-  const etherscanHost = getEtherscanHostForNetwork();
+function openTransactionInBlockExplorer(hash, network) {
   const normalizedHash = hash.replace(/-.*/g, '');
+  if (!isString(hash)) return;
+  const etherscanHost = getEtherscanHostForNetwork(network);
   Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
+}
+
+async function parseEthereumUrl(data) {
+  let ethUrl;
+  try {
+    ethUrl = parse(data);
+  } catch (e) {
+    Alert.alert('Invalid ethereum url');
+    return;
+  }
+
+  const functionName = ethUrl.function_name;
+  let asset = null;
+  const network = getNetworkFromChainId(Number(ethUrl.chain_id || 1));
+  let address = null;
+  let nativeAmount = null;
+  const { nativeCurrency } = store.getState().settings;
+
+  while (store.getState().data.isLoadingAssets) {
+    await delay(300);
+  }
+  const { assets } = store.getState().data;
+
+  if (!functionName) {
+    // Send native asset
+    const nativeAssetAddress = getNativeAssetAddressForNetwork(network);
+    asset = getAsset(assets, toLower(nativeAssetAddress));
+
+    if (!asset || asset?.balance.amount === 0) {
+      Alert.alert(
+        'Ooops!',
+        `Looks like you don't have that asset in your wallet...`
+      );
+      return;
+    }
+    address = ethUrl.target_address;
+    nativeAmount = ethUrl.parameters?.value && fromWei(ethUrl.parameters.value);
+  } else if (functionName === 'transfer') {
+    // Send ERC-20
+    asset = getAsset(assets, toLower(ethUrl.target_address));
+    if (!asset || asset?.balance.amount === 0) {
+      Alert.alert(
+        'Ooops!',
+        `Looks like you don't have that asset in your wallet...`
+      );
+      return;
+    }
+    address = ethUrl.parameters?.address;
+    nativeAmount =
+      ethUrl.parameters?.uint256 &&
+      convertRawAmountToDecimalFormat(
+        ethUrl.parameters.uint256,
+        asset.decimals
+      );
+  } else {
+    Alert.alert('This action is currently not supported :(');
+    return;
+  }
+
+  const assetWithPrice = parseAssetsNative([asset], nativeCurrency)[0];
+
+  InteractionManager.runAfterInteractions(() => {
+    const params = { address, asset: assetWithPrice, nativeAmount };
+    if (isNativeStackAvailable || android) {
+      Navigation.handleAction(Routes.SEND_FLOW, {
+        params,
+        screen: Routes.SEND_SHEET,
+      });
+    } else {
+      Navigation.handleAction(Routes.SEND_FLOW, params);
+    }
+  });
 }
 
 export default {
@@ -330,15 +526,23 @@ export default {
   getAsset,
   getAssetPrice,
   getBalanceAmount,
+  getBlockExplorer,
   getChainIdFromNetwork,
   getDataString,
+  getEtherscanHostForNetwork,
   getEthPriceUnit,
   getHash,
+  getMaticPriceUnit,
+  getNativeAssetForNetwork,
   getNetworkFromChainId,
+  getNetworkNameFromChainId,
+  getPriceOfNativeAssetForNetwork,
   hasPreviousTransactions,
   isEthAddress,
+  openAddressInBlockExplorer,
   openTokenEtherscanURL,
-  openTransactionEtherscanURL,
+  openTransactionInBlockExplorer,
   padLeft,
+  parseEthereumUrl,
   removeHexPrefix,
 };

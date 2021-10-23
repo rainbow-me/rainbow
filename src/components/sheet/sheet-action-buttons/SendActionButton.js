@@ -4,21 +4,26 @@ import SheetActionButton from './SheetActionButton';
 import { useExpandedStateNavigation } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
-export default function SendActionButton({ color: givenColor, ...props }) {
+export default function SendActionButton({
+  asset,
+  color: givenColor,
+  ...props
+}) {
   const { colors } = useTheme();
   const color = givenColor || colors.paleBlue;
   const navigate = useExpandedStateNavigation();
   const handlePress = useCallback(
     () =>
-      navigate(Routes.SEND_FLOW, params =>
-        isNativeStackAvailable
+      navigate(Routes.SEND_FLOW, params => {
+        const updatedParams = { ...params, asset };
+        return isNativeStackAvailable
           ? {
-              params,
+              params: updatedParams,
               screen: Routes.SEND_SHEET,
             }
-          : { ...params }
-      ),
-    [navigate]
+          : { ...updatedParams };
+      }),
+    [navigate, asset]
   );
 
   return (

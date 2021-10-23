@@ -4,7 +4,9 @@ import sentryUtils from './sentry';
 const Logger = {
   debug(...args) {
     if (__DEV__) {
-      console.debug(...args); // eslint-disable-line no-console
+      const date = new Date().toLocaleTimeString();
+      Array.prototype.unshift.call(args, `[${date}] ⚡⚡⚡ `);
+      console.log(...args); // eslint-disable-line no-console
     }
   },
 

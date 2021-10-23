@@ -33,7 +33,9 @@ import {
   ZerionTransactionChange,
   ZerionTransactionStatus,
 } from '@rainbow-me/entities';
-import { toChecksumAddress } from '@rainbow-me/handlers/web3';
+import { getTransactionMethodName } from '@rainbow-me/handlers/transactions';
+import { isL2Network, toChecksumAddress } from '@rainbow-me/handlers/web3';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 import { ETH_ADDRESS, savingsAssetsList } from '@rainbow-me/references';
 import {
   convertRawAmountToBalance,
@@ -64,33 +66,34 @@ const dataFromLastTxHash = (
   return transactionData;
 };
 
-export const parseTransactions = (
+export const parseTransactions = async (
   transactionData: ZerionTransaction[],
   accountAddress: EthereumAddress,
   nativeCurrency: string,
   existingTransactions: RainbowTransaction[],
   purchaseTransactions: RainbowTransaction[],
-  network: string,
+  network: Network,
   appended = false
 ) => {
   const purchaseTransactionHashes = map(purchaseTransactions, txn =>
     ethereumUtils.getHash(txn)
   );
+
+  const [allL2Transactions, existingWithoutL2] = partition(
+    existingTransactions,
+    tx => isL2Network(tx.network || '')
+  );
+
   const data = appended
     ? transactionData
-    : dataFromLastTxHash(transactionData, existingTransactions);
+    : dataFromLastTxHash(transactionData, existingWithoutL2);
 
-  const parsedNewTransactions = flatten(
-    data.map(txn =>
-      parseTransaction(
-        txn,
-        accountAddress,
-        nativeCurrency,
-        purchaseTransactionHashes,
-        network
-      )
-    )
+  const newTransactionPromises = data.map(txn =>
+    parseTransaction(txn, nativeCurrency, purchaseTransactionHashes, network)
   );
+
+  const newTransactions = await Promise.all(newTransactionPromises);
+  const parsedNewTransactions = flatten(newTransactions);
 
   const [pendingTransactions, remainingTransactions] = partition(
     existingTransactions,
@@ -106,7 +109,8 @@ export const parseTransactions = (
   const updatedResults = concat(
     updatedPendingTransactions,
     parsedNewTransactions,
-    remainingTransactions
+    remainingTransactions,
+    allL2Transactions
   );
 
   const potentialNftTransaction = appended
@@ -285,13 +289,54 @@ const overrideTradeRefund = (txn: ZerionTransaction): ZerionTransaction => {
   };
 };
 
-const parseTransaction = (
+const parseTransactionWithEmptyChanges = async (
+  txn: ZerionTransaction,
+  nativeCurrency: string
+) => {
+  const methodName = await getTransactionMethodName(txn);
+  const updatedAsset = {
+    address: ETH_ADDRESS,
+    decimals: 18,
+    name: 'ethereum',
+    symbol: 'ETH',
+  };
+  const priceUnit = 0;
+  const valueUnit = 0;
+  const nativeDisplay = convertRawAmountToNativeDisplay(
+    0,
+    18,
+    priceUnit,
+    nativeCurrency
+  );
+
+  return [
+    {
+      address: ETH_ADDRESS,
+      balance: convertRawAmountToBalance(valueUnit, updatedAsset),
+      description: methodName || 'Signed',
+      from: txn.address_from,
+      hash: `${txn.hash}-${0}`,
+      minedAt: txn.mined_at,
+      name: methodName || 'Signed',
+      native: nativeDisplay,
+      nonce: txn.nonce,
+      pending: false,
+      protocol: txn.protocol,
+      status: TransactionStatus.contract_interaction,
+      symbol: 'contract',
+      title: `Contract interaction`,
+      to: txn.address_to,
+      type: TransactionType.contract_interaction,
+    },
+  ];
+};
+
+const parseTransaction = async (
   transaction: ZerionTransaction,
-  accountAddress: EthereumAddress,
   nativeCurrency: string,
   purchaseTransactionsHashes: string[],
-  network: string
-): RainbowTransaction[] => {
+  network: Network
+): Promise<RainbowTransaction[]> => {
   let txn = {
     ...transaction,
   };
@@ -301,77 +346,82 @@ const parseTransaction = (
   txn = overrideSelfWalletConnect(txn);
   txn = overrideTradeRefund(txn);
 
-  const internalTransactions = map(
-    txn?.changes,
-    (internalTxn, index): RainbowTransaction => {
-      const address = toLower(internalTxn?.asset?.asset_code);
-      const metadata = getTokenMetadata(address);
-      const updatedAsset = {
-        address,
-        decimals: internalTxn?.asset?.decimals,
-        name: internalTxn?.asset?.name,
-        symbol: toUpper(internalTxn?.asset?.symbol ?? ''),
-        ...metadata,
-      };
-      const priceUnit =
-        internalTxn.price ?? internalTxn?.asset?.price?.value ?? 0;
-      const valueUnit = internalTxn.value || 0;
-      const nativeDisplay = convertRawAmountToNativeDisplay(
-        valueUnit,
-        updatedAsset.decimals,
-        priceUnit,
-        nativeCurrency
-      );
+  if (txn.changes.length) {
+    const internalTransactions = map(
+      txn?.changes,
+      (internalTxn, index): RainbowTransaction => {
+        const address = toLower(internalTxn?.asset?.asset_code);
+        const metadata = getTokenMetadata(address);
+        const updatedAsset = {
+          address,
+          decimals: internalTxn?.asset?.decimals,
+          name: internalTxn?.asset?.name,
+          symbol: toUpper(internalTxn?.asset?.symbol ?? ''),
+          ...metadata,
+        };
+        const priceUnit =
+          internalTxn.price ?? internalTxn?.asset?.price?.value ?? 0;
+        const valueUnit = internalTxn.value || 0;
+        const nativeDisplay = convertRawAmountToNativeDisplay(
+          valueUnit,
+          updatedAsset.decimals,
+          priceUnit,
+          nativeCurrency
+        );
 
-      if (includes(purchaseTransactionsHashes, toLower(txn.hash))) {
-        txn.type = TransactionType.purchase;
+        if (includes(purchaseTransactionsHashes, toLower(txn.hash))) {
+          txn.type = TransactionType.purchase;
+        }
+
+        const status = getTransactionLabel({
+          direction: internalTxn.direction || txn.direction,
+          pending: false,
+          protocol: txn.protocol,
+          status: txn.status,
+          type: txn.type,
+        });
+
+        const title = getTitle({
+          protocol: txn.protocol,
+          status,
+          type: txn.type,
+        });
+
+        const description = getDescription({
+          name: updatedAsset.name,
+          status,
+          type: txn.type,
+        });
+        return {
+          address:
+            toLower(updatedAsset?.address) === ETH_ADDRESS
+              ? ETH_ADDRESS
+              : toChecksumAddress(updatedAsset.address),
+          balance: convertRawAmountToBalance(valueUnit, updatedAsset),
+          description,
+          from: internalTxn.address_from ?? txn.address_from,
+          hash: `${txn.hash}-${index}`,
+          minedAt: txn.mined_at,
+          name: updatedAsset.name,
+          native: nativeDisplay,
+          nonce: txn.nonce,
+          pending: false,
+          protocol: txn.protocol,
+          status,
+          symbol: updatedAsset.symbol,
+          title,
+          to: internalTxn.address_to ?? txn.address_to,
+          type: txn.type,
+        };
       }
-
-      const status = getTransactionLabel({
-        direction: internalTxn.direction || txn.direction,
-        pending: false,
-        protocol: txn.protocol,
-        status: txn.status,
-        type: txn.type,
-      });
-
-      const title = getTitle({
-        protocol: txn.protocol,
-        status,
-        type: txn.type,
-      });
-
-      const description = getDescription({
-        name: updatedAsset.name,
-        status,
-        type: txn.type,
-      });
-
-      return {
-        address:
-          toLower(updatedAsset?.address) === ETH_ADDRESS
-            ? ETH_ADDRESS
-            : toChecksumAddress(updatedAsset.address),
-        balance: convertRawAmountToBalance(valueUnit, updatedAsset),
-        description,
-        from: internalTxn.address_from ?? txn.address_from,
-        hash: `${txn.hash}-${index}`,
-        minedAt: txn.mined_at,
-        name: updatedAsset.name,
-        native: nativeDisplay,
-        nonce: txn.nonce,
-        pending: false,
-        protocol: txn.protocol,
-        status,
-        symbol: updatedAsset.symbol,
-        title,
-        to: internalTxn.address_to ?? txn.address_to,
-        type: txn.type,
-      };
-    }
+    );
+    return reverse(internalTransactions);
+  }
+  const parsedTransaction = await parseTransactionWithEmptyChanges(
+    txn,
+    nativeCurrency
   );
-
-  return reverse(internalTransactions);
+  return parsedTransaction;
 };
 
 export const dedupePendingTransactions = (

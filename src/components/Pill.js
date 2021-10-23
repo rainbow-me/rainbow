@@ -5,14 +5,15 @@ import { useTheme } from '../context/ThemeContext';
 import { TruncatedText } from './text';
 import { padding } from '@rainbow-me/styles';
 
-const borderRadius = 10.5;
-
-const Gradient = styled(RadialGradient).attrs(({ theme: { colors } }) => ({
-  center: [0, borderRadius],
-  colors: colors.gradients.lightGrey,
-}))`
-  ${padding(2, 6)};
-  border-radius: ${borderRadius};
+const Gradient = styled(RadialGradient).attrs(
+  ({ theme: { colors }, borderRadius = 10.5 }) => ({
+    center: [0, borderRadius],
+    colors: colors.gradients.lightGrey,
+  })
+)`
+  ${({ paddingVertical, paddingHorizontal }) =>
+    padding(paddingVertical || 2, paddingHorizontal || 6)};
+  border-radius: ${({ borderRadius }) => borderRadius || 10.5};
   overflow: hidden;
 `;
 

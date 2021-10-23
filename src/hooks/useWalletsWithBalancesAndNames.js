@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import useWalletBalances from './useWalletBalances';
 import useWallets from './useWallets';
 
-export const useWalletsWithBalancesAndNames = () => {
+export default function useWalletsWithBalancesAndNames() {
   const { walletNames, wallets } = useWallets();
   const walletBalances = useWalletBalances(wallets);
 
@@ -21,4 +21,4 @@ export const useWalletsWithBalancesAndNames = () => {
   );
 
   return walletsWithBalancesAndNames;
-};
+}

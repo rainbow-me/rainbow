@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components';
 import { TokenSelectionButton } from '../buttons';
@@ -48,13 +48,13 @@ const ExchangeField = (
     address,
     amount,
     disableCurrencySelection,
+    editable,
     onBlur,
     onFocus,
     onPressSelectCurrency,
     setAmount,
     symbol,
     testID,
-    autoFocus,
     useCustomAndroidMask = false,
     ...props
   },
@@ -63,9 +63,7 @@ const ExchangeField = (
   const colorForAsset = useColorForAsset({ address });
   const handleFocusField = useCallback(() => ref?.current?.focus(), [ref]);
   const { colors } = useTheme();
-  useEffect(() => {
-    autoFocus && handleFocusField();
-  }, [autoFocus, handleFocusField]);
+
   return (
     <Container {...props}>
       <TouchableWithoutFeedback onPress={handleFocusField}>
@@ -77,7 +75,7 @@ const ExchangeField = (
           )}
           <Input
             color={colorForAsset}
-            editable={!!symbol}
+            editable={editable}
             onBlur={onBlur}
             onChangeText={setAmount}
             onFocus={onFocus}

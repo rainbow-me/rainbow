@@ -2,7 +2,7 @@ import { get } from 'lodash';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { spring } from 'react-native-reanimated';
-import { useValues } from 'react-native-redash';
+import { useValues } from 'react-native-redash/src/v1';
 import JellySelectorItem from './JellySelectorItem';
 import JellySelectorRow from './JellySelectorRow';
 import {

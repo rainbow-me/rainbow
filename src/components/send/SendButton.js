@@ -2,38 +2,40 @@ import React from 'react';
 import { HoldToAuthorizeButton } from '../buttons';
 
 export default function SendButton({
-  assetAmount,
+  backgroundColor,
+  disabled,
   isAuthorizing,
-  isSufficientBalance,
-  isSufficientGas,
+  isNft,
   onLongPress,
   testID,
   ...props
 }) {
-  const isZeroAssetAmount = Number(assetAmount) <= 0;
+  const { colors, isDarkMode } = useTheme();
+  const colorForAsset = isNft ? colors.appleBlue : backgroundColor;
 
-  let disabled = true;
-  let label = 'Enter an Amount';
-
-  if (!isZeroAssetAmount && !isSufficientGas) {
-    disabled = true;
-    label = 'Insufficient ETH';
-  } else if (!isZeroAssetAmount && !isSufficientBalance) {
-    disabled = true;
-    label = 'Insufficient Funds';
-  } else if (!isZeroAssetAmount) {
-    disabled = false;
-    label = 'Hold to Send';
-  }
+  const shadows = {
+    colored: [
+      [0, 10, 30, colors.shadow, 0.2],
+      [0, 5, 15, isDarkMode ? colors.shadow : colorForAsset, 0.4],
+    ],
+    disabled: [
+      [0, 10, 30, colors.shadow, 0.2],
+      [0, 5, 15, isDarkMode ? colors.shadow : colorForAsset, 0.4],
+    ],
+  };
 
   return (
     <HoldToAuthorizeButton
       {...props}
+      backgroundColor={colorForAsset}
       disabled={disabled}
+      disabledBackgroundColor={colorForAsset}
+      hideInnerBorder
       isAuthorizing={isAuthorizing}
-      label={label}
+      label={disabled ? '􀄨 Complete checks' : 'Hold to Send'}
       onLongPress={onLongPress}
-      parentHorizontalPadding={15}
+      parentHorizontalPadding={19}
+      shadows={disabled ? shadows.disabled : shadows.colored}
       showBiometryIcon={!disabled}
       testID={testID}
     />

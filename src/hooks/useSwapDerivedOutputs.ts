@@ -15,6 +15,7 @@ import {
   isZero,
   updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 enum DisplayValue {
   input = 'inputAmountDisplay',
@@ -80,7 +81,7 @@ export default function useSwapDerivedOutputs() {
     (state: AppState) => state.data.genericAssets
   );
 
-  const inputPrice = genericAssets[inputCurrency?.address]?.price?.value;
+  const inputPrice = ethereumUtils.getAssetPrice(inputCurrency?.address);
   const outputPrice = genericAssets[outputCurrency?.address]?.price?.value;
 
   const { chainId } = useAccountSettings();

@@ -17,6 +17,7 @@ import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
 import ReceiveModal from '../screens/ReceiveModal';
 import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
+import SendConfirmationSheet from '../screens/SendConfirmationSheet';
 import SendSheet from '../screens/SendSheet';
 import SettingsModal from '../screens/SettingsModal';
 import ShowcaseSheet from '../screens/ShowcaseSheet';
@@ -24,6 +25,7 @@ import SpeedUpAndCancelSheet from '../screens/SpeedUpAndCancelSheet';
 import TransactionConfirmationScreen from '../screens/TransactionConfirmationScreen';
 import WalletConnectApprovalSheet from '../screens/WalletConnectApprovalSheet';
 import WalletConnectRedirectSheet from '../screens/WalletConnectRedirectSheet';
+import WalletDiagnosticsSheet from '../screens/WalletDiagnosticsSheet';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import WithdrawModal from '../screens/WithdrawModal';
 import WyreWebview from '../screens/WyreWebview';
@@ -37,6 +39,7 @@ import {
   wyreWebviewOptions,
 } from './config';
 import {
+  androidRecievePreset,
   bottomSheetPreset,
   emojiPreset,
   exchangePreset,
@@ -62,11 +65,6 @@ function SendFlowNavigator() {
       {...stackNavigationConfig}
       initialRouteName={Routes.SEND_SHEET}
     >
-      <Stack.Screen
-        component={ModalScreen}
-        name={Routes.MODAL_SCREEN}
-        options={overlayExpandedPreset}
-      />
       <Stack.Screen
         component={SendSheet}
         name={Routes.SEND_SHEET}
@@ -155,15 +153,9 @@ function MainNavigator() {
         options={exchangePreset}
       />
       <Stack.Screen
-        component={ModalScreen}
-        {...closeKeyboardOnClose}
-        name={Routes.MODAL_SCREEN}
-        options={overlayExpandedPreset}
-      />
-      <Stack.Screen
         component={ReceiveModal}
         name={Routes.RECEIVE_MODAL}
-        options={expandedPreset}
+        options={androidRecievePreset}
       />
       <Stack.Screen
         component={WalletConnectApprovalSheet}
@@ -203,7 +195,7 @@ function MainNavigator() {
       <Stack.Screen
         component={BackupSheet}
         name={Routes.BACKUP_SHEET}
-        options={bottomSheetPreset}
+        options={expandedPreset}
       />
       <Stack.Screen
         component={RestoreSheet}
@@ -254,7 +246,7 @@ function MainOuterNavigator() {
       <OuterStack.Screen
         component={BackupSheet}
         name={Routes.BACKUP_SCREEN}
-        options={sheetPreset}
+        options={expandedPreset}
       />
     </OuterStack.Navigator>
   );
@@ -297,6 +289,20 @@ function BSNavigator() {
         options={{
           height: '100%',
         }}
+      />
+      <BSStack.Screen
+        component={ModalScreen}
+        {...closeKeyboardOnClose}
+        name={Routes.MODAL_SCREEN}
+      />
+      <BSStack.Screen
+        component={SendConfirmationSheet}
+        name={Routes.SEND_CONFIRMATION_SHEET}
+        options={sheetPreset}
+      />
+      <BSStack.Screen
+        component={WalletDiagnosticsSheet}
+        name={Routes.WALLET_DIAGNOSTICS_SHEET}
       />
       <BSStack.Screen component={SavingsSheet} name={Routes.SAVINGS_SHEET} />
       <BSStack.Screen component={SettingsModal} name={Routes.SETTINGS_MODAL} />

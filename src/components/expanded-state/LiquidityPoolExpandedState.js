@@ -31,6 +31,7 @@ import {
   useAsset,
   useChartThrottledPoints,
   useColorForAsset,
+  useDimensions,
   usePoolDetails,
   useTotalFeeEarnedPerAsset,
 } from '@rainbow-me/hooks';
@@ -47,10 +48,7 @@ export const underlyingAssetsHeight = 70;
 const heightWithoutChart = 452 + (android ? 20 - getSoftMenuBarHeight() : 0);
 const heightWithChart = heightWithoutChart + 293;
 
-export const initialLiquidityPoolExpandedStateSheetHeight = Math.min(
-  deviceUtils.dimensions.height,
-  heightWithChart + underlyingAssetsHeight
-);
+export const initialLiquidityPoolExpandedStateSheetHeight = heightWithoutChart;
 
 const formatTokenAddress = address => {
   if (!address || toLower(address) === ETH_ADDRESS) {
@@ -92,6 +90,7 @@ const LiquidityPoolExpandedState = () => {
   const { asset } = params;
   const { tokenNames, tokens, totalNativeDisplay, uniBalance } = asset;
   const dispatch = useDispatch();
+  const { height: screenHeight } = useDimensions();
 
   const tokenAddresses = useMemo(() => {
     return tokens?.map(token => formatTokenAddress(token.address));
@@ -192,8 +191,10 @@ const LiquidityPoolExpandedState = () => {
     <SlackSheet
       additionalTopPadding={android}
       contentHeight={liquidityPoolExpandedStateSheetHeight}
-      {...(ios && { height: '100%' })}
       scrollEnabled
+      {...(ios
+        ? { height: '100%' }
+        : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
     >
       <ChartPathProvider data={throttledData}>
         <Chart
@@ -230,6 +231,7 @@ const LiquidityPoolExpandedState = () => {
                 symbol={tokenNames}
                 token1Address={tokenAddresses[0]}
                 token2Address={tokenAddresses[1]}
+                type={asset.type}
                 weight="bold"
               />
             )}
@@ -238,6 +240,7 @@ const LiquidityPoolExpandedState = () => {
                 symbol={tokenNames}
                 token1Address={tokenAddresses[0]}
                 token2Address={tokenAddresses[1]}
+                type={asset.type}
                 weight="bold"
               />
             )}
@@ -250,6 +253,7 @@ const LiquidityPoolExpandedState = () => {
             symbol={tokenNames}
             token1Address={tokenAddresses[0]}
             token2Address={tokenAddresses[1]}
+            type={asset.type}
             weight="heavy"
           />
         </SheetActionButtonRow>

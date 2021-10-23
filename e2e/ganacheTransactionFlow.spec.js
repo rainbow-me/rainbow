@@ -1,4 +1,4 @@
-/* eslint-disable sort-keys */
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
 import { exec } from 'child_process';
@@ -10,20 +10,6 @@ let uri = null;
 let account = null;
 
 beforeAll(async () => {
-  // Create WC client
-  // Create a connector
-  connector = new WalletConnect({
-    bridge: 'https://bridge.walletconnect.org',
-    clientMeta: {
-      description: 'Connect with WalletConnect',
-      icons: ['https://walletconnect.org/walletconnect-logo.png'],
-      name: 'WalletConnect',
-      url: 'https://walletconnect.org',
-    },
-  });
-
-  await connector.createSession();
-  uri = connector.uri;
   // Connect to ganache
   await exec('yarn ganache');
 });
@@ -102,55 +88,56 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
+  // it('Should swap ETH -> ERC20 (DAI)', async () => {
+  //   await Helpers.tap('exchange-fab');
+  //   await Helpers.typeText('exchange-modal-input', '0.01', true);
+  //   await Helpers.tap('exchange-modal-output-selection-button');
+  //   await Helpers.typeText('currency-select-search-input', 'DAI', true);
+  //   await Helpers.tap('exchange-coin-row-DAI');
+  //   await Helpers.tapAndLongPress('exchange-modal-confirm');
+  //   await Helpers.swipe('profile-screen', 'left', 'slow');
+  // });
+
+  // it('Should swap ERC20 (BAT) -> ERC20 (ZRX)', async () => {
+  //   await Helpers.tap('exchange-fab');
+  //   await Helpers.tap('exchange-modal-input-selection-button');
+  //   await Helpers.tap('exchange-coin-row-BAT');
+  //   await Helpers.typeText('exchange-modal-input', '5', true);
+  //   await Helpers.tap('exchange-modal-output-selection-button');
+  //   await Helpers.tap('exchange-coin-row-ZRX');
+  //   await Helpers.tapAndLongPress('exchange-modal-confirm');
+  //   await Helpers.swipe('profile-screen', 'left', 'slow');
+  // });
+
+  // it('Should swap ERC20 (USDC)-> ETH', async () => {
+  //   await Helpers.tap('exchange-fab');
+  //   await Helpers.tap('exchange-modal-input-selection-button');
+  //   await Helpers.tap('exchange-coin-row-USDC');
+  //   await Helpers.typeText('exchange-modal-input', '2', true);
+  //   await Helpers.tap('exchange-modal-output-selection-button');
+  //   await Helpers.typeText('currency-select-search-input', 'ETH', true);
+  //   await Helpers.tap('exchange-coin-row-ETH');
+  //   await Helpers.tapAndLongPress('exchange-modal-confirm');
+  //   await Helpers.swipe('profile-screen', 'left', 'slow');
+  // });
   /*
-  it('Should swap ETH -> ERC20 (DAI)', async () => {
-    await Helpers.tap('exchange-fab');
-    await Helpers.typeText('exchange-modal-input', '0.01', true);
-    await Helpers.tap('exchange-modal-output-selection-button');
-    await Helpers.typeText('currency-select-search-input', 'DAI', true);
-    await Helpers.tap('exchange-coin-row-DAI');
-    await Helpers.tapAndLongPress('exchange-modal-confirm');
-    await Helpers.swipe('profile-screen', 'left', 'slow');
-  });
-
-  it('Should swap ERC20 (BAT) -> ERC20 (ZRX)', async () => {
-    await Helpers.tap('exchange-fab');
-    await Helpers.tap('exchange-modal-input-selection-button');
-    await Helpers.tap('exchange-coin-row-BAT');
-    await Helpers.typeText('exchange-modal-input', '5', true);
-    await Helpers.tap('exchange-modal-output-selection-button');
-    await Helpers.tap('exchange-coin-row-ZRX');
-    await Helpers.tapAndLongPress('exchange-modal-confirm');
-    await Helpers.swipe('profile-screen', 'left', 'slow');
-  });
-
-  it('Should swap ERC20 (USDC)-> ETH', async () => {
-    await Helpers.tap('exchange-fab');
-    await Helpers.tap('exchange-modal-input-selection-button');
-    await Helpers.tap('exchange-coin-row-USDC');
-    await Helpers.typeText('exchange-modal-input', '2', true);
-    await Helpers.tap('exchange-modal-output-selection-button');
-    await Helpers.typeText('currency-select-search-input', 'ETH', true);
-    await Helpers.tap('exchange-coin-row-ETH');
-    await Helpers.tapAndLongPress('exchange-modal-confirm');
-    await Helpers.swipe('profile-screen', 'left', 'slow');
-  });
-*/
   it('Should send ERC20 (cSAI)', async () => {
     await Helpers.tap('send-fab');
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.tap('send-savings-cSAI');
     await Helpers.typeText('selected-asset-field-input', '1.69', true);
-    await Helpers.tapAndLongPress('Hold to Send');
+    await Helpers.tap('send-sheet-confirm-action-button');
+    await Helpers.tapAndLongPress('send-confirmation-button');
     if (device.getPlatform() === 'android') {
       await Helpers.tapAlertWithButton('Slow');
       await Helpers.delay(4000);
       await Helpers.authenticatePin('1234');
     }
+    await Helpers.checkIfVisible('profile-screen');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  /*
+ 
   it('Should show completed swap ETH -> ERC20 (DAI)', async () => {
     try {
       await Helpers.checkIfVisible('Swapped-Ethereum');
@@ -166,12 +153,14 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.tap('CryptoKitties-family-header');
     await Helpers.tapByText('Arun Cattybinky');
-    await Helpers.tapAndLongPress('Hold to Send');
-    if (device.getPlatform() === 'android') {
+    await Helpers.tap('send-sheet-confirm-action-button');
+    await Helpers.tapAndLongPress('send-confirmation-button');
+	if (device.getPlatform() === 'android') {
       await Helpers.tapAlertWithButton('Slow');
       await Helpers.delay(4000);
       await Helpers.authenticatePin('1234');
     }
+    await Helpers.checkIfVisible('profile-screen');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -180,12 +169,14 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.tap('send-asset-BAT');
     await Helpers.typeText('selected-asset-field-input', '1.02', true);
-    await Helpers.tapAndLongPress('Hold to Send');
-    if (device.getPlatform() === 'android') {
+    await Helpers.tap('send-sheet-confirm-action-button');
+    await Helpers.tapAndLongPress('send-confirmation-button');
+	if (device.getPlatform() === 'android') {
       await Helpers.tapAlertWithButton('Slow');
       await Helpers.delay(4000);
       await Helpers.authenticatePin('1234');
     }
+    await Helpers.checkIfVisible('profile-screen');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -194,16 +185,30 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.tap('send-asset-ETH');
     await Helpers.typeText('selected-asset-field-input', '0.003', true);
-    await Helpers.tapAndLongPress('Hold to Send');
-    if (device.getPlatform() === 'android') {
+    await Helpers.tap('send-sheet-confirm-action-button');
+    await Helpers.tapAndLongPress('send-confirmation-button');
+	if (device.getPlatform() === 'android') {
       await Helpers.tapAlertWithButton('Slow');
       await Helpers.delay(4000);
       await Helpers.authenticatePin('1234');
     }
-    await Helpers.swipe('profile-screen', 'left', 'slow');
+    await Helpers.checkIfVisible('profile-screen');
   });
 
   it('Should receive the WC connect request and approve it', async () => {
+    connector = new WalletConnect({
+      bridge: 'https://bridge.walletconnect.org',
+      clientMeta: {
+        description: 'Connect with WalletConnect',
+        icons: ['https://walletconnect.org/walletconnect-logo.png'],
+        name: 'WalletConnect',
+        url: 'https://walletconnect.org',
+      },
+    });
+    await Helpers.delay(3000);
+
+    await connector.createSession();
+    uri = connector.uri;
     const connected = new Promise(async (resolve, reject) => {
       connector.on('connect', (error, payload) => {
         if (error) {
@@ -222,11 +227,15 @@ describe('Ganache Transaction Flow', () => {
     const baseUrl = 'https://rnbwapp.com';
     const encodedUri = encodeURIComponent(uri);
     const fullUrl = `${baseUrl}/wc?uri=${encodedUri}`;
+
+    await Helpers.disableSynchronization();
     await device.sendToHome();
+    await Helpers.enableSynchronization();
+
+    await Helpers.delay(2000);
 
     await device.launchApp({
       newInstance: false,
-      sourceApp: 'com.apple.mobilesafari',
       url: fullUrl,
     });
 
@@ -235,7 +244,7 @@ describe('Ganache Transaction Flow', () => {
     const isConnected = await connected;
     if (!isConnected) throw new Error('WC Connection failed');
     await Helpers.checkIfVisible('wc-redirect-sheet');
-    await Helpers.swipe('wallet-screen', 'down', 'slow');
+    await Helpers.swipe('wc-redirect-sheet', 'down', 'fast');
   });
 
   it('Should be able to sign personal messages via WC', async () => {
@@ -334,9 +343,7 @@ describe('Ganache Transaction Flow', () => {
     if (!hash) {
       throw new Error('WC approving tx failed');
     }
-    await Helpers.swipe('wallet-screen', 'right', 'slow');
-    connector.killSession();
-    connector = null;
+    await Helpers.delay(3000);
   });
 
   /*
@@ -360,6 +367,7 @@ describe('Ganache Transaction Flow', () => {
       await Helpers.checkIfVisible('Sending-Compound Sai');
     }
   });*/
+  /*
   it('Should show completed send ERC20 (cSAI)', async () => {
     try {
       await Helpers.checkIfVisible('Sent-Compound SAI-1.69 cSAI');
@@ -367,7 +375,7 @@ describe('Ganache Transaction Flow', () => {
       await Helpers.checkIfVisible('Sending-Compound SAI-1.69 cSAI');
     }
   });
-
+*/
   it('Should show completed send NFT (Cryptokitties)', async () => {
     try {
       await Helpers.checkIfVisible('Sent-Arun Cattybinky-1.00 CryptoKitties');
@@ -404,9 +412,10 @@ describe('Ganache Transaction Flow', () => {
 
   afterAll(async () => {
     // Reset the app state
-    if (device.getPlatform() === 'ios') {
-      await device.clearKeychain();
-      await exec('kill $(lsof -t -i:7545)');
-    }
+    await connector.killSession();
+    connector = null;
+    await device.clearKeychain();
+    await exec('kill $(lsof -t -i:7545)');
+    await Helpers.delay(2000);
   });
 });

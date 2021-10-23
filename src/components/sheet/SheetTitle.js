@@ -4,7 +4,7 @@ import { fonts } from '@rainbow-me/styles';
 
 export default function SheetTitle({
   size = fonts.size.large,
-  weight = fonts.weight.bold,
+  weight = fonts.weight.heavy,
   ...props
 }) {
   const { colors } = useTheme();

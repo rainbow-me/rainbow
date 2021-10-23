@@ -9,7 +9,7 @@ import { borders } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const buildShadows = (color, size, darkMode, colors) => {
-  if (size === 'small' || size === 'smaller') {
+  if (size === 'small') {
     return [
       [0, 3, 5, colors.shadow, 0.14],
       [
@@ -18,17 +18,29 @@ const buildShadows = (color, size, darkMode, colors) => {
         10,
         darkMode
           ? darkModeThemeColors.shadow
-          : darkModeThemeColors.avatarColor[color] || color,
+          : darkModeThemeColors.avatarBackgrounds[color] || color,
         0.2,
       ],
     ];
-  } else if (size === 'medium' || size === 'smedium') {
+  } else if (size === 'smaller') {
+    return [
+      [
+        0,
+        4,
+        12,
+        darkMode
+          ? darkModeThemeColors.shadow
+          : darkModeThemeColors.avatarBackgrounds[color] || color,
+        0.3,
+      ],
+    ];
+  } else if (size === 'lmedium' || size === 'medium' || size === 'smedium') {
     return [
       [
         0,
         4,
         android ? 5 : 12,
-        darkMode ? colors.shadow : colors.avatarColor[color] || color,
+        darkMode ? colors.shadow : colors.avatarBackgrounds[color] || color,
         0.4,
       ],
     ];
@@ -44,7 +56,15 @@ const sizeConfigs = colors => ({
       [0, 6, 10, colors.shadow, 0.12],
       [0, 2, 5, colors.shadow, 0.08],
     ],
-    textSize: 'bigger',
+    textSize: 'biggest',
+  },
+  lmedium: {
+    dimensions: 50,
+    shadow: [
+      [0, 4, 12, colors.shadow, 0.04],
+      [0, 1, 3, colors.shadow, 0.08],
+    ],
+    textSize: 28,
   },
   medium: {
     dimensions: 40,
@@ -60,7 +80,7 @@ const sizeConfigs = colors => ({
   },
   smaller: {
     dimensions: 20,
-    textSize: 'smaller',
+    textSize: 'micro',
   },
   smedium: {
     dimensions: 36,
@@ -87,7 +107,7 @@ const ContactAvatar = ({ color, size = 'medium', value, ...props }) => {
     <ShadowStack
       {...props}
       {...borders.buildCircleAsObject(dimensions)}
-      backgroundColor={colors.avatarColor[color] || color}
+      backgroundColor={colors.avatarBackgrounds[color] || color}
       shadows={shadows}
     >
       <Centered flex={1}>

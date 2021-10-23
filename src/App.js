@@ -1,4 +1,3 @@
-import PushNotificationIOS from '@react-native-community/push-notification-ios';
 import messaging from '@react-native-firebase/messaging';
 import analytics from '@segment/analytics-react-native';
 import * as Sentry from '@sentry/react-native';
@@ -26,9 +25,9 @@ import {
 import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
-import VersionNumber from 'react-native-version-number';
 import { connect, Provider } from 'react-redux';
 import PortalConsumer from './components/PortalConsumer';
+import ErrorBoundary from './components/error-boundary/ErrorBoundary';
 import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
 import {
@@ -39,17 +38,16 @@ import {
 import { MainThemeProvider } from './context/ThemeContext';
 import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
+import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
-import {
-  runKeychainIntegrityChecks,
-  runWalletBackupStatusChecks,
-} from './handlers/walletReadyEvents';
+import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
+import { explorerInitL2 } from './redux/explorer';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { walletConnectLoadState } from './redux/walletconnect';
@@ -70,19 +68,7 @@ if (__DEV__) {
     dsn: SENTRY_ENDPOINT,
     enableAutoSessionTracking: true,
     environment: SENTRY_ENVIRONMENT,
-    release: `me.rainbow-${VersionNumber.appVersion}`,
   };
-
-  if (android) {
-    const dist = VersionNumber.buildVersion;
-    // In order for sourcemaps to work on android,
-    // the release needs to be named with the following format
-    // me.rainbow@1.0+4
-    const releaseName = `me.rainbow@${VersionNumber.appVersion}+${dist}`;
-    sentryOptions.release = releaseName;
-    // and we also need to manually set the dist to the versionCode value
-    sentryOptions.dist = dist.toString();
-  }
   Sentry.init(sentryOptions);
 }
 
@@ -104,6 +90,7 @@ class App extends Component {
     }
     this.identifyFlow();
     AppState.addEventListener('change', this.handleAppStateChange);
+    appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
     await this.handleInitializeAnalytics();
     saveFCMToken();
     this.onTokenRefreshListener = registerTokenRefreshListener();
@@ -112,8 +99,8 @@ class App extends Component {
       this.onRemoteNotification
     );
 
-    this.backgroundNotificationListener = messaging().onNotificationOpenedApp(
-      remoteMessage => {
+    this.backgroundNotificationListener = messaging().setBackgroundMessageHandler(
+      async remoteMessage => {
         setTimeout(() => {
           const topic = get(remoteMessage, 'data.topic');
           this.onPushNotificationOpened(topic);
@@ -163,7 +150,6 @@ class App extends Component {
     if (!prevProps.walletReady && this.props.walletReady) {
       // Everything we need to do after the wallet is ready goes here
       logger.sentry('✅ Wallet ready!');
-      runKeychainIntegrityChecks();
       runWalletBackupStatusChecks();
     }
   }
@@ -233,15 +219,10 @@ class App extends Component {
   };
 
   handleAppStateChange = async nextAppState => {
-    if (nextAppState === 'active') {
-      PushNotificationIOS.removeAllDeliveredNotifications();
-    }
-
     // Restore WC connectors when going from BG => FG
     if (this.state.appState === 'background' && nextAppState === 'active') {
       store.dispatch(walletConnectLoadState());
     }
-
     this.setState({ appState: nextAppState });
 
     analytics.track('State change', {
@@ -253,24 +234,36 @@ class App extends Component {
   handleNavigatorRef = navigatorRef =>
     Navigation.setTopLevelNavigator(navigatorRef);
 
+  handleTransactionConfirmed = () => {
+    logger.log('Reloading all data from L2 explorers in 10!');
+    setTimeout(() => {
+      logger.log('Reloading all data from L2 explorers NOW!');
+      store.dispatch(explorerInitL2());
+    }, 10000);
+  };
+
   render = () => (
     <MainThemeProvider>
       <RainbowContextWrapper>
-        <Portal>
-          <SafeAreaProvider>
-            <Provider store={store}>
-              <FlexItem>
-                {this.state.initialRoute && (
-                  <InitialRouteContext.Provider value={this.state.initialRoute}>
-                    <RoutesComponent ref={this.handleNavigatorRef} />
-                    <PortalConsumer />
-                  </InitialRouteContext.Provider>
-                )}
-                <OfflineToast />
-              </FlexItem>
-            </Provider>
-          </SafeAreaProvider>
-        </Portal>
+        <ErrorBoundary>
+          <Portal>
+            <SafeAreaProvider>
+              <Provider store={store}>
+                <FlexItem>
+                  {this.state.initialRoute && (
+                    <InitialRouteContext.Provider
+                      value={this.state.initialRoute}
+                    >
+                      <RoutesComponent ref={this.handleNavigatorRef} />
+                      <PortalConsumer />
+                    </InitialRouteContext.Provider>
+                  )}
+                  <OfflineToast />
+                </FlexItem>
+              </Provider>
+            </SafeAreaProvider>
+          </Portal>
+        </ErrorBoundary>
       </RainbowContextWrapper>
     </MainThemeProvider>
   );

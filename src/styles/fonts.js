@@ -1,4 +1,4 @@
-/* eslint-disable sort-keys */
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 const font = {};
 
 font.family = {
@@ -23,8 +23,11 @@ font.lineHeight = {
   normalTight: 18,
   normal: 20,
   loose: 21,
+  looserLoose: 22,
+  paragraphSmaller: 24,
   paragraphSmall: 25,
   looser: 26,
+  big: 27,
   loosest: 28,
   giant: 108,
 };

@@ -40,8 +40,8 @@ export default function ExchangeInputField({
       <ExchangeField
         address={inputCurrencyAddress}
         amount={inputAmount}
-        autoFocus={android}
         disableCurrencySelection={disableInputCurrencySelection}
+        editable={!!inputCurrencySymbol}
         onFocus={onFocus}
         onPressSelectCurrency={onPressSelectInputCurrency}
         ref={inputFieldRef}

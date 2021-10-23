@@ -31,7 +31,6 @@ import {
   UNISWAP_V2_ROUTER_ABI,
   UNISWAP_V2_ROUTER_ADDRESS,
 } from '@rainbow-me/references';
-import { addBuffer } from '@rainbow-me/utilities';
 import logger from 'logger';
 
 export enum Field {
@@ -156,10 +155,7 @@ export const estimateSwapGasLimit = async ({
     } else {
       methodName = methodNames[indexOfSuccessfulEstimation];
       const gasEstimate = gasEstimates[indexOfSuccessfulEstimation];
-      let gasLimit: string | number = ethUnits.basic_swap;
-      if (gasEstimate) {
-        gasLimit = addBuffer(gasEstimate.toString());
-      }
+      const gasLimit: string | number = gasEstimate ?? ethUnits.basic_swap;
       return { gasLimit, methodName };
     }
   } catch (error) {
@@ -416,19 +412,20 @@ export const getAllTokens = async () => {
   const { dispatch } = store;
   try {
     let dataEnd = false;
-    let lastId = '';
+    //setting an extremely safe upper limit for token volume
+    let lastUSDVolume = '1000000000000';
 
     while (!dataEnd) {
       let result = await uniswapClient.query({
         query: UNISWAP_ALL_TOKENS,
         variables: {
           first: UniswapPageSize,
-          lastId,
+          lastUSDVolume,
         },
       });
       const resultTokens = result?.data?.tokens || [];
       const lastItem = resultTokens[resultTokens.length - 1];
-      lastId = lastItem?.id ?? '';
+      lastUSDVolume = lastItem?.tradeVolumeUSD ?? '';
       dispatch(uniswapUpdateTokens(resultTokens));
       if (resultTokens.length < UniswapPageSize) {
         dispatch(uniswapLoadedAllTokens());

@@ -49,10 +49,9 @@ export default function DiscoverHeaderButton() {
     navigate,
   ]);
 
-  const onLongPress = useCallback(
-    () => navigate(Routes.SHOWCASE_SHEET, { address: 'vitalik.eth' }),
-    [navigate]
-  );
+  const onLongPress = useCallback(() => navigate(Routes.CONNECTED_DAPPS), [
+    navigate,
+  ]);
 
   const shadows = useMemo(() => DiscoverButtonShadowsFactory(colors), [colors]);
 
@@ -81,7 +80,7 @@ export default function DiscoverHeaderButton() {
         <DiscoverButtonContent>
           <Text
             color={colors.alpha(colors.blueGreyDark, isDarkMode ? 1 : 0.8)}
-            letterSpacing="roundedTight"
+            letterSpacing="roundedMedium"
             size="large"
             weight="bold"
             {...(android && { lineHeight: 32 })}

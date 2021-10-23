@@ -1,11 +1,15 @@
-import React, { useCallback, useState } from 'react';
+import { toLower } from 'lodash';
+import React, { Fragment, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { buildUniqueTokenName } from '../../helpers/assets';
-import { ENSAddress } from '../../parsers/uniqueTokens';
+import { ENS_NFT_CONTRACT_ADDRESS } from '../../references';
 import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
+import RemoteSvg from '../svg/RemoteSvg';
 import { Monospace, Text } from '../text';
+import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
+import { useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 
@@ -23,43 +27,82 @@ const getFallbackTextColor = (bg, darkMode, colors) =>
   );
 
 const ImageTile = styled(ImgixImage)`
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 `;
 
-const ENSText = styled(Text).attrs(({ theme: { colors }, small }) => ({
-  color: colors.white,
-  size: small ? 'small' : 'big',
-}))`
+const ENSText = styled(Text).attrs(
+  ({ isTinyPhone, small, theme: { colors } }) => ({
+    color: colors.whiteLabel,
+    letterSpacing: 'roundedMedium',
+    size: small ? 'smedium' : isTinyPhone ? 'large' : 'bigger',
+  })
+)`
   padding: 8px;
   text-align: center;
-  ${fontWithWidth(fonts.weight.bold)};
+  ${fontWithWidth(fonts.weight.heavy)};
 `;
 
 const UniqueTokenImage = ({
   backgroundColor,
   imageUrl,
   item,
+  lowResUrl,
   resizeMode = ImgixImage.resizeMode.cover,
   small,
+  size,
 }) => {
-  const isENS = item.asset_contract.address === ENSAddress;
-  const image = isENS ? `${item.image_url}=s1` : imageUrl;
+  const { isTinyPhone } = useDimensions();
+  const isENS =
+    toLower(item.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
+  const isSVG = isSupportedUriExtension(imageUrl, ['.svg']);
+  const image = isENS && !isSVG ? `${item.image_url}=s1` : imageUrl;
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
   const { isDarkMode, colors } = useTheme();
+  const [loadedImg, setLoadedImg] = useState(false);
+  const onLoad = useCallback(() => setLoadedImg(true), [setLoadedImg]);
+  const remoteSvgStyle = useMemo(() => {
+    // I know... This shit is mad weird :|
+    // I know... This shit even weirder but it's ENS's fault :/
+    const style =
+      isENS && isSVG
+        ? { height: size * 1.1 + 0.1, width: size * 1.1 + 0.1 }
+        : { height: size + 0.1, width: size + 0.1 };
+    return style;
+  }, [isENS, isSVG, size]);
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
-      {imageUrl && !error ? (
-        <ImageTile
+      {isSVG && !error ? (
+        <RemoteSvg
           onError={handleError}
-          resizeMode={ImgixImage.resizeMode[resizeMode]}
-          source={{ uri: image }}
-          style={position.coverAsObject}
-        >
-          {isENS && <ENSText small={small}>{item.name}</ENSText>}
-        </ImageTile>
+          style={remoteSvgStyle}
+          uri={imageUrl}
+        />
+      ) : imageUrl && !error ? (
+        <Fragment>
+          <ImageTile
+            onError={handleError}
+            onLoad={onLoad}
+            resizeMode={ImgixImage.resizeMode[resizeMode]}
+            source={{ uri: image }}
+            style={position.coverAsObject}
+          >
+            {isENS && !isSVG && (
+              <ENSText isTinyPhone={isTinyPhone} small={small}>
+                {item.name}
+              </ENSText>
+            )}
+          </ImageTile>
+          {!loadedImg && lowResUrl && (
+            <ImageTile
+              resizeMode={ImgixImage.resizeMode[resizeMode]}
+              source={{ uri: lowResUrl }}
+              style={position.coverAsObject}
+            />
+          )}
+        </Fragment>
       ) : (
         <Monospace
           align="center"

@@ -35,26 +35,26 @@ export default function useAdditionalAssetData(
   const coingeckoId: string | undefined = useSelector(
     // @ts-ignore
     ({ additionalAssetsData: { coingeckoIds } }): AppState =>
-      coingeckoIds[address.toLowerCase()]
+      coingeckoIds[address?.toLowerCase()]
   );
 
   // @ts-ignore
   const coingeckoData: AdditionalDataCongecko | undefined = useSelector(
     // @ts-ignore
     ({ additionalAssetsData: { coingeckoData } }): AppState =>
-      coingeckoData[address.toLowerCase()]
+      coingeckoData[address?.toLowerCase()]
   );
 
   // @ts-ignore
   const uniswapData: AdditionalDataUniswap | undefined = useSelector(
     // @ts-ignore
     ({ additionalAssetsData: { uniswapData } }): AppState =>
-      uniswapData[address.toLowerCase()]
+      uniswapData[address?.toLowerCase()]
   );
 
   const allTokens = useSelector((state: AppState) => state.uniswap.allTokens);
   const uniswapToken =
-    allTokens[address.toLowerCase() === 'eth' ? WETH_ADDRESS : address];
+    allTokens[address?.toLowerCase() === 'eth' ? WETH_ADDRESS : address];
 
   const totalLiquidity = uniswapToken?.totalLiquidity;
   const dispatch = useDispatch();
