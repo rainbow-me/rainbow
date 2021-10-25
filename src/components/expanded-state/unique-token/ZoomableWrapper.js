@@ -360,11 +360,10 @@ export const ZoomableWrapper = ({
         if (ctx.prevScale) {
           translateX.value +=
             (event.scale / ctx.prevScale - 1) *
-            (containerWidthValue.value / ctx.startScale2 / 2 - ctx.startFocalX);
+            (containerWidthValue.value / ctx.startScale2 - ctx.startFocalX);
           translateY.value +=
             (event.scale / ctx.prevScale - 1) *
-            (containerHeightValue.value / ctx.startScale2 / 2 -
-              ctx.startFocalY);
+            (containerHeightValue.value / ctx.startScale2 - ctx.startFocalY);
         } else {
           ctx.startScale2 = scale.value;
         }
