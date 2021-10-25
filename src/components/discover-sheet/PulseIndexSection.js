@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -55,6 +56,7 @@ const PulseIndex = () => {
       nativeCurrency
     );
 
+    analytics.track('Discover: Pressed DPI Button');
     navigate(Routes.TOKEN_INDEX_SHEET, {
       asset,
       backgroundOpacity: 1,

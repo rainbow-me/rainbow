@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { findIndex, keys, times, toLower } from 'lodash';
 import React, {
   Fragment,
@@ -232,6 +233,10 @@ export default function ListSection() {
 
   const handlePress = useCallback(
     item => {
+      analytics.track('Discover: Pressed List Item', {
+        selectedList,
+        symbol: item.symbol,
+      });
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: item,
         fromDiscover: true,
@@ -239,7 +244,7 @@ export default function ListSection() {
         type: 'token',
       });
     },
-    [navigate]
+    [navigate, selectedList]
   );
 
   const itemProps = useMemo(
