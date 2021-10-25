@@ -145,19 +145,19 @@ export const ZoomableWrapper = ({
         {
           translateY:
             animationProgress.value *
-            (yDisplacement.value + (deviceHeight - fullSizeHeight) / 2 - 88),
-        },
-        {
-          scale:
-            1 +
-            animationProgress.value *
-              (fullSizeHeight / (containerHeightValue.value ?? 1) - 1),
+            (yDisplacement.value + (deviceHeight - fullSizeHeight) / 2 - 85),
         },
         {
           translateY:
             (animationProgress.value *
               (fullSizeHeight - containerHeightValue.value)) /
             2,
+        },
+        {
+          scale:
+            1 +
+            animationProgress.value *
+              (fullSizeHeight / (containerHeightValue.value ?? 1) - 1),
         },
       ],
     }),
@@ -346,9 +346,16 @@ export const ZoomableWrapper = ({
       if (!ctx.initEventScale) {
         ctx.initEventScale = event.scale;
       }
+
+      const yFocalAdjustment =
+        yDisplacement.value +
+        (deviceHeight - containerHeightValue.value) / 2 -
+        85;
+
       if (!ctx.startFocalX) {
         ctx.startFocalX = -translateX.value + event.focalX / scale.value;
-        ctx.startFocalY = -translateY.value + event.focalY / scale.value;
+        ctx.startFocalY =
+          -translateY.value + event.focalY / scale.value - yFocalAdjustment;
       }
       if (event.numberOfPointers === 2) {
         if (
@@ -364,6 +371,7 @@ export const ZoomableWrapper = ({
             (event.scale / ctx.prevScale - 1) *
             (containerWidthValue.value / ctx.startScale2 / 2 - ctx.startFocalX);
           translateY.value +=
+            zooming *
             (event.scale / ctx.prevScale - 1) *
             (containerHeightValue.value / ctx.startScale2 / 2 -
               ctx.startFocalY);
