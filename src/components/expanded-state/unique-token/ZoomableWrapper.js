@@ -347,15 +347,9 @@ export const ZoomableWrapper = ({
         ctx.initEventScale = event.scale;
       }
 
-      const yFocalAdjustment =
-        yDisplacement.value +
-        (deviceHeight - containerHeightValue.value) / 2 -
-        85;
-
       if (!ctx.startFocalX) {
         ctx.startFocalX = -translateX.value + event.focalX / scale.value;
-        ctx.startFocalY =
-          -translateY.value + event.focalY / scale.value - yFocalAdjustment;
+        ctx.startFocalY = -translateY.value + event.focalY / scale.value;
       }
       if (event.numberOfPointers === 2) {
         if (
@@ -528,48 +522,48 @@ export const ZoomableWrapper = ({
             simultaneousHandlers={[blockingPan, pinch]}
           >
             <Animated.View>
-              <PinchGestureHandler
-                enabled={!disableAnimations && pinchEnabled}
-                onGestureEvent={pinchGestureHandler}
-                ref={pinch}
-                simultaneousHandlers={[blockingPan, pan]}
-              >
-                <Animated.View>
-                  <TapGestureHandler
-                    numberOfTaps={1}
-                    onHandlerStateChange={singleTapGestureHandler}
-                    ref={singleTap}
-                    simultaneousHandlers={[blockingPan]}
-                    waitFor={isZoomed && doubleTap}
+              <Animated.View>
+                <TapGestureHandler
+                  numberOfTaps={1}
+                  onHandlerStateChange={singleTapGestureHandler}
+                  ref={singleTap}
+                  simultaneousHandlers={[blockingPan]}
+                  waitFor={isZoomed && doubleTap}
+                >
+                  <ZoomContainer
+                    height={containerHeight}
+                    width={containerWidth}
                   >
-                    <ZoomContainer
-                      height={containerHeight}
-                      width={containerWidth}
-                    >
-                      <GestureBlocker
-                        containerHeight={containerHeight}
-                        containerWidth={containerWidth}
-                        height={deviceHeight}
-                        pointerEvents={isZoomed ? 'auto' : 'none'}
-                        width={deviceWidth}
-                      />
-                      <Animated.View style={[StyleSheet.absoluteFillObject]}>
-                        <TapGestureHandler
-                          enabled={!disableAnimations && isZoomed}
-                          maxDelayMs={420}
-                          maxDist={50}
-                          maxDurationMs={420}
-                          maxPointers={1}
-                          numberOfTaps={2}
-                          onHandlerStateChange={doubleTapGestureHandler}
-                          ref={doubleTap}
-                          waitFor={pinch}
+                    <GestureBlocker
+                      containerHeight={containerHeight}
+                      containerWidth={containerWidth}
+                      height={deviceHeight}
+                      pointerEvents={isZoomed ? 'auto' : 'none'}
+                      width={deviceWidth}
+                    />
+                    <Animated.View style={[StyleSheet.absoluteFillObject]}>
+                      <TapGestureHandler
+                        enabled={!disableAnimations && isZoomed}
+                        maxDelayMs={420}
+                        maxDist={50}
+                        maxDurationMs={420}
+                        maxPointers={1}
+                        numberOfTaps={2}
+                        onHandlerStateChange={doubleTapGestureHandler}
+                        ref={doubleTap}
+                        waitFor={pinch}
+                      >
+                        <Container
+                          style={[
+                            containerStyle,
+                            StyleSheet.absoluteFillObject,
+                          ]}
                         >
-                          <Container
-                            style={[
-                              containerStyle,
-                              StyleSheet.absoluteFillObject,
-                            ]}
+                          <PinchGestureHandler
+                            enabled={!disableAnimations && pinchEnabled}
+                            onGestureEvent={pinchGestureHandler}
+                            ref={pinch}
+                            simultaneousHandlers={[blockingPan, pan]}
                           >
                             <ImageWrapper
                               style={[
@@ -580,13 +574,13 @@ export const ZoomableWrapper = ({
                             >
                               {children}
                             </ImageWrapper>
-                          </Container>
-                        </TapGestureHandler>
-                      </Animated.View>
-                    </ZoomContainer>
-                  </TapGestureHandler>
-                </Animated.View>
-              </PinchGestureHandler>
+                          </PinchGestureHandler>
+                        </Container>
+                      </TapGestureHandler>
+                    </Animated.View>
+                  </ZoomContainer>
+                </TapGestureHandler>
+              </Animated.View>
             </Animated.View>
           </PanGestureHandler>
         </Animated.View>
