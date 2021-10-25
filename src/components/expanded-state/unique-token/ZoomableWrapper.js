@@ -327,7 +327,6 @@ export const ZoomableWrapper = ({
     onFail: endGesture,
     onStart: (_, ctx) => {
       ctx.startScale = scale.value;
-      ctx.startX = translateX.value;
       ctx.startY = translateY.value;
     },
   });
@@ -345,6 +344,10 @@ export const ZoomableWrapper = ({
       if (!ctx.initEventScale) {
         ctx.initEventScale = event.scale;
       }
+      if (!ctx.startFocalX) {
+        ctx.startFocalX = -translateX.value + event.focalX / scale.value;
+        ctx.startFocalY = -translateY.value + event.focalY / scale.value;
+      }
       if (event.numberOfPointers === 2) {
         if (
           isZoomedValue.value &&
@@ -357,10 +360,13 @@ export const ZoomableWrapper = ({
         if (ctx.prevScale) {
           translateX.value +=
             (event.scale / ctx.prevScale - 1) *
-            (containerWidthValue.value / ctx.startScale / 2 - ctx.startFocalX);
+            (containerWidthValue.value / ctx.startScale2 / 2 - ctx.startFocalX);
           translateY.value +=
             (event.scale / ctx.prevScale - 1) *
-            (containerHeightValue.value / ctx.startScale / 2 - ctx.startFocalY);
+            (containerHeightValue.value / ctx.startScale2 / 2 -
+              ctx.startFocalY);
+        } else {
+          ctx.startScale2 = scale.value;
         }
 
         ctx.prevTranslateX = translateX.value;
@@ -378,10 +384,6 @@ export const ZoomableWrapper = ({
     onFinish: endGesture,
     onStart: (event, ctx) => {
       ctx.startScale = scale.value;
-      ctx.startX = translateX.value;
-      ctx.startY = translateY.value;
-      ctx.startFocalX = -translateX.value + event.focalX / scale.value;
-      ctx.startFocalY = -translateY.value + event.focalY / scale.value;
       ctx.blockExitZoom = false;
     },
   });
