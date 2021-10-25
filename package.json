@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.5.28-1",
+  "version": "1.5.29-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn allow-scripts && yarn postinstall",
@@ -266,7 +266,7 @@
     "babel-plugin-rewire": "1.2.0",
     "babel-plugin-styled-components": "1.11.1",
     "babel-plugin-transform-remove-console": "6.9.4",
-    "detox": "18.20.2",
+    "detox": "18.22.1",
     "dotenv": "8.2.0",
     "eslint": "7.32.0",
     "eslint-config-rainbow": "2.0.0",
