@@ -36,7 +36,9 @@ const AssetList = ({
       fetchData={fetchData}
       hideHeader={hideHeader}
       isBlockingUpdate={isBlockingUpdate}
-      paddingBottom={insets.bottom + FabSizeWithPadding - ListFooter.height}
+      paddingBottom={
+        insets.bottom + FabSizeWithPadding - ListFooter.height + (android && 60)
+      }
       scrollViewTracker={scrollViewTracker}
       sections={sections}
       setIsBlockingUpdate={setIsBlockingUpdate}
