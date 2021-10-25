@@ -354,10 +354,8 @@ export const ZoomableWrapper = ({
           ctx.blockExitZoom = true;
         }
         scale.value = ctx.startScale * (event.scale / ctx.initEventScale);
-        translateX.value =
-          ctx.startX + (event.focalX - ctx.startFocalX) * event.scale;
-        translateY.value =
-          ctx.startY + (event.focalY - ctx.startFocalY) * event.scale;
+        translateX.value = ctx.startX + (event.focalX - ctx.startFocalX);
+        translateY.value = ctx.startY + (event.focalY - ctx.startFocalY);
         ctx.prevTranslateX = translateX.value;
         ctx.prevTranslateY = translateY.value;
         ctx.prevScale = event.scale;
