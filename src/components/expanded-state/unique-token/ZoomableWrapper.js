@@ -151,7 +151,7 @@ export const ZoomableWrapper = ({
           scale:
             1 +
             animationProgress.value *
-              (fullSizeHeight / containerHeightValue.value - 1),
+              (fullSizeHeight / (containerHeightValue.value ?? 1) - 1),
         },
         {
           translateY:
