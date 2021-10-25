@@ -143,10 +143,8 @@ const PulseIndex = () => {
           </Row>
         </View>
       </ButtonPressAnimation>
-      <Row
-        as={ButtonPressAnimation}
+      <ButtonPressAnimation
         flex={1}
-        justify="space-between"
         marginBottom={30}
         marginTop={android ? 4 : 8}
         onPress={handlePress}
@@ -155,44 +153,46 @@ const PulseIndex = () => {
           marginHorizontal: 34,
         }}
       >
-        <Text
-          color={colors.dpiLight}
-          numberOfLines={1}
-          size="smedium"
-          weight="semibold"
-        >
-          Trading at{' '}
+        <Row justify="space-between">
           <Text
             color={colors.dpiLight}
-            letterSpacing="roundedMedium"
             numberOfLines={1}
-            size="smedium"
-            weight="bold"
-          >
-            {item.price}
-          </Text>
-        </Text>
-        <Text
-          align="right"
-          color={item.isPositive ? colors.green : colors.red}
-          letterSpacing="roundedMedium"
-          numberOfLines={1}
-          {...fontWithWidth(font.weight.bold)}
-          size="smedium"
-          weight="bold"
-        >
-          {item.isPositive ? `↑` : `↓`} {item.change}
-          <Text
-            align="right"
-            color={item.isPositive ? colors.green : colors.red}
             size="smedium"
             weight="semibold"
           >
-            {' '}
-            today
+            Trading at{' '}
+            <Text
+              color={colors.dpiLight}
+              letterSpacing="roundedMedium"
+              numberOfLines={1}
+              size="smedium"
+              weight="bold"
+            >
+              {item.price}
+            </Text>
           </Text>
-        </Text>
-      </Row>
+          <Text
+            align="right"
+            color={item.isPositive ? colors.green : colors.red}
+            letterSpacing="roundedMedium"
+            numberOfLines={1}
+            {...fontWithWidth(font.weight.bold)}
+            size="smedium"
+            weight="bold"
+          >
+            {item.isPositive ? `↑` : `↓`} {item.change}
+            <Text
+              align="right"
+              color={item.isPositive ? colors.green : colors.red}
+              size="smedium"
+              weight="semibold"
+            >
+              {' '}
+              today
+            </Text>
+          </Text>
+        </Row>
+      </ButtonPressAnimation>
     </Fragment>
   );
 };
