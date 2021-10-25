@@ -7,6 +7,8 @@ import { buildUniqueTokenName } from '../../../helpers/assets';
 import { ButtonPressAnimation } from '../../animations';
 import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import { Text, TruncatedText } from '../../text';
+import saveToCameraRoll from './saveToCameraRoll';
+import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   useAccountProfile,
   useClipboard,
@@ -23,6 +25,7 @@ import logger from 'logger';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
+  download: 'download',
   etherscan: 'etherscan',
   rainbowWeb: 'rainbowWeb',
 };
@@ -50,6 +53,14 @@ const AssetActions = {
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'square.on.square',
+    },
+  },
+  [AssetActionsEnum.download]: {
+    actionKey: AssetActionsEnum.download,
+    actionTitle: 'Save on device',
+    icon: {
+      iconType: 'SYSTEM',
+      iconValue: 'square.and.arrow.down',
     },
   },
 };
@@ -181,6 +192,8 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
     };
   }, [asset, formattedCollectionUrl]);
 
+  const isSVG = isSupportedUriExtension(asset.image_url, ['.svg']);
+
   const assetMenuConfig = useMemo(() => {
     return {
       menuItems: [
@@ -196,10 +209,17 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
           discoverabilityTitle:
             asset.id.length > 15 ? `${asset.id.slice(0, 15)}...` : asset.id,
         },
+        ...(!isSVG
+          ? [
+              {
+                ...AssetActions[AssetActionsEnum.download],
+              },
+            ]
+          : []),
       ],
       menuTitle: '',
     };
-  }, [asset.id]);
+  }, [asset.id, isSVG]);
 
   const handlePressFamilyMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -235,6 +255,8 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
       } else if (actionKey === AssetActionsEnum.copyTokenID) {
         setClipboard(asset.id);
+      } else if (actionKey === AssetActionsEnum.download) {
+        saveToCameraRoll(asset.image_url);
       }
     },
     [accountAddress, accountENS, asset, setClipboard]
