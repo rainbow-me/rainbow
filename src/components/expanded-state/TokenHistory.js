@@ -3,8 +3,10 @@ import { Column, Row } from '../layout';
 import { apiGetTokenHistory } from '@rainbow-me/handlers/opensea-api';
 import { FlatList } from "react-native";
 import logger from 'logger';
+import { abbreviations } from '../../utils';
 import RadialGradient from 'react-native-radial-gradient';
 import { MarkdownText, Text } from '../text';
+import  web3Provider from '@rainbow-me/handlers/web3';
 import { getHumanReadableDate } from '@rainbow-me/helpers/transactions';
 
 /**
@@ -49,8 +51,379 @@ const TokenHistory = ({
     });
   }, [contractAddress, tokenID]);
 
+  // const renderItem = ({ item }) => {
+  //   const date = getHumanReadableDate(new Date(item.created_date).getTime()/1000);
+    
+  // };
+
   const renderItem = ({ item }) => {
     const date = getHumanReadableDate(new Date(item.created_date).getTime()/1000);
+      if (item.event_type == "transfer") {
+        if (item.from_account == "0x0000000000000000000000000000000000000000") {
+          return (
+            <Column>
+              <Column>
+                <Text
+                      align="right"
+                      color={'#FFFFFF'}
+                      lineHeight="loosest"
+                      size="smedium"
+                      weight="heavy"
+                    >
+                  .     
+                </Text>
+              </Column>
+              <Row>
+                <Text
+                  align="right"
+                  color={color}
+                  lineHeight="loosest"
+                  size="smedium"
+                  weight="heavy"
+                >
+                {date}
+                </Text>
+              </Row>
+              <Row>
+                <Text
+                    align="right"
+                    color={color}
+                    lineHeight="loosest"
+                    size="smedium"
+                    weight="heavy"
+                  >
+                  􀎛
+                </Text>
+                <Text
+                    align="right"
+                    color={'#FFFFFF'}
+                    lineHeight="loosest"
+                    size="smedium"
+                    weight="heavy"
+                  >
+                  Minted
+                </Text>
+              </Row>
+              <Column>
+                <Text
+                      align="right"
+                      color={'#FFFFFF'}
+                      lineHeight="loosest"
+                      size="smedium"
+                      weight="heavy"
+                    >
+                  .     
+                </Text>
+              </Column>
+            </Column>
+          )
+        }
+        else {
+          return (
+            <Column>
+            <Column>
+                <Text
+                      align="right"
+                      color={'#FFFFFF'}
+                      lineHeight="loosest"
+                      size="smedium"
+                      weight="heavy"
+                    >
+                  .     
+                </Text>
+              </Column>
+              <Row>
+                <Text
+                  align="right"
+                  color={color}
+                  lineHeight="loosest"
+                  size="smedium"
+                  weight="heavy"
+                >
+                {date}
+                </Text>
+              </Row>
+              <Row>
+                <Text
+                    align="right"
+                    color={color}
+                    lineHeight="loosest"
+                    size="smedium"
+                    weight="heavy"
+                  >
+                  􀈠
+                </Text>
+                <Text
+                    align="right"
+                    color={'#FFFFFF'}
+                    lineHeight="loosest"
+                    size="smedium"
+                    weight="heavy"
+                  >
+                  Sent to {abbreviations.address(item.to_account, 2)};
+                </Text>
+                
+              </Row>
+              <Column>
+                <Text
+                      align="right"
+                      color={'#FFFFFF'}
+                      lineHeight="loosest"
+                      size="smedium"
+                      weight="heavy"
+                    >
+                  .     
+                </Text>
+              </Column>
+          </Column>
+          );
+        }
+      }
+      else if (item.event_type == "successful") {
+        return (
+          <Column>
+            <Column>
+                <Text
+                      align="right"
+                      color={'#FFFFFF'}
+                      lineHeight="loosest"
+                      size="smedium"
+                      weight="heavy"
+                    >
+                  .     
+                </Text>
+              </Column>
+              <Row>
+                <Text
+                  align="right"
+                  color={color}
+                  lineHeight="loosest"
+                  size="smedium"
+                  weight="heavy"
+                >
+                {date}     
+                </Text>
+              </Row>
+              <Row>
+                <Text
+                    align="right"
+                    color={color}
+                    lineHeight="loosest"
+                    size="smedium"
+                    weight="heavy"
+                  >
+                  􀋢 
+                </Text>
+                <Text
+                    align="right"
+                    color={'#FFFFFF'}
+                    lineHeight="loosest"
+                    size="smedium"
+                    weight="heavy"
+                  >
+                  Sold for {item.sale_amount} ETH
+                </Text>
+              </Row>
+              <Column>
+                <Text
+                    align="right"
+                    color={'#FFFFFF'}
+                    lineHeight="loosest"
+                    size="smedium"
+                    weight="heavy"
+                  >
+                  .     
+                </Text>
+              </Column>
+          </Column>
+        )
+      }
+      else if (item.event_type == "created") {
+        return (
+          <Column>
+            <Column>
+                <Text
+                      align="right"
+                      color={'#FFFFFF'}
+                      lineHeight="loosest"
+                      size="smedium"
+                      weight="heavy"
+                    >
+                  .     
+                </Text>
+              </Column>
+              <Row>
+                <Text
+                  align="right"
+                  color={color}
+                  lineHeight="loosest"
+                  size="smedium"
+                  weight="heavy"
+                >
+                {date}     
+                </Text>
+              </Row>
+              <Row>
+                <Text
+                    align="right"
+                    color={color}
+                    lineHeight="loosest"
+                    size="smedium"
+                    weight="heavy"
+                  >
+                  􀎧
+                </Text>
+                <Text
+                    align="right"
+                    color={'#FFFFFF'}
+                    lineHeight="loosest"
+                    size="smedium"
+                    weight="heavy"
+                  >
+                  Listed for {item.list_amount} ETH
+                </Text>
+              </Row>
+              <Column>
+                <Text
+                    align="right"
+                    color={'#FFFFFF'}
+                    lineHeight="loosest"
+                    size="smedium"
+                    weight="heavy"
+                  >
+                  .     
+                </Text>
+              </Column>
+          </Column>
+        )
+      }
+      else {
+        return (
+          <Column>
+            <Column>
+                <Text
+                      align="right"
+                      color={'#FFFFFF'}
+                      lineHeight="loosest"
+                      size="smedium"
+                      weight="heavy"
+                    >
+                  .     
+                </Text>
+              </Column>
+              <Row>
+                <Text
+                  align="right"
+                  color={color}
+                  lineHeight="loosest"
+                  size="smedium"
+                  weight="heavy"
+                >
+                {date}     
+                </Text>
+              </Row>
+              <Row>
+                <Text
+                    align="right"
+                    color={color}
+                    lineHeight="loosest"
+                    size="smedium"
+                    weight="heavy"
+                  >
+                  􀎩
+                </Text>
+                <Text
+                    align="right"
+                    color={'#FFFFFF'}
+                    lineHeight="loosest"
+                    size="smedium"
+                    weight="heavy"
+                  >
+                  Delisted
+                </Text>
+              </Row>
+              <Column>
+                <Text
+                    align="right"
+                    color={'#FFFFFF'}
+                    lineHeight="loosest"
+                    size="smedium"
+                    weight="heavy"
+                  >
+                  .     
+                </Text>
+              </Column>
+          </Column>
+        )
+      }
+        
+  };
+
+  const renderTransferEventType = ({ item }) => {
+    if (item.from_account == "0x0000000000000000000000000000000000000000") {
+      return (
+        <Column>
+          <Row>
+            <Text
+              align="right"
+              color={color}
+              lineHeight="loosest"
+              size="smedium"
+              weight="heavy"
+            >
+            {date}     |
+            </Text>
+          </Row>
+          <Row>
+            <Text
+                align="right"
+                color={'#FFFFFF'}
+                lineHeight="loosest"
+                size="smedium"
+                weight="heavy"
+              >
+            minted 
+            </Text>
+          </Row>
+        </Column>
+      )
+    }
+    else {
+      return (
+        <Column>
+        <Column>
+          <Row>
+            <Text
+              align="right"
+              color={color}
+              lineHeight="loosest"
+              size="smedium"
+              weight="heavy"
+            >
+            {date}     |
+            </Text>
+          </Row>
+          <Row>
+            <Text
+                align="right"
+                color={'#FFFFFF'}
+                lineHeight="loosest"
+                size="smedium"
+                weight="heavy"
+              >
+            {item.event_type}
+            </Text>
+          </Row>
+        </Column>
+      </Column>
+      );
+    }
+    
+    
+  }
+
+  renderSuccessfulEventType = ({ item, date }) => {
+    logger.log("render successful");
     return (
       <Column>
         <Column>
@@ -62,7 +435,7 @@ const TokenHistory = ({
               size="smedium"
               weight="heavy"
             >
-            {date}     | 􀋢 Sold for 1.8 ETH
+            {date}     |
             </Text>
           </Row>
           <Row>
@@ -79,79 +452,71 @@ const TokenHistory = ({
         </Column>
       </Column>
       
-
-    );
-  };
-  // const renderItem = ({ item }) => {
-  //   switch (item.event_type) {
-  //     case "created":
-  //       renderCreatedEventType(item);
-  //       break;
-  //     case "successful":
-  //       renderSuccessfulEventType(item);
-  //       break;
-  //     case "cancelled": 
-  //       renderCancelledEventType(item);
-  //       break;
-  //     case "transfer":
-  //       renderTransferEventType(item);
-  //       break;
-  //     default:
-  //       return (
-  //         <Column>
-  //           <Row>
-  //             <Text color={'#FFFFFF'}>{item.event_type}</Text>
-  //           </Row>
-  //         </Column>
-  //       )
-  //   }
-  // };
-
-  renderCreatedEventType = ({ item }) => {
-    logger.log("render created");
-    return (
-      <Column>
-        <Row>
-          <Text color={'#FFFFFF'}>sold on {item.created_date}</Text>
-        </Row>
-      </Column>
-      
     );
   }
 
-  renderSuccessfulEventType = ({ item }) => {
-    logger.log("render successful");
-    return (
-      <Column>
-        <Row>
-          <Text color={'#FFFFFF'}>listed on {item.created_date}</Text>
-        </Row>
-      </Column>
-      
-    );
-  }
-
-  renderCancelledEventType = ({ item }) => {
+  renderCancelledEventType = ({ item, date }) => {
     logger.log("render cancelled");
     return (
       <Column>
-        <Row>
-          <Text color={'#FFFFFF'}>delisted on {item.created_date}</Text>
-        </Row>
+        <Column>
+          <Row>
+            <Text
+              align="right"
+              color={color}
+              lineHeight="loosest"
+              size="smedium"
+              weight="heavy"
+            >
+            {date}     |
+            </Text>
+          </Row>
+          <Row>
+            <Text
+                align="right"
+                color={'#FFFFFF'}
+                lineHeight="loosest"
+                size="smedium"
+                weight="heavy"
+              >
+            {item.event_type}
+            </Text>
+          </Row>
+        </Column>
       </Column>
       
     );
   }
 
-  renderTransferEventType = ({ item }) => {
+  renderCreatedEventType = ({ item, date }) => {
     logger.log("render transfer");
     return (
       <Column>
-        <Row>
-          <Text color={'#FFFFFF'}>sent on {item.created_date}</Text>
-        </Row>
+        <Column>
+          <Row>
+            <Text
+              align="right"
+              color={color}
+              lineHeight="loosest"
+              size="smedium"
+              weight="heavy"
+            >
+            {date}     |
+            </Text>
+          </Row>
+          <Row>
+            <Text
+                align="right"
+                color={'#FFFFFF'}
+                lineHeight="loosest"
+                size="smedium"
+                weight="heavy"
+              >
+            {item.event_type}
+            </Text>
+          </Row>
+        </Column>
       </Column>
-      
     );
   }
 

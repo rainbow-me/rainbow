@@ -67,6 +67,7 @@ export const apiGetTokenHistory = async (
 ) => {
   try {
     const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=299`;
+    logger.log(url);
     const data = await rainbowFetch(url, {
       headers: {
         'Accept': 'application/json',
@@ -80,28 +81,29 @@ export const apiGetTokenHistory = async (
     var offset = 0;
     var tempResponse = array;
 
-    while (tempResponse.length != 0) {
-      var urlPage = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`;
-      var nextPage = await rainbowFetch(urlPage, {
-        headers: {
-          'Accept': 'application/json',
-          'X-Api-Key': OPENSEA_API_KEY,
-        },
-        method: 'get',
-        timeout: 10000, // 10 secs
-      })
-
-      tempResponse = nextPage.data.asset_events;
-      array.concat(tempResponse);
-      offset += array.length;
+    if (array.length == 299) {
+      while (tempResponse.length != 0) {
+        var urlPage = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`;
+        var nextPage = await rainbowFetch(urlPage, {
+          headers: {
+            'Accept': 'application/json',
+            'X-Api-Key': OPENSEA_API_KEY,
+          },
+          method: 'get',
+          timeout: 10000, // 10 secs
+        })
+  
+        tempResponse = nextPage.data.asset_events;
+        array = array.concat(tempResponse);
+        offset = array.length + 1;
+      }
     }
 
     logger.log(array.length);
     
-    const result = await array.filter(function(event) {
+    const result =  array.filter(function(event) {
       //TODO: Error handling?
       var event_type = event.event_type;
-      logger.log("filtered event: " + event_type);
       if (event_type == "created" || event_type == "transfer" || event_type == "successful" || event_type == "cancelled") {
         return true;
       }
@@ -109,19 +111,76 @@ export const apiGetTokenHistory = async (
       
     })
     .map(function(event) {
-      //TODO: Based on event, craft event object with different fields
       var event_type = event.event_type;
-      var created_date = event.created_date;
-      logger.log("mapped event: " + event.event_type);
-      logger.log("mapped date: " + created_date);
+      var eventObject;
+      if (event_type == "created") {
+        var created_date = event.created_date;
+        var from_account = "0x123";
+        var to_account = "0x123";
+        var sale_amount = "0";
+        var tempList = parseInt(event.starting_price / 1000000000000000000);
+        var list_amount = tempList.toString();
 
-      const eventObject = {
-        event_type,
-        created_date,
-      };
+        eventObject = {
+          event_type,
+          created_date,
+          from_account,
+          to_account,
+          sale_amount,
+          list_amount
+        };
+      }
+      else if (event_type == "transfer") {
+        var created_date = event.created_date;
+        var from_account = event.from_account.address;
+        var to_account = event.to_account.address;
+        var sale_amount = "0";
+        var list_amount = "0";
 
-      return eventObject;
+        eventObject = {
+          event_type,
+          created_date,
+          from_account,
+          to_account,
+          sale_amount,
+          list_amount
+        };
+      }
+      else if (event_type == "successful") {
+        var created_date = event.created_date;
+        var from_account = "0x123";
+        var to_account = "0x123";
+        var tempSale = parseInt(event.total_price / 1000000000000000000);
+        var sale_amount = tempSale.toString();
+        var list_amount = "0";
+
+        eventObject = {
+          event_type,
+          created_date,
+          from_account,
+          to_account,
+          sale_amount,
+          list_amount
+        };
+      }
+      else if (event_type == "cancelled") {
+        var created_date = event.created_date;
+        var from_account = "0x123";
+        var to_account = "0x123";
+        var sale_amount = "0";
+        var list_amount = "0";
+
+        eventObject = {
+          event_type,
+          created_date,
+          from_account,
+          to_account,
+          sale_amount,
+          list_amount
+        };
+      }
       
+      return eventObject;
     })
 
     logger.log("ressy");
@@ -158,7 +217,7 @@ export const apiGetTokenHistory = async (
 
     while (tempResponse.length != 0) {
       var urlPage = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`;
-      logger.log(urlPage + " url2");
+      // logger.log(urlPage + " url2");
       var nextPage = await rainbowFetch(urlPage, {
         headers: {
           'Accept': 'application/json',
@@ -169,9 +228,9 @@ export const apiGetTokenHistory = async (
       })
 
       tempResponse = nextPage.data.asset_events;
-      array.concat(tempResponse);
+      array = array.concat(tempResponse);
       offset += array.length;
-      logger.log("length " +  offset);
+      // logger.log("length " +  offset);
     }
 
     return array;
