@@ -7,7 +7,11 @@ import { buildUniqueTokenName } from '../../../helpers/assets';
 import { ButtonPressAnimation } from '../../animations';
 import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import { Text, TruncatedText } from '../../text';
-import { useAccountProfile, useDimensions } from '@rainbow-me/hooks';
+import {
+  useAccountProfile,
+  useClipboard,
+  useDimensions,
+} from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { padding, position } from '@rainbow-me/styles';
 import {
@@ -18,6 +22,7 @@ import {
 import logger from 'logger';
 
 const AssetActionsEnum = {
+  copyTokenID: 'copyTokenID',
   etherscan: 'etherscan',
   rainbowWeb: 'rainbowWeb',
 };
@@ -37,6 +42,14 @@ const AssetActions = {
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'safari.fill',
+    },
+  },
+  [AssetActionsEnum.copyTokenID]: {
+    actionKey: AssetActionsEnum.copyTokenID,
+    actionTitle: 'Copy Token ID',
+    icon: {
+      iconType: 'SYSTEM',
+      iconValue: 'square.on.square',
     },
   },
 };
@@ -134,8 +147,8 @@ const HeadingColumn = styled(ColumnWithMargins).attrs({
 
 const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
   const { accountAddress, accountENS } = useAccountProfile();
+  const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
-
   const { colors } = useTheme();
 
   const formattedCollectionUrl = useMemo(() => {
@@ -178,10 +191,15 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         {
           ...AssetActions[AssetActionsEnum.etherscan],
         },
+        {
+          ...AssetActions[AssetActionsEnum.copyTokenID],
+          discoverabilityTitle:
+            asset.id.length > 15 ? `${asset.id.slice(0, 15)}...` : asset.id,
+        },
       ],
       menuTitle: '',
     };
-  }, []);
+  }, [asset.id]);
 
   const handlePressFamilyMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -215,9 +233,11 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         );
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
         Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
+      } else if (actionKey === AssetActionsEnum.copyTokenID) {
+        setClipboard(asset.id);
       }
     },
-    [accountAddress, accountENS, asset]
+    [accountAddress, accountENS, asset, setClipboard]
   );
 
   const onPressAndroid = useCallback(() => {
