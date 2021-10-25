@@ -179,6 +179,8 @@ export const ZoomableWrapper = ({
 
     ctx.initEventScale = undefined;
     ctx.prevScale = undefined;
+    ctx.startFocalX = undefined;
+    ctx.startFocalY = undefined;
     ctx.prevTranslateX = 0;
     ctx.prevTranslateY = 0;
     // if zoom state was entered by pinching, adjust targetScale to account for new image dimensions
@@ -360,10 +362,11 @@ export const ZoomableWrapper = ({
         if (ctx.prevScale) {
           translateX.value +=
             (event.scale / ctx.prevScale - 1) *
-            (containerWidthValue.value / ctx.startScale2 - ctx.startFocalX);
+            (containerWidthValue.value / ctx.startScale2 / 2 - ctx.startFocalX);
           translateY.value +=
             (event.scale / ctx.prevScale - 1) *
-            (containerHeightValue.value / ctx.startScale2 - ctx.startFocalY);
+            (containerHeightValue.value / ctx.startScale2 / 2 -
+              ctx.startFocalY);
         } else {
           ctx.startScale2 = scale.value;
         }
