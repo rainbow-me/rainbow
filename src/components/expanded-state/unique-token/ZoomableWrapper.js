@@ -508,8 +508,9 @@ export const ZoomableWrapper = ({
       >
         <Animated.View>
           <PanGestureHandler
-            enabled={!disableAnimations && isZoomed}
+            enabled={!disableAnimations}
             maxPointers={2}
+            minPointers={isZoomed ? 1 : 2}
             onGestureEvent={panGestureHandler}
             ref={pan}
             simultaneousHandlers={[blockingPan, pinch]}
