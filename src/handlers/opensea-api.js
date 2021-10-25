@@ -67,7 +67,6 @@ export const apiGetTokenHistory = async (
 ) => {
   try {
     const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=299`;
-    logger.log(url);
     const data = await rainbowFetch(url, {
       headers: {
         'Accept': 'application/json',
@@ -77,37 +76,56 @@ export const apiGetTokenHistory = async (
       timeout: 10000, // 10 secs
     })
 
-    const array = data.data.asset_events;
+    var array = data.data.asset_events;
+    var offset = 0;
+    var tempResponse = array;
 
-    const result = 
-      await array.filter(function(event) {
-        //TODO: If events are maxed out and there are no mappable events, run the next X amount
-        //TODO: Error handling?
-        var event_type = event.event_type;
-        logger.log("filtered event: " + event_type);
-        if (event_type == "created" || event_type == "transfer" || event_type == "successful" || event_type == "cancelled") {
-          return true;
-        }
-        return false;
-        
-      })
-      .map(function(event) {
-        //TODO: Based on event, craft event object with different fields
-        var event_type = event.event_type;
-        var created_date = event.created_date;
-        logger.log("mapped event: " + event.event_type);
-        logger.log("mapped date: " + created_date);
-
-        const eventObject = {
-          event_type,
-          created_date,
-        };
-
-        return eventObject;
-        
+    while (tempResponse.length != 0) {
+      var urlPage = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`;
+      var nextPage = await rainbowFetch(urlPage, {
+        headers: {
+          'Accept': 'application/json',
+          'X-Api-Key': OPENSEA_API_KEY,
+        },
+        method: 'get',
+        timeout: 10000, // 10 secs
       })
 
-      return result;
+      tempResponse = nextPage.data.asset_events;
+      array.concat(tempResponse);
+      offset += array.length;
+    }
+
+    logger.log(array.length);
+    
+    const result = await array.filter(function(event) {
+      //TODO: Error handling?
+      var event_type = event.event_type;
+      logger.log("filtered event: " + event_type);
+      if (event_type == "created" || event_type == "transfer" || event_type == "successful" || event_type == "cancelled") {
+        return true;
+      }
+      return false;
+      
+    })
+    .map(function(event) {
+      //TODO: Based on event, craft event object with different fields
+      var event_type = event.event_type;
+      var created_date = event.created_date;
+      logger.log("mapped event: " + event.event_type);
+      logger.log("mapped date: " + created_date);
+
+      const eventObject = {
+        event_type,
+        created_date,
+      };
+
+      return eventObject;
+      
+    })
+
+    logger.log("ressy");
+    return result;
     
   } catch (error) {
     logger.log(error);
@@ -119,7 +137,7 @@ export const apiGetTokenHistory = async (
  * Fetch a tokens entire history
  * 
  */
-  function apiGetAllEventsForToken (
+  async function apiGetAllEventsForToken (
   contractAddress, 
   tokenID) {
 
@@ -139,10 +157,9 @@ export const apiGetTokenHistory = async (
     var tempResponse = array;
 
     while (tempResponse.length != 0) {
-      offset = array.length;
-      const urlPage = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`;
-      // logger.log(url);
-      const nextPage = await rainbowFetch(urlPage, {
+      var urlPage = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`;
+      logger.log(urlPage + " url2");
+      var nextPage = await rainbowFetch(urlPage, {
         headers: {
           'Accept': 'application/json',
           'X-Api-Key': OPENSEA_API_KEY,
@@ -153,6 +170,8 @@ export const apiGetTokenHistory = async (
 
       tempResponse = nextPage.data.asset_events;
       array.concat(tempResponse);
+      offset += array.length;
+      logger.log("length " +  offset);
     }
 
     return array;
