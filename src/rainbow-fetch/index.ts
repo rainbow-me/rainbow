@@ -1,9 +1,7 @@
 export const RAINBOW_FETCH_ERROR = 'rainbowFetchError';
 
 export interface RainbowFetchRequestOpts extends RequestInit {
-  params?: ConstructorParameters<typeof URLSearchParams> extends (infer U)[]
-    ? U
-    : never; // type of first argument of URLSearchParams constructor.
+  params?: ConstructorParameters<typeof URLSearchParams>[0]; // type of first argument of URLSearchParams constructor.
   timeout?: number;
 }
 
