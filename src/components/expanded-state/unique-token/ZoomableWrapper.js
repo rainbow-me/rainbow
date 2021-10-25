@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar, View } from 'react-native';
+import { StatusBar, StyleSheet, View } from 'react-native';
 import {
   PanGestureHandler,
   PinchGestureHandler,
@@ -138,21 +138,30 @@ export const ZoomableWrapper = ({
   const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
   const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
 
-  const containerStyle = useAnimatedStyle(() => ({
-    height:
-      containerHeightValue.value +
-      animationProgress.value * (fullSizeHeight - containerHeightValue.value),
-    transform: [
-      {
-        translateY:
-          animationProgress.value *
-          (yDisplacement.value + (deviceHeight - fullSizeHeight) / 2 - 85),
-      },
-    ],
-    width:
-      containerWidthValue.value +
-      animationProgress.value * (fullSizeWidth - containerWidthValue.value),
-  }));
+  const containerStyle = useAnimatedStyle(
+    () => ({
+      transform: [
+        {
+          translateY:
+            animationProgress.value *
+            (yDisplacement.value + (deviceHeight - fullSizeHeight) / 2 - 85),
+        },
+        {
+          translateY:
+            (animationProgress.value *
+              (fullSizeHeight - containerHeightValue.value)) /
+            2,
+        },
+        {
+          scale:
+            1 +
+            animationProgress.value *
+              (fullSizeHeight / containerHeightValue.value - 1),
+        },
+      ],
+    }),
+    [fullSizeHeight]
+  );
 
   const cornerStyle = useAnimatedStyle(() => ({
     borderRadius: (1 - animationProgress.value) * (borderRadius ?? 16),
@@ -516,7 +525,7 @@ export const ZoomableWrapper = ({
                         pointerEvents={isZoomed ? 'auto' : 'none'}
                         width={deviceWidth}
                       />
-                      <Animated.View>
+                      <Animated.View style={[StyleSheet.absoluteFillObject]}>
                         <TapGestureHandler
                           enabled={!disableAnimations && isZoomed}
                           maxDelayMs={420}
@@ -528,8 +537,19 @@ export const ZoomableWrapper = ({
                           ref={doubleTap}
                           waitFor={pinch}
                         >
-                          <Container style={[containerStyle]}>
-                            <ImageWrapper style={[animatedStyle, cornerStyle]}>
+                          <Container
+                            style={[
+                              containerStyle,
+                              StyleSheet.absoluteFillObject,
+                            ]}
+                          >
+                            <ImageWrapper
+                              style={[
+                                animatedStyle,
+                                cornerStyle,
+                                StyleSheet.absoluteFillObject,
+                              ]}
+                            >
                               {children}
                             </ImageWrapper>
                           </Container>
