@@ -21,6 +21,7 @@ import { position } from '@rainbow-me/styles';
 const pixelRatio = PixelRatio.get();
 
 export const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
+const MAX_IMAGE_SCALE = 4;
 
 const ModelView = styled(SimpleModelView)`
   ${position.size('100%')};
@@ -68,7 +69,7 @@ const UniqueTokenExpandedStateContent = ({
   const size = deviceWidth * pixelRatio;
   const url = useMemo(() => {
     if (asset.image_url?.startsWith?.(GOOGLE_USER_CONTENT_URL) && size > 0) {
-      return `${asset.image_url}=w${size}`;
+      return `${asset.image_url}=w${size * MAX_IMAGE_SCALE}`;
     }
     return asset.image_url;
   }, [asset.image_url, size]);
@@ -79,7 +80,7 @@ const UniqueTokenExpandedStateContent = ({
   const lowResUrl = isENS ? url : getLowResUrl(asset.image_url);
   const { supports3d, supportsVideo, supportsAudio } = useUniqueToken(asset);
 
-  // When rendering a 3D/Video assets, we'll default to rendering a loading icon.
+  // default to showing a loading spinner for 3D/video assets
   const [loading, setLoading] = React.useState(supports3d || supportsVideo);
 
   return (
@@ -90,6 +91,7 @@ const UniqueTokenExpandedStateContent = ({
       disableAnimations={disablePreview}
       horizontalPadding={horizontalPadding}
       isENS={isENS}
+      isSVG={isSVG}
       onZoomIn={sheetRef.current?.scrollTo}
     >
       <View style={StyleSheet.absoluteFill}>
