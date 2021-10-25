@@ -143,15 +143,15 @@ export const ZoomableWrapper = ({
     () => ({
       transform: [
         {
+          translateY:
+            animationProgress.value *
+            (yDisplacement.value + (deviceHeight - fullSizeHeight) / 2 - 88),
+        },
+        {
           scale:
             1 +
             animationProgress.value *
               (fullSizeHeight / containerHeightValue.value - 1),
-        },
-        {
-          translateY:
-            animationProgress.value *
-            (yDisplacement.value + (deviceHeight - fullSizeHeight) / 2 - 85),
         },
         {
           translateY:
