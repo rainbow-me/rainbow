@@ -1,7 +1,9 @@
 export const RAINBOW_FETCH_ERROR = 'rainbowFetchError';
 
-interface RainbowFetchRequestOpts extends RequestInit {
-  params?: URLSearchParams extends (arg: infer R) => any ? R : never;
+export interface RainbowFetchRequestOpts extends RequestInit {
+  params?: ConstructorParameters<typeof URLSearchParams> extends (infer U)[]
+    ? U
+    : never; // type of first argument of URLSearchParams constructor.
   timeout?: number;
 }
 
@@ -13,15 +15,13 @@ export async function rainbowFetch(
   opts: RainbowFetchRequestOpts
 ) {
   opts = {
-    body: undefined,
     headers: {},
     method: 'get',
-    params: undefined,
     timeout: 30000, // 30 secs
     ...opts, // Any other fetch options
   };
 
-  if (!url) throw new Error('fancyFetch: Missing url argument');
+  if (!url) throw new Error('rainbowFetch: Missing url argument');
 
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), opts.timeout);
@@ -104,11 +104,15 @@ function generateError({
   return error;
 }
 
+interface RainbowFetchClientOpts extends RainbowFetchRequestOpts {
+  baseURL?: string;
+}
+
 export class RainbowFetchClient {
   baseURL: string;
   opts: RainbowFetchRequestOpts;
 
-  constructor(opts: { baseURL?: string } = {}) {
+  constructor(opts: RainbowFetchClientOpts = {}) {
     const { baseURL = '', ...otherOpts } = opts;
     this.baseURL = baseURL;
     this.opts = otherOpts;
@@ -157,11 +161,7 @@ export class RainbowFetchClient {
   /**
    * Perform a POST request with the RainbowFetchClient.
    */
-  post(
-    url?: RequestInfo,
-    body?: RequestInit['body'],
-    opts?: RainbowFetchRequestOpts
-  ) {
+  post(url?: RequestInfo, body?: any, opts?: RainbowFetchRequestOpts) {
     return rainbowFetch(`${this.baseURL}${url}`, {
       ...opts,
       body,
@@ -172,11 +172,7 @@ export class RainbowFetchClient {
   /**
    * Perform a PUT request with the RainbowFetchClient.
    */
-  put(
-    url?: RequestInfo,
-    body?: RequestInit['body'],
-    opts?: RainbowFetchRequestOpts
-  ) {
+  put(url?: RequestInfo, body?: any, opts?: RainbowFetchRequestOpts) {
     return rainbowFetch(`${this.baseURL}${url}`, {
       ...opts,
       body,
@@ -187,11 +183,7 @@ export class RainbowFetchClient {
   /**
    * Perform a PATCH request with the RainbowFetchClient.
    */
-  patch(
-    url?: RequestInfo,
-    body?: RequestInit['body'],
-    opts?: RainbowFetchRequestOpts
-  ) {
+  patch(url?: RequestInfo, body?: any, opts?: RainbowFetchRequestOpts) {
     return rainbowFetch(`${this.baseURL}${url}`, {
       ...opts,
       body,
