@@ -137,10 +137,17 @@ export const ZoomableWrapper = ({
 
   const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
   const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
+  const zooming = fullSizeHeight / containerHeightValue.value;
 
   const containerStyle = useAnimatedStyle(
     () => ({
       transform: [
+        {
+          scale:
+            1 +
+            animationProgress.value *
+              (fullSizeHeight / containerHeightValue.value - 1),
+        },
         {
           translateY:
             animationProgress.value *
@@ -152,15 +159,9 @@ export const ZoomableWrapper = ({
               (fullSizeHeight - containerHeightValue.value)) /
             2,
         },
-        {
-          scale:
-            1 +
-            animationProgress.value *
-              (fullSizeHeight / containerHeightValue.value - 1),
-        },
       ],
     }),
-    [fullSizeHeight]
+    [fullSizeHeight, fullSizeWidth]
   );
 
   const cornerStyle = useAnimatedStyle(() => ({
@@ -196,32 +197,39 @@ export const ZoomableWrapper = ({
       breakingScaleY = deviceHeight / containerHeight;
     }
     const maxDisplacementX =
-      (deviceWidth * (Math.max(1, targetScale / breakingScaleX) - 1)) / 2;
+      (deviceWidth * (Math.max(1, targetScale / breakingScaleX) - 1)) /
+      2 /
+      zooming;
     const maxDisplacementY =
-      (deviceHeight * (Math.max(1, targetScale / breakingScaleY) - 1)) / 2;
+      (deviceHeight * (Math.max(1, targetScale / breakingScaleY) - 1)) /
+      2 /
+      zooming;
 
     if (targetScale > breakingScaleX) {
-      isAnimationStartedX = true;
       if (translateX.value > maxDisplacementX) {
+        isAnimationStartedX = true;
         translateX.value = withTiming(maxDisplacementX, adjustConfig);
       }
       if (translateX.value < -maxDisplacementX) {
+        isAnimationStartedX = true;
         translateX.value = withTiming(-maxDisplacementX, adjustConfig);
       }
     } else {
+      isAnimationStartedX = true;
       translateX.value = withTiming(0, adjustConfig);
     }
 
     if (targetScale > breakingScaleY) {
-      isAnimationStartedY = true;
-
       if (translateY.value > maxDisplacementY) {
+        isAnimationStartedY = true;
         translateY.value = withTiming(maxDisplacementY, adjustConfig);
       }
       if (translateY.value < -maxDisplacementY) {
+        isAnimationStartedY = true;
         translateY.value = withTiming(-maxDisplacementY, adjustConfig);
       }
     } else {
+      isAnimationStartedY = true;
       translateY.value = withTiming(0, adjustConfig);
     }
 
@@ -284,7 +292,7 @@ export const ZoomableWrapper = ({
       targetScale = MAX_IMAGE_SCALE;
     }
 
-    if (event.velocityY && isAnimationStartedY) {
+    if (event.velocityY && !isAnimationStartedY) {
       translateY.value = withDecay({
         clamp: [-maxDisplacementY, maxDisplacementY],
         deceleration: 0.97,
@@ -292,7 +300,7 @@ export const ZoomableWrapper = ({
       });
     }
 
-    if (event.velocityX && isAnimationStartedX) {
+    if (event.velocityX && !isAnimationStartedX) {
       translateX.value = withDecay({
         clamp: [-maxDisplacementX, maxDisplacementX],
         deceleration: 0.97,
