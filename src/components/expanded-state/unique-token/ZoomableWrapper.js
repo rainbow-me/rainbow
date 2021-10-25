@@ -354,8 +354,15 @@ export const ZoomableWrapper = ({
           ctx.blockExitZoom = true;
         }
         scale.value = ctx.startScale * (event.scale / ctx.initEventScale);
-        translateX.value = ctx.startX + (event.focalX - ctx.startFocalX);
-        translateY.value = ctx.startY + (event.focalY - ctx.startFocalY);
+        if (ctx.prevScale) {
+          translateX.value +=
+            (event.scale / ctx.prevScale - 1) *
+            (containerWidthValue.value / ctx.startScale / 2 - ctx.startFocalX);
+          translateY.value +=
+            (event.scale / ctx.prevScale - 1) *
+            (containerHeightValue.value / ctx.startScale / 2 - ctx.startFocalY);
+        }
+
         ctx.prevTranslateX = translateX.value;
         ctx.prevTranslateY = translateY.value;
         ctx.prevScale = event.scale;
@@ -373,8 +380,8 @@ export const ZoomableWrapper = ({
       ctx.startScale = scale.value;
       ctx.startX = translateX.value;
       ctx.startY = translateY.value;
-      ctx.startFocalX = event.focalX;
-      ctx.startFocalY = event.focalY;
+      ctx.startFocalX = -translateX.value + event.focalX / scale.value;
+      ctx.startFocalY = -translateY.value + event.focalY / scale.value;
       ctx.blockExitZoom = false;
     },
   });
@@ -502,17 +509,17 @@ export const ZoomableWrapper = ({
         <Animated.View>
           <PanGestureHandler
             enabled={!disableAnimations && isZoomed}
-            maxPointers={1}
+            maxPointers={2}
             onGestureEvent={panGestureHandler}
             ref={pan}
-            simultaneousHandlers={[blockingPan]}
+            simultaneousHandlers={[blockingPan, pinch]}
           >
             <Animated.View>
               <PinchGestureHandler
                 enabled={!disableAnimations && pinchEnabled}
                 onGestureEvent={pinchGestureHandler}
                 ref={pinch}
-                simultaneousHandlers={[blockingPan]}
+                simultaneousHandlers={[blockingPan, pan]}
               >
                 <Animated.View>
                   <TapGestureHandler
