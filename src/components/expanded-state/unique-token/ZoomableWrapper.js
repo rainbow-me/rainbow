@@ -12,6 +12,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   useWorkletCallback,
+  withDecay,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
@@ -163,11 +164,13 @@ export const ZoomableWrapper = ({
 
   const endGesture = useWorkletCallback((event, ctx) => {
     'worklet';
+    let isAnimationStartedX = false;
+    let isAnimationStartedY = false;
+
     ctx.initEventScale = undefined;
     ctx.prevScale = undefined;
     ctx.prevTranslateX = 0;
     ctx.prevTranslateY = 0;
-
     // if zoom state was entered by pinching, adjust targetScale to account for new image dimensions
     let targetScale = isZoomed
       ? Math.min(scale.value, MAX_IMAGE_SCALE)
@@ -183,10 +186,13 @@ export const ZoomableWrapper = ({
       breakingScaleX = deviceWidth / containerWidth;
       breakingScaleY = deviceHeight / containerHeight;
     }
+    const maxDisplacementX =
+      (deviceWidth * (Math.max(1, targetScale / breakingScaleX) - 1)) / 2;
+    const maxDisplacementY =
+      (deviceHeight * (Math.max(1, targetScale / breakingScaleY) - 1)) / 2;
 
     if (targetScale > breakingScaleX) {
-      const maxDisplacementX =
-        (deviceWidth * (targetScale / breakingScaleX - 1)) / 2;
+      isAnimationStartedX = true;
       if (translateX.value > maxDisplacementX) {
         translateX.value = withTiming(maxDisplacementX, adjustConfig);
       }
@@ -198,8 +204,8 @@ export const ZoomableWrapper = ({
     }
 
     if (targetScale > breakingScaleY) {
-      const maxDisplacementY =
-        (deviceHeight * (targetScale / breakingScaleY - 1)) / 2;
+      isAnimationStartedY = true;
+
       if (translateY.value > maxDisplacementY) {
         translateY.value = withTiming(maxDisplacementY, adjustConfig);
       }
@@ -211,6 +217,8 @@ export const ZoomableWrapper = ({
     }
 
     if (!isZoomedValue.value) {
+      isAnimationStartedY = true;
+      isAnimationStartedX = true;
       // handle entering zoom state by pinching
       if (scale.value * containerWidthValue.value >= deviceWidth) {
         const adjustedScale = scale.value / (fullSizeWidth / containerWidth);
@@ -226,6 +234,8 @@ export const ZoomableWrapper = ({
       }
     } else {
       if (scale.value < MIN_IMAGE_SCALE) {
+        isAnimationStartedY = true;
+        isAnimationStartedX = true;
         if (ctx.startScale <= MIN_IMAGE_SCALE && !ctx.blockExitZoom) {
           isZoomedValue.value = false;
           runOnJS(setIsZoomed)(false);
@@ -249,6 +259,8 @@ export const ZoomableWrapper = ({
           THRESHOLD * targetScale &&
         fullSizeHeight * scale.value <= deviceHeight
       ) {
+        isAnimationStartedY = true;
+        isAnimationStartedX = true;
         isZoomedValue.value = false;
         runOnJS(setIsZoomed)(false);
         scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
@@ -261,6 +273,22 @@ export const ZoomableWrapper = ({
     if (scale.value > MAX_IMAGE_SCALE) {
       scale.value = withTiming(MAX_IMAGE_SCALE, adjustConfig);
       targetScale = MAX_IMAGE_SCALE;
+    }
+
+    if (event.velocityY && isAnimationStartedY) {
+      translateY.value = withDecay({
+        clamp: [-maxDisplacementY, maxDisplacementY],
+        deceleration: 0.97,
+        velocity: event.velocityY,
+      });
+    }
+
+    if (event.velocityX && isAnimationStartedX) {
+      translateX.value = withDecay({
+        clamp: [-maxDisplacementX, maxDisplacementX],
+        deceleration: 0.97,
+        velocity: event.velocityX,
+      });
     }
   });
 
