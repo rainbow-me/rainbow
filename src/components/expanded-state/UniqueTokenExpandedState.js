@@ -217,6 +217,7 @@ const UniqueTokenExpandedState = ({
   );
 
   const sheetRef = useRef();
+  const yPosition = useSharedValue(0);
 
   return (
     <Fragment>
@@ -250,6 +251,7 @@ const UniqueTokenExpandedState = ({
           : { additionalTopPadding: true, contentHeight: deviceHeight - 80 })}
         ref={sheetRef}
         scrollEnabled
+        yPosition={yPosition}
       >
         <Centered paddingBottom={30} paddingTop={33}>
           <Animated.View style={sheetHandleStyle}>
@@ -262,6 +264,7 @@ const UniqueTokenExpandedState = ({
           imageColor={imageColorWithFallback}
           lowResUrl={lowResUrl}
           sheetRef={sheetRef}
+          yPosition={yPosition}
         />
         <Animated.View style={opacityStyle}>
           <Row justify="space-between" marginTop={14} paddingHorizontal={19}>

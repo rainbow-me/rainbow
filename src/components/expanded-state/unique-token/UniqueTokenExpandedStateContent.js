@@ -52,7 +52,7 @@ const UniqueTokenExpandedStateContent = ({
   horizontalPadding = 24,
   resizeMode = 'cover',
   disablePreview,
-  sheetRef,
+  yPosition,
 }) => {
   const { width: deviceWidth } = useDimensions();
 
@@ -92,7 +92,7 @@ const UniqueTokenExpandedStateContent = ({
       horizontalPadding={horizontalPadding}
       isENS={isENS}
       isSVG={isSVG}
-      onZoomIn={sheetRef.current?.scrollTo}
+      yDisplacement={yPosition}
     >
       <View style={StyleSheet.absoluteFill}>
         {supportsVideo ? (

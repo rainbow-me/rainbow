@@ -72,7 +72,7 @@ export const ZoomableWrapper = ({
   isSVG,
   borderRadius,
   disableAnimations,
-  onZoomIn,
+  yDisplacement,
 }) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const animationProgress = givenAnimationProgress || useSharedValue(0);
@@ -112,8 +112,6 @@ export const ZoomableWrapper = ({
   const containerHeightValue = useReactiveSharedValue(
     containerHeight || maxImageWidth
   );
-  const yPosition = useSharedValue(0);
-
   const [isZoomed, setIsZoomed] = useState(false);
   const isZoomedValue = useSharedValue(false);
 
@@ -146,8 +144,8 @@ export const ZoomableWrapper = ({
     transform: [
       {
         translateY:
-          yPosition.value +
-          animationProgress.value * ((deviceHeight - fullSizeHeight) / 2 - 85),
+          animationProgress.value *
+          (yDisplacement.value + (deviceHeight - fullSizeHeight) / 2 - 85),
       },
     ],
     width:
@@ -218,7 +216,6 @@ export const ZoomableWrapper = ({
         const adjustedScale = scale.value / (fullSizeWidth / containerWidth);
         isZoomedValue.value = true;
         runOnJS(setIsZoomed)(true);
-        runOnJS(onZoomIn)();
         animationProgress.value = withTiming(1, adjustConfig);
         scale.value = withTiming(adjustedScale, adjustConfig);
       } else {
@@ -342,7 +339,6 @@ export const ZoomableWrapper = ({
       if (!isZoomedValue.value) {
         isZoomedValue.value = true;
         runOnJS(setIsZoomed)(true);
-        runOnJS(onZoomIn)();
         animationProgress.value = withSpring(1, enterConfig);
       } else if (
         scale.value === MIN_IMAGE_SCALE &&
@@ -355,7 +351,6 @@ export const ZoomableWrapper = ({
         // dismiss if tap was outside image bounds
         isZoomedValue.value = false;
         runOnJS(setIsZoomed)(false);
-        runOnJS(onZoomIn)();
         animationProgress.value = withSpring(0, exitConfig);
       }
     },

@@ -92,11 +92,13 @@ export default forwardRef(function SlackSheet(
     showBlur,
     testID,
     removeClippedSubviews = false,
+    yPosition: givenYPosition,
     ...props
   },
   ref
 ) {
-  const yPosition = useSharedValue(0);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const yPosition = givenYPosition || useSharedValue(0);
   const { height: deviceHeight } = useDimensions();
   const { goBack } = useNavigation();
   const insets = useSafeArea();
