@@ -8,7 +8,9 @@ import {
 } from 'react-native';
 import { useHideSplashScreen } from '../../hooks';
 import { Heading, Inline, Inset, Stack } from '../';
+import backgroundDocs from '../components/Background/Background.docs';
 import bleedDocs from '../components/Bleed/Bleed.docs';
+import boxDocs from '../components/Box/Box.docs';
 import columnsDocs from '../components/Columns/Columns.docs';
 import headingDocs from '../components/Heading/Heading.docs';
 import inlineDocs from '../components/Inline/Inline.docs';
@@ -21,7 +23,9 @@ import textLinkDocs from '../components/TextLink/TextLink.docs';
 import { Docs } from './Docs';
 
 const allDocs = [
+  backgroundDocs,
   bleedDocs,
+  boxDocs,
   columnsDocs,
   headingDocs,
   inlineDocs,
@@ -65,7 +69,9 @@ const DocsRow = ({ name, category, examples }: Docs) => {
               <Heading weight="bold">{example.name}</Heading>
               <View
                 style={
-                  category === 'Layout' ? styles.layoutContainer : undefined
+                  category === 'Layout' && name !== 'Box'
+                    ? styles.layoutContainer
+                    : undefined
                 }
               >
                 {example.example}

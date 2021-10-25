@@ -1,7 +1,9 @@
 import { mapValues } from 'lodash';
 import React, { ComponentProps, ReactNode, useMemo } from 'react';
 import { View } from 'react-native';
+import { BackgroundColor } from '../../color/palettes';
 import { negativeSpace, NegativeSpace, space, Space } from '../../layout/space';
+import { Background } from '../Background/Background';
 
 const fraction = (numerator: number, denominator: number) =>
   `${(numerator * 100) / denominator}%`;
@@ -20,6 +22,7 @@ const widths = {
 } as const;
 
 export interface BoxProps extends ComponentProps<typeof View> {
+  background?: BackgroundColor;
   flexDirection?: 'row' | 'column';
   flexWrap?: 'wrap';
   flexGrow?: 0 | 1;
@@ -46,6 +49,7 @@ export interface BoxProps extends ComponentProps<typeof View> {
 }
 
 export function Box({
+  background,
   flexDirection,
   flexWrap,
   flexGrow,
@@ -140,7 +144,15 @@ export function Box({
     return [styles, styleProp];
   }, [styles, styleProp]);
 
-  return (
+  return background && children ? (
+    <Background color={background}>
+      {({ style: backgroundStyle }) => (
+        <View style={[backgroundStyle, style]} {...restProps}>
+          {children}
+        </View>
+      )}
+    </Background>
+  ) : (
     <View style={style} {...restProps}>
       {children}
     </View>

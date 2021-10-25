@@ -2,7 +2,7 @@
 import React, { ReactNode } from 'react';
 import { View } from 'react-native';
 import { ColorModeProvider } from '../../color/ColorMode';
-import { basePalette } from '../../color/palette';
+import { palettes } from '../../color/palettes';
 import { CustomColor } from '../../color/useForegroundColor';
 import { Docs } from '../../playground/Docs';
 import { Guide } from '../../playground/Guide';
@@ -79,7 +79,10 @@ const docs: Docs = {
               Custom color
             </Text>
             <View
-              style={{ backgroundColor: basePalette.greyDark, padding: 20 }}
+              style={{
+                backgroundColor: palettes.dark.backgroundColors.body.color,
+                padding: 20,
+              }}
             >
               <ColorModeProvider value="dark">
                 <Stack space="12dp">
@@ -93,7 +96,10 @@ const docs: Docs = {
               </ColorModeProvider>
             </View>
             <View
-              style={{ backgroundColor: basePalette.greyDark, padding: 20 }}
+              style={{
+                backgroundColor: palettes.dark.backgroundColors.body.color,
+                padding: 20,
+              }}
             >
               <ColorModeProvider value="darkTinted">
                 <Stack space="12dp">

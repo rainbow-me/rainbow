@@ -1,7 +1,9 @@
 import React, { ElementRef, forwardRef, ReactNode, useMemo } from 'react';
 import { Text as NativeText } from 'react-native';
-import { ColorModeValue, useColorModeValue } from '../../color/ColorModeValue';
-import { foregroundPalette } from '../../color/palette';
+import {
+  CustomColor,
+  useForegroundColor,
+} from '../../color/useForegroundColor';
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';
 import {
   nodeHasEmoji,
@@ -10,22 +12,22 @@ import {
 } from '../../typography/renderEmoji';
 import { textSizes, textWeights } from '../../typography/typography';
 
-const textColors = {
-  action: foregroundPalette.action,
-  neutral: foregroundPalette.neutral,
-  secondary: foregroundPalette.secondary,
-  secondary30: foregroundPalette.secondary30,
-  secondary40: foregroundPalette.secondary40,
-  secondary50: foregroundPalette.secondary50,
-  secondary60: foregroundPalette.secondary60,
-  secondary70: foregroundPalette.secondary70,
-  secondary80: foregroundPalette.secondary80,
-  white: foregroundPalette.white,
-} as const;
+const validColors = [
+  'action',
+  'inverted',
+  'primary',
+  'secondary',
+  'secondary30',
+  'secondary40',
+  'secondary50',
+  'secondary60',
+  'secondary70',
+  'secondary80',
+] as const;
 
 interface TextStyle {
   align?: 'center' | 'left' | 'right';
-  color?: keyof typeof textColors | { custom: ColorModeValue<string> };
+  color?: typeof validColors[number] | CustomColor;
   size?: keyof typeof textSizes;
   weight?: keyof typeof textWeights;
   tabularNumbers?: boolean;
@@ -34,18 +36,19 @@ interface TextStyle {
 
 function useTextStyle({
   align: textAlign,
-  color = 'neutral',
+  color = 'primary',
   size = 'body',
   weight = 'regular',
   tabularNumbers = false,
   uppercase = false,
 }: TextStyle) {
-  const colorModeValue = useColorModeValue();
+  if (__DEV__ && typeof color === 'string' && !validColors.includes(color)) {
+    throw new Error(`Text: Unsupported color "${color}"`);
+  }
+
+  const colorValue = useForegroundColor(color);
   const sizeStyles = textSizes[size];
   const weightStyles = textWeights[weight];
-  const colorValue = colorModeValue(
-    typeof color === 'object' ? color.custom : textColors[color]
-  );
 
   return useMemo(
     () =>

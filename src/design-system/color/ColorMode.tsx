@@ -1,10 +1,10 @@
-import React, { createContext, ReactNode, useMemo } from 'react';
-import { ColorMode, ContextualPalette, contextualPalettes } from './palette';
+import React, { createContext, ReactNode, useContext, useMemo } from 'react';
+import { ColorMode, Palette, palettes } from './palettes';
 
 function contextValueForColorMode(colorMode: ColorMode): ColorModeContextValue {
   return {
     colorMode,
-    contextualPalette: contextualPalettes[colorMode],
+    ...palettes[colorMode],
   };
 }
 
@@ -12,9 +12,8 @@ export const ColorModeContext = createContext<ColorModeContextValue>(
   contextValueForColorMode('light')
 );
 
-interface ColorModeContextValue {
+interface ColorModeContextValue extends Palette {
   colorMode: ColorMode;
-  contextualPalette: ContextualPalette;
 }
 
 export function ColorModeProvider({
@@ -32,3 +31,5 @@ export function ColorModeProvider({
     </ColorModeContext.Provider>
   );
 }
+
+export const useColorMode = () => useContext(ColorModeContext);

@@ -2,7 +2,7 @@
 import React, { ReactNode } from 'react';
 import { View } from 'react-native';
 import { ColorModeProvider } from '../../color/ColorMode';
-import { basePalette } from '../../color/palette';
+import { palettes } from '../../color/palettes';
 import { Docs } from '../../playground/Docs';
 import { Guide } from '../../playground/Guide';
 import { Stack } from '../Stack/Stack';
@@ -58,7 +58,10 @@ const docs: Docs = {
               With emoji 🌈
             </Heading>
             <View
-              style={{ backgroundColor: basePalette.greyDark, padding: 20 }}
+              style={{
+                backgroundColor: palettes.dark.backgroundColors.body.color,
+                padding: 20,
+              }}
             >
               <ColorModeProvider value="dark">
                 <Heading size={size} weight={weight}>
@@ -67,7 +70,10 @@ const docs: Docs = {
               </ColorModeProvider>
             </View>
             <View
-              style={{ backgroundColor: basePalette.greyDark, padding: 20 }}
+              style={{
+                backgroundColor: palettes.dark.backgroundColors.body.color,
+                padding: 20,
+              }}
             >
               <ColorModeProvider value="darkTinted">
                 <Heading size={size} weight={weight}>

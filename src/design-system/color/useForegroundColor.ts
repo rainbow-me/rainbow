@@ -1,19 +1,23 @@
 import { useContext } from 'react';
 import { ColorModeContext } from './ColorMode';
-import { ColorDefinition, ForegroundColor, selectColor } from './palette';
+import {
+  ContextualColorValue,
+  ForegroundColor,
+  getValueForColorMode,
+} from './palettes';
 
 export type CustomColor = {
-  custom: ColorDefinition;
+  custom: string | ContextualColorValue<string>;
 };
 
 export function useForegroundColor(
   color: ForegroundColor | CustomColor
 ): string {
-  const { colorMode, contextualPalette } = useContext(ColorModeContext);
+  const { colorMode, foregroundColors } = useContext(ColorModeContext);
 
   if (typeof color === 'object') {
-    return selectColor(color.custom, colorMode);
+    return getValueForColorMode(color.custom, colorMode);
   }
 
-  return contextualPalette.foreground[color];
+  return foregroundColors[color];
 }
