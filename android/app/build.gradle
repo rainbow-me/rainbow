@@ -225,11 +225,13 @@ android {
             keyPassword pass
         }
         bitrise {
+
+            byte[] decodedStorePassword =  "${System.env.BITRISEIO_ANDROID_KEYSTORE_PASSWORD}".decodeBase64()
+            byte[] decodedPrivateKeyPassword =  "${System.env.BITRISEIO_ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD}".decodeBase64()
             storeFile file('../keystores/rainbow-key.keystore')
-            
-            storePassword "${System.env.BITRISEIO_ANDROID_KEYSTORE_PASSWORD}".replaceAll("'", "" );
+            storePassword new String(decodedStorePassword)
             keyAlias 'rainbow-alias'
-            keyPassword "${System.env.BITRISEIO_ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD}".replaceAll("'", "" );
+            keyPassword new String(decodedPrivateKeyPassword)
         }
     }
 
