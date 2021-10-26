@@ -98,9 +98,9 @@
     "@unstoppabledomains/resolution": "5.0.2",
     "@walletconnect/client": "1.6.5",
     "@walletconnect/utils": "1.6.5",
-    "@walletconnectv2/client": "npm:@walletconnect/client@2.0.0-beta.18",
-    "@walletconnectv2/types": "npm:@walletconnect/types@2.0.0-beta.18",
-    "@walletconnectv2/utils": "npm:@walletconnect/utils@2.0.0-beta.18",
+    "@walletconnectv2/client": "npm:@walletconnect/client@2.0.0-beta.19",
+    "@walletconnectv2/types": "npm:@walletconnect/types@2.0.0-beta.19",
+    "@walletconnectv2/utils": "npm:@walletconnect/utils@2.0.0-beta.19",
     "assert": "1.5.0",
     "async-mutex": "0.3.2",
     "asyncstorage-down": "4.2.0",
@@ -310,8 +310,8 @@
     "**/socket.io-parser": "3.3.2",
     "**/tar": "6.1.11",
     "**/path-parse": "1.0.7",
-    "@walletconnectv2/**/@walletconnect/types": "npm:@walletconnect/types@2.0.0-beta.18",
-    "@walletconnectv2/**/@walletconnect/utils": "npm:@walletconnect/utils@2.0.0-beta.18"
+    "@walletconnectv2/**/@walletconnect/types": "npm:@walletconnect/types@2.0.0-beta.19",
+    "@walletconnectv2/**/@walletconnect/utils": "npm:@walletconnect/utils@2.0.0-beta.19"
   },
   "jest": {
     "preset": "react-native",

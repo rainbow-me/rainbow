@@ -3997,10 +3997,10 @@
   resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.6.5.tgz#31ad1415fc6e1e89e25a10ad5fed6958f56cefa8"
   integrity sha512-S9DsODI35PbIDuOSkIiF8SzTstqCqX/4+kV7n18vyukEFPlpSSHwZMwJUfzo9yJ0pqsqLNZta+jvb88gJRuAaA==
 
-"@walletconnect/types@^2.0.0-beta.18", "@walletconnect/types@npm:@walletconnect/types@2.0.0-beta.18", "@walletconnectv2/types@npm:@walletconnect/types@2.0.0-beta.18":
-  version "2.0.0-beta.18"
-  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.0.0-beta.18.tgz#6b5ea4bda55576bfe418368ca2e17d8e97d7f6bf"
-  integrity sha512-U9fJtnsa3ov6vRolfjQ6aj5MgLFiy/R+54ShJPsbEff6Pcois+fcpns7mOdI2mNxT8apIPasles0OAYWAbssYw==
+"@walletconnect/types@^2.0.0-beta.19", "@walletconnect/types@npm:@walletconnect/types@2.0.0-beta.19", "@walletconnectv2/types@npm:@walletconnect/types@2.0.0-beta.19":
+  version "2.0.0-beta.19"
+  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.0.0-beta.19.tgz#ae0a596dfe164b9cf779fd37d049b4882b600d60"
+  integrity sha512-DvKr6nEPPkrulf7XNGppOhBoul7Ve3UrHqwX9bbe8zHgPpLDQKW3Z+fEW4YTnROe+Qd8V/F9oZtsa7hXOE84kQ==
   dependencies:
     "@walletconnect/jsonrpc-types" "^1.0.0"
     keyvaluestorage "^0.7.1"
@@ -4020,19 +4020,20 @@
     js-sha3 "0.8.0"
     query-string "6.13.5"
 
-"@walletconnect/utils@^2.0.0-beta.18", "@walletconnect/utils@npm:@walletconnect/utils@2.0.0-beta.18", "@walletconnectv2/utils@npm:@walletconnect/utils@2.0.0-beta.18":
-  version "2.0.0-beta.18"
-  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-2.0.0-beta.18.tgz#87738dc46e2e4639ac896caf149517da92defe79"
-  integrity sha512-C7VMvgzZ5KHUG6oOKJpXjIs2NFjrKsxUhwWqDb6L06ZceaOtkLKK75R7dhrPT8zS0Y+gbB1fSXYSNvOh1zQfog==
+"@walletconnect/utils@^2.0.0-beta.19", "@walletconnect/utils@npm:@walletconnect/utils@2.0.0-beta.19", "@walletconnectv2/utils@npm:@walletconnect/utils@2.0.0-beta.19":
+  version "2.0.0-beta.19"
+  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-2.0.0-beta.19.tgz#6561886451903f20cf871ce4c62ca98ac23f4665"
+  integrity sha512-n+PzwwOZ9ATof1zONm4Apn67T/N5fENNK5P3IMFoetBOsg29Pe1VXH7YbFMsV26bDOdcxUIuEi85zT47CCBoMg==
   dependencies:
     "@walletconnect/ecies-25519" "^1.0.1"
     "@walletconnect/encoding" "^1.0.0"
     "@walletconnect/jsonrpc-utils" "^1.0.0"
     "@walletconnect/logger" "^1.0.0"
     "@walletconnect/safe-json" "^1.0.0"
-    "@walletconnect/types" "^2.0.0-beta.18"
+    "@walletconnect/types" "^2.0.0-beta.19"
     "@walletconnect/window-getters" "^1.0.0"
     "@walletconnect/window-metadata" "^1.0.0"
+    lodash.union "^4.6.0"
     query-string "^6.13.5"
 
 "@walletconnect/window-getters@1.0.0", "@walletconnect/window-getters@^1.0.0":
@@ -4047,10 +4048,10 @@
   dependencies:
     "@walletconnect/window-getters" "^1.0.0"
 
-"@walletconnectv2/client@npm:@walletconnect/client@2.0.0-beta.18":
-  version "2.0.0-beta.18"
-  resolved "https://registry.yarnpkg.com/@walletconnect/client/-/client-2.0.0-beta.18.tgz#1764c870835ea4939df1db9d8bc1016b9e3fbc9b"
-  integrity sha512-enU6CIEOC5LL83o55PnNPYkMNaKwT9ZL3Nefagjiikh9ruZlXylnZBR2QLMdwPv1XtbZ56b7jmYB0URhujPe0g==
+"@walletconnectv2/client@npm:@walletconnect/client@2.0.0-beta.19":
+  version "2.0.0-beta.19"
+  resolved "https://registry.yarnpkg.com/@walletconnect/client/-/client-2.0.0-beta.19.tgz#606018803a7afe40660c41994a6e1da965982505"
+  integrity sha512-I36xcxakrDKV/Z8vflqJJOUit/I0QRnv+YvgYu0Z4F3rUCi+HKnF9hAbmhJPzZmspZekXMP5OFCjgHiU2gAC2Q==
   dependencies:
     "@walletconnect/encoding" "^1.0.0"
     "@walletconnect/jsonrpc-provider" "^1.0.0"
@@ -4059,8 +4060,8 @@
     "@walletconnect/logger" "^1.0.0"
     "@walletconnect/relay-api" "^1.0.0"
     "@walletconnect/safe-json" "^1.0.0"
-    "@walletconnect/types" "^2.0.0-beta.18"
-    "@walletconnect/utils" "^2.0.0-beta.18"
+    "@walletconnect/types" "^2.0.0-beta.19"
+    "@walletconnect/utils" "^2.0.0-beta.19"
     keyvaluestorage "^0.7.1"
     pino "^6.7.0"
     pino-pretty "^4.3.0"
@@ -10162,6 +10163,11 @@ lodash.truncate@^4.4.2:
   version "4.4.2"
   resolved "https://registry.yarnpkg.com/lodash.truncate/-/lodash.truncate-4.4.2.tgz#5a350da0b1113b837ecfffd5812cbe58d6eae193"
   integrity sha1-WjUNoLERO4N+z//VgSy+WNbq4ZM=
+
+lodash.union@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/lodash.union/-/lodash.union-4.6.0.tgz#48bb5088409f16f1821666641c44dd1aaae3cd88"
+  integrity sha1-SLtQiECfFvGCFmZkHETdGqrjzYg=
 
 lodash.uniq@^4.5.0:
   version "4.5.0"
