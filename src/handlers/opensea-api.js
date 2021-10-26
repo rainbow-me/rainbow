@@ -98,11 +98,9 @@ export const apiGetTokenHistory = async (
         offset = array.length + 1;
       }
     }
-
-    logger.log(array.length);
     
+    //Not every event type has all the fields, so based on the type of event, we need to parse the respective fields
     const result =  array.filter(function(event) {
-      //TODO: Error handling?
       var event_type = event.event_type;
       if (event_type == "created" || event_type == "transfer" || event_type == "successful" || event_type == "cancelled") {
         return true;
@@ -191,47 +189,3 @@ export const apiGetTokenHistory = async (
     throw error;
   }
 };
-
-/**
- * Fetch a tokens entire history
- * 
- */
-  async function apiGetAllEventsForToken (
-  contractAddress, 
-  tokenID) {
-
-  const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=299`;
-    logger.log(url);
-    const data = await rainbowFetch(url, {
-      headers: {
-        'Accept': 'application/json',
-        'X-Api-Key': OPENSEA_API_KEY,
-      },
-      method: 'get',
-      timeout: 10000, // 10 secs
-    })
-
-    var array = data.data.asset_events;
-    var offset = 0;
-    var tempResponse = array;
-
-    while (tempResponse.length != 0) {
-      var urlPage = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`;
-      // logger.log(urlPage + " url2");
-      var nextPage = await rainbowFetch(urlPage, {
-        headers: {
-          'Accept': 'application/json',
-          'X-Api-Key': OPENSEA_API_KEY,
-        },
-        method: 'get',
-        timeout: 10000, // 10 secs
-      })
-
-      tempResponse = nextPage.data.asset_events;
-      array = array.concat(tempResponse);
-      offset += array.length;
-      // logger.log("length " +  offset);
-    }
-
-    return array;
-}
