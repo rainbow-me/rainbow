@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Column, Row } from '../layout';
+import { Column, Row } from '../../layout';
 import { apiGetTokenHistory } from '@rainbow-me/handlers/opensea-api';
 import { FlatList } from "react-native";
 import logger from 'logger';
-import { abbreviations } from '../../utils';
+import { abbreviations } from '../../../utils';
 import RadialGradient from 'react-native-radial-gradient';
-import { MarkdownText, Text } from '../text';
+import { MarkdownText, Text } from '../../text';
 import  web3Provider from '@rainbow-me/handlers/web3';
 import { getHumanReadableDate } from '@rainbow-me/helpers/transactions';
 
@@ -13,7 +13,7 @@ import { getHumanReadableDate } from '@rainbow-me/helpers/transactions';
  * Requirements: 
  * A Collapsible "History" Tab under expanded NFT States
  * Use Opensea API to display:
- * Minting - Sales - Transfers - Listings 
+ * Minting - Sales - Transfers - Listings - Cancelled Listings
  * Scrollable horizonatally
  */
 
@@ -22,19 +22,22 @@ const TokenHistory = ({
     color
   }) => {
 
-  // const radialGradientProps = {
-  //   center: [0, 1],
-  //   colors: color,
-  //   pointerEvents: 'none',
-  //   style: {
-  //     overflow: 'hidden',
-  //   },
-  // };
+  const eventTypes = {
+    SALE = 'successful',
+    TRANSFER = 'transfer',
+    LIST = 'created',
+    DELIST = 'cancelled'
+  }
+
+  const eventPhrases = {
+
+  }
 
   const [tokenHistory, setTokenHistory] = useState([]);
   const [contractAddress, setContractAddress] = useState("");
   const [tokenID, setTokenID] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  
 
   useEffect(async() => {
     const tokenInfoArray = contractAndToken.split("/");
@@ -54,17 +57,20 @@ const TokenHistory = ({
   const renderItem = ({ item }) => {
     const date = getHumanReadableDate(new Date(item.created_date).getTime()/1000);
     switch (item.event_type) {
-      case "transfer":
+      case eventTypes.TRANSFER:
         return renderTransferEventType({ item, date });
-      case "successful":
+      case eventTypes.SALE:
         return renderSuccessfulEventType({ item, date });
-      case "created":
+      case eventTypes.LIST:
         return renderCreatedEventType({ item, date });
-      case "cancelled":
+      case eventTypes.DELIST:
         return renderCancelledEventType({ date });
     }
   }
 
+  const renderHistoryDescription = ({ symbol, phrase, date }) => {
+    
+  }
   const renderTransferEventType = ({ item, date }) => {
     if (item.from_account == "0x0000000000000000000000000000000000000000") {
       return (

@@ -26,7 +26,7 @@ import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { TokenInfoItem, TokenInfoRow, TokenInfoSection } from '../token-info';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
 import ExpandedStateSection from './ExpandedStateSection';
-import TokenHistory from './TokenHistory';
+import TokenHistory from './tokenHistory/TokenHistory';
 import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
