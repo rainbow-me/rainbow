@@ -233,9 +233,9 @@ android {
             def decodedPrivateKeyPassword = new String(decodedPrivateKeyPasswordBytes)
 
             storeFile file('../keystores/rainbow-key.keystore')
-            storePassword 
+            storePassword decodedStorePassword
             keyAlias 'rainbow-alias'
-            keyPassword new String(decodedPrivateKeyPassword)
+            keyPassword decodedPrivateKeyPassword
         }
     }
 
