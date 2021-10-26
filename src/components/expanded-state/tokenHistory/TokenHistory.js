@@ -68,6 +68,7 @@ const TokenHistory = ({
   }, [contractAddress, tokenID]);
 
   const renderItem = ({ item }) => {
+    logger.log(item.event_type);
     switch (item.event_type) {
       case eventTypes.TRANSFER:
         var symbol = eventSymbols.TRANSFER;
@@ -99,6 +100,7 @@ const TokenHistory = ({
 
   const renderHistoryDescription = ({ symbol, phrase, item, suffix }) => {
     const date = getHumanReadableDate(new Date(item.created_date).getTime()/1000);
+    logger.log(item.to_account + " to account from OS");
     return (
       <ColumnWithMargins
         margin={19}

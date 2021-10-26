@@ -4,7 +4,7 @@ import NetworkTypes from '@rainbow-me/networkTypes';
 import { parseAccountUniqueTokens } from '@rainbow-me/parsers';
 import logger from 'logger';
 import { abbreviations } from '../utils';
-import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
+import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { UNISWAP_PAIRS_HISTORICAL_BULK_QUERY } from 'src/apollo/queries';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
@@ -111,6 +111,7 @@ export const apiGetTokenHistory = async (
       
     })
     .map(function(event) {
+      
       var event_type = event.event_type;
       var eventObject;
       var created_date = event.created_date;
@@ -141,7 +142,7 @@ export const apiGetTokenHistory = async (
         case "transfer":
           created_date = event.created_date;
           fro_acc = event.from_account.address;
-          to_account = abbreviations.address(event.to_account.address);
+          to_account = resolveNameOrAddress(event.to_account.address);
           sale_amount = "0";
           list_amount = "0";
   
@@ -204,7 +205,7 @@ export const apiGetTokenHistory = async (
 
           break;
       }
-
+      
       return eventObject;
     })
 
