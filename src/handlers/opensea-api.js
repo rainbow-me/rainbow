@@ -3,6 +3,7 @@ import { rainbowFetch } from '../rainbow-fetch';
 import NetworkTypes from '@rainbow-me/networkTypes';
 import { parseAccountUniqueTokens } from '@rainbow-me/parsers';
 import logger from 'logger';
+import { abbreviations } from '../utils';
 import { UNISWAP_PAIRS_HISTORICAL_BULK_QUERY } from 'src/apollo/queries';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
@@ -111,6 +112,7 @@ export const apiGetTokenHistory = async (
     .map(function(event) {
       var event_type = event.event_type;
       var eventObject;
+
       if (event_type == "created") {
         var created_date = event.created_date;
         var from_account = "0x123";
@@ -130,19 +132,31 @@ export const apiGetTokenHistory = async (
       }
       else if (event_type == "transfer") {
         var created_date = event.created_date;
-        var from_account = event.from_account.address;
-        var to_account = event.to_account.address;
+        var fro_acc = event.from_account.address;
+        var to_account = abbreviations.address(event.to_account.address);
         var sale_amount = "0";
         var list_amount = "0";
-
-        eventObject = {
-          event_type,
-          created_date,
-          from_account,
-          to_account,
-          sale_amount,
-          list_amount
-        };
+        
+        if (fro_acc == "0x0000000000000000000000000000000000000000") {
+          eventObject = {
+            event_type: 'mint',
+            created_date,
+            from_account: "0x123",
+            to_account,
+            sale_amount,
+            list_amount
+          };
+        }
+        else {
+          eventObject = {
+            event_type,
+            created_date,
+            from_account,
+            to_account,
+            sale_amount,
+            list_amount
+          };
+        }
       }
       else if (event_type == "successful") {
         var created_date = event.created_date;
@@ -181,7 +195,6 @@ export const apiGetTokenHistory = async (
       return eventObject;
     })
 
-    logger.log("ressy");
     return result;
     
   } catch (error) {

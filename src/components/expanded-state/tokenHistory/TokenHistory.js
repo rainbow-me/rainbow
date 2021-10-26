@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Column, Row } from '../../layout';
 import { apiGetTokenHistory } from '@rainbow-me/handlers/opensea-api';
-import { FlatList } from "react-native";
+import { FlatList, View } from "react-native";
 import logger from 'logger';
-import { abbreviations } from '../../../utils';
 import RadialGradient from 'react-native-radial-gradient';
-import { MarkdownText, Text } from '../../text';
+import { Text } from '../../text';
 import  web3Provider from '@rainbow-me/handlers/web3';
 import { getHumanReadableDate } from '@rainbow-me/helpers/transactions';
 
@@ -15,35 +14,37 @@ import { getHumanReadableDate } from '@rainbow-me/helpers/transactions';
  * Use Opensea API to display:
  * Minting - Sales - Transfers - Listings - Cancelled Listings
  * Scrollable horizonatally
+ * 
  */
+
+const eventTypes = {
+  SALE: 'successful',
+  TRANSFER: 'transfer',
+  LIST: 'created',
+  DELIST: 'cancelled',
+  MINT: 'mint',
+};
+
+const eventPhrases  = {
+  SALE: `Sold for `,
+  LIST: `Listed for `,
+  TRANSFER: `Transferred to `,
+  DELIST: `Delisted`,
+  MINT:`Minted`,
+};
+
+const eventSymbols = {
+  SALE: `􀋢`,
+  LIST: `􀎧`,
+  TRANSFER: `􀈠`,
+  DELIST: `􀎩`,
+  MINT: `􀎛`,
+};
 
 const TokenHistory = ({ 
     contractAndToken,
     color
   }) => {
-
-  const eventTypes = {
-    SALE = 'successful',
-    TRANSFER = 'transfer',
-    LIST = 'created',
-    DELIST = 'cancelled'
-  };
-
-  const eventPhrases = ({ item, event }) => {
-    SALE = `Sold for ${item.sale_amount} ETH`,
-    LIST = `Listed for ${item.list_amount} ETH`,
-    TRANSFER = `Transferred to ${abbreviations.address(item.to_account, 2)}`,
-    DELIST = `Delisted`
-    MINT = `Minted`
-  };
-
-  const eventSymbols = ({ item, event }) => {
-    SALE = <Text>􀋢</Text>,
-    LIST = <Text>􀎧</Text>
-    TRANSFER = <Text>􀈠</Text>,
-    DELIST = <Text>􀎩</Text>,
-    MINT = <Text>􀎛</Text>
-  }
 
   const [tokenHistory, setTokenHistory] = useState([]);
   const [contractAddress, setContractAddress] = useState("");
@@ -67,158 +68,30 @@ const TokenHistory = ({
   }, [contractAddress, tokenID]);
 
   const renderItem = ({ item }) => {
-    const date = getHumanReadableDate(new Date(item.created_date).getTime()/1000);
     switch (item.event_type) {
       case eventTypes.TRANSFER:
-        return renderTransferEventType({ item, date });
-      case eventTypes.SALE:
-        return renderSuccessfulEventType({ item, date });
-      case eventTypes.LIST:
-        return renderCreatedEventType({ item, date });
-      case eventTypes.DELIST:
-        return renderCancelledEventType({ date });
+        var symbol = eventSymbols.TRANSFER;
+        var phrase = eventPhrases.TRANSFER;
+        var suffix = `${item.to_account}`;
+        return renderHistoryDescription({ symbol, phrase, item, suffix });
+      case eventTypes.MINT:
+        var mSymbol = eventSymbols.MINT;
+        var mPhrase = eventPhrases.MINT;
+        var mSuffix = ``;
+        return renderHistoryDescription({ symbol: mSymbol, phrase: mPhrase, item, suffix: mSuffix });
+      // case eventTypes.SALE:
+      //   return renderSuccessfulEventType({ item, date });
+      // case eventTypes.LIST:
+      //   return renderCreatedEventType({ item, date });
+      // case eventTypes.DELIST:
+      //   return renderCancelledEventType({ date });
     }
   }
 
-  const renderHistoryDescription = ({ symbol, phrase, date }) => {
-
-  }
-  const renderTransferEventType = ({ item, date }) => {
-    if (item.from_account == "0x0000000000000000000000000000000000000000") {
-      return (
-        <Column>
-          <Column>
-            <Text
-                  align="right"
-                  color={'#FFFFFF'}
-                  lineHeight="loosest"
-                  size="smedium"
-                  weight="heavy"
-                >
-              .     
-            </Text>
-          </Column>
-          <Row>
-            <Text
-              align="right"
-              color={color}
-              lineHeight="loosest"
-              size="smedium"
-              weight="heavy"
-            >
-            {date}
-            </Text>
-          </Row>
-          <Row>
-            <Text
-                align="right"
-                color={color}
-                lineHeight="loosest"
-                size="smedium"
-                weight="heavy"
-              >
-              􀎛
-            </Text>
-            <Text
-                align="right"
-                color={'#FFFFFF'}
-                lineHeight="loosest"
-                size="smedium"
-                weight="heavy"
-              >
-              Minted
-            </Text>
-          </Row>
-          <Column>
-            <Text
-                  align="right"
-                  color={'#FFFFFF'}
-                  lineHeight="loosest"
-                  size="smedium"
-                  weight="heavy"
-                >
-              .     
-            </Text>
-          </Column>
-        </Column>
-      )
-    }
-    else {
-      return (
-        <Column>
-        <Column>
-            <Text
-                  align="right"
-                  color={'#FFFFFF'}
-                  lineHeight="loosest"
-                  size="smedium"
-                  weight="heavy"
-                >
-              .     
-            </Text>
-          </Column>
-          <Row>
-            <Text
-              align="right"
-              color={color}
-              lineHeight="loosest"
-              size="smedium"
-              weight="heavy"
-            >
-            {date}
-            </Text>
-          </Row>
-          <Row>
-            <Text
-                align="right"
-                color={color}
-                lineHeight="loosest"
-                size="smedium"
-                weight="heavy"
-              >
-              􀈠
-            </Text>
-            <Text
-                align="right"
-                color={'#FFFFFF'}
-                lineHeight="loosest"
-                size="smedium"
-                weight="heavy"
-              >
-              Sent to {abbreviations.address(item.to_account, 2)};
-            </Text>
-            
-          </Row>
-          <Column>
-            <Text
-                  align="right"
-                  color={'#FFFFFF'}
-                  lineHeight="loosest"
-                  size="smedium"
-                  weight="heavy"
-                >
-              .     
-            </Text>
-          </Column>
-      </Column>
-      );
-    }
-  }
-
-  const renderSuccessfulEventType = ({ item, date }) => {
+  const renderHistoryDescription = ({ symbol, phrase, item, suffix }) => {
+    const date = getHumanReadableDate(new Date(item.created_date).getTime()/1000);
     return (
       <Column>
-        <Column>
-            <Text
-                  align="right"
-                  color={'#FFFFFF'}
-                  lineHeight="loosest"
-                  size="smedium"
-                  weight="heavy"
-                >
-              .     
-            </Text>
-          </Column>
           <Row>
             <Text
               align="right"
@@ -238,7 +111,7 @@ const TokenHistory = ({
                 size="smedium"
                 weight="heavy"
               >
-              􀋢 
+              {symbol}
             </Text>
             <Text
                 align="right"
@@ -247,140 +120,9 @@ const TokenHistory = ({
                 size="smedium"
                 weight="heavy"
               >
-              Sold for {item.sale_amount} ETH
+              {phrase}{suffix}
             </Text>
           </Row>
-          <Column>
-            <Text
-                align="right"
-                color={'#FFFFFF'}
-                lineHeight="loosest"
-                size="smedium"
-                weight="heavy"
-              >
-              .     
-            </Text>
-          </Column>
-      </Column>
-    )
-  }
-
-  const renderCreatedEventType = ({ item, date }) => {
-    return (
-      <Column>
-        <Column>
-            <Text
-                  align="right"
-                  color={'#FFFFFF'}
-                  lineHeight="loosest"
-                  size="smedium"
-                  weight="heavy"
-                >
-              .     
-            </Text>
-          </Column>
-          <Row>
-            <Text
-              align="right"
-              color={color}
-              lineHeight="loosest"
-              size="smedium"
-              weight="heavy"
-            >
-            {date}     
-            </Text>
-          </Row>
-          <Row>
-            <Text
-                align="right"
-                color={color}
-                lineHeight="loosest"
-                size="smedium"
-                weight="heavy"
-              >
-              􀎧
-            </Text>
-            <Text
-                align="right"
-                color={'#FFFFFF'}
-                lineHeight="loosest"
-                size="smedium"
-                weight="heavy"
-              >
-              Listed for {item.list_amount} ETH
-            </Text>
-          </Row>
-          <Column>
-            <Text
-                align="right"
-                color={'#FFFFFF'}
-                lineHeight="loosest"
-                size="smedium"
-                weight="heavy"
-              >
-              .     
-            </Text>
-          </Column>
-      </Column>
-    )
-  }
-
-  const renderCancelledEventType = ({ date }) => {
-    return (
-      <Column>
-        <Column>
-            <Text
-                  align="right"
-                  color={'#FFFFFF'}
-                  lineHeight="loosest"
-                  size="smedium"
-                  weight="heavy"
-                >
-              .     
-            </Text>
-          </Column>
-          <Row>
-            <Text
-              align="right"
-              color={color}
-              lineHeight="loosest"
-              size="smedium"
-              weight="heavy"
-            >
-            {date}     
-            </Text>
-          </Row>
-          <Row>
-            <Text
-                align="right"
-                color={color}
-                lineHeight="loosest"
-                size="smedium"
-                weight="heavy"
-              >
-              􀎩
-            </Text>
-            <Text
-                align="right"
-                color={'#FFFFFF'}
-                lineHeight="loosest"
-                size="smedium"
-                weight="heavy"
-              >
-              Delisted
-            </Text>
-          </Row>
-          <Column>
-            <Text
-                align="right"
-                color={'#FFFFFF'}
-                lineHeight="loosest"
-                size="smedium"
-                weight="heavy"
-              >
-              .     
-            </Text>
-          </Column>
       </Column>
     )
   }
@@ -398,7 +140,7 @@ const TokenHistory = ({
       </Row>
     </Column>
   )
-}
+  }
 
 export default TokenHistory;
 
