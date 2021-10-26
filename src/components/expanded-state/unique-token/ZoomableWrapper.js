@@ -346,11 +346,6 @@ export const ZoomableWrapper = ({
       if (!ctx.initEventScale) {
         ctx.initEventScale = event.scale;
       }
-
-      if (!ctx.startFocalX) {
-        ctx.startFocalX = -translateX.value + event.focalX / scale.value;
-        ctx.startFocalY = -translateY.value + event.focalY / scale.value;
-      }
       if (event.numberOfPointers === 2) {
         if (
           isZoomedValue.value &&
@@ -363,12 +358,11 @@ export const ZoomableWrapper = ({
         if (ctx.prevScale) {
           translateX.value +=
             (event.scale / ctx.prevScale - 1) *
-            (containerWidthValue.value / ctx.startScale2 / 2 - ctx.startFocalX);
+            (containerWidthValue.value / ctx.startScale2 / 2 - event.focalX);
           translateY.value +=
             zooming *
             (event.scale / ctx.prevScale - 1) *
-            (containerHeightValue.value / ctx.startScale2 / 2 -
-              ctx.startFocalY);
+            (containerHeightValue.value / ctx.startScale2 / 2 - event.focalY);
         } else {
           ctx.startScale2 = scale.value;
         }
@@ -429,8 +423,8 @@ export const ZoomableWrapper = ({
             Math.max(deviceHeight / fullSizeHeight, 2.5),
             MAX_IMAGE_SCALE
           );
-          const zoomToX = (centerX - event.absoluteX) * scaleTo;
-          const zoomToY = (centerY - event.absoluteY) * scaleTo;
+          const zoomToX = ((centerX - event.absoluteX) / 2) * scaleTo;
+          const zoomToY = ((centerY - event.absoluteY) / 2) * scaleTo;
 
           const breakingScaleX = deviceWidth / fullSizeWidth;
           const breakingScaleY = deviceHeight / fullSizeHeight;
