@@ -1,3 +1,18 @@
+diff --git a/node_modules/react-native-palette-full/android/src/main/java/me/jerson/mobile/palette/RNPaletteModule.java b/node_modules/react-native-palette-full/android/src/main/java/me/jerson/mobile/palette/RNPaletteModule.java
+index 1cfd46e..020d4e4 100644
+--- a/node_modules/react-native-palette-full/android/src/main/java/me/jerson/mobile/palette/RNPaletteModule.java
++++ b/node_modules/react-native-palette-full/android/src/main/java/me/jerson/mobile/palette/RNPaletteModule.java
+@@ -5,8 +5,8 @@ import android.graphics.BitmapFactory;
+ import android.graphics.Color;
+ import android.net.Uri;
+ import android.os.Handler;
+-import android.support.annotation.Nullable;
+-import android.support.v7.graphics.Palette;
++import androidx.annotation.Nullable;
++import androidx.palette.graphics.Palette;
+ import android.util.Log;
+ 
+ import com.facebook.common.executors.CallerThreadExecutor;
 diff --git a/node_modules/react-native-palette-full/ios/RNPalette.m b/node_modules/react-native-palette-full/ios/RNPalette.m
 index fc6704d..577fa35 100644
 --- a/node_modules/react-native-palette-full/ios/RNPalette.m
@@ -112,8 +127,7 @@ index fc6704d..577fa35 100644
     
 diff --git a/node_modules/react-native-palette-full/lib/.DS_Store b/node_modules/react-native-palette-full/lib/.DS_Store
 new file mode 100644
-index 0000000..5008ddf
-Binary files /dev/null and b/node_modules/react-native-palette-full/lib/.DS_Store differ
+index 0000000..e69de29
 diff --git a/node_modules/react-native-palette-full/lib/index.d.ts b/node_modules/react-native-palette-full/lib/index.d.ts
 index 4e3cb79..3c441f7 100644
 --- a/node_modules/react-native-palette-full/lib/index.d.ts
