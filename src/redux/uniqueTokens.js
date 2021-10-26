@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { concat, isEmpty, without } from 'lodash';
 /* eslint-disable-next-line import/no-cycle */
@@ -136,6 +137,7 @@ export const fetchUniqueTokens = showcaseAddress => async (
           dispatch(dataUpdateAssets(dedupedAssets));
         }
         if (!showcaseAddress) {
+          analytics.identify(null, { NFTs: uniqueTokens.length });
           saveUniqueTokens(uniqueTokens, accountAddress, network);
         }
       } else {
