@@ -12,12 +12,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.29](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.29)
+
+### Changed
+* Seperate out L2 explorer init
+
+
 ## [1.5.28](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.28)
 
 ### Changed
 * Changed source of token list
 * ENS & Unstoppable validation fixes
-* Seperate out L2 explorer init
 
 ## [1.5.27](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.27)
 
