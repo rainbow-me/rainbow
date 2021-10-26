@@ -77,6 +77,7 @@ const DEFAULT_CONFIG = {
 
 // Initialize with defaults in case firebase doesn't respond
 let config: RainbowConfig = { ...DEFAULT_CONFIG };
+setRpcEndpoints(config);
 
 const init = async () => {
   try {
@@ -107,7 +108,6 @@ const init = async () => {
   } finally {
     Logger.debug('CURRENT CONFIG', JSON.stringify(config, null, 2));
     // SET THE DEFAULT PROVIDER AFTER LOADING THE CONFIG
-    setRpcEndpoints(config);
     web3SetHttpProvider(networkTypes.mainnet);
   }
 };
