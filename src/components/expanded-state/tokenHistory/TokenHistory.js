@@ -5,7 +5,8 @@ import { FlatList, View } from "react-native";
 import logger from 'logger';
 import RadialGradient from 'react-native-radial-gradient';
 import { Text } from '../../text';
-import  web3Provider from '@rainbow-me/handlers/web3';
+import styled from 'styled-components';
+import { position } from '@rainbow-me/styles';
 import { getHumanReadableDate } from '@rainbow-me/helpers/transactions';
 
 /**
@@ -14,7 +15,6 @@ import { getHumanReadableDate } from '@rainbow-me/helpers/transactions';
  * Use Opensea API to display:
  * Minting - Sales - Transfers - Listings - Cancelled Listings
  * Scrollable horizonatally
- * 
  */
 
 const eventTypes = {
@@ -67,8 +67,20 @@ const TokenHistory = ({
     });
   }, [contractAddress, tokenID]);
 
+  const Gradient = styled(RadialGradient).attrs(
+    ({ theme: { color } }) => ({
+      center: [0, 0],
+      colors: color
+    })
+  )`
+    ${position.cover};
+    border-radius: 15;
+    width: 30;
+    height: 30;
+    overflow: hidden;
+  `;
+
   const renderItem = ({ item }) => {
-    logger.log(item.event_type);
     switch (item.event_type) {
       case eventTypes.TRANSFER:
         var symbol = eventSymbols.TRANSFER;
@@ -100,17 +112,17 @@ const TokenHistory = ({
 
   const renderHistoryDescription = ({ symbol, phrase, item, suffix }) => {
     const date = getHumanReadableDate(new Date(item.created_date).getTime()/1000);
-    logger.log(item.to_account + " to account from OS");
     return (
       <ColumnWithMargins
-        margin={19}
+        margin={5}
         paddingHorizontal={15}
       >
         {/*
           Radial Gradient + Line row
          */ }
         <Row> 
-          <View styles={{ height: 20, width: 250, color: '#FFFFFF' }} />
+          <Gradient color={color} />
+          {/* <View styles={{ height: 20, width: 250, color: '#FFFFFF' }} /> */}
         </Row>
         
         <Row>
