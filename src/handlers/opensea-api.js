@@ -4,6 +4,7 @@ import NetworkTypes from '@rainbow-me/networkTypes';
 import { parseAccountUniqueTokens } from '@rainbow-me/parsers';
 import logger from 'logger';
 import { abbreviations } from '../utils';
+import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import { UNISWAP_PAIRS_HISTORICAL_BULK_QUERY } from 'src/apollo/queries';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
@@ -61,7 +62,6 @@ export const apiGetUniqueTokenFloorPrice = async (
   }
 };
 
-//This is currently O(n) time complexity, is there a way to improve performance?
 export const apiGetTokenHistory = async (
   contractAddress,
   tokenID
@@ -204,7 +204,7 @@ export const apiGetTokenHistory = async (
 
           break;
       }
-      
+
       return eventObject;
     })
 
