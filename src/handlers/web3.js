@@ -31,8 +31,21 @@ import {
 } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 export const networkProviders = {};
+
+const rpcEndpoints = {};
+
+export const setRpcEndpoints = (config) => {
+  rpcEndpoints[networkTypes.mainnet] = config.ethereum_mainnet_rpc;
+  rpcEndpoints[networkTypes.ropsten] = config.ethereum_ropsten_rpc;
+  rpcEndpoints[networkTypes.kovan] = config.ethereum_kovan_rpc;
+  rpcEndpoints[networkTypes.rinkeby] = config.ethereum_rinkeby_rpc;
+  rpcEndpoints[networkTypes.optimism] = config.optimism_mainnet_rpc;
+  rpcEndpoints[networkTypes.arbitrum] = config.arbitrum_mainnet_rpc;
+  rpcEndpoints[networkTypes.polygon] = config.polygon_mainnet_rpc;
+}
 
 /**
  * @desc web3 http instance
@@ -47,9 +60,7 @@ export const web3SetHttpProvider = async network => {
   if (network.startsWith('http://')) {
     web3Provider = new JsonRpcProvider(network, NetworkTypes.mainnet);
   } else {
-    web3Provider = new JsonRpcProvider(
-      replace(config.ethereum_mainnet_rpc, NetworkTypes.mainnet, network)
-    );
+    web3Provider = new JsonRpcProvider(rpcEndpoints[network]);
   }
   return web3Provider.ready;
 };
@@ -96,25 +107,7 @@ export const getProviderForNetwork = async (network = NetworkTypes.mainnet) => {
   if (network.startsWith('http://')) {
     return new JsonRpcProvider(network, NetworkTypes.mainnet);
   } else {
-    let url;
-    switch (network) {
-      case NetworkTypes.arbitrum:
-        url = config.arbitrum_mainnet_rpc;
-        break;
-      case NetworkTypes.optimism:
-        url = config.optimism_mainnet_rpc;
-        break;
-      case NetworkTypes.polygon:
-        url = config.polygon_mainnet_rpc;
-        break;
-      default:
-        url = replace(
-          config.ethereum_mainnet_rpc,
-          NetworkTypes.mainnet,
-          network
-        );
-    }
-    const provider = new JsonRpcProvider(url);
+    const provider = new JsonRpcProvider(rpcEndpoints[network]);
     networkProviders[network] = provider;
     await provider.ready;
     return provider;
