@@ -296,11 +296,7 @@ export const resolveUnstoppableDomain = async domain => {
     blockchain: {
       cns: {
         network: 'mainnet',
-        url: replace(
-          config.ethereum_mainnet_rpc,
-          NetworkTypes.mainnet,
-          NetworkTypes.mainnet
-        ),
+        url: rpcEndpoints[networkTypes.mainnet],
       },
     },
   });
