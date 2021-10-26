@@ -27,10 +27,22 @@ const TokenHistory = ({
     TRANSFER = 'transfer',
     LIST = 'created',
     DELIST = 'cancelled'
-  }
+  };
 
-  const eventPhrases = {
+  const eventPhrases = ({ item, event }) => {
+    SALE = `Sold for ${item.sale_amount} ETH`,
+    LIST = `Listed for ${item.list_amount} ETH`,
+    TRANSFER = `Transferred to ${abbreviations.address(item.to_account, 2)}`,
+    DELIST = `Delisted`
+    MINT = `Minted`
+  };
 
+  const eventSymbols = ({ item, event }) => {
+    SALE = <Text>􀋢</Text>,
+    LIST = <Text>􀎧</Text>
+    TRANSFER = <Text>􀈠</Text>,
+    DELIST = <Text>􀎩</Text>,
+    MINT = <Text>􀎛</Text>
   }
 
   const [tokenHistory, setTokenHistory] = useState([]);
@@ -69,7 +81,7 @@ const TokenHistory = ({
   }
 
   const renderHistoryDescription = ({ symbol, phrase, date }) => {
-    
+
   }
   const renderTransferEventType = ({ item, date }) => {
     if (item.from_account == "0x0000000000000000000000000000000000000000") {
