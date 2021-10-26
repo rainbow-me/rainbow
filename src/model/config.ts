@@ -108,6 +108,7 @@ const init = async () => {
   } finally {
     Logger.debug('CURRENT CONFIG', JSON.stringify(config, null, 2));
     // SET THE DEFAULT PROVIDER AFTER LOADING THE CONFIG
+    setRpcEndpoints(config);
     web3SetHttpProvider(networkTypes.mainnet);
   }
 };
