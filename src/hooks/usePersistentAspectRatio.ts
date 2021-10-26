@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Image, PixelRatio } from 'react-native';
-import { useMMKV, useMMKVNumber } from 'react-native-mmkv';
+import { MMKV, useMMKVNumber } from 'react-native-mmkv';
 import { GOOGLE_USER_CONTENT_URL } from '../components/expanded-state/unique-token/UniqueTokenExpandedStateContent';
 import { CardSize } from '../components/unique-token/CardSize';
 
 const id = 'ASPECT_RATIO';
+
+const storage = new MMKV({
+  id,
+});
+
 enum State {
   init,
   loading,
@@ -27,11 +32,7 @@ const getLowResUrl = (url: string) => {
 };
 
 export default function usePersistentAspectRatio(url: string): Result {
-  const storage = useMMKV({ id });
-  const [ratio, setAspectRatio] = useMMKVNumber(
-    url,
-    storage.current ?? undefined
-  );
+  const [ratio, setAspectRatio] = useMMKVNumber(url, storage);
   const [state, setState] = useState<State>(ratio ? State.loaded : State.init);
   useEffect(() => {
     if (state === State.init && url) {

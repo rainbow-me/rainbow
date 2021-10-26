@@ -31,13 +31,12 @@ const UniqueTokenRow = magicMemo(({ item, external = false }) => {
   const { navigate } = useNavigation();
 
   const handleItemPress = useCallback(
-    (asset, imageColor, lowResUrl) =>
+    (asset, lowResUrl) =>
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset,
         backgroundOpacity: 1,
         cornerRadius: 'device',
         external,
-        imageColor,
         isReadOnlyWallet,
         lowResUrl,
         springDamping: 1,

@@ -1,13 +1,16 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { PixelRatio } from 'react-native';
 import styled from 'styled-components';
-import { getDominantColorFromImage, magicMemo } from '../../utils';
+import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { GOOGLE_USER_CONTENT_URL } from '../expanded-state/unique-token/UniqueTokenExpandedStateContent';
 import { InnerBorder } from '../layout';
 import { CardSize } from './CardSize';
 import UniqueTokenImage from './UniqueTokenImage';
-import { usePersistentAspectRatio } from '@rainbow-me/hooks';
+import {
+  usePersistentAspectRatio,
+  usePersistentDominantColorFromImage,
+} from '@rainbow-me/hooks';
 import { shadow as shadowUtil } from '@rainbow-me/styles';
 
 const pixelRatio = PixelRatio.get();
@@ -41,8 +44,6 @@ const UniqueTokenCard = ({
   width,
   ...props
 }) => {
-  const [imageColor, setImageColor] = useState(null);
-
   const size = Math.ceil(CardSize) * pixelRatio;
 
   const lowResUrl = useMemo(() => {
@@ -53,18 +54,13 @@ const UniqueTokenCard = ({
   }, [item.image_url, size]);
 
   usePersistentAspectRatio(item.image_url);
-
-  useEffect(() => {
-    getDominantColorFromImage(lowResUrl, '#333333').then(result => {
-      setImageColor(result);
-    });
-  }, [lowResUrl]);
+  usePersistentDominantColorFromImage(item.image_url);
 
   const handlePress = useCallback(() => {
     if (onPress) {
-      onPress(item, imageColor, lowResUrl);
+      onPress(item, lowResUrl);
     }
-  }, [item, imageColor, lowResUrl, onPress]);
+  }, [item, lowResUrl, onPress]);
 
   const { colors } = useTheme();
 

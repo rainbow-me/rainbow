@@ -42,6 +42,7 @@ import {
   useAccountProfile,
   useAccountSettings,
   useDimensions,
+  usePersistentDominantColorFromImage,
   useShowcaseTokens,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
@@ -52,7 +53,6 @@ import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 import {
   buildRainbowUrl,
   ethereumUtils,
-  getDominantColorFromImage,
   magicMemo,
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
@@ -96,12 +96,7 @@ const Spacer = styled.View`
   height: ${safeAreaInsetValues.bottom + 20};
 `;
 
-const UniqueTokenExpandedState = ({
-  asset,
-  imageColor,
-  external,
-  lowResUrl,
-}) => {
+const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
   const { accountAddress, accountENS } = useAccountProfile();
   const { nativeCurrency, network } = useAccountSettings();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
@@ -127,7 +122,6 @@ const UniqueTokenExpandedState = ({
     showcaseTokens,
   } = useShowcaseTokens();
 
-  const [fallbackImageColor, setFallbackImageColor] = useState(null);
   const [textColor, setTextColor] = useState('#FFFFFF');
   const [floorPrice, setFloorPrice] = useState(null);
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
@@ -146,30 +140,22 @@ const UniqueTokenExpandedState = ({
   ]);
   const isSVG = isSupportedUriExtension(lowResUrl, ['.svg']);
 
-  const imageColorWithFallback =
-    imageColor || fallbackImageColor || colors.paleBlue;
+  const imageColor =
+    usePersistentDominantColorFromImage(asset.image_url).result ||
+    colors.paleBlue;
 
   const lastSalePrice = lastPrice || 'None';
   const priceOfEth = ethereumUtils.getEthPriceUnit();
 
   useEffect(() => {
-    getDominantColorFromImage(lowResUrl, '#333333').then(result => {
-      setFallbackImageColor(result);
-    });
-  }, [lowResUrl]);
-
-  useEffect(() => {
-    const contrastWithWhite = c.contrast(
-      imageColorWithFallback,
-      colors.whiteLabel
-    );
+    const contrastWithWhite = c.contrast(imageColor, colors.whiteLabel);
 
     if (contrastWithWhite < 2.125) {
       setTextColor(lightModeThemeColors.dark);
     } else {
       setTextColor(colors.whiteLabel);
     }
-  }, [colors.whiteLabel, imageColorWithFallback]);
+  }, [colors.whiteLabel, imageColor]);
 
   useEffect(() => {
     apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then(result => {
@@ -261,7 +247,7 @@ const UniqueTokenExpandedState = ({
         <UniqueTokenExpandedStateContent
           animationProgress={animationProgress}
           asset={asset}
-          imageColor={imageColorWithFallback}
+          imageColor={imageColor}
           lowResUrl={lowResUrl}
           sheetRef={sheetRef}
           yPosition={yPosition}
@@ -274,7 +260,7 @@ const UniqueTokenExpandedState = ({
               scaleTo={0.88}
             >
               <Text
-                color={imageColorWithFallback}
+                color={imageColor}
                 lineHeight="loosest"
                 size="lmedium"
                 weight="heavy"
@@ -289,7 +275,7 @@ const UniqueTokenExpandedState = ({
             >
               <Text
                 align="right"
-                color={imageColorWithFallback}
+                color={imageColor}
                 lineHeight="loosest"
                 size="lmedium"
                 weight="heavy"
@@ -300,7 +286,7 @@ const UniqueTokenExpandedState = ({
           </Row>
           <UniqueTokenExpandedStateHeader
             asset={asset}
-            imageColor={imageColorWithFallback}
+            imageColor={imageColor}
           />
           <SheetActionButtonRow
             ignorePaddingTop
@@ -308,7 +294,7 @@ const UniqueTokenExpandedState = ({
             paddingHorizontal={16.5}
           >
             <SheetActionButton
-              color={imageColorWithFallback}
+              color={imageColor}
               label={
                 !external && !isReadOnlyWallet && isSendable
                   ? '􀮶 OpenSea'
@@ -322,7 +308,7 @@ const UniqueTokenExpandedState = ({
             {!external && !isReadOnlyWallet && isSendable ? (
               <SendActionButton
                 asset={asset}
-                color={imageColorWithFallback}
+                color={imageColor}
                 nftShadows
                 textColor={textColor}
               />
@@ -395,7 +381,7 @@ const UniqueTokenExpandedState = ({
                 <NftExpandedStateSection title="Properties">
                   <UniqueTokenAttributes
                     {...asset}
-                    color={imageColorWithFallback}
+                    color={imageColor}
                     slug={asset.collection.slug}
                   />
                 </NftExpandedStateSection>
