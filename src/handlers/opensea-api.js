@@ -113,42 +113,21 @@ export const apiGetTokenHistory = async (
     .map(function(event) {
       var event_type = event.event_type;
       var eventObject;
+      var created_date = event.created_date;
+      var from_account;
+      var to_account;
+      var sale_amount;
+      var list_amount;
 
-      if (event_type == "created") {
-        var created_date = event.created_date;
-        var from_account = "0x123";
-        var to_account = "0x123";
-        var sale_amount = "0";
-        var tempList = parseInt(event.starting_price / 1000000000000000000);
-        var list_amount = tempList.toString();
+      switch (event_type) {
+        case "created": 
+          created_date = event.created_date;
+          from_account = "0x123";
+          to_account = "0x123";
+          sale_amount = "0";
+          var tempList = parseInt(event.starting_price / 1000000000000000000);
+          list_amount = tempList.toString();
 
-        eventObject = {
-          event_type,
-          created_date,
-          from_account,
-          to_account,
-          sale_amount,
-          list_amount
-        };
-      }
-      else if (event_type == "transfer") {
-        var created_date = event.created_date;
-        var fro_acc = event.from_account.address;
-        var to_account = abbreviations.address(event.to_account.address);
-        var sale_amount = "0";
-        var list_amount = "0";
-
-        if (fro_acc == "0x0000000000000000000000000000000000000000") {
-          eventObject = {
-            event_type: 'mint',
-            created_date,
-            from_account: "0x123",
-            to_account,
-            sale_amount,
-            list_amount
-          };
-        }
-        else {
           eventObject = {
             event_type,
             created_date,
@@ -157,40 +136,73 @@ export const apiGetTokenHistory = async (
             sale_amount,
             list_amount
           };
-        }
-      }
-      else if (event_type == "successful") {
-        var created_date = event.created_date;
-        var from_account = "0x123";
-        var to_account = "0x123";
-        var tempSale = parseInt(event.total_price / 1000000000000000000);
-        var sale_amount = tempSale.toString();
-        var list_amount = "0";
 
-        eventObject = {
-          event_type,
-          created_date,
-          from_account,
-          to_account,
-          sale_amount,
-          list_amount
-        };
-      }
-      else if (event_type == "cancelled") {
-        var created_date = event.created_date;
-        var from_account = "0x123";
-        var to_account = "0x123";
-        var sale_amount = "0";
-        var list_amount = "0";
+          break;
+        case "transfer":
+          created_date = event.created_date;
+          fro_acc = event.from_account.address;
+          to_account = abbreviations.address(event.to_account.address);
+          sale_amount = "0";
+          list_amount = "0";
+  
+          if (fro_acc == "0x0000000000000000000000000000000000000000") {
+            eventObject = {
+              event_type: 'mint',
+              created_date,
+              from_account: "0x123",
+              to_account,
+              sale_amount,
+              list_amount
+            };
+          }
+          else {
+            eventObject = {
+              event_type,
+              created_date,
+              from_account,
+              to_account,
+              sale_amount,
+              list_amount
+            };
+          }
 
-        eventObject = {
-          event_type,
-          created_date,
-          from_account,
-          to_account,
-          sale_amount,
-          list_amount
-        };
+          break;
+        case "successful":
+          created_date = event.created_date;
+          from_account = "0x123";
+          to_account = "0x123";
+          var tempSale = parseInt(event.total_price / 1000000000000000000);
+          sale_amount = tempSale.toString();
+          list_amount = "0";
+  
+          eventObject = {
+            event_type,
+            created_date,
+            from_account,
+            to_account,
+            sale_amount,
+            list_amount
+          };
+
+          break;
+
+        case "cancelled":
+          created_date = event.created_date;
+          from_account = "0x123";
+          to_account = "0x123";
+          sale_amount = "0";
+          list_amount = "0";
+  
+          eventObject = {
+            event_type,
+            created_date,
+            from_account,
+            to_account,
+            sale_amount,
+            list_amount
+          };
+
+          break;
       }
       
       return eventObject;

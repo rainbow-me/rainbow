@@ -104,10 +104,16 @@ const TokenHistory = ({
         margin={19}
         paddingHorizontal={15}
       >
-        <View styles={{ height: 20, width: 250, borderColor: '#FFFFFF' }} />
+        {/*
+          Radial Gradient + Line row
+         */ }
+        <Row> 
+          <View styles={{ height: 20, width: 250, color: '#FFFFFF' }} />
+        </Row>
+        
         <Row>
           <Text
-            align="right"
+            align="left"
             color={color}
             lineHeight="loosest"
             size="smedium"
@@ -118,23 +124,23 @@ const TokenHistory = ({
         </Row>
         <Row>
           <Text
-              align="right"
-              color={color}
-              lineHeight="loosest"
-              size="smedium"
-              weight="heavy"
-            >
-            {symbol}
-          </Text>
-          <Text
-              align="right"
-              color={'#FFFFFF'}
-              lineHeight="loosest"
-              size="smedium"
-              weight="heavy"
-            >
-            {phrase}{suffix}
-          </Text>
+            align="left"
+            color={color}
+            lineHeight="loosest"
+            size="smedium"
+            weight="heavy"
+          >
+          {symbol}
+        </Text>
+        <Text
+            align="right"
+            color={'#FFFFFF'}
+            lineHeight="loosest"
+            size="smedium"
+            weight="heavy"
+          >
+          {phrase}{suffix}
+        </Text>
         </Row>
       </ColumnWithMargins>
     )
