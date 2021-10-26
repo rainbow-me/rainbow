@@ -155,7 +155,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.tapByText('Arun Cattybinky');
     await Helpers.tap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
-	if (device.getPlatform() === 'android') {
+    if (device.getPlatform() === 'android') {
       await Helpers.tapAlertWithButton('Slow');
       await Helpers.delay(4000);
       await Helpers.authenticatePin('1234');
@@ -171,7 +171,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('selected-asset-field-input', '1.02', true);
     await Helpers.tap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
-	if (device.getPlatform() === 'android') {
+    if (device.getPlatform() === 'android') {
       await Helpers.tapAlertWithButton('Slow');
       await Helpers.delay(4000);
       await Helpers.authenticatePin('1234');
@@ -187,7 +187,7 @@ describe('Ganache Transaction Flow', () => {
     await Helpers.typeText('selected-asset-field-input', '0.003', true);
     await Helpers.tap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
-	if (device.getPlatform() === 'android') {
+    if (device.getPlatform() === 'android') {
       await Helpers.tapAlertWithButton('Slow');
       await Helpers.delay(4000);
       await Helpers.authenticatePin('1234');
