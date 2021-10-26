@@ -373,7 +373,7 @@
       },
       "android.emu.release.bitrise": {
         "binaryPath": "./android/app/build/outputs/apk/bitrise/release/app-bitrise-release.apk",
-        "build": "cd ./android && ./gradlew -q assembleBitriseRelease assembleAndroidTest -DtestBuildType=release && cd ..",
+        "build": "cd ./android && ./gradlew clean && ./gradlew -q assembleBitriseRelease assembleAndroidTest -DtestBuildType=release && cd ..",
         "type": "android.emulator",
         "name": "emulator-5554"
       }
