@@ -43,16 +43,16 @@ import Logger from 'logger';
 
 export interface RainbowConfig extends Record<string, any> {
   arbitrum_mainnet_rpc?: string;
-  ethereum_mainnet_rpc?: string;
-  ethereum_ropsten_rpc?: string;
-  ethereum_rinkeby_rpc?: string;
-  ethereum_goerli_rpc?: string;
-  ethereum_kovan_rpc?: string;
-  optimism_mainnet_rpc?: string;
-  polygon_mainnet_rpc?: string;
   data_api_key?: string;
   data_endpoint?: string;
   data_origin?: string;
+  ethereum_goerli_rpc?: string;
+  ethereum_kovan_rpc?: string;
+  ethereum_mainnet_rpc?: string;
+  ethereum_rinkeby_rpc?: string;
+  ethereum_ropsten_rpc?: string;
+  optimism_mainnet_rpc?: string;
+  polygon_mainnet_rpc?: string;
 }
 
 const DEFAULT_CONFIG = {
