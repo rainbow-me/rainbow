@@ -79,10 +79,11 @@ export const apiGetTokenHistory = async (
     })
 
     var array = data.data.asset_events;
-    var offset = 0;
+    
     var tempResponse = array;
 
     if (array.length == 299) {
+      var offset = 299;
       while (tempResponse.length != 0) {
         var urlPage = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`;
         var nextPage = await rainbowFetch(urlPage, {
@@ -136,7 +137,7 @@ export const apiGetTokenHistory = async (
         var to_account = abbreviations.address(event.to_account.address);
         var sale_amount = "0";
         var list_amount = "0";
-        
+
         if (fro_acc == "0x0000000000000000000000000000000000000000") {
           eventObject = {
             event_type: 'mint',

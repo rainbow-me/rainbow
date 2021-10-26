@@ -75,16 +75,25 @@ const TokenHistory = ({
         var suffix = `${item.to_account}`;
         return renderHistoryDescription({ symbol, phrase, item, suffix });
       case eventTypes.MINT:
-        var mSymbol = eventSymbols.MINT;
-        var mPhrase = eventPhrases.MINT;
-        var mSuffix = ``;
-        return renderHistoryDescription({ symbol: mSymbol, phrase: mPhrase, item, suffix: mSuffix });
-      // case eventTypes.SALE:
-      //   return renderSuccessfulEventType({ item, date });
-      // case eventTypes.LIST:
-      //   return renderCreatedEventType({ item, date });
-      // case eventTypes.DELIST:
-      //   return renderCancelledEventType({ date });
+        var mintSymbol = eventSymbols.MINT;
+        var mintPhrase = eventPhrases.MINT;
+        var mintSuffix = ``;
+        return renderHistoryDescription({ symbol: mintSymbol, phrase: mintPhrase, item, suffix: mintSuffix });
+      case eventTypes.SALE:
+        var saleSymbol = eventSymbols.SALE;
+        var salePhrase = eventPhrases.SALE;
+        var saleSuffix = `${item.sale_amount} ETH`;
+        return renderHistoryDescription({ symbol: saleSymbol, phrase: salePhrase, item, suffix: saleSuffix });
+      case eventTypes.LIST:
+        var listSymbol = eventSymbols.LIST;
+        var listPhrase = eventPhrases.LIST;
+        var listSuffix = `${item.list_amount} ETH`;
+        return renderHistoryDescription({ symbol: listSymbol, phrase: listPhrase, item, suffix: listSuffix });
+      case eventTypes.DELIST:
+        var delistSymbol = eventSymbols.DELIST;
+        var delistPhrase = eventPhrases.DELIST;
+        var delistSuffix = ``;
+        return renderHistoryDescription({ symbol: delistSymbol, phrase: delistPhrase, item, suffix: delistSuffix });
     }
   }
 
