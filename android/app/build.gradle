@@ -226,10 +226,14 @@ android {
         }
         bitrise {
 
-            byte[] decodedStorePassword =  "${System.env.BITRISEIO_ANDROID_KEYSTORE_PASSWORD}".decodeBase64()
-            byte[] decodedPrivateKeyPassword =  "${System.env.BITRISEIO_ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD}".decodeBase64()
+            byte[] decodedStorePasswordBytes =  "${System.env.BITRISEIO_ANDROID_KEYSTORE_PASSWORD}".decodeBase64()
+            byte[] decodedPrivateKeyPasswordBytes =  "${System.env.BITRISEIO_ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD}".decodeBase64()
+
+            def decodedStorePassword = new String(decodedStorePasswordBytes)
+            def decodedPrivateKeyPassword = new String(decodedPrivateKeyPasswordBytes)
+
             storeFile file('../keystores/rainbow-key.keystore')
-            storePassword new String(decodedStorePassword)
+            storePassword 
             keyAlias 'rainbow-alias'
             keyPassword new String(decodedPrivateKeyPassword)
         }
