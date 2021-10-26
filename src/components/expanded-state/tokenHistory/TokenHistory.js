@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Column, Row } from '../../layout';
+import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import { apiGetTokenHistory } from '@rainbow-me/handlers/opensea-api';
 import { FlatList, View } from "react-native";
 import logger from 'logger';
@@ -100,39 +100,43 @@ const TokenHistory = ({
   const renderHistoryDescription = ({ symbol, phrase, item, suffix }) => {
     const date = getHumanReadableDate(new Date(item.created_date).getTime()/1000);
     return (
-      <Column>
-          <Row>
-            <Text
+      <ColumnWithMargins
+        margin={19}
+        paddingHorizontal={15}
+      >
+        <View styles={{ height: 20, width: 250, borderColor: '#FFFFFF' }} />
+        <Row>
+          <Text
+            align="right"
+            color={color}
+            lineHeight="loosest"
+            size="smedium"
+            weight="heavy"
+          >
+          {date}     
+          </Text>
+        </Row>
+        <Row>
+          <Text
               align="right"
               color={color}
               lineHeight="loosest"
               size="smedium"
               weight="heavy"
             >
-            {date}     
-            </Text>
-          </Row>
-          <Row>
-            <Text
-                align="right"
-                color={color}
-                lineHeight="loosest"
-                size="smedium"
-                weight="heavy"
-              >
-              {symbol}
-            </Text>
-            <Text
-                align="right"
-                color={'#FFFFFF'}
-                lineHeight="loosest"
-                size="smedium"
-                weight="heavy"
-              >
-              {phrase}{suffix}
-            </Text>
-          </Row>
-      </Column>
+            {symbol}
+          </Text>
+          <Text
+              align="right"
+              color={'#FFFFFF'}
+              lineHeight="loosest"
+              size="smedium"
+              weight="heavy"
+            >
+            {phrase}{suffix}
+          </Text>
+        </Row>
+      </ColumnWithMargins>
     )
   }
 
