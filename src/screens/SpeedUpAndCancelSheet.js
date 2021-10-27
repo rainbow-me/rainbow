@@ -394,7 +394,6 @@ export default function SpeedUpAndCancelSheet() {
   useEffect(() => {
     if (!isEmpty(gasFeeParamsBySpeed) && !calculatingGasLimit.current) {
       calculatingGasLimit.current = true;
-      // we only speed up / cancel for eip1559 supported networks
       if (
         Number(minMaxPriorityFeePerGas) >
         Number(gasFeeParamsBySpeed?.fast?.maxPriorityFeePerGas?.amount)
