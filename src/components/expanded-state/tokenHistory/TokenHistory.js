@@ -7,7 +7,8 @@ import RadialGradient from 'react-native-radial-gradient';
 import { Text } from '../../text';
 import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
-import { getHumanReadableDate } from '@rainbow-me/helpers/transactions';
+import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
+import { useTheme } from '../../../context/ThemeContext';
 
 /**
  * Requirements: 
@@ -28,7 +29,7 @@ const eventTypes = {
 const eventPhrases  = {
   SALE: `Sold for `,
   LIST: `Listed for `,
-  TRANSFER: `Transferred to `,
+  TRANSFER: `Sent to `,
   DELIST: `Delisted`,
   MINT:`Minted`,
 };
@@ -50,7 +51,7 @@ const TokenHistory = ({
   const [contractAddress, setContractAddress] = useState("");
   const [tokenID, setTokenID] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  
+  const { isDarkMode, colors } = useTheme();
 
   useEffect(async() => {
     const tokenInfoArray = contractAndToken.split("/");
@@ -68,17 +69,28 @@ const TokenHistory = ({
   }, [contractAddress, tokenID]);
 
   const Gradient = styled(RadialGradient).attrs(
-    ({ theme: { color } }) => ({
+    ({ theme: { colors } }) => ({
       center: [0, 0],
-      colors: color
+      colors:  [colors.whiteLabel, color]
     })
   )`
-    ${position.cover};
-    border-radius: 15;
-    width: 30;
-    height: 30;
+    position: absolute;
+    border-radius: 5;
+    width: 10;
+    height: 10;
     overflow: hidden;
+    marginRight: 6;
   `;
+
+  const radialGradientProps = {
+    center: [0, 1],
+    colors: colors.gradients.lightGreyWhite,
+    pointerEvents: 'none',
+    style: {
+      ...position.coverAsObject,
+      overflow: 'hidden',
+    },
+  };
 
   const renderItem = ({ item }) => {
     switch (item.event_type) {
@@ -111,51 +123,58 @@ const TokenHistory = ({
   }
 
   const renderHistoryDescription = ({ symbol, phrase, item, suffix }) => {
-    const date = getHumanReadableDate(new Date(item.created_date).getTime()/1000);
+    const date = getHumanReadableDateWithoutOn(new Date(item.created_date).getTime()/1000);
     return (
       <ColumnWithMargins
-        margin={5}
-        paddingHorizontal={15}
+        margin={6}
+        // paddingHorizontal={15}
       >
         {/*
           Radial Gradient + Line row
          */ }
         <Row> 
-          <Gradient color={color} />
-          {/* <View styles={{ height: 20, width: 250, color: '#FFFFFF' }} /> */}
+          <Gradient color={colors} />
+          {/* <RadialGradient
+            {...radialGradientProps}
+            borderRadius={16}
+            radius={600}
+          /> */}
+          <View style={{ height: 3, width: 134, backgroundColor: color, opacity: 0.1, marginTop: 3, marginLeft: 15, marginRight: 6 }} />
         </Row>
         
-        <Row>
-          <Text
-            align="left"
-            color={color}
-            lineHeight="loosest"
-            size="smedium"
-            weight="heavy"
-          >
-          {date}     
+        <Column>
+          <Row>
+            <Text
+              align="left"
+              color={color}
+              lineHeight="loosest"
+              size="smedium"
+              weight="heavy"
+            >
+            {date}     
+            </Text>
+          </Row>
+          <Row>
+            <Text
+              align="left"
+              color={color}
+              lineHeight="loosest"
+              size="smedium"
+              weight="heavy"
+            >
+            {symbol}
           </Text>
-        </Row>
-        <Row>
           <Text
-            align="left"
-            color={color}
-            lineHeight="loosest"
-            size="smedium"
-            weight="heavy"
-          >
-          {symbol}
-        </Text>
-        <Text
-            align="right"
-            color={'#FFFFFF'}
-            lineHeight="loosest"
-            size="smedium"
-            weight="heavy"
-          >
-          {phrase}{suffix}
-        </Text>
-        </Row>
+              align="right"
+              color={'#FFFFFF'}
+              lineHeight="loosest"
+              size="smedium"
+              weight="heavy"
+            >
+            {phrase}{suffix}
+          </Text>
+          </Row>
+        </Column>
       </ColumnWithMargins>
     )
   }
