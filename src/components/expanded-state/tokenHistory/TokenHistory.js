@@ -125,74 +125,69 @@ const TokenHistory = ({
   const renderHistoryDescription = ({ symbol, phrase, item, suffix }) => {
     const date = getHumanReadableDateWithoutOn(new Date(item.created_date).getTime()/1000);
     return (
-      <ColumnWithMargins
-        margin={6}
-        // paddingHorizontal={15}
-      >
+      <Column>
+      
         {/*
           Radial Gradient + Line row
          */ }
-        <Row> 
+        <Row style = {{ marginBottom: 1 }}> 
           <Gradient color={colors} />
-          {/* <RadialGradient
-            {...radialGradientProps}
-            borderRadius={16}
-            radius={600}
-          /> */}
-          <View style={{ height: 3, width: 134, backgroundColor: color, opacity: 0.1, marginTop: 3, marginLeft: 15, marginRight: 6 }} />
+          <View style={{ height: 3, width: 150, backgroundColor: color, opacity: 0.1, marginTop: 3, marginLeft: 15, marginRight: 6 }} />
         </Row>
         
-        <Column>
-          <Row>
-            <Text
-              align="left"
-              color={color}
-              lineHeight="loosest"
-              size="smedium"
-              weight="heavy"
-            >
-            {date}     
-            </Text>
-          </Row>
-          <Row>
-            <Text
-              align="left"
-              color={color}
-              lineHeight="loosest"
-              size="smedium"
-              weight="heavy"
-            >
+        {/*
+          Date Row
+         */ }
+        <Row style = {{ marginBottom: -6 }}>
+          <Text
+            align="left"
+            color={color}
+            lineHeight="loosest"
+            size="smedium"
+            weight="heavy"
+          >
+          {date}     
+          </Text>
+        </Row>
+        
+        {/*
+          Symbol + Phrase Row
+         */ }
+        <Row>
+          <Text
+            align="left"
+            color={color}
+            lineHeight="loosest"
+            size="smedium"
+            weight="heavy"
+          >
             {symbol}
           </Text>
           <Text
-              align="right"
-              color={'#FFFFFF'}
-              lineHeight="loosest"
-              size="smedium"
-              weight="heavy"
-            >
+            align="right"
+            color={colors.whiteLabel}
+            lineHeight="loosest"
+            size="smedium"
+            weight="heavy"
+          >
             {phrase}{suffix}
           </Text>
-          </Row>
-        </Column>
-      </ColumnWithMargins>
+        </Row>
+
+      </Column>
     )
   }
 
   return (
-    <Column>
-      <Row>
-        <FlatList
-            data={tokenHistory}
-            renderItem={renderItem}
-            horizontal={true}
-            inverted={true}
-            showsHorizontalScrollIndicator={false}
-          />
-      </Row>
-    </Column>
+    <FlatList
+      data={tokenHistory}
+      renderItem={renderItem}
+      horizontal={true}
+      inverted={true}
+      showsHorizontalScrollIndicator={false}
+    />
   )
-  }
+}
 
 export default TokenHistory;
 
