@@ -5,8 +5,7 @@ import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode'
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import UnstoppableResolution from '@unstoppabledomains/resolution';
-import { get, replace, startsWith } from 'lodash';
-import config from '../model/config';
+import { get, startsWith } from 'lodash';
 import {
   ARBITRUM_ETH_ADDRESS,
   ETH_ADDRESS,
@@ -31,21 +30,20 @@ import {
 } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 export const networkProviders = {};
 
 const rpcEndpoints = {};
 
-export const setRpcEndpoints = (config) => {
-  rpcEndpoints[networkTypes.mainnet] = config.ethereum_mainnet_rpc;
-  rpcEndpoints[networkTypes.ropsten] = config.ethereum_ropsten_rpc;
-  rpcEndpoints[networkTypes.kovan] = config.ethereum_kovan_rpc;
-  rpcEndpoints[networkTypes.rinkeby] = config.ethereum_rinkeby_rpc;
-  rpcEndpoints[networkTypes.optimism] = config.optimism_mainnet_rpc;
-  rpcEndpoints[networkTypes.arbitrum] = config.arbitrum_mainnet_rpc;
-  rpcEndpoints[networkTypes.polygon] = config.polygon_mainnet_rpc;
-}
+export const setRpcEndpoints = config => {
+  rpcEndpoints[NetworkTypes.mainnet] = config.ethereum_mainnet_rpc;
+  rpcEndpoints[NetworkTypes.ropsten] = config.ethereum_ropsten_rpc;
+  rpcEndpoints[NetworkTypes.kovan] = config.ethereum_kovan_rpc;
+  rpcEndpoints[NetworkTypes.rinkeby] = config.ethereum_rinkeby_rpc;
+  rpcEndpoints[NetworkTypes.optimism] = config.optimism_mainnet_rpc;
+  rpcEndpoints[NetworkTypes.arbitrum] = config.arbitrum_mainnet_rpc;
+  rpcEndpoints[NetworkTypes.polygon] = config.polygon_mainnet_rpc;
+};
 
 /**
  * @desc web3 http instance
@@ -296,7 +294,7 @@ export const resolveUnstoppableDomain = async domain => {
     blockchain: {
       cns: {
         network: 'mainnet',
-        url: rpcEndpoints[networkTypes.mainnet],
+        url: rpcEndpoints[NetworkTypes.mainnet],
       },
     },
   });
