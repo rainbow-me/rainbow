@@ -59,8 +59,6 @@ export const parseBlockNativeGasData = (
   suggestedMaxFeePerGas: number
 ): { gasFeeParamsBySpeed: GasFeeParamsBySpeed; baseFeePerGas: GasFeeParam } => {
   const { baseFeePerGas, estimatedPrices } = data?.blockPrices?.[0];
-  // temp multiplier
-  // const baseFee = baseFeePerGas * 1.5;
   const parsedFees: GasFeeParamsBySpeed = {};
   estimatedPrices.forEach(({ confidence, maxPriorityFeePerGas }) => {
     const option: string = GAS_CONFIDENCE[confidence];

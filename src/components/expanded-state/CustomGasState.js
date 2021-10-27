@@ -2,7 +2,6 @@ import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components';
 import Divider from '../Divider';
 import { ExchangeHeader } from '../exchange';
 import { FloatingPanel } from '../floating-panels';
@@ -28,8 +27,6 @@ const springConfig = {
   mass: 3,
   stiffness: 1000,
 };
-
-const Footer = styled(Column).attrs({})``;
 
 const FOOTER_MIN_HEIGHT = 60;
 const CONTENT_MIN_HEIGHT = 330;
@@ -128,7 +125,7 @@ export default function CustomGasState({ asset }) {
           onPressTabPill={hideKeyboard}
         />
       </FloatingPanel>
-      <Footer onLayout={setFooterHeight}>
+      <Column onLayout={setFooterHeight}>
         <GasSpeedButton
           asset={asset}
           currentNetwork={network}
@@ -136,7 +133,7 @@ export default function CustomGasState({ asset }) {
           testID="swap-details-gas"
           theme="dark"
         />
-      </Footer>
+      </Column>
     </SlackSheet>
   );
 }

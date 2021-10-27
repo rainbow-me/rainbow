@@ -19,7 +19,11 @@ import {
   usePrevious,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import {
+  ARBITRUM_ETH_ADDRESS,
+  ETH_ADDRESS,
+  MATIC_POLYGON_ADDRESS,
+} from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { margin, padding } from '@rainbow-me/styles';
 import {
@@ -304,9 +308,10 @@ const GasSpeedButton = ({
   const nativeFeeCurrencySymbol = useMemo(() => {
     switch (currentNetwork) {
       case networkTypes.polygon:
-        return { address: ETH_ADDRESS, symbol: 'MATIC' };
+        return { address: MATIC_POLYGON_ADDRESS, symbol: 'MATIC' };
       case networkTypes.optimism:
       case networkTypes.arbitrum:
+        return { address: ARBITRUM_ETH_ADDRESS, symbol: 'ETH' };
       default:
         return { address: ETH_ADDRESS, symbol: 'ETH' };
     }
@@ -446,17 +451,6 @@ const GasSpeedButton = ({
       openCustomGasSheet();
     }
   }, [navigate, openCustomGasSheet, selectedGasFeeOption]);
-
-  // useEffect(() => {
-  //   // Cancel any queued estimation
-  //   customGasPriceTimeEstimateHandler.current &&
-  //     clearTimeout(customGasPriceTimeEstimateHandler.current);
-  //   // Add a new one to the queue
-  //   customGasPriceTimeEstimateHandler.current = setTimeout(() => {
-  //     customGasPriceInput &&
-  //       calculateCustomPriceEstimatedTime(customGasPriceInput);
-  //   }, 1000);
-  // }, [calculateCustomPriceEstimatedTime, customGasPriceInput]);
 
   useEffect(() => {
     const estimatedTime = get(

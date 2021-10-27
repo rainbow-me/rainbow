@@ -208,9 +208,10 @@ export default function FeesPanel({
     [currentBaseFee, currentGasTrend, navigate, theme]
   );
 
-  const formattedBaseFee = useMemo(() => `${parseInt(currentBaseFee)} Gwei`, [
-    currentBaseFee,
-  ]);
+  const formattedBaseFee = useMemo(
+    () => `${parseInt(currentBaseFee, 10)} Gwei`,
+    [currentBaseFee]
+  );
 
   const handleFeesGweiInputFocus = useCallback(() => {
     onCustomGasFocus?.();
@@ -259,7 +260,7 @@ export default function FeesPanel({
       if (newMaxPriorityFeePerGas.amount < 0 || newMaxFeePerGas.amount < 0)
         return;
       setCustomMaxPriorityFee(newMaxPriorityFeePerGas.gwei);
-      setCustomMaxBaseFee(parseInt(newMaxFeePerGas.gwei));
+      setCustomMaxBaseFee(parseInt(newMaxFeePerGas.gwei, 10));
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,

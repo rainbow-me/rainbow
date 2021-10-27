@@ -17,8 +17,6 @@ const StepButton = styled(Text).attrs(({ theme: { colors }, color }) => ({
   weight: 'heavy',
 }))``;
 
-const InputColumn = styled(Column).attrs({})``;
-
 const GweiStepButton = ({
   type,
   onLongPress,
@@ -107,7 +105,7 @@ export default function FeesGweiInput({
 
   return (
     <Row>
-      <InputColumn justify="center">
+      <Column justify="center">
         <GweiStepButton
           buttonColor={buttonColor}
           onLongPress={onMinusLongPress}
@@ -115,8 +113,8 @@ export default function FeesGweiInput({
           onPress={onMinusPress}
           type={MINUS_ACTION_TYPE}
         />
-      </InputColumn>
-      <InputColumn>
+      </Column>
+      <Column>
         <GweiInputPill
           onBlur={onBlur}
           onChange={onChange}
@@ -125,8 +123,8 @@ export default function FeesGweiInput({
           ref={inputRef}
           value={value}
         />
-      </InputColumn>
-      <InputColumn justify="center">
+      </Column>
+      <Column justify="center">
         <GweiStepButton
           buttonColor={buttonColor}
           onLongPress={onPlusLongPress}
@@ -134,7 +132,7 @@ export default function FeesGweiInput({
           onPress={onPlusPress}
           type={PLUS_ACTION_TYPE}
         />
-      </InputColumn>
+      </Column>
     </Row>
   );
 }
