@@ -6,6 +6,7 @@ import logger from 'logger';
 import { abbreviations } from '../utils';
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { UNISWAP_PAIRS_HISTORICAL_BULK_QUERY } from 'src/apollo/queries';
+import { fromWei } from '@rainbow-me/utilities';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
 export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;
@@ -126,7 +127,7 @@ export const apiGetTokenHistory = async (
           from_account = "0x123";
           to_account = "0x123";
           sale_amount = "0";
-          var tempList = parseInt(event.starting_price / 1000000000000000000);
+          var tempList = fromWei(parseInt(event.starting_price));
           list_amount = tempList.toString();
 
           eventObject = {
@@ -172,7 +173,7 @@ export const apiGetTokenHistory = async (
           created_date = event.created_date;
           from_account = "0x123";
           to_account = "0x123";
-          var tempSale = parseInt(event.total_price / 1000000000000000000);
+          var tempSale = fromWei(parseInt(event.total_price));
           sale_amount = tempSale.toString();
           list_amount = "0";
   

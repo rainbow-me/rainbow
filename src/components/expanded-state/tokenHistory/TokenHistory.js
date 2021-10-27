@@ -6,7 +6,6 @@ import logger from 'logger';
 import RadialGradient from 'react-native-radial-gradient';
 import { Text } from '../../text';
 import styled from 'styled-components';
-import { position } from '@rainbow-me/styles';
 import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
 import { useTheme } from '../../../context/ThemeContext';
 
@@ -79,18 +78,7 @@ const TokenHistory = ({
     width: 10;
     height: 10;
     overflow: hidden;
-    marginRight: 6;
   `;
-
-  const radialGradientProps = {
-    center: [0, 1],
-    colors: colors.gradients.lightGreyWhite,
-    pointerEvents: 'none',
-    style: {
-      ...position.coverAsObject,
-      overflow: 'hidden',
-    },
-  };
 
   const renderItem = ({ item }) => {
     switch (item.event_type) {
