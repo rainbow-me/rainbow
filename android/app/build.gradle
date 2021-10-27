@@ -111,7 +111,6 @@ project.ext.react = [
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
-apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
 
 
 /**
@@ -226,8 +225,8 @@ android {
         }
         bitrise {
 
-            byte[] decodedStorePasswordBytes =  "${System.env.BITRISEIO_ANDROID_KEYSTORE_PASSWORD}".decodeBase64()
-            byte[] decodedPrivateKeyPasswordBytes =  "${System.env.BITRISEIO_ANDROID_KEYSTORE_PRIVATE_KEY_PASSWORD}".decodeBase64()
+            byte[] decodedStorePasswordBytes =  "${System.env.ANDROID_KEYSTORE_PASSWORD}".decodeBase64()
+            byte[] decodedPrivateKeyPasswordBytes =  "${System.env.ANDROID_KEYSTORE_PASSWORD}".decodeBase64()
 
             def decodedStorePassword = new String(decodedStorePasswordBytes).replaceAll("\n","")
             def decodedPrivateKeyPassword = new String(decodedPrivateKeyPasswordBytes).replaceAll("\n","")
@@ -267,12 +266,13 @@ android {
         local {
             dimension "environment"
             signingConfig signingConfigs.release
+            apply from: "../../node_modules/@sentry/react-native/sentry.gradle"
+            
         }
 
         bitrise {
             dimension "environment"
             signingConfig signingConfigs.bitrise
-
         }
       
     }
