@@ -73,10 +73,12 @@ export const ZoomableWrapper = ({
   isSVG,
   borderRadius,
   disableAnimations,
-  yDisplacement,
+  yDisplacement: givenYDisplacement,
 }) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const animationProgress = givenAnimationProgress || useSharedValue(0);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const yDisplacement = givenYDisplacement || useSharedValue(0);
 
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
 
@@ -428,10 +430,16 @@ export const ZoomableWrapper = ({
 
           const breakingScaleX = deviceWidth / fullSizeWidth;
           const breakingScaleY = deviceHeight / fullSizeHeight;
+          const maxDisplacementX =
+            (deviceWidth * (Math.max(1, scaleTo / breakingScaleX) - 1)) /
+            2 /
+            zooming;
+          const maxDisplacementY =
+            (deviceHeight * (Math.max(1, scaleTo / breakingScaleY) - 1)) /
+            2 /
+            zooming;
 
           if (scaleTo > breakingScaleX) {
-            const maxDisplacementX =
-              (deviceWidth * (scaleTo / breakingScaleX - 1)) / 2;
             if (zoomToX > maxDisplacementX) {
               translateX.value = withTiming(maxDisplacementX, adjustConfig);
             } else if (zoomToX < -maxDisplacementX) {
@@ -444,8 +452,6 @@ export const ZoomableWrapper = ({
           }
 
           if (scaleTo > breakingScaleY) {
-            const maxDisplacementY =
-              (deviceHeight * (scaleTo / breakingScaleY - 1)) / 2;
             if (zoomToY > maxDisplacementY) {
               translateY.value = withTiming(maxDisplacementY, adjustConfig);
             } else if (zoomToY < -maxDisplacementY) {
