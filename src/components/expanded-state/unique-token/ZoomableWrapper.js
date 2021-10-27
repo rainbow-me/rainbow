@@ -425,8 +425,8 @@ export const ZoomableWrapper = ({
             Math.max(deviceHeight / fullSizeHeight, 2.5),
             MAX_IMAGE_SCALE
           );
-          const zoomToX = ((centerX - event.absoluteX) / 2) * scaleTo;
-          const zoomToY = ((centerY - event.absoluteY) / 2) * scaleTo;
+          const zoomToX = (centerX - event.absoluteX) * scaleTo;
+          const zoomToY = (centerY - event.absoluteY) * scaleTo;
 
           const breakingScaleX = deviceWidth / fullSizeWidth;
           const breakingScaleY = deviceHeight / fullSizeHeight;
