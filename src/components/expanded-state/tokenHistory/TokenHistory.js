@@ -80,37 +80,48 @@ const TokenHistory = ({
     overflow: hidden;
   `;
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({ item, index }) => {
+
+    var isFirst = false;
+    var symbol;
+    var phrase;
+    var suffix;
+
+    if (index == 0) {
+      isFirst = true;
+    }
+
     switch (item.event_type) {
       case eventTypes.TRANSFER:
-        var symbol = eventSymbols.TRANSFER;
-        var phrase = eventPhrases.TRANSFER;
-        var suffix = `${item.to_account}`;
-        return renderHistoryDescription({ symbol, phrase, item, suffix });
+        symbol = eventSymbols.TRANSFER;
+        phrase = eventPhrases.TRANSFER;
+        suffix = `${item.to_account}`;
+        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst });
       case eventTypes.MINT:
-        var mintSymbol = eventSymbols.MINT;
-        var mintPhrase = eventPhrases.MINT;
-        var mintSuffix = ``;
-        return renderHistoryDescription({ symbol: mintSymbol, phrase: mintPhrase, item, suffix: mintSuffix });
+        symbol = eventSymbols.MINT;
+        phrase = eventPhrases.MINT;
+        suffix = ``;
+        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst });
       case eventTypes.SALE:
-        var saleSymbol = eventSymbols.SALE;
-        var salePhrase = eventPhrases.SALE;
-        var saleSuffix = `${item.sale_amount} ETH`;
-        return renderHistoryDescription({ symbol: saleSymbol, phrase: salePhrase, item, suffix: saleSuffix });
+        symbol = eventSymbols.SALE;
+        phrase = eventPhrases.SALE;
+        suffix = `${item.sale_amount} ETH`;
+        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst });
       case eventTypes.LIST:
-        var listSymbol = eventSymbols.LIST;
-        var listPhrase = eventPhrases.LIST;
-        var listSuffix = `${item.list_amount} ETH`;
-        return renderHistoryDescription({ symbol: listSymbol, phrase: listPhrase, item, suffix: listSuffix });
+        symbol = eventSymbols.LIST;
+        phrase = eventPhrases.LIST;
+        suffix = `${item.list_amount} ETH`;
+        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst });
       case eventTypes.DELIST:
-        var delistSymbol = eventSymbols.DELIST;
-        var delistPhrase = eventPhrases.DELIST;
-        var delistSuffix = ``;
-        return renderHistoryDescription({ symbol: delistSymbol, phrase: delistPhrase, item, suffix: delistSuffix });
+        symbol = eventSymbols.DELIST;
+        phrase = eventPhrases.DELIST;
+        suffix = ``;
+        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst });
     }
+
   }
 
-  const renderHistoryDescription = ({ symbol, phrase, item, suffix }) => {
+  const renderHistoryDescription = ({ symbol, phrase, item, suffix, isFirst }) => {
     const date = getHumanReadableDateWithoutOn(new Date(item.created_date).getTime()/1000);
     return (
       <Column>
@@ -120,7 +131,7 @@ const TokenHistory = ({
          */ }
         <Row style = {{ marginBottom: 1 }}> 
           <Gradient color={colors} />
-          <View style={{ height: 3, width: 150, backgroundColor: color, opacity: 0.1, marginTop: 3, marginLeft: 15, marginRight: 6 }} />
+          { isFirst ? <View style={{ height: 3, marginTop: 3 }} /> : <View style={{ height: 3, width: 150, backgroundColor: color, opacity: 0.1, marginTop: 3, marginLeft: 15, marginRight: 6 }} /> }
         </Row>
         
         {/*
@@ -169,7 +180,7 @@ const TokenHistory = ({
   return (
     <FlatList
       data={tokenHistory}
-      renderItem={renderItem}
+      renderItem={({item, index}) => renderItem({ item, index })}
       horizontal={true}
       inverted={true}
       showsHorizontalScrollIndicator={false}
