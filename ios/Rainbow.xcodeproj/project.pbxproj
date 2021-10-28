@@ -21,16 +21,6 @@
 		3CBE29CD2381E43900BE05AC /* Dummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBE29CC2381E43900BE05AC /* Dummy.swift */; };
 		6630540924A38A1900E5B030 /* RainbowText.m in Sources */ = {isa = PBXBuildFile; fileRef = 6630540824A38A1900E5B030 /* RainbowText.m */; };
 		6635730624939991006ACFA6 /* SafeStoreReview.m in Sources */ = {isa = PBXBuildFile; fileRef = 6635730524939991006ACFA6 /* SafeStoreReview.m */; };
-		663BAB292729912D001B995D /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 663BAB282729912D001B995D /* WidgetKit.framework */; };
-		663BAB2B2729912D001B995D /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 663BAB2A2729912D001B995D /* SwiftUI.framework */; };
-		663BAB2E2729912E001B995D /* Rainbow_Widget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BAB2D2729912E001B995D /* Rainbow_Widget.swift */; };
-		663BAB312729912F001B995D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 663BAB302729912F001B995D /* Assets.xcassets */; };
-		663BAB372729912F001B995D /* Rainbow WidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 663BAB272729912D001B995D /* Rainbow WidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		663BAB49272995B1001B995D /* SelectToken.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 663BAB4027299442001B995D /* SelectToken.intentdefinition */; };
-		663BAB4A272995B4001B995D /* PriceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BAB3F27299442001B995D /* PriceData.swift */; };
-		663BAB4B272995B7001B995D /* CoinGeckoService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BAB4227299442001B995D /* CoinGeckoService.swift */; };
-		663BAB4C272995BD001B995D /* TokenProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BAB3E27299442001B995D /* TokenProvider.swift */; };
-		663BAB4D272995C9001B995D /* TokenDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BAB3D27299442001B995D /* TokenDetails.swift */; };
 		6655FFB425BB2B0700642961 /* ThemeModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 6655FFB325BB2B0700642961 /* ThemeModule.m */; };
 		66A1FEB424AB641100C3F539 /* RNCMScreenStack.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEB024AB641100C3F539 /* RNCMScreenStack.m */; };
 		66A1FEB524AB641100C3F539 /* UIViewController+slack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEB124AB641100C3F539 /* UIViewController+slack.swift */; };
@@ -75,16 +65,6 @@
 		ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2971642150620600B7C4FE /* JavaScriptCore.framework */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		663BAB352729912F001B995D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 663BAB262729912D001B995D;
-			remoteInfo = "Rainbow WidgetExtension";
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXCopyFilesBuildPhase section */
 		668ADB3225A4E3A40050859D /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -92,7 +72,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				663BAB372729912F001B995D /* Rainbow WidgetExtension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -141,18 +120,8 @@
 		3CBE29CC2381E43900BE05AC /* Dummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dummy.swift; sourceTree = "<group>"; };
 		6630540824A38A1900E5B030 /* RainbowText.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RainbowText.m; sourceTree = "<group>"; };
 		6635730524939991006ACFA6 /* SafeStoreReview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SafeStoreReview.m; sourceTree = "<group>"; };
-		663BAB272729912D001B995D /* Rainbow WidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Rainbow WidgetExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		663BAB282729912D001B995D /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		663BAB2A2729912D001B995D /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		663BAB2D2729912E001B995D /* Rainbow_Widget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rainbow_Widget.swift; sourceTree = "<group>"; };
-		663BAB302729912F001B995D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		663BAB322729912F001B995D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		663BAB3D27299442001B995D /* TokenDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TokenDetails.swift; sourceTree = "<group>"; };
-		663BAB3E27299442001B995D /* TokenProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TokenProvider.swift; sourceTree = "<group>"; };
-		663BAB3F27299442001B995D /* PriceData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PriceData.swift; sourceTree = "<group>"; };
-		663BAB4027299442001B995D /* SelectToken.intentdefinition */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.intentdefinition; path = SelectToken.intentdefinition; sourceTree = "<group>"; };
-		663BAB4127299442001B995D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		663BAB4227299442001B995D /* CoinGeckoService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoinGeckoService.swift; sourceTree = "<group>"; };
 		6655FFB325BB2B0700642961 /* ThemeModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThemeModule.m; sourceTree = "<group>"; };
 		668A9E253DAF444A90ECB997 /* SFMono-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFMono-Medium.otf"; path = "../src/assets/fonts/SFMono-Medium.otf"; sourceTree = "<group>"; };
 		668ADB2C25A4E3A40050859D /* Stickers.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Stickers.xcassets; sourceTree = "<group>"; };
@@ -219,15 +188,6 @@
 				ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */,
 				C72F456C99A646399192517D /* libz.tbd in Frameworks */,
 				7511CCF3D0050D7920C4A769 /* libPods-Rainbow.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		663BAB242729912D001B995D /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				663BAB2B2729912D001B995D /* SwiftUI.framework in Frameworks */,
-				663BAB292729912D001B995D /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -357,22 +317,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		663BAB2C2729912E001B995D /* Rainbow Widget */ = {
-			isa = PBXGroup;
-			children = (
-				663BAB4127299442001B995D /* Assets.xcassets */,
-				663BAB4227299442001B995D /* CoinGeckoService.swift */,
-				663BAB3F27299442001B995D /* PriceData.swift */,
-				663BAB4027299442001B995D /* SelectToken.intentdefinition */,
-				663BAB3D27299442001B995D /* TokenDetails.swift */,
-				663BAB3E27299442001B995D /* TokenProvider.swift */,
-				663BAB2D2729912E001B995D /* Rainbow_Widget.swift */,
-				663BAB302729912F001B995D /* Assets.xcassets */,
-				663BAB322729912F001B995D /* Info.plist */,
-			);
-			path = "Rainbow Widget";
-			sourceTree = "<group>";
-		};
 		668ADB2B25A4E3A20050859D /* Rainbow Stickers */ = {
 			isa = PBXGroup;
 			children = (
@@ -420,7 +364,6 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* RainbowTests */,
 				668ADB2B25A4E3A20050859D /* Rainbow Stickers */,
-				663BAB2C2729912E001B995D /* Rainbow Widget */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				DCAC1D8CC45E468FBB7E1395 /* Resources */,
@@ -436,7 +379,6 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* Rainbow.app */,
-				663BAB272729912D001B995D /* Rainbow WidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -550,29 +492,11 @@
 			buildRules = (
 			);
 			dependencies = (
-				663BAB362729912F001B995D /* PBXTargetDependency */,
 			);
 			name = Rainbow;
 			productName = "Hello World";
 			productReference = 13B07F961A680F5B00A75B9A /* Rainbow.app */;
 			productType = "com.apple.product-type.application";
-		};
-		663BAB262729912D001B995D /* Rainbow WidgetExtension */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 663BAB3C2729912F001B995D /* Build configuration list for PBXNativeTarget "Rainbow WidgetExtension" */;
-			buildPhases = (
-				663BAB232729912D001B995D /* Sources */,
-				663BAB242729912D001B995D /* Frameworks */,
-				663BAB252729912D001B995D /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "Rainbow WidgetExtension";
-			productName = "Rainbow WidgetExtension";
-			productReference = 663BAB272729912D001B995D /* Rainbow WidgetExtension.appex */;
-			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -597,11 +521,6 @@
 							};
 						};
 					};
-					663BAB262729912D001B995D = {
-						CreatedOnToolsVersion = 12.5.1;
-						DevelopmentTeam = L74NQAQB8H;
-						ProvisioningStyle = Automatic;
-					};
 				};
 			};
 			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Rainbow" */;
@@ -619,7 +538,6 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* Rainbow */,
-				663BAB262729912D001B995D /* Rainbow WidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -645,14 +563,6 @@
 				AA6228F124272F510078BDAA /* SF-Pro-Rounded-Medium.otf in Resources */,
 				AA6228F224272F510078BDAA /* SF-Pro-Rounded-Regular.otf in Resources */,
 				AA6228F324272F510078BDAA /* SF-Pro-Rounded-Semibold.otf in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		663BAB252729912D001B995D /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				663BAB312729912F001B995D /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -824,28 +734,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		663BAB232729912D001B995D /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				663BAB4B272995B7001B995D /* CoinGeckoService.swift in Sources */,
-				663BAB49272995B1001B995D /* SelectToken.intentdefinition in Sources */,
-				663BAB4D272995C9001B995D /* TokenDetails.swift in Sources */,
-				663BAB4C272995BD001B995D /* TokenProvider.swift in Sources */,
-				663BAB4A272995B4001B995D /* PriceData.swift in Sources */,
-				663BAB2E2729912E001B995D /* Rainbow_Widget.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		663BAB362729912F001B995D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 663BAB262729912D001B995D /* Rainbow WidgetExtension */;
-			targetProxy = 663BAB352729912F001B995D /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		13B07FB11A68108700A75B9A /* LaunchScreen.xib */ = {
@@ -864,7 +753,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CE50FF2D9F16B0A1CA480B05 /* Pods-Rainbow.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_OPTIMIZATION = time;
 				CLANG_ENABLE_MODULES = YES;
@@ -939,7 +827,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 31A695410195FE6F79E60F69 /* Pods-Rainbow.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_OPTIMIZATION = "";
 				CLANG_ENABLE_MODULES = YES;
@@ -1037,7 +924,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 772959BFA081CAEED18AF4DF /* Pods-Rainbow.staging.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_OPTIMIZATION = "";
 				CLANG_ENABLE_MODULES = YES;
@@ -1135,7 +1021,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = ACBD5653131D2AE1ECE7B5B2 /* Pods-Rainbow.localrelease.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_OPTIMIZATION = time;
 				CLANG_ENABLE_MODULES = YES;
@@ -1189,181 +1074,6 @@
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = LocalRelease;
-		};
-		663BAB382729912F001B995D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = L74NQAQB8H;
-				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				INFOPLIST_FILE = "Rainbow Widget/Info.plist";
-				INTENTS_CODEGEN_LANGUAGE = Swift;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "me.rainbow.Rainbow-Widget";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_COMPILATION_MODE = singlefile;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		663BAB392729912F001B995D /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				CODE_SIGN_STYLE = Automatic;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = L74NQAQB8H;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				INFOPLIST_FILE = "Rainbow Widget/Info.plist";
-				INTENTS_CODEGEN_LANGUAGE = Swift;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "me.rainbow.Rainbow-Widget";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		663BAB3A2729912F001B995D /* LocalRelease */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = L74NQAQB8H;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				INFOPLIST_FILE = "Rainbow Widget/Info.plist";
-				INTENTS_CODEGEN_LANGUAGE = Swift;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "me.rainbow.Rainbow-Widget";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = LocalRelease;
-		};
-		663BAB3B2729912F001B995D /* Staging */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = L74NQAQB8H;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				INFOPLIST_FILE = "Rainbow Widget/Info.plist";
-				INTENTS_CODEGEN_LANGUAGE = Swift;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "me.rainbow.Rainbow-Widget";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Staging;
 		};
 		83CBBA201A601CBA00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -1455,17 +1165,6 @@
 				13B07F951A680F5B00A75B9A /* Release */,
 				2C87B79A2197FA1900682EC4 /* LocalRelease */,
 				2C6A799821127ED9003AFB37 /* Staging */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		663BAB3C2729912F001B995D /* Build configuration list for PBXNativeTarget "Rainbow WidgetExtension" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				663BAB382729912F001B995D /* Debug */,
-				663BAB392729912F001B995D /* Release */,
-				663BAB3A2729912F001B995D /* LocalRelease */,
-				663BAB3B2729912F001B995D /* Staging */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
