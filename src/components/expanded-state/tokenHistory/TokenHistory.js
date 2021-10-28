@@ -86,7 +86,7 @@ const TokenHistory = ({
   const GradientRow = styled(Row).attrs(({}))`
     height: 10;
     marginBottom: 6;
-    marginTop: 5;
+    marginTop: 4;
   `;
 
   const InnerColumn = styled(Column).attrs(({}))`
@@ -99,20 +99,18 @@ const TokenHistory = ({
 
   const EmptyView = styled(View).attrs(({}))`
     height: 3;
-    marginTop: 3;
+    marginTop: 3.5;
   `;
 
   const LineView = styled(View).attrs(({}))`
-    height: 3;
     height: 3;
     backgroundColor: ${color}; 
     opacity: 0.1;
     borderRadius: 1.5;
     position: absolute;
-    top: 3;
-    width: 87%;
+    top: 3.5;
     left: 16;
-    right: 0;
+    right: 6;
   `;
 
   const renderItem = ({ item, index }) => {
@@ -132,21 +130,25 @@ const TokenHistory = ({
         phrase = eventPhrases.TRANSFER;
         suffix = `${item.to_account}`;
         return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst });
+
       case eventTypes.MINT:
         symbol = eventSymbols.MINT;
         phrase = eventPhrases.MINT;
         suffix = ``;
         return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst });
+
       case eventTypes.SALE:
         symbol = eventSymbols.SALE;
         phrase = eventPhrases.SALE;
         suffix = `${item.sale_amount} ETH`;
         return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst });
+
       case eventTypes.LIST:
         symbol = eventSymbols.LIST;
         phrase = eventPhrases.LIST;
         suffix = `${item.list_amount} ETH`;
         return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst });
+
       case eventTypes.DELIST:
         symbol = eventSymbols.DELIST;
         phrase = eventPhrases.DELIST;
@@ -158,6 +160,7 @@ const TokenHistory = ({
 
   const renderHistoryDescription = ({ symbol, phrase, item, suffix, isFirst }) => {
     const date = getHumanReadableDateWithoutOn(new Date(item.created_date).getTime()/1000);
+
     return (
       <Column>
       
