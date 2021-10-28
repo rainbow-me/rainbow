@@ -52,8 +52,8 @@ const Container = styled(Animated.View)`
 `;
 const ImageWrapper = styled(Animated.View)`
   ${position.size('100%')};
-  overflow: hidden;
   flex-direction: row;
+  overflow: hidden;
 `;
 const ZoomContainer = styled(Animated.View)`
   height: ${({ height }) => height};
@@ -425,8 +425,8 @@ export const ZoomableWrapper = ({
             Math.max(deviceHeight / fullSizeHeight, 2.5),
             MAX_IMAGE_SCALE
           );
-          const zoomToX = (centerX - event.absoluteX) * scaleTo;
-          const zoomToY = (centerY - event.absoluteY) * scaleTo;
+          const zoomToX = ((centerX - event.absoluteX) * scaleTo) / zooming;
+          const zoomToY = ((centerY - event.absoluteY) * scaleTo) / zooming;
 
           const breakingScaleX = deviceWidth / fullSizeWidth;
           const breakingScaleY = deviceHeight / fullSizeHeight;
