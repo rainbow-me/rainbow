@@ -9,9 +9,27 @@ const docs: Docs = {
   category: 'Layout',
   examples: [
     {
-      name: 'Basic usage',
+      name: 'Equal spacing',
       example: (
-        <Inline space="12dp">
+        <Inline space="12px">
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+        </Inline>
+      ),
+    },
+
+    {
+      name: 'Different space on each axis',
+      example: (
+        <Inline horizontalSpace="19px" verticalSpace="12px">
           <Placeholder height={40} width={40} />
           <Placeholder height={40} width={40} />
           <Placeholder height={40} width={40} />
@@ -29,7 +47,7 @@ const docs: Docs = {
     {
       name: 'Center-aligned horizontally',
       example: (
-        <Inline alignHorizontal="center" space="19dp">
+        <Inline alignHorizontal="center" space="19px">
           <Placeholder height={40} width={40} />
           <Placeholder height={40} width={40} />
           <Placeholder height={40} width={40} />
@@ -45,7 +63,7 @@ const docs: Docs = {
     {
       name: 'Right-aligned horizontally',
       example: (
-        <Inline alignHorizontal="right" space="19dp">
+        <Inline alignHorizontal="right" space="19px">
           <Placeholder height={40} width={40} />
           <Placeholder height={40} width={40} />
           <Placeholder height={40} width={40} />
@@ -61,7 +79,7 @@ const docs: Docs = {
     {
       name: 'Center-aligned vertically',
       example: (
-        <Inline alignVertical="center" space="19dp">
+        <Inline alignVertical="center" space="19px">
           <Placeholder height={20} width={40} />
           <Placeholder height={40} width={40} />
           <Placeholder height={60} width={40} />
@@ -78,7 +96,7 @@ const docs: Docs = {
     {
       name: 'Bottom-aligned vertically',
       example: (
-        <Inline alignVertical="bottom" space="19dp">
+        <Inline alignVertical="bottom" space="19px">
           <Placeholder height={20} width={40} />
           <Placeholder height={40} width={40} />
           <Placeholder height={60} width={40} />
@@ -95,7 +113,7 @@ const docs: Docs = {
     {
       name: 'Center-aligned horizontally and vertically',
       example: (
-        <Inline alignHorizontal="center" alignVertical="center" space="19dp">
+        <Inline alignHorizontal="center" alignVertical="center" space="19px">
           <Placeholder height={20} width={40} />
           <Placeholder height={40} width={40} />
           <Placeholder height={60} width={40} />

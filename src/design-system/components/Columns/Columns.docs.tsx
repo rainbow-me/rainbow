@@ -16,7 +16,7 @@ const docs: Docs = {
     {
       name: 'Basic usage',
       example: (
-        <Columns space="19dp">
+        <Columns space="19px">
           <Placeholder />
           <Placeholder />
         </Columns>
@@ -26,8 +26,8 @@ const docs: Docs = {
     {
       name: 'Custom widths',
       example: (
-        <Stack space="19dp">
-          <Columns space="19dp">
+        <Stack space="19px">
+          <Columns space="19px">
             <Column width="1/2">
               <Placeholder />
             </Column>
@@ -36,7 +36,7 @@ const docs: Docs = {
             </Column>
           </Columns>
 
-          <Columns space="19dp">
+          <Columns space="19px">
             <Column width="1/3">
               <Placeholder />
             </Column>
@@ -48,7 +48,7 @@ const docs: Docs = {
             </Column>
           </Columns>
 
-          <Columns space="19dp">
+          <Columns space="19px">
             <Column width="2/3">
               <Placeholder />
             </Column>
@@ -57,7 +57,7 @@ const docs: Docs = {
             </Column>
           </Columns>
 
-          <Columns space="19dp">
+          <Columns space="19px">
             <Column width="1/4">
               <Placeholder />
             </Column>
@@ -72,7 +72,7 @@ const docs: Docs = {
             </Column>
           </Columns>
 
-          <Columns space="19dp">
+          <Columns space="19px">
             <Column width="1/4">
               <Placeholder />
             </Column>
@@ -84,7 +84,7 @@ const docs: Docs = {
             </Column>
           </Columns>
 
-          <Columns space="19dp">
+          <Columns space="19px">
             <Column width="1/4">
               <Placeholder />
             </Column>
@@ -93,7 +93,7 @@ const docs: Docs = {
             </Column>
           </Columns>
 
-          <Columns space="19dp">
+          <Columns space="19px">
             <Column width="1/5">
               <Placeholder />
             </Column>
@@ -105,7 +105,7 @@ const docs: Docs = {
             </Column>
           </Columns>
 
-          <Columns space="19dp">
+          <Columns space="19px">
             <Column width="1/5">
               <Placeholder />
             </Column>
@@ -117,7 +117,7 @@ const docs: Docs = {
             </Column>
           </Columns>
 
-          <Columns space="19dp">
+          <Columns space="19px">
             <Column width="1/5">
               <Placeholder />
             </Column>
@@ -132,7 +132,7 @@ const docs: Docs = {
     {
       name: 'Custom width (content)',
       example: (
-        <Columns space="19dp">
+        <Columns space="19px">
           <Placeholder />
           <Column width="content">
             <Placeholder width={100} />
@@ -144,9 +144,9 @@ const docs: Docs = {
     {
       name: 'Nested columns',
       example: (
-        <Columns space="12dp">
+        <Columns space="12px">
           <Placeholder />
-          <Columns space="12dp">
+          <Columns space="12px">
             <Placeholder />
             <Placeholder />
           </Columns>
@@ -157,9 +157,9 @@ const docs: Docs = {
     {
       name: 'Nested columns with explicit widths',
       example: (
-        <Columns space="12dp">
+        <Columns space="12px">
           <Placeholder />
-          <Columns space="12dp">
+          <Columns space="12px">
             <Column width="1/3">
               <Placeholder />
             </Column>
@@ -172,10 +172,10 @@ const docs: Docs = {
     {
       name: 'Nested columns with explicit widths (content)',
       example: (
-        <Columns space="19dp">
+        <Columns space="19px">
           <Placeholder />
           <Column width="content">
-            <Columns space="6dp">
+            <Columns space="6px">
               <Column width="content">
                 <Placeholder width={60} />
               </Column>
@@ -191,7 +191,7 @@ const docs: Docs = {
     {
       name: 'Center-aligned vertically',
       example: (
-        <Columns alignVertical="center" space="19dp">
+        <Columns alignVertical="center" space="19px">
           <Placeholder height={30} />
           <Placeholder height={60} />
           <Placeholder height={20} />
@@ -202,7 +202,7 @@ const docs: Docs = {
     {
       name: 'Bottom-aligned vertically',
       example: (
-        <Columns alignVertical="bottom" space="19dp">
+        <Columns alignVertical="bottom" space="19px">
           <Placeholder height={30} />
           <Placeholder height={60} />
           <Placeholder height={20} />
@@ -213,7 +213,7 @@ const docs: Docs = {
     {
       name: 'Center-aligned horizontally',
       example: (
-        <Columns alignHorizontal="center" space="19dp">
+        <Columns alignHorizontal="center" space="19px">
           <Column width="1/4">
             <Placeholder height={30} />
           </Column>
@@ -227,7 +227,7 @@ const docs: Docs = {
     {
       name: 'Right-aligned horizontally',
       example: (
-        <Columns alignHorizontal="right" space="19dp">
+        <Columns alignHorizontal="right" space="19px">
           <Column width="1/4">
             <Placeholder height={30} />
           </Column>
@@ -241,7 +241,7 @@ const docs: Docs = {
     {
       name: 'Justified horizontally',
       example: (
-        <Columns alignHorizontal="justify" space="19dp">
+        <Columns alignHorizontal="justify" space="19px">
           <Column width="1/4">
             <Placeholder height={30} />
           </Column>
@@ -255,7 +255,7 @@ const docs: Docs = {
     {
       name: 'Full-height column via flexGrow',
       example: (
-        <Columns alignVertical="bottom" space="30dp">
+        <Columns alignVertical="bottom" space="30px">
           <Placeholder flexGrow={1} />
           <Placeholder height={30} />
           <Placeholder height={100} />
@@ -267,7 +267,7 @@ const docs: Docs = {
     {
       name: 'Dynamic width content',
       example: (
-        <Columns space="19dp">
+        <Columns space="19px">
           <Text>Lorem</Text>
           <Text>{loremIpsum}</Text>
         </Columns>

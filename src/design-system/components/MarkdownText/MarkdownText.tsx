@@ -13,7 +13,7 @@ import MarkdownDisplay, {
   RenderRules,
 } from 'react-native-markdown-display';
 import { negateSpace, Space } from '../../layout/space';
-import { renderEmoji } from '../../typography/renderEmoji';
+import { renderStringWithEmoji } from '../../typography/renderStringWithEmoji';
 import { fonts } from '../../typography/typography';
 import { Box } from '../Box/Box';
 import { Text, TextProps } from '../Text/Text';
@@ -31,9 +31,9 @@ const defaultProps: {
   space: Space;
   size: NonNullable<TextProps['size']>;
 } = {
-  nestedSpace: '19dp',
+  nestedSpace: '19px',
   size: 'body',
-  space: '30dp',
+  space: '30px',
 };
 
 interface MarkdownStackContextObject {
@@ -286,7 +286,7 @@ export const MarkdownText = memo(function MarkdownText({
         </View>
       ),
       text: ({ key, content }) => (
-        <NativeText key={key}>{renderEmoji(content)}</NativeText>
+        <NativeText key={key}>{renderStringWithEmoji(content)}</NativeText>
       ),
       th: ({ key }, children) => (
         <View key={key} style={styles.tableCell}>

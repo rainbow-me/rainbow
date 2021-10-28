@@ -1,28 +1,23 @@
-import React, { ReactNode, useContext, useMemo } from 'react';
-import { View } from 'react-native';
+import React, { useContext, useMemo } from 'react';
 import { ColorModeContext, ColorModeProvider } from '../../color/ColorMode';
 import { BackgroundColor } from '../../color/palettes';
 
-export type BackgroundProps = {
+export type BackgroundProviderProps = {
   color: BackgroundColor;
-  children:
-    | ReactNode
-    | ((renderProps: { style: { backgroundColor: string } }) => ReactNode);
+  children: (style: { backgroundColor: string }) => JSX.Element;
 };
 
-export function Background({ color, children }: BackgroundProps) {
+export function BackgroundProvider({
+  color,
+  children,
+}: BackgroundProviderProps) {
   const { colorMode, backgroundColors } = useContext(ColorModeContext);
   const background = backgroundColors[color];
   const style = useMemo(() => ({ backgroundColor: background.color }), [
     background,
   ]);
 
-  const child =
-    typeof children === 'function' ? (
-      children({ style })
-    ) : (
-      <View style={style}>{children}</View>
-    );
+  const child = children(style);
 
   return background.setColorMode !== colorMode ? (
     <ColorModeProvider value={background.setColorMode}>

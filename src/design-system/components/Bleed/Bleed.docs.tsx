@@ -13,10 +13,10 @@ const docs: Docs = {
     {
       name: 'Basic usage',
       example: (
-        <Inset space="19dp">
-          <Stack space="19dp">
+        <Inset space="19px">
+          <Stack space="19px">
             <Placeholder height={100} />
-            <Bleed horizontal="19dp">
+            <Bleed horizontal="19px">
               <Placeholder height={100} />
             </Bleed>
             <Placeholder height={100} />
@@ -28,10 +28,10 @@ const docs: Docs = {
     {
       name: 'Right',
       example: (
-        <Inset space="19dp">
-          <Stack space="19dp">
+        <Inset space="19px">
+          <Stack space="19px">
             <Placeholder height={100} />
-            <Bleed right="19dp">
+            <Bleed right="19px">
               <Placeholder height={100} />
             </Bleed>
             <Placeholder height={100} />
@@ -43,10 +43,10 @@ const docs: Docs = {
     {
       name: 'Left',
       example: (
-        <Inset space="19dp">
-          <Stack space="19dp">
+        <Inset space="19px">
+          <Stack space="19px">
             <Placeholder height={100} />
-            <Bleed left="19dp">
+            <Bleed left="19px">
               <Placeholder height={100} />
             </Bleed>
             <Placeholder height={100} />
@@ -58,9 +58,9 @@ const docs: Docs = {
     {
       name: 'Top',
       example: (
-        <Inset space="19dp">
-          <Stack space="19dp">
-            <Bleed top="19dp">
+        <Inset space="19px">
+          <Stack space="19px">
+            <Bleed top="19px">
               <Placeholder height={100} />
             </Bleed>
             <Placeholder height={100} />
@@ -73,11 +73,11 @@ const docs: Docs = {
     {
       name: 'Bottom',
       example: (
-        <Inset space="19dp">
-          <Stack space="19dp">
+        <Inset space="19px">
+          <Stack space="19px">
             <Placeholder height={100} />
             <Placeholder height={100} />
-            <Bleed bottom="19dp">
+            <Bleed bottom="19px">
               <Placeholder height={100} />
             </Bleed>
           </Stack>

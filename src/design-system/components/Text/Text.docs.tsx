@@ -60,7 +60,7 @@ const docs: Docs = {
     name: `${titleCase(size)} (${weight})`,
     example: (
       <>
-        <Stack space="12dp">
+        <Stack space="12px">
           <Stack separator={<Guide />}>
             <Text size={size} weight={weight}>
               {loremIpsum}
@@ -85,7 +85,7 @@ const docs: Docs = {
               }}
             >
               <ColorModeProvider value="dark">
-                <Stack space="12dp">
+                <Stack space="12px">
                   <Text color="secondary50" size={size} weight={weight}>
                     Dark mode
                   </Text>
@@ -102,7 +102,7 @@ const docs: Docs = {
               }}
             >
               <ColorModeProvider value="darkTinted">
-                <Stack space="12dp">
+                <Stack space="12px">
                   <Text color="secondary50" size={size} weight={weight}>
                     Dark tinted mode
                   </Text>

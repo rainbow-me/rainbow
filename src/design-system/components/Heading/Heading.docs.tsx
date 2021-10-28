@@ -45,7 +45,7 @@ const docs: Docs = {
     name: `${titleCase(size)} (${weight})`,
     example: (
       <>
-        <Stack space="12dp">
+        <Stack space="12px">
           <Stack separator={<Guide />}>
             <Heading size={size} weight={weight}>
               {loremIpsum}

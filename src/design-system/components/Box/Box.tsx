@@ -3,7 +3,7 @@ import React, { ComponentProps, ReactNode, useMemo } from 'react';
 import { View } from 'react-native';
 import { BackgroundColor } from '../../color/palettes';
 import { negativeSpace, NegativeSpace, space, Space } from '../../layout/space';
-import { Background } from '../Background/Background';
+import { BackgroundProvider } from '../BackgroundProvider/BackgroundProvider';
 
 const fraction = (numerator: number, denominator: number) =>
   `${(numerator * 100) / denominator}%`;
@@ -145,13 +145,13 @@ export function Box({
   }, [styles, styleProp]);
 
   return background && children ? (
-    <Background color={background}>
-      {({ style: backgroundStyle }) => (
+    <BackgroundProvider color={background}>
+      {backgroundStyle => (
         <View style={[backgroundStyle, style]} {...restProps}>
           {children}
         </View>
       )}
-    </Background>
+    </BackgroundProvider>
   ) : (
     <View style={style} {...restProps}>
       {children}

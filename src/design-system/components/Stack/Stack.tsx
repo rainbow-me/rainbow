@@ -29,8 +29,11 @@ export type StackProps = {
 
 /**
  * @description Arranges child nodes vertically with equal spacing between
- * them, plus an optional `separator` element. Items can optionally be aligned
- * horizontally and/or vertically.
+ * them, plus an optional `separator` element. If there is only a single
+ * child node within a `Stack`, no space or separators will be rendered. Items
+ * can optionally be aligned with `alignHorizontal`. Stacks can be nested
+ * within each other for layouts with differing amounts of space between groups
+ * of content.
  */
 export function Stack({
   children,

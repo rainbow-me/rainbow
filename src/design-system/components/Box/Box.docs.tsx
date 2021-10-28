@@ -17,8 +17,8 @@ function BackgroundDemo() {
         .sort()
         .map(color => (
           <Box background={color} key={color}>
-            <Inset space="19dp">
-              <Stack space="10dp">
+            <Inset space="19px">
+              <Stack space="10px">
                 <Text color="primary" weight="bold">
                   {color}
                 </Text>
@@ -40,14 +40,14 @@ const docs: Docs = {
     {
       name: 'Backgrounds',
       example: (
-        <Columns space="19dp">
-          <Stack space="10dp">
+        <Columns space="19px">
+          <Stack space="10px">
             <Text weight="bold">Light mode</Text>
             <ColorModeProvider value="light">
               <BackgroundDemo />
             </ColorModeProvider>
           </Stack>
-          <Stack space="10dp">
+          <Stack space="10px">
             <Text weight="bold">Dark mode</Text>
             <ColorModeProvider value="dark">
               <BackgroundDemo />

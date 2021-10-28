@@ -22,8 +22,18 @@ export type InlineProps = {
   children: ReactNode;
   alignHorizontal?: AlignHorizontal;
   alignVertical?: AlignVertical;
-  space: Space;
-};
+} & (
+  | {
+      space: Space;
+      horizontalSpace?: Space;
+      verticalSpace?: Space;
+    }
+  | {
+      space?: Space;
+      horizontalSpace: Space;
+      verticalSpace: Space;
+    }
+);
 
 /**
  * @description Renders flowing content with equal spacing between items
@@ -34,7 +44,12 @@ export function Inline({
   alignHorizontal,
   alignVertical,
   space,
+  horizontalSpace: horizontalSpaceProp,
+  verticalSpace: verticalSpaceProp,
 }: InlineProps) {
+  const verticalSpace = verticalSpaceProp ?? space;
+  const horizontalSpace = horizontalSpaceProp ?? space;
+
   return (
     <Box
       alignItems={
@@ -47,11 +62,11 @@ export function Inline({
           ? alignHorizontalToFlexAlign[alignHorizontal]
           : undefined
       }
-      marginBottom={negateSpace(space)}
-      marginLeft={negateSpace(space)}
+      marginBottom={verticalSpace ? negateSpace(verticalSpace) : undefined}
+      marginLeft={horizontalSpace ? negateSpace(horizontalSpace) : undefined}
     >
       {Children.map(flattenChildren(children), child => (
-        <Box paddingBottom={space} paddingLeft={space}>
+        <Box paddingBottom={verticalSpace} paddingLeft={horizontalSpace}>
           {child}
         </Box>
       ))}

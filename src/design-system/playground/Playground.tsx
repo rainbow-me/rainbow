@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { useHideSplashScreen } from '../../hooks';
 import { Heading, Inline, Inset, Stack } from '../';
-import backgroundDocs from '../components/Background/Background.docs';
+import backgroundDocs from '../components/BackgroundProvider/BackgroundProvider.docs';
 import bleedDocs from '../components/Bleed/Bleed.docs';
 import boxDocs from '../components/Box/Box.docs';
 import columnsDocs from '../components/Columns/Columns.docs';
@@ -52,11 +52,11 @@ const DocsRow = ({ name, category, examples }: Docs) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <Stack space="30dp">
+    <Stack space="30px">
       <TouchableOpacity
         onPress={useCallback(() => setOpen(x => !x), [setOpen])}
       >
-        <Inline space="6dp">
+        <Inline space="6px">
           <View style={styles.docsRowToggle}>
             <Heading size="title">{open ? '-' : '+'}</Heading>
           </View>
@@ -65,7 +65,7 @@ const DocsRow = ({ name, category, examples }: Docs) => {
       </TouchableOpacity>
       {open
         ? examples.map((example, index) => (
-            <Stack key={index} space="30dp">
+            <Stack key={index} space="30px">
               <Heading weight="bold">{example.name}</Heading>
               <View
                 style={
@@ -90,8 +90,8 @@ export const Playground = () => {
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
       {android ? <View style={{ height: StatusBar.currentHeight }} /> : null}
-      <Inset space="19dp">
-        <Stack space="30dp">
+      <Inset space="19px">
+        <Stack space="30px">
           {allDocs.map(({ name, category, examples }, index) => (
             <DocsRow
               category={category}

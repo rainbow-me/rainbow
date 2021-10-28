@@ -1,42 +1,42 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 export const space = {
-  '3dp': 3,
-  '6dp': 6,
-  '10dp': 10,
-  '12dp': 12,
-  '15dp': 15,
-  '19dp': 19,
-  '24dp': 24,
-  '30dp': 30,
-  '42dp': 42,
+  '3px': 3,
+  '6px': 6,
+  '10px': 10,
+  '12px': 12,
+  '15px': 15,
+  '19px': 19,
+  '24px': 24,
+  '30px': 30,
+  '42px': 42,
 } as const;
 
 export type Space = keyof typeof space;
 
 export const negativeSpace = {
-  '-3dp': -3,
-  '-6dp': -6,
-  '-10dp': -10,
-  '-12dp': -12,
-  '-15dp': -15,
-  '-19dp': -19,
-  '-24dp': -24,
-  '-30dp': -30,
-  '-42dp': -42,
+  '-3px': -3,
+  '-6px': -6,
+  '-10px': -10,
+  '-12px': -12,
+  '-15px': -15,
+  '-19px': -19,
+  '-24px': -24,
+  '-30px': -30,
+  '-42px': -42,
 } as const;
 
 export type NegativeSpace = keyof typeof negativeSpace;
 
 const spaceToNegativeSpace: Record<Space, NegativeSpace> = {
-  '3dp': '-3dp',
-  '6dp': '-6dp',
-  '10dp': '-10dp',
-  '12dp': '-12dp',
-  '15dp': '-15dp',
-  '19dp': '-19dp',
-  '24dp': '-24dp',
-  '30dp': '-30dp',
-  '42dp': '-42dp',
+  '3px': '-3px',
+  '6px': '-6px',
+  '10px': '-10px',
+  '12px': '-12px',
+  '15px': '-15px',
+  '19px': '-19px',
+  '24px': '-24px',
+  '30px': '-30px',
+  '42px': '-42px',
 };
 
 export const negateSpace = (space: Space): NegativeSpace =>

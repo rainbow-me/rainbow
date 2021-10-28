@@ -26,7 +26,7 @@ export const nodeIsString = (children: ReactNode): children is StringNode =>
 // text to render higher than its usual baseline on iOS. To
 // fix this, we wrap all emoji in another Text element that
 // resets the font family back to "System"
-export const renderEmoji = (stringNode: StringNode) => {
+export const renderStringWithEmoji = (stringNode: StringNode) => {
   if (__DEV__ && !nodeIsString(stringNode)) {
     throw new Error('renderEmoji: Only string values are supported.');
   }

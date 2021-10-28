@@ -11,7 +11,7 @@ const docs: Docs = {
     {
       name: 'Basic usage',
       example: (
-        <Inset space="19dp">
+        <Inset space="19px">
           <Placeholder height={100} />
         </Inset>
       ),
@@ -20,7 +20,7 @@ const docs: Docs = {
     {
       name: 'Horizontal space',
       example: (
-        <Inset horizontal="19dp">
+        <Inset horizontal="19px">
           <Placeholder height={100} />
         </Inset>
       ),
@@ -29,7 +29,7 @@ const docs: Docs = {
     {
       name: 'Vertical space',
       example: (
-        <Inset vertical="19dp">
+        <Inset vertical="19px">
           <Placeholder height={100} />
         </Inset>
       ),

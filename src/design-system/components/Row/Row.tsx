@@ -33,7 +33,7 @@ export type RowProps = {
 /**
  * @description Arranges child nodes horizontally with equal spacing between
  * them, plus an optional `separator` element. Items can optionally be aligned
- * horizontally and/or vertically.
+ * horizontally and/or vertically with `alignHorizontal` and `alignVertical`.
  */
 export function Row({
   children,

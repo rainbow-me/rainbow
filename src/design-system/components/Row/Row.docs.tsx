@@ -12,7 +12,7 @@ const docs: Docs = {
     {
       name: 'Basic usage',
       example: (
-        <Row space="19dp">
+        <Row space="19px">
           <Placeholder width={40} />
           <Placeholder width={40} />
           <Placeholder width={40} />
@@ -23,7 +23,7 @@ const docs: Docs = {
     {
       name: 'Center-aligned horizontally',
       example: (
-        <Row alignHorizontal="center" space="19dp">
+        <Row alignHorizontal="center" space="19px">
           <Placeholder width={40} />
           <Placeholder width={40} />
           <Placeholder width={40} />
@@ -34,7 +34,7 @@ const docs: Docs = {
     {
       name: 'Right-aligned horizontally',
       example: (
-        <Row alignHorizontal="right" space="19dp">
+        <Row alignHorizontal="right" space="19px">
           <Placeholder width={40} />
           <Placeholder width={40} />
           <Placeholder width={40} />
@@ -45,7 +45,7 @@ const docs: Docs = {
     {
       name: 'Justified horizontally',
       example: (
-        <Row alignHorizontal="justify" space="19dp">
+        <Row alignHorizontal="justify" space="19px">
           <Placeholder width={40} />
           <Placeholder width={40} />
           <Placeholder width={40} />
@@ -56,7 +56,7 @@ const docs: Docs = {
     {
       name: 'Center-aligned vertically',
       example: (
-        <Row alignVertical="center" space="19dp">
+        <Row alignVertical="center" space="19px">
           <Placeholder height={40} width={40} />
           <Placeholder height={60} width={40} />
           <Placeholder height={20} width={40} />
@@ -67,7 +67,7 @@ const docs: Docs = {
     {
       name: 'Bottom-aligned vertically',
       example: (
-        <Row alignVertical="bottom" space="19dp">
+        <Row alignVertical="bottom" space="19px">
           <Placeholder height={40} width={40} />
           <Placeholder height={60} width={40} />
           <Placeholder height={20} width={40} />
@@ -82,7 +82,7 @@ const docs: Docs = {
           separator={
             <View style={{ backgroundColor: '#999', height: 20, width: 1 }} />
           }
-          space="19dp"
+          space="19px"
         >
           <Placeholder width={40} />
           <Placeholder width={40} />
@@ -99,7 +99,7 @@ const docs: Docs = {
           separator={
             <View style={{ backgroundColor: '#999', height: 20, width: 1 }} />
           }
-          space="19dp"
+          space="19px"
         >
           <Placeholder height={40} width={40} />
           <Placeholder height={60} width={40} />
@@ -116,7 +116,7 @@ const docs: Docs = {
           separator={
             <View style={{ backgroundColor: '#999', height: 20, width: 1 }} />
           }
-          space="19dp"
+          space="19px"
         >
           <Placeholder width={40} />
           <Placeholder width={40} />
@@ -133,7 +133,7 @@ const docs: Docs = {
           separator={
             <View style={{ backgroundColor: '#999', flexGrow: 1, width: 1 }} />
           }
-          space="19dp"
+          space="19px"
         >
           <Placeholder height={40} width={40} />
           <Placeholder height={60} width={40} />

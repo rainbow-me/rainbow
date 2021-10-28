@@ -5,8 +5,8 @@ import { createLineHeightFixNode } from '../../typography/createLineHeightFixNod
 import {
   nodeHasEmoji,
   nodeIsString,
-  renderEmoji,
-} from '../../typography/renderEmoji';
+  renderStringWithEmoji,
+} from '../../typography/renderStringWithEmoji';
 import { headingSizes, headingWeights } from '../../typography/typography';
 
 interface HeadingStyle {
@@ -69,7 +69,7 @@ export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
       }
       if (containsEmojiProp && !nodeIsString(children)) {
         throw new Error(
-          'Heading: When "containsEmoji" is set to true, children can only be strings. If you need low-level control of emoji rendering, you can also use the "renderEmoji" function directly which accepts a string.'
+          'Heading: When "containsEmoji" is set to true, children can only be strings. If you need low-level control of emoji rendering, you can also use the "renderStringWithEmoji" function directly which accepts a string.'
         );
       }
     }
@@ -85,7 +85,7 @@ export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
         testID={testID}
       >
         {ios && containsEmojiProp && nodeIsString(children)
-          ? renderEmoji(children)
+          ? renderStringWithEmoji(children)
           : children}
         {lineHeightFixNode}
       </NativeText>
