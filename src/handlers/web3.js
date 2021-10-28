@@ -5,14 +5,7 @@ import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode'
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import UnstoppableResolution from '@unstoppabledomains/resolution';
-import { get, replace, startsWith } from 'lodash';
-import {
-  ARBITRUM_MAINNET_RPC,
-  INFURA_PROJECT_ID,
-  INFURA_PROJECT_ID_DEV,
-  OPTIMISM_MAINNET_RPC,
-  POLYGON_MAINNET_RPC,
-} from 'react-native-dotenv';
+import { get, startsWith } from 'lodash';
 import {
   ARBITRUM_ETH_ADDRESS,
   ETH_ADDRESS,
@@ -38,18 +31,24 @@ import {
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const infuraProjectId = __DEV__ ? INFURA_PROJECT_ID_DEV : INFURA_PROJECT_ID;
-const infuraUrl = `https://network.infura.io/v3/${infuraProjectId}`;
-
 export const networkProviders = {};
+
+const rpcEndpoints = {};
+
+export const setRpcEndpoints = config => {
+  rpcEndpoints[NetworkTypes.mainnet] = config.ethereum_mainnet_rpc;
+  rpcEndpoints[NetworkTypes.ropsten] = config.ethereum_ropsten_rpc;
+  rpcEndpoints[NetworkTypes.kovan] = config.ethereum_kovan_rpc;
+  rpcEndpoints[NetworkTypes.rinkeby] = config.ethereum_rinkeby_rpc;
+  rpcEndpoints[NetworkTypes.optimism] = config.optimism_mainnet_rpc;
+  rpcEndpoints[NetworkTypes.arbitrum] = config.arbitrum_mainnet_rpc;
+  rpcEndpoints[NetworkTypes.polygon] = config.polygon_mainnet_rpc;
+};
 
 /**
  * @desc web3 http instance
  */
-export let web3Provider = new JsonRpcProvider(
-  replace(infuraUrl, 'network', NetworkTypes.mainnet),
-  NetworkTypes.mainnet
-);
+export let web3Provider = null;
 
 /**
  * @desc set a different web3 provider
@@ -59,7 +58,7 @@ export const web3SetHttpProvider = async network => {
   if (network.startsWith('http://')) {
     web3Provider = new JsonRpcProvider(network, NetworkTypes.mainnet);
   } else {
-    web3Provider = new JsonRpcProvider(replace(infuraUrl, 'network', network));
+    web3Provider = new JsonRpcProvider(rpcEndpoints[network]);
   }
   return web3Provider.ready;
 };
@@ -106,21 +105,7 @@ export const getProviderForNetwork = async (network = NetworkTypes.mainnet) => {
   if (network.startsWith('http://')) {
     return new JsonRpcProvider(network, NetworkTypes.mainnet);
   } else {
-    let url;
-    switch (network) {
-      case NetworkTypes.arbitrum:
-        url = ARBITRUM_MAINNET_RPC;
-        break;
-      case NetworkTypes.optimism:
-        url = OPTIMISM_MAINNET_RPC;
-        break;
-      case NetworkTypes.polygon:
-        url = POLYGON_MAINNET_RPC;
-        break;
-      default:
-        url = replace(infuraUrl, 'network', network);
-    }
-    const provider = new JsonRpcProvider(url);
+    const provider = new JsonRpcProvider(rpcEndpoints[network]);
     networkProviders[network] = provider;
     await provider.ready;
     return provider;
@@ -309,7 +294,7 @@ export const resolveUnstoppableDomain = async domain => {
     blockchain: {
       cns: {
         network: 'mainnet',
-        url: replace(infuraUrl, 'network', NetworkTypes.mainnet),
+        url: rpcEndpoints[NetworkTypes.mainnet],
       },
     },
   });
