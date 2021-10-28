@@ -16,6 +16,7 @@ export interface QuoteParams {
     sellAmount?: BigNumberish;
     buyAmount?: BigNumberish;
     slippage: number;
+    destReceiver?: EthereumAddress;
 }
 export interface ProtocolShare {
     name: string;

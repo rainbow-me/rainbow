@@ -1,6 +1,6 @@
 export declare const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 export declare const API_BASE_URL = "https://swap-aggregator.api.p.rainbow.me";
-export declare const RAINBOW_ROUTER_CONTRACT_ADDRESS = "0x2E2Ed0Cfd3AD2f1d34481277b3204d807Ca2F8c2";
+export declare const RAINBOW_ROUTER_CONTRACT_ADDRESS = "0xDC11f7E700A4c898AE5CAddB1082cFfa76512aDD";
 export declare const WETH: {
     1: string;
     3: string;

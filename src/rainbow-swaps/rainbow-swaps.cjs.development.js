@@ -1076,7 +1076,7 @@ var WethAbi = [
 
 var ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 var API_BASE_URL = 'https://swap-aggregator.api.p.rainbow.me';
-var RAINBOW_ROUTER_CONTRACT_ADDRESS = '0x2E2Ed0Cfd3AD2f1d34481277b3204d807Ca2F8c2';
+var RAINBOW_ROUTER_CONTRACT_ADDRESS = '0xDC11f7E700A4c898AE5CAddB1082cFfa76512aDD';
 var WETH = {
   '1': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
   '3': '0xb603cea165119701b58d56d10d2060fbfb3efad8'
@@ -1570,19 +1570,25 @@ var getQuote = /*#__PURE__*/function () {
             return _context.abrupt("return", null);
 
           case 8:
-            _context.next = 10;
+            // When buying ETH, we need to tell the aggregator
+            // to return the funds to the contract if we need to take a fee
+            if (buyTokenAddress === ETH_ADDRESS) {
+              url += "&destReceiver=" + RAINBOW_ROUTER_CONTRACT_ADDRESS;
+            }
+
+            _context.next = 11;
             return fetch(url);
 
-          case 10:
+          case 11:
             response = _context.sent;
-            _context.next = 13;
+            _context.next = 14;
             return response.json();
 
-          case 13:
+          case 14:
             quote = _context.sent;
             return _context.abrupt("return", quote);
 
-          case 15:
+          case 16:
           case "end":
             return _context.stop();
         }
@@ -1606,112 +1612,107 @@ var fillQuote = /*#__PURE__*/function () {
             sellTokenAddress = quote.sellTokenAddress, buyTokenAddress = quote.buyTokenAddress, to = quote.to, data = quote.data, fee = quote.fee, value = quote.value, sellAmount = quote.sellAmount, feePercentageBasisPoints = quote.feePercentageBasisPoints;
 
             if (!((sellTokenAddress == null ? void 0 : sellTokenAddress.toLowerCase()) === ETH_ADDRESS.toLowerCase())) {
-              _context2.next = 9;
+              _context2.next = 8;
               break;
             }
 
-            console.log('🔹🔹🔹 calling fillQuoteEthToToken');
-            _context2.next = 6;
+            _context2.next = 5;
             return instance.fillQuoteEthToToken(buyTokenAddress, to, data, fee, _extends({}, transactionOptions, {
               value: value
             }));
 
-          case 6:
+          case 5:
             swapTx = _context2.sent;
-            _context2.next = 50;
+            _context2.next = 45;
             break;
 
-          case 9:
+          case 8:
             if (!((buyTokenAddress == null ? void 0 : buyTokenAddress.toLowerCase()) === ETH_ADDRESS.toLowerCase())) {
-              _context2.next = 31;
+              _context2.next = 28;
               break;
             }
 
             if (!permit) {
-              _context2.next = 25;
+              _context2.next = 23;
               break;
             }
 
-            _context2.next = 13;
+            _context2.next = 12;
             return wallet.provider.getBlock('latest');
 
-          case 13:
+          case 12:
             _yield$wallet$provide = _context2.sent;
             timestamp = _yield$wallet$provide.timestamp;
             deadline = timestamp + 3600;
-            _context2.next = 18;
+            _context2.next = 17;
             return signPermit(wallet, sellTokenAddress, quote.from, instance.address, MAX_INT, deadline, chainId);
 
-          case 18:
+          case 17:
             permitSignature = _context2.sent;
-            console.log('🔹🔹🔹 calling fillQuoteTokenToEthWithPermit');
-            _context2.next = 22;
+            _context2.next = 20;
             return instance.fillQuoteTokenToEthWithPermit(sellTokenAddress, to, data, sellAmount, feePercentageBasisPoints, permitSignature, _extends({}, transactionOptions, {
               value: value
             }));
 
-          case 22:
+          case 20:
             swapTx = _context2.sent;
-            _context2.next = 29;
+            _context2.next = 26;
             break;
 
-          case 25:
-            console.log('🔹🔹🔹 calling fillQuoteTokenToEth');
-            _context2.next = 28;
+          case 23:
+            _context2.next = 25;
             return instance.fillQuoteTokenToEth(sellTokenAddress, to, data, sellAmount, feePercentageBasisPoints, _extends({}, transactionOptions, {
               value: value
             }));
 
-          case 28:
+          case 25:
             swapTx = _context2.sent;
 
-          case 29:
-            _context2.next = 50;
+          case 26:
+            _context2.next = 45;
             break;
 
-          case 31:
+          case 28:
             if (!permit) {
-              _context2.next = 46;
+              _context2.next = 42;
               break;
             }
 
-            _context2.next = 34;
+            _context2.next = 31;
             return wallet.provider.getBlock('latest');
 
-          case 34:
+          case 31:
             _yield$wallet$provide2 = _context2.sent;
             _timestamp = _yield$wallet$provide2.timestamp;
             _deadline = _timestamp + 3600;
-            _context2.next = 39;
+            _context2.next = 36;
             return signPermit(wallet, sellTokenAddress, quote.from, instance.address, MAX_INT, _deadline, chainId);
 
-          case 39:
+          case 36:
             _permitSignature = _context2.sent;
-            console.log('🔹🔹🔹 calling fillQuoteTokenToTokenWithPermit');
-            _context2.next = 43;
+            _context2.next = 39;
             return instance.fillQuoteTokenToTokenWithPermit(sellTokenAddress, buyTokenAddress, to, data, sellAmount, fee, _permitSignature, _extends({}, transactionOptions, {
               value: value
             }));
 
-          case 43:
+          case 39:
             swapTx = _context2.sent;
-            _context2.next = 50;
+            _context2.next = 45;
             break;
 
-          case 46:
-            console.log('🔹🔹🔹 calling fillQuoteTokenToToken');
-            _context2.next = 49;
+          case 42:
+            _context2.next = 44;
             return instance.fillQuoteTokenToToken(sellTokenAddress, buyTokenAddress, to, data, sellAmount, fee, _extends({}, transactionOptions, {
               value: value
             }));
 
-          case 49:
+          case 44:
             swapTx = _context2.sent;
 
-          case 50:
+          case 45:
             return _context2.abrupt("return", swapTx);
 
-          case 51:
+          case 46:
           case "end":
             return _context2.stop();
         }
