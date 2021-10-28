@@ -143,7 +143,7 @@ export const apiGetTokenHistory = async (
         case "transfer":
           created_date = event.created_date;
           fro_acc = event.from_account.address;
-          to_account = abbreviations.address(event.to_account.address, 3);
+          to_account = abbreviations.address(event.to_account.address, 2);
           sale_amount = "0";
           list_amount = "0";
   

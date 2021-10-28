@@ -8,6 +8,9 @@ import { Text } from '../../text';
 import styled from 'styled-components';
 import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
 import { useTheme } from '../../../context/ThemeContext';
+import { measureText } from '../../../utils';
+import { fonts } from '@rainbow-me/styles';
+
 
 /**
  * Requirements: 
@@ -80,6 +83,38 @@ const TokenHistory = ({
     overflow: hidden;
   `;
 
+  const GradientRow = styled(Row).attrs(({}))`
+    height: 10;
+    marginBottom: 6;
+    marginTop: 5;
+  `;
+
+  const InnerColumn = styled(Column).attrs(({}))`
+    paddingRight: 24;
+  `;
+
+  const DateRow = styled(Row).attrs(({}))`
+    marginBottom: 3;
+  `;
+
+  const EmptyView = styled(View).attrs(({}))`
+    height: 3;
+    marginTop: 3;
+  `;
+
+  const LineView = styled(View).attrs(({}))`
+    height: 3;
+    height: 3;
+    backgroundColor: ${color}; 
+    opacity: 0.1;
+    borderRadius: 1.5;
+    position: absolute;
+    top: 3;
+    width: 87%;
+    left: 16;
+    right: 0;
+  `;
+
   const renderItem = ({ item, index }) => {
 
     var isFirst = false;
@@ -126,52 +161,44 @@ const TokenHistory = ({
     return (
       <Column>
       
-        {/*
-          Radial Gradient + Line row
-         */ }
-        <Row style = {{ marginBottom: 1 }}> 
+        <GradientRow> 
           <Gradient color={colors} />
-          { isFirst ? <View style={{ height: 3, marginTop: 3 }} /> : <View style={{ height: 3, width: 150, backgroundColor: color, opacity: 0.1, marginTop: 3, marginLeft: 15, marginRight: 6 }} /> }
-        </Row>
+          { isFirst ? <EmptyView /> : <LineView /> }
+        </GradientRow>
         
-        {/*
-          Date Row
-         */ }
-        <Row style = {{ marginBottom: -6 }}>
-          <Text
-            align="left"
-            color={color}
-            lineHeight="loosest"
-            size="smedium"
-            weight="heavy"
-          >
-          {date}     
-          </Text>
-        </Row>
+
+        <InnerColumn>
+          <DateRow>
+            <Text
+              align="left"
+              color={color}
+              size="smedium"
+              weight="heavy"
+            >
+            {date}     
+            </Text>
+          </DateRow>
+          
+          <Row>
+            <Text
+              align="left"
+              color={color}
+              size="smedium"
+              weight="heavy"
+            >
+              {symbol}
+            </Text>
+            <Text
+              align="right"
+              color={colors.whiteLabel}
+              size="smedium"
+              weight="heavy"
+            >
+              {' '}{phrase}{suffix}
+            </Text>
+          </Row>
+        </InnerColumn>
         
-        {/*
-          Symbol + Phrase Row
-         */ }
-        <Row>
-          <Text
-            align="left"
-            color={color}
-            lineHeight="loosest"
-            size="smedium"
-            weight="heavy"
-          >
-            {symbol}
-          </Text>
-          <Text
-            align="right"
-            color={colors.whiteLabel}
-            lineHeight="loosest"
-            size="smedium"
-            weight="heavy"
-          >
-            {phrase}{suffix}
-          </Text>
-        </Row>
 
       </Column>
     )
