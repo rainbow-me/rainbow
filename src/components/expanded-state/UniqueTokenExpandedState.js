@@ -79,7 +79,6 @@ const BlurWrapper = styled.View.attrs({
   left: 0;
   overflow: hidden;
   position: absolute;
-  top: 0;
   width: ${({ width }) => width};
 `;
 
@@ -234,7 +233,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
         hideHandle
         {...(ios
           ? { height: '100%' }
-          : { additionalTopPadding: true, contentHeight: deviceHeight - 80 })}
+          : { additionalTopPadding: true, contentHeight: deviceHeight })}
         ref={sheetRef}
         scrollEnabled
         yPosition={yPosition}
