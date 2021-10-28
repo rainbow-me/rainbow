@@ -143,9 +143,13 @@ describe('Ganache Transaction Flow', () => {
   });
   */
 
+  it('Should open send sheet after tapping send fab', async () => {
+    await Helpers.waitAndTap('send-fab');
+    await Helpers.checkIfVisible('send-asset-form-field');
+  });
+
   it('Should send (Cryptokitties)', async () => {
-    await Helpers.tap('send-fab');
-    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
+    await Helpers.typeText('send-asset-form-field', 'rainbowwallet.eth', false);
     await Helpers.tap('CryptoKitties-family-header');
     await Helpers.tapByText('Arun Cattybinky');
     await Helpers.tap('send-sheet-confirm-action-button');
@@ -156,7 +160,7 @@ describe('Ganache Transaction Flow', () => {
 
   it('Should send ERC20 (BAT)', async () => {
     await Helpers.tap('send-fab');
-    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
+    await Helpers.typeText('send-asset-form-field', 'rainbowwallet.eth', false);
     await Helpers.tap('send-asset-BAT');
     await Helpers.typeText('selected-asset-field-input', '1.02', true);
     await Helpers.tap('send-sheet-confirm-action-button');
@@ -167,7 +171,7 @@ describe('Ganache Transaction Flow', () => {
 
   it('Should send ETH', async () => {
     await Helpers.tap('send-fab');
-    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
+    await Helpers.typeText('send-asset-form-field', 'rainbowwallet.eth', false);
     await Helpers.tap('send-asset-ETH');
     await Helpers.typeText('selected-asset-field-input', '0.003', true);
     await Helpers.tap('send-sheet-confirm-action-button');
