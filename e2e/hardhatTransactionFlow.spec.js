@@ -2,7 +2,11 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
 import { exec } from 'child_process';
+import { JsonRpcProvider } from '@ethersproject/providers';
+import { Wallet } from '@ethersproject/wallet';
 import WalletConnect from '@walletconnect/client';
+import { ethers } from 'ethers';
+import { HARDHAT_URL_ANDROID, HARDHAT_URL_IOS } from 'react-native-dotenv';
 import * as Helpers from './helpers';
 
 let connector = null;
@@ -10,10 +14,28 @@ let uri = null;
 let account = null;
 
 const RAINBOW_WALLET_DOT_ETH = '0x7a3d05c70581bd345fe117c06e45f9669205384f';
+const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
 beforeAll(async () => {
   // Connect to hardhat
   await exec('yarn hardhat');
+
+  const provider = new JsonRpcProvider(
+    device.getPlatform() === 'ios' ? HARDHAT_URL_IOS : HARDHAT_URL_ANDROID,
+    'any'
+  );
+
+  // Hardhat account 0 that has 10000 ETH
+  const wallet = new Wallet(
+    '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
+    provider
+  );
+  // Sending 20 ETH so we have enough to pay the tx fees even when the gas is too high
+  await wallet.sendTransaction({
+    to: TESTING_WALLET,
+    value: ethers.utils.parseEther('20'),
+  });
+  console.debug('TX SENT WE GUCCI');
 });
 
 const acceptAlertIfGasPriceIsHigh = async () => {
@@ -271,7 +293,7 @@ describe('Hardhat Transaction Flow', () => {
           reject(error);
         }
         const { accounts } = payload.params[0];
-        if (accounts[0] === '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608') {
+        if (accounts[0] === TESTING_WALLET) {
           account = accounts[0];
           resolve(true);
         } else {
