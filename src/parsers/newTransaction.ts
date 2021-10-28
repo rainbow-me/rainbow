@@ -14,15 +14,12 @@ import { ethereumUtils } from '@rainbow-me/utils';
 
 /**
  * @desc parse transactions from native prices
- * @param  {Object} [txDetails=null]
- * @param  {Object} [nativeCurrency='']
- * @return {String}
  */
 export const parseNewTransaction = async (
   txDetails: NewTransaction,
   nativeCurrency: string = ''
 ): Promise<RainbowTransaction> => {
-  let balance = null;
+  let balance: RainbowTransaction['balance'] = null;
   const { amount } = txDetails;
   if (amount && txDetails.asset) {
     balance = {
@@ -32,6 +29,7 @@ export const parseNewTransaction = async (
   }
 
   const assetPrice =
+    //@ts-ignore
     txDetails?.asset?.price?.value ??
     ethereumUtils.getAssetPrice(txDetails?.asset?.address);
   const native = convertAmountAndPriceToNativeDisplay(

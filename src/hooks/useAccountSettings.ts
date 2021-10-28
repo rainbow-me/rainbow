@@ -1,16 +1,17 @@
 import lang from 'i18n-js';
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import {
   settingsChangeLanguage as changeLanguage,
   settingsChangeNativeCurrency as changeNativeCurrency,
 } from '../redux/settings';
+import { AppState } from '../redux/store';
+import { useAppDispatch, useAppSelector } from './useRedux';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
-const languageSelector = state => state.settings.language;
+const languageSelector = (state: AppState) => state.settings.language;
 
-const withLanguage = language => {
+const withLanguage = (language: string) => {
   if (language !== lang.locale) {
     lang.locale = language;
   }
@@ -20,15 +21,16 @@ const withLanguage = language => {
 const createLanguageSelector = createSelector([languageSelector], withLanguage);
 
 export default function useAccountSettings() {
-  const { language } = useSelector(createLanguageSelector);
-  const dispatch = useDispatch();
-  const settingsData = useSelector(
+  const { language } = useAppSelector(createLanguageSelector);
+  const dispatch = useAppDispatch();
+  const settingsData = useAppSelector(
     ({ settings: { accountAddress, chainId, nativeCurrency, network } }) => ({
       accountAddress,
       chainId,
       language,
       nativeCurrency,
-      nativeCurrencySymbol: supportedNativeCurrencies[nativeCurrency].symbol,
+      nativeCurrencySymbol:
+        supportedNativeCurrencies[nativeCurrency as string].symbol,
       network,
     })
   );

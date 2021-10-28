@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import { checkWalletEthZero } from '../utils/ethereumUtils';
+import { useAppSelector } from './useRedux';
 
 export default function useIsWalletEthZero() {
-  const assets = useSelector(state => state.data.assets);
+  const assets = useAppSelector(state => state.data.assets);
   return useMemo(() => checkWalletEthZero(assets), [assets]);
 }

@@ -1,5 +1,5 @@
 import { ProtocolType } from '../protocolTypes';
-import { ParsedAddressAsset } from '../tokens';
+import { Asset, ParsedAddressAsset } from '../tokens';
 import { EthereumAddress } from '../wallet';
 import { TransactionStatus } from './transactionStatus';
 import { TransactionType } from './transactionType';
@@ -8,14 +8,14 @@ import { Network } from '@rainbow-me/helpers/networkTypes';
 export interface RainbowTransaction {
   address: string;
   balance: {
-    amount: string;
+    amount: string | number;
     display: string;
   } | null;
   dappName?: string; // for walletconnect
   description: string | null;
   from: EthereumAddress | null;
-  gasLimit?: string | null;
-  gasPrice?: string;
+  gasLimit?: string | number | null;
+  gasPrice?: string | number;
   hash: string | null;
   minedAt: number | null;
   name: string | null;
@@ -38,11 +38,11 @@ export interface RainbowTransaction {
 }
 
 export interface NewTransaction {
-  amount: string | null;
-  asset: ParsedAddressAsset | null;
+  amount: string | number | null;
+  asset: ParsedAddressAsset | Asset | null;
   dappName?: string; // for walletconnect
   from: EthereumAddress | null;
-  gasLimit?: string | null;
+  gasLimit?: string | number | null;
   gasPrice?: string;
   hash: string | null;
   network?: Network;

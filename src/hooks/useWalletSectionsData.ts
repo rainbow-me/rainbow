@@ -35,7 +35,9 @@ export default function useWalletSectionsData() {
       currentAction,
       hiddenCoins,
       isCoinListEdited,
+      isWalletEthZero,
       language,
+      //@ts-ignore
       nativeCurrency,
       network,
       pinnedCoins,
@@ -43,7 +45,6 @@ export default function useWalletSectionsData() {
       ...accountData,
       ...uniqueTokens,
       ...uniswap,
-      ...isWalletEthZero,
       showcaseTokens,
     };
 

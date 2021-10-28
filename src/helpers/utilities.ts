@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 import { get, isNil } from 'lodash';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
-type BigNumberish = number | string | BigNumber;
+export type BigNumberish = number | string | BigNumber;
 
 export const abs = (value: BigNumberish): string =>
   new BigNumber(value).abs().toFixed();

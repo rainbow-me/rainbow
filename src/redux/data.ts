@@ -1,9 +1,11 @@
+import { JsonRpcProvider } from '@ethersproject/providers';
 import { Mutex } from 'async-mutex';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import isValidDomain from 'is-valid-domain';
 import {
   concat,
   filter,
+  find,
   get,
   includes,
   isEmpty,
@@ -21,23 +23,28 @@ import {
   uniqBy,
   values,
 } from 'lodash';
+import { AnyAction } from 'redux';
 import { uniswapClient } from '../apollo/client';
 import {
   UNISWAP_24HOUR_PRICE_QUERY,
   UNISWAP_PRICES_QUERY,
 } from '../apollo/queries';
-/* eslint-disable-next-line import/no-cycle */
+
 import { addCashUpdatePurchases } from './addCash';
 import { addCoinsToHiddenList } from './editOptions';
-// eslint-disable-next-line import/no-cycle
+import { AppDispatch, AppGetState } from './store';
 import { uniqueTokensRefreshState } from './uniqueTokens';
-/* eslint-disable-next-line import/no-cycle */
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
   AssetTypes,
-  TransactionDirections,
-  TransactionStatusTypes,
-  TransactionTypes,
+  GenericAsset,
+  NewTransaction,
+  RainbowTransaction,
+  TransactionDirection,
+  TransactionStatus,
+  TransactionType,
+  ZerionAsset,
+  ZerionTransaction,
 } from '@rainbow-me/entities';
 import appEvents from '@rainbow-me/handlers/appEvents';
 import { isL2Asset } from '@rainbow-me/handlers/assets';
@@ -58,7 +65,7 @@ import {
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
-import networkTypes from '@rainbow-me/networkTypes';
+import networkTypes, { Network } from '@rainbow-me/networkTypes';
 import {
   getTitle,
   getTransactionLabel,
@@ -68,6 +75,7 @@ import {
   parseTransactions,
 } from '@rainbow-me/parsers';
 import {
+  BACKUP_SHEET_DELAY_MS,
   coingeckoIdsFallback,
   DPI_ADDRESS,
   ETH_ADDRESS,
@@ -75,7 +83,14 @@ import {
   shitcoins,
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { delay, isZero, multiply } from '@rainbow-me/utilities';
+import {
+  BigNumberish,
+  delay,
+  divide,
+  isZero,
+  multiply,
+  subtract,
+} from '@rainbow-me/utilities';
 import {
   ethereumUtils,
   getBlocksFromTimestamps,
@@ -84,10 +99,8 @@ import {
 } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const BACKUP_SHEET_DELAY_MS = 3000;
-
-let pendingTransactionsHandle = null;
-let genericAssetsHandle = null;
+let pendingTransactionsHandle: number | null = null;
+let genericAssetsHandle: number | null = null;
 const TXN_WATCHER_MAX_TRIES = 60;
 const TXN_WATCHER_MAX_TRIES_LAYER_2 = 200;
 const TXN_WATCHER_POLL_INTERVAL = 5000; // 5 seconds
@@ -131,10 +144,15 @@ const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
 
 const mutex = new Mutex();
 
-const withRunExclusive = async callback => await mutex.runExclusive(callback);
+const withRunExclusive = async (
+  callback: Parameters<typeof mutex.runExclusive>[0]
+) => await mutex.runExclusive(callback);
 
 // -- Actions ---------------------------------------- //
-export const dataLoadState = () => async (dispatch, getState) =>
+export const dataLoadState = () => async (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) =>
   withRunExclusive(async () => {
     const { accountAddress, network } = getState().settings;
     try {
@@ -173,10 +191,17 @@ export const dataLoadState = () => async (dispatch, getState) =>
     }, GENERIC_ASSETS_FALLBACK_TIMEOUT);
   });
 
+interface CoingeckoPrices {
+  [key: string]: {
+    [key: string]: number;
+    last_updated_at: number;
+  };
+}
+
 export const fetchAssetPricesWithCoingecko = async (
-  coingeckoIds,
-  nativeCurrency
-) => {
+  coingeckoIds: string[],
+  nativeCurrency: string
+): Promise<CoingeckoPrices | undefined> => {
   try {
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoIds
       .filter(val => !!val)
@@ -185,14 +210,27 @@ export const fetchAssetPricesWithCoingecko = async (
         ','
       )}&vs_currencies=${nativeCurrency}&include_24hr_change=true&include_last_updated_at=true`;
     const priceRequest = await fetch(url);
-    return priceRequest.json();
+    return await priceRequest.json();
   } catch (e) {
     logger.log(`Error trying to fetch ${coingeckoIds} prices`, e);
   }
 };
 
+interface CoinGeckoId {
+  id: string;
+  platforms: {
+    ethereum: string;
+  };
+  name: string;
+  symbol: string;
+}
+
+interface CoinGeckoIdMap {
+  [address: string]: CoinGeckoId['id'];
+}
+
 export const fetchCoingeckoIds = async () => {
-  let ids;
+  let ids: CoinGeckoId[];
   try {
     const request = await fetch(COINGECKO_IDS_ENDPOINT);
     ids = await request.json();
@@ -200,7 +238,7 @@ export const fetchCoingeckoIds = async () => {
     ids = coingeckoIdsFallback;
   }
 
-  const idsMap = {};
+  const idsMap: CoinGeckoIdMap = {};
   ids.forEach(({ id, platforms: { ethereum: tokenAddress } }) => {
     const address = tokenAddress && toLower(tokenAddress);
     if (address && address.substr(0, 2) === '0x') {
@@ -210,11 +248,31 @@ export const fetchCoingeckoIds = async () => {
   return idsMap;
 };
 
-const genericAssetsFallback = () => async (dispatch, getState) => {
+interface AssetPriceMessage {
+  meta: {
+    currency: string;
+    status: string;
+    address: string;
+    asset_code?: string;
+  };
+  payload: {
+    prices: {
+      [assetCode: string]: GenericAsset;
+    };
+    portfolio: unknown;
+    transactions: ZerionTransaction[];
+    assets: unknown;
+  };
+}
+
+const genericAssetsFallback = () => async (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
   logger.log('ZERION IS DOWN! ENABLING GENERIC ASSETS FALLBACK');
   const { nativeCurrency } = getState().settings;
   const formattedNativeCurrency = toLower(nativeCurrency);
-  let ids;
+  let ids: CoinGeckoId[];
   try {
     const request = await fetch(COINGECKO_IDS_ENDPOINT);
     ids = await request.json();
@@ -222,7 +280,7 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
     ids = coingeckoIdsFallback;
   }
 
-  const allAssets = [
+  const allAssets: GenericAsset[] = [
     {
       asset_code: ETH_ADDRESS,
       coingecko_id: ETH_COINGECKO_ID,
@@ -257,7 +315,7 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
 
   const allAssetsUnique = uniqBy(allAssets, token => token.asset_code);
 
-  let prices = {};
+  let prices: CoingeckoPrices = {};
   const pricePageSize = 80;
   const pages = Math.ceil(allAssetsUnique.length / pricePageSize);
   try {
@@ -281,9 +339,9 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
 
   if (!isEmpty(prices)) {
     Object.keys(prices).forEach(key => {
-      for (let i = 0; i < allAssetsUnique.length; i++) {
-        if (toLower(allAssetsUnique[i].coingecko_id) === toLower(key)) {
-          allAssetsUnique[i].price = {
+      for (const uniqueAsset of allAssetsUnique) {
+        if (toLower(uniqueAsset.coingecko_id) === toLower(key)) {
+          uniqueAsset.price = {
             changed_at: prices[key].last_updated_at,
             relative_change_24h:
               prices[key][`${formattedNativeCurrency}_24h_change`],
@@ -295,7 +353,9 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
     });
   }
 
-  const allPrices = {};
+  const allPrices: {
+    [assetCode: string]: GenericAsset;
+  } = {};
 
   allAssetsUnique.forEach(asset => {
     allPrices[asset.asset_code] = asset;
@@ -309,7 +369,7 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
           status: 'ok',
         },
         payload: { prices: allPrices },
-      },
+      } as AssetPriceMessage,
       true
     )
   );
@@ -326,17 +386,21 @@ const disableGenericAssetsFallbackIfNeeded = () => {
   }
 };
 
-export const dataResetState = () => (dispatch, getState) => {
+export const dataResetState = () => (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
   const { uniswapPricesSubscription } = getState().data;
-  uniswapPricesSubscription &&
-    uniswapPricesSubscription.unsubscribe &&
-    uniswapPricesSubscription.unsubscribe();
+  uniswapPricesSubscription?.unsubscribe();
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
   genericAssetsHandle && clearTimeout(genericAssetsHandle);
   dispatch({ type: DATA_CLEAR_STATE });
 };
 
-export const dataUpdateAssets = assets => (dispatch, getState) => {
+export const dataUpdateAssets = (assets: ZerionAsset[]) => (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
   const { accountAddress, network } = getState().settings;
   if (assets.length) {
     saveAssets(assets, accountAddress, network);
@@ -349,7 +413,10 @@ export const dataUpdateAssets = assets => (dispatch, getState) => {
   }
 };
 
-const checkMeta = message => (dispatch, getState) => {
+const checkMeta = (message: AssetPriceMessage) => (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
   const { accountAddress, nativeCurrency } = getState().settings;
   const address = message?.meta?.address;
   const currency = message?.meta?.currency;
@@ -359,7 +426,9 @@ const checkMeta = message => (dispatch, getState) => {
   );
 };
 
-const checkForConfirmedSavingsActions = transactionsData => dispatch => {
+const checkForConfirmedSavingsActions = (
+  transactionsData: ZerionTransaction[]
+) => (dispatch: AppDispatch) => {
   const foundConfirmedSavings = find(
     transactionsData,
     transaction =>
@@ -371,7 +440,10 @@ const checkForConfirmedSavingsActions = transactionsData => dispatch => {
   }
 };
 
-export const portfolioReceived = message => async (dispatch, getState) => {
+export const portfolioReceived = (message: AssetPriceMessage) => async (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
   if (message?.meta?.status !== 'ok') return;
   if (!message?.payload?.portfolio) return;
 
@@ -386,10 +458,10 @@ export const portfolioReceived = message => async (dispatch, getState) => {
   });
 };
 
-export const transactionsReceived = (message, appended = false) => async (
-  dispatch,
-  getState
-) =>
+export const transactionsReceived = (
+  message: AssetPriceMessage,
+  appended = false
+) => async (dispatch: AppDispatch, getState: AppGetState) =>
   withRunExclusive(async () => {
     const isValidMeta = dispatch(checkMeta(message));
     if (!isValidMeta) return;
@@ -443,7 +515,10 @@ export const transactionsReceived = (message, appended = false) => async (
     }
   });
 
-export const transactionsRemoved = message => async (dispatch, getState) =>
+export const transactionsRemoved = (message: AssetPriceMessage) => async (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) =>
   withRunExclusive(() => {
     const isValidMeta = dispatch(checkMeta(message));
     if (!isValidMeta) return;
@@ -469,12 +544,12 @@ export const transactionsRemoved = message => async (dispatch, getState) =>
   });
 
 export const addressAssetsReceived = (
-  message,
+  message: AssetPriceMessage,
   append = false,
   change = false,
   removed = false,
-  assetsNetwork = null
-) => (dispatch, getState) => {
+  assetsNetwork?: Network
+) => (dispatch: AppDispatch, getState: AppGetState) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
   const { accountAddress, network } = getState().settings;
@@ -525,7 +600,9 @@ export const addressAssetsReceived = (
     );
   } else if (isL2) {
     // We need to replace all the assets for that network completely
-    const { assets: existingAssets } = getState().data;
+    const {
+      assets: existingAssets,
+    }: { assets: { network?: Network }[] } = getState().data;
     const restOfTheAssets = existingAssets.filter(
       asset => asset.network !== assetsNetwork
     );
@@ -537,7 +614,9 @@ export const addressAssetsReceived = (
   } else {
     // We need to merge the response with all l2 assets
     // to prevent L2 assets temporarily dissapearing
-    const { assets: existingAssets } = getState().data;
+    const {
+      assets: existingAssets,
+    }: { assets: ZerionAsset[] } = getState().data;
     const l2Assets = existingAssets.filter(asset => isL2Asset(asset.type));
     parsedAssets = uniqBy(
       network === networkTypes.mainnet
@@ -560,7 +639,7 @@ export const addressAssetsReceived = (
     type: DATA_UPDATE_ASSETS,
   });
   if (!change) {
-    const missingPriceAssetAddresses = map(
+    const missingPriceAssetAddresses: string[] = map(
       filter(parsedAssets, asset => isNil(asset.price)),
       property('address')
     );
@@ -582,7 +661,10 @@ export const addressAssetsReceived = (
   }
 };
 
-const subscribeToMissingPrices = addresses => (dispatch, getState) => {
+const subscribeToMissingPrices = (addresses: string[]) => (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
   const { accountAddress, network } = getState().settings;
   const { uniswapPricesQuery } = getState().data;
 
@@ -603,7 +685,7 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
         try {
           if (data?.tokens) {
             const nativePriceOfEth = ethereumUtils.getEthPriceUnit();
-            const tokenAddresses = map(data.tokens, property('id'));
+            const tokenAddresses: string[] = map(data.tokens, property('id'));
 
             const yesterday = getUnixTime(
               startOfMinute(sub(Date.now(), { days: 1 }))
@@ -612,8 +694,9 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
               yesterday,
             ]);
 
-            const historicalPriceCalls = map(tokenAddresses, address =>
-              get24HourPrice(address, yesterdayBlock)
+            const historicalPriceCalls = map(
+              tokenAddresses,
+              (address: string) => get24HourPrice(address, yesterdayBlock)
             );
             const historicalPriceResults = await Promise.all(
               historicalPriceCalls
@@ -624,7 +707,11 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
 
             const missingHistoricalPrices = mapValues(
               mappedHistoricalData,
-              value => multiply(ethereumPriceOneDayAgo, value?.derivedETH)
+              value =>
+                multiply(
+                  ethereumPriceOneDayAgo,
+                  value?.derivedETH as BigNumberish
+                )
             );
 
             const mappedPricingData = keyBy(data.tokens, 'id');
@@ -633,14 +720,20 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
             );
             const missingPriceInfo = mapValues(
               missingPrices,
-              (currentPrice, key) => {
-                const historicalPrice = get(
+              (currentPrice: number, key) => {
+                const historicalPrice: BigNumberish = get(
                   missingHistoricalPrices,
                   `[${key}]`
                 );
                 const tokenAddress = get(mappedPricingData, `[${key}].id`);
                 const relativePriceChange = historicalPrice
-                  ? ((currentPrice - historicalPrice) / currentPrice) * 100
+                  ? multiply(
+                      divide(
+                        subtract(currentPrice, historicalPrice),
+                        currentPrice
+                      ),
+                      100
+                    )
                   : 0;
                 return {
                   price: currentPrice,
@@ -679,7 +772,7 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
   }
 };
 
-const get24HourPrice = async (address, yesterday) => {
+const get24HourPrice = async (address: string, yesterday: number) => {
   try {
     const result = await uniswapClient.query({
       fetchPolicy: 'no-cache',
@@ -692,10 +785,10 @@ const get24HourPrice = async (address, yesterday) => {
   }
 };
 
-export const assetPricesReceived = (message, fromFallback = false) => (
-  dispatch,
-  getState
-) => {
+export const assetPricesReceived = (
+  message: AssetPriceMessage,
+  fromFallback = false
+) => (dispatch: AppDispatch, getState: AppGetState) => {
   if (!fromFallback) {
     disableGenericAssetsFallbackIfNeeded();
   }
@@ -726,7 +819,10 @@ export const assetPricesReceived = (message, fromFallback = false) => (
   }
 };
 
-export const assetPricesChanged = message => (dispatch, getState) => {
+export const assetPricesChanged = (message: AssetPriceMessage) => (
+  dispatch: AppDispatch,
+  getState: AppGetState
+) => {
   const price = message?.payload?.prices?.[0]?.price;
   const assetAddress = message?.meta?.asset_code;
   if (isNil(price) || isNil(assetAddress)) return;
@@ -746,11 +842,11 @@ export const assetPricesChanged = message => (dispatch, getState) => {
 };
 
 export const dataAddNewTransaction = (
-  txDetails,
-  accountAddressToUpdate = null,
+  txDetails: NewTransaction,
+  accountAddressToUpdate?: string,
   disableTxnWatcher = false,
-  provider = null
-) => async (dispatch, getState) =>
+  provider?: JsonRpcProvider
+) => async (dispatch: AppDispatch, getState: AppGetState) =>
   withRunExclusive(async () => {
     const { transactions } = getState().data;
     const { accountAddress, nativeCurrency, network } = getState().settings;
@@ -781,7 +877,6 @@ export const dataAddNewTransaction = (
             parsedTransaction.network
               ? TXN_WATCHER_MAX_TRIES_LAYER_2
               : TXN_WATCHER_MAX_TRIES,
-            null,
             provider
           )
         );
@@ -791,27 +886,27 @@ export const dataAddNewTransaction = (
     } catch (error) {}
   });
 
-const getConfirmedState = type => {
+const getConfirmedState = (type: string) => {
   switch (type) {
-    case TransactionTypes.authorize:
-      return TransactionStatusTypes.approved;
-    case TransactionTypes.deposit:
-      return TransactionStatusTypes.deposited;
-    case TransactionTypes.withdraw:
-      return TransactionStatusTypes.withdrew;
-    case TransactionTypes.receive:
-      return TransactionStatusTypes.received;
-    case TransactionTypes.purchase:
-      return TransactionStatusTypes.purchased;
+    case TransactionType.authorize:
+      return TransactionStatus.approved;
+    case TransactionType.deposit:
+      return TransactionStatus.deposited;
+    case TransactionType.withdraw:
+      return TransactionStatus.withdrew;
+    case TransactionType.receive:
+      return TransactionStatus.received;
+    case TransactionType.purchase:
+      return TransactionStatus.purchased;
     default:
-      return TransactionStatusTypes.sent;
+      return TransactionStatus.sent;
   }
 };
 
 export const dataWatchPendingTransactions = (
-  provider = null,
+  provider?: JsonRpcProvider,
   currentNonce = -1
-) => async (dispatch, getState) =>
+) => async (dispatch: AppDispatch, getState: AppGetState) =>
   withRunExclusive(async () => {
     const { transactions } = getState().data;
     if (!transactions.length) return true;
@@ -837,10 +932,7 @@ export const dataWatchPendingTransactions = (
           const txObj = await p.getTransaction(txHash);
           // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
           const nonceAlreadyIncluded = currentNonce > tx.nonce;
-          if (
-            (txObj && txObj.blockNumber && txObj.blockHash) ||
-            nonceAlreadyIncluded
-          ) {
+          if ((txObj?.blockNumber && txObj.blockHash) || nonceAlreadyIncluded) {
             // When speeding up a non "normal tx" we need to resubscribe
             // because zerion "append" event isn't reliable
             logger.log('TX CONFIRMED!', txObj);
@@ -853,21 +945,21 @@ export const dataWatchPendingTransactions = (
               const isSelf = toLower(tx?.from) === toLower(tx?.to);
               const newStatus = getTransactionLabel({
                 direction: isSelf
-                  ? TransactionDirections.self
-                  : TransactionDirections.out,
+                  ? TransactionDirection.self
+                  : TransactionDirection.out,
                 pending: false,
                 protocol: tx?.protocol,
                 status:
-                  tx.status === TransactionStatusTypes.cancelling
-                    ? TransactionStatusTypes.cancelled
+                  tx.status === TransactionStatus.cancelling
+                    ? TransactionStatus.cancelled
                     : getConfirmedState(tx.type),
                 type: tx?.type,
               });
               updatedPending.status = newStatus;
             } else if (nonceAlreadyIncluded) {
-              updatedPending.status = TransactionStatusTypes.unknown;
+              updatedPending.status = TransactionStatus.unknown;
             } else {
-              updatedPending.status = TransactionStatusTypes.failed;
+              updatedPending.status = TransactionStatus.failed;
             }
             const title = getTitle({
               protocol: tx.protocol,
@@ -887,7 +979,7 @@ export const dataWatchPendingTransactions = (
 
     if (txStatusesDidChange) {
       const filteredPendingTransactions = updatedPendingTransactions?.filter(
-        ({ status }) => status !== TransactionStatusTypes.unknown
+        ({ status }) => status !== TransactionStatus.unknown
       );
       const updatedTransactions = concat(
         filteredPendingTransactions,
@@ -911,15 +1003,17 @@ export const dataWatchPendingTransactions = (
   });
 
 export const dataUpdateTransaction = (
-  txHash,
-  txObj,
-  watch,
-  provider = null
-) => async (dispatch, getState) =>
+  txHash: string,
+  txObj: RainbowTransaction,
+  watch: boolean,
+  provider?: JsonRpcProvider
+) => async (dispatch: AppDispatch, getState: AppGetState) =>
   withRunExclusive(async () => {
     const { transactions } = getState().data;
 
-    const allOtherTx = transactions.filter(tx => tx.hash !== txHash);
+    const allOtherTx = transactions.filter(
+      (tx: RainbowTransaction) => tx.hash !== txHash
+    );
     const updatedTransactions = [txObj].concat(allOtherTx);
 
     dispatch({
@@ -940,20 +1034,22 @@ export const dataUpdateTransaction = (
     }
   });
 
-const updatePurchases = updatedTransactions => dispatch => {
+const updatePurchases = (updatedTransactions: RainbowTransaction[]) => (
+  dispatch: AppDispatch
+) => {
   const confirmedPurchases = filter(updatedTransactions, txn => {
     return (
-      txn.type === TransactionTypes.purchase &&
-      txn.status !== TransactionStatusTypes.purchasing
+      txn.type === TransactionType.purchase &&
+      txn.status !== TransactionStatus.purchasing
     );
   });
   dispatch(addCashUpdatePurchases(confirmedPurchases));
 };
 
 export const checkPendingTransactionsOnInitialize = (
-  accountAddressToWatch,
-  provider = null
-) => async (dispatch, getState) => {
+  accountAddressToWatch: string,
+  provider: JsonRpcProvider
+) => async (dispatch: AppDispatch, getState: AppGetState) => {
   const { accountAddress: currentAccountAddress } = getState().settings;
   if (currentAccountAddress !== accountAddressToWatch) return;
   const currentNonce = await (provider || web3Provider).getTransactionCount(
@@ -964,10 +1060,10 @@ export const checkPendingTransactionsOnInitialize = (
 };
 
 export const watchPendingTransactions = (
-  accountAddressToWatch,
+  accountAddressToWatch: string,
   remainingTries = TXN_WATCHER_MAX_TRIES,
-  provider = null
-) => async (dispatch, getState) => {
+  provider?: JsonRpcProvider
+) => async (dispatch: AppDispatch, getState: AppGetState) => {
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
   if (remainingTries === 0) return;
 
@@ -989,18 +1085,9 @@ export const watchPendingTransactions = (
   }
 };
 
-export const addNewSubscriber = (subscriber, type) => (dispatch, getState) => {
-  const { subscribers } = getState().data;
-  const newSubscribers = { ...subscribers };
-  newSubscribers[type] = concat(newSubscribers[type], subscriber);
-
-  dispatch({
-    payload: newSubscribers,
-    type: DATA_ADD_NEW_SUBSCRIBER,
-  });
-};
-
-export const updateRefetchSavings = fetch => dispatch =>
+export const updateRefetchSavings = (fetch: boolean) => (
+  dispatch: AppDispatch
+) =>
   dispatch({
     payload: fetch,
     type: DATA_UPDATE_REFETCH_SAVINGS,
@@ -1026,7 +1113,7 @@ const INITIAL_STATE = {
   uniswapPricesSubscription: null,
 };
 
-export default (state = INITIAL_STATE, action) => {
+export default (state = INITIAL_STATE, action: AnyAction) => {
   switch (action.type) {
     case DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION:
       return {

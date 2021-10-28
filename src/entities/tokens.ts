@@ -23,6 +23,16 @@ export interface ZerionAsset {
   price?: ZerionAssetPrice | null;
 }
 
+export interface GenericAsset {
+  address?: string;
+  asset_code: string;
+  coingecko_id: string;
+  decimals?: number;
+  name: string;
+  symbol: string;
+  price?: ZerionAssetPrice | null;
+}
+
 export interface SavingsAsset extends Asset {
   contractAddress: string;
 }

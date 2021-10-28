@@ -1,5 +1,6 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
+import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import { get, isNull, toLower } from 'lodash';
@@ -18,6 +19,8 @@ import { convertAmountToRawAmount, greaterThan } from '@rainbow-me/utilities';
 import { AllowancesCache, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
+const typedWeb3Provider: unknown = web3Provider;
+
 export const estimateApprove = async (
   owner: string,
   tokenAddress: string,
@@ -29,7 +32,11 @@ export const estimateApprove = async (
       spender,
       tokenAddress,
     });
-    const exchange = new Contract(tokenAddress, erc20ABI, web3Provider);
+    const exchange = new Contract(
+      tokenAddress,
+      erc20ABI,
+      typedWeb3Provider as JsonRpcProvider
+    );
     const gasLimit = await exchange.estimateGas.approve(spender, MaxUint256, {
       from: owner,
     });
@@ -48,7 +55,11 @@ const getRawAllowance = async (
 ) => {
   try {
     const { address: tokenAddress } = token;
-    const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider);
+    const tokenContract = new Contract(
+      tokenAddress,
+      erc20ABI,
+      typedWeb3Provider as JsonRpcProvider
+    );
     const allowance = await tokenContract.allowance(owner, spender);
     return allowance.toString();
   } catch (error) {

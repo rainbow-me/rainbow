@@ -4,7 +4,6 @@ import config from '../model/config';
 // eslint-disable-next-line import/no-cycle
 import { arbitrumExplorerInit } from './arbitrumExplorer';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
-/* eslint-disable-next-line import/no-cycle */
 import {
   addressAssetsReceived,
   assetPricesChanged,
