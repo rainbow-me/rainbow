@@ -118,7 +118,7 @@ export const estimateSwapGasLimit = async ({
         // @ts-ignore
         isUnwrapWeth ? [tradeDetails.buyAmount] : null,
         provider,
-        1.01
+        1.002
       );
 
       return gasLimit || default_estimate;
