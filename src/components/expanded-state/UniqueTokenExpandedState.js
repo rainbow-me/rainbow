@@ -1,8 +1,9 @@
 import React, { Fragment, useCallback, useMemo } from 'react';
-import { Share, View } from 'react-native';
+import { Share } from 'react-native';
 import styled from 'styled-components';
 import useWallets from '../../hooks/useWallets';
 import Link from '../Link';
+import { Column, ColumnWithDividers } from '../layout';
 import {
   SendActionButton,
   SheetActionButton,
@@ -10,20 +11,14 @@ import {
   SheetDivider,
   SlackSheet,
 } from '../sheet';
+import { MarkdownText } from '../text';
 import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { UniqueTokenAttributes } from '../unique-token';
+import ExpandedStateSection from './ExpandedStateSection';
 import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
 } from './unique-token';
-import { useTheme } from '@rainbow-me/context';
-import {
-  Heading,
-  Inset,
-  MarkdownText,
-  Stack,
-  Text,
-} from '@rainbow-me/design-system';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import {
   useAccountProfile,
@@ -36,35 +31,15 @@ import {
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
 
-const Spacer = styled(View)`
+const NftExpandedStateSection = styled(ExpandedStateSection).attrs({
+  isNft: true,
+})``;
+
+const Spacer = styled.View`
   height: ${safeAreaInsetValues.bottom + 20};
 `;
 
-interface UniqueTokenAsset {
-  id: string;
-  name: string | undefined;
-  collection: {
-    name: string;
-    description?: string;
-    external_link?: string;
-  };
-  description?: string;
-  familyName: string;
-  isSendable?: boolean;
-  traits?: {
-    trait_type: string;
-    value: string;
-  }[];
-  uniqueId: string;
-}
-
-const UniqueTokenExpandedState = ({
-  asset,
-  external,
-}: {
-  asset: UniqueTokenAsset;
-  external: boolean;
-}) => {
+const UniqueTokenExpandedState = ({ asset, external }) => {
   const {
     collection: { description: familyDescription, external_link: familyLink },
     description,
@@ -109,7 +84,6 @@ const UniqueTokenExpandedState = ({
 
   return (
     <Fragment>
-      {/* @ts-expect-error */}
       <SlackSheet
         bottomInset={42}
         {...(ios
@@ -120,27 +94,18 @@ const UniqueTokenExpandedState = ({
         <UniqueTokenExpandedStateHeader asset={asset} />
         <UniqueTokenExpandedStateContent asset={asset} />
         {!external && !isReadOnlyWallet ? (
-          // @ts-expect-error
           <SheetActionButtonRow>
-            {/* @ts-expect-error */}
             <SheetActionButton
-              // @ts-expect-error
               color={isDarkMode ? colors.darkModeDark : colors.dark}
               label={isShowcaseAsset ? '􀁏 Showcase' : '􀁍 Showcase'}
               onPress={handlePressShowcase}
               weight="bold"
             />
-            {isSendable && (
-              // @ts-expect-error
-              <SendActionButton asset={asset} />
-            )}
+            {isSendable && <SendActionButton asset={asset} />}
           </SheetActionButtonRow>
         ) : (
-          // @ts-expect-error
           <SheetActionButtonRow>
-            {/* @ts-expect-error */}
             <SheetActionButton
-              // @ts-expect-error
               color={isDarkMode ? colors.darkModeDark : colors.dark}
               label="􀈂 Share"
               onPress={handlePressShare}
@@ -149,35 +114,32 @@ const UniqueTokenExpandedState = ({
           </SheetActionButtonRow>
         )}
         <SheetDivider />
-        <Stack separator={<SheetDivider />}>
+        <ColumnWithDividers dividerRenderer={SheetDivider}>
           {!!description && (
-            <Inset horizontal="19dp" vertical="24dp">
-              <Stack space="24dp">
-                <Heading>Description</Heading>
-                <Text color="secondary50">{description}</Text>
-              </Stack>
-            </Inset>
+            <NftExpandedStateSection title="Description">
+              {description}
+            </NftExpandedStateSection>
           )}
-          {!!traits && traits.length > 0 && (
-            <Inset horizontal="19dp" vertical="24dp">
-              <Stack space="24dp">
-                <Heading>Attributes</Heading>
-                <UniqueTokenAttributes {...asset} />
-              </Stack>
-            </Inset>
+          {!!traits.length && (
+            <NftExpandedStateSection paddingBottom={14} title="Attributes">
+              <UniqueTokenAttributes {...asset} />
+            </NftExpandedStateSection>
           )}
           {!!familyDescription && (
-            <Inset horizontal="19dp" vertical="24dp">
-              <Stack space="24dp">
-                <Heading>About {familyName}</Heading>
-                <MarkdownText nestedSpace="19dp" space="24dp">
+            <NftExpandedStateSection title={`About ${familyName}`}>
+              <Column>
+                <MarkdownText
+                  color={colors.alpha(colors.blueGreyDark, 0.5)}
+                  lineHeight="paragraphSmall"
+                  size="lmedium"
+                >
                   {familyDescription}
                 </MarkdownText>
                 {familyLink && <Link url={familyLink} />}
-              </Stack>
-            </Inset>
+              </Column>
+            </NftExpandedStateSection>
           )}
-        </Stack>
+        </ColumnWithDividers>
         <Spacer />
       </SlackSheet>
       <ToastPositionContainer>
