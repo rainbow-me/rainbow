@@ -112,7 +112,11 @@ describe('Send Sheet Interaction Flow', () => {
   it('Should show show Contact Button & Asset List on valid ENS address', async () => {
     await Helpers.clearField('send-asset-form-field');
     await Helpers.checkIfVisible('send-asset-form-field');
-    await Helpers.typeText('send-asset-form-field', 'rainbowwallet.eth\n', false);
+    await Helpers.typeText(
+      'send-asset-form-field',
+      'rainbowwallet.eth\n',
+      false
+    );
     await Helpers.checkIfVisible('add-contact-button');
     await Helpers.checkIfVisible('send-asset-list');
   });
