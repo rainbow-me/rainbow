@@ -1,12 +1,35 @@
 import { mapKeys, mapValues } from 'lodash';
+import { default as untypedChainAssets } from './chain-assets.json';
 import { savingsAssets } from './compound';
+import { default as untypedSupportedNativeCurrencies } from './native-currencies.json';
 import { Asset, SavingsAsset } from '@rainbow-me/entities';
+
+type ChainAssets = typeof untypedChainAssets;
+const chainAssets: ChainAssets = untypedChainAssets;
+export { chainAssets };
+export type { ChainAssets };
+
+export interface SupportedNativeCurrency {
+  [currency: string]: {
+    alignment: string;
+    assetLimit: number;
+    currency: string;
+    decimals: number;
+    emojiName?: string;
+    label: string;
+    mask: string;
+    placeholder: string;
+    smallThreshold: number;
+    symbol: string;
+  };
+}
+const supportedNativeCurrencies: SupportedNativeCurrency = untypedSupportedNativeCurrencies;
+export { supportedNativeCurrencies };
 
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as balanceCheckerContractAbiOVM } from './balances-checker-abi-ovm.json';
 export { default as chains } from './chains.json';
 export { default as arbitrumTokenMapping } from './arbitrum-token-mapping.json';
-export { default as chainAssets } from './chain-assets.json';
 export { default as coingeckoIdsFallback } from './coingecko/ids.json';
 export { compoundCERC20ABI, compoundCETHABI } from './compound';
 export { default as DefaultTokenLists } from './default-token-lists.json';
@@ -24,7 +47,6 @@ export { default as ethUnits } from './ethereum-units.json';
 export { DPI_ADDRESS } from './indexes';
 
 export { default as migratedTokens } from './migratedTokens.json';
-export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins.json';
 export { default as smartContractMethods } from './smartcontract-methods.json';
 export {
@@ -152,3 +174,5 @@ export const savingsAssetsListByUnderlying: Record<
     value => value.address
   )
 );
+
+export const BACKUP_SHEET_DELAY_MS = 3000;

@@ -8,10 +8,9 @@ import { Navigation } from '@rainbow-me/navigation';
 
 import store from '@rainbow-me/redux/store';
 import { checkKeychainIntegrity } from '@rainbow-me/redux/wallets';
+import { BACKUP_SHEET_DELAY_MS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
-
-const BACKUP_SHEET_DELAY_MS = 3000;
 
 export const runKeychainIntegrityChecks = async () => {
   const keychainIntegrityState = await getKeychainIntegrityState();

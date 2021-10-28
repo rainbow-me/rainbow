@@ -28,6 +28,7 @@ import {
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
 import URL from 'url-parse';
+import { Asset, ZerionAsset } from '@rainbow-me/entities';
 import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
 import { getProviderForNetwork, isTestnet } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
@@ -67,7 +68,7 @@ import logger from 'logger';
 
 const { RNBip39 } = NativeModules;
 
-const getNativeAssetAddressForNetwork = network => {
+const getNativeAssetAddressForNetwork = (network: String) => {
   let nativeAssetAddress;
   switch (network) {
     case networkTypes.arbitrum:
@@ -85,7 +86,7 @@ const getNativeAssetAddressForNetwork = network => {
   return nativeAssetAddress;
 };
 
-const getNativeAssetForNetwork = async (network, address) => {
+const getNativeAssetForNetwork = async (network: string, address: string) => {
   const nativeAssetAddress = getNativeAssetAddressForNetwork(network);
   const { accountAddress } = store.getState().settings;
   let differentWallet = toLower(address) !== toLower(accountAddress);
@@ -123,8 +124,12 @@ const getNativeAssetForNetwork = async (network, address) => {
   return nativeAsset;
 };
 
-const getAsset = (assets, address = 'eth') =>
-  find(assets, matchesProperty('address', toLower(address)));
+const getAsset = (
+  assets: ZerionAsset[],
+  address = 'eth'
+): ZerionAsset | undefined => {
+  return find(assets, matchesProperty('address', toLower(address)));
+};
 
 const getAssetPrice = (address = ETH_ADDRESS) => {
   const { assets, genericAssets } = store.getState().data;

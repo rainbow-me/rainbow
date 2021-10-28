@@ -52,10 +52,17 @@ const WalletPage = styled(Page)`
   flex: 1;
 `;
 
+type WalletScreenParams = {
+  initialized?: string;
+  emptyWallet?: string;
+};
+
 export default function WalletScreen() {
   const { params } = useRoute();
   const { setParams } = useNavigation();
-  const [initialized, setInitialized] = useState(!!params?.initialized);
+  const [initialized, setInitialized] = useState(
+    !!(params as WalletScreenParams)?.initialized
+  );
   const [portfoliosFetched, setPortfoliosFetched] = useState(false);
   const [fetchedCharts, setFetchedCharts] = useState(false);
   const initializeWallet = useInitializeWallet();
@@ -102,9 +109,17 @@ export default function WalletScreen() {
   }, [dispatch, refetchSavings, shouldRefetchSavings]);
 
   useEffect(() => {
-    if (!initialized || (params?.emptyWallet && initialized)) {
+    if (
+      !initialized ||
+      ((params as WalletScreenParams)?.emptyWallet && initialized)
+    ) {
       // We run the migrations only once on app launch
-      initializeWallet(null, null, null, !params?.emptyWallet);
+      initializeWallet(
+        null,
+        null,
+        null,
+        !(params as WalletScreenParams)?.emptyWallet
+      );
       setInitialized(true);
       setParams({ emptyWallet: false });
     }
@@ -114,8 +129,7 @@ export default function WalletScreen() {
     if (initialized && addressSocket && !portfoliosFetched) {
       setPortfoliosFetched(true);
       const fetchPortfolios = async () => {
-        for (let i = 0; i < userAccounts.length; i++) {
-          const account = userAccounts[i];
+        for (const account of userAccounts) {
           // Passing usd for consistency in tracking
           dispatch(emitPortfolioRequest(toLower(account.address), 'usd'));
         }
@@ -175,7 +189,9 @@ export default function WalletScreen() {
       <Animated.View style={{ opacity: isCoinListEditedValue }} />
       <Animated.Code exec={scrollViewTracker} />
       <FabWrapper
-        disabled={isAccountEmpty || !!params?.emptyWallet}
+        disabled={
+          isAccountEmpty || !!(params as WalletScreenParams)?.emptyWallet
+        }
         fabs={fabs}
         isCoinListEdited={isCoinListEdited}
         isReadOnlyWallet={isReadOnlyWallet}
@@ -189,7 +205,9 @@ export default function WalletScreen() {
         <AssetList
           disableRefreshControl={isLoadingAssets}
           fetchData={refreshAccountData}
-          isEmpty={isAccountEmpty || !!params?.emptyWallet}
+          isEmpty={
+            isAccountEmpty || !!(params as WalletScreenParams)?.emptyWallet
+          }
           isWalletEthZero={isWalletEthZero}
           network={network}
           scrollViewTracker={scrollViewTracker}
