@@ -103,6 +103,8 @@
       "close": "Close",
       "confirm": "Confirm",
       "cancel": "Cancel",
+      "proceed": "Proceed",
+      "okay": "Okay",
       "go_back": "Go Back",
       "send_another": "Send Another",
       "exchange_again": "Exchange Again",
@@ -278,6 +280,24 @@
         "send": "Send",
         "to": "To",
         "value": "Value"
+      },
+      "add_cash": {
+        "card_notice": "Works with most debit cards",
+        "watching_mode_confirm_title": "You’re in Watching Mode",
+        "watching_mode_confirm_message": "The wallet you have open is read-only, so you can’t control what’s inside. Are you sure you want to add cash to %{truncatedAddress}?",
+        "purchasing_dai_requires_eth_title": "You don't have any ETH!",
+        "purchasing_dai_requires_eth_message": "Before you can purchase DAI you must have some ETH in your wallet!",
+        "purchase_failed_title": "Sorry, your purchase failed.",
+        "purchase_failed_subtitle": "You were not charged.",
+        "purchase_failed_order_id": "Order ID: %{orderId}",
+        "purchase_failed_support_subject_with_order_id": "Purchase Failed - Order %{orderId}",
+        "purchase_failed_support_subject": "Purchase Failed",
+        "running_checks": "Running checks...",
+        "on_the_way_line_1": "Your %{currencySymbol} is on the way",
+        "on_the_way_line_2": "and will arrive shortly",
+        "success_message": "It's here 🥳",
+        "need_help_button_label": "Get Support",
+        "need_help_button_email_subject": "support"
       },
       "authenticate": {
         "please": "Please authenticate",
