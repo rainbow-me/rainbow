@@ -1,11 +1,15 @@
 import { debounce, isEmpty } from 'lodash';
 import { web3Provider } from '../handlers/web3';
-import store from '../redux/store';
+import store, { AppDispatch, AppState } from '../redux/store';
 import { multicallUpdateOutdatedListeners } from './multicall';
 import logger from 'logger';
+import { JsonRpcProvider, Provider } from '@ethersproject/providers';
 
 // -- Actions ---------------------------------------- //
-const updateMulticall = blockNumber => async (dispatch, getState) => {
+const updateMulticall = (blockNumber: number) => async (
+  dispatch: AppDispatch,
+  getState: () => AppState
+) => {
   const { listeners } = getState().multicall;
   try {
     if (isEmpty(listeners)) return;
@@ -22,11 +26,17 @@ const debouncedUpdateMulticallListeners = debounce(blockNumber => {
   store.dispatch(updateMulticall(blockNumber));
 }, 1000);
 
-export const web3ListenerInit = () => {
-  web3Provider.pollingInterval = 10000;
-  web3Provider.on('block', debouncedUpdateMulticallListeners);
+let typedWeb3Provider = web3Provider as JsonRpcProvider | null;
+
+export const web3ListenerInit = (): void => {
+  if (!typedWeb3Provider) {
+    return;
+  }
+
+  typedWeb3Provider.pollingInterval = 10000;
+  typedWeb3Provider.on('block', debouncedUpdateMulticallListeners);
 };
 
-export const web3ListenerStop = () => {
-  web3Provider.removeAllListeners('block');
+export const web3ListenerStop = (): void => {
+  typedWeb3Provider?.removeAllListeners('block');
 };
