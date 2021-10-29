@@ -55,6 +55,8 @@ describe('Deeplinks spec', () => {
     }
     await Helpers.checkIfVisible('wallet-screen', 40000);
     await Helpers.enableSynchronization();
+    // Waiting 10s for MATIC assets to show up
+    await Helpers.delay(20000);
   });
 
   it('should be able to handle ethereum payments urls for ETH (mainnet)', async () => {
@@ -86,12 +88,6 @@ describe('Deeplinks spec', () => {
 
   it('should be able to handle ethereum payments urls for MATIC (polygon)', async () => {
     const url = 'ethereum:payment-brunobarbieri.eth@137?value=1e15';
-    await testEthereumDeeplink(url);
-  });
-
-  it('should be able to handle ethereum payments urls for WETH (polygon)', async () => {
-    const url =
-      'ethereum:0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619@137/transfer?address=brunobarbieri.eth&uint256=1e15';
     await testEthereumDeeplink(url);
   });
 
