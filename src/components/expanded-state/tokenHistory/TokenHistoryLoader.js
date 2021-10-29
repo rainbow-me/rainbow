@@ -10,11 +10,11 @@ import Animated, {
   Value,
 } from 'react-native-reanimated';
 import styled from 'styled-components';
-import { withThemeContext } from '../../context/ThemeContext';
-import { deviceUtils } from '../../utils';
-import { interpolate } from '../animations';
-import { CoinRowHeight } from '../coin-row';
-import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
+import { withThemeContext } from '../../../context/ThemeContext';
+import { deviceUtils } from '../../../utils';
+import { interpolate } from '../../animations';
+import { CoinRowHeight } from '../../coin-row';
+import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import { padding, position } from '@rainbow-me/styles';
 
 const { block, cond, set, startClock, stopClock } = Animated;
@@ -66,7 +66,7 @@ const Wrapper = styled(RowWithMargins).attrs({
   background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 
-class AssetListItemSkeleton extends PureComponent {
+class TokenHistoryLoader extends PureComponent {
   static propTypes = {
     animated: PropTypes.bool,
     descendingOpacity: PropTypes.bool,
@@ -174,16 +174,12 @@ class AssetListItemSkeleton extends PureComponent {
 
     return (
       <Container descendingOpacity={descendingOpacity} index={index}>
-        {animated && ios ? (
           <MaskedView maskElement={skeletonElement}>
             {this.renderShimmer()}
           </MaskedView>
-        ) : (
-          skeletonElement
-        )}
       </Container>
     );
   }
 }
 
-export default withThemeContext(AssetListItemSkeleton);
+export default withThemeContext(TokenHistoryLoader);

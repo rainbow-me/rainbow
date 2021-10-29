@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
+import { Column, Row } from '../../layout';
 import { apiGetTokenHistory } from '@rainbow-me/handlers/opensea-api';
 import { FlatList, View } from "react-native";
 import logger from 'logger';
@@ -8,9 +8,8 @@ import { Text } from '../../text';
 import styled from 'styled-components';
 import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
 import { useTheme } from '../../../context/ThemeContext';
-import { useAddressToENS } from '@rainbow-me/hooks';
-import { isHexString } from '@ethersproject/bytes';
-import { abbreviations } from '../../../utils';
+import { useDimensions } from '@rainbow-me/hooks';
+import { TokenHistoryLoader } from './TokenHistoryLoader';
 
 /**
  * Requirements: 
@@ -44,6 +43,57 @@ const eventSymbols = {
   MINT: `􀎛`,
 };
 
+const Gradient = styled(RadialGradient).attrs(
+  ({ color, theme: { colors } }) => ({
+    center: [0, 0],
+    colors:  [colors.whiteLabel, color]
+  })
+)`
+  position: absolute;
+  border-radius: 5;
+  width: 10;
+  height: 10;
+  overflow: hidden;
+`;
+
+const GradientRow = styled(Row)`
+  height: 10;
+  margin-bottom: 6;
+  margin-top: 4;
+`;
+
+const InnerColumn = styled(Column)`
+  padding-right: 24;
+`;
+
+const DateRow = styled(Row)`
+  margin-bottom: 3;
+`;
+
+const EmptyView = styled(View)`
+  height: 3;
+  marginTop: 3.5;
+`;
+
+const LeftSpacer = styled(View)`
+  width: 24;
+`;
+
+const LineView = styled(View)`
+  height: 3;
+  background-color: ${({ color }) => color};
+  opacity: 0.1;
+  border-radius: 1.5;
+  position: absolute;
+  top: 3.5;
+  left: 16;
+  right: 6;
+`;
+
+const Container = styled(View).attrs(({}))`
+  justify-content: flex-start;
+`;
+
 const TokenHistory = ({ 
     contractAndToken,
     color
@@ -54,9 +104,10 @@ const TokenHistory = ({
   const [tokenID, setTokenID] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const { colors } = useTheme();
+  const { width } = useDimensions();
 
   useEffect(async() => {
-    const tokenInfoArray = contractAndToken.split("/");
+    const tokenInfoArray = contractAndToken.split("/")
     setContractAddress(tokenInfoArray[0]);
     setTokenID(tokenInfoArray[1]);
   });
@@ -70,101 +121,7 @@ const TokenHistory = ({
     });
   }, [contractAddress, tokenID]);
 
-  // const setDataAddresses = async(data) => {
-  //   var newData;
-
-  //   for await (const item of data) {
-  //     if (item.event_type == eventTypes.TRANSFER) {
-  //       const newAddy = await getAddress(item.to_account)
-  //       newData.push({
-  //         event_type: item.event_type,
-  //         created_date: item.created_date,
-  //         from_account: item.from_account,
-  //         to_account: newAddy,
-  //         sale_amount: item.sale_amount,
-  //         list_amount: list_amount
-  //       });
-  //     }
-  //     else {
-  //       newData.push({
-  //         event_type: item.event_type,
-  //         created_date: item.created_date,
-  //         from_account: item.from_account,
-  //         to_account: item.to_account,
-  //         sale_amount: item.sale_amount,
-  //         list_amount: list_amount
-  //       });
-  //     }
-  //   }
-    
-
-    
-  // }
- 
-  const getAddress = async(address) => {
-    const addy = await useAddressToENS(address);
-
-    //No ens name
-    if (isHexString(addy)) {
-      const abbrevAddy = abbreviations.address(addy, 2) 
-      logger.log(abbrevAddy);
-
-      return abbrevAddy;
-    } 
-    const abbrevENS = abbreviations.formatAddressForDisplay(addy) 
-    logger.log(abbrevENS);
-
-    return abbrevENS;
-
-  };
-
-  const Gradient = styled(RadialGradient).attrs(
-    ({ theme: { colors } }) => ({
-      center: [0, 0],
-      colors:  [colors.whiteLabel, color]
-    })
-  )`
-    position: absolute;
-    border-radius: 5;
-    width: 10;
-    height: 10;
-    overflow: hidden;
-  `;
-
-  const GradientRow = styled(Row).attrs(({}))`
-    height: 10;
-    marginBottom: 6;
-    marginTop: 4;
-  `;
-
-  const InnerColumn = styled(Column).attrs(({}))`
-    paddingRight: 24;
-  `;
-
-  const DateRow = styled(Row).attrs(({}))`
-    marginBottom: 3;
-  `;
-
-  const EmptyView = styled(View).attrs(({}))`
-    height: 3;
-    marginTop: 3.5;
-  `;
-
-  const LineView = styled(View).attrs(({}))`
-    height: 3;
-    backgroundColor: ${color}; 
-    opacity: 0.1;
-    borderRadius: 1.5;
-    position: absolute;
-    top: 3.5;
-    left: 16;
-    right: 6;
-  `;
-
-
-
   const renderItem = ({ item, index }) => {
-
     var isFirst = false;
     var symbol;
     var phrase;
@@ -178,8 +135,7 @@ const TokenHistory = ({
       case eventTypes.TRANSFER:
         symbol = eventSymbols.TRANSFER;
         phrase = eventPhrases.TRANSFER;
-        var temp = abbreviations.address(item.to_account, 2)
-        suffix = `${temp}`;
+        suffix = `${item.to_account}`;
         return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst });
 
       case eventTypes.MINT:
@@ -215,8 +171,8 @@ const TokenHistory = ({
     return (
       <Column>
         <GradientRow> 
-          <Gradient color={colors} />
-          { isFirst ? <EmptyView /> : <LineView /> }
+          <Gradient color={color} />
+          { isFirst ? <EmptyView /> : <LineView color={color} /> }
         </GradientRow>
         
         <InnerColumn>
@@ -255,21 +211,21 @@ const TokenHistory = ({
   }
   
   return (
-    <View>
+    <Container>
       {
         isLoading ?
-        <Text style = {{ color: '#FFFFFF'}}> loading </Text>
+        <TokenHistoryLoader />
         :
         <FlatList
           data={tokenHistory}
           renderItem={({item, index}) => renderItem({ item, index })}
           horizontal={true}
           inverted={true}
+          ListFooterComponent={<LeftSpacer />}
           showsHorizontalScrollIndicator={false}
         />
       }
-    </View>
-    
+    </Container>
   )
 }
 
