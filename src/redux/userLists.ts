@@ -7,8 +7,10 @@ import {
   saveSelectedUserList,
   saveUserLists,
 } from '../handlers/localstorage/userLists';
+import { Network } from '../helpers/networkTypes';
 import { DefaultTokenLists } from '../references';
 import { emitAssetRequest } from './explorer';
+import { AppDispatch, AppState } from './store';
 import { uniswapUpdateFavorites } from './uniswap';
 
 // -- Constants ------------------------------------------------------------- //
@@ -21,16 +23,90 @@ const USER_LISTS_UPDATE_LISTS = 'userLists/USER_LISTS_UPDATE_LISTS';
 const USER_LISTS_CLEAR_STATE = 'userLists/USER_LISTS_CLEAR_STATE';
 const USER_LISTS_SET_SELECTED_LIST = 'userLists/USER_LISTS_SET_SELECTED_LIST';
 const FAVORITES_LIST_ID = 'favorites';
+
 // -- Actions --------------------------------------------------------------- //
-export const userListsLoadState = () => async (dispatch, getState) => {
+
+/**
+ * A single user list, based on the data found in `DefaultTokenLists`.
+ */
+export interface UserList {
+  emoji: string;
+  id: string;
+  name: string;
+  tokens: string[];
+}
+
+/**
+ * The current `userLists` state.
+ */
+interface UserListsState {
+  lists: UserList[];
+  loadingUserLists: boolean;
+  ready: boolean;
+  selectedList: string | null;
+}
+
+/**
+ * A `userLists` Redux action.
+ */
+type UserListsAction =
+  | UserListsLoadRequestAction
+  | UserListsLoadSuccessAction
+  | UserListsSetSelectedListAction
+  | UserListsUpdateListsAction
+  | UserListsFailureAction
+  | UserListsReadyAction
+  | UserListsClearStateAction;
+
+interface UserListsLoadRequestAction {
+  type: typeof USER_LISTS_LOAD_REQUEST;
+}
+
+interface UserListsLoadSuccessAction {
+  type: typeof USER_LISTS_LOAD_SUCCESS;
+  payload: {
+    lists: UserList[];
+  };
+}
+
+interface UserListsSetSelectedListAction {
+  type: typeof USER_LISTS_SET_SELECTED_LIST;
+  payload: string;
+}
+
+interface UserListsUpdateListsAction {
+  type: typeof USER_LISTS_UPDATE_LISTS;
+  payload: UserList[];
+}
+
+interface UserListsFailureAction {
+  type: typeof USER_LISTS_LOAD_FAILURE;
+}
+
+interface UserListsReadyAction {
+  type: typeof USER_LISTS_READY;
+}
+
+interface UserListsClearStateAction {
+  type: typeof USER_LISTS_CLEAR_STATE;
+}
+
+export const userListsLoadState = () => async (
+  dispatch: AppDispatch,
+  getState: () => AppState
+) => {
   const { network } = getState().settings;
 
   dispatch({ type: USER_LISTS_LOAD_REQUEST });
   try {
-    const defaultLists = DefaultTokenLists[network] || [];
-    const userLists = await getUserLists(network);
+    const defaultLists =
+      (DefaultTokenLists as Record<
+        Network,
+        typeof DefaultTokenLists[keyof typeof DefaultTokenLists]
+      >)[network] || [];
+    const userLists: UserList[] = await getUserLists();
     const lists = userLists?.length ? userLists : defaultLists;
-    let allAddresses = [];
+    let allAddresses: string[] = [];
     lists.forEach(list => {
       allAddresses = [...allAddresses, ...list.tokens];
     });
@@ -55,7 +131,10 @@ export const userListsLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const userListsSetSelectedList = (listId, save = true) => dispatch => {
+export const userListsSetSelectedList = (
+  listId: string,
+  save: boolean = true
+) => (dispatch: AppDispatch) => {
   dispatch({
     payload: listId,
     type: USER_LISTS_SET_SELECTED_LIST,
@@ -67,7 +146,10 @@ export const userListsSetSelectedList = (listId, save = true) => dispatch => {
   }
 };
 
-export const userListsClearList = listId => (dispatch, getState) => {
+export const userListsClearList = (listId: string) => (
+  dispatch: AppDispatch,
+  getState: () => AppState
+) => {
   const { lists } = getState().userLists;
   const allNewLists = [...lists];
 
@@ -82,9 +164,11 @@ export const userListsClearList = listId => (dispatch, getState) => {
   });
 
   // update the list
-  const newList = { ...allNewLists[listIndex] };
-  newList.tokens = [];
-  allNewLists[listIndex] = newList;
+  if (listIndex) {
+    const newList = { ...allNewLists[listIndex] };
+    newList.tokens = [];
+    allNewLists[listIndex] = newList;
+  }
 
   dispatch({
     payload: allNewLists,
@@ -93,10 +177,11 @@ export const userListsClearList = listId => (dispatch, getState) => {
   saveUserLists(allNewLists);
 };
 
-export const userListsUpdateList = (assetAddress, listId, add = true) => (
-  dispatch,
-  getState
-) => {
+export const userListsUpdateList = (
+  assetAddress: string,
+  listId: string,
+  add = true
+) => (dispatch: AppDispatch, getState: () => AppState) => {
   if (listId === FAVORITES_LIST_ID) {
     dispatch(uniswapUpdateFavorites(assetAddress, add));
   } else {
@@ -114,19 +199,21 @@ export const userListsUpdateList = (assetAddress, listId, add = true) => (
     });
 
     // add or remove
-    const updatedListTokens = add
-      ? uniq(concat(allNewLists[listIndex].tokens, assetAddress))
-      : isArray(assetAddress)
-      ? without(allNewLists[listIndex].tokens, ...assetAddress)
-      : without(allNewLists[listIndex].tokens, assetAddress);
-    if (add) {
-      dispatch(emitAssetRequest(assetAddress));
-    }
+    if (listIndex) {
+      const updatedListTokens = add
+        ? uniq(concat(allNewLists[listIndex].tokens, assetAddress))
+        : isArray(assetAddress)
+        ? without(allNewLists[listIndex].tokens, ...assetAddress)
+        : without(allNewLists[listIndex].tokens, assetAddress);
+      if (add) {
+        dispatch(emitAssetRequest(assetAddress));
+      }
 
-    // update the list
-    const newList = { ...allNewLists[listIndex] };
-    newList.tokens = updatedListTokens;
-    allNewLists[listIndex] = newList;
+      // update the list
+      const newList = { ...allNewLists[listIndex] };
+      newList.tokens = updatedListTokens;
+      allNewLists[listIndex] = newList;
+    }
 
     dispatch({
       payload: allNewLists,
@@ -137,14 +224,14 @@ export const userListsUpdateList = (assetAddress, listId, add = true) => (
 };
 
 // -- Reducer --------------------------------------------------------------- //
-export const INITIAL_USER_LISTS_STATE = {
+export const INITIAL_USER_LISTS_STATE: UserListsState = {
   lists: [],
   loadingUserLists: false,
   ready: false,
   selectedList: null,
 };
 
-export default (state = INITIAL_USER_LISTS_STATE, action) =>
+export default (state = INITIAL_USER_LISTS_STATE, action: UserListsAction) =>
   produce(state, draft => {
     switch (action.type) {
       case USER_LISTS_LOAD_REQUEST:
