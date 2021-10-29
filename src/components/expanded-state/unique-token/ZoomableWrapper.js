@@ -12,7 +12,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   useWorkletCallback,
-  withDecay,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
@@ -118,17 +117,6 @@ export const ZoomableWrapper = ({
   const [isZoomed, setIsZoomed] = useState(false);
   const isZoomedValue = useSharedValue(false);
 
-  // disable pinch when one finger is lifted
-  const [pinchEnabled, setPinchEnabledState] = useState(true);
-  useEffect(() => {
-    if (!pinchEnabled) {
-      setPinchEnabledState(true);
-    }
-  }, [pinchEnabled]);
-  const disablePinch = useCallback(() => {
-    setPinchEnabledState(false);
-  }, []);
-
   useEffect(() => {
     if (isZoomed) {
       StatusBar.setHidden(true);
@@ -176,13 +164,12 @@ export const ZoomableWrapper = ({
 
   const endGesture = useWorkletCallback((event, ctx) => {
     'worklet';
-    let isAnimationStartedX = false;
-    let isAnimationStartedY = false;
-
     ctx.initEventScale = undefined;
     ctx.prevScale = undefined;
     ctx.startFocalX = undefined;
     ctx.startFocalY = undefined;
+    ctx.startVelocityX = undefined;
+    ctx.startVelocityY = undefined;
     ctx.prevTranslateX = 0;
     ctx.prevTranslateY = 0;
     // if zoom state was entered by pinching, adjust targetScale to account for new image dimensions
@@ -211,35 +198,27 @@ export const ZoomableWrapper = ({
 
     if (targetScale > breakingScaleX) {
       if (translateX.value > maxDisplacementX) {
-        isAnimationStartedX = true;
         translateX.value = withTiming(maxDisplacementX, adjustConfig);
       }
       if (translateX.value < -maxDisplacementX) {
-        isAnimationStartedX = true;
         translateX.value = withTiming(-maxDisplacementX, adjustConfig);
       }
     } else {
-      isAnimationStartedX = true;
       translateX.value = withTiming(0, adjustConfig);
     }
 
     if (targetScale > breakingScaleY) {
       if (translateY.value > maxDisplacementY) {
-        isAnimationStartedY = true;
         translateY.value = withTiming(maxDisplacementY, adjustConfig);
       }
       if (translateY.value < -maxDisplacementY) {
-        isAnimationStartedY = true;
         translateY.value = withTiming(-maxDisplacementY, adjustConfig);
       }
     } else {
-      isAnimationStartedY = true;
       translateY.value = withTiming(0, adjustConfig);
     }
 
     if (!isZoomedValue.value) {
-      isAnimationStartedY = true;
-      isAnimationStartedX = true;
       // handle entering zoom state by pinching
       if (scale.value * containerWidthValue.value >= deviceWidth) {
         const adjustedScale = scale.value / (fullSizeWidth / containerWidth);
@@ -255,8 +234,6 @@ export const ZoomableWrapper = ({
       }
     } else {
       if (scale.value < MIN_IMAGE_SCALE) {
-        isAnimationStartedY = true;
-        isAnimationStartedX = true;
         if (ctx.startScale <= MIN_IMAGE_SCALE && !ctx.blockExitZoom) {
           isZoomedValue.value = false;
           runOnJS(setIsZoomed)(false);
@@ -280,14 +257,12 @@ export const ZoomableWrapper = ({
           THRESHOLD * targetScale &&
         fullSizeHeight * scale.value <= deviceHeight
       ) {
-        isAnimationStartedY = true;
-        isAnimationStartedX = true;
         isZoomedValue.value = false;
         runOnJS(setIsZoomed)(false);
         scale.value = withSpring(MIN_IMAGE_SCALE, exitConfig);
+        animationProgress.value = withSpring(0, exitConfig);
         translateX.value = withSpring(0, exitConfig);
         translateY.value = withSpring(0, exitConfig);
-        animationProgress.value = withSpring(0, exitConfig);
       }
     }
 
@@ -296,51 +271,106 @@ export const ZoomableWrapper = ({
       targetScale = MAX_IMAGE_SCALE;
     }
 
-    if (event.velocityY && !isAnimationStartedY) {
-      translateY.value = withDecay({
-        clamp: [-maxDisplacementY, maxDisplacementY],
-        deceleration: 0.97,
+    if (
+      event.velocityY &&
+      isZoomedValue.value &&
+      targetScale > breakingScaleX
+    ) {
+      const projectedYCoordinate = translateY.value + event.velocityY / 8;
+      const edgeBounceConfig = {
+        damping: 60,
+        mass: 2,
+        stiffness: 600,
         velocity: event.velocityY,
-      });
+      };
+      const flingConfig = {
+        damping: 120,
+        mass: 2,
+        stiffness: 600,
+        velocity: event.velocityY,
+      };
+      if (projectedYCoordinate > maxDisplacementY) {
+        translateY.value = withSpring(maxDisplacementY, edgeBounceConfig);
+      } else if (projectedYCoordinate < -maxDisplacementY) {
+        translateY.value = withSpring(-maxDisplacementY, edgeBounceConfig);
+      } else {
+        translateY.value = withSpring(projectedYCoordinate, flingConfig);
+      }
     }
 
-    if (event.velocityX && !isAnimationStartedX) {
-      translateX.value = withDecay({
-        clamp: [-maxDisplacementX, maxDisplacementX],
-        deceleration: 0.97,
+    if (
+      event.velocityX &&
+      isZoomedValue.value &&
+      targetScale > breakingScaleX
+    ) {
+      const projectedXCoordinate = translateX.value + event.velocityX / 8;
+      const edgeBounceConfig = {
+        damping: 60,
+        mass: 2,
+        stiffness: 600,
         velocity: event.velocityX,
-      });
+      };
+      const flingConfig = {
+        damping: 120,
+        mass: 2,
+        stiffness: 600,
+        velocity: event.velocityX,
+      };
+      if (projectedXCoordinate > maxDisplacementX) {
+        translateX.value = withSpring(maxDisplacementX, edgeBounceConfig);
+      } else if (projectedXCoordinate < -maxDisplacementX) {
+        translateX.value = withSpring(-maxDisplacementX, edgeBounceConfig);
+      } else {
+        translateX.value = withSpring(projectedXCoordinate, flingConfig);
+      }
     }
   });
 
   const panGestureHandler = useAnimatedGestureHandler({
     onActive: (event, ctx) => {
-      if (ctx.startScale <= MIN_IMAGE_SCALE) {
+      if (
+        isZoomedValue.value &&
+        ctx.startScale <= MIN_IMAGE_SCALE &&
+        event.numberOfPointers === 1
+      ) {
         scale.value =
           ctx.startScale -
           ((ctx.startY + Math.abs(event.translationY)) / deviceHeight / 2) *
             ctx.startScale;
       }
-      translateX.value += event.translationX - (ctx.prevTranslateX ?? 0);
-      translateY.value += event.translationY - (ctx.prevTranslateY ?? 0);
+      if (event.numberOfPointers === 2) {
+        ctx.numberOfPointers = 2;
+      }
+      translateX.value +=
+        (event.translationX - (ctx.prevTranslateX ?? 0)) /
+        (isZoomedValue.value ? zooming : 1);
+
+      // lock y translation on horizontal swipe
+      if (
+        ctx.startScale <= MIN_IMAGE_SCALE ||
+        ctx.startScale * fullSizeHeight >= deviceHeight ||
+        ctx.startPointers === 2 ||
+        event.numberOfPointers === 2 ||
+        !(Math.abs(ctx.startVelocityX) / Math.abs(ctx.startVelocityY) > 1)
+      ) {
+        translateY.value +=
+          (event.translationY - (ctx.prevTranslateY ?? 0)) /
+          (isZoomedValue.value ? zooming : 1);
+      }
+
       ctx.prevTranslateX = event.translationX;
       ctx.prevTranslateY = event.translationY;
     },
     onCancel: endGesture,
     onEnd: endGesture,
     onFail: endGesture,
-    onStart: (_, ctx) => {
+    onStart: (event, ctx) => {
+      ctx.numberOfPointers = event.numberOfPointers;
       ctx.startScale = scale.value;
+      ctx.startVelocityX = event.velocityX;
+      ctx.startVelocityY = event.velocityY;
       ctx.startY = translateY.value;
     },
-  });
-
-  const blockingPanGestureHandler = useAnimatedGestureHandler({
-    onActive: () => {},
-    onCancel: () => {},
-    onEnd: () => {},
-    onFail: () => {},
-    onStart: () => {},
   });
 
   const pinchGestureHandler = useAnimatedGestureHandler({
@@ -348,7 +378,7 @@ export const ZoomableWrapper = ({
       if (!ctx.initEventScale) {
         ctx.initEventScale = event.scale;
       }
-      if (event.numberOfPointers === 2) {
+      if (event.numberOfPointers === 1 || event.numberOfPointers === 2) {
         if (
           isZoomedValue.value &&
           ctx.startScale <= MIN_IMAGE_SCALE &&
@@ -372,10 +402,6 @@ export const ZoomableWrapper = ({
         ctx.prevTranslateX = translateX.value;
         ctx.prevTranslateY = translateY.value;
         ctx.prevScale = event.scale;
-      } else if (event.numberOfPointers !== 2) {
-        translateX.value = ctx.prevTranslateX;
-        translateY.value = ctx.prevTranslateY;
-        runOnJS(disablePinch)();
       }
     },
     onCancel: endGesture,
@@ -489,7 +515,6 @@ export const ZoomableWrapper = ({
     };
   });
 
-  const blockingPan = useRef();
   const pan = useRef();
   const pinch = useRef();
   const doubleTap = useRef();
@@ -505,84 +530,65 @@ export const ZoomableWrapper = ({
     >
       <PanGestureHandler
         enabled={!disableAnimations}
-        maxPointers={5}
-        minPointers={2}
-        onGestureEvent={blockingPanGestureHandler}
-        ref={blockingPan}
-        simultaneousHandlers={[pan, pinch, doubleTap, singleTap]}
-        waitFor={[pinch, doubleTap, singleTap]}
+        maxPointers={2}
+        minPointers={isZoomed ? 1 : 2}
+        onGestureEvent={panGestureHandler}
+        ref={pan}
+        simultaneousHandlers={[pinch]}
       >
         <Animated.View>
-          <PanGestureHandler
-            enabled={!disableAnimations}
-            maxPointers={2}
-            minPointers={isZoomed ? 1 : 2}
-            onGestureEvent={panGestureHandler}
-            ref={pan}
-            simultaneousHandlers={[blockingPan, pinch]}
-          >
-            <Animated.View>
-              <Animated.View>
-                <TapGestureHandler
-                  numberOfTaps={1}
-                  onHandlerStateChange={singleTapGestureHandler}
-                  ref={singleTap}
-                  simultaneousHandlers={[blockingPan]}
-                  waitFor={isZoomed && doubleTap}
-                >
-                  <ZoomContainer
-                    height={containerHeight}
-                    width={containerWidth}
+          <Animated.View>
+            <TapGestureHandler
+              numberOfTaps={1}
+              onHandlerStateChange={singleTapGestureHandler}
+              ref={singleTap}
+              waitFor={isZoomed && doubleTap}
+            >
+              <ZoomContainer height={containerHeight} width={containerWidth}>
+                <GestureBlocker
+                  containerHeight={containerHeight}
+                  containerWidth={containerWidth}
+                  height={deviceHeight}
+                  pointerEvents={isZoomed ? 'auto' : 'none'}
+                  width={deviceWidth}
+                />
+                <Animated.View style={[StyleSheet.absoluteFillObject]}>
+                  <TapGestureHandler
+                    enabled={!disableAnimations && isZoomed}
+                    maxDelayMs={420}
+                    maxDist={50}
+                    maxDurationMs={420}
+                    maxPointers={1}
+                    numberOfTaps={2}
+                    onHandlerStateChange={doubleTapGestureHandler}
+                    ref={doubleTap}
+                    waitFor={pinch}
                   >
-                    <GestureBlocker
-                      containerHeight={containerHeight}
-                      containerWidth={containerWidth}
-                      height={deviceHeight}
-                      pointerEvents={isZoomed ? 'auto' : 'none'}
-                      width={deviceWidth}
-                    />
-                    <Animated.View style={[StyleSheet.absoluteFillObject]}>
-                      <TapGestureHandler
-                        enabled={!disableAnimations && isZoomed}
-                        maxDelayMs={420}
-                        maxDist={50}
-                        maxDurationMs={420}
-                        maxPointers={1}
-                        numberOfTaps={2}
-                        onHandlerStateChange={doubleTapGestureHandler}
-                        ref={doubleTap}
-                        waitFor={pinch}
+                    <Container
+                      style={[containerStyle, StyleSheet.absoluteFillObject]}
+                    >
+                      <PinchGestureHandler
+                        enabled={!disableAnimations}
+                        onGestureEvent={pinchGestureHandler}
+                        ref={pinch}
+                        simultaneousHandlers={[pan]}
                       >
-                        <Container
+                        <ImageWrapper
                           style={[
-                            containerStyle,
+                            animatedStyle,
+                            cornerStyle,
                             StyleSheet.absoluteFillObject,
                           ]}
                         >
-                          <PinchGestureHandler
-                            enabled={!disableAnimations && pinchEnabled}
-                            onGestureEvent={pinchGestureHandler}
-                            ref={pinch}
-                            simultaneousHandlers={[blockingPan, pan]}
-                          >
-                            <ImageWrapper
-                              style={[
-                                animatedStyle,
-                                cornerStyle,
-                                StyleSheet.absoluteFillObject,
-                              ]}
-                            >
-                              {children}
-                            </ImageWrapper>
-                          </PinchGestureHandler>
-                        </Container>
-                      </TapGestureHandler>
-                    </Animated.View>
-                  </ZoomContainer>
-                </TapGestureHandler>
-              </Animated.View>
-            </Animated.View>
-          </PanGestureHandler>
+                          {children}
+                        </ImageWrapper>
+                      </PinchGestureHandler>
+                    </Container>
+                  </TapGestureHandler>
+                </Animated.View>
+              </ZoomContainer>
+            </TapGestureHandler>
+          </Animated.View>
         </Animated.View>
       </PanGestureHandler>
     </ButtonPressAnimation>
