@@ -1,9 +1,9 @@
+import { JsonRpcProvider } from '@ethersproject/providers';
 import { debounce, isEmpty } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import store, { AppDispatch, AppState } from '../redux/store';
 import { multicallUpdateOutdatedListeners } from './multicall';
 import logger from 'logger';
-import { JsonRpcProvider, Provider } from '@ethersproject/providers';
 
 // -- Actions ---------------------------------------- //
 const updateMulticall = (blockNumber: number) => async (
