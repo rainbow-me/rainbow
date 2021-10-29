@@ -6,13 +6,14 @@ import {
   settingsChangeLanguage as changeLanguage,
   settingsChangeNativeCurrency as changeNativeCurrency,
 } from '../redux/settings';
+import { updateLanguageLocale } from '../languages';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 const languageSelector = state => state.settings.language;
 
 const withLanguage = language => {
   if (language !== lang.locale) {
-    lang.locale = language;
+    updateLanguageLocale(language);
   }
   return { language };
 };

@@ -1,4 +1,5 @@
 import {
+  getLanguage,
   getNativeCurrency,
   getNetwork,
   saveLanguage,
@@ -7,8 +8,8 @@ import {
 } from '../handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '../handlers/web3';
 import networkTypes from '../helpers/networkTypes';
-import { updateLanguage } from '../languages';
 
+import { updateLanguageLocale } from '../languages';
 import { ethereumUtils } from '../utils';
 import { dataResetState } from './data';
 import { explorerClearState, explorerInit } from './explorer';
@@ -52,6 +53,19 @@ export const settingsLoadNetwork = () => async dispatch => {
   }
 };
 
+export const settingsLoadLanguage = () => async dispatch => {
+  try {
+    const language = await getLanguage();
+    updateLanguageLocale(language);
+    dispatch({
+      payload: language,
+      type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
+    });
+  } catch (error) {
+    logger.log('Error loading language settings', error);
+  }
+};
+
 export const settingsUpdateAccountAddress = accountAddress => async dispatch => {
   dispatch({
     payload: accountAddress,
@@ -74,7 +88,7 @@ export const settingsUpdateNetwork = network => async dispatch => {
 };
 
 export const settingsChangeLanguage = language => async dispatch => {
-  updateLanguage(language);
+  updateLanguageLocale(language);
   try {
     dispatch({
       payload: language,
@@ -105,7 +119,7 @@ export const settingsChangeNativeCurrency = nativeCurrency => async dispatch => 
 export const INITIAL_STATE = {
   accountAddress: '',
   chainId: 1,
-  language: 'fr',
+  language: 'en',
   nativeCurrency: 'USD',
   network: networkTypes.mainnet,
 };

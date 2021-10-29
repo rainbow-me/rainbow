@@ -186,7 +186,9 @@ export default function WalletProfileState({
           <BiometricButtonContent
             label={
               isNewProfile
-                ? lang.t('wallet.new.create_wallet')
+                ? actionType === 'Create'
+                  ? lang.t('wallet.new.create_wallet')
+                  : lang.t('wallet.new.import_wallet')
                 : lang.t('button.done')
             }
             showIcon={actionType === 'Create'}

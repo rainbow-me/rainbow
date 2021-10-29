@@ -119,7 +119,7 @@ const ExchangeSearch = (
     onFocus,
     searchQuery,
     testID,
-    placeholderText = lang.t('button.search'),
+    placeholderText = lang.t('button.exchange_search_uniswap'),
     clearTextOnFocus = true,
   },
   ref

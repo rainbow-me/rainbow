@@ -3,8 +3,6 @@ import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { Image, Linking, NativeModules, ScrollView, Share } from 'react-native';
 import styled from 'styled-components';
-// import { REVIEW_ANDROID } from '../../config/experimental';
-// import useExperimentalFlag from '../../config/experimentalHooks';
 import { THEMES, useTheme } from '../../context/ThemeContext';
 import { supportedLanguages } from '../../languages';
 import AppVersionStamp from '../AppVersionStamp';
@@ -29,6 +27,9 @@ import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
 import NetworkIconDark from '@rainbow-me/assets/settingsNetworkDark.png';
 import PrivacyIcon from '@rainbow-me/assets/settingsPrivacy.png';
 import PrivacyIconDark from '@rainbow-me/assets/settingsPrivacyDark.png';
+import useExperimentalFlag, {
+  LANGUAGE_SETTINGS,
+} from '@rainbow-me/config/experimentalHooks';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -141,6 +142,7 @@ export default function SettingsSection({
   const { wallets, isReadOnlyWallet } = useWallets();
   const { language, nativeCurrency, network } = useAccountSettings();
   const { isSmallPhone } = useDimensions();
+  const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
 
   const { colors, isDarkMode, setTheme, colorScheme } = useTheme();
 
@@ -290,19 +292,21 @@ export default function SettingsSection({
               <ListItemArrowGroup />
             </ListItem>
           )}
-          <ListItem
-            icon={
-              <SettingIcon
-                source={isDarkMode ? LanguageIconDark : LanguageIcon}
-              />
-            }
-            label={lang.t('settings.language')}
-            onPress={onPressLanguage}
-          >
-            <ListItemArrowGroup>
-              {supportedLanguages[language] || ''}
-            </ListItemArrowGroup>
-          </ListItem>
+          {isLanguageSelectionEnabled && (
+            <ListItem
+              icon={
+                <SettingIcon
+                  source={isDarkMode ? LanguageIconDark : LanguageIcon}
+                />
+              }
+              label={lang.t('settings.language')}
+              onPress={onPressLanguage}
+            >
+              <ListItemArrowGroup>
+                {supportedLanguages[language] || ''}
+              </ListItemArrowGroup>
+            </ListItem>
+          )}
         </ColumnWithDividers>
         <ListFooter />
         <ColumnWithDividers dividerRenderer={ListItemDivider}>
@@ -329,7 +333,11 @@ export default function SettingsSection({
           />
           <ListItem
             icon={<Emoji name={ios ? 'speech_balloon' : 'lady_beetle'} />}
-            label={lang.t('settings.feedback')}
+            label={
+              ios
+                ? lang.t('settings.feedback_and_support')
+                : lang.t('settings.feedback_and_reports')
+            }
             onPress={onSendFeedback}
             testID="feedback-section"
           />

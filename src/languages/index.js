@@ -1,7 +1,6 @@
-import i18next from 'i18next';
+import lang from 'i18n-js';
 import english from './_english.json';
 import french from './_french.json';
-import logger from 'logger';
 
 export const resources = {
   en: english,
@@ -13,15 +12,17 @@ export const supportedLanguages = {
   fr: 'French',
 };
 
-i18next.init({
-  lng: 'en',
-  resources,
-});
+export const updateLanguageLocale = code => {
+  lang.locale = code;
+};
 
-export const updateLanguage = code => i18next.changeLanguage(code);
-
-i18next.on('languageChanged', () => {
-  logger.log('Language Changed');
-});
-
-export default i18next;
+// Configure languages
+lang.defaultLocale = 'en';
+lang.locale = 'en';
+lang.fallbacks = true;
+lang.translations = Object.assign(
+  {},
+  ...Object.keys(resources).map(key => ({
+    [key]: resources[key].translation,
+  }))
+);

@@ -61,37 +61,37 @@ const SettingsPages = {
   backup: {
     component: View,
     key: 'BackupSection',
-    title: lang.t('settings.backup'),
+    title: () => lang.t('settings.backup'),
   },
   currency: {
     component: CurrencySection,
     key: 'CurrencySection',
-    title: lang.t('settings.currency'),
+    title: () => lang.t('settings.currency'),
   },
   default: {
     component: null,
     key: 'SettingsSection',
-    title: lang.t('settings.label'),
+    title: () => lang.t('settings.label'),
   },
   dev: {
     component: IS_DEV ? DevSection : null,
     key: 'DevSection',
-    title: lang.t('settings.dev'),
+    title: () => lang.t('settings.developer'),
   },
   language: {
     component: LanguageSection,
     key: 'LanguageSection',
-    title: lang.t('settings.language'),
+    title: () => lang.t('settings.language'),
   },
   network: {
     component: NetworkSection,
     key: 'NetworkSection',
-    title: lang.t('settings.network'),
+    title: () => lang.t('settings.network'),
   },
   privacy: {
     component: PrivacySection,
     key: 'PrivacySection',
-    title: 'Privacy',
+    title: () => 'Privacy',
   },
 };
 
@@ -208,9 +208,9 @@ export default function SettingsModal() {
                   name={key}
                   options={{
                     cardStyleInterpolator,
-                    title,
+                    title: title(),
                   }}
-                  title={title}
+                  title={title()}
                 />
               )
           )}
