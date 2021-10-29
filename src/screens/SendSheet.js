@@ -58,7 +58,7 @@ import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import {
   chainAssets,
   ETH_ADDRESS,
-  RAINBOW_TOKEN_LIST,
+  rainbowTokenList,
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { borders } from '@rainbow-me/styles';
@@ -559,7 +559,7 @@ export default function SendSheet(props) {
   const validateRecipient = useCallback(
     async toAddress => {
       // Don't allow send to known ERC20 contracts on mainnet
-      if (RAINBOW_TOKEN_LIST[toLower(toAddress)]) {
+      if (rainbowTokenList.RAINBOW_TOKEN_LIST[toLower(toAddress)]) {
         return false;
       }
 
