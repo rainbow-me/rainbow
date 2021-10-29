@@ -1,5 +1,5 @@
-import lang from 'i18n-js';
 import { isHexString } from '@ethersproject/bytes';
+import lang from 'i18n-js';
 import { get, isEmpty, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';

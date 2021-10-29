@@ -1,14 +1,9 @@
 import { useRoute } from '@react-navigation/core';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { get, toLower } from 'lodash';
 import lang from 'i18n-js';
-import React, {
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { get, toLower } from 'lodash';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
@@ -522,7 +517,7 @@ export default function ChangeWalletSheet() {
             <Row style={{ position: 'absolute', right: 0 }}>
               <EditButton editMode={editMode} onPress={onPressEditMode}>
                 <EditButtonLabel editMode={editMode}>
-                {editMode ? lang.t('button.done') : lang.t('button.edit')}
+                  {editMode ? lang.t('button.done') : lang.t('button.edit')}
                 </EditButtonLabel>
               </EditButton>
             </Row>

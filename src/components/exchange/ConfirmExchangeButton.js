@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import lang from 'i18n-js';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';

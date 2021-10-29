@@ -1,7 +1,7 @@
+import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { StatusBar } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
-import lang from 'i18n-js';
 import styled from 'styled-components';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Spinner from '../components/Spinner';

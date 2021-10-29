@@ -42,8 +42,16 @@ export default function ChartContextButton({ asset, color }) {
 
   const options = useMemo(
     () => [
-      `📌️ ${currentAction === EditOptions.unpin ? lang.t('wallet.action.unpin') : lang.t('wallet.action.pin')}`,
-      `🙈️ ${currentAction === EditOptions.unhide ? lang.t('wallet.action.unhide') : lang.t('wallet.action.hide')}`,
+      `📌️ ${
+        currentAction === EditOptions.unpin
+          ? lang.t('wallet.action.unpin')
+          : lang.t('wallet.action.pin')
+      }`,
+      `🙈️ ${
+        currentAction === EditOptions.unhide
+          ? lang.t('wallet.action.unhide')
+          : lang.t('wallet.action.hide')
+      }`,
       ...(asset?.uniqueId === 'eth'
         ? []
         : [
@@ -58,8 +66,9 @@ export default function ChartContextButton({ asset, color }) {
 
   return (
     <ContextCircleButton
+      $
       flex={0}
-      onPressActionSheet={handleActionSheetPress}$
+      onPressActionSheet={handleActionSheetPress}
       options={options}
       tintColor={color}
     />

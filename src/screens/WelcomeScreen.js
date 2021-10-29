@@ -1,6 +1,6 @@
 import MaskedView from '@react-native-community/masked-view';
-import lang from 'i18n-js';
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';

@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/core';
-import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import React, { Fragment, useEffect, useMemo } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';

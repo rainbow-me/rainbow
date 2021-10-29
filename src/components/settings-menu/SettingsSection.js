@@ -291,16 +291,17 @@ export default function SettingsSection({
             </ListItem>
           )}
           <ListItem
-        icon={
-          <SettingIcon source={darkMode ? LanguageIconDark : LanguageIcon} />}
-   
-          label={lang.t('settings.language')}
-
-          onPress={onPressLanguage}
+            icon={
+              <SettingIcon
+                source={isDarkMode ? LanguageIconDark : LanguageIcon}
+              />
+            }
+            label={lang.t('settings.language')}
+            onPress={onPressLanguage}
           >
-          <ListItemArrowGroup>
-          {supportedLanguages[language] || ''}
-        </ListItemArrowGroup>
+            <ListItemArrowGroup>
+              {supportedLanguages[language] || ''}
+            </ListItemArrowGroup>
           </ListItem>
         </ColumnWithDividers>
         <ListFooter />

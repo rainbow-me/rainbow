@@ -1,9 +1,9 @@
 import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Animated, InteractionManager, View } from 'react-native';
 import styled from 'styled-components';
-import lang from 'i18n-js';
 import { Modal } from '../components/modal';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
@@ -146,7 +146,11 @@ export default function SettingsModal() {
   const renderHeaderRight = useCallback(
     () =>
       ios ? (
-        <ModalHeaderButton label={lang.t('settings.done')} onPress={goBack} side="right" />
+        <ModalHeaderButton
+          label={lang.t('settings.done')}
+          onPress={goBack}
+          side="right"
+        />
       ) : null,
     [goBack]
   );
