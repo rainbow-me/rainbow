@@ -388,12 +388,13 @@ export const ZoomableWrapper = ({
         scale.value = ctx.startScale * (event.scale / ctx.initEventScale);
         if (ctx.prevScale) {
           translateX.value +=
-            (event.scale / ctx.prevScale - 1) *
-            (containerWidthValue.value / ctx.startScale2 / 2 - event.focalX);
+            (ctx.focalDisplacementX * (event.scale - ctx.prevScale)) /
+            ctx.initEventScale /
+            ctx.startScale;
           translateY.value +=
-            zooming *
-            (event.scale / ctx.prevScale - 1) *
-            (containerHeightValue.value / ctx.startScale2 / 2 - event.focalY);
+            (ctx.focalDisplacementY * (event.scale - ctx.prevScale)) /
+            ctx.initEventScale /
+            ctx.startScale;
         } else {
           ctx.startScale2 = scale.value;
         }
@@ -410,6 +411,10 @@ export const ZoomableWrapper = ({
     onStart: (event, ctx) => {
       ctx.startScale = scale.value;
       ctx.blockExitZoom = false;
+      ctx.focalDisplacementX =
+        containerWidthValue.value / scale.value / 2 - event.focalX;
+      ctx.focalDisplacementY =
+        containerHeightValue.value / scale.value / 2 - event.focalY;
     },
   });
 
