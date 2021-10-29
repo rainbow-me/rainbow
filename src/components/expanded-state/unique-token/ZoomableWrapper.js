@@ -69,7 +69,6 @@ export const ZoomableWrapper = ({
   horizontalPadding,
   aspectRatio,
   isENS,
-  isSVG,
   borderRadius,
   disableAnimations,
   yDisplacement: givenYDisplacement,
@@ -504,12 +503,7 @@ export const ZoomableWrapper = ({
           translateY: translateY.value,
         },
         {
-          // SVGs don't resize when given a new width and height, so scale them up to compensate
-          scale: isSVG
-            ? scale.value +
-              animationProgress.value *
-                ((fullSizeWidth / containerWidth) * scale.value - scale.value)
-            : scale.value,
+          scale: scale.value,
         },
       ],
     };

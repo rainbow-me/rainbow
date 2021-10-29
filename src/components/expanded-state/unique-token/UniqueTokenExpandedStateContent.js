@@ -91,7 +91,6 @@ const UniqueTokenExpandedStateContent = ({
       disableAnimations={disablePreview}
       horizontalPadding={horizontalPadding}
       isENS={isENS}
-      isSVG={isSVG}
       yDisplacement={yPosition}
     >
       <View style={StyleSheet.absoluteFill}>
