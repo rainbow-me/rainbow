@@ -1,6 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
-import { toLower } from 'lodash';
+import { pick, startCase, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -95,7 +95,14 @@ export default function TransactionList({
     });
   }, [navigate, isDamaged]);
 
-  const onAvatarPress = useOnAvatarPress();
+  const {
+    avatarOptions,
+    onAvatarChooseImage,
+    onAvatarRemovePhoto,
+    onAvatarPickEmoji,
+    onAvatarPress,
+    onAvatarWebProfile,
+  } = useOnAvatarPress();
 
   const onReceivePress = useCallback(() => {
     if (isDamaged) {
@@ -128,7 +135,7 @@ export default function TransactionList({
     e => {
       const { index } = e.nativeEvent;
       const item = transactions[index];
-      const { hash, from, minedAt, pending, to, status, type } = item;
+      const { hash, from, minedAt, network, pending, to, status, type } = item;
 
       const date = getHumanReadableDate(minedAt);
 
@@ -164,11 +171,15 @@ export default function TransactionList({
       const canBeCancelled =
         canBeResubmitted && status !== TransactionStatusTypes.cancelling;
 
+      const blockExplorerAction = `View on ${startCase(
+        ethereumUtils.getBlockExplorer(network)
+      )}`;
+
       if (hash) {
         let buttons = [
           ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
           ...(canBeCancelled ? [TransactionActions.cancel] : []),
-          TransactionActions.viewOnEtherscan,
+          blockExplorerAction,
           ...(ios ? [TransactionActions.close] : []),
         ];
         if (showContactInfo) {
@@ -218,11 +229,12 @@ export default function TransactionList({
                   type: 'cancel',
                 });
                 break;
-              case TransactionActions.viewOnEtherscan: {
-                ethereumUtils.openTransactionEtherscanURL(hash);
+              case TransactionActions.close:
+                return;
+              default: {
+                ethereumUtils.openTransactionInBlockExplorer(hash, network);
                 break;
               }
-              default:
             }
           }
         );
@@ -251,14 +263,6 @@ export default function TransactionList({
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
-  const data = useMemo(
-    () => ({
-      requests,
-      transactions,
-    }),
-    [requests, transactions]
-  );
-
   const loading = useMemo(() => (!initialized && !isFocused()) || isLoading, [
     initialized,
     isLoading,
@@ -270,15 +274,60 @@ export default function TransactionList({
   const safeAccountImage = useSafeImageUri(accountImage);
   const { isDarkMode, colors } = useTheme();
 
+  const onNativeAvatarMenuSelect = useCallback(
+    e => {
+      const { selection } = e.nativeEvent;
+      switch (selection) {
+        case 'newimage':
+          onAvatarChooseImage();
+          break;
+        case 'newemoji':
+          onAvatarPickEmoji();
+          break;
+        case 'removeimage':
+          onAvatarRemovePhoto();
+          break;
+        case 'webprofile':
+          onAvatarWebProfile();
+          break;
+        default:
+          break;
+      }
+    },
+    [
+      onAvatarChooseImage,
+      onAvatarPickEmoji,
+      onAvatarRemovePhoto,
+      onAvatarWebProfile,
+    ]
+  );
+
+  const data = useMemo(() => {
+    const requestsNative = requests.map(request =>
+      pick(request, [
+        'clientId',
+        'dappName',
+        'imageUrl',
+        'payloadId',
+        'displayDetails.timestampInMs',
+      ])
+    );
+    return {
+      requests: requestsNative,
+      transactions,
+    };
+  }, [requests, transactions]);
+
   return (
     <Container>
       <Container
         accountAddress={accountName}
-        accountColor={colors.avatarColor[accountColor]}
+        accountColor={colors.avatarBackgrounds[accountColor]}
         accountImage={safeAccountImage}
         accountName={accountSymbol}
         addCashAvailable={addCashAvailable}
         as={NativeTransactionListView}
+        avatarOptions={avatarOptions}
         darkMode={isDarkMode}
         data={data}
         isAvatarPickerAvailable={isAvatarPickerAvailable}
@@ -287,6 +336,7 @@ export default function TransactionList({
         onAddCashPress={onAddCashPress}
         onAvatarPress={onAvatarPress}
         onCopyAddressPress={onCopyAddressPress}
+        onNativeAvatarMenuSelect={onNativeAvatarMenuSelect}
         onReceivePress={onReceivePress}
         onRequestExpire={onRequestExpire}
         onRequestPress={onRequestPress}

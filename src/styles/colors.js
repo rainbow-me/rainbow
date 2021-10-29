@@ -12,6 +12,7 @@ const darkModeColors = {
   blueGreyDark04: '#222326',
   blueGreyDark20: '#3A3D45',
   blueGreyDark30: '#50535E',
+  blueGreyDark40: '#646876',
   blueGreyDark50: '#797D8B',
   blueGreyDarker: '#000000',
   blueGreyDarkLight: '#1E2027',
@@ -43,12 +44,40 @@ const darkModeColors = {
 
 const isHex = (color = '') => color.length >= 3 && color.charAt(0) === '#';
 const isRGB = (color = '') => toLower(color).substring(0, 3) === 'rgb';
+
+const avatarBackgrounds = [
+  '#FC5C54',
+  '#FFD95A',
+  '#E95D72',
+  '#6A87C8',
+  '#5FD0F3',
+  '#75C06B',
+  '#FFDD86',
+  '#5FC6D4',
+  '#FF949A',
+  '#FF8024',
+  '#9BA1A4',
+  '#EC66FF',
+  '#FF8CBC',
+  '#FF9A23',
+  '#C5DADB',
+  '#A8CE63',
+  '#71ABFF',
+  '#FFE279',
+  '#B6B1B6',
+  '#FF6780',
+  '#A575FF',
+  '#4D82FF',
+  '#FFB35A',
+];
+
 const getColorsByTheme = darkMode => {
   let base = {
     appleBlue: '#0E76FD', // '14, 118, 253'
     black: '#000000', // '0, 0, 0'
     blueGreyDark: '#3C4252', // '60, 66, 82'
     blueGreyDark30: '#C5C6CB', // this color is blueGreyDark at 30% over white
+    blueGreyDark40: '#B1B3BA', // this color is blueGreyDark at 40% over white
     blueGreyDark50: '#9DA0A8', // this color is blueGreyDark at 50% over white
     blueGreyDark60: '#898D97', // this color is blueGreyDark at 60% over white
     blueGreyDark80: '#636875', // this color is blueGreyDark at 80% over white
@@ -122,10 +151,23 @@ const getColorsByTheme = darkMode => {
     red: '#C95050', // '201, 80, 80',
   };
 
+  let networkColors = {
+    arbitrum: '#2D374B',
+    goerli: '#f6c343',
+    kovan: '#7057ff',
+    mainnet: buildRgba('#3C4252', 0.5),
+    optimism: '#FF4040',
+    polygon: '#8247E5',
+    rinkeby: '#f6c343',
+    ropsten: '#ff4a8d',
+  };
+
   let gradients = {
     lighterGrey: [buildRgba('#ECF1F5', 0.15), buildRgba('#DFE4EB', 0.5)],
     lightestGrey: ['#FFFFFF', '#F2F4F7'],
+    lightestGreyReverse: ['#F2F4F7', '#FFFFFF'],
     lightGrey: [buildRgba('#ECF1F5', 0.5), buildRgba('#DFE4EB', 0.5)],
+    lightGreyWhite: [buildRgba('#F0F2F5', 0.5), buildRgba('#FFFFFF', 0.5)],
     offWhite: [base.white, base.offWhite],
     rainbow: ['#FFB114', '#FF54BB', '#7EA4DE'],
     savings: ['#FFFFFF', '#F7F9FA'],
@@ -203,7 +245,12 @@ const getColorsByTheme = darkMode => {
     gradients = {
       lighterGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.6)],
       lightestGrey: [buildRgba('#1F222A', 0.8), buildRgba('#1F222A', 0.3)],
+      lightestGreyReverse: [
+        buildRgba('#1F222A', 0.1),
+        buildRgba('#1F222A', 0.8),
+      ],
       lightGrey: ['#1F222A', buildRgba('#1F222A', 0.8)],
+      lightGreyWhite: [buildRgba('#F0F2F5', 0.05), buildRgba('#FFFFFF', 0.01)],
       offWhite: ['#1F222A', '#1F222A'],
       rainbow: ['#FFB114', '#FF54BB', '#7EA4DE'],
       savings: ['#1F222A', '#1F222A'],
@@ -217,11 +264,23 @@ const getColorsByTheme = darkMode => {
       secondGradient: '#12131A80',
       thirdGradient: '#12131Aff',
     };
+
+    networkColors = {
+      arbitrum: '#96BEDC',
+      goerli: '#f6c343',
+      kovan: '#7057ff',
+      mainnet: buildRgba('#E0E8FF', 0.5),
+      optimism: '#FF4040',
+      polygon: '#8247E5',
+      rinkeby: '#f6c343',
+      ropsten: '#ff4a8d',
+    };
   }
 
   return {
     alpha: buildRgba,
     assetIcon,
+    avatarBackgrounds,
     avatarColor,
     brighten,
     getFallbackTextColor,
@@ -230,6 +289,7 @@ const getColorsByTheme = darkMode => {
     isColorDark,
     isColorLight,
     listHeaders,
+    networkColors,
     sendScreen,
     ...base,
     ...transparent,

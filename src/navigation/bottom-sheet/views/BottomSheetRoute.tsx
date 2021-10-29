@@ -7,7 +7,6 @@ import { View } from 'react-native';
 import type { ViewStyle } from 'react-native';
 import {
   CONTAINER_HEIGHT,
-  DEFAULT_ANIMATION_DURATION,
   DEFAULT_BACKDROP_COLOR,
   DEFAULT_BACKDROP_OPACITY,
   DEFAULT_HEIGHT,
@@ -33,11 +32,12 @@ const BottomSheetRoute = ({
   const {
     enableContentPanningGesture,
     enableHandlePanningGesture,
-    index = 1,
+    index = 0,
     snapPoints = ['100%'],
     backdropColor = DEFAULT_BACKDROP_COLOR,
     backdropOpacity = DEFAULT_BACKDROP_OPACITY,
     height = DEFAULT_HEIGHT,
+    offsetY = android ? 20 : 3,
   } = options || {};
   //#endregion
 
@@ -48,11 +48,6 @@ const BottomSheetRoute = ({
   removingRef.current = removing;
 
   // const
-  //#endregion
-
-  //#region variables
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const enhancedSpanPoints = useMemo(() => [0, ...snapPoints], [...snapPoints]);
   //#endregion
 
   //#region styles
@@ -115,7 +110,7 @@ const BottomSheetRoute = ({
 
   //#region callbacks
   const handleOnChange = useCallback((index: number) => {
-    if (index === 0) {
+    if (index === -1) {
       onDismiss(routeKey, removingRef.current);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -134,8 +129,8 @@ const BottomSheetRoute = ({
   const renderBackdropComponent = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
-        appearsOnIndex={1}
-        disappearsOnIndex={0}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
         opacity={backdropOpacity}
         style={backdropStyle}
         {...props}
@@ -147,20 +142,20 @@ const BottomSheetRoute = ({
   return (
     <BottomSheetNavigatorContext.Provider value={contextVariables}>
       <BottomSheet
-        activeOffsetY={[-3, 3]}
+        activeOffsetY={[-offsetY, offsetY]}
         animateOnMount
-        animationDuration={DEFAULT_ANIMATION_DURATION}
         backdropComponent={renderBackdropComponent}
         backgroundComponent={null}
         containerHeight={CONTAINER_HEIGHT}
         enableContentPanningGesture={enableContentPanningGesture}
         enableHandlePanningGesture={enableHandlePanningGesture}
+        enablePanDownToClose
         handleComponent={null}
         index={index}
         onChange={handleOnChange}
         ref={ref}
         simultaneousHandlers={[]}
-        snapPoints={enhancedSpanPoints}
+        snapPoints={snapPoints}
         waitFor={[]}
       >
         <View style={screenContainerStyle}>{render()}</View>

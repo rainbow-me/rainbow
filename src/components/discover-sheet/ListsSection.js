@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { findIndex, keys, times, toLower } from 'lodash';
 import React, {
   Fragment,
@@ -10,7 +11,6 @@ import { FlatList, LayoutAnimation } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { emitAssetRequest, emitChartsRequest } from '../../redux/explorer';
-import { fetchCoingeckoIds } from '../../redux/fallbackExplorer';
 import { DefaultTokenLists } from '../../references';
 import { ButtonPressAnimation } from '../animations';
 import { AssetListItemSkeleton } from '../asset-list';
@@ -32,13 +32,12 @@ import { ethereumUtils } from '@rainbow-me/utils';
 const COINGECKO_TRENDING_ENDPOINT =
   'https://api.coingecko.com/api/v3/search/trending';
 
-const fetchTrendingAddresses = async () => {
+const fetchTrendingAddresses = async coingeckoIds => {
   const trendingAddresses = [];
   try {
-    const coingeckoIds = await fetchCoingeckoIds();
     const request = await fetch(COINGECKO_TRENDING_ENDPOINT);
     const trending = await request.json();
-    const idsToLookUp = trending.coins.map(coin => coin.item.id);
+    const idsToLookUp = trending.coins.map(coin => coin.item?.id);
     keys(coingeckoIds).forEach(address => {
       if (idsToLookUp.indexOf(coingeckoIds[address]) !== -1) {
         trendingAddresses.push(toLower(address));
@@ -103,9 +102,14 @@ export default function ListSection() {
   const listRef = useRef(null);
   const initialized = useRef(false);
   const { allAssets } = useAccountAssets();
-  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
-    genericAssets,
-  }));
+  const genericAssets = useSelector(
+    ({ data: { genericAssets } }) => genericAssets
+  );
+
+  const coingeckoIds = useSelector(
+    ({ additionalAssetsData: { coingeckoIds } }) => coingeckoIds
+  );
+
   const { colors } = useTheme();
   const listData = useMemo(() => DefaultTokenLists[network], [network]);
 
@@ -124,7 +128,7 @@ export default function ListSection() {
   const trendingListHandler = useRef(null);
 
   const updateTrendingList = useCallback(async () => {
-    const tokens = await fetchTrendingAddresses();
+    const tokens = await fetchTrendingAddresses(coingeckoIds);
     clearList('trending');
 
     dispatch(emitAssetRequest(tokens));
@@ -135,7 +139,7 @@ export default function ListSection() {
       () => updateTrendingList(),
       TRENDING_LIST_UPDATE_INTERVAL
     );
-  }, [clearList, dispatch, updateList]);
+  }, [clearList, coingeckoIds, dispatch, updateList]);
 
   const handleSwitchList = useCallback(
     (id, index) => {
@@ -157,12 +161,12 @@ export default function ListSection() {
       ready && updateTrendingList();
       const currentListIndex = findIndex(
         lists,
-        list => list.id === selectedList
+        list => list?.id === selectedList
       );
       if (listData?.length > 0) {
         setTimeout(() => {
           if (lists[currentListIndex]) {
-            handleSwitchList(lists[currentListIndex].id, currentListIndex);
+            handleSwitchList(lists[currentListIndex]?.id, currentListIndex);
           }
         }, 300);
       }
@@ -189,17 +193,19 @@ export default function ListSection() {
     }
     let items = [];
     if (selectedList === 'favorites') {
-      items = favorites.map(
-        item =>
-          ethereumUtils.getAsset(allAssets, toLower(item.address)) ||
-          ethereumUtils.formatGenericAsset(
-            genericAssets[toLower(item.address)],
-            nativeCurrency
-          )
-      );
+      items = favorites
+        .map(
+          address =>
+            ethereumUtils.getAsset(allAssets, toLower(address)) ||
+            ethereumUtils.formatGenericAsset(
+              genericAssets[toLower(address)],
+              nativeCurrency
+            )
+        )
+        .sort((a, b) => (a.name > b.name ? 1 : -1));
     } else {
       if (!lists?.length) return [];
-      const currentList = lists.find(list => list.id === selectedList);
+      const currentList = lists.find(list => list?.id === selectedList);
       if (!currentList) {
         return [];
       }
@@ -227,6 +233,11 @@ export default function ListSection() {
 
   const handlePress = useCallback(
     item => {
+      analytics.track('Pressed List Item', {
+        category: 'discover',
+        selectedList,
+        symbol: item.symbol,
+      });
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: item,
         fromDiscover: true,
@@ -234,7 +245,7 @@ export default function ListSection() {
         type: 'token',
       });
     },
-    [navigate]
+    [navigate, selectedList]
   );
 
   const itemProps = useMemo(
@@ -248,16 +259,16 @@ export default function ListSection() {
   const renderItem = useCallback(
     ({ item: list, index }) => (
       <ListButton
-        key={`list-${list.id}`}
-        onPress={() => handleSwitchList(list.id, index)}
-        selected={selectedList === list.id}
-        testID={`list-${list.id}`}
+        key={`list-${list?.id}`}
+        onPress={() => handleSwitchList(list?.id, index)}
+        selected={selectedList === list?.id}
+        testID={`list-${list?.id}`}
       >
         <Row>
           <Emoji name={list.emoji} size="small" />
           <ListName
             color={
-              selectedList === list.id
+              selectedList === list?.id
                 ? colors.alpha(colors.blueGreyDark, 0.8)
                 : colors.alpha(colors.blueGreyDark, 0.5)
             }
@@ -292,7 +303,7 @@ export default function ListSection() {
             data={listData}
             getItemLayout={getItemLayout}
             horizontal
-            keyExtractor={item => item.id}
+            keyExtractor={item => item?.id}
             ref={listRef}
             renderItem={renderItem}
             scrollsToTop={false}

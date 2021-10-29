@@ -3,14 +3,13 @@ import React, { useCallback } from 'react';
 import { Linking, Share } from 'react-native';
 import styled from 'styled-components';
 import { buildUniqueTokenName } from '../../../helpers/assets';
-import { magicMemo } from '../../../utils';
 import Pill from '../../Pill';
 import { ContextCircleButton } from '../../context-menu';
 import { ColumnWithMargins, FlexItem, Row, RowWithMargins } from '../../layout';
 import { Text } from '../../text';
 import { useAccountProfile } from '@rainbow-me/hooks';
-import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import { padding } from '@rainbow-me/styles';
+import { buildRainbowUrl, magicMemo } from '@rainbow-me/utils';
 
 const contextButtonOptions = [
   'Share',
@@ -39,31 +38,19 @@ const HeadingColumn = styled(ColumnWithMargins).attrs({
 const UniqueTokenExpandedStateHeader = ({ asset }) => {
   const { accountAddress, accountENS } = useAccountProfile();
 
-  const buildRainbowUrl = useCallback(
-    asset => {
-      const address = accountENS || accountAddress;
-      const family = asset.familyName;
-      const assetId = asset.uniqueId;
-
-      const url = `${RAINBOW_PROFILES_BASE_URL}/${address}?family=${family}&nft=${assetId}`;
-      return url;
-    },
-    [accountAddress, accountENS]
-  );
-
   const handleActionSheetPress = useCallback(
     buttonIndex => {
       if (buttonIndex === 0) {
         Share.share({
           title: `Share ${buildUniqueTokenName(asset)} Info`,
-          url: buildRainbowUrl(asset),
+          url: buildRainbowUrl(asset, accountENS, accountAddress),
         });
-      } else if (buttonIndex === 2) {
+      } else if (buttonIndex === 1) {
         // View on OpenSea
         Linking.openURL(asset.permalink);
       }
     },
-    [asset, buildRainbowUrl]
+    [accountAddress, accountENS, asset]
   );
 
   const { colors } = useTheme();

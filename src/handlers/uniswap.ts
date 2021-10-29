@@ -412,19 +412,20 @@ export const getAllTokens = async () => {
   const { dispatch } = store;
   try {
     let dataEnd = false;
-    let lastId = '';
+    //setting an extremely safe upper limit for token volume
+    let lastUSDVolume = '1000000000000';
 
     while (!dataEnd) {
       let result = await uniswapClient.query({
         query: UNISWAP_ALL_TOKENS,
         variables: {
           first: UniswapPageSize,
-          lastId,
+          lastUSDVolume,
         },
       });
       const resultTokens = result?.data?.tokens || [];
       const lastItem = resultTokens[resultTokens.length - 1];
-      lastId = lastItem?.id ?? '';
+      lastUSDVolume = lastItem?.tradeVolumeUSD ?? '';
       dispatch(uniswapUpdateTokens(resultTokens));
       if (resultTokens.length < UniswapPageSize) {
         dispatch(uniswapLoadedAllTokens());

@@ -9,6 +9,7 @@ const NETWORK = 'network';
 const KEYCHAIN_INTEGRITY_STATE = 'keychainIntegrityState';
 const AUTH_TIMELOCK = 'authTimelock';
 const PIN_AUTH_ATTEMPTS_LEFT = 'pinAuthAttemptsLeft';
+const TRANSACTION_SIGNATURES = 'transactionSignatures';
 
 export const getKeychainIntegrityState = () =>
   getGlobal(KEYCHAIN_INTEGRITY_STATE, null);
@@ -47,3 +48,16 @@ export const getImageMetadata = () => getGlobal(IMAGE_METADATA, {});
 
 export const saveImageMetadata = imageMetadata =>
   saveGlobal(IMAGE_METADATA, imageMetadata);
+
+/**
+ * @desc save transaction signatures
+ * @param  {Object}   [transactionSignatures]
+ */
+export const saveTransactionSignatures = transactionSignatures =>
+  saveGlobal(TRANSACTION_SIGNATURES, transactionSignatures);
+
+/**
+ * @desc get transaction signatures
+ */
+export const getTransactionSignatures = () =>
+  getGlobal(TRANSACTION_SIGNATURES, {});

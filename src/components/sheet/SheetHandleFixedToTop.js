@@ -4,7 +4,7 @@ import { Centered } from '../layout';
 import SheetHandle, { HandleHeight } from './SheetHandle';
 import { padding } from '@rainbow-me/styles';
 
-const paddingBottom = 8;
+const paddingBottom = 6;
 const paddingTop = 6;
 
 export const SheetHandleFixedToTopHeight =

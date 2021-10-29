@@ -5,7 +5,7 @@ import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
-import { Column } from '../layout';
+import { Column, Row } from '../layout';
 import { SecretDisplaySection } from '../secret-display';
 import { SheetActionButton } from '../sheet';
 import { Nbsp, Text } from '../text';
@@ -24,7 +24,7 @@ const Content = styled(Column).attrs({
 })`
   flex-grow: 1;
   flex-shrink: 0;
-  padding-top: ${({ isTallPhone }) => (android ? 30 : isTallPhone ? 65 : 15)};
+  padding-top: ${({ isTallPhone }) => (android ? 30 : isTallPhone ? 45 : 25)};
 `;
 
 const Footer = styled(Column).attrs({
@@ -33,20 +33,19 @@ const Footer = styled(Column).attrs({
 })`
   ${padding(0, 15, 21)};
   width: 100%;
+  margin-bottom: ${android ? 30 : 0};
 `;
 
 const Masthead = styled(Column).attrs({
   align: 'center',
   justify: 'start',
-})`
-  padding-top: 18;
-`;
+})``;
 
 const MastheadDescription = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.6),
   lineHeight: 'looser',
-  size: 'large',
+  size: 'lmedium',
 }))`
   max-width: 291;
 `;
@@ -54,16 +53,23 @@ const MastheadDescription = styled(Text).attrs(({ theme: { colors } }) => ({
 const MastheadIcon = styled(Text).attrs({
   align: 'center',
   color: 'appleBlue',
-  size: 43,
-  weight: 'semibold',
+  size: 21,
+  weight: 'heavy',
 })``;
 
 const MastheadTitle = styled(Text).attrs({
   align: 'center',
-  size: 'big',
+  size: 'larger',
   weight: 'bold',
 })`
-  ${padding(15, 0, 12)};
+  ${padding(8)};
+`;
+
+const MastheadTitleRow = styled(Row).attrs({
+  align: 'center',
+  justify: 'start',
+})`
+  padding-top: 18;
 `;
 
 export default function BackupManualStep() {
@@ -79,13 +85,16 @@ export default function BackupManualStep() {
   const [secretLoaded, setSecretLoaded] = useState(false);
 
   const onComplete = useCallback(() => {
+    analytics.track(`Tapped "I've saved the secret"`, {
+      type,
+    });
     onManuallyBackupWalletId(walletId);
     analytics.track('Backup Complete', {
       category: 'backup',
       label: 'manual',
     });
     goBack();
-  }, [goBack, onManuallyBackupWalletId, walletId]);
+  }, [goBack, onManuallyBackupWalletId, type, walletId]);
 
   useEffect(() => {
     analytics.track('Manual Backup Step', {
@@ -97,8 +106,10 @@ export default function BackupManualStep() {
   return (
     <Fragment>
       <Masthead>
-        <MastheadIcon>􀉆</MastheadIcon>
-        <MastheadTitle>{lang.t('back_up.manual.label')}</MastheadTitle>
+        <MastheadTitleRow>
+          <MastheadIcon>􀉆</MastheadIcon>
+          <MastheadTitle>{lang.t('back_up.manual.label')}</MastheadTitle>
+        </MastheadTitleRow>
         <MastheadDescription>
           <MastheadDescription weight="semibold">
             {type === WalletTypes.privateKey

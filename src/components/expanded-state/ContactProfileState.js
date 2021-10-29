@@ -4,15 +4,20 @@ import { Keyboard } from 'react-native';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
-import { abbreviations, magicMemo } from '../../utils';
+import { abbreviations, magicMemo, profileUtils } from '../../utils';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { Button } from '../buttons';
 import { showDeleteContactActionSheet } from '../contacts';
 import CopyTooltip from '../copy-tooltip';
 import { Centered } from '../layout';
-import { Text, TruncatedAddress } from '../text';
+import { Text, TruncatedAddress, TruncatedENS } from '../text';
 import { ProfileAvatarButton, ProfileModal, ProfileNameInput } from './profile';
+import {
+  removeFirstEmojiFromString,
+  returnStringFirstEmoji,
+} from '@rainbow-me/helpers/emojiHandler';
+import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import { useAccountSettings, useContacts } from '@rainbow-me/hooks';
 import { margin, padding } from '@rainbow-me/styles';
 
@@ -31,16 +36,35 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs(
   width: 100%;
 `;
 
+const ENSAbbreviation = styled(TruncatedENS).attrs(({ theme: { colors } }) => ({
+  align: 'center',
+  color: colors.blueGreyDark,
+  size: 'lmedium',
+  truncationLength: 18,
+  weight: 'regular',
+}))`
+  ${margin(9, 0, 5)};
+  opacity: 0.6;
+  width: 100%;
+`;
+
 const Spacer = styled.View`
   height: 19;
 `;
 
-const SubmitButton = styled(Button).attrs(({ theme: { colors }, value }) => ({
-  backgroundColor: value.length > 0 ? colors.appleBlue : undefined,
-  disabled: !value.length > 0,
-  showShadow: true,
-  size: 'small',
-}))`
+const SubmitButton = styled(Button).attrs(
+  ({ theme: { colors }, value, color }) => ({
+    backgroundColor:
+      value.length > 0
+        ? typeof color === 'string'
+          ? color
+          : colors.avatarBackgrounds[color] || colors.appleBlue
+        : undefined,
+    disabled: !value.length > 0,
+    showShadow: true,
+    size: 'small',
+  })
+)`
   height: 43;
   width: 215;
 `;
@@ -56,15 +80,18 @@ const SubmitButtonLabel = styled(Text).attrs(({ value }) => ({
 const ContactProfileState = ({ address, color: colorProp, contact }) => {
   const { goBack } = useNavigation();
   const { onAddOrUpdateContacts, onRemoveContact } = useContacts();
-
   const [color, setColor] = useState(colorProp || 0);
-  const [value, setValue] = useState(contact?.nickname || '');
+  const [value, setValue] = useState(
+    removeFirstEmojiFromString(contact?.nickname || '')
+  );
+  const [emoji, setEmoji] = useState(returnStringFirstEmoji(contact?.nickname));
   const inputRef = useRef(null);
   const { network } = useAccountSettings();
 
   const handleAddContact = useCallback(() => {
+    const nickname = (emoji ? `${emoji} ${value}` : value).trim();
     if (value.length > 0 || color !== colorProp) {
-      onAddOrUpdateContacts(address, value, color, network);
+      onAddOrUpdateContacts(address, nickname, color, network);
       goBack();
     }
     android && Keyboard.dismiss();
@@ -72,6 +99,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
     address,
     color,
     colorProp,
+    emoji,
     goBack,
     network,
     onAddOrUpdateContacts,
@@ -96,16 +124,25 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
 
   const { isDarkMode, colors } = useTheme();
 
+  const handleChangeAvatar = useCallback(() => {
+    const prevAvatarIndex = profileUtils.avatars.findIndex(
+      avatar => avatar.emoji === emoji
+    );
+    const nextAvatarIndex = (prevAvatarIndex + 1) % profileUtils.avatars.length;
+    setColor(profileUtils.avatars[nextAvatarIndex]?.colorIndex);
+    setEmoji(profileUtils.avatars[nextAvatarIndex]?.emoji);
+  }, [emoji, setColor]);
+
   return (
     <ProfileModal onPressBackdrop={handleAddContact}>
       <Centered css={padding(24, 25)} direction="column">
         <ProfileAvatarButton
+          changeAvatar={handleChangeAvatar}
           color={color}
           marginBottom={0}
           radiusAndroid={32}
-          setColor={setColor}
           testID="contact-profile-avatar-button"
-          value={value}
+          value={emoji || value}
         />
         <Spacer />
         <ProfileNameInput
@@ -113,7 +150,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           onSubmitEditing={handleAddContact}
           placeholder="Name"
           ref={inputRef}
-          selectionColor={colors.avatarColor[color]}
+          selectionColor={colors.avatarBackgrounds[color]}
           testID="contact-profile-name-input"
           value={value}
         />
@@ -122,12 +159,17 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           textToCopy={address}
           tooltipText={lang.t('wallet.settings.copy_address')}
         >
-          <AddressAbbreviation address={address} />
+          {isENSAddressFormat(address) ? (
+            <ENSAbbreviation ens={address} />
+          ) : (
+            <AddressAbbreviation address={address} />
+          )}
         </CopyTooltip>
         <Centered paddingVertical={19} width={93}>
           <Divider inset={false} />
         </Centered>
         <SubmitButton
+          color={color}
           isDarkMode={isDarkMode}
           onPress={handleAddContact}
           testID="contact-profile-add-button"

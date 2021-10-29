@@ -29,6 +29,7 @@ import {
   privateKeyKey,
   seedPhraseKey,
 } from '../utils/keychainConstants';
+import { addressHashedColorIndex } from '../utils/profileUtils';
 import { updateWebDataEnabled } from './showcaseTokens';
 import { lightModeThemeColors } from '@rainbow-me/styles';
 
@@ -109,6 +110,7 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     });
 
     dispatch(fetchWalletNames());
+    return wallets;
   } catch (error) {
     logger.sentry('Exception during walletsLoadState');
     captureException(error);
@@ -188,17 +190,19 @@ export const createAccountForWallet = (id, color, name) => async (
   );
   const newIndex = index + 1;
   const account = await generateAccount(id, newIndex);
+  const walletColorIndex =
+    color !== null ? color : addressHashedColorIndex(account.address);
   newWallets[id].addresses.push({
     address: account.address,
     avatar: null,
-    color,
+    color: walletColorIndex,
     index: newIndex,
     label: name,
     visible: true,
   });
 
   setPreference(PreferenceActionType.init, 'profile', account.address, {
-    accountColor: lightModeThemeColors.avatarColor[color],
+    accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
   });
 
   await dispatch(updateWebDataEnabled(true, account.address));

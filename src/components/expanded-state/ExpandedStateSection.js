@@ -7,14 +7,20 @@ import { padding } from '@rainbow-me/styles';
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
 })`
-  ${padding(android ? 10 : 19, 19, android ? 12 : 24)};
+  ${padding(android ? 19 : 36, 19, 24)};
+  padding-top: ${({ isL2, isNft }) => (isL2 || isNft ? 24 : android ? 19 : 36)};
 `;
 
-export default function ExpandedStateSection({ children, title, ...props }) {
+export default function ExpandedStateSection({
+  children,
+  isNft,
+  title,
+  ...props
+}) {
   const { colors } = useTheme();
   return (
-    <Container {...props}>
-      <Text color={colors.dark} size="larger" weight="bold">
+    <Container isNft={isNft} {...props}>
+      <Text color={colors.dark} size="larger" weight="heavy">
         {title}
       </Text>
       {typeof children === 'string' ? (

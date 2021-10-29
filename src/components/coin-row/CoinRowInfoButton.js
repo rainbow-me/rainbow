@@ -1,4 +1,7 @@
+import { startCase } from 'lodash';
 import React from 'react';
+import { View } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components';
@@ -8,7 +11,6 @@ import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
 import { useClipboard } from '@rainbow-me/hooks';
 import { fonts, fontWithWidth, padding } from '@rainbow-me/styles';
-
 import {
   abbreviations,
   ethereumUtils,
@@ -29,10 +31,12 @@ const InfoButton = styled(Centered)`
   width: 68px;
 `;
 
-const Circle = styled(RadialGradient).attrs(({ theme: { colors } }) => ({
-  center: [0, 15],
-  colors: colors.gradients.lightestGrey,
-}))`
+const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
+  ({ theme: { colors } }) => ({
+    center: [0, 15],
+    colors: colors.gradients.lightestGrey,
+  })
+)`
   border-radius: 15px;
   height: 30px;
   overflow: hidden;
@@ -54,8 +58,8 @@ const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
 `;
 
 const CoinRowActionsEnum = {
+  blockExplorer: 'blockExplorer',
   copyAddress: 'copyAddress',
-  etherscan: 'etherscan',
 };
 
 const CoinRowActions = {
@@ -67,21 +71,20 @@ const CoinRowActions = {
       iconValue: 'doc.on.doc',
     },
   },
-  [CoinRowActionsEnum.etherscan]: {
-    actionKey: CoinRowActionsEnum.etherscan,
-    actionTitle: 'View on Etherscan',
+};
+
+const buildBlockExplorerAction = type => {
+  const blockExplorerText =
+    'View on ' + startCase(ethereumUtils.getBlockExplorer(type));
+  return {
+    actionKey: CoinRowActionsEnum.blockExplorer,
+    actionTitle: blockExplorerText,
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'safari',
     },
-  },
+  };
 };
-
-const androidContractActions = [
-  'Copy Contract Address',
-  'View on Etherscan',
-  'Cancel',
-];
 
 const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
   const { setClipboard } = useClipboard();
@@ -95,6 +98,15 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
   );
 
   const onPressAndroid = useCallback(() => {
+    const blockExplorerText = `View on ' ${startCase(
+      ethereumUtils.getBlockExplorer(item?.type)
+    )}`;
+    const androidContractActions = [
+      'Copy Contract Address',
+      blockExplorerText,
+      'Cancel',
+    ];
+
     showActionSheetWithOptions(
       {
         cancelButtonIndex: 2,
@@ -107,16 +119,17 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
           handleCopyContractAddress(item?.address);
         }
         if (idx === 1) {
-          ethereumUtils.openTokenEtherscanURL(item?.address);
+          ethereumUtils.openTokenEtherscanURL(item?.uniqueId, item?.type);
         }
       }
     );
   }, [item, handleCopyContractAddress]);
 
-  const menuConfig = useMemo(
-    () => ({
+  const menuConfig = useMemo(() => {
+    const blockExplorerAction = buildBlockExplorerAction(item?.type);
+    return {
       menuItems: [
-        CoinRowActions[CoinRowActionsEnum.etherscan],
+        blockExplorerAction,
         {
           ...CoinRowActions[CoinRowActionsEnum.copyAddress],
           discoverabilityTitle: abbreviations.formatAddressForDisplay(
@@ -125,16 +138,15 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
         },
       ],
       menuTitle: `${item?.name} (${item?.symbol})`,
-    }),
-    [item]
-  );
+    };
+  }, [item?.address, item?.name, item?.symbol, item?.type]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === CoinRowActionsEnum.copyAddress) {
         handleCopyContractAddress(item?.address);
-      } else if (actionKey === CoinRowActionsEnum.etherscan) {
-        ethereumUtils.openTokenEtherscanURL(item?.address);
+      } else if (actionKey === CoinRowActionsEnum.blockExplorer) {
+        ethereumUtils.openTokenEtherscanURL(item?.uniqueId, item?.type);
       }
     },
     [item, handleCopyContractAddress]

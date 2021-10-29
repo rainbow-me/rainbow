@@ -21,6 +21,7 @@ import {
 } from './swap-details';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
+  useAccountSettings,
   useBooleanState,
   useDimensions,
   useHeight,
@@ -90,6 +91,7 @@ export default function SwapDetailsState({
   confirmButtonProps,
   restoreFocusOnSwapModal,
 }) {
+  const { network } = useAccountSettings();
   const { setParams } = useNavigation();
   const { params: { longFormHeight } = {} } = useRoute();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
@@ -212,7 +214,7 @@ export default function SwapDetailsState({
         <Footer onLayout={setFooterHeight}>
           <ConfirmExchangeButton
             {...confirmButtonProps}
-            testID="swap-details-confirm"
+            testID="swap-details-confirm-button"
           />
           <Column
             justify="center"
@@ -220,6 +222,7 @@ export default function SwapDetailsState({
             width={deviceWidth - 10}
           >
             <GasSpeedButton
+              currentNetwork={network}
               onCustomGasBlur={hideKeyboard}
               onCustomGasFocus={showKeyboard}
               testID="swap-details-gas"

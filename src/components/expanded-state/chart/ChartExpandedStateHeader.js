@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { useCallbackOne } from 'use-memo-one';
-import { CoinIconGroup } from '../../coin-icon';
+import { CoinIcon, CoinIconGroup } from '../../coin-icon';
 import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import ChartAddToListButton from './ChartAddToListButton';
 import ChartContextButton from './ChartContextButton';
@@ -100,7 +100,12 @@ export default function ChartExpandedStateHeader({
           testID ? `${testID}-expanded-state-header` : 'expanded-state-header'
         }
       >
-        <CoinIconGroup tokens={tokens} />
+        {tokens.length === 1 ? (
+          <CoinIcon badgeXPosition={-7} badgeYPosition={0} {...asset} />
+        ) : (
+          <CoinIconGroup tokens={tokens} />
+        )}
+
         <Row>
           <ChartAddToListButton asset={asset} />
           <ChartContextButton asset={asset} color={color} />

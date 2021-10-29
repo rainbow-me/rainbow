@@ -47,6 +47,7 @@ const { RainbowRequestReview, RNReview } = NativeModules;
 
 export const SettingsExternalURLs = {
   rainbowHomepage: 'https://rainbow.me',
+  rainbowLearn: 'https://rainbow.me/learn',
   review:
     'itms-apps://itunes.apple.com/us/app/appName/id1457119021?mt=8&action=write-review',
   twitterDeepLink: 'twitter://user?screen_name=rainbowdotme',
@@ -61,14 +62,15 @@ const CheckmarkIcon = styled(Icon).attrs({
       colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
 `;
 
-const contentContainerStyle = { flex: 1 };
-const Container = styled(ScrollView).attrs({
-  contentContainerStyle,
-  scrollEventThrottle: 32,
-})`
+const Container = styled(Column).attrs({})`
   ${position.cover};
   background-color: ${({ backgroundColor }) => backgroundColor};
 `;
+
+const scrollContainerStyle = { flex: 1 };
+const ScrollContainer = styled(ScrollView).attrs({
+  scrollEventThrottle: 32,
+})``;
 
 // ⚠️ Beware: magic numbers lol
 const SettingIcon = styled(Image)`
@@ -117,7 +119,7 @@ const checkAllWallets = wallets => {
     ) {
       areBackedUp = false;
     }
-    if (!wallets[key].type !== WalletTypes.readOnly) {
+    if (wallets[key].type !== WalletTypes.readOnly) {
       canBeBackedUp = true;
     }
   });
@@ -138,7 +140,7 @@ export default function SettingsSection({
   const isReviewAvailable = false;
   const { wallets, isReadOnlyWallet } = useWallets();
   const { language, nativeCurrency, network } = useAccountSettings();
-  const { isTinyPhone } = useDimensions();
+  const { isSmallPhone } = useDimensions();
 
   const { colors, isDarkMode, setTheme, colorScheme } = useTheme();
 
@@ -172,6 +174,11 @@ export default function SettingsSection({
     );
   }, []);
 
+  const onPressLearn = useCallback(
+    () => Linking.openURL(SettingsExternalURLs.rainbowLearn),
+    []
+  );
+
   const { allBackedUp, areBackedUp, canBeBackedUp } = useMemo(
     () => checkAllWallets(wallets),
     [wallets]
@@ -192,148 +199,164 @@ export default function SettingsSection({
   }, [setTheme, colorScheme]);
 
   return (
-    <Container backgroundColor={colors.white} scrollEnabled={isTinyPhone}>
-      <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
-        {canBeBackedUp && (
-          <ListItem
-            icon={
-              <SettingIcon source={isDarkMode ? BackupIconDark : BackupIcon} />
-            }
-            label={lang.t('settings.backup')}
-            onPress={onPressBackup}
-            onPressIcloudBackup={onPressIcloudBackup}
-            onPressShowSecret={onPressShowSecret}
-            testID="backup-section"
-          >
-            <ListItemArrowGroup>
-              {areBackedUp ? (
-                <CheckmarkIcon
-                  color={backupStatusColor}
-                  isDarkMode={isDarkMode}
+    <Container backgroundColor={colors.white}>
+      <ScrollContainer
+        contentContainerStyle={!isSmallPhone && scrollContainerStyle}
+        scrollEnabled={isSmallPhone}
+      >
+        <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
+          {canBeBackedUp && (
+            <ListItem
+              icon={
+                <SettingIcon
+                  source={isDarkMode ? BackupIconDark : BackupIcon}
                 />
-              ) : (
-                <WarningIcon />
-              )}
-            </ListItemArrowGroup>
-          </ListItem>
-        )}
-        <ListItem
-          icon={
-            <SettingIcon
-              source={isDarkMode ? CurrencyIconDark : CurrencyIcon}
-            />
-          }
-          label={lang.t('settings.currency')}
-          onPress={onPressCurrency}
-          testID="currency-section"
-        >
-          <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
-        </ListItem>
-        <ListItem
-          icon={
-            <SettingIcon source={isDarkMode ? NetworkIconDark : NetworkIcon} />
-          }
-          label={lang.t('settings.network')}
-          onPress={onPressNetwork}
-          testID="network-section"
-        >
-          <ListItemArrowGroup>
-            {networkInfo?.[network]?.name}
-          </ListItemArrowGroup>
-        </ListItem>
-        <ListItem
-          icon={
-            <SettingIcon
-              source={isDarkMode ? DarkModeIconDark : DarkModeIcon}
-            />
-          }
-          label={lang.t('settings.theme')}
-          onPress={toggleTheme}
-          testID={`darkmode-section-${isDarkMode}`}
-        >
-          <Column align="end" flex="1" justify="end">
-            <Text
-              color={colors.alpha(colors.blueGreyDark, 0.6)}
-              size="large"
-              weight="medium"
+              }
+              label={lang.t('settings.backup')}
+              onPress={onPressBackup}
+              onPressIcloudBackup={onPressIcloudBackup}
+              onPressShowSecret={onPressShowSecret}
+              testID="backup-section"
             >
-              {capitalizeFirstLetter(colorScheme)}
-            </Text>
-          </Column>
-        </ListItem>
-        {!isReadOnlyWallet && (
+              <ListItemArrowGroup>
+                {areBackedUp ? (
+                  <CheckmarkIcon
+                    color={backupStatusColor}
+                    isDarkMode={isDarkMode}
+                  />
+                ) : (
+                  <WarningIcon />
+                )}
+              </ListItemArrowGroup>
+            </ListItem>
+          )}
           <ListItem
             icon={
               <SettingIcon
-                source={isDarkMode ? PrivacyIconDark : PrivacyIcon}
+                source={isDarkMode ? CurrencyIconDark : CurrencyIcon}
               />
             }
-            label={lang.t('settings.privacy')}
-            onPress={onPressPrivacy}
-            testID="privacy"
+            label={lang.t('settings.currency')}
+            onPress={onPressCurrency}
+            testID="currency-section"
           >
-            <ListItemArrowGroup />
+            <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
           </ListItem>
-        )}
-        <ListItem
-          icon={
-            <SettingIcon
-              source={isDarkMode ? LanguageIconDark : LanguageIcon}
-            />
-          }
-          label="Language"
+          <ListItem
+            icon={
+              <SettingIcon
+                source={isDarkMode ? NetworkIconDark : NetworkIcon}
+              />
+            }
+            label={lang.t('settings.network')}
+            onPress={onPressNetwork}
+            testID="network-section"
+          >
+            <ListItemArrowGroup>
+              {networkInfo?.[network]?.name}
+            </ListItemArrowGroup>
+          </ListItem>
+          <ListItem
+            icon={
+              <SettingIcon
+                source={isDarkMode ? DarkModeIconDark : DarkModeIcon}
+              />
+            }
+            label={lang.t('settings.theme')}
+            onPress={toggleTheme}
+            testID={`darkmode-section-${isDarkMode}`}
+          >
+            <Column align="end" flex="1" justify="end">
+              <Text
+                color={colors.alpha(colors.blueGreyDark, 0.6)}
+                size="large"
+                weight="medium"
+              >
+                {capitalizeFirstLetter(colorScheme)}
+              </Text>
+            </Column>
+          </ListItem>
+          {!isReadOnlyWallet && (
+            <ListItem
+              icon={
+                <SettingIcon
+                  source={isDarkMode ? PrivacyIconDark : PrivacyIcon}
+                />
+              }
+              label={lang.t('settings.privacy')}
+              onPress={onPressPrivacy}
+              testID="privacy"
+            >
+              <ListItemArrowGroup />
+            </ListItem>
+          )}
+          <ListItem
+        icon={
+          <SettingIcon source={darkMode ? LanguageIconDark : LanguageIcon} />}
+   
+          label={lang.t('settings.language')}
+
           onPress={onPressLanguage}
-        >
+          >
           <ListItemArrowGroup>
-            {supportedLanguages[language] || ''}
-          </ListItemArrowGroup>
-        </ListItem>
-      </ColumnWithDividers>
-      <ListFooter />
-      <ColumnWithDividers dividerRenderer={ListItemDivider}>
-        <ListItem
-          icon={<Emoji name="rainbow" />}
-          label={lang.t('settings.share')}
-          onPress={onPressShare}
-          testID="share-section"
-          value={SettingsExternalURLs.rainbowHomepage}
-        />
-        <ListItem
-          icon={<Emoji name="bird" />}
-          label={lang.t('settings.follow_twitter')}
-          onPress={onPressTwitter}
-          testID="twitter-section"
-          value={SettingsExternalURLs.twitter}
-        />
-        <ListItem
-          icon={<Emoji name={ios ? 'speech_balloon' : 'lady_beetle'} />}
-          label={lang.t('settings.feedback')}
-          onPress={onSendFeedback}
-          testID="feedback-section"
-        />
-        {isReviewAvailable && (
+          {supportedLanguages[language] || ''}
+        </ListItemArrowGroup>
+          </ListItem>
+        </ColumnWithDividers>
+        <ListFooter />
+        <ColumnWithDividers dividerRenderer={ListItemDivider}>
           <ListItem
-            icon={<Emoji name="red_heart" />}
-            label={lang.t('settings.review')}
-            onPress={onPressReview}
-            testID="review-section"
+            icon={<Emoji name="rainbow" />}
+            label="Share Rainbow"
+            onPress={onPressShare}
+            testID="share-section"
+            value={SettingsExternalURLs.rainbowHomepage}
           />
+          <ListItem
+            icon={<Emoji name="brain" />}
+            label={lang.t('settings.learn')}
+            onPress={onPressLearn}
+            testID="learn-section"
+            value={SettingsExternalURLs.rainbowLearn}
+          />
+          <ListItem
+            icon={<Emoji name="bird" />}
+            label="Follow Us on Twitter"
+            onPress={onPressTwitter}
+            testID="twitter-section"
+            value={SettingsExternalURLs.twitter}
+          />
+          <ListItem
+            icon={<Emoji name={ios ? 'speech_balloon' : 'lady_beetle'} />}
+            label={lang.t('settings.feedback')}
+            onPress={onSendFeedback}
+            testID="feedback-section"
+          />
+          {isReviewAvailable && (
+            <ListItem
+              icon={<Emoji name="red_heart" />}
+              label={lang.t('settings.review')}
+              onPress={onPressReview}
+              testID="review-section"
+            />
+          )}
+        </ColumnWithDividers>
+        {IS_DEV && (
+          <Fragment>
+            <ListFooter height={10} />
+            <ListItem
+              icon={<Emoji name="construction" />}
+              label={lang.t('settings.developer')}
+              onPress={onPressDev}
+              testID="developer-section"
+            />
+          </Fragment>
         )}
-      </ColumnWithDividers>
-      {IS_DEV && (
-        <Fragment>
-          <ListFooter height={10} />
-          <ListItem
-            icon={<Emoji name="construction" />}
-            label={lang.t('settings.dev')}
-            onPress={onPressDev}
-            testID="developer-section"
-          />
-        </Fragment>
-      )}
-      <VersionStampContainer>
-        <AppVersionStamp />
-      </VersionStampContainer>
+
+        <VersionStampContainer>
+          <AppVersionStamp />
+        </VersionStampContainer>
+      </ScrollContainer>
     </Container>
   );
 }

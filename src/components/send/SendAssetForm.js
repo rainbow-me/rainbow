@@ -1,44 +1,47 @@
 import React, { Fragment, useMemo } from 'react';
 import { KeyboardArea } from 'react-native-keyboard-area';
+import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
+import { ButtonPressAnimation } from '../animations';
 import { SendCoinRow } from '../coin-row';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
 import SendSavingsCoinRow from '../coin-row/SendSavingsCoinRow';
-import { Icon } from '../icons';
 import { Column } from '../layout';
+import { Text } from '../text';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
 import { AssetTypes } from '@rainbow-me/entities';
-import { useAsset, useDimensions } from '@rainbow-me/hooks';
+import { useColorForAsset, useDimensions } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const AssetRowShadow = colors => [
-  [0, 1, 0, colors.shadow, 0.01],
-  [0, 4, 12, colors.shadow, 0.04],
-  [0, 8, 23, colors.shadow, 0.05],
+  [0, 10, 30, colors.shadow, 0.12],
+  [0, 5, 15, colors.shadow, 0.06],
 ];
+
+const AssetRowGradient = styled(LinearGradient).attrs(
+  ({ theme: { colors } }) => ({
+    colors: colors.gradients.offWhite,
+    end: { x: 0.5, y: 1 },
+    start: { x: 0.5, y: 0 },
+  })
+)`
+  ${position.cover};
+`;
 
 const Container = styled(Column)`
   ${position.size('100%')};
   background-color: ${({ theme: { colors } }) => colors.white};
   flex: 1;
-  overflow: hidden;
 `;
 
 const FormContainer = styled(Column).attrs({
   align: 'end',
   justify: 'space-between',
 })`
-  ${({ isNft, isTinyPhone }) =>
-    isNft
-      ? padding(22, 0, 0)
-      : isTinyPhone
-      ? padding(6, 15, 0)
-      : padding(19, 15)};
-  background-color: ${({ theme: { colors } }) => colors.lighterGrey};
+  ${({ isNft }) => (isNft ? padding(0) : padding(0, 19))};
   flex: 1;
-  margin-bottom: ${android ? 0 : ({ isTinyPhone }) => (isTinyPhone ? -19 : 0)};
   width: 100%;
 `;
 
@@ -53,7 +56,6 @@ export default function SendAssetForm({
   nativeCurrency,
   onChangeAssetAmount,
   onChangeNativeAmount,
-  onFocus,
   onResetAssetSelection,
   selected,
   sendMaxBalance,
@@ -61,11 +63,10 @@ export default function SendAssetForm({
   ...props
 }) {
   const { isTinyPhone, width: deviceWidth } = useDimensions();
+  const [showNativeValue, setShowNativeValue] = useState(true);
 
-  const selectedAsset = useAsset(selected);
-
-  const isNft = selectedAsset.type === AssetTypes.nft;
-  const isSavings = selectedAsset.type === AssetTypes.compound;
+  const isNft = selected.type === AssetTypes.nft;
+  const isSavings = selected.type === AssetTypes.compound;
 
   const AssetRowElement = isNft
     ? CollectiblesSendRow
@@ -73,31 +74,66 @@ export default function SendAssetForm({
     ? SendSavingsCoinRow
     : SendCoinRow;
 
+  const onFocusAssetInput = useCallback(() => {
+    setShowNativeValue(false);
+  }, []);
+
+  const onFocusNativeInput = useCallback(() => {
+    setShowNativeValue(true);
+  }, []);
+
   const { colors } = useTheme();
+
+  const address = selected?.mainnet_address || selected?.address;
+
+  let colorForAsset = useColorForAsset({ address });
+  if (isNft) {
+    colorForAsset = colors.appleBlue;
+  }
+
+  const noShadows = [[0, 0, 0, colors.transparent, 0]];
   const shadows = useMemo(() => AssetRowShadow(colors), [colors]);
 
   return (
     <Container>
-      <ShadowStack
-        backgroundColor={colors.white}
-        borderRadius={0}
-        height={SendCoinRow.selectedHeight}
-        shadows={shadows}
-        width={deviceWidth}
+      <ButtonPressAnimation
+        onPress={onResetAssetSelection}
+        overflowMargin={30}
+        scaleTo={0.925}
       >
-        <AssetRowElement
-          item={selectedAsset}
-          onPress={onResetAssetSelection}
-          selected
-          testID="send-asset-form"
+        <ShadowStack
+          alignSelf="center"
+          backgroundColor={colors.white}
+          borderRadius={20}
+          height={SendCoinRow.selectedHeight}
+          overflow={isTinyPhone ? 'visible' : 'hidden'}
+          shadows={isTinyPhone ? noShadows : shadows}
+          width={deviceWidth - 38}
         >
-          <Icon name="doubleCaret" />
-        </AssetRowElement>
-      </ShadowStack>
-      <FormContainer isNft={isNft} isTinyPhone={isTinyPhone}>
+          {isTinyPhone ? null : <AssetRowGradient />}
+          <AssetRowElement
+            badgeYPosition={5}
+            disablePressAnimation
+            item={selected}
+            selected
+            showNativeValue={showNativeValue}
+            testID="send-asset-form"
+          >
+            <Text
+              align="center"
+              color={colorForAsset || colors.dark}
+              size="large"
+              weight="heavy"
+            >
+              􀁴
+            </Text>
+          </AssetRowElement>
+        </ShadowStack>
+      </ButtonPressAnimation>
+      <FormContainer isNft={isNft}>
         {isNft ? (
           <SendAssetFormCollectible
-            asset={selectedAsset}
+            asset={selected}
             buttonRenderer={buttonRenderer}
             txSpeedRenderer={txSpeedRenderer}
           />
@@ -107,12 +143,14 @@ export default function SendAssetForm({
               {...props}
               assetAmount={assetAmount}
               buttonRenderer={buttonRenderer}
+              colorForAsset={colorForAsset}
               nativeAmount={nativeAmount}
               nativeCurrency={nativeCurrency}
               onChangeAssetAmount={onChangeAssetAmount}
               onChangeNativeAmount={onChangeNativeAmount}
-              onFocus={onFocus}
-              selected={selectedAsset}
+              onFocusAssetInput={onFocusAssetInput}
+              onFocusNativeInput={onFocusNativeInput}
+              selected={selected}
               sendMaxBalance={sendMaxBalance}
               txSpeedRenderer={txSpeedRenderer}
             />

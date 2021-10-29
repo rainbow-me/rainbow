@@ -3,7 +3,7 @@ import { processColor, requireNativeComponent, View } from 'react-native';
 import { createNativeWrapper } from 'react-native-gesture-handler';
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import Animated, {
-  NewEasing as Easing,
+  Easing,
   runOnJS,
   useAnimatedGestureHandler,
   useAnimatedStyle,

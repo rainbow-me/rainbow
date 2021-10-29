@@ -1,5 +1,7 @@
 import analytics from '@segment/analytics-react-native';
+import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
+import qs from 'qs';
 import { useCallback, useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { PERMISSIONS, request } from 'react-native-permissions';
@@ -13,7 +15,7 @@ import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import { Navigation } from '@rainbow-me/navigation';
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { addressUtils, haptics } from '@rainbow-me/utils';
+import { addressUtils, ethereumUtils, haptics } from '@rainbow-me/utils';
 import logger from 'logger';
 
 function useScannerState(enabled) {
@@ -39,12 +41,16 @@ function useScannerState(enabled) {
 
   useEffect(() => {
     if (enabled && !wasEnabled && ios) {
-      request(PERMISSIONS.IOS.CAMERA).then(permission => {
-        const result = permission === 'granted';
-        if (isCameraAuthorized !== result) {
-          setIsCameraAuthorized(result);
-        }
-      });
+      request(PERMISSIONS.IOS.CAMERA)
+        .then(permission => {
+          const result = permission === 'granted';
+          if (isCameraAuthorized !== result) {
+            setIsCameraAuthorized(result);
+          }
+        })
+        .catch(e => {
+          logger.log('ERROR REQUESTING CAM PERMISSION', e);
+        });
 
       if (!isScanningEnabled) {
         enableScanning();
@@ -77,6 +83,10 @@ export default function useScanner(enabled) {
     isScanningEnabled,
   } = useScannerState(enabled);
 
+  const handleScanEthereumUrl = useCallback(data => {
+    ethereumUtils.parseEthereumUrl(data);
+  }, []);
+
   const handleScanAddress = useCallback(
     address => {
       haptics.notificationSuccess();
@@ -85,9 +95,11 @@ export default function useScanner(enabled) {
       // First navigate to wallet screen
       navigate(Routes.WALLET_SCREEN);
 
-      // And then navigate to Send sheet
-      Navigation.handleAction(Routes.SHOWCASE_SHEET, {
-        address: address,
+      // And then navigate to Showcase sheet
+      InteractionManager.runAfterInteractions(() => {
+        Navigation.handleAction(Routes.SHOWCASE_SHEET, {
+          address,
+        });
       });
 
       setTimeout(enableScanning, 2500);
@@ -105,8 +117,12 @@ export default function useScanner(enabled) {
       if (checkIsValidAddressOrDomain(addressOrENS)) {
         // First navigate to wallet screen
         navigate(Routes.WALLET_SCREEN);
-        Navigation.handleAction(Routes.SHOWCASE_SHEET, {
-          address: addressOrENS,
+
+        // And then navigate to Showcase sheet
+        InteractionManager.runAfterInteractions(() => {
+          Navigation.handleAction(Routes.SHOWCASE_SHEET, {
+            address: addressOrENS,
+          });
         });
       }
       setTimeout(enableScanning, 2500);
@@ -149,9 +165,27 @@ export default function useScanner(enabled) {
     async ({ data }) => {
       if (!data || !isScanningEnabled) return null;
       disableScanning();
+      // EIP 681 / 831
+      if (data.startsWith('ethereum:')) {
+        return handleScanEthereumUrl(data);
+      }
       const address = await addressUtils.getEthereumAddressFromQRCodeData(data);
-      if (address) return handleScanAddress(address);
+      // Ethereum address (no ethereum: prefix)
+      if (data.startsWith('0x') && isValidAddress(address)) {
+        return handleScanAddress(address);
+      }
+      // Walletconnect QR Code
       if (data.startsWith('wc:')) return handleScanWalletConnect(data);
+      // Walletconnect via universal link
+      const urlObj = new URL(data);
+      if (
+        urlObj?.protocol === 'https:' &&
+        urlObj?.pathname?.split('/')?.[1] === 'wc'
+      ) {
+        const { uri } = qs.parse(urlObj.query.substring(1));
+        return handleScanWalletConnect(uri);
+      }
+      // Rainbow profile QR code
       if (data.startsWith(RAINBOW_PROFILES_BASE_URL)) {
         return handleScanRainbowProfile(data);
       }
@@ -160,10 +194,11 @@ export default function useScanner(enabled) {
     [
       isScanningEnabled,
       disableScanning,
-      handleScanAddress,
       handleScanWalletConnect,
-      handleScanRainbowProfile,
       handleScanInvalid,
+      handleScanEthereumUrl,
+      handleScanAddress,
+      handleScanRainbowProfile,
     ]
   );
 

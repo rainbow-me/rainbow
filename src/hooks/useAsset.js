@@ -10,7 +10,7 @@ export default function useAsset(asset) {
   const genericAssets = useSelector(
     ({ data: { genericAssets } }) => genericAssets
   );
-  const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
+  const uniswapAssetsInWallet = useUniswapAssetsInWallet();
 
   return useMemo(() => {
     if (!asset) return null;
@@ -19,14 +19,17 @@ export default function useAsset(asset) {
     if (asset.type === AssetTypes.token) {
       const uniswapAsset = find(
         uniswapAssetsInWallet,
-        matchesProperty('address', asset.address)
+        matchesProperty('address', asset.mainnet_address || asset.address)
       );
 
       matched = uniswapAsset
         ? uniswapAsset
-        : find(allAssets, matchesProperty('address', asset.address));
+        : find(
+            allAssets,
+            matchesProperty('address', asset.mainnet_address || asset.address)
+          );
       if (!matched) {
-        matched = genericAssets?.[asset.address];
+        matched = genericAssets?.[asset.mainnet_address || asset.address];
       }
     } else if (asset.type === AssetTypes.nft) {
       matched = find(collectibles, matchesProperty('uniqueId', asset.uniqueId));

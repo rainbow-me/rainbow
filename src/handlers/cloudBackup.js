@@ -41,6 +41,16 @@ export async function deleteAllBackups() {
   );
 }
 
+export async function fetchAllBackups() {
+  if (android) {
+    await RNCloudFs.loginIfNeeded();
+  }
+  return RNCloudFs.listFiles({
+    scope: 'hidden',
+    targetPath: REMOTE_BACKUP_WALLET_DIR,
+  });
+}
+
 export async function encryptAndSaveDataToCloud(data, password, filename) {
   // Encrypt the data
   try {
@@ -100,6 +110,13 @@ function getICloudDocument(filename) {
 
 function getGoogleDriveDocument(id) {
   return RNCloudFs.getGoogleDriveDocument(id);
+}
+
+export function syncCloud() {
+  if (ios) {
+    return RNCloudFs.syncCloud();
+  }
+  return true;
 }
 
 export async function getDataFromCloud(backupPassword, filename = null) {

@@ -64,6 +64,7 @@ const UniqueTokenCard = ({
           imageUrl={imageUrl}
           item={item}
           resizeMode={resizeMode}
+          size={width}
           small={smallENSName}
         />
         {borderEnabled && (

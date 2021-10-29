@@ -1,10 +1,11 @@
 import { useRoute } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
-import { Alert, InteractionManager } from 'react-native';
+import { InteractionManager } from 'react-native';
 import useAsset from './useAsset';
 import useWallets from './useWallets';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import { useNavigation } from '@rainbow-me/navigation';
+import { watchingAlert } from '@rainbow-me/utils';
 
 export default function useExpandedStateNavigation(inputType) {
   const { goBack, navigate } = useNavigation();
@@ -29,7 +30,8 @@ export default function useExpandedStateNavigation(inputType) {
   return useCallback(
     (routeName, traverseParams) => {
       if (isReadOnlyWallet) {
-        return Alert.alert(`You need to import the wallet in order to do this`);
+        watchingAlert();
+        return;
       }
 
       InteractionManager.runAfterInteractions(goBack);

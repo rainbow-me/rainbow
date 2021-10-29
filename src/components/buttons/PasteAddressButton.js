@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
-import MiniButton from './MiniButton';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import { useClipboard, useInvalidPaste } from '@rainbow-me/hooks';
 import { deviceUtils } from '@rainbow-me/utils';
 
 export default function PasteAddressButton({ onPress }) {
   const [isValid, setIsValid] = useState(false);
+  const { colors } = useTheme();
   const { onInvalidPaste } = useInvalidPaste();
   const {
     clipboard,
@@ -41,15 +42,21 @@ export default function PasteAddressButton({ onPress }) {
   }, [enablePaste, getClipboard, onInvalidPaste, onPress]);
 
   return (
-    <MiniButton
-      disabled={deviceUtils.isIOS14 ? !hasClipboardData : clipboard && !isValid}
-      onPress={handlePress}
-      testID="paste-address-button"
-      {...(android && { height: 30, overflowMargin: 15, width: 60 })}
-    >
-      <Text color="whiteLabel" weight="bold">
-        Paste
+    deviceUtils.isIOS14 ? !hasClipboardData : clipboard && !isValid
+  ) ? null : (
+    <ButtonPressAnimation onPress={handlePress} testID="paste-address-button">
+      <Text
+        align="right"
+        color={
+          (deviceUtils.isIOS14 ? !hasClipboardData : clipboard && !isValid)
+            ? colors.alpha(colors.blueGreyDark, 0.3)
+            : colors.appleBlue
+        }
+        size="large"
+        weight="heavy"
+      >
+        􀜍 Paste
       </Text>
-    </MiniButton>
+    </ButtonPressAnimation>
   );
 }

@@ -1,13 +1,12 @@
 import { filter, find, get, isNil, map, pick, uniq } from 'lodash';
 import { AssetTypes } from '@rainbow-me/entities';
+import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 
 /**
  * @desc parse unique tokens from opensea
  * @param  {Object}
  * @return {Array}
  */
-
-export const ENSAddress = '0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85';
 
 export const parseAccountUniqueTokens = data => {
   const erc721s = get(data, 'data.assets', null);
@@ -48,7 +47,9 @@ export const parseAccountUniqueTokens = data => {
       ]),
       familyImage: collection.image_url,
       familyName:
-        asset_contract.address === ENSAddress ? 'ENS' : collection.name,
+        asset_contract.address === ENS_NFT_CONTRACT_ADDRESS
+          ? 'ENS'
+          : collection.name,
       id: token_id,
       isSendable:
         asset_contract.nft_version === '1.0' ||
@@ -57,7 +58,7 @@ export const parseAccountUniqueTokens = data => {
       lastPrice: asset.last_sale ? Number(asset.last_sale.total_price) : null,
       type: AssetTypes.nft,
       uniqueId:
-        asset_contract.address === ENSAddress
+        asset_contract.address === ENS_NFT_CONTRACT_ADDRESS
           ? asset.name
           : `${get(asset_contract, 'address')}_${token_id}`,
     })

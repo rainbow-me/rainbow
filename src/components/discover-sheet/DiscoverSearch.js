@@ -1,5 +1,5 @@
-import { map, toLower } from 'lodash';
-import matchSorter from 'match-sorter';
+import { toLower } from 'lodash';
+import { rankings } from 'match-sorter';
 import React, {
   useCallback,
   useContext,
@@ -8,13 +8,10 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { InteractionManager, View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
 import { addHexPrefix } from '../../handlers/web3';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
 import tokenSectionTypes from '../../helpers/tokenSectionTypes';
@@ -24,17 +21,19 @@ import { CurrencySelectionList } from '../exchange';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
+import { fetchSuggestions } from '@rainbow-me/handlers/ens';
 import {
   useAccountAssets,
   useTimeout,
   useUniswapAssets,
-  useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { filterList } from '@rainbow-me/utils';
 
-const headerlessSection = data => [{ data, title: '' }];
+export const SearchContainer = styled(Row)`
+  height: 100%;
+`;
 
 const searchCurrencyList = (searchList = [], query) => {
   const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);
@@ -42,37 +41,17 @@ const searchCurrencyList = (searchList = [], query) => {
   if (isAddress) {
     const formattedQuery = toLower(addHexPrefix(query));
     return filterList(searchList, formattedQuery, ['address'], {
-      threshold: matchSorter.rankings.CASE_SENSITIVE_EQUAL,
+      threshold: rankings.CASE_SENSITIVE_EQUAL,
     });
   }
-
   return filterList(searchList, query, ['symbol', 'name'], {
-    threshold: matchSorter.rankings.CONTAINS,
+    threshold: rankings.CONTAINS,
   });
 };
 
-const timingConfig = { duration: 700 };
-
 export default function DiscoverSearch() {
   const { navigate } = useNavigation();
-  const listOpacity = useSharedValue(0);
   const { allAssets } = useAccountAssets();
-
-  const listAnimatedStyles = useAnimatedStyle(() => {
-    return {
-      opacity: listOpacity.value,
-    };
-  });
-
-  useEffect(() => {
-    listOpacity.value = withTiming(1, timingConfig);
-  }, [listOpacity]);
-
-  const { setIsSearching, searchQuery, isSearchModeEnabled } = useContext(
-    DiscoverSheetContext
-  );
-  const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
-  const type = CurrencySelectionTypes.output;
   const dispatch = useDispatch();
   const {
     curatedNotFavorited,
@@ -82,35 +61,118 @@ export default function DiscoverSearch() {
     globalVerifiedAssets,
     loadingAllTokens,
   } = useUniswapAssets();
-  const { uniswapAssetsInWallet } = useUniswapAssetsInWallet();
-  const { colors } = useTheme();
+  const {
+    isFetchingEns,
+    setIsSearching,
+    setIsFetchingEns,
+    searchQuery,
+    isSearchModeEnabled,
+  } = useContext(DiscoverSheetContext);
 
-  const currencyList = useMemo(() => {
-    let filteredList = [];
-    if (type === CurrencySelectionTypes.input) {
-      filteredList = headerlessSection(uniswapAssetsInWallet);
-      if (searchQueryForSearch) {
-        filteredList = searchCurrencyList(
-          uniswapAssetsInWallet,
+  const currencySelectionListRef = useRef();
+  const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
+  const { colors } = useTheme();
+  const [startQueryDebounce, stopQueryDebounce] = useTimeout();
+  const [fastCurrencyList, setFastCurrencyList] = useState([]);
+  const [lowCurrencyList, setLowCurrencyList] = useState([]);
+  const [ensResults, setEnsResults] = useState([]);
+
+  const currencyList = useMemo(
+    () => [...fastCurrencyList, ...lowCurrencyList, ...ensResults],
+    [fastCurrencyList, lowCurrencyList, ensResults]
+  );
+
+  const handlePress = useCallback(
+    item => {
+      if (item.ens) {
+        // navigate to Showcase sheet
+        InteractionManager.runAfterInteractions(() => {
+          navigate(Routes.SHOWCASE_SHEET, {
+            address: item.nickname,
+          });
+        });
+      } else {
+        const asset = allAssets.find(asset => item.address === asset.address);
+        dispatch(emitAssetRequest(item.address));
+        navigate(Routes.EXPANDED_ASSET_SHEET, {
+          asset: asset || item,
+          longFormHeight: initialChartExpandedStateSheetHeight,
+          type: 'token',
+        });
+      }
+    },
+    [allAssets, dispatch, navigate]
+  );
+
+  const handleActionAsset = useCallback(
+    item => {
+      navigate(Routes.ADD_TOKEN_SHEET, { item });
+    },
+    [navigate]
+  );
+
+  const itemProps = useMemo(
+    () => ({
+      onActionAsset: handleActionAsset,
+      onPress: handlePress,
+      showAddButton: true,
+      showBalance: false,
+    }),
+    [handleActionAsset, handlePress]
+  );
+
+  const searchInFilteredLow = useCallback(
+    searchQueryForSearch => {
+      setTimeout(() => {
+        const filteredLow = searchCurrencyList(
+          globalLowLiquidityAssets,
           searchQueryForSearch
         );
-        filteredList = headerlessSection(filteredList);
-      }
-    } else if (type === CurrencySelectionTypes.output) {
+        let lowCurrencyList = [];
+        if (filteredLow.length) {
+          lowCurrencyList = [
+            {
+              data: filteredLow,
+              title: tokenSectionTypes.lowLiquidityTokenSection,
+            },
+          ];
+        }
+        setLowCurrencyList(lowCurrencyList);
+      }, 0);
+    },
+    [globalLowLiquidityAssets]
+  );
+
+  const addEnsResults = useCallback(ensResults => {
+    let ensSearchResults = [];
+    if (ensResults && ensResults.length) {
+      ensSearchResults = [
+        {
+          color: '#5893ff',
+          data: ensResults,
+          key: '􀏼 Ethereum Name Service',
+          title: '􀏼 Ethereum Name Service',
+        },
+      ];
+    }
+    setEnsResults(ensSearchResults);
+  }, []);
+
+  const filterCurrencyList = useCallback(
+    searchQueryForSearch => {
+      let filteredList = [];
       if (searchQueryForSearch) {
-        const [
-          filteredFavorite,
-          filteredVerified,
-          filteredHighUnverified,
-          filteredLow,
-        ] = map(
-          [
-            favorites,
-            globalVerifiedAssets,
-            globalHighLiquidityAssets,
-            globalLowLiquidityAssets,
-          ],
-          section => searchCurrencyList(section, searchQueryForSearch)
+        const filteredFavorite = searchCurrencyList(
+          favorites,
+          searchQueryForSearch
+        );
+        const filteredVerified = searchCurrencyList(
+          globalVerifiedAssets,
+          searchQueryForSearch
+        );
+        const filteredHighUnverified = searchCurrencyList(
+          globalHighLiquidityAssets,
+          searchQueryForSearch
         );
 
         filteredList = [];
@@ -133,12 +195,7 @@ export default function DiscoverSearch() {
             data: filteredHighUnverified,
             title: tokenSectionTypes.unverifiedTokenSection,
           });
-
-        filteredLow.length &&
-          filteredList.push({
-            data: filteredLow,
-            title: tokenSectionTypes.lowLiquidityTokenSection,
-          });
+        searchInFilteredLow(searchQueryForSearch);
       } else {
         filteredList = [
           {
@@ -153,69 +210,36 @@ export default function DiscoverSearch() {
           },
         ];
       }
-    }
-    setIsSearching(false);
-    return filteredList;
-  }, [
-    type,
-    setIsSearching,
-    uniswapAssetsInWallet,
-    searchQueryForSearch,
-    favorites,
-    globalVerifiedAssets,
-    globalHighLiquidityAssets,
-    globalLowLiquidityAssets,
-    colors.yellowFavorite,
-    curatedNotFavorited,
-  ]);
+      setIsSearching(false);
+      setFastCurrencyList(filteredList);
+    },
+    [
+      setIsSearching,
+      favorites,
+      globalVerifiedAssets,
+      globalHighLiquidityAssets,
+      colors.yellowFavorite,
+      curatedNotFavorited,
+      searchInFilteredLow,
+    ]
+  );
 
-  const [startQueryDebounce, stopQueryDebounce] = useTimeout();
   useEffect(() => {
     stopQueryDebounce();
     startQueryDebounce(
       () => {
         setIsSearching(true);
         setSearchQueryForSearch(searchQuery);
+        fetchSuggestions(searchQuery, addEnsResults, setIsFetchingEns);
+        filterCurrencyList(searchQuery);
       },
       searchQuery === '' ? 1 : 500
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, setIsSearching, startQueryDebounce, stopQueryDebounce]);
 
-  const handlePress = useCallback(
-    item => {
-      const asset = allAssets.find(asset => item.address === asset.address);
-
-      dispatch(emitAssetRequest(item.address));
-
-      navigate(Routes.EXPANDED_ASSET_SHEET, {
-        asset: asset || item,
-        longFormHeight: initialChartExpandedStateSheetHeight,
-        type: 'token',
-      });
-    },
-    [allAssets, dispatch, navigate]
-  );
-
-  const handleActionAsset = useCallback(
-    item => {
-      navigate(Routes.ADD_TOKEN_SHEET, { item });
-    },
-    [navigate]
-  );
-
-  const itemProps = useMemo(
-    () => ({
-      onActionAsset: handleActionAsset,
-      onPress: handlePress,
-      showAddButton: true,
-      showBalance: false,
-    }),
-    [handleActionAsset, handlePress]
-  );
-
-  const ref = useRef();
   useEffect(() => {
-    ref.current?.scrollToLocation({
+    currencySelectionListRef.current?.scrollToLocation({
       animated: false,
       itemIndex: 0,
       sectionIndex: 0,
@@ -225,25 +249,21 @@ export default function DiscoverSearch() {
   }, [isSearchModeEnabled]);
 
   return (
-    <Animated.View
-      style={[
-        listAnimatedStyles,
-        !android && { height: deviceUtils.dimensions.height - 140 },
-      ]}
-    >
-      <Row height="100%">
+    <View style={[!android && { height: deviceUtils.dimensions.height - 140 }]}>
+      <SearchContainer>
         <CurrencySelectionList
+          footerSpacer
           itemProps={itemProps}
           keyboardDismissMode="on-drag"
           listItems={currencyList}
-          loading={loadingAllTokens}
+          loading={loadingAllTokens || isFetchingEns}
           query={searchQueryForSearch}
-          ref={ref}
+          ref={currencySelectionListRef}
           showList
           testID="discover-currency-select-list"
-          type={type}
+          type={CurrencySelectionTypes.output}
         />
-      </Row>
-    </Animated.View>
+      </SearchContainer>
+    </View>
   );
 }

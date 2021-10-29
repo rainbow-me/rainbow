@@ -1,4 +1,5 @@
 import lang from 'i18n-js';
+import { startCase } from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { ContextCircleButton } from '../../context-menu';
 import EditOptions from '@rainbow-me/helpers/editOptionTypes';
@@ -31,36 +32,34 @@ export default function ChartContextButton({ asset, color }) {
       } else if (buttonIndex === 1) {
         // 🙈️ Hide
         setHiddenCoins();
-      } else if (buttonIndex === 2 && asset?.address !== 'eth') {
+      } else if (buttonIndex === 2 && asset?.uniqueId !== 'eth') {
         // 🔍 View on Etherscan
-        ethereumUtils.openTokenEtherscanURL(asset?.address);
+        ethereumUtils.openTokenEtherscanURL(asset?.uniqueId, asset?.type);
       }
     },
-    [asset?.address, setHiddenCoins, setPinnedCoins]
+    [asset?.type, asset?.uniqueId, setHiddenCoins, setPinnedCoins]
   );
 
   const options = useMemo(
     () => [
-      `📌️ ${
-        currentAction === EditOptions.unpin
-          ? lang.t('button.unpin')
-          : lang.t('button.pin')
-      }`,
-      `🙈️ ${
-        currentAction === EditOptions.unhide
-          ? lang.t('button.unhide')
-          : lang.t('button.hide')
-      }`,
-      ...(asset?.address === 'eth' ? [] : [lang.t('button.etherscan')]),
-      lang.t('wallet.action.cancel'),
+      `📌️ ${currentAction === EditOptions.unpin ? lang.t('wallet.action.unpin') : lang.t('wallet.action.pin')}`,
+      `🙈️ ${currentAction === EditOptions.unhide ? lang.t('wallet.action.unhide') : lang.t('wallet.action.hide')}`,
+      ...(asset?.uniqueId === 'eth'
+        ? []
+        : [
+            `${lang.t('button.viewOn')} ${startCase(
+              ethereumUtils.getBlockExplorer(asset?.type)
+            )}`,
+          ]),
+      ...(ios ? [lang.t('wallet.action.cancel')] : []),
     ],
-    [asset?.address, currentAction]
+    [asset.type, asset?.uniqueId, currentAction]
   );
 
   return (
     <ContextCircleButton
       flex={0}
-      onPressActionSheet={handleActionSheetPress}
+      onPressActionSheet={handleActionSheetPress}$
       options={options}
       tintColor={color}
     />

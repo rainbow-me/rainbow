@@ -27,6 +27,8 @@ import ShadowStack from 'react-native-shadow-stack';
 const ContainerWidth = 261;
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
+  position: absolute;
+  top: 60;
   width: ${ContainerWidth};
 `;
 

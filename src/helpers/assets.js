@@ -33,12 +33,17 @@ const addEthPlaceholder = (
   assets,
   includePlaceholder,
   pinnedCoins,
-  nativeCurrency
+  nativeCurrency,
+  emptyCollectibles
 ) => {
   const hasEth = !!find(assets, asset => asset.address === 'eth');
 
   const { genericAssets } = store.getState().data;
-  if (includePlaceholder && !hasEth && assets.length > 0) {
+  if (
+    includePlaceholder &&
+    !hasEth &&
+    (assets.length > 0 || !emptyCollectibles)
+  ) {
     const { relative_change_24h, value } = genericAssets?.eth?.price || {};
 
     const zeroEth = {
@@ -75,9 +80,9 @@ const addEthPlaceholder = (
       uniqueId: 'eth',
     };
 
-    return concat([zeroEth], assets);
+    return { addedEth: true, assets: concat([zeroEth], assets) };
   }
-  return assets;
+  return { addedEth: false, assets };
 };
 
 const getTotal = assets =>
@@ -96,18 +101,20 @@ export const buildCoinsList = (
   isCoinListEdited,
   pinnedCoins,
   hiddenCoins,
-  includePlaceholder = false
+  includePlaceholder = false,
+  emptyCollectibles
 ) => {
   let standardAssets = [],
     pinnedAssets = [],
     smallAssets = [],
     hiddenAssets = [];
 
-  const assets = addEthPlaceholder(
+  const { addedEth, assets } = addEthPlaceholder(
     assetsOriginal,
     includePlaceholder,
     pinnedCoins,
-    nativeCurrency
+    nativeCurrency,
+    emptyCollectibles
   );
 
   // separate into standard, pinned, small balances, hidden assets
@@ -176,7 +183,7 @@ export const buildCoinsList = (
     });
   }
 
-  return { assets: allAssets, totalBalancesValue };
+  return { addedEth, assets: allAssets, totalBalancesValue };
 };
 
 export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
@@ -205,7 +212,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
       }
     }
     let tokens = compact(tokensRow);
-    tokens = chunk(tokens, tokens.length > 25 ? 4 : 25);
+    tokens = chunk(tokens, 50);
     // eslint-disable-next-line no-loop-func
     tokens.forEach((tokenChunk, index) => {
       const id = tokensRow[0]
@@ -222,8 +229,8 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
       });
     });
   }
-
-  rows = sortBy(rows, ['familyName']);
+  const regex = RegExp(/\s*(the)\s/, 'i');
+  rows = sortBy(rows, row => row.familyName.replace(regex, '').toLowerCase());
 
   showcaseTokens.sort(function (a, b) {
     return (
@@ -261,5 +268,5 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
   return rows;
 };
 
-export const buildUniqueTokenName = ({ asset_contract, id, name }) =>
-  name || `${asset_contract.name} #${id}`;
+export const buildUniqueTokenName = ({ collection, id, name }) =>
+  name || `${collection.name} #${id}`;

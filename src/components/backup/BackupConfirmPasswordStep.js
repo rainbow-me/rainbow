@@ -153,6 +153,7 @@ export default function BackupConfirmPasswordStep() {
 
   const onSubmit = useCallback(async () => {
     if (!validPassword) return;
+    analytics.track('Tapped "Restore from cloud"');
     await walletCloudBackup({
       onError,
       onSuccess,

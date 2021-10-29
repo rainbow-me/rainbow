@@ -7,7 +7,7 @@ import ShadowStack from 'react-native-shadow-stack';
 
 const buildSmallShadows = (color, colors) => [
   [0, 3, 5, colors.shadow, 0.14],
-  [0, 6, 10, colors.avatarColor[color] || color, 0.2],
+  [0, 6, 10, colors.avatarBackgrounds[color] || color, 0.2],
 ];
 
 const sizeConfigs = colors => ({
@@ -18,6 +18,14 @@ const sizeConfigs = colors => ({
       [0, 2, 5, colors.shadow, 0.08],
     ],
     textSize: 'bigger',
+  },
+  lmedium: {
+    dimensions: 50,
+    shadow: [
+      [0, 4, 12, colors.shadow, 0.12],
+      [0, 1, 3, colors.shadow, 0.08],
+    ],
+    textSize: 28,
   },
   medium: {
     dimensions: 40,
@@ -30,6 +38,10 @@ const sizeConfigs = colors => ({
   small: {
     dimensions: 34,
     textSize: 'large',
+  },
+  smaller: {
+    dimensions: 20,
+    textSize: 'small',
   },
 });
 
@@ -47,7 +59,9 @@ const ImageAvatar = ({ image, size = 'medium', ...props }) => {
 
   const shadows = useMemo(
     () =>
-      size === 'small' ? buildSmallShadows(colors.shadow, colors) : shadow,
+      size === 'small' || size === 'smaller'
+        ? buildSmallShadows(colors.shadow, colors)
+        : shadow,
     [shadow, size, colors]
   );
 

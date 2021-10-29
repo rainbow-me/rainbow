@@ -4,5 +4,4 @@ export default {
   close: 'Close',
   speedUp: '🚀 Speed Up',
   viewContact: 'View Contact',
-  viewOnEtherscan: 'View on Etherscan',
 };

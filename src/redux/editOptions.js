@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { concat, difference, filter, union, without } from 'lodash';
+import { concat, difference, filter, union, uniq, without } from 'lodash';
 import { Value } from 'react-native-reanimated';
 import {
   getHiddenCoins,
@@ -139,6 +139,38 @@ export const setPinnedCoins = () => (dispatch, getState) => {
   });
 };
 
+export const addCoinsToHiddenList = additionalCoinsToHide => (
+  dispatch,
+  getState
+) => {
+  const { accountAddress, network } = getState().settings;
+  const {
+    hiddenCoins,
+    pinnedCoins,
+    recentlyPinnedCount,
+  } = getState().editOptions;
+  const updatedPinnedCoins = pinnedCoins;
+  const updatedHiddenCoins = uniq(
+    concat(hiddenCoins, without(additionalCoinsToHide, ...pinnedCoins))
+  );
+  // Nothing to update
+  if (hiddenCoins.length === updatedHiddenCoins.length) {
+    return;
+  }
+
+  saveHiddenCoins(updatedHiddenCoins, accountAddress, network);
+  dispatch({
+    payload: {
+      currentAction: EditOptions.none,
+      hiddenCoins: updatedHiddenCoins,
+      pinnedCoins: updatedPinnedCoins,
+      recentlyPinnedCount: recentlyPinnedCount + 1,
+      selectedCoins: [],
+    },
+    type: SET_HIDDEN_COINS,
+  });
+};
+
 export const setHiddenCoins = () => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   const {
@@ -160,6 +192,7 @@ export const setHiddenCoins = () => (dispatch, getState) => {
   } else if (currentAction === EditOptions.unhide) {
     updatedHiddenCoins = without(hiddenCoins, ...selectedCoins);
   }
+
   saveHiddenCoins(updatedHiddenCoins, accountAddress, network);
   dispatch({
     payload: {

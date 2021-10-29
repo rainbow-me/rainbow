@@ -15,9 +15,7 @@ import ShadowStack from 'react-native-shadow-stack';
 const addChartsStyling = isCharts =>
   isCharts ? 'position: absolute; width: 100%;' : '';
 
-const Button = styled(Centered).attrs({
-  scaleTo: 0.9,
-})`
+const Button = styled(Centered)`
   height: ${({ size }) => (size === 'big' ? 56 : 46)};
   ${({ isCharts }) => addChartsStyling(isCharts)}
 `;
@@ -27,7 +25,7 @@ const Content = styled(RowWithMargins).attrs({
   margin: 4,
 })`
   height: ${({ size }) => (size === 'big' ? 56 : 46)};
-  padding-bottom: ${({ label }) => (containsEmoji(label) ? 5.5 : 4)};
+  padding-bottom: ${({ label }) => (label && containsEmoji(label) ? 5.5 : 4)};
   padding-horizontal: 19;
   z-index: 1;
 `;
@@ -50,19 +48,22 @@ const WhiteButtonGradient = React.memo(
 );
 
 const SheetActionButton = ({
-  androidWidth,
+  androidWidth = null,
   borderRadius = 56,
+  children,
   color: givenColor,
-  disabled,
+  disabled = false,
   elevation = 24,
-  emoji,
-  fullWidth,
-  icon,
-  isCharts,
-  isTransparent,
-  label,
-  size,
-  testID,
+  emoji = null,
+  forceShadows = false,
+  fullWidth = false,
+  icon = null,
+  isCharts = false,
+  isTransparent = false,
+  label = null,
+  scaleTo = 0.9,
+  size = null,
+  testID = null,
   textColor: givenTextColor,
   weight = 'semibold',
   ...props
@@ -74,7 +75,7 @@ const SheetActionButton = ({
   const shadowsForButtonColor = useMemo(() => {
     const isWhite = color === colors.white;
 
-    if (disabled || isTransparent) {
+    if (!forceShadows && (disabled || isTransparent)) {
       return [[0, 0, 0, colors.transparent, 0]];
     } else
       return [
@@ -87,7 +88,7 @@ const SheetActionButton = ({
           isWhite ? 0.08 : 0.4,
         ],
       ];
-  }, [color, colors, disabled, isTransparent, isDarkMode]);
+  }, [color, colors, disabled, forceShadows, isTransparent, isDarkMode]);
 
   const androidButtonWidth =
     androidWidth || (fullWidth ? deviceWidth - 38 : (deviceWidth - 53) / 2);
@@ -106,6 +107,7 @@ const SheetActionButton = ({
         isCharts={isCharts}
         overflowMargin={30}
         radiusAndroid={borderRadius}
+        scaleTo={scaleTo}
         size={size}
         testID={`${testID}-action-button`}
         wrapperStyle={{ alignItems: 'center' }}
@@ -132,14 +134,18 @@ const SheetActionButton = ({
         <Content label={label} size={size}>
           {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
           {icon && <Icon color="white" height={18} name={icon} size={18} />}
-          <Text
-            align="center"
-            color={textColor}
-            size={size === 'big' ? 'larger' : 'large'}
-            weight={weight}
-          >
-            {label}
-          </Text>
+          {label ? (
+            <Text
+              align="center"
+              color={textColor}
+              size={size === 'big' ? 'larger' : 'large'}
+              weight={weight}
+            >
+              {label}
+            </Text>
+          ) : (
+            children
+          )}
         </Content>
       </Button>
     </View>

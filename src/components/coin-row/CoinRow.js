@@ -28,11 +28,14 @@ const Content = styled(Column).attrs({ justify: 'space-between' })`
 
 export default function CoinRow({
   address,
+  badgeXPosition,
+  badgeYPosition,
   bottomRowRender,
   children,
   coinIconRender = CoinIcon,
   containerStyles,
   contentStyles,
+  isFirstCoinRow,
   isHidden,
   isPinned,
   isPool,
@@ -43,7 +46,7 @@ export default function CoinRow({
   tokens,
   ...props
 }) {
-  const accountSettings = useAccountSettings();
+  const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
 
   return (
     <Container css={containerStyles}>
@@ -52,19 +55,32 @@ export default function CoinRow({
       ) : (
         createElement(coinIconRender, {
           address,
+          badgeXPosition,
+          badgeYPosition,
+          isFirstCoinRow,
           isHidden,
           isPinned,
           symbol,
-          ...accountSettings,
           ...props,
         })
       )}
       <Content isHidden={isHidden} justify="center" style={contentStyles}>
         <Row align="center" testID={`${testID}-${symbol || ''}`}>
-          {topRowRender({ name, symbol, ...accountSettings, ...props })}
+          {topRowRender({
+            name,
+            nativeCurrency,
+            nativeCurrencySymbol,
+            symbol,
+            ...props,
+          })}
         </Row>
         <Row align="center" marginBottom={0.5}>
-          {bottomRowRender({ symbol, ...accountSettings, ...props })}
+          {bottomRowRender({
+            nativeCurrency,
+            nativeCurrencySymbol,
+            symbol,
+            ...props,
+          })}
         </Row>
       </Content>
       {typeof children === 'function'

@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { toUpper } from 'lodash';
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
@@ -26,13 +27,6 @@ const TopRowContainer = styled(Row).attrs({
   justify: 'flex-start',
 })``;
 
-const PriceContainer = ios
-  ? View
-  : styled(View)`
-      margin-top: -3;
-      margin-bottom: 3;
-    `;
-
 const BottomRow = ({ symbol }) => {
   return (
     <BottomRowContainer>
@@ -49,9 +43,9 @@ const TopRow = item => {
       <FlexItem flex={1}>
         <CoinName>{item.tokenNames}</CoinName>
       </FlexItem>
-      <PriceContainer>
+      <View>
         <PoolValue type={item.attribute} value={item[item.attribute]} />
-      </PriceContainer>
+      </View>
     </TopRowContainer>
   );
 };
@@ -74,6 +68,12 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
         nativeCurrency
       )[0];
     }
+
+    analytics.track('Pressed Pools Item', {
+      category: 'discover',
+      symbol: poolAsset.tokenNames,
+      type: item.attribute,
+    });
 
     // on iOS we handle this on native side
     android && removeNextToLastRoute();

@@ -31,19 +31,17 @@ export const SORT_DIRECTION = {
 
 const getTimestampsForChanges = () => {
   const t1 = getUnixTime(startOfMinute(sub(Date.now(), { days: 1 })));
-  const t2 = getUnixTime(startOfMinute(sub(Date.now(), { days: 2 })));
-  const t3 = getUnixTime(startOfMinute(sub(Date.now(), { months: 1 })));
-  return [t1, t2, t3];
+  const t2 = getUnixTime(startOfMinute(sub(Date.now(), { months: 1 })));
+  return [t1, t2];
 };
 
 async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
   try {
-    const [t1, t2, t3] = getTimestampsForChanges();
-    const [
-      { number: b1 },
-      { number: b2 },
-      { number: b3 },
-    ] = await getBlocksFromTimestamps([t1, t2, t3]);
+    const [t1, t2] = getTimestampsForChanges();
+    const [{ number: b1 }, { number: b2 }] = await getBlocksFromTimestamps([
+      t1,
+      t2,
+    ]);
 
     const current = await uniswapClient.query({
       fetchPolicy: 'no-cache',
@@ -53,13 +51,13 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
       },
     });
 
-    const [oneDayResult, twoDayResult, oneMonthResult] = await Promise.all(
-      [b1, b2, b3].map(async block => {
+    const [oneDayResult, oneMonthResult] = await Promise.all(
+      [b1, b2].map(async block => {
         const result = uniswapClient.query({
           fetchPolicy: 'no-cache',
           query: UNISWAP_PAIRS_HISTORICAL_BULK_QUERY,
           variables: {
-            block,
+            block: Number(block),
             pairs: pairList,
           },
         });
@@ -71,10 +69,6 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
       return { ...obj, [cur.id]: cur };
     }, {});
 
-    const twoDayData = twoDayResult?.data?.pairs.reduce((obj, cur) => {
-      return { ...obj, [cur.id]: cur };
-    }, {});
-
     const oneMonthData = oneMonthResult?.data?.pairs.reduce((obj, cur) => {
       return { ...obj, [cur.id]: cur };
     }, {});
@@ -83,27 +77,19 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
       current &&
         current.data.pairs.map(async pair => {
           let data = pair;
-          let oneDayHistory = oneDayData?.[pair.id];
+          let oneDayHistory = oneDayData?.[pair?.id];
           if (!oneDayHistory) {
             const newData = await uniswapClient.query({
               fetchPolicy: 'no-cache',
-              query: UNISWAP_PAIR_DATA_QUERY(pair.id, b1),
+              query: UNISWAP_PAIR_DATA_QUERY(pair?.id, b1),
             });
             oneDayHistory = newData?.data?.pairs[0];
           }
-          let twoDayHistory = twoDayData?.[pair.id];
-          if (!twoDayHistory) {
-            const newData = await uniswapClient.query({
-              fetchPolicy: 'no-cache',
-              query: UNISWAP_PAIR_DATA_QUERY(pair.id, b2),
-            });
-            twoDayHistory = newData?.data?.pairs[0];
-          }
-          let oneMonthHistory = oneMonthData?.[pair.id];
+          let oneMonthHistory = oneMonthData?.[pair?.id];
           if (!oneMonthHistory) {
             const newData = await uniswapClient.query({
               fetchPolicy: 'no-cache',
-              query: UNISWAP_PAIR_DATA_QUERY(pair.id, b3),
+              query: UNISWAP_PAIR_DATA_QUERY(pair?.id, b2),
             });
             oneMonthHistory = newData?.data?.pairs[0];
           }
@@ -111,7 +97,6 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
           data = parseData(
             data,
             oneDayHistory,
-            twoDayHistory,
             oneMonthHistory,
             ethPrice,
             ethPriceOneMonthAgo,
@@ -129,7 +114,6 @@ async function getBulkPairData(pairList, ethPrice, ethPriceOneMonthAgo) {
 function parseData(
   data,
   oneDayData,
-  twoDayData,
   oneMonthData,
   ethPrice,
   ethPriceOneMonthAgo,
@@ -137,17 +121,9 @@ function parseData(
 ) {
   const newData = { ...data };
   // get volume changes
-  const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
+  const oneDayVolumeUSD = getOneDayVolume(
     newData?.volumeUSD,
-    oneDayData?.volumeUSD ? oneDayData.volumeUSD : 0,
-    twoDayData?.volumeUSD ? twoDayData.volumeUSD : 0
-  );
-  const [oneDayVolumeUntracked, volumeChangeUntracked] = get2DayPercentChange(
-    newData?.untrackedVolumeUSD,
-    oneDayData?.untrackedVolumeUSD
-      ? parseFloat(oneDayData?.untrackedVolumeUSD)
-      : 0,
-    twoDayData?.untrackedVolumeUSD ? twoDayData?.untrackedVolumeUSD : 0
+    oneDayData?.volumeUSD ? oneDayData.volumeUSD : 0
   );
 
   newData.profit30d = calculateProfit30d(
@@ -159,9 +135,6 @@ function parseData(
 
   // set volume properties
   newData.oneDayVolumeUSD = parseFloat(oneDayVolumeUSD);
-  newData.volumeChangeUSD = volumeChangeUSD;
-  newData.oneDayVolumeUntracked = oneDayVolumeUntracked;
-  newData.volumeChangeUntracked = volumeChangeUntracked;
 
   // set liquidity properties
   newData.trackedReserveUSD = newData.trackedReserveETH * ethPrice;
@@ -182,7 +155,7 @@ function parseData(
     (newData.oneDayVolumeUSD * 0.003 * 365 * 100) / newData.trackedReserveUSD;
 
   return {
-    address: newData.id,
+    address: newData?.id,
     annualized_fees: newData.annualized_fees,
     liquidity: Number(Number(newData.reserveUSD).toFixed(2)),
     oneDayVolumeUSD: newData.oneDayVolumeUSD,
@@ -198,31 +171,8 @@ function parseData(
   };
 }
 
-/**
- * gets the amoutn difference plus the % change in change itself (second order change)
- * @param {*} valueNow
- * @param {*} value24HoursAgo
- * @param {*} value48HoursAgo
- */
-export const get2DayPercentChange = (
-  valueNow,
-  value24HoursAgo,
-  value48HoursAgo
-) => {
-  // get volume info for both 24 hour periods
-  const currentChange = parseFloat(valueNow) - parseFloat(value24HoursAgo);
-  const previousChange =
-    parseFloat(value24HoursAgo) - parseFloat(value48HoursAgo);
-
-  const adjustedPercentChange =
-    (parseFloat(currentChange - previousChange) / parseFloat(previousChange)) *
-    100;
-
-  if (isNaN(adjustedPercentChange) || !isFinite(adjustedPercentChange)) {
-    return [currentChange, 0];
-  }
-  return [currentChange, adjustedPercentChange];
-};
+export const getOneDayVolume = (valueNow, value24HoursAgo) =>
+  parseFloat(valueNow) - parseFloat(value24HoursAgo);
 
 export const calculateProfit30d = (
   data,
@@ -310,11 +260,8 @@ export default function useUniswapPools(sortField, sortDirection, token) {
       );
   }, [pairs, dispatch]);
 
-  const { genericAssets } = useSelector(
-    ({ data: { assets, genericAssets } }) => ({
-      assets,
-      genericAssets,
-    })
+  const genericAssets = useSelector(
+    ({ data: { genericAssets } }) => genericAssets
   );
 
   const { data: idsData, error } = useQuery(
@@ -323,7 +270,7 @@ export default function useUniswapPools(sortField, sortDirection, token) {
       client: uniswapClient,
       fetchPolicy: 'no-cache',
       pollInterval: UNISWAP_QUERY_INTERVAL,
-      skip: !priceOfEther || !ethereumPriceOneMonthAgo,
+      skip: !priceOfEther,
       variables: {
         address: token === ETH_ADDRESS ? WETH_ADDRESS : token,
       },
@@ -351,7 +298,7 @@ export default function useUniswapPools(sortField, sortDirection, token) {
     // get data for every pair in list
     try {
       const topPairs = await getBulkPairData(
-        pairsFromQuery.map(item => item.id),
+        pairsFromQuery.map(item => item?.id),
         Number(priceOfEther),
         Number(ethereumPriceOneMonthAgo)
       );
@@ -362,7 +309,7 @@ export default function useUniswapPools(sortField, sortDirection, token) {
   }, [ethereumPriceOneMonthAgo, pairsFromQuery, priceOfEther]);
 
   useEffect(() => {
-    if (pairsFromQuery && priceOfEther > 0 && ethereumPriceOneMonthAgo > 0) {
+    if (pairsFromQuery && priceOfEther > 0) {
       fetchPairsData();
     }
   }, [fetchPairsData, priceOfEther, ethereumPriceOneMonthAgo, pairsFromQuery]);
@@ -381,22 +328,22 @@ export default function useUniswapPools(sortField, sortDirection, token) {
     const tmpAllTokens = [];
     // Override with tokens from generic assets
     sortedPairs = sortedPairs.map(pair => {
-      const token0 = (toLower(pair.token0.id) === WETH_ADDRESS
+      const token0 = (toLower(pair.token0?.id) === WETH_ADDRESS
         ? genericAssets['eth']
-        : genericAssets[toLower(pair.token0.id)]) || {
+        : genericAssets[toLower(pair.token0?.id)]) || {
         ...pair.token0,
-        address: pair.token0.id,
+        address: pair.token0?.id,
       };
       const token1 =
-        toLower(pair.token1.id) === WETH_ADDRESS
+        toLower(pair.token1?.id) === WETH_ADDRESS
           ? genericAssets['eth']
-          : genericAssets[toLower(pair.token1.id)] || {
+          : genericAssets[toLower(pair.token1?.id)] || {
               ...pair.token1,
-              address: pair.token1.id,
+              address: pair.token1?.id,
             };
       pair.tokens = [token0, token1];
-      tmpAllTokens.push(toLower(pair.tokens[0].id));
-      tmpAllTokens.push(toLower(pair.tokens[1].id));
+      tmpAllTokens.push(toLower(pair.tokens[0]?.id));
+      tmpAllTokens.push(toLower(pair.tokens[1]?.id));
       const pairAdjustedForCurrency = {
         ...pair,
         liquidity: pair.liquidity * currenciesRate,

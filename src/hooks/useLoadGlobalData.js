@@ -10,6 +10,7 @@ import { imageMetadataCacheLoadState } from '@rainbow-me/redux/imageMetadata';
 import { keyboardHeightsLoadState } from '@rainbow-me/redux/keyboardHeight';
 import { settingsLoadState } from '@rainbow-me/redux/settings';
 import { topMoversLoadState } from '@rainbow-me/redux/topMovers';
+import { transactionSignaturesLoadState } from '@rainbow-me/redux/transactionSignatures';
 import { promiseUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -28,8 +29,9 @@ export default function useLoadGlobalData() {
     const p4 = loadWalletBalanceNamesToCache();
     const p5 = dispatch(imageMetadataCacheLoadState());
     const p6 = dispatch(keyboardHeightsLoadState());
+    const p7 = dispatch(transactionSignaturesLoadState());
 
-    promises.push(p1, p2, p3, p4, p5, p6);
+    promises.push(p1, p2, p3, p4, p5, p6, p7);
 
     return promiseUtils.PromiseAllWithFails(promises);
   }, [dispatch]);

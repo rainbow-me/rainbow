@@ -23,8 +23,9 @@ target 'Rainbow' do
   pod 'RNInputMask', :path => '../node_modules/react-native-text-input-mask/ios/InputMask'
 
   permissions_path = '../node_modules/react-native-permissions/ios'
-  pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
-  pod 'Permission-FaceID', :path => "#{permissions_path}/FaceID.podspec"
+  pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
+  pod 'Permission-FaceID', :path => "#{permissions_path}/FaceID"
+  pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
 
   pod "PanModal", :git => 'https://github.com/osdnk/PanModal', :commit => '42c1ac03b79d1333ff06c4234aba2e3e47a32c99'
 
@@ -33,6 +34,8 @@ target 'Rainbow' do
   use_native_modules!
   if ENV['SKIP_FLIPPER'] != "true"
     use_flipper!()
+    pod 'RNExitApp', :path => '../node_modules/react-native-exit-app'
+
   end
 
   post_install do |installer|

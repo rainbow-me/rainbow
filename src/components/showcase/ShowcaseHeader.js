@@ -18,7 +18,8 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { padding } from '@rainbow-me/styles';
+import { colors, padding } from '@rainbow-me/styles';
+import { abbreviations, profileUtils } from '@rainbow-me/utils';
 
 export const ShowcaseContext = createContext();
 
@@ -33,7 +34,7 @@ const HeaderWrapper = styled.View`
 const Footer = styled(ColumnWithMargins).attrs({
   margin: 19,
 })`
-  ${padding(19, 15, 21)};
+  ${padding(19, 0, 21)};
   width: 100%;
 `;
 
@@ -48,6 +49,7 @@ const ButtonSpacer = styled.View`
 const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.blueGreyDark,
+  firstSectionLength: abbreviations.defaultNumCharsPerSection,
   lineHeight: 'loosest',
   opacity: 0.6,
   size: 'large',
@@ -66,81 +68,9 @@ const ENSAddress = styled(Text).attrs(({ theme: { colors } }) => ({
   width: 100%;
 `;
 
-const popularEmojis = [
-  '🌶',
-  '🤑',
-  '🐙',
-  '🫐',
-  '🐳',
-  '🤶',
-  '🌲',
-  '🌞',
-  '🐒',
-  '🐵',
-  '🦊',
-  '🐼',
-  '🦄',
-  '🐷',
-  '🐧',
-  '🦩',
-  '👽',
-  '🎈',
-  '🍉',
-  '🎉',
-  '🐲',
-  '🌎',
-  '🍊',
-  '🐭',
-  '🍣',
-  '🐥',
-  '👾',
-  '🥦',
-  '👹',
-  '🙀',
-  '⛱',
-  '⛵️',
-  '🥳',
-  '🤯',
-  '🤠',
-];
-
-const avatarColor = [
-  '#FC5C54',
-  '#FFD95A',
-  '#E95D72',
-  '#6A87C8',
-  '#5FD0F3',
-  '#FC5C54',
-  '#75C06B',
-  '#FFDD86',
-  '#5FC6D4',
-  '#FF949A',
-  '#FF8024',
-  '#9BA1A4',
-  '#EC66FF',
-  '#FF8CBC',
-  '#FF9A23',
-  '#FF949A',
-  '#C5DADB',
-  '#FC5C54',
-  '#FF949A',
-  '#FFD95A',
-  '#A8CE63',
-  '#71ABFF',
-  '#FFE279',
-  '#B6B1B6',
-  '#FF6780',
-  '#FFD95A',
-  '#A575FF',
-  '#A8CE63',
-  '#FC5C54',
-  '#FFE279',
-  '#5FD0F3',
-  '#4D82FF',
-  '#FFE279',
-  '#FF949A',
-  '#FFB35A',
-];
+const avatarColor = profileUtils.emojiColorIndexes.map(
+  idx => colors.avatarBackgrounds[idx]
+);
 
 function hashCode(text) {
   let hash = 0,
@@ -171,7 +101,7 @@ export function Header() {
     if (emojiFromContext) {
       return emojiFromContext;
     }
-    return popularEmojis[hash];
+    return profileUtils.popularEmojis[hash];
   }, [contextValue?.data?.profile?.accountSymbol, hash]);
 
   const color = useMemo(() => {
@@ -185,42 +115,62 @@ export function Header() {
   const onAddToContact = useCallback(async () => {
     const contacts = await getContacts();
     const currentContact = contacts[contextValue?.address];
-
+    const nickname =
+      contextValue?.data?.reverseEns ||
+      (isHexString(contextValue?.addressOrDomain)
+        ? abbreviations.address(contextValue?.addressOrDomain, 4, 4)
+        : contextValue?.addressOrDomain);
     navigate(Routes.MODAL_SCREEN, {
       address: contextValue?.address,
-      color,
+      color: currentContact?.color || color,
       contact: currentContact || {
         address: contextValue?.address,
-        color,
-        nickname: contextValue?.ensName,
+        color: currentContact?.color || color,
+        nickname: `${emoji} ${nickname}`,
         temporary: true,
       },
       type: 'contact_profile',
     });
-  }, [color, contextValue?.address, contextValue?.ensName, navigate]);
+  }, [
+    color,
+    contextValue?.address,
+    contextValue?.addressOrDomain,
+    contextValue?.data?.reverseEns,
+    emoji,
+    navigate,
+  ]);
 
   const onSend = useCallback(async () => {
     goBack();
     if (isNativeStackAvailable || android) {
       navigate(Routes.SEND_FLOW, {
-        params: { address: contextValue?.address },
+        params: {
+          address: contextValue?.addressOrDomain || contextValue?.address,
+        },
         screen: Routes.SEND_SHEET,
       });
     } else {
-      navigate(Routes.SEND_FLOW, { address: contextValue?.address });
+      navigate(Routes.SEND_FLOW, {
+        address: contextValue?.addressOrDomain || contextValue?.address,
+      });
     }
-  }, [contextValue?.address, goBack, navigate]);
+  }, [contextValue?.address, contextValue?.addressOrDomain, goBack, navigate]);
 
   const { handleSetSeedPhrase, handlePressImportButton } = useImportingWallet();
 
   const onWatchAddress = useCallback(() => {
     handleSetSeedPhrase(contextValue.address);
-    handlePressImportButton(color, contextValue.address);
+    handlePressImportButton(
+      color,
+      contextValue.address,
+      contextValue?.data?.profile?.accountSymbol
+    );
   }, [
     color,
     contextValue.address,
     handlePressImportButton,
     handleSetSeedPhrase,
+    contextValue?.data?.profile?.accountSymbol,
   ]);
 
   const mainText =
@@ -233,7 +183,7 @@ export function Header() {
       : contextValue?.address?.toLowerCase();
 
   return (
-    <HeaderWrapper height={350}>
+    <HeaderWrapper height={350} testID="showcase-header-wrapper">
       <SheetHandle />
       <Spacer />
       <AvatarCircle

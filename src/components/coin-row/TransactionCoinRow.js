@@ -1,4 +1,4 @@
-import { compact, get, toLower } from 'lodash';
+import { compact, get, startCase, toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { css } from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
@@ -91,7 +91,7 @@ export default function TransactionCoinRow({ item, ...props }) {
   const { navigate } = useNavigation();
 
   const onPressTransaction = useCallback(async () => {
-    const { hash, from, minedAt, pending, to, status, type } = item;
+    const { hash, from, minedAt, pending, to, status, type, network } = item;
 
     const date = getHumanReadableDate(minedAt);
     const isSent =
@@ -125,11 +125,14 @@ export default function TransactionCoinRow({ item, ...props }) {
       contactColor = getRandomColor();
     }
 
+    const blockExplorerAction = `View on ${startCase(
+      ethereumUtils.getBlockExplorer(network)
+    )}`;
     if (hash) {
       let buttons = [
         ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
         ...(canBeCancelled ? [TransactionActions.cancel] : []),
-        TransactionActions.viewOnEtherscan,
+        blockExplorerAction,
         ...(ios ? [TransactionActions.close] : []),
       ];
       if (showContactInfo) {
@@ -179,11 +182,12 @@ export default function TransactionCoinRow({ item, ...props }) {
                 type: 'cancel',
               });
               break;
-            case TransactionActions.viewOnEtherscan: {
-              ethereumUtils.openTransactionEtherscanURL(hash);
+            case TransactionActions.close:
+              return;
+            default: {
+              ethereumUtils.openTransactionInBlockExplorer(hash, network);
               break;
             }
-            default:
           }
         }
       );

@@ -27,12 +27,11 @@ const RightAction = ({ onPress, progress, text, x }) => {
     <AnimatedCentered
       flex={1}
       marginRight={isEdit ? 0 : 10}
-      marginTop={12}
       style={{ transform: [{ translateX }] }}
     >
       <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
         <ImgixImage
-          css={margin(0, 10, 5, 10)}
+          css={margin(0, 10, android ? 0 : 3, 10)}
           source={isEdit ? EditIcon : DeleteIcon}
           style={position.sizeAsObject(35)}
         />
@@ -41,7 +40,7 @@ const RightAction = ({ onPress, progress, text, x }) => {
           color={colors.alpha(colors.blueGreyDark, 0.4)}
           letterSpacing="roundedTight"
           size="smaller"
-          weight="medium"
+          weight="semibold"
         >
           {text}
         </Text>

@@ -34,7 +34,7 @@ const PredictionNumber = styled(AnimatedNumber).attrs(
   flex-grow: 1;
 `;
 
-/* eslint-disable sort-keys */
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 const steps = {
   'Monthly': {
     label: lang.t('savings.earnings.monthly'),
@@ -65,7 +65,7 @@ const steps = {
     days: 365 * 100,
   },
 };
-/* eslint-enable sort-keys */
+/* eslint-enable sort-keys-fix/sort-keys-fix */
 
 const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
   const { nativeCurrency } = useAccountSettings();
