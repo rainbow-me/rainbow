@@ -9,9 +9,10 @@ import {
   saveNetwork,
 } from '@rainbow-me/handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
 import { dataResetState } from '@rainbow-me/redux/data';
 import { explorerClearState, explorerInit } from '@rainbow-me/redux/explorer';
+import { AppDispatch } from '@rainbow-me/redux/store';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -26,7 +27,51 @@ const SETTINGS_UPDATE_NETWORK_SUCCESS =
   'settings/SETTINGS_UPDATE_NETWORK_SUCCESS';
 
 // -- Actions --------------------------------------------------------------- //
-export const settingsLoadState = () => async dispatch => {
+
+/**
+ * The current `settings` state.
+ */
+interface SettingsState {
+  accountAddress: string;
+  chainId: number;
+  language: string;
+  nativeCurrency: string;
+  network: Network;
+}
+
+/**
+ * A `settings` Redux action.
+ */
+type SettingsStateUpdateAction =
+  | SettingsStateUpdateSettingsAddressAction
+  | SettingsStateUpdateNativeCurrencySuccessAction
+  | SettingsStateUpdateNetworkSuccessAction
+  | SettingsStateUpdateLanguageSuccessAction;
+
+interface SettingsStateUpdateSettingsAddressAction {
+  type: typeof SETTINGS_UPDATE_SETTINGS_ADDRESS;
+  payload: SettingsState['accountAddress'];
+}
+
+interface SettingsStateUpdateNativeCurrencySuccessAction {
+  type: typeof SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS;
+  payload: SettingsState['nativeCurrency'];
+}
+
+interface SettingsStateUpdateNetworkSuccessAction {
+  type: typeof SETTINGS_UPDATE_NETWORK_SUCCESS;
+  payload: {
+    chainId: SettingsState['chainId'];
+    network: SettingsState['network'];
+  };
+}
+
+interface SettingsStateUpdateLanguageSuccessAction {
+  type: typeof SETTINGS_UPDATE_LANGUAGE_SUCCESS;
+  payload: SettingsState['language'];
+}
+
+export const settingsLoadState = () => async (dispatch: AppDispatch) => {
   try {
     const nativeCurrency = await getNativeCurrency();
     analytics.identify(null, { currency: nativeCurrency });
@@ -40,7 +85,7 @@ export const settingsLoadState = () => async dispatch => {
   }
 };
 
-export const settingsLoadNetwork = () => async dispatch => {
+export const settingsLoadNetwork = () => async (dispatch: AppDispatch) => {
   try {
     const network = await getNetwork();
     const chainId = ethereumUtils.getChainIdFromNetwork(network);
@@ -54,14 +99,18 @@ export const settingsLoadNetwork = () => async dispatch => {
   }
 };
 
-export const settingsUpdateAccountAddress = accountAddress => async dispatch => {
+export const settingsUpdateAccountAddress = (accountAddress: string) => async (
+  dispatch: AppDispatch
+) => {
   dispatch({
     payload: accountAddress,
     type: SETTINGS_UPDATE_SETTINGS_ADDRESS,
   });
 };
 
-export const settingsUpdateNetwork = network => async dispatch => {
+export const settingsUpdateNetwork = (network: Network) => async (
+  dispatch: AppDispatch
+) => {
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
   await web3SetHttpProvider(network);
   try {
@@ -75,7 +124,9 @@ export const settingsUpdateNetwork = network => async dispatch => {
   }
 };
 
-export const settingsChangeLanguage = language => async dispatch => {
+export const settingsChangeLanguage = (language: string) => async (
+  dispatch: AppDispatch
+) => {
   updateLanguage(language);
   try {
     dispatch({
@@ -89,7 +140,9 @@ export const settingsChangeLanguage = language => async dispatch => {
   }
 };
 
-export const settingsChangeNativeCurrency = nativeCurrency => async dispatch => {
+export const settingsChangeNativeCurrency = (nativeCurrency: string) => async (
+  dispatch: AppDispatch
+) => {
   dispatch(dataResetState());
   dispatch(explorerClearState());
   try {
@@ -106,7 +159,7 @@ export const settingsChangeNativeCurrency = nativeCurrency => async dispatch => 
 };
 
 // -- Reducer --------------------------------------------------------------- //
-export const INITIAL_STATE = {
+export const INITIAL_STATE: SettingsState = {
   accountAddress: '',
   chainId: 1,
   language: 'en',
@@ -114,7 +167,7 @@ export const INITIAL_STATE = {
   network: networkTypes.mainnet,
 };
 
-export default (state = INITIAL_STATE, action) => {
+export default (state = INITIAL_STATE, action: SettingsStateUpdateAction) => {
   switch (action.type) {
     case SETTINGS_UPDATE_SETTINGS_ADDRESS:
       return {
