@@ -8,9 +8,9 @@ import { Text } from '../../text';
 import styled from 'styled-components';
 import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
 import { useTheme } from '../../../context/ThemeContext';
-import { measureText } from '../../../utils';
-import { fonts } from '@rainbow-me/styles';
-
+import { useReverseAddressDomainLookup } from '@rainbow-me/hooks';
+import { isHexString } from '@ethersproject/bytes';
+import { abbreviations } from '../../../utils';
 
 /**
  * Requirements: 
@@ -53,7 +53,7 @@ const TokenHistory = ({
   const [contractAddress, setContractAddress] = useState("");
   const [tokenID, setTokenID] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const { isDarkMode, colors } = useTheme();
+  const { colors } = useTheme();
 
   useEffect(async() => {
     const tokenInfoArray = contractAndToken.split("/");
@@ -64,11 +64,59 @@ const TokenHistory = ({
   //Query opensea using the contract address + tokenID
   useEffect(async() => {
     await apiGetTokenHistory(contractAddress, tokenID)
-    .then(result => {
-      setTokenHistory(result);
+    .then(data => {
+      setTokenHistory(data);
       setIsLoading(false);
     });
   }, [contractAddress, tokenID]);
+
+  // const setDataAddresses = async(data) => {
+  //   var newData;
+
+  //   for await (const item of data) {
+  //     if (item.event_type == eventTypes.TRANSFER) {
+  //       const newAddy = await getAddress(item.to_account)
+  //       newData.push({
+  //         event_type: item.event_type,
+  //         created_date: item.created_date,
+  //         from_account: item.from_account,
+  //         to_account: newAddy,
+  //         sale_amount: item.sale_amount,
+  //         list_amount: list_amount
+  //       });
+  //     }
+  //     else {
+  //       newData.push({
+  //         event_type: item.event_type,
+  //         created_date: item.created_date,
+  //         from_account: item.from_account,
+  //         to_account: item.to_account,
+  //         sale_amount: item.sale_amount,
+  //         list_amount: list_amount
+  //       });
+  //     }
+  //   }
+    
+
+    
+  // }
+ 
+  const getAddress = async(address) => {
+    const addy = await useReverseAddressDomainLookup(address);
+
+    //No ens name
+    if (isHexString(addy)) {
+      const abbrevAddy = abbreviations.address(addy, 2) 
+      logger.log(abbrevAddy);
+
+      return abbrevAddy;
+    } 
+    const abbrevENS = abbreviations.formatAddressForDisplay(addy) 
+    logger.log(abbrevENS);
+
+    return abbrevENS;
+
+  };
 
   const Gradient = styled(RadialGradient).attrs(
     ({ theme: { colors } }) => ({
@@ -113,6 +161,8 @@ const TokenHistory = ({
     right: 6;
   `;
 
+
+
   const renderItem = ({ item, index }) => {
 
     var isFirst = false;
@@ -128,7 +178,8 @@ const TokenHistory = ({
       case eventTypes.TRANSFER:
         symbol = eventSymbols.TRANSFER;
         phrase = eventPhrases.TRANSFER;
-        suffix = `${item.to_account}`;
+        var temp = abbreviations.address(item.to_account, 2)
+        suffix = `${temp}`;
         return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst });
 
       case eventTypes.MINT:
@@ -163,13 +214,11 @@ const TokenHistory = ({
 
     return (
       <Column>
-      
         <GradientRow> 
           <Gradient color={colors} />
           { isFirst ? <EmptyView /> : <LineView /> }
         </GradientRow>
         
-
         <InnerColumn>
           <DateRow>
             <Text
@@ -201,20 +250,26 @@ const TokenHistory = ({
             </Text>
           </Row>
         </InnerColumn>
-        
-
       </Column>
     )
   }
-
+  
   return (
-    <FlatList
-      data={tokenHistory}
-      renderItem={({item, index}) => renderItem({ item, index })}
-      horizontal={true}
-      inverted={true}
-      showsHorizontalScrollIndicator={false}
-    />
+    <View>
+      {
+        isLoading ?
+        <Text style = {{ color: '#FFFFFF'}}> loading </Text>
+        :
+        <FlatList
+          data={tokenHistory}
+          renderItem={({item, index}) => renderItem({ item, index })}
+          horizontal={true}
+          inverted={true}
+          showsHorizontalScrollIndicator={false}
+        />
+      }
+    </View>
+    
   )
 }
 

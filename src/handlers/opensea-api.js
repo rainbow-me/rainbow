@@ -3,8 +3,6 @@ import { rainbowFetch } from '../rainbow-fetch';
 import NetworkTypes from '@rainbow-me/networkTypes';
 import { parseAccountUniqueTokens } from '@rainbow-me/parsers';
 import logger from 'logger';
-import { abbreviations } from '../utils';
-import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { UNISWAP_PAIRS_HISTORICAL_BULK_QUERY } from 'src/apollo/queries';
 import { fromWei } from '@rainbow-me/utilities';
 
@@ -103,7 +101,7 @@ export const apiGetTokenHistory = async (
     }
     
     //Not every event type has all the fields, so based on the type of event, we need to parse the respective fields
-    const result =  array.filter(function(event) {
+    const result = array.filter(function(event) {
       var event_type = event.event_type;
       if (event_type == "created" || event_type == "transfer" || event_type == "successful" || event_type == "cancelled") {
         return true;
@@ -143,10 +141,10 @@ export const apiGetTokenHistory = async (
         case "transfer":
           created_date = event.created_date;
           fro_acc = event.from_account.address;
-          to_account = abbreviations.address(event.to_account.address, 2);
+          to_account = event.to_account.address;
           sale_amount = "0";
           list_amount = "0";
-  
+
           if (fro_acc == "0x0000000000000000000000000000000000000000") {
             eventObject = {
               event_type: 'mint',
