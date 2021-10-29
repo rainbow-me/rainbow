@@ -56,7 +56,8 @@ const PulseIndex = () => {
       nativeCurrency
     );
 
-    analytics.track('Discover: Pressed DPI Button');
+    analytics.track('Pressed DPI Button', { category: 'discover' });
+
     navigate(Routes.TOKEN_INDEX_SHEET, {
       asset,
       backgroundOpacity: 1,

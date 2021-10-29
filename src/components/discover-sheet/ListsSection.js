@@ -233,7 +233,8 @@ export default function ListSection() {
 
   const handlePress = useCallback(
     item => {
-      analytics.track('Discover: Pressed List Item', {
+      analytics.track('Pressed List Item', {
+        category: 'discover',
         selectedList,
         symbol: item.symbol,
       });

@@ -69,7 +69,8 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
       )[0];
     }
 
-    analytics.track('Discover: Pressed Pools Item', {
+    analytics.track('Pressed Pools Item', {
+      category: 'discover',
       symbol: poolAsset.tokenNames,
       type: item.attribute,
     });

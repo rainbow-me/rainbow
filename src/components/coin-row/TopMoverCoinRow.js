@@ -80,7 +80,8 @@ const TopMoverCoinRow = asset => {
   } = asset;
   const handlePress = useCallback(() => {
     const moverOrLoser = change[0] === '+' ? 'Mover' : 'Loser';
-    analytics.track('Discover: Pressed Top Mover', {
+    analytics.track('Pressed Top Mover', {
+      category: 'discover',
       moverOrLoser,
       symbol,
       truncatedName,
