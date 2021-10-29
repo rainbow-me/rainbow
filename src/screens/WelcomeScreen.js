@@ -1,4 +1,5 @@
 import MaskedView from '@react-native-community/masked-view';
+import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -464,7 +465,7 @@ export default function WelcomeScreen() {
         borderWidth: ios ? 0 : 3,
         width: 230 + (ios ? 0 : 6),
       },
-      text: 'Get a new wallet',
+      text: lang.t('wallet.new.create_wallet'),
       textColor: colors.white,
     };
   }, [rValue]);
@@ -489,7 +490,7 @@ export default function WelcomeScreen() {
         backgroundColor: colors.blueGreyDarkLight,
         width: 248,
       },
-      text: 'I already have one',
+      text: lang.t('wallet.new.already_have_wallet'),
       textColor: colors.alpha(colors.blueGreyDark, 0.8),
     };
   }, [rValue]);

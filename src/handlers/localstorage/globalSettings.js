@@ -26,7 +26,7 @@ export const getPinAuthAttemptsLeft = () =>
 export const savePinAuthAttemptsLeft = amount =>
   saveGlobal(PIN_AUTH_ATTEMPTS_LEFT, amount);
 
-export const getLanguage = () => getGlobal(LANGUAGE, 'en');
+export const getLanguage = () => getGlobal(LANGUAGE, 'fr');
 
 export const saveLanguage = language => saveGlobal(LANGUAGE, language);
 

@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Animated, { Easing } from 'react-native-reanimated';
@@ -134,7 +135,7 @@ SavingsListHeader.defaultProps = {
   emoji: 'sunflower',
   savingsSumValue: '0',
   showSumValue: false,
-  title: 'Savings',
+  title: lang.t('account.tab_savings'),
 };
 
 export default SavingsListHeader;

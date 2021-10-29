@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Centered, RowWithMargins } from '../layout';
@@ -15,7 +16,7 @@ const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => {
         uppercase
         weight="semibold"
       >
-        Savings
+        {lang.t('savings.label')}
       </Text>
       <DollarFigure decimals={2} value={balance} />
       <RowWithMargins align="center" margin={4} marginTop={1}>

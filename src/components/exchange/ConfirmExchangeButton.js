@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/native';
+import lang from 'i18n-js';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
@@ -93,6 +94,23 @@ export default function ConfirmExchangeButton({
       ],
     };
   }, [colorForAsset, colors, isDarkMode, isSwapDetailsRoute]);
+
+  /* leaving this here so u know the 🔑's
+    let label =
+    type === ExchangeModalTypes.deposit
+      ? lang.t('button.confirm_exchange.deposit')
+      : type === ExchangeModalTypes.withdrawal
+      ? lang.t('button.confirm_exchange.withdraw')
+      : lang.t('button.confirm_exchange.swap');
+  if (!isSufficientBalance) {
+    label = lang.t('button.confirm_exchange.insuffecient_funds');
+  } else if (!isSufficientGas) {
+    label = lang.t('button.confirm_exchange.insuffecient_eth');
+  } else if (slippage > SlippageWarningTheshold) {
+    label = lang.t('button.confirm_exchange.swap_anyway');
+  } else if (disabled) {
+    label = lang.t('button.confirm_exchange.enter_amount');
+    */
 
   let label = '';
   if (type === ExchangeModalTypes.deposit) {

@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
 import { Linking } from 'react-native';
 import { neverRerender } from '../../../utils';
@@ -33,7 +34,7 @@ function WithdrawActionButton({
     <SheetActionButton
       {...props}
       color={color}
-      label="􀁏 Withdraw"
+      label={`􀁏 ${lang.t('pools.withdraw')}`}
       onPress={handlePress}
     />
   );

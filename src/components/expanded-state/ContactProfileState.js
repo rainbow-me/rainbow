@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import styled from 'styled-components';
@@ -119,7 +120,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
         <CopyTooltip
           onHide={handleTriggerFocusInput}
           textToCopy={address}
-          tooltipText="Copy Address"
+          tooltipText={lang.t('wallet.settings.copy_address')}
         >
           <AddressAbbreviation address={address} />
         </CopyTooltip>
@@ -133,7 +134,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           value={value}
         >
           <SubmitButtonLabel value={value}>
-            {isContact ? 'Done' : 'Add Contact'}
+            {isContact ? lang.t('button.done') : lang.t('contacts.options.add')}
           </SubmitButtonLabel>
         </SubmitButton>
         <ButtonPressAnimation
@@ -157,7 +158,9 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
               size="lmedium"
               weight="regular"
             >
-              {isContact ? 'Delete Contact' : 'Cancel'}
+              {isContact
+                ? lang.t('contacts.options.delete')
+                : lang.t('contacts.options.cancel')}
             </Text>
           </Centered>
         </ButtonPressAnimation>

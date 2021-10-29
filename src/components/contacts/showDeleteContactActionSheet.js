@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
@@ -14,7 +15,10 @@ const showDeleteContactActionSheet = ({
       message: `Are you sure you want to delete "${
         nickname || address
       }" from your contacts?`,
-      options: ['Delete Contact', 'Cancel'],
+      options: [
+        lang.t('contacts.options.delete'),
+        lang.t('contacts.options.cancel'),
+      ],
     },
     async buttonIndex => {
       if (buttonIndex === 0) {

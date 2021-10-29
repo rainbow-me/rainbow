@@ -151,7 +151,7 @@ const withUniswapSection = (
   return {
     data: uniswap,
     header: {
-      title: 'Pools',
+      title: lang.t('account.tab_investments'),
       totalItems: uniswap.length,
       totalValue: convertAmountToNativeDisplay(uniswapTotal, nativeCurrency),
     },
@@ -221,7 +221,7 @@ const coinEditContextMenu = (
         ? {
             cancelButtonIndex: 0,
             dynamicOptions: () => {
-              return ['Cancel', 'Edit'];
+              return [lang.t('button.cancel'), lang.t('button.edit')];
             },
             onPressActionSheet: async index => {
               if (index === 1) {

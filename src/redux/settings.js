@@ -108,7 +108,7 @@ export const settingsChangeNativeCurrency = nativeCurrency => async dispatch => 
 export const INITIAL_STATE = {
   accountAddress: '',
   chainId: 1,
-  language: 'en',
+  language: 'fr',
   nativeCurrency: 'USD',
   network: networkTypes.mainnet,
 };

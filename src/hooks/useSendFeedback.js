@@ -1,4 +1,5 @@
 import Clipboard from '@react-native-community/clipboard';
+import lang from 'i18n-js';
 import { debounce } from 'lodash';
 import { useCallback } from 'react';
 import Mailer from 'react-native-mail';
@@ -15,16 +16,15 @@ const FeedbackErrorAlert = () =>
     buttons: [
       {
         onPress: setClipboardToFeedbackEmail,
-        text: 'Copy email address',
+        text: lang.t('send_feedback.copy_email'),
       },
       {
         style: 'cancel',
-        text: 'No thanks',
+        text: lang.t('button.no_thanks'),
       },
     ],
-    message:
-      'Would you like to manually copy our feedback email address to your clipboard?',
-    title: 'Error launching email client',
+    message: lang.t('send_feedback.email_error.description'),
+    title: lang.t('send_feedback.email_error.label'),
   });
 
 const handleMailError = debounce(

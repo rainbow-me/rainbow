@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components';
@@ -83,11 +84,11 @@ const CoinDividerOpenButton = ({
           <View>
             <CoinDividerButtonLabel
               isVisible={isSmallBalancesOpen}
-              label="All"
+              label={lang.t('button.all')}
             />
             <CoinDividerButtonLabel
               isVisible={!isSmallBalancesOpen}
-              label="Less"
+              label={lang.t('button.less')}
             />
           </View>
           <CaretContainer>

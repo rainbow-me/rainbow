@@ -1,4 +1,4 @@
-import { upperFirst } from 'lodash';
+import lang from 'i18n-js';
 import React, { useEffect } from 'react';
 import Animated, {
   Transition,
@@ -94,7 +94,7 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate, theme }) => {
               : colors.alpha(colors.blueGreyDark, 0.8)
           }
         >
-          {upperFirst(label)}
+          {lang.t(`swap.gas.${label}`)}
         </GasSpeedLabel>
       </GasSpeedRow>
     </TransitionContainer>

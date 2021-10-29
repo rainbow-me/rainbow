@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
@@ -147,7 +148,7 @@ export default function WalletProfileState({
         <ProfileNameInput
           onChange={setValue}
           onSubmitEditing={handleSubmit}
-          placeholder="Name your wallet"
+          placeholder={lang.t('wallet.new.name_wallet')}
           ref={inputRef}
           selectionColor={colors.avatarColor[color]}
           testID="wallet-info-input"
@@ -157,7 +158,7 @@ export default function WalletProfileState({
           <CopyTooltip
             onHide={handleTriggerFocusInput}
             textToCopy={address}
-            tooltipText="Copy Address"
+            tooltipText={lang.t('wallet.copy_address')}
           >
             <WalletProfileAddressText address={address} />
           </CopyTooltip>
@@ -166,7 +167,11 @@ export default function WalletProfileState({
       <ColumnWithDividers dividerRenderer={WalletProfileDivider} width="100%">
         <WalletProfileButton onPress={handleSubmit}>
           <BiometricButtonContent
-            label={isNewProfile ? `${actionType} Wallet` : 'Done'}
+            label={
+              isNewProfile
+                ? lang.t('wallet.new.create_wallet')
+                : lang.t('button.done')
+            }
             showIcon={actionType === 'Create'}
             testID="wallet-info-submit-button"
           />
@@ -178,7 +183,7 @@ export default function WalletProfileState({
             weight="medium"
             {...(android && { lineHeight: 21 })}
           >
-            Cancel
+            {lang.t('button.cancel')}
           </WalletProfileButtonText>
         </WalletProfileButton>
       </ColumnWithDividers>

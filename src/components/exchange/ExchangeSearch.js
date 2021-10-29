@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
@@ -118,7 +119,7 @@ const ExchangeSearch = (
     onFocus,
     searchQuery,
     testID,
-    placeholderText = 'Search Uniswap',
+    placeholderText = lang.t('button.search'),
     clearTextOnFocus = true,
   },
   ref

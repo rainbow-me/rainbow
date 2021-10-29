@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components';
@@ -97,17 +98,17 @@ export default function BackupManualStep() {
     <Fragment>
       <Masthead>
         <MastheadIcon>􀉆</MastheadIcon>
-        <MastheadTitle>Back up manually</MastheadTitle>
+        <MastheadTitle>{lang.t('back_up.manual.label')}</MastheadTitle>
         <MastheadDescription>
           <MastheadDescription weight="semibold">
             {type === WalletTypes.privateKey
-              ? `This is the key to your wallet!`
-              : `These words are the keys to your wallet!`}
+              ? lang.t('back_up.manual.pkey.these_keys')
+              : lang.t('back_up.manual.seed.these_keys')}
           </MastheadDescription>
           <Nbsp />
           {type === WalletTypes.privateKey
-            ? `Copy it and save it in your password manager, or in another secure spot.`
-            : `Write them down or save them in your password manager.`}
+            ? lang.t('back_up.manual.pkey.save_them')
+            : lang.t('back_up.manual.seed.save_them')}
         </MastheadDescription>
       </Masthead>
       <Content isTallPhone={isTallPhone} paddingHorizontal={30}>
@@ -121,9 +122,10 @@ export default function BackupManualStep() {
           <View marginTop={30}>
             <SheetActionButton
               color={colors.appleBlue}
-              fullWidth
-              label={`􀁣 I’ve saved ${
-                type === WalletTypes.privateKey ? 'my key' : 'these words'
+              label={`􀁣  ${
+                type === WalletTypes.privateKey
+                  ? lang.t('back_up.manual.pkey.confirm_save')
+                  : lang.t('back_up.manual.seed.confirm_save')
               }`}
               onPress={onComplete}
               size="big"
