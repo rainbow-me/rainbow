@@ -5,6 +5,9 @@ import { parseAccountUniqueTokens } from '@rainbow-me/parsers';
 import logger from 'logger';
 import { UNISWAP_PAIRS_HISTORICAL_BULK_QUERY } from 'src/apollo/queries';
 import { fromWei } from '@rainbow-me/utilities';
+import { useAddressToENS } from '@rainbow-me/hooks';
+import { isHexString } from '@ethersproject/bytes';
+import { abbreviations } from '../utils';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
 export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;
@@ -65,6 +68,20 @@ export const apiGetTokenHistory = async (
   contractAddress,
   tokenID
 ) => {
+  const getAddress = async(address) => {
+    const addy = await useAddressToENS(address);
+
+    //No ens name
+    if (isHexString(addy)) {
+      const abbrevAddy = abbreviations.address(addy, 2);
+      return abbrevAddy;
+    } 
+    const abbrevENS = abbreviations.formatAddressForDisplay(addy);
+
+    return abbrevENS;
+
+  };
+
   try {
     const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=299`;
     logger.log(url);
@@ -101,7 +118,7 @@ export const apiGetTokenHistory = async (
     }
     
     //Not every event type has all the fields, so based on the type of event, we need to parse the respective fields
-    const result = array.filter(function(event) {
+    return Promise.all(array.filter(function(event) {
       var event_type = event.event_type;
       if (event_type == "created" || event_type == "transfer" || event_type == "successful" || event_type == "cancelled") {
         return true;
@@ -109,7 +126,7 @@ export const apiGetTokenHistory = async (
       return false;
       
     })
-    .map(function(event) {
+    .map(async function(event) {
       
       var event_type = event.event_type;
       var eventObject;
@@ -139,33 +156,33 @@ export const apiGetTokenHistory = async (
 
           break;
         case "transfer":
-          created_date = event.created_date;
-          fro_acc = event.from_account.address;
-          to_account = event.to_account.address;
-          sale_amount = "0";
-          list_amount = "0";
-
-          if (fro_acc == "0x0000000000000000000000000000000000000000") {
-            eventObject = {
-              event_type: 'mint',
-              created_date,
-              from_account: "0x123",
-              to_account,
-              sale_amount,
-              list_amount
-            };
-          }
-          else {
-            eventObject = {
-              event_type,
-              created_date,
-              from_account,
-              to_account,
-              sale_amount,
-              list_amount
-            };
-          }
-
+          await getAddress(event.to_account.address)
+            .then((address) => {
+              created_date = event.created_date;
+              fro_acc = event.from_account.address;
+              sale_amount = "0";
+              list_amount = "0";
+              if (fro_acc == "0x0000000000000000000000000000000000000000") {
+                eventObject = {
+                  event_type: 'mint',
+                  created_date,
+                  from_account: "0x123",
+                  to_account: address,
+                  sale_amount,
+                  list_amount
+                };
+              }
+              else {
+                eventObject = {
+                  event_type,
+                  created_date,
+                  from_account,
+                  to_account: address,
+                  sale_amount,
+                  list_amount
+                };
+              }
+            })
           break;
         case "successful":
           created_date = event.created_date;
@@ -206,9 +223,7 @@ export const apiGetTokenHistory = async (
       }
       
       return eventObject;
-    })
-
-    return result;
+    }))
     
   } catch (error) {
     logger.log(error);

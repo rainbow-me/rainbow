@@ -8,7 +8,7 @@ import { Text } from '../../text';
 import styled from 'styled-components';
 import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
 import { useTheme } from '../../../context/ThemeContext';
-import { useReverseAddressDomainLookup } from '@rainbow-me/hooks';
+import { useAddressToENS } from '@rainbow-me/hooks';
 import { isHexString } from '@ethersproject/bytes';
 import { abbreviations } from '../../../utils';
 
@@ -102,7 +102,7 @@ const TokenHistory = ({
   // }
  
   const getAddress = async(address) => {
-    const addy = await useReverseAddressDomainLookup(address);
+    const addy = await useAddressToENS(address);
 
     //No ens name
     if (isHexString(addy)) {
