@@ -31,6 +31,22 @@ const AssetActionsEnum = {
 };
 
 const AssetActions = {
+  [AssetActionsEnum.copyTokenID]: {
+    actionKey: AssetActionsEnum.copyTokenID,
+    actionTitle: 'Copy Token ID',
+    icon: {
+      iconType: 'SYSTEM',
+      iconValue: 'square.on.square',
+    },
+  },
+  [AssetActionsEnum.download]: {
+    actionKey: AssetActionsEnum.download,
+    actionTitle: 'Save to Photos',
+    icon: {
+      iconType: 'SYSTEM',
+      iconValue: 'photo.on.rectangle.angled',
+    },
+  },
   [AssetActionsEnum.etherscan]: {
     actionKey: AssetActionsEnum.etherscan,
     actionTitle: 'View on Etherscan',
@@ -45,22 +61,6 @@ const AssetActions = {
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'safari.fill',
-    },
-  },
-  [AssetActionsEnum.copyTokenID]: {
-    actionKey: AssetActionsEnum.copyTokenID,
-    actionTitle: 'Copy Token ID',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'square.on.square',
-    },
-  },
-  [AssetActionsEnum.download]: {
-    actionKey: AssetActionsEnum.download,
-    actionTitle: 'Save on device',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'square.and.arrow.down',
     },
   },
 };
@@ -204,11 +204,6 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         {
           ...AssetActions[AssetActionsEnum.etherscan],
         },
-        {
-          ...AssetActions[AssetActionsEnum.copyTokenID],
-          discoverabilityTitle:
-            asset.id.length > 15 ? `${asset.id.slice(0, 15)}...` : asset.id,
-        },
         ...(!isSVG
           ? [
               {
@@ -216,6 +211,11 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
               },
             ]
           : []),
+        {
+          ...AssetActions[AssetActionsEnum.copyTokenID],
+          discoverabilityTitle:
+            asset.id.length > 15 ? `${asset.id.slice(0, 15)}...` : asset.id,
+        },
       ],
       menuTitle: '',
     };
