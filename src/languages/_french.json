@@ -499,15 +499,14 @@
         "send_eth": "or send ETH to your wallet :)",
         "send_description": "Send from Coinbase or another exchange—or ask a friend! :)",
         "other_amount": "Other amount :) "
-    }
-  },
-  "send_feedback":{
-    "copy_email": "Copy email address :)",
-    "email_error":{
-      "label": "Error launching email client :)",
-      "description": "Would you like to manually copy our feedback email address to your clipboard? :)"
-      } 
-
+      }
+    },
+    "send_feedback": {
+      "copy_email": "Copy email address :)",
+      "email_error": {
+        "label": "Error launching email client :)",
+        "description": "Would you like to manually copy our feedback email address to your clipboard? :)"
+      }
     }
   }
 }
