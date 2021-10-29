@@ -113,7 +113,10 @@ export default function QRCodeScanner({
       ) : (
         <Fragment>
           <QRCodeScannerNeedsAuthorization />
-          <ContentOverlay contentPositionTop={contentPositionTop + 350}>
+          <ContentOverlay
+            contentPositionTop={contentPositionTop + 350}
+            pointerEvents="box-none"
+          >
             <ConnectedDapps />
           </ContentOverlay>
         </Fragment>
