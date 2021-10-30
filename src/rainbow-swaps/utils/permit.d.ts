@@ -1,17 +1,18 @@
+import { BigNumberish } from '@ethersproject/bignumber';
 import { Wallet } from '@ethersproject/wallet';
-import { EthereumAddress } from '..';
+import { ChainId, EthereumAddress } from '../types';
 export interface MessageParam {
     nonce: number;
     spender: EthereumAddress;
     holder?: EthereumAddress;
     allowed?: boolean;
     expiry?: number;
-    value?: string;
+    value?: BigNumberish;
     deadline?: number;
     owner?: EthereumAddress;
 }
 export interface DomainParam {
-    chainId: number;
+    chainId: ChainId;
     name: string;
     verifyingContract: EthereumAddress;
     version?: string;

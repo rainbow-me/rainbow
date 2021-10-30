@@ -28,13 +28,11 @@ export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins.json';
 export { default as smartContractMethods } from './smartcontract-methods.json';
 export {
-  CURATED_UNISWAP_TOKENS,
-  RAINBOW_TOKEN_LIST,
-  TOKEN_SAFE_LIST,
   UNISWAP_TESTNET_TOKEN_LIST,
   UNISWAP_V1_EXCHANGE_ABI,
   UNISWAP_V2_ROUTER_ABI,
 } from './uniswap';
+export { rainbowTokenList } from './rainbow-token-list';
 export {
   getWyreErrorOverride,
   wyreSupportedCountries,

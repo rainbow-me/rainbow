@@ -219,6 +219,11 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
+  it('Should open send sheet after tapping send fab', async () => {
+    await Helpers.waitAndTap('send-fab');
+    await Helpers.checkIfVisible('send-asset-form-field');
+  });
+
   it('Should swap USDC -> ETH (via tokenToETH)', async () => {
     await Helpers.tap('exchange-fab');
     await Helpers.tap('exchange-modal-input-selection-button');
