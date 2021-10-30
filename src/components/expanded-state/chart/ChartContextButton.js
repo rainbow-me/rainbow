@@ -68,7 +68,6 @@ export default function ChartContextButton({ asset, color }) {
 
   return (
     <ContextCircleButton
-      $
       flex={0}
       onPressActionSheet={handleActionSheetPress}
       options={options}
