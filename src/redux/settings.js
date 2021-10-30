@@ -7,7 +7,6 @@ import {
 } from '../handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '../handlers/web3';
 import networkTypes from '../helpers/networkTypes';
-import { updateLanguage } from '../languages';
 
 import { ethereumUtils } from '../utils';
 import { dataResetState } from './data';
@@ -74,7 +73,6 @@ export const settingsUpdateNetwork = network => async dispatch => {
 };
 
 export const settingsChangeLanguage = language => async dispatch => {
-  updateLanguage(language);
   try {
     dispatch({
       payload: language,
