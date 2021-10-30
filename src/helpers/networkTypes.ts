@@ -7,7 +7,6 @@ export enum Network {
   polygon = 'polygon',
   rinkeby = 'rinkeby',
   ropsten = 'ropsten',
-  xdai = 'xdai',
 }
 
 // We need to keep this one until
@@ -21,5 +20,4 @@ export default {
   polygon: 'polygon' as Network,
   rinkeby: 'rinkeby' as Network,
   ropsten: 'ropsten' as Network,
-  xdai: 'xdai' as Network,
 };

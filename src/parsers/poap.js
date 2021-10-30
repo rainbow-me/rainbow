@@ -1,6 +1,5 @@
 import { get } from 'lodash';
 import { AssetTypes } from '@rainbow-me/entities';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 /**
  * @desc parse poaps
@@ -40,7 +39,6 @@ export const parsePoaps = data => {
       isSendable: false,
       lastPrice: null,
       name: event.name,
-      network: networkTypes.xdai,
       permalink: event.event_url,
       traits: [
         {
