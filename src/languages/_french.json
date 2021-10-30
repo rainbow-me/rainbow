@@ -90,14 +90,14 @@
       "edit": "Modifier",
       "delete": "Effacer",
       "done": "Terminé",
-      "pin": "Epingler", 
-      "unpin":"Détacher",
+      "pin": "Epingler",
+      "unpin": "Détacher",
       "hide": "Cacher",
       "unhide": "Afficher",
       "ok": "D'accord",
       "loading": "Se charge",
       "enter": "Entrer",
-      "search": "Cherche",
+      "exchange_search_uniswap": "Cherche",
       "swap": "Swap",
       "import": "Importer",
       "paste": "Coller",
@@ -105,7 +105,7 @@
       "share": "Share :)",
       "no_thanks": "No thanks :)",
       "etherscan": "🔍 Affichage à Etherscan :)",
-      "confirm_exchange":{
+      "confirm_exchange": {
         "deposit": "Tenir pour Déposer",
         "withdraw": "Tenir pour Retirer",
         "swap": "Tenir pour Swap",
@@ -114,8 +114,6 @@
         "enter_amount": "Entrez un Montant",
         "swap_anyway": "Echanger quand Même"
       }
-      
-
     },
     "input": {
       "recipient_address": "Adresse du destinataire",
@@ -164,46 +162,43 @@
       "helper_price": "Prix",
       "helper_min": "Min",
       "helper_max": "Max",
-      "back_up":{
+      "back_up": {
         "label": "Back up your wallet :)",
         "label_plural": "Back up your wallets :)",
         "description": "Don't lose your wallet! Save an encrypted copy to iCloud. :)",
         "imported_title": "Would you like to back up? :)",
         "imported_description": "You have wallets that have not been backed up yet. Back them up in case you lose this device. :)",
-        "button":{
+        "button": {
           "cloud": "Back up to :)",
           "manual": "Back up manually :) ",
           "now": "Back up now :)",
           "later": "Maybe later : )"
         },
-        "alerts":{
-          "cloud_not_enabled":{
-            "label":"iCloud not enabled :)",
+        "alerts": {
+          "cloud_not_enabled": {
+            "label": "iCloud not enabled :)",
             "description": "Looks like iCloud drive is not enabled on your device. Do you want to see how to enable it? :)",
             "show_me": "Yes, Show me :)",
             "no_thanks": "No thanks :)"
           }
-
         }
-
       }
     },
-   "back_up":{
-     "manual": {
+    "back_up": {
+      "manual": {
         "label": "Back up manually :)",
-        
-          "pkey":{
-            "these_keys": "This is the key to your wallet! :)",
-            "save_them": "Copy it and save it in your password manager, or in another secure spot. :)",
-            "confirm_save": "I've saved my key :)"
-          },
-          "seed":{
-            "these_keys": "These words are the keys to your wallet! :)",
-            "save_them": "Write them down or save them in your password manager. :)",
-            "confirm_save": "I've saved these words :)"
-          }
-    }
-   },
+        "pkey": {
+          "these_keys": "This is the key to your wallet! :)",
+          "save_them": "Copy it and save it in your password manager, or in another secure spot. :)",
+          "confirm_save": "I've saved my key :)"
+        },
+        "seed": {
+          "these_keys": "These words are the keys to your wallet! :)",
+          "save_them": "Write them down or save them in your password manager. :)",
+          "confirm_save": "I've saved these words :)"
+        }
+      }
+    },
     "message": {
       "web3_not_available": "Veuillez installer l’extension Chrome de MetaMask",
       "web3_not_unlocked": "Veuillez déverrouiller votre wallet MetaMask",
@@ -323,10 +318,11 @@
         "to": "À",
         "edit": "Moadifier le Portefeuille",
         "delete": "Supprimer le Portefeuille",
-        "delete_confirm":"Voulez-vous vraiment supprimer ce portefeuille",
+        "delete_confirm": "Voulez-vous vraiment supprimer ce portefeuille",
         "create_new": "Créez un nouveau portefeuille",
         "add_existing": "Ajouter un portefeuille existant",
-        "import_wallet": "Importer un portefeuille"
+        "import_wallet": "Importer un portefeuille",
+        "view_on": "View on %{blockExplorerName} :)"
       },
       "add_cash": {
         "card_notice": "Works with most debit cards :)",
@@ -346,16 +342,16 @@
         "need_help_button_label": "Get Support :)",
         "need_help_button_email_subject": "support :)"
       },
-      "new":{
-        "name_wallet":"Nommez votre portefeuille" ,
-        "create_wallet":"Créez un portefeuille",
+      "new": {
+        "name_wallet": "Nommez votre portefeuille",
+        "create_wallet": "Créez un portefeuille",
         "already_have_wallet": "I already have on :) ",
         "enter_seeds": "Phrase de départ, clé privée, adresse Ethereum ou nom ENS",
         "ens_invalid": "Ce n'est pas un nom ENS valide",
         "ens_try_again": "Désolé, nous ne pouvons pas ajouter ce nom ENS pour le moment. Veuillez réessayer plus tard!"
       },
-      "restore":{
-        "phrase_key":{
+      "restore": {
+        "phrase_key": {
           "label": "Restore with a recovery phrase or private key :) ",
           "description": "Use your recovery phrase from Rainbow or another crypto wallet :)"
         },
@@ -363,9 +359,7 @@
           "label": "Watch an Ethereum address  :) ",
           "description": "Watch a public address or ENS name :)"
         }
-
       },
-
       "authenticate": {
         "please": "Veuillez vous authentifier",
         "please_seed_phrase": "Veuillez vous authentifier pour afficher votre clé mnémonique"
@@ -414,83 +408,84 @@
       "receive": "Recovoir"
     },
     "contacts": {
-      "options":{
+      "options": {
         "add": "Ajouter le contact",
         "delete": "Effacer le contact",
         "edit": "Modifier le contact",
         "cancel": "Annuler"
       }
-
     },
-    "settings":{
+    "settings": {
       "label": "Réglages",
       "backup": "Sauvegarder",
       "currency": "Devise",
       "dev": "Developer Réglages :)",
       "language": "Langue",
-      "network": "Réseau", 
+      "network": "Réseau",
       "share": "Share Rainbow:)",
-      "follow_twitter": "Follow Us on Twitter :)" ,
+      "follow_twitter": "Follow Us on Twitter :)",
       "feedback": "Feedback & Support :)",
       "review": "Review Rainbow :)",
       "back": "Retour",
       "done": "Terminé"
     },
-    "walletconnect":{
-      "scan_to_send":{
+    "walletconnect": {
+      "scan_to_send": {
         "label": "Numériser pour envoyer",
         "description": "Vous pouvez scanner un code QR pour envoyer de l'argent"
       },
-      "scan_to_connect":{
-        "label": "Scannez pour connecter votre portefeuille" ,
+      "scan_to_connect": {
+        "label": "Scannez pour connecter votre portefeuille",
         "description": "WalletConnect vous permet de vous connecter à des sites Web de bureau en scannant un code QR"
       },
       "learn_more": "Apprendre encore plus",
       "paste_uri": {
-       "button": "Coller l'URI de session",
-       "message": "Collez l'URI WalletConnect ci-dessous",
-       "title": "Nouvelle session WalletConnect"
+        "button": "Coller l'URI de session",
+        "message": "Collez l'URI WalletConnect ci-dessous",
+        "title": "Nouvelle session WalletConnect"
       }
     },
-    "swap":{
+    "swap": {
       "label": "Swap",
       "max": "Max",
       "choose_token": "Choisir le Jeton",
-      "gas":{
+      "gas": {
         "network_fee": "Frais de Réseau",
         "edit_price": "Modifier le prix du gaz",
+        "enter_price": "Enter Gas Price :)",
         "slow": "Lent",
         "normal": "Normal",
         "fast": "Rapide",
-        "custom": "Personnalisé" 
+        "custom": "Personnalisé"
       },
-      "warning":{
+      "warning": {
         "proceed_anyway": "Continuer malgré tout",
-        "too_low":{
+        "edit_price": "Modifier le prix du gaz",
+        "too_low": {
           "message": "Il est recommandé de fixer un prix du gaz plus élevé pour éviter les problèmes.",
           "title": "Prix de l'essence bas - la transaction pourrait rester bloquée!"
         },
-        "too_high":{
+        "too_high": {
           "message": "Vérifiez à nouveau que vous avez saisi le montant correct. Vous paierez probablement plus que nécessaire!",
-          "title":  "Prix de l'essence élevé!"
+          "title": "Prix de l'essence élevé!"
         },
-        "invalid_price":{
+        "invalid_price": {
           "message": "Vous devez entrer un montant valide",
-          "title":  "Prix du gaz invalide"
+          "title": "Prix du gaz invalide"
         }
       },
-      "modal_types":{
+      "modal_types": {
         "deposit": "Dépôts dans",
         "withdraw": "Se retire dans",
         "confirm": "Confirme dans",
         "swap": "Swaps en"
       }
     },
-    "savings":{
+    "savings": {
       "label": "Epargne",
       "withdraw": "Retrait",
       "deposit": "Dépôt",
-      "earnings":{
+      "earnings": {
         "label": "Gains",
         "est": "Est.",
         "monthly": "Mensuel",
@@ -502,7 +497,7 @@
         "100_year": "100-Ans"
       }
     },
-    "pools":{
+    "pools": {
       "label": "Pools",
       "pool": "Pool",
       "per_share": "par action",
@@ -511,10 +506,9 @@
       "total_value": "Valeur totale",
       "withdraw": "Retrait",
       "deposit": "Dépôt"
-
     },
-    "add_funds":{
-      "interstitial":{
+    "add_funds": {
+      "interstitial": {
         "buy_eth": "To get started, buy some ETH with Apple Pay :)",
         "send_eth": "or send ETH to your wallet :)",
         "send_description": "Send from Coinbase or another exchange—or ask a friend! :)",

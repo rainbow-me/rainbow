@@ -29,7 +29,7 @@
         "link_title_browser": "Discover Trust DApp Browser",
         "button": "Connect to Trust Wallet"
       },
-	    "connect_walletconnect": {
+      "connect_walletconnect": {
         "description": "Scan a QR code to link your mobile wallet ",
         "description_mobile": "Connect to any wallet that supports ",
         "link_text": "using WalletConnect",
@@ -39,7 +39,7 @@
         "button": "Use WalletConnect",
         "button_mobile": "Connect with WalletConnect"
       },
- 			"reassurance": {
+      "reassurance": {
         "work_title": "How does Manager work?",
         "work": "This is a web-based tool to help you manage the funds in your wallet. It does this by connecting to your wallet through its Application Programming Interface (API). Here are some important points about how we designed Balance Manager:",
         "access_link": "No access to your funds",
@@ -93,25 +93,59 @@
       "show_less": "Show less",
       "unknown_token": "Unknown Token"
     },
+    "back_up": {
+      "manual": {
+        "label": "Your secret phrase"
+      },
+      "pkey": {
+        "these_keys": "This is the key to your wallet!",
+        "save_them": "Copy it and save it in your password manager, or in another secure spot.",
+        "confirm_save": "I’ve saved my key"
+      },
+      "seed": {
+        "these_keys": "These words are the keys to your wallet!",
+        "save_them": "Write them down or save them in your password manager.",
+        "confirm_save": "I’ve saved these words"
+      }
+    },
+    "add_funds": { "interstitial": { "other_amount": "Other amount" } },
     "button": {
+      "add_cash": "Add Cash",
+      "all": "All",
       "connect_walletconnect": "Use WalletConnect",
       "exchange": "Exchange",
-      "send": "Send",
+      "exchange_again": "Exchange Again",
+      "delete": "Delete",
       "disconnect_account": "Log Out",
       "donate": "Donate ETH",
+      "done": "Done",
+      "edit": "Edit",
+      "go_back": "Go Back",
+      "hide": "Hide",
       "receive": "Receive",
       "close": "Close",
       "confirm": "Confirm",
       "cancel": "Cancel",
-      "proceed": "Proceed",
-      "okay": "Okay",
-      "go_back": "Go Back",
-      "send_another": "Send Another",
-      "exchange_again": "Exchange Again",
+      "less": "Less",
+      "loading": "Loading",
       "notify_me": "Get notified",
+      "okay": "Okay",
+      "pin": "Pin",
+      "proceed": "Proceed",
+      "send": "Send",
+      "send_another": "Send Another",
       "try_again": "Try again",
       "learn_more": "Learn more",
+      "unhide": "Unhide",
+      "unpin": "Unpin",
       "view": "View"
+    },
+    "contacts": {
+      "options": {
+        "add": "Add Contact",
+        "delete": "Delete Contact",
+        "cancel": "Cancel"
+      }
     },
     "input": {
       "recipient_address": "Recipient Address",
@@ -128,6 +162,7 @@
     "modal": {
       "receive_title": "Receive to {{walletName}}",
       "exchange_title": "Exchange from {{walletName}}",
+      "exchange_search_uniswap": "Search Uniswap",
       "donate_title": "Send from {{walletName}} to Balance Manager",
       "send_title": "Send from {{walletName}}",
       "approve_tx": "Approve transaction on {{walletType}}",
@@ -213,6 +248,36 @@
       "sending": "Sending...",
       "generic_error": "Oops, something went wrong"
     },
+    "swap": {
+      "choose_token": "Choose Token",
+      "modal_types": {
+        "deposit": "Deposit",
+        "withdraw": "Withdraw",
+        "confirm": "Confirm",
+        "swap": "Swap"
+      },
+      "warning": {
+        "invalid_price": {
+          "message": "You need to enter a valid amount",
+          "title": "Invalid Gas Price"
+        },
+        "too_low": {
+          "title": "Low gas price–transaction might get stuck!",
+          "message": "Setting a higher gas price is recommended to avoid issues."
+        },
+        "too_high": {
+          "title": "High gas price!",
+          "message": "Double check that you entered the correct amount—you’re likely paying more than you need to!"
+        },
+        "proceed_anyway": "Proceed Anyway",
+        "edit_price": "Edit Gas Price"
+      },
+      "gas": {
+        "edit_price": "Edit Gas Price",
+        "enter_price": "Enter Gas Price",
+        "network_fee": "Network Fee"
+      }
+    },
     "time": {
       "days": {
         "long": {
@@ -273,13 +338,20 @@
     },
     "wallet": {
       "action": {
+        "create_new": "Create a new wallet",
+        "add_existing": "Add an existing wallet",
         "cancel": "Cancel",
+        "hide": "Hide",
         "input": "Transaction Input",
         "paste": "Paste",
+        "pin": "Pin",
         "reject": "Reject",
         "send": "Send",
         "to": "To",
-        "value": "Value"
+        "unpin": "Unpin",
+        "unhide": "Unhide",
+        "value": "Value",
+        "view_on": "View on %{blockExplorerName}"
       },
       "add_cash": {
         "card_notice": "Works with most debit cards",
@@ -328,6 +400,9 @@
         "error": "There has been an error loading the wallet. Please kill the app and retry.",
         "message": "Loading"
       },
+      "new": {
+        "name_wallet": "Name your wallet"
+      },
       "settings": {
         "copy_address": "Copy Address",
         "copy_seed_phrase": "Copy Secret Phrase",
@@ -353,12 +428,23 @@
         "request": "Transaction Request",
         "send": "Send Transaction"
       },
+      "restore": {
+        "phrase_key": {
+          "label": "Restore with a secret phrase or private key",
+          "description": "Use your secret phrase from Rainbow or another crypto wallet"
+        },
+        "watch": {
+          "label": "Watch an Ethereum address",
+          "description": "Watch a public address or ENS name"
+        }
+      },
       "unrecognized_qrcode": "Sorry, this QR code could not be recognized.",
       "unrecognized_qrcode_title": "Unrecognized QR Code",
       "wallet_connect": {
         "missing_fcm": "Unable to initialize WalletConnect: missing push notification token. Please try again.",
         "error": "Error initializing with WalletConnect"
-      }
+      },
+      "copy_address": "Copy Address"
     }
   }
 }

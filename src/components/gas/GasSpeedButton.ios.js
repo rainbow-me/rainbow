@@ -405,7 +405,7 @@ const GasSpeedButton = ({
           {
             onPress: () => inputRef.current?.focus(),
             style: lang.t('button.cancel'),
-            text: lang.t('swap.gas.edit_price'),
+            text: lang.t('swap.warning.edit_price'),
           },
         ],
         message: tooLow
@@ -542,11 +542,9 @@ const GasSpeedButton = ({
           >
             {inputFocused
               ? lang.t('button.done')
-              : `${
-                  customGasPriceInput
-                    ? lang.t('button.edit')
-                    : lang.t('button.enter')
-                } Gas Price`}
+              : customGasPriceInput
+              ? lang.t('swap.gas.edit_price')
+              : lang.t('swap.gas.enter_price')}
           </LittleBorderlessButton>
         )}
 

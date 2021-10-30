@@ -55,9 +55,11 @@ export default function ChartContextButton({ asset, color }) {
       ...(asset?.uniqueId === 'eth'
         ? []
         : [
-            `${lang.t('button.viewOn')} ${startCase(
-              ethereumUtils.getBlockExplorer(asset?.type)
-            )}`,
+            `🔍 ${lang.t('wallet.action.view_on', {
+              blockExplorerName: startCase(
+                ethereumUtils.getBlockExplorer(asset?.type)
+              ),
+            })}`,
           ]),
       ...(ios ? [lang.t('wallet.action.cancel')] : []),
     ],
