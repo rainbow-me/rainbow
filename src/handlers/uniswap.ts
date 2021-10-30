@@ -4,7 +4,6 @@ import { get, mapKeys, mapValues, toLower } from 'lodash';
 import { uniswapClient } from '../apollo/client';
 import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
 import { Token } from '../entities/tokens';
-import { ChainId } from '../helpers/chainIds';
 import { loadWallet } from '../model/wallet';
 import {
   estimateGasWithPadding,
@@ -30,6 +29,7 @@ import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 import {
   ALLOWS_PERMIT,
+  ChainId,
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   fillQuote,
   getQuoteExecutionDetails,
@@ -99,10 +99,11 @@ export const estimateSwapGasLimit = async ({
 
   const isWrapEth =
     sellTokenAddress === ETH_ADDRESS_AGGREGATORS &&
-    buyTokenAddress === WETH['1'];
+    buyTokenAddress === WETH[ChainId.mainnet];
   const isUnwrapWeth =
-    sellTokenAddress === WETH['1'] &&
+    sellTokenAddress === WETH[ChainId.mainnet] &&
     buyTokenAddress === ETH_ADDRESS_AGGREGATORS;
+
   // Wrap / Unwrap Eth
   if (isWrapEth || isUnwrapWeth) {
     const default_estimate = isWrapEth
@@ -217,12 +218,12 @@ export const executeSwap = async ({
   // Wrap Eth
   if (
     sellTokenAddress === ETH_ADDRESS_AGGREGATORS &&
-    buyTokenAddress === WETH['1']
+    buyTokenAddress === WETH[ChainId.mainnet]
   ) {
     return wrapEth(tradeDetails.buyAmount, walletToUse);
     // Unwrap Weth
   } else if (
-    sellTokenAddress === WETH['1'] &&
+    sellTokenAddress === WETH[ChainId.mainnet] &&
     buyTokenAddress === ETH_ADDRESS_AGGREGATORS
   ) {
     return unwrapWeth(tradeDetails.sellAmount, walletToUse);

@@ -1,4 +1,3 @@
-import { ChainId } from '../helpers/chainIds';
 import {
   compact,
   find,
@@ -26,7 +25,7 @@ import {
   multiply,
 } from '@rainbow-me/utilities';
 import { getTokenMetadata } from '@rainbow-me/utils';
-import { WETH } from 'rainbow-swaps';
+import { ChainId, WETH } from 'rainbow-swaps';
 
 const accountAddressSelector = (state: AppState) =>
   state.settings.accountAddress;

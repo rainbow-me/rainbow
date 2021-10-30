@@ -13,6 +13,7 @@ import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import { add } from '@rainbow-me/utilities';
 import {
   ALLOWS_PERMIT,
+  ChainId,
   PermitSupportedTokenList,
   RAINBOW_ROUTER_CONTRACT_ADDRESS,
   WETH,
@@ -30,7 +31,7 @@ export const estimateUnlockAndSwap = async (
   const { accountAddress, chainId } = store.getState().settings;
 
   const isWethUnwrapping =
-    toLower(inputCurrency.address) === toLower(WETH['1']) &&
+    toLower(inputCurrency.address) === toLower(WETH[ChainId.mainnet]) &&
     toLower(outputCurrency.address) === toLower(ETH_ADDRESS);
 
   let gasLimits: (string | number)[] = [];
@@ -74,7 +75,7 @@ export const createUnlockAndSwapRap = async (
   const { inputCurrency, outputCurrency } = store.getState().swap;
   const { accountAddress, chainId } = store.getState().settings;
   const isWethUnwrapping =
-    toLower(inputCurrency.address) === toLower(WETH['1']) &&
+    toLower(inputCurrency.address) === toLower(WETH[ChainId.mainnet]) &&
     toLower(outputCurrency.address) === toLower(ETH_ADDRESS);
 
   let swapAssetNeedsUnlocking = false;

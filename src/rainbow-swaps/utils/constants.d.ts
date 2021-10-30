@@ -1,10 +1,11 @@
-import { ChainId } from '../types';
+import { EthereumAddress } from '../types';
 export declare const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 export declare const API_BASE_URL = "https://swap-aggregator.api.p.rainbow.me";
 export declare const RAINBOW_ROUTER_CONTRACT_ADDRESS = "0xDC11f7E700A4c898AE5CAddB1082cFfa76512aDD";
-export declare const WETH: {
-    1: string;
+export declare type MultiChainAsset = {
+    [key: string]: EthereumAddress;
 };
+export declare const WETH: MultiChainAsset;
 export declare const DAI_ADDRESS = "0x6b175474e89094c44da98b954eedeac495271d0f";
 export declare const USDC_ADDRESS = "0x111111111117dc0aa78b770fa6a738034120c302";
 export declare const TORN_ADDRESS = "0x77777feddddffc19ff86db637967013e6c6a116c";

@@ -1074,8 +1074,6 @@ var WethAbi = [
 	}
 ];
 
-var ChainId;
-
 (function (ChainId) {
   ChainId[ChainId["mainnet"] = 1] = "mainnet";
   ChainId[ChainId["ropsten"] = 3] = "ropsten";
@@ -1085,20 +1083,18 @@ var ChainId;
   ChainId[ChainId["optimism"] = 10] = "optimism";
   ChainId[ChainId["polygon"] = 137] = "polygon";
   ChainId[ChainId["arbitrum"] = 42161] = "arbitrum";
-})(ChainId || (ChainId = {}));
-
-var Source;
+})(exports.ChainId || (exports.ChainId = {}));
 
 (function (Source) {
   Source["Aggregator0x"] = "0x";
   Source["Aggregotor1inch"] = "1inch";
-})(Source || (Source = {}));
+})(exports.Source || (exports.Source = {}));
 
 var _WETH;
 var ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 var API_BASE_URL = 'https://swap-aggregator.api.p.rainbow.me';
 var RAINBOW_ROUTER_CONTRACT_ADDRESS = '0xDC11f7E700A4c898AE5CAddB1082cFfa76512aDD';
-var WETH = (_WETH = {}, _WETH[ChainId.mainnet] = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', _WETH);
+var WETH = (_WETH = {}, _WETH["" + exports.ChainId.mainnet] = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', _WETH);
 var DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
 var USDC_ADDRESS = '0x111111111117dc0aa78b770fa6a738034120c302';
 var TORN_ADDRESS = '0x77777feddddffc19ff86db637967013e6c6a116c';
@@ -1143,7 +1139,7 @@ var ALLOWS_PERMIT = {
 
 /**
  * Function to wrap a specific amount of ether for the specified wallet
- *
+ * (MAINNET ONLY!)
  * @param {BigNumberish} amount
  * @param {Wallet} wallet
  * @returns {Promise<Transaction>}
@@ -1156,7 +1152,7 @@ var wrapEth = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            instance = new contracts.Contract(WETH['1'], JSON.stringify(WethAbi), wallet);
+            instance = new contracts.Contract(WETH[exports.ChainId.mainnet], JSON.stringify(WethAbi), wallet);
             return _context.abrupt("return", instance.deposit({
               value: amount
             }));
@@ -1175,7 +1171,7 @@ var wrapEth = /*#__PURE__*/function () {
 }();
 /**
  * Function to unwrap a specific amount of ether for the specified wallet
- *
+ * (MAINNET ONLY!)
  * @param {BigNumberish} amount
  * @param {Wallet} wallet
  * @returns {Promise<Transaction>}
@@ -1188,7 +1184,7 @@ var unwrapWeth = /*#__PURE__*/function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            instance = new contracts.Contract(WETH['1'], JSON.stringify(WethAbi), wallet);
+            instance = new contracts.Contract(WETH[exports.ChainId.mainnet], JSON.stringify(WethAbi), wallet);
             return _context2.abrupt("return", instance.withdraw(amount));
 
           case 2:
@@ -1203,8 +1199,17 @@ var unwrapWeth = /*#__PURE__*/function () {
     return _ref2.apply(this, arguments);
   };
 }();
+/**
+ * Function that returns a pointer to the smart contract
+ * function that wraps or unwraps, to be used by estimateGas calls
+ * (MAINNET ONLY!)
+ * @param {string} name
+ * @param {Provider} provider]
+ * @returns {Promise<Transaction>}
+ */
+
 var geWethMethod = function geWethMethod(name, provider) {
-  var instance = new contracts.Contract(WETH['1'], JSON.stringify(WethAbi), provider);
+  var instance = new contracts.Contract(WETH[exports.ChainId.mainnet], JSON.stringify(WethAbi), provider);
   return instance.estimateGas[name];
 };
 
@@ -1574,9 +1579,9 @@ var getQuote = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            source = _ref.source, _ref$chainId = _ref.chainId, chainId = _ref$chainId === void 0 ? ChainId.mainnet : _ref$chainId, fromAddress = _ref.fromAddress, sellTokenAddress = _ref.sellTokenAddress, buyTokenAddress = _ref.buyTokenAddress, sellAmount = _ref.sellAmount, buyAmount = _ref.buyAmount, slippage = _ref.slippage;
+            source = _ref.source, _ref$chainId = _ref.chainId, chainId = _ref$chainId === void 0 ? exports.ChainId.mainnet : _ref$chainId, fromAddress = _ref.fromAddress, sellTokenAddress = _ref.sellTokenAddress, buyTokenAddress = _ref.buyTokenAddress, sellAmount = _ref.sellAmount, buyAmount = _ref.buyAmount, slippage = _ref.slippage;
 
-            if (!(sellTokenAddress === ETH_ADDRESS && buyTokenAddress === WETH[ChainId.mainnet] || sellTokenAddress === WETH[ChainId.mainnet] && buyTokenAddress === ETH_ADDRESS)) {
+            if (!(sellTokenAddress === ETH_ADDRESS && buyTokenAddress === WETH[exports.ChainId.mainnet] || sellTokenAddress === WETH[exports.ChainId.mainnet] && buyTokenAddress === ETH_ADDRESS)) {
               _context.next = 3;
               break;
             }
