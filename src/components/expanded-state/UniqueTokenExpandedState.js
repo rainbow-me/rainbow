@@ -121,7 +121,6 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
     showcaseTokens,
   } = useShowcaseTokens();
 
-  const [textColor, setTextColor] = useState('#FFFFFF');
   const [floorPrice, setFloorPrice] = useState(null);
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const [showFloorInEth, setShowFloorInEth] = useState(true);
@@ -146,13 +145,13 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
   const lastSalePrice = lastPrice || 'None';
   const priceOfEth = ethereumUtils.getEthPriceUnit();
 
-  useEffect(() => {
+  const textColor = useMemo(() => {
     const contrastWithWhite = c.contrast(imageColor, colors.whiteLabel);
 
     if (contrastWithWhite < 2.125) {
-      setTextColor(lightModeThemeColors.dark);
+      return lightModeThemeColors.dark;
     } else {
-      setTextColor(colors.whiteLabel);
+      return colors.whiteLabel;
     }
   }, [colors.whiteLabel, imageColor]);
 
