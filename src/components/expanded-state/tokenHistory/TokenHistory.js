@@ -79,6 +79,10 @@ const LeftSpacer = styled(View)`
   width: 24;
 `;
 
+const RightSpacer = styled(View)`
+  width: 50;
+`;
+
 const LineView = styled(View)`
   height: 3;
   background-color: ${({ color }) => color};
@@ -100,6 +104,7 @@ const TokenHistory = ({
   }) => {
 
   const [tokenHistory, setTokenHistory] = useState([]);
+  const [tokenHistoryShort, setTokenHistoryShort] = useState(false);
   const [contractAddress, setContractAddress] = useState("");
   const [tokenID, setTokenID] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -115,13 +120,19 @@ const TokenHistory = ({
   //Query opensea using the contract address + tokenID
   useEffect(async() => {
     await apiGetTokenHistory(contractAddress, tokenID)
-    .then(data => {
-      setTokenHistory(data);
+    .then(results => {
+      setTokenHistory(results);
+      if (results.length <= 2) {
+        setTokenHistoryShort(true);
+      }
+    })
+    .then(() => {
       setIsLoading(false);
-    });
+    })
   }, [contractAddress, tokenID]);
 
   const renderItem = ({ item, index }) => {
+    logger.log(tokenHistoryShort);
     var isFirst = false;
     var symbol;
     var phrase;
@@ -162,7 +173,6 @@ const TokenHistory = ({
         suffix = ``;
         return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst });
     }
-
   }
 
   const renderHistoryDescription = ({ symbol, phrase, item, suffix, isFirst }) => {
@@ -214,16 +224,18 @@ const TokenHistory = ({
     <Container>
       {
         isLoading ?
-        <TokenHistoryLoader />
+        <Text style={{ color: '#FFFFFF'}}> Loading </Text>
         :
         <FlatList
           data={tokenHistory}
           renderItem={({item, index}) => renderItem({ item, index })}
           horizontal={true}
           inverted={true}
-          ListFooterComponent={<LeftSpacer />}
+          ListHeaderComponent={ tokenHistoryShort ? <RightSpacer /> : <View /> }
+          ListFooterComponent={ <LeftSpacer /> }
           showsHorizontalScrollIndicator={false}
         />
+       
       }
     </Container>
   )
