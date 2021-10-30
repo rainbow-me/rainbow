@@ -27,12 +27,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 ### Changed
 * NFT Count analytics
 
-
 ## [1.5.29](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.29)
 
 ### Changed
 * Seperate out L2 explorer init
-
 
 ## [1.5.28](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.28)
 
