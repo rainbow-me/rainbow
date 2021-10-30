@@ -11,7 +11,9 @@ import { Centered, Row } from '../layout';
 import ExchangeDetailsButton from './ExchangeDetailsButton';
 import PriceImpactWarning from './PriceImpactWarning';
 import { usePrevious, useSwapCurrencies } from '@rainbow-me/hooks';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import { padding, position } from '@rainbow-me/styles';
+import { ChainId, WETH } from 'rainbow-swaps';
 
 const defaultPriceImpactScale = 1.15;
 const timingConfig = {
@@ -51,7 +53,7 @@ export default function ExchangeDetailsRow({
   const detailsRowOpacity = useSharedValue(1);
   const priceImpactOpacity = useSharedValue(0);
   const priceImpactScale = useSharedValue(defaultPriceImpactScale);
-  const { outputCurrency } = useSwapCurrencies();
+  const { inputCurrency, outputCurrency } = useSwapCurrencies();
 
   const detailsRowAnimatedStyle = useAnimatedStyle(() => ({
     opacity: detailsRowOpacity.value,
@@ -102,6 +104,14 @@ export default function ExchangeDetailsRow({
     priceImpactScale,
   ]);
 
+  const isWrapEth =
+    inputCurrency.address === ETH_ADDRESS &&
+    outputCurrency.address === WETH[ChainId.mainnet];
+
+  const isUnwrapWeth =
+    inputCurrency.address === WETH[ChainId.mainnet] &&
+    outputCurrency.address === ETH_ADDRESS;
+
   return (
     <Container {...props}>
       <PriceImpactWarning
@@ -123,13 +133,15 @@ export default function ExchangeDetailsRow({
         >
           􀄬 Flip
         </ExchangeDetailsButton>
-        <ExchangeDetailsButton
-          disabled={!showDetailsButton}
-          onPress={onPressViewDetails}
-          testID="exchange-details-button"
-        >
-          􀕹 View Details
-        </ExchangeDetailsButton>
+        {!(isWrapEth || isUnwrapWeth) && (
+          <ExchangeDetailsButton
+            disabled={!showDetailsButton}
+            onPress={onPressViewDetails}
+            testID="exchange-details-button"
+          >
+            􀕹 View Details
+          </ExchangeDetailsButton>
+        )}
       </AnimatedExchangeDetailsButtonRow>
     </Container>
   );
