@@ -9,7 +9,7 @@ import App from './src/App';
 import { resources } from './src/languages';
 
 // Languages (i18n)
-lang.defaultLocale = 'fr';
+lang.defaultLocale = 'en';
 lang.locale = language;
 lang.fallbacks = true;
 
