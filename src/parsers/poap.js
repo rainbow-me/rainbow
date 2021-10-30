@@ -10,7 +10,6 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 export const parsePoaps = data => {
   const poaps = get(data, 'data', null);
-  //if (isNil(data)) throw new Error('Invalid data from OpenSea');
   return poaps.map(({ tokenId, event }) => {
     return {
       asset_contract: {
