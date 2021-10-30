@@ -9,7 +9,7 @@ import {
   saveNetwork,
 } from '@rainbow-me/handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
-import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 import { dataResetState } from '@rainbow-me/redux/data';
 import { explorerClearState, explorerInit } from '@rainbow-me/redux/explorer';
 import { AppDispatch } from '@rainbow-me/redux/store';
@@ -164,7 +164,7 @@ export const INITIAL_STATE: SettingsState = {
   chainId: 1,
   language: 'en',
   nativeCurrency: NativeCurrencyKeys.USD,
-  network: networkTypes.mainnet,
+  network: Network.mainnet,
 };
 
 export default (state = INITIAL_STATE, action: SettingsStateUpdateAction) => {
