@@ -67,6 +67,8 @@
       "tab_transactions_tooltip": "Transactions and Token Transfers",
       "tab_interactions_tooltip": "Smart Contract Interactions",
       "tab_uniquetokens_tooltip": "Unique Tokens",
+      "tab_savings": "Savings",
+      "tab_investments": "Pools",
       "label_asset": "Asset",
       "label_quantity": "Quantity",
       "label_price": "Price",
@@ -119,6 +121,7 @@
       "disconnect_account": "Log Out",
       "donate": "Donate ETH",
       "done": "Done",
+      "import": "Import",
       "edit": "Edit",
       "go_back": "Go Back",
       "hide": "Hide",
@@ -130,9 +133,12 @@
       "loading": "Loading",
       "notify_me": "Get notified",
       "okay": "Okay",
+      "offline": "Offline",
       "pin": "Pin",
       "proceed": "Proceed",
+      "paste": "Paste",
       "send": "Send",
+      "swap": "Swap",
       "send_another": "Send Another",
       "try_again": "Try again",
       "learn_more": "Learn more",
@@ -144,6 +150,7 @@
       "options": {
         "add": "Add Contact",
         "delete": "Delete Contact",
+        "edit": "Edit Contact",
         "cancel": "Cancel"
       }
     },
@@ -194,7 +201,41 @@
       "helper_rate": "Rate",
       "helper_price": "Price",
       "helper_min": "Min",
-      "helper_max": "Max"
+      "helper_max": "Max",
+      "back_up": {
+        "existing": {
+          "title": "Would you like to back up?",
+          "description": "You have wallets that have not been backed up yet. Back them up in case you lose this device.",
+          "button": {
+            "now": "Back up now",
+            "later": "Maybe later"
+          }
+        },
+        "imported": {
+          "title": "Would you like to back up?",
+          "description": "Don't lose your wallet! Save an encrypted copy to %{cloudPlatformName}.",
+          "button": {
+            "back_up": "Back up to %{cloudPlatformName}",
+            "no_thanks": "No thanks"
+          }
+        },
+        "default": {
+          "title": "Back up your wallet",
+          "description": "Don't lose your wallet! Save an encrypted copy to %{cloudPlatformName}",
+          "button": {
+            "cloud": "Back up your wallet",
+            "manual": "Back up manually"
+          }
+        },
+        "alerts": {
+          "cloud_not_enabled": {
+            "label": "iCloud Not Enabled",
+            "description": "Looks like iCloud drive is not enabled on your device. Do you want to see how to enable it?",
+            "show_me": "Yes, Show me",
+            "no_thanks": "No thanks"
+          }
+        }
+      }
     },
     "message": {
       "web3_not_available": "Please install the MetaMask Chrome extension",
@@ -241,6 +282,37 @@
       "user_is_offline": "Connection offline, please check your internet connection",
       "user_is_online": "Connected! You're back online"
     },
+    "settings": {
+      "label": "Settings",
+      "done": "Done",
+      "backup": "Backup",
+      "currency": "Currency",
+      "theme": "Theme",
+      "privacy": "Privacy",
+      "language": "Language",
+      "learn": "Learn about Rainbow and Ethereum",
+      "feedback_and_support": "Feedback and Support",
+      "feedback_and_reports": "Feedback & Bug Reports",
+      "review": "Review Rainbow",
+      "developer": "Developer Settings",
+      "network": "Network"
+    },
+    "savings": {
+      "earnings": {
+        "est": "Est.",
+        "label": "Earnings",
+        "monthly": "Monthly",
+        "yearly": "Yearly",
+        "5_year": "5-Year",
+        "10_year": "10-Year",
+        "20_year": "20-Year",
+        "50_year": "50-Year",
+        "100_year": "100-Year"
+      },
+      "label": "Savings",
+      "withdraw": "Withdraw",
+      "deposit": "Deposit"
+    },
     "subscribe_form": {
       "email_already_subscribed": "Sorry, you've already signed up with this email",
       "too_many_signup_request": "Too many signup requests, please try again later",
@@ -275,7 +347,11 @@
       "gas": {
         "edit_price": "Edit Gas Price",
         "enter_price": "Enter Gas Price",
-        "network_fee": "Network Fee"
+        "network_fee": "Network Fee",
+        "slow": "Slow",
+        "normal": "Normal",
+        "fast": "Fast",
+        "custom": "Custom"
       }
     },
     "time": {
@@ -341,6 +417,10 @@
         "create_new": "Create a new wallet",
         "add_existing": "Add an existing wallet",
         "cancel": "Cancel",
+        "delete": "Delete Wallet",
+        "delete_confirm": "Are you sure you want to delete this wallet?",
+        "edit": "Edit Wallet",
+        "import_wallet": "Add Wallet",
         "hide": "Hide",
         "input": "Transaction Input",
         "paste": "Paste",
@@ -401,7 +481,12 @@
         "message": "Loading"
       },
       "new": {
-        "name_wallet": "Name your wallet"
+        "name_wallet": "Name your wallet",
+        "create_wallet": "Create Wallet",
+        "get_new_wallet": "Get a new wallet",
+        "import_wallet": "Import Wallet",
+        "enter_seeds_placeholder": "Secret phrase, private key, Ethereum address, or ENS name",
+        "already_have_wallet": "I already have one"
       },
       "settings": {
         "copy_address": "Copy Address",
@@ -444,7 +529,27 @@
         "missing_fcm": "Unable to initialize WalletConnect: missing push notification token. Please try again.",
         "error": "Error initializing with WalletConnect"
       },
-      "copy_address": "Copy Address"
+      "copy_address": "Copy Address",
+      "label": "Wallets"
+    },
+    "pools": {
+      "deposit": "Deposit",
+      "withdraw": "Withdraw"
+    },
+    "send_feedback": {
+      "copy_email": "Copy email address",
+      "no_thanks": "No thanks",
+      "email_error": {
+        "description": "Would you like to manually copy our feedback email address to your clipboard?",
+        "title": "Error launching email client"
+      }
+    },
+    "walletconnect": {
+      "paste_uri": {
+        "message": "Paste WalletConnect URI below",
+        "title": "New WalletConnect Session",
+        "button": "Paste session URI"
+      }
     }
   }
 }

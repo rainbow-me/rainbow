@@ -329,7 +329,11 @@ export default function SettingsSection({
           />
           <ListItem
             icon={<Emoji name={ios ? 'speech_balloon' : 'lady_beetle'} />}
-            label={lang.t('settings.feedback')}
+            label={
+              ios
+                ? lang.t('settings.feedback_and_support')
+                : lang.t('settings.feedback_and_reports')
+            }
             onPress={onSendFeedback}
             testID="feedback-section"
           />

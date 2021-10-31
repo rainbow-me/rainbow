@@ -74,7 +74,7 @@ const FooterButton = styled(MiniButton).attrs({
 const KeyboardSizeView = styled(KeyboardArea)`
   background-color: ${({ theme: { colors } }) => colors.white};
 `;
-const placeholder = lang.t('wallet.new.enter_seeds');
+const placeholder = lang.t('wallet.new.enter_seeds_placeholder');
 const SecretTextArea = styled(Input).attrs({
   align: 'center',
   autoCapitalize: 'none',
@@ -168,7 +168,7 @@ export default function ImportSeedPhraseSheet() {
             onChangeText={handleSetSeedPhrase}
             onFocus={handleFocus}
             onSubmitEditing={handlePressImportButton}
-            placeholder={lang.t('wallet.new.enter_seeds')}
+            placeholder={lang.t('wallet.new.enter_seeds_placeholder')}
             placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
             ref={inputRef}
             returnKeyType="done"

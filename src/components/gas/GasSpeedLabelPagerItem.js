@@ -94,6 +94,12 @@ const GasSpeedLabelPagerItem = ({ label, selected, shouldAnimate, theme }) => {
               : colors.alpha(colors.blueGreyDark, 0.8)
           }
         >
+          {/*
+            The current options for `label` are defined in `GasSpeedOrder`:
+            custom, fast, normal, slow. At some point TypeScript should show
+            these as the possible values instead of treating this as an
+            arbitrary string.
+           */}
           {lang.t(`swap.gas.${label}`)}
         </GasSpeedLabel>
       </GasSpeedRow>

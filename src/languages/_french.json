@@ -163,16 +163,29 @@
       "helper_min": "Min",
       "helper_max": "Max",
       "back_up": {
-        "label": "Back up your wallet :)",
-        "label_plural": "Back up your wallets :)",
-        "description": "Don't lose your wallet! Save an encrypted copy to iCloud. :)",
-        "imported_title": "Would you like to back up? :)",
-        "imported_description": "You have wallets that have not been backed up yet. Back them up in case you lose this device. :)",
-        "button": {
-          "cloud": "Back up to :)",
-          "manual": "Back up manually :) ",
-          "now": "Back up now :)",
-          "later": "Maybe later : )"
+        "existing": {
+          "title": "Would you like to back up? :)",
+          "description": "You have wallets that have not been backed up yet. Back them up in case you lose this device. :)",
+          "button": {
+            "now": "Back up now :)",
+            "later": "Maybe later :)"
+          }
+        },
+        "imported": {
+          "title": "Would you like to back up? :)",
+          "description": "Don't lose your wallet! Save an encrypted copy to %{cloudPlatformName}. :)",
+          "button": {
+            "back_up": "Back up to %{cloudPlatformName} :)",
+            "no_thanks": "No thanks :)"
+          }
+        },
+        "default": {
+          "title": "Back up your wallet :)",
+          "description": "Don't lose your wallet! Save an encrypted copy to %{cloudPlatformName} :)",
+          "button": {
+            "cloud": "Back up your wallet :)",
+            "manual": "Back up manually :)"
+          }
         },
         "alerts": {
           "cloud_not_enabled": {
@@ -345,8 +358,10 @@
       "new": {
         "name_wallet": "Nommez votre portefeuille",
         "create_wallet": "Créez un portefeuille",
+        "get_new_wallet": "Get a new wallet :)",
+        "import_wallet": "Import Wallet :)",
         "already_have_wallet": "I already have on :) ",
-        "enter_seeds": "Phrase de départ, clé privée, adresse Ethereum ou nom ENS",
+        "enter_seeds_placeholder": "Phrase de départ, clé privée, adresse Ethereum ou nom ENS",
         "ens_invalid": "Ce n'est pas un nom ENS valide",
         "ens_try_again": "Désolé, nous ne pouvons pas ajouter ce nom ENS pour le moment. Veuillez réessayer plus tard!"
       },
@@ -419,12 +434,13 @@
       "label": "Réglages",
       "backup": "Sauvegarder",
       "currency": "Devise",
-      "dev": "Developer Réglages :)",
+      "developer": "Developer Settings :)",
       "language": "Langue",
       "network": "Réseau",
       "share": "Share Rainbow:)",
       "follow_twitter": "Follow Us on Twitter :)",
-      "feedback": "Feedback & Support :)",
+      "feedback_and_support": "Feedback & Support :)",
+      "feedback_and_reports": "Feedback & Bug Reports :)",
       "review": "Review Rainbow :)",
       "back": "Retour",
       "done": "Terminé"

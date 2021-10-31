@@ -144,12 +144,12 @@ export default function BackupSheet() {
       case WalletBackupStepTypes.existing_user:
         return (
           <BackupSheetSection
-            descriptionText={lang.t('modal.back_up.imported_description')}
+            descriptionText={lang.t('modal.back_up.existing.description')}
             onPrimaryAction={onBackupNow}
             onSecondaryAction={goBack}
-            primaryLabel={lang.t('modal.back_up.button.now')}
-            secondaryLabel={lang.t('modal.back_up.button.later')}
-            titleText={lang.t('modal.back_up.label')}
+            primaryLabel={lang.t('modal.back_up.existing.button.now')}
+            secondaryLabel={lang.t('modal.back_up.existing.button.later')}
+            titleText={lang.t('modal.back_up.existing.title')}
             type="Existing User"
           />
         );
@@ -157,15 +157,15 @@ export default function BackupSheet() {
         return (
           //TODO: ADD CloudPlatform to back_up.description
           <BackupSheetSection
-            descriptionText={lang.t('modal.back_up.description')}
+            descriptionText={lang.t('modal.back_up.imported.description')}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={goBack}
-            primaryLabel={`􀙶 ${lang.t(
-              'modal.back_up.button.cloud'
-            )} ${cloudPlatform}`}
+            primaryLabel={`􀙶 ${lang.t('modal.back_up.imported.button.back_up', {
+              cloudPlatformName: cloudPlatform,
+            })}`}
             secondaryButtonTestId="backup-sheet-imported-cancel-button"
-            secondaryLabel={lang.t('button.no_thanks')}
-            titleText={lang.t('modal_back_up.imported_title')}
+            secondaryLabel={lang.t('modal.back_up.imported.button.no_thanks')}
+            titleText={lang.t('modal.back_up.imported.title')}
             type="Imported Wallet"
           />
         );
@@ -180,14 +180,16 @@ export default function BackupSheet() {
       default:
         return (
           <BackupSheetSection
-            descriptionText={lang.t('modal.back_up.description')}
+            descriptionText={lang.t('modal.backup.default.description')}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={onManualBackup}
-            primaryLabel={`􀙶 ${lang.t(
-              'modal.back_up.button.cloud'
-            )} ${cloudPlatform}`}
-            secondaryLabel={`🤓 ${lang.t('modal.back_up.button.manual')}`}
-            titleText={lang.t('modal.back_up.label')}
+            primaryLabel={`􀙶 ${lang.t('modal.backup.default.button.cloud', {
+              cloudPlatformName: cloudPlatform,
+            })}`}
+            secondaryLabel={`🤓 ${lang.t(
+              'modal.backup.default.button.manual'
+            )}`}
+            titleText={lang.t('modal.backup.default.title')}
             type="Default"
           />
         );

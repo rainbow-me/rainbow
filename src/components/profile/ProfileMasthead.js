@@ -203,7 +203,7 @@ export default function ProfileMasthead({
           onPress={handlePressReceive}
           radiusWrapperStyle={{ marginRight: 10, width: 104 }}
           scaleTo={0.88}
-          text={lang.t('wallet.recieve')}
+          text={lang.t('button.receive')}
           width={81}
           wrapperProps={{
             containerStyle: {
