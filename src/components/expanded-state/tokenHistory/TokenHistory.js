@@ -9,8 +9,9 @@ import styled from 'styled-components';
 import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
 import { useTheme } from '../../../context/ThemeContext';
 import { useDimensions } from '@rainbow-me/hooks';
-import { TokenHistoryLoader } from './TokenHistoryLoader';
 import TokenHistoryEdgeFade from './TokenHistoryEdgeFade';
+import TokenHistoryLoader from './TokenHistoryLoader';
+import MaskedView from '@react-native-community/masked-view';
 
 /**
  * Requirements: 
@@ -229,10 +230,13 @@ const TokenHistory = ({
     <Container>
       {
         isLoading ?
-        <Text style={{ color: '#FFFFFF'}}> Loading </Text>
+        <TokenHistoryLoader />
         :
-        <View> 
-          <TokenHistoryEdgeFade />
+        <View>
+          <MaskedView
+            style={{ backgroundColor: 'transparent', width: '100%' }}
+            maskElement={<TokenHistoryEdgeFade />}
+          > 
             <FlatList
               data={tokenHistory}
               renderItem={({item, index}) => renderItem({ item, index })}
@@ -242,7 +246,9 @@ const TokenHistory = ({
               ListFooterComponent={ <LeftSpacer /> }
               showsHorizontalScrollIndicator={false}
             />
-          <TokenHistoryEdgeFade />
+          </MaskedView>
+
+          
         </View>
       }
     </Container>

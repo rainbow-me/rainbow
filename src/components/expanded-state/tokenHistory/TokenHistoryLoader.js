@@ -1,185 +1,136 @@
-import MaskedView from '@react-native-community/masked-view';
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
-import { View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import Animated, {
-  Clock,
-  Easing,
-  timing,
-  Value,
-} from 'react-native-reanimated';
+import React from 'react';
 import styled from 'styled-components';
-import { withThemeContext } from '../../../context/ThemeContext';
-import { deviceUtils } from '../../../utils';
-import { interpolate } from '../../animations';
-import { CoinRowHeight } from '../../coin-row';
-import { ColumnWithMargins, Row, RowWithMargins } from '../../layout';
-import { padding, position } from '@rainbow-me/styles';
+import { useDimensions } from '@rainbow-me/hooks';
+import { View } from "react-native";
+import { Column, Row } from '../../layout';
+import RadialGradient from 'react-native-radial-gradient';
 
-const { block, cond, set, startClock, stopClock } = Animated;
-
-const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
-
-const Container = styled.View`
-  height: ${CoinRowHeight};
-  opacity: ${({ descendingOpacity, index }) =>
-    1 - 0.2 * (descendingOpacity ? index : 0)};
-  width: 100%;
+const Container = styled(Row)`
+  width: ${({ width }) => width};
+  height: 60;
+  background-color: #FFFFFF00; 
+  margin-top: 5;
 `;
 
-const FakeAvatar = styled.View`
-  ${position.size(40)};
-  background-color: ${({ theme: { colors } }) => colors.skeleton};
-  border-radius: 20;
-`;
-
-const FakeRow = styled(Row).attrs({
-  align: 'flex-end',
-  flex: 0,
-  height: 10,
-  justify: 'space-between',
-  paddingBottom: 5,
-  paddingTop: 5,
-})(Row);
-
-const FakeText = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.skeleton};
+const FakeDate = styled(RadialGradient).attrs(
+  ({ theme: { colors } }) => ({
+    center: [0, 0],
+    colors:  [colors.whiteLabel, '#FFFFFF00']
+  })
+)`
   border-radius: 5;
+  width: 60;
+  height: 11;
+  overflow: hidden;
+  opacity: 0.1;
+  margin-bottom: 9;
+`;
+
+const FakeEvent = styled(RadialGradient).attrs(
+  ({ theme: { colors } }) => ({
+    center: [0, 0],
+    colors:  [colors.whiteLabel, '#FFFFFF00']
+  })
+)`
+  border-radius: 5;
+  width: 130;
+  height: 11;
+  overflow: hidden;
+  opacity: 0.1;
+`;
+
+const LeftmostEvent = styled(RadialGradient).attrs(
+  ({ theme: { colors } }) => ({
+    center: [0, 0],
+    colors:  [colors.whiteLabel, '#FFFFFF00']
+  })
+)`
+  border-radius: 5;
+  width: 39;
+  height: 11;
+  opacity: 0.1;
+`;
+
+const LeftmostLine = styled(View)`
+  height: 3;
+  background-color: #FFFFFF;
+  opacity: 0.1;
+  border-radius: 1.5;
+  width: 76;
+  margin-bottom: 32.5;
+  margin-top: 3.5;
+`;
+
+const Line = styled(View)`
+  height: 3;
+  background-color: #FFFFFF;
+  opacity: 0.1;
+  border-radius: 1.5;
+  width: 132;
+  margin-top: 3.5
+`;
+
+
+const RowWithMargins = styled(Row)`
+  margin-left: 6;
+`;
+
+const Gradient = styled(RadialGradient).attrs(
+  ({ theme: { colors } }) => ({
+    center: [0, 0],
+    colors:  [colors.whiteLabel, '#FFFFFF00']
+  })
+)`
+  border-radius: 5;
+  width: 10;
   height: 10;
+  margin-left: 6;
+  margin-right: 6;
+  margin-bottom: 9;
+  opacity: 0.25;
+  overflow: hidden;
 `;
 
-const Wrapper = styled(RowWithMargins).attrs({
-  align: 'flex-end',
-  justify: 'space-between',
-  margin: 10,
-})`
 
-  ${({ ignorePaddingHorizontal }) =>
-    padding(
-      9,
-      ignorePaddingHorizontal ? 0 : 19,
-      10,
-      ignorePaddingHorizontal ? 0 : 19
-    )};
-  ${position.size('100%')};
-  background-color: ${({ theme: { colors } }) => colors.transparent};
-`;
+export default function TokenHistoryLoader() {
+  const { width } = useDimensions();
+  const { colors } = useTheme();
+  return (
+    <Container width={width} colors={colors}>
+      
+      <Column>
+        <LeftmostLine />
+        <LeftmostEvent colors={colors} />
+      </Column>
+        
+      <Column>
+        <Row>
+          <Gradient colors={colors} />
+          <Line />
+        </Row>
 
-class TokenHistoryLoader extends PureComponent {
-  static propTypes = {
-    animated: PropTypes.bool,
-    descendingOpacity: PropTypes.bool,
-    index: PropTypes.number,
-  };
+        <RowWithMargins>
+         <FakeDate colors={colors} />
+        </RowWithMargins>
 
-  static defaultProps = {
-    animated: true,
-    index: 0,
-  };
+        <RowWithMargins>
+          <FakeEvent colors={colors} />
+        </RowWithMargins>
+      </Column>
 
-  startShimmerLoop() {
-    const clock = new Clock();
+      <Column>
+        <Row>
+          <Gradient colors={colors} />
+        </Row>
+        <RowWithMargins>
+         <FakeDate colors={colors} />
+        </RowWithMargins>
 
-    const config = {
-      duration: new Value(1250),
-      easing: Easing.linear,
-      toValue: new Value(1),
-    };
+        <RowWithMargins>
+          <FakeEvent colors={colors} />
+        </RowWithMargins>
+      </Column>
 
-    const state = {
-      finished: new Value(0),
-      frameTime: new Value(0),
-      position: new Value(0),
-      time: new Value(0),
-    };
-
-    return block([
-      startClock(clock),
-      timing(clock, state, config),
-      cond(state.finished, [
-        stopClock(clock),
-        set(state.finished, 0),
-        set(state.position, 0),
-        set(state.time, 0),
-        set(state.frameTime, 0),
-      ]),
-      state.position,
-    ]);
-  }
-
-  animation = this.props.animated && ios ? this.startShimmerLoop() : () => null;
-
-  renderShimmer() {
-    const { colors } = this.props;
-    const gradientColors = [
-      colors.skeleton,
-      colors.shimmer,
-      colors.skeleton,
-      colors.skeleton,
-    ];
-
-    const gradientSteps = [0, 0.2, 0.4, 1];
-
-    const translateX = interpolate(this.animation, {
-      inputRange: [0, 1],
-      outputRange: [
-        deviceUtils.dimensions.width * -1.17,
-        deviceUtils.dimensions.width * 1.17,
-      ],
-    });
-
-    return (
-      <View backgroundColor={gradientColors[0]} css={position.size('100%')}>
-        <AnimatedLinearGradient
-          {...position.sizeAsObject('100%')}
-          colors={gradientColors}
-          end={{ x: 1, y: 0.5 }}
-          locations={gradientSteps}
-          start={{ x: 0, y: 0.5 }}
-          style={{ transform: [{ translateX }] }}
-        />
-      </View>
-    );
-  }
-
-  render() {
-    const {
-      animated,
-      descendingOpacity,
-      ignorePaddingHorizontal,
-      index,
-      colors,
-    } = this.props;
-
-    const skeletonElement = (
-      <Wrapper ignorePaddingHorizontal={ignorePaddingHorizontal} index={index}>
-        <FakeAvatar />
-        <ColumnWithMargins
-          backgroundColor={colors.transparent}
-          flex={1}
-          margin={10}
-        >
-          <FakeRow>
-            <FakeText width={100} />
-            <FakeText width={80} />
-          </FakeRow>
-          <FakeRow>
-            <FakeText width={60} />
-            <FakeText width={50} />
-          </FakeRow>
-        </ColumnWithMargins>
-      </Wrapper>
-    );
-
-    return (
-      <Container descendingOpacity={descendingOpacity} index={index}>
-          <MaskedView maskElement={skeletonElement}>
-            {this.renderShimmer()}
-          </MaskedView>
-      </Container>
-    );
-  }
+    </Container> 
+  );
 }
-
-export default withThemeContext(TokenHistoryLoader);

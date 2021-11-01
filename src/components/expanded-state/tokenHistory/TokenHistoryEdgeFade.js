@@ -1,22 +1,24 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
+import { useDimensions } from '@rainbow-me/hooks';
+import { View } from "react-native";
 
 const LeftFade = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   colors: [
     colors.black,
-    colors.alpha(0.738, colors.black),
-    colors.alpha(0.541, colors.black),
-    colors.alpha(0.382, colors.black),
-    colors.alpha(0.278, colors.black),
-    colors.alpha(0.194, colors.black),
-    colors.alpha(0.126, colors.black),
-    colors.alpha(0.075, colors.black),
-    colors.alpha(0.042, colors.black),
-    colors.alpha(0.021, colors.black),
-    colors.alpha(0.008, colors.black),
-    colors.alpha(0.002, colors.black),
-    colors.alpha(0, colors.black),
+    colors.alpha(colors.black, 0.738),
+    colors.alpha(colors.black, 0.541),
+    colors.alpha(colors.black, 0.382),
+    colors.alpha(colors.black, 0.278),
+    colors.alpha(colors.black, 0.194),
+    colors.alpha(colors.black, 0.126),
+    colors.alpha(colors.black, 0.075),
+    colors.alpha(colors.black, 0.042),
+    colors.alpha(colors.black, 0.021),
+    colors.alpha(colors.black, 0.008),
+    colors.alpha(colors.black, 0.002),
+    colors.alpha(colors.black, 0),
   ],
   end: { x: 0, y: 0.5 },
   locations: [
@@ -46,18 +48,18 @@ const LeftFade = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
 const RightFade = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   colors: [
     colors.black,
-    colors.alpha(0.738, colors.black),
-    colors.alpha(0.541, colors.black),
-    colors.alpha(0.382, colors.black),
-    colors.alpha(0.278, colors.black),
-    colors.alpha(0.194, colors.black),
-    colors.alpha(0.126, colors.black),
-    colors.alpha(0.075, colors.black),
-    colors.alpha(0.042, colors.black),
-    colors.alpha(0.021, colors.black),
-    colors.alpha(0.008, colors.black),
-    colors.alpha(0.002, colors.black),
-    colors.alpha(0, colors.black),
+    colors.alpha(colors.black, 0.738),
+    colors.alpha(colors.black, 0.541),
+    colors.alpha(colors.black, 0.382),
+    colors.alpha(colors.black, 0.278),
+    colors.alpha(colors.black, 0.194),
+    colors.alpha(colors.black, 0.126),
+    colors.alpha(colors.black, 0.075),
+    colors.alpha(colors.black, 0.042),
+    colors.alpha(colors.black, 0.021),
+    colors.alpha(colors.black, 0.008),
+    colors.alpha(colors.black, 0.002),
+    colors.alpha(colors.black, 0),
   ],
   end: { x: 1, y: 0.5 },
   locations: [
@@ -84,10 +86,21 @@ const RightFade = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   width: 24px;
 `;
 
+const CenterView = styled(View)`
+  margin-left: 24;
+  width: ${({ width }) => width - 48};
+  height: 100%;
+  background-color: ${({ colors }) => colors.black}; 
+`;
+
+
 export default function TokenHistoryEdgeFade() {
+  const { width } = useDimensions();
+  const { colors } = useTheme();
   return (
     <>
       <LeftFade />
+        <CenterView width = {width} colors = {colors} />
       <RightFade />
     </>
   );
