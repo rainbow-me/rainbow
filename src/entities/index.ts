@@ -12,11 +12,12 @@ export type {
   GasFeesBySpeed,
   LegacyGasFeesBySpeed,
   GasPricesAPIData,
-  GasFeesBlockNativeData,
   GasFeeParam,
   TransactionGasParams,
   GasFeesPolygonGasStationData,
   CurrentBlockParams,
+  RainbowMeteorologyData,
+  ConfirmationTimeByPriorityFee,
 } from './gas';
 export type Numberish = string | number;
 export { default as ProtocolTypeNames, ProtocolType } from './protocolTypes';

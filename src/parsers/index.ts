@@ -10,7 +10,6 @@ export {
   getFallbackGasPrices,
   parseGasPrices,
   parseGasFeesBySpeed,
-  parseBlockNativeGasData,
   defaultGasPriceFormat,
   parseLegacyGasFeesBySpeed,
   gweiToWei,
@@ -19,6 +18,7 @@ export {
   parseGasFeeParam,
   parseGasFees,
   defaultGasParamsFormat,
+  parseRainbowMeteorologyData,
 } from './gas';
 export { parseNewTransaction } from './newTransaction';
 export { getRequestDisplayDetails } from './requests';

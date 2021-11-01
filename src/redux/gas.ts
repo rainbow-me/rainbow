@@ -1,6 +1,5 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { suggestFees } from 'eip1559-fee-suggestions-ethers';
 import { get, isEmpty } from 'lodash';
 import { AppDispatch, AppGetState } from './store';
 import {
@@ -8,37 +7,36 @@ import {
   GasFee,
   GasFeeParams,
   GasFeeParamsBySpeed,
-  GasFeesBlockNativeData,
   GasFeesBySpeed,
   GasFeesPolygonGasStationData,
   LegacyGasFee,
   LegacyGasFeeParamsBySpeed,
   LegacyGasFeesBySpeed,
   LegacySelectedGasFee,
+  RainbowMeteorologyData,
   SelectedGasFee,
 } from '@rainbow-me/entities';
 import {
-  blockNativeGetGasParams,
   getEstimatedTimeForGasPrice,
   getGasFeesEstimates,
   polygonGasStationGetGasPrices,
   polygonGetGasEstimates,
+  rainbowMeteorologyGetData,
 } from '@rainbow-me/handlers/gasFees';
 import {
   getProviderForNetwork,
   isEIP1559LegacyNetwork,
-  web3Provider,
 } from '@rainbow-me/handlers/web3';
 import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasParamsFormat,
   getFallbackGasPrices,
-  parseBlockNativeGasData,
   parseGasFeeParam,
   parseGasFees,
   parseGasFeesBySpeed,
   parseGasPrices,
   parseLegacyGasFeesBySpeed,
+  parseRainbowMeteorologyData,
   weiToGwei,
 } from '@rainbow-me/parsers';
 import {
@@ -291,21 +289,15 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   };
 
   const getEIP1559GasParams = async () => {
-    const { suggestions, trend } = await suggestFees(web3Provider);
-    const suggestedFees: { maxFeePerGas: number }[] = suggestions;
-    // add fallback to blocknative baseFeePerGas
-    const suggestedMaxFeesPerGas = suggestedFees.map(
-      ({ maxFeePerGas }) => maxFeePerGas
-    );
-    const suggestedMaxFeePerGas = Math.max(...suggestedMaxFeesPerGas);
-    const suggestedGweiMaxFeePerGas = Number(weiToGwei(suggestedMaxFeePerGas));
-
-    const { data } = await blockNativeGetGasParams();
-    const { gasFeeParamsBySpeed, baseFeePerGas } = parseBlockNativeGasData(
-      data as GasFeesBlockNativeData,
-      suggestedGweiMaxFeePerGas
-    );
-    return { baseFeePerGas, gasFeeParamsBySpeed, trend };
+    const { data } = (await rainbowMeteorologyGetData()) as {
+      data: RainbowMeteorologyData;
+    };
+    const {
+      gasFeeParamsBySpeed,
+      baseFeePerGas,
+      baseFeeTrend,
+    } = parseRainbowMeteorologyData(data);
+    return { baseFeePerGas, gasFeeParamsBySpeed, trend: baseFeeTrend };
   };
 
   const getGasPrices = (network: Network) =>

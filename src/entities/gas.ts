@@ -101,16 +101,26 @@ export interface GasFeesPolygonGasStationData {
   };
 }
 
-export interface GasFeesBlockNativeData {
-  blockPrices: {
+export interface ConfirmationTimeByPriorityFee {
+  15: string;
+  30: string;
+  45: string;
+  60: string;
+}
+
+export interface RainbowMeteorologyData {
+  data: {
+    baseFeeSuggestion: string;
+    baseFeeTrend: number;
+    confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee;
+    maxPriorityFeeSuggestions: {
+      fast: string;
+      normal: string;
+      urgent: string;
+    };
+  };
+  meta: {
     blockNumber: number;
-    baseFeePerGas: number;
-    estimatedTransactionCount: number;
-    estimatedPrices: {
-      confidence: number;
-      price: number;
-      maxPriorityFeePerGas: number;
-      maxFeePerGas: number;
-    }[];
-  }[];
+    provider: string;
+  };
 }

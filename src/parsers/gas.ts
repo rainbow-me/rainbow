@@ -11,29 +11,23 @@ import ethUnits from '../references/ethereum-units.json';
 import timeUnits from '../references/time-units.json';
 import { gasUtils } from '../utils';
 import {
+  ConfirmationTimeByPriorityFee,
   GasFeeParam,
   GasFeeParams,
   GasFeeParamsBySpeed,
-  GasFeesBlockNativeData,
   GasFeesBySpeed,
   GasPricesAPIData,
   LegacyGasFeeParamsBySpeed,
   LegacyGasFeesBySpeed,
   LegacySelectedGasFee,
   Numberish,
+  RainbowMeteorologyData,
   SelectedGasFee,
 } from '@rainbow-me/entities';
 
 type BigNumberish = number | string | BigNumber;
 
-const {
-  CUSTOM,
-  FAST,
-  NORMAL,
-  URGENT,
-  GasSpeedOrder,
-  GAS_CONFIDENCE,
-} = gasUtils;
+const { CUSTOM, FAST, NORMAL, URGENT, GasSpeedOrder } = gasUtils;
 
 /**
  * @desc parse ether gas prices
@@ -54,28 +48,80 @@ const parseGasPricesEtherscan = (data: GasPricesAPIData) => ({
   [URGENT]: defaultGasPriceFormat(URGENT, data.fastWait, data.fast),
 });
 
-export const parseBlockNativeGasData = (
-  data: GasFeesBlockNativeData,
-  suggestedMaxFeePerGas: number
-): { gasFeeParamsBySpeed: GasFeeParamsBySpeed; baseFeePerGas: GasFeeParam } => {
-  const { baseFeePerGas, estimatedPrices } = data?.blockPrices?.[0];
-  const parsedFees: GasFeeParamsBySpeed = {};
-  estimatedPrices.forEach(({ confidence, maxPriorityFeePerGas }) => {
-    const option: string = GAS_CONFIDENCE[confidence];
-    parsedFees[option] = defaultGasParamsFormat(
-      option,
-      '0', // time
-      suggestedMaxFeePerGas,
-      maxPriorityFeePerGas
-    );
-  });
-  parsedFees[CUSTOM] = {} as GasFeeParams;
-  const parsedBaseFeePerGas = parseGasFeeParam(
-    Number(gweiToWei(baseFeePerGas))
-  );
+const parseGasDataConfirmationTime = (
+  maxPriorityFee: string,
+  confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee
+) => {
+  const maxPriorityFeeGwei = weiToGwei(maxPriorityFee);
+  const moreThanUrgentTime = weiToGwei(confirmationTimeByPriorityFee[15]);
+  const urgentTime = weiToGwei(confirmationTimeByPriorityFee[30]);
+  const fastTime = weiToGwei(confirmationTimeByPriorityFee[45]);
+  const normalTime = weiToGwei(confirmationTimeByPriorityFee[60]);
+  let timeAmount = 100;
+  if (maxPriorityFeeGwei <= moreThanUrgentTime) {
+    timeAmount = 15;
+  } else if (
+    maxPriorityFeeGwei > moreThanUrgentTime &&
+    maxPriorityFeeGwei <= urgentTime
+  ) {
+    timeAmount = 30;
+  } else if (
+    maxPriorityFeeGwei > urgentTime &&
+    maxPriorityFeeGwei <= fastTime
+  ) {
+    timeAmount = 45;
+  } else if (
+    maxPriorityFeeGwei > fastTime &&
+    maxPriorityFeeGwei <= normalTime
+  ) {
+    timeAmount = 60;
+  } else if (maxPriorityFeeGwei > normalTime) timeAmount = 75;
 
   return {
-    baseFeePerGas: parsedBaseFeePerGas,
+    amount: Number(timeAmount),
+    display: getMinimalTimeUnitStringForMs(
+      multiply(timeAmount, timeUnits.ms.minute)
+    ),
+  };
+};
+
+export const parseRainbowMeteorologyData = (
+  rainbowMeterologyData: RainbowMeteorologyData
+): {
+  gasFeeParamsBySpeed: GasFeeParamsBySpeed;
+  baseFeePerGas: GasFeeParam;
+  baseFeeTrend: number;
+} => {
+  const {
+    baseFeeSuggestion,
+    baseFeeTrend,
+    maxPriorityFeeSuggestions,
+    confirmationTimeByPriorityFee,
+  } = rainbowMeterologyData.data;
+  const parsedFees: GasFeeParamsBySpeed = {};
+
+  const parsedBaseFeeSuggestion = parseRainbowMeteorologyGasFeeParam(
+    baseFeeSuggestion
+  );
+
+  Object.keys(maxPriorityFeeSuggestions).forEach(speed => {
+    const maxPriorityFee = maxPriorityFeeSuggestions[speed];
+    parsedFees[speed] = {
+      estimatedTime: parseGasDataConfirmationTime(
+        maxPriorityFee,
+        confirmationTimeByPriorityFee
+      ),
+      maxFeePerGas: parsedBaseFeeSuggestion,
+      maxPriorityFeePerGas: parseRainbowMeteorologyGasFeeParam(maxPriorityFee),
+      option: speed,
+    };
+  });
+
+  parsedFees[CUSTOM] = {} as GasFeeParams;
+
+  return {
+    baseFeePerGas: parsedBaseFeeSuggestion,
+    baseFeeTrend,
     gasFeeParamsBySpeed: parsedFees,
   };
 };
@@ -153,6 +199,22 @@ export const defaultGasPriceFormat = (
       display: `${parseInt(value.toString(), 10)} Gwei`,
     },
     option,
+  };
+};
+
+/**
+ * Transform gwei gas value into a `GasFeeParam` object
+ * @param weiAmount - Gas value in wei unit
+ * @returns
+ */
+export const parseRainbowMeteorologyGasFeeParam = (
+  weiAmount: string
+): GasFeeParam => {
+  const gweiAmount = weiToGwei(weiAmount);
+  return {
+    amount: Math.round(Number(gweiAmount)),
+    display: `${parseInt(gweiAmount, 10)} Gwei`,
+    gwei: Number(gweiAmount),
   };
 };
 

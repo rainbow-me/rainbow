@@ -31,6 +31,7 @@ const GAS_ICONS = {
   [NORMAL]: 'stopwatch',
   [URGENT]: 'policeCarLight',
 };
+
 const getTrendKey = (trend: number) => {
   // missing rising still
   switch (trend) {
@@ -44,6 +45,7 @@ const getTrendKey = (trend: number) => {
       return 'stable';
   }
 };
+
 const GAS_TRENDS = {
   falling: { color: colors.green, label: '􀄱 Falling' },
   rising: { color: colors.orange, label: '􀰾 Rising' },
