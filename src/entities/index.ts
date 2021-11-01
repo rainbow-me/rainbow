@@ -18,6 +18,7 @@ export type {
   CurrentBlockParams,
   RainbowMeteorologyData,
   ConfirmationTimeByPriorityFee,
+  MaxPriorityFeeSuggestions,
 } from './gas';
 export type Numberish = string | number;
 export { default as ProtocolTypeNames, ProtocolType } from './protocolTypes';

@@ -108,16 +108,18 @@ export interface ConfirmationTimeByPriorityFee {
   60: string;
 }
 
+export interface MaxPriorityFeeSuggestions {
+  fast: string;
+  normal: string;
+  urgent: string;
+}
+
 export interface RainbowMeteorologyData {
   data: {
     baseFeeSuggestion: string;
     baseFeeTrend: number;
     confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee;
-    maxPriorityFeeSuggestions: {
-      fast: string;
-      normal: string;
-      urgent: string;
-    };
+    maxPriorityFeeSuggestions: MaxPriorityFeeSuggestions;
   };
   meta: {
     blockNumber: number;

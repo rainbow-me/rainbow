@@ -20,6 +20,7 @@ import {
   LegacyGasFeeParamsBySpeed,
   LegacyGasFeesBySpeed,
   LegacySelectedGasFee,
+  MaxPriorityFeeSuggestions,
   Numberish,
   RainbowMeteorologyData,
   SelectedGasFee,
@@ -103,9 +104,9 @@ export const parseRainbowMeteorologyData = (
   const parsedBaseFeeSuggestion = parseRainbowMeteorologyGasFeeParam(
     baseFeeSuggestion
   );
-
   Object.keys(maxPriorityFeeSuggestions).forEach(speed => {
-    const maxPriorityFee = maxPriorityFeeSuggestions[speed];
+    const maxPriorityFee =
+      maxPriorityFeeSuggestions[speed as keyof MaxPriorityFeeSuggestions];
     parsedFees[speed] = {
       estimatedTime: parseGasDataConfirmationTime(
         maxPriorityFee,
