@@ -215,7 +215,7 @@ export const parseRainbowMeteorologyGasFeeParam = (
   return {
     amount: Math.round(Number(gweiAmount)),
     display: `${parseInt(gweiAmount, 10)} Gwei`,
-    gwei: Number(gweiAmount),
+    gwei: Math.round(Number(gweiAmount) * 100) / 100,
   };
 };
 
