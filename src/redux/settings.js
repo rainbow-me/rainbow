@@ -6,6 +6,7 @@ import {
   saveNetwork,
 } from '../handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '../handlers/web3';
+import { NativeCurrencyKeys } from '../helpers/nativeCurrencyTypes';
 import networkTypes from '../helpers/networkTypes';
 import { updateLanguage } from '../languages';
 
@@ -106,7 +107,7 @@ export const INITIAL_STATE = {
   accountAddress: '',
   chainId: 1,
   language: 'en',
-  nativeCurrency: 'USD',
+  nativeCurrency: NativeCurrencyKeys.USD,
   network: networkTypes.mainnet,
 };
 

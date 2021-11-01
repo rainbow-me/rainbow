@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { Row } from '../../../layout';
 import ChartHeaderTitle from './ChartHeaderTitle';
 import { ChartYLabel } from '@rainbow-me/animated-charts';
+import { NativeCurrencyKeys } from '@rainbow-me/helpers/nativeCurrencyTypes';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
@@ -54,7 +55,7 @@ export function formatNative(value, priceSharedValue, nativeSelected) {
       : 2;
 
   let res = `${Number(value).toFixed(decimals).toLocaleString('en-US', {
-    currency: 'USD',
+    currency: NativeCurrencyKeys.USD,
   })}`;
   res =
     nativeSelected?.alignment === 'left'
