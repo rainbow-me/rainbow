@@ -10,6 +10,7 @@ import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions'
 import { useTheme } from '../../../context/ThemeContext';
 import { useDimensions } from '@rainbow-me/hooks';
 import { TokenHistoryLoader } from './TokenHistoryLoader';
+import TokenHistoryEdgeFade from './TokenHistoryEdgeFade';
 
 /**
  * Requirements: 
@@ -60,6 +61,10 @@ const GradientRow = styled(Row)`
   height: 10;
   margin-bottom: 6;
   margin-top: 4;
+`;
+
+const OuterColumn = styled(Column)`
+  'justyify-content: flex-start'
 `;
 
 const InnerColumn = styled(Column)`
@@ -179,7 +184,7 @@ const TokenHistory = ({
     const date = getHumanReadableDateWithoutOn(new Date(item.created_date).getTime()/1000);
 
     return (
-      <Column>
+      <OuterColumn>
         <GradientRow> 
           <Gradient color={color} />
           { isFirst ? <EmptyView /> : <LineView color={color} /> }
@@ -216,7 +221,7 @@ const TokenHistory = ({
             </Text>
           </Row>
         </InnerColumn>
-      </Column>
+      </OuterColumn>
     )
   }
   
@@ -226,16 +231,19 @@ const TokenHistory = ({
         isLoading ?
         <Text style={{ color: '#FFFFFF'}}> Loading </Text>
         :
-        <FlatList
-          data={tokenHistory}
-          renderItem={({item, index}) => renderItem({ item, index })}
-          horizontal={true}
-          inverted={true}
-          ListHeaderComponent={ tokenHistoryShort ? <RightSpacer /> : <View /> }
-          ListFooterComponent={ <LeftSpacer /> }
-          showsHorizontalScrollIndicator={false}
-        />
-       
+        <View> 
+          <TokenHistoryEdgeFade />
+            <FlatList
+              data={tokenHistory}
+              renderItem={({item, index}) => renderItem({ item, index })}
+              horizontal={true}
+              inverted={true}
+              ListHeaderComponent={ tokenHistoryShort ? <RightSpacer /> : <View /> }
+              ListFooterComponent={ <LeftSpacer /> }
+              showsHorizontalScrollIndicator={false}
+            />
+          <TokenHistoryEdgeFade />
+        </View>
       }
     </Container>
   )
