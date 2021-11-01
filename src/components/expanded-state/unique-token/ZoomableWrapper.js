@@ -163,10 +163,6 @@ export const ZoomableWrapper = ({
 
   const endGesture = useWorkletCallback((event, ctx) => {
     'worklet';
-    ctx.initEventScale = undefined;
-    ctx.prevScale = undefined;
-    ctx.startFocalX = undefined;
-    ctx.startFocalY = undefined;
     ctx.startVelocityX = undefined;
     ctx.startVelocityY = undefined;
     ctx.prevTranslateX = 0;
@@ -186,6 +182,7 @@ export const ZoomableWrapper = ({
       breakingScaleX = deviceWidth / containerWidth;
       breakingScaleY = deviceHeight / containerHeight;
     }
+
     const maxDisplacementX =
       (deviceWidth * (Math.max(1, targetScale / breakingScaleX) - 1)) /
       2 /
@@ -195,11 +192,40 @@ export const ZoomableWrapper = ({
       2 /
       zooming;
 
+    let targetTranslateX = translateX.value;
+    let targetTranslateY = translateY.value;
+
+    if (scale.value > MAX_IMAGE_SCALE) {
+      scale.value = withTiming(MAX_IMAGE_SCALE, adjustConfig);
+      targetScale = MAX_IMAGE_SCALE;
+      if (ctx.prevScale) {
+        const lastFocalDisplacementX =
+          (ctx.focalDisplacementX * event.scale) / ctx.initEventScale;
+        const readjustX =
+          ctx.maxAllowedFocalDisplacementX - lastFocalDisplacementX;
+        targetTranslateX = translateX.value + readjustX;
+        translateX.value = withTiming(targetTranslateX, adjustConfig);
+
+        const lastFocalDisplacementY =
+          (ctx.focalDisplacementY * event.scale) / ctx.initEventScale;
+        const readjustY =
+          ctx.maxAllowedFocalDisplacementY - lastFocalDisplacementY;
+        targetTranslateY = translateY.value + readjustY;
+        translateY.value = withTiming(targetTranslateY, adjustConfig);
+      } else {
+        return;
+      }
+    }
+    ctx.initEventScale = undefined;
+    ctx.startFocalX = undefined;
+    ctx.startFocalY = undefined;
+    ctx.prevScale = undefined;
+
     if (targetScale > breakingScaleX) {
-      if (translateX.value > maxDisplacementX) {
+      if (targetTranslateX > maxDisplacementX) {
         translateX.value = withTiming(maxDisplacementX, adjustConfig);
       }
-      if (translateX.value < -maxDisplacementX) {
+      if (targetTranslateX < -maxDisplacementX) {
         translateX.value = withTiming(-maxDisplacementX, adjustConfig);
       }
     } else {
@@ -207,10 +233,10 @@ export const ZoomableWrapper = ({
     }
 
     if (targetScale > breakingScaleY) {
-      if (translateY.value > maxDisplacementY) {
+      if (targetTranslateY > maxDisplacementY) {
         translateY.value = withTiming(maxDisplacementY, adjustConfig);
       }
-      if (translateY.value < -maxDisplacementY) {
+      if (targetTranslateY < -maxDisplacementY) {
         translateY.value = withTiming(-maxDisplacementY, adjustConfig);
       }
     } else {
@@ -265,17 +291,12 @@ export const ZoomableWrapper = ({
       }
     }
 
-    if (scale.value > MAX_IMAGE_SCALE) {
-      scale.value = withTiming(MAX_IMAGE_SCALE, adjustConfig);
-      targetScale = MAX_IMAGE_SCALE;
-    }
-
     if (
       event.velocityY &&
       isZoomedValue.value &&
       targetScale > breakingScaleX
     ) {
-      const projectedYCoordinate = translateY.value + event.velocityY / 8;
+      const projectedYCoordinate = targetTranslateY + event.velocityY / 8;
       const edgeBounceConfig = {
         damping: 60,
         mass: 2,
@@ -302,7 +323,7 @@ export const ZoomableWrapper = ({
       isZoomedValue.value &&
       targetScale > breakingScaleX
     ) {
-      const projectedXCoordinate = translateX.value + event.velocityX / 8;
+      const projectedXCoordinate = targetTranslateX + event.velocityX / 8;
       const edgeBounceConfig = {
         damping: 60,
         mass: 2,
@@ -376,6 +397,13 @@ export const ZoomableWrapper = ({
     onActive: (event, ctx) => {
       if (!ctx.initEventScale) {
         ctx.initEventScale = event.scale;
+
+        const maxAllowedEventScale =
+          (ctx.initEventScale * MAX_IMAGE_SCALE) / scale.value;
+        ctx.maxAllowedFocalDisplacementX =
+          (ctx.focalDisplacementX * maxAllowedEventScale) / ctx.initEventScale;
+        ctx.maxAllowedFocalDisplacementY =
+          (ctx.focalDisplacementY * maxAllowedEventScale) / ctx.initEventScale;
       }
       if (event.numberOfPointers === 1 || event.numberOfPointers === 2) {
         if (
@@ -409,8 +437,10 @@ export const ZoomableWrapper = ({
     onStart: (event, ctx) => {
       ctx.startScale = scale.value;
       ctx.blockExitZoom = false;
+
       ctx.focalDisplacementX =
         (containerWidthValue.value / 2 - event.focalX) * scale.value;
+
       ctx.focalDisplacementY =
         (containerHeightValue.value / 2 - event.focalY) * scale.value;
     },
