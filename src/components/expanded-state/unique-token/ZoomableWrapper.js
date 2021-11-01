@@ -369,7 +369,7 @@ export const ZoomableWrapper = ({
       if (
         ctx.startScale <= MIN_IMAGE_SCALE ||
         ctx.startScale * fullSizeHeight >= deviceHeight ||
-        ctx.startPointers === 2 ||
+        ctx.numberOfPointers === 2 ||
         event.numberOfPointers === 2 ||
         !(Math.abs(ctx.startVelocityX) / Math.abs(ctx.startVelocityY) > 1)
       ) {

@@ -320,6 +320,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
                     ? colors.alpha(colors.whiteLabel, 0.5)
                     : colors.whiteLabel
                 }
+                enableHapticFeedback={!!currentPrice}
                 isNft
                 onPress={toggleCurrentPriceDisplayCurrency}
                 size="big"
@@ -344,6 +345,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
                     ? colors.alpha(colors.whiteLabel, 0.5)
                     : colors.whiteLabel
                 }
+                enableHapticFeedback={floorPrice !== 'None'}
                 isNft
                 loading={!floorPrice}
                 onInfoPress={handlePressCollectionFloor}
