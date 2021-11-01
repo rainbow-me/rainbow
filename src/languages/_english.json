@@ -147,7 +147,19 @@
       "learn_more": "Learn more",
       "unhide": "Unhide",
       "unpin": "Unpin",
-      "view": "View"
+      "view": "View",
+      "confirm_exchange": {
+        "deposit": "Hold to Deposit",
+        "withdraw": "Hold to Withdraw",
+        "swap": "Hold to Swap",
+        "insufficient_funds": "Insufficient Funds",
+        "insufficient_eth": "Insufficient ETH",
+        "insufficient_liquidity": "Insufficient Liquidity",
+        "swap_anyway": "Swap Anyway",
+        "view_details": "View Details",
+        "enter_amount": "Enter an Amount",
+        "fetching_details": "Fetching Details..."
+      }
     },
     "contacts": {
       "options": {

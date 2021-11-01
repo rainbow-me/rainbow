@@ -109,10 +109,13 @@
         "deposit": "Tenir pour Déposer",
         "withdraw": "Tenir pour Retirer",
         "swap": "Tenir pour Swap",
-        "insuffecient_funds": "Fonds Insuffisants",
-        "insuffecient_eth": "ETH Insuffisants",
+        "insufficient_funds": "Fonds Insuffisants",
+        "insufficient_eth": "ETH Insuffisants",
         "enter_amount": "Entrez un Montant",
-        "swap_anyway": "Echanger quand Même"
+        "swap_anyway": "Echanger quand Même",
+        "insufficient_liquidity": "Insufficient Liquidity :)",
+        "view_details": "View Details :)",
+        "fetching_details": "Fetching Details... :)"
       }
     },
     "input": {
