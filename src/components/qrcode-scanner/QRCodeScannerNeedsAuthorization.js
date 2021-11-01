@@ -56,9 +56,7 @@ const Title = styled(Text).attrs(({ theme: { colors } }) => ({
 
 export default function QRCodeScannerNeedsAuthorization() {
   const handlePressSettings = useCallback(() => {
-    Linking.canOpenURL('app-settings:').then(() =>
-      Linking.openURL('app-settings:')
-    );
+    Linking.openSettings();
   }, []);
 
   return (

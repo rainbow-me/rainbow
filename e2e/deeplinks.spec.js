@@ -91,12 +91,6 @@ describe('Deeplinks spec', () => {
     await testEthereumDeeplink(url);
   });
 
-  it('should be able to handle ethereum payments urls for WETH (polygon)', async () => {
-    const url =
-      'ethereum:0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619@137/transfer?address=brunobarbieri.eth&uint256=1e15';
-    await testEthereumDeeplink(url);
-  });
-
   it('should reject ethereum urls for assets that are not in the wallet', async () => {
     const url =
       'ethereum:0xef2e9966eb61bb494e5375d5df8d67b7db8a780d@1/transfer?address=brunobarbieri.eth&uint256=1e15';
