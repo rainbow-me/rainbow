@@ -212,6 +212,9 @@
         }
       }
     },
+    "cloud": {
+      "backup_success": "Your wallet has been backed up successfully!"
+    },
     "message": {
       "web3_not_available": "Veuillez installer l’extension Chrome de MetaMask",
       "web3_not_unlocked": "Veuillez déverrouiller votre wallet MetaMask",
@@ -329,6 +332,11 @@
         "reject": "Refuser",
         "send": "Envoyer",
         "to": "À",
+        "pin": "Pin :)",
+        "hide": "Hide :)",
+        "unpin": "Unpin :)",
+        "unhide": "Unhide :)",
+        "value": "Value :)",
         "edit": "Moadifier le Portefeuille",
         "delete": "Supprimer le Portefeuille",
         "delete_confirm": "Voulez-vous vraiment supprimer ce portefeuille",
@@ -406,11 +414,21 @@
         "hide_seed_phrase": "Cacher clé mnémonique",
         "show_seed_phrase": "Afficher clé mnémonique"
       },
+      "message_signing": {
+        "message": "Message :)",
+        "request": "Message Signing Request :)"
+      },
+      "push_notifications": {
+        "please_enable_title": "Rainbow would like to send you push notifications :)",
+        "please_enable_body": "It looks like you are using WalletConnect. Please enable push notifications to be notified of transaction requests from WalletConnect. :)"
+      },
       "transaction": {
         "alert": {
           "authentication": "L'authentication a échouée",
           "cancelled_transaction": "Échec de l'envoie de la transaction annulée à WalletConnect",
           "failed_transaction_status": "Échec de l'envoie du status de la transaction échouée",
+          "failed_transaction": "Failed to send transaction :)",
+          "failed_sign_message": "Failed to sign message :)",
           "transaction_status": "Échec de l'envoie du status de la transaction"
         },
         "confirm": "Confirmer transaction",
@@ -418,8 +436,12 @@
         "send": "Envoyer transaction"
       },
       "wallet_connect": {
+        "missing_fcm": "Unable to initialize WalletConnect: missing push notification token. Please try again. :)",
         "error": "Erreur d'initialisation avec WalletConnect"
       },
+      "unrecognized_qrcode": "Sorry, this QR code could not be recognized. :)",
+      "unrecognized_qrcode_title": "Unrecognized QR Code :)",
+      "copy_address": "Copy Address",
       "receive": "Recovoir"
     },
     "contacts": {
@@ -443,7 +465,10 @@
       "feedback_and_reports": "Feedback & Bug Reports :)",
       "review": "Review Rainbow :)",
       "back": "Retour",
-      "done": "Terminé"
+      "done": "Terminé",
+      "theme": "Theme :)",
+      "privacy": "Privacy :)",
+      "learn": "Learn about Rainbow and Ethereum :)"
     },
     "walletconnect": {
       "scan_to_send": {
@@ -533,8 +558,9 @@
     },
     "send_feedback": {
       "copy_email": "Copy email address :)",
+      "no_thanks": "No thanks :)",
       "email_error": {
-        "label": "Error launching email client :)",
+        "title": "Error launching email client :)",
         "description": "Would you like to manually copy our feedback email address to your clipboard? :)"
       }
     }

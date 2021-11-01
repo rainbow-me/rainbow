@@ -20,11 +20,11 @@ const FeedbackErrorAlert = () =>
       },
       {
         style: 'cancel',
-        text: lang.t('button.no_thanks'),
+        text: lang.t('send_feedback.no_thanks'),
       },
     ],
     message: lang.t('send_feedback.email_error.description'),
-    title: lang.t('send_feedback.email_error.label'),
+    title: lang.t('send_feedback.email_error.title'),
   });
 
 const handleMailError = debounce(

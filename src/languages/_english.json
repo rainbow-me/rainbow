@@ -97,17 +97,17 @@
     },
     "back_up": {
       "manual": {
-        "label": "Your secret phrase"
-      },
-      "pkey": {
-        "these_keys": "This is the key to your wallet!",
-        "save_them": "Copy it and save it in your password manager, or in another secure spot.",
-        "confirm_save": "I’ve saved my key"
-      },
-      "seed": {
-        "these_keys": "These words are the keys to your wallet!",
-        "save_them": "Write them down or save them in your password manager.",
-        "confirm_save": "I’ve saved these words"
+        "label": "Your secret phrase",
+        "pkey": {
+          "these_keys": "This is the key to your wallet!",
+          "save_them": "Copy it and save it in your password manager, or in another secure spot.",
+          "confirm_save": "I’ve saved my key"
+        },
+        "seed": {
+          "these_keys": "These words are the keys to your wallet!",
+          "save_them": "Write them down or save them in your password manager.",
+          "confirm_save": "I’ve saved these words"
+        }
       }
     },
     "add_funds": { "interstitial": { "other_amount": "Other amount" } },
@@ -117,6 +117,7 @@
       "connect_walletconnect": "Use WalletConnect",
       "exchange": "Exchange",
       "exchange_again": "Exchange Again",
+      "exchange_search_uniswap": "Search Uniswap",
       "delete": "Delete",
       "disconnect_account": "Log Out",
       "donate": "Donate ETH",
@@ -138,6 +139,7 @@
       "pin": "Pin",
       "proceed": "Proceed",
       "paste": "Paste",
+      "share": "Share",
       "send": "Send",
       "swap": "Swap",
       "send_another": "Send Another",
@@ -170,7 +172,6 @@
     "modal": {
       "receive_title": "Receive to {{walletName}}",
       "exchange_title": "Exchange from {{walletName}}",
-      "exchange_search_uniswap": "Search Uniswap",
       "donate_title": "Send from {{walletName}} to Balance Manager",
       "send_title": "Send from {{walletName}}",
       "approve_tx": "Approve transaction on {{walletType}}",

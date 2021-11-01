@@ -180,16 +180,16 @@ export default function BackupSheet() {
       default:
         return (
           <BackupSheetSection
-            descriptionText={lang.t('modal.backup.default.description')}
+            descriptionText={lang.t('modal.back_up.default.description')}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={onManualBackup}
-            primaryLabel={`􀙶 ${lang.t('modal.backup.default.button.cloud', {
+            primaryLabel={`􀙶 ${lang.t('modal.back_up.default.button.cloud', {
               cloudPlatformName: cloudPlatform,
             })}`}
             secondaryLabel={`🤓 ${lang.t(
-              'modal.backup.default.button.manual'
+              'modal.back_up.default.button.manual'
             )}`}
-            titleText={lang.t('modal.backup.default.title')}
+            titleText={lang.t('modal.back_up.default.title')}
             type="Default"
           />
         );
