@@ -9,7 +9,6 @@ const Container = styled(Row)`
   width: ${({ width }) => width};
   height: 60;
   background-color: #FFFFFF00; 
-  margin-top: 5;
 `;
 
 const FakeDate = styled(RadialGradient).attrs(
@@ -58,7 +57,7 @@ const LeftmostLine = styled(View)`
   border-radius: 1.5;
   width: 76;
   margin-bottom: 32.5;
-  margin-top: 3.5;
+  margin-top: 4;
 `;
 
 const Line = styled(View)`
@@ -67,7 +66,7 @@ const Line = styled(View)`
   opacity: 0.1;
   border-radius: 1.5;
   width: 132;
-  margin-top: 3.5
+  margin-top: 4;
 `;
 
 
@@ -78,7 +77,8 @@ const RowWithMargins = styled(Row)`
 const Gradient = styled(RadialGradient).attrs(
   ({ theme: { colors } }) => ({
     center: [0, 0],
-    colors:  [colors.whiteLabel, '#FFFFFF00']
+    colors:  [colors.alpha(colors.whiteLabel, 0.2), colors.alpha(colors.whiteLabel, 0.06)],
+    radius: 10
   })
 )`
   border-radius: 5;
@@ -87,7 +87,6 @@ const Gradient = styled(RadialGradient).attrs(
   margin-left: 6;
   margin-right: 6;
   margin-bottom: 9;
-  opacity: 0.25;
   overflow: hidden;
 `;
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Column, Row } from '../../layout';
 import { apiGetTokenHistory } from '@rainbow-me/handlers/opensea-api';
 import { FlatList, View } from "react-native";
@@ -65,7 +65,6 @@ const GradientRow = styled(Row)`
 `;
 
 const OuterColumn = styled(Column)`
-  'justyify-content: flex-start'
 `;
 
 const InnerColumn = styled(Column)`
@@ -101,7 +100,6 @@ const LineView = styled(View)`
 `;
 
 const Container = styled(View).attrs(({}))`
-  justify-content: flex-start;
 `;
 
 const TokenHistory = ({ 
@@ -138,7 +136,6 @@ const TokenHistory = ({
   }, [contractAddress, tokenID]);
 
   const renderItem = ({ item, index }) => {
-    logger.log(tokenHistoryShort);
     var isFirst = false;
     var symbol;
     var phrase;
@@ -148,7 +145,7 @@ const TokenHistory = ({
       isFirst = true;
     }
 
-    switch (item.event_type) {
+    switch (item?.event_type) {
       case eventTypes.TRANSFER:
         symbol = eventSymbols.TRANSFER;
         phrase = eventPhrases.TRANSFER;
@@ -225,16 +222,50 @@ const TokenHistory = ({
       </OuterColumn>
     )
   }
+
+  // const renderTwoOrLessDataItems = useMemo(() => {
+  //   if (tokenHistory.length == 1) {
+  //     renderItem(tokenHistory[0], 0);
+  //   }
+  //   else if (tokenHistory.length == 2) {
+  //     renderItem(tokenHistory[0], 0);
+  //     renderItem(tokenHistory[1], 1);
+  //   }
+  // }, [tokenHistory]);
+
+  const renderTwoOrLessDataItems = () => {
+    if (tokenHistory.length == 1) {
+      return (
+        <View style = {{ marginLeft: 24 }}> 
+        { renderItem({item: tokenHistory[0], index: 0}) }
+        </View>
+      )
+    }
+    else if (tokenHistory.length == 2) {
+      return (
+        <View style = {{ marginLeft: 24 }}> 
+          <Row>
+            <Column>
+              { renderItem({item: tokenHistory[1], index: 1}) }
+            </Column>
+            <Column>
+              { renderItem({item: tokenHistory[0], index: 0}) }
+            </Column>
+          </Row>
+        </View>
+      )
+      
+    }
+  };
   
   return (
     <Container>
-      {
-        isLoading ?
-        <TokenHistoryLoader />
-        :
-        <View>
+      {isLoading && <TokenHistoryLoader />}
+      {!isLoading && (
+        tokenHistoryShort ?
+        renderTwoOrLessDataItems() :
+        <Container>
           <MaskedView
-            style={{ backgroundColor: 'transparent', width: '100%' }}
             maskElement={<TokenHistoryEdgeFade />}
           > 
             <FlatList
@@ -248,9 +279,8 @@ const TokenHistory = ({
             />
           </MaskedView>
 
-          
-        </View>
-      }
+        </Container>
+      )}
     </Container>
   )
 }
