@@ -45,8 +45,10 @@ import {
   LEGACY_TRANSACTION_TYPE,
 } from '@rainbow-me/references';
 import { position } from '@rainbow-me/styles';
-import { safeAreaInsetValues } from '@rainbow-me/utils';
+import { gasUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 import logger from 'logger';
+
+const { CUSTOM, FAST } = gasUtils;
 
 const springConfig = {
   damping: 500,
@@ -315,7 +317,7 @@ export default function SpeedUpAndCancelSheet() {
     if (!isEmpty(gasFeeParamsBySpeed) && gasLimit) {
       updateTxFee(gasLimit);
       // Always default to fast
-      updateGasFeeOption('fast');
+      updateGasFeeOption(gasUtils.FAST);
     }
   }, [
     currentNetwork,
@@ -398,7 +400,7 @@ export default function SpeedUpAndCancelSheet() {
         Number(minMaxPriorityFeePerGas) >
         Number(gasFeeParamsBySpeed?.fast?.maxPriorityFeePerGas?.amount)
       ) {
-        dispatch(updateGasFeeForSpeed('fast', minMaxPriorityFeePerGas));
+        dispatch(updateGasFeeForSpeed(gasUtils.FAST, minMaxPriorityFeePerGas));
       }
       const gasLimitForNewTx =
         type === CANCEL_TX ? ethUnits.basic_tx : tx.gasLimit;
@@ -566,7 +568,7 @@ export default function SpeedUpAndCancelSheet() {
                       minMaxPriorityFeePerGas={minMaxPriorityFeePerGas}
                       onCustomGasBlur={hideKeyboard}
                       onCustomGasFocus={showKeyboard}
-                      options={['fast', 'custom']}
+                      options={[FAST, CUSTOM]}
                       theme={isDarkMode ? 'dark' : 'light'}
                       type="transaction"
                     />

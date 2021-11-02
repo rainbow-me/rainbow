@@ -108,7 +108,7 @@ export default function FeesPanel({
   const [feesGweiInputFocused, setFeesGweiInputFocused] = useState(false);
 
   const selectedOptionIsCustom = useMemo(
-    () => selectedGasFee?.option === 'custom',
+    () => selectedGasFee?.option === gasUtils.CUSTOM,
     [selectedGasFee?.option]
   );
 
@@ -204,7 +204,7 @@ export default function FeesPanel({
 
   const handleFeesGweiInputFocus = useCallback(() => {
     onCustomGasFocus?.();
-    !selectedOptionIsCustom && updateGasFeeOption('custom');
+    !selectedOptionIsCustom && updateGasFeeOption(gasUtils.CUSTOM);
     const {
       gasFeeParams: { maxFeePerGas, maxPriorityFeePerGas },
     } = selectedGasFee;
@@ -240,11 +240,9 @@ export default function FeesPanel({
         Math.round((gweiMaxFeePerGas + feePerGas) * 100) / 100;
 
       const newMaxPriorityFeePerGas = parseGasFeeParam(
-        Number(gweiToWei(newGweiMaxPriorityFeePerGas))
+        gweiToWei(newGweiMaxPriorityFeePerGas)
       );
-      const newMaxFeePerGas = parseGasFeeParam(
-        Number(gweiToWei(newGweiMaxFeePerGas))
-      );
+      const newMaxFeePerGas = parseGasFeeParam(gweiToWei(newGweiMaxFeePerGas));
 
       if (newMaxPriorityFeePerGas.amount < 0 || newMaxFeePerGas.amount < 0)
         return;
@@ -284,14 +282,12 @@ export default function FeesPanel({
 
   const onMaxBaseFeeChange = useCallback(
     ({ nativeEvent: { text } }) => {
-      const maxFeePerGas = parseGasFeeParam(Number(gweiToWei(text)));
+      const maxFeePerGas = parseGasFeeParam(gweiToWei(text));
       const gweiMaxFeePerGas = maxFeePerGas.gwei;
 
       const newGweiMaxFeePerGas = Math.round(gweiMaxFeePerGas * 100) / 100;
 
-      const newMaxFeePerGas = parseGasFeeParam(
-        Number(gweiToWei(newGweiMaxFeePerGas))
-      );
+      const newMaxFeePerGas = parseGasFeeParam(gweiToWei(newGweiMaxFeePerGas));
 
       if (newMaxFeePerGas.amount < 0) return;
 
@@ -308,14 +304,14 @@ export default function FeesPanel({
 
   const onMinerTipChange = useCallback(
     ({ nativeEvent: { text } }) => {
-      const maxPriorityFeePerGas = parseGasFeeParam(Number(gweiToWei(text)));
+      const maxPriorityFeePerGas = parseGasFeeParam(gweiToWei(text));
       const gweiMaxPriorityFeePerGas = maxPriorityFeePerGas.gwei;
 
       const newGweiMaxPriorityFeePerGas =
         Math.round(gweiMaxPriorityFeePerGas * 100) / 100;
 
       const newMaxPriorityFeePerGas = parseGasFeeParam(
-        Number(gweiToWei(newGweiMaxPriorityFeePerGas))
+        gweiToWei(newGweiMaxPriorityFeePerGas)
       );
       if (newMaxPriorityFeePerGas.amount < 0) return;
 

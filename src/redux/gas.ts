@@ -149,7 +149,7 @@ const { GAS_PRICE_SOURCES } = gasUtils;
  */
 export const updateGasFeeForSpeed = (
   speed: string,
-  newMaxPriorityFeePerGas: number
+  newMaxPriorityFeePerGas: string
 ) => async (dispatch: AppDispatch, getState: AppGetState) => {
   const { gasFeeParamsBySpeed } = getState().gas;
   const newGasFeeParams = { ...gasFeeParamsBySpeed };

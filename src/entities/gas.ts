@@ -6,9 +6,9 @@ export interface Fee {
 }
 
 export interface GasFeeParam {
-  amount: number;
+  amount: string;
   display: string;
-  gwei: number;
+  gwei: string;
 }
 
 export interface SelectedGasFee {

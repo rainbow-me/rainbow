@@ -102,13 +102,8 @@ export const parseRainbowMeteorologyData = (
     currentBaseFee,
   } = rainbowMeterologyData.data;
   const parsedFees: GasFeeParamsBySpeed = {};
-
-  const parsedCurrentBaseFee = parseRainbowMeteorologyGasFeeParam(
-    currentBaseFee
-  );
-  const parsedBaseFeeSuggestion = parseRainbowMeteorologyGasFeeParam(
-    baseFeeSuggestion
-  );
+  const parsedCurrentBaseFee = parseGasFeeParam(currentBaseFee);
+  const parsedBaseFeeSuggestion = parseGasFeeParam(baseFeeSuggestion);
   Object.keys(maxPriorityFeeSuggestions).forEach(speed => {
     const maxPriorityFee =
       maxPriorityFeeSuggestions[speed as keyof MaxPriorityFeeSuggestions];
@@ -118,7 +113,7 @@ export const parseRainbowMeteorologyData = (
         confirmationTimeByPriorityFee
       ),
       maxFeePerGas: parsedBaseFeeSuggestion,
-      maxPriorityFeePerGas: parseRainbowMeteorologyGasFeeParam(maxPriorityFee),
+      maxPriorityFeePerGas: parseGasFeeParam(maxPriorityFee),
       option: speed,
     };
   });
@@ -210,31 +205,15 @@ export const defaultGasPriceFormat = (
 };
 
 /**
- * Transform gwei gas value into a `GasFeeParam` object
+ * Transform wei gas value into a `GasFeeParam` object
  * @param weiAmount - Gas value in wei unit
  * @returns
  */
-export const parseRainbowMeteorologyGasFeeParam = (
-  weiAmount: string
-): GasFeeParam => {
-  const gweiAmount = weiToGwei(weiAmount);
+export const parseGasFeeParam = (weiAmount: string): GasFeeParam => {
   return {
-    amount: Math.round(Number(gweiAmount)),
-    display: `${parseInt(gweiAmount, 10)} Gwei`,
-    gwei: Math.round(Number(gweiAmount) * 100) / 100,
-  };
-};
-
-/**
- * Transform gwei gas value into a `GasFeeParam` object
- * @param weiAmount - Gas value in wei unit
- * @returns
- */
-export const parseGasFeeParam = (weiAmount: number): GasFeeParam => {
-  return {
-    amount: Math.round(weiAmount),
+    amount: weiAmount,
     display: `${parseInt(weiToGwei(weiAmount), 10)} Gwei`,
-    gwei: Number(weiToGwei(weiAmount)),
+    gwei: weiToGwei(weiAmount),
   };
 };
 
@@ -250,13 +229,11 @@ export const parseGasFeeParam = (weiAmount: number): GasFeeParam => {
 export const defaultGasParamsFormat = (
   option: string,
   timeWait: Numberish,
-  gweiMaxFeePerGas: number,
-  gweiMaxPriorityFeePerGas: number
+  gweiMaxFeePerGas: string,
+  gweiMaxPriorityFeePerGas: string
 ): GasFeeParams => {
-  const weiMaxFeePerGas = Number(multiply(gweiMaxFeePerGas, ethUnits.gwei));
-  const weiMaxPriorityFeePerGas = Number(
-    multiply(gweiMaxPriorityFeePerGas, ethUnits.gwei)
-  );
+  const weiMaxFeePerGas = gweiToWei(gweiMaxFeePerGas);
+  const weiMaxPriorityFeePerGas = gweiToWei(gweiMaxPriorityFeePerGas);
   const timeAmount = multiply(timeWait, timeUnits.ms.minute);
   return {
     estimatedTime: {
@@ -303,19 +280,23 @@ export const parseGasFees = (
   priceUnit: BigNumberish,
   nativeCurrency: string
 ) => {
-  const { maxPriorityFeePerGas, maxFeePerGas } = gasFeeParams || {};
+  const {
+    maxPriorityFeePerGas: maxPriorityFeePerGasGwei,
+    maxFeePerGas: maxFeePerGasGwei,
+  } = gasFeeParams || {};
 
-  const priorityFee = maxPriorityFeePerGas?.amount || 0;
-  const maxFeePerGasAmount = maxFeePerGas?.amount || 0;
+  const priorityFee = maxPriorityFeePerGasGwei?.amount || 0;
+  const maxFeePerGasAmount = maxFeePerGasGwei?.amount || 0;
   const baseFeePerGasAmount = baseFeePerGas?.amount || 0;
+
   const maxFee = getTxFee(
-    maxFeePerGasAmount + priorityFee,
+    Number(maxFeePerGasAmount) + Number(priorityFee),
     gasLimit,
     priceUnit,
     nativeCurrency
   );
   const estimatedFee = getTxFee(
-    baseFeePerGasAmount + priorityFee,
+    Number(baseFeePerGasAmount) + Number(priorityFee),
     gasLimit,
     priceUnit,
     nativeCurrency

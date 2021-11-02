@@ -69,7 +69,7 @@ import {
   formatInputDecimals,
   lessThan,
 } from '@rainbow-me/utilities';
-import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
+import { deviceUtils, ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
@@ -867,7 +867,7 @@ export default function SendSheet(props) {
                 options={
                   currentNetwork === networkTypes.optimism ||
                   currentNetwork === networkTypes.arbitrum
-                    ? ['normal']
+                    ? [gasUtils.NORMAL]
                     : undefined
                 }
                 theme={isDarkMode ? 'dark' : 'light'}
