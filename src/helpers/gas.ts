@@ -2,11 +2,11 @@ const PRIORITY_FEE_INCREMENT = 0.5;
 const PRIORITY_FEE_THRESHOLD = 0.15;
 
 export const getTrendKey = (trend: number) => {
-  if (trend < -0.25) {
+  if (trend < -0.3) {
     return 'falling';
-  } else if (trend >= -0.25 && trend <= 0.25) {
+  } else if (trend >= -0.3 && trend <= 0.3) {
     return 'stable';
-  } else if (trend > 0.25 && trend <= 0.6) {
+  } else if (trend > 0.3 && trend <= 0.6) {
     return 'rising';
   } else if (trend > 0.6) {
     return 'surging';
