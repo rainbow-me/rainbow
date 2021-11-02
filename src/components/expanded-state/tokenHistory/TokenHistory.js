@@ -8,7 +8,7 @@ import { Text } from '../../text';
 import styled from 'styled-components';
 import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
 import { useTheme } from '../../../context/ThemeContext';
-import { useDimensions } from '@rainbow-me/hooks';
+import { useDimensions, useAccountProfile } from '@rainbow-me/hooks';
 import TokenHistoryEdgeFade from './TokenHistoryEdgeFade';
 import TokenHistoryLoader from './TokenHistoryLoader';
 import MaskedView from '@react-native-community/masked-view';
@@ -114,6 +114,7 @@ const TokenHistory = ({
   const [isLoading, setIsLoading] = useState(true);
   const { colors } = useTheme();
   const { width } = useDimensions();
+  const { accountAddress, accountENS } = useAccountProfile();
 
   useEffect(async() => {
     const tokenInfoArray = contractAndToken.split("/")
@@ -147,7 +148,8 @@ const TokenHistory = ({
     let symbol;
     let phrase;
     let suffix;
-    let isClickable;
+    let suffixSymbol = `􀆊`;
+    let isClickable = false;
     
     if (index == 0) {
       isFirst = true;
@@ -157,41 +159,42 @@ const TokenHistory = ({
       case eventTypes.TRANSFER:
         symbol = eventSymbols.TRANSFER;
         phrase = eventPhrases.TRANSFER;
-        suffix = `${item.to_account} 􀆊`;
-        isClickable = true;
-        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable });
+        suffix = `${item.to_account} `;
+        if (accountAddress != item.to_account && accountENS != item.to_account) {
+          isClickable = true;
+        }
+        else {
+          isClickable = false;
+        }
+        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
 
       case eventTypes.MINT:
         symbol = eventSymbols.MINT;
         phrase = eventPhrases.MINT;
         suffix = ``;
-        isClickable = false;
-        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable });
+        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
 
       case eventTypes.SALE:
         symbol = eventSymbols.SALE;
         phrase = eventPhrases.SALE;
         suffix = `${item.sale_amount} ETH`;
-        isClickable = false;
-        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable });
+        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
 
       case eventTypes.LIST:
         symbol = eventSymbols.LIST;
         phrase = eventPhrases.LIST;
         suffix = `${item.list_amount} ETH`;
-        isClickable = false;
-        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable });
+        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
 
       case eventTypes.DELIST:
         symbol = eventSymbols.DELIST;
         phrase = eventPhrases.DELIST;
         suffix = ``;
-        isClickable = false;
-        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable });
+        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
     }
   }
 
-  const renderHistoryDescription = ({ symbol, phrase, item, suffix, isFirst, isClickable }) => {
+  const renderHistoryDescription = ({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol }) => {
     const date = getHumanReadableDateWithoutOn(new Date(item.created_date).getTime()/1000);
 
     return (
@@ -237,7 +240,7 @@ const TokenHistory = ({
                   size="smedium"
                   weight="heavy"
                 >
-                  {' '}{phrase}{suffix}
+                  {' '}{phrase}{suffix}{suffixSymbol}
                 </Text>
               </Row>
 
