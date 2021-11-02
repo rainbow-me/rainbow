@@ -311,7 +311,6 @@ const GasSpeedButton = ({
         return { address: MATIC_POLYGON_ADDRESS, symbol: 'MATIC' };
       case networkTypes.optimism:
       case networkTypes.arbitrum:
-        return { address: ARBITRUM_ETH_ADDRESS, symbol: 'ETH' };
       default:
         return { address: ETH_ADDRESS, symbol: 'ETH' };
     }
