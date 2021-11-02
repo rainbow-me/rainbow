@@ -76,7 +76,6 @@ const PRIORITY_FEE_THRESHOLD = 0.15;
 
 const MAX_BASE_FEE_RANGE = [1, 3];
 const MINER_TIP_RANGE = [1, 2];
-const TREND_RANGE = [-0.25, 0.25, 0.6];
 
 const calculateMinerTipAddDifference = maxPriorityFee => {
   const diff =

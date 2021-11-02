@@ -9,6 +9,7 @@ import { GasSpeedButton } from '../gas';
 import { Column } from '../layout';
 import { SlackSheet } from '../sheet';
 import { FeesPanel, FeesPanelTabs } from './custom-gas';
+import { getTrendKey } from '@rainbow-me/helpers/gas';
 import {
   useAccountSettings,
   useBooleanState,
@@ -20,7 +21,6 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { colors, lightModeThemeColors } from '@rainbow-me/styles';
-import { gasUtils } from '@rainbow-me/utils';
 
 const springConfig = {
   damping: 500,
@@ -52,9 +52,7 @@ export default function CustomGasState({ asset }) {
   const contentScroll = useSharedValue(0);
   const colorForAsset = useColorForAsset(asset || {});
   const { selectedGasFee, currentBlockParams } = useGas();
-  const [currentGasTrend] = useState(
-    gasUtils.getTrendKey(currentBlockParams?.trend)
-  );
+  const [currentGasTrend] = useState(getTrendKey(currentBlockParams?.trend));
   useAndroidDisableGesturesOnFocus();
 
   const keyboardOffset = keyboardHeight + insets.bottom + 10;

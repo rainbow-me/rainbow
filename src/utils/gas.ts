@@ -32,18 +32,6 @@ const GAS_ICONS = {
   [URGENT]: 'policeCarLight',
 };
 
-const getTrendKey = (trend: number) => {
-  if (trend < -0.25) {
-    return 'falling';
-  } else if (trend >= -0.25 && trend <= 0.25) {
-    return 'stable';
-  } else if (trend > 0.25 && trend <= 0.6) {
-    return 'rising';
-  } else if (trend > 0.6) {
-    return 'surging';
-  }
-};
-
 const GAS_TRENDS = {
   falling: { color: colors.green, label: '􀄱 Falling' },
   rising: { color: colors.orange, label: '􀰾 Rising' },
@@ -59,7 +47,6 @@ export default {
   GAS_PRICE_SOURCES,
   GAS_TRENDS,
   GasSpeedOrder,
-  getTrendKey,
   NORMAL,
   SLOW,
   URGENT,
