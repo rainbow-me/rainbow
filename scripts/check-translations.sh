@@ -98,4 +98,19 @@ do
 EOM
 done
 
-echo "🔶 Note, this script currently **does not** support interpolated translations such as \`lang.t(\`my.\${variable}.based.\${path}\`)."
+### Template String Checks ###
+echo "Note, this script currently **does not** support interpolated translations such as \`lang.t(\`my.\${variable}.based.\${path}\`)."
+
+# Find all instances of `lang.t` used with a template string.
+OUT_DYNAMIC=$(ggrep -oh -r -P "$FUNCTION\\(\`.*?\`\\)" $DIRECTORY)
+OUT_DYNAMIC_UNIQ=$(echo "$OUT_DYNAMIC" | sort -u)
+
+for DYNAMIC_CALL in $OUT_DYNAMIC_UNIQ
+do
+echo "    🔶 Manual check required for \"$DYNAMIC_CALL\"."
+done
+
+if [$(echo "$OUT_DYNAMIC_UNIQ" | wc -l) == 0 ]
+then
+echo "    ✅ No template calls found."
+fi
