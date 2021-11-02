@@ -92,15 +92,20 @@ export const parseRainbowMeteorologyData = (
   gasFeeParamsBySpeed: GasFeeParamsBySpeed;
   baseFeePerGas: GasFeeParam;
   baseFeeTrend: number;
+  currentBaseFee: GasFeeParam;
 } => {
   const {
     baseFeeSuggestion,
     baseFeeTrend,
     maxPriorityFeeSuggestions,
     confirmationTimeByPriorityFee,
+    currentBaseFee,
   } = rainbowMeterologyData.data;
   const parsedFees: GasFeeParamsBySpeed = {};
 
+  const parsedCurrentBaseFee = parseRainbowMeteorologyGasFeeParam(
+    currentBaseFee
+  );
   const parsedBaseFeeSuggestion = parseRainbowMeteorologyGasFeeParam(
     baseFeeSuggestion
   );
@@ -123,6 +128,7 @@ export const parseRainbowMeteorologyData = (
   return {
     baseFeePerGas: parsedBaseFeeSuggestion,
     baseFeeTrend,
+    currentBaseFee: parsedCurrentBaseFee,
     gasFeeParamsBySpeed: parsedFees,
   };
 };

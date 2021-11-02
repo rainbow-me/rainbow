@@ -116,6 +116,7 @@ export interface MaxPriorityFeeSuggestions {
 
 export interface RainbowMeteorologyData {
   data: {
+    currentBaseFee: string;
     baseFeeSuggestion: string;
     baseFeeTrend: number;
     confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee;

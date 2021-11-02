@@ -296,8 +296,14 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
       gasFeeParamsBySpeed,
       baseFeePerGas,
       baseFeeTrend,
+      currentBaseFee,
     } = parseRainbowMeteorologyData(data);
-    return { baseFeePerGas, gasFeeParamsBySpeed, trend: baseFeeTrend };
+    return {
+      baseFeePerGas,
+      currentBaseFee,
+      gasFeeParamsBySpeed,
+      trend: baseFeeTrend,
+    };
   };
 
   const getGasPrices = (network: Network) =>
@@ -335,6 +341,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
               gasFeeParamsBySpeed,
               baseFeePerGas,
               trend,
+              currentBaseFee,
             } = await getEIP1559GasParams();
             const newGasFeeParamsBySpeed = await getGasFeesEstimates(
               gasFeeParamsBySpeed
@@ -351,7 +358,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
             }
             dispatch({
               payload: {
-                currentBlockParams: { baseFeePerGas, trend },
+                currentBlockParams: { baseFeePerGas: currentBaseFee, trend },
                 gasFeeParamsBySpeed: newGasFeeParamsBySpeed,
               },
               type: GAS_FEES_SUCCESS,
