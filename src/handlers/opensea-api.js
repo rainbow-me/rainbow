@@ -150,7 +150,6 @@ export const apiGetTokenHistory = async (
             created_date,
             from_account,
             to_account,
-            to_account_eth_address: "x",
             sale_amount,
             list_amount
           };
@@ -169,7 +168,6 @@ export const apiGetTokenHistory = async (
                   created_date,
                   from_account: "0x123",
                   to_account: address,
-                  to_account_eth_address: event.to_account.address,
                   sale_amount,
                   list_amount
                 };
@@ -180,7 +178,6 @@ export const apiGetTokenHistory = async (
                   created_date,
                   from_account,
                   to_account: address,
-                  to_account_eth_address: event.to_account.address,
                   sale_amount,
                   list_amount
                 };
@@ -200,7 +197,6 @@ export const apiGetTokenHistory = async (
             created_date,
             from_account,
             to_account,
-            to_account_eth_address: "x",
             sale_amount,
             list_amount
           };
@@ -219,7 +215,6 @@ export const apiGetTokenHistory = async (
             created_date,
             from_account,
             to_account,
-            to_account_eth_address: "x",
             sale_amount,
             list_amount
           };

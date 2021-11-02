@@ -139,10 +139,9 @@ const TokenHistory = ({
   const handlePress = useCallback(
     () => {
       logger.log("sup m8")
-    });
+  });
 
   //TODO: Memoize This
-  //Remove the 􀆊 when looking at your own account
   const renderItem = ({ item, index }) => {
     let isFirst = false;
     let symbol;
