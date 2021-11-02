@@ -115,6 +115,7 @@ const TokenHistory = ({
   const { colors } = useTheme();
   const { width } = useDimensions();
   const { accountAddress, accountENS } = useAccountProfile();
+  const { navigate } = useNavigation();
 
   useEffect(async() => {
     const tokenInfoArray = contractAndToken.split("/")
@@ -137,8 +138,10 @@ const TokenHistory = ({
   }, [contractAddress, tokenID]);
 
   const handlePress = useCallback(
-    () => {
-      logger.log("sup m8")
+    (address) => {
+      navigate(Routes.SHOWCASE_SHEET, {
+        address: address,
+      });
   });
 
   //TODO: Memoize This
@@ -159,7 +162,7 @@ const TokenHistory = ({
         symbol = eventSymbols.TRANSFER;
         phrase = eventPhrases.TRANSFER;
         suffix = `${item.to_account} `;
-        if (accountAddress != item.to_account && accountENS != item.to_account) {
+        if (accountAddress.toLowerCase() != item.to_account_eth_address && accountENS != item.to_account) {
           isClickable = true;
         }
         else {
@@ -197,7 +200,6 @@ const TokenHistory = ({
     const date = getHumanReadableDateWithoutOn(new Date(item.created_date).getTime()/1000);
 
     return (
-      
         <Column>
           <GradientRow> 
             <Gradient color={color} />
@@ -216,33 +218,32 @@ const TokenHistory = ({
               </Text>
             </DateRow>
 
-
             {
               isClickable ? 
               <ButtonPressAnimation
-              hapticType={'selection'}
-              onPress={handlePress}
-              scaleTo={0.92}
+                hapticType={'selection'}
+                onPress={() => handlePress(item.to_account_eth_address)}
+                scaleTo={0.92}
               >
-              <Row>
-                <Text
-                  align="left"
-                  color={color}
-                  size="smedium"
-                  weight="heavy"
-                >
-                  {symbol}
-                </Text>
-                <Text
-                  align="right"
-                  color={colors.whiteLabel}
-                  size="smedium"
-                  weight="heavy"
-                >
-                  {' '}{phrase}{suffix}{suffixSymbol}
-                </Text>
-              </Row>
+                <Row>
+                  <Text
+                    align="left"
+                    color={color}
+                    size="smedium"
+                    weight="heavy"
+                  >
+                    {symbol}
+                  </Text>
 
+                  <Text
+                    align="right"
+                    color={colors.whiteLabel}
+                    size="smedium"
+                    weight="heavy"
+                  >
+                    {' '}{phrase}{suffix}{suffixSymbol}
+                  </Text>
+                </Row>
               </ButtonPressAnimation>
               : 
               <Row>
@@ -254,6 +255,7 @@ const TokenHistory = ({
                 >
                   {symbol}
                 </Text>
+
                 <Text
                   align="right"
                   color={colors.whiteLabel}
@@ -296,7 +298,6 @@ const TokenHistory = ({
           </Row>
         </TwoItemContainer>
       )
-      
     }
   };
 
@@ -315,7 +316,6 @@ const TokenHistory = ({
             showsHorizontalScrollIndicator={false}
           />
         </MaskedView>
-
       </Container>
     )
   }

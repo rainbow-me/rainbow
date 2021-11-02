@@ -135,6 +135,7 @@ export const apiGetTokenHistory = async (
       let to_account;
       let sale_amount;
       let list_amount;
+      let to_account_eth_address = "x";
 
       switch (event_type) {
         case "created": 
@@ -151,7 +152,8 @@ export const apiGetTokenHistory = async (
             from_account,
             to_account,
             sale_amount,
-            list_amount
+            list_amount,
+            to_account_eth_address
           };
 
           break;
@@ -169,7 +171,8 @@ export const apiGetTokenHistory = async (
                   from_account: "0x123",
                   to_account: address,
                   sale_amount,
-                  list_amount
+                  list_amount,
+                  to_account_eth_address: event.to_account.address
                 };
               }
               else {
@@ -179,7 +182,8 @@ export const apiGetTokenHistory = async (
                   from_account,
                   to_account: address,
                   sale_amount,
-                  list_amount
+                  list_amount,
+                  to_account_eth_address: event.to_account.address
                 };
               }
             })
@@ -198,7 +202,8 @@ export const apiGetTokenHistory = async (
             from_account,
             to_account,
             sale_amount,
-            list_amount
+            list_amount,
+            to_account_eth_address
           };
 
           break;
@@ -216,7 +221,8 @@ export const apiGetTokenHistory = async (
             from_account,
             to_account,
             sale_amount,
-            list_amount
+            list_amount,
+            to_account_eth_address
           };
 
           break;
