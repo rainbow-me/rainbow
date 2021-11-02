@@ -198,11 +198,12 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
 
   newGasFeesBySpeed[CUSTOM] = customGasFees;
   // todo time
+  console.log('gasparams', gasParams);
   newGasFeeParamsBySpeed[CUSTOM] = defaultGasParamsFormat(
     CUSTOM,
     confirmationTimeByPriorityFee,
-    gasParams.maxFeePerGas.gwei,
-    gasParams.maxPriorityFeePerGas.gwei
+    gasParams.maxFeePerGas.amount,
+    gasParams.maxPriorityFeePerGas.amount
   );
   const newSelectedGasFee = getSelectedGasFee(
     assets,
@@ -288,10 +289,11 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
       baseFeePerGas,
       baseFeeTrend,
       currentBaseFee,
+      confirmationTimeByPriorityFee,
     } = parseRainbowMeteorologyData(data);
     return {
       baseFeePerGas,
-      confirmationTimeByPriorityFee: data.data.confirmationTimeByPriorityFee,
+      confirmationTimeByPriorityFee,
       currentBaseFee,
       gasFeeParamsBySpeed,
       trend: baseFeeTrend,
@@ -334,6 +336,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
               baseFeePerGas,
               trend,
               currentBaseFee,
+              confirmationTimeByPriorityFee,
             } = await getEIP1559GasParams();
             if (!isEmpty(existingGasFees[CUSTOM])) {
               // Preserve custom values while updating prices
@@ -347,6 +350,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
             }
             dispatch({
               payload: {
+                confirmationTimeByPriorityFee,
                 currentBlockParams: { baseFeePerGas: currentBaseFee, trend },
                 gasFeeParamsBySpeed: gasFeeParamsBySpeed,
               },
@@ -521,6 +525,8 @@ export default (
     case GAS_FEES_SUCCESS:
       return {
         ...state,
+        confirmationTimeByPriorityFee:
+          action.payload.confirmationTimeByPriorityFee,
         currentBlockParams: action.payload.currentBlockParams,
         gasFeeParamsBySpeed: action.payload.gasFeeParamsBySpeed,
       };

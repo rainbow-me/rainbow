@@ -58,6 +58,8 @@ const parseGasDataConfirmationTime = (
   const urgentTime = weiToGwei(confirmationTimeByPriorityFee[30]);
   const fastTime = weiToGwei(confirmationTimeByPriorityFee[45]);
   const normalTime = weiToGwei(confirmationTimeByPriorityFee[60]);
+  console.log('maxPriorityFeeGwei', maxPriorityFeeGwei);
+  console.log('moreThanUrgentTime', moreThanUrgentTime);
 
   let timeAmount = '120';
   if (maxPriorityFeeGwei > moreThanUrgentTime) {
@@ -237,19 +239,17 @@ export const parseGasFeeParam = (weiAmount: string): GasFeeParam => {
 export const defaultGasParamsFormat = (
   option: string,
   confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee,
-  gweiMaxFeePerGas: string,
-  gweiMaxPriorityFeePerGas: string
+  maxFeePerGas: string,
+  maxPriorityFeePerGas: string
 ): GasFeeParams => {
-  const weiMaxFeePerGas = gweiToWei(gweiMaxFeePerGas);
-  const weiMaxPriorityFeePerGas = gweiToWei(gweiMaxPriorityFeePerGas);
   const time = parseGasDataConfirmationTime(
-    gweiMaxPriorityFeePerGas,
+    maxPriorityFeePerGas,
     confirmationTimeByPriorityFee
   );
   return {
     estimatedTime: time,
-    maxFeePerGas: parseGasFeeParam(weiMaxFeePerGas),
-    maxPriorityFeePerGas: parseGasFeeParam(weiMaxPriorityFeePerGas),
+    maxFeePerGas: parseGasFeeParam(maxFeePerGas),
+    maxPriorityFeePerGas: parseGasFeeParam(maxPriorityFeePerGas),
     option,
   };
 };
