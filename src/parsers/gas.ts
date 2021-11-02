@@ -50,39 +50,65 @@ const parseGasPricesEtherscan = (data: GasPricesAPIData) => ({
 });
 
 const parseGasDataConfirmationTime = (
+  maxBaseFee: string,
   maxPriorityFee: string,
-  confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee
+  confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee,
+  suggestedMaxBaseFee: string
 ) => {
-  const maxPriorityFeeGwei = weiToGwei(maxPriorityFee);
-  const moreThanUrgentTime = weiToGwei(confirmationTimeByPriorityFee[15]);
-  const urgentTime = weiToGwei(confirmationTimeByPriorityFee[30]);
-  const fastTime = weiToGwei(confirmationTimeByPriorityFee[45]);
-  const normalTime = weiToGwei(confirmationTimeByPriorityFee[60]);
-  console.log('maxPriorityFeeGwei', maxPriorityFeeGwei);
-  console.log('moreThanUrgentTime', moreThanUrgentTime);
+  const maxPriorityFeeGwei = Number(weiToGwei(maxPriorityFee));
+  const moreThanUrgentTime = Number(
+    weiToGwei(confirmationTimeByPriorityFee[15])
+  );
+  const urgentTime = Number(weiToGwei(confirmationTimeByPriorityFee[30]));
+  const fastTime = Number(weiToGwei(confirmationTimeByPriorityFee[45]));
+  const normalTime = Number(weiToGwei(confirmationTimeByPriorityFee[60]));
 
-  let timeAmount = '120';
+  const maxBaseFeeGwei = Number(weiToGwei(maxBaseFee));
+  const suggestedMaxBaseFeeGwei = Number(weiToGwei(suggestedMaxBaseFee));
+
+  let timeAmount = 15;
+
+  // 95% match 1st block, for 1 * suggested max base fee
+  // 95% match 3rd block, for 0.95 * suggested max base fee
+  // 95% match 4th block, for 0.9 * suggested max base fee
+  // less than that we show warnings
+  if (suggestedMaxBaseFeeGwei >= maxBaseFeeGwei) {
+    timeAmount = 0;
+  } else if (
+    suggestedMaxBaseFeeGwei < maxBaseFeeGwei &&
+    suggestedMaxBaseFeeGwei >= maxBaseFeeGwei * 0.95
+  ) {
+    timeAmount = 15;
+  } else if (
+    suggestedMaxBaseFeeGwei < maxBaseFeeGwei * 0.85 &&
+    suggestedMaxBaseFeeGwei >= maxBaseFeeGwei * 0.9
+  ) {
+    timeAmount = 30;
+  } else {
+    timeAmount = 45;
+  }
+
   if (maxPriorityFeeGwei > moreThanUrgentTime) {
-    timeAmount = '15';
+    timeAmount += 0;
   } else if (
     maxPriorityFeeGwei < moreThanUrgentTime &&
     maxPriorityFeeGwei >= urgentTime
   ) {
-    timeAmount = '30';
+    timeAmount += 30;
   } else if (
     maxPriorityFeeGwei < urgentTime &&
     maxPriorityFeeGwei >= fastTime
   ) {
-    timeAmount = '45';
+    timeAmount += 45;
   } else if (
     maxPriorityFeeGwei < fastTime &&
     maxPriorityFeeGwei >= normalTime
   ) {
-    timeAmount = '60';
-  } else if (maxPriorityFeeGwei < normalTime) timeAmount = '90';
+    timeAmount += 60;
+  } else if (maxPriorityFeeGwei < normalTime) timeAmount += 90;
 
   return {
-    amount: Number(timeAmount),
+    amount: timeAmount,
     display: getMinimalTimeUnitStringForMs(
       multiply(timeAmount, timeUnits.ms.second)
     ),
@@ -118,8 +144,10 @@ export const parseRainbowMeteorologyData = (
     );
     parsedFees[speed] = {
       estimatedTime: parseGasDataConfirmationTime(
+        currentBaseFee,
         cleanMaxPriorityFee,
-        confirmationTimeByPriorityFee
+        confirmationTimeByPriorityFee,
+        baseFeeSuggestion
       ),
       maxFeePerGas: parsedBaseFeeSuggestion,
       maxPriorityFeePerGas: parseGasFeeParam(cleanMaxPriorityFee),
@@ -238,13 +266,16 @@ export const parseGasFeeParam = (weiAmount: string): GasFeeParam => {
  */
 export const defaultGasParamsFormat = (
   option: string,
+  currentBaseFee: string,
   confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee,
   maxFeePerGas: string,
   maxPriorityFeePerGas: string
 ): GasFeeParams => {
   const time = parseGasDataConfirmationTime(
+    currentBaseFee,
     maxPriorityFeePerGas,
-    confirmationTimeByPriorityFee
+    confirmationTimeByPriorityFee,
+    maxFeePerGas
   );
   return {
     estimatedTime: time,

@@ -197,10 +197,9 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   const newGasFeeParamsBySpeed = { ...gasFeeParamsBySpeed };
 
   newGasFeesBySpeed[CUSTOM] = customGasFees;
-  // todo time
-  console.log('gasparams', gasParams);
   newGasFeeParamsBySpeed[CUSTOM] = defaultGasParamsFormat(
     CUSTOM,
+    currentBlockParams.baseFeePerGas,
     confirmationTimeByPriorityFee,
     gasParams.maxFeePerGas.amount,
     gasParams.maxPriorityFeePerGas.amount
