@@ -343,7 +343,7 @@ export default function FeesPanel({
 
   useEffect(() => {
     // validate not zero
-    if (!maxBaseFee || maxBaseFee === '0') {
+    if (!maxBaseFee || maxBaseFee === 0) {
       setMaxBaseFeeError('1 Gwei to avoid failure');
     } else {
       setMaxBaseFeeError(null);
@@ -359,7 +359,7 @@ export default function FeesPanel({
 
   useEffect(() => {
     // validate not zero
-    if (!maxPriorityFee || maxPriorityFee === '0') {
+    if (!maxPriorityFee || maxPriorityFee === 0) {
       setMaxPriorityFeeError('1 Gwei to avoid failure');
     } else {
       setMaxPriorityFeeError(null);
