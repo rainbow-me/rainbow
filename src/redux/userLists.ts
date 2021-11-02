@@ -1,6 +1,7 @@
 import produce from 'immer';
 import { concat, isArray, uniq, without } from 'lodash';
 import { InteractionManager } from 'react-native';
+import { UserList } from '../entities/userLists';
 import {
   getSelectedUserList,
   getUserLists,
@@ -24,16 +25,6 @@ const USER_LISTS_SET_SELECTED_LIST = 'userLists/USER_LISTS_SET_SELECTED_LIST';
 const FAVORITES_LIST_ID = 'favorites';
 
 // -- Actions --------------------------------------------------------------- //
-
-/**
- * A single user list, based on the data found in `DefaultTokenLists`.
- */
-export interface UserList {
-  emoji: string;
-  id: string;
-  name: string;
-  tokens: string[];
-}
 
 /**
  * The current `userLists` state.
