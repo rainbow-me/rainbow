@@ -58,30 +58,31 @@ const parseGasDataConfirmationTime = (
   const urgentTime = weiToGwei(confirmationTimeByPriorityFee[30]);
   const fastTime = weiToGwei(confirmationTimeByPriorityFee[45]);
   const normalTime = weiToGwei(confirmationTimeByPriorityFee[60]);
-  let timeAmount = 100;
-  if (maxPriorityFeeGwei <= moreThanUrgentTime) {
-    timeAmount = 15;
+
+  let timeAmount = '120';
+  if (maxPriorityFeeGwei > moreThanUrgentTime) {
+    timeAmount = '15';
   } else if (
-    maxPriorityFeeGwei > moreThanUrgentTime &&
-    maxPriorityFeeGwei <= urgentTime
+    maxPriorityFeeGwei < moreThanUrgentTime &&
+    maxPriorityFeeGwei >= urgentTime
   ) {
-    timeAmount = 30;
+    timeAmount = '30';
   } else if (
-    maxPriorityFeeGwei > urgentTime &&
-    maxPriorityFeeGwei <= fastTime
+    maxPriorityFeeGwei < urgentTime &&
+    maxPriorityFeeGwei >= fastTime
   ) {
-    timeAmount = 45;
+    timeAmount = '45';
   } else if (
-    maxPriorityFeeGwei > fastTime &&
-    maxPriorityFeeGwei <= normalTime
+    maxPriorityFeeGwei < fastTime &&
+    maxPriorityFeeGwei >= normalTime
   ) {
-    timeAmount = 60;
-  } else if (maxPriorityFeeGwei > normalTime) timeAmount = 75;
+    timeAmount = '60';
+  } else if (maxPriorityFeeGwei < normalTime) timeAmount = '90';
 
   return {
     amount: Number(timeAmount),
     display: getMinimalTimeUnitStringForMs(
-      multiply(timeAmount, timeUnits.ms.minute)
+      multiply(timeAmount, timeUnits.ms.second)
     ),
   };
 };
@@ -93,6 +94,7 @@ export const parseRainbowMeteorologyData = (
   baseFeePerGas: GasFeeParam;
   baseFeeTrend: number;
   currentBaseFee: GasFeeParam;
+  confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee;
 } => {
   const {
     baseFeeSuggestion,
@@ -128,6 +130,7 @@ export const parseRainbowMeteorologyData = (
   return {
     baseFeePerGas: parsedBaseFeeSuggestion,
     baseFeeTrend,
+    confirmationTimeByPriorityFee,
     currentBaseFee: parsedCurrentBaseFee,
     gasFeeParamsBySpeed: parsedFees,
   };
@@ -233,18 +236,18 @@ export const parseGasFeeParam = (weiAmount: string): GasFeeParam => {
  */
 export const defaultGasParamsFormat = (
   option: string,
-  timeWait: Numberish,
+  confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee,
   gweiMaxFeePerGas: string,
   gweiMaxPriorityFeePerGas: string
 ): GasFeeParams => {
   const weiMaxFeePerGas = gweiToWei(gweiMaxFeePerGas);
   const weiMaxPriorityFeePerGas = gweiToWei(gweiMaxPriorityFeePerGas);
-  const timeAmount = multiply(timeWait, timeUnits.ms.minute);
+  const time = parseGasDataConfirmationTime(
+    gweiMaxPriorityFeePerGas,
+    confirmationTimeByPriorityFee
+  );
   return {
-    estimatedTime: {
-      amount: Number(timeAmount),
-      display: getMinimalTimeUnitStringForMs(timeAmount),
-    },
+    estimatedTime: time,
     maxFeePerGas: parseGasFeeParam(weiMaxFeePerGas),
     maxPriorityFeePerGas: parseGasFeeParam(weiMaxPriorityFeePerGas),
     option,

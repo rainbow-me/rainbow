@@ -3,6 +3,7 @@ import { captureException } from '@sentry/react-native';
 import { get, isEmpty } from 'lodash';
 import { AppDispatch, AppGetState } from './store';
 import {
+  ConfirmationTimeByPriorityFee,
   CurrentBlockParams,
   GasFee,
   GasFeeParams,
@@ -60,6 +61,7 @@ interface GasState {
   gasFeesBySpeed: GasFeesBySpeed | LegacyGasFeesBySpeed;
   txNetwork: Network | null;
   currentBlockParams: CurrentBlockParams;
+  confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee;
 }
 
 // -- Constants ------------------------------------------------------------- //
@@ -174,6 +176,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     gasFeeParamsBySpeed,
     gasLimit,
     currentBlockParams,
+    confirmationTimeByPriorityFee,
   } = getState().gas;
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
@@ -197,7 +200,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   // todo time
   newGasFeeParamsBySpeed[CUSTOM] = defaultGasParamsFormat(
     CUSTOM,
-    '0',
+    confirmationTimeByPriorityFee,
     gasParams.maxFeePerGas.gwei,
     gasParams.maxPriorityFeePerGas.gwei
   );
@@ -288,6 +291,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
     } = parseRainbowMeteorologyData(data);
     return {
       baseFeePerGas,
+      confirmationTimeByPriorityFee: data.data.confirmationTimeByPriorityFee,
       currentBaseFee,
       gasFeeParamsBySpeed,
       trend: baseFeeTrend,
@@ -488,6 +492,7 @@ export const gasPricesStopPolling = () => (dispatch: AppDispatch) => {
 
 // -- Reducer --------------------------------------------------------------- //
 const INITIAL_STATE: GasState = {
+  confirmationTimeByPriorityFee: {} as ConfirmationTimeByPriorityFee,
   currentBlockParams: {} as CurrentBlockParams,
   defaultGasLimit: ethUnits.basic_tx,
   gasFeeParamsBySpeed: {},
