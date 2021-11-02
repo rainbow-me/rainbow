@@ -95,6 +95,7 @@ const depositCompound = async (
   const newTransaction = {
     amount: amountToDeposit,
     asset: tokenToDeposit,
+    data: deposit.data,
     from: accountAddress,
     gasLimit: transactionParams.gasLimit,
     gasPrice: transactionParams.gasPrice,
@@ -104,6 +105,7 @@ const depositCompound = async (
     status: TransactionStatus.depositing,
     to: deposit?.to,
     type: TransactionType.deposit,
+    value: transactionParams.value,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
   // Disable the txn watcher because Compound can silently fail

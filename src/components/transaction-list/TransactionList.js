@@ -33,6 +33,7 @@ import Routes from '@rainbow-me/routes';
 import {
   abbreviations,
   ethereumUtils,
+  logger,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
 
@@ -135,6 +136,7 @@ export default function TransactionList({
     e => {
       const { index } = e.nativeEvent;
       const item = transactions[index];
+      logger.log('ON TRANSACTION PRESS: ', e.nativeEvent);
       const { hash, from, minedAt, network, pending, to, status, type } = item;
 
       const date = getHumanReadableDate(minedAt);

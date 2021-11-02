@@ -7,7 +7,7 @@ import { Row } from '../layout';
 import { margin } from '@rainbow-me/styles';
 
 const AttributeItem = ({ trait_type: type, value }) =>
-  type ? (
+  type && value ? (
     <Tag
       css={margin(0, 10, 10, 0)}
       key={`${type}${value}`}

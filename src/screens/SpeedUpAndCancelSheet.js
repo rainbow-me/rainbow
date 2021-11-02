@@ -29,6 +29,7 @@ import { TransactionStatusTypes } from '@rainbow-me/entities';
 import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
 import {
   useAccountSettings,
+  useAccountTransactions,
   useBooleanState,
   useDimensions,
   useGas,
@@ -144,6 +145,7 @@ export default function SpeedUpAndCancelSheet() {
   const [nonce, setNonce] = useState(null);
   const [to, setTo] = useState(tx.to);
   const [value, setValue] = useState(null);
+  const { transactions } = useAccountTransactions(true, true);
 
   const getNewGasPrice = useCallback(() => {
     const rawGasPrice = get(selectedGasPrice, 'value.amount');
@@ -278,23 +280,20 @@ export default function SpeedUpAndCancelSheet() {
   useEffect(() => {
     const init = async () => {
       if (currentNetwork && currentProvider && !fetchedTx.current) {
-        const txHash = tx.hash.split('-')[0];
         try {
           fetchedTx.current = true;
-          const txObj = await currentProvider.getTransaction(txHash);
-          if (txObj) {
-            const hexGasLimit = toHex(txObj.gasLimit.toString());
-            const hexGasPrice = toHex(txObj.gasPrice.toString());
-            const hexValue = toHex(txObj.value.toString());
-            const hexData = txObj.data;
-            setReady(true);
-            setNonce(txObj.nonce);
-            setValue(hexValue);
-            setData(hexData);
-            setTo(txObj.to);
-            setGasLimit(hexGasLimit);
-            setMinGasPrice(calcMinGasPriceAllowed(hexGasPrice));
-          }
+          logger.log('TX: ', JSON.stringify(tx, null, 2));
+          const hexGasLimit = toHex(tx.gasLimit.toString());
+          const hexGasPrice = toHex(tx.gasPrice.toString());
+          const hexValue = toHex(tx.value.toString());
+          const hexData = tx.data;
+          setReady(true);
+          setNonce(tx.nonce);
+          setValue(hexValue);
+          setData(hexData);
+          setTo(tx.to);
+          setGasLimit(hexGasLimit);
+          setMinGasPrice(calcMinGasPriceAllowed(hexGasPrice));
         } catch (e) {
           logger.log('something went wrong while fetching tx info ', e);
           captureException(e);
@@ -326,6 +325,7 @@ export default function SpeedUpAndCancelSheet() {
     tx.hash,
     type,
     updateGasPriceOption,
+    transactions,
   ]);
 
   useEffect(() => {
