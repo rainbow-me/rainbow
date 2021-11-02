@@ -19,11 +19,7 @@ import {
   usePrevious,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import {
-  ARBITRUM_ETH_ADDRESS,
-  ETH_ADDRESS,
-  MATIC_POLYGON_ADDRESS,
-} from '@rainbow-me/references';
+import { ETH_ADDRESS, MATIC_POLYGON_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { margin, padding } from '@rainbow-me/styles';
 import {
