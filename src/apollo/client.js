@@ -1,4 +1,5 @@
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client';
+import config from '../model/config';
 
 const defaultOptions = {
   query: {
@@ -14,7 +15,7 @@ const defaultOptions = {
 export const compoundClient = new ApolloClient({
   cache: new InMemoryCache(),
   link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2',
+    uri: config.compound_subgraph_endpoint,
   }),
 });
 

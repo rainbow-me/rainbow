@@ -4,6 +4,8 @@ import {
   // @ts-ignore
   ARBITRUM_MAINNET_RPC,
   // @ts-ignore
+  COMPOUND_SUBGRAPH_ENDPOINT,
+  // @ts-ignore
   DATA_API_KEY,
   // @ts-ignore
   DATA_ENDPOINT,
@@ -43,6 +45,7 @@ import Logger from 'logger';
 
 export interface RainbowConfig extends Record<string, any> {
   arbitrum_mainnet_rpc?: string;
+  compound_subgraph_endpoint?: string;
   data_api_key?: string;
   data_endpoint?: string;
   data_origin?: string;
@@ -57,6 +60,9 @@ export interface RainbowConfig extends Record<string, any> {
 
 const DEFAULT_CONFIG = {
   arbitrum_mainnet_rpc: ARBITRUM_MAINNET_RPC,
+  compound_subgraph_endpoint:
+    COMPOUND_SUBGRAPH_ENDPOINT ||
+    'https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2',
   data_api_key: DATA_API_KEY,
   data_endpoint: DATA_ENDPOINT || 'wss://api-v4.zerion.io',
   data_origin: DATA_ORIGIN,
