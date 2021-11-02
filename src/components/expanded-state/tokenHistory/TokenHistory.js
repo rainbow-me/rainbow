@@ -94,11 +94,11 @@ const LineView = styled(View)`
   right: 6;
 `;
 
-const Container = styled(View).attrs(({}))`
+const Container = styled(View)`
   width: 100%;
 `;
 
-const TwoItemContainer = styled(View).attrs(({}))`
+const ShortListContainer = styled(View)`
   margin-left: 24;
 `;
 
@@ -275,19 +275,19 @@ const TokenHistory = ({
   const renderTwoOrLessDataItems = () => {
     if (tokenHistory.length == 1) {
       return (
-        <Container>
+        <ShortListContainer>
           <Row>
             <Column>
               { renderItem({item: tokenHistory[0], index: 0}) }
             </Column>
           </Row>
-      </Container>
+      </ShortListContainer>
         
       )
     }
     else if (tokenHistory.length == 2) {
       return (
-        <TwoItemContainer>
+        <ShortListContainer>
           <Row>
             <Column>
               { renderItem({item: tokenHistory[1], index: 1}) }
@@ -296,7 +296,7 @@ const TokenHistory = ({
               { renderItem({item: tokenHistory[0], index: 0}) }
             </Column>
           </Row>
-        </TwoItemContainer>
+        </ShortListContainer>
       )
     }
   };

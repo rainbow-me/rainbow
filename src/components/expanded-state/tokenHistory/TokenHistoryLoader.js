@@ -9,6 +9,7 @@ const Container = styled(Row)`
   width: ${({ width }) => width};
   height: 57;
   background-color: #FFFFFF00; 
+  // margin-top: 4;
 `;
 
 const FakeDate = styled(RadialGradient).attrs(
@@ -19,7 +20,7 @@ const FakeDate = styled(RadialGradient).attrs(
 )`
   border-radius: 5;
   width: 60;
-  height: 10;
+  height: 11;
   overflow: hidden;
   opacity: 0.1;
   margin-bottom: 9;
@@ -33,7 +34,7 @@ const FakeEvent = styled(RadialGradient).attrs(
 )`
   border-radius: 5;
   width: 130;
-  height: 10;
+  height: 11;
   overflow: hidden;
   opacity: 0.1;
 `;
@@ -46,7 +47,7 @@ const LeftmostEvent = styled(RadialGradient).attrs(
 )`
   border-radius: 5;
   width: 39;
-  height: 10;
+  height: 11;
   opacity: 0.1;
 `;
 

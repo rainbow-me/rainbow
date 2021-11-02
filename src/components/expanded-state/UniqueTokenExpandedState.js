@@ -44,7 +44,7 @@ import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
-import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
+import { convertAmountToNativeDisplay, handleSignificantDecimals } from '@rainbow-me/utilities';
 import {
   buildRainbowUrl,
   ethereumUtils,
@@ -136,6 +136,7 @@ const UniqueTokenExpandedState = ({
   const imageColorWithFallback =
     imageColor || fallbackImageColor || colors.paleBlue;
 
+  const tempLastPrice = handleSignificantDecimals(parseFloat(lastPrice), 5);
   const lastSalePrice = lastPrice || 'None';
   const priceOfEth = ethereumUtils.getEthPriceUnit();
 

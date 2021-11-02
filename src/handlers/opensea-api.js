@@ -4,7 +4,7 @@ import NetworkTypes from '@rainbow-me/networkTypes';
 import { parseAccountUniqueTokens } from '@rainbow-me/parsers';
 import logger from 'logger';
 import { UNISWAP_PAIRS_HISTORICAL_BULK_QUERY } from 'src/apollo/queries';
-import { fromWei } from '@rainbow-me/utilities';
+import { fromWei, handleSignificantDecimals } from '@rainbow-me/utilities';
 import { useAddressToENS } from '@rainbow-me/hooks';
 import { isHexString } from '@ethersproject/bytes';
 import { abbreviations } from '../utils';
@@ -144,8 +144,8 @@ export const apiGetTokenHistory = async (
           to_account = "0x123";
           sale_amount = "0";
           let tempList = fromWei(parseInt(event.starting_price));
-          list_amount = tempList.toString();
-
+          list_amount = handleSignificantDecimals(tempList, 5);
+          
           eventObject = {
             event_type,
             created_date,
@@ -193,7 +193,7 @@ export const apiGetTokenHistory = async (
           from_account = "0x123";
           to_account = "0x123";
           let tempSale = fromWei(parseInt(event.total_price));
-          sale_amount = tempSale.toString();
+          sale_amount = handleSignificantDecimals(tempSale, 5)
           list_amount = "0";
   
           eventObject = {
