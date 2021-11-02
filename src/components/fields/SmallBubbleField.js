@@ -79,15 +79,6 @@ const BubbleField = (
     [onBlur]
   );
 
-  // const handleButtonPress = useCallback(
-  //   event => {
-  //     ref.current?.focus?.();
-  //     setWasButtonPressed(true);
-  //     onPressButton?.(event);
-  //   },
-  //   [onPressButton]
-  // );
-
   const handleChangeText = useCallback(
     text => {
       const formattedValue = format(text);
