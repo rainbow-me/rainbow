@@ -76,7 +76,7 @@ const DateRow = styled(Row)`
 
 const EmptyView = styled(View)`
   height: 3;
-  marginTop: 3.5;
+  marginTop: 4;
 `;
 
 const LeftSpacer = styled(View)`
@@ -112,7 +112,6 @@ const TokenHistory = ({
   const [contractAddress, setContractAddress] = useState("");
   const [tokenID, setTokenID] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isClickable, setIsClickable] = useState(false);
   const { colors } = useTheme();
   const { width } = useDimensions();
 
@@ -192,7 +191,6 @@ const TokenHistory = ({
     }
   }
 
-  //Todo: Touchable for transactions
   const renderHistoryDescription = ({ symbol, phrase, item, suffix, isFirst, isClickable }) => {
     const date = getHumanReadableDateWithoutOn(new Date(item.created_date).getTime()/1000);
 
@@ -274,15 +272,11 @@ const TokenHistory = ({
     if (tokenHistory.length == 1) {
       return (
         <Container>
-          <MaskedView
-            maskElement={<TokenHistoryEdgeFade />}
-          > 
-            <ScrollView 
-            style={{ marginLeft: 24 }}
-            horizontal={true}> 
-            { renderItem({item: tokenHistory[0], index: 0}) }
-            </ScrollView>
-        </MaskedView>
+          <Row>
+            <Column>
+              { renderItem({item: tokenHistory[0], index: 0}) }
+            </Column>
+          </Row>
       </Container>
         
       )

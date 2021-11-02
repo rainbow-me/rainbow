@@ -94,15 +94,15 @@ export const apiGetTokenHistory = async (
       timeout: 10000, // 10 secs
     })
 
-    var array = data.data.asset_events;
+    let array = data.data.asset_events;
     
-    var tempResponse = array;
+    let tempResponse = array;
 
     if (array.length == 299) {
-      var offset = 299;
+      let offset = 299;
       while (tempResponse.length != 0) {
-        var urlPage = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`;
-        var nextPage = await rainbowFetch(urlPage, {
+        let urlPage = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`;
+        let nextPage = await rainbowFetch(urlPage, {
           headers: {
             'Accept': 'application/json',
             'X-Api-Key': OPENSEA_API_KEY,
@@ -119,7 +119,7 @@ export const apiGetTokenHistory = async (
     
     //Not every event type has all the fields, so based on the type of event, we need to parse the respective fields
     return Promise.all(array.filter(function(event) {
-      var event_type = event.event_type;
+      let event_type = event.event_type;
       if (event_type == "created" || event_type == "transfer" || event_type == "successful" || event_type == "cancelled") {
         return true;
       }
@@ -128,13 +128,13 @@ export const apiGetTokenHistory = async (
     })
     .map(async function(event) {
       
-      var event_type = event.event_type;
-      var eventObject;
-      var created_date = event.created_date;
-      var from_account;
-      var to_account;
-      var sale_amount;
-      var list_amount;
+      let event_type = event.event_type;
+      let eventObject;
+      let created_date = event.created_date;
+      let from_account;
+      let to_account;
+      let sale_amount;
+      let list_amount;
 
       switch (event_type) {
         case "created": 
@@ -142,7 +142,7 @@ export const apiGetTokenHistory = async (
           from_account = "0x123";
           to_account = "0x123";
           sale_amount = "0";
-          var tempList = fromWei(parseInt(event.starting_price));
+          let tempList = fromWei(parseInt(event.starting_price));
           list_amount = tempList.toString();
 
           eventObject = {
@@ -188,7 +188,7 @@ export const apiGetTokenHistory = async (
           created_date = event.created_date;
           from_account = "0x123";
           to_account = "0x123";
-          var tempSale = fromWei(parseInt(event.total_price));
+          let tempSale = fromWei(parseInt(event.total_price));
           sale_amount = tempSale.toString();
           list_amount = "0";
   

@@ -7,7 +7,7 @@ import RadialGradient from 'react-native-radial-gradient';
 
 const Container = styled(Row)`
   width: ${({ width }) => width};
-  height: 60;
+  height: 57;
   background-color: #FFFFFF00; 
 `;
 
@@ -57,7 +57,7 @@ const LeftmostLine = styled(View)`
   border-radius: 1.5;
   width: 76;
   margin-bottom: 32.5;
-  margin-top: 4;
+  margin-top: 3.5;
 `;
 
 const Line = styled(View)`
@@ -66,7 +66,7 @@ const Line = styled(View)`
   opacity: 0.1;
   border-radius: 1.5;
   width: 132;
-  margin-top: 4;
+  margin-top: 3.5;
 `;
 
 
@@ -96,7 +96,6 @@ export default function TokenHistoryLoader() {
   const { colors } = useTheme();
   return (
     <Container width={width} colors={colors}>
-      
       <Column>
         <LeftmostLine />
         <LeftmostEvent colors={colors} />
