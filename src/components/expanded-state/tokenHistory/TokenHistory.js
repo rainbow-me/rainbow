@@ -1,13 +1,12 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import { Column, Row } from '../../layout';
+import RadialGradient from 'react-native-radial-gradient';
+import { Column, ColumnWithMargins, Row } from '../../layout';
+import { Text } from '../../text';
 import { apiGetTokenHistory } from '@rainbow-me/handlers/opensea-api';
 import { FlatList, View, ScrollView, InteractionManager } from "react-native";
-import logger from 'logger';
-import RadialGradient from 'react-native-radial-gradient';
-import { Text } from '../../text';
 import styled from 'styled-components';
 import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
-import { useTheme } from '../../../context/ThemeContext';
+import { useTheme } from '@rainbow-me/context';
 import { useDimensions, useAccountProfile } from '@rainbow-me/hooks';
 import TokenHistoryEdgeFade from './TokenHistoryEdgeFade';
 import TokenHistoryLoader from './TokenHistoryLoader';
@@ -15,6 +14,7 @@ import MaskedView from '@react-native-community/masked-view';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ButtonPressAnimation } from '../../animations';
+import logger from 'logger';
 
 /**
  * Requirements: 
@@ -23,87 +23,91 @@ import { ButtonPressAnimation } from '../../animations';
  * Minting - Sales - Transfers - Listings - Cancelled Listings
  * Scrollable horizonatally
  */
+const EventsEnum = {
+  DELIST{
+    type: 'cancelled'
+    label: ,
+    icon: ,
+  },
+  ENS{
+    type: 'ens-registration'
+    label: ,
+    icon: ,
+  },
+  LIST{
+    type: 'created'
+    label: ,
+    icon: ,
+  },
+  MINT{
+    type: 'mint'
+    label: ,
+    icon: ,
+  },
+  SALE{
+    type: 'successful'
+    label: ,
+    icon: ,
+  },
+  TRANSFER{
+    type: 'transfer'
+    label: ,
+    icon: ,
+  },
+
+}
 const eventTypes = {
+  DELIST: 'cancelled',
+  ENS: 'ens-registration',
+  LIST: 'created',
+  MINT: 'mint',
   SALE: 'successful',
   TRANSFER: 'transfer',
-  LIST: 'created',
-  DELIST: 'cancelled',
-  MINT: 'mint',
-  ENS: 'ens-registration',
 };
 
 const eventPhrases  = {
-  SALE: `Sold for `,
-  LIST: `Listed for `,
-  TRANSFER: `Sent to `,
   DELIST: `Delisted`,
-  MINT:`Minted`,
   ENS: `Registered`,
+  LIST: `Listed for `,
+  MINT:`Minted`,
+  SALE: `Sold for `,
+  TRANSFER: `Sent to `,
 };
 
-const eventSymbols = {
-  SALE: `􀋢`,
-  LIST: `􀎧`,
-  TRANSFER: `􀈠`,
+const eventIcons = {
   DELIST: `􀎩`,
-  MINT: `􀎛`,
   ENS: `􀈐`,
+  LIST: `􀎧`,
+  MINT: `􀎛`,
+  SALE: `􀋢`,
+  TRANSFER: `􀈠`,
 };
 
-const Gradient = styled(RadialGradient).attrs(
-  ({ color, theme: { colors } }) => ({
-    center: [0, 0],
-    colors:  [colors.whiteLabel, color]
-  })
-)`
-  position: absolute;
-  border-radius: 5;
-  width: 10;
-  height: 10;
-  overflow: hidden;
-`;
+const spaceBetweenItems = 24;
 
-const GradientRow = styled(Row)`
-  height: 10;
-  margin-bottom: 6;
-  margin-top: 4;
-`;
-
-const InnerColumn = styled(Column)`
-  padding-right: 24;
-`;
 
 const DateRow = styled(Row)`
   margin-bottom: 3;
 `;
 
-const EmptyView = styled(View)`
-  height: 3;
-  marginTop: 4;
-`;
 
 const LeftSpacer = styled(View)`
-  width: 24;
+  width: ${spaceBetweenItems};
 `;
 
-const LineView = styled(View)`
-  height: 3;
-  background-color: ${({ color }) => color};
-  opacity: 0.1;
-  border-radius: 1.5;
-  position: absolute;
-  top: 3.5;
-  left: 16;
-  right: 6;
-`;
 
 const Container = styled(View)`
   width: 100%;
 `;
 
 const ShortListContainer = styled(View)`
-  margin-left: 24;
+  margin-left: ${spaceBetweenItems};
 `;
+
+const AccentText = styled(Text).attrs({
+  size: 'smedium',
+  weight: 'heavy',
+})``;
 
 const TokenHistory = ({ 
     contractAndToken,
@@ -162,7 +166,7 @@ const TokenHistory = ({
 
     switch (item?.event_type) {
       case eventTypes.TRANSFER:
-        symbol = eventSymbols.TRANSFER;
+        symbol = eventIcons.TRANSFER;
         phrase = eventPhrases.TRANSFER;
         suffix = `${item.to_account} `;
         if (accountAddress.toLowerCase() != item.to_account_eth_address && accountENS != item.to_account) {
@@ -174,31 +178,31 @@ const TokenHistory = ({
         return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
 
       case eventTypes.MINT:
-        symbol = eventSymbols.MINT;
+        symbol = eventIcons.MINT;
         phrase = eventPhrases.MINT;
         suffix = ``;
         return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
 
       case eventTypes.SALE:
-        symbol = eventSymbols.SALE;
+        symbol = eventIcons.SALE;
         phrase = eventPhrases.SALE;
         suffix = `${item.sale_amount} ETH`;
         return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
 
       case eventTypes.LIST:
-        symbol = eventSymbols.LIST;
+        symbol = eventIcons.LIST;
         phrase = eventPhrases.LIST;
         suffix = `${item.list_amount} ETH`;
         return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
 
       case eventTypes.DELIST:
-        symbol = eventSymbols.DELIST;
+        symbol = eventIcons.DELIST;
         phrase = eventPhrases.DELIST;
         suffix = ``;
         return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
 
         case eventTypes.ENS:
-          symbol = eventSymbols.ENS;
+          symbol = eventIcons.ENS;
           phrase = eventPhrases.ENS;
           suffix = ``;
           return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
@@ -209,40 +213,28 @@ const TokenHistory = ({
     const date = getHumanReadableDateWithoutOn(new Date(item.created_date).getTime()/1000);
 
     return (
-        <Column>
-          <GradientRow> 
-            <Gradient color={color} />
-            { isFirst ? <EmptyView /> : <LineView color={color} /> }
-          </GradientRow>
-          
-          <InnerColumn>
+        <ColumnWithMargins margin={6}>
+          <TokenHistoryLineDecoration color={color} isFirst={isFirst} />
+          <ColumnWithMargins
+            margin={3}
+            paddingRight={spaceBetweenItems}
+          >
             <DateRow>
-              <Text
-                align="left"
-                color={color}
-                size="smedium"
-                weight="heavy"
-              >
+              <AccentText color={color}>
               {date}     
-              </Text>
+              </AccentText>
             </DateRow>
 
-            {
-              isClickable ? 
               <ButtonPressAnimation
                 hapticType={'selection'}
+                disabled={!isClickable}
                 onPress={() => handlePress(item.to_account_eth_address)}
                 scaleTo={0.92}
               >
                 <Row>
-                  <Text
-                    align="left"
-                    color={color}
-                    size="smedium"
-                    weight="heavy"
-                  >
+                  <AccentText color={color}>
                     {symbol}
-                  </Text>
+                  </AccentText>
 
                   <Text
                     align="right"
@@ -250,31 +242,10 @@ const TokenHistory = ({
                     size="smedium"
                     weight="heavy"
                   >
-                    {' '}{phrase}{suffix}{suffixSymbol}
+                    {' '}{phrase}{suffix}{isClickable ? suffixSymbol : ''}
                   </Text>
                 </Row>
               </ButtonPressAnimation>
-              : 
-              <Row>
-                <Text
-                  align="left"
-                  color={color}
-                  size="smedium"
-                  weight="heavy"
-                >
-                  {symbol}
-                </Text>
-
-                <Text
-                  align="right"
-                  color={colors.whiteLabel}
-                  size="smedium"
-                  weight="heavy"
-                >
-                  {' '}{phrase}{suffix}
-                </Text>
-              </Row>
-            }
           </InnerColumn>
         </Column>
     )

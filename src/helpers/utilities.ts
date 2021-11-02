@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { get, isNil } from 'lodash';
+import { Asset } from '@rainbow-me/entities';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 type BigNumberish = number | string | BigNumber;
@@ -313,12 +314,12 @@ export const convertRawAmountToBalance = (
  */
 export const convertAmountToBalanceDisplay = (
   value: BigNumberish,
-  asset: { decimals: number },
+  asset: Asset,
   buffer?: number
 ) => {
-  const decimals = get(asset, 'decimals', 18);
+  const decimals = asset?.decimals || 18;
   const display = handleSignificantDecimals(value, decimals, buffer);
-  return `${display} ${get(asset, 'symbol', '')}`;
+  return `${display} ${asset?.symbol || ''}`;
 };
 
 /**
