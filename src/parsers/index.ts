@@ -21,6 +21,7 @@ export {
   parseRainbowMeteorologyData,
 } from './gas';
 export { parseNewTransaction } from './newTransaction';
+export { parsePoaps } from './poap';
 export { getRequestDisplayDetails } from './requests';
 export {
   parseTransactions,

@@ -194,7 +194,7 @@ const DisplayDappNames = Object.freeze({
   },
   'uniswap.org': {
     name: 'Uniswap',
-    uri: buildAssetUrl('uniswap.org'),
+    uri: null,
   },
   'walletconnect.org': {
     name: 'WalletConnect',

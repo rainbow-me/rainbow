@@ -60,10 +60,11 @@ const UniqueTokenCard = ({
     >
       <Content {...props} height={height} style={style} width={width}>
         <UniqueTokenImage
-          backgroundColor={item.background || colors.lightestGrey}
+          backgroundColor={item.background}
           imageUrl={imageUrl}
           item={item}
           resizeMode={resizeMode}
+          shouldRasterizeIOS
           size={width}
           small={smallENSName}
         />
