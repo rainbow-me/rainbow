@@ -1,14 +1,14 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { debounce, isEmpty } from 'lodash';
 import { web3Provider } from '../handlers/web3';
-import store, { AppDispatch, AppState } from '../redux/store';
+import store, { AppDispatch, AppGetState } from '../redux/store';
 import { multicallUpdateOutdatedListeners } from './multicall';
 import logger from 'logger';
 
 // -- Actions ---------------------------------------- //
 const updateMulticall = (blockNumber: number) => async (
   dispatch: AppDispatch,
-  getState: () => AppState
+  getState: AppGetState
 ) => {
   const { listeners } = getState().multicall;
   try {

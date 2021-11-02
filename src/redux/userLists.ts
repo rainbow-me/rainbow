@@ -9,7 +9,7 @@ import {
 } from '../handlers/localstorage/userLists';
 import { DefaultTokenLists, TokenListsExtendedRecord } from '../references';
 import { emitAssetRequest } from './explorer';
-import { AppDispatch, AppState } from './store';
+import { AppDispatch, AppGetState } from './store';
 import { uniswapUpdateFavorites } from './uniswap';
 
 // -- Constants ------------------------------------------------------------- //
@@ -92,7 +92,7 @@ interface UserListsClearStateAction {
 
 export const userListsLoadState = () => async (
   dispatch: AppDispatch,
-  getState: () => AppState
+  getState: AppGetState
 ) => {
   const { network } = getState().settings;
 
@@ -144,7 +144,7 @@ export const userListsSetSelectedList = (
 
 export const userListsClearList = (listId: string) => (
   dispatch: AppDispatch,
-  getState: () => AppState
+  getState: AppGetState
 ) => {
   const { lists } = getState().userLists;
   const allNewLists = [...lists];
@@ -177,7 +177,7 @@ export const userListsUpdateList = (
   assetAddress: string,
   listId: string,
   add = true
-) => (dispatch: AppDispatch, getState: () => AppState) => {
+) => (dispatch: AppDispatch, getState: AppGetState) => {
   if (listId === FAVORITES_LIST_ID) {
     dispatch(uniswapUpdateFavorites(assetAddress, add));
   } else {
