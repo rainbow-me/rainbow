@@ -16,6 +16,7 @@ import {
   updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
+import logger from 'logger';
 import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   getQuote,
@@ -65,7 +66,9 @@ const getInputAmount = async (
       sellTokenAddress,
       slippage: 1,
     };
+    logger.debug('GETTING QUOTE FOR BUY AMOUNT', buyAmount);
     const quote = await getQuote(quoteParams);
+    logger.debug('GOT QUOTE FOR BUY AMOUNT', buyAmount);
     if (!quote) {
       return {
         inputAmount: null,
@@ -143,7 +146,9 @@ const getOutputAmount = async (
       sellTokenAddress,
       slippage: 1,
     };
+    logger.debug('GETTING QUOTE FOR SELL AMOUNT', sellAmount);
     const quote = await getQuote(quoteParams);
+    logger.debug('GOT QUOTE FOR SELL AMOUNT', sellAmount);
     if (!quote) {
       return {
         outputAmount: null,

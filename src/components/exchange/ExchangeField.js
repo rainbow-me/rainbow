@@ -1,6 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import styled from 'styled-components';
+import { useDebounce } from 'use-debounce';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon, CoinIconSize } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';
@@ -64,6 +65,13 @@ const ExchangeField = (
   const handleFocusField = useCallback(() => ref?.current?.focus(), [ref]);
   const { colors } = useTheme();
 
+  const [value, setValue] = useState(amount);
+  const [debouncedValue] = useDebounce(value, 350);
+
+  useEffect(() => {
+    setAmount(debouncedValue);
+  }, [debouncedValue, setAmount]);
+
   return (
     <Container {...props}>
       <TouchableWithoutFeedback onPress={handleFocusField}>
@@ -77,7 +85,7 @@ const ExchangeField = (
             color={colorForAsset}
             editable={editable}
             onBlur={onBlur}
-            onChangeText={setAmount}
+            onChangeText={setValue}
             onFocus={onFocus}
             placeholder={symbol ? '0' : EnDash.unicode}
             placeholderTextColor={

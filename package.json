@@ -233,7 +233,7 @@
     "tty-browserify": "0.0.0",
     "url": "0.10.3",
     "url-parse": "1.5.3",
-    "use-debounce": "5.2.0",
+    "use-debounce": "^7.0.0",
     "use-memo-one": "1.1.1",
     "util": "0.10.4",
     "vm-browserify": "0.0.4",

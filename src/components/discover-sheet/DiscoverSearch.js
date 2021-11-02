@@ -12,6 +12,7 @@ import { InteractionManager, View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { useDebounce } from 'use-debounce';
 import { addHexPrefix } from '../../handlers/web3';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
 import tokenSectionTypes from '../../helpers/tokenSectionTypes';
@@ -22,11 +23,7 @@ import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/Ch
 import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { fetchSuggestions } from '@rainbow-me/handlers/ens';
-import {
-  useAccountAssets,
-  useTimeout,
-  useUniswapAssets,
-} from '@rainbow-me/hooks';
+import { useAccountAssets, useUniswapAssets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { filterList } from '@rainbow-me/utils';
@@ -62,6 +59,7 @@ export default function DiscoverSearch() {
     loadingAllTokens,
   } = useUniswapAssets();
   const {
+    isSearching,
     isFetchingEns,
     setIsSearching,
     setIsFetchingEns,
@@ -70,9 +68,8 @@ export default function DiscoverSearch() {
   } = useContext(DiscoverSheetContext);
 
   const currencySelectionListRef = useRef();
-  const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
+  const [searchQueryForSearch] = useDebounce(searchQuery, 350);
   const { colors } = useTheme();
-  const [startQueryDebounce, stopQueryDebounce] = useTimeout();
   const [fastCurrencyList, setFastCurrencyList] = useState([]);
   const [lowCurrencyList, setLowCurrencyList] = useState([]);
   const [ensResults, setEnsResults] = useState([]);
@@ -225,18 +222,19 @@ export default function DiscoverSearch() {
   );
 
   useEffect(() => {
-    stopQueryDebounce();
-    startQueryDebounce(
-      () => {
-        setIsSearching(true);
-        setSearchQueryForSearch(searchQuery);
-        fetchSuggestions(searchQuery, addEnsResults, setIsFetchingEns);
-        filterCurrencyList(searchQuery);
-      },
-      searchQuery === '' ? 1 : 500
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery, setIsSearching, startQueryDebounce, stopQueryDebounce]);
+    if (searchQueryForSearch && !isSearching) {
+      setIsSearching(true);
+      fetchSuggestions(searchQuery, addEnsResults, setIsFetchingEns);
+      filterCurrencyList(searchQuery);
+    }
+  }, [
+    addEnsResults,
+    filterCurrencyList,
+    searchQuery,
+    searchQueryForSearch,
+    setIsFetchingEns,
+    setIsSearching,
+  ]);
 
   useEffect(() => {
     currencySelectionListRef.current?.scrollToLocation({

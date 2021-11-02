@@ -14,6 +14,7 @@ import { StatusBar } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import styled from 'styled-components';
+import { useDebounce } from 'use-debounce';
 import GestureBlocker from '../components/GestureBlocker';
 import {
   CurrencySelectionList,
@@ -29,7 +30,6 @@ import {
   useInteraction,
   useMagicAutofocus,
   usePrevious,
-  useTimeout,
   useUniswapAssets,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
@@ -46,9 +46,7 @@ const TabTransitionAnimation = styled(Animated.View)`
 const headerlessSection = data => [{ data, title: '' }];
 const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
 
-const searchCurrencyList = (searchList, query) => {
-  const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);
-
+const searchCurrencyList = (searchList, query, isAddress) => {
   if (isAddress) {
     const formattedQuery = toLower(addHexPrefix(query));
     return filterList(searchList, formattedQuery, ['address'], {
@@ -82,8 +80,9 @@ export default function CurrencySelectModal() {
 
   const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchQueryForSearch] = useDebounce(searchQuery, 350);
+
   const [isSearching, setIsSearching] = useState(false);
-  const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
   const searchQueryExists = useMemo(() => searchQuery.length > 0, [
     searchQuery,
   ]);
@@ -101,13 +100,17 @@ export default function CurrencySelectModal() {
   const uniswapAssetsInWallet = useUniswapAssetsInWallet();
 
   const currencyList = useMemo(() => {
+    setIsSearching(true);
     let filteredList = [];
+    const isAddress = searchQueryForSearch.match(/^(0x)?[0-9a-fA-F]{40}$/);
+
     if (type === CurrencySelectionTypes.input) {
       filteredList = headerlessSection(uniswapAssetsInWallet);
       if (searchQueryForSearch) {
         filteredList = searchCurrencyList(
           uniswapAssetsInWallet,
-          searchQueryForSearch
+          searchQueryForSearch,
+          isAddress
         );
         filteredList = headerlessSection(filteredList);
       }
@@ -125,7 +128,8 @@ export default function CurrencySelectModal() {
             globalHighLiquidityAssets,
             globalLowLiquidityAssets,
           ],
-          section => searchCurrencyList(section, searchQueryForSearch)
+          section =>
+            searchCurrencyList(section, searchQueryForSearch, isAddress)
         );
 
         filteredList = [];
@@ -182,18 +186,6 @@ export default function CurrencySelectModal() {
     type,
     uniswapAssetsInWallet,
   ]);
-
-  const [startQueryDebounce, stopQueryDebounce] = useTimeout();
-  useEffect(() => {
-    stopQueryDebounce();
-    startQueryDebounce(
-      () => {
-        setIsSearching(true);
-        setSearchQueryForSearch(searchQuery);
-      },
-      searchQuery === '' ? 1 : 250
-    );
-  }, [searchQuery, startQueryDebounce, stopQueryDebounce]);
 
   const handleFavoriteAsset = useCallback(
     (asset, isFavorited) => {
