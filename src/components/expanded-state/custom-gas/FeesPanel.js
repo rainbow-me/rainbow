@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/core';
-import { get } from 'lodash';
+import { get, upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { KeyboardAvoidingView } from 'react-native';
 import styled from 'styled-components';
@@ -398,7 +398,10 @@ export default function FeesPanel({
         </PanelColumn>
       </PanelRowThin>
       <PanelRow justify="space-between">
-        {renderRowLabel('Current Base Fee', 'currentBaseFee')}
+        {renderRowLabel(
+          'Current Base Fee',
+          'currentBaseFee' + upperFirst(currentGasTrend)
+        )}
         <PanelColumn>
           <PanelLabel>{formattedBaseFee}</PanelLabel>
         </PanelColumn>

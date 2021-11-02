@@ -55,9 +55,21 @@ const GAS_EXPLAINER = `This is the "gas fee" used by the Ethereum blockchain to 
 
 This fee varies depending on the complexity of your transaction and how busy the network is!`;
 
-const CURRENT_BASE_FEE_EXPLAINER = `The base fee is set by the Ethereum network and changes depending on how busy the network is.
+const CURRENT_BASE_FEE_EXPLAINER_STABLE = `The base fee is set by the Ethereum network and changes depending on how busy the network is.
 
 Network traffic is stable right now. Have fun!`;
+
+const CURRENT_BASE_FEE_EXPLAINER_FALLING = `The base fee is set by the Ethereum network and changes depending on how busy the network is.
+
+Fees are dropping right now!`;
+
+const CURRENT_BASE_FEE_EXPLAINER_RISING = `The base fee is set by the Ethereum network and changes depending on how busy the network is.
+
+Fees are rising right now! It’s best to use a higher max base fee to avoid a stuck transaction.`;
+
+const CURRENT_BASE_FEE_EXPLAINER_SURGING = `The base fee is set by the Ethereum network and changes depending on how busy the network is.
+
+Fees are unusually high right now! Unless your transaction is urgent, it’s best to wait for fees to drop.`;
 
 const MAX_BASE_FEE_EXPLAINER = `This is the maximum base fee you’re willing to pay for this transaction.
 
@@ -90,10 +102,28 @@ export const explainers = {
     text: GAS_EXPLAINER,
     title: 'Ethereum network fee',
   },
-  currentBaseFee: {
+  currentBaseFeeStable: {
     emoji: '🌞',
     extraHeight: 30,
-    text: CURRENT_BASE_FEE_EXPLAINER,
+    text: CURRENT_BASE_FEE_EXPLAINER_STABLE,
+    title: 'Current base fee',
+  },
+  currentBaseFeeFalling: {
+    emoji: '🤑',
+    extraHeight: 30,
+    text: CURRENT_BASE_FEE_EXPLAINER_FALLING,
+    title: 'Current base fee',
+  },
+  currentBaseFeeRising: {
+    emoji: '🥵',
+    extraHeight: 60,
+    text: CURRENT_BASE_FEE_EXPLAINER_RISING,
+    title: 'Current base fee',
+  },
+  currentBaseFeeSurging: {
+    emoji: '🎢',
+    extraHeight: 60,
+    text: CURRENT_BASE_FEE_EXPLAINER_SURGING,
     title: 'Current base fee',
   },
   maxBaseFee: {
@@ -182,9 +212,8 @@ const ExplainSheet = () => {
   const { params: { type = 'gas', onClose } = {}, params = {} } = useRoute();
   const { colors } = useTheme();
   const { goBack } = useNavigation();
-
   const renderBaseFeeInficator = useMemo(() => {
-    if (type !== 'currentBaseFee') return null;
+    if (!type.includes('currentBaseFee')) return null;
     const { currentGasTrend, currentBaseFee } = params;
     return (
       <GasTrendContainer>
