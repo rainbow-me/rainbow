@@ -14,6 +14,7 @@ import { ButtonPressAnimation, ScaleButtonZoomableAndroid } from './animations';
 import { Icon } from './icons';
 import { Centered, Row, RowWithMargins } from './layout';
 import { Text } from './text';
+import analytics from '@segment/analytics-react-native';
 import {
   useAccountSettings,
   useDimensions,
@@ -185,13 +186,22 @@ const AddFundsInterstitial = ({ network }) => {
           params: !isNaN(amount) ? { amount } : null,
           screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
         });
-      } else {
+        analytics.track('Tapped Add Cash', {
+          category: 'add cash',
+          newUser: true
+        });
+      } 
+      else {
         navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
           params: {
             address: accountAddress,
             amount: !isNaN(amount) ? amount : null,
           },
           screen: Routes.WYRE_WEBVIEW,
+        });
+        analytics.track('Tapped Add Cash', {
+          category: 'add cash',
+          newUser: true
         });
       }
     },
