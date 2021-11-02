@@ -109,7 +109,6 @@ export const userListsLoadState = () => async (
     setTimeout(() => {
       dispatch(emitAssetRequest(allAddresses));
       dispatch({
-        payload: true,
         type: USER_LISTS_READY,
       });
     }, 3000);
