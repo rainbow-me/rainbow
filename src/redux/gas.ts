@@ -336,7 +336,6 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
               baseFeePerGas,
               trend,
             } = await getEIP1559GasParams();
-            console.log('gasFeeParamsBySpeed', gasFeeParamsBySpeed);
             const newGasFeeParamsBySpeed = await getGasFeesEstimates(
               gasFeeParamsBySpeed
             );

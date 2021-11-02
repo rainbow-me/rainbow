@@ -41,11 +41,7 @@ const rainbowMeteorologyApi = new RainbowFetchClient({
 });
 
 export const rainbowMeteorologyGetData = () =>
-  rainbowMeteorologyApi.get(`/meteorology/v1/gas/mainnet`, {
-    // headers: {
-    // Authorization: `${BLOCK_NATIVE_API_KEY}`,
-    // },
-  });
+  rainbowMeteorologyApi.get(`/meteorology/v1/gas/mainnet`, {});
 
 /**
  * Configuration for Polygon GAS Station API

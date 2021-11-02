@@ -175,29 +175,37 @@ export default function FeesPanel({
   ]);
 
   const renderRowLabel = useCallback(
-    (label, type) => {
+    (label, type, error, warning) => {
       const openGasHelper = () =>
         navigate(Routes.EXPLAIN_SHEET, {
           currentBaseFee,
           currentGasTrend,
           type,
         });
+      let color;
+      let text;
+      if (!error && !warning) {
+        color =
+          theme === 'dark'
+            ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
+            : colors.alpha(colors.blueGreyDark, 0.4);
+        text = '􀅵';
+      } else if (error) {
+        color = colors.red;
+        text = '􀁟';
+      } else {
+        color = colors.yellowFavorite;
+        text = '􀇿';
+      }
+
       return (
         <PanelColumn>
           <ButtonPressAnimation onPress={openGasHelper}>
             <Row>
               <PanelLabel>
                 {`${label} `}
-                <Label
-                  color={
-                    theme === 'dark'
-                      ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
-                      : colors.alpha(colors.blueGreyDark, 0.4)
-                  }
-                  size="smedium"
-                  weight="bold"
-                >
-                  􀅵
+                <Label color={color} size="smedium" weight="bold">
+                  {text}
                 </Label>
               </PanelLabel>
             </Row>
@@ -415,7 +423,12 @@ export default function FeesPanel({
         </PanelColumn>
       </PanelRow>
       <PanelRow>
-        {renderRowLabel('Max Base Fee', 'maxBaseFee')}
+        {renderRowLabel(
+          'Max Base Fee',
+          'maxBaseFee',
+          maxBaseFeeError,
+          maxBaseFeeWarning
+        )}
         {renderWarning(maxBaseFeeError, maxBaseFeeWarning)}
 
         <PanelColumn>
@@ -430,7 +443,12 @@ export default function FeesPanel({
         </PanelColumn>
       </PanelRow>
       <PanelRow>
-        {renderRowLabel('Miner Tip', `minerTip`)}
+        {renderRowLabel(
+          'Miner Tip',
+          `minerTip`,
+          maxPriorityFeeError,
+          maxPriorityFeeWarning
+        )}
         {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
 
         <PanelColumn>
