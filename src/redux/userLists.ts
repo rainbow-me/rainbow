@@ -7,8 +7,7 @@ import {
   saveSelectedUserList,
   saveUserLists,
 } from '../handlers/localstorage/userLists';
-import { Network } from '../helpers/networkTypes';
-import { DefaultTokenLists } from '../references';
+import { DefaultTokenLists, TokenListsExtendedRecord } from '../references';
 import { emitAssetRequest } from './explorer';
 import { AppDispatch, AppState } from './store';
 import { uniswapUpdateFavorites } from './uniswap';
@@ -100,10 +99,7 @@ export const userListsLoadState = () => async (
   dispatch({ type: USER_LISTS_LOAD_REQUEST });
   try {
     const defaultLists =
-      (DefaultTokenLists as Record<
-        Network,
-        typeof DefaultTokenLists[keyof typeof DefaultTokenLists]
-      >)[network] || [];
+      (DefaultTokenLists as TokenListsExtendedRecord)[network] || [];
     const userLists: UserList[] = await getUserLists();
     const lists = userLists?.length ? userLists : defaultLists;
     let allAddresses: string[] = [];
