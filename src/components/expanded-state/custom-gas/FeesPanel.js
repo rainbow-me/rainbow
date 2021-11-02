@@ -8,6 +8,10 @@ import { ButtonPressAnimation } from '../../animations';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import FeesGweiInput from './FeesGweiInput';
+import {
+  calculateMinerTipAddDifference,
+  calculateMinerTipSubstDifference,
+} from '@rainbow-me/helpers/gas';
 import { useGas } from '@rainbow-me/hooks';
 import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
@@ -71,31 +75,8 @@ const Label = styled(Text).attrs(({ size, weight }) => ({
 }))``;
 
 const GAS_FEE_INCREMENT = 1;
-const PRIORITY_FEE_INCREMENT = 0.5;
-const PRIORITY_FEE_THRESHOLD = 0.15;
-
 const MAX_BASE_FEE_RANGE = [1, 3];
 const MINER_TIP_RANGE = [1, 2];
-
-const calculateMinerTipAddDifference = maxPriorityFee => {
-  const diff =
-    Math.round((maxPriorityFee % PRIORITY_FEE_INCREMENT) * 100) / 100;
-  if (diff > PRIORITY_FEE_INCREMENT - PRIORITY_FEE_THRESHOLD) {
-    return 2 * PRIORITY_FEE_INCREMENT - diff;
-  } else {
-    return PRIORITY_FEE_INCREMENT - diff;
-  }
-};
-
-const calculateMinerTipSubstDifference = maxPriorityFee => {
-  const diff =
-    Math.round((maxPriorityFee % PRIORITY_FEE_INCREMENT) * 100) / 100;
-  if (diff < PRIORITY_FEE_THRESHOLD) {
-    return PRIORITY_FEE_INCREMENT + diff;
-  } else {
-    return diff || PRIORITY_FEE_INCREMENT;
-  }
-};
 
 export default function FeesPanel({
   currentGasTrend,
