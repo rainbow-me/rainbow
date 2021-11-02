@@ -19,7 +19,7 @@ const FakeDate = styled(RadialGradient).attrs(
 )`
   border-radius: 5;
   width: 60;
-  height: 11;
+  height: 10;
   overflow: hidden;
   opacity: 0.1;
   margin-bottom: 9;
@@ -33,7 +33,7 @@ const FakeEvent = styled(RadialGradient).attrs(
 )`
   border-radius: 5;
   width: 130;
-  height: 11;
+  height: 10;
   overflow: hidden;
   opacity: 0.1;
 `;
@@ -46,7 +46,7 @@ const LeftmostEvent = styled(RadialGradient).attrs(
 )`
   border-radius: 5;
   width: 39;
-  height: 11;
+  height: 10;
   opacity: 0.1;
 `;
 
