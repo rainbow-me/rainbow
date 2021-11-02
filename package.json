@@ -289,7 +289,7 @@
   "resolutions": {
     "**/node-fetch": "2.6.1",
     "**/bl": "2.2.1",
-    "**/browserslist": "4.16.5",
+    "**/browserslist": "4.17.6",
     "**/elliptic": "6.5.4",
     "**/hosted-git-info": "3.0.8",
     "**/logkitty": "0.7.1",
