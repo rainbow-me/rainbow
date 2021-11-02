@@ -1,17 +1,20 @@
 import produce from 'immer';
 import { concat, isArray, uniq, without } from 'lodash';
 import { InteractionManager } from 'react-native';
-import { UserList } from '../entities/userLists';
+import { UserList } from '@rainbow-me/entities';
 import {
   getSelectedUserList,
   getUserLists,
   saveSelectedUserList,
   saveUserLists,
-} from '../handlers/localstorage/userLists';
-import { DefaultTokenLists, TokenListsExtendedRecord } from '../references';
-import { emitAssetRequest } from './explorer';
-import { AppDispatch, AppGetState } from './store';
-import { uniswapUpdateFavorites } from './uniswap';
+} from '@rainbow-me/handlers/localstorage/userLists';
+import { emitAssetRequest } from '@rainbow-me/redux/explorer';
+import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
+import { uniswapUpdateFavorites } from '@rainbow-me/redux/uniswap';
+import {
+  DefaultTokenLists,
+  TokenListsExtendedRecord,
+} from '@rainbow-me/references';
 
 // -- Constants ------------------------------------------------------------- //
 const USER_LISTS_READY = 'userLists/USER_LISTS_READY';
