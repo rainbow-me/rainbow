@@ -3,7 +3,6 @@ import { rainbowFetch } from '../rainbow-fetch';
 import NetworkTypes from '@rainbow-me/networkTypes';
 import { parseAccountUniqueTokens } from '@rainbow-me/parsers';
 import logger from 'logger';
-import { UNISWAP_PAIRS_HISTORICAL_BULK_QUERY } from 'src/apollo/queries';
 import { fromWei, handleSignificantDecimals } from '@rainbow-me/utilities';
 import { useAddressToENS } from '@rainbow-me/hooks';
 import { isHexString } from '@ethersproject/bytes';

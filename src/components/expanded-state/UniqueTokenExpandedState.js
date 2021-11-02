@@ -136,8 +136,12 @@ const UniqueTokenExpandedState = ({
   const imageColorWithFallback =
     imageColor || fallbackImageColor || colors.paleBlue;
 
-  const tempLastPrice = handleSignificantDecimals(parseFloat(lastPrice), 5);
-  const lastSalePrice = lastPrice || 'None';
+  let lastSalePrice = lastPrice || 'None';
+
+  if (lastSalePrice != 'None') {
+    lastSalePrice = handleSignificantDecimals(parseFloat(lastPrice), 5);
+  }
+  
   const priceOfEth = ethereumUtils.getEthPriceUnit();
 
   useEffect(() => {
@@ -346,7 +350,7 @@ const UniqueTokenExpandedState = ({
               {showFloorInEth ||
               nativeCurrency === 'ETH' ||
               floorPrice === 'None'
-                ? floorPrice
+                ? handleSignificantDecimals(parseFloat(floorPrice), 5)
                 : convertAmountToNativeDisplay(
                     parseFloat(floorPrice) * priceOfEth,
                     nativeCurrency

@@ -9,7 +9,6 @@ const Container = styled(Row)`
   width: ${({ width }) => width};
   height: 57;
   background-color: #FFFFFF00; 
-  // margin-top: 4;
 `;
 
 const FakeDate = styled(RadialGradient).attrs(
