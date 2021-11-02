@@ -54,9 +54,7 @@ interface UserListsLoadRequestAction {
 
 interface UserListsLoadSuccessAction {
   type: typeof USER_LISTS_LOAD_SUCCESS;
-  payload: {
-    lists: UserList[];
-  };
+  payload: UserList[];
 }
 
 interface UserListsSetSelectedListAction {
@@ -99,7 +97,7 @@ export const userListsLoadState = () => async (
     });
 
     dispatch({
-      payload: { lists },
+      payload: lists,
       type: USER_LISTS_LOAD_SUCCESS,
     });
     const selectedUserList = (await getSelectedUserList()) || FAVORITES_LIST_ID;
@@ -224,7 +222,7 @@ export default (state = INITIAL_USER_LISTS_STATE, action: UserListsAction) =>
         draft.loadingUserLists = true;
         break;
       case USER_LISTS_LOAD_SUCCESS:
-        draft.lists = action.payload.lists;
+        draft.lists = action.payload;
         draft.loadingUserLists = false;
         break;
       case USER_LISTS_SET_SELECTED_LIST:
