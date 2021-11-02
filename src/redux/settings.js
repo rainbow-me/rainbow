@@ -1,3 +1,4 @@
+import { NativeCurrencyKeys } from '../entities/nativeCurrencyTypes';
 import {
   getNativeCurrency,
   getNetwork,
@@ -6,7 +7,6 @@ import {
   saveNetwork,
 } from '../handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '../handlers/web3';
-import { NativeCurrencyKeys } from '../helpers/nativeCurrencyTypes';
 import networkTypes from '../helpers/networkTypes';
 import { updateLanguage } from '../languages';
 

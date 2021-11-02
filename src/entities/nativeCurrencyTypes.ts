@@ -10,4 +10,7 @@ for (let key of Object.keys(nativeCurrencyReference) as NativeCurrencyKey[]) {
   nativeKeys[key] = key;
 }
 
+/**
+ * An enum of native currencies such as "USD" or "ETH".
+ */
 export const NativeCurrencyKeys: NativeCurrencyKeysMap = nativeKeys as NativeCurrencyKeysMap;
