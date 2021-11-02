@@ -2,10 +2,8 @@ import {
   ETH_GAS_STATION_API_KEY,
   ETHERSCAN_API_KEY,
 } from 'react-native-dotenv';
-import { multiply } from '../helpers/utilities';
 import { RainbowFetchClient } from '../rainbow-fetch';
 import { defaultGasParamsFormat } from '@rainbow-me/parsers';
-import { ethUnits } from '@rainbow-me/references';
 
 /**
  * Configuration for defipulse API
@@ -103,6 +101,7 @@ export const polygonGetGasEstimates = data => {
   };
 };
 
+// todo
 /**
  * @desc get ethereum gas params from BlockNative
  * @params {data}
@@ -112,11 +111,8 @@ export const getGasFeesEstimates = async gasFeeParamsBySpeed => {
   const requests = Object.keys(gasFeeParamsBySpeed).map(speed => {
     return new Promise(async resolve => {
       try {
-        const totalGasFee =
-          gasFeeParamsBySpeed[speed].maxFeePerGas.gwei +
-          gasFeeParamsBySpeed[speed].maxPriorityFeePerGas.gwei;
-
-        const time = await getEstimatedTimeForGasPrice(Math.round(totalGasFee));
+        // todo
+        const time = 0;
         resolve({
           speed,
           time,
@@ -141,52 +137,4 @@ export const getGasFeesEstimates = async gasFeeParamsBySpeed => {
     });
 
   return newGasFeeParamsBySpeed;
-};
-
-/**
- * @desc get ethereum gas prices from Etherscan
- * @params {data}
- * @return {Promise}
- */
-export const etherscanGetGasEstimates = async data => {
-  const requests = Object.keys(data).map(speed => {
-    return new Promise(async resolve => {
-      const time = await getEstimatedTimeForGasPrice(data[speed]);
-      resolve({
-        [`${speed === 'average' ? 'avg' : speed}Wait`]: time,
-      });
-    });
-  });
-
-  let newData = { ...data };
-
-  const estimates = await Promise.all(requests);
-  estimates.forEach(estimate => {
-    newData = {
-      ...newData,
-      ...estimate,
-    };
-  });
-
-  return newData;
-};
-
-/**
- * @desc get estimated time for a specific gas price from Etherscan
- * @return {Promise}
- */
-export const getEstimatedTimeForGasPrice = async gwei => {
-  const priceInWei = multiply(gwei, ethUnits.gwei);
-  const { data: response } = await etherscanAPI.get(`/api`, {
-    params: {
-      action: 'gasestimate',
-      apikey: ETHERSCAN_API_KEY,
-      gasprice: priceInWei,
-      module: 'gastracker',
-    },
-  });
-  if (response.status === '0') {
-    throw new Error('Etherscan gas estimation request failed');
-  }
-  return Number(response.result) / 60;
 };

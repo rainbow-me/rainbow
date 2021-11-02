@@ -13,9 +13,9 @@ export const getTrendKey = (trend: number) => {
   }
 };
 
-export const calculateMinerTipAddDifference = (maxPriorityFee: number) => {
+export const calculateMinerTipAddDifference = (maxPriorityFee: string) => {
   const diff =
-    Math.round((maxPriorityFee % PRIORITY_FEE_INCREMENT) * 100) / 100;
+    Math.round((Number(maxPriorityFee) % PRIORITY_FEE_INCREMENT) * 100) / 100;
   if (diff > PRIORITY_FEE_INCREMENT - PRIORITY_FEE_THRESHOLD) {
     return 2 * PRIORITY_FEE_INCREMENT - diff;
   } else {
@@ -23,9 +23,9 @@ export const calculateMinerTipAddDifference = (maxPriorityFee: number) => {
   }
 };
 
-export const calculateMinerTipSubstDifference = (maxPriorityFee: number) => {
+export const calculateMinerTipSubstDifference = (maxPriorityFee: string) => {
   const diff =
-    Math.round((maxPriorityFee % PRIORITY_FEE_INCREMENT) * 100) / 100;
+    Math.round((Number(maxPriorityFee) % PRIORITY_FEE_INCREMENT) * 100) / 100;
   if (diff < PRIORITY_FEE_THRESHOLD) {
     return PRIORITY_FEE_INCREMENT + diff;
   } else {

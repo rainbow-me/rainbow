@@ -17,7 +17,6 @@ import {
   SelectedGasFee,
 } from '@rainbow-me/entities';
 import {
-  getEstimatedTimeForGasPrice,
   getGasFeesEstimates,
   polygonGasStationGetGasPrices,
   polygonGetGasEstimates,
@@ -175,12 +174,10 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     gasFeesBySpeed,
     gasFeeParamsBySpeed,
     gasLimit,
-    selectedGasFee,
     currentBlockParams,
   } = getState().gas;
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
-
   const _gasLimit = gasLimit || defaultGasLimit;
   const nativeTokenPriceUnit =
     txNetwork !== networkTypes.polygon
@@ -198,17 +195,10 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   const newGasFeeParamsBySpeed = { ...gasFeeParamsBySpeed };
 
   newGasFeesBySpeed[CUSTOM] = customGasFees;
-  const estimatedTime = await Promise.race([
-    await getEstimatedTimeForGasPrice(
-      gasParams.maxFeePerGas.gwei + gasParams.maxPriorityFeePerGas.gwei
-    ),
-    new Promise(res =>
-      setTimeout(() => res(selectedGasFee?.estimatedTime?.amount || 45000), 200)
-    ),
-  ]);
+  // todo time
   newGasFeeParamsBySpeed[CUSTOM] = defaultGasParamsFormat(
     CUSTOM,
-    estimatedTime,
+    '0',
     gasParams.maxFeePerGas.gwei,
     gasParams.maxPriorityFeePerGas.gwei
   );

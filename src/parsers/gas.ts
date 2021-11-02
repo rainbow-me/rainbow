@@ -104,16 +104,21 @@ export const parseRainbowMeteorologyData = (
   const parsedFees: GasFeeParamsBySpeed = {};
   const parsedCurrentBaseFee = parseGasFeeParam(currentBaseFee);
   const parsedBaseFeeSuggestion = parseGasFeeParam(baseFeeSuggestion);
+
   Object.keys(maxPriorityFeeSuggestions).forEach(speed => {
     const maxPriorityFee =
       maxPriorityFeeSuggestions[speed as keyof MaxPriorityFeeSuggestions];
+    // next version of the package will send only 2 decimals
+    const cleanMaxPriorityFee = gweiToWei(
+      new BigNumber(weiToGwei(maxPriorityFee)).toFixed(2)
+    );
     parsedFees[speed] = {
       estimatedTime: parseGasDataConfirmationTime(
-        maxPriorityFee,
+        cleanMaxPriorityFee,
         confirmationTimeByPriorityFee
       ),
       maxFeePerGas: parsedBaseFeeSuggestion,
-      maxPriorityFeePerGas: parseGasFeeParam(maxPriorityFee),
+      maxPriorityFeePerGas: parseGasFeeParam(cleanMaxPriorityFee),
       option: speed,
     };
   });

@@ -232,8 +232,9 @@ export default function FeesPanel({
       const maxPriorityFeePerGas =
         selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas;
 
-      const gweiMaxPriorityFeePerGas = maxPriorityFeePerGas?.gwei || 0;
-      const gweiMaxFeePerGas = maxFeePerGas?.gwei || 0;
+      const gweiMaxPriorityFeePerGas = Number(maxPriorityFeePerGas?.gwei) || 0;
+      const gweiMaxFeePerGas = Number(maxFeePerGas?.gwei) || 0;
+
       const newGweiMaxPriorityFeePerGas =
         Math.round((gweiMaxPriorityFeePerGas + priorityFeePerGas) * 100) / 100;
       const newGweiMaxFeePerGas =
@@ -244,8 +245,6 @@ export default function FeesPanel({
       );
       const newMaxFeePerGas = parseGasFeeParam(gweiToWei(newGweiMaxFeePerGas));
 
-      if (newMaxPriorityFeePerGas.amount < 0 || newMaxFeePerGas.amount < 0)
-        return;
       setCustomMaxPriorityFee(newMaxPriorityFeePerGas.gwei);
       setCustomMaxBaseFee(parseInt(newMaxFeePerGas.gwei, 10));
 
