@@ -29,6 +29,7 @@ const eventTypes = {
   LIST: 'created',
   DELIST: 'cancelled',
   MINT: 'mint',
+  ENS: 'ens-registration',
 };
 
 const eventPhrases  = {
@@ -37,6 +38,7 @@ const eventPhrases  = {
   TRANSFER: `Sent to `,
   DELIST: `Delisted`,
   MINT:`Minted`,
+  ENS: `Registered`,
 };
 
 const eventSymbols = {
@@ -45,6 +47,7 @@ const eventSymbols = {
   TRANSFER: `􀈠`,
   DELIST: `􀎩`,
   MINT: `􀎛`,
+  ENS: `􀈐`,
 };
 
 const Gradient = styled(RadialGradient).attrs(
@@ -193,6 +196,12 @@ const TokenHistory = ({
         phrase = eventPhrases.DELIST;
         suffix = ``;
         return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
+
+        case eventTypes.ENS:
+          symbol = eventSymbols.ENS;
+          phrase = eventPhrases.ENS;
+          suffix = ``;
+          return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
     }
   }
 

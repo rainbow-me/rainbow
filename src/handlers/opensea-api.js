@@ -8,6 +8,7 @@ import { fromWei, handleSignificantDecimals } from '@rainbow-me/utilities';
 import { useAddressToENS } from '@rainbow-me/hooks';
 import { isHexString } from '@ethersproject/bytes';
 import { abbreviations } from '../utils';
+import { ENS_NFT_CONTRACT_ADDRESS } from '../references';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
 export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;
@@ -145,7 +146,7 @@ export const apiGetTokenHistory = async (
           sale_amount = "0";
           let tempList = fromWei(parseInt(event.starting_price));
           list_amount = handleSignificantDecimals(tempList, 5);
-          
+
           eventObject = {
             event_type,
             created_date,
@@ -160,11 +161,23 @@ export const apiGetTokenHistory = async (
         case "transfer":
           await getAddress(event.to_account.address)
             .then((address) => {
+              
               created_date = event.created_date;
               fro_acc = event.from_account.address;
               sale_amount = "0";
               list_amount = "0";
-              if (fro_acc == "0x0000000000000000000000000000000000000000") {
+              if (contractAddress == ENS_NFT_CONTRACT_ADDRESS && fro_acc == "0x0000000000000000000000000000000000000000") {
+                eventObject = {
+                  event_type: 'ens-registration',
+                  created_date,
+                  from_account: "0x123",
+                  to_account: address,
+                  sale_amount,
+                  list_amount,
+                  to_account_eth_address: event.to_account.address
+                };
+              }
+              else if (contractAddress != ENS_NFT_CONTRACT_ADDRESS && fro_acc == "0x0000000000000000000000000000000000000000") {
                 eventObject = {
                   event_type: 'mint',
                   created_date,
