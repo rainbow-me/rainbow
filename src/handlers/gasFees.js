@@ -3,7 +3,6 @@ import {
   ETHERSCAN_API_KEY,
 } from 'react-native-dotenv';
 import { RainbowFetchClient } from '../rainbow-fetch';
-import { defaultGasParamsFormat } from '@rainbow-me/parsers';
 
 /**
  * Configuration for defipulse API
@@ -99,42 +98,4 @@ export const polygonGetGasEstimates = data => {
     fastWait: 0.2,
     safeLowWait: 1,
   };
-};
-
-// todo
-/**
- * @desc get ethereum gas params from BlockNative
- * @params {data}
- * @return {Promise}
- */
-export const getGasFeesEstimates = async gasFeeParamsBySpeed => {
-  const requests = Object.keys(gasFeeParamsBySpeed).map(speed => {
-    return new Promise(async resolve => {
-      try {
-        // todo
-        const time = 0;
-        resolve({
-          speed,
-          time,
-        });
-        return;
-      } catch (e) {
-        resolve();
-      }
-    });
-  });
-  const estimates = await Promise.all(requests);
-  const newGasFeeParamsBySpeed = { ...gasFeeParamsBySpeed };
-  estimates
-    .filter(estimate => estimate)
-    .forEach(({ speed, time }) => {
-      newGasFeeParamsBySpeed[speed] = defaultGasParamsFormat(
-        speed,
-        time,
-        newGasFeeParamsBySpeed[speed].maxFeePerGas.gwei,
-        newGasFeeParamsBySpeed[speed].maxPriorityFeePerGas.gwei
-      );
-    });
-
-  return newGasFeeParamsBySpeed;
 };

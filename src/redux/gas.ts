@@ -17,7 +17,6 @@ import {
   SelectedGasFee,
 } from '@rainbow-me/entities';
 import {
-  getGasFeesEstimates,
   polygonGasStationGetGasPrices,
   polygonGetGasEstimates,
   rainbowMeteorologyGetData,
@@ -202,7 +201,6 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     gasParams.maxFeePerGas.gwei,
     gasParams.maxPriorityFeePerGas.gwei
   );
-
   const newSelectedGasFee = getSelectedGasFee(
     assets,
     newGasFeeParamsBySpeed,
@@ -333,23 +331,20 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
               trend,
               currentBaseFee,
             } = await getEIP1559GasParams();
-            const newGasFeeParamsBySpeed = await getGasFeesEstimates(
-              gasFeeParamsBySpeed
-            );
             if (!isEmpty(existingGasFees[CUSTOM])) {
               // Preserve custom values while updating prices
-              newGasFeeParamsBySpeed[CUSTOM] = {
+              gasFeeParamsBySpeed[CUSTOM] = {
                 ...existingGasFees[CUSTOM],
                 baseFeePerGas,
               };
-            } else if (isEmpty(newGasFeeParamsBySpeed[CUSTOM])) {
+            } else if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
               // set CUSTOM to NORMAL if not defined
-              newGasFeeParamsBySpeed[CUSTOM] = newGasFeeParamsBySpeed[NORMAL];
+              gasFeeParamsBySpeed[CUSTOM] = gasFeeParamsBySpeed[NORMAL];
             }
             dispatch({
               payload: {
                 currentBlockParams: { baseFeePerGas: currentBaseFee, trend },
-                gasFeeParamsBySpeed: newGasFeeParamsBySpeed,
+                gasFeeParamsBySpeed: gasFeeParamsBySpeed,
               },
               type: GAS_FEES_SUCCESS,
             });

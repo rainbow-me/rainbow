@@ -245,6 +245,9 @@ export default function FeesPanel({
       );
       const newMaxFeePerGas = parseGasFeeParam(gweiToWei(newGweiMaxFeePerGas));
 
+      if (newMaxPriorityFeePerGas.amount < 0 || newMaxFeePerGas.amount < 0)
+        return;
+
       setCustomMaxPriorityFee(newMaxPriorityFeePerGas.gwei);
       setCustomMaxBaseFee(parseInt(newMaxFeePerGas.gwei, 10));
 
