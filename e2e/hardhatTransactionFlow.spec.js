@@ -18,7 +18,7 @@ const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
 beforeAll(async () => {
   // Connect to hardhat
-  await exec('yarn hardhat');
+  // await exec('yarn hardhat');
 
   const provider = new JsonRpcProvider(
     device.getPlatform() === 'ios' ? HARDHAT_URL_IOS : HARDHAT_URL_ANDROID,
@@ -35,7 +35,6 @@ beforeAll(async () => {
     to: TESTING_WALLET,
     value: ethers.utils.parseEther('20'),
   });
-  console.debug('TX SENT WE GUCCI');
 });
 
 const acceptAlertIfGasPriceIsHigh = async () => {
@@ -219,11 +218,6 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should open send sheet after tapping send fab', async () => {
-    await Helpers.waitAndTap('send-fab');
-    await Helpers.checkIfVisible('send-asset-form-field');
-  });
-
   it('Should swap USDC -> ETH (via tokenToETH)', async () => {
     await Helpers.tap('exchange-fab');
     await Helpers.tap('exchange-modal-input-selection-button');
@@ -237,11 +231,16 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
+  it('Should open send sheet after tapping send fab', async () => {
+    await Helpers.waitAndTap('send-fab');
+    await Helpers.checkIfVisible('send-asset-form-field');
+  });
+
   it('Should send (Cryptokitties)', async () => {
-    await Helpers.tap('send-fab');
-    await Helpers.typeTextAndHideKeyboard(
+    await Helpers.typeText(
       'send-asset-form-field',
-      RAINBOW_WALLET_DOT_ETH
+      RAINBOW_WALLET_DOT_ETH,
+      true
     );
     await Helpers.tap('CryptoKitties-family-header');
     await Helpers.tapByText('Arun Cattybinky');
@@ -253,9 +252,10 @@ describe('Hardhat Transaction Flow', () => {
 
   it('Should send ERC20 (BAT)', async () => {
     await Helpers.tap('send-fab');
-    await Helpers.typeTextAndHideKeyboard(
+    await Helpers.typeText(
       'send-asset-form-field',
-      RAINBOW_WALLET_DOT_ETH
+      RAINBOW_WALLET_DOT_ETH,
+      true
     );
     await Helpers.tap('send-asset-BAT');
     await Helpers.typeText('selected-asset-field-input', '1.02', true);
@@ -267,9 +267,10 @@ describe('Hardhat Transaction Flow', () => {
 
   it('Should send ETH', async () => {
     await Helpers.tap('send-fab');
-    await Helpers.typeTextAndHideKeyboard(
+    await Helpers.typeText(
       'send-asset-form-field',
-      RAINBOW_WALLET_DOT_ETH
+      RAINBOW_WALLET_DOT_ETH,
+      true
     );
     await Helpers.tap('send-asset-ETH');
     await Helpers.typeText('selected-asset-field-input', '0.003', true);
