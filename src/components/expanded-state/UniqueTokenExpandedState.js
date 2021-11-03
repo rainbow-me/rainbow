@@ -138,9 +138,9 @@ const UniqueTokenExpandedState = ({
 
   let lastSalePrice = lastPrice || 'None';
 
-  if (lastSalePrice != 'None') {
-    lastSalePrice = handleSignificantDecimals(parseFloat(lastPrice), 5);
-  }
+  // if (lastSalePrice != 'None') {
+  //   lastSalePrice = handleSignificantDecimals(parseFloat(lastPrice), 5);
+  // }
   
   const priceOfEth = ethereumUtils.getEthPriceUnit();
 
@@ -325,7 +325,7 @@ const UniqueTokenExpandedState = ({
               {showCurrentPriceInEth ||
               nativeCurrency === 'ETH' ||
               !currentPrice
-                ? currentPrice || lastSalePrice
+                ? currentPrice|| lastSalePrice
                 : convertAmountToNativeDisplay(
                     parseFloat(currentPrice) * priceOfEth,
                     nativeCurrency
@@ -350,7 +350,7 @@ const UniqueTokenExpandedState = ({
               {showFloorInEth ||
               nativeCurrency === 'ETH' ||
               floorPrice === 'None'
-                ? handleSignificantDecimals(parseFloat(floorPrice), 5)
+                ? floorPrice
                 : convertAmountToNativeDisplay(
                     parseFloat(floorPrice) * priceOfEth,
                     nativeCurrency

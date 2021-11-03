@@ -1,54 +1,65 @@
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
-import { Column, Row } from '../../layout';
-import { apiGetTokenHistory } from '@rainbow-me/handlers/opensea-api';
-import { FlatList, View, ScrollView, InteractionManager } from "react-native";
-import logger from 'logger';
-import RadialGradient from 'react-native-radial-gradient';
+import React, { 
+  useEffect, 
+  useMemo, 
+  useState, 
+  useCallback 
+} from 'react';
+import { 
+  FlatList, 
+  View,
+} from "react-native";
+import { ButtonPressAnimation } from '../../animations'; 
+import { 
+  Column, 
+  Row 
+} from '../../layout';
 import { Text } from '../../text';
-import styled from 'styled-components';
-import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
-import { useTheme } from '../../../context/ThemeContext';
-import { useDimensions, useAccountProfile } from '@rainbow-me/hooks';
 import TokenHistoryEdgeFade from './TokenHistoryEdgeFade';
 import TokenHistoryLoader from './TokenHistoryLoader';
-import MaskedView from '@react-native-community/masked-view';
+import { apiGetTokenHistory } from '@rainbow-me/handlers/opensea-api';
+import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
+import { useAccountProfile, useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { useTheme } from '@rainbow-me/context/ThemeContext';
+import MaskedView from '@react-native-community/masked-view';
 import Routes from '@rainbow-me/routes';
-import { ButtonPressAnimation } from '../../animations';
+import RadialGradient from 'react-native-radial-gradient';
+import styled from 'styled-components';
+import logger from 'logger';
 
-/**
- * Requirements: 
- * A Collapsible "History" Tab under expanded NFT States
- * Use Opensea API to display:
- * Minting - Sales - Transfers - Listings - Cancelled Listings
- * Scrollable horizonatally
- */
-const eventTypes = {
-  SALE: 'successful',
-  TRANSFER: 'transfer',
-  LIST: 'created',
-  DELIST: 'cancelled',
-  MINT: 'mint',
-  ENS: 'ens-registration',
-};
+const EventEnum = {
+  DELIST: {
+    type: 'cancelled',
+    label: `Delisted`,
+    icon: `􀎩`,
+  },
+  ENS: {
+    type: 'ens-registration',
+    label: `Registered`,
+    icon: `􀈐`,
+  },
+  LIST: {
+    type: 'created',
+    label: `Listed for `,
+    icon: `􀎧`,
+  },
+  MINT: {
+    type: 'mint',
+    label: `Minted`,
+    icon: `􀎛`,
+  },
+  SALE: {
+    type: 'successful',
+    label: `Sold for `,
+    icon: `􀋢`,
+  },
+  TRANSFER: {
+    type: 'transfer',
+    label: `Sent to `,
+    icon: `􀈠`,
+  },
 
-const eventPhrases  = {
-  SALE: `Sold for `,
-  LIST: `Listed for `,
-  TRANSFER: `Sent to `,
-  DELIST: `Delisted`,
-  MINT:`Minted`,
-  ENS: `Registered`,
-};
-
-const eventSymbols = {
-  SALE: `􀋢`,
-  LIST: `􀎧`,
-  TRANSFER: `􀈠`,
-  DELIST: `􀎩`,
-  MINT: `􀎛`,
-  ENS: `􀈐`,
-};
+}
 
 const Gradient = styled(RadialGradient).attrs(
   ({ color, theme: { colors } }) => ({
@@ -161,9 +172,39 @@ const TokenHistory = ({
     }
 
     switch (item?.event_type) {
-      case eventTypes.TRANSFER:
-        symbol = eventSymbols.TRANSFER;
-        phrase = eventPhrases.TRANSFER;
+      case EventEnum.DELIST.type:
+        symbol = EventEnum.DELIST.icon;
+        phrase = EventEnum.DELIST.label;
+        suffix = ``;
+        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
+
+      case EventEnum.ENS.type:
+        symbol = EventEnum.ENS.icon;
+        phrase = EventEnum.ENS.label;
+        suffix = ``;
+        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
+
+      case EventEnum.LIST.type:
+        symbol = EventEnum.LIST.icon;
+        phrase = EventEnum.LIST.label;
+        suffix = `${item.list_amount} ETH`;
+        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
+
+      case EventEnum.MINT.type:
+          symbol = EventEnum.MINT.icon;
+          phrase = EventEnum.MINT.label;
+          suffix = ``;
+          return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
+  
+      case EventEnum.SALE.type:
+        symbol = EventEnum.SALE.icon;
+        phrase = EventEnum.SALE.label;
+        suffix = `${item.sale_amount} ETH`;
+        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
+
+      case EventEnum.TRANSFER.type:
+        symbol = EventEnum.TRANSFER.icon;
+        phrase = EventEnum.TRANSFER.label;
         suffix = `${item.to_account} `;
         if (accountAddress.toLowerCase() != item.to_account_eth_address && accountENS != item.to_account) {
           isClickable = true;
@@ -172,36 +213,6 @@ const TokenHistory = ({
           isClickable = false;
         }
         return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
-
-      case eventTypes.MINT:
-        symbol = eventSymbols.MINT;
-        phrase = eventPhrases.MINT;
-        suffix = ``;
-        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
-
-      case eventTypes.SALE:
-        symbol = eventSymbols.SALE;
-        phrase = eventPhrases.SALE;
-        suffix = `${item.sale_amount} ETH`;
-        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
-
-      case eventTypes.LIST:
-        symbol = eventSymbols.LIST;
-        phrase = eventPhrases.LIST;
-        suffix = `${item.list_amount} ETH`;
-        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
-
-      case eventTypes.DELIST:
-        symbol = eventSymbols.DELIST;
-        phrase = eventPhrases.DELIST;
-        suffix = ``;
-        return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
-
-        case eventTypes.ENS:
-          symbol = eventSymbols.ENS;
-          phrase = eventPhrases.ENS;
-          suffix = ``;
-          return renderHistoryDescription({ symbol, phrase, item, suffix, isFirst, isClickable, suffixSymbol });
     }
   }
 
@@ -280,7 +291,6 @@ const TokenHistory = ({
     )
   }
 
-  //TODO: Memoize this
   const renderTwoOrLessDataItems = () => {
     if (tokenHistory.length == 1) {
       return (
