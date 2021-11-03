@@ -113,7 +113,6 @@ const DevSection = () => {
       />
       <ListItem label="‍🏖️ Alert" onPress={checkAlert} testID="alert-section" />
       <ListFooter />
-
       {Object.keys(config)
         .sort()
         .map(key => (
