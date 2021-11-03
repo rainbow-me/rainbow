@@ -8,7 +8,6 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   AppState,
-  InteractionManager,
   Linking,
   LogBox,
   NativeModules,
@@ -51,9 +50,7 @@ import RoutesComponent from './navigation/Routes';
 import { explorerInitL2 } from './redux/explorer';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
-import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
-import { rainbowTokenList } from './references';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
@@ -92,11 +89,7 @@ class App extends Component {
       logger.sentry(`Test flight usage - ${isTestFlight}`);
     }
     this.identifyFlow();
-    InteractionManager.runAfterInteractions(() => {
-      rainbowTokenList.update();
-    });
     AppState.addEventListener('change', this.handleAppStateChange);
-    rainbowTokenList.on('update', this.handleTokenListUpdate);
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
     await this.handleInitializeAnalytics();
     saveFCMToken();
@@ -163,7 +156,6 @@ class App extends Component {
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
-    rainbowTokenList.off('update', this.handleTokenListUpdate);
     this.onTokenRefreshListener?.();
     this.foregroundNotificationListener?.();
     this.backgroundNotificationListener?.();
@@ -178,10 +170,6 @@ class App extends Component {
       this.setState({ initialRoute: Routes.WELCOME_SCREEN });
     }
   };
-
-  async handleTokenListUpdate() {
-    store.dispatch(uniswapPairsInit());
-  }
 
   onRemoteNotification = notification => {
     const topic = get(notification, 'data.topic');
@@ -234,9 +222,6 @@ class App extends Component {
     // Restore WC connectors when going from BG => FG
     if (this.state.appState === 'background' && nextAppState === 'active') {
       store.dispatch(walletConnectLoadState());
-      InteractionManager.runAfterInteractions(() => {
-        rainbowTokenList.update();
-      });
     }
     this.setState({ appState: nextAppState });
 

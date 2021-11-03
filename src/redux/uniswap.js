@@ -10,8 +10,9 @@ import {
 } from '@rainbow-me/handlers/uniswap';
 import networkTypes from '@rainbow-me/networkTypes';
 import {
+  CURATED_UNISWAP_TOKENS,
   DefaultUniswapFavorites,
-  rainbowTokenList,
+  RAINBOW_TOKEN_LIST,
   SOCKS_ADDRESS,
 } from '@rainbow-me/references';
 import { greaterThanOrEqualTo, multiply } from '@rainbow-me/utilities';
@@ -108,7 +109,7 @@ export const uniswapPairsInit = () => (dispatch, getState) => {
   const { network } = getState().settings;
   const pairs =
     network === networkTypes.mainnet
-      ? rainbowTokenList.CURATED_TOKENS
+      ? CURATED_UNISWAP_TOKENS
       : getTestnetUniswapPairs(network);
   dispatch({
     payload: pairs,
@@ -140,16 +141,12 @@ export const uniswapUpdateFavorites = (assetAddress, add = true) => (
 
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNISWAP_STATE = {
-  get allTokens() {
-    return rainbowTokenList.RAINBOW_TOKEN_LIST;
-  },
+  allTokens: RAINBOW_TOKEN_LIST,
   favorites: DefaultUniswapFavorites['mainnet'],
   fetchingUniswap: false,
   loadingAllTokens: true,
   loadingUniswap: false,
-  get pairs() {
-    return rainbowTokenList.CURATED_TOKENS;
-  },
+  pairs: CURATED_UNISWAP_TOKENS,
 };
 
 export default (state = INITIAL_UNISWAP_STATE, action) =>
