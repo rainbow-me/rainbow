@@ -29,7 +29,6 @@ import { TransactionStatusTypes } from '@rainbow-me/entities';
 import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
 import {
   useAccountSettings,
-  useAccountTransactions,
   useBooleanState,
   useDimensions,
   useGas,
@@ -145,7 +144,6 @@ export default function SpeedUpAndCancelSheet() {
   const [nonce, setNonce] = useState(null);
   const [to, setTo] = useState(tx.to);
   const [value, setValue] = useState(null);
-  const { transactions } = useAccountTransactions(true, true);
 
   const getNewGasPrice = useCallback(() => {
     const rawGasPrice = get(selectedGasPrice, 'value.amount');
@@ -282,7 +280,6 @@ export default function SpeedUpAndCancelSheet() {
       if (currentNetwork && currentProvider && !fetchedTx.current) {
         try {
           fetchedTx.current = true;
-          logger.log('TX: ', JSON.stringify(tx, null, 2));
           const hexGasLimit = toHex(tx.gasLimit.toString());
           const hexGasPrice = toHex(tx.gasPrice.toString());
           const hexValue = toHex(tx.value.toString());
@@ -325,7 +322,6 @@ export default function SpeedUpAndCancelSheet() {
     tx.hash,
     type,
     updateGasPriceOption,
-    transactions,
   ]);
 
   useEffect(() => {
