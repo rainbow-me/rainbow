@@ -3,7 +3,6 @@ import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
-import { IS_TESTING } from 'react-native-dotenv';
 import { useValue } from 'react-native-redash/src/v1';
 import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
@@ -90,9 +89,6 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     const [swipeEnabled, setSwipeEnabled] = useStateCallback(false);
 
     const setPointerEvents = useCallback(pointerEventsVal => {
-      if (IS_TESTING === 'true') {
-        return;
-      }
       pointerEvents.current = pointerEventsVal;
       ref.current?.setNativeProps?.({
         pointerEvents: pointerEventsVal ? 'none' : 'auto',
@@ -102,18 +98,18 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     const handle = useRef();
 
     const enableInteractionsAfterOpeningKeyboard = useCallback(() => {
-      Keyboard.removeListener('keyboardDidShow', handle.current);
+      handle.current &&
+        Keyboard.removeListener('keyboardDidShow', handle.current);
       handle.current = () => {
         // this timeout helps to omit a visual glitch
         setTimeout(() => {
           setSwipeEnabled(true);
           handle.current = null;
         }, 200);
-        Keyboard.removeListener('keyboardDidShow', handle.current);
       };
       // fallback if was already opened
       setTimeout(() => handle.current?.(), 300);
-      Keyboard.addListener('keyboardDidShow', handle.current);
+      handle.current && Keyboard.addListener('keyboardDidShow', handle.current);
     }, [setSwipeEnabled]);
 
     const blockInteractions = useCallback(() => {
@@ -122,15 +118,13 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
     const onMomentumScrollEnd = useCallback(
       position => {
-        if (IS_TESTING === 'true') {
-          return;
-        }
         if (position === width) {
           setPointerEvents(true);
           enableInteractionsAfterOpeningKeyboard();
         } else if (position === 0) {
           setSwipeEnabled(false, () => setPointerEvents(true));
-          Keyboard.removeListener('keyboardDidShow', handle.current);
+          handle.current &&
+            Keyboard.removeListener('keyboardDidShow', handle.current);
         }
       },
       [
@@ -157,7 +151,8 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
         }
 
         if (targetContentOffset === 0) {
-          Keyboard.removeListener('keyboardDidShow', handle.current);
+          handle.current &&
+            Keyboard.removeListener('keyboardDidShow', handle.current);
           setSwipeEnabled(false, () => setPointerEvents(true));
         }
       },

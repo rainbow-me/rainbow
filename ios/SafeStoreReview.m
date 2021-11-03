@@ -79,7 +79,7 @@ static NSString* partialDescForStoreReviewWindow =  @"SKStore";
 
 + (BOOL)requiresMainQueueSetup
 {
-    return NO;
+      return NO;
 }
 
 
