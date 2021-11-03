@@ -83,12 +83,12 @@ export const additionalAssetsDataAddCoingecko = (address: string) => async (
         {
           method: 'get',
           params: {
-            community_data: 'true',
-            developer_data: 'false',
-            localization: 'false',
-            market_data: 'true',
-            sparkline: 'false',
-            tickers: 'false',
+            community_data: true,
+            developer_data: false,
+            localization: false,
+            market_data: true,
+            sparkline: false,
+            tickers: false,
           },
         }
       )) as any;
