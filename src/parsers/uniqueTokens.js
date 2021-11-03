@@ -80,7 +80,7 @@ export const parseAccountUniqueTokens = data => {
           : `${get(asset_contract, 'address')}_${token_id}`,
       urlSuffixForAsset: `${get(asset_contract, 'address')}/${token_id}`,
     })
-  );
+  ).filter(token => !!token.familyName);
 };
 
 export const getFamilies = uniqueTokens =>
