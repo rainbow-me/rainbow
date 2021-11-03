@@ -1,6 +1,9 @@
 import BigNumber from 'bignumber.js';
 import { map, zipObject } from 'lodash';
-import { IS_TESTING } from 'react-native-dotenv';
+import {
+  // @ts-ignore
+  IS_TESTING,
+} from 'react-native-dotenv';
 import { getMinimalTimeUnitStringForMs } from '../helpers/time';
 import {
   convertRawAmountToBalance,
