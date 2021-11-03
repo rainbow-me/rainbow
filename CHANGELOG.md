@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.33](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.33)
+
+### Added
+* Discover Analytics
+* Dynamic Token List
+* Remote Config
+
+### Changed
+* Fix camera permissions deeplink
+
 ## [1.5.31](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.31)
 
 ### Added
