@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
@@ -51,7 +52,7 @@ ActivityListEmptyState.propTypes = {
 
 ActivityListEmptyState.defaultProps = {
   emoji: '🏝',
-  label: 'No transactions yet',
+  label: lang.t('activity_list.empty_state.default_label'),
 };
 
 export default ActivityListEmptyState;

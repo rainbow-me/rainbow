@@ -38,12 +38,11 @@
       "tx_to": "À",
       "unknown_token": "Token inconnu"
     },
-    "add_funds": {
-      "interstitial": {
-        "buy_eth": "To get started, buy some ETH with Apple Pay :)",
-        "other_amount": "Other amount :) ",
-        "send_description": "Send from Coinbase or another exchange—or ask a friend! :)",
-        "send_eth": "or send ETH to your wallet :)"
+    "activity_list": {
+      "empty_state": {
+        "default_label": "No transactions yet :)",
+        "recycler_label": "No transactions yet :)",
+        "testnet_label": "Your testnet transaction history starts now! :)"
       }
     },
     "back_up": {
@@ -468,7 +467,13 @@
         "running_checks": "Running checks... :)",
         "success_message": "It's here 🥳 :)",
         "watching_mode_confirm_message": "The wallet you have open is read-only, so you can’t control what’s inside. Are you sure you want to add cash to %{truncatedAddress}? :)",
-        "watching_mode_confirm_title": "You’re in Watching Mode :)"
+        "watching_mode_confirm_title": "You’re in Watching Mode :)",
+        "interstitial": {
+          "buy_eth": "To get started, buy some ETH with Apple Pay :)",
+          "other_amount": "Other amount :) ",
+          "send_description": "Send from Coinbase or another exchange—or ask a friend! :)",
+          "send_eth": "or send ETH to your wallet :)"
+        }
       },
       "assets": {
         "no_price": "actifs sans données de prix"

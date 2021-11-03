@@ -39,9 +39,11 @@
       "tx_to": "To",
       "unknown_token": "Unknown Token"
     },
-    "add_funds": {
-      "interstitial": {
-        "other_amount": "Other amount"
+    "activity_list": {
+      "empty_state": {
+        "default_label": "No transactions yet",
+        "recycler_label": "No transactions yet",
+        "testnet_label": "Your testnet transaction history starts now!"
       }
     },
     "back_up": {
@@ -479,7 +481,10 @@
         "running_checks": "Running checks...",
         "success_message": "It's here 🥳",
         "watching_mode_confirm_message": "The wallet you have open is read-only, so you can’t control what’s inside. Are you sure you want to add cash to %{truncatedAddress}?",
-        "watching_mode_confirm_title": "You’re in Watching Mode"
+        "watching_mode_confirm_title": "You’re in Watching Mode",
+        "interstitial": {
+          "other_amount": "Other amount"
+        }
       },
       "assets": {
         "no_price": "Small Balances"
