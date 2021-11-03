@@ -9,6 +9,8 @@ let connector = null;
 let uri = null;
 let account = null;
 
+const RAINBOW_WALLET_DOT_ETH = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
+
 beforeAll(async () => {
   // Connect to hardhat
   await exec('yarn hardhat');
@@ -149,7 +151,11 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   it('Should send (Cryptokitties)', async () => {
-    await Helpers.typeText('send-asset-form-field', 'rainbowwallet.eth', false);
+    await Helpers.typeText(
+      'send-asset-form-field',
+      RAINBOW_WALLET_DOT_ETH,
+      true
+    );
     await Helpers.tap('CryptoKitties-family-header');
     await Helpers.tapByText('Arun Cattybinky');
     await Helpers.tap('send-sheet-confirm-action-button');
@@ -160,7 +166,11 @@ describe('Hardhat Transaction Flow', () => {
 
   it('Should send ERC20 (BAT)', async () => {
     await Helpers.tap('send-fab');
-    await Helpers.typeText('send-asset-form-field', 'rainbowwallet.eth', false);
+    await Helpers.typeText(
+      'send-asset-form-field',
+      RAINBOW_WALLET_DOT_ETH,
+      true
+    );
     await Helpers.tap('send-asset-BAT');
     await Helpers.typeText('selected-asset-field-input', '1.02', true);
     await Helpers.tap('send-sheet-confirm-action-button');
@@ -171,7 +181,11 @@ describe('Hardhat Transaction Flow', () => {
 
   it('Should send ETH', async () => {
     await Helpers.tap('send-fab');
-    await Helpers.typeText('send-asset-form-field', 'rainbowwallet.eth', false);
+    await Helpers.typeText(
+      'send-asset-form-field',
+      RAINBOW_WALLET_DOT_ETH,
+      true
+    );
     await Helpers.tap('send-asset-ETH');
     await Helpers.typeText('selected-asset-field-input', '0.003', true);
     await Helpers.tap('send-sheet-confirm-action-button');
