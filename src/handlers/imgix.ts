@@ -2,10 +2,9 @@ import ImgixClient from 'imgix-core-js';
 import LRUCache from 'mnemonist/lru-cache';
 import { PixelRatio } from 'react-native';
 import {
-  // @ts-ignore
   IMGIX_DOMAIN as domain,
-  // @ts-ignore
   IMGIX_TOKEN as secureURLToken,
+  // @ts-ignore
 } from 'react-native-dotenv';
 import { Source } from 'react-native-fast-image';
 import parse from 'url-parse';

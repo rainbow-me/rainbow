@@ -1,6 +1,5 @@
 import 'react-native-gesture-handler';
 import './shim';
-import './src/model/config';
 
 import lang from 'i18n-js';
 import { language } from 'react-native-languages';
