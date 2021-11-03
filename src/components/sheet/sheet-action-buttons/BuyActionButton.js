@@ -25,8 +25,9 @@ export default function BuyActionButton({ color: givenColor, ...props }) {
       navigate(Routes.WYRE_WEBVIEW, params => params);
     }
 
-    analytics.track('Tapped Buy more ETH', {
+    analytics.track('Tapped Add Cash', {
       category: 'add cash',
+      source: 'expanded state'
     });
   }, [navigate, isDamaged]);
 

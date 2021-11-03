@@ -190,8 +190,7 @@ const AddFundsInterstitial = ({ network }) => {
           category: 'add cash',
           newUser: true
         });
-      } 
-      else {
+      } else {
         navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
           params: {
             address: accountAddress,
