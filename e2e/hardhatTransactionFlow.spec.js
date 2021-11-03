@@ -10,11 +10,11 @@ let uri = null;
 let account = null;
 
 beforeAll(async () => {
-  // Connect to ganache
-  await exec('yarn ganache');
+  // Connect to hardhat
+  await exec('yarn hardhat');
 });
 
-describe('Ganache Transaction Flow', () => {
+describe('Hardhat Transaction Flow', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
@@ -82,9 +82,9 @@ describe('Ganache Transaction Flow', () => {
     });
   }
 
-  it('Should show Ganache Toast after pressing Connect To Ganache', async () => {
-    await Helpers.tap('ganache-section');
-    await Helpers.checkIfVisible('testnet-toast-Ganache');
+  it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
+    await Helpers.tap('hardhat-section');
+    await Helpers.checkIfVisible('testnet-toast-Hardhat');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
