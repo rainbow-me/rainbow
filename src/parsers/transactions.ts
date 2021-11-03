@@ -396,7 +396,7 @@ const parseTransaction = async (
           address:
             toLower(updatedAsset?.address) === ETH_ADDRESS
               ? ETH_ADDRESS
-              : toChecksumAddress(updatedAsset.address),
+              : toChecksumAddress(updatedAsset.address)!,
           balance: convertRawAmountToBalance(valueUnit, updatedAsset),
           description,
           from: internalTxn.address_from ?? txn.address_from,

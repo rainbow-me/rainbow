@@ -40,6 +40,7 @@ export interface ParsedAddressAsset extends Asset {
     value?: number;
   };
   type?: string;
+  id: string;
   uniqueId: string;
 }
 
