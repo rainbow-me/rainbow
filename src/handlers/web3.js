@@ -293,7 +293,7 @@ export const getTransactionCount = address =>
 export const getTxDetails = async transaction => {
   const { to } = transaction;
   const data = transaction.data ? transaction.data : '0x';
-  const value = transaction.amount ? toHex(toWei(transaction.amount)) : '0x00';
+  const value = transaction.amount ? toHex(toWei(transaction.amount)) : '0x0';
   const gasLimit = transaction.gasLimit
     ? toHex(transaction.gasLimit)
     : undefined;
@@ -361,11 +361,12 @@ export const getTransferNftTransaction = async transaction => {
   const contractAddress = get(transaction, 'asset.asset_contract.address');
   const data = getDataForNftTransfer(from, recipient, transaction.asset);
   return {
-    ...transaction,
     data,
     from,
     gasLimit: transaction.gasLimit,
     gasPrice: transaction.gasPrice,
+    maxFeePerGas: transaction.maxFeePerGas,
+    maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
     to: contractAddress,
   };
 };
@@ -383,11 +384,12 @@ export const getTransferTokenTransaction = async transaction => {
   const recipient = await resolveNameOrAddress(transaction.to);
   const data = getDataForTokenTransfer(value, recipient);
   return {
-    ...transaction,
     data,
     from: transaction.from,
     gasLimit: transaction.gasLimit,
     gasPrice: transaction.gasPrice,
+    maxFeePerGas: transaction.maxFeePerGas,
+    maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
     to: transaction.asset.address,
   };
 };

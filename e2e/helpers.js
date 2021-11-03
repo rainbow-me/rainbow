@@ -49,6 +49,10 @@ export async function typeTextAndHideKeyboard(elementId, text) {
   await typeText(elementId, text + '\n');
 }
 
+export async function hideKeyboard(elementId, text) {
+  await typeText(elementId, text + '\n');
+}
+
 export async function clearField(elementId) {
   return element(by.id(elementId)).replaceText('');
 }

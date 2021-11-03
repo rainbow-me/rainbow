@@ -506,13 +506,13 @@ export default function TransactionConfirmationScreen() {
       return;
     }
 
-    const { txFee } = selectedGasFee;
-    if (!txFee) {
+    const { gasFee } = selectedGasFee;
+    if (!gasFee.maxFee) {
       setIsBalanceEnough(false);
       return;
     }
     // Get the TX fee Amount
-    const txFeeAmount = fromWei(txFee?.value?.amount ?? 0);
+    const txFeeAmount = fromWei(gasFee?.maxFee?.value?.amount ?? 0);
 
     // Get the ETH balance
     const balanceAmount = walletBalance.amount ?? 0;
@@ -1111,23 +1111,24 @@ export default function TransactionConfirmationScreen() {
                     </WalletText>
                   </Column>
                 </RowWithMargins>
-                {!isMessageRequest && (
-                  <GasSpeedButton
-                    currentNetwork={network}
-                    onCustomGasBlur={hideKeyboard}
-                    onCustomGasFocus={showKeyboard}
-                    options={
-                      network === networkTypes.optimism ||
-                      network === networkTypes.arbitrum
-                        ? ['normal']
-                        : undefined
-                    }
-                    type="transaction"
-                  />
-                )}
               </Fragment>
             )}
           </AnimatedSheet>
+          {!isMessageRequest && (
+            <GasSpeedButton
+              currentNetwork={network}
+              onCustomGasBlur={hideKeyboard}
+              onCustomGasFocus={showKeyboard}
+              options={
+                network === networkTypes.optimism ||
+                network === networkTypes.arbitrum
+                  ? ['normal']
+                  : undefined
+              }
+              theme="dark"
+              type="transaction"
+            />
+          )}
         </Column>
       </SlackSheet>
     </SheetKeyboardAnimation>
