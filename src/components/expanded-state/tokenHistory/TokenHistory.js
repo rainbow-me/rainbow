@@ -68,22 +68,11 @@ const GradientRow = styled(Row)`
   margin-top: 4;
 `;
 
-const InnerColumn = styled(Column)`
-  padding-right: 24;
-`;
-
-const DateRow = styled(Row)`
-  margin-bottom: 3;
-`;
-
 const EmptyView = styled(View)`
   height: 3;
   margin-top: 4;
 `;
 
-const LeftSpacer = styled(View)`
-  width: 24;
-`;
 
 const LineView = styled(View)`
   height: 3;
@@ -138,7 +127,6 @@ const TokenHistory = ({ contractAndToken, color }) => {
     });
   });
 
-  //TODO: Memoize This
   const renderItem = ({ item, index }) => {
     let isFirst = false;
     let symbol;
@@ -266,36 +254,34 @@ const TokenHistory = ({ contractAndToken, color }) => {
           {isFirst ? <EmptyView /> : <LineView color={color} />}
         </GradientRow>
 
-        <InnerColumn>
-          <Row style = {{ marginBottom: 3 }}>
+        <Column style={{ paddingRight: 24 }}>
+          <Row style={{ marginBottom: 3 }}>
             <AccentText color={color}>
               {date}
             </AccentText>
           </Row>
 
-            <ButtonPressAnimation
-              hapticType="selection"
-              disabled={!isClickable}
-              onPress={() => handlePress(item.to_account_eth_address)}
-              scaleTo={0.92}
-            >
-              <Row>
-                <AccentText color={color}>
-                  {symbol}
-                </AccentText>
+          <ButtonPressAnimation
+            hapticType="selection"
+            disabled={!isClickable}
+            onPress={() => handlePress(item.to_account_eth_address)}
+            scaleTo={0.92}
+          >
+            <Row>
+              <AccentText color={color}>
+                {symbol}
+              </AccentText>
 
-
-                <AccentText color={colors.whiteLabel}>
-                  {' '}
-                  {phrase}
-                  {suffix}
-                  {isClickable ? suffixSymbol : ''}
-                </AccentText>
-                  
-              </Row>
-            </ButtonPressAnimation>
-          
-        </InnerColumn>
+              <AccentText color={colors.whiteLabel}>
+                {' '}
+                {phrase}
+                {suffix}
+                {isClickable ? suffixSymbol : ''}
+              </AccentText>
+                
+            </Row>
+          </ButtonPressAnimation>
+        </Column>
       </Column>
     );
   };
@@ -304,8 +290,8 @@ const TokenHistory = ({ contractAndToken, color }) => {
     return (
       <View style={{ marginLeft: 24 }}>
         <Row>
-          { tokenHistory.length === 2 ? <Column>{renderItem({ index: 1, item: tokenHistory[1] })} </Column> : <View /> }
-          <Column>{renderItem({ index: 0, item: tokenHistory[0] })} </Column>
+          { tokenHistory.length == 2 ? renderItem({ index: 1, item: tokenHistory[1] }) : <View /> }
+          {renderItem({ index: 0, item: tokenHistory[0] })}
         </Row>
       </View>
     );
@@ -316,7 +302,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
       <View>
         <MaskedView maskElement={<TokenHistoryEdgeFade />}>
           <FlatList
-            ListFooterComponent={<LeftSpacer />}
+            ListFooterComponent={<View style={{ paddingLeft: 24 }} />}
             data={tokenHistory}
             horizontal
             inverted
