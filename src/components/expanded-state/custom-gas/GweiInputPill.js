@@ -50,7 +50,10 @@ const GweiLabel = styled(Text).attrs(() => ({
   )}
 `;
 
-function GweiInputPill({ value, onPress, onChange, onFocus, onBlur }, ref) {
+function GweiInputPill(
+  { value, onPress, onChange, onFocus, onBlur, testID },
+  ref
+) {
   return (
     <ButtonPressAnimation onPress={onPress}>
       <GweiPill>
@@ -63,6 +66,7 @@ function GweiInputPill({ value, onPress, onChange, onFocus, onBlur }, ref) {
               onFocus={onFocus}
               placeholder="0"
               ref={ref}
+              testID={testID}
               value={!!value && `${value}`}
             />
           </Column>

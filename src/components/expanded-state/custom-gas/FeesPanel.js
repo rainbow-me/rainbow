@@ -114,6 +114,7 @@ export default function FeesPanel({
 
   const { maxFee, currentBaseFee, maxBaseFee, maxPriorityFee } = useMemo(() => {
     const maxFee = get(selectedGasFee, 'gasFee.maxFee.native.value.display', 0);
+
     const currentBaseFee = get(currentBlockParams, 'baseFeePerGas.gwei', 0);
     let maxBaseFee;
     if (selectedOptionIsCustom) {
@@ -232,8 +233,8 @@ export default function FeesPanel({
       const maxPriorityFeePerGas =
         selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas;
 
-      const gweiMaxPriorityFeePerGas = Number(maxPriorityFeePerGas?.gwei) || 0;
-      const gweiMaxFeePerGas = Number(maxFeePerGas?.gwei) || 0;
+      const gweiMaxPriorityFeePerGas = Number(maxPriorityFeePerGas?.gwei || 0);
+      const gweiMaxFeePerGas = Number(maxFeePerGas?.gwei || 0);
 
       const newGweiMaxPriorityFeePerGas =
         Math.round((gweiMaxPriorityFeePerGas + priorityFeePerGas) * 100) / 100;
@@ -284,6 +285,7 @@ export default function FeesPanel({
 
   const onMaxBaseFeeChange = useCallback(
     ({ nativeEvent: { text } }) => {
+      text = text || 0;
       const maxFeePerGas = parseGasFeeParam(gweiToWei(text));
       const gweiMaxFeePerGas = maxFeePerGas.gwei;
 
@@ -306,6 +308,7 @@ export default function FeesPanel({
 
   const onMinerTipChange = useCallback(
     ({ nativeEvent: { text } }) => {
+      text = text || 0;
       const maxPriorityFeePerGas = parseGasFeeParam(gweiToWei(text));
       const gweiMaxPriorityFeePerGas = maxPriorityFeePerGas.gwei;
 
@@ -420,6 +423,7 @@ export default function FeesPanel({
             onChange={onMaxBaseFeeChange}
             onPress={handleFeesGweiInputFocus}
             plusAction={addMaxFee}
+            testID="max-base-fee-input"
             value={maxBaseFee}
           />
         </PanelColumn>
@@ -441,6 +445,7 @@ export default function FeesPanel({
             onChange={onMinerTipChange}
             onPress={handleCustomPriorityFeeFocus}
             plusAction={addMinerTip}
+            testID="max-priority-fee-input"
             value={maxPriorityFee}
           />
         </PanelColumn>

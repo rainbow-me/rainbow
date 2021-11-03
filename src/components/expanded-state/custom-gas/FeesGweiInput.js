@@ -43,6 +43,7 @@ export default function FeesGweiInput({
   onPress,
   onBlur,
   buttonColor,
+  testID,
 }) {
   const inputRef = useRef(null);
 
@@ -121,6 +122,7 @@ export default function FeesGweiInput({
           onFocus={onInputPress}
           onPress={onInputPress}
           ref={inputRef}
+          testID={testID}
           value={value}
         />
       </Column>

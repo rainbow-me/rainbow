@@ -327,7 +327,6 @@ export const parseGasFees = (
   const priorityFee = maxPriorityFeePerGasGwei?.amount || 0;
   const maxFeePerGasAmount = maxFeePerGasGwei?.amount || 0;
   const baseFeePerGasAmount = baseFeePerGas?.amount || 0;
-
   const maxFee = getTxFee(
     Number(maxFeePerGasAmount) + Number(priorityFee),
     gasLimit,

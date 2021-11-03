@@ -34,12 +34,18 @@ export const TabPillText = styled(Text).attrs({
   )}
 `;
 
-const TabPill = ({ label, isSelected, handleOnPressTabPill, color }) => {
+const TabPill = ({
+  label,
+  isSelected,
+  handleOnPressTabPill,
+  color,
+  testID,
+}) => {
   const handleOnPress = () => {
     handleOnPressTabPill(label);
   };
   return (
-    <ButtonPressAnimation onPress={handleOnPress}>
+    <ButtonPressAnimation onPress={handleOnPress} testID={testID}>
       <TabPillWrapper color={color} isSelected={isSelected}>
         <TabPillText
           color={color}
@@ -70,6 +76,7 @@ export default function FeesPanelTabs({ onPressTabPill, colorForAsset }) {
               handleOnPressTabPill={handleOnPressTabPill}
               isSelected={selectedGasFeeOption === speed}
               label={speed}
+              testID={`speed-pill-${speed}`}
             />
           </Column>
         ))}

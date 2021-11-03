@@ -462,7 +462,10 @@ const GasSpeedButton = ({
     <Container horizontalPadding={horizontalPadding} testID={testID}>
       <Row align="center" justify="space-between">
         <Column>
-          <ButtonPressAnimation onPress={openGasHelper}>
+          <ButtonPressAnimation
+            onPress={openGasHelper}
+            testID="estimated-fee-label"
+          >
             <Row>
               <NativeCoinIconWrapper>
                 <CoinIcon
@@ -518,7 +521,7 @@ const GasSpeedButton = ({
         </Column>
         <Column>
           <Row>
-            <Column>{renderGasSpeedPager}</Column>
+            <Column testID="gas-speed-pager">{renderGasSpeedPager}</Column>
             <Column justify="center">
               {isL2 ? (
                 <ChainBadgeContainer>
@@ -543,6 +546,7 @@ const GasSpeedButton = ({
                 <CustomGasButton
                   borderColor={colorForAsset}
                   onPress={openCustomOptions}
+                  testID="gas-speed-custom"
                 >
                   <Symbol
                     color={
