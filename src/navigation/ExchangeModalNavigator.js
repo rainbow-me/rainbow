@@ -3,6 +3,7 @@ import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import { useValue } from 'react-native-redash/src/v1';
 import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
@@ -89,6 +90,9 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     const [swipeEnabled, setSwipeEnabled] = useStateCallback(false);
 
     const setPointerEvents = useCallback(pointerEventsVal => {
+      if (IS_TESTING === 'true') {
+        return;
+      }
       pointerEvents.current = pointerEventsVal;
       ref.current?.setNativeProps?.({
         pointerEvents: pointerEventsVal ? 'none' : 'auto',
@@ -118,6 +122,9 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
 
     const onMomentumScrollEnd = useCallback(
       position => {
+        if (IS_TESTING === 'true') {
+          return;
+        }
         if (position === width) {
           setPointerEvents(true);
           enableInteractionsAfterOpeningKeyboard();
