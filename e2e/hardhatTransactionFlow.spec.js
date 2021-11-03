@@ -9,12 +9,14 @@ let connector = null;
 let uri = null;
 let account = null;
 
+const RAINBOW_WALLET_DOT_ETH = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
+
 beforeAll(async () => {
-  // Connect to ganache
-  await exec('yarn ganache');
+  // Connect to hardhat
+  await exec('yarn hardhat');
 });
 
-describe('Ganache Transaction Flow', () => {
+describe('Hardhat Transaction Flow', () => {
   it('Should show the welcome screen', async () => {
     await Helpers.checkIfVisible('welcome-screen');
   });
@@ -82,9 +84,9 @@ describe('Ganache Transaction Flow', () => {
     });
   }
 
-  it('Should show Ganache Toast after pressing Connect To Ganache', async () => {
-    await Helpers.tap('ganache-section');
-    await Helpers.checkIfVisible('testnet-toast-Ganache');
+  it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
+    await Helpers.tap('hardhat-section');
+    await Helpers.checkIfVisible('testnet-toast-Hardhat');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
@@ -149,7 +151,11 @@ describe('Ganache Transaction Flow', () => {
   });
 
   it('Should send (Cryptokitties)', async () => {
-    await Helpers.typeText('send-asset-form-field', 'rainbowwallet.eth', false);
+    await Helpers.typeText(
+      'send-asset-form-field',
+      RAINBOW_WALLET_DOT_ETH,
+      true
+    );
     await Helpers.tap('CryptoKitties-family-header');
     await Helpers.tapByText('Arun Cattybinky');
     await Helpers.tap('send-sheet-confirm-action-button');
@@ -160,7 +166,11 @@ describe('Ganache Transaction Flow', () => {
 
   it('Should send ERC20 (BAT)', async () => {
     await Helpers.tap('send-fab');
-    await Helpers.typeText('send-asset-form-field', 'rainbowwallet.eth', false);
+    await Helpers.typeText(
+      'send-asset-form-field',
+      RAINBOW_WALLET_DOT_ETH,
+      true
+    );
     await Helpers.tap('send-asset-BAT');
     await Helpers.typeText('selected-asset-field-input', '1.02', true);
     await Helpers.tap('send-sheet-confirm-action-button');
@@ -171,7 +181,11 @@ describe('Ganache Transaction Flow', () => {
 
   it('Should send ETH', async () => {
     await Helpers.tap('send-fab');
-    await Helpers.typeText('send-asset-form-field', 'rainbowwallet.eth', false);
+    await Helpers.typeText(
+      'send-asset-form-field',
+      RAINBOW_WALLET_DOT_ETH,
+      true
+    );
     await Helpers.tap('send-asset-ETH');
     await Helpers.typeText('selected-asset-field-input', '0.003', true);
     await Helpers.tap('send-sheet-confirm-action-button');

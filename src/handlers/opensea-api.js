@@ -1,4 +1,4 @@
-import { OPENSEA_API_KEY } from 'react-native-dotenv';
+import { OPENSEA_API_KEY, OPENSEA_RINKEBY_API_KEY } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
 import NetworkTypes from '@rainbow-me/networkTypes';
 import { parseAccountUniqueTokens } from '@rainbow-me/parsers';
@@ -9,13 +9,17 @@ export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;
 
 export const apiGetAccountUniqueTokens = async (network, address, page) => {
   try {
+    const API_KEY =
+      network === NetworkTypes.rinkeby
+        ? OPENSEA_RINKEBY_API_KEY
+        : OPENSEA_API_KEY;
     const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
     const offset = page * UNIQUE_TOKENS_LIMIT_PER_PAGE;
     const url = `https://${networkPrefix}api.opensea.io/api/v1/assets`;
     const data = await rainbowFetch(url, {
       headers: {
         'Accept': 'application/json',
-        'X-Api-Key': OPENSEA_API_KEY,
+        'X-Api-Key': API_KEY,
       },
       method: 'get',
       params: {
