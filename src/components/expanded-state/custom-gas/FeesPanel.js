@@ -166,7 +166,7 @@ export default function FeesPanel({
         });
       let color;
       let text;
-      if (!error && !warning) {
+      if ((!error && !warning) || !selectedOptionIsCustom) {
         color =
           theme === 'dark'
             ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
