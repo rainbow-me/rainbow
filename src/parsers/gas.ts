@@ -77,7 +77,7 @@ const parseGasDataConfirmationTime = (
   // 95% match 4th block, for 0.9 * suggested max base fee
   // less than that we show warnings
   if (suggestedMaxBaseFeeGwei >= maxBaseFeeGwei) {
-    timeAmount = 0;
+    timeAmount += 0;
   } else if (
     suggestedMaxBaseFeeGwei < maxBaseFeeGwei &&
     suggestedMaxBaseFeeGwei >= maxBaseFeeGwei * 0.95
@@ -91,7 +91,6 @@ const parseGasDataConfirmationTime = (
   } else {
     timeAmount = 45;
   }
-
   if (maxPriorityFeeGwei > moreThanUrgentTime) {
     timeAmount += 0;
   } else if (
@@ -266,18 +265,18 @@ export const parseGasFeeParam = (weiAmount: string): GasFeeParam => {
 /**
  * Transform EIP1559 params into a `GasFeeParams` object
  * @param option - Speed option
- * @param timeWait - Time
- * @param gweiBaseFeePerGas - `baseFeePerGas` value in gwei unit
- * @param gweiMaxFeePerGas - `maxFeePerGas` value in gwei unit
- * @param gweiMaxPriorityFeePerGas - `maxPriorityFeePerGas` value in gwei unit
+ * @param currentBaseFee - Block base fee
+ * @param maxFeePerGas - `maxFeePerGas` value in gwei unit
+ * @param maxPriorityFeePerGas - `maxPriorityFeePerGas` value in gwei unit
+ * @param confirmationTimeByPriorityFee - ConfirmationTimeByPriorityFee object
  * @returns GasFeeParams
  */
 export const defaultGasParamsFormat = (
   option: string,
   currentBaseFee: string,
-  confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee,
   maxFeePerGas: string,
-  maxPriorityFeePerGas: string
+  maxPriorityFeePerGas: string,
+  confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee
 ): GasFeeParams => {
   const time = parseGasDataConfirmationTime(
     currentBaseFee,
