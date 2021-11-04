@@ -111,6 +111,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
   useEffect(async () => {
     await apiGetTokenHistory(contractAddress, tokenID, accountAddress)
       .then(results => {
+        logger.log('results returned');
         setTokenHistory(results);
         if (results.length <= 2) {
           setTokenHistoryShort(true);
@@ -317,8 +318,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
   return (
     <View>
       {isLoading && <TokenHistoryLoader />}
-      {!isLoading &&
-        (tokenHistoryShort ? renderTwoOrLessDataItems() : renderFlatlist())}
+      {!isLoading && (tokenHistoryShort ? renderTwoOrLessDataItems() : renderFlatlist())}
     </View>
   );
 };
