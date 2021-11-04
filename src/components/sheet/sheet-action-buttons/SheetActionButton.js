@@ -48,7 +48,7 @@ const WhiteButtonGradient = React.memo(
 );
 
 const SheetActionButton = ({
-  androidWidth = null,
+  androidWidth = 0,
   borderRadius = 56,
   children,
   color: givenColor,

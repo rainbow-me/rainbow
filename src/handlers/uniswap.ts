@@ -105,7 +105,7 @@ export const estimateSwapGasLimit = async ({
       chainId,
       inputCurrency,
       outputCurrency,
-      providerOrSigner: web3Provider,
+      providerOrSigner: web3Provider!,
       slippage,
       tradeDetails,
     });
@@ -115,6 +115,7 @@ export const estimateSwapGasLimit = async ({
       methodNames.map((methodName: string) =>
         estimateGasWithPadding(
           params,
+          // @ts-ignore
           exchange.estimateGas[methodName],
           updatedMethodArgs
         )

@@ -29,7 +29,7 @@ export const estimateApprove = async (
       spender,
       tokenAddress,
     });
-    const exchange = new Contract(tokenAddress, erc20ABI, web3Provider);
+    const exchange = new Contract(tokenAddress, erc20ABI, web3Provider!);
     const gasLimit = await exchange.estimateGas.approve(spender, MaxUint256, {
       from: owner,
     });
@@ -48,7 +48,7 @@ const getRawAllowance = async (
 ) => {
   try {
     const { address: tokenAddress } = token;
-    const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider);
+    const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider!);
     const allowance = await tokenContract.allowance(owner, spender);
     return allowance.toString();
   } catch (error) {

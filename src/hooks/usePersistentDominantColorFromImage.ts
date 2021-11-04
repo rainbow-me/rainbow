@@ -17,7 +17,7 @@ const storage = new MMKV({
 
 type Result = {
   state: State;
-  result: string;
+  result: string | undefined;
 };
 
 export default function usePersistentDominantColorFromImage(
