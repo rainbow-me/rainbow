@@ -16,19 +16,16 @@ import { gasUtils } from '@rainbow-me/utils';
 
 export const ExplainSheetHeight = android ? 454 : 434;
 
-const GasTrendContainer = styled(Centered).attrs(() => ({}))``;
-
 const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   color: color || colors.appleBlue,
   size: 'lmedium',
   weight: 'heavy',
   alignItems: 'center',
   textAlign: 'center',
-  width: '50%',
 }))`
-  ${padding(10)}
+  ${padding(9.5, 15, android ? 6 : 9, 15)}
   border-color: ${({ theme: { colors }, color }) => colors.alpha(color, 0.2)};
-  border-radius: 20;
+  border-radius: ${android ? 24 : 20};
   border-width: 2;
 `;
 
@@ -216,7 +213,7 @@ const ExplainSheet = () => {
     if (!type.includes('currentBaseFee')) return null;
     const { currentGasTrend, currentBaseFee } = params;
     return (
-      <GasTrendContainer>
+      <Centered>
         <GasTrendHeader
           align="center"
           color={gasUtils.GAS_TRENDS[currentGasTrend].color}
@@ -225,7 +222,7 @@ const ExplainSheet = () => {
             currentBaseFee
           )} Gwei`}
         </GasTrendHeader>
-      </GasTrendContainer>
+      </Centered>
     );
   }, [params, type]);
 
