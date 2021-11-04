@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/core';
 import { get, upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { KeyboardAvoidingView } from 'react-native';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import colors, { darkModeThemeColors } from '../../../styles/colors';
 import { ButtonPressAnimation } from '../../animations';
 import { Column, Row } from '../../layout';
@@ -82,7 +82,6 @@ export default function FeesPanel({
   currentGasTrend,
   colorForAsset,
   onCustomGasFocus,
-  theme = 'dark',
 }) {
   const {
     selectedGasFee,
@@ -93,6 +92,7 @@ export default function FeesPanel({
   const { navigate } = useNavigation();
 
   const { updateGasFeeOption } = useGas();
+  const { isDarkMode } = useTheme();
 
   const [customMaxPriorityFee, setCustomMaxPriorityFee] = useState(
     get(selectedGasFee, 'gasFeeParams.maxPriorityFeePerGas.gwei', 0)
@@ -167,10 +167,9 @@ export default function FeesPanel({
       let color;
       let text;
       if ((!error && !warning) || !selectedOptionIsCustom) {
-        color =
-          theme === 'dark'
-            ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.25)
-            : colors.alpha(colors.blueGreyDark, 0.25);
+        color = isDarkMode
+          ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.25)
+          : colors.alpha(colors.blueGreyDark, 0.25);
         text = '􀅵';
       } else if (error) {
         color = colors.red;
@@ -195,7 +194,13 @@ export default function FeesPanel({
         </PanelColumn>
       );
     },
-    [currentBaseFee, currentGasTrend, navigate, selectedOptionIsCustom, theme]
+    [
+      currentBaseFee,
+      currentGasTrend,
+      navigate,
+      selectedOptionIsCustom,
+      isDarkMode,
+    ]
   );
 
   const formattedBaseFee = useMemo(
