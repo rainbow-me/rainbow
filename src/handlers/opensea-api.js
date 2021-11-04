@@ -66,7 +66,8 @@ export const apiGetUniqueTokenFloorPrice = async (
 
 export const apiGetTokenHistory = async (
   contractAddress,
-  tokenID
+  tokenID,
+  accountAddress
 ) => {
   const getAddress = async(address) => {
     const addy = await useAddressToENS(address);
@@ -86,6 +87,7 @@ export const apiGetTokenHistory = async (
 
 
   try {
+
     const checkFungibility = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=1`;
   
     const fungData = await rainbowFetch(checkFungibility, {
@@ -97,10 +99,15 @@ export const apiGetTokenHistory = async (
       timeout: 10000, // 10 secs
     })
 
-    logger.log(fungData.data.asset_events[0].asset.asset_contract.asset_contract_type);
+    let semiFungible = false;
+    if (fungData.data.asset_events[0].asset.asset_contract.asset_contract_type === 'semi-fungible') {
+      semiFungible = true;
+    }
 
-    const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=299`;
-    
+    let url = semiFungible ? 
+      `https://api.opensea.io/api/v1/events?account_address=${accountAddress}&asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=299`
+      : `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=299`;
+
     const data = await rainbowFetch(url, {
       headers: {
         'Accept': 'application/json',
@@ -118,7 +125,10 @@ export const apiGetTokenHistory = async (
     if (array.length == 299) {
       let offset = 299;
       while (tempResponse.length != 0) {
-        let urlPage = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`;
+        let urlPage = semiFungible ? 
+          `https://api.opensea.io/api/v1/events?account_address=${accountAddress}&asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299` 
+          : `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`;
+
         let nextPage = await rainbowFetch(urlPage, {
           headers: {
             'Accept': 'application/json',
