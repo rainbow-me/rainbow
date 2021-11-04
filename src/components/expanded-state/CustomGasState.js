@@ -56,7 +56,8 @@ export default function CustomGasState({ asset }) {
   useAndroidDisableGesturesOnFocus();
 
   const keyboardOffset = keyboardHeight + insets.bottom + 10;
-  const sheetHeightWithoutKeyboard = contentHeight + footerHeight;
+  const sheetHeightWithoutKeyboard =
+    contentHeight + footerHeight + (android ? 10 : 0);
 
   const sheetHeightWithKeyboard = sheetHeightWithoutKeyboard + keyboardHeight;
 

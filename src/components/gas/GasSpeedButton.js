@@ -80,7 +80,7 @@ const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
   justifyContent: 'center',
 })`
-  ${margin(android ? 6 : 15, 0)};
+  ${margin(19, 0)};
   ${({ horizontalPadding }) => padding(0, horizontalPadding)};
   width: 100%;
 `;
