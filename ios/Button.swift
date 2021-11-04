@@ -28,6 +28,8 @@ class Button : RCTView {
   @objc var hapticType: String = "selection"
   @objc var useLateHaptic: Bool = true
   @objc var throttle: Bool = false
+  @objc var shouldLongPressEndPress: Bool = false
+
   var blocked: Bool = false
   var invalidated: Bool = false;
 
@@ -45,8 +47,10 @@ class Button : RCTView {
       case .began:
         onLongPress([:])
       case .ended:
-        onLongPressEnded([:])
-        animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
+        if shouldLongPressEndPress {
+            onLongPressEnded([:])
+            animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
+        }
       default: break
       }
     }
@@ -150,7 +154,7 @@ class Button : RCTView {
       let location = touch.location(in: self)
       onCancel(["close":Button.isClose(locationA: location, locationB: tapLocation!), "state": self.longPress?.value(forKey: "_state")])
     }
-    if onLongPressEnded == nil {
+    if shouldLongPressEndPress == false {
       animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
     }
     if throttle {
