@@ -1,4 +1,4 @@
-import { upperFirst } from 'lodash';
+import { isEmpty, upperFirst } from 'lodash';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 import styled from 'styled-components';
@@ -63,11 +63,30 @@ const TabPill = ({
 };
 
 export default function FeesPanelTabs({ onPressTabPill, colorForAsset }) {
-  const { updateGasFeeOption, selectedGasFeeOption } = useGas();
+  const {
+    updateGasFeeOption,
+    selectedGasFeeOption,
+    gasFeeParamsBySpeed,
+    updateToCustomGasFee,
+  } = useGas();
   const handleOnPressTabPill = label => {
-    updateGasFeeOption(label);
+    if (
+      label === gasUtils.CUSTOM &&
+      isEmpty(gasFeeParamsBySpeed[gasUtils.CUSTOM])
+    ) {
+      const gasFeeParams = gasFeeParamsBySpeed[selectedGasFeeOption];
+      updateToCustomGasFee({
+        ...gasFeeParams,
+        maxBaseFeePerGas: gasFeeParams.maxFeePerGas,
+        maxPriorityFeePerGas: gasFeeParams.maxPriorityFeePerGas,
+        option: gasUtils.CUSTOM,
+      });
+    } else {
+      updateGasFeeOption(label);
+    }
     onPressTabPill();
   };
+
   return (
     <Row align="center">
       <ScrollView contentContainerStyle={PillScrollViewStyle} horizontal>
