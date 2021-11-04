@@ -323,7 +323,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
           wrapNativeComponent={false}
         >
           <ButtonPressAnimation scaleTo={0.88}>
-            <Row>
+            <Row align="center">
               {asset.familyImage ? (
                 <FamilyImageWrapper>
                   <FamilyImage
