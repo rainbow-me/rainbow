@@ -1,3 +1,4 @@
+import { isHexString } from '@ethersproject/bytes';
 import { OPENSEA_API_KEY } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
 import NetworkTypes from '@rainbow-me/networkTypes';
@@ -5,7 +6,6 @@ import { parseAccountUniqueTokens } from '@rainbow-me/parsers';
 import logger from 'logger';
 import { fromWei, handleSignificantDecimals } from '@rainbow-me/utilities';
 import { useAddressToENS } from '@rainbow-me/hooks';
-import { isHexString } from '@ethersproject/bytes';
 import { abbreviations } from '../utils';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../references';
 
@@ -69,19 +69,6 @@ export const apiGetTokenHistory = async (
   tokenID,
   accountAddress
 ) => {
-  const getAddress = async address => {
-    const addy = await useAddressToENS(address);
-
-    //No ens name
-    if (isHexString(addy)) {
-      const abbrevAddy = abbreviations.address(addy, 2);
-      return abbrevAddy;
-    }
-    const abbrevENS = abbreviations.formatAddressForDisplay(addy);
-
-    return abbrevENS;
-  };
-
   try {
     const checkFungibility = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=1`;
 
@@ -141,148 +128,148 @@ export const apiGetTokenHistory = async (
         array = array.concat(tempResponse);
         offset = array.length + 1;
       }
-
-      logger.log(array.length);
     }
 
-    //Not every event type has all the fields, so based on the type of event, we need to parse the respective fields
-    return Promise.all(
-      array
-        .filter(function (event) {
-          let event_type = event.event_type;
-          if (
-            event_type === 'created' ||
-            event_type === 'transfer' ||
-            event_type === 'successful' ||
-            event_type === 'cancelled'
-          ) {
-            return true;
-          }
-          return false;
-        })
-        .map(async function (event) {
-          let event_type = event.event_type;
-          let eventObject;
-          let created_date = event.created_date;
-          let from_account;
-          let to_account;
-          let sale_amount;
-          let list_amount;
-          let to_account_eth_address = 'x';
+    const result = await filterAndMapData(contractAddress, array);
 
-          switch (event_type) {
-            case 'created':
-              created_date = event.created_date;
-              from_account = '0x123';
-              to_account = '0x123';
-              sale_amount = '0';
-              let tempList = fromWei(parseInt(event.starting_price));
-              list_amount = handleSignificantDecimals(tempList, 5);
-
-              eventObject = {
-                created_date,
-                event_type,
-                from_account,
-                list_amount,
-                sale_amount,
-                to_account,
-                to_account_eth_address,
-              };
-              break;
-
-            case 'transfer':
-              await getAddress(event.to_account.address).then(address => {
-                created_date = event.created_date;
-                let fro_acc = event.from_account.address;
-                sale_amount = '0';
-                list_amount = '0';
-                if (
-                  contractAddress == ENS_NFT_CONTRACT_ADDRESS &&
-                  fro_acc == '0x0000000000000000000000000000000000000000'
-                ) {
-                  eventObject = {
-                    created_date,
-                    event_type: 'ens-registration',
-                    from_account: '0x123',
-                    list_amount,
-                    sale_amount,
-                    to_account: address,
-                    to_account_eth_address: event.to_account.address,
-                  };
-                } else if (
-                  contractAddress != ENS_NFT_CONTRACT_ADDRESS &&
-                  fro_acc === '0x0000000000000000000000000000000000000000'
-                ) {
-                  eventObject = {
-                    created_date,
-                    event_type: 'mint',
-                    from_account: '0x123',
-                    list_amount,
-                    sale_amount,
-                    to_account: address,
-                    to_account_eth_address: event.to_account.address,
-                  };
-                } else {
-                  eventObject = {
-                    created_date,
-                    event_type,
-                    from_account: fro_acc,
-                    list_amount,
-                    sale_amount,
-                    to_account: address,
-                    to_account_eth_address: event.to_account.address,
-                  };
-                }
-              });
-              break;
-
-            case 'successful':
-              created_date = event.created_date;
-              from_account = '0x123';
-              to_account = '0x123';
-              let tempSale = fromWei(parseInt(event.total_price));
-              sale_amount = handleSignificantDecimals(tempSale, 5);
-              list_amount = '0';
-
-              eventObject = {
-                created_date,
-                event_type,
-                from_account,
-                list_amount,
-                sale_amount,
-                to_account,
-                to_account_eth_address,
-              };
-              break;
-
-            case 'cancelled':
-              created_date = event.created_date;
-              from_account = '0x123';
-              to_account = '0x123';
-              sale_amount = '0';
-              list_amount = '0';
-
-              eventObject = {
-                created_date,
-                event_type,
-                from_account,
-                list_amount,
-                sale_amount,
-                to_account,
-                to_account_eth_address,
-              };
-              break;
-
-            default:
-              logger.log('default');
-              break;
-          }
-          logger.log(eventObject);
-          return eventObject;
-        })
-    );
+    return result;
   } catch (error) {
-    logger.log(error);
+    logger.debug('FETCH ERROR:', error);
     throw error;
   }
+};
+
+async function GetAddress(address) {
+  const addy = await useAddressToENS(address);
+
+  if (isHexString(addy)) {
+    const abbrevAddy = abbreviations.address(addy, 2);
+    return abbrevAddy;
+  }
+  const abbrevENS = abbreviations.formatAddressForDisplay(addy);
+
+  return abbrevENS;
+}
+
+const filterAndMapData = async (contractAddress, array) => {
+  return Promise.all(
+    array
+      .filter(function (event) {
+        let event_type = event.event_type;
+        if (
+          event_type === 'created' ||
+          event_type === 'transfer' ||
+          event_type === 'successful' ||
+          event_type === 'cancelled'
+        ) {
+          return true;
+        }
+        return false;
+      })
+      .map(async function (event) {
+        let event_type = event.event_type;
+        let eventObject;
+        let created_date = event.created_date;
+        let from_account = '0x123';
+        let to_account = '0x123';
+        let sale_amount = '0';
+        let list_amount = '0';
+        let to_account_eth_address = 'x';
+
+        switch (event_type) {
+          case 'created':
+            // eslint-disable-next-line no-case-declarations
+            let tempList = fromWei(parseInt(event.starting_price));
+            list_amount = handleSignificantDecimals(tempList, 5);
+
+            eventObject = {
+              created_date,
+              event_type,
+              from_account,
+              list_amount,
+              sale_amount,
+              to_account,
+              to_account_eth_address,
+            };
+            break;
+
+          case 'transfer':
+            await GetAddress(event.to_account.address).then(address => {
+              let fro_acc = event.from_account.address;
+              if (
+                contractAddress === ENS_NFT_CONTRACT_ADDRESS &&
+                fro_acc === '0x0000000000000000000000000000000000000000'
+              ) {
+                eventObject = {
+                  created_date,
+                  event_type: 'ens-registration',
+                  from_account: '0x123',
+                  list_amount,
+                  sale_amount,
+                  to_account: address,
+                  to_account_eth_address: event.to_account.address,
+                };
+              } else if (
+                contractAddress !== ENS_NFT_CONTRACT_ADDRESS &&
+                fro_acc === '0x0000000000000000000000000000000000000000'
+              ) {
+                eventObject = {
+                  created_date,
+                  event_type: 'mint',
+                  from_account: '0x123',
+                  list_amount,
+                  sale_amount,
+                  to_account: address,
+                  to_account_eth_address: event.to_account.address,
+                };
+              } else {
+                eventObject = {
+                  created_date,
+                  event_type,
+                  from_account: fro_acc,
+                  list_amount,
+                  sale_amount,
+                  to_account: address,
+                  to_account_eth_address: event.to_account.address,
+                };
+              }
+            });
+            break;
+
+          case 'successful':
+            // eslint-disable-next-line no-case-declarations
+            let tempSale = fromWei(parseInt(event.total_price));
+            sale_amount = handleSignificantDecimals(tempSale, 5);
+
+            eventObject = {
+              created_date,
+              event_type,
+              from_account,
+              list_amount,
+              sale_amount,
+              to_account,
+              to_account_eth_address,
+            };
+            break;
+
+          case 'cancelled':
+            eventObject = {
+              created_date,
+              event_type,
+              from_account,
+              list_amount,
+              sale_amount,
+              to_account,
+              to_account_eth_address,
+            };
+            break;
+
+          default:
+            logger.log('default');
+            break;
+        }
+        // logger.log(eventObject);
+        return eventObject;
+      })
+  );
 };

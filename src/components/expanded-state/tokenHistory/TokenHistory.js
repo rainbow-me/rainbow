@@ -109,18 +109,20 @@ const TokenHistory = ({ contractAndToken, color }) => {
 
   //Query opensea using the contract address + tokenID
   useEffect(async () => {
-    await apiGetTokenHistory(contractAddress, tokenID, accountAddress)
-      .then(results => {
-        logger.log('results returned');
-        setTokenHistory(results);
-        if (results.length <= 2) {
-          setTokenHistoryShort(true);
-        }
-      })
-      .then(() => {
-        setIsLoading(false);
-      });
-  }, [contractAddress, tokenID]);
+    try {
+      const results = await apiGetTokenHistory(contractAddress, tokenID, accountAddress);
+      logger.log('results returned');
+      setTokenHistory(results);
+      if (results.length <= 2) {
+        setTokenHistoryShort(true);
+      }
+      setIsLoading(false);
+    } catch (error) {
+      logger.debug('BLEW UP:', error);
+      throw error;
+    }
+    
+    }, [contractAddress, tokenID]);
 
   const handlePress = useCallback(address => {
     navigate(Routes.SHOWCASE_SHEET, {
@@ -232,6 +234,10 @@ const TokenHistory = ({ contractAndToken, color }) => {
           suffixSymbol,
           symbol,
         });
+      
+      default: 
+        logger.log('default');
+        break;
     }
   };
 
