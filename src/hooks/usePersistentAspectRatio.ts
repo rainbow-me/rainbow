@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Image, PixelRatio } from 'react-native';
+import { Image } from 'react-native';
 import { MMKV, useMMKVNumber } from 'react-native-mmkv';
-import { GOOGLE_USER_CONTENT_URL } from '../components/expanded-state/unique-token/UniqueTokenExpandedStateContent';
-import { CardSize } from '../components/unique-token/CardSize';
+import { getLowResUrl } from '../utils/getLowResUrl';
 
 const id = 'ASPECT_RATIO';
 
@@ -20,15 +19,6 @@ enum State {
 type Result = {
   state: State;
   result: number;
-};
-
-const size = Math.ceil(CardSize) * PixelRatio.get();
-
-const getLowResUrl = (url: string) => {
-  if (url?.startsWith?.(GOOGLE_USER_CONTENT_URL)) {
-    return `${url}=w${size}`;
-  }
-  return url;
 };
 
 export default function usePersistentAspectRatio(url: string): Result {

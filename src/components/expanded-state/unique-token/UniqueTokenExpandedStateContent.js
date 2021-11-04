@@ -4,10 +4,10 @@ import { ActivityIndicator, PixelRatio, StyleSheet, View } from 'react-native';
 import styled from 'styled-components';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../../../references';
 import { magicMemo } from '../../../utils';
+import { getLowResUrl } from '../../../utils/getLowResUrl';
 import { SimpleModelView } from '../../3d';
 import { AudioPlayer } from '../../audio';
 import { UniqueTokenImage } from '../../unique-token';
-import { CardSize } from '../../unique-token/CardSize';
 import { SimpleVideo } from '../../video';
 import { ZoomableWrapper } from './ZoomableWrapper';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
@@ -20,7 +20,7 @@ import { position } from '@rainbow-me/styles';
 
 const pixelRatio = PixelRatio.get();
 
-export const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
+const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
 const MAX_IMAGE_SCALE = 4;
 
 const ModelView = styled(SimpleModelView)`
@@ -35,15 +35,6 @@ const LoadingWrapper = styled(View)`
   padding-right: 10;
   position: absolute;
 `;
-
-const size = Math.ceil(CardSize) * PixelRatio.get();
-
-const getLowResUrl = url => {
-  if (url?.startsWith?.(GOOGLE_USER_CONTENT_URL)) {
-    return `${url}=w${size}`;
-  }
-  return url;
-};
 
 const UniqueTokenExpandedStateContent = ({
   animationProgress,

@@ -229,7 +229,7 @@
     "redux-thunk": "2.3.0",
     "reselect": "4.0.0",
     "rn-dominant-color": "1.7.0",
-    "rn-fetch-blob": "^0.12.0",
+    "rn-fetch-blob": "0.12.0",
     "socket.io-client": "2.3.1",
     "stream-browserify": "1.0.0",
     "string.fromcodepoint": "0.2.1",

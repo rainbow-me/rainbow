@@ -66,11 +66,11 @@ export const parseAccountUniqueTokens = data => {
         asset_contract.nft_version === '3.0' ||
         asset_contract.schema_name === 'ERC1155',
       lastPrice: asset.last_sale
-        ? Number(asset.last_sale.total_price / 1000000000000000000) +
-          ` ${asset.last_sale.payment_token.symbol}`
+        ? Number(asset.last_sale?.total_price / 1000000000000000000) +
+          ` ${asset.last_sale.payment_token?.symbol}`
         : null,
       lastPriceUsd: asset.last_sale
-        ? asset.last_sale.payment_token.usd_price
+        ? asset.last_sale?.payment_token?.usd_price
         : null,
       lastSale: asset.last_sale,
       type: AssetTypes.nft,

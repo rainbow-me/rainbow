@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
-import { PixelRatio } from 'react-native';
 import { MMKV, useMMKVString } from 'react-native-mmkv';
-import { GOOGLE_USER_CONTENT_URL } from '../components/expanded-state/unique-token/UniqueTokenExpandedStateContent';
-import { CardSize } from '../components/unique-token/CardSize';
+import { getLowResUrl } from '../utils/getLowResUrl';
 import { getDominantColorFromImage } from '@rainbow-me/utils';
 
 const id = 'DOMINANT_COLOR';
@@ -20,14 +18,6 @@ const storage = new MMKV({
 type Result = {
   state: State;
   result: string;
-};
-
-const size = Math.ceil(CardSize) * PixelRatio.get();
-const getLowResUrl = (url: string) => {
-  if (url?.startsWith?.(GOOGLE_USER_CONTENT_URL)) {
-    return `${url}=w${size}`;
-  }
-  return url;
 };
 
 export default function usePersistentDominantColorFromImage(
