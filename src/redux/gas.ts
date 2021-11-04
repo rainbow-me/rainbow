@@ -181,7 +181,6 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
   const _gasLimit = gasLimit || defaultGasLimit;
-  console.log('---------------------- gasParams', gasParams);
   const nativeTokenPriceUnit =
     txNetwork !== networkTypes.polygon
       ? ethereumUtils.getEthPriceUnit()
@@ -338,7 +337,6 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
               currentBaseFee,
               confirmationTimeByPriorityFee,
             } = await getEIP1559GasParams();
-            console.log('existingGasFees[CUSTOM]', existingGasFees[CUSTOM]);
             if (!isEmpty(existingGasFees[CUSTOM])) {
               // Preserve custom values while updating prices
               gasFeeParamsBySpeed[CUSTOM] = {
