@@ -293,6 +293,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
           >
             <SheetActionButton
               color={imageColor}
+              fullWidth
               label={
                 !external && !isReadOnlyWallet && isSendable
                   ? '􀮶 OpenSea'
