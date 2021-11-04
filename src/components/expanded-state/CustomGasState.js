@@ -59,7 +59,8 @@ export default function CustomGasState({ asset }) {
   const sheetHeightWithoutKeyboard =
     contentHeight + footerHeight + (android ? 10 : 0);
 
-  const sheetHeightWithKeyboard = sheetHeightWithoutKeyboard + keyboardHeight;
+  const sheetHeightWithKeyboard =
+    sheetHeightWithoutKeyboard + keyboardHeight + (android ? 0 : -28);
 
   const additionalScrollForKeyboard =
     sheetHeightWithoutKeyboard + keyboardOffset >
