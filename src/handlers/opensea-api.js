@@ -82,9 +82,25 @@ export const apiGetTokenHistory = async (
 
   };
 
+  
+
+
   try {
+    const checkFungibility = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=1`;
+  
+    const fungData = await rainbowFetch(checkFungibility, {
+      headers: {
+        'Accept': 'application/json',
+        'X-Api-Key': OPENSEA_API_KEY,
+      },
+      method: 'get',
+      timeout: 10000, // 10 secs
+    })
+
+    logger.log(fungData.data.asset_events[0].asset.asset_contract.asset_contract_type);
+
     const url = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=299`;
-    logger.log(url);
+    
     const data = await rainbowFetch(url, {
       headers: {
         'Accept': 'application/json',
@@ -94,6 +110,7 @@ export const apiGetTokenHistory = async (
       timeout: 10000, // 10 secs
     })
 
+    
     let array = data.data.asset_events;
     
     let tempResponse = array;
