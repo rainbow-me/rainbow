@@ -22,6 +22,7 @@ const GweiStepButton = ({
   onLongPress,
   onLongPressEnded,
   onPress,
+  shouldLongPressEndPress,
   buttonColor,
 }) => {
   return (
@@ -29,6 +30,7 @@ const GweiStepButton = ({
       onLongPress={onLongPress}
       onLongPressEnded={onLongPressEnded}
       onPress={onPress}
+      shouldLongPressEndPress={shouldLongPressEndPress}
     >
       <StepButton color={buttonColor}>{type === 'plus' ? '􀁍' : '􀁏'}</StepButton>
     </ButtonPressAnimation>
@@ -112,6 +114,7 @@ export default function FeesGweiInput({
           onLongPress={onMinusLongPress}
           onLongPressEnded={onLongPressEnded}
           onPress={onMinusPress}
+          shouldLongPressEndPress
           type={MINUS_ACTION_TYPE}
         />
       </Column>
@@ -132,6 +135,7 @@ export default function FeesGweiInput({
           onLongPress={onPlusLongPress}
           onLongPressEnded={onLongPressEnded}
           onPress={onPlusPress}
+          shouldLongPressEndPress
           type={PLUS_ACTION_TYPE}
         />
       </Column>

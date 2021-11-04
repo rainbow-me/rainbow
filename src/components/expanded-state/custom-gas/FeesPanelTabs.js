@@ -14,11 +14,11 @@ const PillScrollViewStyle = { flexGrow: 1, justifyContent: 'center' };
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
 export const TabPillWrapper = styled(View).attrs({})`
-  ${padding(5, 10)};
+  ${padding(4, 10)};
   ${margin(20, 4, 24, 4)};
   border: ${({ isSelected, color, theme: { colors } }) =>
     `2px solid ${isSelected ? color || colors.appleBlue : colors.rowDivider}`};
-  border-radius: 15px;
+  border-radius: 19px;
 `;
 export const TabPillText = styled(Text).attrs({
   size: 'lmedium',

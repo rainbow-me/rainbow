@@ -169,8 +169,8 @@ export default function FeesPanel({
       if ((!error && !warning) || !selectedOptionIsCustom) {
         color =
           theme === 'dark'
-            ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
-            : colors.alpha(colors.blueGreyDark, 0.4);
+            ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.25)
+            : colors.alpha(colors.blueGreyDark, 0.25);
         text = '􀅵';
       } else if (error) {
         color = colors.red;
