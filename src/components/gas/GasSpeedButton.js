@@ -203,7 +203,6 @@ const GasSpeedButton = ({
   }, [asset, navigate, gasIsNotReady]);
 
   const openCustomOptions = useCallback(() => {
-    Keyboard.dismiss();
     setShouldOpenCustomGasSheet(true);
   }, [setShouldOpenCustomGasSheet]);
 

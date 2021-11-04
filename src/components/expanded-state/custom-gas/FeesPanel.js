@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/core';
 import { get, upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import styled, { useTheme } from 'styled-components';
 import colors, { darkModeThemeColors } from '../../../styles/colors';
 import { ButtonPressAnimation } from '../../animations';
@@ -15,7 +16,7 @@ import {
 import { useGas } from '@rainbow-me/hooks';
 import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
-import { padding } from '@rainbow-me/styles';
+import { margin, padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
 const Wrapper = styled(KeyboardAvoidingView)`
@@ -44,8 +45,7 @@ const PanelWarning = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'smedium',
   weight: 'heavy',
 }))`
-  position: absolute;
-  bottom: 0;
+  ${margin(-18, 0, 18)}
 `;
 
 const PanelError = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -53,8 +53,7 @@ const PanelError = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'smedium',
   weight: 'heavy',
 }))`
-  position: absolute;
-  bottom: 0;
+  ${margin(-18, 0, 18)}
 `;
 
 const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
@@ -63,6 +62,14 @@ const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   weight: 'heavy',
 }))`
   padding-bottom: 0;
+`;
+
+const BaseFeePanelRow = styled(PanelRow).attrs(() => ({}))`
+  margin-bottom: 6;
+`;
+
+const TransactionFeePanelRow = styled(PanelRow).attrs(() => ({}))`
+  margin-top: 6;
 `;
 
 const PanelColumn = styled(Column).attrs(() => ({
@@ -106,6 +113,20 @@ export default function FeesPanel({
   const [maxBaseFeeWarning, setMaxBaseFeeWarning] = useState(null);
   const [maxBaseFeeError, setMaxBaseFeeError] = useState(null);
   const [feesGweiInputFocused, setFeesGweiInputFocused] = useState(false);
+
+  const maxBaseWarningsStyle = useAnimatedStyle(() => {
+    const display = !!maxBaseFeeError || !!maxBaseFeeWarning;
+    return {
+      transform: [{ scale: display ? 1 : 0 }],
+    };
+  });
+
+  const maxPriorityWarningsStyle = useAnimatedStyle(() => {
+    const display = !!maxPriorityFeeError || !!maxPriorityFeeWarning;
+    return {
+      transform: [{ scale: display ? 1 : 0 }],
+    };
+  });
 
   const selectedOptionIsCustom = useMemo(
     () => selectedGasFee?.option === gasUtils.CUSTOM,
@@ -405,7 +426,7 @@ export default function FeesPanel({
           </GasTrendHeader>
         </PanelColumn>
       </PanelRowThin>
-      <PanelRow justify="space-between">
+      <BaseFeePanelRow justify="space-between">
         {renderRowLabel(
           'Current Base Fee',
           'currentBaseFee' + upperFirst(currentGasTrend)
@@ -413,7 +434,7 @@ export default function FeesPanel({
         <PanelColumn>
           <PanelLabel>{formattedBaseFee}</PanelLabel>
         </PanelColumn>
-      </PanelRow>
+      </BaseFeePanelRow>
       <PanelRow>
         {renderRowLabel(
           'Max Base Fee',
@@ -421,8 +442,6 @@ export default function FeesPanel({
           maxBaseFeeError,
           maxBaseFeeWarning
         )}
-        {renderWarning(maxBaseFeeError, maxBaseFeeWarning)}
-
         <PanelColumn>
           <FeesGweiInput
             buttonColor={colorForAsset}
@@ -435,6 +454,10 @@ export default function FeesPanel({
           />
         </PanelColumn>
       </PanelRow>
+      <Animated.View style={maxBaseWarningsStyle}>
+        {renderWarning(maxBaseFeeError, maxBaseFeeWarning)}
+      </Animated.View>
+
       <PanelRow>
         {renderRowLabel(
           'Miner Tip',
@@ -442,8 +465,6 @@ export default function FeesPanel({
           maxPriorityFeeError,
           maxPriorityFeeWarning
         )}
-        {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
-
         <PanelColumn>
           <FeesGweiInput
             buttonColor={colorForAsset}
@@ -457,14 +478,18 @@ export default function FeesPanel({
           />
         </PanelColumn>
       </PanelRow>
-      <PanelRow>
+      <Animated.View style={maxPriorityWarningsStyle}>
+        {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
+      </Animated.View>
+
+      <TransactionFeePanelRow>
         <PanelColumn>
           <PanelLabel>Max Transaction Fee</PanelLabel>
         </PanelColumn>
         <PanelColumn>
           <PanelLabel>{maxFee}</PanelLabel>
         </PanelColumn>
-      </PanelRow>
+      </TransactionFeePanelRow>
     </Wrapper>
   );
 }
