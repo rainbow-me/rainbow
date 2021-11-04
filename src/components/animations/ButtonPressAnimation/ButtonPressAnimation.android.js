@@ -166,6 +166,7 @@ const SimpleScaleButton = ({
   minLongPressDuration,
   onLongPress,
   onLongPressEnded,
+  shouldLongPressEndPress,
   onPress,
   overflowMargin,
   scaleTo,
@@ -177,13 +178,13 @@ const SimpleScaleButton = ({
     ({ nativeEvent: { type } }) => {
       if (type === 'longPress') {
         onLongPress?.();
-      } else if (type === 'longPressEnded') {
+      } else if (shouldLongPressEndPress && type === 'longPressEnded') {
         onLongPressEnded?.();
       } else {
         onPress?.();
       }
     },
-    [onLongPress, onLongPressEnded, onPress]
+    [onLongPress, onLongPressEnded, onPress, shouldLongPressEndPress]
   );
 
   return (
@@ -244,6 +245,7 @@ export default function ButtonPressAnimation({
   minLongPressDuration = 500,
   onLongPress,
   onLongPressEnded,
+  shouldLongPressEndPress,
   onPress,
   onPressStart,
   overflowMargin = OVERFLOW_MARGIN,
@@ -279,6 +281,7 @@ export default function ButtonPressAnimation({
       onPressStart={onPressStart}
       overflowMargin={overflowMargin}
       scaleTo={scaleTo}
+      shouldLongPressEndPress={shouldLongPressEndPress}
       skipTopMargin={skipTopMargin}
       testID={testID}
       transformOrigin={normalizedTransformOrigin}
