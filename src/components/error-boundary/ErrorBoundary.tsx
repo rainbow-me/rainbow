@@ -23,7 +23,6 @@ class ErrorBoundary extends React.Component {
     const customError = new Error('React Crash');
     captureException(customError);
   }
-
   render() {
     if (this.state.hasError) {
       return <Fallback />;

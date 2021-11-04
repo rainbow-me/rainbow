@@ -1,4 +1,5 @@
 import { useCallback, useContext, useEffect } from 'react';
+import { IS_TESTING } from 'react-native-dotenv';
 import useTimeout from './useTimeout';
 import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
 
@@ -16,17 +17,21 @@ export default function useInvalidPaste() {
   ]);
 
   // ⏰️ Reset isInvalidPaste value after 3 seconds.
-  useEffect(() => {
-    if (isInvalidPaste) {
-      stopTimeout();
-      startTimeout(reset, 3000);
-    }
-  }, [isInvalidPaste, reset, startTimeout, stopTimeout]);
+  !IS_TESTING &&
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+      if (isInvalidPaste) {
+        stopTimeout();
+        reset && startTimeout(reset, 3000);
+      }
+    }, [isInvalidPaste, reset, startTimeout, stopTimeout]);
 
   // 🚪️ Reset isInvalidPaste when we leave the screen
-  useEffect(() => () => setGlobalState({ isInvalidPaste: false }), [
-    setGlobalState,
-  ]);
+  !IS_TESTING &&
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => () => setGlobalState({ isInvalidPaste: false }), [
+      setGlobalState,
+    ]);
 
   return {
     isInvalidPaste,
