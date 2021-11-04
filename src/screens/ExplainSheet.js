@@ -125,13 +125,13 @@ export const explainers = {
   },
   maxBaseFee: {
     emoji: '📈',
-    extraHeight: 2,
+    extraHeight: -20,
     text: MAX_BASE_FEE_EXPLAINER,
     title: 'Max base fee',
   },
   minerTip: {
     emoji: '⛏',
-    extraHeight: 2,
+    extraHeight: -20,
     text: MINER_TIP_EXPLAINER,
     title: 'Miner tip',
   },
