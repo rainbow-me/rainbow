@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/core';
 import { get, upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { KeyboardAvoidingView } from 'react-native';
+import { Keyboard, KeyboardAvoidingView } from 'react-native';
 import styled, { useTheme } from 'styled-components';
 import colors, { darkModeThemeColors } from '../../../styles/colors';
 import { ButtonPressAnimation } from '../../animations';
@@ -158,12 +158,14 @@ export default function FeesPanel({
 
   const renderRowLabel = useCallback(
     (label, type, error, warning) => {
-      const openGasHelper = () =>
+      const openGasHelper = () => {
+        Keyboard.dismiss();
         navigate(Routes.EXPLAIN_SHEET, {
           currentBaseFee,
           currentGasTrend,
           type,
         });
+      };
       let color;
       let text;
       if ((!error && !warning) || !selectedOptionIsCustom) {

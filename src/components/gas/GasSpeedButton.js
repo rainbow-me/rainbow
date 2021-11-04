@@ -80,7 +80,7 @@ const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
   justifyContent: 'center',
 })`
-  ${margin(19, 0)};
+  ${margin(android ? 8 : 19, 0)};
   ${({ horizontalPadding }) => padding(0, horizontalPadding)};
   width: 100%;
 `;
@@ -141,7 +141,6 @@ const GasSpeedButton = ({
 
   const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
   const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
-  const [inputFocused] = useState(false);
   const [shouldOpenCustomGasSheet, setShouldOpenCustomGasSheet] = useState(
     false
   );
@@ -228,12 +227,9 @@ const GasSpeedButton = ({
 
   const handlePressSpeedOption = useCallback(
     selectedSpeed => {
-      if (inputFocused) {
-        return;
-      }
       updateGasFeeOption(selectedSpeed);
     },
-    [inputFocused, updateGasFeeOption]
+    [updateGasFeeOption]
   );
 
   const formatTransactionTime = useCallback(() => {
@@ -289,10 +285,10 @@ const GasSpeedButton = ({
     selectedGasFeeOption,
   ]);
 
-  const openGasHelper = useCallback(
-    () => navigate(Routes.EXPLAIN_SHEET, { type: 'gas' }),
-    [navigate]
-  );
+  const openGasHelper = useCallback(() => {
+    Keyboard.dismiss();
+    navigate(Routes.EXPLAIN_SHEET, { type: 'gas' });
+  }, [navigate]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -351,7 +347,7 @@ const GasSpeedButton = ({
   const onPressAndroid = useCallback(() => {
     if (gasIsNotReady) return;
     const uppercasedSpeedOptions = speedOptions.map(speed => upperFirst(speed));
-    const androidContractActions = [...uppercasedSpeedOptions, 'Cancel'];
+    const androidContractActions = [...uppercasedSpeedOptions];
 
     showActionSheetWithOptions(
       {
@@ -360,13 +356,18 @@ const GasSpeedButton = ({
         showSeparators: true,
         title: `Transaction Speed`,
       },
-      idx => {
-        if (idx !== androidContractActions) {
-          handlePressSpeedOption(lowerCase(androidContractActions[idx]));
-        }
+      buttonIndex => {
+        handlePressSpeedOption(lowerCase(androidContractActions[buttonIndex]));
+        navigate(Routes.MODAL_SCREEN, {
+          address: '',
+          asset: {},
+          color: '',
+          type: 'contact_profile',
+        });
       }
+      // }
     );
-  }, [gasIsNotReady, speedOptions, handlePressSpeedOption]);
+  }, [gasIsNotReady, handlePressSpeedOption, navigate, speedOptions]);
 
   const renderGasSpeedPager = useMemo(() => {
     if (showGasOptions) return;
@@ -381,7 +382,7 @@ const GasSpeedButton = ({
         dropdownEnabled={gasOptionsAvailable}
         label={selectedGasFeeOption}
         showGasOptions={showGasOptions}
-        showPager={!inputFocused}
+        showPager
         theme={theme}
       />
     );
@@ -407,7 +408,6 @@ const GasSpeedButton = ({
     gasIsNotReady,
     gasOptionsAvailable,
     handlePressMenuItem,
-    inputFocused,
     menuConfig,
     onPressAndroid,
     selectedGasFeeOption,
