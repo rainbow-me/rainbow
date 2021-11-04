@@ -1,7 +1,9 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import { precomputeValues } from '@capsizecss/core';
-import { pick } from 'lodash';
+import { mapValues, pick } from 'lodash';
 import { PixelRatio } from 'react-native';
+import { fontWeights } from './fontWeights';
+import { typeHierarchy } from './typeHierarchy';
 
 const capsize = (options: Parameters<typeof precomputeValues>[0]) => {
   const values = precomputeValues(options);
@@ -29,34 +31,34 @@ export const fonts = {
   SFProRounded: {
     regular: {
       fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Regular',
-      fontWeight: ios ? '400' : 'normal',
+      fontWeight: ios ? fontWeights.regular : 'normal',
     },
     medium: {
       fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Medium',
-      fontWeight: ios ? '500' : 'normal',
+      fontWeight: ios ? fontWeights.medium : 'normal',
     },
     semibold: {
       fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Semibold',
-      fontWeight: ios ? '600' : 'normal',
+      fontWeight: ios ? fontWeights.semibold : 'normal',
     },
     bold: {
       fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Bold',
-      fontWeight: ios ? '700' : 'normal',
+      fontWeight: ios ? fontWeights.bold : 'normal',
     },
     heavy: {
       fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Heavy',
-      fontWeight: ios ? '800' : 'normal',
+      fontWeight: ios ? fontWeights.heavy : 'normal',
     },
   },
 
   SFMono: {
     regular: {
       fontFamily: ios ? 'SF Mono' : 'SFMono-Regular',
-      fontWeight: ios ? '400' : 'normal',
+      fontWeight: ios ? fontWeights.regular : 'normal',
     },
     medium: {
       fontFamily: ios ? 'SF Mono' : 'SFMono-Medium',
-      fontWeight: ios ? '500' : 'normal',
+      fontWeight: ios ? fontWeights.medium : 'normal',
     },
   },
 } as const;
@@ -115,28 +117,5 @@ const createTextSize = ({
   };
 };
 
-export const headingSizes = {
-  title: createTextSize({
-    fontSize: 23,
-    lineHeight: 27,
-    letterSpacing: 0.6,
-  }),
-  heading: createTextSize({
-    fontSize: 20,
-    lineHeight: 24,
-    letterSpacing: 0.6,
-  }),
-};
-
-export const textSizes = {
-  body: createTextSize({
-    fontSize: 16,
-    lineHeight: 24,
-    letterSpacing: 0.5,
-  }),
-  small: createTextSize({
-    fontSize: 14,
-    lineHeight: 17,
-    letterSpacing: 0.6,
-  }),
-} as const;
+export const headingSizes = mapValues(typeHierarchy.heading, createTextSize);
+export const textSizes = mapValues(typeHierarchy.text, createTextSize);

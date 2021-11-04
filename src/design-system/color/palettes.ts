@@ -41,30 +41,30 @@ export type BackgroundColor = 'body' | 'action' | 'swap';
 
 type BackgroundColorValue = {
   color: string;
-  setColorMode: ColorMode;
+  mode: ColorMode;
 };
 
-const backgroundColors: Record<
+export const backgroundColors: Record<
   BackgroundColor,
   BackgroundColorValue | ContextualColorValue<BackgroundColorValue>
 > = {
   body: {
     light: {
       color: colors.white,
-      setColorMode: 'light',
+      mode: 'light',
     },
     dark: {
-      color: colors.black,
-      setColorMode: 'dark',
+      color: '#12131a',
+      mode: 'dark',
     },
   },
   action: {
     color: colors.appleBlue,
-    setColorMode: 'dark',
+    mode: 'dark',
   },
   swap: {
     color: colors.swapPurple,
-    setColorMode: 'dark',
+    mode: 'dark',
   },
 };
 
@@ -80,7 +80,7 @@ export type ForegroundColor =
   | 'inverted'
   | 'action';
 
-const foregroundColors: Record<
+export const foregroundColors: Record<
   ForegroundColor,
   string | ContextualColorValue<string>
 > = {

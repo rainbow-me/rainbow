@@ -37,7 +37,8 @@
     "android-reverse-ports": "adb reverse tcp:8097 tcp:8097 && adb reverse tcp:8081 tcp:8081",
     "update-tokens": "yarn update-token-list && yarn update-token-metadata",
     "update-token-list": "./scripts/update-token-list.sh",
-    "update-token-metadata": "./scripts/update-token-metadata.sh"
+    "update-token-metadata": "./scripts/update-token-metadata.sh",
+    "ds": "next dev src/design-system/docs"
   },
   "husky": {
     "hooks": {
@@ -252,6 +253,7 @@
     "@babel/runtime": "7.14.0",
     "@lavamoat/allow-scripts": "1.0.3",
     "@types/jest": "26.0.14",
+    "@types/node": "16.11.6",
     "@types/react": "16.9.52",
     "@types/react-native": "0.63.25",
     "@types/react-native-dotenv": "0.2.0",
@@ -272,6 +274,7 @@
     "detox": "18.22.1",
     "dotenv": "8.2.0",
     "eslint": "7.32.0",
+    "eslint-config-next": "12.0.1",
     "eslint-config-rainbow": "2.0.0",
     "eslint-import-resolver-babel-module": "5.3.1",
     "ganache-cli": "6.12.2",
@@ -281,8 +284,10 @@
     "jest-circus": "26.6.3",
     "metro-plugin-anisotropic-transform": "rainbow-me/metro-plugin-anisotropic-transform#463b4ca9f5631f9c5e6028d22a450f6f0e54214f",
     "metro-react-native-babel-preset": "0.64.0",
+    "next": "12.0.1",
     "node-vibrant": "3.2.1-alpha.1",
     "prettier": "2.2.1",
+    "react-dom": "^17.0.2",
     "react-test-renderer": "17.0.1",
     "rn-nodeify": "10.2.0",
     "schedule": "0.5.0",
@@ -431,6 +436,7 @@
       "@scarf/scarf": false,
       "@lavamoat/preinstall-always-fail": false,
       "core-js": false,
+      "core-js-pure": false,
       "detox": false,
       "dtrace-provider": false,
       "fsevents": false,

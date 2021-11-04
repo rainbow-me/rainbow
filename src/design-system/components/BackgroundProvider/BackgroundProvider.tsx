@@ -19,10 +19,8 @@ export function BackgroundProvider({
 
   const child = children(style);
 
-  return background.setColorMode !== colorMode ? (
-    <ColorModeProvider value={background.setColorMode}>
-      {child}
-    </ColorModeProvider>
+  return background.mode !== colorMode ? (
+    <ColorModeProvider value={background.mode}>{child}</ColorModeProvider>
   ) : (
     child
   );
