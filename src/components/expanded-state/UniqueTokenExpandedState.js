@@ -185,6 +185,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
     Share.share({
       title: `Share ${buildUniqueTokenName(asset)} Info`,
       url: buildRainbowUrl(asset, accountENS, accountAddress),
+      message: buildRainbowUrl(asset, accountENS, accountAddress)
     });
   }, [accountAddress, accountENS, asset]);
 
