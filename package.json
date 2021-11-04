@@ -459,8 +459,7 @@
       "web3-shh": false,
       "bufferutil": false,
       "utf-8-validate": false,
-      "postinstall-postinstall": false,
-      "core-js-pure": false
+      "postinstall-postinstall": false
     }
   }
 }
