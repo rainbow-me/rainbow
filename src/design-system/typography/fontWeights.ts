@@ -5,4 +5,4 @@ export const fontWeights = {
   semibold: '600',
   bold: '700',
   heavy: '800',
-};
+} as const;
