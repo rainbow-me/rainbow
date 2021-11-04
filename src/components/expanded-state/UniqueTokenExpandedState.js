@@ -80,7 +80,7 @@ const BlurWrapper = styled.View.attrs({
   overflow: hidden;
   position: absolute;
   width: ${({ width }) => width};
-  border-radius: 20;
+  ${android && 'border-top-left-radius: 20; border-top-right-radius: 20;' }
 `;
 
 const SheetDivider = styled(Row)`
