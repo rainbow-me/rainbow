@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React from 'react';
 import { StatusBar } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import styled from 'styled-components';
@@ -15,18 +15,13 @@ import {
 } from '../components/toasts';
 import { useTheme } from '../context/ThemeContext';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import { isValidWallet } from '@rainbow-me/helpers/validators';
 import {
-  useAccountSettings,
-  useClipboard,
   useDimensions,
   useImportingWallet,
-  useInvalidPaste,
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import { borders, padding } from '@rainbow-me/styles';
-import { deviceUtils } from '@rainbow-me/utils';
 
 const sheetBottomPadding = 19;
 
@@ -123,34 +118,34 @@ export default function ImportSeedPhraseSheet() {
     seedPhrase,
   } = useImportingWallet();
 
-  const { accountAddress } = useAccountSettings();
-
-  const { getClipboard, hasClipboardData, clipboard } = useClipboard();
-  const { onInvalidPaste } = useInvalidPaste();
-
-  const isClipboardValidSecret = useMemo(
-    () =>
-      deviceUtils.isIOS14
-        ? hasClipboardData
-        : clipboard !== accountAddress && isValidWallet(clipboard),
-    [accountAddress, clipboard, hasClipboardData]
-  );
-
-  const handlePressPasteButton = useCallback(() => {
-    if (deviceUtils.isIOS14 && !hasClipboardData) return;
-    getClipboard(result => {
-      if (result !== accountAddress && isValidWallet(result)) {
-        return handleSetSeedPhrase(result);
-      }
-      return onInvalidPaste();
-    });
-  }, [
-    accountAddress,
-    getClipboard,
-    handleSetSeedPhrase,
-    hasClipboardData,
-    onInvalidPaste,
-  ]);
+  // const { accountAddress } = useAccountSettings();
+  //
+  // const { getClipboard, hasClipboardData, clipboard } = useClipboard();
+  // const { onInvalidPaste } = useInvalidPaste();
+  //
+  // const isClipboardValidSecret = useMemo(
+  //   () =>
+  //     deviceUtils.isIOS14
+  //       ? hasClipboardData
+  //       : clipboard !== accountAddress && isValidWallet(clipboard),
+  //   [accountAddress, clipboard, hasClipboardData]
+  // );
+  //
+  // const handlePressPasteButton = useCallback(() => {
+  //   if (deviceUtils.isIOS14 && !hasClipboardData) return;
+  //   getClipboard(result => {
+  //     if (result !== accountAddress && isValidWallet(result)) {
+  //       return handleSetSeedPhrase(result);
+  //     }
+  //     return onInvalidPaste();
+  //   });
+  // }, [
+  //   accountAddress,
+  //   getClipboard,
+  //   handleSetSeedPhrase,
+  //   hasClipboardData,
+  //   onInvalidPaste,
+  // ]);
 
   const { colors } = useTheme();
   return (
@@ -203,22 +198,7 @@ export default function ImportSeedPhraseSheet() {
                 </Text>
               </Row>
             </FooterButton>
-          ) : (
-            <FooterButton
-              {...(android && { height: 30, overflowMargin: 15, width: 63 })}
-              disabled={!isClipboardValidSecret}
-              onPress={handlePressPasteButton}
-            >
-              <Text
-                align="center"
-                color="whiteLabel"
-                testID="import-sheet-button-label"
-                weight="bold"
-              >
-                Paste
-              </Text>
-            </FooterButton>
-          )}
+          ) : null}
         </Footer>
       </Sheet>
       <ToastPositionContainer bottom={keyboardHeight}>
