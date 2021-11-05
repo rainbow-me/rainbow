@@ -23,7 +23,9 @@ type Result = {
 
 export default function usePersistentAspectRatio(url: string): Result {
   const [ratio, setAspectRatio] = useMMKVNumber(url, storage);
-  const [state, setState] = useState<State>(ratio ? State.loaded : State.init);
+  const [state, setState] = useState<State>(
+    ratio !== 0 ? State.loaded : State.init
+  );
   useEffect(() => {
     if (state === State.init && url) {
       const lowResUrl = getLowResUrl(url);
@@ -31,7 +33,6 @@ export default function usePersistentAspectRatio(url: string): Result {
       Image.getSize(
         lowResUrl,
         (width, height) => {
-          // @ts-ignore
           setAspectRatio(width / height);
           setState(State.loaded);
         },

@@ -80,6 +80,7 @@ const BlurWrapper = styled.View.attrs({
   overflow: hidden;
   position: absolute;
   width: ${({ width }) => width};
+  ${android && 'border-top-left-radius: 20; border-top-right-radius: 20;' }
 `;
 
 const SheetDivider = styled(Row)`
@@ -184,6 +185,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
     Share.share({
       title: `Share ${buildUniqueTokenName(asset)} Info`,
       url: buildRainbowUrl(asset, accountENS, accountAddress),
+      message: buildRainbowUrl(asset, accountENS, accountAddress)
     });
   }, [accountAddress, accountENS, asset]);
 
@@ -293,6 +295,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
           >
             <SheetActionButton
               color={imageColor}
+              fullWidth
               label={
                 !external && !isReadOnlyWallet && isSendable
                   ? '􀮶 OpenSea'

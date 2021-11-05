@@ -21,7 +21,6 @@ import {
   magicMemo,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
-import logger from 'logger';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',
@@ -262,31 +261,84 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
     [accountAddress, accountENS, asset, setClipboard]
   );
 
-  const onPressAndroid = useCallback(() => {
-    const blockExplorerText = 'View on Etherscan';
+  const onPressAndroidFamily = useCallback(() => {
     const androidContractActions = [
-      'Copy Contract Address',
-      blockExplorerText,
-      'Cancel',
+      'View Collection',
+      'Collection Website',
+      'Twitter',
+      'Discord',
     ];
 
     showActionSheetWithOptions(
       {
-        cancelButtonIndex: 2,
         options: androidContractActions,
         showSeparators: true,
         title: '',
       },
       idx => {
         if (idx === 0) {
-          logger.log('menu0');
+          Linking.openURL(
+            'https://opensea.io/collection/' +
+              asset.collection.slug +
+              '?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW'
+          );
         }
         if (idx === 1) {
-          logger.log('menu1');
+          Linking.openURL(asset.external_link || asset.collection.external_url);
+        }
+        if (idx === 2) {
+          Linking.openURL(
+            'https://twitter.com/' + asset.collection.twitter_username
+          );
+        }
+        if (idx === 3) {
+          Linking.openURL(asset.collection.discord_url);
         }
       }
     );
-  }, []);
+  }, [
+    asset.collection.discord_url,
+    asset.collection.external_url,
+    asset.collection.slug,
+    asset.collection.twitter_username,
+    asset.external_link,
+  ]);
+
+  const onPressAndroidAsset = useCallback(() => {
+    const androidContractActions = [
+      'View On Web',
+      'View on Etherscan',
+      'Save to Photos',
+      'Copy Token ID',
+    ];
+
+    showActionSheetWithOptions(
+      {
+        options: androidContractActions,
+        showSeparators: true,
+        title: '',
+      },
+      idx => {
+        if (idx === 0) {
+          Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
+        }
+        if (idx === 1) {
+          Linking.openURL(
+            'https://etherscan.io/token/' +
+              asset.asset_contract.address +
+              '?a=' +
+              asset.id
+          );
+        }
+        if (idx === 2) {
+          saveToCameraRoll(asset.image_url);
+        }
+        if (idx === 3) {
+          setClipboard(asset.id);
+        }
+      }
+    );
+  }, [accountAddress, accountENS, asset, setClipboard]);
 
   return (
     <Container>
@@ -300,7 +352,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
           <ContextMenuButton
             activeOpacity={1}
             menuConfig={assetMenuConfig}
-            {...(android ? { onPress: onPressAndroid } : {})}
+            {...(android ? { onPress: onPressAndroidAsset } : {})}
             isMenuPrimaryAction
             onPressMenuItem={handlePressAssetMenuItem}
             useActionSheetFallback={false}
@@ -316,14 +368,14 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         <ContextMenuButton
           activeOpacity={0}
           menuConfig={familyMenuConfig}
-          {...(android ? { onPress: onPressAndroid } : {})}
+          {...(android ? { onPress: onPressAndroidFamily } : {})}
           isMenuPrimaryAction
           onPressMenuItem={handlePressFamilyMenuItem}
           useActionSheetFallback={false}
           wrapNativeComponent={false}
         >
           <ButtonPressAnimation scaleTo={0.88}>
-            <Row>
+            <Row align="center" marginTop={android ? -10 : 0}>
               {asset.familyImage ? (
                 <FamilyImageWrapper>
                   <FamilyImage

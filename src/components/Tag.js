@@ -9,7 +9,6 @@ import { ButtonPressAnimation } from './animations';
 import { Centered, Column } from './layout';
 import { Text as TextElement } from './text';
 import { padding } from '@rainbow-me/styles';
-import logger from 'logger';
 
 const PropertyActionsEnum = {
   viewTraitOnOpensea: 'viewTraitOnOpensea',
@@ -90,26 +89,24 @@ const Tag = ({ color, slug, text, title, ...props }) => {
   }, []);
 
   const onPressAndroid = useCallback(() => {
-    const blockExplorerText = 'View on Etherscan';
-    const androidContractActions = [
-      'Copy Contract Address',
-      blockExplorerText,
-      'Cancel',
-    ];
+    const androidContractActions = ['View All With Property'];
 
     showActionSheetWithOptions(
       {
-        cancelButtonIndex: 2,
         options: androidContractActions,
         showSeparators: true,
         title: '',
       },
       idx => {
         if (idx === 0) {
-          logger.log('menu0');
-        }
-        if (idx === 1) {
-          logger.log('menu1');
+          Linking.openURL(
+            'https://opensea.io/collection/' +
+              slug +
+              '?search[stringTraits][0][name]=' +
+              title +
+              '&search[stringTraits][0][values][0]=' +
+              text
+          );
         }
       }
     );

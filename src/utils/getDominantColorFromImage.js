@@ -8,7 +8,15 @@ export default async function getDominantColorFromImage(
   colorToMeasureAgainst
 ) {
   if (IS_TESTING === 'true') return undefined;
-  const colors = await Palette.getNamedSwatchesFromUrl(imageUrl);
+  let colors = await Palette.getNamedSwatchesFromUrl(imageUrl);
+
+  //react-native-palette keys for Andriod are not the same as iOS so we fix here
+  if (android) {
+    colors = Object.keys(colors).reduce((acc, key) => {
+      acc[key.toLowerCase()] = colors[key];
+      return acc;
+    }, {});
+  }
 
   const color =
     colors.vibrant?.color ||
