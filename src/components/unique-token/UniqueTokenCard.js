@@ -1,19 +1,15 @@
 import React, { useCallback, useMemo } from 'react';
-import { PixelRatio } from 'react-native';
 import styled from 'styled-components';
 import { magicMemo } from '../../utils';
+import { getLowResUrl } from '../../utils/getLowResUrl';
 import { ButtonPressAnimation } from '../animations';
-import { GOOGLE_USER_CONTENT_URL } from '../expanded-state/unique-token/UniqueTokenExpandedStateContent';
 import { InnerBorder } from '../layout';
-import { CardSize } from './CardSize';
 import UniqueTokenImage from './UniqueTokenImage';
 import {
   usePersistentAspectRatio,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import { shadow as shadowUtil } from '@rainbow-me/styles';
-
-const pixelRatio = PixelRatio.get();
 
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadowFactory = colors => [0, 2, 6, colors.shadow, 0.08];
@@ -44,14 +40,7 @@ const UniqueTokenCard = ({
   width,
   ...props
 }) => {
-  const size = Math.ceil(CardSize) * pixelRatio;
-
-  const lowResUrl = useMemo(() => {
-    if (item.image_url?.startsWith?.(GOOGLE_USER_CONTENT_URL)) {
-      return `${item.image_url}=w${size}`;
-    }
-    return item.image_url;
-  }, [item.image_url, size]);
+  const lowResUrl = getLowResUrl(item.image_url);
 
   usePersistentAspectRatio(item.image_url);
   usePersistentDominantColorFromImage(item.image_url);
