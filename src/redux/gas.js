@@ -168,13 +168,22 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
               data: { result: etherscanGasPrices },
             } = await etherscanGetGasPrices();
 
-            if (IS_TESTING === 'true') {
-              etherscanGasPrices = {
-                FastGasPrice: 1000,
-                ProposeGasPrice: 1000,
-                SafeGasPrice: 1000,
-              };
+
+            // Set a really gas estimate to guarantee that we're gonna be over
+            // the basefee at the time we fork mainnet during our hardhat tests
+            if (network === networkTypes.mainnet && IS_TESTING === 'true') {
+              const providerUrl = web3Provider?.connection?.url;
+              if (providerUrl?.startsWith('http://') && providerUrl?.endsWith('8545')) {
+                setVisible(true);
+                setNetworkName('Hardhat');
+                etherscanGasPrices = {
+                  FastGasPrice: 1000,
+                  ProposeGasPrice: 1000,
+                  SafeGasPrice: 1000,
+                };
+              }
             }
+
             const priceData = {
               average: Number(etherscanGasPrices.ProposeGasPrice),
               fast: Number(etherscanGasPrices.FastGasPrice),
