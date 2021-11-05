@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { get, isEmpty } from 'lodash';
+import { IS_TESTING } from 'react-native-dotenv';
 import {
   etherscanGetGasEstimates,
   etherscanGetGasPrices,
@@ -26,7 +27,6 @@ import {
   OPTIMISM_ETH_ADDRESS,
 } from '@rainbow-me/references';
 import { fromWei, greaterThanOrEqualTo, multiply } from '@rainbow-me/utilities';
-
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -164,10 +164,17 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
         } else {
           try {
             // Use etherscan as our Gas Price Oracle
-            const {
+            let {
               data: { result: etherscanGasPrices },
             } = await etherscanGetGasPrices();
 
+            if (IS_TESTING === 'true') {
+              etherscanGasPrices = {
+                FastGasPrice: 1000,
+                ProposeGasPrice: 1000,
+                SafeGasPrice: 1000,
+              };
+            }
             const priceData = {
               average: Number(etherscanGasPrices.ProposeGasPrice),
               fast: Number(etherscanGasPrices.FastGasPrice),
