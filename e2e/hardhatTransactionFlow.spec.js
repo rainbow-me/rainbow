@@ -19,6 +19,8 @@ beforeAll(async () => {
   // Connect to hardhat
   await exec('yarn hardhat');
 
+  await Helpers.delay(5000);
+
   const provider = new JsonRpcProvider(
     device.getPlatform() === 'ios' ? HARDHAT_URL_IOS : HARDHAT_URL_ANDROID,
     'any'
@@ -433,7 +435,7 @@ describe('Hardhat Transaction Flow', () => {
     await connector.killSession();
     connector = null;
     await device.clearKeychain();
-    await exec('kill $(lsof -t -i:7545)');
+    await exec('kill $(lsof -t -i:8545)');
     await Helpers.delay(2000);
   });
 });
