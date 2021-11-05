@@ -10,7 +10,11 @@ import {
   polygonGasStationGetGasPrices,
   polygonGetGasEstimates,
 } from '@rainbow-me/handlers/gasPrices';
-import { getProviderForNetwork, isL2Network, web3Provider } from '@rainbow-me/handlers/web3';
+import {
+  getProviderForNetwork,
+  isL2Network,
+  web3Provider,
+} from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasPriceFormat,
@@ -168,12 +172,14 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
               data: { result: etherscanGasPrices },
             } = await etherscanGetGasPrices();
 
-
             // Set a really gas estimate to guarantee that we're gonna be over
             // the basefee at the time we fork mainnet during our hardhat tests
             if (network === networkTypes.mainnet && IS_TESTING === 'true') {
               const providerUrl = web3Provider?.connection?.url;
-              if (providerUrl?.startsWith('http://') && providerUrl?.endsWith('8545')) {
+              if (
+                providerUrl?.startsWith('http://') &&
+                providerUrl?.endsWith('8545')
+              ) {
                 etherscanGasPrices = {
                   FastGasPrice: 1000,
                   ProposeGasPrice: 1000,
