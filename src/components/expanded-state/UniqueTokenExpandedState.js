@@ -80,7 +80,7 @@ const BlurWrapper = styled.View.attrs({
   overflow: hidden;
   position: absolute;
   width: ${({ width }) => width};
-  ${android && 'border-top-left-radius: 20; border-top-right-radius: 20;' }
+  ${android && 'border-top-left-radius: 30; border-top-right-radius: 30;'}
 `;
 
 const SheetDivider = styled(Row)`
@@ -183,9 +183,9 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
 
   const handlePressShare = useCallback(() => {
     Share.share({
+      message: buildRainbowUrl(asset, accountENS, accountAddress),
       title: `Share ${buildUniqueTokenName(asset)} Info`,
       url: buildRainbowUrl(asset, accountENS, accountAddress),
-      message: buildRainbowUrl(asset, accountENS, accountAddress)
     });
   }, [accountAddress, accountENS, asset]);
 
