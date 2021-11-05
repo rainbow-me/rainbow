@@ -8,6 +8,7 @@ import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import TokenHistoryEdgeFade from './TokenHistoryEdgeFade';
 import TokenHistoryLoader from './TokenHistoryLoader';
+import { abbreviations } from '@rainbow-me/utils';
 import { useTheme } from '@rainbow-me/context/ThemeContext';
 import { apiGetTokenHistory } from '@rainbow-me/handlers/opensea-api';
 import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
@@ -131,124 +132,96 @@ const TokenHistory = ({ contractAndToken, color }) => {
   });
 
   const renderItem = ({ item, index }) => {
-    let isFirst = false;
-    let symbol;
-    let phrase;
-    let suffix;
-    let suffixSymbol = `􀆊`;
+    let isFirst = (index == 0);
+    let suffix = ``;
+    let suffixIcon = `􀆊`;
     let isClickable = false;
-
-    if (index == 0) {
-      isFirst = true;
-    }
 
     switch (item?.event_type) {
       case EventEnum.DELIST.type:
-        symbol = EventEnum.DELIST.icon;
-        phrase = EventEnum.DELIST.label;
-        suffix = ``;
         return renderHistoryDescription({
           isClickable,
           isFirst,
           item,
-          phrase,
+          label: EventEnum.DELIST.label,
           suffix,
-          suffixSymbol,
-          symbol,
+          suffixIcon,
+          icon: EventEnum.DELIST.icon,
         });
 
       case EventEnum.ENS.type:
-        symbol = EventEnum.ENS.icon;
-        phrase = EventEnum.ENS.label;
-        suffix = ``;
         return renderHistoryDescription({
           isClickable,
           isFirst,
           item,
-          phrase,
+          label: EventEnum.ENS.label,
           suffix,
-          suffixSymbol,
-          symbol,
+          suffixIcon,
+          icon: EventEnum.ENS.icon,
         });
 
       case EventEnum.LIST.type:
-        symbol = EventEnum.LIST.icon;
-        phrase = EventEnum.LIST.label;
-        suffix = `${item.list_amount} ETH`;
+        suffix = `${item.list_amount} ${item.payment_token}`;
         return renderHistoryDescription({
           isClickable,
           isFirst,
           item,
-          phrase,
+          label: EventEnum.LIST.label,
           suffix,
-          suffixSymbol,
-          symbol,
+          suffixIcon,
+          icon: EventEnum.LIST.icon,
         });
 
       case EventEnum.MINT.type:
-        symbol = EventEnum.MINT.icon;
-        phrase = EventEnum.MINT.label;
-        suffix = ``;
         return renderHistoryDescription({
           isClickable,
           isFirst,
           item,
-          phrase,
+          label: EventEnum.MINT.label,
           suffix,
-          suffixSymbol,
-          symbol,
+          suffixIcon,
+          icon: EventEnum.MINT.icon,
         });
 
       case EventEnum.SALE.type:
-        symbol = EventEnum.SALE.icon;
-        phrase = EventEnum.SALE.label;
-        suffix = `${item.sale_amount} ETH`;
+        suffix = `${item.sale_amount} ${item.payment_token}`;
         return renderHistoryDescription({
           isClickable,
           isFirst,
           item,
-          phrase,
+          label: EventEnum.SALE.label,
           suffix,
-          suffixSymbol,
-          symbol,
+          suffixIcon,
+          icon: EventEnum.SALE.icon,
         });
 
       case EventEnum.TRANSFER.type:
-        symbol = EventEnum.TRANSFER.icon;
-        phrase = EventEnum.TRANSFER.label;
-        suffix = `${item.to_account} `;
-        if (
-          accountAddress.toLowerCase() != item.to_account_eth_address &&
-          accountENS != item.to_account
-        ) {
-          isClickable = true;
-        } else {
-          isClickable = false;
-        }
+        suffix = `${abbreviations.address(item.to_account, 2)}`;
+        isClickable = (accountAddress.toLowerCase() !== item.to_account_eth_address)
         return renderHistoryDescription({
           isClickable,
           isFirst,
           item,
-          phrase,
+          label: EventEnum.TRANSFER.label,
           suffix,
-          suffixSymbol,
-          symbol,
+          suffixIcon,
+          icon: EventEnum.TRANSFER.icon,
         });
       
       default: 
-        logger.log('default');
+        logger.debug('default');
         break;
     }
   };
 
   const renderHistoryDescription = ({
-    symbol,
-    phrase,
+    icon,
+    label,
     item,
     suffix,
     isFirst,
     isClickable,
-    suffixSymbol,
+    suffixIcon,
   }) => {
     const date = getHumanReadableDateWithoutOn(
       new Date(item.created_date).getTime() / 1000
@@ -276,14 +249,14 @@ const TokenHistory = ({ contractAndToken, color }) => {
           >
             <Row>
               <AccentText color={color}>
-                {symbol}
+                {icon}
               </AccentText>
 
               <AccentText color={colors.whiteLabel}>
                 {' '}
-                {phrase}
+                {label}
                 {suffix}
-                {isClickable ? suffixSymbol : ''}
+                {isClickable ? suffixIcon : ''}
               </AccentText>
                 
             </Row>
@@ -297,7 +270,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
     return (
       <View style={{ marginLeft: 24 }}>
         <Row>
-          { tokenHistory.length == 2 ? renderItem({ index: 1, item: tokenHistory[1] }) : <View /> }
+          { tokenHistory.length === 2 ? renderItem({ index: 1, item: tokenHistory[1] }) : <View /> }
           {renderItem({ index: 0, item: tokenHistory[0] })}
         </Row>
       </View>

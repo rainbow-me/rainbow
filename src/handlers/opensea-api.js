@@ -101,6 +101,7 @@ export const apiGetTokenHistory = async (
 ) => {
   try {
     const checkFungibility = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=1`;
+    logger.log(checkFungibility);
 
     const fungData = await rainbowFetch(checkFungibility, {
       headers: {
@@ -140,8 +141,7 @@ async function GetAddress(address) {
   //   const abbrevAddy = abbreviations.address(address, 2);
   //   return abbrevAddy;
   // }
-  const abbrevAddy = await abbreviations.address(address, 2);
-  return abbrevAddy;
+  return await abbreviations.address(address, 2);
   // const abbrevENS = abbreviations.formatAddressForDisplay(addy);
 
   // return abbrevENS;
@@ -165,18 +165,18 @@ const filterAndMapData = async (contractAddress, array) => {
         let to_account = '0x123';
         let sale_amount = '0';
         let list_amount = '0';
+        let payment_token = 'x';
         let to_account_eth_address = 'x';
 
         switch (event_type) {
-
           case 'transfer': {
             // Follow up with Bruno
             // const address =
             //   (uniqueEvent.to_account?.address &&
             //     (await GetAddress(uniqueEvent.to_account.address))) ||
             //   '????';
-            const address = GetAddress(uniqueEvent.to_account?.address) || '????';
-            let from_acc = uniqueEvent.from_account.address;
+            const address = uniqueEvent.to_account?.address || '????';
+            let from_acc = uniqueEvent.from_account?.address;
             if (
               contractAddress === ENS_NFT_CONTRACT_ADDRESS &&
               from_acc === '0x0000000000000000000000000000000000000000'
@@ -186,6 +186,7 @@ const filterAndMapData = async (contractAddress, array) => {
                 event_type: 'ens-registration',
                 from_account: '0x123',
                 list_amount,
+                payment_token,
                 sale_amount,
                 to_account: address,
                 to_account_eth_address: uniqueEvent.to_account.address,
@@ -199,6 +200,7 @@ const filterAndMapData = async (contractAddress, array) => {
                 event_type: 'mint',
                 from_account: '0x123',
                 list_amount,
+                payment_token,
                 sale_amount,
                 to_account: address,
                 to_account_eth_address: uniqueEvent.to_account.address,
@@ -209,6 +211,7 @@ const filterAndMapData = async (contractAddress, array) => {
                 event_type,
                 from_account: from_acc,
                 list_amount,
+                payment_token,
                 sale_amount,
                 to_account: address,
                 to_account_eth_address: uniqueEvent.to_account.address,
@@ -220,12 +223,14 @@ const filterAndMapData = async (contractAddress, array) => {
             // eslint-disable-next-line no-case-declarations
             let tempSale = fromWei(parseInt(uniqueEvent.total_price));
             sale_amount = handleSignificantDecimals(tempSale, 5);
+            payment_token = uniqueEvent.payment_token?.symbol;
 
             eventObject = {
               created_date,
               event_type,
               from_account,
               list_amount,
+              payment_token,
               sale_amount,
               to_account,
               to_account_eth_address,
@@ -238,6 +243,7 @@ const filterAndMapData = async (contractAddress, array) => {
               event_type,
               from_account,
               list_amount,
+              payment_token,
               sale_amount,
               to_account,
               to_account_eth_address,
@@ -245,21 +251,22 @@ const filterAndMapData = async (contractAddress, array) => {
             break;
 
           default:
-            case 'created':
-              // eslint-disable-next-line no-case-declarations
-              let tempList = fromWei(parseInt(uniqueEvent.starting_price));
-              list_amount = handleSignificantDecimals(tempList, 5);
-  
-              eventObject = {
-                created_date,
-                event_type,
-                from_account,
-                list_amount,
-                sale_amount,
-                to_account,
-                to_account_eth_address,
-              };
-              break;
+          case 'created':
+            // eslint-disable-next-line no-case-declarations
+            let tempList = fromWei(parseInt(uniqueEvent.starting_price));
+            list_amount = handleSignificantDecimals(tempList, 5);
+            payment_token = uniqueEvent.payment_token?.symbol;
+            eventObject = {
+              created_date,
+              event_type,
+              from_account,
+              list_amount,
+              payment_token,
+              sale_amount,
+              to_account,
+              to_account_eth_address,
+            };
+            break;
         }
         return eventObject;
       })
