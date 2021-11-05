@@ -393,15 +393,15 @@ describe('Hardhat Transaction Flow', () => {
     }
   });
 */
-  it('Should show completed send NFT (Cryptokitties)', async () => {
-    try {
-      await Helpers.checkIfVisible('Sent-Arun Cattybinky-1.00 CryptoKitties');
-    } catch (e) {
-      await Helpers.checkIfVisible(
-        'Sending-Arun Cattybinky-1.00 CryptoKitties'
-      );
-    }
-  });
+  // it('Should show completed send NFT (Cryptokitties)', async () => {
+  //   try {
+  //     await Helpers.checkIfVisible('Sent-Arun Cattybinky-1.00 CryptoKitties');
+  //   } catch (e) {
+  //     await Helpers.checkIfVisible(
+  //       'Sending-Arun Cattybinky-1.00 CryptoKitties'
+  //     );
+  //   }
+  // });
 
   it('Should show completed send ERC20 (BAT)', async () => {
     try {
@@ -432,7 +432,7 @@ describe('Hardhat Transaction Flow', () => {
     await connector.killSession();
     connector = null;
     await device.clearKeychain();
-    await exec('kill $(lsof -t -i:7545)');
+    await exec('kill $(lsof -t -i:8545)');
     await Helpers.delay(2000);
   });
 });
