@@ -5,7 +5,7 @@ export const NONCE_MANAGER = 'nonceManager';
 type NetworkId = string;
 type AccountId = string;
 interface NetworkNonceInfo {
-  nonce: string;
+  nonce: number;
 }
 interface AccountNonceInfo {
   [key: NetworkId]: NetworkNonceInfo;
