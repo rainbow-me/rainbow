@@ -139,7 +139,7 @@ export default function FeesPanel({
     const currentBaseFee = get(currentBlockParams, 'baseFeePerGas.gwei', 0);
     let maxBaseFee;
     if (selectedOptionIsCustom) {
-      // block more thn 2 decimals on gwei value
+      // block more than 2 decimals on gwei value
       const decimals = Number(customMaxBaseFee) % 1;
       maxBaseFee =
         `${decimals}`.length > 4
@@ -154,7 +154,7 @@ export default function FeesPanel({
 
     let maxPriorityFee;
     if (feesGweiInputFocused) {
-      // block more thn 2 decimals on gwei value
+      // block more than 2 decimals on gwei value
       const decimals = Number(customMaxPriorityFee) % 1;
       maxPriorityFee =
         `${decimals}`.length > 4
