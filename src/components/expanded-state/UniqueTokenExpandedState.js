@@ -408,9 +408,6 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
           <Spacer />
         </Animated.View>
       </SlackSheet>
-      {/* <HeaderBlurContainer>
-        <HeaderBlur />
-      </HeaderBlurContainer> */}
       <ToastPositionContainer>
         <ToggleStateToast
           addCopy="Added to showcase"
