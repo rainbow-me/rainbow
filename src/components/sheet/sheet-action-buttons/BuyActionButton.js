@@ -27,7 +27,7 @@ export default function BuyActionButton({ color: givenColor, ...props }) {
 
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
-      source: 'expanded state'
+      source: 'expanded state',
     });
   }, [navigate, isDamaged]);
 
