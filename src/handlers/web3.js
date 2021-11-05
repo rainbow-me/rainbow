@@ -286,6 +286,21 @@ export const getTransactionCount = address =>
   web3Provider.getTransactionCount(address, 'pending');
 
 /**
+ * get transaction gas params depending on network
+ * @returns - object with `gasPrice` or `maxFeePerGas` and `maxPriorityFeePerGas`
+ */
+export const getTransactionGasParams = transaction => {
+  return isEIP1559LegacyNetwork(transaction.network)
+    ? {
+        gasPrice: toHex(transaction.gasPrice),
+      }
+    : {
+        maxFeePerGas: toHex(transaction.maxFeePerGas),
+        maxPriorityFeePerGas: toHex(transaction.maxPriorityFeePerGas),
+      };
+};
+
+/**
  * @desc get transaction details
  * @param  {Object} transaction { from, to, data, value, gasPrice, gasLimit }
  * @return {Object}
@@ -304,15 +319,7 @@ export const getTxDetails = async transaction => {
     value,
   };
 
-  const gasParams = isEIP1559LegacyNetwork(transaction.network)
-    ? {
-        gasPrice: toHex(transaction.gasPrice),
-      }
-    : {
-        maxFeePerGas: toHex(transaction.maxFeePerGas),
-        maxPriorityFeePerGas: toHex(transaction.maxPriorityFeePerGas),
-      };
-
+  const gasParams = getTransactionGasParams(transaction);
   const tx = {
     ...baseTx,
     ...gasParams,
@@ -360,14 +367,13 @@ export const getTransferNftTransaction = async transaction => {
   const { from } = transaction;
   const contractAddress = get(transaction, 'asset.asset_contract.address');
   const data = getDataForNftTransfer(from, recipient, transaction.asset);
+  const gasParams = getTransactionGasParams(transaction);
   return {
     data,
     from,
     gasLimit: transaction.gasLimit,
-    gasPrice: transaction.gasPrice,
-    maxFeePerGas: transaction.maxFeePerGas,
-    maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
     to: contractAddress,
+    ...gasParams,
   };
 };
 
@@ -383,14 +389,13 @@ export const getTransferTokenTransaction = async transaction => {
   );
   const recipient = await resolveNameOrAddress(transaction.to);
   const data = getDataForTokenTransfer(value, recipient);
+  const gasParams = getTransactionGasParams(transaction);
   return {
     data,
     from: transaction.from,
     gasLimit: transaction.gasLimit,
-    gasPrice: transaction.gasPrice,
-    maxFeePerGas: transaction.maxFeePerGas,
-    maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
     to: transaction.asset.address,
+    ...gasParams,
   };
 };
 
