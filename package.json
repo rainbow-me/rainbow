@@ -445,7 +445,7 @@
       "react-query": false,
       "scrypt": false,
       "secp256k1": false,
-      "@sentry/cli": false,
+      "@sentry/cli": true,
       "web3": false,
       "web3-bzz": false,
       "web3-shh": false,
