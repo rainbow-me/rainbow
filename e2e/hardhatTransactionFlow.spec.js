@@ -2,7 +2,11 @@
 /* eslint-disable no-undef */
 /* eslint-disable jest/expect-expect */
 import { exec } from 'child_process';
+import { JsonRpcProvider } from '@ethersproject/providers';
+import { Wallet } from '@ethersproject/wallet';
 import WalletConnect from '@walletconnect/client';
+import { ethers } from 'ethers';
+import { HARDHAT_URL_ANDROID, HARDHAT_URL_IOS } from 'react-native-dotenv';
 import * as Helpers from './helpers';
 
 let connector = null;
@@ -14,6 +18,21 @@ const RAINBOW_WALLET_DOT_ETH = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
 beforeAll(async () => {
   // Connect to hardhat
   await exec('yarn hardhat');
+  await Helpers.delay(5000);
+  const provider = new JsonRpcProvider(
+    device.getPlatform() === 'ios' ? HARDHAT_URL_IOS : HARDHAT_URL_ANDROID,
+    'any'
+  );
+  // Hardhat account 0 that has 10000 ETH
+  const wallet = new Wallet(
+    '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
+    provider
+  );
+  // Sending 20 ETH so we have enough to pay the tx fees even when the gas is too high
+  await wallet.sendTransaction({
+    to: RAINBOW_WALLET_DOT_ETH,
+    value: ethers.utils.parseEther('20'),
+  });
 });
 
 describe('Hardhat Transaction Flow', () => {
