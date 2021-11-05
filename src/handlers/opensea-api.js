@@ -3,10 +3,13 @@ import { OPENSEA_API_KEY } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../references';
 import { abbreviations } from '../utils';
-import { convertAddressToENSOrAddressDisplay } from '@rainbow-me/hooks';
+import {
+  convertAddressToENSOrAddressDisplay,
+  FormatAssetForDisplay,
+} from '@rainbow-me/helpers';
 import NetworkTypes from '@rainbow-me/networkTypes';
 import { parseAccountUniqueTokens } from '@rainbow-me/parsers';
-import { fromWei, handleSignificantDecimals } from '@rainbow-me/utilities';
+import { handleSignificantDecimals } from '@rainbow-me/utilities';
 import logger from 'logger';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
@@ -134,18 +137,22 @@ export const apiGetTokenHistory = async (
   }
 };
 
-async function GetAddress(address) {
-  // const addy = await convertAddressToENSOrAddressDisplay(address);
+//Need to figure out how to do this without querying ethers 1000 times
+// Follow up with Bruno
+// const address =
+//   (uniqueEvent.to_account?.address &&
+//     (await GetAddress(uniqueEvent.to_account.address))) ||
+//   '????';
+// async function GetAddress(address) {
+// const addy = await convertAddressToENSOrAddressDisplay(address);
+// if (isHexString(address)) {
+//   const abbrevAddy = abbreviations.address(address, 2);
+//   return abbrevAddy;
+// }
+// const abbrevENS = abbreviations.formatAddressForDisplay(addy);
 
-  // if (isHexString(address)) {
-  //   const abbrevAddy = abbreviations.address(address, 2);
-  //   return abbrevAddy;
-  // }
-  return await abbreviations.address(address, 2);
-  // const abbrevENS = abbreviations.formatAddressForDisplay(addy);
-
-  // return abbrevENS;
-}
+// return abbrevENS;
+// }
 
 const filterAndMapData = async (contractAddress, array) => {
   return Promise.all(
@@ -170,11 +177,6 @@ const filterAndMapData = async (contractAddress, array) => {
 
         switch (event_type) {
           case 'transfer': {
-            // Follow up with Bruno
-            // const address =
-            //   (uniqueEvent.to_account?.address &&
-            //     (await GetAddress(uniqueEvent.to_account.address))) ||
-            //   '????';
             const address = uniqueEvent.to_account?.address || '????';
             let from_acc = uniqueEvent.from_account?.address;
             if (
@@ -220,10 +222,14 @@ const filterAndMapData = async (contractAddress, array) => {
             break;
           }
           case 'successful':
+            payment_token = (uniqueEvent.payment_token?.symbol === 'WETH' ? 'ETH' : uniqueEvent.payment_token?.symbol);
             // eslint-disable-next-line no-case-declarations
-            let tempSale = fromWei(parseInt(uniqueEvent.total_price));
-            sale_amount = handleSignificantDecimals(tempSale, 5);
-            payment_token = uniqueEvent.payment_token?.symbol;
+            const temp_sale_amount = FormatAssetForDisplay({
+              amount: uniqueEvent.total_price,
+              token: payment_token,
+            });
+
+            sale_amount = handleSignificantDecimals(temp_sale_amount, 5);
 
             eventObject = {
               created_date,
@@ -252,10 +258,15 @@ const filterAndMapData = async (contractAddress, array) => {
 
           default:
           case 'created':
+            payment_token = (uniqueEvent.payment_token?.symbol === 'WETH' ? 'ETH' : uniqueEvent.payment_token?.symbol);
             // eslint-disable-next-line no-case-declarations
-            let tempList = fromWei(parseInt(uniqueEvent.starting_price));
-            list_amount = handleSignificantDecimals(tempList, 5);
-            payment_token = uniqueEvent.payment_token?.symbol;
+            const temp_list_amount = FormatAssetForDisplay({
+              amount: uniqueEvent.starting_price,
+              token: payment_token,
+            });
+            list_amount = handleSignificantDecimals(temp_list_amount, 5);
+
+
             eventObject = {
               created_date,
               event_type,
