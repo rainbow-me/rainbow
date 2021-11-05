@@ -1,17 +1,19 @@
 import React from 'react';
+import { View } from 'react-native';
 import styled from 'styled-components';
 import { ColumnWithMargins } from '../layout';
 import { Text } from '../text';
 import { padding } from '@rainbow-me/styles';
-import { View } from "react-native";
 
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
 })`
   ${padding(android ? 19 : 36, 19, 24)};
   ${({ isNft }) => padding(android ? 19 : 36, isNft ? 24 : 19, 24)};
-  ${({ isTokenHistory }) => padding(android ? 19 : 36, isTokenHistory ? 0 : 19, 24)};
-  padding-top: ${({ isL2, isNft, isTokenHistory }) => (isL2 || isNft || isTokenHistory ? 24 : android ? 19 : 36)};
+  ${({ isTokenHistory }) =>
+    padding(android ? 19 : 36, isTokenHistory ? 0 : 19, 24)};
+  padding-top: ${({ isL2, isNft, isTokenHistory }) =>
+    isL2 || isNft || isTokenHistory ? 24 : android ? 19 : 36};
 `;
 
 export default function ExpandedStateSection({
@@ -24,14 +26,13 @@ export default function ExpandedStateSection({
   const { colors } = useTheme();
   return (
     <View>
-      {
-        isTokenHistory ? 
+      {isTokenHistory ? (
         <Container isTokenHistory={isTokenHistory} {...props}>
           <Text
             color={isTokenHistory ? colors.whiteLabel : colors.dark}
             size="large"
-            weight="heavy"
             style={{ paddingLeft: 19 }}
+            weight="heavy"
           >
             {title}
           </Text>
@@ -51,7 +52,7 @@ export default function ExpandedStateSection({
             children
           )}
         </Container>
-        :
+      ) : (
         <Container isNft={isNft} {...props}>
           <Text
             color={isNft ? colors.whiteLabel : colors.dark}
@@ -76,7 +77,7 @@ export default function ExpandedStateSection({
             children
           )}
         </Container>
-      }
+      )}
     </View>
   );
 }

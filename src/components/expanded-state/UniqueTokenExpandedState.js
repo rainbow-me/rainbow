@@ -71,9 +71,9 @@ const BackgroundBlur = styled(VibrancyView).attrs({
 
 const BackgroundImage = styled.View`
   background: black;
-  height: 844px;
+  height: ${({ deviceHeight }) => deviceHeight};
   position: absolute;
-  width: 390px;
+  width: ${({ deviceWidth }) => deviceWidth};
 `;
 
 const SheetDivider = styled(Row)`
@@ -210,7 +210,7 @@ const UniqueTokenExpandedState = ({
 
   return (
     <Fragment>
-      <BackgroundImage>
+      <BackgroundImage deviceWidth={deviceWidth} deviceHeight={deviceHeight}>
         {isSVG ? (
           <UniqueTokenImage
             backgroundColor={asset.background}

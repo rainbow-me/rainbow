@@ -112,7 +112,6 @@ const TokenHistory = ({ contractAndToken, color }) => {
   useEffect(async () => {
     try {
       const results = await apiGetTokenHistory(contractAddress, tokenID, accountAddress);
-      logger.log('results returned');
       setTokenHistory(results);
       if (results.length <= 2) {
         setTokenHistoryShort(true);

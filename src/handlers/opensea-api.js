@@ -183,46 +183,27 @@ const filterAndMapData = async (contractAddress, array) => {
               contractAddress === ENS_NFT_CONTRACT_ADDRESS &&
               from_acc === '0x0000000000000000000000000000000000000000'
             ) {
-              eventObject = {
-                created_date,
-                event_type: 'ens-registration',
-                from_account: '0x123',
-                list_amount,
-                payment_token,
-                sale_amount,
-                to_account: address,
-                to_account_eth_address: uniqueEvent.to_account.address,
-              };
+              event_type = 'ens-registration';
+              to_account_eth_address = uniqueEvent.to_account.address;
+              to_account = address;
             } else if (
               contractAddress !== ENS_NFT_CONTRACT_ADDRESS &&
               from_acc === '0x0000000000000000000000000000000000000000'
             ) {
-              eventObject = {
-                created_date,
-                event_type: 'mint',
-                from_account: '0x123',
-                list_amount,
-                payment_token,
-                sale_amount,
-                to_account: address,
-                to_account_eth_address: uniqueEvent.to_account.address,
-              };
+              event_type = 'mint';
+              to_account_eth_address = uniqueEvent.to_account.address;
+              to_account = address;
             } else {
-              eventObject = {
-                created_date,
-                event_type,
-                from_account: from_acc,
-                list_amount,
-                payment_token,
-                sale_amount,
-                to_account: address,
-                to_account_eth_address: uniqueEvent.to_account.address,
-              };
+              to_account_eth_address = uniqueEvent.to_account.address;
+              to_account = address;
             }
             break;
           }
           case 'successful':
-            payment_token = (uniqueEvent.payment_token?.symbol === 'WETH' ? 'ETH' : uniqueEvent.payment_token?.symbol);
+            payment_token = 
+              uniqueEvent.payment_token?.symbol === 'WETH'
+                ? 'ETH'
+                : uniqueEvent.payment_token?.symbol;
             // eslint-disable-next-line no-case-declarations
             const temp_sale_amount = FormatAssetForDisplay({
               amount: uniqueEvent.total_price,
@@ -230,35 +211,17 @@ const filterAndMapData = async (contractAddress, array) => {
             });
 
             sale_amount = handleSignificantDecimals(temp_sale_amount, 5);
-
-            eventObject = {
-              created_date,
-              event_type,
-              from_account,
-              list_amount,
-              payment_token,
-              sale_amount,
-              to_account,
-              to_account_eth_address,
-            };
             break;
 
           case 'cancelled':
-            eventObject = {
-              created_date,
-              event_type,
-              from_account,
-              list_amount,
-              payment_token,
-              sale_amount,
-              to_account,
-              to_account_eth_address,
-            };
             break;
 
           default:
           case 'created':
-            payment_token = (uniqueEvent.payment_token?.symbol === 'WETH' ? 'ETH' : uniqueEvent.payment_token?.symbol);
+            payment_token =
+              uniqueEvent.payment_token?.symbol === 'WETH'
+                ? 'ETH'
+                : uniqueEvent.payment_token?.symbol;
             // eslint-disable-next-line no-case-declarations
             const temp_list_amount = FormatAssetForDisplay({
               amount: uniqueEvent.starting_price,
@@ -266,19 +229,19 @@ const filterAndMapData = async (contractAddress, array) => {
             });
             list_amount = handleSignificantDecimals(temp_list_amount, 5);
 
-
-            eventObject = {
-              created_date,
-              event_type,
-              from_account,
-              list_amount,
-              payment_token,
-              sale_amount,
-              to_account,
-              to_account_eth_address,
-            };
             break;
         }
+        eventObject = {
+          created_date,
+          event_type,
+          from_account,
+          list_amount,
+          payment_token,
+          sale_amount,
+          to_account,
+          to_account_eth_address,
+        };
+
         return eventObject;
       })
   );
