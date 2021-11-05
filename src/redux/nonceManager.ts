@@ -3,24 +3,22 @@ import {
   saveNonceManager,
 } from '../handlers/localstorage/nonceManager';
 import { AppDispatch, AppGetState } from './store';
-
-type NetworkId = string;
-type AccountId = string;
+import { Network } from '@rainbow-me/helpers/networkTypes';
 
 interface NetworkNonceInfo {
   nonce: number;
 }
 interface AccountNonceInfo {
-  [key: NetworkId]: NetworkNonceInfo;
+  [key: string]: NetworkNonceInfo;
 }
 
 interface NonceManager {
-  [key: AccountId]: AccountNonceInfo;
+  [key: string]: AccountNonceInfo;
 }
 
 interface NonceManagerUpdate {
-  network: NetworkId;
-  account: AccountId;
+  network: string;
+  account: string;
   nonce: number;
 }
 
@@ -44,13 +42,15 @@ const NONCE_MANAGER_LOAD_FAILURE = 'NONCE_MANAGER_LOAD_FAILURE';
 const NONCE_MANAGER_UPDATE_DATA = 'NONCE_MANAGER_UPDATE_DATA';
 
 // -- Actions ---------------------------------------- //
-export const getNonceManagerState = () => async (dispatch: AppDispatch) => {
+export const nonceManagerLoadState = () => async (dispatch: AppDispatch) => {
   try {
     const nonceManager = await getNonceManager();
-    dispatch({
-      payload: nonceManager,
-      type: NONCE_MANAGER_LOAD_SUCCESS,
-    });
+    if (nonceManager) {
+      dispatch({
+        payload: nonceManager,
+        type: NONCE_MANAGER_LOAD_SUCCESS,
+      });
+    }
   } catch (error) {
     dispatch({ type: NONCE_MANAGER_LOAD_FAILURE });
   }
@@ -58,17 +58,30 @@ export const getNonceManagerState = () => async (dispatch: AppDispatch) => {
 
 export const updateNonceManager = (
   account: string,
-  network: string,
-  nonce: number
+  nonce: number,
+  network?: string
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const { nonceManager } = getState();
-  const updatedNonceManager: NonceManager = { ...nonceManager };
-  updatedNonceManager[account][network]['nonce'] = nonce;
-  dispatch({
-    payload: { account, network, nonce },
-    type: NONCE_MANAGER_UPDATE_DATA,
-  });
-  saveNonceManager(updatedNonceManager);
+  let updatedNonceManager: NonceManager = { ...nonceManager };
+  const ntwrk = network || Network.mainnet;
+  const txNonce = updatedNonceManager[account]?.[ntwrk]?.nonce;
+
+  if (!txNonce || txNonce < nonce) {
+    updatedNonceManager = {
+      ...updatedNonceManager,
+      [account]: {
+        ...(updatedNonceManager[account] || {}),
+        [ntwrk]: {
+          nonce,
+        },
+      },
+    };
+    dispatch({
+      payload: { account, network, nonce },
+      type: NONCE_MANAGER_UPDATE_DATA,
+    });
+    saveNonceManager(updatedNonceManager);
+  }
 };
 
 // -- Reducer ----------------------------------------- //

@@ -29,6 +29,7 @@ import {
 /* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
 import { addCoinsToHiddenList } from './editOptions';
+import { updateNonceManager } from './nonceManager';
 // eslint-disable-next-line import/no-cycle
 import { uniqueTokensRefreshState } from './uniqueTokens';
 /* eslint-disable-next-line import/no-cycle */
@@ -371,6 +372,12 @@ const checkForConfirmedSavingsActions = transactionsData => dispatch => {
   }
 };
 
+const checkForUpdatedNonce = transactionData => dispatch => {
+  const [latestTx] = transactionData;
+  const { address_from, network, nonce } = latestTx;
+  dispatch(updateNonceManager(address_from, nonce, network));
+};
+
 export const portfolioReceived = message => async (dispatch, getState) => {
   if (message?.meta?.status !== 'ok') return;
   if (!message?.payload?.portfolio) return;
@@ -397,6 +404,7 @@ export const transactionsReceived = (message, appended = false) => async (
     if (appended) {
       dispatch(checkForConfirmedSavingsActions(transactionData));
     }
+    dispatch(checkForUpdatedNonce(transactionData));
 
     const { accountAddress, nativeCurrency, network } = getState().settings;
     const { purchaseTransactions } = getState().addCash;

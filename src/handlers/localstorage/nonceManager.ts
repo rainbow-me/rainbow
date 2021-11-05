@@ -2,16 +2,14 @@ import { getGlobal, saveGlobal } from './common';
 
 export const NONCE_MANAGER = 'nonceManager';
 
-type NetworkId = string;
-type AccountId = string;
 interface NetworkNonceInfo {
   nonce: number;
 }
 interface AccountNonceInfo {
-  [key: NetworkId]: NetworkNonceInfo;
+  [key: string]: NetworkNonceInfo;
 }
 interface NonceManager {
-  [key: AccountId]: AccountNonceInfo;
+  [key: string]: AccountNonceInfo;
 }
 
 export const getNonceManager = async (): Promise<NonceManager> => {
