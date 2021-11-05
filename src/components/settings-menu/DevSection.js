@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import React, { useCallback, useContext } from 'react';
 import { Alert, ScrollView } from 'react-native';
-import { GANACHE_URL_ANDROID, GANACHE_URL_IOS } from 'react-native-dotenv';
+import { HARDHAT_URL_ANDROID, HARDHAT_URL_IOS } from 'react-native-dotenv';
 import Restart from 'react-native-restart';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
@@ -30,17 +30,17 @@ const DevSection = () => {
     [config, setConfig]
   );
 
-  const connectToGanache = useCallback(async () => {
+  const connectToHardhat = useCallback(async () => {
     try {
       const ready = await web3SetHttpProvider(
-        (ios && GANACHE_URL_IOS) ||
-          (android && GANACHE_URL_ANDROID) ||
-          'http://127.0.0.1:7545'
+        (ios && HARDHAT_URL_IOS) ||
+          (android && HARDHAT_URL_ANDROID) ||
+          'http://127.0.0.1:8545'
       );
-      logger.log('connected to ganache', ready);
+      logger.log('connected to hardhat', ready);
     } catch (e) {
       await web3SetHttpProvider(networkTypes.mainnet);
-      logger.log('error connecting to ganache');
+      logger.log('error connecting to hardhat');
     }
     navigate(Routes.PROFILE_SCREEN);
   }, [navigate]);
@@ -107,9 +107,9 @@ const DevSection = () => {
         onPress={() => AsyncStorage.removeItem('experimentalConfig')}
       />
       <ListItem
-        label="‍👾 Connect to ganache"
-        onPress={connectToGanache}
-        testID="ganache-section"
+        label="👷 Connect to hardhat"
+        onPress={connectToHardhat}
+        testID="hardhat-section"
       />
       <ListItem label="‍🏖️ Alert" onPress={checkAlert} testID="alert-section" />
       <ListFooter />
