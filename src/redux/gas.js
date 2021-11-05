@@ -10,7 +10,7 @@ import {
   polygonGasStationGetGasPrices,
   polygonGetGasEstimates,
 } from '@rainbow-me/handlers/gasPrices';
-import { getProviderForNetwork, isL2Network } from '@rainbow-me/handlers/web3';
+import { getProviderForNetwork, isL2Network, web3Provider } from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasPriceFormat,
@@ -174,8 +174,6 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
             if (network === networkTypes.mainnet && IS_TESTING === 'true') {
               const providerUrl = web3Provider?.connection?.url;
               if (providerUrl?.startsWith('http://') && providerUrl?.endsWith('8545')) {
-                setVisible(true);
-                setNetworkName('Hardhat');
                 etherscanGasPrices = {
                   FastGasPrice: 1000,
                   ProposeGasPrice: 1000,
