@@ -109,7 +109,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
   });
 
   //Query opensea using the contract address + tokenID
-  useEffect(async () => {
+  useEffect(async() => {
     try {
       const results = await apiGetTokenHistory(contractAddress, tokenID, accountAddress);
       setTokenHistory(results);

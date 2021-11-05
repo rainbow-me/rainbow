@@ -1,8 +1,6 @@
-import { isHexString } from '@ethersproject/bytes';
 import { OPENSEA_API_KEY } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../references';
-import { abbreviations } from '../utils';
 import {
   convertAddressToENSOrAddressDisplay,
   FormatAssetForDisplay,
@@ -47,7 +45,6 @@ export const apiGetUniqueTokenFloorPrice = async (
   try {
     const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
     const url = `https://${networkPrefix}api.opensea.io/api/v1/asset/${urlSuffixForAsset}`;
-    const EthSuffix = ' ETH';
     const data = await rainbowFetch(url, {
       headers: {
         'Accept': 'application/json',
@@ -56,13 +53,69 @@ export const apiGetUniqueTokenFloorPrice = async (
       method: 'get',
       timeout: 5000, // 5 secs
     });
-    if (JSON.stringify(data.data.collection.stats.floor_price) === '0') {
+
+    const slug = data?.data?.collection?.slug;
+
+    const collectionURL = `https://${networkPrefix}api.opensea.io/api/v1/collection/${slug}`;
+    const collectionData = await rainbowFetch(collectionURL, {
+      headers: {
+        'Accept': 'application/json',
+        'X-Api-Key': OPENSEA_API_KEY,
+      },
+      method: 'get',
+      timeout: 5000, // 5 secs
+    });
+
+    const temp_price = collectionData?.data?.collection?.stats?.floor_price;
+
+    if (parseFloat(temp_price) === 0) {
       return 'None';
     }
-    const formattedFloorPrice =
-      JSON.stringify(data.data.collection.stats.floor_price) + EthSuffix;
-    return formattedFloorPrice;
+
+    const floor_price = handleSignificantDecimals(temp_price, 5);
+
+    //logger.debug("FP: ",  floor_price);
+
+    return temp_price;
   } catch (error) {
+    logger.debug('FLOOR FETCH:', error);
+    throw error;
+  }
+};
+
+export const apiGetTokenHistory = async (
+  contractAddress,
+  tokenID,
+  accountAddress
+) => {
+  try {
+    const checkFungibility = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=1`;
+    // logger.log(checkFungibility);
+
+    const fungData = await rainbowFetch(checkFungibility, {
+      headers: {
+        'Accept': 'application/json',
+        'X-Api-Key': OPENSEA_API_KEY,
+      },
+      method: 'get',
+      timeout: 10000, // 10 secs
+    });
+
+    const semiFungible =
+      fungData?.data?.asset_events[0]?.asset?.asset_contract
+        ?.asset_contract_type === 'semi-fungible';
+
+    const allEvents = await fetchAllTokenHistoryEvents({
+      accountAddress,
+      contractAddress,
+      semiFungible,
+      tokenID,
+    });
+
+    const result = await filterAndMapData(contractAddress, allEvents);
+    return result;
+  } catch (error) {
+    logger.debug('FETCH ERROR:', error);
     throw error;
   }
 };
@@ -97,63 +150,6 @@ const fetchAllTokenHistoryEvents = async ({
   return array;
 };
 
-export const apiGetTokenHistory = async (
-  contractAddress,
-  tokenID,
-  accountAddress
-) => {
-  try {
-    const checkFungibility = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=1`;
-    logger.log(checkFungibility);
-
-    const fungData = await rainbowFetch(checkFungibility, {
-      headers: {
-        'Accept': 'application/json',
-        'X-Api-Key': OPENSEA_API_KEY,
-      },
-      method: 'get',
-      timeout: 10000, // 10 secs
-    });
-
-    const semiFungible =
-      fungData?.data?.asset_events[0]?.asset?.asset_contract
-        ?.asset_contract_type === 'semi-fungible';
-
-    const allEvents = await fetchAllTokenHistoryEvents({
-      accountAddress,
-      contractAddress,
-      semiFungible,
-      tokenID,
-    });
-    logger.debug('ALL EVENTS', allEvents.length);
-
-    const result = await filterAndMapData(contractAddress, allEvents);
-    logger.debug('results length', result.length);
-
-    return result;
-  } catch (error) {
-    logger.debug('FETCH ERROR:', error);
-    throw error;
-  }
-};
-
-//Need to figure out how to do this without querying ethers 1000 times
-// Follow up with Bruno
-// const address =
-//   (uniqueEvent.to_account?.address &&
-//     (await GetAddress(uniqueEvent.to_account.address))) ||
-//   '????';
-// async function GetAddress(address) {
-// const addy = await convertAddressToENSOrAddressDisplay(address);
-// if (isHexString(address)) {
-//   const abbrevAddy = abbreviations.address(address, 2);
-//   return abbrevAddy;
-// }
-// const abbrevENS = abbreviations.formatAddressForDisplay(addy);
-
-// return abbrevENS;
-// }
-
 const filterAndMapData = async (contractAddress, array) => {
   return Promise.all(
     array
@@ -166,7 +162,6 @@ const filterAndMapData = async (contractAddress, array) => {
       )
       .map(async function (uniqueEvent) {
         let event_type = uniqueEvent.event_type;
-        let eventObject;
         let created_date = uniqueEvent.created_date;
         let from_account = '0x123';
         let to_account = '0x123';
@@ -174,6 +169,7 @@ const filterAndMapData = async (contractAddress, array) => {
         let list_amount = '0';
         let payment_token = 'x';
         let to_account_eth_address = 'x';
+        let event_object;
 
         switch (event_type) {
           case 'transfer': {
@@ -200,7 +196,7 @@ const filterAndMapData = async (contractAddress, array) => {
             break;
           }
           case 'successful':
-            payment_token = 
+            payment_token =
               uniqueEvent.payment_token?.symbol === 'WETH'
                 ? 'ETH'
                 : uniqueEvent.payment_token?.symbol;
@@ -213,10 +209,6 @@ const filterAndMapData = async (contractAddress, array) => {
             sale_amount = handleSignificantDecimals(temp_sale_amount, 5);
             break;
 
-          case 'cancelled':
-            break;
-
-          default:
           case 'created':
             payment_token =
               uniqueEvent.payment_token?.symbol === 'WETH'
@@ -230,8 +222,12 @@ const filterAndMapData = async (contractAddress, array) => {
             list_amount = handleSignificantDecimals(temp_list_amount, 5);
 
             break;
+
+          default:
+          case 'cancelled':
+            break;
         }
-        eventObject = {
+        event_object = {
           created_date,
           event_type,
           from_account,
@@ -242,7 +238,24 @@ const filterAndMapData = async (contractAddress, array) => {
           to_account_eth_address,
         };
 
-        return eventObject;
+        return event_object;
       })
   );
 };
+
+//Need to figure out how to do this without querying ethers 1000 times
+// Follow up with Bruno
+// const address =
+//   (uniqueEvent.to_account?.address &&
+//     (await GetAddress(uniqueEvent.to_account.address))) ||
+//   '????';
+// async function GetAddress(address) {
+// const addy = await convertAddressToENSOrAddressDisplay(address);
+// if (isHexString(address)) {
+//   const abbrevAddy = abbreviations.address(address, 2);
+//   return abbrevAddy;
+// }
+// const abbrevENS = abbreviations.formatAddressForDisplay(addy);
+
+// return abbrevENS;
+// }

@@ -163,10 +163,15 @@ const UniqueTokenExpandedState = ({
     }
   }, [colors.whiteLabel, imageColorWithFallback]);
 
-  useEffect(() => {
-    apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then(result => {
+  useEffect(async() => {
+    try {
+      const result  = await apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset);
+      logger.log('returned')
       setFloorPrice(result);
-    });
+    } catch (error) {
+      logger.debug('UTES: ', error);
+      throw error;
+    }
   }, [network, urlSuffixForAsset]);
 
   const handlePressCollectionFloor = useCallback(() => {
