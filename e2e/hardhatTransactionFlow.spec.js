@@ -18,7 +18,8 @@ const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
 beforeAll(async () => {
   // Connect to hardhat
-  // await exec('yarn hardhat');
+  await exec('yarn hardhat');
+  await Helpers.delay(5000);
 
   const provider = new JsonRpcProvider(
     device.getPlatform() === 'ios' ? HARDHAT_URL_IOS : HARDHAT_URL_ANDROID,
