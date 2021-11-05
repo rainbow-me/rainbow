@@ -27,19 +27,19 @@ interface NonceManagerLoadSuccessAction {
   payload: NonceManager;
 }
 
-interface NonceManagerUpdateDataAction {
-  type: typeof NONCE_MANAGER_UPDATE_DATA;
+interface NonceManagerUpdateNonceAction {
+  type: typeof NONCE_MANAGER_UPDATE_NONCE;
   payload: NonceManagerUpdate;
 }
 
 export type NonceManagerActionType =
   | NonceManagerLoadSuccessAction
-  | NonceManagerUpdateDataAction;
+  | NonceManagerUpdateNonceAction;
 
 // -- Constants --------------------------------------- //
 const NONCE_MANAGER_LOAD_SUCCESS = 'NONCE_MANAGER_LOAD_SUCCESS';
 const NONCE_MANAGER_LOAD_FAILURE = 'NONCE_MANAGER_LOAD_FAILURE';
-const NONCE_MANAGER_UPDATE_DATA = 'NONCE_MANAGER_UPDATE_DATA';
+const NONCE_MANAGER_UPDATE_NONCE = 'NONCE_MANAGER_UPDATE_NONCE';
 
 // -- Actions ---------------------------------------- //
 export const nonceManagerLoadState = () => async (dispatch: AppDispatch) => {
@@ -56,7 +56,7 @@ export const nonceManagerLoadState = () => async (dispatch: AppDispatch) => {
   }
 };
 
-export const updateNonceManager = (
+export const incrementNonceManager = (
   account: string,
   nonce: number,
   network?: string
@@ -78,7 +78,7 @@ export const updateNonceManager = (
     };
     dispatch({
       payload: { account, network, nonce },
-      type: NONCE_MANAGER_UPDATE_DATA,
+      type: NONCE_MANAGER_UPDATE_NONCE,
     });
     saveNonceManager(updatedNonceManager);
   }
@@ -94,7 +94,7 @@ export default (state = INITIAL_STATE, action: NonceManagerActionType) => {
         ...state,
         ...action.payload,
       };
-    case NONCE_MANAGER_UPDATE_DATA:
+    case NONCE_MANAGER_UPDATE_NONCE:
       return {
         ...state,
         [action.payload.account]: {
