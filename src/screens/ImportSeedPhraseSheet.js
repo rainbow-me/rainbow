@@ -163,20 +163,20 @@ export default function ImportSeedPhraseSheet() {
           Add Wallet
         </Text>
         <SecretTextAreaContainer>
-          <SecretTextArea
-            color={isSecretValid ? colors.appleBlue : colors.dark}
-            onChangeText={() => {}}
-            onFocus={handleFocus}
-            onSubmitEditing={handlePressImportButton}
-            placeholder="Secret phrase, private key, Ethereum address or ENS name"
-            placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
-            ref={inputRef}
-            returnKeyType="done"
-            size="large"
-            spellCheck={false}
-            testID="import-sheet-input"
-            value={seedPhrase}
-          />
+          {/*<SecretTextArea*/}
+          {/*  color={isSecretValid ? colors.appleBlue : colors.dark}*/}
+          {/*  onChangeText={() => {}}*/}
+          {/*  onFocus={handleFocus}*/}
+          {/*  onSubmitEditing={handlePressImportButton}*/}
+          {/*  placeholder="Secret phrase, private key, Ethereum address or ENS name"*/}
+          {/*  placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}*/}
+          {/*  ref={inputRef}*/}
+          {/*  returnKeyType="done"*/}
+          {/*  size="large"*/}
+          {/*  spellCheck={false}*/}
+          {/*  testID="import-sheet-input"*/}
+          {/*  value={seedPhrase}*/}
+          {/*/>*/}
         </SecretTextAreaContainer>
         <Footer isSmallPhone={isSmallPhone}>
           {seedPhrase ? (
@@ -204,7 +204,22 @@ export default function ImportSeedPhraseSheet() {
                 </Text>
               </Row>
             </FooterButton>
-          ) : null}
+          ) : (
+            <FooterButton
+              {...(android && { height: 30, overflowMargin: 15, width: 63 })}
+              disabled={!isClipboardValidSecret}
+              onPress={handlePressPasteButton}
+            >
+              <Text
+                align="center"
+                color="whiteLabel"
+                testID="import-sheet-button-label"
+                weight="bold"
+              >
+                Paste
+              </Text>
+            </FooterButton>
+          )}
         </Footer>
       </Sheet>
       <ToastPositionContainer bottom={keyboardHeight}>
