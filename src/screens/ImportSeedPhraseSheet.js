@@ -110,7 +110,7 @@ const Sheet = styled(Column).attrs({
 
 export default function ImportSeedPhraseSheet() {
   const { isSmallPhone } = useDimensions();
-  // const keyboardHeight = useKeyboardHeight();
+  const keyboardHeight = useKeyboardHeight();
   const {
     busy,
     handleFocus,
