@@ -109,15 +109,15 @@ const Sheet = styled(Column).attrs({
 export default function ImportSeedPhraseSheet() {
   const { isSmallPhone } = useDimensions();
   // const keyboardHeight = useKeyboardHeight();
-  // const {
-  //   busy,
-  //   handleFocus,
-  //   handlePressImportButton,
-  //   handleSetSeedPhrase,
-  //   inputRef,
-  //   isSecretValid,
-  //   seedPhrase,
-  // } = useImportingWallet();
+  const {
+    busy,
+    handleFocus,
+    handlePressImportButton,
+    handleSetSeedPhrase,
+    inputRef,
+    isSecretValid,
+    seedPhrase,
+  } = useImportingWallet();
 
   // const { accountAddress } = useAccountSettings();
   //
