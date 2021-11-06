@@ -17,6 +17,7 @@ import {
 import { useTheme } from '../context/ThemeContext';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import {
+  useAccountSettings,
   useClipboard,
   useDimensions,
   useImportingWallet,
@@ -121,8 +122,8 @@ export default function ImportSeedPhraseSheet() {
     seedPhrase,
   } = useImportingWallet();
 
-  // const { accountAddress } = useAccountSettings();
-  //
+  const { accountAddress } = useAccountSettings();
+
   const { getClipboard, hasClipboardData, clipboard } = useClipboard();
   const { onInvalidPaste } = useInvalidPaste();
   //
