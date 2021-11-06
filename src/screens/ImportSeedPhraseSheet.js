@@ -163,53 +163,53 @@ export default function ImportSeedPhraseSheet() {
           Add Wallet
         </Text>
         <SecretTextAreaContainer>
-          <SecretTextArea
-            color={isSecretValid ? colors.appleBlue : colors.dark}
-            onChangeText={handleSetSeedPhrase}
-            onFocus={handleFocus}
-            onSubmitEditing={handlePressImportButton}
-            placeholder="Secret phrase, private key, Ethereum address or ENS name"
-            placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
-            ref={inputRef}
-            returnKeyType="done"
-            size="large"
-            spellCheck={false}
-            testID="import-sheet-input"
-            value={seedPhrase}
-          />
+          {/*<SecretTextArea*/}
+          {/*  color={isSecretValid ? colors.appleBlue : colors.dark}*/}
+          {/*  onChangeText={handleSetSeedPhrase}*/}
+          {/*  onFocus={handleFocus}*/}
+          {/*  onSubmitEditing={handlePressImportButton}*/}
+          {/*  placeholder="Secret phrase, private key, Ethereum address or ENS name"*/}
+          {/*  placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}*/}
+          {/*  ref={inputRef}*/}
+          {/*  returnKeyType="done"*/}
+          {/*  size="large"*/}
+          {/*  spellCheck={false}*/}
+          {/*  testID="import-sheet-input"*/}
+          {/*  value={seedPhrase}*/}
+          {/*/>*/}
         </SecretTextAreaContainer>
         <Footer isSmallPhone={isSmallPhone}>
-          {/*{seedPhrase ? (*/}
-          {/*  <FooterButton*/}
-          {/*    disabled={!isSecretValid}*/}
-          {/*    hasLeadingIcon*/}
-          {/*    {...(android && { height: 30, overflowMargin: 15, width: 89 })}*/}
-          {/*    onPress={handlePressImportButton}*/}
-          {/*  >*/}
-          {/*    <Row>*/}
-          {/*      {busy ? (*/}
-          {/*        <LoadingSpinner />*/}
-          {/*      ) : (*/}
-          {/*        <Text align="center" color="whiteLabel" weight="bold">*/}
-          {/*          􀂍{' '}*/}
-          {/*        </Text>*/}
-          {/*      )}*/}
-          {/*      <Text*/}
-          {/*        align="center"*/}
-          {/*        color="whiteLabel"*/}
-          {/*        testID="import-sheet-button-label"*/}
-          {/*        weight="bold"*/}
-          {/*      >*/}
-          {/*        Import*/}
-          {/*      </Text>*/}
-          {/*    </Row>*/}
-          {/*  </FooterButton>*/}
-          {/*) : null}*/}
+          {seedPhrase ? (
+            <FooterButton
+              disabled={!isSecretValid}
+              hasLeadingIcon
+              {...(android && { height: 30, overflowMargin: 15, width: 89 })}
+              onPress={handlePressImportButton}
+            >
+              <Row>
+                {busy ? (
+                  <LoadingSpinner />
+                ) : (
+                  <Text align="center" color="whiteLabel" weight="bold">
+                    􀂍{' '}
+                  </Text>
+                )}
+                <Text
+                  align="center"
+                  color="whiteLabel"
+                  testID="import-sheet-button-label"
+                  weight="bold"
+                >
+                  Import
+                </Text>
+              </Row>
+            </FooterButton>
+          ) : null}
         </Footer>
       </Sheet>
-      {/*<ToastPositionContainer bottom={keyboardHeight}>*/}
-      {/*  <InvalidPasteToast />*/}
-      {/*</ToastPositionContainer>*/}
+      <ToastPositionContainer bottom={keyboardHeight}>
+        <InvalidPasteToast />
+      </ToastPositionContainer>
       {ios ? <KeyboardSizeView isOpen /> : null}
     </Container>
   );
