@@ -16,6 +16,7 @@ import {
 } from '../components/toasts';
 import { useTheme } from '../context/ThemeContext';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import { isValidWallet } from '@rainbow-me/helpers/validators';
 import {
   useAccountSettings,
   useClipboard,
@@ -26,6 +27,7 @@ import {
 } from '@rainbow-me/hooks';
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
 import { borders, padding } from '@rainbow-me/styles';
+import { deviceUtils } from '@rainbow-me/utils';
 
 const sheetBottomPadding = 19;
 
@@ -126,30 +128,30 @@ export default function ImportSeedPhraseSheet() {
 
   const { getClipboard, hasClipboardData, clipboard } = useClipboard();
   const { onInvalidPaste } = useInvalidPaste();
-  //
-  // const isClipboardValidSecret = useMemo(
-  //   () =>
-  //     deviceUtils.isIOS14
-  //       ? hasClipboardData
-  //       : clipboard !== accountAddress && isValidWallet(clipboard),
-  //   [accountAddress, clipboard, hasClipboardData]
-  // );
-  //
-  // const handlePressPasteButton = useCallback(() => {
-  //   if (deviceUtils.isIOS14 && !hasClipboardData) return;
-  //   getClipboard(result => {
-  //     if (result !== accountAddress && isValidWallet(result)) {
-  //       return handleSetSeedPhrase(result);
-  //     }
-  //     return onInvalidPaste();
-  //   });
-  // }, [
-  //   accountAddress,
-  //   getClipboard,
-  //   handleSetSeedPhrase,
-  //   hasClipboardData,
-  //   onInvalidPaste,
-  // ]);
+
+  const isClipboardValidSecret = useMemo(
+    () =>
+      deviceUtils.isIOS14
+        ? hasClipboardData
+        : clipboard !== accountAddress && isValidWallet(clipboard),
+    [accountAddress, clipboard, hasClipboardData]
+  );
+
+  const handlePressPasteButton = useCallback(() => {
+    if (deviceUtils.isIOS14 && !hasClipboardData) return;
+    getClipboard(result => {
+      if (result !== accountAddress && isValidWallet(result)) {
+        return handleSetSeedPhrase(result);
+      }
+      return onInvalidPaste();
+    });
+  }, [
+    accountAddress,
+    getClipboard,
+    handleSetSeedPhrase,
+    hasClipboardData,
+    onInvalidPaste,
+  ]);
 
   const { colors } = useTheme();
   return (
