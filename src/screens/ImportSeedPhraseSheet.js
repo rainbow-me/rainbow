@@ -19,6 +19,7 @@ import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import {
   useDimensions,
   useImportingWallet,
+  useInvalidPaste,
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
