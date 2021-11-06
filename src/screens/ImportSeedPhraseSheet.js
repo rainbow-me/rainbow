@@ -122,7 +122,7 @@ export default function ImportSeedPhraseSheet() {
   // const { accountAddress } = useAccountSettings();
   //
   // const { getClipboard, hasClipboardData, clipboard } = useClipboard();
-  // const { onInvalidPaste } = useInvalidPaste();
+  const { onInvalidPaste } = useInvalidPaste();
   //
   // const isClipboardValidSecret = useMemo(
   //   () =>
