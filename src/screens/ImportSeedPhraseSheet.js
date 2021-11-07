@@ -164,13 +164,13 @@ export default function ImportSeedPhraseSheet() {
         </Text>
         <SecretTextAreaContainer>
           <SecretTextArea
-            color={isSecretValid ? colors.appleBlue : colors.dark}
+            // color={isSecretValid ? colors.appleBlue : colors.dark}
             onChangeText={() => {}}
             onFocus={() => {}}
             onSubmitEditing={() => {}}
             placeholder="Secret phrase, private key, Ethereum address or ENS name"
             placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
-            ref={inputRef}
+            // ref={inputRef}
             returnKeyType="done"
             size="large"
             spellCheck={false}
