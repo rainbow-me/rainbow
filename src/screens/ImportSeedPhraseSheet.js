@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StatusBar } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import styled from 'styled-components';
@@ -76,20 +75,20 @@ const KeyboardSizeView = styled(KeyboardArea)`
 `;
 
 const SecretTextArea = styled(Input).attrs({
-  // align: 'center',
-  // autoCapitalize: 'none',
-  // autoCorrect: false,
-  // autoFocus: true,
-  // enablesReturnKeyAutomatically: true,
-  // keyboardType: android ? 'visible-password' : 'default',
-  // lineHeight: 'looser',
-  // multiline: true,
-  // numberOfLines: 3,
-  // placeholder: 'Secret phrase, private key, Ethereum address, or ENS name',
-  // returnKeyType: 'done',
-  // size: 'large',
-  // spellCheck: false,
-  // weight: 'semibold',
+  align: 'center',
+  autoCapitalize: 'none',
+  autoCorrect: false,
+  autoFocus: true,
+  enablesReturnKeyAutomatically: true,
+  keyboardType: android ? 'visible-password' : 'default',
+  lineHeight: 'looser',
+  multiline: true,
+  numberOfLines: 3,
+  placeholder: 'Secret phrase, private key, Ethereum address, or ENS name',
+  returnKeyType: 'done',
+  size: 'large',
+  spellCheck: false,
+  weight: 'semibold',
 })`
   margin-bottom: ${android ? 55 : 0};
   min-height: ${android ? 100 : 50};
@@ -164,16 +163,16 @@ export default function ImportSeedPhraseSheet() {
         </Text>
         <SecretTextAreaContainer>
           <SecretTextArea
-            // color={isSecretValid ? colors.appleBlue : colors.dark}
+            color={isSecretValid ? colors.appleBlue : colors.dark}
             onChangeText={handleSetSeedPhrase}
             onFocus={handleFocus}
             onSubmitEditing={handlePressImportButton}
-            // placeholder="Secret phrase, private key, Ethereum address or ENS name"
-            // // placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
+            placeholder="Secret phrase, private key, Ethereum address or ENS name"
+            placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
             ref={inputRef}
-            // returnKeyType="done"
-            // size="large"
-            // spellCheck={false}
+            returnKeyType="done"
+            size="large"
+            spellCheck={false}
             testID="import-sheet-input"
             value={seedPhrase}
           />

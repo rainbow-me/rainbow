@@ -52,7 +52,7 @@ export default function useClipboard() {
   // Listen for updates
   useEffect(() => {
     listeners.add(updateClipboardData);
-    return function example2() {
+    return () => {
       listeners.delete(updateClipboardData);
     };
   }, []);
