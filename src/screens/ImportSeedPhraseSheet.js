@@ -165,17 +165,17 @@ export default function ImportSeedPhraseSheet() {
         <SecretTextAreaContainer>
           <SecretTextArea
             // color={isSecretValid ? colors.appleBlue : colors.dark}
-            // onChangeText={() => {}}
-            // onFocus={() => {}}
-            // onSubmitEditing={() => {}}
+            onChangeText={handleSetSeedPhrase}
+            onFocus={handleFocus}
+            onSubmitEditing={handlePressImportButton}
             // placeholder="Secret phrase, private key, Ethereum address or ENS name"
             // // placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
-            // // ref={inputRef}
+            ref={inputRef}
             // returnKeyType="done"
             // size="large"
             // spellCheck={false}
             testID="import-sheet-input"
-            // value={seedPhrase}
+            value={seedPhrase}
           />
         </SecretTextAreaContainer>
         <Footer isSmallPhone={isSmallPhone}>
