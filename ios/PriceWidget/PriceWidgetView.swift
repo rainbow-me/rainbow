@@ -81,10 +81,10 @@ struct PriceWidgetView: View {
                 .font(.custom("SF Pro Rounded", size: 18))
                 .fontWeight(.heavy)
                 .foregroundColor(Color.white)
+                .tracking(0.4)
                 .mask(
                   LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.9), Color.white.opacity(0.8)]), startPoint: .leading, endPoint: .trailing)
                 )
-                .offset(y: -0.5)
 
               Spacer()
 
@@ -95,9 +95,9 @@ struct PriceWidgetView: View {
             Spacer()
             
             HStack {
-              VStack(alignment: .leading, spacing: 7) {
+              VStack(alignment: .leading, spacing: 3) {
                 if (tokenData.priceChange != nil && tokenData.price != nil) {
-                  HStack(spacing: 4) {
+                  HStack(spacing: 3) {
                     if (tokenData.priceChange! >= 0) {
                       Image(systemName: "arrow.up")
                         .font(.system(size: 18, weight: .heavy, design: .rounded))
@@ -111,13 +111,17 @@ struct PriceWidgetView: View {
                       .font(.custom("SF Pro Rounded", size: 18))
                       .fontWeight(.heavy)
                       .foregroundColor(Color.white)
-                  }
+                      .tracking(0.2)
+                  }.mask(
+                    LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.9), Color.white.opacity(0.7)]), startPoint: .leading, endPoint: .trailing)
+                  )
                     Text(tokenData.price != nil ? convertToCurrency(double: tokenData.price!) : "")
                       .font(.custom("SF Pro Rounded", size: 28))
                       .fontWeight(.heavy)
                       .foregroundColor(Color.white)
                       .minimumScaleFactor(0.01)
                       .lineLimit(1)
+                      .frame(height: 33, alignment: .top)
                 } else {
                   Text("Couldn't retrieve token data")
                     .font(.custom("SF Pro Rounded", size: 28))
@@ -127,10 +131,8 @@ struct PriceWidgetView: View {
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
                 }
-              }.mask(
-                LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.9), Color.white.opacity(0.7)]), startPoint: .leading, endPoint: .trailing)
-              )
-            }.padding(.bottom, 8)
+              }
+            }
             
             Spacer()
             
@@ -140,11 +142,13 @@ struct PriceWidgetView: View {
                   .font(.custom("SF Pro Rounded", size: 10))
                   .fontWeight(.bold)
                   .foregroundColor(Color.white.opacity(0.4))
+                  .tracking(0.2)
               } else {
                 (Text("Updated at ") + Text(date, style: .time))
                   .font(.custom("SF Pro Rounded", size: 10))
                   .fontWeight(.bold)
-                  .foregroundColor(Color.white.opacity(0.4))
+                  .foregroundColor(Color.white.opacity(0.5))
+                  .tracking(0.2)
               }
             }
           }
