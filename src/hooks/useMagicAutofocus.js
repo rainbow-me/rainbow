@@ -87,7 +87,7 @@ export default function useMagicAutofocus(
         InteractionManager.runAfterInteractions(fallbackRefocusLastInput);
       }
 
-      return () => {
+      return function example6() {
         setListener(null);
       };
     }, [fallbackRefocusLastInput, shouldFocusOnNavigateOnAndroid, triggerFocus])
