@@ -76,20 +76,20 @@ const KeyboardSizeView = styled(KeyboardArea)`
 `;
 
 const SecretTextArea = styled(Input).attrs({
-  align: 'center',
-  autoCapitalize: 'none',
-  autoCorrect: false,
-  autoFocus: true,
-  enablesReturnKeyAutomatically: true,
-  keyboardType: android ? 'visible-password' : 'default',
-  lineHeight: 'looser',
-  multiline: true,
-  numberOfLines: 3,
-  placeholder: 'Secret phrase, private key, Ethereum address, or ENS name',
-  returnKeyType: 'done',
-  size: 'large',
-  spellCheck: false,
-  weight: 'semibold',
+  // align: 'center',
+  // autoCapitalize: 'none',
+  // autoCorrect: false,
+  // autoFocus: true,
+  // enablesReturnKeyAutomatically: true,
+  // keyboardType: android ? 'visible-password' : 'default',
+  // lineHeight: 'looser',
+  // multiline: true,
+  // numberOfLines: 3,
+  // placeholder: 'Secret phrase, private key, Ethereum address, or ENS name',
+  // returnKeyType: 'done',
+  // size: 'large',
+  // spellCheck: false,
+  // weight: 'semibold',
 })`
   margin-bottom: ${android ? 55 : 0};
   min-height: ${android ? 100 : 50};
@@ -164,16 +164,16 @@ export default function ImportSeedPhraseSheet() {
         </Text>
         <SecretTextAreaContainer>
           <SecretTextArea
-            color={isSecretValid ? colors.appleBlue : colors.dark}
-            onChangeText={() => {}}
-            onFocus={() => {}}
-            onSubmitEditing={() => {}}
-            placeholder="Secret phrase, private key, Ethereum address or ENS name"
-            // placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
-            // ref={inputRef}
-            returnKeyType="done"
-            size="large"
-            spellCheck={false}
+            // color={isSecretValid ? colors.appleBlue : colors.dark}
+            // onChangeText={() => {}}
+            // onFocus={() => {}}
+            // onSubmitEditing={() => {}}
+            // placeholder="Secret phrase, private key, Ethereum address or ENS name"
+            // // placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
+            // // ref={inputRef}
+            // returnKeyType="done"
+            // size="large"
+            // spellCheck={false}
             testID="import-sheet-input"
             // value={seedPhrase}
           />
