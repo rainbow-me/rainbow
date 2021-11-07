@@ -82,6 +82,7 @@ struct PriceWidgetView: View {
                 .fontWeight(.heavy)
                 .foregroundColor(Color.white)
                 .tracking(0.4)
+                .frame(height: 20)
                 .mask(
                   LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.9), Color.white.opacity(0.8)]), startPoint: .leading, endPoint: .trailing)
                 )
