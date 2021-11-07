@@ -67,6 +67,18 @@
       "cancel": "Cancel",
       "close": "Close",
       "confirm": "Confirm",
+      "confirm_exchange": {
+        "deposit": "Hold to Deposit",
+        "enter_amount": "Enter an Amount",
+        "fetching_details": "Fetching Details...",
+        "insufficient_eth": "Insufficient ETH",
+        "insufficient_funds": "Insufficient Funds",
+        "insufficient_liquidity": "Insufficient Liquidity",
+        "swap": "Hold to Swap",
+        "swap_anyway": "Swap Anyway",
+        "view_details": "View Details",
+        "withdraw": "Hold to Withdraw"
+      },
       "connect_walletconnect": "Use WalletConnect",
       "delete": "Delete",
       "disconnect_account": "Log Out",
@@ -97,19 +109,7 @@
       "try_again": "Try again",
       "unhide": "Unhide",
       "unpin": "Unpin",
-      "view": "View",
-      "confirm_exchange": {
-        "deposit": "Hold to Deposit",
-        "enter_amount": "Enter an Amount",
-        "fetching_details": "Fetching Details...",
-        "insufficient_eth": "Insufficient ETH",
-        "insufficient_funds": "Insufficient Funds",
-        "insufficient_liquidity": "Insufficient Liquidity",
-        "swap": "Hold to Swap",
-        "swap_anyway": "Swap Anyway",
-        "view_details": "View Details",
-        "withdraw": "Hold to Withdraw"
-      }
+      "view": "View"
     },
     "cloud": {
       "backup_success": "Your wallet has been backed up successfully!"
@@ -212,6 +212,40 @@
     },
     "modal": {
       "approve_tx": "Approve transaction on {{walletType}}",
+      "back_up": {
+        "alerts": {
+          "cloud_not_enabled": {
+            "description": "Looks like iCloud drive is not enabled on your device. Do you want to see how to enable it?",
+            "label": "iCloud Not Enabled",
+            "no_thanks": "No thanks",
+            "show_me": "Yes, Show me"
+          }
+        },
+        "default": {
+          "button": {
+            "cloud": "Back up your wallet",
+            "manual": "Back up manually"
+          },
+          "description": "Don't lose your wallet! Save an encrypted copy to %{cloudPlatformName}",
+          "title": "Back up your wallet"
+        },
+        "existing": {
+          "button": {
+            "later": "Maybe later",
+            "now": "Back up now"
+          },
+          "description": "You have wallets that have not been backed up yet. Back them up in case you lose this device.",
+          "title": "Would you like to back up?"
+        },
+        "imported": {
+          "button": {
+            "back_up": "Back up to %{cloudPlatformName}",
+            "no_thanks": "No thanks"
+          },
+          "description": "Don't lose your wallet! Save an encrypted copy to %{cloudPlatformName}.",
+          "title": "Would you like to back up?"
+        }
+      },
       "confirm_tx": "Confirm transaction from {{walletName}}",
       "default_wallet": " Wallet",
       "deposit_dropdown_label": "Exchange my",
@@ -244,41 +278,7 @@
       "tx_hash": "Transaction Hash",
       "tx_verify": "Verify your transaction here",
       "withdrawal_dropdown_label": "For",
-      "withdrawal_input_label": "Get",
-      "back_up": {
-        "alerts": {
-          "cloud_not_enabled": {
-            "description": "Looks like iCloud drive is not enabled on your device. Do you want to see how to enable it?",
-            "label": "iCloud Not Enabled",
-            "no_thanks": "No thanks",
-            "show_me": "Yes, Show me"
-          }
-        },
-        "default": {
-          "description": "Don't lose your wallet! Save an encrypted copy to %{cloudPlatformName}",
-          "title": "Back up your wallet",
-          "button": {
-            "cloud": "Back up your wallet",
-            "manual": "Back up manually"
-          }
-        },
-        "existing": {
-          "description": "You have wallets that have not been backed up yet. Back them up in case you lose this device.",
-          "title": "Would you like to back up?",
-          "button": {
-            "later": "Maybe later",
-            "now": "Back up now"
-          }
-        },
-        "imported": {
-          "description": "Don't lose your wallet! Save an encrypted copy to %{cloudPlatformName}.",
-          "title": "Would you like to back up?",
-          "button": {
-            "back_up": "Back up to %{cloudPlatformName}",
-            "no_thanks": "No thanks"
-          }
-        }
-      }
+      "withdrawal_input_label": "Get"
     },
     "notification": {
       "error": {
@@ -304,27 +304,27 @@
     },
     "savings": {
       "deposit": "Deposit",
-      "label": "Savings",
-      "withdraw": "Withdraw",
       "earnings": {
-        "10_year": "10-Year",
         "100_year": "100-Year",
+        "10_year": "10-Year",
         "20_year": "20-Year",
-        "5_year": "5-Year",
         "50_year": "50-Year",
+        "5_year": "5-Year",
         "est": "Est.",
         "label": "Earnings",
         "monthly": "Monthly",
         "yearly": "Yearly"
-      }
+      },
+      "label": "Savings",
+      "withdraw": "Withdraw"
     },
     "send_feedback": {
       "copy_email": "Copy email address",
-      "no_thanks": "No thanks",
       "email_error": {
         "description": "Would you like to manually copy our feedback email address to your clipboard?",
         "title": "Error launching email client"
-      }
+      },
+      "no_thanks": "No thanks"
     },
     "settings": {
       "backup": "Backup",
@@ -367,11 +367,11 @@
       },
       "warning": {
         "edit_price": "Edit Gas Price",
-        "proceed_anyway": "Proceed Anyway",
         "invalid_price": {
           "message": "You need to enter a valid amount",
           "title": "Invalid Gas Price"
         },
+        "proceed_anyway": "Proceed Anyway",
         "too_high": {
           "message": "Double check that you entered the correct amount—you’re likely paying more than you need to!",
           "title": "High gas price!"
@@ -383,57 +383,57 @@
       }
     },
     "time": {
-      "now": "Now",
       "days": {
-        "micro": "d",
         "long": {
           "plural": "days",
           "singular": "day"
         },
+        "micro": "d",
         "short": {
           "plural": "days",
           "singular": "day"
         }
       },
       "hours": {
-        "micro": "h",
         "long": {
           "plural": "hours",
           "singular": "hour"
         },
+        "micro": "h",
         "short": {
           "plural": "hrs",
           "singular": "hr"
         }
       },
       "milliseconds": {
-        "micro": "ms",
         "long": {
           "plural": "milliseconds",
           "singular": "millisecond"
         },
+        "micro": "ms",
         "short": {
           "plural": "ms",
           "singular": "ms"
         }
       },
       "minutes": {
-        "micro": "m",
         "long": {
           "plural": "minutes",
           "singular": "minute"
         },
+        "micro": "m",
         "short": {
           "plural": "mins",
           "singular": "min"
         }
       },
+      "now": "Now",
       "seconds": {
-        "micro": "s",
         "long": {
           "plural": "seconds",
           "singular": "second"
         },
+        "micro": "s",
         "short": {
           "plural": "secs",
           "singular": "sec"
@@ -441,10 +441,6 @@
       }
     },
     "wallet": {
-      "copy_address": "Copy Address",
-      "label": "Wallets",
-      "unrecognized_qrcode": "Sorry, this QR code could not be recognized.",
-      "unrecognized_qrcode_title": "Unrecognized QR Code",
       "action": {
         "add_existing": "Add an existing wallet",
         "cancel": "Cancel",
@@ -467,6 +463,9 @@
       },
       "add_cash": {
         "card_notice": "Works with most debit cards",
+        "interstitial": {
+          "other_amount": "Other amount"
+        },
         "need_help_button_email_subject": "support",
         "need_help_button_label": "Get Support",
         "on_the_way_line_1": "Your %{currencySymbol} is on the way",
@@ -481,10 +480,7 @@
         "running_checks": "Running checks...",
         "success_message": "It's here 🥳",
         "watching_mode_confirm_message": "The wallet you have open is read-only, so you can’t control what’s inside. Are you sure you want to add cash to %{truncatedAddress}?",
-        "watching_mode_confirm_title": "You’re in Watching Mode",
-        "interstitial": {
-          "other_amount": "Other amount"
-        }
+        "watching_mode_confirm_title": "You’re in Watching Mode"
       },
       "assets": {
         "no_price": "Small Balances"
@@ -493,6 +489,7 @@
         "please": "Please authenticate",
         "please_seed_phrase": "Please authenticate to view private key"
       },
+      "copy_address": "Copy Address",
       "feedback": {
         "cancel": "No thanks",
         "choice": "Would you like to manually copy our feedback email address to your clipboard?",
@@ -507,6 +504,7 @@
         "warning": "This is alpha software.",
         "welcome": "Welcome to Rainbow"
       },
+      "label": "Wallets",
       "loading": {
         "error": "There has been an error loading the wallet. Please kill the app and retry.",
         "message": "Loading"
@@ -546,9 +544,6 @@
         "show_seed_phrase": "Show Secret Phrase"
       },
       "transaction": {
-        "confirm": "Confirm transaction",
-        "request": "Transaction Request",
-        "send": "Send Transaction",
         "alert": {
           "authentication": "Authentication Failed",
           "cancelled_transaction": "Failed to send cancelled transaction to WalletConnect",
@@ -556,8 +551,13 @@
           "failed_transaction": "Failed to send transaction",
           "failed_transaction_status": "Failed to send failed transaction status",
           "transaction_status": "Failed to send transaction status"
-        }
+        },
+        "confirm": "Confirm transaction",
+        "request": "Transaction Request",
+        "send": "Send Transaction"
       },
+      "unrecognized_qrcode": "Sorry, this QR code could not be recognized.",
+      "unrecognized_qrcode_title": "Unrecognized QR Code",
       "wallet_connect": {
         "error": "Error initializing with WalletConnect",
         "missing_fcm": "Unable to initialize WalletConnect: missing push notification token. Please try again."
