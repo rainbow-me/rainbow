@@ -62,7 +62,7 @@ import {
   rainbowTokenList,
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { borders, lightModeThemeColors } from '@rainbow-me/styles';
+import { borders } from '@rainbow-me/styles';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
@@ -156,11 +156,16 @@ export default function SendSheet(props) {
   const showAssetForm = isValidAddress && !isEmpty(selected);
 
   const isNft = selected?.type === AssetTypes.nft;
-  let color = useColorForAsset({
-    address: selected?.mainnet_address || selected.address,
-  });
+  let colorForAsset = useColorForAsset(
+    {
+      address: selected?.mainnet_address || selected.address,
+    },
+    null,
+    false,
+    true
+  );
   if (isNft) {
-    color = colors.appleBlue;
+    colorForAsset = colors.appleBlue;
   }
 
   const isL2 = useMemo(() => {
@@ -697,14 +702,6 @@ export default function SendSheet(props) {
     setRecipient(event);
   }, []);
 
-  // if ETH color, use blueApple
-  const assetColor = useMemo(() => {
-    if (color === colors.brighten(lightModeThemeColors.dark)) {
-      return colors.appleBlue;
-    }
-    return color;
-  }, [color, colors]);
-
   useEffect(() => {
     updateDefaultGasLimit();
   }, [updateDefaultGasLimit]);
@@ -840,7 +837,7 @@ export default function SendSheet(props) {
             buttonRenderer={
               <SheetActionButton
                 androidWidth={deviceWidth - 60}
-                color={assetColor}
+                color={colorForAsset}
                 disabled={buttonDisabled}
                 forceShadows
                 fullWidth

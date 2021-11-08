@@ -56,7 +56,7 @@ interface GasState {
   defaultGasLimit: number;
   gasLimit: number | null;
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed;
-  isSufficientGas: Boolean | null;
+  isSufficientGas: boolean | null;
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee;
   gasFeesBySpeed: GasFeesBySpeed | LegacyGasFeesBySpeed;
   txNetwork: Network | null;

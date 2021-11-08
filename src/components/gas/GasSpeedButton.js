@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
-import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
+import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { ChainBadge, CoinIcon } from '../coin-icon';
 import { Column, Row } from '../layout';
@@ -120,15 +120,7 @@ const GasSpeedButton = ({
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
-  const colorForAsset = useColorForAsset(asset || {});
-
-  // if ETH color, use blueApple
-  const assetColor = useMemo(() => {
-    if (colorForAsset === colors.brighten(lightModeThemeColors.dark)) {
-      return colors.appleBlue;
-    }
-    return colorForAsset;
-  }, [colorForAsset, colors]);
+  const colorForAsset = useColorForAsset(asset || {}, null, false, false);
 
   const {
     gasFeeParamsBySpeed,
@@ -374,7 +366,7 @@ const GasSpeedButton = ({
       <GasSpeedLabelPager
         colorForAsset={
           gasOptionsAvailable
-            ? assetColor
+            ? colorForAsset
             : colors.alpha(colors.blueGreyDark, 0.4)
         }
         currentNetwork={currentNetwork}
@@ -401,7 +393,7 @@ const GasSpeedButton = ({
       </ContextMenuButton>
     );
   }, [
-    assetColor,
+    colorForAsset,
     colors,
     currentNetwork,
     gasIsNotReady,

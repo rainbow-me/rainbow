@@ -20,7 +20,7 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors, lightModeThemeColors } from '@rainbow-me/styles';
+import { colors } from '@rainbow-me/styles';
 
 const springConfig = {
   damping: 500,
@@ -50,7 +50,7 @@ export default function CustomGasState({ asset }) {
   const [footerHeight, setFooterHeight] = useHeight(FOOTER_MIN_HEIGHT);
   const [contentHeight, setContentHeight] = useHeight(CONTENT_MIN_HEIGHT);
   const contentScroll = useSharedValue(0);
-  const colorForAsset = useColorForAsset(asset || {});
+  const colorForAsset = useColorForAsset(asset || {}, null, false, false);
   const { selectedGasFee, currentBlockParams } = useGas();
   const [currentGasTrend] = useState(getTrendKey(currentBlockParams?.trend));
   useAndroidDisableGesturesOnFocus();
@@ -70,14 +70,6 @@ export default function CustomGasState({ asset }) {
         insets.bottom -
         (sheetHeightWithoutKeyboard + keyboardOffset)
       : 0;
-
-  // if ETH color, use blueApple
-  const assetColor = useMemo(() => {
-    if (colorForAsset === colors.brighten(lightModeThemeColors.dark)) {
-      return colors.appleBlue;
-    }
-    return colorForAsset;
-  }, [colorForAsset]);
 
   useEffect(() => {
     if (isKeyboardVisible) {
@@ -113,7 +105,7 @@ export default function CustomGasState({ asset }) {
       <FloatingPanel onLayout={setContentHeight} radius={39}>
         <ExchangeHeader />
         <FeesPanel
-          colorForAsset={assetColor}
+          colorForAsset={colorForAsset}
           currentGasTrend={currentGasTrend}
           onCustomGasBlur={hideKeyboard}
           onCustomGasFocus={showKeyboard}
@@ -121,7 +113,7 @@ export default function CustomGasState({ asset }) {
         />
         <Divider />
         <FeesPanelTabs
-          colorForAsset={assetColor}
+          colorForAsset={colorForAsset}
           onPressTabPill={hideKeyboard}
         />
       </FloatingPanel>
