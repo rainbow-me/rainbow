@@ -1,9 +1,5 @@
 import BigNumber from 'bignumber.js';
 import { map, zipObject } from 'lodash';
-import {
-  // @ts-ignore
-  IS_TESTING,
-} from 'react-native-dotenv';
 import { getMinimalTimeUnitStringForMs } from '../helpers/time';
 import {
   convertRawAmountToBalance,
@@ -136,11 +132,7 @@ export const parseRainbowMeteorologyData = (
   } = rainbowMeterologyData.data;
   const parsedFees: GasFeeParamsBySpeed = {};
   const parsedCurrentBaseFee = parseGasFeeParam(currentBaseFee);
-
-  // we need to hardcode base fee suggestion for e2e since we're running those
-  // in a fork that's not in sync with mainnet
-  const baseFee = IS_TESTING === 'true' ? gweiToWei(1000) : baseFeeSuggestion;
-  const parsedBaseFeeSuggestion = parseGasFeeParam(baseFee);
+  const parsedBaseFeeSuggestion = parseGasFeeParam(baseFeeSuggestion);
 
   Object.keys(maxPriorityFeeSuggestions).forEach(speed => {
     const maxPriorityFee =

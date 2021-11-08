@@ -1,6 +1,10 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { get, isEmpty } from 'lodash';
+import {
+  // @ts-ignore
+  IS_TESTING,
+} from 'react-native-dotenv';
 import { AppDispatch, AppGetState } from './store';
 import {
   ConfirmationTimeByPriorityFee,
@@ -25,11 +29,13 @@ import {
 import {
   getProviderForNetwork,
   isEIP1559LegacyNetwork,
+  web3Provider,
 } from '@rainbow-me/handlers/web3';
 import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasParamsFormat,
   getFallbackGasPrices,
+  gweiToWei,
   parseGasFeeParam,
   parseGasFees,
   parseGasFeesBySpeed,
@@ -46,7 +52,6 @@ import {
   OPTIMISM_ETH_ADDRESS,
 } from '@rainbow-me/references';
 import { fromWei, greaterThanOrEqualTo, multiply } from '@rainbow-me/utilities';
-
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -337,11 +342,30 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
               currentBaseFee,
               confirmationTimeByPriorityFee,
             } = await getEIP1559GasParams();
+
+            // Set a really gas estimate to guarantee that we're gonna be over
+            // the basefee at the time we fork mainnet during our hardhat tests
+            let baseFee = baseFeePerGas;
+            if (network === networkTypes.mainnet && IS_TESTING === 'true') {
+              const providerUrl = (
+                web3Provider ||
+                ({} as {
+                  connection: { url: string };
+                })
+              )?.connection?.url;
+              if (
+                providerUrl?.startsWith('http://') &&
+                providerUrl?.endsWith('8545')
+              ) {
+                baseFee = parseGasFeeParam(gweiToWei(1000));
+              }
+            }
+
             if (!isEmpty(existingGasFees[CUSTOM])) {
               // Preserve custom values while updating prices
               gasFeeParamsBySpeed[CUSTOM] = {
                 ...existingGasFees[CUSTOM],
-                baseFeePerGas,
+                baseFeePerGas: baseFee,
               };
             } else if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
               // set CUSTOM to NORMAL if not defined
