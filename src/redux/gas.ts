@@ -1,6 +1,10 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { get, isEmpty } from 'lodash';
+import {
+  // @ts-ignore
+  IS_TESTING,
+} from 'react-native-dotenv';
 import { AppDispatch, AppGetState } from './store';
 import {
   ConfirmationTimeByPriorityFee,
@@ -342,7 +346,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
             // Set a really gas estimate to guarantee that we're gonna be over
             // the basefee at the time we fork mainnet during our hardhat tests
             let baseFee = baseFeePerGas;
-            if (network === networkTypes.mainnet) {
+            if (network === networkTypes.mainnet && IS_TESTING === 'true') {
               const providerUrl = (
                 web3Provider ||
                 ({} as {
