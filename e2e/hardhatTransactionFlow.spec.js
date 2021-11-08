@@ -6,7 +6,6 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import WalletConnect from '@walletconnect/client';
 import { ethers } from 'ethers';
-import { HARDHAT_URL_ANDROID, HARDHAT_URL_IOS } from 'react-native-dotenv';
 import * as Helpers from './helpers';
 
 let connector = null;
@@ -14,6 +13,8 @@ let uri = null;
 let account = null;
 
 const RAINBOW_WALLET_DOT_ETH = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
+const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
+
 
 beforeAll(async () => {
   // Connect to hardhat
@@ -22,7 +23,7 @@ beforeAll(async () => {
   await Helpers.delay(5000);
 
   const provider = new JsonRpcProvider(
-    device.getPlatform() === 'ios' ? HARDHAT_URL_IOS : HARDHAT_URL_ANDROID,
+    device.getPlatform() === 'ios' ? process.env.HARDHAT_URL_IOS : process.env.HARDHAT_URL_ANDROID,
     'any'
   );
 
