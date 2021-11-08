@@ -39,6 +39,12 @@ const sendETHtoTestWallet = async () => {
 beforeAll(async () => {
   // Connect to hardhat
   await exec('yarn hardhat');
+
+  if (process.env.CI.toString() === 'true') {
+    await exec(
+      'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
+    );
+  }
 });
 
 describe('Hardhat Transaction Flow', () => {
