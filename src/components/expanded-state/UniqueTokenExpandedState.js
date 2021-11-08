@@ -31,7 +31,7 @@ import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
 } from './unique-token';
-import { apiGetUniqueTokenFloorPrice } from '@rainbow-me/handlers/opensea-api';
+import { apiGetUniqueTokenFloorPrice, apiGetUniqueTokenLastSaleOrListPrice } from '@rainbow-me/handlers/opensea-api';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
@@ -125,6 +125,8 @@ const UniqueTokenExpandedState = ({
   const [fallbackImageColor, setFallbackImageColor] = useState(null);
   const [textColor, setTextColor] = useState('#FFFFFF');
   const [floorPrice, setFloorPrice] = useState(null);
+  // const [lastPrice, setLastPrice] = useState(null);
+  // const [currentPrice, setCurrentPrice] = useState(null);
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const [showFloorInEth, setShowFloorInEth] = useState(true);
 
@@ -166,6 +168,7 @@ const UniqueTokenExpandedState = ({
 
   useEffect(async() => {
     apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then((result) => setFloorPrice(result));
+    apiGetUniqueTokenLastSaleOrListPrice(accountAddress, network, urlSuffixForAsset);
   }, [urlSuffixForAsset]);
 
   const handlePressCollectionFloor = useCallback(() => {

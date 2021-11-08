@@ -38,6 +38,65 @@ export const apiGetAccountUniqueTokens = async (network, address, page) => {
   }
 };
 
+export const apiGetUniqueTokenLastSaleOrListPrice = async (
+  accountAddress,
+  network,
+  urlSuffixForAsset,
+  whichPrice
+) => {
+  try {
+    const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
+    const contractAddress = urlSuffixForAsset.split('/');
+    const url = `https://${networkPrefix}api.opensea.io/api/v1/assets?owner=${accountAddress}&asset_contract_address=${contractAddress[0]}&order_direction=desc&offset=0&limit=1`;
+    const data = await rainbowFetch(url, {
+      headers: {
+        'Accept': 'application/json',
+        'X-Api-Key': OPENSEA_API_KEY,
+      },
+      method: 'get',
+      timeout: 5000, // 5 secs
+    });
+
+    const baseData = data?.data?.assets[0];
+
+    const last_sale = baseData?.last_sale?.total_price ?? 'None';
+
+    const last_sale_token =
+      last_sale !== 'None' ? baseData.last_sale?.payment_token?.symbol : '';
+
+    const current_price = baseData?.sell_orders
+      ? baseData?.sell_orders[0]?.current_price
+      : 'None';
+
+    const current_price_token =
+      current_price !== 'None'
+        ? baseData.sell_orders[0]?.payment_token_contract?.symbol
+        : '';
+
+    let formatted_last_sale = 'None';
+    let formatted_current_price = 'None';
+
+    if (last_sale !== 'None') {
+      formatted_last_sale = FormatAssetForDisplay({
+        amount: last_sale,
+        token: last_sale_token,
+      });
+    }
+
+    if (current_price !== 'None') {
+      formatted_current_price = FormatAssetForDisplay({
+        amount: current_price,
+        token: current_price_token,
+      });
+    }
+
+    return whichPrice ? formatted_current_price : formatted_last_sale; 
+  } catch (error) {
+    logger.debug('LIST OR SALE PRICE FETCH ERROR', error);
+    throw error;
+  }
+};
+
 export const apiGetUniqueTokenFloorPrice = async (
   network,
   urlSuffixForAsset
@@ -157,96 +216,103 @@ const fetchAllTokenHistoryEvents = async ({
 };
 
 const filterAndMapData = async (contractAddress, array) => {
-  return Promise.all(
-    array
-      .filter(
-        ({ event_type }) =>
-          event_type === 'created' ||
-          event_type === 'transfer' ||
-          event_type === 'successful' ||
-          event_type === 'cancelled'
-      )
-      .map(async function (uniqueEvent) {
-        let event_type = uniqueEvent.event_type;
-        let created_date = uniqueEvent.created_date;
-        let from_account = '0x123';
-        let to_account = '0x123';
-        let sale_amount = '0';
-        let list_amount = '0';
-        let payment_token = 'x';
-        let to_account_eth_address = 'x';
-        let event_object;
+  let addressArray = new Array();
+  const events = await array
+    .filter(
+      ({ event_type }) =>
+        event_type === 'created' ||
+        event_type === 'transfer' ||
+        event_type === 'successful' ||
+        event_type === 'cancelled'
+    )
+    .map(function (uniqueEvent) {
+      let event_type = uniqueEvent.event_type;
+      let created_date = uniqueEvent.created_date;
+      let from_account = '0x123';
+      let to_account = '0x123';
+      let sale_amount = '0';
+      let list_amount = '0';
+      let payment_token = 'x';
+      let to_account_eth_address = 'x';
+      let event_object;
 
-        switch (event_type) {
-          case 'transfer': {
-            const address = uniqueEvent.to_account?.address || '????';
-            let from_acc = uniqueEvent.from_account?.address;
-            if (
-              contractAddress === ENS_NFT_CONTRACT_ADDRESS &&
-              from_acc === '0x0000000000000000000000000000000000000000'
-            ) {
-              event_type = 'ens-registration';
-              to_account_eth_address = uniqueEvent.to_account.address;
-              to_account = address;
-            } else if (
-              contractAddress !== ENS_NFT_CONTRACT_ADDRESS &&
-              from_acc === '0x0000000000000000000000000000000000000000'
-            ) {
-              event_type = 'mint';
-              to_account_eth_address = uniqueEvent.to_account.address;
-              to_account = address;
-            } else {
-              to_account_eth_address = uniqueEvent.to_account.address;
-              to_account = address;
-            }
-            break;
+      switch (event_type) {
+        case 'transfer': {
+          const address = uniqueEvent.to_account?.address || '????';
+          let from_acc = uniqueEvent.from_account?.address;
+          if (
+            contractAddress === ENS_NFT_CONTRACT_ADDRESS &&
+            from_acc === '0x0000000000000000000000000000000000000000'
+          ) {
+            event_type = 'ens-registration';
+            to_account_eth_address = uniqueEvent.to_account.address;
+            to_account = address;
+          } else if (
+            contractAddress !== ENS_NFT_CONTRACT_ADDRESS &&
+            from_acc === '0x0000000000000000000000000000000000000000'
+          ) {
+            event_type = 'mint';
+            to_account_eth_address = uniqueEvent.to_account.address;
+            to_account = address;
+          } else {
+            to_account_eth_address = uniqueEvent.to_account.address;
+            to_account = address;
           }
-          case 'successful':
-            payment_token =
-              uniqueEvent.payment_token?.symbol === 'WETH'
-                ? 'ETH'
-                : uniqueEvent.payment_token?.symbol;
-            // eslint-disable-next-line no-case-declarations
-            const temp_sale_amount = FormatAssetForDisplay({
-              amount: uniqueEvent.total_price,
-              token: payment_token,
-            });
-
-            sale_amount = handleSignificantDecimals(temp_sale_amount, 5);
-            break;
-
-          case 'created':
-            payment_token =
-              uniqueEvent.payment_token?.symbol === 'WETH'
-                ? 'ETH'
-                : uniqueEvent.payment_token?.symbol;
-            // eslint-disable-next-line no-case-declarations
-            const temp_list_amount = FormatAssetForDisplay({
-              amount: uniqueEvent.starting_price,
-              token: payment_token,
-            });
-            list_amount = handleSignificantDecimals(temp_list_amount, 5);
-
-            break;
-
-          default:
-          case 'cancelled':
-            break;
+          break;
         }
-        event_object = {
-          created_date,
-          event_type,
-          from_account,
-          list_amount,
-          payment_token,
-          sale_amount,
-          to_account,
-          to_account_eth_address,
-        };
+        case 'successful':
+          payment_token =
+            uniqueEvent.payment_token?.symbol === 'WETH'
+              ? 'ETH'
+              : uniqueEvent.payment_token?.symbol;
+          // eslint-disable-next-line no-case-declarations
+          const temp_sale_amount = FormatAssetForDisplay({
+            amount: uniqueEvent.total_price,
+            token: payment_token,
+          });
 
-        return event_object;
-      })
-  );
+          sale_amount = handleSignificantDecimals(temp_sale_amount, 5);
+          break;
+
+        case 'created':
+          payment_token =
+            uniqueEvent.payment_token?.symbol === 'WETH'
+              ? 'ETH'
+              : uniqueEvent.payment_token?.symbol;
+          // eslint-disable-next-line no-case-declarations
+          const temp_list_amount = FormatAssetForDisplay({
+            amount: uniqueEvent.starting_price,
+            token: payment_token,
+          });
+          list_amount = handleSignificantDecimals(temp_list_amount, 5);
+
+          break;
+
+        default:
+        case 'cancelled':
+          break;
+      }
+      event_object = {
+        created_date,
+        event_type,
+        from_account,
+        list_amount,
+        payment_token,
+        sale_amount,
+        to_account,
+        to_account_eth_address,
+      };
+
+      addressArray.push(to_account_eth_address);
+      return event_object;
+    });
+
+  // const allnames = await ReverseRecords.getNames(addressArray);
+
+  // logger.debug(allnames);
+  // logger.debug(addressArray);
+  
+  return events;
 };
 
 //Need to figure out how to do this without querying ethers 1000 times
