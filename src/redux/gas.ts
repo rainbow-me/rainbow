@@ -56,6 +56,7 @@ import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const { CUSTOM, NORMAL } = gasUtils;
+let gasPricesHandle: number | null = null;
 
 interface GasState {
   defaultGasLimit: number;
@@ -143,8 +144,6 @@ const getSelectedGasFee = (
 };
 
 // -- Actions --------------------------------------------------------------- //
-let gasPricesHandle: number | null = null;
-
 const { GAS_PRICE_SOURCES } = gasUtils;
 
 /**
