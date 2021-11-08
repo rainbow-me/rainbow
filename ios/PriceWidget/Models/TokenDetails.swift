@@ -14,14 +14,12 @@ public struct TokenDetails: Codable {
   public let identifier: String?
   public let symbol: String?
   public let color: String?
-  public let isVerified: Bool?
 
-  init(name: String?, identifier: String?, symbol: String?, color: String?, isVerified: Bool?) {
+  init(name: String?, identifier: String?, symbol: String?, color: String?) {
     self.name = name
     self.identifier = identifier
     self.symbol = symbol
     self.color = color
-    self.isVerified = isVerified
   }
   
   private enum CodingKeys: String, CodingKey {
@@ -29,6 +27,5 @@ public struct TokenDetails: Codable {
     case identifier = "id"
     case symbol = "symbol"
     case color = "color"
-    case isVerified = "isVerified"
   }
 }

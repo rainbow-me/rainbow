@@ -25,21 +25,17 @@ final class TokenProvider {
     if (coinGeckoTokenList != nil && rainbowTokenList != nil) {
       rainbowTokenList!.tokens.forEach {
         let address = $0.address.lowercased()
-        if ($0.extensions != nil) {
-          addressTokenMap[address] = TokenDetails(name: $0.name, identifier: nil, symbol: $0.symbol, color: $0.extensions!.color, isVerified: $0.extensions!.isVerified == true ? true : false)
-        } else {
-          addressTokenMap[address] = TokenDetails(name: $0.name, identifier: nil, symbol: $0.symbol, color: "#282C2C", isVerified: false)
-        }
+        addressTokenMap[address] = TokenDetails(name: $0.name, identifier: nil, symbol: $0.symbol, color: "#282C2C")
       }
       coinGeckoTokenList!.forEach {
         let address = $0.platforms.ethereum.lowercased()
         let incompleteToken = addressTokenMap[address]
         if (incompleteToken != nil) {
-          addressTokenMap[address] = TokenDetails(name: incompleteToken!.name, identifier: $0.id, symbol: incompleteToken!.symbol, color: incompleteToken!.color, isVerified: incompleteToken!.isVerified)
+          addressTokenMap[address] = TokenDetails(name: incompleteToken!.name, identifier: $0.id, symbol: incompleteToken!.symbol, color: incompleteToken!.color)
         }
       }
     }
-    addressTokenMap["eth"] = TokenDetails(name: "Ethereum", identifier: "ethereum", symbol: "ETH", color: "#282C2C", isVerified: true)
+    addressTokenMap["eth"] = TokenDetails(name: "Ethereum", identifier: "ethereum", symbol: "ETH", color: "#282C2C")
     return addressTokenMap
   }
   
