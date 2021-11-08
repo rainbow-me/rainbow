@@ -30,21 +30,13 @@ extension IntentHandler: SelectTokenIntentHandling {
     let tokenProvider = TokenProvider.shared
     let addressTokenMap = tokenProvider.getAddressTokenMap()
     
-    let verifiedTokens = addressTokenMap.values.filter {
-      $0.isVerified == true
-    }
-    
-    verifiedTokens.forEach { token in
+    addressTokenMap.values.forEach { token in
       if (token.identifier != nil && token.name != nil && token.symbol != nil) {
         let tokenIntentObject = Token(identifier: token.identifier!, display: token.name! + " (" + token.symbol! + ")")
         tokenItems.append(tokenIntentObject)
       }
     }
     
-    let sortedTokenItems = tokenItems.sorted {
-      $0.displayString < $1.displayString
-    }
-    
-    completion(INObjectCollection(items: sortedTokenItems), nil)
+    completion(INObjectCollection(items: tokenItems), nil)
   }
 }
