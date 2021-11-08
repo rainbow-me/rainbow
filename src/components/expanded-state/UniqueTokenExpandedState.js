@@ -106,11 +106,9 @@ const UniqueTokenExpandedState = ({
 
   const {
     collection: { description: familyDescription, external_link: familyLink },
-    currentPrice,
     description,
     familyName,
     isSendable,
-    lastPrice,
     traits,
     uniqueId,
     urlSuffixForAsset,
@@ -125,8 +123,8 @@ const UniqueTokenExpandedState = ({
   const [fallbackImageColor, setFallbackImageColor] = useState(null);
   const [textColor, setTextColor] = useState('#FFFFFF');
   const [floorPrice, setFloorPrice] = useState(null);
-  // const [lastPrice, setLastPrice] = useState(null);
-  // const [currentPrice, setCurrentPrice] = useState(null);
+  const [lastSalePrice, setLastSalePrice] = useState(null);
+  const [currentPrice, setCurrentPrice] = useState(null);
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const [showFloorInEth, setShowFloorInEth] = useState(true);
 
@@ -138,8 +136,6 @@ const UniqueTokenExpandedState = ({
 
   const imageColorWithFallback =
     imageColor || fallbackImageColor || colors.paleBlue;
-
-  let lastSalePrice = lastPrice || 'None';
 
   // if (lastSalePrice != 'None') {
   //   lastSalePrice = handleSignificantDecimals(parseFloat(lastPrice), 5);
@@ -168,7 +164,8 @@ const UniqueTokenExpandedState = ({
 
   useEffect(async() => {
     apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then((result) => setFloorPrice(result));
-    apiGetUniqueTokenLastSaleOrListPrice(accountAddress, network, urlSuffixForAsset);
+    apiGetUniqueTokenLastSaleOrListPrice(accountAddress, network, urlSuffixForAsset, true).then((result) => setCurrentPrice(result));
+    apiGetUniqueTokenLastSaleOrListPrice(accountAddress, network, urlSuffixForAsset, false).then((result) => setLastSalePrice(result));
   }, [urlSuffixForAsset]);
 
   const handlePressCollectionFloor = useCallback(() => {

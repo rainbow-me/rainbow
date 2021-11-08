@@ -77,20 +77,29 @@ export const apiGetUniqueTokenLastSaleOrListPrice = async (
     let formatted_current_price = 'None';
 
     if (last_sale !== 'None') {
-      formatted_last_sale = FormatAssetForDisplay({
+      const temp_formatted_last_sale = FormatAssetForDisplay({
         amount: last_sale,
         token: last_sale_token,
       });
+
+      formatted_last_sale = handleSignificantDecimals(
+        temp_formatted_last_sale,
+        5
+      );
     }
 
     if (current_price !== 'None') {
-      formatted_current_price = FormatAssetForDisplay({
+      const temp_formatted_current_price = FormatAssetForDisplay({
         amount: current_price,
         token: current_price_token,
       });
+      formatted_current_price = handleSignificantDecimals(
+        temp_formatted_current_price,
+        5
+      );
     }
 
-    return whichPrice ? formatted_current_price : formatted_last_sale; 
+    return whichPrice ? formatted_current_price : formatted_last_sale;
   } catch (error) {
     logger.debug('LIST OR SALE PRICE FETCH ERROR', error);
     throw error;
