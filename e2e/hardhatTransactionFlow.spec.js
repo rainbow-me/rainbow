@@ -15,10 +15,8 @@ let account = null;
 const RAINBOW_WALLET_DOT_ETH = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
-beforeAll(async () => {
-  // Connect to hardhat
-  await exec('yarn hardhat');
-  await Helpers.delay(5000);
+const sendETHtoTestWallet = async () => {
+  // Send additional ETH to wallet before start sending
   const provider = new JsonRpcProvider(
     device.getPlatform() === 'ios'
       ? process.env.HARDHAT_URL_IOS
@@ -35,6 +33,12 @@ beforeAll(async () => {
     to: TESTING_WALLET,
     value: ethers.utils.parseEther('20'),
   });
+  return true;
+};
+
+beforeAll(async () => {
+  // Connect to hardhat
+  await exec('yarn hardhat');
 });
 
 describe('Hardhat Transaction Flow', () => {
@@ -106,6 +110,8 @@ describe('Hardhat Transaction Flow', () => {
   }
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
+    await sendETHtoTestWallet();
+
     await Helpers.tap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
     await Helpers.swipe('profile-screen', 'left', 'slow');
