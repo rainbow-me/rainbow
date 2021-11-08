@@ -45,6 +45,7 @@ export const apiGetUniqueTokenFloorPrice = async (
   try {
     const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
     const url = `https://${networkPrefix}api.opensea.io/api/v1/asset/${urlSuffixForAsset}`;
+    logger.log(url);
     const data = await rainbowFetch(url, {
       headers: {
         'Accept': 'application/json',
@@ -57,6 +58,7 @@ export const apiGetUniqueTokenFloorPrice = async (
     const slug = data?.data?.collection?.slug;
 
     const collectionURL = `https://${networkPrefix}api.opensea.io/api/v1/collection/${slug}`;
+    logger.log(collectionURL);
     const collectionData = await rainbowFetch(collectionURL, {
       headers: {
         'Accept': 'application/json',
@@ -72,25 +74,27 @@ export const apiGetUniqueTokenFloorPrice = async (
       return 'None';
     }
 
-    const floor_price = handleSignificantDecimals(temp_price, 5);
+    const temp_floor_price = handleSignificantDecimals(temp_price, 5);
 
-    //logger.debug("FP: ",  floor_price);
-
-    return temp_price;
+    const floor_price = temp_floor_price + ' ETH';
+    
+    logger.log('FLOOR_PRICE: ' + floor_price);
+    return floor_price;
   } catch (error) {
-    logger.debug('FLOOR FETCH:', error);
+    logger.debug('TOKEN FETCH ERROR', error);
     throw error;
   }
 };
 
 export const apiGetTokenHistory = async (
+  network,
   contractAddress,
   tokenID,
   accountAddress
 ) => {
   try {
-    const checkFungibility = `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=1`;
-    // logger.log(checkFungibility);
+    const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
+    const checkFungibility = `https://${networkPrefix}api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=1`;
 
     const fungData = await rainbowFetch(checkFungibility, {
       headers: {
@@ -108,6 +112,7 @@ export const apiGetTokenHistory = async (
     const allEvents = await fetchAllTokenHistoryEvents({
       accountAddress,
       contractAddress,
+      networkPrefix,
       semiFungible,
       tokenID,
     });
@@ -121,6 +126,7 @@ export const apiGetTokenHistory = async (
 };
 
 const fetchAllTokenHistoryEvents = async ({
+  networkPrefix,
   semiFungible,
   accountAddress,
   contractAddress,
@@ -131,8 +137,8 @@ const fetchAllTokenHistoryEvents = async ({
   let nextPage = true;
   while (nextPage) {
     const urlPage = semiFungible
-      ? `https://api.opensea.io/api/v1/events?account_address=${accountAddress}&asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`
-      : `https://api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`;
+      ? `https://${networkPrefix}api.opensea.io/api/v1/events?account_address=${accountAddress}&asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`
+      : `https://${networkPrefix}api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`;
 
     let currentPage = await rainbowFetch(urlPage, {
       headers: {

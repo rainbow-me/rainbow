@@ -49,6 +49,7 @@ import {
   buildRainbowUrl,
   ethereumUtils,
   getDominantColorFromImage,
+  logger,
   magicMemo,
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
@@ -164,15 +165,8 @@ const UniqueTokenExpandedState = ({
   }, [colors.whiteLabel, imageColorWithFallback]);
 
   useEffect(async() => {
-    try {
-      const result  = await apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset);
-      logger.log('returned')
-      setFloorPrice(result);
-    } catch (error) {
-      logger.debug('UTES: ', error);
-      throw error;
-    }
-  }, [network, urlSuffixForAsset]);
+    apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then((result) => setFloorPrice(result));
+  }, [urlSuffixForAsset]);
 
   const handlePressCollectionFloor = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {

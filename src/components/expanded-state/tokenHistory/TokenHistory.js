@@ -12,7 +12,7 @@ import { abbreviations } from '@rainbow-me/utils';
 import { useTheme } from '@rainbow-me/context/ThemeContext';
 import { apiGetTokenHistory } from '@rainbow-me/handlers/opensea-api';
 import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
-import { useAccountProfile, useDimensions } from '@rainbow-me/hooks';
+import { useAccountProfile, useDimensions, useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
@@ -100,6 +100,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
   const { colors } = useTheme();
   const { width } = useDimensions();
   const { accountAddress, accountENS } = useAccountProfile();
+  const { network } = useAccountSettings();
   const { navigate } = useNavigation();
 
   useEffect(async () => {
@@ -110,17 +111,12 @@ const TokenHistory = ({ contractAndToken, color }) => {
 
   //Query opensea using the contract address + tokenID
   useEffect(async() => {
-    try {
-      const results = await apiGetTokenHistory(contractAddress, tokenID, accountAddress);
+      const results = await apiGetTokenHistory(network, contractAddress, tokenID, accountAddress);
       setTokenHistory(results);
       if (results.length <= 2) {
         setTokenHistoryShort(true);
       }
       setIsLoading(false);
-    } catch (error) {
-      logger.debug('BLEW UP:', error);
-      throw error;
-    }
     
     }, [contractAddress, tokenID]);
 
@@ -132,85 +128,61 @@ const TokenHistory = ({ contractAndToken, color }) => {
 
   const renderItem = ({ item, index }) => {
     let isFirst = (index == 0);
+    let label;
+    let icon;
     let suffix = ``;
     let suffixIcon = `􀆊`;
     let isClickable = false;
 
     switch (item?.event_type) {
       case EventEnum.DELIST.type:
-        return renderHistoryDescription({
-          isClickable,
-          isFirst,
-          item,
-          label: EventEnum.DELIST.label,
-          suffix,
-          suffixIcon,
-          icon: EventEnum.DELIST.icon,
-        });
+          label = EventEnum.DELIST.label;
+          icon = EventEnum.DELIST.icon;
+          break;
 
       case EventEnum.ENS.type:
-        return renderHistoryDescription({
-          isClickable,
-          isFirst,
-          item,
-          label: EventEnum.ENS.label,
-          suffix,
-          suffixIcon,
-          icon: EventEnum.ENS.icon,
-        });
+        label = EventEnum.ENS.label;
+        icon = EventEnum.ENS.icon;
+        break;
 
       case EventEnum.LIST.type:
         suffix = `${item.list_amount} ${item.payment_token}`;
-        return renderHistoryDescription({
-          isClickable,
-          isFirst,
-          item,
-          label: EventEnum.LIST.label,
-          suffix,
-          suffixIcon,
-          icon: EventEnum.LIST.icon,
-        });
+        label = EventEnum.LIST.label;
+        icon = EventEnum.LIST.icon;
+        break;
 
       case EventEnum.MINT.type:
-        return renderHistoryDescription({
-          isClickable,
-          isFirst,
-          item,
-          label: EventEnum.MINT.label,
-          suffix,
-          suffixIcon,
-          icon: EventEnum.MINT.icon,
-        });
+        label = EventEnum.MINT.label;
+        icon = EventEnum.MINT.icon;
+        break;
 
       case EventEnum.SALE.type:
         suffix = `${item.sale_amount} ${item.payment_token}`;
-        return renderHistoryDescription({
-          isClickable,
-          isFirst,
-          item,
-          label: EventEnum.SALE.label,
-          suffix,
-          suffixIcon,
-          icon: EventEnum.SALE.icon,
-        });
+        label = EventEnum.SALE.label;
+        icon = EventEnum.SALE.icon;
+        break;
 
       case EventEnum.TRANSFER.type:
         suffix = `${abbreviations.address(item.to_account, 2)}`;
         isClickable = (accountAddress.toLowerCase() !== item.to_account_eth_address)
-        return renderHistoryDescription({
-          isClickable,
-          isFirst,
-          item,
-          label: EventEnum.TRANSFER.label,
-          suffix,
-          suffixIcon,
-          icon: EventEnum.TRANSFER.icon,
-        });
+        label = EventEnum.TRANSFER.label;
+        icon = EventEnum.TRANSFER.icon;
+        break;
       
       default: 
         logger.debug('default');
         break;
     }
+
+    return renderHistoryDescription({
+      isClickable,
+      isFirst,
+      item,
+      label,
+      suffix,
+      suffixIcon,
+      icon,
+    });
   };
 
   const renderHistoryDescription = ({
