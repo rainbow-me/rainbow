@@ -29,7 +29,7 @@ import {
 /* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
 import { addCoinsToHiddenList } from './editOptions';
-import { updateNonceManager } from './nonceManager';
+import { incrementNonce, decrementNonce } from './nonceManager';
 // eslint-disable-next-line import/no-cycle
 import { uniqueTokensRefreshState } from './uniqueTokens';
 /* eslint-disable-next-line import/no-cycle */
@@ -375,7 +375,15 @@ const checkForConfirmedSavingsActions = transactionsData => dispatch => {
 const checkForUpdatedNonce = transactionData => dispatch => {
   const [latestTx] = transactionData;
   const { address_from, network, nonce } = latestTx;
-  dispatch(updateNonceManager(address_from, nonce, network));
+  dispatch(incrementNonce(address_from, nonce, network));
+};
+
+const checkForRemovedNonce = removedTransactions => dispatch => {
+  const txSortedByNonce = removedTransactions.sort(
+    ({ nonce: n1 }, { nonce: n2 }) => n2 - n1
+  );
+  const { address_from, network, nonce } = txSortedByNonce[0];
+  dispatch(decrementNonce(address_from, nonce, network));
 };
 
 export const portfolioReceived = message => async (dispatch, getState) => {
@@ -464,7 +472,7 @@ export const transactionsRemoved = message => async (dispatch, getState) =>
     const { transactions } = getState().data;
     const removeHashes = map(transactionData, txn => txn.hash);
     logger.log('[data] - remove txn hashes', removeHashes);
-    const updatedTransactions = filter(
+    const [updatedTransactions, removedTransactions] = partition(
       transactions,
       txn => !includes(removeHashes, ethereumUtils.getHash(txn))
     );
@@ -473,6 +481,7 @@ export const transactionsRemoved = message => async (dispatch, getState) =>
       payload: updatedTransactions,
       type: DATA_UPDATE_TRANSACTIONS,
     });
+    checkForRemovedNonce(removedTransactions);
     saveLocalTransactions(updatedTransactions, accountAddress, network);
   });
 

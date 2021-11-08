@@ -41,6 +41,34 @@ const NONCE_MANAGER_LOAD_SUCCESS = 'NONCE_MANAGER_LOAD_SUCCESS';
 const NONCE_MANAGER_LOAD_FAILURE = 'NONCE_MANAGER_LOAD_FAILURE';
 const NONCE_MANAGER_UPDATE_NONCE = 'NONCE_MANAGER_UPDATE_NONCE';
 
+// -- Helpers --------------------------------------- //
+const getCurrentNonce = (
+  getState: AppGetState,
+  params: NonceManagerUpdate
+): [number, NonceManager] => {
+  const { nonceManager } = getState();
+  const { account, network } = params;
+  let currentNonceData: NonceManager = { ...nonceManager };
+  const currentNonce = currentNonceData[account]?.[network]?.nonce;
+  return [currentNonce, currentNonceData];
+};
+
+const updateNonce = (
+  dispatch: AppDispatch,
+  nonceData: NonceManager,
+  params: NonceManagerUpdate
+) => {
+  const { account, network, nonce } = params;
+  dispatch({ payload: params, type: NONCE_MANAGER_UPDATE_NONCE });
+  saveNonceManager({
+    ...nonceData,
+    [account]: {
+      ...(nonceData[account] || {}),
+      [network]: { nonce },
+    },
+  });
+};
+
 // -- Actions ---------------------------------------- //
 export const nonceManagerLoadState = () => async (dispatch: AppDispatch) => {
   try {
@@ -56,31 +84,49 @@ export const nonceManagerLoadState = () => async (dispatch: AppDispatch) => {
   }
 };
 
-export const incrementNonceManager = (
+export const incrementNonce = (
   account: string,
   nonce: number,
   network?: string
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
-  const { nonceManager } = getState();
-  let updatedNonceManager: NonceManager = { ...nonceManager };
-  const ntwrk = network || Network.mainnet;
-  const txNonce = updatedNonceManager[account]?.[ntwrk]?.nonce;
+  const nonceParams = {
+    account,
+    network: network || Network.mainnet,
+    nonce,
+  };
+  const [currentNonce, currentNonceData] = getCurrentNonce(
+    getState,
+    nonceParams
+  );
+  const nonceCounterExists = !!currentNonce;
+  const counterShouldBeIncremented = currentNonce < nonce;
 
-  if (!txNonce || txNonce < nonce) {
-    updatedNonceManager = {
-      ...updatedNonceManager,
-      [account]: {
-        ...(updatedNonceManager[account] || {}),
-        [ntwrk]: {
-          nonce,
-        },
-      },
-    };
-    dispatch({
-      payload: { account, network, nonce },
-      type: NONCE_MANAGER_UPDATE_NONCE,
+  if (!nonceCounterExists || counterShouldBeIncremented) {
+    updateNonce(dispatch, currentNonceData, nonceParams);
+  }
+};
+
+export const decrementNonce = (
+  account: string,
+  nonce: number,
+  network?: string
+) => (dispatch: AppDispatch, getState: AppGetState) => {
+  const ntwrk = network || Network.mainnet;
+  let [currentNonce, currentNonceData] = getCurrentNonce(getState, {
+    account,
+    network: ntwrk,
+    nonce,
+  });
+  const nonceCounterExists = !!currentNonce;
+  const counterShouldBeDecremented = currentNonce >= nonce;
+
+  if (!nonceCounterExists || counterShouldBeDecremented) {
+    const decrementedNonce = nonce - 1;
+    updateNonce(dispatch, currentNonceData, {
+      account,
+      network: ntwrk,
+      nonce: decrementedNonce,
     });
-    saveNonceManager(updatedNonceManager);
   }
 };
 
