@@ -6,7 +6,6 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import WalletConnect from '@walletconnect/client';
 import { ethers } from 'ethers';
-import { HARDHAT_URL_ANDROID, HARDHAT_URL_IOS } from 'react-native-dotenv';
 import * as Helpers from './helpers';
 
 let connector = null;
@@ -14,13 +13,16 @@ let uri = null;
 let account = null;
 
 const RAINBOW_WALLET_DOT_ETH = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
+const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
 beforeAll(async () => {
   // Connect to hardhat
   await exec('yarn hardhat');
   await Helpers.delay(5000);
   const provider = new JsonRpcProvider(
-    device.getPlatform() === 'ios' ? HARDHAT_URL_IOS : HARDHAT_URL_ANDROID,
+    device.getPlatform() === 'ios'
+      ? process.env.HARDHAT_URL_IOS
+      : process.env.HARDHAT_URL_ANDROID,
     'any'
   );
   // Hardhat account 0 that has 10000 ETH
@@ -30,7 +32,7 @@ beforeAll(async () => {
   );
   // Sending 20 ETH so we have enough to pay the tx fees even when the gas is too high
   await wallet.sendTransaction({
-    to: RAINBOW_WALLET_DOT_ETH,
+    to: TESTING_WALLET,
     value: ethers.utils.parseEther('20'),
   });
 });
