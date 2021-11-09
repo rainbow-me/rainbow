@@ -407,15 +407,15 @@ describe('Hardhat Transaction Flow', () => {
     }
   });
 */
-  // it('Should show completed send NFT (Cryptokitties)', async () => {
-  //   try {
-  //     await Helpers.checkIfVisible('Sent-Arun Cattybinky-1.00 CryptoKitties');
-  //   } catch (e) {
-  //     await Helpers.checkIfVisible(
-  //       'Sending-Arun Cattybinky-1.00 CryptoKitties'
-  //     );
-  //   }
-  // });
+  it('Should show completed send NFT (Cryptokitties)', async () => {
+    try {
+      await Helpers.checkIfVisible('Sent-Arun Cattybinky-1.00 CryptoKitties');
+    } catch (e) {
+      await Helpers.checkIfVisible(
+        'Sending-Arun Cattybinky-1.00 CryptoKitties'
+      );
+    }
+  });
 
   it('Should show completed send ERC20 (BAT)', async () => {
     try {
