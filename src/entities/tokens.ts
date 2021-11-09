@@ -39,6 +39,14 @@ export interface ParsedAddressAsset extends Asset {
     relative_change_24h?: number;
     value?: number;
   };
+  asset_contract?: {
+    address?: string;
+    name?: string;
+    nft_version?: string;
+    schema_name?: string;
+    symbol?: string;
+    total_supply?: number | null;
+  };
   type?: string;
   id: string;
   uniqueId: string;

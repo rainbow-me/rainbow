@@ -11,7 +11,7 @@ import {
 } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import UnstoppableResolution from '@unstoppabledomains/resolution';
-import { get, startsWith } from 'lodash';
+import { startsWith } from 'lodash';
 import { RainbowConfig } from '../model/config';
 import {
   AssetType,
@@ -172,8 +172,8 @@ export const isTestnet = (network: Network) => {
 export const getProviderForNetwork = async (
   network: Network | string = Network.mainnet
 ): Promise<StaticJsonRpcProvider> => {
-  if (networkProviders[network as Network]) {
-    return networkProviders[network as Network]!;
+  if (isNetworkEnum(network) && networkProviders[network]) {
+    return networkProviders[network]!;
   }
 
   if (!isNetworkEnum(network)) {
@@ -543,7 +543,7 @@ export const getTransferNftTransaction = async (
 ): Promise<TransactionDetailsReturned> => {
   const recipient = (await resolveNameOrAddress(transaction.to)) as string;
   const { from } = transaction;
-  const contractAddress = get(transaction, 'asset.asset_contract.address');
+  const contractAddress = transaction.asset.asset_contract?.address;
   const data = getDataForNftTransfer(from, recipient, transaction.asset);
   const gasParams = getTransactionGasParams(transaction);
   return {
@@ -602,14 +602,14 @@ export const createSignableTransaction = async (
   transaction: NewTransactionNonNullable
 ): Promise<TransactionDetailsReturned> => {
   if (
-    get(transaction, 'asset.address') === ETH_ADDRESS ||
-    get(transaction, 'asset.address') === ARBITRUM_ETH_ADDRESS ||
-    get(transaction, 'asset.address') === OPTIMISM_ETH_ADDRESS ||
-    get(transaction, 'asset.address') === MATIC_POLYGON_ADDRESS
+    transaction.asset.address === ETH_ADDRESS ||
+    transaction.asset.address === ARBITRUM_ETH_ADDRESS ||
+    transaction.asset.address === OPTIMISM_ETH_ADDRESS ||
+    transaction.asset.address === MATIC_POLYGON_ADDRESS
   ) {
     return getTxDetails(transaction);
   }
-  const isNft = get(transaction, 'asset.type') === AssetType.nft;
+  const isNft = transaction.asset.type === AssetType.nft;
   const result = isNft
     ? await getTransferNftTransaction(transaction)
     : await getTransferTokenTransaction(transaction);
@@ -622,9 +622,9 @@ export const createSignableTransaction = async (
  * @returns The estimated portion.
  */
 const estimateAssetBalancePortion = (asset: ParsedAddressAsset): string => {
-  if (!(asset.type === AssetType.nft)) {
-    const assetBalance = get(asset, 'balance.amount');
-    const decimals = get(asset, 'decimals');
+  if (asset.type !== AssetType.nft && asset.balance?.amount) {
+    const assetBalance = asset.balance?.amount;
+    const decimals = asset.decimals;
     const portion = multiply(assetBalance, 0.1);
     const trimmed = handleSignificantDecimals(portion, decimals);
     return convertAmountToRawAmount(trimmed, decimals);
@@ -659,8 +659,8 @@ export const getDataForNftTransfer = (
   to: string,
   asset: ParsedAddressAsset
 ): string => {
-  const nftVersion = get(asset, 'asset_contract.nft_version');
-  const schema_name = get(asset, 'asset_contract.schema_name');
+  const nftVersion = asset.asset_contract?.nft_version;
+  const schema_name = asset.asset_contract?.schema_name;
   if (nftVersion === '3.0') {
     const transferMethodHash = smartContractMethods.nft_transfer_from.hash;
     const data = ethereumUtils.getDataString(transferMethodHash, [
@@ -731,7 +731,7 @@ export const buildTransaction = async (
     value,
   };
   if (asset.type === AssetType.nft) {
-    const contractAddress = get(asset, 'asset_contract.address');
+    const contractAddress = asset.asset_contract?.address;
     const data = getDataForNftTransfer(address, _recipient, asset);
     txData = {
       data,
