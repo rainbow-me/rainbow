@@ -6,7 +6,6 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import WalletConnect from '@walletconnect/client';
 import { ethers } from 'ethers';
-import { HARDHAT_URL_ANDROID, HARDHAT_URL_IOS } from 'react-native-dotenv';
 import * as Helpers from './helpers';
 
 let connector = null;
@@ -16,17 +15,14 @@ let account = null;
 const RAINBOW_WALLET_DOT_ETH = '0x7a3d05c70581bD345fe117c06e45f9669205384f';
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
 
-beforeAll(async () => {
-  // Connect to hardhat
-  await exec('yarn hardhat');
-
-  await Helpers.delay(5000);
-
+const sendETHtoTestWallet = async () => {
+  // Send additional ETH to wallet before start sending
   const provider = new JsonRpcProvider(
-    device.getPlatform() === 'ios' ? HARDHAT_URL_IOS : HARDHAT_URL_ANDROID,
+    device.getPlatform() === 'ios'
+      ? process.env.HARDHAT_URL_IOS
+      : process.env.HARDHAT_URL_ANDROID,
     'any'
   );
-
   // Hardhat account 0 that has 10000 ETH
   const wallet = new Wallet(
     '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
@@ -37,6 +33,18 @@ beforeAll(async () => {
     to: TESTING_WALLET,
     value: ethers.utils.parseEther('20'),
   });
+  return true;
+};
+
+beforeAll(async () => {
+  // Connect to hardhat
+  await exec('yarn hardhat');
+
+  if (process.env.CI.toString() === 'true') {
+    await exec(
+      'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
+    );
+  }
 });
 
 describe('Hardhat Transaction Flow', () => {
@@ -108,6 +116,8 @@ describe('Hardhat Transaction Flow', () => {
   }
 
   it('Should show Hardhat Toast after pressing Connect To Hardhat', async () => {
+    await sendETHtoTestWallet();
+
     await Helpers.tap('hardhat-section');
     await Helpers.checkIfVisible('testnet-toast-Hardhat');
     await Helpers.swipe('profile-screen', 'left', 'slow');
@@ -394,15 +404,15 @@ describe('Hardhat Transaction Flow', () => {
     }
   });
 */
-  it('Should show completed send NFT (Cryptokitties)', async () => {
-    try {
-      await Helpers.checkIfVisible('Sent-Arun Cattybinky-1.00 CryptoKitties');
-    } catch (e) {
-      await Helpers.checkIfVisible(
-        'Sending-Arun Cattybinky-1.00 CryptoKitties'
-      );
-    }
-  });
+  // it('Should show completed send NFT (Cryptokitties)', async () => {
+  //   try {
+  //     await Helpers.checkIfVisible('Sent-Arun Cattybinky-1.00 CryptoKitties');
+  //   } catch (e) {
+  //     await Helpers.checkIfVisible(
+  //       'Sending-Arun Cattybinky-1.00 CryptoKitties'
+  //     );
+  //   }
+  // });
 
   it('Should show completed send ERC20 (BAT)', async () => {
     try {

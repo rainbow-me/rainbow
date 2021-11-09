@@ -44,7 +44,7 @@ const EXPLORER_SET_FALLBACK_HANDLER = 'explorer/EXPLORER_SET_FALLBACK_HANDLER';
 
 let assetInfoHandle = null;
 
-const TRANSACTIONS_LIMIT = 1000;
+const TRANSACTIONS_LIMIT = 250;
 const ZERION_ASSETS_TIMEOUT = 15000; // 15 seconds
 const ASSET_INFO_TIMEOUT = 10 * 60 * 1000; // 10 minutes
 
