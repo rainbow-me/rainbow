@@ -1,4 +1,6 @@
 import analytics from '@segment/analytics-react-native';
+import { Dispatch } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
 import { updateLanguage } from '../languages';
 import { NativeCurrencyKeys } from '@rainbow-me/entities';
 import {
@@ -12,7 +14,7 @@ import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import { dataResetState } from '@rainbow-me/redux/data';
 import { explorerClearState, explorerInit } from '@rainbow-me/redux/explorer';
-import { AppDispatch } from '@rainbow-me/redux/store';
+import { AppState } from '@rainbow-me/redux/store';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -71,7 +73,9 @@ interface SettingsStateUpdateLanguageSuccessAction {
   payload: SettingsState['language'];
 }
 
-export const settingsLoadState = () => async (dispatch: AppDispatch) => {
+export const settingsLoadState = () => async (
+  dispatch: Dispatch<SettingsStateUpdateNativeCurrencySuccessAction>
+) => {
   try {
     const nativeCurrency = await getNativeCurrency();
     analytics.identify(null, { currency: nativeCurrency });
@@ -85,7 +89,9 @@ export const settingsLoadState = () => async (dispatch: AppDispatch) => {
   }
 };
 
-export const settingsLoadNetwork = () => async (dispatch: AppDispatch) => {
+export const settingsLoadNetwork = () => async (
+  dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>
+) => {
   try {
     const network = await getNetwork();
     const chainId = ethereumUtils.getChainIdFromNetwork(network);
@@ -100,7 +106,7 @@ export const settingsLoadNetwork = () => async (dispatch: AppDispatch) => {
 };
 
 export const settingsUpdateAccountAddress = (accountAddress: string) => async (
-  dispatch: AppDispatch
+  dispatch: Dispatch<SettingsStateUpdateSettingsAddressAction>
 ) => {
   dispatch({
     payload: accountAddress,
@@ -109,7 +115,7 @@ export const settingsUpdateAccountAddress = (accountAddress: string) => async (
 };
 
 export const settingsUpdateNetwork = (network: Network) => async (
-  dispatch: AppDispatch
+  dispatch: Dispatch<SettingsStateUpdateNetworkSuccessAction>
 ) => {
   const chainId = ethereumUtils.getChainIdFromNetwork(network);
   await web3SetHttpProvider(network);
@@ -125,7 +131,7 @@ export const settingsUpdateNetwork = (network: Network) => async (
 };
 
 export const settingsChangeLanguage = (language: string) => async (
-  dispatch: AppDispatch
+  dispatch: Dispatch<SettingsStateUpdateLanguageSuccessAction>
 ) => {
   updateLanguage(language);
   try {
@@ -141,7 +147,11 @@ export const settingsChangeLanguage = (language: string) => async (
 };
 
 export const settingsChangeNativeCurrency = (nativeCurrency: string) => async (
-  dispatch: AppDispatch
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    SettingsStateUpdateNativeCurrencySuccessAction
+  >
 ) => {
   dispatch(dataResetState());
   dispatch(explorerClearState());
