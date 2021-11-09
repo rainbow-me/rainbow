@@ -47,7 +47,8 @@ export const apiGetUniqueTokenLastSaleOrListPrice = async (
   try {
     const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
     const contractAddress = urlSuffixForAsset.split('/');
-    const url = `https://${networkPrefix}api.opensea.io/api/v1/assets?owner=${accountAddress}&asset_contract_address=${contractAddress[0]}&order_direction=desc&offset=0&limit=1`;
+    const url = `https://${networkPrefix}api.opensea.io/api/v1/assets?owner=${accountAddress}&token_ids=${contractAddress[1]}&asset_contract_address=${contractAddress[0]}&order_direction=desc&offset=0&limit=1`;
+    logger.log(url);
     const data = await rainbowFetch(url, {
       headers: {
         'Accept': 'application/json',
@@ -77,8 +78,9 @@ export const apiGetUniqueTokenLastSaleOrListPrice = async (
     let formatted_current_price = 'None';
 
     if (last_sale !== 'None') {
+      const splitSale = last_sale.split('.');
       const temp_formatted_last_sale = FormatAssetForDisplay({
-        amount: last_sale,
+        amount: splitSale[0],
         token: last_sale_token,
       });
 
@@ -89,8 +91,9 @@ export const apiGetUniqueTokenLastSaleOrListPrice = async (
     }
 
     if (current_price !== 'None') {
+      const splitPrice = current_price.split('.');
       const temp_formatted_current_price = FormatAssetForDisplay({
-        amount: current_price,
+        amount: splitPrice[0],
         token: current_price_token,
       });
       formatted_current_price = handleSignificantDecimals(
@@ -99,7 +102,10 @@ export const apiGetUniqueTokenLastSaleOrListPrice = async (
       );
     }
 
-    return whichPrice ? formatted_current_price : formatted_last_sale;
+    logger.log(formatted_last_sale + " last sale");
+    logger.log(formatted_current_price + " curr price");
+
+    return whichPrice ? formatted_current_price + ` ${current_price_token}` : formatted_last_sale + ` ${last_sale_token}`;
   } catch (error) {
     logger.debug('LIST OR SALE PRICE FETCH ERROR', error);
     throw error;
@@ -113,7 +119,6 @@ export const apiGetUniqueTokenFloorPrice = async (
   try {
     const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
     const url = `https://${networkPrefix}api.opensea.io/api/v1/asset/${urlSuffixForAsset}`;
-    logger.log(url);
     const data = await rainbowFetch(url, {
       headers: {
         'Accept': 'application/json',
@@ -126,7 +131,6 @@ export const apiGetUniqueTokenFloorPrice = async (
     const slug = data?.data?.collection?.slug;
 
     const collectionURL = `https://${networkPrefix}api.opensea.io/api/v1/collection/${slug}`;
-    logger.log(collectionURL);
     const collectionData = await rainbowFetch(collectionURL, {
       headers: {
         'Accept': 'application/json',
@@ -145,11 +149,9 @@ export const apiGetUniqueTokenFloorPrice = async (
     const temp_floor_price = handleSignificantDecimals(temp_price, 5);
 
     const floor_price = temp_floor_price + ' ETH';
-    
-    logger.log('FLOOR_PRICE: ' + floor_price);
     return floor_price;
   } catch (error) {
-    logger.debug('TOKEN FETCH ERROR', error);
+    logger.debug('FLOOR PRICE ERROR', error);
     throw error;
   }
 };
@@ -188,7 +190,7 @@ export const apiGetTokenHistory = async (
     const result = await filterAndMapData(contractAddress, allEvents);
     return result;
   } catch (error) {
-    logger.debug('FETCH ERROR:', error);
+    logger.debug('TOKEN HISTORY:', error);
     throw error;
   }
 };
@@ -274,9 +276,12 @@ const filterAndMapData = async (contractAddress, array) => {
             uniqueEvent.payment_token?.symbol === 'WETH'
               ? 'ETH'
               : uniqueEvent.payment_token?.symbol;
+          
+          // eslint-disable-next-line no-case-declarations
+          const zz = uniqueEvent.total_price.split('.');
           // eslint-disable-next-line no-case-declarations
           const temp_sale_amount = FormatAssetForDisplay({
-            amount: uniqueEvent.total_price,
+            amount: zz[0],
             token: payment_token,
           });
 
@@ -289,8 +294,10 @@ const filterAndMapData = async (contractAddress, array) => {
               ? 'ETH'
               : uniqueEvent.payment_token?.symbol;
           // eslint-disable-next-line no-case-declarations
+          const yy = uniqueEvent.starting_price.split('.');
+          // eslint-disable-next-line no-case-declarations
           const temp_list_amount = FormatAssetForDisplay({
-            amount: uniqueEvent.starting_price,
+            amount: yy[0],
             token: payment_token,
           });
           list_amount = handleSignificantDecimals(temp_list_amount, 5);

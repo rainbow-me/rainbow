@@ -127,6 +127,8 @@ const UniqueTokenExpandedState = ({
   const [currentPrice, setCurrentPrice] = useState(null);
   const [showCurrentPriceInEth, setShowCurrentPriceInEth] = useState(true);
   const [showFloorInEth, setShowFloorInEth] = useState(true);
+  const [contractAddress, setContractAddress] = useState('');
+  const [tokenID, setTokenID] = useState('');
 
   const isShowcaseAsset = useMemo(() => showcaseTokens.includes(uniqueId), [
     showcaseTokens,
@@ -162,7 +164,7 @@ const UniqueTokenExpandedState = ({
     }
   }, [colors.whiteLabel, imageColorWithFallback]);
 
-  useEffect(async() => {
+  useEffect(() => {
     apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then((result) => setFloorPrice(result));
     apiGetUniqueTokenLastSaleOrListPrice(accountAddress, network, urlSuffixForAsset, true).then((result) => setCurrentPrice(result));
     apiGetUniqueTokenLastSaleOrListPrice(accountAddress, network, urlSuffixForAsset, false).then((result) => setLastSalePrice(result));
@@ -309,22 +311,22 @@ const UniqueTokenExpandedState = ({
           <TokenInfoRow>
             <TokenInfoItem
               color={
-                lastSalePrice === 'None' && !currentPrice
+                lastSalePrice === 'None ' && currentPrice === 'None '
                   ? colors.alpha(colors.whiteLabel, 0.5)
                   : colors.whiteLabel
               }
               isNft
               onPress={toggleCurrentPriceDisplayCurrency}
               size="big"
-              title={currentPrice ? '􀋢 For sale' : 'Last sale price'}
+              title={currentPrice !== 'None ' ? '􀋢 For sale' : 'Last sale price'}
               weight={
-                lastSalePrice === 'None' && !currentPrice ? 'bold' : 'heavy'
+                lastSalePrice === 'None ' && !currentPrice ? 'bold' : 'heavy'
               }
             >
               {showCurrentPriceInEth ||
               nativeCurrency === 'ETH' ||
-              !currentPrice
-                ? currentPrice|| lastSalePrice
+              currentPrice !== 'None '
+                ? (currentPrice === 'None ' ? lastSalePrice : currentPrice)
                 : convertAmountToNativeDisplay(
                     parseFloat(currentPrice) * priceOfEth,
                     nativeCurrency

@@ -103,7 +103,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
   const { network } = useAccountSettings();
   const { navigate } = useNavigation();
 
-  useEffect(async () => {
+  useEffect(() => {
     const tokenInfoArray = contractAndToken.split('/');
     setContractAddress(tokenInfoArray[0]);
     setTokenID(tokenInfoArray[1]);
