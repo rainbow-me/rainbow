@@ -1,9 +1,9 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { debounce, isEmpty } from 'lodash';
 import { ThunkDispatch } from 'redux-thunk';
-import { web3Provider } from '../handlers/web3';
-import store, { AppGetState, AppState } from '../redux/store';
-import { multicallUpdateOutdatedListeners } from './multicall';
+import { web3Provider } from '@rainbow-me/handlers/web3';
+import { multicallUpdateOutdatedListeners } from '@rainbow-me/redux/multicall';
+import store, { AppGetState, AppState } from '@rainbow-me/redux/store';
 import logger from 'logger';
 
 // -- Actions ---------------------------------------- //
