@@ -1,3 +1,4 @@
+import { NativeCurrencyKeys } from '../entities/nativeCurrencyTypes';
 import {
   getNativeCurrency,
   getNetwork,
@@ -106,7 +107,7 @@ export const INITIAL_STATE = {
   accountAddress: '',
   chainId: 1,
   language: 'en',
-  nativeCurrency: 'USD',
+  nativeCurrency: NativeCurrencyKeys.USD,
   network: networkTypes.mainnet,
 };
 
