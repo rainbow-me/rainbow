@@ -1,9 +1,10 @@
 import produce from 'immer';
+import { Dispatch } from 'redux';
 import {
   getImageMetadata,
   saveImageMetadata,
-} from '../handlers/localstorage/globalSettings';
-import { AppDispatch, AppGetState } from './store';
+} from '@rainbow-me/handlers/localstorage/globalSettings';
+import { AppGetState } from '@rainbow-me/redux/store';
 
 // -- Constants --------------------------------------- //
 const CLEAR = 'imageMetadata/CLEAR';
@@ -62,11 +63,12 @@ interface UpdateImageMetadataFunctionParameter {
 }
 
 // -- Actions ---------------------------------------- //
-export const clearImageMetadataCache = () => (dispatch: AppDispatch) =>
-  dispatch({ type: CLEAR });
+export const clearImageMetadataCache = () => (
+  dispatch: Dispatch<ImageMetadataClearAction>
+) => dispatch({ type: CLEAR });
 
 export const imageMetadataCacheLoadState = () => async (
-  dispatch: AppDispatch
+  dispatch: Dispatch<ImageMetadataLoadAction>
 ) => {
   const metadataCache = await getImageMetadata();
   dispatch({
@@ -79,7 +81,7 @@ export const updateImageMetadataCache = ({
   id,
   metadata,
 }: UpdateImageMetadataFunctionParameter) => (
-  dispatch: AppDispatch,
+  dispatch: Dispatch<ImageMetadataMergeAction>,
   getState: AppGetState
 ) => {
   const { imageMetadata } = getState().imageMetadata;
