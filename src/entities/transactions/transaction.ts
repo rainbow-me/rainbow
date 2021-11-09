@@ -13,7 +13,7 @@ export interface RainbowTransaction {
     display: string;
   } | null;
   dappName?: string; // for walletconnect
-  data?: string;
+  data?: string; // for pending tx
   description: string | null;
   from: EthereumAddress | null;
   gasLimit?: BigNumberish;
