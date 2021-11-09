@@ -8,7 +8,6 @@ import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import TokenHistoryEdgeFade from './TokenHistoryEdgeFade';
 import TokenHistoryLoader from './TokenHistoryLoader';
-import { abbreviations } from '@rainbow-me/utils';
 import { useTheme } from '@rainbow-me/context/ThemeContext';
 import { apiGetTokenHistory } from '@rainbow-me/handlers/opensea-api';
 import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
@@ -163,7 +162,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
         break;
 
       case EventEnum.TRANSFER.type:
-        suffix = `${abbreviations.address(item.to_account, 2)}`;
+        suffix = `${item.to_account}`;
         isClickable = (accountAddress.toLowerCase() !== item.to_account_eth_address)
         label = EventEnum.TRANSFER.label;
         icon = EventEnum.TRANSFER.icon;

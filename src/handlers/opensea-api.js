@@ -1,10 +1,14 @@
 import { OPENSEA_API_KEY } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
-import { ENS_NFT_CONTRACT_ADDRESS } from '../references';
 import {
-  convertAddressToENSOrAddressDisplay,
-  FormatAssetForDisplay,
-} from '@rainbow-me/helpers';
+  ENS_NFT_CONTRACT_ADDRESS,
+  REVERSE_RECORDS_MAINNET_ADDRESS,
+  reverseRecordsABI,
+} from '@rainbow-me/references';
+import { Contract } from '@ethersproject/contracts';
+import { web3Provider } from './web3';
+import { abbreviations } from '@rainbow-me/utils';
+import { FormatAssetForDisplay } from '@rainbow-me/helpers';
 import NetworkTypes from '@rainbow-me/networkTypes';
 import { parseAccountUniqueTokens } from '@rainbow-me/parsers';
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
@@ -38,6 +42,7 @@ export const apiGetAccountUniqueTokens = async (network, address, page) => {
   }
 };
 
+//If whichPrice is true, return the current price. If false, return the last sale price
 export const apiGetUniqueTokenLastSaleOrListPrice = async (
   accountAddress,
   network,
@@ -48,7 +53,6 @@ export const apiGetUniqueTokenLastSaleOrListPrice = async (
     const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
     const contractAddress = urlSuffixForAsset.split('/');
     const url = `https://${networkPrefix}api.opensea.io/api/v1/assets?owner=${accountAddress}&token_ids=${contractAddress[1]}&asset_contract_address=${contractAddress[0]}&order_direction=desc&offset=0&limit=1`;
-    logger.log(url);
     const data = await rainbowFetch(url, {
       headers: {
         'Accept': 'application/json',
@@ -102,10 +106,9 @@ export const apiGetUniqueTokenLastSaleOrListPrice = async (
       );
     }
 
-    logger.log(formatted_last_sale + " last sale");
-    logger.log(formatted_current_price + " curr price");
-
-    return whichPrice ? formatted_current_price + ` ${current_price_token}` : formatted_last_sale + ` ${last_sale_token}`;
+    return whichPrice
+      ? formatted_current_price + ` ${current_price_token}`
+      : formatted_last_sale + ` ${last_sale_token}`;
   } catch (error) {
     logger.debug('LIST OR SALE PRICE FETCH ERROR', error);
     throw error;
@@ -190,7 +193,7 @@ export const apiGetTokenHistory = async (
     const result = await filterAndMapData(contractAddress, allEvents);
     return result;
   } catch (error) {
-    logger.debug('TOKEN HISTORY:', error);
+    logger.debug('TOKEN HISTORY LOOP ERROR:', error);
     throw error;
   }
 };
@@ -226,6 +229,29 @@ const fetchAllTokenHistoryEvents = async ({
   return array;
 };
 
+//Need to figure out how to do this without querying ethers 1000 times
+// Follow up with Bruno
+async function GetAddresses(addressArray) {
+  try {
+    // logger.debug('REVERSE ADDRESS: ', REVERSE_RECORDS_MAINNET_ADDRESS);
+    // logger.debug('ABI: ', reverseRecordsABI);
+    const reverseRecordContract = new Contract(
+      REVERSE_RECORDS_MAINNET_ADDRESS,
+      reverseRecordsABI,
+      web3Provider
+    );
+  
+    const result = await reverseRecordContract.getNames(addressArray);
+  
+    return result;
+  }
+  catch(error) {
+    logger.debug('CONTRACT ERROR:', error);
+  }
+  
+}
+
+
 const filterAndMapData = async (contractAddress, array) => {
   let addressArray = new Array();
   const events = await array
@@ -244,7 +270,7 @@ const filterAndMapData = async (contractAddress, array) => {
       let sale_amount = '0';
       let list_amount = '0';
       let payment_token = 'x';
-      let to_account_eth_address = 'x';
+      let to_account_eth_address = '0x0000000000000000000000000000000000000000';
       let event_object;
 
       switch (event_type) {
@@ -276,7 +302,7 @@ const filterAndMapData = async (contractAddress, array) => {
             uniqueEvent.payment_token?.symbol === 'WETH'
               ? 'ETH'
               : uniqueEvent.payment_token?.symbol;
-          
+
           // eslint-disable-next-line no-case-declarations
           const zz = uniqueEvent.total_price.split('.');
           // eslint-disable-next-line no-case-declarations
@@ -323,27 +349,21 @@ const filterAndMapData = async (contractAddress, array) => {
       return event_object;
     });
 
-  // const allnames = await ReverseRecords.getNames(addressArray);
-
-  // logger.debug(allnames);
-  // logger.debug(addressArray);
+  const allNames = await GetAddresses(addressArray);
   
+  await events.map(function(uniqueEvent, index) {
+    if (allNames[index] != '') {
+      const abbrevENS = abbreviations.formatAddressForDisplay(allNames[index]);
+      uniqueEvent.to_account = abbrevENS;
+    }
+    else {
+      const abbrevAddress = abbreviations.address(uniqueEvent.to_account, 2);
+      uniqueEvent.to_account = abbrevAddress;
+    }
+  });
+
   return events;
 };
 
-//Need to figure out how to do this without querying ethers 1000 times
-// Follow up with Bruno
-// const address =
-//   (uniqueEvent.to_account?.address &&
-//     (await GetAddress(uniqueEvent.to_account.address))) ||
-//   '????';
-// async function GetAddress(address) {
-// const addy = await convertAddressToENSOrAddressDisplay(address);
-// if (isHexString(address)) {
-//   const abbrevAddy = abbreviations.address(address, 2);
-//   return abbrevAddy;
-// }
-// const abbrevENS = abbreviations.formatAddressForDisplay(addy);
 
-// return abbrevENS;
-// }
+
