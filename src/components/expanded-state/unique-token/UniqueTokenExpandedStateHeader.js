@@ -262,16 +262,26 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
   );
 
   const onPressAndroidFamily = useCallback(() => {
-    const androidContractActions = [
+    const hasWebsite = !!(asset.external_link || asset.collection.external_url);
+    const hasTwitter = !!asset.collection.twitter_username;
+    const hasDiscord = !!asset.collection.discord_url;
+    const baseActions = [
       'View Collection',
       'Collection Website',
       'Twitter',
       'Discord',
     ];
 
+    const twitterIndex = 2 - (!hasWebsite && 1);
+    const discordIndex = 3 - (!hasWebsite && 1) - (!hasTwitter && 1);
+
+    if (!hasWebsite) baseActions.splice(1, 1);
+    if (!hasTwitter) baseActions.splice(twitterIndex, 1);
+    if (!hasDiscord) baseActions.splice(discordIndex, 1);
+
     showActionSheetWithOptions(
       {
-        options: androidContractActions,
+        options: baseActions,
         showSeparators: true,
         title: '',
       },
@@ -284,12 +294,30 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
           );
         }
         if (idx === 1) {
-          Linking.openURL(asset.external_link || asset.collection.external_url);
+          if (hasWebsite) {
+            Linking.openURL(
+              asset.external_link || asset.collection.external_url
+            );
+          } else if (hasTwitter && twitterIndex === 1) {
+            Linking.openURL(
+              'https://twitter.com/' + asset.collection.twitter_username
+            );
+          } else if (hasDiscord && discordIndex === 1) {
+            Linking.openURL(
+              'https://twitter.com/' + asset.collection.twitter_username
+            );
+          }
         }
         if (idx === 2) {
-          Linking.openURL(
-            'https://twitter.com/' + asset.collection.twitter_username
-          );
+          if (hasTwitter && twitterIndex === 2) {
+            Linking.openURL(
+              'https://twitter.com/' + asset.collection.twitter_username
+            );
+          } else if (hasDiscord && discordIndex === 2) {
+            Linking.openURL(
+              'https://twitter.com/' + asset.collection.twitter_username
+            );
+          }
         }
         if (idx === 3) {
           Linking.openURL(asset.collection.discord_url);
