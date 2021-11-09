@@ -379,10 +379,11 @@ const checkForUpdatedNonce = transactionData => dispatch => {
 };
 
 const checkForRemovedNonce = removedTransactions => dispatch => {
-  const txSortedByNonce = removedTransactions.sort(
-    ({ nonce: n1 }, { nonce: n2 }) => n2 - n1
+  const txSortedByAscendingNonce = removedTransactions.sort(
+    ({ nonce: n1 }, { nonce: n2 }) => n1 - n2
   );
-  const { address_from, network, nonce } = txSortedByNonce[0];
+  const [lowestNonceTx] = txSortedByAscendingNonce;
+  const { address_from, network, nonce } = lowestNonceTx;
   dispatch(decrementNonce(address_from, nonce, network));
 };
 
