@@ -1,6 +1,8 @@
 import produce from 'immer';
 import { concat, isArray, uniq, without } from 'lodash';
 import { InteractionManager } from 'react-native';
+import { Dispatch } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
 import { UserList } from '@rainbow-me/entities';
 import {
   getSelectedUserList,
@@ -9,7 +11,7 @@ import {
   saveUserLists,
 } from '@rainbow-me/handlers/localstorage/userLists';
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
-import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
+import { AppGetState, AppState } from '@rainbow-me/redux/store';
 import { uniswapUpdateFavorites } from '@rainbow-me/redux/uniswap';
 import {
   DefaultTokenLists,
@@ -83,7 +85,14 @@ interface UserListsClearStateAction {
 }
 
 export const userListsLoadState = () => async (
-  dispatch: AppDispatch,
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    | UserListsLoadSuccessAction
+    | UserListsLoadRequestAction
+    | UserListsReadyAction
+    | UserListsFailureAction
+  >,
   getState: AppGetState
 ) => {
   const { network } = getState().settings;
@@ -121,7 +130,7 @@ export const userListsLoadState = () => async (
 export const userListsSetSelectedList = (
   listId: string,
   save: boolean = true
-) => (dispatch: AppDispatch) => {
+) => (dispatch: Dispatch<UserListsSetSelectedListAction>) => {
   dispatch({
     payload: listId,
     type: USER_LISTS_SET_SELECTED_LIST,
@@ -134,7 +143,7 @@ export const userListsSetSelectedList = (
 };
 
 export const userListsClearList = (listId: string) => (
-  dispatch: AppDispatch,
+  dispatch: Dispatch<UserListsUpdateListsAction>,
   getState: AppGetState
 ) => {
   const { lists } = getState().userLists;
@@ -168,7 +177,10 @@ export const userListsUpdateList = (
   assetAddress: string,
   listId: string,
   add = true
-) => (dispatch: AppDispatch, getState: AppGetState) => {
+) => (
+  dispatch: ThunkDispatch<AppState, unknown, UserListsUpdateListsAction>,
+  getState: AppGetState
+) => {
   if (listId === FAVORITES_LIST_ID) {
     dispatch(uniswapUpdateFavorites(assetAddress, add));
   } else {
