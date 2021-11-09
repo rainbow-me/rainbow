@@ -17,6 +17,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
   
   let tokenProvider = TokenProvider.shared
   let priceDataProvider = PriceDataProvider.shared
+  let iconProvider = IconProvider.shared
   
   let defaultToken = TokenDetails(name: "Ethereum", identifier: "ethereum", symbol: "ETH", color: "#282C2C", address: "NA")
 
@@ -27,7 +28,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
     let priceChange = priceData?.marketData.priceChangePercentage24h
     let price = priceData?.marketData.currentPrice.usd
     
-    let icon = UIImage(named: "coinIcons/" + eth.symbol!.lowercased())
+    let icon = iconProvider.getIcon(token: eth.symbol!, address: eth.address!)
 
     let tokenData = TokenData(tokenDetails: eth, priceChange: priceChange, price: price, icon: icon)
     
@@ -41,7 +42,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
     let priceChange = 9.99
     let price = 9999.99
 
-    let icon = UIImage(named: "coinIcons/" + eth.symbol!.lowercased())
+    let icon = iconProvider.getIcon(token: eth.symbol!, address: eth.address!)
 
     let tokenData = TokenData(tokenDetails: eth, priceChange: priceChange, price: price, icon: icon)
     let entry = CustomTokenEntry(date: Date(), tokenData: tokenData)
@@ -61,7 +62,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
       return
     }
     
-    let icon = UIImage(named: "coinIcons/" + tokenDetails.symbol!.lowercased())
+    let icon = iconProvider.getIcon(token: tokenDetails.symbol!, address: tokenDetails.address!)
     
     let tokenData = TokenData(tokenDetails: tokenDetails, priceChange: priceChange, price: price, icon: icon)
     let date = Date()

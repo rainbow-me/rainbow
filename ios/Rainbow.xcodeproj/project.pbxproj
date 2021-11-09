@@ -59,6 +59,10 @@
 		AA6228F324272F510078BDAA /* SF-Pro-Rounded-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EA24272B200078BDAA /* SF-Pro-Rounded-Semibold.otf */; };
 		B7A3E82A4C4449F4A18EB5C2 /* SFMono-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 95F2888C850F40C8A26E083B /* SFMono-Regular.otf */; };
 		C04D10F025AFC8C1003BEF7A /* Extras.json in Resources */ = {isa = PBXBuildFile; fileRef = C04D10EF25AFC8C1003BEF7A /* Extras.json */; };
+		C151287E2739F676006517AB /* IconProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C151287D2739F676006517AB /* IconProvider.swift */; };
+		C151287F2739F676006517AB /* IconProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C151287D2739F676006517AB /* IconProvider.swift */; };
+		C15128802739F676006517AB /* IconProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C151287D2739F676006517AB /* IconProvider.swift */; };
+		C15128812739F676006517AB /* IconProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C151287D2739F676006517AB /* IconProvider.swift */; };
 		C16DCF5E272BA6EF00FF5C78 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C16DCF5D272BA6EF00FF5C78 /* WidgetKit.framework */; };
 		C16DCF60272BA6EF00FF5C78 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C16DCF5F272BA6EF00FF5C78 /* SwiftUI.framework */; };
 		C16DCF63272BA6EF00FF5C78 /* PriceWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF62272BA6EF00FF5C78 /* PriceWidget.swift */; };
@@ -256,6 +260,7 @@
 		B0C692B061D7430D8194DC98 /* ToolTipMenuTests.xctest */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ToolTipMenuTests.xctest; sourceTree = "<group>"; };
 		B92B1C2393038A177D519754 /* libPods-Rainbow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rainbow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C04D10EF25AFC8C1003BEF7A /* Extras.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Extras.json; sourceTree = "<group>"; };
+		C151287D2739F676006517AB /* IconProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconProvider.swift; sourceTree = "<group>"; };
 		C16DCF5C272BA6EF00FF5C78 /* PriceWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PriceWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C16DCF5D272BA6EF00FF5C78 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		C16DCF5F272BA6EF00FF5C78 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -622,6 +627,7 @@
 		C1AA30662731ECD900136A9A /* Providers */ = {
 			isa = PBXGroup;
 			children = (
+				C151287D2739F676006517AB /* IconProvider.swift */,
 				C16DCF72272BA77A00FF5C78 /* TokenProvider.swift */,
 				C16DCFAA272BB8ED00FF5C78 /* PriceDataProvider.swift */,
 			);
@@ -1009,6 +1015,7 @@
 				6630540924A38A1900E5B030 /* RainbowText.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				153D1AAC24777130007E4723 /* TransactionListLoadingViewCell.swift in Sources */,
+				C151287E2739F676006517AB /* IconProvider.swift in Sources */,
 				C1C61A912731A05700E5C0B3 /* RainbowTokenList.swift in Sources */,
 				C1C61A6D272C9C8D00E5C0B3 /* UIImage.swift in Sources */,
 				6635730624939991006ACFA6 /* SafeStoreReview.m in Sources */,
@@ -1058,6 +1065,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C16DCF7A272BA8A000FF5C78 /* SelectTokenIntent.intentdefinition in Sources */,
+				C151287F2739F676006517AB /* IconProvider.swift in Sources */,
 				C1C61A922731A05700E5C0B3 /* RainbowTokenList.swift in Sources */,
 				C16DCF71272BA75700FF5C78 /* CoinGeckoToken.swift in Sources */,
 				C16DCFB1272BB8FC00FF5C78 /* PriceData.swift in Sources */,
@@ -1077,6 +1085,7 @@
 			files = (
 				C16DCFA4272BABC300FF5C78 /* SelectTokenIntent.intentdefinition in Sources */,
 				C1C61A932731A05700E5C0B3 /* RainbowTokenList.swift in Sources */,
+				C15128802739F676006517AB /* IconProvider.swift in Sources */,
 				C1C61A6F272C9C8D00E5C0B3 /* UIImage.swift in Sources */,
 				C16DCFB2272BB8FC00FF5C78 /* PriceData.swift in Sources */,
 				C16DCFB7272BC8F100FF5C78 /* TokenData.swift in Sources */,
@@ -1094,6 +1103,7 @@
 			files = (
 				C16DCFA5272BABC300FF5C78 /* SelectTokenIntent.intentdefinition in Sources */,
 				C1C61A942731A05700E5C0B3 /* RainbowTokenList.swift in Sources */,
+				C15128812739F676006517AB /* IconProvider.swift in Sources */,
 				C1C61A70272C9C8D00E5C0B3 /* UIImage.swift in Sources */,
 				C16DCFB3272BB8FC00FF5C78 /* PriceData.swift in Sources */,
 				C16DCFB8272BC8F100FF5C78 /* TokenData.swift in Sources */,
