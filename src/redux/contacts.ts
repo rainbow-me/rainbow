@@ -1,7 +1,11 @@
 import { omit, toLower } from 'lodash';
-import { getContacts, saveContacts } from '../handlers/localstorage/contacts';
-import { AppDispatch, AppGetState } from './store';
+import { Dispatch } from 'redux';
+import {
+  getContacts,
+  saveContacts,
+} from '@rainbow-me/handlers/localstorage/contacts';
 import { Network } from '@rainbow-me/helpers/networkTypes';
+import { AppGetState } from '@rainbow-me/redux/store';
 
 // -- Constants --------------------------------------- //
 const CONTACTS_UPDATE = 'contacts/CONTACTS_UPDATE';
@@ -68,9 +72,11 @@ interface ContactsClearStateAction {
 }
 
 // -- Actions ---------------------------------------- //
-export const contactsLoadState = () => async (dispatch: AppDispatch) => {
+export const contactsLoadState = () => async (
+  dispatch: Dispatch<ContactsLoadAction>
+) => {
   try {
-    const contacts = await getContacts();
+    const contacts = (await getContacts()) as ContactsState['contacts'];
     dispatch({
       payload: contacts,
       type: CONTACTS_LOAD,
@@ -84,7 +90,7 @@ export const contactsAddOrUpdate = (
   nickname: string,
   color: number,
   network: Network
-) => (dispatch: AppDispatch, getState: AppGetState) => {
+) => (dispatch: Dispatch<ContactsUpdateAction>, getState: AppGetState) => {
   const loweredAddress = toLower(address);
   const { contacts } = getState().contacts;
   const updatedContacts = {
@@ -104,7 +110,7 @@ export const contactsAddOrUpdate = (
 };
 
 export const removeContact = (address: string) => (
-  dispatch: AppDispatch,
+  dispatch: Dispatch<ContactsUpdateAction>,
   getState: AppGetState
 ) => {
   const { contacts } = getState().contacts;
