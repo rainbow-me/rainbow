@@ -29,7 +29,7 @@ import {
 /* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
 import { addCoinsToHiddenList } from './editOptions';
-import { incrementNonce, decrementNonce } from './nonceManager';
+import { decrementNonce, incrementNonce } from './nonceManager';
 // eslint-disable-next-line import/no-cycle
 import { uniqueTokensRefreshState } from './uniqueTokens';
 /* eslint-disable-next-line import/no-cycle */
@@ -412,7 +412,7 @@ export const transactionsReceived = (message, appended = false) => async (
     if (appended) {
       dispatch(checkForConfirmedSavingsActions(transactionData));
     }
-    dispatch(checkForUpdatedNonce(transactionData));
+    await dispatch(checkForUpdatedNonce(transactionData));
 
     const { accountAddress, nativeCurrency, network } = getState().settings;
     const { purchaseTransactions } = getState().addCash;
@@ -481,7 +481,7 @@ export const transactionsRemoved = message => async (dispatch, getState) =>
       payload: updatedTransactions,
       type: DATA_UPDATE_TRANSACTIONS,
     });
-    checkForRemovedNonce(removedTransactions);
+    dispatch(checkForRemovedNonce(removedTransactions));
     saveLocalTransactions(updatedTransactions, accountAddress, network);
   });
 
@@ -860,9 +860,15 @@ export const dataWatchPendingTransactions = (
           ) {
             // When speeding up a non "normal tx" we need to resubscribe
             // because zerion "append" event isn't reliable
-            logger.log('TX CONFIRMED!', txObj);
             if (!nonceAlreadyIncluded) {
               appEvents.emit('transactionConfirmed', txObj);
+              await dispatch(
+                incrementNonce({
+                  account: txObj.from,
+                  network: updatedPending.network,
+                  nonce: txObj.nonce,
+                })
+              );
             }
             const minedAt = Math.floor(Date.now() / 1000);
             txStatusesDidChange = true;

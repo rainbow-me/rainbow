@@ -104,3 +104,4 @@ export { default as usePoolDetails } from './usePoolDetails';
 export { default as useAdditionalAssetData } from './useAdditionalAssetData';
 export { default as useTotalFeeEarnedPerAsset } from './useTotalFeeEarnedPerAsset';
 export { default as useImportingWallet } from './useImportingWallet';
+export { default as useCurrentNonce } from './useCurrentNonce.ts';

@@ -53,17 +53,19 @@ const getCurrentNonce = (
   return [currentNonce, currentNonceData];
 };
 
-const updateNonce = (
-  dispatch: AppDispatch,
-  nonceData: NonceManager,
-  params: NonceManagerUpdate
+const updateNonce = (nonceData: NonceManager, params: NonceManagerUpdate) => (
+  dispatch: AppDispatch
 ) => {
   const { account, network, nonce } = params;
-  dispatch({ payload: params, type: NONCE_MANAGER_UPDATE_NONCE });
+  const lcAccount = account.toLowerCase();
+  dispatch({
+    payload: { ...params, account: lcAccount },
+    type: NONCE_MANAGER_UPDATE_NONCE,
+  });
   saveNonceManager({
     ...nonceData,
-    [account]: {
-      ...(nonceData[account] || {}),
+    [lcAccount]: {
+      ...(nonceData[lcAccount] || {}),
       [network]: { nonce },
     },
   });
@@ -102,7 +104,7 @@ export const incrementNonce = (
   const counterShouldBeIncremented = currentNonce < nonce;
 
   if (!nonceCounterExists || counterShouldBeIncremented) {
-    updateNonce(dispatch, currentNonceData, nonceParams);
+    dispatch(updateNonce(currentNonceData, nonceParams));
   }
 };
 
@@ -122,16 +124,18 @@ export const decrementNonce = (
 
   if (!nonceCounterExists || counterShouldBeDecremented) {
     const decrementedNonce = nonce - 1;
-    updateNonce(dispatch, currentNonceData, {
-      account,
-      network: ntwrk,
-      nonce: decrementedNonce,
-    });
+    dispatch(
+      updateNonce(currentNonceData, {
+        account,
+        network: ntwrk,
+        nonce: decrementedNonce,
+      })
+    );
   }
 };
 
 // -- Reducer ----------------------------------------- //
-const INITIAL_STATE = {};
+const INITIAL_STATE: NonceManager = {};
 
 export default (state = INITIAL_STATE, action: NonceManagerActionType) => {
   switch (action.type) {

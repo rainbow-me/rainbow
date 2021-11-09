@@ -37,6 +37,7 @@ import {
 import {
   useAccountSettings,
   useBlockPolling,
+  useCurrentNonce,
   useGas,
   usePrevious,
   usePriceImpactDetails,
@@ -147,7 +148,8 @@ export default function ExchangeModal({
   } = useGas();
 
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
-  const { nativeCurrency, network } = useAccountSettings();
+  const { accountAddress, nativeCurrency, network } = useAccountSettings();
+  const currentNonce = useCurrentNonce(accountAddress, network);
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
@@ -404,6 +406,7 @@ export default function ExchangeModal({
       };
       logger.log('[exchange - handle submit] rap');
       const swapParameters = {
+        currentNonce,
         inputAmount,
         outputAmount,
         tradeDetails,
@@ -426,6 +429,7 @@ export default function ExchangeModal({
       navigate(Routes.WALLET_SCREEN);
     }
   }, [
+    currentNonce,
     defaultInputAsset?.symbol,
     genericAssets,
     inputAmount,
