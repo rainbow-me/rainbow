@@ -8,7 +8,6 @@ import {
   restoreCloudBackup,
   saveBackupPassword,
 } from '../../model/backup';
-import { cloudPlatform } from '../../utils/platform';
 import { PasswordField } from '../fields';
 import { Centered, Column } from '../layout';
 import { GradientText, Text } from '../text';
@@ -126,7 +125,7 @@ export default function RestoreCloudStep({
         passwordIsValid = true;
       }
 
-      newLabel = `􀑙 Restore from ${cloudPlatform}`;
+      newLabel = `􀑙 Restore from Rainbow Backup`;
     }
 
     setValidPassword(passwordIsValid);

@@ -156,10 +156,10 @@ export default function BackupSheet() {
       case WalletBackupStepTypes.imported:
         return (
           <BackupSheetSection
-            descriptionText={`Don't lose your wallet! Save an encrypted copy to ${cloudPlatform}.`}
+            descriptionText={`Don't lose your wallet! Save an encrypted copy to Rainbow Backup.`}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={goBack}
-            primaryLabel={`􀙶 Back up to ${cloudPlatform}`}
+            primaryLabel="􀙶 Back up to Rainbow Backup"
             secondaryButtonTestId="backup-sheet-imported-cancel-button"
             secondaryLabel="No thanks"
             titleText="Would you like to back up?"
@@ -177,10 +177,10 @@ export default function BackupSheet() {
       default:
         return (
           <BackupSheetSection
-            descriptionText={`Don't lose your wallet! Save an encrypted copy to ${cloudPlatform}.`}
+            descriptionText={`Don't lose your wallet! Save an encrypted copy to Rainbow Backup.`}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={onManualBackup}
-            primaryLabel={`􀙶 Back up to ${cloudPlatform}`}
+            primaryLabel="􀙶 Back up to Rainbow Backup"
             secondaryLabel="🤓 Back up manually"
             titleText="Back up your wallet"
             type="Default"

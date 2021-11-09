@@ -2,7 +2,6 @@ import React, { useCallback } from 'react';
 import { ScrollView } from 'react-native';
 import styled from 'styled-components';
 import { useTheme } from '../../../context/ThemeContext';
-import { cloudPlatform } from '../../../utils/platform';
 import Divider from '../../Divider';
 import { ButtonPressAnimation } from '../../animations';
 import { BottomRowText } from '../../coin-row';
@@ -216,7 +215,7 @@ const WalletSelectionView = () => {
               size="lmedium"
               weight="semibold"
             >
-              􀍢 Manage {cloudPlatform} Backups
+              􀍢 Manage Rainbow Backups
             </Text>
           </ButtonPressAnimation>
         </Footer>

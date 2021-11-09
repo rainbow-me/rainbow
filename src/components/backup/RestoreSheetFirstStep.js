@@ -3,7 +3,6 @@ import React, { useEffect, useMemo } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
-import { cloudPlatform } from '../../utils/platform';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
@@ -117,7 +116,7 @@ export default function RestoreSheetFirstStep({
               </Row>
               <TitleRow>
                 <RainbowText colors={colors}>
-                  <Title>Restore from {cloudPlatform}</Title>
+                  <Title>Restore from Rainbow Backup</Title>
                 </RainbowText>
                 <CaretIcon />
               </TitleRow>
@@ -126,7 +125,7 @@ export default function RestoreSheetFirstStep({
                   ? `You have ${walletsBackedUp} ${
                       walletsBackedUp > 1 ? 'wallets' : 'wallet'
                     } backed up`
-                  : `If you previously backed up your wallet on ${cloudPlatform} tap here to restore it.`}
+                  : `If you previously backed up your wallet using Rainbow Backup, tap here to restore it.`}
               </DescriptionText>
             </Column>
           </SheetRow>

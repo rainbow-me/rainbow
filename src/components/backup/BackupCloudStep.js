@@ -116,7 +116,7 @@ export default function BackupCloudStep() {
   const walletId = params?.walletId || selectedWallet.id;
 
   const [label, setLabel] = useState(
-    !validPassword ? `􀙶 Add to ${cloudPlatform} Backup` : '􀎽 Confirm Backup'
+    !validPassword ? `􀙶 Add to Rainbow Backup` : '􀎽 Confirm Backup'
   );
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();

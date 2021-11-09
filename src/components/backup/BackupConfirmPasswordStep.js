@@ -115,7 +115,7 @@ export default function BackupConfirmPasswordStep() {
 
     if (isCloudBackupPasswordValid(password)) {
       passwordIsValid = true;
-      setLabel(`􀑙 Add to ${cloudPlatform} Backup`);
+      setLabel(`􀑙 Add to Rainbow Backup`);
     }
     setValidPassword(passwordIsValid);
   }, [password, passwordFocused]);
@@ -181,8 +181,8 @@ export default function BackupConfirmPasswordStep() {
         )}
         <Title>Enter backup password</Title>
         <DescriptionText>
-          To add this wallet to your {cloudPlatform} backup, enter your existing
-          backup password
+          To add this wallet to your Rainbow Backup, enter your existing backup
+          password
         </DescriptionText>
       </Masthead>
       <Column align="center" flex={1}>

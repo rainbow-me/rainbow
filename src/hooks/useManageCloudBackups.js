@@ -1,6 +1,5 @@
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { cloudPlatform } from '../utils/platform';
 import useWallets from './useWallets';
 import {
   deleteAllBackups,
@@ -20,8 +19,8 @@ export default function useManageCloudBackups() {
 
   const manageCloudBackups = useCallback(() => {
     const buttons = [
-      `Restore from ${cloudPlatform} Backups`,
-      `Delete All ${cloudPlatform} Backups`,
+      `Restore from Rainbow Backups`,
+      `Delete All Rainbow Backups`,
       'Cancel',
     ];
 
@@ -30,7 +29,7 @@ export default function useManageCloudBackups() {
         cancelButtonIndex: 2,
         destructiveButtonIndex: 1,
         options: buttons,
-        title: `Manage ${cloudPlatform} Backups`,
+        title: `Manage Rainbow Backups`,
       },
       async buttonIndex => {
         if (buttonIndex === 0) {
@@ -56,7 +55,7 @@ export default function useManageCloudBackups() {
             showActionSheetWithOptions(
               {
                 cancelButtonIndex: backupFiles.length,
-                message: `Choose your ${cloudPlatform} backups`,
+                message: `Choose your Rainbow Backups`,
                 options: backupFiles.concat(['Cancel']),
               },
               async buttonIndex => {
@@ -109,7 +108,7 @@ export default function useManageCloudBackups() {
             {
               cancelButtonIndex: 1,
               destructiveButtonIndex: 0,
-              message: `Are you sure you want to delete your ${cloudPlatform} wallet backups?`,
+              message: `Are you sure you want to delete your Rainbow Backups?`,
               options: [`Confirm and Delete Backups`, 'Cancel'],
             },
             async buttonIndex => {

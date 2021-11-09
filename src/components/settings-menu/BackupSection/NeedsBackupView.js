@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
-import { cloudPlatform } from '../../../utils/platform';
 import { RainbowButton } from '../../buttons';
 import { Centered, Column } from '../../layout';
 import { SheetActionButton } from '../../sheet';
@@ -84,7 +83,7 @@ export default function NeedsBackupView() {
   }, []);
 
   const onIcloudBackup = useCallback(() => {
-    analytics.track(`Back up to ${cloudPlatform} pressed`, {
+    analytics.track(`Back up to Rainbow Backup pressed`, {
       category: 'settings backup',
     });
     navigate(ios ? Routes.BACKUP_SHEET : Routes.BACKUP_SCREEN, {
@@ -121,7 +120,7 @@ export default function NeedsBackupView() {
         </Column>
         <Column align="center">
           <BackupButton
-            label={`􀙶 Back up to ${cloudPlatform}`}
+            label="􀙶 Back up to Rainbow Backup"
             onPress={onIcloudBackup}
           />
           <SheetActionButton

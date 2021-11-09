@@ -4,7 +4,6 @@ import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components';
 import { useTheme } from '../../../context/ThemeContext';
-import { cloudPlatform } from '../../../utils/platform';
 import { DelayedAlert } from '../../alerts';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, Column } from '../../layout';
@@ -152,7 +151,7 @@ export default function AlreadyBackedUpView() {
       return;
     }
 
-    analytics.track(`Back up to ${cloudPlatform} pressed`, {
+    analytics.track(`Back up to Rainbow Backup pressed`, {
       category: 'settings backup',
     });
 
@@ -211,7 +210,7 @@ export default function AlreadyBackedUpView() {
           </Title>
           <DescriptionText>
             {(walletStatus === WalletBackupStatus.CLOUD_BACKUP &&
-              `If you lose this device, you can recover your encrypted wallet backup from ${cloudPlatform}.`) ||
+              `If you lose this device, you can recover your encrypted wallet backup from Rainbow Backup.`) ||
               (walletStatus === WalletBackupStatus.MANUAL_BACKUP &&
                 `If you lose this device, you can restore your wallet with the secret phrase you saved.`) ||
               (walletStatus === WalletBackupStatus.IMPORTED &&
@@ -238,7 +237,7 @@ export default function AlreadyBackedUpView() {
               size="large"
               weight="semibold"
             >
-              􀙶 Back up to {cloudPlatform}
+              􀙶 Back up to Rainbow Backup
             </Text>
           </ButtonPressAnimation>
         </Footer>
@@ -252,7 +251,7 @@ export default function AlreadyBackedUpView() {
               size="lmedium"
               weight="semibold"
             >
-              􀍢 Manage {cloudPlatform} Backups
+              􀍢 Manage Rainbow Backups
             </Text>
           </ButtonPressAnimation>
         </Footer>
