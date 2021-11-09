@@ -1,10 +1,11 @@
 import produce from 'immer';
+import { Dispatch } from 'redux';
 import {
   getKeyboardHeight as loadKeyboardHeights,
   setKeyboardHeight as saveKeyboardHeight,
 } from '@rainbow-me/handlers/localstorage/globalSettings';
 import { KeyboardType } from '@rainbow-me/helpers/keyboardTypes';
-import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
+import { AppGetState } from '@rainbow-me/redux/store';
 import { deviceUtils } from '@rainbow-me/utils';
 
 // -- Constants --------------------------------------- //
@@ -77,7 +78,9 @@ const INITIAL_STATE: KeyboardHeightState = {
   },
 };
 
-export const keyboardHeightsLoadState = () => async (dispatch: AppDispatch) => {
+export const keyboardHeightsLoadState = () => async (
+  dispatch: Dispatch<KeyboardHeightLoadAction>
+) => {
   const cachedKeyboardHeights = await loadKeyboardHeights();
 
   dispatch({
@@ -93,7 +96,7 @@ export const setKeyboardHeight = ({
   height,
   keyboardType = KeyboardType.default,
 }: SetKeyboardHeightFunctionParameter) => async (
-  dispatch: AppDispatch,
+  dispatch: Dispatch<KeyboardHeightSaveAction>,
   getState: AppGetState
 ) => {
   await dispatch({
