@@ -1,33 +1,21 @@
 import {
   getNonceManager,
+  NONCE_MANAGER_LOAD_FAILURE,
+  NONCE_MANAGER_LOAD_SUCCESS,
+  NONCE_MANAGER_UPDATE_NONCE,
+  NonceManager,
+  NonceManagerUpdate,
   saveNonceManager,
 } from '../handlers/localstorage/nonceManager';
 import { AppDispatch, AppGetState } from './store';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 
-interface NetworkNonceInfo {
-  nonce: number;
-}
-interface AccountNonceInfo {
-  [key: string]: NetworkNonceInfo;
-}
-
-interface NonceManager {
-  [key: string]: AccountNonceInfo;
-}
-
-interface NonceManagerUpdate {
-  network: string;
-  account: string;
-  nonce: number;
-}
-
-interface NonceManagerLoadSuccessAction {
+export interface NonceManagerLoadSuccessAction {
   type: typeof NONCE_MANAGER_LOAD_SUCCESS;
   payload: NonceManager;
 }
 
-interface NonceManagerUpdateNonceAction {
+export interface NonceManagerUpdateNonceAction {
   type: typeof NONCE_MANAGER_UPDATE_NONCE;
   payload: NonceManagerUpdate;
 }
@@ -35,11 +23,6 @@ interface NonceManagerUpdateNonceAction {
 export type NonceManagerActionType =
   | NonceManagerLoadSuccessAction
   | NonceManagerUpdateNonceAction;
-
-// -- Constants --------------------------------------- //
-const NONCE_MANAGER_LOAD_SUCCESS = 'NONCE_MANAGER_LOAD_SUCCESS';
-const NONCE_MANAGER_LOAD_FAILURE = 'NONCE_MANAGER_LOAD_FAILURE';
-const NONCE_MANAGER_UPDATE_NONCE = 'NONCE_MANAGER_UPDATE_NONCE';
 
 // -- Helpers --------------------------------------- //
 const getCurrentNonce = (
