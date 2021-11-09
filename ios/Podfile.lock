@@ -393,8 +393,6 @@ PODS:
     - React-Core
   - react-native-cloud-fs (2.4.0):
     - React
-  - react-native-flipper (0.118.0):
-    - React-Core
   - react-native-get-random-values (1.5.0):
     - React
   - react-native-ios-context-menu (1.3.0):
@@ -682,7 +680,6 @@ DEPENDENCIES:
   - react-native-branch (from `../node_modules/react-native-branch`)
   - react-native-camera (from `../node_modules/react-native-camera`)
   - react-native-cloud-fs (from `../node_modules/react-native-cloud-fs`)
-  - react-native-flipper (from `../node_modules/react-native-flipper`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-ios-context-menu (from `../node_modules/react-native-ios-context-menu`)
   - react-native-mail (from `../node_modules/react-native-mail`)
@@ -846,8 +843,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-camera"
   react-native-cloud-fs:
     :path: "../node_modules/react-native-cloud-fs"
-  react-native-flipper:
-    :path: "../node_modules/react-native-flipper"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
   react-native-ios-context-menu:
@@ -1038,7 +1033,6 @@ SPEC CHECKSUMS:
   react-native-branch: 8bda99ca8dc5a16d32bd81c8a8d937cb3d2c5e0c
   react-native-camera: 35854c4f764a4a6cf61c1c3525888b92f0fe4b31
   react-native-cloud-fs: 1e883ec82ff418d320c128f61971dd971b128ca0
-  react-native-flipper: 5830e729e7d902021a0ade8f24ca10ab536de8f1
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
   react-native-ios-context-menu: 1ccf4d6aa1c0e7dc596613eb9a36f8c0c23ca56f
   react-native-mail: a864fb211feaa5845c6c478a3266de725afdce89
