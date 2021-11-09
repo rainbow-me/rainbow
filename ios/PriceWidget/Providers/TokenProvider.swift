@@ -24,18 +24,18 @@ final class TokenProvider {
     
     if (coinGeckoTokenList != nil && rainbowTokenList != nil) {
       rainbowTokenList!.tokens.forEach {
-        let address = $0.address.lowercased()
-        addressTokenMap[address] = TokenDetails(name: $0.name, identifier: nil, symbol: $0.symbol, color: "#282C2C")
+        let address = $0.address
+        addressTokenMap[address.lowercased()] = TokenDetails(name: $0.name, identifier: nil, symbol: $0.symbol, color: "#282C2C", address: address)
       }
       coinGeckoTokenList!.forEach {
         let address = $0.platforms.ethereum.lowercased()
         let incompleteToken = addressTokenMap[address]
         if (incompleteToken != nil) {
-          addressTokenMap[address] = TokenDetails(name: incompleteToken!.name, identifier: $0.id, symbol: incompleteToken!.symbol, color: incompleteToken!.color)
+          addressTokenMap[address] = TokenDetails(name: incompleteToken!.name, identifier: $0.id, symbol: incompleteToken!.symbol, color: incompleteToken!.color, address: incompleteToken!.address)
         }
       }
     }
-    addressTokenMap["eth"] = TokenDetails(name: "Ethereum", identifier: "ethereum", symbol: "ETH", color: "#282C2C")
+    addressTokenMap["eth"] = TokenDetails(name: "Ethereum", identifier: "ethereum", symbol: "ETH", color: "#282C2C", address: "NA")
     return addressTokenMap
   }
   
