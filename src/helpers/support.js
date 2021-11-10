@@ -50,6 +50,6 @@ export default function showWalletErrorAlert() {
       },
     ],
     message: `For help, please reach out to support! \nWe'll get back to you soon!`,
-    title: 'An error ocurred',
+    title: 'An error occurred',
   });
 }
