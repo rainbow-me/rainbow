@@ -1,3 +1,4 @@
+import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
@@ -15,6 +16,7 @@ import {
   useDimensions,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 import { padding, position } from '@rainbow-me/styles';
 import {
   buildRainbowUrl,
@@ -192,7 +194,10 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
   }, [asset, formattedCollectionUrl]);
 
   const isSVG = isSupportedUriExtension(asset.image_url, ['.svg']);
+  const isENS =
+    toLower(asset.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
 
+  const isPhotoDownloadAvailable = !isSVG && !isENS;
   const assetMenuConfig = useMemo(() => {
     return {
       menuItems: [
@@ -203,7 +208,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         {
           ...AssetActions[AssetActionsEnum.etherscan],
         },
-        ...(!isSVG
+        ...(isPhotoDownloadAvailable
           ? [
               {
                 ...AssetActions[AssetActionsEnum.download],
@@ -218,7 +223,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
       ],
       menuTitle: '',
     };
-  }, [asset.id, isSVG]);
+  }, [asset.id, isPhotoDownloadAvailable]);
 
   const handlePressFamilyMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -336,7 +341,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
     const androidContractActions = [
       'View On Web',
       'View on Etherscan',
-      'Save to Photos',
+      ...(isPhotoDownloadAvailable ? ['Save to Photos'] : []),
       'Copy Token ID',
     ];
 
@@ -349,24 +354,27 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
       idx => {
         if (idx === 0) {
           Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
-        }
-        if (idx === 1) {
+        } else if (idx === 1) {
           Linking.openURL(
             'https://etherscan.io/token/' +
               asset.asset_contract.address +
               '?a=' +
               asset.id
           );
-        }
-        if (idx === 2) {
-          saveToCameraRoll(asset.image_url);
-        }
-        if (idx === 3) {
+        } else if (isPhotoDownloadAvailable ? idx === 3 : idx === 2) {
           setClipboard(asset.id);
+        } else if (idx === 2) {
+          saveToCameraRoll(asset.image_url);
         }
       }
     );
-  }, [accountAddress, accountENS, asset, setClipboard]);
+  }, [
+    accountAddress,
+    accountENS,
+    asset,
+    isPhotoDownloadAvailable,
+    setClipboard,
+  ]);
 
   return (
     <Container>
