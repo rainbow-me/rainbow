@@ -70,6 +70,8 @@ const UniqueTokenExpandedStateContent = ({
   const lowResUrl = isENS ? url : getLowResUrl(asset.image_url);
   const { supports3d, supportsVideo, supportsAudio } = useUniqueToken(asset);
 
+  const supportsAnythingExceptImage =
+    supports3d || supportsVideo || supportsAudio;
   const aspectRatio = usePersistentAspectRatio(asset.image_url);
   const aspectRatioWithFallback =
     supports3d || supportsAudio ? 0.88 : aspectRatio.result || 1;
@@ -82,7 +84,7 @@ const UniqueTokenExpandedStateContent = ({
       animationProgress={animationProgress}
       aspectRatio={aspectRatioWithFallback}
       borderRadius={borderRadius}
-      disableAnimations={disablePreview}
+      disableAnimations={disablePreview || supportsAnythingExceptImage}
       horizontalPadding={horizontalPadding}
       isENS={isENS}
       yDisplacement={yPosition}

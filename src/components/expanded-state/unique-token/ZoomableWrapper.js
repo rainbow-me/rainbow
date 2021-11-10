@@ -565,6 +565,7 @@ export const ZoomableWrapper = ({
         <Animated.View>
           <Animated.View>
             <TapGestureHandler
+              enabled={!disableAnimations}
               numberOfTaps={1}
               onHandlerStateChange={singleTapGestureHandler}
               ref={singleTap}
