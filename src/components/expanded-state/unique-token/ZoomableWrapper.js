@@ -68,7 +68,6 @@ export const ZoomableWrapper = ({
   children,
   horizontalPadding,
   aspectRatio,
-  isENS,
   borderRadius,
   disableAnimations,
   yDisplacement: givenYDisplacement,
@@ -86,7 +85,7 @@ export const ZoomableWrapper = ({
     containerWidth = maxImageWidth,
     containerHeight = maxImageWidth,
   ] = useMemo(() => {
-    const isSquare = aspectRatio === 1 || isENS;
+    const isSquare = aspectRatio === 1;
     const isLandscape = aspectRatio > 1;
     const isPortrait = aspectRatio < 1;
 
@@ -105,7 +104,7 @@ export const ZoomableWrapper = ({
         return [maxImageWidth, maxImageWidth / aspectRatio];
       }
     }
-  }, [aspectRatio, isENS, maxImageHeight, maxImageWidth]);
+  }, [aspectRatio, maxImageHeight, maxImageWidth]);
 
   const containerWidthValue = useReactiveSharedValue(
     containerWidth || maxImageWidth
