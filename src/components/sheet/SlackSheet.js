@@ -39,7 +39,7 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
             ? deviceHeight - contentHeight
             : 0
         };`};
-  ${android ? 'border-top-left-radius: 20; border-top-right-radius: 20;' : ''}
+  ${android && 'border-top-left-radius: 30; border-top-right-radius: 30;'}
   background-color: ${({ backgroundColor }) => backgroundColor};
   bottom: 0;
   left: 0;
