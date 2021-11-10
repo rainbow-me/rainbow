@@ -16,7 +16,7 @@ import {
 import { useGas } from '@rainbow-me/hooks';
 import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
-import { margin, padding } from '@rainbow-me/styles';
+import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
 const Wrapper = styled(KeyboardAvoidingView)`
@@ -76,10 +76,11 @@ const PanelColumn = styled(Column).attrs(() => ({
   justify: 'center',
 }))``;
 
-const Label = styled(Text).attrs(({ size, weight }) => ({
+const Label = styled(Text).attrs(({ size }) => ({
   size: size || 'lmedium',
-  weight: weight || 'semibold',
-}))``;
+}))`
+  ${({ weight }) => fontWithWidth(weight || fonts.weight.semibold)}
+`;
 
 const GAS_FEE_INCREMENT = 1;
 const MAX_BASE_FEE_RANGE = [1, 3];

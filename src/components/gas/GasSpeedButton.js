@@ -21,7 +21,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS, MATIC_POLYGON_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { margin, padding } from '@rainbow-me/styles';
+import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import {
   gasUtils,
   magicMemo,
@@ -85,10 +85,11 @@ const Container = styled(Column).attrs({
   width: 100%;
 `;
 
-const Label = styled(Text).attrs(({ size, weight }) => ({
+const Label = styled(Text).attrs(({ size }) => ({
   size: size || 'lmedium',
-  weight: weight || 'semibold',
-}))``;
+}))`
+  ${({ weight }) => fontWithWidth(weight || fonts.weight.semibold)}
+`;
 
 const TransactionTimeLabel = ({ formatter, theme }) => {
   const { colors } = useTheme();
