@@ -250,6 +250,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
           imageColor={imageColor}
           lowResUrl={lowResUrl}
           sheetRef={sheetRef}
+          textColor={textColor}
           yPosition={yPosition}
         />
         <Animated.View style={opacityStyle}>

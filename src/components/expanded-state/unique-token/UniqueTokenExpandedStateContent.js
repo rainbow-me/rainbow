@@ -43,6 +43,7 @@ const UniqueTokenExpandedStateContent = ({
   horizontalPadding = 24,
   imageColor,
   resizeMode = 'cover',
+  textColor,
   disablePreview,
   yPosition,
 }) => {
@@ -104,6 +105,7 @@ const UniqueTokenExpandedStateContent = ({
           />
         ) : supportsAudio ? (
           <AudioPlayer
+            fontColor={textColor}
             imageColor={imageColor}
             uri={asset.animation_url || imageUrl}
           />
