@@ -41,6 +41,7 @@ const UniqueTokenExpandedStateContent = ({
   asset,
   borderRadius,
   horizontalPadding = 24,
+  imageColor,
   resizeMode = 'cover',
   disablePreview,
   yPosition,
@@ -65,11 +66,12 @@ const UniqueTokenExpandedStateContent = ({
     return asset.image_url;
   }, [asset.image_url, size]);
 
-  const aspectRatio = usePersistentAspectRatio(asset.image_url);
-  const aspectRatioWithFallback = aspectRatio.result || 1;
-
   const lowResUrl = isENS ? url : getLowResUrl(asset.image_url);
   const { supports3d, supportsVideo, supportsAudio } = useUniqueToken(asset);
+
+  const aspectRatio = usePersistentAspectRatio(asset.image_url);
+  const aspectRatioWithFallback =
+    supports3d || supportsAudio ? 0.88 : aspectRatio.result || 1;
 
   // default to showing a loading spinner for 3D/video assets
   const [loading, setLoading] = React.useState(supports3d || supportsVideo);
@@ -101,7 +103,10 @@ const UniqueTokenExpandedStateContent = ({
             uri={asset.animation_url || imageUrl}
           />
         ) : supportsAudio ? (
-          <AudioPlayer uri={asset.animation_url || imageUrl} />
+          <AudioPlayer
+            imageColor={imageColor}
+            uri={asset.animation_url || imageUrl}
+          />
         ) : (
           <UniqueTokenImage
             backgroundColor={asset.background}
