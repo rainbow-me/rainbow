@@ -153,6 +153,7 @@ const unlock = async (
   const newTransaction = {
     amount: 0,
     asset: assetToUnlock,
+    data: approval.data,
     from: accountAddress,
     gasLimit,
     gasPrice,
@@ -161,6 +162,7 @@ const unlock = async (
     status: TransactionStatus.approving,
     to: approval?.to,
     type: TransactionType.authorize,
+    value: approval.value,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
   await dispatch(dataAddNewTransaction(newTransaction, accountAddress));
