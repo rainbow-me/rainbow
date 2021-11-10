@@ -912,7 +912,6 @@ export const dataWatchPendingTransactions = (
         filteredPendingTransactions,
         remainingTransactions
       );
-
       dispatch(updatePurchases(updatedTransactions));
       const { accountAddress, network } = getState().settings;
       dispatch({

@@ -24,6 +24,7 @@ import { optimismExplorerInit } from './optimismExplorer';
 import { polygonExplorerInit } from './polygonExplorer';
 import { updateTopMovers } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
+import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import currencyTypes from '@rainbow-me/helpers/currencyTypes';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
@@ -265,7 +266,11 @@ export const explorerInit = () => async (dispatch, getState) => {
 
   // Fallback to the testnet data provider
   // if we're not on mainnnet
-  if (network !== NetworkTypes.mainnet || forceFallbackProvider) {
+  const provider = await getProviderForNetwork(network);
+  const providerUrl = provider?.connection?.url;
+  const isHardHat =
+    providerUrl?.startsWith('http://') && providerUrl?.endsWith('8545');
+  if (isHardHat || network !== NetworkTypes.mainnet || forceFallbackProvider) {
     return dispatch(fallbackExplorerInit());
   }
 
