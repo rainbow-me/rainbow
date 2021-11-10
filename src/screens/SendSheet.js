@@ -494,11 +494,14 @@ export default function SendSheet(props) {
         transaction: signableTransaction,
       });
       const { hash, nonce } = txResult;
+      const { data, value } = signableTransaction;
       if (!isEmpty(hash)) {
         submitSuccess = true;
         txDetails.hash = hash;
         txDetails.nonce = nonce;
         txDetails.network = currentNetwork;
+        txDetails.data = data;
+        txDetails.value = value;
         await dispatch(
           dataAddNewTransaction(txDetails, null, false, currentProvider)
         );

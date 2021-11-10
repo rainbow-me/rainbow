@@ -435,7 +435,7 @@
       "@scarf/scarf": false,
       "@lavamoat/preinstall-always-fail": false,
       "core-js": false,
-      "detox": false,
+      "detox": true,
       "dtrace-provider": false,
       "fsevents": false,
       "husky": false,

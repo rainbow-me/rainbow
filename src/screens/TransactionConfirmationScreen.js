@@ -635,6 +635,7 @@ export default function TransactionConfirmationScreen() {
           amount: displayDetails?.request?.value ?? 0,
           asset: nativeAsset || displayDetails?.request?.asset,
           dappName,
+          data: result.data,
           from: displayDetails?.request?.from,
           gasLimit,
           gasPrice,
@@ -642,6 +643,7 @@ export default function TransactionConfirmationScreen() {
           network,
           nonce: currentNonce,
           to: displayDetails?.request?.to,
+          value: result.value,
         };
         if (toLower(accountAddress) === toLower(txDetails.from)) {
           dispatch(dataAddNewTransaction(txDetails, null, false, provider));
