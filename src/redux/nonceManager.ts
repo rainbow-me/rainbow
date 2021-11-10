@@ -5,6 +5,7 @@ import {
 } from '../handlers/localstorage/nonceManager';
 import { AppDispatch, AppGetState } from './store';
 import { Network } from '@rainbow-me/helpers/networkTypes';
+import logger from 'logger';
 
 interface NonceManagerUpdate {
   network: string;
@@ -94,6 +95,7 @@ export const incrementNonce = (
   const counterShouldBeIncremented = currentNonce < nonce;
 
   if (!nonceCounterExists || counterShouldBeIncremented) {
+    logger.log('Incrementing nonce: ', nonceParams);
     dispatch(updateNonce(currentNonceData, nonceParams));
   }
 };
@@ -114,6 +116,12 @@ export const decrementNonce = (
 
   if (!nonceCounterExists || counterShouldBeDecremented) {
     const decrementedNonce = nonce - 1;
+    const nonceParams = {
+      account,
+      network: ntwrk,
+      nonce: decrementNonce,
+    };
+    logger.log('Decrementing nonce: ', nonceParams);
     dispatch(
       updateNonce(currentNonceData, {
         account,

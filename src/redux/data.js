@@ -860,6 +860,7 @@ export const dataWatchPendingTransactions = (
           ) {
             // When speeding up a non "normal tx" we need to resubscribe
             // because zerion "append" event isn't reliable
+            logger.log('TX CONFIRMED!', txObj);
             if (!nonceAlreadyIncluded) {
               appEvents.emit('transactionConfirmed', txObj);
               await dispatch(

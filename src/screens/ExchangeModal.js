@@ -406,8 +406,8 @@ export default function ExchangeModal({
       };
       logger.log('[exchange - handle submit] rap');
       const swapParameters = {
-        currentNonce,
         inputAmount,
+        nonce: currentNonce,
         outputAmount,
         tradeDetails,
       };
