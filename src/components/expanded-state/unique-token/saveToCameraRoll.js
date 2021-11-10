@@ -17,45 +17,78 @@ const getPermissionAndroid = async () => {
       return true;
     }
   } catch (err) {
-    Alert.alert(
-      'Save remote Image',
-      'Failed to save Image: ' + err.message,
-      [{ text: 'OK' }],
-      { cancelable: false }
-    );
+    alertError(err);
   }
 };
+
+function alertError(err) {
+  Alert.alert(
+    'Save remote Image',
+    'Failed to save Image' + err.message ? `: ${err.message}` : '',
+    [{ text: 'OK' }],
+    { cancelable: false }
+  );
+}
+
+function getFilename(url) {
+  url = url
+    .split('/')
+    .pop()
+    .replace(/#(.*?)$/, '')
+    .replace(/\?(.*?)$/, '');
+  url = url.split('.');
+  return { ext: url[1], filename: url[0] || '' };
+}
+
+async function downloadImageAndroid(url) {
+  const granted = await getPermissionAndroid();
+  if (!granted) {
+    alertError('no permission');
+    return;
+  }
+  let { filename, ext } = getFilename(url);
+  // first fetch to get metadata
+  const result = await RNFetchBlob.config({
+    fileCache: true,
+  })
+    .fetch('GET', url)
+    .catch(alertError);
+  const mime = result?.respInfo?.headers['content-type'];
+  if (!ext) {
+    ext = mime?.split('/')?.[1];
+  }
+  if (!ext) {
+    alertError();
+    return;
+  }
+  const { config, fs } = RNFetchBlob;
+  const { PictureDir } = fs.dirs;
+  const path = PictureDir + '/image_' + filename + Date.now().toString();
+  const options = {
+    addAndroidDownloads: {
+      description: 'NFT image',
+      mime,
+      notification: true,
+      path,
+      useDownloadManager: true,
+    },
+    fileCache: true,
+  };
+  // second fetch, probably cached, to save image correctly
+  config(options).fetch('GET', url).catch(alertError);
+}
+
+function downloadImageIOS(url) {
+  CameraRoll.save(url).catch(alertError);
+}
 
 const saveToCameraRoll = async url => {
   // if device is android you have to ensure you have permission
   if (Platform.OS === 'android') {
-    const granted = await getPermissionAndroid();
-    if (!granted) {
-      return;
-    }
+    downloadImageAndroid(url);
+  } else {
+    downloadImageIOS(url);
   }
-  RNFetchBlob.config({
-    fileCache: true,
-  })
-    .fetch('GET', url)
-    .then(res => {
-      CameraRoll.save(res.data).catch(err => {
-        Alert.alert(
-          'Save remote Image',
-          'Failed to save Image: ' + err.message,
-          [{ onPress: () => {}, text: 'OK' }],
-          { cancelable: false }
-        );
-      });
-    })
-    .catch(error => {
-      Alert.alert(
-        'Save remote Image',
-        'Failed to save Image: ' + error.message,
-        [{ onPress: () => {}, text: 'OK' }],
-        { cancelable: false }
-      );
-    });
 };
 
 export default saveToCameraRoll;
