@@ -2,6 +2,7 @@ import { OPENSEA_API_KEY, OPENSEA_RINKEBY_API_KEY } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
 import NetworkTypes from '@rainbow-me/networkTypes';
 import { parseAccountUniqueTokens } from '@rainbow-me/parsers';
+import { handleSignificantDecimals } from '@rainbow-me/utilities';
 import logger from 'logger';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
@@ -43,8 +44,18 @@ export const apiGetUniqueTokenFloorPrice = async (
   try {
     const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
     const url = `https://${networkPrefix}api.opensea.io/api/v1/asset/${urlSuffixForAsset}`;
-    const EthSuffix = ' ETH';
     const data = await rainbowFetch(url, {
+      headers: {
+        Accept: 'application/json',
+        method: 'get',
+        timeout: 5000, // 5 secs
+      },
+    });
+
+    const slug = data?.data?.collection?.slug;
+
+    const collectionURL = `https://${networkPrefix}api.opensea.io/api/v1/collection/${slug}`;
+    const collectionData = await rainbowFetch(collectionURL, {
       headers: {
         'Accept': 'application/json',
         'X-Api-Key': OPENSEA_API_KEY,
@@ -52,13 +63,18 @@ export const apiGetUniqueTokenFloorPrice = async (
       method: 'get',
       timeout: 5000, // 5 secs
     });
-    if (JSON.stringify(data.data.collection.stats.floor_price) === '0') {
+
+    const tempPrice = collectionData?.data?.collection?.stats?.floor_price;
+
+    if (parseFloat(tempPrice) === 0) {
       return 'None';
     }
-    const formattedFloorPrice =
-      JSON.stringify(data.data.collection.stats.floor_price) + EthSuffix;
-    return formattedFloorPrice;
+
+    const tempFloorPrice = handleSignificantDecimals(tempPrice, 5);
+
+    return tempFloorPrice + ' ETH';
   } catch (error) {
+    logger.debug('FLOOR PRICE ERROR', error);
     throw error;
   }
 };
