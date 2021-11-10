@@ -3,12 +3,12 @@
 //  Rainbow
 //
 //  Created by Ben Goldberg on 10/27/21.
-//  Copyright © 2021 Facebook. All rights reserved.
 //
 
 import Foundation
 import SwiftUI
 import UIKit
+import Palette
 
 @available(iOS 14.0, *)
 struct PriceWidgetView: View {
@@ -31,6 +31,17 @@ struct PriceWidgetView: View {
     nf.numberStyle = .currency
     nf.currencySymbol = "$"
     return nf.string(for: double)!
+  }
+  
+  private func getColor(tokenData: TokenData) -> Color {
+    if (tokenData.tokenDetails != nil) {
+      if let color = tokenData.tokenDetails!.color {
+        return hexStringToColor(hex: color)
+      } else if let icon = tokenData.icon {
+        return Color(Palette.from(image: icon).generate().vibrantColor!)
+      }
+    }
+    return Color(red:0.15, green:0.16, blue:0.18)
   }
   
   private func hexStringToColor (hex:String) -> Color {
@@ -59,7 +70,7 @@ struct PriceWidgetView: View {
     GeometryReader { geometry in
       ZStack {
           Rectangle()
-            .fill(tokenData.tokenDetails != nil && tokenData.tokenDetails!.color != nil ? hexStringToColor(hex: tokenData.tokenDetails!.color!) : Color(red:0.15, green:0.16, blue:0.18))
+            .fill(getColor(tokenData: tokenData))
             .offset(x: 0, y: 0)
         
           Rectangle()

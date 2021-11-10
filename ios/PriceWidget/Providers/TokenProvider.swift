@@ -3,7 +3,6 @@
 //  Rainbow
 //
 //  Created by Ben Goldberg on 10/28/21.
-//  Copyright © 2021 Facebook. All rights reserved.
 //
 
 import Foundation
@@ -17,30 +16,33 @@ final class TokenProvider {
   
   private init() {}
   
-  public func getAddressTokenMap() -> [String: TokenDetails] {
-    var addressTokenMap = [String: TokenDetails]()
+  public func getTokens() -> [TokenDetails] {
+    var symbolTokenMap = [String: TokenDetails]()
     let coinGeckoTokenList = getCoinGeckoTokenList()
     let rainbowTokenList = getRainbowTokenList()
     
     if (coinGeckoTokenList != nil && rainbowTokenList != nil) {
       rainbowTokenList!.tokens.forEach {
         let address = $0.address
-        addressTokenMap[address.lowercased()] = TokenDetails(name: $0.name, identifier: nil, symbol: $0.symbol, color: "#282C2C", address: address)
+        if ($0.extensions != nil && $0.extensions!.color != nil) {
+          symbolTokenMap[$0.symbol.lowercased()] = TokenDetails(name: $0.name, identifier: nil, symbol: $0.symbol, color: $0.extensions!.color!, address: address)
+        } else {
+          symbolTokenMap[$0.symbol.lowercased()] = TokenDetails(name: $0.name, identifier: nil, symbol: $0.symbol, color: nil, address: address)
+        }
       }
       coinGeckoTokenList!.forEach {
-        let address = $0.platforms.ethereum.lowercased()
-        let incompleteToken = addressTokenMap[address]
+        let incompleteToken = symbolTokenMap[$0.symbol]
         if (incompleteToken != nil) {
-          addressTokenMap[address] = TokenDetails(name: incompleteToken!.name, identifier: $0.id, symbol: incompleteToken!.symbol, color: incompleteToken!.color, address: incompleteToken!.address)
+          symbolTokenMap[$0.symbol.lowercased()] = TokenDetails(name: incompleteToken!.name, identifier: $0.id, symbol: incompleteToken!.symbol, color: incompleteToken!.color, address: incompleteToken!.address)
         }
       }
     }
-    addressTokenMap["eth"] = TokenDetails(name: "Ethereum", identifier: "ethereum", symbol: "ETH", color: "#282C2C", address: "NA")
-    return addressTokenMap
+    symbolTokenMap["eth"] = TokenDetails(name: "Ethereum", identifier: "ethereum", symbol: "ETH", color: "#282C2C", address: "NA")
+    return Array(symbolTokenMap.values)
   }
   
   private func getCoinGeckoTokenList() -> [CoinGeckoToken]? {
-    let url = URL(string: "https://api.coingecko.com/api/v3/coins/list?include_platform=true&asset_platform_id=ethereum")!
+    let url = URL(string: "https://api.coingecko.com/api/v3/coins/list?include_platform=false")!
     
     let semaphore = DispatchSemaphore(value: 0)
     
@@ -61,7 +63,7 @@ final class TokenProvider {
   
   private func getRainbowTokenList() -> RainbowTokenList? {
     
-//      let urlString = ProcessInfo.processInfo.environment["RAINBOW_TOKEN_LIST_URL"] ?? ""
+//    let urlString = ProcessInfo.processInfo.environment["RAINBOW_TOKEN_LIST_URL"] ?? ""
     let url = URL(string: "https://metadata.p.rainbow.me/token-list/rainbow-token-list.json")!
     
     let semaphore = DispatchSemaphore(value: 0)

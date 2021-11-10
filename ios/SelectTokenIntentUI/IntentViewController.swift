@@ -3,7 +3,6 @@
 //  SelectTokenIntentUI
 //
 //  Created by Ben Goldberg on 10/28/21.
-//  Copyright © 2021 Facebook. All rights reserved.
 //
 
 import IntentsUI

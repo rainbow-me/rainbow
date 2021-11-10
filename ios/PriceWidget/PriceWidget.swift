@@ -3,7 +3,6 @@
 //  Rainbow
 //
 //  Created by Ben Goldberg on 10/27/21.
-//  Copyright © 2021 Facebook. All rights reserved.
 //
 
 import SwiftUI
@@ -39,12 +38,12 @@ struct PriceWidgetProvider: IntentTimelineProvider {
     
     let eth = defaultToken
 
-    let priceChange = 9.99
-    let price = 9999.99
+    let priceChangePlaceholder = 9.99
+    let pricePlaceholder = 9999.99
 
     let icon = iconProvider.getIcon(token: eth.symbol!, address: eth.address!)
 
-    let tokenData = TokenData(tokenDetails: eth, priceChange: priceChange, price: price, icon: icon)
+    let tokenData = TokenData(tokenDetails: eth, priceChange: priceChangePlaceholder, price: pricePlaceholder, icon: icon)
     let entry = CustomTokenEntry(date: Date(), tokenData: tokenData)
 
     completion(entry)
@@ -77,7 +76,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
 
   private func lookupTokenDetails(for configuration: SelectTokenIntent) -> TokenDetails {
     let tokenId = configuration.token != nil ? configuration.token!.identifier : "ethereum"
-    let tokenForConfig = tokenProvider.getAddressTokenMap().values.first(where: { token in
+    let tokenForConfig = tokenProvider.getTokens().first(where: { token in
       token.identifier == tokenId
     })
     return tokenForConfig != nil ? tokenForConfig! : defaultToken
