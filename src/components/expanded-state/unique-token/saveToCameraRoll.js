@@ -63,7 +63,8 @@ async function downloadImageAndroid(url) {
   }
   const { config, fs } = RNFetchBlob;
   const { PictureDir } = fs.dirs;
-  const path = PictureDir + '/image_' + filename + Date.now().toString();
+  const path =
+    PictureDir + '/nft_' + filename + Date.now().toString() + '.' + ext;
   const options = {
     addAndroidDownloads: {
       description: 'NFT image',
