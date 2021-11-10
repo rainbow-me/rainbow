@@ -843,7 +843,6 @@ export const dataWatchPendingTransactions = (
       return true;
     }
     let txStatusesDidChange = false;
-
     const updatedPendingTransactions = await Promise.all(
       pending.map(async tx => {
         const updatedPending = { ...tx };
@@ -864,11 +863,7 @@ export const dataWatchPendingTransactions = (
             if (!nonceAlreadyIncluded) {
               appEvents.emit('transactionConfirmed', txObj);
               await dispatch(
-                incrementNonce({
-                  account: txObj.from,
-                  network: updatedPending.network,
-                  nonce: txObj.nonce,
-                })
+                incrementNonce(txObj.from, updatedPending.network, txObj.nonce)
               );
             }
             const minedAt = Math.floor(Date.now() / 1000);
