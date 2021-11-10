@@ -39,12 +39,9 @@ const sendETHtoTestWallet = async () => {
 beforeAll(async () => {
   // Connect to hardhat
   await exec('yarn hardhat');
-
-  if (process.env.CI.toString() === 'true') {
-    await exec(
-      'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
-    );
-  }
+  await exec(
+    'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
+  );
 });
 
 describe('Hardhat Transaction Flow', () => {
@@ -167,7 +164,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
- 
+
   it('Should show completed swap ETH -> ERC20 (DAI)', async () => {
     try {
       await Helpers.checkIfVisible('Swapped-Ethereum');
@@ -407,15 +404,15 @@ describe('Hardhat Transaction Flow', () => {
     }
   });
 */
-  it('Should show completed send NFT (Cryptokitties)', async () => {
-    try {
-      await Helpers.checkIfVisible('Sent-Arun Cattybinky-1.00 CryptoKitties');
-    } catch (e) {
-      await Helpers.checkIfVisible(
-        'Sending-Arun Cattybinky-1.00 CryptoKitties'
-      );
-    }
-  });
+  // it('Should show completed send NFT (Cryptokitties)', async () => {
+  //   try {
+  //     await Helpers.checkIfVisible('Sent-Arun Cattybinky-1.00 CryptoKitties');
+  //   } catch (e) {
+  //     await Helpers.checkIfVisible(
+  //       'Sending-Arun Cattybinky-1.00 CryptoKitties'
+  //     );
+  //   }
+  // });
 
   it('Should show completed send ERC20 (BAT)', async () => {
     try {
