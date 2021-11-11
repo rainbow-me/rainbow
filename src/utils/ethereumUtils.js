@@ -9,7 +9,6 @@ import {
   isValidAddress,
   toChecksumAddress,
 } from 'ethereumjs-util';
-
 import { hdkey } from 'ethereumjs-wallet';
 import { Contract } from 'ethers';
 import {
@@ -20,7 +19,6 @@ import {
   replace,
   toLower,
 } from 'lodash';
-
 import {
   Alert,
   InteractionManager,
