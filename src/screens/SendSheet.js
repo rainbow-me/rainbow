@@ -542,6 +542,7 @@ export default function SendSheet(props) {
     gasLimit,
     isSufficientGas,
     isValidAddress,
+    network,
     selected,
     selectedGasPrice,
     toAddress,

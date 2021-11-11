@@ -52,7 +52,6 @@
   "dependencies": {
     "@apollo/client": "3.2.4",
     "@bankify/react-native-animate-number": "0.2.1",
-    "@eth-optimism/contracts": "^0.5.0",
     "@ethersproject/abi": "5.0.9",
     "@ethersproject/abstract-provider": "5.0.7",
     "@ethersproject/abstract-signer": "5.0.9",
@@ -453,9 +452,7 @@
       "bufferutil": false,
       "utf-8-validate": false,
       "postinstall-postinstall": false,
-      "core-js-pure": false,
-      "usb": false,
-      "node-hid": false
+      "core-js-pure": false
     }
   }
 }
