@@ -530,9 +530,9 @@ const calculateL1FeeOptimism = async (tx, provider) => {
     tx.nonce = Number(await provider.getTransactionCount(tx.from));
     delete tx.from;
     tx.to = toChecksumAddress(tx.to);
-    tx.gasLimit = toHex(
-      tx.data === '0x' ? ethUnits.basic_tx : ethUnits.basic_transfer
-    );
+    tx.gasLimit =
+      toHex(tx.gasLimit) ||
+      toHex(tx.data === '0x' ? ethUnits.basic_tx : ethUnits.basic_transfer);
     const currentGasPrice = store.getState().gas.selectedGasPrice?.value
       ?.amount;
     if (currentGasPrice) tx.gasPrice = toHex(currentGasPrice);

@@ -437,7 +437,6 @@ const GasSpeedButton = ({
     [navigate]
   );
 
-
   return (
     <Container
       as={ButtonPressAnimation}
