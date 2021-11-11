@@ -864,7 +864,7 @@ export const dataWatchPendingTransactions = (
             if (!nonceAlreadyIncluded) {
               appEvents.emit('transactionConfirmed', txObj);
               await dispatch(
-                incrementNonce(txObj.from, updatedPending.network, txObj.nonce)
+                incrementNonce(txObj.from, txObj.nonce, updatedPending.network)
               );
             }
             const minedAt = Math.floor(Date.now() / 1000);

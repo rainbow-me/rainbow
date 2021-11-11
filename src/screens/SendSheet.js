@@ -25,6 +25,7 @@ import {
   createSignableTransaction,
   estimateGasLimit,
   getProviderForNetwork,
+  getTransactionCount,
   isL2Network,
   resolveNameOrAddress,
   web3Provider,
@@ -125,7 +126,10 @@ export default function SendSheet(props) {
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
-  const currentNonce = useCurrentNonce(accountAddress, network);
+  const [currentNonce, getMostRecentNonce] = useCurrentNonce(
+    accountAddress,
+    network
+  );
 
   const savings = useSendSavingsAccount();
   const fetchData = useRefreshAccountData();
@@ -478,13 +482,17 @@ export default function SendSheet(props) {
         : gasLimit;
 
     logger.log('gasLimit', gasLimitToUse);
+    const nonce = getMostRecentNonce(
+      await getTransactionCount(accountAddress),
+      currentNonce
+    );
     const txDetails = {
       amount: amountDetails.assetAmount,
       asset: selected,
       from: accountAddress,
       gasLimit: gasLimitToUse,
       gasPrice: selectedGasPrice.value?.amount,
-      nonce: currentNonce,
+      nonce,
       to: toAddress,
     };
     try {
@@ -530,6 +538,7 @@ export default function SendSheet(props) {
     selectedGasPrice,
     toAddress,
     updateTxFee,
+    getMostRecentNonce,
   ]);
 
   const submitTransaction = useCallback(async () => {

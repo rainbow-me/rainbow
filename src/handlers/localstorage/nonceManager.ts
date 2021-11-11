@@ -19,11 +19,6 @@ export interface NonceManagerUpdate {
   nonce: number;
 }
 
-// -- Constants --------------------------------------- //
-export const NONCE_MANAGER_LOAD_SUCCESS = 'NONCE_MANAGER_LOAD_SUCCESS';
-export const NONCE_MANAGER_LOAD_FAILURE = 'NONCE_MANAGER_LOAD_FAILURE';
-export const NONCE_MANAGER_UPDATE_NONCE = 'NONCE_MANAGER_UPDATE_NONCE';
-
 export const getNonceManager = async (): Promise<NonceManager> => {
   const nonceManager = await getGlobal(NONCE_MANAGER, []);
 

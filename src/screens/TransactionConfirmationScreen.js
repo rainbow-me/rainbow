@@ -53,6 +53,7 @@ import {
   estimateGas,
   estimateGasWithPadding,
   getProviderForNetwork,
+  getTransactionCount,
   isL2Network,
   toHex,
   web3Provider,
@@ -180,7 +181,10 @@ export default function TransactionConfirmationScreen() {
   const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
   const balances = useWalletBalances(wallets);
   const { accountAddress, nativeCurrency } = useAccountSettings();
-  const currentNonce = useCurrentNonce(accountAddress, network);
+  const [currentNonce, getMostRecentNonce] = useCurrentNonce(
+    accountAddress,
+    network
+  );
   const keyboardHeight = useKeyboardHeight();
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
@@ -630,6 +634,10 @@ export default function TransactionConfirmationScreen() {
       }
       let txSavedInCurrentWallet = false;
       let txDetails = null;
+      const nonce = getMostRecentNonce(
+        await getTransactionCount(accountAddress),
+        currentNonce
+      );
       if (sendInsteadOfSign) {
         txDetails = {
           amount: displayDetails?.request?.value ?? 0,
@@ -641,7 +649,7 @@ export default function TransactionConfirmationScreen() {
           gasPrice,
           hash: result.hash,
           network,
-          nonce: currentNonce,
+          nonce,
           to: displayDetails?.request?.to,
           value: result.value,
         };

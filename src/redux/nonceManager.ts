@@ -40,7 +40,8 @@ const getCurrentNonce = (
   const { nonceManager } = getState();
   const { account, network } = params;
   let currentNonceData: NonceManager = { ...nonceManager };
-  const currentNonce = currentNonceData[account]?.[network]?.nonce;
+  const currentNonce =
+    currentNonceData[account.toLowerCase()]?.[network]?.nonce;
   return [currentNonce, currentNonceData];
 };
 
@@ -72,6 +73,10 @@ export const nonceManagerLoadState = () => async (dispatch: AppDispatch) => {
         type: NONCE_MANAGER_LOAD_SUCCESS,
       });
     }
+    logger.debug(
+      'NONCE MANAGER LOAD STATE: ',
+      JSON.stringify(nonceManager, null, 2)
+    );
   } catch (error) {
     dispatch({ type: NONCE_MANAGER_LOAD_FAILURE });
   }
@@ -95,7 +100,7 @@ export const incrementNonce = (
   const counterShouldBeIncremented = currentNonce < nonce;
 
   if (!nonceCounterExists || counterShouldBeIncremented) {
-    logger.log('Incrementing nonce: ', nonceParams);
+    logger.debug('Incrementing nonce: ', nonceParams, currentNonce);
     dispatch(updateNonce(currentNonceData, nonceParams));
   }
 };
@@ -121,7 +126,7 @@ export const decrementNonce = (
       network: ntwrk,
       nonce: decrementNonce,
     };
-    logger.log('Decrementing nonce: ', nonceParams);
+    logger.debug('Decrementing nonce: ', nonceParams);
     dispatch(
       updateNonce(currentNonceData, {
         account,

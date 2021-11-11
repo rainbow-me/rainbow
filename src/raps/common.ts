@@ -199,6 +199,7 @@ export const executeRap = async (
   logger.log('[common - executing rap]: actions', actions);
   if (actions.length) {
     const firstAction = actions[0];
+    logger.log('[common - executing rap]: swapParameters', swapParameters);
     const { baseNonce, errorMessage } = await executeAction(
       firstAction,
       wallet,

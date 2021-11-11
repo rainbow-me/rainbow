@@ -28,6 +28,7 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
+import { getTransactionCount } from '@rainbow-me/handlers/web3';
 import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
 import {
   convertStringToNumber,
@@ -149,7 +150,10 @@ export default function ExchangeModal({
 
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
-  const currentNonce = useCurrentNonce(accountAddress, network);
+  const [currentNonce, getMostRecentNonce] = useCurrentNonce(
+    accountAddress,
+    network
+  );
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
@@ -405,12 +409,17 @@ export default function ExchangeModal({
         }
       };
       logger.log('[exchange - handle submit] rap');
+      const nonce = getMostRecentNonce(
+        await getTransactionCount(accountAddress),
+        currentNonce
+      );
       const swapParameters = {
         inputAmount,
-        nonce: currentNonce,
+        nonce,
         outputAmount,
         tradeDetails,
       };
+      logger.debug('SWAP PARAMETERS: ', swapParameters);
       await executeRap(wallet, type, swapParameters, callback);
       logger.log('[exchange - handle submit] executed rap!');
       analytics.track(`Completed ${type}`, {
@@ -429,6 +438,7 @@ export default function ExchangeModal({
       navigate(Routes.WALLET_SCREEN);
     }
   }, [
+    accountAddress,
     currentNonce,
     defaultInputAsset?.symbol,
     genericAssets,
@@ -449,6 +459,7 @@ export default function ExchangeModal({
     setParams,
     tradeDetails,
     type,
+    getMostRecentNonce,
   ]);
 
   const confirmButtonProps = useMemoOne(
