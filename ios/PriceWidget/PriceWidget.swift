@@ -75,9 +75,9 @@ struct PriceWidgetProvider: IntentTimelineProvider {
   }
 
   private func lookupTokenDetails(for configuration: SelectTokenIntent) -> TokenDetails {
-    let tokenId = configuration.token != nil ? configuration.token!.identifier : "ethereum"
+    let tokenId = configuration.token != nil ? configuration.token!.identifier : nil
     let tokenForConfig = tokenProvider.getTokens().first(where: { token in
-      token.identifier == tokenId
+      token.symbol!.lowercased() == tokenId
     })
     return tokenForConfig != nil ? tokenForConfig! : defaultToken
   }

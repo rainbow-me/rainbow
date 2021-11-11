@@ -66,6 +66,20 @@ struct PriceWidgetView: View {
       )
   }
   
+  private func colorIsLight(color: Color) -> Bool {
+    var red: CGFloat = 0
+    var green: CGFloat = 0
+    var blue: CGFloat = 0
+    var alpha: CGFloat = 0
+    
+    let uiColor = UIColor(color)
+    uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+    
+    let luminance = 1 - ( 0.299 * red + 0.587 * green + 0.114 * blue) / 255
+    
+    return luminance < 0.5
+  }
+  
   var body: some View {
     GeometryReader { geometry in
       ZStack {
