@@ -444,7 +444,7 @@
       "@lavamoat/preinstall-always-fail": false,
       "core-js": false,
       "core-js-pure": false,
-      "detox": false,
+      "detox": true,
       "dtrace-provider": false,
       "fsevents": false,
       "husky": false,
