@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { toLower } from 'lodash';
 import { rankings } from 'match-sorter';
 import React, {
@@ -232,6 +233,12 @@ export default function DiscoverSearch() {
         setSearchQueryForSearch(searchQuery);
         fetchSuggestions(searchQuery, addEnsResults, setIsFetchingEns);
         filterCurrencyList(searchQuery);
+        if (searchQuery.length > 1) {
+          analytics.track('Search Query', {
+            category: 'discover',
+            query: searchQuery,
+          });
+        }
       },
       searchQuery === '' ? 1 : 500
     );
