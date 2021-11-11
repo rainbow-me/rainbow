@@ -44,6 +44,10 @@ const FeesPanelWrapper = styled(Column)`
   ${margin(16, 19, 29, 24)}
 `;
 
+const FeesPanelTabswrapper = styled(Column)`
+  ${margin(16, 0, 29, 0)}
+`;
+
 export default function CustomGasState({ asset }) {
   const { network } = useAccountSettings();
   const { setParams } = useNavigation();
@@ -118,11 +122,13 @@ export default function CustomGasState({ asset }) {
             selectedGasFee={selectedGasFee}
           />
         </FeesPanelWrapper>
-        <Divider />
-        <FeesPanelTabs
-          colorForAsset={colorForAsset}
-          onPressTabPill={hideKeyboard}
-        />
+        <Divider inset={[0, 24, 0, 24]} />
+        <FeesPanelTabswrapper>
+          <FeesPanelTabs
+            colorForAsset={colorForAsset}
+            onPressTabPill={hideKeyboard}
+          />
+        </FeesPanelTabswrapper>
       </FloatingPanel>
       <Column onLayout={setFooterHeight}>
         <GasSpeedButton

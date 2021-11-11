@@ -15,7 +15,7 @@ const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
 export const TabPillWrapper = styled(View).attrs({})`
   ${padding(3, 10)};
-  ${margin(19, 4, 24, 4)};
+  ${margin(0, 4, 0, 4)};
   height: 30px;'
   border: ${({ isSelected, color, theme: { colors } }) =>
     `2px solid ${isSelected ? color || colors.appleBlue : colors.rowDivider}`};

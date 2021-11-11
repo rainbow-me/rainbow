@@ -27,11 +27,7 @@ const PanelRow = styled(Row).attrs({
 })``;
 
 // GweiInputPill has a vertical padding of 10
-const MaxBaseFeePanelRow = styled(PanelRow).attrs(() => ({}))`
-  ${padding(8, 0)}
-`;
-
-const MaxPriorityFeePanelRow = styled(PanelRow).attrs(() => ({}))`
+const MiddlePanelRow = styled(PanelRow).attrs(() => ({}))`
   ${padding(8, 0)}
 `;
 
@@ -45,7 +41,7 @@ const PanelLabel = styled(Text).attrs({
   size: 'lmedium',
   weight: 'heavy',
 })`
-  ${margin(android ? 0 : 0, 0)}
+  ${margin(0, 5, 0, 0)};
 `;
 
 const PanelWarning = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -71,7 +67,7 @@ const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   size: 'smedium',
   weight: 'heavy',
 }))`
-  padding-bottom: 0;
+  ${margin(0, 5, 0, 0)};
 `;
 
 const PanelColumn = styled(Column).attrs(() => ({
@@ -440,7 +436,7 @@ export default function FeesPanel({
         </PanelColumn>
       </PanelRow>
 
-      <MaxBaseFeePanelRow>
+      <MiddlePanelRow>
         {renderRowLabel(
           'Max Base Fee',
           'maxBaseFee',
@@ -458,12 +454,12 @@ export default function FeesPanel({
             value={maxBaseFee}
           />
         </PanelColumn>
-      </MaxBaseFeePanelRow>
+      </MiddlePanelRow>
       <Animated.View style={maxBaseWarningsStyle}>
         {renderWarning(maxBaseFeeError, maxBaseFeeWarning)}
       </Animated.View>
 
-      <MaxPriorityFeePanelRow>
+      <MiddlePanelRow>
         {renderRowLabel(
           'Miner Tip',
           `minerTip`,
@@ -482,7 +478,7 @@ export default function FeesPanel({
             value={maxPriorityFee}
           />
         </PanelColumn>
-      </MaxPriorityFeePanelRow>
+      </MiddlePanelRow>
       <Animated.View style={maxPriorityWarningsStyle}>
         {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
       </Animated.View>
