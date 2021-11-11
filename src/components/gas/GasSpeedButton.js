@@ -135,6 +135,7 @@ const GasSpeedButton = ({
     updateGasFeeOption,
     selectedGasFee,
     selectedGasFeeOption,
+    updateToCustomGasFee,
   } = useGas();
 
   const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
@@ -226,9 +227,27 @@ const GasSpeedButton = ({
 
   const handlePressSpeedOption = useCallback(
     selectedSpeed => {
-      updateGasFeeOption(selectedSpeed);
+      if (
+        selectedSpeed === gasUtils.CUSTOM &&
+        isEmpty(gasFeeParamsBySpeed[gasUtils.CUSTOM])
+      ) {
+        const gasFeeParams = gasFeeParamsBySpeed[selectedGasFeeOption];
+        updateToCustomGasFee({
+          ...gasFeeParams,
+          maxBaseFeePerGas: gasFeeParams.maxFeePerGas,
+          maxPriorityFeePerGas: gasFeeParams.maxPriorityFeePerGas,
+          option: gasUtils.CUSTOM,
+        });
+      } else {
+        updateGasFeeOption(selectedSpeed);
+      }
     },
-    [updateGasFeeOption]
+    [
+      gasFeeParamsBySpeed,
+      selectedGasFeeOption,
+      updateToCustomGasFee,
+      updateGasFeeOption,
+    ]
   );
 
   const formatTransactionTime = useCallback(() => {

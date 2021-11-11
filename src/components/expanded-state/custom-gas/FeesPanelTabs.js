@@ -69,6 +69,7 @@ export default function FeesPanelTabs({ onPressTabPill, colorForAsset }) {
     gasFeeParamsBySpeed,
     updateToCustomGasFee,
   } = useGas();
+
   const handleOnPressTabPill = label => {
     if (
       label === gasUtils.CUSTOM &&
