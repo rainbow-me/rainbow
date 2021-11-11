@@ -6,20 +6,15 @@ import { palettes } from '../../color/palettes';
 import { CustomColor } from '../../color/useForegroundColor';
 import { Docs } from '../../playground/Docs';
 import { Guide } from '../../playground/Guide';
+import { Inline } from '../Inline/Inline';
 import { Stack } from '../Stack/Stack';
 import { Text, TextProps } from './Text';
 
 const textExamples: Required<Pick<TextProps, 'size' | 'weight'>>[] = [
-  { size: 'body', weight: 'regular' },
-  { size: 'body', weight: 'medium' },
-  { size: 'body', weight: 'semibold' },
-  { size: 'body', weight: 'bold' },
-  { size: 'body', weight: 'heavy' },
-  { size: 'small', weight: 'regular' },
-  { size: 'small', weight: 'medium' },
-  { size: 'small', weight: 'semibold' },
-  { size: 'small', weight: 'bold' },
-  { size: 'small', weight: 'heavy' },
+  { size: '18px', weight: 'bold' },
+  { size: '16px', weight: 'bold' },
+  { size: '14px', weight: 'bold' },
+  { size: '11px', weight: 'bold' },
 ];
 
 const MockBadge = ({ children }: { children: ReactNode }) => (
@@ -56,77 +51,92 @@ const customTextColor: CustomColor = {
 const docs: Docs = {
   name: 'Text',
   category: 'Content',
-  examples: textExamples.map(({ size, weight }) => ({
-    name: `${titleCase(size)} (${weight})`,
-    example: (
-      <>
-        <Stack space="12px">
-          <Stack separator={<Guide />}>
-            <Text size={size} weight={weight}>
-              {loremIpsum}
-            </Text>
-            <Text numberOfLines={1} size={size} weight={weight}>
-              Truncated text truncated text truncated text truncated text
-              truncated text truncated text
-            </Text>
-            <Text containsEmoji size={size} weight={weight}>
-              With emoji 🌈
-            </Text>
-            <Text color="action" size={size} weight={weight}>
-              Palette color
-            </Text>
-            <Text color={customTextColor} size={size} weight={weight}>
-              Custom color
-            </Text>
-            <View
-              style={{
-                backgroundColor: palettes.dark.backgroundColors.body.color,
-                padding: 20,
-              }}
-            >
-              <ColorModeProvider value="dark">
-                <Stack space="12px">
-                  <Text color="secondary50" size={size} weight={weight}>
-                    Dark mode
-                  </Text>
-                  <Text color={customTextColor} size={size} weight={weight}>
-                    Custom color
-                  </Text>
-                </Stack>
-              </ColorModeProvider>
+  examples: [
+    ...textExamples.map(({ size, weight }) => ({
+      name: `${titleCase(size)} (${weight})`,
+      example: (
+        <>
+          <Stack space="10px">
+            <View>
+              <Guide />
+              <Text size={size} weight={weight}>
+                {loremIpsum}
+              </Text>
+              <Guide />
             </View>
-            <View
-              style={{
-                backgroundColor: palettes.dark.backgroundColors.body.color,
-                padding: 20,
-              }}
-            >
-              <ColorModeProvider value="darkTinted">
-                <Stack space="12px">
-                  <Text color="secondary50" size={size} weight={weight}>
-                    Dark tinted mode
-                  </Text>
-                  <Text color={customTextColor} size={size} weight={weight}>
-                    Custom color
-                  </Text>
-                </Stack>
-              </ColorModeProvider>
-            </View>
+            <Inline space="10px">
+              <MockBadge>
+                <Text size={size} weight={weight}>
+                  CENTERED
+                </Text>
+              </MockBadge>
+              <MockBadge>
+                <Text size={size} weight={weight}>
+                  Centered
+                </Text>
+              </MockBadge>
+            </Inline>
           </Stack>
-          <MockBadge>
-            <Text size={size} weight={weight}>
-              CENTERED TEXT
-            </Text>
-          </MockBadge>
-          <MockBadge>
-            <Text size={size} weight={weight}>
-              Centered text
-            </Text>
-          </MockBadge>
+        </>
+      ),
+    })),
+    {
+      name: 'With emoji',
+      example: (
+        <>
+          <Guide />
+          <Text containsEmoji>Text with emoji 🌈</Text>
+          <Guide />
+        </>
+      ),
+    },
+    {
+      name: 'With truncation',
+      example: (
+        <>
+          <Guide />
+          <Text numberOfLines={1}>
+            Truncated text truncated text truncated text truncated text
+            truncated text truncated text
+          </Text>
+          <Guide />
+        </>
+      ),
+    },
+    {
+      name: 'With color',
+      example: (
+        <Stack space="12px">
+          <Text color="accent">Standard color</Text>
+          <Text color={customTextColor}>Custom color</Text>
+          <View>
+            <View
+              style={{
+                backgroundColor: palettes.dark.backgroundColors.body.color,
+                padding: 24,
+              }}
+            >
+              <Stack space="24px">
+                <ColorModeProvider value="dark">
+                  <Stack space="12px">
+                    <Text color="secondary50">Dark mode</Text>
+                    <Text color={customTextColor}>Custom color</Text>
+                  </Stack>
+                </ColorModeProvider>
+
+                <ColorModeProvider value="darkTinted">
+                  <Stack space="12px">
+                    <Text color="secondary50">Dark tinted mode</Text>
+                    <Text color={customTextColor}>Custom color</Text>
+                  </Stack>
+                </ColorModeProvider>
+              </Stack>
+            </View>
+          </View>
         </Stack>
-      </>
-    ),
-  })),
+      ),
+    },
+  ],
 };
 
 export default docs;

@@ -9,47 +9,23 @@ import {
 } from '../../typography/renderStringWithEmoji';
 import { headingSizes, headingWeights } from '../../typography/typography';
 
-interface HeadingStyle {
+export type HeadingProps = {
   align?: 'center' | 'left' | 'right';
   size?: keyof typeof headingSizes;
   weight?: keyof typeof headingWeights;
-}
-
-function useHeadingStyle({
-  align: textAlign,
-  size = 'heading',
-  weight = 'heavy',
-}: HeadingStyle) {
-  const sizeStyles = headingSizes[size];
-  const weightStyles = headingWeights[weight];
-  const color = useForegroundColor('primary');
-
-  return useMemo(
-    () =>
-      ({
-        lineHeightFixNode: createLineHeightFixNode(sizeStyles.lineHeight),
-        textStyle: {
-          color,
-          textAlign,
-          ...sizeStyles,
-          ...weightStyles,
-        },
-      } as const),
-    [sizeStyles, weightStyles, textAlign, color]
-  );
-}
-
-export type HeadingProps = HeadingStyle & {
   numberOfLines?: number;
   testID?: string;
 } & (
-    | {
-        containsEmoji: true;
-        children: string | (string | null)[];
-      }
-    | { containsEmoji?: false; children: ReactNode }
-  );
+  | {
+      containsEmoji: true;
+      children: string | (string | null)[]; // This is because we can only process strings automatically. We can't traverse into content rendered by child components.
+    }
+  | { containsEmoji?: false; children: ReactNode }
+);
 
+/**
+ * @description Default size is `"20px"`
+ */
 export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
   function Heading(
     {
@@ -57,7 +33,9 @@ export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
       containsEmoji: containsEmojiProp = false,
       children,
       testID,
-      ...textStyleProps
+      align: textAlign,
+      size = '20px',
+      weight = 'heavy',
     },
     ref
   ) {
@@ -74,7 +52,25 @@ export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
       }
     }
 
-    const { textStyle, lineHeightFixNode } = useHeadingStyle(textStyleProps);
+    const sizeStyles = headingSizes[size];
+    const weightStyles = headingWeights[weight];
+    const color = useForegroundColor('primary');
+
+    const lineHeightFixNode = useMemo(
+      () => createLineHeightFixNode(sizeStyles.lineHeight),
+      [sizeStyles]
+    );
+
+    const textStyle = useMemo(
+      () =>
+        ({
+          color,
+          textAlign,
+          ...sizeStyles,
+          ...weightStyles,
+        } as const),
+      [sizeStyles, weightStyles, textAlign, color]
+    );
 
     return (
       <NativeText

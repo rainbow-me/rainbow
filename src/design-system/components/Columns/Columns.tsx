@@ -47,6 +47,9 @@ Column.__isColumn__ = true;
 const getColumnProps = (node: NonNullable<ReactNode>): ColumnProps | null =>
   typeof node === 'object' &&
   'type' in node &&
+  // This lets us detect Column elements even if they've been hot reloaded.
+  // If we checked that node.type === Column, it will fail if Column has been
+  // dynamically replaced with a new component.
   // @ts-expect-error
   node.type.__isColumn__
     ? (node.props as ColumnProps)
@@ -57,26 +60,31 @@ interface PrivateColumnProps extends ColumnProps {
   alignVertical: AlignVertical | undefined;
 }
 
-const PrivateColumn = ({
+// This is the component that's rendered instead of the Column component that
+// consumers have access to. The public Column component is essentially used
+// as a mechanism for providing access to this component's props without
+// leaking private implementation detail.
+function PrivateColumn({
   space,
   width,
   alignVertical,
   children,
-}: PrivateColumnProps) => (
-  <Box
-    flexBasis={width ? undefined : 0}
-    flexGrow={width ? 0 : 1}
-    flexShrink={width ? 0 : 1}
-    justifyContent={
-      alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined
-    }
-    paddingRight={space}
-    width={width !== 'content' ? width : undefined}
-  >
-    {children}
-  </Box>
-);
-PrivateColumn.displayName = 'Column';
+}: PrivateColumnProps) {
+  return (
+    <Box
+      flexBasis={width ? undefined : 0}
+      flexGrow={width ? 0 : 1}
+      flexShrink={width ? 0 : 1}
+      justifyContent={
+        alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined
+      }
+      paddingRight={space}
+      width={width !== 'content' ? width : undefined}
+    >
+      {children}
+    </Box>
+  );
+}
 
 export interface ColumnsProps {
   space: Space;

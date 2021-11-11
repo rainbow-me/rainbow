@@ -1,5 +1,7 @@
 # 🎨📦🌈 Rainbow Design System 🌈📦🎨
 
+> 💡 To view the design system cheat sheet while working on the app, run `yarn ds` and open http://localhost:3000.
+
 The goal of Rainbow Design System is to make it fast and easy to build and maintain standard Rainbow designs.
 
 As much as possible, component APIs at the screen level should be high level, reading the way a designer would describe them. You ideally shouldn't have to write a bunch of low-level styling or manually adjust padding and margins on individual components to create visual balance. To achieve this, we need to start at the foundations and build up in layers.
@@ -346,7 +348,7 @@ import { BackgroundProvider } from '@rainbow-me/design-system';
 import { SomeComponent } from 'some-component';
 
 export default () => (
-  <BackgroundProvider color="action">
+  <BackgroundProvider color="accent">
     {backgroundStyle => (
       <SomeComponent style={backgroundStyle}>...</SomeComponent>
     )}
@@ -381,11 +383,11 @@ Low-level access to the foreground color palette is available via the `useForegr
 import { useForegroundColor, Box, Text } from '@rainbow-me/design-system';
 
 export default () => {
-  const borderColor = useForegroundColor('action');
+  const borderColor = useForegroundColor('accent');
 
   return (
     <Box padding="6px" style={{ borderWidth: 2, borderColor }}>
-      <Text color="action">...</Text>
+      <Text color="accent">...</Text>
     </Box>
   );
 };
@@ -406,7 +408,7 @@ export default () => {
 
   return (
     <Box padding="6px" style={{ borderWidth: 2, borderColor }}>
-      <Text color="action">...</Text>
+      <Text color="accent">...</Text>
     </Box>
   );
 };
@@ -428,6 +430,8 @@ Then start the app with a clean cache.
 yarn start --reset-cache
 ```
 
-This causes the app to boot up rendering the design system playground instead of the regular app. The playground code is sourced from `src/design-system/playground/Playground.tsx`. This screen imports files named `*.docs.tsx` from each component folder which define the examples to be rendered in each section.
+This causes the app to render the design system playground instead of the regular app. The playground code is sourced from `src/design-system/playground/Playground.tsx`. This screen imports files named `*.docs.tsx` from each component folder.
 
 When adding a new component, please ensure that it has a matching docs file and that it's imported in the main `Playground` component.
+
+When adding a new text/heading size, please ensure that you've added an example to the respective `*.docs.tsx` file and validate that the space is being trimmed correctly above capital letters and below the baseline on both iOS and Android.

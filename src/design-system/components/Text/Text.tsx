@@ -13,7 +13,7 @@ import {
 import { textSizes, textWeights } from '../../typography/typography';
 
 const validColors = [
-  'action',
+  'accent',
   'inverted',
   'primary',
   'secondary',
@@ -25,61 +25,26 @@ const validColors = [
   'secondary80',
 ] as const;
 
-interface TextStyle {
+export type TextProps = {
   align?: 'center' | 'left' | 'right';
   color?: typeof validColors[number] | CustomColor;
-  size?: keyof typeof textSizes;
-  weight?: keyof typeof textWeights;
-  tabularNumbers?: boolean;
-  uppercase?: boolean;
-}
-
-function useTextStyle({
-  align: textAlign,
-  color = 'primary',
-  size = 'body',
-  weight = 'regular',
-  tabularNumbers = false,
-  uppercase = false,
-}: TextStyle) {
-  if (__DEV__ && typeof color === 'string' && !validColors.includes(color)) {
-    throw new Error(`Text: Unsupported color "${color}"`);
-  }
-
-  const colorValue = useForegroundColor(color);
-  const sizeStyles = textSizes[size];
-  const weightStyles = textWeights[weight];
-
-  return useMemo(
-    () =>
-      ({
-        lineHeightFixNode: createLineHeightFixNode(sizeStyles.lineHeight),
-        textStyle: {
-          color: colorValue,
-          textAlign,
-          ...sizeStyles,
-          ...weightStyles,
-          ...(uppercase ? { textTransform: 'uppercase' as const } : null),
-          ...(tabularNumbers
-            ? { fontVariant: ['tabular-nums' as const] }
-            : null),
-        },
-      } as const),
-    [sizeStyles, weightStyles, textAlign, colorValue, tabularNumbers, uppercase]
-  );
-}
-
-export type TextProps = TextStyle & {
   numberOfLines?: number;
+  size?: keyof typeof textSizes;
+  tabularNumbers?: boolean;
   testID?: string;
+  uppercase?: boolean;
+  weight?: keyof typeof textWeights;
 } & (
-    | {
-        containsEmoji: true;
-        children: string | (string | null)[];
-      }
-    | { containsEmoji?: false; children: ReactNode }
-  );
+  | {
+      containsEmoji: true;
+      children: string | (string | null)[];
+    }
+  | { containsEmoji?: false; children: ReactNode }
+);
 
+/**
+ * @description Default size is `"16px"`
+ */
 export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
   function Text(
     {
@@ -87,7 +52,12 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
       containsEmoji: containsEmojiProp = false,
       children,
       testID,
-      ...textStyleProps
+      align: textAlign,
+      color = 'primary',
+      size = '16px',
+      weight = 'regular',
+      tabularNumbers = false,
+      uppercase = false,
     },
     ref
   ) {
@@ -104,7 +74,34 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
       }
     }
 
-    const { textStyle, lineHeightFixNode } = useTextStyle(textStyleProps);
+    const colorValue = useForegroundColor(color);
+    const sizeStyles = textSizes[size];
+    const weightStyles = textWeights[weight];
+
+    const { textStyle, lineHeightFixNode } = useMemo(
+      () =>
+        ({
+          lineHeightFixNode: createLineHeightFixNode(sizeStyles.lineHeight),
+          textStyle: {
+            color: colorValue,
+            textAlign,
+            ...sizeStyles,
+            ...weightStyles,
+            ...(uppercase ? { textTransform: 'uppercase' as const } : null),
+            ...(tabularNumbers
+              ? { fontVariant: ['tabular-nums' as const] }
+              : null),
+          },
+        } as const),
+      [
+        sizeStyles,
+        weightStyles,
+        textAlign,
+        colorValue,
+        tabularNumbers,
+        uppercase,
+      ]
+    );
 
     return (
       <NativeText

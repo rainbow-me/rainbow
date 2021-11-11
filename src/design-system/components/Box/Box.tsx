@@ -48,6 +48,11 @@ export interface BoxProps extends ComponentProps<typeof View> {
   children?: ReactNode;
 }
 
+/**
+ * @description Renders a single `View` element with standard styling. Any
+ * background color set via the `background` prop will be used to automatically
+ * set the color mode for nested elements.
+ */
 export function Box({
   background,
   flexDirection,

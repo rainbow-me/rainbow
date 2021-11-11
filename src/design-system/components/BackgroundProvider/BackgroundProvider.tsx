@@ -7,6 +7,13 @@ export type BackgroundProviderProps = {
   children: (style: { backgroundColor: string }) => JSX.Element;
 };
 
+/**
+ * @description Allows third-party elements to be rendered with a standard
+ * background color via a render prop, while also setting up the
+ * `ColorModeProvider` so that nested elements can correctly infer whether
+ * they are in a dark or light context. The `style` object containing the
+ * `backgroundColor` value is memoized and passed to the render function.
+ */
 export function BackgroundProvider({
   color,
   children,

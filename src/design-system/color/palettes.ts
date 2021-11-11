@@ -37,7 +37,7 @@ export type ContextualColorValue<Value> = {
   darkTinted?: Value;
 };
 
-export type BackgroundColor = 'body' | 'action' | 'swap';
+export type BackgroundColor = 'body' | 'accent' | 'swap';
 
 type BackgroundColorValue = {
   color: string;
@@ -48,6 +48,10 @@ export const backgroundColors: Record<
   BackgroundColor,
   BackgroundColorValue | ContextualColorValue<BackgroundColorValue>
 > = {
+  accent: {
+    color: colors.appleBlue,
+    mode: 'dark',
+  },
   body: {
     light: {
       color: colors.white,
@@ -57,10 +61,6 @@ export const backgroundColors: Record<
       color: '#12131a',
       mode: 'dark',
     },
-  },
-  action: {
-    color: colors.appleBlue,
-    mode: 'dark',
   },
   swap: {
     color: colors.swapPurple,
@@ -78,12 +78,13 @@ export type ForegroundColor =
   | 'secondary40'
   | 'secondary30'
   | 'inverted'
-  | 'action';
+  | 'accent';
 
 export const foregroundColors: Record<
   ForegroundColor,
   string | ContextualColorValue<string>
 > = {
+  accent: colors.appleBlue,
   inverted: {
     light: colors.black,
     dark: colors.white,
@@ -128,9 +129,13 @@ export const foregroundColors: Record<
     dark: colors.sky30,
     darkTinted: colors.white30,
   },
-  action: colors.appleBlue,
 };
 
+/**
+ * @description Accepts an object with values defined for each color mode and
+ * resolves the value based on the requested color mode. This is useful because
+ * some color modes can inherit from others, e.g. `"dark"` and `"darkTinted"`.
+ */
 export function getValueForColorMode<Value>(
   value: Value | ContextualColorValue<Value>,
   colorMode: ColorMode

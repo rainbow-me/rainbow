@@ -27,7 +27,7 @@ const docs: Docs = {
     {
       name: 'With text',
       example: (
-        <Stack space="19px">
+        <Stack space="15px">
           <Text>Lorem ipsum</Text>
           <Text>Lorem ipsum</Text>
           <Text>Lorem ipsum</Text>

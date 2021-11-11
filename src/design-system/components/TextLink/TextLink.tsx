@@ -7,13 +7,17 @@ export interface TextLinkProps {
   children: ReactNode;
 }
 
+/**
+ * @description Renders a plain, static text link, designed to be used within a
+ * block of text.
+ */
 export function TextLink({ children, url }: TextLinkProps) {
-  const actionColor = useForegroundColor('action');
+  const accentColor = useForegroundColor('accent');
 
   return (
     <NativeText
       onPress={useCallback(() => Linking.openURL(url), [url])}
-      style={useMemo(() => ({ color: actionColor }), [actionColor])}
+      style={useMemo(() => ({ color: accentColor }), [accentColor])}
     >
       {children}
     </NativeText>

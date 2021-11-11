@@ -5,8 +5,8 @@ import { Text as NativeText, StyleSheet } from 'react-native';
 const emojiRegex = createEmojiRegex();
 const styles = StyleSheet.create({
   emoji: {
-    color: 'black', // Ensures emoji don't inherit the alpha channel of rgba colors
-    fontFamily: 'System',
+    color: 'black', // Ensures emoji don't inherit the opacity of rgba colors
+    fontFamily: 'System', // Fixes line height issues with custom fonts + emoji
   },
 });
 
@@ -22,10 +22,11 @@ export const nodeIsString = (children: ReactNode): children is StringNode =>
   (Array.isArray(children) &&
     children.every(child => typeof child === 'string' || child === null));
 
-// Using emoji within a text node in a custom font causes the
-// text to render higher than its usual baseline on iOS. To
-// fix this, we wrap all emoji in another Text element that
-// resets the font family back to "System"
+/**
+ * @description Renders a string of text containing emoji. This is required due
+ * to a rendering issue on iOS where the presence of emoji causes text nodes to
+ * render higher than their usual baseline.
+ */
 export const renderStringWithEmoji = (stringNode: StringNode) => {
   if (__DEV__ && !nodeIsString(stringNode)) {
     throw new Error('renderEmoji: Only string values are supported.');

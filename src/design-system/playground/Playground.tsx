@@ -58,15 +58,17 @@ const DocsRow = ({ name, category, examples }: Docs) => {
       >
         <Inline space="6px">
           <View style={styles.docsRowToggle}>
-            <Heading size="title">{open ? '-' : '+'}</Heading>
+            <Heading size="20px">{open ? '-' : '+'}</Heading>
           </View>
-          <Heading size="title">{name}</Heading>
+          <Heading size="20px">{name}</Heading>
         </Inline>
       </TouchableOpacity>
       {open
         ? examples.map((example, index) => (
-            <Stack key={index} space="30px">
-              <Heading weight="bold">{example.name}</Heading>
+            <Stack key={index} space="12px">
+              <Heading size="18px" weight="bold">
+                {example.name}
+              </Heading>
               <View
                 style={
                   category === 'Layout' && name !== 'Box'
@@ -91,7 +93,7 @@ export const Playground = () => {
     <ScrollView contentInsetAdjustmentBehavior="automatic">
       {android ? <View style={{ height: StatusBar.currentHeight }} /> : null}
       <Inset space="19px">
-        <Stack space="30px">
+        <Stack space="24px">
           {allDocs.map(({ name, category, examples }, index) => (
             <DocsRow
               category={category}

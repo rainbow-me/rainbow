@@ -32,7 +32,7 @@ const defaultProps: {
   size: NonNullable<TextProps['size']>;
 } = {
   nestedSpace: '19px',
-  size: 'body',
+  size: '16px',
   space: '30px',
 };
 
@@ -121,6 +121,10 @@ export type MarkdownTextProps = {
   | { space: Space; nestedSpace: Space }
 );
 
+/**
+ * @description Renders a markdown string as a series of Text components. The
+ * text size and spacing between lines can be customized.
+ */
 export const MarkdownText = memo(function MarkdownText({
   children,
   space = defaultProps.space,

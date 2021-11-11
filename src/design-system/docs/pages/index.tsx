@@ -152,7 +152,7 @@ const Home: NextPage = () => {
                     ) => (
                       <div key={index} style={{ fontSize: fontSize }}>
                         <div style={{ color: PRIMARY_TEXT, fontWeight: 800 }}>
-                          {sizeName} ({fontSize}px)
+                          {sizeName} heading
                         </div>
                         <div
                           style={{
@@ -180,7 +180,7 @@ const Home: NextPage = () => {
                     ) => (
                       <div key={index} style={{ fontSize: fontSize }}>
                         <div style={{ color: PRIMARY_TEXT, fontWeight: 800 }}>
-                          {sizeName} ({fontSize}px)
+                          {sizeName} text
                         </div>
                         <div
                           style={{

@@ -75,22 +75,19 @@ const fontMetrics = {
   unitsPerEm: 2048,
 } as const;
 
-const marginCorrectionForFontSize = {
-  23: ios ? -0.3 : -0.3,
-  20: ios ? -0.5 : -0.2,
-  18: ios ? 0.4 : 0.2,
-  16: ios ? -0.5 : 2.4,
-  14: ios ? -0.3 : -0.1,
-} as const;
-
 const createTextSize = ({
   fontSize,
   lineHeight: leading,
   letterSpacing,
+  marginCorrection,
 }: {
-  fontSize: keyof typeof marginCorrectionForFontSize;
+  fontSize: number;
   lineHeight: number;
   letterSpacing: number;
+  marginCorrection: {
+    ios: number;
+    android: number;
+  };
 }) => {
   const styles = {
     letterSpacing,
@@ -101,18 +98,15 @@ const createTextSize = ({
     }),
   } as const;
 
-  const marginCorrection =
-    fontSize in marginCorrectionForFontSize
-      ? marginCorrectionForFontSize[fontSize]
-      : 0;
+  const marginCorrectionForPlatform = marginCorrection[ios ? 'ios' : 'android'];
 
   return {
     ...styles,
     marginTop: PixelRatio.roundToNearestPixel(
-      styles.marginTop + marginCorrection
+      styles.marginTop + marginCorrectionForPlatform
     ),
     marginBottom: PixelRatio.roundToNearestPixel(
-      styles.marginBottom - marginCorrection
+      styles.marginBottom - marginCorrectionForPlatform
     ),
   };
 };
