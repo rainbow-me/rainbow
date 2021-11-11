@@ -75,16 +75,19 @@ struct PriceWidgetView: View {
     let uiColor = UIColor(color)
     uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
     
-    let luminance = 1 - ( 0.299 * red + 0.587 * green + 0.114 * blue) / 255
+    let luminance = 0.299 * red + 0.587 * green + 0.114 * blue
     
-    return luminance < 0.5
+    return luminance > 0.5
   }
   
   var body: some View {
+    let bgColor = getColor(tokenData: tokenData)
+    let fgColor = colorIsLight(color: bgColor) ? hexStringToColor(hex: "#25292E") : Color.white
+    
     GeometryReader { geometry in
       ZStack {
           Rectangle()
-            .fill(getColor(tokenData: tokenData))
+            .fill(bgColor)
             .offset(x: 0, y: 0)
         
           Rectangle()
@@ -105,11 +108,11 @@ struct PriceWidgetView: View {
               Text(tokenData.tokenDetails != nil && tokenData.price != nil ? tokenData.tokenDetails!.symbol!.uppercased() : "")
                 .font(.custom("SF Pro Rounded", size: 18))
                 .fontWeight(.heavy)
-                .foregroundColor(Color.white)
+                .foregroundColor(fgColor)
                 .tracking(0.4)
                 .frame(height: 20)
                 .mask(
-                  LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.9), Color.white.opacity(0.8)]), startPoint: .leading, endPoint: .trailing)
+                  LinearGradient(gradient: Gradient(colors: [fgColor.opacity(0.9), fgColor.opacity(0.8)]), startPoint: .leading, endPoint: .trailing)
                 )
 
               Spacer()
@@ -127,24 +130,24 @@ struct PriceWidgetView: View {
                     if (tokenData.priceChange! >= 0) {
                       Image(systemName: "arrow.up")
                         .font(.system(size: 18, weight: .heavy, design: .rounded))
-                        .foregroundColor(Color.white)
+                        .foregroundColor(fgColor)
                     } else {
                       Image(systemName: "arrow.down")
                         .font(.system(size: 18, weight: .heavy, design: .rounded))
-                        .foregroundColor(Color.white)
+                        .foregroundColor(fgColor)
                     }
                     Text(tokenData.priceChange != nil ? String(format: "%.2f", abs(tokenData.priceChange!)) + "%" : "")
                       .font(.custom("SF Pro Rounded", size: 18))
                       .fontWeight(.heavy)
-                      .foregroundColor(Color.white)
+                      .foregroundColor(fgColor)
                       .tracking(0.2)
                   }.mask(
-                    LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.9), Color.white.opacity(0.7)]), startPoint: .leading, endPoint: .trailing)
+                    LinearGradient(gradient: Gradient(colors: [fgColor.opacity(0.9), fgColor.opacity(0.7)]), startPoint: .leading, endPoint: .trailing)
                   )
                     Text(tokenData.price != nil ? convertToCurrency(double: tokenData.price!) : "")
                       .font(.custom("SF Pro Rounded", size: 28))
                       .fontWeight(.heavy)
-                      .foregroundColor(Color.white)
+                      .foregroundColor(fgColor)
                       .minimumScaleFactor(0.01)
                       .lineLimit(1)
                       .frame(height: 33, alignment: .top)
@@ -152,7 +155,7 @@ struct PriceWidgetView: View {
                   Text("Couldn't retrieve token data")
                     .font(.custom("SF Pro Rounded", size: 28))
                     .fontWeight(.heavy)
-                    .foregroundColor(Color.white)
+                    .foregroundColor(fgColor)
                     .minimumScaleFactor(0.01)
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
@@ -167,13 +170,13 @@ struct PriceWidgetView: View {
                 Text("This is fake data")
                   .font(.custom("SF Pro Rounded", size: 10))
                   .fontWeight(.bold)
-                  .foregroundColor(Color.white.opacity(0.4))
+                  .foregroundColor(fgColor.opacity(0.4))
                   .tracking(0.2)
               } else {
                 (Text("Updated at ") + Text(date, style: .time))
                   .font(.custom("SF Pro Rounded", size: 10))
                   .fontWeight(.bold)
-                  .foregroundColor(Color.white.opacity(0.5))
+                  .foregroundColor(fgColor.opacity(0.5))
                   .tracking(0.2)
               }
             }
