@@ -1,6 +1,8 @@
 import { get, map, zipObject } from 'lodash';
+import { greaterThan } from 'react-native-reanimated';
 import { getMinimalTimeUnitStringForMs } from '../helpers/time';
 import {
+  add,
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
   divide,
@@ -119,10 +121,22 @@ export const defaultGasPriceFormat = (option, timeWait, value) => {
  * @param {Object} prices
  * @param {Number} gasLimit
  */
-export const parseTxFees = (gasPrices, priceUnit, gasLimit, nativeCurrency) => {
+export const parseTxFees = (
+  gasPrices,
+  priceUnit,
+  gasLimit,
+  nativeCurrency,
+  l1GasFee
+) => {
   const txFees = map(GasSpeedOrder, speed => {
     const gasPrice = get(gasPrices, `${speed}.value.amount`);
-    const txFee = getTxFee(gasPrice, gasLimit, priceUnit, nativeCurrency);
+    const txFee = getTxFee(
+      gasPrice,
+      gasLimit,
+      priceUnit,
+      nativeCurrency,
+      l1GasFee
+    );
     return {
       txFee,
     };
@@ -130,8 +144,11 @@ export const parseTxFees = (gasPrices, priceUnit, gasLimit, nativeCurrency) => {
   return zipObject(GasSpeedOrder, txFees);
 };
 
-const getTxFee = (gasPrice, gasLimit, priceUnit, nativeCurrency) => {
-  const amount = multiply(gasPrice, gasLimit);
+const getTxFee = (gasPrice, gasLimit, priceUnit, nativeCurrency, l1GasFee) => {
+  let amount = multiply(gasPrice, gasLimit);
+  if (l1GasFee && greaterThan(l1GasFee, '0')) {
+    amount = add(amount, l1GasFee.toString());
+  }
   return {
     native: {
       value: convertRawAmountToNativeDisplay(

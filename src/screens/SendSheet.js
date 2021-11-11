@@ -22,6 +22,7 @@ import { AssetTypes } from '@rainbow-me/entities';
 import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';
 import { debouncedFetchSuggestions } from '@rainbow-me/handlers/ens';
 import {
+  buildTransaction,
   createSignableTransaction,
   estimateGasLimit,
   getProviderForNetwork,
@@ -464,7 +465,25 @@ export default function SendSheet(props) {
         );
 
         if (!lessThan(updatedGasLimit, gasLimit)) {
-          updateTxFee(updatedGasLimit, null, currentNetwork);
+          if (network === networkTypes.optimism) {
+            const txData = await buildTransaction(
+              {
+                address: accountAddress,
+                amount: amountDetails.assetAmount,
+                asset: selected,
+                recipient: toAddress,
+              },
+              currentProvider,
+              currentNetwork
+            );
+            const l1GasFee = await ethereumUtils.calculateL1FeeOptimism(
+              txData,
+              currentProvider
+            );
+            updateTxFee(updatedGasLimit, null, currentNetwork, l1GasFee);
+          } else {
+            updateTxFee(updatedGasLimit, null, currentNetwork);
+          }
         }
         // eslint-disable-next-line no-empty
       } catch (e) {}
@@ -744,10 +763,30 @@ export default function SendSheet(props) {
         currentProvider,
         currentNetwork
       )
-        .then(gasLimit => {
-          updateTxFee(gasLimit, null, currentNetwork);
+        .then(async gasLimit => {
+          if (currentNetwork === networkTypes.optimism) {
+            const txData = await buildTransaction(
+              {
+                address: accountAddress,
+                amount: amountDetails.assetAmount,
+                asset: selected,
+                recipient: toAddress,
+              },
+              currentProvider,
+              currentNetwork
+            );
+            const l1GasFee = await ethereumUtils.calculateL1FeeOptimism(
+              txData,
+              currentProvider
+            );
+            updateTxFee(gasLimit, null, currentNetwork, l1GasFee);
+          } else {
+            updateTxFee(gasLimit, null, currentNetwork);
+          }
         })
-        .catch(() => {
+        .catch(e => {
+          logger.sentry('OP Gas limit blew up', e);
+          captureException(e);
           updateTxFee(null, null, currentNetwork);
         });
     }

@@ -979,7 +979,7 @@ SPEC CHECKSUMS:
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   BVLinearGradient: e3aad03778a456d77928f594a649e96995f1c872
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
-  DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
+  DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   FBLazyVector: e686045572151edef46010a6f819ade377dfeb4b
   FBReactNativeSpec: deacad5a4727314b5f7a7b53a0847db0227e2a30
   Firebase: 629510f1a9ddb235f3a7c5c8ceb23ba887f0f814
@@ -998,7 +998,7 @@ SPEC CHECKSUMS:
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
   Flipper-RSocket: 127954abe8b162fcaf68d2134d34dc2bd7076154
   FlipperKit: 8a20b5c5fcf9436cac58551dc049867247f64b00
-  glog: 5337263514dd6f09803962437687240c5dc39aa4
+  glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
   GoogleDataTransport: 85fd18ff3019bb85d3f2c551d04c481dedf71fc9
   GoogleUtilities: eea970f4a389963963bffe8d8fabe43540678b9c
   hermes-engine: 7d97ba46a1e29bacf3e3c61ecb2804a5ddd02d4f

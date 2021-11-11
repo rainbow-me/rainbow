@@ -20,6 +20,7 @@ export {
 } from './signatureRegistry';
 export { default as emojis } from './emojis.json';
 export { default as erc20ABI } from './erc20-abi.json';
+export { default as optimismGasOracleAbi } from './optimism-gas-oracle-abi.json';
 export { default as ethUnits } from './ethereum-units.json';
 export { DPI_ADDRESS } from './indexes';
 
@@ -43,6 +44,9 @@ export {
   wyreSupportedCountries,
   WYRE_SUPPORTED_COUNTRIES_ISO,
 } from './wyre';
+
+export const OVM_GAS_PRICE_ORACLE =
+  '0x420000000000000000000000000000000000000F';
 
 // Block Explorers
 export const ARBITRUM_BLOCK_EXPLORER_URL = 'arbiscan.io';

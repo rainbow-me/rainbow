@@ -437,6 +437,49 @@ export const getDataForNftTransfer = (from, to, asset) => {
 };
 
 /**
+ * @desc build transaction
+ * @param {Object} [{selected, address, recipient, amount, gasPrice}]
+ * @return {String}
+ */
+
+export const buildTransaction = async (
+  { asset, address, recipient, amount },
+  provider,
+  network
+) => {
+  const _amount =
+    amount && Number(amount)
+      ? convertAmountToRawAmount(amount, asset.decimals)
+      : estimateAssetBalancePortion(asset);
+  const value = _amount.toString();
+  const _recipient = await resolveNameOrAddress(recipient, provider);
+  let txData = {
+    data: '0x',
+    from: address,
+    to: _recipient,
+    value,
+  };
+  if (asset.type === AssetTypes.nft) {
+    const contractAddress = get(asset, 'asset_contract.address');
+    const data = getDataForNftTransfer(address, _recipient, asset);
+    txData = {
+      data,
+      from: address,
+      to: contractAddress,
+    };
+  } else if (!isNativeAsset(asset.address, network)) {
+    const transferData = getDataForTokenTransfer(value, _recipient);
+    txData = {
+      data: transferData,
+      from: address,
+      to: asset.address,
+      value: '0x0',
+    };
+  }
+  return txData;
+};
+
+/**
  * @desc estimate gas limit
  * @param {Object} [{selected, address, recipient, amount, gasPrice}]
  * @return {String}
@@ -447,35 +490,11 @@ export const estimateGasLimit = async (
   provider = null,
   network = NetworkTypes.mainnet
 ) => {
-  const _amount =
-    amount && Number(amount)
-      ? convertAmountToRawAmount(amount, asset.decimals)
-      : estimateAssetBalancePortion(asset);
-  const value = _amount.toString();
-  const _recipient = await resolveNameOrAddress(recipient, provider);
-  let estimateGasData = {
-    data: '0x',
-    from: address,
-    to: _recipient,
-    value,
-  };
-  if (asset.type === AssetTypes.nft) {
-    const contractAddress = get(asset, 'asset_contract.address');
-    const data = getDataForNftTransfer(address, _recipient, asset);
-    estimateGasData = {
-      data,
-      from: address,
-      to: contractAddress,
-    };
-  } else if (!isNativeAsset(asset.address, network)) {
-    const transferData = getDataForTokenTransfer(value, _recipient);
-    estimateGasData = {
-      data: transferData,
-      from: address,
-      to: asset.address,
-      value: '0x0',
-    };
-  }
+  const estimateGasData = await buildTransaction(
+    { address, amount, asset, recipient },
+    provider,
+    network
+  );
   if (addPadding) {
     return estimateGasWithPadding(estimateGasData, null, null, provider);
   } else {

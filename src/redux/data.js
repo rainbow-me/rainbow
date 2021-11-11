@@ -529,10 +529,10 @@ export const addressAssetsReceived = (
     const restOfTheAssets = existingAssets.filter(
       asset => asset.network !== assetsNetwork
     );
-
+    parsedAssets = concat(parsedAssets, restOfTheAssets);
     parsedAssets = uniqBy(
-      concat(parsedAssets, restOfTheAssets),
-      item => item.uniqueId
+      parsedAssets,
+      item => `${item.uniqueId}_${item.network}`
     );
   } else {
     // We need to merge the response with all l2 assets

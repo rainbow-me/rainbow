@@ -48,8 +48,8 @@
     "short_name": "omainnet",
     "chain": "ETH",
     "network": "optimism",
-    "chain_id": 10,
-    "network_id": 10
+    "chain_id": 69,
+    "network_id": 69
   },
   {
     "name": "Polygon (Matic)",
