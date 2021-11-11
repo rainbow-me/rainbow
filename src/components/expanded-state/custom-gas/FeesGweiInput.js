@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../../animations';
-import { Column, Row } from '../../layout';
+import { Row } from '../../layout';
 import { Text } from '../../text';
 import GweiInputPill from './GweiInputPill';
 import { delay } from '@rainbow-me/helpers/utilities';
@@ -11,8 +11,11 @@ const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';
 const DELAY_THRESHOLD = 200;
 
+const Wrapper = styled(Row).attrs(() => ({}))``;
+
 const StepButton = styled(Text).attrs(({ theme: { colors }, color }) => ({
   color: color || colors.appleBlue,
+  lineHeight: 40,
   size: 'lmedium',
   weight: 'heavy',
 }))``;
@@ -107,38 +110,33 @@ export default function FeesGweiInput({
   }, [trigger, prevTrigger, actionType, plusAction, minusAction]);
 
   return (
-    <Row>
-      <Column justify="center">
-        <GweiStepButton
-          buttonColor={buttonColor}
-          onLongPress={onMinusLongPress}
-          onLongPressEnded={onLongPressEnded}
-          onPress={onMinusPress}
-          shouldLongPressEndPress
-          type={MINUS_ACTION_TYPE}
-        />
-      </Column>
-      <Column>
-        <GweiInputPill
-          onBlur={onBlur}
-          onChange={onChange}
-          onFocus={onInputPress}
-          onPress={onInputPress}
-          ref={inputRef}
-          testID={testID}
-          value={value}
-        />
-      </Column>
-      <Column justify="center">
-        <GweiStepButton
-          buttonColor={buttonColor}
-          onLongPress={onPlusLongPress}
-          onLongPressEnded={onLongPressEnded}
-          onPress={onPlusPress}
-          shouldLongPressEndPress
-          type={PLUS_ACTION_TYPE}
-        />
-      </Column>
-    </Row>
+    <Wrapper>
+      <GweiStepButton
+        buttonColor={buttonColor}
+        onLongPress={onMinusLongPress}
+        onLongPressEnded={onLongPressEnded}
+        onPress={onMinusPress}
+        shouldLongPressEndPress
+        type={MINUS_ACTION_TYPE}
+      />
+      <GweiInputPill
+        color={buttonColor}
+        onBlur={onBlur}
+        onChange={onChange}
+        onFocus={onInputPress}
+        onPress={onInputPress}
+        ref={inputRef}
+        testID={testID}
+        value={value}
+      />
+      <GweiStepButton
+        buttonColor={buttonColor}
+        onLongPress={onPlusLongPress}
+        onLongPressEnded={onLongPressEnded}
+        onPress={onPlusPress}
+        shouldLongPressEndPress
+        type={PLUS_ACTION_TYPE}
+      />
+    </Wrapper>
   );
 }

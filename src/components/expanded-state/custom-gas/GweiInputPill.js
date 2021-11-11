@@ -3,9 +3,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../../animations';
 import { Input } from '../../inputs';
-import { Column, Row } from '../../layout';
+import { Row } from '../../layout';
 import { Text } from '../../text';
-import { margin, padding } from '@rainbow-me/styles';
+import { colors, margin, padding } from '@rainbow-me/styles';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
@@ -51,28 +51,26 @@ const GweiLabel = styled(Text).attrs(() => ({
 `;
 
 function GweiInputPill(
-  { value, onPress, onChange, onFocus, onBlur, testID },
+  { value, onPress, onChange, onFocus, onBlur, testID, color },
   ref
 ) {
   return (
     <ButtonPressAnimation onPress={onPress}>
       <GweiPill>
         <Row>
-          <Column>
-            <GweiNumberInput
-              keyboardType="numeric"
-              onBlur={onBlur}
-              onChange={onChange}
-              onFocus={onFocus}
-              placeholder="0"
-              ref={ref}
-              testID={testID}
-              value={!!value && `${value}`}
-            />
-          </Column>
-          <Column>
-            <GweiLabel> Gwei</GweiLabel>
-          </Column>
+          <GweiNumberInput
+            keyboardType="numeric"
+            onBlur={onBlur}
+            onChange={onChange}
+            onFocus={onFocus}
+            placeholder="0"
+            placeholderTextColor={colors.grey}
+            ref={ref}
+            selectionColor={color}
+            testID={testID}
+            value={!!value && `${value}`}
+          />
+          <GweiLabel> Gwei</GweiLabel>
         </Row>
       </GweiPill>
     </ButtonPressAnimation>

@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { ChainBadge, CoinIcon } from '../coin-icon';
-import { Column, Row } from '../layout';
+import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPager from './GasSpeedLabelPager';
 import { isL2Network } from '@rainbow-me/handlers/web3';
@@ -37,25 +37,25 @@ const CustomGasButton = styled(ButtonPressAnimation).attrs({
   justifyContent: 'center',
   scaleTo: 0.9,
 })`
+  border-radius: 19;
   border: ${({ borderColor, color, theme: { colors } }) =>
     `2px solid ${borderColor || color || colors.blueGreyDark}`};
-  border-radius: 19px;
-  ${margin(0, 0, 0, 8)}
-  ${padding(0, 0, 0, 0)}
+  ${padding(3, 0)}
 `;
 
 const Symbol = styled(Text).attrs({
   alignItems: 'center',
-  flex: 1,
+  lineHeight: 'normal',
   size: 'lmedium',
   weight: 'heavy',
 })`
-  ${margin(0, 8, 0, 8)}
+  ${margin(0, 8)}
 `;
 
 const DoneCustomGas = styled(Text).attrs({
   alignItems: 'center',
   justifyContent: 'center',
+  lineHeight: 'normal',
   size: 'lmedium',
   weight: 'heavy',
 })`
@@ -72,7 +72,7 @@ const ChainBadgeContainer = styled.View.attrs({
 `;
 
 const NativeCoinIconWrapper = styled(Column)`
-  ${margin(android ? 5 : 0, 5, 0, 0)};
+  ${margin(0, 5, 0, 0)};
 `;
 
 const Container = styled(Column).attrs({
@@ -86,10 +86,15 @@ const Container = styled(Column).attrs({
 `;
 
 const Label = styled(Text).attrs(({ size }) => ({
+  lineHeight: 'normal',
   size: size || 'lmedium',
 }))`
   ${({ weight }) => fontWithWidth(weight || fonts.weight.semibold)}
 `;
+
+const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
+  marginRight: 8,
+}))``;
 
 const TransactionTimeLabel = ({ formatter, theme }) => {
   const { colors } = useTheme();
@@ -196,6 +201,7 @@ const GasSpeedButton = ({
   }, [asset, navigate, gasIsNotReady]);
 
   const openCustomOptions = useCallback(() => {
+    android && Keyboard.dismiss();
     setShouldOpenCustomGasSheet(true);
   }, [setShouldOpenCustomGasSheet]);
 
@@ -208,6 +214,7 @@ const GasSpeedButton = ({
             : colors.alpha(colors.blueGreyDark, 0.8)
         }
         letterSpacing="roundedTight"
+        lineHeight="normal"
         size="lmedium"
         weight="bold"
       >
@@ -278,7 +285,7 @@ const GasSpeedButton = ({
   ]);
 
   const openGasHelper = useCallback(() => {
-    Keyboard.dismiss();
+    android && Keyboard.dismiss();
     navigate(Routes.EXPLAIN_SHEET, { type: 'gas' });
   }, [navigate]);
 
@@ -452,108 +459,106 @@ const GasSpeedButton = ({
 
   return (
     <Container horizontalPadding={horizontalPadding} testID={testID}>
-      <Row align="center" justify="space-between">
-        <Column>
-          <ButtonPressAnimation
-            onPress={openGasHelper}
-            testID="estimated-fee-label"
-          >
-            <Row>
-              <NativeCoinIconWrapper>
-                <CoinIcon
-                  address={nativeFeeCurrencySymbol.address}
-                  size={18}
-                  symbol={nativeFeeCurrencySymbol.symbol}
-                />
-              </NativeCoinIconWrapper>
-              <Column>
-                <AnimateNumber
-                  formatter={formatGasPrice}
-                  interval={6}
-                  renderContent={renderGasPriceText}
-                  steps={6}
-                  timing="linear"
-                  value={price}
-                />
-              </Column>
-              <Column>
-                <TransactionTimeLabel
-                  formatter={formatTransactionTime}
-                  theme={theme}
-                  value={{
-                    estimatedTimeValue,
-                    price,
-                  }}
-                />
-              </Column>
-            </Row>
-            <Row justify="space-between" marginTop={android ? -10 : 0}>
+      <Row justify="space-between">
+        <ButtonPressAnimation
+          onPress={openGasHelper}
+          testID="estimated-fee-label"
+        >
+          <Row>
+            <NativeCoinIconWrapper>
+              <CoinIcon
+                address={nativeFeeCurrencySymbol.address}
+                size={18}
+                symbol={nativeFeeCurrencySymbol.symbol}
+              />
+            </NativeCoinIconWrapper>
+            <Column>
+              <AnimateNumber
+                formatter={formatGasPrice}
+                interval={6}
+                renderContent={renderGasPriceText}
+                steps={6}
+                timing="linear"
+                value={price}
+              />
+            </Column>
+            <Column>
+              <TransactionTimeLabel
+                formatter={formatTransactionTime}
+                theme={theme}
+                value={{
+                  estimatedTimeValue,
+                  price,
+                }}
+              />
+            </Column>
+          </Row>
+          <Row justify="space-between">
+            <Label
+              color={
+                theme === 'dark'
+                  ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
+                  : colors.alpha(colors.blueGreyDark, 0.6)
+              }
+              size="smedium"
+            >
+              Estimated Fee{' '}
               <Label
                 color={
                   theme === 'dark'
-                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)
-                    : colors.alpha(colors.blueGreyDark, 0.6)
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
+                    : colors.alpha(colors.blueGreyDark, 0.4)
                 }
                 size="smedium"
               >
-                Estimated Fee{' '}
-                <Label
-                  color={
-                    theme === 'dark'
-                      ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
-                      : colors.alpha(colors.blueGreyDark, 0.4)
-                  }
-                  size="smedium"
-                >
-                  􀅵
-                </Label>
+                􀅵
               </Label>
-            </Row>
-          </ButtonPressAnimation>
-        </Column>
-        <Column>
-          <Row>
-            <Column testID="gas-speed-pager">{renderGasSpeedPager}</Column>
-            <Column justify="center">
-              {isL2 ? (
-                <ChainBadgeContainer>
-                  <ChainBadge assetType={currentNetwork} position="relative" />
-                </ChainBadgeContainer>
-              ) : showGasOptions ? (
-                <CustomGasButton
-                  borderColor={colorForAsset}
-                  onPress={onDonePress}
-                >
-                  <DoneCustomGas
-                    color={
-                      theme !== 'light'
-                        ? colors.whiteLabel
-                        : colors.alpha(colors.blueGreyDark, 0.8)
-                    }
-                  >
-                    Done
-                  </DoneCustomGas>
-                </CustomGasButton>
-              ) : (
-                <CustomGasButton
-                  borderColor={colorForAsset}
-                  onPress={openCustomOptions}
-                  testID="gas-speed-custom"
-                >
-                  <Symbol
-                    color={
-                      theme !== 'light'
-                        ? colors.whiteLabel
-                        : colors.alpha(colors.blueGreyDark, 0.8)
-                    }
-                  >
-                    􀌆
-                  </Symbol>
-                </CustomGasButton>
-              )}
-            </Column>
+            </Label>
           </Row>
-        </Column>
+        </ButtonPressAnimation>
+        <Centered>
+          <GasSpeedPagerCentered testID="gas-speed-pager">
+            {renderGasSpeedPager}
+          </GasSpeedPagerCentered>
+          <Centered>
+            {isL2 ? (
+              <ChainBadgeContainer>
+                <ChainBadge assetType={currentNetwork} position="relative" />
+              </ChainBadgeContainer>
+            ) : showGasOptions ? (
+              <CustomGasButton
+                borderColor={colorForAsset}
+                onPress={onDonePress}
+              >
+                <DoneCustomGas
+                  color={
+                    theme !== 'light'
+                      ? colors.whiteLabel
+                      : colors.alpha(colors.blueGreyDark, 0.8)
+                  }
+                >
+                  Done
+                </DoneCustomGas>
+              </CustomGasButton>
+            ) : (
+              <CustomGasButton
+                borderColor={colorForAsset}
+                onPress={openCustomOptions}
+                testID="gas-speed-custom"
+              >
+                <Symbol
+                  color={
+                    theme !== 'light'
+                      ? colors.whiteLabel
+                      : colors.alpha(colors.blueGreyDark, 0.8)
+                  }
+                >
+                  􀌆
+                </Symbol>
+              </CustomGasButton>
+            )}
+          </Centered>
+        </Centered>
       </Row>
     </Container>
   );

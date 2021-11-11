@@ -2,6 +2,7 @@ import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
+import styled from 'styled-components';
 import Divider from '../Divider';
 import { ExchangeHeader } from '../exchange';
 import { FloatingPanel } from '../floating-panels';
@@ -20,7 +21,7 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors } from '@rainbow-me/styles';
+import { colors, margin } from '@rainbow-me/styles';
 
 const springConfig = {
   damping: 500,
@@ -38,6 +39,10 @@ function useAndroidDisableGesturesOnFocus() {
     android && params?.toggleGestureEnabled?.(!isFocused);
   }, [isFocused, params]);
 }
+
+const FeesPanelWrapper = styled(Column)`
+  ${margin(16, 19, 29, 24)}
+`;
 
 export default function CustomGasState({ asset }) {
   const { network } = useAccountSettings();
@@ -104,13 +109,15 @@ export default function CustomGasState({ asset }) {
     >
       <FloatingPanel onLayout={setContentHeight} radius={39}>
         <ExchangeHeader />
-        <FeesPanel
-          colorForAsset={colorForAsset}
-          currentGasTrend={currentGasTrend}
-          onCustomGasBlur={hideKeyboard}
-          onCustomGasFocus={showKeyboard}
-          selectedGasFee={selectedGasFee}
-        />
+        <FeesPanelWrapper>
+          <FeesPanel
+            colorForAsset={colorForAsset}
+            currentGasTrend={currentGasTrend}
+            onCustomGasBlur={hideKeyboard}
+            onCustomGasFocus={showKeyboard}
+            selectedGasFee={selectedGasFee}
+          />
+        </FeesPanelWrapper>
         <Divider />
         <FeesPanelTabs
           colorForAsset={colorForAsset}

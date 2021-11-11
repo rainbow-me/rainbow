@@ -19,41 +19,51 @@ import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
-const Wrapper = styled(KeyboardAvoidingView)`
-  ${padding(10, 24)}
-`;
+const Wrapper = styled(KeyboardAvoidingView)``;
 
 const PanelRow = styled(Row).attrs({
   alignItems: 'center',
   justify: 'space-between',
-})`
-  ${padding(10, 0)}
-`;
-const PanelRowThin = styled(Row).attrs({
-  justify: 'space-between',
-})`
-  ${padding(0, 0)}
+})``;
+
+// GweiInputPill has a vertical padding of 10
+const MaxBaseFeePanelRow = styled(PanelRow).attrs(() => ({}))`
+  ${padding(8, 0)}
 `;
 
+const MaxPriorityFeePanelRow = styled(PanelRow).attrs(() => ({}))`
+  ${padding(8, 0)}
+`;
+
+const PanelRowThin = styled(Row).attrs({
+  justify: 'space-between',
+  marginBottom: 5,
+})``;
+
 const PanelLabel = styled(Text).attrs({
+  lineHeight: 'normal',
   size: 'lmedium',
   weight: 'heavy',
-})``;
+})`
+  ${margin(android ? 0 : 0, 0)}
+`;
 
 const PanelWarning = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.yellowFavorite,
+  lineHeight: 'normal',
   size: 'smedium',
   weight: 'heavy',
 }))`
-  ${margin(-18, 0, 18)}
+  ${margin(-20, 0, 20, 0)};
 `;
 
 const PanelError = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.red,
+  lineHeight: 'normal',
   size: 'smedium',
   weight: 'heavy',
 }))`
-  ${margin(-18, 0, 18)}
+  ${margin(-20, 0, 20, 0)}
 `;
 
 const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
@@ -62,14 +72,6 @@ const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   weight: 'heavy',
 }))`
   padding-bottom: 0;
-`;
-
-const BaseFeePanelRow = styled(PanelRow).attrs(() => ({}))`
-  margin-bottom: 6;
-`;
-
-const TransactionFeePanelRow = styled(PanelRow).attrs(() => ({}))`
-  margin-top: 6;
 `;
 
 const PanelColumn = styled(Column).attrs(() => ({
@@ -427,7 +429,8 @@ export default function FeesPanel({
           </GasTrendHeader>
         </PanelColumn>
       </PanelRowThin>
-      <BaseFeePanelRow justify="space-between">
+
+      <PanelRow justify="space-between" marginBottom={18}>
         {renderRowLabel(
           'Current Base Fee',
           'currentBaseFee' + upperFirst(currentGasTrend)
@@ -435,8 +438,9 @@ export default function FeesPanel({
         <PanelColumn>
           <PanelLabel>{formattedBaseFee}</PanelLabel>
         </PanelColumn>
-      </BaseFeePanelRow>
-      <PanelRow>
+      </PanelRow>
+
+      <MaxBaseFeePanelRow>
         {renderRowLabel(
           'Max Base Fee',
           'maxBaseFee',
@@ -454,12 +458,12 @@ export default function FeesPanel({
             value={maxBaseFee}
           />
         </PanelColumn>
-      </PanelRow>
+      </MaxBaseFeePanelRow>
       <Animated.View style={maxBaseWarningsStyle}>
         {renderWarning(maxBaseFeeError, maxBaseFeeWarning)}
       </Animated.View>
 
-      <PanelRow>
+      <MaxPriorityFeePanelRow>
         {renderRowLabel(
           'Miner Tip',
           `minerTip`,
@@ -478,19 +482,19 @@ export default function FeesPanel({
             value={maxPriorityFee}
           />
         </PanelColumn>
-      </PanelRow>
+      </MaxPriorityFeePanelRow>
       <Animated.View style={maxPriorityWarningsStyle}>
         {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
       </Animated.View>
 
-      <TransactionFeePanelRow>
+      <PanelRow marginTop={18}>
         <PanelColumn>
           <PanelLabel>Max Transaction Fee</PanelLabel>
         </PanelColumn>
         <PanelColumn>
           <PanelLabel>{maxFee}</PanelLabel>
         </PanelColumn>
-      </TransactionFeePanelRow>
+      </PanelRow>
     </Wrapper>
   );
 }
