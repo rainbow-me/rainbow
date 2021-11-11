@@ -236,6 +236,7 @@ export default function DiscoverSearch() {
         if (searchQuery.length > 1) {
           analytics.track('Search Query', {
             category: 'discover',
+            length: searchQuery.length,
             query: searchQuery,
           });
         }
