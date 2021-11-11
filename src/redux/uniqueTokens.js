@@ -12,6 +12,8 @@ import {
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '@rainbow-me/handlers/opensea-api';
+//import { fetchPoaps } from '@rainbow-me/handlers/poap';
+
 import NetworkTypes from '@rainbow-me/networkTypes';
 import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
 
@@ -117,8 +119,10 @@ export const fetchUniqueTokens = showcaseAddress => async (
           type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
         });
       }
-
       if (shouldStopFetching) {
+        //const poaps = await fetchPoaps(accountAddress);
+        //uniqueTokens = concat(uniqueTokens, poaps);
+
         if (!shouldUpdateInBatches) {
           dispatch({
             payload: uniqueTokens,
