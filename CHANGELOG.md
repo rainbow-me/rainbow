@@ -20,7 +20,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 * Revert Uniswap fetchng by Volume
 * Use StaticJsonRpcProvider
 
-
 ## [1.5.33](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.33)
 
 ### Changed
