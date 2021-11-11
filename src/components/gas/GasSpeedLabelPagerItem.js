@@ -4,12 +4,15 @@ import styled from 'styled-components';
 import { Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedEmoji from './GasSpeedEmoji';
+import { padding } from '@rainbow-me/styles';
 
 const GasSpeedLabel = styled(Text).attrs({
   lineHeight: 'normal',
   size: 'lmedium',
   weight: 'heavy',
-})``;
+})`
+  ${padding(android ? 0 : -1, 4)};
+`;
 
 const GasSpeedLabelPagerItem = ({ label, theme }) => {
   const { colors } = useTheme();

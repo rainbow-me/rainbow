@@ -39,7 +39,7 @@ const CustomGasButton = styled(ButtonPressAnimation).attrs({
 })`
   border-radius: 19;
   border: ${({ borderColor, color, theme: { colors } }) =>
-    `2px solid ${borderColor || color || colors.blueGreyDark}`};
+    `2px solid ${borderColor || color || colors.appleBlue}`};
   ${padding(3, 0)}
 `;
 
@@ -49,7 +49,7 @@ const Symbol = styled(Text).attrs({
   size: 'lmedium',
   weight: 'heavy',
 })`
-  ${margin(0, 8)}
+  ${padding(0, 8)};
 `;
 
 const DoneCustomGas = styled(Text).attrs({
@@ -126,7 +126,7 @@ const GasSpeedButton = ({
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
-  const colorForAsset = useColorForAsset(asset || {}, null, false, false);
+  const colorForAsset = useColorForAsset(asset || {}, null, false, true);
 
   const {
     gasFeeParamsBySpeed,
@@ -357,16 +357,9 @@ const GasSpeedButton = ({
       },
       buttonIndex => {
         handlePressSpeedOption(lowerCase(androidContractActions[buttonIndex]));
-        navigate(Routes.MODAL_SCREEN, {
-          address: '',
-          asset: {},
-          color: '',
-          type: 'contact_profile',
-        });
       }
-      // }
     );
-  }, [gasIsNotReady, handlePressSpeedOption, navigate, speedOptions]);
+  }, [gasIsNotReady, handlePressSpeedOption, speedOptions]);
 
   const renderGasSpeedPager = useMemo(() => {
     if (showGasOptions) return;

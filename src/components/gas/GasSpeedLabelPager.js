@@ -4,7 +4,7 @@ import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Row } from '../layout';
 import { Text } from '../text';
 import GasSpeedLabelPagerItem from './GasSpeedLabelPagerItem';
-import { padding } from '@rainbow-me/styles';
+import { margin, padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const SpeedButton = styled(ButtonPressAnimation).attrs({
@@ -13,16 +13,17 @@ const SpeedButton = styled(ButtonPressAnimation).attrs({
 })`
   border: ${({ color, theme: { colors } }) =>
     `2px solid ${color || colors.appleBlue}`};
-  ${padding(3, 6)};
+  ${padding(3, 6, 3, 8)};
   border-radius: 19;
 `;
 
 const Symbol = styled(Text).attrs({
-  align: 'right',
   lineHeight: 'normal',
-  size: 'lmedium',
+  size: android ? 'bmedium' : 'lmedium',
   weight: 'heavy',
-})``;
+})`
+  ${margin(android ? 0 : -0.5, 0)};
+`;
 
 const GasSpeedLabelPager = ({
   label,
