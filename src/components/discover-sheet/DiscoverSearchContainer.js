@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/native';
+import analytics from '@segment/analytics-react-native';
 import React, {
   forwardRef,
   useCallback,
@@ -33,6 +34,16 @@ const CancelText = styled(Text).attrs(({ theme: { colors } }) => ({
   margin-left: -3;
   margin-right: 15;
 `;
+
+const sendQueryAnalytics = query => {
+  if (query.length > 1) {
+    analytics.track('Search Query', {
+      category: 'discover',
+      length: query.length,
+      query: query,
+    });
+  }
+};
 
 export default forwardRef(function DiscoverSearchContainer(
   { children, showSearch, setShowSearch },
@@ -128,6 +139,7 @@ export default forwardRef(function DiscoverSearchContainer(
         <Column flex={1} marginTop={19}>
           <ExchangeSearch
             clearTextOnFocus={false}
+            isDiscover
             isFetching={loadingAllTokens || isFetchingEns}
             isSearching={isSearching}
             onBlur={() => setIsInputFocused(false)}
@@ -147,6 +159,7 @@ export default forwardRef(function DiscoverSearchContainer(
           onPress={() => {
             searchInputRef.current?.blur();
             setIsInputFocused(false);
+            sendQueryAnalytics(searchQuery);
           }}
           testID="done-button"
         >

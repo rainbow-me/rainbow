@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
@@ -112,6 +113,7 @@ const timingConfig = {
 
 const ExchangeSearch = (
   {
+    isDiscover,
     isFetching,
     isSearching,
     onChangeText,
@@ -124,9 +126,17 @@ const ExchangeSearch = (
   ref
 ) => {
   const handleClearInput = useCallback(() => {
+    if (isDiscover && searchQuery.length > 1) {
+      console.log('query: ', searchQuery);
+      analytics.track('Search Query', {
+        category: 'discover',
+        length: searchQuery.length,
+        query: searchQuery,
+      });
+    }
     ref?.current?.clear();
     onChangeText?.('');
-  }, [ref, onChangeText]);
+  }, [isDiscover, searchQuery, ref, onChangeText]);
 
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0);
