@@ -73,10 +73,6 @@ export const nonceManagerLoadState = () => async (dispatch: AppDispatch) => {
         type: NONCE_MANAGER_LOAD_SUCCESS,
       });
     }
-    logger.debug(
-      'NONCE MANAGER LOAD STATE: ',
-      JSON.stringify(nonceManager, null, 2)
-    );
   } catch (error) {
     dispatch({ type: NONCE_MANAGER_LOAD_FAILURE });
   }
@@ -100,7 +96,7 @@ export const incrementNonce = (
   const counterShouldBeIncremented = currentNonce < nonce;
 
   if (!nonceCounterExists || counterShouldBeIncremented) {
-    logger.debug('Incrementing nonce: ', nonceParams, currentNonce);
+    logger.log('Incrementing nonce: ', nonceParams, currentNonce);
     dispatch(updateNonce(currentNonceData, nonceParams));
   }
 };

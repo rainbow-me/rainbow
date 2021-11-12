@@ -127,7 +127,7 @@ const swap = async (
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 
-  await dispatch(dataAddNewTransaction(newTransaction, accountAddress, false));
+  await dispatch(dataAddNewTransaction(newTransaction, accountAddress, true));
   return swap?.nonce;
 };
 
