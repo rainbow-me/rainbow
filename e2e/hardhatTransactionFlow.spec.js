@@ -180,7 +180,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('send-asset-form-field');
   });
 
-  it('Should send (Cryptokitties)', async () => {
+  xit('Should send (Cryptokitties)', async () => {
     await Helpers.typeText(
       'send-asset-form-field',
       RAINBOW_WALLET_DOT_ETH,
@@ -194,7 +194,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should send ERC20 (BAT)', async () => {
+  xit('Should send ERC20 (BAT)', async () => {
     await Helpers.tap('send-fab');
     await Helpers.typeText(
       'send-asset-form-field',
@@ -209,7 +209,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should send ETH', async () => {
+  xit('Should send ETH', async () => {
     await Helpers.tap('send-fab');
     await Helpers.typeText(
       'send-asset-form-field',
@@ -414,7 +414,7 @@ describe('Hardhat Transaction Flow', () => {
   //   }
   // });
 
-  it('Should show completed send ERC20 (BAT)', async () => {
+  xit('Should show completed send ERC20 (BAT)', async () => {
     try {
       await Helpers.checkIfVisible('Sent-Basic Attention Token-1.02 BAT');
     } catch (e) {
@@ -422,7 +422,7 @@ describe('Hardhat Transaction Flow', () => {
     }
   });
 
-  it('Should show completed send ETH', async () => {
+  xit('Should show completed send ETH', async () => {
     try {
       await Helpers.checkIfVisible('Sent-Ethereum-0.003 ETH');
     } catch (e) {
@@ -430,7 +430,7 @@ describe('Hardhat Transaction Flow', () => {
     }
   });
 
-  it('Should show completed send ETH (WC)', async () => {
+  xit('Should show completed send ETH (WC)', async () => {
     try {
       await Helpers.checkIfVisible('Self-Ethereum-0.00 ETH');
     } catch (e) {
