@@ -158,7 +158,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.typeText('send-asset-form-field', 'poopcoin.eth', false);
     await Helpers.tap('send-savings-cSAI');
     await Helpers.typeText('selected-asset-field-input', '1.69', true);
-    await Helpers.tap('send-sheet-confirm-action-button');
+    await Helpers.waitAndTap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.checkIfVisible('profile-screen');
     await Helpers.swipe('profile-screen', 'left', 'slow');
@@ -188,7 +188,7 @@ describe('Hardhat Transaction Flow', () => {
     );
     await Helpers.tap('CryptoKitties-family-header');
     await Helpers.tapByText('Arun Cattybinky');
-    await Helpers.tap('send-sheet-confirm-action-button');
+    await Helpers.waitAndTap('send-sheet-confirm-action-button', 10000);
     await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.checkIfVisible('profile-screen');
     await Helpers.swipe('profile-screen', 'left', 'slow');
@@ -203,7 +203,7 @@ describe('Hardhat Transaction Flow', () => {
     );
     await Helpers.tap('send-asset-BAT');
     await Helpers.typeText('selected-asset-field-input', '1.02', true);
-    await Helpers.tap('send-sheet-confirm-action-button');
+    await Helpers.waitAndTap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.checkIfVisible('profile-screen');
     await Helpers.swipe('profile-screen', 'left', 'slow');
@@ -218,7 +218,7 @@ describe('Hardhat Transaction Flow', () => {
     );
     await Helpers.tap('send-asset-ETH');
     await Helpers.typeText('selected-asset-field-input', '0.003', true);
-    await Helpers.tap('send-sheet-confirm-action-button');
+    await Helpers.waitAndTap('send-sheet-confirm-action-button');
     await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.checkIfVisible('profile-screen');
   });
