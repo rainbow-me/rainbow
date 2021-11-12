@@ -25,7 +25,7 @@ export default function useCurrentNonce(account: string, network: string) {
       transactionCount,
     });
 
-    nextNonce;
+    return nextNonce;
   }, [account, network, nonceInState]);
 
   return getNextNonce;
