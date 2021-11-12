@@ -131,7 +131,7 @@ const getAssetsFromCovalent = async (
           decimals: item.contract_decimals,
           icon_url: item.logo_url,
           mainnet_address: mainnetAddress,
-          name: item.contract_name.replace(' (PoS)', ''),
+          name: item.contract_name?.replace(' (PoS)', ''),
           network: networkTypes.polygon,
           price: {
             value: item.quote_rate || 0,

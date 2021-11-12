@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { get, isEmpty } from 'lodash';
+import { IS_TESTING } from 'react-native-dotenv';
 import {
   etherscanGetGasEstimates,
   etherscanGetGasPrices,
@@ -9,7 +10,11 @@ import {
   polygonGasStationGetGasPrices,
   polygonGetGasEstimates,
 } from '@rainbow-me/handlers/gasPrices';
-import { getProviderForNetwork, isL2Network } from '@rainbow-me/handlers/web3';
+import {
+  getProviderForNetwork,
+  isL2Network,
+  web3Provider,
+} from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasPriceFormat,
@@ -26,7 +31,6 @@ import {
   OPTIMISM_ETH_ADDRESS,
 } from '@rainbow-me/references';
 import { fromWei, greaterThanOrEqualTo, multiply } from '@rainbow-me/utilities';
-
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -164,9 +168,25 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
         } else {
           try {
             // Use etherscan as our Gas Price Oracle
-            const {
+            let {
               data: { result: etherscanGasPrices },
             } = await etherscanGetGasPrices();
+
+            // Set a really gas estimate to guarantee that we're gonna be over
+            // the basefee at the time we fork mainnet during our hardhat tests
+            if (network === networkTypes.mainnet && IS_TESTING === 'true') {
+              const providerUrl = web3Provider?.connection?.url;
+              if (
+                providerUrl?.startsWith('http://') &&
+                providerUrl?.endsWith('8545')
+              ) {
+                etherscanGasPrices = {
+                  FastGasPrice: 1000,
+                  ProposeGasPrice: 1000,
+                  SafeGasPrice: 1000,
+                };
+              }
+            }
 
             const priceData = {
               average: Number(etherscanGasPrices.ProposeGasPrice),

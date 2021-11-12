@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.5.33-1",
+  "version": "1.5.35-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn allow-scripts && yarn postinstall",
@@ -435,7 +435,7 @@
       "@lavamoat/preinstall-always-fail": false,
       "core-js": false,
       "core-js-pure": false,
-      "detox": false,
+      "detox": true,
       "dtrace-provider": false,
       "fsevents": false,
       "husky": false,
