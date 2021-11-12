@@ -54,12 +54,13 @@ struct PriceWidgetProvider: IntentTimelineProvider {
     let tokenDetails = lookupTokenDetails(for: configuration)
     
     let priceData = priceDataProvider.getPriceData(token: tokenDetails.coinGeckoId!)
-    let priceChange = priceData?.marketData.priceChangePercentage24h
-    let price = priceData?.marketData.currentPrice.usd
     
-    if (priceData == nil || priceChange == nil || price == nil) {
+    if (priceData == nil) {
       return
     }
+    
+    let priceChange = priceData!.marketData.priceChangePercentage24h
+    let price = priceData!.marketData.currentPrice.usd
     
     let icon = iconProvider.getIcon(token: tokenDetails.symbol!, address: tokenDetails.address!)
     
