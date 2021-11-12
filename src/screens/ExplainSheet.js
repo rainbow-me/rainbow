@@ -134,12 +134,12 @@ const ExplainSheet = () => {
   const insets = useSafeArea();
   const { params: { type = 'gas', onClose } = {} } = useRoute();
   const { colors } = useTheme();
-  const { pop } = useNavigation();
+  const { goBack } = useNavigation();
 
   const handleClose = useCallback(() => {
-    pop();
+    goBack();
     onClose?.();
-  }, [onClose, pop]);
+  }, [onClose, goBack]);
 
   const handleReadMore = useCallback(() => {
     Linking.openURL(explainers[type].readMoreLink);
