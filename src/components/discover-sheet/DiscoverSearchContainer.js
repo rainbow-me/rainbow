@@ -116,6 +116,9 @@ export default forwardRef(function DiscoverSearchContainer(
       searchInputRef.current.focus();
     } else {
       setIsInputFocused(true);
+      analytics.track('Tapped Search', {
+        category: 'discover',
+      });
     }
   }, [isSearchModeEnabled, setIsInputFocused]);
 
