@@ -260,7 +260,6 @@ const ExplainSheet = () => {
             style={{
               height: sheetHeight,
               padding: 19,
-              width: '100%',
             }}
           >
             {explainers[type]?.logo ? (
@@ -298,7 +297,6 @@ const ExplainSheet = () => {
             {explainers[type].readMoreLink && (
               <Column height={60}>
                 <SheetActionButton
-                  androidWidth={deviceWidth - 60}
                   color={colors.blueGreyDarkLight}
                   isTransparent
                   label="Read More"

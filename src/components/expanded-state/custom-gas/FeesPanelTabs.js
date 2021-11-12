@@ -14,9 +14,9 @@ const PillScrollViewStyle = { flexGrow: 1, justifyContent: 'center' };
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
 export const TabPillWrapper = styled(View).attrs({})`
-  ${padding(3, 10)};
+  ${padding(2.5, 8)};
   ${margin(0, 4, 0, 4)};
-  height: 30px;'
+  height: 30px;
   border: ${({ isSelected, color, theme: { colors } }) =>
     `2px solid ${isSelected ? color || colors.appleBlue : colors.rowDivider}`};
   border-radius: 15px;
