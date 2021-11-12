@@ -30,9 +30,13 @@ extension IntentHandler: SelectTokenIntentHandling {
     var topTokenItems = [Token]()
     var otherTokenItems = [Token]()
     let tokenProvider = TokenProvider.shared
-    var tokens = tokenProvider.getTokens()
+    var tokens = Array(tokenProvider.getTokens().values)
+    
+    top100.keys.forEach {
+      top100[$0.lowercased()] = top100[$0]
+    }
 
-    let partition = tokens.partition(by: { top100.keys.contains($0.address!) })
+    let partition = tokens.partition(by: { top100.keys.contains($0.address!.lowercased()) })
     let otherTokens = tokens[..<partition]
     let topTokens = tokens[partition...]
     
@@ -42,10 +46,6 @@ extension IntentHandler: SelectTokenIntentHandling {
 
     otherTokenItems = otherTokens.map { token in
       Token(identifier: token.address!.lowercased(), display: token.name! + " (" + token.symbol! + ")")
-    }
-
-    top100.keys.forEach {
-      top100[$0.lowercased()] = top100.removeValue(forKey: $0)
     }
 
     topTokenItems.sort(by: {

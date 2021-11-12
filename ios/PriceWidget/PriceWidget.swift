@@ -18,12 +18,12 @@ struct PriceWidgetProvider: IntentTimelineProvider {
   let priceDataProvider = PriceDataProvider.shared
   let iconProvider = IconProvider.shared
   
-  let defaultToken = TokenDetails(name: "Ethereum", identifier: "ethereum", symbol: "ETH", color: "#282C2C", address: "no address")
+  let defaultToken = TokenDetails(name: "Ethereum", coinGeckoId: "ethereum", symbol: "ETH", color: "#282C2C", address: "no address")
 
   func placeholder(in context: Context) -> CustomTokenEntry {
     let eth = defaultToken
     
-    let priceData = priceDataProvider.getPriceData(token: eth.identifier!)
+    let priceData = priceDataProvider.getPriceData(token: eth.coinGeckoId!)
     let priceChange = priceData?.marketData.priceChangePercentage24h
     let price = priceData?.marketData.currentPrice.usd
     
@@ -53,7 +53,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
     var entries = [CustomTokenEntry]()
     let tokenDetails = lookupTokenDetails(for: configuration)
     
-    let priceData = priceDataProvider.getPriceData(token: tokenDetails.identifier!)
+    let priceData = priceDataProvider.getPriceData(token: tokenDetails.coinGeckoId!)
     let priceChange = priceData?.marketData.priceChangePercentage24h
     let price = priceData?.marketData.currentPrice.usd
     
@@ -75,10 +75,8 @@ struct PriceWidgetProvider: IntentTimelineProvider {
   }
 
   private func lookupTokenDetails(for configuration: SelectTokenIntent) -> TokenDetails {
-    let tokenId = configuration.token != nil ? configuration.token!.identifier : ""
-    let tokenForConfig = tokenProvider.getTokens().first(where: { token in
-      token.address?.lowercased() == tokenId!.lowercased()
-    })
+    let tokenId = configuration.token != nil ? configuration.token!.identifier!.lowercased() : ""
+    let tokenForConfig = tokenProvider.getTokens()[tokenId]
     return tokenForConfig != nil ? tokenForConfig! : defaultToken
   }
 }

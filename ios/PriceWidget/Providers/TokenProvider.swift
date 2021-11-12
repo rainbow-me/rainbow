@@ -16,7 +16,7 @@ final class TokenProvider {
   
   private init() {}
   
-  public func getTokens() -> [TokenDetails] {
+  public func getTokens() -> [String: TokenDetails] {
     var addressTokenMap = [String: TokenDetails]()
     let coinGeckoTokenList = getCoinGeckoTokenList()
     let rainbowTokenList = getRainbowTokenList()
@@ -24,9 +24,9 @@ final class TokenProvider {
     if (coinGeckoTokenList != nil && rainbowTokenList != nil) {
       rainbowTokenList!.tokens.forEach {
         if ($0.extensions != nil && $0.extensions!.color != nil) {
-          addressTokenMap[$0.address.lowercased()] = TokenDetails(name: $0.name, identifier: nil, symbol: $0.symbol, color: $0.extensions!.color!, address: $0.address)
+          addressTokenMap[$0.address.lowercased()] = TokenDetails(name: $0.name, coinGeckoId: nil, symbol: $0.symbol, color: $0.extensions!.color!, address: $0.address)
         } else {
-          addressTokenMap[$0.address.lowercased()] = TokenDetails(name: $0.name, identifier: nil, symbol: $0.symbol, color: nil, address: $0.address)
+          addressTokenMap[$0.address.lowercased()] = TokenDetails(name: $0.name, coinGeckoId: nil, symbol: $0.symbol, color: nil, address: $0.address)
         }
       }
       coinGeckoTokenList!.forEach {
@@ -34,14 +34,14 @@ final class TokenProvider {
           if (!address.isEmpty) {
             let incompleteToken = addressTokenMap[address.lowercased()]
             if (incompleteToken != nil) {
-              addressTokenMap[address.lowercased()] = TokenDetails(name: incompleteToken!.name, identifier: $0.id, symbol: incompleteToken!.symbol, color: incompleteToken!.color, address: incompleteToken!.address)
+              addressTokenMap[address.lowercased()] = TokenDetails(name: incompleteToken!.name, coinGeckoId: $0.id, symbol: incompleteToken!.symbol, color: incompleteToken!.color, address: incompleteToken!.address)
             }
           }
         }
       }
     }
-    addressTokenMap["eth"] = TokenDetails(name: "Ethereum", identifier: "ethereum", symbol: "ETH", color: "#282C2C", address: "no address")
-    return Array(addressTokenMap.values)
+    addressTokenMap["eth"] = TokenDetails(name: "Ethereum", coinGeckoId: "ethereum", symbol: "ETH", color: "#282C2C", address: "no address")
+    return addressTokenMap
   }
   
   private func getCoinGeckoTokenList() -> [CoinGeckoToken]? {
