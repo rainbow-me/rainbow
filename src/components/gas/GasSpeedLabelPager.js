@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { upperFirst } from 'lodash';
+import React from 'react';
 import styled from 'styled-components';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Row } from '../layout';
 import { Text } from '../text';
-import GasSpeedLabelPagerItem from './GasSpeedLabelPagerItem';
+import { GasSpeedEmoji } from '.';
 import { margin, padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
@@ -13,7 +14,7 @@ const SpeedButton = styled(ButtonPressAnimation).attrs({
 })`
   border: ${({ color, theme: { colors } }) =>
     `2px solid ${color || colors.appleBlue}`};
-  ${padding(3, 6, 3, 8)};
+  ${padding(2.5, 4, android ? 2.5 : 3.5, 6)};
   border-radius: 19;
 `;
 
@@ -22,7 +23,15 @@ const Symbol = styled(Text).attrs({
   size: android ? 'bmedium' : 'lmedium',
   weight: 'heavy',
 })`
-  ${margin(android ? 0 : -0.5, 0)};
+  ${margin(0, 0)};
+`;
+
+const GasSpeedLabel = styled(Text).attrs({
+  lineHeight: 'normal',
+  size: 'lmedium',
+  weight: 'heavy',
+})`
+  ${padding(android ? 0 : -1, 4, 0, 4)};
 `;
 
 const GasSpeedLabelPager = ({
@@ -32,10 +41,7 @@ const GasSpeedLabelPager = ({
   colorForAsset,
   dropdownEnabled,
 }) => {
-  const [touched, setTouched] = useState(false);
   const { colors } = useTheme();
-
-  useEffect(() => setTouched(true), [label]);
 
   return (
     <SpeedButton
@@ -44,14 +50,16 @@ const GasSpeedLabelPager = ({
       onPress={onPress}
     >
       <Row>
-        <GasSpeedLabelPagerItem
-          colorForAsset={colorForAsset}
-          key={label}
-          label={label}
-          selected
-          shouldAnimate={touched}
-          theme={theme}
-        />
+        <GasSpeedEmoji label={label} />
+        <GasSpeedLabel
+          color={
+            theme === 'dark'
+              ? colors.whiteLabel
+              : colors.alpha(colors.blueGreyDark, 0.8)
+          }
+        >
+          {upperFirst(label)}
+        </GasSpeedLabel>
         {dropdownEnabled && (
           <Symbol
             color={

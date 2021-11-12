@@ -9,7 +9,7 @@ import { ButtonPressAnimation } from '../animations';
 import { ChainBadge, CoinIcon } from '../coin-icon';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
-import GasSpeedLabelPager from './GasSpeedLabelPager';
+import { GasSpeedLabelPager } from '.';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
@@ -40,7 +40,7 @@ const CustomGasButton = styled(ButtonPressAnimation).attrs({
   border-radius: 19;
   border: ${({ borderColor, color, theme: { colors } }) =>
     `2px solid ${borderColor || color || colors.appleBlue}`};
-  ${padding(3, 0)}
+  ${padding(android ? 2 : 3, 0)}
 `;
 
 const Symbol = styled(Text).attrs({
@@ -49,7 +49,7 @@ const Symbol = styled(Text).attrs({
   size: 'lmedium',
   weight: 'heavy',
 })`
-  ${padding(0, 8)};
+  ${padding(android ? 1 : 0, 6, 0, 7)};
 `;
 
 const DoneCustomGas = styled(Text).attrs({
@@ -554,13 +554,17 @@ const GasSpeedButton = ({
               </CustomGasButton>
             ) : (
               <CustomGasButton
-                borderColor={colorForAsset}
+                borderColor={
+                  theme === 'dark'
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
+                    : colors.alpha(colors.blueGreyDark, 0.8)
+                }
                 onPress={openCustomOptions}
                 testID="gas-speed-custom"
               >
                 <Symbol
                   color={
-                    theme !== 'light'
+                    theme === 'dark'
                       ? colors.whiteLabel
                       : colors.alpha(colors.blueGreyDark, 0.8)
                   }
