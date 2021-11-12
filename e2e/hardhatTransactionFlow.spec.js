@@ -6,7 +6,6 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import WalletConnect from '@walletconnect/client';
 import { ethers } from 'ethers';
-import { HARDHAT_URL_ANDROID, HARDHAT_URL_IOS } from 'react-native-dotenv';
 import * as Helpers from './helpers';
 
 let connector = null;
@@ -15,7 +14,8 @@ let account = null;
 
 const RAINBOW_WALLET_DOT_ETH = '0x7a3d05c70581bd345fe117c06e45f9669205384f';
 const TESTING_WALLET = '0x3Cb462CDC5F809aeD0558FBEe151eD5dC3D3f608';
-const HARDHAT_WALLET_PKEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
+const HARDHAT_WALLET_PKEY =
+  '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
 
 const sendETHtoTestWallet = async () => {
   // Send additional ETH to wallet before start sending
@@ -26,10 +26,7 @@ const sendETHtoTestWallet = async () => {
     'any'
   );
   // Hardhat account 0 that has 10000 ETH
-  const wallet = new Wallet(
-    HARDHAT_WALLET_PKEY,
-    provider
-  );
+  const wallet = new Wallet(HARDHAT_WALLET_PKEY, provider);
   // Sending 20 ETH so we have enough to pay the tx fees even when the gas is too high
   await wallet.sendTransaction({
     to: TESTING_WALLET,
@@ -40,7 +37,7 @@ const sendETHtoTestWallet = async () => {
 
 beforeAll(async () => {
   // Connect to hardhat
-  await exec('yarn hardhat');
+  // await exec('yarn hardhat');
   await exec(
     'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
   );
