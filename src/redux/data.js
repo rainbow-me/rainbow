@@ -788,6 +788,13 @@ export const dataAddNewTransaction = (
         type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
       });
       saveLocalTransactions(_transactions, accountAddress, network);
+      await dispatch(
+        incrementNonce(
+          parsedTransaction.from,
+          parsedTransaction.nonce,
+          parsedTransaction.network
+        )
+      );
       if (
         !disableTxnWatcher ||
         network !== networkTypes.mainnet ||
@@ -863,9 +870,6 @@ export const dataWatchPendingTransactions = (
             logger.log('TX CONFIRMED!', txObj);
             if (!nonceAlreadyIncluded) {
               appEvents.emit('transactionConfirmed', txObj);
-              await dispatch(
-                incrementNonce(txObj.from, txObj.nonce, updatedPending.network)
-              );
             }
             const minedAt = Math.floor(Date.now() / 1000);
             txStatusesDidChange = true;
