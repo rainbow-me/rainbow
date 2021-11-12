@@ -1,42 +1,48 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import React, { Children, Fragment, ReactNode } from 'react';
-import { backgroundColors, foregroundColors } from '../../color/palettes';
+import {
+  backgroundColors,
+  foregroundColors,
+  palettes,
+} from '../../color/palettes';
 import { fontWeights } from '../../typography/fontWeights';
 import { typeHierarchy } from '../../typography/typeHierarchy';
-import { Radii, Space, sprinkles } from '../styles/sprinkles.css';
+
+type Space =
+  | 'none'
+  | '4px'
+  | '8px'
+  | '12px'
+  | '16px'
+  | '24px'
+  | '32px'
+  | '48px'
+  | '64px';
+const resolveSpace = (space: Space) => (space === 'none' ? undefined : space);
+
+const HEADING_SIZE = 23;
+const TEXT_SIZE = 18;
 
 const GRID_SPACING: Space = '16px';
 const CARD_GUTTER: Space = '32px';
-const CARD_RADIUS: Radii = '16px';
+const CARD_RADIUS = '16px';
 
-const fontWeightFromString = {
-  '400': 400,
-  '500': 500,
-  '600': 600,
-  '700': 700,
-  '800': 800,
-} as const;
+const BODY_DARK = palettes.dark.backgroundColors.body.color;
+const BODY_LIGHT = palettes.light.backgroundColors.body.color;
+const PRIMARY_TEXT = palettes.light.foregroundColors.primary;
+const SECONDARY_TEXT = palettes.light.foregroundColors.secondary60;
+const SECONDARY_TEXT_DARK = palettes.dark.foregroundColors.secondary80;
 
 const Title = ({ children }: { children: ReactNode }) => (
-  <h1
-    className={sprinkles({
-      color: 'primary',
-      fontSize: '23px',
-      fontWeight: 800,
-    })}
-  >
+  <h1 style={{ color: PRIMARY_TEXT, fontSize: HEADING_SIZE, fontWeight: 800 }}>
     {children}
   </h1>
 );
 
 const Heading = ({ children }: { children: ReactNode }) => (
   <h2
-    className={sprinkles({
-      color: 'secondary',
-      fontSize: '23px',
-      fontWeight: 700,
-    })}
+    style={{ color: SECONDARY_TEXT, fontSize: HEADING_SIZE, fontWeight: 700 }}
   >
     {children}
   </h2>
@@ -44,11 +50,11 @@ const Heading = ({ children }: { children: ReactNode }) => (
 
 const Stack = ({ space, children }: { space: Space; children: ReactNode }) => (
   <div
-    className={sprinkles({
+    style={{
       display: 'flex',
       flexDirection: 'column',
-      gap: space,
-    })}
+      gap: resolveSpace(space),
+    }}
   >
     {children}
   </div>
@@ -62,20 +68,20 @@ const Columns = ({
   children: ReactNode;
 }) => (
   <div
-    className={sprinkles({
+    style={{
       display: 'flex',
       flexDirection: 'row',
-      gap: space,
+      gap: resolveSpace(space),
       width: '100%',
-    })}
+    }}
   >
     {Children.map(children, child => (
       <div
-        className={sprinkles({
-          flexBasis: 0,
+        style={{
+          flexBasis: 1,
           flexGrow: 1,
           flexShrink: 1,
-        })}
+        }}
       >
         {child}
       </div>
@@ -85,21 +91,22 @@ const Columns = ({
 
 const Card = ({
   backgroundColor = 'white',
-  height,
+  height = 'auto',
   children,
 }: {
   backgroundColor?: string;
-  height?: 'full';
+  height?: 'full' | 'auto';
   children: ReactNode;
 }) => (
   <div
-    className={sprinkles({
+    style={{
+      backgroundColor,
       borderRadius: CARD_RADIUS,
-      height: height === 'full' ? '100%' : undefined,
+      height: height === 'full' ? '100%' : height,
       padding: CARD_GUTTER,
-      paddingVertical: CARD_GUTTER,
-    })}
-    style={{ backgroundColor }}
+      paddingBottom: CARD_GUTTER,
+      paddingTop: CARD_GUTTER,
+    }}
   >
     {children}
   </div>
@@ -113,17 +120,17 @@ const Home: NextPage = () => {
         <link href="/favicon.ico" rel="icon" />
       </Head>
       <div
-        className={sprinkles({
+        style={{
           display: 'flex',
           flexDirection: 'column',
           marginLeft: 'auto',
           marginRight: 'auto',
-          maxWidth: '1020px',
+          maxWidth: 1020,
           paddingBottom: '48px',
           paddingLeft: GRID_SPACING,
           paddingRight: GRID_SPACING,
           paddingTop: '48px',
-        })}
+        }}
       >
         <Stack space="64px">
           <Stack space="24px">
@@ -143,20 +150,15 @@ const Home: NextPage = () => {
                       [sizeName, { fontSize, lineHeight, letterSpacing }],
                       index
                     ) => (
-                      <div key={index} style={{ fontSize }}>
-                        <div
-                          className={sprinkles({
-                            color: 'primary',
-                            fontWeight: 800,
-                          })}
-                        >
+                      <div key={index} style={{ fontSize: fontSize }}>
+                        <div style={{ color: PRIMARY_TEXT, fontWeight: 800 }}>
                           {sizeName} heading
                         </div>
                         <div
-                          className={sprinkles({
-                            color: 'secondary',
+                          style={{
+                            color: SECONDARY_TEXT,
                             fontWeight: 500,
-                          })}
+                          }}
                         >
                           {lineHeight}
                           px line height
@@ -176,20 +178,15 @@ const Home: NextPage = () => {
                       [sizeName, { fontSize, lineHeight, letterSpacing }],
                       index
                     ) => (
-                      <div key={index} style={{ fontSize }}>
-                        <div
-                          className={sprinkles({
-                            color: 'primary',
-                            fontWeight: 800,
-                          })}
-                        >
+                      <div key={index} style={{ fontSize: fontSize }}>
+                        <div style={{ color: PRIMARY_TEXT, fontWeight: 800 }}>
                           {sizeName} text
                         </div>
                         <div
-                          className={sprinkles({
-                            color: 'secondary',
+                          style={{
+                            color: SECONDARY_TEXT,
                             fontWeight: 600,
-                          })}
+                          }}
                         >
                           {lineHeight}
                           px line height
@@ -207,12 +204,12 @@ const Home: NextPage = () => {
                   {Object.entries(fontWeights).map(
                     ([fontWeightName, fontWeight], index) => (
                       <div
-                        className={sprinkles({
-                          color: 'primary',
-                          fontSize: '18px',
-                          fontWeight: fontWeightFromString[fontWeight],
-                        })}
                         key={index}
+                        style={{
+                          color: PRIMARY_TEXT,
+                          fontSize: TEXT_SIZE,
+                          fontWeight: parseInt(fontWeight, 10),
+                        }}
                       >
                         {fontWeightName} ({fontWeight})
                       </div>
@@ -238,38 +235,38 @@ const Home: NextPage = () => {
                     {('color' in background
                       ? [background, background]
                       : [background.light, background.dark]
-                    ).map(({ color: backgroundColor, mode }, index) => (
+                    ).map(({ color, mode }, index) => (
                       <div
-                        className={sprinkles({
-                          borderRadius: CARD_RADIUS,
-                          color: mode === 'light' ? 'primary' : 'white',
-                          padding: CARD_GUTTER,
-                        })}
                         key={index}
-                        style={{ backgroundColor }}
+                        style={{
+                          backgroundColor: color,
+                          borderRadius: CARD_RADIUS,
+                          color: mode === 'light' ? PRIMARY_TEXT : 'white',
+                          padding: CARD_GUTTER,
+                        }}
                       >
                         <Stack space="8px">
                           <div
-                            className={sprinkles({
-                              fontSize: '18px',
+                            style={{
+                              fontSize: TEXT_SIZE,
                               fontWeight: 800,
                               wordBreak: 'break-word',
-                            })}
+                            }}
                           >
                             {backgroundName}
                           </div>
                           <div
-                            className={sprinkles({
+                            style={{
                               color:
                                 mode === 'light'
-                                  ? 'secondary'
-                                  : 'secondaryDark',
-                              fontSize: '18px',
+                                  ? SECONDARY_TEXT
+                                  : SECONDARY_TEXT_DARK,
+                              fontSize: TEXT_SIZE,
                               fontWeight: 500,
                               wordBreak: 'break-word',
-                            })}
+                            }}
                           >
-                            {backgroundColor}
+                            {color}
                           </div>
                         </Stack>
                       </div>
@@ -294,53 +291,58 @@ const Home: NextPage = () => {
                 ([foregroundName, foreground], colorIndex, arr) => (
                   <Columns key={colorIndex} space={GRID_SPACING}>
                     {(typeof foreground === 'string'
-                      ? ([
-                          [foreground, 'bodyLight'],
-                          [foreground, 'bodyDark'],
-                          [foreground, 'bodyDark'],
-                        ] as const)
-                      : ([
-                          [foreground.light, 'bodyLight'],
-                          [foreground.dark, 'bodyDark'],
-                          [
-                            foreground.darkTinted ?? foreground.dark,
-                            'bodyDark',
-                          ],
-                        ] as const)
+                      ? [
+                          [foreground, BODY_LIGHT],
+                          [foreground, BODY_DARK],
+                          [foreground, BODY_DARK],
+                        ]
+                      : [
+                          [foreground.light, BODY_LIGHT],
+                          [foreground.dark, BODY_DARK],
+                          [foreground.darkTinted ?? foreground.dark, BODY_DARK],
+                        ]
                     ).map(([color, backgroundColor], index) => (
                       <div
-                        className={sprinkles({
-                          backgroundColor,
-                          borderBottomRadius:
+                        key={index}
+                        style={{
+                          backgroundColor: backgroundColor,
+                          borderBottomLeftRadius:
                             colorIndex === arr.length - 1
                               ? CARD_RADIUS
                               : undefined,
-                          borderTopRadius:
+                          borderBottomRightRadius:
+                            colorIndex === arr.length - 1
+                              ? CARD_RADIUS
+                              : undefined,
+                          borderTopLeftRadius:
+                            colorIndex === 0 ? CARD_RADIUS : undefined,
+                          borderTopRightRadius:
                             colorIndex === 0 ? CARD_RADIUS : undefined,
                           height: '100%',
-                          padding: CARD_GUTTER,
-                          paddingTop: colorIndex === 0 ? CARD_GUTTER : 'none',
-                        })}
-                        key={index}
+                          paddingBottom: CARD_GUTTER,
+                          paddingLeft: CARD_GUTTER,
+                          paddingRight: CARD_GUTTER,
+                          paddingTop: colorIndex === 0 ? CARD_GUTTER : 0,
+                        }}
                       >
                         <Stack space="8px">
                           <div
-                            className={sprinkles({
-                              fontSize: '18px',
+                            style={{
+                              color: color,
+                              fontSize: TEXT_SIZE,
                               fontWeight: 800,
                               wordBreak: 'break-word',
-                            })}
-                            style={{ color }}
+                            }}
                           >
                             {foregroundName}
                           </div>
                           <div
-                            className={sprinkles({
-                              fontSize: '18px',
+                            style={{
+                              color: color,
+                              fontSize: TEXT_SIZE,
                               fontWeight: 500,
                               wordBreak: 'break-word',
-                            })}
-                            style={{ color }}
+                            }}
                           >
                             {color}
                           </div>
