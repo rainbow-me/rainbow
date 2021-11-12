@@ -119,6 +119,7 @@ describe('Send Sheet Interaction Flow', () => {
     );
     await Helpers.checkIfVisible('add-contact-button');
     await Helpers.checkIfVisible('send-asset-list');
+    await Helpers.clearField('send-asset-form-field');
     await Helpers.typeText(
       'send-asset-form-field',
       'rainbowwallet.eth\n',
