@@ -1,13 +1,12 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 export const typeHierarchy = {
   heading: {
-    '23px': {
-      fontSize: 23,
-      letterSpacing: 0.6,
-      lineHeight: 27,
+    '18px': {
+      fontSize: 18,
+      letterSpacing: 0.5,
+      lineHeight: 21,
       marginCorrection: {
-        ios: -0.3,
-        android: -0.3,
+        android: 0.2,
+        ios: 0,
       },
     },
     '20px': {
@@ -15,38 +14,29 @@ export const typeHierarchy = {
       letterSpacing: 0.6,
       lineHeight: 24,
       marginCorrection: {
-        ios: -0.5,
         android: 0,
+        ios: -0.5,
       },
     },
-    '18px': {
-      fontSize: 18,
-      letterSpacing: 0.5,
-      lineHeight: 21,
+    '23px': {
+      fontSize: 23,
+      letterSpacing: 0.6,
+      lineHeight: 27,
       marginCorrection: {
-        ios: 0,
-        android: 0.2,
+        android: -0.3,
+        ios: -0.3,
       },
     },
   },
 
   text: {
-    '18px': {
-      fontSize: 18,
+    '11px': {
+      fontSize: 11,
       letterSpacing: 0.6,
-      lineHeight: 27,
+      lineHeight: 13,
       marginCorrection: {
+        android: -0.3,
         ios: -0.3,
-        android: 2.4,
-      },
-    },
-    '16px': {
-      fontSize: 16,
-      letterSpacing: 0.5,
-      lineHeight: 24,
-      marginCorrection: {
-        ios: -0.5,
-        android: 2.4,
       },
     },
     '14px': {
@@ -54,17 +44,26 @@ export const typeHierarchy = {
       letterSpacing: 0.6,
       lineHeight: 17,
       marginCorrection: {
-        ios: -0.3,
         android: -0.1,
+        ios: -0.3,
       },
     },
-    '11px': {
-      fontSize: 11,
-      letterSpacing: 0.6,
-      lineHeight: 13,
+    '16px': {
+      fontSize: 16,
+      letterSpacing: 0.5,
+      lineHeight: 24,
       marginCorrection: {
+        android: 2.4,
+        ios: -0.5,
+      },
+    },
+    '18px': {
+      fontSize: 18,
+      letterSpacing: 0.6,
+      lineHeight: 27,
+      marginCorrection: {
+        android: 2.4,
         ios: -0.3,
-        android: -0.3,
       },
     },
   },
