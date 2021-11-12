@@ -1,7 +1,4 @@
-import {
-  isENSAddressFormat,
-  isUnstoppableAddressFormat,
-} from '../helpers/validators';
+import { isValidDomainFormat } from '../helpers/validators';
 
 const defaultNumCharsPerSection = 6;
 
@@ -23,13 +20,13 @@ export function formatAddressForDisplay(
   truncationLength = 4,
   firstSectionLength = 10
 ) {
-  return isENSAddressFormat(text) || isUnstoppableAddressFormat(text)
+  return isValidDomainFormat(text)
     ? text
     : address(text, truncationLength, firstSectionLength);
 }
 
 export function abbreviateEnsForDisplay(text, truncationLength = 20) {
-  if (typeof text !== 'string' || !isENSAddressFormat(text)) {
+  if (typeof text !== 'string' || !isValidDomainFormat(text)) {
     return null;
   }
   const pieces = text.split('.');

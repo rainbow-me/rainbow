@@ -30,7 +30,7 @@ import {
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
-import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
+import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountSettings,
   useAccountTransactions,
@@ -314,7 +314,7 @@ export default function SendConfirmationSheet() {
 
   const avatarName =
     removeFirstEmojiFromString(existingAccount?.label || contact?.nickname) ||
-    (isENSAddressFormat(to)
+    (isValidDomainFormat(to)
       ? to
       : walletNames?.[to]
       ? walletNames[to]
