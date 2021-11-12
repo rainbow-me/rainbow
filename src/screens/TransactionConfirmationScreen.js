@@ -586,9 +586,11 @@ export default function TransactionConfirmationScreen() {
     }
 
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
+    const nonce = await getNextNonce();
     let txPayloadUpdated = {
       ...txPayload,
       gasPrice,
+      nonce,
     };
     if (calculatedGasLimit) {
       txPayloadUpdated.gasLimit = calculatedGasLimit;
@@ -630,7 +632,6 @@ export default function TransactionConfirmationScreen() {
       }
       let txSavedInCurrentWallet = false;
       let txDetails = null;
-      const nonce = await getNextNonce();
       if (sendInsteadOfSign) {
         txDetails = {
           amount: displayDetails?.request?.value ?? 0,

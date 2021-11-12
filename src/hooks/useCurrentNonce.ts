@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { getTransactionCount } from '@rainbow-me/handlers/web3';
+import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import { AppState } from '@rainbow-me/redux/store';
 import logger from 'logger';
 
@@ -9,7 +9,11 @@ export default function useCurrentNonce(account: string, network: string) {
     return state.nonceManager[account.toLowerCase()]?.[network]?.nonce;
   });
   const getNextNonce = useCallback(async () => {
-    const transactionCount = await getTransactionCount(account);
+    const provider = await getProviderForNetwork(network);
+    const transactionCount = await provider.getTransactionCount(
+      account,
+      'pending'
+    );
     const transactionIndex = transactionCount - 1;
     const nextNonceBase =
       !nonceInState || transactionIndex > nonceInState
