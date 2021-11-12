@@ -18,7 +18,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
   let priceDataProvider = PriceDataProvider.shared
   let iconProvider = IconProvider.shared
   
-  let defaultToken = TokenDetails(name: "Ethereum", identifier: "ethereum", symbol: "ETH", color: "#282C2C", address: "NA")
+  let defaultToken = TokenDetails(name: "Ethereum", identifier: "ethereum", symbol: "ETH", color: "#282C2C", address: "no address")
 
   func placeholder(in context: Context) -> CustomTokenEntry {
     let eth = defaultToken
@@ -75,9 +75,9 @@ struct PriceWidgetProvider: IntentTimelineProvider {
   }
 
   private func lookupTokenDetails(for configuration: SelectTokenIntent) -> TokenDetails {
-    let tokenId = configuration.token != nil ? configuration.token!.identifier : nil
+    let tokenId = configuration.token != nil ? configuration.token!.identifier : ""
     let tokenForConfig = tokenProvider.getTokens().first(where: { token in
-      token.symbol!.lowercased() == tokenId
+      token.address?.lowercased() == tokenId!.lowercased()
     })
     return tokenForConfig != nil ? tokenForConfig! : defaultToken
   }
