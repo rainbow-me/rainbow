@@ -1,6 +1,6 @@
 import { omit } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { TouchableWithoutFeedback } from 'react-native';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { padding } from '@rainbow-me/styles';
