@@ -461,11 +461,11 @@ export default function TransactionConfirmationScreen() {
       logger.log('Setting gas limit to', convertHexToString(gas));
 
       if (network === networkTypes.optimism) {
-        const l1GasFee = await ethereumUtils.calculateL1FeeOptimism(
+        const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
           txPayload,
           provider
         );
-        updateTxFee(gas, null, network, l1GasFee);
+        updateTxFee(gas, null, network, l1GasFeeOptimism);
       } else {
         updateTxFee(gas, null, network);
       }

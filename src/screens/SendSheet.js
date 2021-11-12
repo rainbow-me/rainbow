@@ -477,11 +477,16 @@ export default function SendSheet(props) {
               currentProvider,
               currentNetwork
             );
-            const l1GasFee = await ethereumUtils.calculateL1FeeOptimism(
+            const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
               txData,
               currentProvider
             );
-            updateTxFee(updatedGasLimit, null, currentNetwork, l1GasFee);
+            updateTxFee(
+              updatedGasLimit,
+              null,
+              currentNetwork,
+              l1GasFeeOptimism
+            );
           } else {
             updateTxFee(updatedGasLimit, null, currentNetwork);
           }
@@ -781,11 +786,11 @@ export default function SendSheet(props) {
               currentProvider,
               currentNetwork
             );
-            const l1GasFee = await ethereumUtils.calculateL1FeeOptimism(
+            const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
               txData,
               currentProvider
             );
-            updateTxFee(gasLimit, null, currentNetwork, l1GasFee);
+            updateTxFee(gasLimit, null, currentNetwork, l1GasFeeOptimism);
           } else {
             updateTxFee(gasLimit, null, currentNetwork);
           }

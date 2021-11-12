@@ -321,7 +321,7 @@ export const gasUpdateTxFee = (
   network,
   gasLimit,
   overrideGasOption,
-  l1GasFee = null
+  l1GasFeeOptimism = null
 ) => (dispatch, getState) => {
   const { defaultGasLimit, gasPrices, selectedGasPriceOption } = getState().gas;
   const _gasLimit = gasLimit || defaultGasLimit;
@@ -339,7 +339,7 @@ export const gasUpdateTxFee = (
     nativeTokenPriceUnit,
     _gasLimit,
     nativeCurrency,
-    l1GasFee
+    l1GasFeeOptimism
   );
 
   const results = getSelectedGasPrice(

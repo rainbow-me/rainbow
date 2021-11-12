@@ -126,7 +126,7 @@ export const parseTxFees = (
   priceUnit,
   gasLimit,
   nativeCurrency,
-  l1GasFee
+  l1GasFeeOptimism
 ) => {
   const txFees = map(GasSpeedOrder, speed => {
     const gasPrice = get(gasPrices, `${speed}.value.amount`);
@@ -135,7 +135,7 @@ export const parseTxFees = (
       gasLimit,
       priceUnit,
       nativeCurrency,
-      l1GasFee
+      l1GasFeeOptimism
     );
     return {
       txFee,
@@ -144,10 +144,16 @@ export const parseTxFees = (
   return zipObject(GasSpeedOrder, txFees);
 };
 
-const getTxFee = (gasPrice, gasLimit, priceUnit, nativeCurrency, l1GasFee) => {
+const getTxFee = (
+  gasPrice,
+  gasLimit,
+  priceUnit,
+  nativeCurrency,
+  l1GasFeeOptimism
+) => {
   let amount = multiply(gasPrice, gasLimit);
-  if (l1GasFee && greaterThan(l1GasFee, '0')) {
-    amount = add(amount, l1GasFee.toString());
+  if (l1GasFeeOptimism && greaterThan(l1GasFeeOptimism, '0')) {
+    amount = add(amount, l1GasFeeOptimism.toString());
   }
   return {
     native: {

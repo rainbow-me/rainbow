@@ -65,10 +65,15 @@ export default function useGas() {
       newGasLimit,
       overrideGasOption,
       network = currentNetwork,
-      l1GasFee = null
+      l1GasFeeOptimism = null
     ) => {
       dispatch(
-        gasUpdateTxFee(network, newGasLimit, overrideGasOption, l1GasFee)
+        gasUpdateTxFee(
+          network,
+          newGasLimit,
+          overrideGasOption,
+          l1GasFeeOptimism
+        )
       );
     },
     [currentNetwork, dispatch]
