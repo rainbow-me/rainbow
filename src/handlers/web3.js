@@ -18,6 +18,7 @@ import {
 import { isNativeAsset } from './assets';
 import { AssetTypes } from '@rainbow-me/entities';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
+import { isUnstoppableAddressFormat } from '@rainbow-me/helpers/validators';
 
 import {
   addBuffer,
@@ -299,18 +300,18 @@ export const resolveUnstoppableDomain = async domain => {
     },
   });
 
-  const res = resolution
+  const res = await resolution
     .addr(domain, 'ETH')
     .then(address => {
       return address;
     })
-    .catch(logger.error);
+    .catch(error => logger.error(error));
   return res;
 };
 
 export const resolveNameOrAddress = async (nameOrAddress, provider) => {
   if (!isHexString(nameOrAddress)) {
-    if (/^([\w-]+\.)+(crypto)$/.test(nameOrAddress)) {
+    if (isUnstoppableAddressFormat(nameOrAddress)) {
       return resolveUnstoppableDomain(nameOrAddress);
     }
     const p = provider || web3Provider;
