@@ -78,20 +78,22 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
     const sizeStyles = textSizes[size];
     const weightStyles = textWeights[weight];
 
-    const { textStyle, lineHeightFixNode } = useMemo(
+    const lineHeightFixNode = useMemo(
+      () => createLineHeightFixNode(sizeStyles.lineHeight),
+      [sizeStyles]
+    );
+
+    const textStyle = useMemo(
       () =>
         ({
-          lineHeightFixNode: createLineHeightFixNode(sizeStyles.lineHeight),
-          textStyle: {
-            color: colorValue,
-            textAlign,
-            ...sizeStyles,
-            ...weightStyles,
-            ...(uppercase ? { textTransform: 'uppercase' as const } : null),
-            ...(tabularNumbers
-              ? { fontVariant: ['tabular-nums' as const] }
-              : null),
-          },
+          color: colorValue,
+          textAlign,
+          ...sizeStyles,
+          ...weightStyles,
+          ...(uppercase ? { textTransform: 'uppercase' as const } : null),
+          ...(tabularNumbers
+            ? { fontVariant: ['tabular-nums' as const] }
+            : null),
         } as const),
       [
         sizeStyles,

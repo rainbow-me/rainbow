@@ -34,9 +34,6 @@ const MockBadge = ({ children }: { children: ReactNode }) => (
   </View>
 );
 
-const titleCase = (string: string) =>
-  `${string[0].toUpperCase()}${string.slice(1)}`;
-
 const loremIpsum =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
 
@@ -53,7 +50,7 @@ const docs: Docs = {
   category: 'Content',
   examples: [
     ...textExamples.map(({ size, weight }) => ({
-      name: `${titleCase(size)} (${weight})`,
+      name: `${size} (${weight})`,
       example: (
         <>
           <Stack space="10px">

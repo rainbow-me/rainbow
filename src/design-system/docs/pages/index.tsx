@@ -16,14 +16,14 @@ const fontWeightFromString = {
   '600': 600,
   '700': 700,
   '800': 800,
-};
+} as const;
 
 const Title = ({ children }: { children: ReactNode }) => (
   <h1
     className={sprinkles({
       color: 'primary',
       fontSize: '23px',
-      fontWeight: '800',
+      fontWeight: 800,
     })}
   >
     {children}
@@ -35,7 +35,7 @@ const Heading = ({ children }: { children: ReactNode }) => (
     className={sprinkles({
       color: 'secondary',
       fontSize: '23px',
-      fontWeight: '700',
+      fontWeight: 700,
     })}
   >
     {children}
@@ -147,7 +147,7 @@ const Home: NextPage = () => {
                         <div
                           className={sprinkles({
                             color: 'primary',
-                            fontWeight: '800',
+                            fontWeight: 800,
                           })}
                         >
                           {sizeName} heading
@@ -155,7 +155,7 @@ const Home: NextPage = () => {
                         <div
                           className={sprinkles({
                             color: 'secondary',
-                            fontWeight: '500',
+                            fontWeight: 500,
                           })}
                         >
                           {lineHeight}
@@ -180,7 +180,7 @@ const Home: NextPage = () => {
                         <div
                           className={sprinkles({
                             color: 'primary',
-                            fontWeight: '800',
+                            fontWeight: 800,
                           })}
                         >
                           {sizeName} text
@@ -188,7 +188,7 @@ const Home: NextPage = () => {
                         <div
                           className={sprinkles({
                             color: 'secondary',
-                            fontWeight: '600',
+                            fontWeight: 600,
                           })}
                         >
                           {lineHeight}
@@ -252,7 +252,7 @@ const Home: NextPage = () => {
                           <div
                             className={sprinkles({
                               fontSize: '18px',
-                              fontWeight: '800',
+                              fontWeight: 800,
                               wordBreak: 'break-word',
                             })}
                           >
@@ -265,7 +265,7 @@ const Home: NextPage = () => {
                                   ? 'secondary'
                                   : 'secondaryDark',
                               fontSize: '18px',
-                              fontWeight: '500',
+                              fontWeight: 500,
                               wordBreak: 'break-word',
                             })}
                           >
@@ -327,7 +327,7 @@ const Home: NextPage = () => {
                           <div
                             className={sprinkles({
                               fontSize: '18px',
-                              fontWeight: '800',
+                              fontWeight: 800,
                               wordBreak: 'break-word',
                             })}
                             style={{ color }}
@@ -337,7 +337,7 @@ const Home: NextPage = () => {
                           <div
                             className={sprinkles({
                               fontSize: '18px',
-                              fontWeight: '500',
+                              fontWeight: 500,
                               wordBreak: 'break-word',
                             })}
                             style={{ color }}
