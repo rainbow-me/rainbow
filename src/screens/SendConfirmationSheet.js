@@ -44,6 +44,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import logger from 'logger';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -271,7 +272,7 @@ export default function SendConfirmationSheet() {
   }, [network]);
 
   const shouldShowChecks =
-    isL2 &&
+    (isL2 && network !== networkTypes.optimism) &&
     !isSendingToUserAccount &&
     alreadySentTransactionsCurrentNetwork < 3;
 

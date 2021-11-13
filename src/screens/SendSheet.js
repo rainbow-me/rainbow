@@ -796,8 +796,6 @@ export default function SendSheet(props) {
           }
         })
         .catch(e => {
-          logger.sentry('OP Gas limit blew up', e);
-          captureException(e);
           updateTxFee(null, null, currentNetwork);
         });
     }
