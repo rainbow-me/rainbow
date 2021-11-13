@@ -39,7 +39,7 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
             ? deviceHeight - contentHeight
             : 0
         };`};
-  ${android ? 'border-top-left-radius: 20; border-top-right-radius: 20;' : ''}
+  ${android && 'border-top-left-radius: 30; border-top-right-radius: 30;'}
   background-color: ${({ backgroundColor }) => backgroundColor};
   bottom: 0;
   left: 0;
@@ -92,11 +92,13 @@ export default forwardRef(function SlackSheet(
     showBlur,
     testID,
     removeClippedSubviews = false,
+    yPosition: givenYPosition,
     ...props
   },
   ref
 ) {
-  const yPosition = useSharedValue(0);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const yPosition = givenYPosition || useSharedValue(0);
   const { height: deviceHeight } = useDimensions();
   const { goBack } = useNavigation();
   const insets = useSafeArea();

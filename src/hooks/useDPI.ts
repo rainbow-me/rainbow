@@ -46,7 +46,7 @@ export default function useDPI() {
     const adapterRegistry = new Contract(
       DEFI_SDK_ADAPTER_REGISTRY_ADDRESS,
       defiSdkAdapterRegistryABI,
-      web3Provider
+      web3Provider!
     );
     const result = await adapterRegistry.getFinalFullTokenBalance(
       TOKENSETS_V2,

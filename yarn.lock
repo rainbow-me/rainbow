@@ -2789,6 +2789,11 @@
   dependencies:
     prop-types "^15.5.10"
 
+"@react-native-community/cameraroll@4.1.2":
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cameraroll/-/cameraroll-4.1.2.tgz#489c6bb6137571540d93c543d5fcf8c652b548ec"
+  integrity sha512-jkdhMByMKD2CZ/5MPeBieYn8vkCfC4MOTouPpBpps3I8N6HUYJk+1JnDdktVYl2WINnqXpQptDA2YptVyifYAg==
+
 "@react-native-community/cli-debugger-ui@^6.0.0-rc.0":
   version "6.0.0-rc.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-debugger-ui/-/cli-debugger-ui-6.0.0-rc.0.tgz#774378626e4b70f5e1e2e54910472dcbaffa1536"
@@ -5570,7 +5575,7 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
 
-base-64@^0.1.0:
+base-64@0.1.0, base-64@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/base-64/-/base-64-0.1.0.tgz#780a99c84e7d600260361511c4877613bf24f6bb"
   integrity sha1-eAqZyE59YAJgNhURxId2E78k9rs=
@@ -9601,6 +9606,18 @@ glob-parent@6.0.0, glob-parent@^5.1.2, glob-parent@~5.1.0, glob-parent@~5.1.2:
   dependencies:
     is-glob "^4.0.1"
 
+glob@7.0.6:
+  version "7.0.6"
+  resolved "https://registry.yarnpkg.com/glob/-/glob-7.0.6.tgz#211bafaf49e525b8cd93260d14ab136152b3f57a"
+  integrity sha1-IRuvr0nlJbjNkyYNFKsTYVKz9Xo=
+  dependencies:
+    fs.realpath "^1.0.0"
+    inflight "^1.0.4"
+    inherits "2"
+    minimatch "^3.0.2"
+    once "^1.3.0"
+    path-is-absolute "^1.0.0"
+
 glob@7.1.3:
   version "7.1.3"
   resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.3.tgz#3960832d3f1574108342dafd3a67b332c0969df1"
@@ -12445,15 +12462,7 @@ madge@4.0.2, madge@^3.12.0:
     typescript "^3.9.5"
     walkdir "^0.4.1"
 
-make-color-more-chill@0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/make-color-more-chill/-/make-color-more-chill-0.2.1.tgz#87d88d157c7042ee7b6db4c1b1248a6bc5c345ea"
-  integrity sha512-8ub4T8r1g+pcKtslbyszpY0TsIPQCuqVAhaR5/HLH2y1ZnXbqYmGuwqvWOTUuX6eRYOZhzwozz3WrdkMfxIGlA==
-  dependencies:
-    chroma-js "^2.1.0"
-    zod "^1.11.11"
-
-make-color-more-chill@^0.2.0:
+make-color-more-chill@0.2.2, make-color-more-chill@^0.2.0:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/make-color-more-chill/-/make-color-more-chill-0.2.2.tgz#53829a817d7410dd854c7e81270e85f8a1224a06"
   integrity sha512-vbeMRwJhACNL77aNjTMAwyAEanvUlA9Q8gxZoDWSpnMKaeltmFRmCjXjv/EJCCDMnryqh7x7+35aFxX03azJYw==
@@ -15276,9 +15285,19 @@ react-native-markdown-display@7.0.0-alpha.2:
     prop-types "^15.7.2"
     react-native-fit-image "^1.5.5"
 
+react-native-mmkv@1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/react-native-mmkv/-/react-native-mmkv-1.5.2.tgz#d2b84f22f13d3ed0c2395addbd6ef8f2fe986c35"
+  integrity sha512-vvmtcjWVUTKoErg1RxMwPijyoySqWd2nuD6LC1PiZsBQO0sCXi8mJel1dI5Agnq3SsNYhPTcRNSHzVKz4q7gyw==
+
 react-native-os@brunobar79/react-native-os#41a08e45260b8c1c53c77ad00e13ae954cb9337c:
   version "1.2.8"
   resolved "https://codeload.github.com/brunobar79/react-native-os/tar.gz/41a08e45260b8c1c53c77ad00e13ae954cb9337c"
+
+react-native-palette-full@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-palette-full/-/react-native-palette-full-1.2.0.tgz#db912894a6dfb1352a263a2c8bcb9bdd979c3231"
+  integrity sha512-l7X96pdRGoMiS1+BXm8K1XvvezxFxA05QA68IM8PM8qvG0cV4S/EUC124UVS8TcgjMkWZpAda67Hpf8oYB5bwg==
 
 react-native-permissions@3.0.5:
   version "3.0.5"
@@ -16108,6 +16127,14 @@ rn-dominant-color@1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/rn-dominant-color/-/rn-dominant-color-1.7.0.tgz#99b86847dec671c3c0cf84f990a6ef8eb95a19d8"
   integrity sha512-HlFVCCy0gleMhxE1o+twOJwg/FxAMw5XBoZbMcifcVLIa9wCCJCiOz70dl7I6m0vvzVdOcE4RoZ+0PTv3IMBTQ==
+
+rn-fetch-blob@0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/rn-fetch-blob/-/rn-fetch-blob-0.12.0.tgz#ec610d2f9b3f1065556b58ab9c106eeb256f3cba"
+  integrity sha512-+QnR7AsJ14zqpVVUbzbtAjq0iI8c9tCg49tIoKO2ezjzRunN7YL6zFSFSWZm6d+mE/l9r+OeDM3jmb2tBb2WbA==
+  dependencies:
+    base-64 "0.1.0"
+    glob "7.0.6"
 
 rn-nodeify@10.2.0:
   version "10.2.0"
@@ -17762,10 +17789,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@3.9.7:
-  version "3.9.7"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.7.tgz#98d600a5ebdc38f40cb277522f12dc800e9e25fa"
-  integrity sha512-BLbiRkiBzAwsjut4x/dsibSTB6yWpwT5qWmC2OfuCg3GgVQCSgMs4vEctYPhsaGtd0AeuuHMkjZ2h2WG8MSzRw==
+typescript@4.4.4:
+  version "4.4.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.4.4.tgz#2cd01a1a1f160704d3101fd5a58ff0f9fcb8030c"
+  integrity sha512-DqGhF5IKoBl8WNf8C1gu8q0xZSInh9j1kJJMqT3a94w1JzVaBU4EXOSMrz9yDqMT0xt3selp83fuFMQ0uzv6qA==
 
 typescript@^3.9.5, typescript@^3.9.7:
   version "3.9.10"
