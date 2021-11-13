@@ -796,6 +796,7 @@ export default function SendSheet(props) {
           }
         })
         .catch(e => {
+          logger.sentry('Error getting optimism l1 fee', e);
           updateTxFee(null, null, currentNetwork);
         });
     }

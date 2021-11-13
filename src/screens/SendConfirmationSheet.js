@@ -29,6 +29,7 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import {
@@ -44,7 +45,6 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import logger from 'logger';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
@@ -272,7 +272,8 @@ export default function SendConfirmationSheet() {
   }, [network]);
 
   const shouldShowChecks =
-    (isL2 && network !== networkTypes.optimism) &&
+    isL2 &&
+    network !== networkTypes.optimism &&
     !isSendingToUserAccount &&
     alreadySentTransactionsCurrentNetwork < 3;
 
