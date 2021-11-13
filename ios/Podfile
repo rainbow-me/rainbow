@@ -33,7 +33,7 @@ target 'Rainbow' do
 
   use_native_modules!
   if ENV['SKIP_FLIPPER'] != "true"
-    use_flipper!()
+    # use_flipper!()
     pod 'RNExitApp', :path => '../node_modules/react-native-exit-app'
 
     pod 'react-native-palette-full', :path => '../node_modules/react-native-palette-full'
@@ -43,6 +43,7 @@ target 'Rainbow' do
   post_install do |installer|
     react_native_post_install(installer)
     installer.pods_project.build_configurations.each do |config|
+      __apply_Xcode_12_5_M1_post_install_workaround(installer)
       config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
     end
   end
