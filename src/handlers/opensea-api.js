@@ -66,7 +66,7 @@ export const apiGetUniqueTokenFloorPrice = async (
 
     const tempPrice = collectionData?.data?.collection?.stats?.floor_price;
 
-    if (parseFloat(tempPrice) === 0) {
+    if (parseFloat(tempPrice) === 0 || !tempPrice) {
       return 'None';
     }
 
