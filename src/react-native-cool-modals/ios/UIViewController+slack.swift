@@ -106,8 +106,6 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
       return self
     }
   }
-  
-
 
   var hacked = false
   var originalMethod: Method? = nil
@@ -124,7 +122,10 @@ class PanModalViewController: UIViewController, PanModalPresentable, UILayoutSup
   }
 
   var cornerRadius: CGFloat {
-    return CGFloat(truncating: config?.cornerRadius ?? 0)
+    if (self.config?.cornerRadius == 0.666) {
+      return UIScreen.main.displayCornerRadius
+    }
+    return CGFloat(truncating: self.config?.cornerRadius ?? 0)
   }
 
   var ignoreBottomOffset: Bool {

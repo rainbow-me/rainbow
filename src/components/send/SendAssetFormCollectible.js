@@ -124,6 +124,7 @@ export default function SendAssetFormCollectible({
                 {...props}
                 asset={asset}
                 borderRadius={20}
+                disablePreview
                 height={imageHeight}
                 horizontalPadding={0}
                 resizeMode="cover"
