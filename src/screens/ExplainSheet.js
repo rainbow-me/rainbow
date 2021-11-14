@@ -34,6 +34,8 @@ Except for rare situations, you probably shouldn't do this. You could lose your 
 
 Double check the address, verify it with the recipient, or contact support first.`;
 
+const FLOOR_PRICE_EXPLAINER = `A collection's floor price is the lowest asking price across all the items currently for sale in a collection.`;
+
 const GAS_EXPLAINER = `This is the "gas fee" used by the Ethereum blockchain to securely validate your transaction.
 
 This fee varies depending on the complexity of your transaction and how busy the network is!`;
@@ -55,6 +57,12 @@ const POLYGON_EXPLAINER = `Polygon is a sidechain, a distinct network that runs 
 It allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum.`;
 
 export const explainers = {
+  floor_price: {
+    emoji: '📊',
+    extraHeight: -102,
+    text: FLOOR_PRICE_EXPLAINER,
+    title: 'Collection floor price',
+  },
   gas: {
     emoji: '⛽️',
     extraHeight: 2,
