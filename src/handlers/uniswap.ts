@@ -212,7 +212,7 @@ const getExecutionDetails = (
   inputCurrency: Asset,
   outputCurrency: Asset,
   trade: Trade,
-  providerOrSigner: Provider | Signer,
+  providerOrSigner: Provider | Signer | Wallet,
   allowedSlippage: number,
   deadline: number = DEFAULT_DEADLINE_FROM_NOW // in seconds from now, optional
 ): {
@@ -335,7 +335,7 @@ const getContractExecutionDetails = ({
   chainId: ChainId;
   inputCurrency: Asset;
   outputCurrency: Asset;
-  providerOrSigner: Provider | Signer;
+  providerOrSigner: Provider | Signer | Wallet;
   slippage: number;
   tradeDetails: Trade;
 }) => {
