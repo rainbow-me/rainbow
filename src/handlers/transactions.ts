@@ -43,6 +43,7 @@ export const getTransactionMethodName = async (
   try {
     const { signatures } = store.getState().transactionSignatures;
     // only being used on mainnet transactions, so we can use the default web3 provider
+    // @ts-ignore
     const txn = await web3Provider.getTransaction(transaction.hash);
     const bytes = txn?.data?.substring(0, 10) || '';
     let signature = signatures[bytes] || '';
@@ -61,7 +62,7 @@ export const getTransactionMethodName = async (
         const contract = new Contract(
           SIGNATURE_REGISTRY_ADDRESS,
           signatureRegistryABI,
-          web3Provider
+          web3Provider!
         );
         signature = await Promise.race([
           contract.entries(bytes),

@@ -5,7 +5,8 @@ import { padding } from '@rainbow-me/styles';
 const TokenInfoSection = styled(ColumnWithMargins).attrs({
   margin: 15,
 })`
-  ${ios && padding(24, 0, 5)};
+  ${({ isNft }) =>
+    ios && padding(isNft ? 0 : 24, isNft ? 5 : 0, isNft ? 24 : 5)};
   width: 100%;
 `;
 

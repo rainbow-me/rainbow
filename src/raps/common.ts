@@ -164,7 +164,7 @@ const executeAction = async (
       baseNonce
     );
     return { baseNonce: nonce, errorMessage: null };
-  } catch (error) {
+  } catch (error: any) {
     logger.sentry('[3 INNER] error running action, code:', error?.code);
     captureException(error);
     analytics.track('Rap failed', {
