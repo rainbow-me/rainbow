@@ -13,6 +13,7 @@
     "detox:android:release": "detox build -c android.emu.release && detox test -R 1 -c android.emu.release",
     "detox:ios": "detox build -c ios.sim.debug && detox test -R 1 -c ios.sim.debug --bail",
     "detox:ios:release": "detox build -c ios.sim.release && detox test -R 1 -c ios.sim.release --bail",
+    "ds": "next dev src/design-system/docs",
     "fast": "yarn setup && yarn install-pods-fast",
     "gradle": "cd android && ./gradlew",
     "hardhat": "source .env && hardhat node --fork ${ETHEREUM_MAINNET_RPC_DEV}",
@@ -37,8 +38,7 @@
     "android-reverse-ports": "adb reverse tcp:8097 tcp:8097 && adb reverse tcp:8081 tcp:8081",
     "update-tokens": "yarn update-token-list && yarn update-token-metadata",
     "update-token-list": "./scripts/update-token-list.sh",
-    "update-token-metadata": "./scripts/update-token-metadata.sh",
-    "ds": "next dev src/design-system/docs"
+    "update-token-metadata": "./scripts/update-token-metadata.sh"
   },
   "husky": {
     "hooks": {
