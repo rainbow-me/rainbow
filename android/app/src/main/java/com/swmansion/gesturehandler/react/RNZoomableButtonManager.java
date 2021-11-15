@@ -66,9 +66,9 @@ public class RNZoomableButtonManager extends
                 } else {
                     onReceivePressEndedEvent();
                 }
+                mIsTaskScheduled = false;
                 mLongPressTimer.cancel();
                 mLongPressTimer = new Timer();
-                mIsTaskScheduled = false;
             }
 
             return super.onTouchEvent(ev);
