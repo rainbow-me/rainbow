@@ -75,6 +75,7 @@ const BackgroundImage = styled.View`
 const BlurWrapper = styled.View.attrs({
   shouldRasterizeIOS: true,
 })`
+  background-color: ${({ theme: { colors } }) => colors.trueBlack};
   height: ${({ height }) => height};
   left: 0;
   overflow: hidden;
