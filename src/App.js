@@ -59,6 +59,7 @@ import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
 import { ethereumUtils } from './utils';
 import networkTypes from './helpers/networkTypes';
+import { isL2Network } from './handlers/web3';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
 
