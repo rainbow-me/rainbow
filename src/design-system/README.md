@@ -187,7 +187,7 @@ You can optionally control column widths by manually rendering a `Column` as a d
 A common usage of this is to make a column shrink to the width of its content. This can be achieved by setting the column `width` prop to `"content"`. Any columns without an explicit width will share the remaining space equally.
 
 ```tsx
-import { Columns, Text } from '@rainbow-me/design-system';
+import { Columns, Column, Text } from '@rainbow-me/design-system';
 
 export default () => (
   <Inset horizontal="19px" vertical="24px">
