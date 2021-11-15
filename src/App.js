@@ -60,6 +60,7 @@ import { Portal } from 'react-native-cool-modals/Portal';
 import { ethereumUtils } from './utils';
 import networkTypes from './helpers/networkTypes';
 import { isL2Network } from './handlers/web3';
+import { fetchOnchainBalances } from './redux/fallbackExplorer';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
 
