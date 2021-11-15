@@ -211,7 +211,7 @@ const ExplainSheet = () => {
   const { params: { type = 'gas', onClose } = {}, params = {} } = useRoute();
   const { colors } = useTheme();
   const { goBack } = useNavigation();
-  const renderBaseFeeInficator = useMemo(() => {
+  const renderBaseFeeIndicator = useMemo(() => {
     if (!type.includes('currentBaseFee')) return null;
     const { currentGasTrend, currentBaseFee } = params;
     return (
@@ -281,7 +281,7 @@ const ExplainSheet = () => {
             </Title>
 
             {/** base fee explainer */}
-            {renderBaseFeeInficator}
+            {renderBaseFeeIndicator}
 
             <Text
               align="center"
