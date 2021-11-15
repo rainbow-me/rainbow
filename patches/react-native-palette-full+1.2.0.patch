@@ -1,0 +1,193 @@
+diff --git a/node_modules/react-native-palette-full/android/src/main/java/me/jerson/mobile/palette/RNPaletteModule.java b/node_modules/react-native-palette-full/android/src/main/java/me/jerson/mobile/palette/RNPaletteModule.java
+index 1cfd46e..020d4e4 100644
+--- a/node_modules/react-native-palette-full/android/src/main/java/me/jerson/mobile/palette/RNPaletteModule.java
++++ b/node_modules/react-native-palette-full/android/src/main/java/me/jerson/mobile/palette/RNPaletteModule.java
+@@ -5,8 +5,8 @@ import android.graphics.BitmapFactory;
+ import android.graphics.Color;
+ import android.net.Uri;
+ import android.os.Handler;
+-import android.support.annotation.Nullable;
+-import android.support.v7.graphics.Palette;
++import androidx.annotation.Nullable;
++import androidx.palette.graphics.Palette;
+ import android.util.Log;
+ 
+ import com.facebook.common.executors.CallerThreadExecutor;
+diff --git a/node_modules/react-native-palette-full/ios/RNPalette.m b/node_modules/react-native-palette-full/ios/RNPalette.m
+index fc6704d..577fa35 100644
+--- a/node_modules/react-native-palette-full/ios/RNPalette.m
++++ b/node_modules/react-native-palette-full/ios/RNPalette.m
+@@ -162,7 +162,7 @@ - (void)getAllSwatchesFromImage:(UIImage *)image
+     if ([[allModeColorDic objectForKey:@"vibrant"] isKindOfClass:[PaletteColorModel class]]){
+       PaletteColorModel * vibrant = (PaletteColorModel *)[allModeColorDic objectForKey:@"vibrant"];
+       [data addObject:@{
+-          @"name":@"Vibrant",
++          @"name":@"vibrant",
+           @"color":[vibrant  imageColorString],
+           @"population" : [NSNumber numberWithInteger:[vibrant population]],
+           @"percentage":[NSNumber numberWithFloat:[vibrant percentage]],
+@@ -171,7 +171,7 @@ - (void)getAllSwatchesFromImage:(UIImage *)image
+     if ([[allModeColorDic objectForKey:@"dark_vibrant"] isKindOfClass:[PaletteColorModel class]]){
+       PaletteColorModel * dark_vibrant = (PaletteColorModel *)[allModeColorDic objectForKey:@"dark_vibrant"];
+       [data addObject:@{
+-          @"name":@"Vibrant Dark",
++          @"name":@"vibrantDark",
+           @"color":[dark_vibrant  imageColorString],
+           @"population" : [NSNumber numberWithInteger:[dark_vibrant population]],
+           @"percentage":[NSNumber numberWithFloat:[dark_vibrant percentage]],
+@@ -180,7 +180,7 @@ - (void)getAllSwatchesFromImage:(UIImage *)image
+     if ([[allModeColorDic objectForKey:@"light_vibrant"] isKindOfClass:[PaletteColorModel class]]){
+       PaletteColorModel * light_vibrant = (PaletteColorModel *)[allModeColorDic objectForKey:@"light_vibrant"];
+       [data addObject:@{
+-          @"name":@"Vibrant Light",
++          @"name":@"vibrantLight",
+           @"color":[light_vibrant  imageColorString],
+           @"population" : [NSNumber numberWithInteger:[light_vibrant population]],
+           @"percentage":[NSNumber numberWithFloat:[light_vibrant percentage]],
+@@ -189,7 +189,7 @@ - (void)getAllSwatchesFromImage:(UIImage *)image
+     if ([[allModeColorDic objectForKey:@"muted"] isKindOfClass:[PaletteColorModel class]]){
+       PaletteColorModel * muted = (PaletteColorModel *)[allModeColorDic objectForKey:@"muted"];
+       [data addObject:@{
+-          @"name":@"Muted",
++          @"name":@"muted",
+           @"color":[muted imageColorString],
+           @"population" : [NSNumber numberWithInteger:[muted population]],
+           @"percentage":[NSNumber numberWithFloat:[muted percentage]],
+@@ -198,7 +198,7 @@ - (void)getAllSwatchesFromImage:(UIImage *)image
+     if ([[allModeColorDic objectForKey:@"dark_muted"] isKindOfClass:[PaletteColorModel class]]){
+       PaletteColorModel * dark_muted = (PaletteColorModel *)[allModeColorDic objectForKey:@"dark_muted"];
+       [data addObject:@{
+-          @"name":@"Muted Dark",
++          @"name":@"vibrantLight",
+           @"color":[dark_muted imageColorString],
+           @"population" : [NSNumber numberWithInteger:[dark_muted population]],
+           @"percentage":[NSNumber numberWithFloat:[dark_muted percentage]],
+@@ -207,7 +207,7 @@ - (void)getAllSwatchesFromImage:(UIImage *)image
+     if ([[allModeColorDic objectForKey:@"light_muted"] isKindOfClass:[PaletteColorModel class]]){
+       PaletteColorModel * light_muted = (PaletteColorModel *)[allModeColorDic objectForKey:@"light_muted"];
+       [data addObject:@{
+-          @"name":@"Muted Light",
++          @"name":@"mutedLight",
+           @"color":[light_muted imageColorString],
+           @"population" : [NSNumber numberWithInteger:[light_muted population]],
+           @"percentage":[NSNumber numberWithFloat:[light_muted percentage]],
+@@ -244,7 +244,7 @@ - (void)getNamedSwatchesFromImage:(UIImage *)image
+         @"color":[vibrant imageColorString],
+         @"population":[NSNumber numberWithInteger:[vibrant population]],
+         @"percentage":[NSNumber numberWithFloat:[vibrant percentage]]
+-      } forKey:@"Vibrant"];
++      } forKey:@"vibrant"];
+     }
+     if ([[allModeColorDic objectForKey:@"dark_vibrant"] isKindOfClass:[PaletteColorModel class]]){
+       PaletteColorModel * dark_vibrant = (PaletteColorModel *)[allModeColorDic objectForKey:@"dark_vibrant"];
+@@ -252,7 +252,7 @@ - (void)getNamedSwatchesFromImage:(UIImage *)image
+         @"color":[dark_vibrant imageColorString],
+         @"population":[NSNumber numberWithInteger:[dark_vibrant population]],
+         @"percentage":[NSNumber numberWithFloat:[dark_vibrant percentage]]
+-      } forKey:@"Vibrant Dark"];
++      } forKey:@"vibrantDark"];
+ 
+     }
+     if ([[allModeColorDic objectForKey:@"light_vibrant"] isKindOfClass:[PaletteColorModel class]]){
+@@ -261,7 +261,7 @@ - (void)getNamedSwatchesFromImage:(UIImage *)image
+         @"color":[light_vibrant imageColorString],
+         @"population":[NSNumber numberWithInteger:[light_vibrant population]],
+         @"percentage":[NSNumber numberWithFloat:[light_vibrant percentage]],
+-      } forKey:@"Vibrant Light"];
++      } forKey:@"vibrantLight"];
+     }
+     if ([[allModeColorDic objectForKey:@"muted"] isKindOfClass:[PaletteColorModel class]]){
+       PaletteColorModel * muted = (PaletteColorModel *)[allModeColorDic objectForKey:@"muted"];
+@@ -269,7 +269,7 @@ - (void)getNamedSwatchesFromImage:(UIImage *)image
+         @"color":[muted imageColorString],
+         @"population":[NSNumber numberWithInteger:[muted population]],
+         @"percentage":[NSNumber numberWithFloat:[muted percentage]]
+-      } forKey:@"Muted"];
++      } forKey:@"muted"];
+     }
+     if ([[allModeColorDic objectForKey:@"dark_muted"] isKindOfClass:[PaletteColorModel class]]){
+       PaletteColorModel * dark_muted = (PaletteColorModel *)[allModeColorDic objectForKey:@"dark_muted"];
+@@ -277,7 +277,7 @@ - (void)getNamedSwatchesFromImage:(UIImage *)image
+         @"color":[dark_muted imageColorString],
+         @"population":[NSNumber numberWithInteger:[dark_muted population]],
+         @"percentage":[NSNumber numberWithFloat:[dark_muted percentage]]
+-      } forKey:@"Muted Dark"];
++      } forKey:@"vibrantLight"];
+     }
+     if ([[allModeColorDic objectForKey:@"light_muted"] isKindOfClass:[PaletteColorModel class]]){
+       PaletteColorModel * light_muted = (PaletteColorModel *)[allModeColorDic objectForKey:@"light_muted"];
+@@ -285,7 +285,7 @@ - (void)getNamedSwatchesFromImage:(UIImage *)image
+         @"color":[light_muted imageColorString],
+         @"population":[NSNumber numberWithInteger:[light_muted population]],
+         @"percentage":[NSNumber numberWithFloat:[light_muted percentage]]
+-      } forKey:@"Muted Light"];
++      } forKey:@"mutedLight"];
+     }
+ 
+    
+diff --git a/node_modules/react-native-palette-full/lib/.DS_Store b/node_modules/react-native-palette-full/lib/.DS_Store
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/react-native-palette-full/lib/index.d.ts b/node_modules/react-native-palette-full/lib/index.d.ts
+index 4e3cb79..3c441f7 100644
+--- a/node_modules/react-native-palette-full/lib/index.d.ts
++++ b/node_modules/react-native-palette-full/lib/index.d.ts
+@@ -1,10 +1,10 @@
+ export declare enum ISwatchType {
+-    vibrant = "Vibrant",
+-    vibrantDark = "Vibrant Dark",
+-    vibrantLight = "Vibrant Light",
+-    muted = "Video",
+-    mutedDark = "Muted Dark",
+-    mutedLight = "Muted Light"
++    vibrant = "vibrant",
++    vibrantDark = "vibrantDark",
++    vibrantLight = "vibrantLight",
++    muted = "muted",
++    mutedDark = "mutedDark",
++    mutedLight = "mutedLight"
+ }
+ export declare type ISwatch = {
+     color: string;
+@@ -14,12 +14,12 @@ export declare type ISwatchWithName = ISwatch & {
+     name: string;
+ };
+ export interface IPalette {
+-    Muted: ISwatch;
+-    "Muted Dark": ISwatch;
+-    "Muted Light": ISwatch;
+-    Vibrant: ISwatch;
+-    "Vibrant Dark": ISwatch;
+-    "Vibrant Light": ISwatch;
++    muted: ISwatch;
++    mutedDark: ISwatch;
++    mutedLight: ISwatch;
++    vibrant: ISwatch;
++    vibrantDark: ISwatch;
++    vibrantLight: ISwatch;
+ }
+ export default class Palette {
+     static getNamedSwatchesFromUrl(url: string): Promise<IPalette>;
+diff --git a/node_modules/react-native-palette-full/lib/index.js b/node_modules/react-native-palette-full/lib/index.js
+index d408dc4..9d478e3 100644
+--- a/node_modules/react-native-palette-full/lib/index.js
++++ b/node_modules/react-native-palette-full/lib/index.js
+@@ -2,12 +2,12 @@ import { NativeModules } from "react-native";
+ const { RNPalette } = NativeModules;
+ export var ISwatchType;
+ (function (ISwatchType) {
+-    ISwatchType["vibrant"] = "Vibrant";
+-    ISwatchType["vibrantDark"] = "Vibrant Dark";
+-    ISwatchType["vibrantLight"] = "Vibrant Light";
+-    ISwatchType["muted"] = "Video";
+-    ISwatchType["mutedDark"] = "Muted Dark";
+-    ISwatchType["mutedLight"] = "Muted Light";
++    ISwatchType["vibrant"] = "vibrant";
++    ISwatchType["vibrantDark"] = "vibrantDark";
++    ISwatchType["vibrantLight"] = "vibrantLight";
++    ISwatchType["muted"] = "muted";
++    ISwatchType["mutedDark"] = "mutedDark";
++    ISwatchType["mutedLight"] = "mutedLight";
+ })(ISwatchType || (ISwatchType = {}));
+ const TAG = "[Palette]";
+ export default class Palette {

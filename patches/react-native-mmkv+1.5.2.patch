@@ -1,0 +1,12 @@
+diff --git a/node_modules/react-native-mmkv/android/CMakeLists.txt b/node_modules/react-native-mmkv/android/CMakeLists.txt
+index 8784d6b..e298176 100644
+--- a/node_modules/react-native-mmkv/android/CMakeLists.txt
++++ b/node_modules/react-native-mmkv/android/CMakeLists.txt
+@@ -48,7 +48,6 @@ target_link_libraries(
+         reactnativemmkv
+         core
+         ${log-lib}
+-        ${JSI_LIB}
+         ${REACT_NATIVE_JNI_LIB}
+         android
+ )
