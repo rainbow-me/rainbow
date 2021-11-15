@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/core';
-import { get, upperFirst } from 'lodash';
+import { get, isEmpty, upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
@@ -97,7 +97,7 @@ export default function FeesPanel({
   } = useGas();
   const { navigate } = useNavigation();
 
-  const { updateGasFeeOption } = useGas();
+  const { updateGasFeeOption, selectedGasFeeOption } = useGas();
   const { isDarkMode } = useTheme();
 
   const [customMaxPriorityFee, setCustomMaxPriorityFee] = useState(
@@ -230,25 +230,40 @@ export default function FeesPanel({
     [currentBaseFee]
   );
 
+  const handleOnInputFocus = useCallback(() => {
+    if (isEmpty(gasFeeParamsBySpeed[gasUtils.CUSTOM])) {
+      const gasFeeParams = gasFeeParamsBySpeed[selectedGasFeeOption];
+      updateToCustomGasFee({
+        ...gasFeeParams,
+        maxBaseFeePerGas: gasFeeParams.maxFeePerGas,
+        maxPriorityFeePerGas: gasFeeParams.maxPriorityFeePerGas,
+        option: gasUtils.CUSTOM,
+      });
+    } else {
+      updateGasFeeOption(gasUtils.CUSTOM);
+    }
+  }, [
+    gasFeeParamsBySpeed,
+    selectedGasFeeOption,
+    updateGasFeeOption,
+    updateToCustomGasFee,
+  ]);
+
   const handleFeesGweiInputFocus = useCallback(() => {
     onCustomGasFocus?.();
-    !selectedOptionIsCustom && updateGasFeeOption(gasUtils.CUSTOM);
+    handleOnInputFocus();
     const {
       gasFeeParams: { maxFeePerGas, maxPriorityFeePerGas },
     } = selectedGasFee;
     setCustomMaxPriorityFee(get(maxPriorityFeePerGas, 'gwei', 0));
     setCustomMaxBaseFee(parseInt(get(maxFeePerGas, 'gwei', 0), 10));
-  }, [
-    onCustomGasFocus,
-    selectedGasFee,
-    updateGasFeeOption,
-    selectedOptionIsCustom,
-  ]);
+  }, [onCustomGasFocus, handleOnInputFocus, selectedGasFee]);
 
   const handleCustomPriorityFeeFocus = useCallback(() => {
+    handleOnInputFocus();
     setFeesGweiInputFocused(true);
     handleFeesGweiInputFocus();
-  }, [handleFeesGweiInputFocus, setFeesGweiInputFocused]);
+  }, [handleFeesGweiInputFocus, handleOnInputFocus]);
 
   const handleCustomPriorityFeeBlur = useCallback(() => {
     setFeesGweiInputFocused(false);
