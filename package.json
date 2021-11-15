@@ -453,6 +453,7 @@
       "core-js": false,
       "detox": true,
       "dtrace-provider": false,
+      "esbuild": false,
       "fsevents": false,
       "husky": false,
       "keccak": false,
