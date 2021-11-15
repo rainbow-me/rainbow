@@ -59,7 +59,7 @@ export default function CustomGasState({ asset }) {
   const [footerHeight, setFooterHeight] = useHeight(FOOTER_MIN_HEIGHT);
   const [contentHeight, setContentHeight] = useHeight(CONTENT_MIN_HEIGHT);
   const contentScroll = useSharedValue(0);
-  const colorForAsset = useColorForAsset(asset || {}, null, false, false);
+  const colorForAsset = useColorForAsset(asset || {}, null, false, true);
   const { selectedGasFee, currentBlockParams } = useGas();
   const [currentGasTrend] = useState(getTrendKey(currentBlockParams?.trend));
   useAndroidDisableGesturesOnFocus();
