@@ -54,21 +54,15 @@ const GAS_EXPLAINER = `This is the "gas fee" used by the Ethereum blockchain to 
 
 This fee varies depending on the complexity of your transaction and how busy the network is!`;
 
-const CURRENT_BASE_FEE_EXPLAINER_STABLE = `The base fee is set by the Ethereum network and changes depending on how busy the network is.
+const BASE_CURRENT_BASE_FEE_EXPLAINER = `The base fee is set by the Ethereum network and changes depending on how busy the network is.\n\n`;
 
-Network traffic is stable right now. Have fun!`;
+const CURRENT_BASE_FEE_EXPLAINER_STABLE = `Network traffic is stable right now. Have fun!`;
 
-const CURRENT_BASE_FEE_EXPLAINER_FALLING = `The base fee is set by the Ethereum network and changes depending on how busy the network is.
+const CURRENT_BASE_FEE_EXPLAINER_FALLING = `Fees are dropping right now!`;
 
-Fees are dropping right now!`;
+const CURRENT_BASE_FEE_EXPLAINER_RISING = `Fees are rising right now! It’s best to use a higher max base fee to avoid a stuck transaction.`;
 
-const CURRENT_BASE_FEE_EXPLAINER_RISING = `The base fee is set by the Ethereum network and changes depending on how busy the network is.
-
-Fees are rising right now! It’s best to use a higher max base fee to avoid a stuck transaction.`;
-
-const CURRENT_BASE_FEE_EXPLAINER_SURGING = `The base fee is set by the Ethereum network and changes depending on how busy the network is.
-
-Fees are unusually high right now! Unless your transaction is urgent, it’s best to wait for fees to drop.`;
+const CURRENT_BASE_FEE_EXPLAINER_SURGING = `Fees are unusually high right now! Unless your transaction is urgent, it’s best to wait for fees to drop.`;
 
 const MAX_BASE_FEE_EXPLAINER = `This is the maximum base fee you’re willing to pay for this transaction.
 
@@ -110,25 +104,25 @@ export const explainers = {
   currentBaseFeeStable: {
     emoji: '🌞',
     extraHeight: android ? 80 : 40,
-    text: CURRENT_BASE_FEE_EXPLAINER_STABLE,
+    text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_STABLE,
     title: 'Current base fee',
   },
   currentBaseFeeFalling: {
     emoji: '🤑',
     extraHeight: android ? 60 : 10,
-    text: CURRENT_BASE_FEE_EXPLAINER_FALLING,
+    text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_FALLING,
     title: 'Current base fee',
   },
   currentBaseFeeRising: {
     emoji: '🥵',
     extraHeight: android ? 100 : 50,
-    text: CURRENT_BASE_FEE_EXPLAINER_RISING,
+    text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_RISING,
     title: 'Current base fee',
   },
   currentBaseFeeSurging: {
     emoji: '🎢',
     extraHeight: android ? 100 : 50,
-    text: CURRENT_BASE_FEE_EXPLAINER_SURGING,
+    text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_SURGING,
     title: 'Current base fee',
   },
   maxBaseFee: {
