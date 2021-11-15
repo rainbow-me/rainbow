@@ -12,7 +12,6 @@ import {
   DEFAULT_HEIGHT,
 } from '../constants';
 import { BottomSheetNavigatorContext } from '../contexts/internal';
-// eslint-disable-next-line import/no-unresolved
 import type { BottomSheetDescriptor } from '../types';
 
 interface Props {

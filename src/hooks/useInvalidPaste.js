@@ -11,20 +11,18 @@ export default function useInvalidPaste() {
     setGlobalState({ isInvalidPaste: true });
   }, [setGlobalState, stopTimeout]);
 
-  const reset = useCallback(() => setGlobalState({ isInvalidPaste: false }), [
-    setGlobalState,
-  ]);
-
   // ⏰️ Reset isInvalidPaste value after 3 seconds.
   useEffect(() => {
     if (isInvalidPaste) {
       stopTimeout();
-      startTimeout(reset, 3000);
+      startTimeout(() => setGlobalState({ isInvalidPaste: false }), 3000);
     }
-  }, [isInvalidPaste, reset, startTimeout, stopTimeout]);
+  }, [isInvalidPaste, setGlobalState, startTimeout, stopTimeout]);
 
   // 🚪️ Reset isInvalidPaste when we leave the screen
-  useEffect(() => () => reset(), [reset]);
+  useEffect(() => () => setGlobalState({ isInvalidPaste: false }), [
+    setGlobalState,
+  ]);
 
   return {
     isInvalidPaste,

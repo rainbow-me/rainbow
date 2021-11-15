@@ -2,28 +2,28 @@ import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { useNavigation } from '../../navigation/Navigation';
-import { deviceUtils, magicMemo } from '../../utils';
+import { magicMemo } from '../../utils';
 import { Row } from '../layout';
+import {
+  CardSize,
+  UniqueTokenCardMargin,
+  UniqueTokenRowPadding,
+} from './CardSize';
 import UniqueTokenCard from './UniqueTokenCard';
 import { useWallets } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { padding, position } from '@rainbow-me/styles';
 
-const CardMargin = 15;
-const RowPadding = 19;
-const CardSize =
-  (deviceUtils.dimensions.width - RowPadding * 2 - CardMargin) / 2;
-
 const Container = styled(Row).attrs({ align: 'center' })`
-  ${padding(0, RowPadding)};
-  margin-bottom: ${CardMargin};
+  ${padding(0, UniqueTokenRowPadding)};
+  margin-bottom: ${UniqueTokenCardMargin};
   width: 100%;
 `;
 
 const UniqueTokenCardItem = styled(UniqueTokenCard).attrs({
   ...position.sizeAsObject(CardSize),
 })`
-  margin-left: ${({ index }) => (index >= 1 ? CardMargin : 0)};
+  margin-left: ${({ index }) => (index >= 1 ? UniqueTokenCardMargin : 0)};
 `;
 
 const UniqueTokenRow = magicMemo(({ item, external = false }) => {
@@ -31,12 +31,17 @@ const UniqueTokenRow = magicMemo(({ item, external = false }) => {
   const { navigate } = useNavigation();
 
   const handleItemPress = useCallback(
-    asset =>
+    (asset, lowResUrl) =>
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset,
-        cornerRadius: 30,
+        backgroundOpacity: 1,
+        cornerRadius: 'device',
         external,
         isReadOnlyWallet,
+        lowResUrl,
+        springDamping: 1,
+        topOffset: 0,
+        transitionDuration: 0.25,
         type: 'unique_token',
       }),
     [external, isReadOnlyWallet, navigate]
@@ -61,9 +66,9 @@ UniqueTokenRow.propTypes = {
   item: PropTypes.array,
 };
 
-UniqueTokenRow.height = CardSize + CardMargin;
+UniqueTokenRow.height = CardSize + UniqueTokenCardMargin;
 UniqueTokenRow.cardSize = CardSize;
-UniqueTokenRow.cardMargin = CardMargin;
-UniqueTokenRow.rowPadding = RowPadding;
+UniqueTokenRow.cardMargin = UniqueTokenCardMargin;
+UniqueTokenRow.rowPadding = UniqueTokenRowPadding;
 
 export default UniqueTokenRow;
