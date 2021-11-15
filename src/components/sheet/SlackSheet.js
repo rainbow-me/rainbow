@@ -34,10 +34,11 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
   ${({ additionalTopPadding, contentHeight, deferredHeight, deviceHeight }) =>
     deferredHeight || ios
       ? ''
-      : `top: ${contentHeight && additionalTopPadding
-        ? deviceHeight - contentHeight
-        : 0
-      };`};
+      : `top: ${
+          contentHeight && additionalTopPadding
+            ? deviceHeight - contentHeight
+            : 0
+        };`};
   ${android && 'border-top-left-radius: 30; border-top-right-radius: 30;'}
   background-color: ${({ backgroundColor }) => backgroundColor};
   bottom: 0;

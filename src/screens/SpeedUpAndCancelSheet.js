@@ -26,7 +26,7 @@ import {
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
-import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
+import { getProviderForNetwork, toHex, isEIP1559LegacyNetwork } from '@rainbow-me/handlers/web3';
 import {
   useAccountSettings,
   useBooleanState,
@@ -332,9 +332,7 @@ export default function SpeedUpAndCancelSheet() {
       if (currentNetwork && currentProvider && !fetchedTx.current) {
         try {
           fetchedTx.current = true;
-          console.log('tx.gasLimit', tx.gasLimit)
           const hexGasLimit = toHex(tx.gasLimit.toString());
-          console.log('tx.value', tx.value)
           const hexValue = toHex(tx.value.toString());
           const hexData = tx.data;
 
@@ -344,22 +342,18 @@ export default function SpeedUpAndCancelSheet() {
           setData(hexData);
           setTo(tx.to);
           setGasLimit(hexGasLimit);
-          console.log('tx.type', tx.type)
-          if (tx.type === EIP1559_TRANSACTION_TYPE) {
+          if (!isEIP1559LegacyNetwork(tx.network)) {
             setTxType(EIP1559_TRANSACTION_TYPE);
-            console.log('tx.maxPriorityFeePerGas', tx.maxPriorityFeePerGas)
             const hexMaxPriorityFeePerGas = toHex(
               tx.maxPriorityFeePerGas.toString()
             );
             setMinMaxPriorityFeePerGas(
               calcGasParamRetryValue(hexMaxPriorityFeePerGas)
             );
-            console.log('tx.maxFeePerGas', tx.maxFeePerGas)
             const hexMaxFeePerGas = toHex(tx.maxFeePerGas.toString());
             setMinMaxFeePerGas(calcGasParamRetryValue(hexMaxFeePerGas));
           } else {
             setTxType(LEGACY_TRANSACTION_TYPE);
-            console.log('tx.gasPrice', tx.gasPrice)
             const hexGasPrice = toHex(tx.gasPrice.toString());
             setMinGasPrice(calcGasParamRetryValue(hexGasPrice));
           }
