@@ -1,11 +1,11 @@
 import { get, map, zipObject } from 'lodash';
-import { greaterThan } from 'react-native-reanimated';
 import { getMinimalTimeUnitStringForMs } from '../helpers/time';
 import {
   add,
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
   divide,
+  greaterThan,
   multiply,
 } from '../helpers/utilities';
 import ethUnits from '../references/ethereum-units.json';
