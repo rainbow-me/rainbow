@@ -669,7 +669,6 @@ export default function SendSheet(props) {
       currentInput,
       from: accountAddress,
       gasLimit: gasLimit,
-      gasPrice: selectedGasFee.value?.amount,
       isL2,
       isNft,
       isSufficientGas,
@@ -690,7 +689,6 @@ export default function SendSheet(props) {
     navigate,
     recipient,
     selected,
-    selectedGasFee.value?.amount,
     submitTransaction,
     validateRecipient,
   ]);

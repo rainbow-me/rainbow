@@ -367,7 +367,8 @@ export const executeSwap = async ({
   accountAddress,
   chainId,
   gasLimit,
-  gasPrice,
+  maxFeePerGas,
+  maxPriorityFeePerGas,
   inputCurrency,
   nonce,
   outputCurrency,
@@ -379,7 +380,8 @@ export const executeSwap = async ({
   accountAddress: string;
   chainId: ChainId;
   gasLimit: string | number;
-  gasPrice: string;
+  maxFeePerGas: string;
+  maxPriorityFeePerGas: string;
   inputCurrency: Asset;
   nonce?: number;
   outputCurrency: Asset;
@@ -402,7 +404,8 @@ export const executeSwap = async ({
 
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
-    gasPrice: toHex(gasPrice) || undefined,
+    maxFeePerGas: toHex(maxFeePerGas) || undefined,
+    maxPriorityFeePerGas: toHex(maxPriorityFeePerGas) || undefined,
     nonce: nonce ? toHex(nonce) : undefined,
     ...(value ? { value } : {}),
   };

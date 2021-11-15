@@ -39,15 +39,30 @@ const swap = async (
   } = store.getState().swap;
   const { gasFeesBySpeed, selectedGasFee } = store.getState().gas;
 
-  let gasPrice = selectedGasFee?.value?.amount;
+  let maxFeePerGas = get(selectedGasFee, `gasFeeParams.maxFeePerGas.amount`);
+  let maxPriorityFeePerGas = get(
+    selectedGasFee,
+    `gasFeeParams.maxPriorityFeePerGas.amount`
+  );
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
-  if (currentRap.actions.length - 1 > index || !gasPrice) {
-    const fastPrice = get(
+  if (
+    currentRap.actions.length - 1 > index ||
+    !maxFeePerGas ||
+    !maxPriorityFeePerGas
+  ) {
+    const fastMaxFeePerGas = get(
       gasFeesBySpeed,
-      `[${gasUtils.FAST}].gasFee.estimatedFee.value.amount`
+      `[${gasUtils.FAST}].gasFeeParams.maxFeePerGas.amount`
     );
-    if (greaterThan(fastPrice, gasPrice)) {
-      gasPrice = fastPrice;
+    const fastMaxPriorityFeePerGas = get(
+      gasFeesBySpeed,
+      `[${gasUtils.FAST}].gasFeeParams.maxPriorityFeePerGas.amount`
+    );
+    if (greaterThan(fastMaxFeePerGas, maxFeePerGas)) {
+      maxFeePerGas = fastMaxFeePerGas;
+    }
+    if (greaterThan(fastMaxPriorityFeePerGas, maxPriorityFeePerGas)) {
+      maxPriorityFeePerGas = fastMaxPriorityFeePerGas;
     }
   }
   let gasLimit, methodName;
@@ -87,7 +102,8 @@ const swap = async (
   try {
     logger.sentry(`[${actionName}] executing rap`, {
       gasLimit,
-      gasPrice,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
       methodName,
     });
     const nonce = baseNonce ? baseNonce + index : undefined;
@@ -95,8 +111,9 @@ const swap = async (
       accountAddress,
       chainId,
       gasLimit,
-      gasPrice,
       inputCurrency,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
       methodName,
       nonce,
       outputCurrency,
@@ -119,8 +136,9 @@ const swap = async (
     data: swap.data,
     from: accountAddress,
     gasLimit,
-    gasPrice,
     hash: swap?.hash,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
     nonce: swap?.nonce,
     protocol: ProtocolType.uniswap,
     status: TransactionStatus.swapping,

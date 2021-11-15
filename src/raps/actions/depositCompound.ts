@@ -55,11 +55,26 @@ const depositCompound = async (
   );
   logger.log(`[${actionName}] raw input amount`, rawInputAmount);
 
-  let gasPrice = selectedGasFee?.value?.amount;
-  if (!gasPrice) {
-    gasPrice = get(gasFeesBySpeed, `[${gasUtils.FAST}].gasPrice.amount`);
+  let maxFeePerGas = get(selectedGasFee, `gasFeeParams.maxFeePerGas.amount`);
+  let maxPriorityFeePerGas = get(
+    selectedGasFee,
+    `gasFeeParams.maxPriorityFeePerGas.amount`
+  );
+  if (!maxFeePerGas) {
+    maxFeePerGas = get(
+      gasFeesBySpeed,
+      `[${gasUtils.FAST}].gasFeeParams.maxFeePerGas.amount`
+    );
   }
-  logger.log(`[${actionName}] gas price`, gasPrice);
+  if (!maxPriorityFeePerGas) {
+    maxPriorityFeePerGas = get(
+      gasFeesBySpeed,
+      `[${gasUtils.FAST}].gasFeeParams.maxPriorityFeePerGas.amount`
+    );
+  }
+
+  logger.log(`[${actionName}] max fee per gas`, maxFeePerGas);
+  logger.log(`[${actionName}] max priority fee per gas`, maxPriorityFeePerGas);
 
   const cTokenContract =
     savingsAssetsListByUnderlying[network][tokenToDeposit.address]
@@ -76,7 +91,8 @@ const depositCompound = async (
 
   const transactionParams = {
     gasLimit: getDepositGasLimit(tokenToDeposit),
-    gasPrice: toHex(gasPrice) || undefined,
+    maxFeePerGas: toHex(maxFeePerGas) || undefined,
+    maxPriorityFeePerGas: toHex(maxPriorityFeePerGas) || undefined,
     nonce: baseNonce ? toHex(baseNonce + index) : undefined,
   };
 
@@ -97,8 +113,9 @@ const depositCompound = async (
     data: deposit.data,
     from: accountAddress,
     gasLimit: transactionParams.gasLimit,
-    gasPrice: transactionParams.gasPrice,
     hash: deposit?.hash,
+    maxFeePerGas: transactionParams.maxFeePerGas,
+    maxPriorityFeePerGas: transactionParams.maxPriorityFeePerGas,
     nonce: deposit?.nonce,
     protocol: ProtocolType.compound,
     status: TransactionStatus.depositing,

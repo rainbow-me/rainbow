@@ -62,14 +62,16 @@ const executeApprove = (
   tokenAddress: string,
   spender: string,
   gasLimit: number | string,
-  gasPrice: string,
+  maxFeePerGas: string,
+  maxPriorityFeePerGas: string,
   wallet: Wallet,
   nonce: number | null = null
 ) => {
   const exchange = new Contract(tokenAddress, erc20ABI, wallet);
   return exchange.approve(spender, MaxUint256, {
     gasLimit: toHex(gasLimit) || undefined,
-    gasPrice: toHex(gasPrice) || undefined,
+    maxFeePerGas: toHex(maxFeePerGas) || undefined,
+    maxPriorityFeePerGas: toHex(maxPriorityFeePerGas) || undefined,
     nonce: nonce ? toHex(nonce) : undefined,
   });
 };
@@ -112,15 +114,36 @@ const unlock = async (
     throw e;
   }
   let approval;
-  let gasPrice;
+  let maxFeePerGas;
+  let maxPriorityFeePerGas;
   try {
     // approvals should always use fast gas or custom (whatever is faster)
-    gasPrice = selectedGasFee?.value?.amount;
-    const fastPrice = get(gasFeesBySpeed, `[${gasUtils.FAST}].gasPrice.amount`);
-    if (greaterThan(fastPrice, gasPrice)) {
-      gasPrice = fastPrice;
+    maxFeePerGas = get(selectedGasFee, `gasFeeParams.maxFeePerGas.amount`);
+    maxPriorityFeePerGas = get(
+      selectedGasFee,
+      `gasFeeParams.maxPriorityFeePerGas.amount`
+    );
+    // if swap isn't the last action, use fast gas or custom (whatever is faster)
+    if (
+      currentRap.actions.length - 1 > index ||
+      !maxFeePerGas ||
+      !maxPriorityFeePerGas
+    ) {
+      const fastMaxFeePerGas = get(
+        gasFeesBySpeed,
+        `[${gasUtils.FAST}].gasFeeParams.maxFeePerGas.amount`
+      );
+      const fastMaxPriorityFeePerGas = get(
+        gasFeesBySpeed,
+        `[${gasUtils.FAST}].gasFeeParams.maxPriorityFeePerGas.amount`
+      );
+      if (greaterThan(fastMaxFeePerGas, maxFeePerGas)) {
+        maxFeePerGas = fastMaxFeePerGas;
+      }
+      if (greaterThan(fastMaxPriorityFeePerGas, maxPriorityFeePerGas)) {
+        maxPriorityFeePerGas = fastMaxPriorityFeePerGas;
+      }
     }
-
     logger.sentry(`[${actionName}] about to approve`, {
       assetAddress,
       contractAddress,
@@ -131,7 +154,8 @@ const unlock = async (
       assetAddress,
       contractAddress,
       gasLimit,
-      gasPrice,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
       wallet,
       nonce
     );
@@ -156,8 +180,9 @@ const unlock = async (
     data: approval.data,
     from: accountAddress,
     gasLimit,
-    gasPrice,
     hash: approval?.hash,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
     nonce: approval?.nonce,
     status: TransactionStatus.approving,
     to: approval?.to,
