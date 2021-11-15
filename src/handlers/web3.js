@@ -18,6 +18,7 @@ import {
 import { isNativeAsset } from './assets';
 import { AssetTypes } from '@rainbow-me/entities';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
+// eslint-disable-next-line import/no-cycle
 import { isUnstoppableAddressFormat } from '@rainbow-me/helpers/validators';
 
 import {
