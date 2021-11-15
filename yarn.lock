@@ -15220,10 +15220,10 @@ react-native-indicators@0.17.0:
   dependencies:
     prop-types "^15.5.10"
 
-react-native-ios-context-menu@1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/react-native-ios-context-menu/-/react-native-ios-context-menu-1.3.0.tgz#b877cbe9594afccfeb2f1659ee4aae829b986fc5"
-  integrity sha512-7Af/5T9LGwdw+127UeiKrdCzlT247Puunts6pQ7HuKSW/33ZVJpxshDYjPiKEDYL94g5TDlIEsI93RC59x1Slw==
+react-native-ios-context-menu@1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/react-native-ios-context-menu/-/react-native-ios-context-menu-1.4.0.tgz#ed0329b89c0e5e7dc3ccc9046a734f2b81db5c3e"
+  integrity sha512-5QOtXzvyTwy0JDDltJqUc8drGJg19+VALiaSvl4PFmmQwXWLTmEoprXuDiEjWSadjjZZVpPTINnulx9ahVIkjg==
 
 react-native-ios11-devicecheck@0.0.3:
   version "0.0.3"
