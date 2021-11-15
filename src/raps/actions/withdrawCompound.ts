@@ -54,12 +54,27 @@ const withdrawCompound = async (
   logger.log(`[${actionName}] is max`, isMax);
   logger.log(`[${actionName}] raw input amount`, rawInputAmount);
 
-  let gasPrice = selectedGasFee?.gasPrice.amount;
-  if (!gasPrice) {
-    gasPrice = get(gasFeesBySpeed, `[${gasUtils.FAST}].gasPrice.amount`);
+  let maxFeePerGas = get(selectedGasFee, `gasFeeParams.maxFeePerGas.amount`);
+  let maxPriorityFeePerGas = get(
+    selectedGasFee,
+    `gasFeeParams.maxPriorityFeePerGas.amount`
+  );
+  if (!maxFeePerGas) {
+    maxFeePerGas = get(
+      gasFeesBySpeed,
+      `[${gasUtils.FAST}].gasFeeParams.maxFeePerGas.amount`
+    );
+  }
+  if (!maxPriorityFeePerGas) {
+    maxPriorityFeePerGas = get(
+      gasFeesBySpeed,
+      `[${gasUtils.FAST}].gasFeeParams.maxPriorityFeePerGas.amount`
+    );
   }
 
-  logger.log(`[${actionName}] gas price`, gasPrice);
+  logger.log(`[${actionName}] max fee per gas`, maxFeePerGas);
+  logger.log(`[${actionName}] max priority fee per gas`, maxPriorityFeePerGas);
+
   const cTokenContract =
     savingsAssetsListByUnderlying[network as string][inputCurrency.address]
       .contractAddress;
@@ -72,7 +87,8 @@ const withdrawCompound = async (
 
   const transactionParams = {
     gasLimit: ethUnits.basic_withdrawal,
-    gasPrice: toHex(gasPrice) || undefined,
+    maxFeePerGas: toHex(maxFeePerGas) || undefined,
+    maxPriorityFeePerGas: toHex(maxPriorityFeePerGas) || undefined,
     nonce: baseNonce ? toHex(baseNonce + index) : undefined,
   };
 
@@ -99,8 +115,9 @@ const withdrawCompound = async (
     data: withdraw.data,
     from: accountAddress,
     gasLimit: transactionParams.gasLimit,
-    gasPrice: transactionParams.gasPrice,
     hash: withdraw?.hash,
+    maxFeePerGas: transactionParams.maxFeePerGas,
+    maxPriorityFeePerGas: transactionParams.maxPriorityFeePerGas,
     nonce: withdraw?.nonce,
     protocol: ProtocolType.compound,
     status: TransactionStatus.withdrawing,
