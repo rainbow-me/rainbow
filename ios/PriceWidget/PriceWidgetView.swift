@@ -38,7 +38,9 @@ struct PriceWidgetView: View {
       if let color = tokenData.tokenDetails!.color {
         return hexStringToColor(hex: color)
       } else if let icon = tokenData.icon {
-        return Color(Palette.from(image: icon).generate().vibrantColor!)
+        if let palette = Palette.from(image: icon).generate().vibrantColor {
+          return Color(palette)
+        }
       }
     }
     return Color(red:0.15, green:0.16, blue:0.18)
@@ -117,7 +119,7 @@ struct PriceWidgetView: View {
 
               Spacer()
 
-              if (tokenData.icon != nil && tokenData.price != nil) {
+              if (tokenData.icon != nil) {
                 Image(uiImage: tokenData.icon!.resizeImageTo(size: CGSize(width: 20, height: 20))).frame(width: 20, height: 20)
               }
             }
