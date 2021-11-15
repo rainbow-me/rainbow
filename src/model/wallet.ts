@@ -238,6 +238,7 @@ export const loadWallet = async (
     return null;
   }
   if (privateKey) {
+    // @ts-ignore
     return new Wallet(privateKey, provider || web3Provider);
   }
   if (ios && showErrorIfNotLoaded) {

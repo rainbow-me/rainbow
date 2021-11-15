@@ -78,7 +78,6 @@ const depositCompound = async (
     gasLimit: getDepositGasLimit(tokenToDeposit),
     gasPrice: toHex(gasPrice) || undefined,
     nonce: baseNonce ? toHex(baseNonce + index) : undefined,
-    value: toHex(0),
   };
 
   let deposit = null;
@@ -95,6 +94,7 @@ const depositCompound = async (
   const newTransaction = {
     amount: amountToDeposit,
     asset: tokenToDeposit,
+    data: deposit.data,
     from: accountAddress,
     gasLimit: transactionParams.gasLimit,
     gasPrice: transactionParams.gasPrice,
@@ -104,6 +104,7 @@ const depositCompound = async (
     status: TransactionStatus.depositing,
     to: deposit?.to,
     type: TransactionType.deposit,
+    value: deposit.value,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
   // Disable the txn watcher because Compound can silently fail

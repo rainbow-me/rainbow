@@ -74,7 +74,6 @@ const withdrawCompound = async (
     gasLimit: ethUnits.basic_withdrawal,
     gasPrice: toHex(gasPrice) || undefined,
     nonce: baseNonce ? toHex(baseNonce + index) : undefined,
-    value: toHex(0),
   };
 
   let withdraw = null;
@@ -97,6 +96,7 @@ const withdrawCompound = async (
   const newTransaction = {
     amount: inputAmount,
     asset: inputCurrency,
+    data: withdraw.data,
     from: accountAddress,
     gasLimit: transactionParams.gasLimit,
     gasPrice: transactionParams.gasPrice,
@@ -106,6 +106,7 @@ const withdrawCompound = async (
     status: TransactionStatus.withdrawing,
     to: withdraw?.to,
     type: TransactionType.withdraw,
+    value: withdraw.value,
   };
 
   logger.log(`[${actionName}] adding new txn`, newTransaction);

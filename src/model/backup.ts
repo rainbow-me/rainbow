@@ -101,6 +101,7 @@ export async function addWalletToCloudBackup(
   wallet: RainbowWallet,
   filename: string
 ): Promise<null | boolean> {
+  // @ts-ignore
   const backup = await getDataFromCloud(password, filename);
 
   const now = Date.now();
@@ -155,6 +156,7 @@ export async function restoreCloudBackup(
       return false;
     }
     // 2- download that backup
+    // @ts-ignore
     const data = await getDataFromCloud(password, filename);
     if (!data) {
       throw new Error('Invalid password');

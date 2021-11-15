@@ -116,6 +116,7 @@ const swap = async (
   const newTransaction = {
     amount: inputAmount,
     asset: inputCurrency,
+    data: swap.data,
     from: accountAddress,
     gasLimit,
     gasPrice,
@@ -125,8 +126,10 @@ const swap = async (
     status: TransactionStatus.swapping,
     to: swap?.to,
     type: TransactionType.trade,
+    value: swap.value,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
+
   await dispatch(dataAddNewTransaction(newTransaction, accountAddress, true));
   return swap?.nonce;
 };

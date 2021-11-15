@@ -330,36 +330,38 @@ export default function SpeedUpAndCancelSheet() {
   useEffect(() => {
     const init = async () => {
       if (currentNetwork && currentProvider && !fetchedTx.current) {
-        const txHash = tx.hash.split('-')[0];
         try {
           fetchedTx.current = true;
-          const txObj = await currentProvider.getTransaction(txHash);
-          if (txObj) {
-            const hexGasLimit = toHex(txObj.gasLimit.toString());
+          console.log('tx.gasLimit', tx.gasLimit)
+          const hexGasLimit = toHex(tx.gasLimit.toString());
+          console.log('tx.value', tx.value)
+          const hexValue = toHex(tx.value.toString());
+          const hexData = tx.data;
 
-            const hexValue = toHex(txObj.value.toString());
-            const hexData = txObj.data;
-            setReady(true);
-            setNonce(txObj.nonce);
-            setValue(hexValue);
-            setData(hexData);
-            setTo(txObj.to);
-            setGasLimit(hexGasLimit);
-            if (txObj.type === EIP1559_TRANSACTION_TYPE) {
-              setTxType(EIP1559_TRANSACTION_TYPE);
-              const hexMaxPriorityFeePerGas = toHex(
-                txObj.maxPriorityFeePerGas.toString()
-              );
-              setMinMaxPriorityFeePerGas(
-                calcGasParamRetryValue(hexMaxPriorityFeePerGas)
-              );
-              const hexMaxFeePerGas = toHex(txObj.maxFeePerGas.toString());
-              setMinMaxFeePerGas(calcGasParamRetryValue(hexMaxFeePerGas));
-            } else {
-              setTxType(LEGACY_TRANSACTION_TYPE);
-              const hexGasPrice = toHex(txObj.gasPrice.toString());
-              setMinGasPrice(calcGasParamRetryValue(hexGasPrice));
-            }
+          setReady(true);
+          setNonce(tx.nonce);
+          setValue(hexValue);
+          setData(hexData);
+          setTo(tx.to);
+          setGasLimit(hexGasLimit);
+          console.log('tx.type', tx.type)
+          if (tx.type === EIP1559_TRANSACTION_TYPE) {
+            setTxType(EIP1559_TRANSACTION_TYPE);
+            console.log('tx.maxPriorityFeePerGas', tx.maxPriorityFeePerGas)
+            const hexMaxPriorityFeePerGas = toHex(
+              tx.maxPriorityFeePerGas.toString()
+            );
+            setMinMaxPriorityFeePerGas(
+              calcGasParamRetryValue(hexMaxPriorityFeePerGas)
+            );
+            console.log('tx.maxFeePerGas', tx.maxFeePerGas)
+            const hexMaxFeePerGas = toHex(tx.maxFeePerGas.toString());
+            setMinMaxFeePerGas(calcGasParamRetryValue(hexMaxFeePerGas));
+          } else {
+            setTxType(LEGACY_TRANSACTION_TYPE);
+            console.log('tx.gasPrice', tx.gasPrice)
+            const hexGasPrice = toHex(tx.gasPrice.toString());
+            setMinGasPrice(calcGasParamRetryValue(hexGasPrice));
           }
         } catch (e) {
           logger.log('something went wrong while fetching tx info ', e);

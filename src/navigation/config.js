@@ -19,9 +19,17 @@ export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 const buildCoolModalConfig = params => ({
   allowsDragToDismiss: true,
   allowsTapToDismiss: true,
+  backgroundColor: params.backgroundColor || colors.themedColors.shadowBlack,
   backgroundOpacity: params.backgroundOpacity || 0.7,
   blocksBackgroundTouches: true,
-  cornerRadius: params.cornerRadius || 39,
+  cornerRadius:
+    params.cornerRadius === 'device'
+      ? android
+        ? 30
+        : 0.666 // 0.666 gets the screen corner radius internally
+      : params.cornerRadius === 0
+      ? 0
+      : params.cornerRadius || 39,
   customStack: true,
   disableShortFormAfterTransitionToLongForm:
     params.disableShortFormAfterTransitionToLongForm ||
@@ -35,9 +43,12 @@ const buildCoolModalConfig = params => ({
   onAppear: params.onAppear || null,
   scrollEnabled: params.scrollEnabled,
   single: params.single,
+  springDamping: params.springDamping || 0.8,
   startFromShortForm:
     params.startFromShortForm || params?.type === 'token' || false,
-  topOffset: params.topOffset || sharedCoolModalTopOffset,
+  topOffset:
+    params.topOffset === 0 ? 0 : params.topOffset || sharedCoolModalTopOffset,
+  transitionDuration: params.transitionDuration || 0.35,
 });
 
 const backupSheetSizes = {

@@ -324,7 +324,7 @@ const parseTransactionWithEmptyChanges = async (
       protocol: txn.protocol,
       status: TransactionStatus.contract_interaction,
       symbol: 'contract',
-      title: `Contract interaction`,
+      title: `Contract Interaction`,
       to: txn.address_to,
       type: TransactionType.contract_interaction,
     },
