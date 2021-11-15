@@ -250,10 +250,11 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   handleTransactionConfirmed = () => {
-    logger.log('Reloading all data from L2 explorers in 10!');
+    logger.log('Reloading all data from L2 explorers in 10 and fetching mainnet balances!');
     setTimeout(() => {
-      logger.log('Reloading all data from L2 explorers NOW!');
+      logger.log('Reloading all data from L2 explorers and fetching mainnet balances NOW!');
       store.dispatch(explorerInitL2());
+      store.dispatch(fetchOnchainBalances({withPrices: false, keepPolling: false}));
     }, 10000);
   };
 
