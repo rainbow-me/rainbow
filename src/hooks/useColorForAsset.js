@@ -26,20 +26,13 @@ export default function useColorForAsset(
   const isDarkMode = forceLightMode || isDarkModeTheme;
 
   const colorDerivedFromAddress = useMemo(() => {
-    const isETHAddress = isETH(address);
-    let color;
-    if (isETHAddress && isDarkMode) {
-      color = forceETHColor
-        ? colors.appleBlue
-        : colors.brighten(lightModeThemeColors.dark);
-    } else if (isETHAddress) {
-      color = colors.dark;
-    } else {
-      color = pseudoRandomArrayItemFromString(
-        address,
-        colors.avatarBackgrounds
-      );
-    }
+    const color = isETH(address)
+      ? isDarkMode
+        ? forceETHColor
+          ? colors.appleBlue
+          : colors.brighten(lightModeThemeColors.dark)
+        : colors.dark
+      : pseudoRandomArrayItemFromString(address, colors.avatarBackgrounds);
     return color;
   }, [address, colors, forceETHColor, isDarkMode]);
 

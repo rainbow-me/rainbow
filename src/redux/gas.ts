@@ -55,7 +55,8 @@ import { fromWei, greaterThanOrEqualTo, multiply } from '@rainbow-me/utilities';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const { CUSTOM, NORMAL } = gasUtils;
+const { CUSTOM, NORMAL, GAS_PRICE_SOURCES } = gasUtils;
+
 let gasPricesHandle: NodeJS.Timeout | null = null;
 
 interface GasState {
@@ -144,7 +145,6 @@ const getSelectedGasFee = (
 };
 
 // -- Actions --------------------------------------------------------------- //
-const { GAS_PRICE_SOURCES } = gasUtils;
 
 /**
  * Used to update the selectedFee when trying to speed up or cancel
