@@ -57,6 +57,8 @@ import { rainbowTokenList } from './references';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
+import { ethereumUtils } from './utils';
+import networkTypes from './helpers/networkTypes';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
 
@@ -249,12 +251,18 @@ class App extends Component {
   handleNavigatorRef = navigatorRef =>
     Navigation.setTopLevelNavigator(navigatorRef);
 
-  handleTransactionConfirmed = () => {
-    logger.log('Reloading all data from L2 explorers in 10 and fetching mainnet balances!');
+  handleTransactionConfirmed = (tx) => {
+    logger.log('reloading explorer data in 10');
     setTimeout(() => {
-      logger.log('Reloading all data from L2 explorers and fetching mainnet balances NOW!');
-      store.dispatch(explorerInitL2());
-      store.dispatch(fetchOnchainBalances({withPrices: false, keepPolling: false}));
+      const network = ethereumUtils.getNetworkFromChainId(tx.chainId);
+      const isL2 = isL2Network(network);
+      if(isL2){
+        logger.log('Reloading all data from L2 explorers!');
+        store.dispatch(explorerInitL2());
+      } else{
+        logger.log('fetching onchain balances NOW!');
+        store.dispatch(fetchOnchainBalances({withPrices: false, keepPolling: false}));
+      }        
     }, 10000);
   };
 
