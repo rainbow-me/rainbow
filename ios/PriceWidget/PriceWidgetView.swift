@@ -120,7 +120,9 @@ struct PriceWidgetView: View {
               Spacer()
 
               if (tokenData.icon != nil) {
-                Image(uiImage: tokenData.icon!.resizeImageTo(size: CGSize(width: 20, height: 20))).frame(width: 20, height: 20)
+                Image(uiImage: tokenData.icon!.resizeImageTo(size: CGSize(width: 20, height: 20)))
+                  .frame(width: 20, height: 20)
+                  .clipShape(Circle())
               }
             }
             Spacer()
