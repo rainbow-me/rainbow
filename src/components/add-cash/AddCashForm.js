@@ -64,7 +64,18 @@ const AddCashForm = ({
         setPaymentSheetVisible(false);
       }
     }
-    if (isReadOnlyWallet) {
+
+    if (value <= 50) {
+      Alert({
+        buttons: [
+          { style: 'cancel', text: 'Cancel' },
+          { onPress: handlePurchase, text: 'Proceed' },
+        ],
+        message:
+          'This purchase will most likely cost you more than the value you are purchasing, are you sure you want to continue?',
+        title: 'Are you sure?',
+      });
+    } else if (isReadOnlyWallet) {
       const truncatedAddress = abbreviations.formatAddressForDisplay(
         toChecksumAddress(accountAddress),
         4,
