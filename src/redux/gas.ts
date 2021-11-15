@@ -56,7 +56,7 @@ import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const { CUSTOM, NORMAL } = gasUtils;
-let gasPricesHandle: number | null = null;
+let gasPricesHandle: NodeJS.Timeout | null = null;
 
 interface GasState {
   defaultGasLimit: number;

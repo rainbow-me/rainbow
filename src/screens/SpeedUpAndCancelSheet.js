@@ -26,7 +26,11 @@ import {
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
-import { getProviderForNetwork, toHex, isEIP1559LegacyNetwork } from '@rainbow-me/handlers/web3';
+import {
+  getProviderForNetwork,
+  isEIP1559LegacyNetwork,
+  toHex,
+} from '@rainbow-me/handlers/web3';
 import {
   useAccountSettings,
   useBooleanState,

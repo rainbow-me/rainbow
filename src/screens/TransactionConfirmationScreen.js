@@ -674,7 +674,7 @@ export default function TransactionConfirmationScreen() {
         const error = new Error(`WC Tx failure - ${formattedDappUrl}`);
         captureException(error);
         // eslint-disable-next-line no-empty
-      } catch (e) { }
+      } catch (e) {}
 
       await onCancel(error);
     }
@@ -927,8 +927,8 @@ export default function TransactionConfirmationScreen() {
     (isMessageRequest
       ? MessageSheetHeight
       : (amount && amount !== '0.00') || !isBalanceEnough
-        ? TallSheetHeight
-        : ShortSheetHeight) * (android ? 1.5 : 1);
+      ? TallSheetHeight
+      : ShortSheetHeight) * (android ? 1.5 : 1);
 
   let marginTop = android
     ? method === SIGN_TYPED_DATA
@@ -1123,7 +1123,7 @@ export default function TransactionConfirmationScreen() {
               onCustomGasFocus={showKeyboard}
               options={
                 network === networkTypes.optimism ||
-                  network === networkTypes.arbitrum
+                network === networkTypes.arbitrum
                   ? ['normal']
                   : undefined
               }
