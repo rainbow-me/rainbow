@@ -554,7 +554,6 @@ export const addressAssetsReceived = (
     // Change the state since the account isn't empty anymore
     saveAccountEmptyState(false, accountAddress, network);
   }
-
   dispatch({
     payload: parsedAssets,
     type: DATA_UPDATE_ASSETS,

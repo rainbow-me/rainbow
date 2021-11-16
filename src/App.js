@@ -42,6 +42,7 @@ import monitorNetwork from './debugging/network';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
+import { isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
@@ -49,18 +50,16 @@ import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
 import { explorerInitL2 } from './redux/explorer';
+import { fetchOnchainBalances } from './redux/fallbackExplorer';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
+import { ethereumUtils } from './utils';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
-import { ethereumUtils } from './utils';
-import networkTypes from './helpers/networkTypes';
-import { isL2Network } from './handlers/web3';
-import { fetchOnchainBalances } from './redux/fallbackExplorer';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
 
@@ -253,18 +252,20 @@ class App extends Component {
   handleNavigatorRef = navigatorRef =>
     Navigation.setTopLevelNavigator(navigatorRef);
 
-  handleTransactionConfirmed = (tx) => {
+  handleTransactionConfirmed = tx => {
     logger.log('reloading explorer data in 10');
     setTimeout(() => {
       const network = ethereumUtils.getNetworkFromChainId(tx.chainId);
       const isL2 = isL2Network(network);
-      if(isL2){
+      if (isL2) {
         logger.log('Reloading all data from L2 explorers!');
         store.dispatch(explorerInitL2());
-      } else{
+      } else {
         logger.log('fetching onchain balances NOW!');
-        store.dispatch(fetchOnchainBalances({withPrices: false, keepPolling: false}));
-      }        
+        store.dispatch(
+          fetchOnchainBalances({ keepPolling: false, withPrices: false })
+        );
+      }
     }, 10000);
   };
 

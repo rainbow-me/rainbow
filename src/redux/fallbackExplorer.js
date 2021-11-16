@@ -210,6 +210,7 @@ const fetchAssetBalances = async (tokens, address, network) => {
         balances[addr][tokenAddr] = balance.toString();
       });
     });
+
     return balances[address];
   } catch (e) {
     logger.log(
@@ -221,17 +222,35 @@ const fetchAssetBalances = async (tokens, address, network) => {
   }
 };
 
-
-export const fetchOnchainBalances = ({ withPrices = true, keepPolling = true }) => async (dispatch, getState) => {
-
-  logger.log('😬 FallbackExplorer fetchOnchainBalances');
-  const { network } = getState().settings;
+export const fetchOnchainBalances = ({
+  keepPolling = true,
+  withPrices = true,
+}) => async (dispatch, getState) => {
+  logger.log('😬 FallbackExplorer:: fetchOnchainBalances');
+  const { network, accountAddress, nativeCurrency } = getState().settings;
+  const formattedNativeCurrency = toLower(nativeCurrency);
   const { mainnetAssets } = getState().fallbackExplorer;
-  const assets =
+  const { assets: accountAssets } = getState().data;
+  let assets =
     network === NetworkTypes.mainnet ? mainnetAssets : chainAssets[network];
-  if (!assets || !assets.length && keepPolling) {
+
+  if (!assets.length && accountAssets.length) {
+    assets = accountAssets.map(asset => ({
+      asset: {
+        asset_code: asset.address,
+        decimals: asset.decimals,
+        icon_url: asset.icon_url,
+        name: asset.name,
+        price: asset.price,
+        symbol: asset.symbol,
+      },
+      quantity: 0,
+    }));
+  }
+
+  if (!assets || (!assets.length && keepPolling)) {
     const fallbackExplorerBalancesHandle = setTimeout(
-      () =>  dispatch(fetchOnchainBalances({withPrices, withBalances})),
+      () => dispatch(fetchOnchainBalances({ keepPolling, withPrices })),
       10000
     );
     dispatch({
@@ -243,9 +262,8 @@ export const fetchOnchainBalances = ({ withPrices = true, keepPolling = true }) 
     return;
   }
 
-  if ( withPrices ) {
-    const prices = 
-      await fetchAssetPricesWithCoingecko(
+  if (withPrices) {
+    const prices = await fetchAssetPricesWithCoingecko(
       assets.map(({ asset: { coingecko_id } }) => coingecko_id),
       formattedNativeCurrency
     );
@@ -266,12 +284,15 @@ export const fetchOnchainBalances = ({ withPrices = true, keepPolling = true }) 
       });
     }
   }
+
+  const tokenAddresses = assets.map(({ asset: { asset_code } }) =>
+    asset_code === ETH_ADDRESS
+      ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+      : asset_code
+  );
+
   const balances = await fetchAssetBalances(
-    assets.map(({ asset: { asset_code } }) =>
-      asset_code === ETH_ADDRESS
-        ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-        : asset_code
-    ),
+    tokenAddresses,
     accountAddress,
     network
   );
@@ -289,6 +310,12 @@ export const fetchOnchainBalances = ({ withPrices = true, keepPolling = true }) 
           assets[i].quantity = balances[key];
           break;
         }
+
+        if (
+          assets[i].asset.asset_code === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+        ) {
+          assets[i].asset.asset_code = ETH_ADDRESS;
+        }
       }
       total = total.add(balances[key]);
     });
@@ -298,7 +325,7 @@ export const fetchOnchainBalances = ({ withPrices = true, keepPolling = true }) 
 
   const newPayload = { assets };
 
-  if (!isEqual(lastUpdatePayload, newPayload)) {
+  if (!keepPolling || !isEqual(lastUpdatePayload, newPayload)) {
     dispatch(
       addressAssetsReceived(
         {
@@ -318,9 +345,10 @@ export const fetchOnchainBalances = ({ withPrices = true, keepPolling = true }) 
     lastUpdatePayload = newPayload;
   }
 
-  if(keepPolling){
+  if (keepPolling) {
     const fallbackExplorerBalancesHandle = setTimeout(
-      () => dispatch(dispatch(fetchOnchainBalances({ withBalances, keepPolling }))),
+      () =>
+        dispatch(dispatch(fetchOnchainBalances({ keepPolling, withPrices }))),
       UPDATE_BALANCE_AND_PRICE_FREQUENCY
     );
     let fallbackExplorerAssetsHandle = null;
@@ -341,11 +369,9 @@ export const fetchOnchainBalances = ({ withPrices = true, keepPolling = true }) 
   }
 };
 
-
 export const fallbackExplorerInit = () => async (dispatch, getState) => {
-  const { accountAddress, nativeCurrency, network } = getState().settings;
+  const { accountAddress, network } = getState().settings;
   const { latestTxBlockNumber, mainnetAssets } = getState().fallbackExplorer;
-  const formattedNativeCurrency = toLower(nativeCurrency);
   const { coingeckoIds } = getState().additionalAssetsData;
   // If mainnet, we need to get all the info
   // 1 - Coingecko ids
@@ -367,7 +393,7 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
     });
   }
 
-  dispatch(fetchOnchainBalances({withPrices: true, keepPolling: true}));
+  dispatch(fetchOnchainBalances({ keepPolling: true, withPrices: true }));
   dispatch(explorerInitL2());
 };
 
