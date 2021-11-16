@@ -67,13 +67,14 @@ export default function Fallback() {
         </Centered>
         <Spacer height={33} />
         <Centered>
-          {/* @ts-ignore */}
           <SheetActionButton
             androidWidth={deviceWidth - 60}
             color={colors.alpha(colors.appleBlue, 0.06)}
             isTransparent
+            // @ts-ignore
             label="🌈 Restart Rainbow"
             onPress={handleRestart}
+            // @ts-ignore
             size="big"
             textColor={colors.appleBlue}
             weight="heavy"

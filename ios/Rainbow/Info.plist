@@ -102,8 +102,6 @@
 	<array>
 		<string>SelectTokenIntent</string>
 	</array>
-	<key>RAINBOW_TOKEN_LIST_URL</key>
-	<string>$(RAINBOW_TOKEN_LIST_URL)</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>SFMono-Medium.otf</string>

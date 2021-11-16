@@ -80,7 +80,7 @@ const shouldSignUri = (
         `Expected string signedExternalImageUri, encountered ${typeof signedExternalImageUri} (for input "${externalImageUri}").`
       );
     }
-  } catch (e) {
+  } catch (e: any) {
     logger.log(`[Imgix]: Failed to sign "${externalImageUri}"! (${e.message})`);
     // If something goes wrong, it is not safe to assume the image is valid.
     return undefined;
@@ -97,7 +97,7 @@ const isPossibleToSignUri = (externalImageUri: string | undefined): boolean => {
     try {
       const { host } = parse(externalImageUri);
       return typeof host === 'string' && !!host.length;
-    } catch (e) {
+    } catch (e: any) {
       logger.log(
         `[Imgix]: Failed to parse "${externalImageUri}"! (${e.message})`
       );

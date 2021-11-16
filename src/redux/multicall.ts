@@ -206,7 +206,7 @@ export const multicallUpdateOutdatedListeners = (
   const multicallContract = new Contract(
     MULTICALL_NETWORKS[chainId as ChainId],
     MULTICALL_ABI,
-    web3Provider
+    web3Provider!
   );
 
   forEach(chunkedCalls, (chunk, chunkIndex) => {
