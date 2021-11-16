@@ -187,8 +187,9 @@ const AddFundsInterstitial = ({ network }) => {
           screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
         });
         analytics.track('Tapped Add Cash', {
+          amount: amount,
           category: 'add cash',
-          newUser: true,
+          newWallet: true,
         });
       } else {
         navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
@@ -199,8 +200,9 @@ const AddFundsInterstitial = ({ network }) => {
           screen: Routes.WYRE_WEBVIEW,
         });
         analytics.track('Tapped Add Cash', {
+          amount: amount,
           category: 'add cash',
-          newUser: true,
+          newWallet: true,
         });
       }
     },
