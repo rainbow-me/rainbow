@@ -301,7 +301,7 @@ export default function SendSheet(props) {
   // Recalculate balance when gas price changes
   useEffect(() => {
     if (
-      selected?.address === ETH_ADDRESS &&
+      selected?.isNativeAsset &&
       (prevSelectedGasPrice?.txFee?.value?.amount ?? 0) !==
         (selectedGasPrice?.txFee?.value?.amount ?? 0)
     ) {

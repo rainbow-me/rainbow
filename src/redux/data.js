@@ -567,14 +567,14 @@ export const addressAssetsReceived = (
   //Hide tokens with a url as their token name
   const assetsWithScamURL = parsedAssets
     .filter(asset => isValidDomain(asset.name) && !asset.isVerified)
-    .map(({ uniqueId }) => uniqueId);
+    .map(({ address }) => address);
   dispatch(addCoinsToHiddenList(assetsWithScamURL));
 
   // Hide coins with price = 0 that are currently not pinned
   if (isL2) {
     const assetsWithNoPrice = parsedAssets
       .filter(asset => asset.price?.value === 0)
-      .map(({ uniqueId }) => uniqueId);
+      .map(({ address }) => address);
     dispatch(addCoinsToHiddenList(assetsWithNoPrice));
   }
 };

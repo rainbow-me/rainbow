@@ -64,7 +64,11 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
     name,
     symbol,
     type,
-    uniqueId: `${address}_${asset.network}` || name,
+    uniqueId: address
+      ? asset.network
+        ? `${address}_${asset.network}`
+        : address
+      : name,
   };
 
   return parsedAsset;

@@ -107,7 +107,7 @@ const ExchangeCoinRow = ({
           )}
         </CoinRow>
       </ButtonPressAnimation>
-      {item.address !== ETH_ADDRESS && !showBalance && (
+      {!item.isNativeAsset && !showBalance && (
         <CoinRowInfoButton
           item={item}
           onCopySwapDetailsText={onCopySwapDetailsText}

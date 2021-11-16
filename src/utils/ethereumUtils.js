@@ -174,7 +174,7 @@ const getBalanceAmount = (selectedGasPrice, selected) => {
     getAsset(assets, selected?.address)?.balance?.amount ??
     0;
 
-  if (selected?.address === ETH_ADDRESS) {
+  if (selected?.isNativeAsset) {
     if (!isEmpty(selectedGasPrice)) {
       const txFeeRaw = selectedGasPrice?.txFee?.value?.amount;
       const txFeeAmount = fromWei(txFeeRaw);
