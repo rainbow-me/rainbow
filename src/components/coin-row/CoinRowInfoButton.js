@@ -146,7 +146,7 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
       if (actionKey === CoinRowActionsEnum.copyAddress) {
         handleCopyContractAddress(item?.address);
       } else if (actionKey === CoinRowActionsEnum.blockExplorer) {
-        ethereumUtils.openTokenEtherscanURL(item?.uniqueId, item?.type);
+        ethereumUtils.openTokenEtherscanURL(item?.address, item?.type);
       }
     },
     [item, handleCopyContractAddress]
