@@ -139,14 +139,14 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   const getOptimismGasPrices = async () => {
     const provider = await getProviderForNetwork(networkTypes.optimism);
     const baseGasPrice = await provider.getGasPrice();
-    const gasPriceGwei = weiToGwei(baseGasPrice.toString());
+    const gasPriceGwei = Number(weiToGwei(baseGasPrice.toString()));
 
     const priceData = {
-      average: Number(gasPriceGwei),
+      average: gasPriceGwei,
       avgWait: 0.5,
-      fast: Number(gasPriceGwei),
+      fast: gasPriceGwei,
       fastWait: 0.2,
-      safeLow: Number(gasPriceGwei),
+      safeLow: gasPriceGwei,
       safeLowWait: 1,
     };
     return priceData;
