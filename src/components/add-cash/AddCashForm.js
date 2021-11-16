@@ -72,7 +72,7 @@ const AddCashForm = ({
           { onPress: handlePurchase, text: 'Proceed' },
         ],
         message:
-          'This purchase will most likely cost you more than the value you are purchasing, are you sure you want to continue?',
+          'You will receive this amount, but the blockchain fees associated with the purchase will likely be much higher.',
         title: 'Are you sure?',
       });
     } else if (isReadOnlyWallet) {
