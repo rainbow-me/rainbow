@@ -543,7 +543,7 @@ export const addressAssetsReceived = (
       network === networkTypes.mainnet
         ? concat(parsedAssets, l2Assets)
         : parsedAssets,
-      item => item.uniqueId
+      item => `${item.uniqueId}_${item.network}`
     );
   }
 
