@@ -434,14 +434,14 @@ export const getDataForNftTransfer = (from, to, asset) => {
 
 /**
  * @desc build transaction object
- * @param {Object} [{selected, address, recipient, amount, gasLimit}]
+ * @param {Object} [{address, amount, asset, gasLimit, recipient}]
  * @param {Provider} provider
  * @param {String} network
  * @return {String}
  */
 
 export const buildTransaction = async (
-  { asset, address, recipient, amount, gasLimit },
+  { address, amount, asset, gasLimit, recipient },
   provider,
   network
 ) => {
@@ -479,11 +479,11 @@ export const buildTransaction = async (
 
 /**
  * @desc estimate gas limit
- * @param {Object} [{selected, address, recipient, amount, gasPrice}]
+ * @param {Object} [{ address, amount, asset, recipient }]
  * @return {String}
  */
 export const estimateGasLimit = async (
-  { asset, address, recipient, amount },
+  { address, amount, asset, recipient },
   addPadding = false,
   provider = null,
   network = NetworkTypes.mainnet
