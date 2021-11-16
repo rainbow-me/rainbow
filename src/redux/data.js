@@ -530,10 +530,7 @@ export const addressAssetsReceived = (
       asset => asset.network !== assetsNetwork
     );
     parsedAssets = concat(parsedAssets, restOfTheAssets);
-    parsedAssets = uniqBy(
-      parsedAssets,
-      item => `${item.uniqueId}_${item.network}`
-    );
+    parsedAssets = uniqBy(parsedAssets, item => item.uniqueId);
   } else {
     // We need to merge the response with all l2 assets
     // to prevent L2 assets temporarily dissapearing
@@ -543,7 +540,7 @@ export const addressAssetsReceived = (
       network === networkTypes.mainnet
         ? concat(parsedAssets, l2Assets)
         : parsedAssets,
-      item => `${item.uniqueId}_${item.network}`
+      item => item.uniqueId
     );
   }
 
