@@ -210,7 +210,6 @@ const fetchAssetBalances = async (tokens, address, network) => {
         balances[addr][tokenAddr] = balance.toString();
       });
     });
-
     return balances[address];
   } catch (e) {
     logger.log(
