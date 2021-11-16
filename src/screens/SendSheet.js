@@ -434,6 +434,7 @@ export default function SendSheet(props) {
     resolveAddressIfNeeded();
   }, [recipient]);
 
+  
   const onSubmit = useCallback(async () => {
     const validTransaction =
       isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
@@ -466,27 +467,7 @@ export default function SendSheet(props) {
 
         if (!lessThan(updatedGasLimit, gasLimit)) {
           if (network === networkTypes.optimism) {
-            const txData = await buildTransaction(
-              {
-                address: accountAddress,
-                amount: amountDetails.assetAmount,
-                asset: selected,
-                gasLimit: updatedGasLimit,
-                recipient: toAddress,
-              },
-              currentProvider,
-              currentNetwork
-            );
-            const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
-              txData,
-              currentProvider
-            );
-            updateTxFee(
-              updatedGasLimit,
-              null,
-              currentNetwork,
-              l1GasFeeOptimism
-            );
+            updateTxFeeForOptimism(updatedGasLimit);
           } else {
             updateTxFee(updatedGasLimit, null, currentNetwork);
           }
@@ -748,6 +729,39 @@ export default function SendSheet(props) {
     checkAddress(recipient);
   }, [checkAddress, recipient]);
 
+
+  const updateTxFeeForOptimism = useCallback(async (updatedGasLimit) => {
+    const txData = await buildTransaction(
+      {
+        address: accountAddress,
+        amount: amountDetails.assetAmount,
+        asset: selected,
+        gasLimit: updatedGasLimit,
+        recipient: toAddress,
+      },
+      currentProvider,
+      currentNetwork
+    );
+    const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+      txData,
+      currentProvider
+    );
+    updateTxFee(
+      updatedGasLimit,
+      null,
+      currentNetwork,
+      l1GasFeeOptimism
+    );
+  }, [
+    accountAddress,
+    amountDetails.assetAmount,
+    currentNetwork,
+    currentProvider,
+    selected,
+    toAddress,
+    updateTxFee
+  ]);
+
   useEffect(() => {
     if (!currentProvider?._network?.chainId) return;
     const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
@@ -775,22 +789,7 @@ export default function SendSheet(props) {
       )
         .then(async gasLimit => {
           if (currentNetwork === networkTypes.optimism) {
-            const txData = await buildTransaction(
-              {
-                address: accountAddress,
-                amount: amountDetails.assetAmount,
-                asset: selected,
-                gasLimit,
-                recipient: toAddress,
-              },
-              currentProvider,
-              currentNetwork
-            );
-            const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
-              txData,
-              currentProvider
-            );
-            updateTxFee(gasLimit, null, currentNetwork, l1GasFeeOptimism);
+            updateTxFeeForOptimism(gasLimit);
           } else {
             updateTxFee(gasLimit, null, currentNetwork);
           }
