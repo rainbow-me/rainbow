@@ -72,7 +72,7 @@ export const apiGetUniqueTokenFloorPrice = async (
 
     const tempFloorPrice = handleSignificantDecimals(tempPrice, 5);
 
-    return tempFloorPrice + ' ETH';
+    return parseFloat(tempFloorPrice) + ' ETH';
   } catch (error) {
     logger.debug('FLOOR PRICE ERROR', error);
     throw error;
