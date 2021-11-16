@@ -119,7 +119,7 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
           handleCopyContractAddress(item?.address);
         }
         if (idx === 1) {
-          ethereumUtils.openTokenEtherscanURL(item?.uniqueId, item?.type);
+          ethereumUtils.openTokenEtherscanURL(item?.address, item?.type);
         }
       }
     );
