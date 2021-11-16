@@ -3,6 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Link from '../../Link';
 import EdgeFade from '../../discover-sheet/EdgeFade';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const TWITTER_URL = 'https://twitter.com/';
@@ -32,10 +33,10 @@ const CommunityLink = styled(Link).attrs({
 `;
 
 export default function SocialLinks({
+  address,
   color,
   links,
   marginTop,
-  uniqueId,
   type,
 }) {
   const etherscanURL = ethereumUtils.getEtherscanHostForNetwork(type);
@@ -43,13 +44,15 @@ export default function SocialLinks({
   return (
     <>
       <Carousel height={59} marginBottom={1} marginTop={marginTop || 0}>
-        <CommunityLink
-          color={color}
-          display={` ${startCase(blockExplorerName)}`}
-          emoji="􀉣"
-          transformOrigin="center"
-          url={`https://${etherscanURL}/token/${uniqueId}`}
-        />
+        {address !== ETH_ADDRESS && (
+          <CommunityLink
+            color={color}
+            display={` ${startCase(blockExplorerName)}`}
+            emoji="􀉣"
+            transformOrigin="center"
+            url={`https://${etherscanURL}/token/${address}`}
+          />
+        )}
         {!!links?.twitter_screen_name && (
           <CommunityLink
             color={color}
