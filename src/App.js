@@ -256,17 +256,20 @@ class App extends Component {
     logger.log('reloading explorer data in 10');
     const network = ethereumUtils.getNetworkFromChainId(tx.chainId);
     const isL2 = isL2Network(network);
-    setTimeout(() => {
-      if (isL2) {
-        logger.log('Reloading all data from L2 explorers!');
-        store.dispatch(explorerInitL2());
-      } else {
-        logger.log('fetching onchain balances NOW!');
-        store.dispatch(
-          fetchOnchainBalances({ keepPolling: false, withPrices: false })
-        );
-      }
-    }, isL2 ? 10000 : 5000);
+    setTimeout(
+      () => {
+        if (isL2) {
+          logger.log('Reloading all data from L2 explorers!');
+          store.dispatch(explorerInitL2());
+        } else {
+          logger.log('fetching onchain balances NOW!');
+          store.dispatch(
+            fetchOnchainBalances({ keepPolling: false, withPrices: false })
+          );
+        }
+      },
+      isL2 ? 10000 : 5000
+    );
   };
 
   render = () => (
