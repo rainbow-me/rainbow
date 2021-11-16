@@ -434,7 +434,6 @@ export default function SendSheet(props) {
     resolveAddressIfNeeded();
   }, [recipient]);
 
-  
   const onSubmit = useCallback(async () => {
     const validTransaction =
       isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
@@ -534,6 +533,7 @@ export default function SendSheet(props) {
     selectedGasPrice,
     toAddress,
     updateTxFee,
+    updateTxFeeForOptimism,
   ]);
 
   const submitTransaction = useCallback(async () => {
@@ -729,38 +729,35 @@ export default function SendSheet(props) {
     checkAddress(recipient);
   }, [checkAddress, recipient]);
 
-
-  const updateTxFeeForOptimism = useCallback(async (updatedGasLimit) => {
-    const txData = await buildTransaction(
-      {
-        address: accountAddress,
-        amount: amountDetails.assetAmount,
-        asset: selected,
-        gasLimit: updatedGasLimit,
-        recipient: toAddress,
-      },
-      currentProvider,
-      currentNetwork
-    );
-    const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
-      txData,
-      currentProvider
-    );
-    updateTxFee(
-      updatedGasLimit,
-      null,
+  const updateTxFeeForOptimism = useCallback(
+    async updatedGasLimit => {
+      const txData = await buildTransaction(
+        {
+          address: accountAddress,
+          amount: amountDetails.assetAmount,
+          asset: selected,
+          gasLimit: updatedGasLimit,
+          recipient: toAddress,
+        },
+        currentProvider,
+        currentNetwork
+      );
+      const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+        txData,
+        currentProvider
+      );
+      updateTxFee(updatedGasLimit, null, currentNetwork, l1GasFeeOptimism);
+    },
+    [
+      accountAddress,
+      amountDetails.assetAmount,
       currentNetwork,
-      l1GasFeeOptimism
-    );
-  }, [
-    accountAddress,
-    amountDetails.assetAmount,
-    currentNetwork,
-    currentProvider,
-    selected,
-    toAddress,
-    updateTxFee
-  ]);
+      currentProvider,
+      selected,
+      toAddress,
+      updateTxFee,
+    ]
+  );
 
   useEffect(() => {
     if (!currentProvider?._network?.chainId) return;
@@ -809,6 +806,7 @@ export default function SendSheet(props) {
     selected,
     toAddress,
     updateTxFee,
+    updateTxFeeForOptimism,
     network,
     gasPrices,
   ]);
