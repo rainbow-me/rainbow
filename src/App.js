@@ -254,9 +254,9 @@ class App extends Component {
 
   handleTransactionConfirmed = tx => {
     logger.log('reloading explorer data in 10');
+    const network = ethereumUtils.getNetworkFromChainId(tx.chainId);
     const isL2 = isL2Network(network);
     setTimeout(() => {
-      const network = ethereumUtils.getNetworkFromChainId(tx.chainId);
       if (isL2) {
         logger.log('Reloading all data from L2 explorers!');
         store.dispatch(explorerInitL2());
