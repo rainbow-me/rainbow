@@ -77,7 +77,7 @@ const addEthPlaceholder = (
       price: value,
       symbol: 'ETH',
       type: 'token',
-      uniqueId: 'eth',
+      uniqueId: 'eth_mainnet',
     };
 
     return { addedEth: true, assets: concat([zeroEth], assets) };
