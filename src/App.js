@@ -254,9 +254,9 @@ class App extends Component {
 
   handleTransactionConfirmed = tx => {
     logger.log('reloading explorer data in 10');
+    const isL2 = isL2Network(network);
     setTimeout(() => {
       const network = ethereumUtils.getNetworkFromChainId(tx.chainId);
-      const isL2 = isL2Network(network);
       if (isL2) {
         logger.log('Reloading all data from L2 explorers!');
         store.dispatch(explorerInitL2());
@@ -266,7 +266,7 @@ class App extends Component {
           fetchOnchainBalances({ keepPolling: false, withPrices: false })
         );
       }
-    }, 10000);
+    }, isL2 ? 10000 : 5000);
   };
 
   render = () => (
