@@ -29,7 +29,6 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
 import {
@@ -273,7 +272,6 @@ export default function SendConfirmationSheet() {
 
   const shouldShowChecks =
     isL2 &&
-    network !== networkTypes.optimism &&
     !isSendingToUserAccount &&
     alreadySentTransactionsCurrentNetwork < 3;
 
