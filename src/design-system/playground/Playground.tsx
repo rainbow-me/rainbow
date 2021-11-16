@@ -87,7 +87,7 @@ const DocsRow = ({ name, category, examples }: Docs) => {
 
 export const Playground = () => {
   const hideSplashScreen = useHideSplashScreen();
-  useEffect(() => hideSplashScreen(), [hideSplashScreen]);
+  useEffect(hideSplashScreen, [hideSplashScreen]);
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
