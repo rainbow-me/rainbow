@@ -47,9 +47,9 @@ import {
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
-import { ETH_ADDRESS } from '@rainbow-me/references';
 
 const defaultCarouselHeight = 60;
 const baseHeight =
@@ -202,11 +202,14 @@ export default function ChartExpandedState({ asset }) {
     assetWithPrice.address = assetWithPrice.mainnet_address;
   }
 
-  // This one includes the original l2 address if exists
-  const ogAsset = { ...assetWithPrice, address: assetWithPrice.l2Address };
   const isL2 = useMemo(() => isL2Network(assetWithPrice.type), [
     assetWithPrice.type,
   ]);
+  // This one includes the original l2 address if exists
+  const ogAsset = {
+    ...assetWithPrice,
+    address: isL2 ? assetWithPrice.l2Address : assetWithPrice.address,
+  };
 
   const { height: screenHeight } = useDimensions();
   const {
@@ -263,12 +266,11 @@ export default function ChartExpandedState({ asset }) {
   });
 
   const uniswapAssetsInWallet = useUniswapAssetsInWallet();
-  const showSwapButton = find(uniswapAssetsInWallet, [
-    'address',
-    ogAsset.address,
-  ]);
+  const showSwapButton =
+    !isL2 && find(uniswapAssetsInWallet, ['address', ogAsset.address]);
 
-  const needsEth = asset?.address === ETH_ADDRESS && asset?.balance?.amount === '0';
+  const needsEth =
+    asset?.address === ETH_ADDRESS && asset?.balance?.amount === '0';
 
   const duration = useRef(0);
 
