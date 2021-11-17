@@ -2,7 +2,7 @@ import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
-import { get, isNull, toLower } from 'lodash';
+import { isNull, toLower } from 'lodash';
 import { alwaysRequireApprove } from '../../config/debug';
 import { Rap, RapActionParameters, UnlockActionParameters } from '../common';
 import {
@@ -118,25 +118,22 @@ const unlock = async (
   let maxPriorityFeePerGas;
   try {
     // approvals should always use fast gas or custom (whatever is faster)
-    maxFeePerGas = get(selectedGasFee, `gasFeeParams.maxFeePerGas.amount`);
-    maxPriorityFeePerGas = get(
-      selectedGasFee,
-      `gasFeeParams.maxPriorityFeePerGas.amount`
-    );
+    maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
+    maxPriorityFeePerGas =
+      selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
+
     // if swap isn't the last action, use fast gas or custom (whatever is faster)
     if (
       currentRap.actions.length - 1 > index ||
       !maxFeePerGas ||
       !maxPriorityFeePerGas
     ) {
-      const fastMaxFeePerGas = get(
-        gasFeesBySpeed,
-        `[${gasUtils.FAST}].gasFeeParams.maxFeePerGas.amount`
-      );
-      const fastMaxPriorityFeePerGas = get(
-        gasFeesBySpeed,
-        `[${gasUtils.FAST}].gasFeeParams.maxPriorityFeePerGas.amount`
-      );
+      const fastMaxFeePerGas =
+        gasFeesBySpeed?.[gasUtils.FAST]?.gasFeeParams?.maxFeePerGas?.amount;
+      const fastMaxPriorityFeePerGas =
+        gasFeesBySpeed?.[gasUtils.FAST]?.gasFeeParams?.maxPriorityFeePerGas
+          ?.amount;
+
       if (greaterThan(fastMaxFeePerGas, maxFeePerGas)) {
         maxFeePerGas = fastMaxFeePerGas;
       }

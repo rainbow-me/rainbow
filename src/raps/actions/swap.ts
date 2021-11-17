@@ -1,6 +1,5 @@
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
-import { get } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
 import {
   ProtocolType,
@@ -39,25 +38,21 @@ const swap = async (
   } = store.getState().swap;
   const { gasFeesBySpeed, selectedGasFee } = store.getState().gas;
 
-  let maxFeePerGas = get(selectedGasFee, `gasFeeParams.maxFeePerGas.amount`);
-  let maxPriorityFeePerGas = get(
-    selectedGasFee,
-    `gasFeeParams.maxPriorityFeePerGas.amount`
-  );
+  let maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
+  let maxPriorityFeePerGas =
+    selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
+
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
   if (
     currentRap.actions.length - 1 > index ||
     !maxFeePerGas ||
     !maxPriorityFeePerGas
   ) {
-    const fastMaxFeePerGas = get(
-      gasFeesBySpeed,
-      `[${gasUtils.FAST}].gasFeeParams.maxFeePerGas.amount`
-    );
-    const fastMaxPriorityFeePerGas = get(
-      gasFeesBySpeed,
-      `[${gasUtils.FAST}].gasFeeParams.maxPriorityFeePerGas.amount`
-    );
+    const fastMaxFeePerGas =
+      gasFeesBySpeed?.[gasUtils.FAST]?.gasFeeParams.maxFeePerGas.amount;
+    const fastMaxPriorityFeePerGas =
+      gasFeesBySpeed?.[gasUtils.FAST]?.gasFeeParams.maxPriorityFeePerGas.amount;
+
     if (greaterThan(fastMaxFeePerGas, maxFeePerGas)) {
       maxFeePerGas = fastMaxFeePerGas;
     }

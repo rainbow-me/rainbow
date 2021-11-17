@@ -1,7 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
-import { get } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
 import {
   Asset,
@@ -55,22 +54,18 @@ const depositCompound = async (
   );
   logger.log(`[${actionName}] raw input amount`, rawInputAmount);
 
-  let maxFeePerGas = get(selectedGasFee, `gasFeeParams.maxFeePerGas.amount`);
-  let maxPriorityFeePerGas = get(
-    selectedGasFee,
-    `gasFeeParams.maxPriorityFeePerGas.amount`
-  );
+  let maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
+  let maxPriorityFeePerGas =
+    selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
+
   if (!maxFeePerGas) {
-    maxFeePerGas = get(
-      gasFeesBySpeed,
-      `[${gasUtils.FAST}].gasFeeParams.maxFeePerGas.amount`
-    );
+    maxFeePerGas =
+      gasFeesBySpeed?.[gasUtils.FAST]?.gasFeeParams?.maxFeePerGas?.amount;
   }
   if (!maxPriorityFeePerGas) {
-    maxPriorityFeePerGas = get(
-      gasFeesBySpeed,
-      `[${gasUtils.FAST}].gasFeeParams.maxPriorityFeePerGas.amount`
-    );
+    maxPriorityFeePerGas =
+      gasFeesBySpeed?.[gasUtils.FAST]?.gasFeeParams?.maxPriorityFeePerGas
+        ?.amount;
   }
 
   logger.log(`[${actionName}] max fee per gas`, maxFeePerGas);

@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { get, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import {
   // @ts-ignore
   IS_TESTING,
@@ -109,10 +109,11 @@ const checkIsSufficientGas = (
   txFee: LegacyGasFee | GasFee,
   network: Network
 ) => {
-  const txFeeKey = (txFee as GasFee)?.maxFee ? `maxFee` : `estimatedFee`;
+  const txFeeValue =
+    (txFee as GasFee)?.maxFee || (txFee as LegacyGasFee)?.estimatedFee;
   const nativeAsset = getNetworkNativeAsset(assets, network);
-  const balanceAmount = get(nativeAsset, 'balance.amount', 0);
-  const txFeeAmount = fromWei(get(txFee, `${txFeeKey}.value.amount`, 0));
+  const balanceAmount = nativeAsset?.balance?.amount || 0;
+  const txFeeAmount = fromWei(txFeeValue?.value?.amount);
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
   return isSufficientGas;
 };
@@ -130,8 +131,8 @@ const getSelectedGasFee = (
   const selectedGasParams = gasFeeParamsBySpeed[selectedGasFeeOption];
   const selectedTxFee = gasFeesBySpeed[selectedGasFeeOption];
   const isSufficientGas = checkIsSufficientGas(assets, selectedTxFee, network);
-  // this is going to be undefined on type 0 transactions
-  const maxFee = get(selectedTxFee, 'maxFee');
+  // this is going to be undefined for type 0 transactions
+  const maxFee = (selectedTxFee as GasFee)?.maxFee;
 
   return {
     isSufficientGas,
