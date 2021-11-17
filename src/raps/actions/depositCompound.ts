@@ -46,7 +46,7 @@ const depositCompound = async (
   const tokenToDeposit = requiresSwap ? outputCurrency : inputCurrency;
 
   const { accountAddress, network } = store.getState().settings;
-  const { gasFeesBySpeed, selectedGasFee } = store.getState().gas;
+  const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
   logger.log(`[${actionName}] amount`, amountToDeposit);
   const rawInputAmount = convertAmountToRawAmount(
     amountToDeposit,
@@ -59,13 +59,11 @@ const depositCompound = async (
     selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
 
   if (!maxFeePerGas) {
-    maxFeePerGas =
-      gasFeesBySpeed?.[gasUtils.FAST]?.gasFeeParams?.maxFeePerGas?.amount;
+    maxFeePerGas = gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount;
   }
   if (!maxPriorityFeePerGas) {
     maxPriorityFeePerGas =
-      gasFeesBySpeed?.[gasUtils.FAST]?.gasFeeParams?.maxPriorityFeePerGas
-        ?.amount;
+      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxPriorityFeePerGas?.amount;
   }
 
   logger.log(`[${actionName}] max fee per gas`, maxFeePerGas);

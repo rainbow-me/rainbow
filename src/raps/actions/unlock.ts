@@ -88,7 +88,7 @@ const unlock = async (
   logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
-  const { gasFeesBySpeed, selectedGasFee } = store.getState().gas;
+  const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
   const {
     assetToUnlock,
     contractAddress,
@@ -129,10 +129,9 @@ const unlock = async (
       !maxPriorityFeePerGas
     ) {
       const fastMaxFeePerGas =
-        gasFeesBySpeed?.[gasUtils.FAST]?.gasFeeParams?.maxFeePerGas?.amount;
+        gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount;
       const fastMaxPriorityFeePerGas =
-        gasFeesBySpeed?.[gasUtils.FAST]?.gasFeeParams?.maxPriorityFeePerGas
-          ?.amount;
+        gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxPriorityFeePerGas?.amount;
 
       if (greaterThan(fastMaxFeePerGas, maxFeePerGas)) {
         maxFeePerGas = fastMaxFeePerGas;

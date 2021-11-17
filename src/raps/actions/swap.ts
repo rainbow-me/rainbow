@@ -36,7 +36,7 @@ const swap = async (
     outputCurrency,
     slippageInBips: slippage,
   } = store.getState().swap;
-  const { gasFeesBySpeed, selectedGasFee } = store.getState().gas;
+  const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
 
   let maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
   let maxPriorityFeePerGas =
@@ -49,9 +49,9 @@ const swap = async (
     !maxPriorityFeePerGas
   ) {
     const fastMaxFeePerGas =
-      gasFeesBySpeed?.[gasUtils.FAST]?.gasFeeParams.maxFeePerGas.amount;
+      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas.amount;
     const fastMaxPriorityFeePerGas =
-      gasFeesBySpeed?.[gasUtils.FAST]?.gasFeeParams.maxPriorityFeePerGas.amount;
+      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxPriorityFeePerGas.amount;
 
     if (greaterThan(fastMaxFeePerGas, maxFeePerGas)) {
       maxFeePerGas = fastMaxFeePerGas;
