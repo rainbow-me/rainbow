@@ -18,7 +18,7 @@ To correct for this, we use a library called [Capsize](https://seek-oss.github.i
 
 > Using Capsize in React Native gets us _really_ close, but unfortunately we still see some minor vertical alignment issues, so we're also applying some magic-number corrections for each font size — usually a decimal between 1 and -1. If you have any insight into why we need to do this, please let us know 🙏
 
-Text is handled by the `Text` and `Heading` components. Both of these components optionally support `size` and `weight` and `align` props, while `Text` also has props for `color`, `uppercase` and `tabularNumbers`.
+Text is handled by the `Text` and `Heading` components. Both of these components optionally support `size`, `weight` and `align` props, while `Text` also has props for `color`, `uppercase` and `tabularNumbers`.
 
 ```tsx
 import { Heading } from '@rainbow-me/design-system';
