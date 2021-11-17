@@ -115,13 +115,13 @@ const TransactionTimeLabel = ({ formatter, theme }) => {
 };
 
 const GasSpeedButton = ({
+  asset,
+  currentNetwork,
+  horizontalPadding = 20,
+  options = null,
   showGasOptions = false,
   testID,
   theme = 'dark',
-  options = null,
-  currentNetwork,
-  asset,
-  horizontalPadding = 20,
 }) => {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
@@ -228,16 +228,16 @@ const GasSpeedButton = ({
   const handlePressSpeedOption = useCallback(
     selectedSpeed => {
       if (
-        selectedSpeed === gasUtils.CUSTOM &&
-        isEmpty(gasFeeParamsBySpeed[gasUtils.CUSTOM])
+        selectedSpeed === CUSTOM &&
+        isEmpty(gasFeeParamsBySpeed[CUSTOM])
       ) {
         const gasFeeParams = gasFeeParamsBySpeed[selectedGasFeeOption];
         updateToCustomGasFee({
           ...gasFeeParams,
           maxBaseFeePerGas: gasFeeParams.maxFeePerGas,
           maxPriorityFeePerGas: gasFeeParams.maxPriorityFeePerGas,
-          option: gasUtils.CUSTOM,
-        });
+          option: CUSTOM,
+        })
       } else {
         updateGasFeeOption(selectedSpeed);
       }
@@ -285,13 +285,13 @@ const GasSpeedButton = ({
 
         return ` ${timeSymbol}${time} ${estimatedTimeUnit}`;
       } else {
-        return ``;
+        return '';
       }
     }
 
     // If it's still loading show `...`
     if (time === '0' && estimatedTimeUnit === 'min') {
-      return ``;
+      return '';
     }
 
     return ` ${timeSymbol}${time} ${estimatedTimeUnit}`;
@@ -315,7 +315,7 @@ const GasSpeedButton = ({
     [handlePressSpeedOption]
   );
 
-  const nativeFeeCurrencySymbol = useMemo(() => {
+  const nativeFeeCurrency = useMemo(() => {
     switch (currentNetwork) {
       case networkTypes.polygon:
         return { address: MATIC_POLYGON_ADDRESS, symbol: 'MATIC' };
@@ -453,7 +453,7 @@ const GasSpeedButton = ({
   ]);
 
   useEffect(() => {
-    if (selectedGasFeeOption === gasUtils.CUSTOM) {
+    if (selectedGasFeeOption === CUSTOM) {
       openCustomGasSheet();
     }
   }, [navigate, openCustomGasSheet, selectedGasFeeOption]);
@@ -479,9 +479,9 @@ const GasSpeedButton = ({
           <Row>
             <NativeCoinIconWrapper>
               <CoinIcon
-                address={nativeFeeCurrencySymbol.address}
+                address={nativeFeeCurrency.address}
                 size={18}
-                symbol={nativeFeeCurrencySymbol.symbol}
+                symbol={nativeFeeCurrency.symbol}
               />
             </NativeCoinIconWrapper>
             <Column>

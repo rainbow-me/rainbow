@@ -113,7 +113,7 @@ const checkIsSufficientGas = (
     (txFee as GasFee)?.maxFee || (txFee as LegacyGasFee)?.estimatedFee;
   const nativeAsset = getNetworkNativeAsset(assets, network);
   const balanceAmount = nativeAsset?.balance?.amount || 0;
-  const txFeeAmount = fromWei(txFeeValue?.value?.amount);
+  const txFeeAmount = fromWei(txFeeValue?.value?.amount || 0);
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
   return isSufficientGas;
 };

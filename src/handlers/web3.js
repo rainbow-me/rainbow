@@ -296,12 +296,7 @@ export const getTransactionGasParams = transaction => {
       };
 };
 
-/**
- * @desc get transaction details
- * @param  {Object} transaction { from, to, data, value, gasPrice, gasLimit }
- * @return {Object}
- */
-export const getTxDetails = async transaction => {
+const getTxDetails = async transaction => {
   const { to } = transaction;
   const data = transaction.data ? transaction.data : '0x';
   const value = transaction.amount ? toHex(toWei(transaction.amount)) : '0x0';
@@ -353,11 +348,6 @@ export const resolveNameOrAddress = async (nameOrAddress, provider) => {
   return nameOrAddress;
 };
 
-/**
- * @desc get transfer nft transaction
- * @param  {Object}  transaction { asset, from, to, gasPrice }
- * @return {Object}
- */
 export const getTransferNftTransaction = async transaction => {
   const recipient = await resolveNameOrAddress(transaction.to);
   const { from } = transaction;
@@ -373,11 +363,6 @@ export const getTransferNftTransaction = async transaction => {
   };
 };
 
-/**
- * @desc get transfer token transaction
- * @param  {Object}  transaction { asset, from, to, amount, gasPrice }
- * @return {Object}
- */
 export const getTransferTokenTransaction = async transaction => {
   const value = convertAmountToRawAmount(
     transaction.amount,

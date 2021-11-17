@@ -20,12 +20,12 @@ export default function useGas() {
   const gasData = useSelector(
     ({
       gas: {
+        currentBlockParams,
         gasFeeParamsBySpeed,
         gasFeesBySpeed,
         gasLimit,
         isSufficientGas,
         selectedGasFee,
-        currentBlockParams,
       },
     }: AppState) => ({
       currentBlockParams,

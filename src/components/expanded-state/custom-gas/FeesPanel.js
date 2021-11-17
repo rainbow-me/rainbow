@@ -92,12 +92,12 @@ export default function FeesPanel({
   const {
     selectedGasFee,
     currentBlockParams,
-    updateToCustomGasFee,
     gasFeeParamsBySpeed,
+    updateToCustomGasFee,
+    updateGasFeeOption,
+    selectedGasFeeOption,
   } = useGas();
   const { navigate } = useNavigation();
-
-  const { updateGasFeeOption, selectedGasFeeOption } = useGas();
   const { isDarkMode } = useTheme();
 
   const [customMaxPriorityFee, setCustomMaxPriorityFee] = useState(

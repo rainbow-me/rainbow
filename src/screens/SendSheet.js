@@ -633,10 +633,10 @@ export default function SendSheet(props) {
   }, [
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
-    network,
     gasFeeParamsBySpeed,
-    selectedGasFee,
     isSufficientGas,
+    network,
+    selectedGasFee,
   ]);
 
   const showConfirmationSheet = useCallback(async () => {
