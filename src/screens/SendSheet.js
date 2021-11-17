@@ -56,11 +56,7 @@ import {
 } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import {
-  chainAssets,
-  ETH_ADDRESS,
-  rainbowTokenList,
-} from '@rainbow-me/references';
+import { chainAssets, rainbowTokenList } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { borders } from '@rainbow-me/styles';
 import {

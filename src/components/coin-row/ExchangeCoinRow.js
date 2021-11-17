@@ -12,7 +12,6 @@ import CoinRowAddButton from './CoinRowAddButton';
 import CoinRowFavoriteButton from './CoinRowFavoriteButton';
 import CoinRowInfoButton from './CoinRowInfoButton';
 import { useDimensions } from '@rainbow-me/hooks';
-import { ETH_ADDRESS } from '@rainbow-me/references';
 import { padding } from '@rainbow-me/styles';
 import { haptics, neverRerender } from '@rainbow-me/utils';
 

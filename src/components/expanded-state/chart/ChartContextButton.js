@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { ContextCircleButton } from '../../context-menu';
 import EditOptions from '@rainbow-me/helpers/editOptionTypes';
 import { useCoinListEditOptions } from '@rainbow-me/hooks';
-import { ETH_ADDRESS } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function ChartContextButton({ asset, color }) {
