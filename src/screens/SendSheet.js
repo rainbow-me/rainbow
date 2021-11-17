@@ -172,10 +172,6 @@ export default function SendSheet(props) {
     return isL2Network(currentNetwork);
   }, [currentNetwork]);
 
-  const transactionNetwork = useMemo(() => {
-    return isL2Asset(selected?.type) ? selected.type : network;
-  }, [selected?.type, network]);
-
   const { triggerFocus } = useMagicAutofocus(recipientFieldRef);
 
   useEffect(() => {
@@ -292,7 +288,7 @@ export default function SendSheet(props) {
     // belongs to
     if (prevNetwork !== currentNetwork) {
       InteractionManager.runAfterInteractions(() => {
-        startPollingGasFees(transactionNetwork);
+        startPollingGasFees(currentNetwork);
       });
     }
   }, [
@@ -301,7 +297,6 @@ export default function SendSheet(props) {
     startPollingGasFees,
     selected.type,
     network,
-    transactionNetwork,
   ]);
 
   // Stop polling when the sheet is unmounted
@@ -786,7 +781,6 @@ export default function SendSheet(props) {
     updateTxFee,
     network,
     gasFeeParamsBySpeed,
-    transactionNetwork,
   ]);
 
   return (
