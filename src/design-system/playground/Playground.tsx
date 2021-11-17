@@ -76,7 +76,7 @@ const DocsRow = ({ name, category, examples }: Docs) => {
                     : undefined
                 }
               >
-                {example.example}
+                {'Example' in example ? <example.Example /> : example.example}
               </View>
             </Stack>
           ))

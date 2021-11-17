@@ -1,5 +1,11 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
-import React from 'react';
+import React, { useMemo } from 'react';
+import { TouchableOpacity, View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import { ColorModeProvider, useColorMode } from '../../color/ColorMode';
 import { Docs } from '../../playground/Docs';
 import { Columns } from '../Columns/Columns';
@@ -55,6 +61,55 @@ const docs: Docs = {
           </Stack>
         </Columns>
       ),
+    },
+    {
+      name: 'With animation',
+      Example: () => {
+        const offsetRatio = useSharedValue(0);
+        const containerWidth = useSharedValue(0);
+        const boxSize = 100;
+
+        const sizeStyles = useMemo(
+          () => ({
+            width: boxSize,
+            height: boxSize,
+          }),
+          [boxSize]
+        );
+
+        const animatedStyles = useAnimatedStyle(() => ({
+          transform: [
+            {
+              translateX: withSpring(
+                offsetRatio.value * (containerWidth.value - boxSize)
+              ),
+            },
+          ],
+        }));
+
+        return (
+          <View
+            onLayout={event =>
+              (containerWidth.value = event.nativeEvent.layout.width)
+            }
+          >
+            <Stack space="19px">
+              <Box
+                as={Animated.View}
+                background="accent"
+                style={[sizeStyles, animatedStyles]}
+              />
+              <TouchableOpacity
+                onPress={() => (offsetRatio.value = Math.random())}
+              >
+                <Text align="center" color="accent" weight="bold">
+                  Move
+                </Text>
+              </TouchableOpacity>
+            </Stack>
+          </View>
+        );
+      },
     },
   ],
 };

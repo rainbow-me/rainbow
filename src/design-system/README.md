@@ -309,6 +309,29 @@ export default () => (
 );
 ```
 
+If you need to render something other than a `View`, you can pass a component to the `as` prop.
+
+```tsx
+import { Box } from '@rainbow-me/design-system';
+import Animated, { useAnimatedStyles } from 'react-native-reanimated';
+
+export default () => {
+  const animatedStyles = useAnimatedStyles(/* ... */);
+
+  return (
+    <Box
+      as={Animated.View}
+      style={animatedStyles}
+      padding="19px"
+      flexDirection="row"
+      flexWrap="wrap"
+    >
+      ...
+    </Box>
+  );
+};
+```
+
 `Box` also supports setting a background color via the `background` prop, which leads us into color management.
 
 ## Color

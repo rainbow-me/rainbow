@@ -1,9 +1,10 @@
-import { mapValues } from 'lodash';
-import React, { ComponentProps, ReactNode, useMemo } from 'react';
+import { flatten, mapValues } from 'lodash';
+import React, { forwardRef, ReactNode, useMemo } from 'react';
 import { View } from 'react-native';
 import { BackgroundColor } from '../../color/palettes';
 import { negativeSpace, NegativeSpace, space, Space } from '../../layout/space';
 import { BackgroundProvider } from '../BackgroundProvider/BackgroundProvider';
+import type * as Polymorphic from './polymorphic';
 
 const fraction = (numerator: number, denominator: number) =>
   `${(numerator * 100) / denominator}%`;
@@ -21,66 +22,73 @@ const widths = {
   full: '100%', // eslint-disable-line prettier/prettier
 } as const;
 
-export interface BoxProps extends ComponentProps<typeof View> {
+export interface BoxProps {
+  alignItems?: 'flex-start' | 'flex-end' | 'center' | 'stretch';
   background?: BackgroundColor;
+  children?: ReactNode;
+  flexBasis?: 0;
   flexDirection?: 'row' | 'column';
-  flexWrap?: 'wrap';
   flexGrow?: 0 | 1;
   flexShrink?: 0 | 1;
-  flexBasis?: 0;
-  alignItems?: 'flex-start' | 'flex-end' | 'center' | 'stretch';
+  flexWrap?: 'wrap';
   justifyContent?: 'flex-start' | 'flex-end' | 'center' | 'space-between';
-  paddingTop?: Space;
-  paddingBottom?: Space;
-  paddingLeft?: Space;
-  paddingRight?: Space;
-  paddingVertical?: Space;
-  paddingHorizontal?: Space;
-  padding?: Space;
-  marginTop?: NegativeSpace;
+  margin?: NegativeSpace;
   marginBottom?: NegativeSpace;
+  marginHorizontal?: NegativeSpace;
   marginLeft?: NegativeSpace;
   marginRight?: NegativeSpace;
+  marginTop?: NegativeSpace;
   marginVertical?: NegativeSpace;
-  marginHorizontal?: NegativeSpace;
-  margin?: NegativeSpace;
+  padding?: Space;
+  paddingBottom?: Space;
+  paddingHorizontal?: Space;
+  paddingLeft?: Space;
+  paddingRight?: Space;
+  paddingTop?: Space;
+  paddingVertical?: Space;
   width?: keyof typeof widths;
-  children?: ReactNode;
 }
+
+type PolymorphicBox = Polymorphic.ForwardRefComponent<typeof View, BoxProps>;
 
 /**
  * @description Renders a single `View` element with standard styling. Any
  * background color set via the `background` prop will be used to automatically
- * set the color mode for nested elements.
+ * set the color mode for nested elements. To render another element instead,
+ * you can provide the `as` prop, e.g. `<Box as={Animated.View}>`
  */
-export function Box({
-  background,
-  flexDirection,
-  flexWrap,
-  flexGrow,
-  flexShrink,
-  flexBasis,
-  alignItems,
-  justifyContent,
-  margin,
-  marginBottom,
-  marginHorizontal,
-  marginLeft,
-  marginRight,
-  marginTop,
-  marginVertical,
-  padding,
-  paddingBottom,
-  paddingHorizontal,
-  paddingLeft,
-  paddingRight,
-  paddingTop,
-  paddingVertical,
-  width,
-  style: styleProp,
-  children,
-  ...restProps
-}: BoxProps) {
+export const Box = forwardRef(function Box(
+  {
+    alignItems,
+    as: Component = View,
+    background,
+    children,
+    flexBasis,
+    flexDirection,
+    flexGrow,
+    flexShrink,
+    flexWrap,
+    justifyContent,
+    margin,
+    marginBottom,
+    marginHorizontal,
+    marginLeft,
+    marginRight,
+    marginTop,
+    marginVertical,
+    padding,
+    paddingBottom,
+    paddingHorizontal,
+    paddingLeft,
+    paddingRight,
+    paddingTop,
+    paddingVertical,
+    style: styleProp,
+    width,
+    ...restProps
+  },
+  ref
+) {
   const styles = useMemo(() => {
     const paddingValues = mapValues(
       {
@@ -146,20 +154,24 @@ export function Box({
   ]);
 
   const style = useMemo(() => {
-    return [styles, styleProp];
-  }, [styles, styleProp]);
+    const stylesArray = [styles, styleProp];
 
-  return background && children ? (
+    // We flatten the styles array in case it's passed to Animated.View.
+    // This won't be needed with v2.3+ of react-native-reanimated.
+    return Component === View ? stylesArray : flatten(stylesArray);
+  }, [styles, styleProp, Component]);
+
+  return background ? (
     <BackgroundProvider color={background}>
       {backgroundStyle => (
-        <View style={[backgroundStyle, style]} {...restProps}>
+        <Component style={[backgroundStyle, ...style]} {...restProps} ref={ref}>
           {children}
-        </View>
+        </Component>
       )}
     </BackgroundProvider>
   ) : (
-    <View style={style} {...restProps}>
+    <Component style={style} {...restProps} ref={ref}>
       {children}
-    </View>
+    </Component>
   );
-}
+}) as PolymorphicBox;
