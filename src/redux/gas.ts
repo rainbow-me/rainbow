@@ -454,7 +454,7 @@ export const gasUpdateDefaultGasLimit = (
 };
 
 export const gasUpdateTxFee = (
-  gasLimit: number,
+  gasLimit?: number,
   overrideGasOption?: string
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const {
