@@ -59,7 +59,7 @@ export default function ChartContextButton({ asset, color }) {
           ]),
       ...(ios ? [lang.t('wallet.action.cancel')] : []),
     ],
-    [currentAction, asset?.isNativeAsset, asset?.type]
+    [asset?.isNativeAsset, asset?.type, currentAction]
   );
 
   return (
