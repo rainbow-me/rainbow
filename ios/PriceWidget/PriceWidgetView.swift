@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 import UIKit
-//import Palette
+import Palette
 
 @available(iOS 14.0, *)
 struct PriceWidgetView: View {
@@ -38,9 +38,9 @@ struct PriceWidgetView: View {
       if let color = tokenData.tokenDetails!.color {
         return hexStringToColor(hex: color)
       } else if let icon = tokenData.icon {
-//        if let palette = Palette.from(image: icon).generate().vibrantColor {
-//          return Color(palette)
-        return Color(red:0.15, green:0.16, blue:0.18)
+        if let palette = Palette.from(image: icon).generate().darkVibrantColor {
+          return Color(palette)
+        }
       }
     }
     return Color(red:0.15, green:0.16, blue:0.18)

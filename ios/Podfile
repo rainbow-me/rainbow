@@ -13,10 +13,6 @@ target 'SelectTokenIntent' do
   pod 'Palette', :git => 'https://github.com/galandezzz/ios-Palette.git'
 end 
 
-target 'SelectTokenIntentUI' do
-  pod 'Palette', :git => 'https://github.com/galandezzz/ios-Palette.git'
-end 
-
 target 'Rainbow' do
   # Pods for Rainbow
   config = use_native_modules!
