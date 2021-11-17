@@ -22,7 +22,8 @@ export const uniswapClient = new ApolloClient({
   cache: new InMemoryCache(),
   defaultOptions,
   link: new HttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2',
+    uri: 'https://api.thegraph.com/subgraphs/name/ubeswap/ubeswap'
+    // uri: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2',
   }),
 });
 

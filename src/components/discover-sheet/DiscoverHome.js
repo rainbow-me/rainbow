@@ -15,7 +15,6 @@ export default function DiscoverHome() {
       <PulseIndex />
       <Lists />
       {/* <Strategies /> */}
-      {accountAddress ? <UniswapPools /> : null}
       <BottomSpacer />
     </React.Fragment>
   );
