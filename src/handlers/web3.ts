@@ -109,6 +109,7 @@ const isNetworkEnum = (network: Network | string): network is Network => {
  */
 export const web3SetHttpProvider = async (network: Network | string) => {
   web3Provider = await getProviderForNetwork(network);
+  return web3Provider.ready;
 };
 
 /**
