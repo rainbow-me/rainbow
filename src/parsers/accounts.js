@@ -1,6 +1,7 @@
 import { get, isNil, map, toUpper } from 'lodash';
 import { dedupeUniqueTokens } from './uniqueTokens';
 import { AssetTypes } from '@rainbow-me/entities';
+import { isNativeAsset } from '@rainbow-me/handlers/assets';
 import {
   add,
   convertAmountAndPriceToNativeDisplay,
@@ -61,6 +62,7 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
     ...asset,
     ...metadata,
     address,
+    isNativeAsset: isNativeAsset(address, asset.type),
     name,
     symbol,
     type,
