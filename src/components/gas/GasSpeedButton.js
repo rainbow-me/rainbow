@@ -273,7 +273,6 @@ const GasSpeedButton = ({
       }
     }
 
-    // If it's still loading show `...`
     if (time === '0' && estimatedTimeUnit === 'min') {
       return '';
     }
