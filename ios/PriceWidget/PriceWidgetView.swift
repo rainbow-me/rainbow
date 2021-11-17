@@ -84,7 +84,7 @@ struct PriceWidgetView: View {
   
   var body: some View {
     let bgColor = getColor(tokenData: tokenData)
-    let fgColor = colorIsLight(color: bgColor) ? hexStringToColor(hex: "#25292E") : Color.white
+    let fgColor = tokenData.tokenDetails != nil && tokenData.tokenDetails!.color == nil && colorIsLight(color: bgColor) ? hexStringToColor(hex: "#25292E") : Color.white
     
     GeometryReader { geometry in
       ZStack {
