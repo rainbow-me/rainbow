@@ -1,4 +1,4 @@
-import { Pair, Token, TokenAmount, Trade } from '@uniswap/sdk';
+import { Pair, Token, TokenAmount, Trade } from '@ubeswap/sdk';
 import { isEmpty } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';

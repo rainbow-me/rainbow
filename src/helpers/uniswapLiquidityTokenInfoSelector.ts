@@ -1,4 +1,4 @@
-import { ChainId, WETH } from '@uniswap/sdk';
+import { ChainId, CELO } from '@ubeswap/sdk';
 import {
   compact,
   find,
@@ -65,7 +65,7 @@ interface UniswapCard {
 }
 
 const switchWethToEth = (token: Token, chainId: ChainId): Token => {
-  if (toLower(token.address) === toLower(WETH[chainId].address)) {
+  if (toLower(token.address) === toLower(CELO[chainId].address)) {
     return {
       ...token,
       address: ETH_ADDRESS,

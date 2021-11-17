@@ -1,4 +1,4 @@
-import { Pair, TokenAmount } from '@uniswap/sdk';
+import { Pair, TokenAmount } from '@ubeswap/sdk';
 import { compact } from 'lodash';
 import { useMemo } from 'react';
 import useMulticall from './useMulticall';

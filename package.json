@@ -93,6 +93,7 @@
     "@types/i18n-js": "3.0.3",
     "@types/lodash": "4.14.168",
     "@types/react-redux": "7.1.9",
+    "@ubeswap/sdk": "^2.1.1",
     "@uniswap/sdk": "3.0.3",
     "@uniswap/v2-core": "1.0.1",
     "@unstoppabledomains/resolution": "5.0.2",
@@ -105,6 +106,7 @@
     "bip39": "3.0.2",
     "browserify-zlib": "0.1.4",
     "buffer": "4.9.2",
+    "caniuse-lite": "^1.0.30001271",
     "chroma-js": "2.1.0",
     "console-browserify": "1.2.0",
     "constants-browserify": "1.0.0",
@@ -236,6 +238,7 @@
     "use-memo-one": "1.1.1",
     "util": "0.10.4",
     "vm-browserify": "0.0.4",
+    "web3": "^1.6.0",
     "zxcvbn": "4.4.2"
   },
   "devDependencies": {
@@ -427,14 +430,17 @@
       "core-js": false,
       "detox": false,
       "dtrace-provider": false,
-      "fsevents": false,
       "husky": false,
       "keccak": false,
       "react-native-storage": false,
       "react-query": false,
-      "scrypt": false,
       "secp256k1": false,
-      "@sentry/cli": true
+      "@sentry/cli": true,
+      "web3": false,
+      "web3-bzz": false,
+      "bufferutil": false,
+      "utf-8-validate": false,
+      "web3-shh": false
     }
   }
 }

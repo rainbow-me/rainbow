@@ -22,6 +22,7 @@ const createLanguageSelector = createSelector([languageSelector], withLanguage);
 export default function useAccountSettings() {
   const { language } = useSelector(createLanguageSelector);
   const dispatch = useDispatch();
+  //logger.sentry(`[ALERT] ${accountAddress} ${chainId} ${nativeCurrency}, ${network}`)
   const settingsData = useSelector(
     ({ settings: { accountAddress, chainId, nativeCurrency, network } }) => ({
       accountAddress,

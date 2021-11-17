@@ -217,10 +217,13 @@ export const walletInit = async (
 
   if (!walletAddress) {
     const wallet = await createWallet();
+    logger.sentry(`[SELF] wallet: ${wallet}`);
+
     walletAddress = wallet?.address;
     isNew = true;
     await saveAccountEmptyState(true, walletAddress?.toLowerCase(), network);
   }
+  logger.sentry(`[SELF] walletAddress: ${walletAddress}`);
   return { isNew, walletAddress };
 };
 
@@ -542,11 +545,16 @@ export const createWallet = async (
   checkedWallet: null | EthereumWalletFromSeed = null
 ): Promise<null | EthereumWallet> => {
   const isImported = !!seed;
+
+  logger.sentry(`[SELF] seed, color, name, overwrite, checkedWallet : ${[seed, color, name, overwrite, checkedWallet]}`);
+
   logger.sentry('Creating wallet, isImported?', isImported);
   if (!seed) {
     logger.sentry('Generating a new seed phrase');
   }
   const walletSeed = seed || generateMnemonic();
+  logger.sentry([walletSeed]);
+
   let addresses: RainbowAccount[] = [];
   try {
     const { dispatch } = store;
@@ -571,6 +579,8 @@ export const createWallet = async (
       );
     }
     logger.sentry('[createWallet] - getWallet from seed');
+
+    logger.sentry(``);
 
     // Get all wallets
     const allWalletsResult = await getAllWallets();
@@ -695,6 +705,10 @@ export const createWallet = async (
       label: name || '',
       visible: true,
     });
+
+    logger.sentry(`${addresses}`)
+    logger.sentry(`[SELF] addresses :${addresses}`)
+    logger.sentry(`[SELF] type :${type}`)
     if (type !== EthereumWalletType.readOnly) {
       // Creating signature for this wallet
       logger.sentry(`[createWallet] - generating signature`);

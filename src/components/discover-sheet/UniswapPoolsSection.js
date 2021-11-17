@@ -11,6 +11,7 @@ import { Text } from '../text';
 import EdgeFade from './EdgeFade';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useAccountSettings, useUniswapPools } from '@rainbow-me/hooks';
+import {logger} from 'logger';
 
 const INITIAL_PAGE_AMOUNT = 15;
 
@@ -183,7 +184,7 @@ export default function UniswapPools({
 
   const allPairs = useMemo(() => {
     if (!pairs) return [];
-
+    logger.sentry(pairs);
     const sortedPairs = pairs
       .filter(pair => {
         if (pair[selectedList] === 0) return false;
@@ -255,7 +256,7 @@ export default function UniswapPools({
         <PoolEmoji>🐋</PoolEmoji>
         <Text size="larger" testID="pools-section" weight="heavy">
           {' '}
-          Uniswap Pools
+          Ubeswap Pools
         </Text>
       </Row>
       <Column>

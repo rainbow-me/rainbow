@@ -260,6 +260,8 @@ export default function useUniswapPools(sortField, sortDirection, token) {
       );
   }, [pairs, dispatch]);
 
+  logger.sentry(pairs);
+
   const genericAssets = useSelector(
     ({ data: { genericAssets } }) => genericAssets
   );

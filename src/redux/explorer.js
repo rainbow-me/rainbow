@@ -1,5 +1,5 @@
 import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
-import { DATA_API_KEY, DATA_ENDPOINT, DATA_ORIGIN } from 'react-native-dotenv';
+import { Z_DATA_API_KEY, DATA_ENDPOINT, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
 // eslint-disable-next-line import/no-cycle
 import { arbitrumExplorerInit } from './arbitrumExplorer';
@@ -83,11 +83,12 @@ const messages = {
 };
 
 // -- Actions ---------------------------------------- //
+logger.sentry(`Date Endpoint ${DATA_ENDPOINT} ${Z_DATA_API_KEY}`);
 const createSocket = endpoint =>
   io(`${DATA_ENDPOINT || 'wss://api-v4.zerion.io'}/${endpoint}`, {
     extraHeaders: { origin: DATA_ORIGIN },
     query: {
-      api_token: `${DATA_API_KEY}`,
+      api_token: `${Z_DATA_API_KEY}`,
     },
     transports: ['websocket'],
   });
@@ -443,12 +444,14 @@ const listenOnAddressMessages = socket => (dispatch, getState) => {
       );
       dispatch(disableFallbackIfNeeded());
       if (getState().settings.network === NetworkTypes.mainnet) {
-        // Start watching arbitrum assets
-        dispatch(arbitrumExplorerInit());
-        // Start watching optimism assets
-        dispatch(optimismExplorerInit());
-        // Start watching polygon assets
-        dispatch(polygonExplorerInit());
+        // TODO: init forno explorer
+        
+        // // Start watching arbitrum assets
+        // dispatch(arbitrumExplorerInit());
+        // // Start watching optimism assets
+        // dispatch(optimismExplorerInit());
+        // // Start watching polygon assets
+        // dispatch(polygonExplorerInit());
       }
     }
   });

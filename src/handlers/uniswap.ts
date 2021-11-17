@@ -4,14 +4,17 @@ import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import {
+  CurrencyAmount
+} from '@uniswap/sdk';
+import {
   ChainId,
-  CurrencyAmount,
+  
   Percent,
   Token,
   Trade,
   TradeType,
-  WETH,
-} from '@uniswap/sdk';
+  CELO,
+} from '@ubeswap/sdk';
 import { get, mapKeys, mapValues, toLower } from 'lodash';
 import { uniswapClient } from '../apollo/client';
 import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
@@ -441,7 +444,7 @@ export const getTokenForCurrency = (
   currency: Asset,
   chainId: ChainId
 ): Token => {
-  if (currency.address === 'eth') return WETH[chainId];
+  if (currency.address === 'eth') return CELO[chainId];
   return new Token(
     chainId,
     currency.address,

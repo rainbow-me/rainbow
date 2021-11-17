@@ -1,5 +1,5 @@
 import { FunctionFragment, Interface } from '@ethersproject/abi';
-import { ChainId } from '@uniswap/sdk';
+import { ChainId } from '@ubeswap/sdk';
 import { map } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';

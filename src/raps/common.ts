@@ -2,7 +2,7 @@ import { Logger } from '@ethersproject/logger';
 import { Wallet } from '@ethersproject/wallet';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { Trade } from '@uniswap/sdk';
+import { Trade } from '@ubeswap/sdk';
 import { join, map } from 'lodash';
 import { depositCompound, swap, unlock, withdrawCompound } from './actions';
 import {
