@@ -142,7 +142,6 @@ export default function ExchangeModal({
 
   const {
     selectedGasFee,
-    gasFeesBySpeed,
     gasFeeParamsBySpeed,
     startPollingGasFees,
     stopPollingGasFees,
@@ -154,7 +153,7 @@ export default function ExchangeModal({
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
-  const prevGasPrices = usePrevious(gasFeesBySpeed);
+  const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
 
   useAndroidBackHandler(() => {
     navigate(Routes.WALLET_SCREEN);
@@ -278,17 +277,22 @@ export default function ExchangeModal({
 
   // Set default gas limit
   useEffect(() => {
-    if (isEmpty(prevGasPrices) && !isEmpty(gasFeeParamsBySpeed)) {
+    if (isEmpty(prevGasFeesParamsBySpeed) && !isEmpty(gasFeeParamsBySpeed)) {
       updateTxFee(defaultGasLimit);
     }
-  }, [gasFeeParamsBySpeed, defaultGasLimit, updateTxFee, prevGasPrices]);
+  }, [
+    gasFeeParamsBySpeed,
+    defaultGasLimit,
+    updateTxFee,
+    prevGasFeesParamsBySpeed,
+  ]);
 
   // Update gas limit
   useEffect(() => {
-    if (isEmpty(gasFeeParamsBySpeed)) {
+    if (!isEmpty(gasFeeParamsBySpeed)) {
       updateGasLimit();
     }
-  }, [gasFeeParamsBySpeed, gasFeesBySpeed, updateGasLimit]);
+  }, [gasFeeParamsBySpeed, updateGasLimit]);
 
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
@@ -380,7 +384,7 @@ export default function ExchangeModal({
     }
 
     const outputInUSD = outputPriceValue * outputAmount;
-    const gasPrice = selectedGasFee?.txFee?.native?.value?.amount;
+    const gasPrice = selectedGasFee?.gasFee?.maxFee?.native?.value?.amount;
     const cancelTransaction = await checkGasVsOutput(gasPrice, outputInUSD);
 
     if (cancelTransaction) {
