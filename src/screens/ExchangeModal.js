@@ -29,11 +29,7 @@ import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
-import {
-  convertStringToNumber,
-  divide,
-  multiply,
-} from '@rainbow-me/helpers/utilities';
+import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useBlockPolling,
@@ -318,8 +314,7 @@ export default function ExchangeModal({
   }, [updateMaxInputAmount]);
 
   const checkGasVsOutput = async (gasPrice, outputPrice) => {
-    const outputValue = convertStringToNumber(outputPrice);
-    if (outputValue > 0 && convertStringToNumber(gasPrice) > outputValue) {
+    if (greaterThan(outputPrice, 0) && greaterThan(gasPrice, outputPrice)) {
       const res = new Promise(resolve => {
         Alert.alert(
           'Are you sure?',
@@ -383,7 +378,7 @@ export default function ExchangeModal({
       });
     }
 
-    const outputInUSD = outputPriceValue * outputAmount;
+    const outputInUSD = multiply(outputPriceValue, outputAmount);
     const gasPrice = selectedGasFee?.gasFee?.maxFee?.native?.value?.amount;
     const cancelTransaction = await checkGasVsOutput(gasPrice, outputInUSD);
 
