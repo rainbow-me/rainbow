@@ -30,6 +30,9 @@ struct PriceWidgetView: View {
     nf.usesGroupingSeparator = true
     nf.numberStyle = .currency
     nf.currencySymbol = "$"
+    if (double < 1.0) {
+      nf.maximumSignificantDigits = 2
+    }
     return nf.string(for: double)!
   }
   
