@@ -443,7 +443,7 @@ export default function ExchangeModal({
     outputPriceValue,
     priceImpactPercentDisplay,
     priceOfEther,
-    selectedGasFee,
+    selectedGasFee?.gasFee?.maxFee?.native?.value?.amount,
     setParams,
     tradeDetails,
     type,
