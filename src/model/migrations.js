@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
-import { findKey, isNumber, keys } from 'lodash';
+import { findKey, isNumber, keys, uniq } from 'lodash';
 import { removeLocal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import {
@@ -446,37 +446,47 @@ export default async function runMigrations() {
    * Migrates the hidden and pinned l2 assets to new format
    */
   const v12 = async () => {
-    const accountAddress = await loadAddress();
     const { network } = store.getState().settings;
-    const assets = await getAssets(accountAddress, network);
-    const hiddenCoins = await getHiddenCoins(accountAddress, network);
-    const pinnedCoins = await getPinnedCoins(accountAddress, network);
-    logger.log(JSON.stringify({ pinnedCoins }, null, 2));
-    logger.log(JSON.stringify({ hiddenCoins }, null, 2));
+    const { wallets } = store.getState().wallets;
+    if (!wallets) return;
+    const walletKeys = Object.keys(wallets);
+    for (let i = 0; i < walletKeys.length; i++) {
+      const wallet = wallets[walletKeys[i]];
+      if (wallet.type !== WalletTypes.readOnly) {
+        for (let x = 0; x < wallet.addresses.length; x++) {
+          const { address } = wallet.addresses[x];
+          const assets = await getAssets(address, network);
+          const hiddenCoins = await getHiddenCoins(address, network);
+          const pinnedCoins = await getPinnedCoins(address, network);
+          logger.log(JSON.stringify({ pinnedCoins }, null, 2));
+          logger.log(JSON.stringify({ hiddenCoins }, null, 2));
 
-    const pinnedCoinsMigrated = pinnedCoins.map(address => {
-      const asset = ethereumUtils.getAsset(assets, address);
-      if (asset?.type && isL2Asset(asset.type)) {
-        return `${asset.address}_${asset.network}`;
-      } else {
-        return address;
+          const pinnedCoinsMigrated = pinnedCoins.map(address => {
+            const asset = ethereumUtils.getAsset(assets, address);
+            if (asset?.type && isL2Asset(asset.type)) {
+              return `${asset.address}_${asset.network}`;
+            } else {
+              return address;
+            }
+          });
+
+          const hiddenCoinsMigrated = hiddenCoins.map(address => {
+            const asset = ethereumUtils.getAsset(assets, address);
+            if (asset?.type && isL2Asset(asset.type)) {
+              return `${asset.address}_${asset.network}`;
+            } else {
+              return address;
+            }
+          });
+
+          logger.log(JSON.stringify({ pinnedCoinsMigrated }, null, 2));
+          logger.log(JSON.stringify({ hiddenCoinsMigrated }, null, 2));
+
+          await savePinnedCoins(uniq(pinnedCoinsMigrated), address, network);
+          await saveHiddenCoins(uniq(hiddenCoinsMigrated), address, network);
+        }
       }
-    });
-
-    const hiddenCoinsMigrated = hiddenCoins.map(address => {
-      const asset = ethereumUtils.getAsset(assets, address);
-      if (asset?.type && isL2Asset(asset.type)) {
-        return `${asset.address}_${asset.network}`;
-      } else {
-        return address;
-      }
-    });
-
-    logger.log(JSON.stringify({ pinnedCoinsMigrated }, null, 2));
-    logger.log(JSON.stringify({ hiddenCoinsMigrated }, null, 2));
-
-    await savePinnedCoins(pinnedCoinsMigrated, accountAddress, network);
-    await saveHiddenCoins(hiddenCoinsMigrated, accountAddress, network);
+    }
   };
 
   migrations.push(v12);
