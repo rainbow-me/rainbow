@@ -449,8 +449,7 @@ const GasSpeedButton = ({
     setEstimatedTimeValue(estimatedTime[0] || 0);
     setEstimatedTimeUnit(estimatedTime[1] || 'min');
   }, [selectedGasFee, selectedGasFeeOption]);
-  console.log('nativeFeeCurrency.address, ', nativeFeeCurrency.address);
-  console.log('nativeFeeCurrency.symbol, ', nativeFeeCurrency.symbol);
+
   return (
     <Container horizontalPadding={horizontalPadding} testID={testID}>
       <Row justify="space-between">
