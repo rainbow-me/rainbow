@@ -458,6 +458,7 @@ export default function ChartExpandedState({ asset }) {
         <SocialLinks
           address={assetWithPrice?.mainnet_address || assetWithPrice?.address}
           color={color}
+          isNativeAsset={assetWithPrice?.isNativeAsset}
           links={links}
           marginTop={!delayedDescriptions && 19}
           type={asset?.type}

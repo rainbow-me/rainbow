@@ -35,6 +35,7 @@ const CommunityLink = styled(Link).attrs({
 export default function SocialLinks({
   address,
   color,
+  isNativeAsset,
   links,
   marginTop,
   type,
@@ -44,7 +45,7 @@ export default function SocialLinks({
   return (
     <>
       <Carousel height={59} marginBottom={1} marginTop={marginTop || 0}>
-        {address !== ETH_ADDRESS && (
+        {!isNativeAsset && (
           <CommunityLink
             color={color}
             display={` ${startCase(blockExplorerName)}`}
