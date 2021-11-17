@@ -3,7 +3,6 @@ import React from 'react';
 import styled from 'styled-components';
 import Link from '../../Link';
 import EdgeFade from '../../discover-sheet/EdgeFade';
-import { ETH_ADDRESS } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const TWITTER_URL = 'https://twitter.com/';
