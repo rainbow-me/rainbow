@@ -1,4 +1,4 @@
-import { ChainId, Pair, Token } from '@uniswap/sdk';
+import { ChainId, Pair, Token } from '@ubeswap/sdk';
 import { filter, flatMap, map, toLower, uniqBy } from 'lodash';
 import { useMemo } from 'react';
 import { getTokenForCurrency } from '../handlers/uniswap';

@@ -24,7 +24,7 @@ import {
 
 import { isNativeAsset } from './assets';
 import { AssetTypes } from '@rainbow-me/entities';
-import NetworkTypes from '@rainbow-me/helpers/networkTypes';
+import NetworkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
 
 import {
   addBuffer,
@@ -39,7 +39,9 @@ import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const infuraProjectId = __DEV__ ? INFURA_PROJECT_ID_DEV : INFURA_PROJECT_ID;
-const infuraUrl = `https://network.infura.io/v3/${infuraProjectId}`;
+// const infuraUrl = `https://network.infura.io/v3/${infuraProjectId}`;
+// TODO: Replace Infura URL.
+const infuraUrl = `https://forno.celo.org`;
 
 export const networkProviders = {};
 
@@ -56,19 +58,23 @@ export let web3Provider = new JsonRpcProvider(
  * @param {String} network
  */
 export const web3SetHttpProvider = async network => {
+  logger.sentry(`Setting ${network} as web3 provider.`);
   if (network.startsWith('http://')) {
     web3Provider = new JsonRpcProvider(network, NetworkTypes.mainnet);
   } else {
     web3Provider = new JsonRpcProvider(replace(infuraUrl, 'network', network));
   }
+  logger.sentry(`Setting ${web3Provider} as web3 provider.`)
   return web3Provider.ready;
 };
 
 /**
- * @desc returns true if the given network is a Layer 2
+ * @desc Always returns false; No L2 Network exists for CELO.
  * @param {String} network
  */
 export const isL2Network = network => {
+  return false;
+
   switch (network) {
     case NetworkTypes.arbitrum:
     case NetworkTypes.optimism:
@@ -85,14 +91,22 @@ export const isL2Network = network => {
  */
 export const isTestnet = network => {
   switch (network) {
-    case NetworkTypes.goerli:
-    case NetworkTypes.kovan:
-    case NetworkTypes.rinkeby:
-    case NetworkTypes.ropsten:
+    case NetworkTypes.testnet:
       return true;
     default:
       return false;
   }
+
+  // TODO: Replace below
+  // switch (network) {
+  //   case NetworkTypes.goerli:
+  //   case NetworkTypes.kovan:
+  //   case NetworkTypes.rinkeby:
+  //   case NetworkTypes.ropsten:
+  //     return true;
+  //   default:
+  //     return false;
+  // }
 };
 
 /**
@@ -100,6 +114,7 @@ export const isTestnet = network => {
  * @param {String} network
  */
 export const getProviderForNetwork = async (network = NetworkTypes.mainnet) => {
+  logger.sentry(`Need to get web3 provider.  ${networkProviders[network]}`);
   if (networkProviders[network]) {
     return networkProviders[network];
   }
@@ -108,24 +123,40 @@ export const getProviderForNetwork = async (network = NetworkTypes.mainnet) => {
   } else {
     let url;
     switch (network) {
-      case NetworkTypes.arbitrum:
-        url = ARBITRUM_MAINNET_RPC;
+      case NetworkTypes.mainnet:
+        url = ''; // TODO: Get CELO Mainnet RPC
         break;
-      case NetworkTypes.optimism:
-        url = OPTIMISM_MAINNET_RPC;
+      case NetworkTypes.testnet:
+        url = ''; // TODO: Get CELO Testnet RPC (Alfajores)
         break;
-      case NetworkTypes.polygon:
-        url = POLYGON_MAINNET_RPC;
-        break;
-      default:
-        url = replace(infuraUrl, 'network', network);
     }
+
+    logger.sentry(`Chose RPC URL: ${url}`);
+    logger.sentry(`Default swapped: ${replace(infuraUrl, 'network', network)}`);
+
+    // TODO: Replace below
+    // switch (network) {
+    //   case NetworkTypes.arbitrum:
+    //     url = ARBITRUM_MAINNET_RPC;
+    //     break;
+    //   case NetworkTypes.optimism:
+    //     url = OPTIMISM_MAINNET_RPC;
+    //     break;
+    //   case NetworkTypes.polygon:
+    //     url = POLYGON_MAINNET_RPC;
+    //     break;
+    //   default:
+    //     url = replace(infuraUrl, 'network', network);
+    // }
+
     const provider = new JsonRpcProvider(url);
     networkProviders[network] = provider;
     await provider.ready;
     return provider;
   }
 };
+
+// TODO: Things.
 
 export const sendRpcCall = async (payload, provider = null) =>
   (provider || web3Provider).send(payload.method, payload.params);
@@ -381,6 +412,7 @@ export const getTransferTokenTransaction = async transaction => {
  */
 export const createSignableTransaction = async transaction => {
   if (
+    get(transaction, 'asset.address') === 
     get(transaction, 'asset.address') === ETH_ADDRESS ||
     get(transaction, 'asset.address') === ARBITRUM_ETH_ADDRESS ||
     get(transaction, 'asset.address') === OPTIMISM_ETH_ADDRESS ||

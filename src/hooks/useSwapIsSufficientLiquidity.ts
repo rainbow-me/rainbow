@@ -1,4 +1,4 @@
-import { Trade } from '@uniswap/sdk';
+import { Trade } from '@ubeswap/sdk';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '@rainbow-me/redux/store';

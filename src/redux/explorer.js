@@ -83,11 +83,12 @@ const messages = {
 };
 
 // -- Actions ---------------------------------------- //
+logger.sentry(`Date Endpoint ${DATA_ENDPOINT} ${DATA_API_KEY}`);
 const createSocket = endpoint =>
   io(`${DATA_ENDPOINT || 'wss://api-v4.zerion.io'}/${endpoint}`, {
     extraHeaders: { origin: DATA_ORIGIN },
     query: {
-      api_token: `${DATA_API_KEY}`,
+      api_token: `${Z_DATA_API_KEY}`,
     },
     transports: ['websocket'],
   });

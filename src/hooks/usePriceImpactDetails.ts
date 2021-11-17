@@ -1,4 +1,4 @@
-import { Trade } from '@uniswap/sdk';
+import { Trade } from '@ubeswap/sdk';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import { useTheme } from '@rainbow-me/context';
