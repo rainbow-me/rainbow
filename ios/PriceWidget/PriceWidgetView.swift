@@ -41,7 +41,7 @@ struct PriceWidgetView: View {
       if let color = tokenData.tokenDetails!.color {
         return hexStringToColor(hex: color)
       } else if let icon = tokenData.icon {
-        if let palette = Palette.from(image: icon).generate().darkVibrantColor {
+        if let palette = icon.createPalette().vibrantColor {
           return Color(palette)
         }
       }
@@ -71,23 +71,12 @@ struct PriceWidgetView: View {
       )
   }
   
-  private func colorIsLight(color: Color) -> Bool {
-    var red: CGFloat = 0
-    var green: CGFloat = 0
-    var blue: CGFloat = 0
-    var alpha: CGFloat = 0
-    
-    let uiColor = UIColor(color)
-    uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-    
-    let luminance = 0.299 * red + 0.587 * green + 0.114 * blue
-    
-    return luminance > 0.5
-  }
-  
   var body: some View {
     let bgColor = getColor(tokenData: tokenData)
-    let fgColor = tokenData.tokenDetails != nil && tokenData.tokenDetails!.color == nil && colorIsLight(color: bgColor) ? hexStringToColor(hex: "#25292E") : Color.white
+    let gray = hexStringToColor(hex: "#25292E")
+    let whiteContrast = UIColor(bgColor).contrastRatio(with: .white)
+    let grayContrast = UIColor(bgColor).contrastRatio(with: UIColor(gray))
+    let fgColor = tokenData.tokenDetails != nil && tokenData.tokenDetails!.color == nil && grayContrast > 2 * whiteContrast ? gray : Color.white
     
     GeometryReader { geometry in
       ZStack {
@@ -107,7 +96,7 @@ struct PriceWidgetView: View {
             )
             .blendMode(.overlay)
             .opacity(0.12)
-
+        if (tokenData.tokenDetails != nil && tokenData.price != nil && tokenData.priceChange != nil) {
           VStack(alignment: .leading) {
             HStack {
               Text(tokenData.tokenDetails != nil && tokenData.price != nil ? tokenData.tokenDetails!.symbol!.uppercased() : "")
@@ -158,14 +147,6 @@ struct PriceWidgetView: View {
                       .minimumScaleFactor(0.01)
                       .lineLimit(1)
                       .frame(height: 33, alignment: .top)
-                } else {
-                  Text("Couldn't retrieve token data")
-                    .font(.custom("SF Pro Rounded", size: 28))
-                    .fontWeight(.heavy)
-                    .foregroundColor(fgColor)
-                    .minimumScaleFactor(0.01)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.center)
                 }
               }
             }
@@ -187,8 +168,18 @@ struct PriceWidgetView: View {
                   .tracking(0.2)
               }
             }
-          }
-            .padding(16)
+          }.padding(16)
+        } else {
+          VStack(alignment: .leading) {
+            Text("Couldn't retrieve token data \u{1F9D0}")
+              .font(.custom("SF Pro Rounded", size: 28))
+              .fontWeight(.heavy)
+              .foregroundColor(.white)
+              .minimumScaleFactor(0.01)
+              .lineLimit(2)
+              .multilineTextAlignment(.center)
+          }.padding(16)
+        }
       }
     }
   }
