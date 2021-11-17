@@ -183,13 +183,13 @@ const GasSpeedButton = ({
     [isL2, nativeCurrencySymbol, nativeCurrency]
   );
 
-  const gasIsNotReady = useMemo(() => {
-    return (
+  const gasIsNotReady = useMemo(
+    () =>
       isEmpty(gasFeeParamsBySpeed) ||
       isEmpty(selectedGasFee?.gasFee) ||
-      typeof isSufficientGas === 'undefined'
-    );
-  }, [gasFeeParamsBySpeed, selectedGasFee, isSufficientGas]);
+      isSufficientGas === null,
+    [gasFeeParamsBySpeed, selectedGasFee, isSufficientGas]
+  );
 
   const openCustomGasSheet = useCallback(() => {
     if (gasIsNotReady) return;
