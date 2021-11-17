@@ -59,6 +59,9 @@
 		AA6228F324272F510078BDAA /* SF-Pro-Rounded-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = AA6228EA24272B200078BDAA /* SF-Pro-Rounded-Semibold.otf */; };
 		B7A3E82A4C4449F4A18EB5C2 /* SFMono-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 95F2888C850F40C8A26E083B /* SFMono-Regular.otf */; };
 		C04D10F025AFC8C1003BEF7A /* Extras.json in Resources */ = {isa = PBXBuildFile; fileRef = C04D10EF25AFC8C1003BEF7A /* Extras.json */; };
+		C10074C82744D15B006D6E1E /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10074C72744D15B006D6E1E /* UIColor.swift */; };
+		C10074C92744D15C006D6E1E /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10074C72744D15B006D6E1E /* UIColor.swift */; };
+		C10074CA2744D15C006D6E1E /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10074C72744D15B006D6E1E /* UIColor.swift */; };
 		C1038325273C2D0C00B18210 /* PriceWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF75272BA7AA00FF5C78 /* PriceWidgetView.swift */; };
 		C1038337273C5C4200B18210 /* PriceWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF62272BA6EF00FF5C78 /* PriceWidget.swift */; };
 		C151287F2739F676006517AB /* IconProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C151287D2739F676006517AB /* IconProvider.swift */; };
@@ -249,6 +252,7 @@
 		AD28C4AF86142344E06574EB /* Pods-Rainbow.localrelease.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Rainbow.localrelease.xcconfig"; path = "Target Support Files/Pods-Rainbow/Pods-Rainbow.localrelease.xcconfig"; sourceTree = "<group>"; };
 		B0C692B061D7430D8194DC98 /* ToolTipMenuTests.xctest */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ToolTipMenuTests.xctest; sourceTree = "<group>"; };
 		C04D10EF25AFC8C1003BEF7A /* Extras.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Extras.json; sourceTree = "<group>"; };
+		C10074C72744D15B006D6E1E /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		C151287D2739F676006517AB /* IconProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconProvider.swift; sourceTree = "<group>"; };
 		C16DCF5C272BA6EF00FF5C78 /* PriceWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PriceWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C16DCF5D272BA6EF00FF5C78 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -635,6 +639,7 @@
 			isa = PBXGroup;
 			children = (
 				C1C61A6C272C9C8D00E5C0B3 /* UIImage.swift */,
+				C10074C72744D15B006D6E1E /* UIColor.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -1051,6 +1056,7 @@
 				1539422D24C7CF9300E4A9D1 /* SettingsBundleHelper.swift in Sources */,
 				66A1FEB624AB641100C3F539 /* RNCMScreen.m in Sources */,
 				C18FCD3F273C64D80079CE28 /* CoinGeckoToken.swift in Sources */,
+				C10074C82744D15B006D6E1E /* UIColor.swift in Sources */,
 				A49B52B823DB5F7200A00918 /* TransactionViewModelTransactionRequestItem.swift in Sources */,
 				A44A4EEE23EC928900B543F1 /* CoinIconWithProgressBar.swift in Sources */,
 				A4AF3CD023DA3A0F00F230F3 /* TransactionListRequestViewCell.swift in Sources */,
@@ -1077,6 +1083,7 @@
 				C16DCF74272BA77A00FF5C78 /* TokenProvider.swift in Sources */,
 				C16DCFB6272BC8F100FF5C78 /* TokenData.swift in Sources */,
 				C1C61A6E272C9C8D00E5C0B3 /* UIImage.swift in Sources */,
+				C10074C92744D15C006D6E1E /* UIColor.swift in Sources */,
 				C16DCFAC272BB8ED00FF5C78 /* PriceDataProvider.swift in Sources */,
 				C1038325273C2D0C00B18210 /* PriceWidgetView.swift in Sources */,
 				C16DCF63272BA6EF00FF5C78 /* PriceWidget.swift in Sources */,
@@ -1088,6 +1095,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C16DCFA4272BABC300FF5C78 /* SelectTokenIntent.intentdefinition in Sources */,
+				C10074CA2744D15C006D6E1E /* UIColor.swift in Sources */,
 				C1C61A932731A05700E5C0B3 /* RainbowTokenList.swift in Sources */,
 				C15128802739F676006517AB /* IconProvider.swift in Sources */,
 				C1C61A6F272C9C8D00E5C0B3 /* UIImage.swift in Sources */,
