@@ -19,7 +19,7 @@ import {
   usePrevious,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { ETH_ADDRESS, MATIC_POLYGON_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import {
@@ -301,7 +301,7 @@ const GasSpeedButton = ({
   const nativeFeeCurrency = useMemo(() => {
     switch (currentNetwork) {
       case networkTypes.polygon:
-        return { address: MATIC_POLYGON_ADDRESS, symbol: 'MATIC' };
+        return { address: MATIC_MAINNET_ADDRESS, symbol: 'MATIC' };
       case networkTypes.optimism:
       case networkTypes.arbitrum:
       default:
@@ -449,7 +449,8 @@ const GasSpeedButton = ({
     setEstimatedTimeValue(estimatedTime[0] || 0);
     setEstimatedTimeUnit(estimatedTime[1] || 'min');
   }, [selectedGasFee, selectedGasFeeOption]);
-
+  console.log('nativeFeeCurrency.address, ', nativeFeeCurrency.address);
+  console.log('nativeFeeCurrency.symbol, ', nativeFeeCurrency.symbol);
   return (
     <Container horizontalPadding={horizontalPadding} testID={testID}>
       <Row justify="space-between">
