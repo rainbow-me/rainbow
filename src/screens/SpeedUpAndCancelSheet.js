@@ -25,7 +25,10 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
+import {
+  EIP1559TransactionType,
+  TransactionStatusTypes,
+} from '@rainbow-me/entities';
 import {
   getProviderForNetwork,
   isEIP1559LegacyNetwork,
@@ -43,11 +46,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { getTitle } from '@rainbow-me/parsers';
 import { dataUpdateTransaction } from '@rainbow-me/redux/data';
 import { updateGasFeeForSpeed } from '@rainbow-me/redux/gas';
-import {
-  EIP1559_TRANSACTION_TYPE,
-  ethUnits,
-  LEGACY_TRANSACTION_TYPE,
-} from '@rainbow-me/references';
+import { ethUnits } from '@rainbow-me/references';
 import { position } from '@rainbow-me/styles';
 import { gasUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -159,7 +158,7 @@ export default function SpeedUpAndCancelSheet() {
   const [value, setValue] = useState(null);
 
   const getNewTransactionGasParams = useCallback(() => {
-    if (txType === EIP1559_TRANSACTION_TYPE) {
+    if (txType === EIP1559TransactionType.current) {
       const rawMaxPriorityFeePerGas =
         selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
       const rawMaxFeePerGas =
@@ -344,7 +343,7 @@ export default function SpeedUpAndCancelSheet() {
           setTo(tx.to);
           setGasLimit(hexGasLimit);
           if (!isEIP1559LegacyNetwork(tx.network)) {
-            setTxType(EIP1559_TRANSACTION_TYPE);
+            setTxType(EIP1559TransactionType.current);
             const hexMaxPriorityFeePerGas = toHex(
               tx.maxPriorityFeePerGas.toString()
             );
@@ -354,7 +353,7 @@ export default function SpeedUpAndCancelSheet() {
             const hexMaxFeePerGas = toHex(tx.maxFeePerGas.toString());
             setMinMaxFeePerGas(calcGasParamRetryValue(hexMaxFeePerGas));
           } else {
-            setTxType(LEGACY_TRANSACTION_TYPE);
+            setTxType(EIP1559TransactionType.legacy);
             const hexGasPrice = toHex(tx.gasPrice.toString());
             setMinGasPrice(calcGasParamRetryValue(hexGasPrice));
           }
