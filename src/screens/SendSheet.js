@@ -133,7 +133,7 @@ export default function SendSheet(props) {
     isSufficientBalance: false,
     nativeAmount: '',
   });
-  const [currentNetwork, setCurrentNetwork] = useState();
+  const [currentNetwork, setCurrentNetwork] = useState(network);
   const prevNetwork = usePrevious(currentNetwork);
   const [currentInput, setCurrentInput] = useState('');
 
@@ -446,7 +446,6 @@ export default function SendSheet(props) {
   const onSubmit = useCallback(async () => {
     const validTransaction =
       isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
-    const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
     if (!selectedGasFee?.gasFee?.estimatedFee || !validTransaction) {
       logger.sentry('preventing tx submit for one of the following reasons:');
       logger.sentry('selectedGasFee ? ', selectedGasFee);
@@ -493,7 +492,7 @@ export default function SendSheet(props) {
       asset: selected,
       from: accountAddress,
       gasLimit: gasLimitToUse,
-      network: assetNetwork,
+      network: currentNetwork,
       nonce: null,
       to: toAddress,
       ...gasParams,
@@ -537,7 +536,6 @@ export default function SendSheet(props) {
     gasLimit,
     isSufficientGas,
     isValidAddress,
-    network,
     selected,
     selectedGasFee,
     toAddress,
