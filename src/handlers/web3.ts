@@ -97,7 +97,7 @@ export let web3Provider: StaticJsonRpcProvider = (null as unknown) as StaticJson
  * @desc Checks whether or not a `Network | string` union type should be
  * treated as a `Network` based on its prefix, as opposed to a `string` type.
  * @param network The network to check.
- * @returns A type predicate of `network is Network`.
+ * @return A type predicate of `network is Network`.
  */
 const isNetworkEnum = (network: Network | string): network is Network => {
   return !network.startsWith('http://');
@@ -199,7 +199,7 @@ export const getProviderForNetwork = async (
  * the Ethers.js `StaticJsonRpcProvider.send` arguments.
  * @param provider The provider to use. If `null`, the current cached web3
  * provider is used.
- * @returns The response from the `StaticJsonRpcProvider.send` call.
+ * @return The response from the `StaticJsonRpcProvider.send` call.
  */
 export const sendRpcCall = async (
   payload: {
@@ -220,7 +220,7 @@ export const isHexString = (value: string) => isEthersHexString(value);
 /**
  * Converts a number to a hex string.
  * @param value The number.
- * @returns The hex string.
+ * @return The hex string.
  */
 export const toHex = (value: BigNumberish) =>
   BigNumber.from(value).toHexString();
@@ -228,7 +228,7 @@ export const toHex = (value: BigNumberish) =>
 /**
  * @desc Checks if a hex string, ignoring prefixes and suffixes.
  * @param value The string.
- * @returns Whether or not the string is a hex string.
+ * @return Whether or not the string is a hex string.
  */
 export const isHexStringIgnorePrefix = (value: string) => {
   if (!value) return false;
@@ -240,7 +240,7 @@ export const isHexStringIgnorePrefix = (value: string) => {
 /**
  * @desc Adds an "0x" prefix to a string if one is not present.
  * @param value The starting string.
- * @returns The prefixed string.
+ * @return The prefixed string.
  */
 export const addHexPrefix = (value: string) =>
   startsWith(value, '0x') ? value : `0x${value}`;
@@ -296,7 +296,7 @@ export const estimateGas = async (
  * @param provider The provider to use. If none is specified, the cached
  * `web3Provider` is used instead.
  * @param paddingFactor The padding applied to the gas limit.
- * @returns
+ * @return The gas estimation as a string, or `null` if estimation failed
  */
 export async function estimateGasWithPadding(
   txPayload: TransactionRequest,
@@ -402,7 +402,7 @@ export const toWei = (ether: string): string => {
 export const getTransaction = async (
   hash: string
 ): Promise<TransactionResponse | null> =>
-  web3Provider ? web3Provider.getTransaction(hash) : null;
+  web3Provider?.getTransaction(hash) ?? null;
 
 /**
  * @desc get address transaction count
@@ -412,7 +412,7 @@ export const getTransaction = async (
 export const getTransactionCount = async (
   address: string
 ): Promise<number | null> =>
-  web3Provider ? web3Provider.getTransactionCount(address, 'pending') : null;
+  web3Provider?.getTransactionCount(address, 'pending') ?? null;
 
 /**
  * get transaction gas params depending on network
@@ -457,7 +457,7 @@ export const getTxDetails = async (
     Pick<TransactionRequest, 'data'>
 ): Promise<TransactionDetailsReturned> => {
   const { to } = transaction;
-  const data = transaction.data ? transaction.data : '0x';
+  const data = transaction?.data ?? '0x';
   const value = transaction.amount ? toHex(toWei(transaction.amount)) : '0x0';
   const gasLimit = transaction.gasLimit
     ? toHex(transaction.gasLimit)
@@ -479,7 +479,7 @@ export const getTxDetails = async (
 /**
  * @desc Resolves an Unstoppable domain string.
  * @param domain The domain as a string.
- * @returns The resolved address, or undefined if none could be found.
+ * @return The resolved address, or undefined if none could be found.
  */
 export const resolveUnstoppableDomain = async (
   domain: string
@@ -507,7 +507,7 @@ export const resolveUnstoppableDomain = async (
  * @param nameOrAddress The name or address to resolve.
  * @param provider If provided, a provider to use instead of the cached
  * `web3Provider`.
- * @returns The address, or undefined if one could not be resolved.
+ * @return The address, or undefined if one could not be resolved.
  */
 export const resolveNameOrAddress = async (
   nameOrAddress: string,
@@ -528,6 +528,7 @@ export const resolveNameOrAddress = async (
  * @param transaction The new transaction. The `asset`, `from`, `to`,
  * `gasPrice`, and `gasLimit` fields from a `NewTransaction` are required.
  * @return The transaction details.
+ * @throws If the recipient is invalid or could not be found.
  */
 export const getTransferNftTransaction = async (
   transaction: Pick<
@@ -542,7 +543,12 @@ export const getTransferNftTransaction = async (
     | 'maxPriorityFeePerGas'
   >
 ): Promise<TransactionDetailsReturned> => {
-  const recipient = (await resolveNameOrAddress(transaction.to)) as string;
+  const recipient = await resolveNameOrAddress(transaction.to);
+
+  if (!recipient) {
+    throw new Error(`Invalid recipient "${transaction.to}"`);
+  }
+
   const { from } = transaction;
   const contractAddress = transaction.asset.asset_contract?.address;
   const data = getDataForNftTransfer(from, recipient, transaction.asset);
@@ -620,7 +626,7 @@ export const createSignableTransaction = async (
 /**
  * @desc Estimates the balance portion for a given asset.
  * @param asset The asset to check.
- * @returns The estimated portion.
+ * @return The estimated portion.
  */
 const estimateAssetBalancePortion = (asset: ParsedAddressAsset): string => {
   if (asset.type !== AssetType.nft && asset.balance?.amount) {
@@ -637,7 +643,7 @@ const estimateAssetBalancePortion = (asset: ParsedAddressAsset): string => {
  * @desc Generates a transaction data string for a token transfer.
  * @param value The value to transfer.
  * @param to The recipient address.
- * @returns The data string for the transaction.
+ * @return The data string for the transaction.
  */
 export const getDataForTokenTransfer = (value: string, to: string): string => {
   const transferMethodHash = smartContractMethods.token_transfer.hash;
@@ -653,7 +659,7 @@ export const getDataForTokenTransfer = (value: string, to: string): string => {
  * @param from The sender's address.
  * @param to The recipient's address.
  * @param asset The asset to transfer.
- * @returns The data string.
+ * @return The data string.
  */
 export const getDataForNftTransfer = (
   from: string,
