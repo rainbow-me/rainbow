@@ -133,7 +133,7 @@ export default function SendSheet(props) {
     isSufficientBalance: false,
     nativeAmount: '',
   });
-  const [currentNetwork, setCurrentNetwork] = useState(network);
+  const [currentNetwork, setCurrentNetwork] = useState();
   const prevNetwork = usePrevious(currentNetwork);
   const [currentInput, setCurrentInput] = useState('');
 
@@ -659,26 +659,18 @@ export default function SendSheet(props) {
       amountDetails: amountDetails,
       asset: selected,
       callback: submitTransaction,
-      currentInput,
-      from: accountAddress,
-      gasLimit: gasLimit,
       isL2,
       isNft,
-      isSufficientGas,
       network: currentNetwork,
       to: recipient,
       toAddress,
     });
   }, [
-    accountAddress,
     amountDetails,
     buttonDisabled,
-    currentInput,
     currentNetwork,
-    gasLimit,
     isL2,
     isNft,
-    isSufficientGas,
     navigate,
     recipient,
     selected,
@@ -741,7 +733,6 @@ export default function SendSheet(props) {
       currentProvider._network.chainId
     );
     const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
-
     if (
       assetNetwork === currentNetwork &&
       currentProviderNetwork === currentNetwork &&

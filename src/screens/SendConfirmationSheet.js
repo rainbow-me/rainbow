@@ -24,7 +24,6 @@ import {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '../utils/profileUtils';
-import { isL2Network } from '@rainbow-me/handlers/web3';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -180,7 +179,16 @@ export default function SendConfirmationSheet() {
   }, []);
 
   const {
-    params: { asset, amountDetails, callback, isNft, network, to, toAddress },
+    params: {
+      asset,
+      amountDetails,
+      callback,
+      isNft,
+      network,
+      to,
+      toAddress,
+      isL2,
+    },
   } = useRoute();
 
   const [
@@ -265,10 +273,6 @@ export default function SendConfirmationSheet() {
   if (isNft) {
     color = colors.appleBlue;
   }
-
-  const isL2 = useMemo(() => {
-    return isL2Network(network);
-  }, [network]);
 
   const shouldShowChecks =
     isL2 &&
