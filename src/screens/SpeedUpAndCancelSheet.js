@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import { BigNumber } from 'bignumber.js';
-import { get, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -160,14 +160,11 @@ export default function SpeedUpAndCancelSheet() {
 
   const getNewTransactionGasParams = useCallback(() => {
     if (txType === EIP1559_TRANSACTION_TYPE) {
-      const rawMaxPriorityFeePerGas = get(
-        selectedGasFee,
-        'gasFeeParams.maxPriorityFeePerGas.amount'
-      );
-      const rawMaxFeePerGas = get(
-        selectedGasFee,
-        'gasFeeParams.maxFeePerGas.amount'
-      );
+      const rawMaxPriorityFeePerGas =
+        selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
+      const rawMaxFeePerGas =
+        selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
+
       const rawMaxPriorityFeePerGasBN = new BigNumber(rawMaxPriorityFeePerGas);
       const minMaxPriorityFeePerGasAllowedBN = new BigNumber(
         minMaxPriorityFeePerGas
@@ -188,7 +185,7 @@ export default function SpeedUpAndCancelSheet() {
         : toHex(minMaxFeePerGas);
       return { maxFeePerGas, maxPriorityFeePerGas };
     } else {
-      const rawGasPrice = get(selectedGasFee, 'gasFeeParams.gasPrice.amount');
+      const rawGasPrice = selectedGasFee?.gasFeeParams?.gasPrice?.amount;
       const rawGasPriceBN = new BigNumber(rawGasPrice);
       const minGasPriceAllowedBN = new BigNumber(minGasPrice);
       return {

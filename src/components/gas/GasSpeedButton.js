@@ -1,5 +1,5 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
-import { get, isEmpty, isNil, lowerCase, upperFirst } from 'lodash';
+import { isEmpty, isNil, lowerCase, upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
@@ -150,10 +150,8 @@ const GasSpeedButton = ({
   // (and leave the number only!)
   // which gets added later in the formatGasPrice function
   const price = useMemo(() => {
-    const gasPrice = get(
-      selectedGasFee,
-      `gasFee.estimatedFee.native.value.display`
-    );
+    const gasPrice =
+      selectedGasFee?.gasFee?.estimatedFee?.native?.value?.display;
     const price = (isNil(gasPrice) ? '0.00' : gasPrice)
       .replace(',', '') // In case gas price is > 1k!
       .replace(nativeCurrencySymbol, '')
@@ -227,17 +225,14 @@ const GasSpeedButton = ({
 
   const handlePressSpeedOption = useCallback(
     selectedSpeed => {
-      if (
-        selectedSpeed === CUSTOM &&
-        isEmpty(gasFeeParamsBySpeed[CUSTOM])
-      ) {
+      if (selectedSpeed === CUSTOM && isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
         const gasFeeParams = gasFeeParamsBySpeed[selectedGasFeeOption];
         updateToCustomGasFee({
           ...gasFeeParams,
           maxBaseFeePerGas: gasFeeParams.maxFeePerGas,
           maxPriorityFeePerGas: gasFeeParams.maxPriorityFeePerGas,
           option: CUSTOM,
-        })
+        });
       } else {
         updateGasFeeOption(selectedSpeed);
       }
@@ -252,29 +247,18 @@ const GasSpeedButton = ({
 
   const formatTransactionTime = useCallback(() => {
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
-    let selectedGasFeeGwei = get(
-      selectedGasFee,
-      'estimatedFee.value.display.display'
-    );
+    let selectedGasFeeGwei =
+      selectedGasFee?.gasFee?.estimatedFee?.value?.display;
     if (selectedGasFeeGwei === '0 Gwei') {
       selectedGasFeeGwei = '< 1 Gwei';
     }
     let timeSymbol = '~';
 
     if (selectedGasFeeOption === CUSTOM) {
-      const customWei = get(
-        gasFeesBySpeed,
-        `${CUSTOM}.estimatedFee.value.amount`
-      );
+      const customWei = gasFeesBySpeed?.[CUSTOM]?.estimatedFee?.value?.amount;
       if (customWei) {
-        const normalWei = get(
-          gasFeesBySpeed,
-          `${NORMAL}.estimatedFee.value.amount`
-        );
-        const urgentWei = get(
-          gasFeesBySpeed,
-          `${URGENT}.estimatedFee.value.amount`
-        );
+        const normalWei = gasFeesBySpeed?.[NORMAL]?.estimatedFee?.value?.amount;
+        const urgentWei = gasFeesBySpeed?.[URGENT]?.estimatedFee?.value?.amount;
         const minGasPriceSlow = normalWei | urgentWei;
         const maxGasPriceFast = urgentWei;
         if (normalWei < minGasPriceSlow) {
@@ -459,11 +443,9 @@ const GasSpeedButton = ({
   }, [navigate, openCustomGasSheet, selectedGasFeeOption]);
 
   useEffect(() => {
-    const estimatedTime = get(
-      selectedGasFee,
-      'estimatedTime.display',
-      ''
-    ).split(' ');
+    const estimatedTime = (selectedGasFee?.estimatedTime?.display || '').split(
+      ' '
+    );
 
     setEstimatedTimeValue(estimatedTime[0] || 0);
     setEstimatedTimeUnit(estimatedTime[1] || 'min');
