@@ -61,7 +61,6 @@ export default function CustomGasState({ asset }) {
   const contentScroll = useSharedValue(0);
   const colorForAsset = useColorForAsset(asset || {}, null, false, true);
   const { selectedGasFee, currentBlockParams } = useGas();
-  const [currentGasTrend] = useState(getTrendKey(currentBlockParams?.trend));
   useAndroidDisableGesturesOnFocus();
 
   const keyboardOffset = keyboardHeight + insets.bottom + 10;
@@ -79,6 +78,11 @@ export default function CustomGasState({ asset }) {
         insets.bottom -
         (sheetHeightWithoutKeyboard + keyboardOffset)
       : 0;
+
+  const currentGasTrend = useMemo(
+    () => getTrendKey(currentBlockParams?.trend),
+    [currentBlockParams?.trend]
+  );
 
   useEffect(() => {
     if (isKeyboardVisible) {
