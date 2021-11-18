@@ -9,6 +9,7 @@ import {
   CLOUDINARY_CLOUD_NAME as cloudName,
 } from 'react-native-dotenv';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
+import { deviceUtils } from '@rainbow-me/utils';
 
 cloudinaryConfig({
   api_key: apiKey,
@@ -18,19 +19,20 @@ cloudinaryConfig({
 
 const RAINBOW_PROXY = 'https://images.rainbow.me/proxy?url=';
 
-function svgToPng(url) {
+function svgToPng(url, big = false) {
   const encoded = encodeURI(url);
   const rainbowedUrl = `${RAINBOW_PROXY}${encoded}&v=2`;
   const cloudinaryImg = cloudinaryImage(rainbowedUrl, {
     sign_url: true,
     transformation: [{ fetch_format: 'png' }],
     type: 'fetch',
+    ...(big && { width: deviceUtils.dimensions.width * 3 }),
   });
-  const cloudinaryUrl = cloudinaryImg.substr(10, cloudinaryImg.length - 14);
+  const cloudinaryUrl = cloudinaryImg.split("'")[1];
   return cloudinaryUrl;
 }
 
-export default function svgToPngIfNeeded(url) {
+export default function svgToPngIfNeeded(url, big) {
   const isSVG = isSupportedUriExtension(url, ['.svg']);
-  return isSVG ? svgToPng(url) : url;
+  return isSVG ? svgToPng(url, big) : url;
 }

@@ -79,7 +79,9 @@ const UniqueTokenImage = ({
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
       {isSVG && !transformSvgs && !error ? (
         <RemoteSvg
-          fallbackUri={svgToPngIfNeeded(imageUrl)}
+          fallbackIfNonAnimated
+          fallbackUri={svgToPngIfNeeded(imageUrl, true)}
+          lowResFallbackUri={svgToPngIfNeeded(imageUrl)}
           onError={handleError}
           resizeMode={resizeMode}
           style={remoteSvgStyle}
