@@ -17,8 +17,6 @@
 		15E531D5242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E531D4242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift */; };
 		15E531DA242DAB7100797B89 /* NotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E531D9242DAB7100797B89 /* NotificationManager.m */; };
 		24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 24979E7720F84004007EB0DA /* GoogleService-Info.plist */; };
-		4024A9382C93EA5E4ABC1483 /* libPods-SelectTokenIntent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E573B49B1BBED599AE6E23C2 /* libPods-SelectTokenIntent.a */; };
-		439BA6E851E6D4C500100082 /* libPods-Rainbow.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1214A7C61F87CDCD77D76837 /* libPods-Rainbow.a */; };
 		6630540924A38A1900E5B030 /* RainbowText.m in Sources */ = {isa = PBXBuildFile; fileRef = 6630540824A38A1900E5B030 /* RainbowText.m */; };
 		6635730624939991006ACFA6 /* SafeStoreReview.m in Sources */ = {isa = PBXBuildFile; fileRef = 6635730524939991006ACFA6 /* SafeStoreReview.m */; };
 		6655FFB425BB2B0700642961 /* ThemeModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 6655FFB325BB2B0700642961 /* ThemeModule.m */; };
@@ -27,6 +25,9 @@
 		66A1FEB624AB641100C3F539 /* RNCMScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEB324AB641100C3F539 /* RNCMScreen.m */; };
 		66A1FEBC24ACBBE600C3F539 /* RNCMPortal.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A1FEBB24ACBBE600C3F539 /* RNCMPortal.m */; };
 		66A28EB024CAF1B500410A88 /* TestFlight.m in Sources */ = {isa = PBXBuildFile; fileRef = 66A28EAF24CAF1B500410A88 /* TestFlight.m */; };
+		66DD52AA2747003D0016C7CA /* UIImageColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DD52A92747003D0016C7CA /* UIImageColor.swift */; };
+		66DD52AB2747003D0016C7CA /* UIImageColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DD52A92747003D0016C7CA /* UIImageColor.swift */; };
+		66DD52AC2747003D0016C7CA /* UIImageColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DD52A92747003D0016C7CA /* UIImageColor.swift */; };
 		66F889DB260CEF1E00E27D6E /* UIViewController+PanModalPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F889D8260CEF1E00E27D6E /* UIViewController+PanModalPresenter.swift */; };
 		66F889DC260CEF1E00E27D6E /* SlackBottomSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 66F889DA260CEF1E00E27D6E /* SlackBottomSheet.m */; };
 		66FEC91623EDA14000A0F367 /* RoundedCornerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FEC91523EDA13F00A0F367 /* RoundedCornerView.swift */; };
@@ -116,7 +117,6 @@
 		C1EB01302731B68400830E70 /* TokenDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EB012E2731B68400830E70 /* TokenDetails.swift */; };
 		C1EB01312731B68400830E70 /* TokenDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EB012E2731B68400830E70 /* TokenDetails.swift */; };
 		C72F456C99A646399192517D /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 98AED33BAB4247CEBEF8464D /* libz.tbd */; };
-		E50AFF678B6F6113B3AD2D6A /* libPods-PriceWidgetExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 014EBC9E7631E2716F11BB23 /* libPods-PriceWidgetExtension.a */; };
 		ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2971642150620600B7C4FE /* JavaScriptCore.framework */; };
 /* End PBXBuildFile section */
 
@@ -156,8 +156,6 @@
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* RainbowTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RainbowTests.m; sourceTree = "<group>"; };
-		014EBC9E7631E2716F11BB23 /* libPods-PriceWidgetExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PriceWidgetExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		1214A7C61F87CDCD77D76837 /* libPods-Rainbow.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Rainbow.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* Rainbow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rainbow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Rainbow/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = Rainbow/AppDelegate.mm; sourceTree = "<group>"; };
@@ -210,6 +208,7 @@
 		66A1FEBB24ACBBE600C3F539 /* RNCMPortal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNCMPortal.m; path = "../src/react-native-cool-modals/ios/RNCMPortal.m"; sourceTree = "<group>"; };
 		66A28EAF24CAF1B500410A88 /* TestFlight.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TestFlight.m; sourceTree = "<group>"; };
 		66A29CCA2511074500481F4A /* ReaHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReaHeader.h; sourceTree = SOURCE_ROOT; };
+		66DD52A92747003D0016C7CA /* UIImageColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageColor.swift; sourceTree = "<group>"; };
 		66F889D8260CEF1E00E27D6E /* UIViewController+PanModalPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+PanModalPresenter.swift"; sourceTree = "<group>"; };
 		66F889D9260CEF1E00E27D6E /* SlackBottomSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlackBottomSheet.h; sourceTree = "<group>"; };
 		66F889DA260CEF1E00E27D6E /* SlackBottomSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SlackBottomSheet.m; sourceTree = "<group>"; };
@@ -282,7 +281,6 @@
 		C85A0C7ECF0BC94E4815B42A /* Pods-PriceWidgetExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PriceWidgetExtension.debug.xcconfig"; path = "Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		CE76671601A0B34DDA691460 /* Pods-PriceWidgetExtension.staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PriceWidgetExtension.staging.xcconfig"; path = "Target Support Files/Pods-PriceWidgetExtension/Pods-PriceWidgetExtension.staging.xcconfig"; sourceTree = "<group>"; };
 		D755E71324B04FEE9C691D14 /* libRNFirebase.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFirebase.a; sourceTree = "<group>"; };
-		E573B49B1BBED599AE6E23C2 /* libPods-SelectTokenIntent.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SelectTokenIntent.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
@@ -294,7 +292,6 @@
 			files = (
 				ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */,
 				C72F456C99A646399192517D /* libz.tbd in Frameworks */,
-				439BA6E851E6D4C500100082 /* libPods-Rainbow.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -304,7 +301,6 @@
 			files = (
 				C16DCF60272BA6EF00FF5C78 /* SwiftUI.framework in Frameworks */,
 				C16DCF5E272BA6EF00FF5C78 /* WidgetKit.framework in Frameworks */,
-				E50AFF678B6F6113B3AD2D6A /* libPods-PriceWidgetExtension.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -313,7 +309,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C16DCF81272BAB9500FF5C78 /* Intents.framework in Frameworks */,
-				4024A9382C93EA5E4ABC1483 /* libPods-SelectTokenIntent.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -438,9 +433,6 @@
 				C16DCF5F272BA6EF00FF5C78 /* SwiftUI.framework */,
 				C16DCF80272BAB9500FF5C78 /* Intents.framework */,
 				C16DCF8B272BAB9600FF5C78 /* IntentsUI.framework */,
-				014EBC9E7631E2716F11BB23 /* libPods-PriceWidgetExtension.a */,
-				1214A7C61F87CDCD77D76837 /* libPods-Rainbow.a */,
-				E573B49B1BBED599AE6E23C2 /* libPods-SelectTokenIntent.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -640,6 +632,7 @@
 			children = (
 				C1C61A6C272C9C8D00E5C0B3 /* UIImage.swift */,
 				C10074C72744D15B006D6E1E /* UIColor.swift */,
+				66DD52A92747003D0016C7CA /* UIImageColor.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -1038,6 +1031,7 @@
 				A4704B4823C546DA00E50E4B /* TransactionListViewCell.swift in Sources */,
 				A485E61423C8ED6000E5C3D4 /* TransactionListViewHeader.swift in Sources */,
 				A49B52B423DB5D1100A00918 /* TransactionViewModelTransactionItem.swift in Sources */,
+				66DD52AA2747003D0016C7CA /* UIImageColor.swift in Sources */,
 				66FEC91623EDA14000A0F367 /* RoundedCornerView.swift in Sources */,
 				A477567E23DB3A85005AE8FD /* TransactionListViewManager.m in Sources */,
 				66A1FEB424AB641100C3F539 /* RNCMScreenStack.m in Sources */,
@@ -1079,6 +1073,7 @@
 				C1C61A922731A05700E5C0B3 /* RainbowTokenList.swift in Sources */,
 				C16DCF71272BA75700FF5C78 /* CoinGeckoToken.swift in Sources */,
 				C16DCFB1272BB8FC00FF5C78 /* PriceData.swift in Sources */,
+				66DD52AB2747003D0016C7CA /* UIImageColor.swift in Sources */,
 				C1EB01302731B68400830E70 /* TokenDetails.swift in Sources */,
 				C16DCF74272BA77A00FF5C78 /* TokenProvider.swift in Sources */,
 				C16DCFB6272BC8F100FF5C78 /* TokenData.swift in Sources */,
@@ -1095,6 +1090,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C16DCFA4272BABC300FF5C78 /* SelectTokenIntent.intentdefinition in Sources */,
+				66DD52AC2747003D0016C7CA /* UIImageColor.swift in Sources */,
 				C10074CA2744D15C006D6E1E /* UIColor.swift in Sources */,
 				C1C61A932731A05700E5C0B3 /* RainbowTokenList.swift in Sources */,
 				C15128802739F676006517AB /* IconProvider.swift in Sources */,

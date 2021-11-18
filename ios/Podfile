@@ -6,12 +6,10 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
 target 'PriceWidgetExtension' do
-  pod 'swift-vibrant'
-end  
+end
 
 target 'SelectTokenIntent' do
-  pod 'swift-vibrant'
-end 
+end
 
 target 'Rainbow' do
   # Pods for Rainbow
@@ -37,7 +35,6 @@ target 'Rainbow' do
   pod "PanModal", :git => 'https://github.com/osdnk/PanModal', :commit => 'ab97d74279ba28c2891b47a5dc767ed4dd7cf994'
 
   pod 'Shimmer'
-  pod 'swift-vibrant'
   use_native_modules!
   if ENV['SKIP_FLIPPER'] != "true"
     # use_flipper!()
