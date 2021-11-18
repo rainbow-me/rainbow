@@ -122,24 +122,18 @@ const unlock = async (
     maxPriorityFeePerGas =
       selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
 
-    // if swap isn't the last action, use fast gas or custom (whatever is faster)
-    if (
-      currentRap.actions.length - 1 > index ||
-      !maxFeePerGas ||
-      !maxPriorityFeePerGas
-    ) {
-      const fastMaxFeePerGas =
-        gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount;
-      const fastMaxPriorityFeePerGas =
-        gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxPriorityFeePerGas?.amount;
+    const fastMaxFeePerGas =
+      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount;
+    const fastMaxPriorityFeePerGas =
+      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxPriorityFeePerGas?.amount;
 
-      if (greaterThan(fastMaxFeePerGas, maxFeePerGas)) {
-        maxFeePerGas = fastMaxFeePerGas;
-      }
-      if (greaterThan(fastMaxPriorityFeePerGas, maxPriorityFeePerGas)) {
-        maxPriorityFeePerGas = fastMaxPriorityFeePerGas;
-      }
+    if (greaterThan(fastMaxFeePerGas, maxFeePerGas)) {
+      maxFeePerGas = fastMaxFeePerGas;
     }
+    if (greaterThan(fastMaxPriorityFeePerGas, maxPriorityFeePerGas)) {
+      maxPriorityFeePerGas = fastMaxPriorityFeePerGas;
+    }
+
     logger.sentry(`[${actionName}] about to approve`, {
       assetAddress,
       contractAddress,
