@@ -643,7 +643,7 @@ export default function TransactionConfirmationScreen() {
           gasPrice,
           hash: result.hash,
           network,
-          nonce,
+          nonce: result.nonce,
           to: displayDetails?.request?.to,
           value: result.value,
         };

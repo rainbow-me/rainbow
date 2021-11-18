@@ -1,17 +1,15 @@
 import {
   getNonceManager,
-  NonceManager,
   saveNonceManager,
 } from '../handlers/localstorage/nonceManager';
 import { AppDispatch, AppGetState } from './store';
+import {
+  EthereumAddress,
+  NonceManager,
+  NonceManagerUpdate,
+} from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import logger from 'logger';
-
-interface NonceManagerUpdate {
-  network: string;
-  account: string;
-  nonce: number;
-}
 
 interface NonceManagerLoadSuccessAction {
   type: typeof NONCE_MANAGER_LOAD_SUCCESS;
@@ -38,26 +36,26 @@ const getCurrentNonce = (
   params: NonceManagerUpdate
 ): [number, NonceManager] => {
   const { nonceManager } = getState();
-  const { account, network } = params;
+  const { accountAddress, network } = params;
   let currentNonceData: NonceManager = { ...nonceManager };
   const currentNonce =
-    currentNonceData[account.toLowerCase()]?.[network]?.nonce;
+    currentNonceData[accountAddress.toLowerCase()]?.[network]?.nonce;
   return [currentNonce, currentNonceData];
 };
 
 const updateNonce = (nonceData: NonceManager, params: NonceManagerUpdate) => (
   dispatch: AppDispatch
 ) => {
-  const { account, network, nonce } = params;
-  const lcAccount = account.toLowerCase();
+  const { accountAddress, network, nonce } = params;
+  const lcAccountAddress = accountAddress.toLowerCase();
   dispatch({
-    payload: { ...params, account: lcAccount },
+    payload: { ...params, accountAddress: lcAccountAddress },
     type: NONCE_MANAGER_UPDATE_NONCE,
   });
   saveNonceManager({
     ...nonceData,
-    [lcAccount]: {
-      ...(nonceData[lcAccount] || {}),
+    [lcAccountAddress]: {
+      ...(nonceData[lcAccountAddress] || {}),
       [network]: { nonce },
     },
   });
@@ -79,13 +77,13 @@ export const nonceManagerLoadState = () => async (dispatch: AppDispatch) => {
 };
 
 export const incrementNonce = (
-  account: string,
+  accountAddress: EthereumAddress,
   nonce: number,
-  network?: string
+  network = Network.mainnet
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const nonceParams = {
-    account,
-    network: network || Network.mainnet,
+    accountAddress,
+    network,
     nonce,
   };
   const [currentNonce, currentNonceData] = getCurrentNonce(
@@ -102,14 +100,13 @@ export const incrementNonce = (
 };
 
 export const decrementNonce = (
-  account: string,
+  accountAddress: EthereumAddress,
   nonce: number,
-  network?: string
+  network = Network.mainnet
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
-  const ntwrk = network || Network.mainnet;
   let [currentNonce, currentNonceData] = getCurrentNonce(getState, {
-    account,
-    network: ntwrk,
+    accountAddress,
+    network,
     nonce,
   });
   const nonceCounterExists = !!currentNonce;
@@ -118,18 +115,12 @@ export const decrementNonce = (
   if (!nonceCounterExists || counterShouldBeDecremented) {
     const decrementedNonce = nonce - 1;
     const nonceParams = {
-      account,
-      network: ntwrk,
-      nonce: decrementNonce,
+      accountAddress,
+      network,
+      nonce: decrementedNonce,
     };
-    logger.debug('Decrementing nonce: ', nonceParams);
-    dispatch(
-      updateNonce(currentNonceData, {
-        account,
-        network: ntwrk,
-        nonce: decrementedNonce,
-      })
-    );
+    logger.log('Decrementing nonce: ', nonceParams);
+    dispatch(updateNonce(currentNonceData, nonceParams));
   }
 };
 
@@ -146,7 +137,8 @@ export default (state = INITIAL_STATE, action: NonceManagerActionType) => {
     case NONCE_MANAGER_UPDATE_NONCE:
       return {
         ...state,
-        [action.payload.account]: {
+        [action.payload.accountAddress]: {
+          ...state[action.payload.accountAddress],
           [action.payload.network]: {
             nonce: action.payload.nonce,
           },

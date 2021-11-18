@@ -373,7 +373,10 @@ const checkForConfirmedSavingsActions = transactionsData => dispatch => {
 };
 
 const checkForUpdatedNonce = transactionData => dispatch => {
-  const [latestTx] = transactionData;
+  const txSortedByDescendingNonce = transactionData.sort(
+    ({ nonce: n1 }, { nonce: n2 }) => n2 - n1
+  );
+  const [latestTx] = txSortedByDescendingNonce;
   const { address_from, network, nonce } = latestTx;
   dispatch(incrementNonce(address_from, nonce, network));
 };

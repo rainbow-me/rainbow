@@ -1,17 +1,22 @@
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import { EthereumAddress } from '@rainbow-me/entities';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 import { AppState } from '@rainbow-me/redux/store';
 import logger from 'logger';
 
-export default function useCurrentNonce(account: string, network: string) {
+export default function useCurrentNonce(
+  accountAddress: EthereumAddress,
+  network: Network
+) {
   const nonceInState = useSelector((state: AppState) => {
-    return state.nonceManager[account.toLowerCase()]?.[network]?.nonce;
+    return state.nonceManager[accountAddress.toLowerCase()]?.[network]?.nonce;
   });
   const getNextNonce = useCallback(async () => {
     const provider = await getProviderForNetwork(network);
     const transactionCount = await provider.getTransactionCount(
-      account,
+      accountAddress,
       'pending'
     );
     const transactionIndex = transactionCount - 1;
@@ -22,7 +27,7 @@ export default function useCurrentNonce(account: string, network: string) {
     const nextNonce = nextNonceBase + 1;
 
     logger.log('Use current nonce: ', {
-      account,
+      accountAddress,
       network,
       nextNonce,
       nonceInState,
@@ -30,7 +35,7 @@ export default function useCurrentNonce(account: string, network: string) {
     });
 
     return nextNonce;
-  }, [account, network, nonceInState]);
+  }, [accountAddress, network, nonceInState]);
 
   return getNextNonce;
 }

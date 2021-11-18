@@ -478,14 +478,13 @@ export default function SendSheet(props) {
         : gasLimit;
 
     logger.log('gasLimit', gasLimitToUse);
-    const nonce = await getNextNonce();
     const txDetails = {
       amount: amountDetails.assetAmount,
       asset: selected,
       from: accountAddress,
       gasLimit: gasLimitToUse,
       gasPrice: selectedGasPrice.value?.amount,
-      nonce,
+      nonce: await getNextNonce(),
       to: toAddress,
     };
     try {
