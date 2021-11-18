@@ -70,7 +70,7 @@ export async function loadString(
       return credentials.password;
     }
     logger.sentry(`Keychain: string does not exist for key: ${key}`);
-  } catch (err) {
+  } catch (err: any) {
     if (err.toString() === 'Error: User canceled the operation.') {
       return -1;
     }

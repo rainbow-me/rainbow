@@ -8,7 +8,6 @@ import type {
   BottomSheetDescriptorMap,
   BottomSheetNavigationConfig,
   BottomSheetNavigationHelpers,
-  // eslint-disable-next-line import/no-unresolved
 } from '../types';
 import BottomSheetRoute from './BottomSheetRoute';
 import { useForceUpdate } from '@rainbow-me/hooks';
