@@ -139,7 +139,7 @@ class SvgImage extends Component {
             <ImageTile
               resizeMode={ImgixImage.resizeMode.contain}
               source={{ uri: props.fallbackUri }}
-              style={[position.coverAsObject, { backgroundColor: 'red' }]}
+              style={position.coverAsObject}
             />
           )}
           <WebView
@@ -154,7 +154,7 @@ class SvgImage extends Component {
             style={[
               styles,
               props.style,
-              { display: this.state.loaded ? 'flex' : 'none' },
+              { display: this.state.loaded || android ? 'flex' : 'none' },
             ]}
           />
         </View>
