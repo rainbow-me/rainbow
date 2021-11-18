@@ -484,6 +484,9 @@ export const getTxDetails = async (
 export const resolveUnstoppableDomain = async (
   domain: string
 ): Promise<string | void> => {
+  // This parameter doesn't line up with the `Resolution` type declaration,
+  // but it can be casted to `any` as it does match the documentation here:
+  // https://unstoppabledomains.github.io/resolution/v2.2.0/classes/resolution.html.
   const resolution = new UnstoppableResolution({
     blockchain: {
       cns: {
