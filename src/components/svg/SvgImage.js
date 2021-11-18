@@ -137,7 +137,7 @@ class SvgImage extends Component {
       const isSVGAnimated = html?.indexOf('<animate') !== -1;
 
       return (
-        <View style={[props.style, props.containerStyle]}>
+        <View style={[isSVGAnimated ? {} : props.style, props.containerStyle]}>
           {!this.state.trulyLoaded && props.lowResFallbackUri && (
             <ImageTile
               resizeMode={ImgixImage.resizeMode.contain}
