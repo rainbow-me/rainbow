@@ -260,7 +260,7 @@ class App extends Component {
       () => {
         if (isL2) {
           logger.log('Reloading all data from L2 explorers!');
-          store.dispatch(explorerInitL2());
+          store.dispatch(explorerInitL2(network));
         } else {
           logger.log('fetching onchain balances NOW!');
           store.dispatch(

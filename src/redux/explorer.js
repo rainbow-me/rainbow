@@ -410,14 +410,27 @@ const listenOnAssetMessages = socket => dispatch => {
   });
 };
 
-export const explorerInitL2 = () => (dispatch, getState) => {
+export const explorerInitL2 = (network = null) => (dispatch, getState) => {
   if (getState().settings.network === NetworkTypes.mainnet) {
-    // Start watching arbitrum assets
-    dispatch(arbitrumExplorerInit());
-    // Start watching optimism assets
-    dispatch(optimismExplorerInit());
-    // Start watching polygon assets
-    dispatch(polygonExplorerInit());
+    switch (network) {
+      case NetworkTypes.arbitrum:
+        // Start watching arbitrum assets
+        dispatch(arbitrumExplorerInit());
+        break;
+      case NetworkTypes.optimism:
+        // Start watching optimism assets
+        dispatch(optimismExplorerInit());
+        break;
+      case NetworkTypes.polygon:
+        // Start watching polygon assets
+        dispatch(polygonExplorerInit());
+        break;
+      default:
+        // Start watching all L2 assets
+        dispatch(arbitrumExplorerInit());
+        dispatch(optimismExplorerInit());
+        dispatch(polygonExplorerInit());
+    }
   }
 };
 
