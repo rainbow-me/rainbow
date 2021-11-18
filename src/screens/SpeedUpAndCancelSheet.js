@@ -293,7 +293,18 @@ export default function SpeedUpAndCancelSheet() {
           setMinGasPrice(calcMinGasPriceAllowed(hexGasPrice));
         } catch (e) {
           logger.log('something went wrong while fetching tx info ', e);
-          captureException(e);
+          logger.sentry(
+            'Error speeding up or canceling transaction: [error]',
+            e
+          );
+          logger.sentry(
+            'Error speeding up or canceling transaction: [transaction]',
+            tx
+          );
+          const speedUpOrCancelError = new Error(
+            'Error speeding up or canceling transaction'
+          );
+          captureException(speedUpOrCancelError);
           if (type === SPEED_UP) {
             Alert.alert(
               'Unable to speed up transaction',
