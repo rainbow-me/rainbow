@@ -114,7 +114,6 @@ PODS:
     - nanopb/encode (= 2.30908.0)
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
-  - Palette (1.0.6)
   - PanModal (1.2.7)
   - Permission-Camera (3.0.5):
     - RNPermissions
@@ -584,6 +583,7 @@ PODS:
   - Shimmer (1.0.2)
   - SRSRadialGradient (1.0.9):
     - React
+  - swift-vibrant (1.0.0)
   - TcpSockets (3.3.2):
     - CocoaAsyncSocket
     - React
@@ -605,7 +605,6 @@ DEPENDENCIES:
   - libwebp
   - lottie-ios (from `../node_modules/lottie-ios`)
   - lottie-react-native (from `../node_modules/lottie-react-native`)
-  - Palette (from `https://github.com/galandezzz/ios-Palette.git`)
   - PanModal (from `https://github.com/osdnk/PanModal`, commit `42c1ac03b79d1333ff06c4234aba2e3e47a32c99`)
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera`)
   - Permission-FaceID (from `../node_modules/react-native-permissions/ios/FaceID`)
@@ -694,6 +693,7 @@ DEPENDENCIES:
   - RNTextSize (from `../node_modules/react-native-text-size`)
   - Shimmer
   - SRSRadialGradient (from `../node_modules/react-native-radial-gradient/ios`)
+  - swift-vibrant
   - TcpSockets (from `../node_modules/react-native-tcp`)
   - ToolTipMenu (from `../node_modules/react-native-tooltip`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -728,6 +728,7 @@ SPEC REPOS:
     - SDWebImageWebPCoder
     - Sentry
     - Shimmer
+    - swift-vibrant
     - TOCropViewController
 
 EXTERNAL SOURCES:
@@ -747,8 +748,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/lottie-ios"
   lottie-react-native:
     :path: "../node_modules/lottie-react-native"
-  Palette:
-    :git: https://github.com/galandezzz/ios-Palette.git
   PanModal:
     :commit: 42c1ac03b79d1333ff06c4234aba2e3e47a32c99
     :git: https://github.com/osdnk/PanModal
@@ -928,9 +927,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 CHECKOUT OPTIONS:
-  Palette:
-    :commit: 9b5b2831367fb32fac0ec97551724f77978a7e85
-    :git: https://github.com/galandezzz/ios-Palette.git
   PanModal:
     :commit: 42c1ac03b79d1333ff06c4234aba2e3e47a32c99
     :git: https://github.com/osdnk/PanModal
@@ -967,7 +963,6 @@ SPEC CHECKSUMS:
   MMKV: 217b643c181c3d2f71983206ca1972d0a6e99881
   MMKVCore: f9e4f56742fdebbd042f7a273e278927f182cee7
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
-  Palette: aa21bf41603ef85b1d735ae7e17f7685aa21f192
   PanModal: 421fe72d4af5b7e9016aaa3b4db94a2fb71756d3
   Permission-Camera: ac603073e4128e51e6ca3c39129778f05b4082fa
   Permission-FaceID: 9b1f0d42ee7aa2c830844964e739676fe6b634bd
@@ -1058,11 +1053,12 @@ SPEC CHECKSUMS:
   Sentry: 89d26e036063b9cb9caa59b6951dd2f8277aa13b
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SRSRadialGradient: a372b4b3bc65a2f3b1a16b906485cff204e1db3e
+  swift-vibrant: 3def73c5c281db74f420ec386590d9c1c5b0995c
   TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
   TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   Yoga: 2b4a01651f42a32f82e6cef3830a3ba48088237f
 
-PODFILE CHECKSUM: 844011f0b4f0e17384cda0cfec89c409562e1e59
+PODFILE CHECKSUM: d04bdbee56bdb2a72518141cdb64889180a36d7e
 
 COCOAPODS: 1.11.2

@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 import UIKit
-import Palette
+import swift_vibrant
 
 @available(iOS 14.0, *)
 struct PriceWidgetView: View {
@@ -36,20 +36,18 @@ struct PriceWidgetView: View {
     return nf.string(for: double)!
   }
   
-  private func getColor(tokenData: TokenData) -> Color {
+  private func getColor(tokenData: TokenData) -> SwiftUI.Color {
     if (tokenData.tokenDetails != nil) {
       if let color = tokenData.tokenDetails!.color {
         return hexStringToColor(hex: color)
-      } else if let icon = tokenData.icon {
-        if let palette = icon.createPalette().vibrantColor {
-          return Color(palette)
-        }
+      } else if let icon = tokenData.icon, let palette = Vibrant.from(icon).getPalette().Vibrant {
+        return SwiftUI.Color(palette.uiColor)
       }
     }
     return Color(red:0.15, green:0.16, blue:0.18)
   }
   
-  private func hexStringToColor (hex:String) -> Color {
+  private func hexStringToColor(hex: String) -> SwiftUI.Color {
       var cString:String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
 
       if (cString.hasPrefix("#")) {
