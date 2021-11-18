@@ -51,7 +51,7 @@ const docs: Docs = {
   examples: [
     ...textExamples.map(({ size, weight }) => ({
       name: `${size} (${weight})`,
-      example: (
+      Example: () => (
         <>
           <Stack space="10px">
             <View>
@@ -79,7 +79,7 @@ const docs: Docs = {
     })),
     {
       name: 'With emoji',
-      example: (
+      Example: () => (
         <>
           <Guide />
           <Text containsEmoji>Text with emoji 🌈</Text>
@@ -89,7 +89,7 @@ const docs: Docs = {
     },
     {
       name: 'With truncation',
-      example: (
+      Example: () => (
         <>
           <Guide />
           <Text numberOfLines={1}>
@@ -102,7 +102,7 @@ const docs: Docs = {
     },
     {
       name: 'With color',
-      example: (
+      Example: () => (
         <Stack space="12px">
           <Text color="accent">Standard color</Text>
           <Text color={customTextColor}>Custom color</Text>

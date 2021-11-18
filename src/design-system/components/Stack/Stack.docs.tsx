@@ -16,7 +16,7 @@ const docs: Docs = {
   examples: [
     {
       name: 'Basic usage',
-      example: (
+      Example: () => (
         <Stack space="12px">
           <Placeholder />
           <Placeholder />
@@ -26,7 +26,7 @@ const docs: Docs = {
     },
     {
       name: 'With text',
-      example: (
+      Example: () => (
         <Stack space="15px">
           <Text>Lorem ipsum</Text>
           <Text>Lorem ipsum</Text>
@@ -36,7 +36,7 @@ const docs: Docs = {
     },
     {
       name: 'With center alignment',
-      example: (
+      Example: () => (
         <Stack alignHorizontal="center" space="19px">
           <Placeholder width={30} />
           <Placeholder width={90} />
@@ -46,7 +46,7 @@ const docs: Docs = {
     },
     {
       name: 'With separators',
-      example: (
+      Example: () => (
         <Stack separator={<MockDivider />} space="19px">
           <Placeholder />
           <Placeholder />
@@ -56,7 +56,7 @@ const docs: Docs = {
     },
     {
       name: 'With center alignment and dividers',
-      example: (
+      Example: () => (
         <Stack
           alignHorizontal="center"
           separator={<MockDivider />}
@@ -70,7 +70,7 @@ const docs: Docs = {
     },
     {
       name: 'With right alignment and dividers',
-      example: (
+      Example: () => (
         <Stack alignHorizontal="right" separator={<MockDivider />} space="19px">
           <Placeholder width={30} />
           <Placeholder width={90} />
@@ -80,7 +80,7 @@ const docs: Docs = {
     },
     {
       name: 'With no space and separators',
-      example: (
+      Example: () => (
         <Stack alignHorizontal="center" separator={<MockDivider />}>
           <Placeholder width={30} />
           <Placeholder width={90} />

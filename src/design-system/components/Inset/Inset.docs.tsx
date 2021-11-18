@@ -10,7 +10,7 @@ const docs: Docs = {
   examples: [
     {
       name: 'Basic usage',
-      example: (
+      Example: () => (
         <Inset space="19px">
           <Placeholder height={100} />
         </Inset>
@@ -19,7 +19,7 @@ const docs: Docs = {
 
     {
       name: 'Horizontal space',
-      example: (
+      Example: () => (
         <Inset horizontal="19px">
           <Placeholder height={100} />
         </Inset>
@@ -28,7 +28,7 @@ const docs: Docs = {
 
     {
       name: 'Vertical space',
-      example: (
+      Example: () => (
         <Inset vertical="19px">
           <Placeholder height={100} />
         </Inset>

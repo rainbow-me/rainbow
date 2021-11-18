@@ -10,7 +10,7 @@ const docs: Docs = {
   examples: [
     {
       name: 'Basic usage',
-      example: (
+      Example: () => (
         <Text>
           This text contains a{' '}
           <TextLink url="https://rainbow.me">link</TextLink>

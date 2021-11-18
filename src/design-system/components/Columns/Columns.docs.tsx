@@ -15,7 +15,7 @@ const docs: Docs = {
   examples: [
     {
       name: 'Basic usage',
-      example: (
+      Example: () => (
         <Columns space="19px">
           <Placeholder />
           <Placeholder />
@@ -25,7 +25,7 @@ const docs: Docs = {
 
     {
       name: 'Custom widths',
-      example: (
+      Example: () => (
         <Stack space="19px">
           <Columns space="19px">
             <Column width="1/2">
@@ -131,7 +131,7 @@ const docs: Docs = {
 
     {
       name: 'Custom width (content)',
-      example: (
+      Example: () => (
         <Columns space="19px">
           <Placeholder />
           <Column width="content">
@@ -143,7 +143,7 @@ const docs: Docs = {
 
     {
       name: 'Nested columns',
-      example: (
+      Example: () => (
         <Columns space="12px">
           <Placeholder />
           <Columns space="12px">
@@ -156,7 +156,7 @@ const docs: Docs = {
 
     {
       name: 'Nested columns with explicit widths',
-      example: (
+      Example: () => (
         <Columns space="12px">
           <Placeholder />
           <Columns space="12px">
@@ -171,7 +171,7 @@ const docs: Docs = {
 
     {
       name: 'Nested columns with explicit widths (content)',
-      example: (
+      Example: () => (
         <Columns space="19px">
           <Placeholder />
           <Column width="content">
@@ -190,7 +190,7 @@ const docs: Docs = {
 
     {
       name: 'Center-aligned vertically',
-      example: (
+      Example: () => (
         <Columns alignVertical="center" space="19px">
           <Placeholder height={30} />
           <Placeholder height={60} />
@@ -201,7 +201,7 @@ const docs: Docs = {
 
     {
       name: 'Bottom-aligned vertically',
-      example: (
+      Example: () => (
         <Columns alignVertical="bottom" space="19px">
           <Placeholder height={30} />
           <Placeholder height={60} />
@@ -212,7 +212,7 @@ const docs: Docs = {
 
     {
       name: 'Center-aligned horizontally',
-      example: (
+      Example: () => (
         <Columns alignHorizontal="center" space="19px">
           <Column width="1/4">
             <Placeholder height={30} />
@@ -226,7 +226,7 @@ const docs: Docs = {
 
     {
       name: 'Right-aligned horizontally',
-      example: (
+      Example: () => (
         <Columns alignHorizontal="right" space="19px">
           <Column width="1/4">
             <Placeholder height={30} />
@@ -240,7 +240,7 @@ const docs: Docs = {
 
     {
       name: 'Justified horizontally',
-      example: (
+      Example: () => (
         <Columns alignHorizontal="justify" space="19px">
           <Column width="1/4">
             <Placeholder height={30} />
@@ -254,7 +254,7 @@ const docs: Docs = {
 
     {
       name: 'Full-height column via flexGrow',
-      example: (
+      Example: () => (
         <Columns alignVertical="bottom" space="30px">
           <Placeholder flexGrow={1} />
           <Placeholder height={30} />
@@ -266,7 +266,7 @@ const docs: Docs = {
 
     {
       name: 'Dynamic width content',
-      example: (
+      Example: () => (
         <Columns space="19px">
           <Text>Lorem</Text>
           <Text>{loremIpsum}</Text>

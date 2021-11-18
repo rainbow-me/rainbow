@@ -97,7 +97,7 @@ const docs: Docs = {
   examples: [
     {
       name: 'Basic usage',
-      example: (
+      Example: () => (
         <>
           <Guide />
           <MarkdownText>{markdown}</MarkdownText>
@@ -108,7 +108,7 @@ const docs: Docs = {
 
     {
       name: 'Custom space',
-      example: (
+      Example: () => (
         <>
           <Guide />
           <MarkdownText nestedSpace="30px" space="42px">

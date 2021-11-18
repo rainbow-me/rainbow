@@ -11,7 +11,7 @@ const docs: Docs = {
   examples: [
     {
       name: 'Basic usage',
-      example: (
+      Example: () => (
         <Row space="19px">
           <Placeholder width={40} />
           <Placeholder width={40} />
@@ -22,7 +22,7 @@ const docs: Docs = {
 
     {
       name: 'Center-aligned horizontally',
-      example: (
+      Example: () => (
         <Row alignHorizontal="center" space="19px">
           <Placeholder width={40} />
           <Placeholder width={40} />
@@ -33,7 +33,7 @@ const docs: Docs = {
 
     {
       name: 'Right-aligned horizontally',
-      example: (
+      Example: () => (
         <Row alignHorizontal="right" space="19px">
           <Placeholder width={40} />
           <Placeholder width={40} />
@@ -44,7 +44,7 @@ const docs: Docs = {
 
     {
       name: 'Justified horizontally',
-      example: (
+      Example: () => (
         <Row alignHorizontal="justify" space="19px">
           <Placeholder width={40} />
           <Placeholder width={40} />
@@ -55,7 +55,7 @@ const docs: Docs = {
 
     {
       name: 'Center-aligned vertically',
-      example: (
+      Example: () => (
         <Row alignVertical="center" space="19px">
           <Placeholder height={40} width={40} />
           <Placeholder height={60} width={40} />
@@ -66,7 +66,7 @@ const docs: Docs = {
 
     {
       name: 'Bottom-aligned vertically',
-      example: (
+      Example: () => (
         <Row alignVertical="bottom" space="19px">
           <Placeholder height={40} width={40} />
           <Placeholder height={60} width={40} />
@@ -77,7 +77,7 @@ const docs: Docs = {
 
     {
       name: 'With fixed-height separators',
-      example: (
+      Example: () => (
         <Row
           separator={
             <View style={{ backgroundColor: '#999', height: 20, width: 1 }} />
@@ -93,7 +93,7 @@ const docs: Docs = {
 
     {
       name: 'With fixed-height separators and vertical alignment',
-      example: (
+      Example: () => (
         <Row
           alignVertical="center"
           separator={
@@ -110,7 +110,7 @@ const docs: Docs = {
 
     {
       name: 'With fixed-height separators and horizontal alignment',
-      example: (
+      Example: () => (
         <Row
           alignHorizontal="center"
           separator={
@@ -127,7 +127,7 @@ const docs: Docs = {
 
     {
       name: 'With full-height separators',
-      example: (
+      Example: () => (
         <Row
           alignVertical="center"
           separator={
@@ -144,7 +144,7 @@ const docs: Docs = {
 
     {
       name: 'With no space and separators',
-      example: (
+      Example: () => (
         <Row
           alignVertical="center"
           separator={

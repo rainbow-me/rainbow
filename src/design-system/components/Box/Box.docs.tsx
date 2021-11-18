@@ -45,7 +45,7 @@ const docs: Docs = {
   examples: [
     {
       name: 'Backgrounds',
-      example: (
+      Example: () => (
         <Columns space="19px">
           <Stack space="10px">
             <Text weight="bold">Light mode</Text>

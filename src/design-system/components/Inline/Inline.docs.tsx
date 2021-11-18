@@ -10,7 +10,7 @@ const docs: Docs = {
   examples: [
     {
       name: 'Equal spacing',
-      example: (
+      Example: () => (
         <Inline space="12px">
           <Placeholder height={40} width={40} />
           <Placeholder height={40} width={40} />
@@ -28,7 +28,7 @@ const docs: Docs = {
 
     {
       name: 'Different space on each axis',
-      example: (
+      Example: () => (
         <Inline horizontalSpace="19px" verticalSpace="12px">
           <Placeholder height={40} width={40} />
           <Placeholder height={40} width={40} />
@@ -46,7 +46,7 @@ const docs: Docs = {
 
     {
       name: 'Center-aligned horizontally',
-      example: (
+      Example: () => (
         <Inline alignHorizontal="center" space="19px">
           <Placeholder height={40} width={40} />
           <Placeholder height={40} width={40} />
@@ -62,7 +62,7 @@ const docs: Docs = {
 
     {
       name: 'Right-aligned horizontally',
-      example: (
+      Example: () => (
         <Inline alignHorizontal="right" space="19px">
           <Placeholder height={40} width={40} />
           <Placeholder height={40} width={40} />
@@ -78,7 +78,7 @@ const docs: Docs = {
 
     {
       name: 'Center-aligned vertically',
-      example: (
+      Example: () => (
         <Inline alignVertical="center" space="19px">
           <Placeholder height={20} width={40} />
           <Placeholder height={40} width={40} />
@@ -95,7 +95,7 @@ const docs: Docs = {
 
     {
       name: 'Bottom-aligned vertically',
-      example: (
+      Example: () => (
         <Inline alignVertical="bottom" space="19px">
           <Placeholder height={20} width={40} />
           <Placeholder height={40} width={40} />
@@ -112,7 +112,7 @@ const docs: Docs = {
 
     {
       name: 'Center-aligned horizontally and vertically',
-      example: (
+      Example: () => (
         <Inline alignHorizontal="center" alignVertical="center" space="19px">
           <Placeholder height={20} width={40} />
           <Placeholder height={40} width={40} />

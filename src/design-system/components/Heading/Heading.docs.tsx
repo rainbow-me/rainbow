@@ -41,7 +41,7 @@ const docs: Docs = {
   examples: [
     ...headingExamples.map(({ size, weight }) => ({
       name: `${size} (${weight})`,
-      example: (
+      Example: () => (
         <>
           <Stack space="10px">
             <View>
@@ -74,7 +74,7 @@ const docs: Docs = {
     })),
     {
       name: 'With emoji',
-      example: (
+      Example: () => (
         <>
           <Guide />
           <Heading containsEmoji>Heading with emoji 🌈</Heading>
@@ -84,7 +84,7 @@ const docs: Docs = {
     },
     {
       name: 'With truncation',
-      example: (
+      Example: () => (
         <>
           <Guide />
           <Heading numberOfLines={1}>
@@ -97,7 +97,7 @@ const docs: Docs = {
     },
     {
       name: 'With color',
-      example: (
+      Example: () => (
         <View>
           <View
             style={{

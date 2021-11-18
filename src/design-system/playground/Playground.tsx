@@ -64,10 +64,10 @@ const DocsRow = ({ name, category, examples }: Docs) => {
         </Inline>
       </TouchableOpacity>
       {open
-        ? examples.map((example, index) => (
+        ? examples.map(({ name, Example }, index) => (
             <Stack key={index} space="12px">
               <Heading size="18px" weight="bold">
-                {example.name}
+                {name}
               </Heading>
               <View
                 style={
@@ -76,7 +76,7 @@ const DocsRow = ({ name, category, examples }: Docs) => {
                     : undefined
                 }
               >
-                {'Example' in example ? <example.Example /> : example.example}
+                <Example />
               </View>
             </Stack>
           ))

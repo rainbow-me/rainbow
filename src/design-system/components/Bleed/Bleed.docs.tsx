@@ -12,7 +12,7 @@ const docs: Docs = {
   examples: [
     {
       name: 'Basic usage',
-      example: (
+      Example: () => (
         <Inset space="19px">
           <Stack space="19px">
             <Placeholder height={100} />
@@ -27,7 +27,7 @@ const docs: Docs = {
 
     {
       name: 'Right',
-      example: (
+      Example: () => (
         <Inset space="19px">
           <Stack space="19px">
             <Placeholder height={100} />
@@ -42,7 +42,7 @@ const docs: Docs = {
 
     {
       name: 'Left',
-      example: (
+      Example: () => (
         <Inset space="19px">
           <Stack space="19px">
             <Placeholder height={100} />
@@ -57,7 +57,7 @@ const docs: Docs = {
 
     {
       name: 'Top',
-      example: (
+      Example: () => (
         <Inset space="19px">
           <Stack space="19px">
             <Bleed top="19px">
@@ -72,7 +72,7 @@ const docs: Docs = {
 
     {
       name: 'Bottom',
-      example: (
+      Example: () => (
         <Inset space="19px">
           <Stack space="19px">
             <Placeholder height={100} />
