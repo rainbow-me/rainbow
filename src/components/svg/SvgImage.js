@@ -1,11 +1,19 @@
 // @flow
-
 import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { WebView } from 'react-native-webview';
+import styled from 'styled-components';
+import { ImgixImage } from '@rainbow-me/images';
+import { position } from '@rainbow-me/styles';
 import logger from 'logger';
 
-const getHTML = (svgContent, style) => `
+const ImageTile = styled(ImgixImage)`
+  align-items: center;
+  justify-content: center;
+`;
+
+const getHTML = (svgContent, style) =>
+  `
 <html data-key="key-${style.height}-${style.width}">
   <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no"> 
@@ -31,8 +39,10 @@ const getHTML = (svgContent, style) => `
   <body>
     ${svgContent}
   </body>
-</html>
-`;
+</html>`.replace(
+    '<svg',
+    `<svg onload="window.ReactNativeWebView.postMessage('loaded');"`
+  );
 
 const styles = {
   backgroundColor: 'transparent',
@@ -89,6 +99,12 @@ class SvgImage extends Component {
       this.mounted && props.onLoadEnd && props.onLoadEnd();
     }
   };
+
+  onLoad = e => {
+    if (e?.nativeEvent?.data === 'loaded') {
+      this.setState({ loaded: true });
+    }
+  };
   render() {
     const props = this.props;
     const { svgContent } = this.state;
@@ -119,7 +135,15 @@ class SvgImage extends Component {
 
       return (
         <View style={[props.style, props.containerStyle]}>
+          {props.fallbackUri && (
+            <ImageTile
+              resizeMode={ImgixImage.resizeMode.contain}
+              source={{ uri: props.fallbackUri }}
+              style={[position.coverAsObject, { backgroundColor: 'red' }]}
+            />
+          )}
           <WebView
+            onMessage={this.onLoad}
             originWhitelist={['*']}
             pointerEvents="none"
             scalesPageToFit
@@ -127,7 +151,11 @@ class SvgImage extends Component {
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
             source={{ html }}
-            style={[styles, props.style]}
+            style={[
+              styles,
+              props.style,
+              { display: this.state.loaded ? 'flex' : 'none' },
+            ]}
           />
         </View>
       );

@@ -8,6 +8,7 @@ import {
   // @ts-ignore
   CLOUDINARY_CLOUD_NAME as cloudName,
 } from 'react-native-dotenv';
+import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 
 cloudinaryConfig({
   api_key: apiKey,
@@ -17,7 +18,7 @@ cloudinaryConfig({
 
 const RAINBOW_PROXY = 'https://images.rainbow.me/proxy?url=';
 
-export default function svgToPng(url) {
+function svgToPng(url) {
   const encoded = encodeURI(url);
   const rainbowedUrl = `${RAINBOW_PROXY}${encoded}`;
   const cloudinaryImg = cloudinaryImage(rainbowedUrl, {
@@ -27,4 +28,9 @@ export default function svgToPng(url) {
   });
   const cloudinaryUrl = cloudinaryImg.substr(10, cloudinaryImg.length - 14);
   return cloudinaryUrl;
+}
+
+export default function svgToPngIfNeeded(url) {
+  const isSVG = isSupportedUriExtension(url, ['.svg']);
+  return isSVG ? svgToPng(url) : url;
 }

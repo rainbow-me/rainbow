@@ -8,6 +8,7 @@ import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
 import { Monospace, Text } from '../text';
+import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import { useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
@@ -51,12 +52,14 @@ const UniqueTokenImage = ({
   resizeMode = ImgixImage.resizeMode.cover,
   small,
   size,
+  transformSvgs = true,
 }) => {
   const { isTinyPhone } = useDimensions();
   const isENS =
     toLower(item.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
   const isSVG = isSupportedUriExtension(imageUrl, ['.svg']);
-  const image = isENS && !isSVG ? `${item.image_url}=s1` : imageUrl;
+  const newImageUrl = transformSvgs ? svgToPngIfNeeded(imageUrl) : imageUrl;
+  const image = isENS && !isSVG ? `${item.image_url}=s1` : newImageUrl;
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
   const { isDarkMode, colors } = useTheme();
@@ -74,9 +77,11 @@ const UniqueTokenImage = ({
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
-      {isSVG && !error ? (
+      {isSVG && !transformSvgs && !error ? (
         <RemoteSvg
+          fallbackUri={svgToPngIfNeeded(imageUrl)}
           onError={handleError}
+          resizeMode={resizeMode}
           style={remoteSvgStyle}
           uri={imageUrl}
         />
@@ -98,7 +103,7 @@ const UniqueTokenImage = ({
           {!loadedImg && lowResUrl && (
             <ImageTile
               playing={false}
-              resizeMode={ImgixImage.resizeMode[resizeMode]}
+              resizeMode={ImgixImage.resizeMode}
               source={{ uri: lowResUrl }}
               style={position.coverAsObject}
             />
