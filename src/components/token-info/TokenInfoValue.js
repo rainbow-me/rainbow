@@ -2,9 +2,9 @@ import styled from 'styled-components';
 import { TruncatedText } from '../text';
 
 const TokenInfoValue = styled(TruncatedText).attrs(
-  ({ color, theme: { colors }, size, weight = 'semibold' }) => ({
+  ({ color, isNft, theme: { colors }, size, weight = 'semibold' }) => ({
     color: color || colors.dark,
-    letterSpacing: 'roundedTight',
+    letterSpacing: isNft ? 'rounded' : 'roundedTight',
     size: size || 'larger',
     weight,
   })
