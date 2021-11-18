@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { MMKV, useMMKVString } from 'react-native-mmkv';
 import { getLowResUrl } from '../utils/getLowResUrl';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
+import { svgToLQPng } from '@rainbow-me/handlers/imgix';
+import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import { getDominantColorFromImage } from '@rainbow-me/utils';
 
 const id = 'DOMINANT_COLOR';
@@ -25,7 +26,8 @@ export default function usePersistentDominantColorFromImage(
   url: string,
   colorToMeasureAgainst: string = '#333333'
 ): Result {
-  const nonSvgUrl = svgToPngIfNeeded(url);
+  const isSVG = isSupportedUriExtension(url, ['.svg']);
+  const nonSvgUrl = isSVG ? svgToLQPng(url) : url;
   const [dominantColor, setPersistentDominantColor] = useMMKVString(
     url,
     storage
@@ -43,6 +45,7 @@ export default function usePersistentDominantColorFromImage(
       );
     }
   }, [colorToMeasureAgainst, setPersistentDominantColor, state, nonSvgUrl]);
+
   return {
     result: dominantColor,
     state,
