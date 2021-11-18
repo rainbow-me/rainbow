@@ -59,10 +59,10 @@ type GasParamsReturned =
  */
 type TransactionDetailsReturned = {
   data?: TransactionRequest['data'];
-  to?: TransactionRequest['to'];
-  value?: TransactionRequest['value'];
   from?: TransactionRequest['from'];
   gasLimit?: string;
+  to?: TransactionRequest['to'];
+  value?: TransactionRequest['value'];
 } & GasParamsReturned;
 
 /**
