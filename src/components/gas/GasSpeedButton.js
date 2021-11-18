@@ -247,11 +247,6 @@ const GasSpeedButton = ({
 
   const formatTransactionTime = useCallback(() => {
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
-    let selectedGasFeeGwei =
-      selectedGasFee?.gasFee?.estimatedFee?.value?.display;
-    if (selectedGasFeeGwei === '0 Gwei') {
-      selectedGasFeeGwei = '< 1 Gwei';
-    }
     let timeSymbol = '~';
 
     if (selectedGasFeeOption === CUSTOM) {
@@ -282,7 +277,6 @@ const GasSpeedButton = ({
     estimatedTimeUnit,
     estimatedTimeValue,
     gasFeesBySpeed,
-    selectedGasFee,
     selectedGasFeeOption,
   ]);
 
