@@ -89,7 +89,7 @@ struct PriceWidgetEntryView : View {
   var entry: PriceWidgetProvider.Entry
   
   var body: some View {
-    PriceWidgetView(tokenData: entry.tokenData, date: entry.date).widgetURL(URL.init(string: "rnbwappdotcom.app.link/token=" + (entry.tokenData.tokenDetails?.address)!))
+    PriceWidgetView(tokenData: entry.tokenData, date: entry.date).widgetURL(URL.init(string: "rnbwappdotcom.app.link/token/" + (entry.tokenData.tokenDetails?.address)!))
   }
 }
 
