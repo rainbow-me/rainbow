@@ -180,14 +180,14 @@ export default function SendConfirmationSheet() {
 
   const {
     params: {
-      asset,
       amountDetails,
+      asset,
       callback,
+      isL2,
       isNft,
       network,
       to,
       toAddress,
-      isL2,
     },
   } = useRoute();
 
