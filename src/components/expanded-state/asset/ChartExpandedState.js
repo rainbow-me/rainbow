@@ -189,14 +189,13 @@ export default function ChartExpandedState({ asset }) {
   // It's a generic asset
   const hasBalance = asset?.balance;
   const assetWithPrice = hasBalance
-    ? asset
+    ? { ...asset }
     : genericAssets[asset?.address]
     ? ethereumUtils.formatGenericAsset(
         genericAssets[asset?.address],
         nativeCurrency
       )
-    : asset;
-
+    : { ...asset };
   if (assetWithPrice?.mainnet_address) {
     assetWithPrice.l2Address = assetWithPrice.address;
     assetWithPrice.address = assetWithPrice.mainnet_address;
@@ -267,7 +266,7 @@ export default function ChartExpandedState({ asset }) {
 
   const uniswapAssetsInWallet = useUniswapAssetsInWallet();
   const showSwapButton =
-    !isL2 && find(uniswapAssetsInWallet, ['address', ogAsset.address]);
+    !isL2 && find(uniswapAssetsInWallet, ['address', assetWithPrice.address]);
 
   const needsEth =
     asset?.address === ETH_ADDRESS && asset?.balance?.amount === '0';
@@ -456,7 +455,7 @@ export default function ChartExpandedState({ asset }) {
           </ExpandedStateSection>
         )}
         <SocialLinks
-          address={assetWithPrice?.mainnet_address || assetWithPrice?.address}
+          address={ogAsset.address}
           color={color}
           isNativeAsset={assetWithPrice?.isNativeAsset}
           links={links}
