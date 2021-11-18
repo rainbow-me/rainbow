@@ -20,7 +20,7 @@ const RAINBOW_PROXY = 'https://images.rainbow.me/proxy?url=';
 
 function svgToPng(url) {
   const encoded = encodeURI(url);
-  const rainbowedUrl = `${RAINBOW_PROXY}${encoded}`;
+  const rainbowedUrl = `${RAINBOW_PROXY}${encoded}&v=2`;
   const cloudinaryImg = cloudinaryImage(rainbowedUrl, {
     sign_url: true,
     transformation: [{ fetch_format: 'png' }],
