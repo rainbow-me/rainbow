@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { captureMessage } from '@sentry/react-native';
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
@@ -185,6 +186,11 @@ const AddFundsInterstitial = ({ network }) => {
           params: !isNaN(amount) ? { amount } : null,
           screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
         });
+        analytics.track('Tapped Add Cash', {
+          amount: amount,
+          category: 'add cash',
+          newWallet: true,
+        });
       } else {
         navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
           params: {
@@ -192,6 +198,11 @@ const AddFundsInterstitial = ({ network }) => {
             amount: !isNaN(amount) ? amount : null,
           },
           screen: Routes.WYRE_WEBVIEW,
+        });
+        analytics.track('Tapped Add Cash', {
+          amount: amount,
+          category: 'add cash',
+          newWallet: true,
         });
       }
     },

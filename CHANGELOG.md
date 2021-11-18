@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.35](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.35)
+
+### Changed
+* RN 66
+* NFT V2 Expanded States
+* Fix Back Up Sheet Height
+
 ## [1.5.34](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.34)
 
 ### Changed
