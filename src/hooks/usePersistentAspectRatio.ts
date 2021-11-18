@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Image } from 'react-native';
 import { MMKV, useMMKVNumber } from 'react-native-mmkv';
 import { getLowResUrl } from '../utils/getLowResUrl';
-import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
+import { svgToLQPng } from '@rainbow-me/handlers/imgix';
+import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 
 const id = 'ASPECT_RATIO';
 
@@ -23,8 +24,9 @@ type Result = {
 };
 
 export default function usePersistentAspectRatio(url: string): Result {
-  const nonSvgUrl = svgToPngIfNeeded(url);
-  const [ratio, setAspectRatio] = useMMKVNumber(nonSvgUrl, storage);
+  const isSVG = isSupportedUriExtension(url, ['.svg']);
+  const nonSvgUrl = isSVG ? svgToLQPng(url) : url;
+  const [ratio, setAspectRatio] = useMMKVNumber(nonSvgUrl as string, storage);
   const [state, setState] = useState<State>(
     ratio !== 0 ? State.loaded : State.init
   );
