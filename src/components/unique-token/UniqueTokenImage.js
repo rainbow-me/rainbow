@@ -83,7 +83,7 @@ const UniqueTokenImage = ({
           onError={handleError}
           resizeMode={resizeMode}
           style={remoteSvgStyle}
-          uri={imageUrl}
+          uri={item.image_url}
         />
       ) : imageUrl && !error ? (
         <Fragment>

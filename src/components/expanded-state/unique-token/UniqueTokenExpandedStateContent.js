@@ -114,7 +114,7 @@ const UniqueTokenExpandedStateContent = ({
         ) : (
           <UniqueTokenImage
             backgroundColor={asset.background}
-            imageUrl={url}
+            imageUrl={isSVG ? asset.image_url : url}
             item={asset}
             lowResUrl={lowResUrl}
             resizeMode={resizeMode}
