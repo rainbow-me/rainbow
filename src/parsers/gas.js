@@ -152,7 +152,7 @@ const getTxFee = (
   l1GasFeeOptimism
 ) => {
   let amount = multiply(gasPrice, gasLimit);
-  if (l1GasFeeOptimism && greaterThan(l1GasFeeOptimism, '0')) {
+  if (l1GasFeeOptimism && greaterThan(l1GasFeeOptimism.toString(), '0')) {
     amount = add(amount, l1GasFeeOptimism.toString());
   }
   return {
