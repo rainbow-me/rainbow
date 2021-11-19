@@ -309,7 +309,6 @@ const getTxDetails = async transaction => {
     to,
     value,
   };
-
   const gasParams = getTransactionGasParams(transaction);
   const tx = {
     ...baseTx,
@@ -358,6 +357,7 @@ export const getTransferNftTransaction = async transaction => {
     data,
     from,
     gasLimit: transaction.gasLimit,
+    network: transaction.network,
     to: contractAddress,
     ...gasParams,
   };
@@ -376,6 +376,7 @@ export const getTransferTokenTransaction = async transaction => {
     from: transaction.from,
     gasLimit: transaction.gasLimit,
     to: transaction.asset.address,
+    network: transaction.network,
     ...gasParams,
   };
 };
