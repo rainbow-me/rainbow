@@ -72,7 +72,6 @@ interface GasState {
 }
 
 // -- Constants ------------------------------------------------------------- //
-const OPTIMISM_GAS_PRICE_GWEI = 0.015;
 // const GAS_MULTIPLIER = 1.101;
 const GAS_UPDATE_DEFAULT_GAS_LIMIT = 'gas/GAS_UPDATE_DEFAULT_GAS_LIMIT';
 const GAS_PRICES_SUCCESS = 'gas/GAS_PRICES_SUCCESS';
@@ -273,12 +272,16 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   };
 
   const getOptimismGasPrices = async () => {
+    const provider = await getProviderForNetwork(networkTypes.optimism);
+    const baseGasPrice = await provider.getGasPrice();
+    const gasPriceGwei = Number(weiToGwei(baseGasPrice.toString()));
+
     const priceData = {
-      average: OPTIMISM_GAS_PRICE_GWEI,
+      average: gasPriceGwei,
       avgWait: 0.5,
-      fast: OPTIMISM_GAS_PRICE_GWEI,
+      fast: gasPriceGwei,
       fastWait: 0.2,
-      safeLow: OPTIMISM_GAS_PRICE_GWEI,
+      safeLow: gasPriceGwei,
       safeLowWait: 1,
     };
     return priceData;
@@ -455,7 +458,8 @@ export const gasUpdateDefaultGasLimit = (
 
 export const gasUpdateTxFee = (
   gasLimit?: number,
-  overrideGasOption?: string
+  overrideGasOption?: string,
+  l1GasFeeOptimism = null
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const {
     defaultGasLimit,
@@ -484,7 +488,8 @@ export const gasUpdateTxFee = (
         gasFeeParamsBySpeed,
         _gasLimit,
         nativeTokenPriceUnit,
-        nativeCurrency
+        nativeCurrency,
+        l1GasFeeOptimism
       )
     : parseGasFeesBySpeed(
         gasFeeParamsBySpeed,

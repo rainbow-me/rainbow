@@ -2,9 +2,11 @@ import BigNumber from 'bignumber.js';
 import { map, zipObject } from 'lodash';
 import { getMinimalTimeUnitStringForMs } from '../helpers/time';
 import {
+  add,
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
   divide,
+  greaterThan,
   multiply,
 } from '../helpers/utilities';
 import ethUnits from '../references/ethereum-units.json';
@@ -294,7 +296,8 @@ export const parseLegacyGasFeesBySpeed = (
   legacyGasFees: LegacyGasFeeParamsBySpeed,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
-  nativeCurrency: string
+  nativeCurrency: string,
+  l1GasFeeOptimism: BigNumber | null = null
 ): LegacyGasFeesBySpeed => {
   const gasFeesBySpeed = map(GasSpeedOrder, speed => {
     const gasPrice = legacyGasFees?.[speed]?.gasPrice?.amount || 0;
@@ -302,7 +305,8 @@ export const parseLegacyGasFeesBySpeed = (
       gasPrice,
       gasLimit,
       priceUnit,
-      nativeCurrency
+      nativeCurrency,
+      l1GasFeeOptimism
     );
     return {
       estimatedFee,
@@ -367,9 +371,14 @@ const getTxFee = (
   gasPrice: BigNumberish,
   gasLimit: BigNumberish,
   priceUnit: BigNumberish,
-  nativeCurrency: string
+  nativeCurrency: string,
+  l1GasFeeOptimism: BigNumber | null = null
 ) => {
-  const amount = multiply(gasPrice, gasLimit);
+  let amount = multiply(gasPrice, gasLimit);
+  if (l1GasFeeOptimism && greaterThan(l1GasFeeOptimism.toString(), '0')) {
+    amount = add(amount, l1GasFeeOptimism.toString());
+  }
+
   return {
     native: {
       value: convertRawAmountToNativeDisplay(

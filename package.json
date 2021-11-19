@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.5.35-1",
+  "version": "1.5.36-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn allow-scripts && yarn postinstall",
@@ -274,6 +274,7 @@
     "babel-plugin-styled-components": "1.11.1",
     "babel-plugin-transform-remove-console": "6.9.4",
     "detox": "19.0.0",
+    "chai": "4.2.0",
     "dotenv": "8.2.0",
     "eslint": "7.32.0",
     "eslint-config-rainbow": "2.0.0",
@@ -281,7 +282,7 @@
     "ethereum-waffle": "3.4.0",
     "ethers": "5.5.1",
     "graphql": "15.3.0",
-    "hardhat": "^2.6.7",
+    "hardhat": "2.6.7",
     "image-size": "1.0.0",
     "jest": "26.6.3",
     "jest-circus": "26.6.3",
@@ -296,7 +297,7 @@
   },
   "resolutions": {
     "**/node-fetch": "2.6.1",
-    "**/web3": "1.5.2",
+    "**/web3": "1.6.1",
     "**/underscore": "1.12.1",
     "**/socket.io-parser": "3.3.1",
     "**/bl": "2.2.1",
@@ -326,7 +327,8 @@
     "**/tmpl": "1.0.5",
     "**/nth-check": "2.0.1",
     "**/is-svg": "4.3.1",
-    "**/set-value": "4.1.0"
+    "**/set-value": "4.1.0",
+    "**/validator": "13.7.0"
   },
   "jest": {
     "preset": "react-native",

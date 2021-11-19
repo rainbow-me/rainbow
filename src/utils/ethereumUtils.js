@@ -1,3 +1,4 @@
+import { serialize } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
@@ -9,6 +10,7 @@ import {
   toChecksumAddress,
 } from 'ethereumjs-util';
 import { hdkey } from 'ethereumjs-wallet';
+import { Contract } from 'ethers';
 import {
   find,
   isEmpty,
@@ -27,7 +29,11 @@ import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
 import URL from 'url-parse';
 import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
-import { getProviderForNetwork, isTestnet } from '@rainbow-me/handlers/web3';
+import {
+  getProviderForNetwork,
+  isTestnet,
+  toHex,
+} from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
@@ -54,10 +60,13 @@ import {
   ARBITRUM_ETH_ADDRESS,
   chains,
   ETH_ADDRESS,
+  ethUnits,
   MATIC_MAINNET_ADDRESS,
   MATIC_POLYGON_ADDRESS,
   OPTIMISM_BLOCK_EXPLORER_URL,
   OPTIMISM_ETH_ADDRESS,
+  optimismGasOracleAbi,
+  OVM_GAS_PRICE_ORACLE,
   POLYGON_BLOCK_EXPLORER_URL,
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
@@ -165,7 +174,7 @@ const getBalanceAmount = (selectedGasFee, selected) => {
     getAsset(assets, selected?.address)?.balance?.amount ??
     0;
 
-  if (selected?.address === ETH_ADDRESS) {
+  if (selected?.isNativeAsset) {
     if (!isEmpty(selectedGasFee)) {
       const txFeeRaw = selectedGasFee?.gasFee?.estimatedFee?.value.amount;
       const txFeeAmount = fromWei(txFeeRaw);
@@ -184,8 +193,8 @@ const formatGenericAsset = (asset, nativeCurrency) => {
     native: {
       change: asset?.price?.relative_change_24h
         ? convertAmountToPercentageDisplay(
-            `${asset?.price?.relative_change_24h}`
-          )
+          `${asset?.price?.relative_change_24h}`
+        )
         : '',
       price: convertAmountAndPriceToNativeDisplay(
         1,
@@ -515,7 +524,35 @@ async function parseEthereumUrl(data) {
   });
 }
 
+const calculateL1FeeOptimism = async (tx, provider) => {
+  try {
+    tx.value = toHex(tx.value);
+    tx.nonce = Number(await provider.getTransactionCount(tx.from));
+    delete tx.from;
+    delete tx.gas;
+    tx.to = toChecksumAddress(tx.to);
+    tx.gasLimit =
+      toHex(tx.gasLimit) ||
+      toHex(tx.data === '0x' ? ethUnits.basic_tx : ethUnits.basic_transfer);
+    const currentGasPrice = store.getState().gas.selectedGasPrice?.value
+      ?.amount;
+    if (currentGasPrice) tx.gasPrice = toHex(currentGasPrice);
+    const serializedTx = serialize(tx);
+
+    const OVM_GasPriceOracle = new Contract(
+      OVM_GAS_PRICE_ORACLE,
+      optimismGasOracleAbi,
+      provider
+    );
+    const l1FeeInWei = await OVM_GasPriceOracle.getL1Fee(serializedTx);
+    return l1FeeInWei;
+  } catch (e) {
+    logger.log('error calculating l1 fee', e);
+  }
+};
+
 export default {
+  calculateL1FeeOptimism,
   checkIfUrlIsAScam,
   deriveAccountFromMnemonic,
   deriveAccountFromPrivateKey,
