@@ -246,7 +246,12 @@ const isValidAssetsResponseFromZerion = msg => {
   return false;
 };
 
-export const explorerClearState = () => dispatch => {
+export const explorerClearState = () => (dispatch, getState) => {
+  const { fallback } = getState().explorer;
+  if (fallback) {
+    logger.log('😬 Disabling fallback data provider!');
+    dispatch(fallbackExplorerClearState());
+  }
   dispatch(disableFallbackIfNeeded());
   dispatch(explorerUnsubscribe());
   dispatch({ type: EXPLORER_CLEAR_STATE });

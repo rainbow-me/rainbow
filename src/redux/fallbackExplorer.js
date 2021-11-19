@@ -2,6 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { get, toLower, uniqBy } from 'lodash';
 import isEqual from 'react-fast-compare';
+import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 // eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
@@ -47,12 +48,15 @@ const getCurrentAddress = address => {
 const findNewAssetsToWatch = () => async (dispatch, getState) => {
   const { accountAddress } = getState().settings;
   const { mainnetAssets, latestTxBlockNumber } = getState().fallbackExplorer;
+  const { coingeckoIds } = getState().additionalAssetsData;
 
   const newAssets = await findAssetsToWatch(
     accountAddress,
     latestTxBlockNumber,
-    dispatch
+    dispatch,
+    coingeckoIds
   );
+
   if (newAssets.length > 0) {
     logger.log('😬 Found new assets!', newAssets);
 
@@ -182,7 +186,7 @@ const getTokenTxDataFromEtherscan = async (
   offset,
   latestTxBlockNumber
 ) => {
-  let url = `https://api.etherscan.io/api?module=account&action=tokentx&address=${address}&page=${page}&offset=${offset}&sort=desc`;
+  let url = `https://api.etherscan.io/api?module=account&action=tokentx&address=${address}&page=${page}&offset=${offset}&sort=desc&apikey=${ETHERSCAN_API_KEY}`;
   if (latestTxBlockNumber) {
     url += `&startBlock=${latestTxBlockNumber}`;
   }
@@ -346,14 +350,13 @@ export const fetchOnchainBalances = ({
 
   if (keepPolling) {
     const fallbackExplorerBalancesHandle = setTimeout(
-      () =>
-        dispatch(dispatch(fetchOnchainBalances({ keepPolling, withPrices }))),
+      () => dispatch(fetchOnchainBalances({ keepPolling, withPrices })),
       UPDATE_BALANCE_AND_PRICE_FREQUENCY
     );
     let fallbackExplorerAssetsHandle = null;
     if (NetworkTypes.mainnet === network) {
       fallbackExplorerAssetsHandle = setTimeout(
-        () => dispatch(findNewAssetsToWatch(accountAddress)),
+        () => dispatch(findNewAssetsToWatch()),
         DISCOVER_NEW_ASSETS_FREQUENCY
       );
     }
@@ -386,7 +389,10 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
 
     await dispatch({
       payload: {
-        mainnetAssets: mainnetAssets.concat(newMainnetAssets),
+        mainnetAssets: uniqBy(
+          [...mainnetAssets, ...newMainnetAssets],
+          token => token.asset.asset_code
+        ),
       },
       type: FALLBACK_EXPLORER_SET_ASSETS,
     });
