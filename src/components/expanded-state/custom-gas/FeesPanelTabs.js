@@ -78,8 +78,6 @@ export default function FeesPanelTabs({ onPressTabPill, colorForAsset }) {
       const gasFeeParams = gasFeeParamsBySpeed[selectedGasFeeOption];
       updateToCustomGasFee({
         ...gasFeeParams,
-        maxBaseFeePerGas: gasFeeParams.maxFeePerGas,
-        maxPriorityFeePerGas: gasFeeParams.maxPriorityFeePerGas,
         option: gasUtils.CUSTOM,
       });
     } else {
