@@ -529,6 +529,7 @@ const calculateL1FeeOptimism = async (tx, provider) => {
     tx.value = toHex(tx.value);
     tx.nonce = Number(await provider.getTransactionCount(tx.from));
     delete tx.from;
+    delete tx.gas;
     tx.to = toChecksumAddress(tx.to);
     tx.gasLimit =
       toHex(tx.gasLimit) ||
@@ -536,7 +537,6 @@ const calculateL1FeeOptimism = async (tx, provider) => {
     const currentGasPrice = store.getState().gas.selectedGasPrice?.value
       ?.amount;
     if (currentGasPrice) tx.gasPrice = toHex(currentGasPrice);
-
     const serializedTx = serialize(tx);
 
     const OVM_GasPriceOracle = new Contract(
