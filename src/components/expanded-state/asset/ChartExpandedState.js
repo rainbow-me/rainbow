@@ -163,8 +163,8 @@ function Description({ text }) {
     >
       <Text
         color={colors.alpha(colors.blueGreyDark, 0.5)}
-        lineHeight="paragraphSmall"
-        size="lmedium"
+        lineHeight="big"
+        size="large"
       >
         {delayedTruncated ? truncatedText : text}
       </Text>

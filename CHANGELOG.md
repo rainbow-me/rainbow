@@ -12,12 +12,34 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.35](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.35)
+
+### Changed
+* RN 66
+* NFT V2 Expanded States
+* Fix Back Up Sheet Height
+
+## [1.5.34](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.34)
+
+### Changed
+* Lowered Exporer Transaction Limit
+* Polygon Contract Name handling
+* Revert Uniswap fetchng by Volume
+* Use StaticJsonRpcProvider
+
+## [1.5.33](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.33)
+
+### Changed
+* NFT family name filtering
+* Temp disable poaps
+
 ## [1.5.31](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.31)
 
 ### Added
 * Discover Analytics
 * Dynamic Token List
 * Remote Config
+* Poap Support
 
 ### Changed
 * Fix camera permissions deeplink

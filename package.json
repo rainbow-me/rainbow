@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.5.32-1",
+  "version": "1.5.36-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn allow-scripts && yarn postinstall",
@@ -15,7 +15,7 @@
     "detox:ios:release": "detox build -c ios.sim.release && detox test -R 1 -c ios.sim.release --bail",
     "fast": "yarn setup && yarn install-pods-fast",
     "gradle": "cd android && ./gradlew",
-    "ganache": "source .env && ganache-cli --f ${ETHEREUM_MAINNET_RPC_DEV} -p 7545 -i 1 -b 10",
+    "hardhat": "source .env && hardhat node --fork ${ETHEREUM_MAINNET_RPC_DEV}",
     "install-all": "yarn setup && yarn install-pods",
     "install-all-no-flipper": "yarn setup && yarn install-pods-no-flipper",
     "install-bundle": "cd ios && bundle install && cd ..",
@@ -77,6 +77,7 @@
     "@rainbow-me/react-native-payments": "1.1.5",
     "@react-native-community/async-storage": "1.12.1",
     "@react-native-community/blur": "3.6.0",
+    "@react-native-community/cameraroll": "4.1.2",
     "@react-native-community/clipboard": "git+https://github.com/brunobar79/clipboard#01d1c13",
     "@react-native-community/masked-view": "0.1.10",
     "@react-native-community/netinfo": "5.9.7",
@@ -123,7 +124,7 @@
     "global": "4.4.0",
     "grapheme-splitter": "1.0.4",
     "graphql-tag": "2.11.0",
-    "hermes-engine": "0.7.2",
+    "hermes-engine": "0.9.0",
     "https-browserify": "0.0.1",
     "husky": "2.7.0",
     "i18n-js": "3.8.0",
@@ -136,7 +137,7 @@
     "lodash": "4.17.21",
     "lottie-ios": "3.2.3",
     "lottie-react-native": "4.0.2",
-    "make-color-more-chill": "0.2.1",
+    "make-color-more-chill": "0.2.2",
     "match-sorter": "6.3.0",
     "mnemonist": "0.38.1",
     "nanoid": "2.1.11",
@@ -150,11 +151,11 @@
     "qs": "6.9.4",
     "querystring-es3": "0.2.1",
     "rainbow-token-list": "1.2.2",
-    "react": "17.0.1",
+    "react": "17.0.2",
     "react-coin-icon": "0.1.42",
     "react-fast-compare": "2.0.4",
     "react-flatten-children": "1.1.2",
-    "react-native": "0.64.2",
+    "react-native": "0.66.1",
     "react-native-action-sheet": "2.2.0",
     "react-native-actionsheet": "2.4.2",
     "react-native-aes-crypto": "brunobar79/react-native-aes#65c49f7e70266615b2999eaa7db654d3fe4f2e3b",
@@ -187,12 +188,14 @@
     "react-native-linear-gradient": "2.5.6",
     "react-native-mail": "4.1.0",
     "react-native-markdown-display": "7.0.0-alpha.2",
+    "react-native-mmkv": "1.5.2",
     "react-native-os": "brunobar79/react-native-os#41a08e45260b8c1c53c77ad00e13ae954cb9337c",
+    "react-native-palette-full": "1.2.0",
     "react-native-permissions": "3.0.5",
     "react-native-qrcode-svg": "mikedemarais/react-native-qrcode-svg#c0302a698ea4fa0bb9b506a11ef39905674f2221",
     "react-native-radial-gradient": "rainbow-me/react-native-radial-gradient#1266cd8f6ac3321bcf27357f8771bd088f9f27ef",
     "react-native-randombytes": "3.5.3",
-    "react-native-reanimated": "2.2.0",
+    "react-native-reanimated": "2.2.3",
     "react-native-redash": "16.2.2",
     "react-native-restart": "0.0.22",
     "react-native-safe-area-context": "0.5.0",
@@ -226,6 +229,7 @@
     "redux-thunk": "2.3.0",
     "reselect": "4.0.0",
     "rn-dominant-color": "1.7.0",
+    "rn-fetch-blob": "0.12.0",
     "socket.io-client": "2.3.1",
     "stream-browserify": "1.0.0",
     "string.fromcodepoint": "0.2.1",
@@ -242,6 +246,12 @@
     "zxcvbn": "4.4.2"
   },
   "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "2.0.2",
+    "@nomiclabs/hardhat-waffle": "2.0.1",
+    "chai": "4.2.0",
+    "ethereum-waffle": "3.4.0",
+    "hardhat": "2.6.7",
+    "ethers": "5.5.1",
     "@babel/core": "7.14.2",
     "@babel/parser": "7.12.14",
     "@babel/plugin-transform-react-inline-elements": "7.12.1",
@@ -267,12 +277,11 @@
     "babel-plugin-rewire": "1.2.0",
     "babel-plugin-styled-components": "1.11.1",
     "babel-plugin-transform-remove-console": "6.9.4",
-    "detox": "18.22.1",
+    "detox": "19.0.0",
     "dotenv": "8.2.0",
     "eslint": "7.32.0",
     "eslint-config-rainbow": "2.0.0",
     "eslint-import-resolver-babel-module": "5.3.1",
-    "ganache-cli": "6.12.2",
     "graphql": "15.3.0",
     "image-size": "1.0.0",
     "jest": "26.6.3",
@@ -284,10 +293,13 @@
     "react-test-renderer": "17.0.1",
     "rn-nodeify": "10.2.0",
     "schedule": "0.5.0",
-    "typescript": "3.9.7"
+    "typescript": "4.4.4"
   },
   "resolutions": {
     "**/node-fetch": "2.6.1",
+    "**/web3": "1.6.1",
+    "**/underscore": "1.12.1",
+    "**/socket.io-parser": "3.3.1",
     "**/bl": "2.2.1",
     "**/browserslist": "4.16.5",
     "**/elliptic": "6.5.4",
@@ -308,7 +320,6 @@
     "**/glob-parent": "6.0.0",
     "**/merge-deep": "3.0.3",
     "**/css-what": "5.0.1",
-    "**/socket.io-parser": "3.3.1",
     "**/tar": "6.1.11",
     "**/path-parse": "1.0.7",
     "**/ansi-regex": "5.0.1",
@@ -316,7 +327,8 @@
     "**/tmpl": "1.0.5",
     "**/nth-check": "2.0.1",
     "**/is-svg": "4.3.1",
-    "**/set-value": "4.1.0"
+    "**/set-value": "4.1.0",
+    "**/validator": "13.7.0"
   },
   "jest": {
     "preset": "react-native",
@@ -336,7 +348,8 @@
       "simulator": {
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 12 Pro Max"
+          "type": "iPhone 11 Pro Max",
+          "os": "13.7"
         }
       }
     },
@@ -429,7 +442,7 @@
       "@scarf/scarf": false,
       "@lavamoat/preinstall-always-fail": false,
       "core-js": false,
-      "detox": false,
+      "detox": true,
       "dtrace-provider": false,
       "fsevents": false,
       "husky": false,
@@ -438,7 +451,14 @@
       "react-query": false,
       "scrypt": false,
       "secp256k1": false,
-      "@sentry/cli": true
+      "@sentry/cli": true,
+      "web3": false,
+      "web3-bzz": false,
+      "web3-shh": false,
+      "bufferutil": false,
+      "utf-8-validate": false,
+      "postinstall-postinstall": false,
+      "core-js-pure": false
     }
   }
 }

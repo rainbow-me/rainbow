@@ -1,20 +1,58 @@
-import makeColorMoreChill, { isBlackOrWhite } from 'make-color-more-chill';
+import c from 'chroma-js';
+import makeColorMoreChill from 'make-color-more-chill';
 import { IS_TESTING } from 'react-native-dotenv';
-import { getColorFromURL } from 'rn-dominant-color';
+import Palette from 'react-native-palette-full';
 
-export default async function getDominantColorFromImage(imageUrl) {
+export default async function getDominantColorFromImage(
+  imageUrl,
+  colorToMeasureAgainst
+) {
   if (IS_TESTING === 'true') return undefined;
-  const { background, secondary } = await getColorFromURL(imageUrl);
+  let colors = await Palette.getNamedSwatchesFromUrl(imageUrl);
 
-  // if rn-dominant-color returned '#00000000' it means the color doesnt exist, in this
-  // case we want to aboooort and let the consumer handle the correct fallback color depending on
-  // their implementation / needs!
-  if (background === '#00000000' && secondary === '#00000000') {
-    return undefined;
+  //react-native-palette keys for Andriod are not the same as iOS so we fix here
+  if (android) {
+    colors = Object.keys(colors).reduce((acc, key) => {
+      acc[key.toLowerCase()] = colors[key];
+      return acc;
+    }, {});
   }
 
-  if (isBlackOrWhite(background)) return makeColorMoreChill(secondary);
-  if (isBlackOrWhite(secondary)) return makeColorMoreChill(background);
+  const color =
+    colors.vibrant?.color ||
+    colors.muted?.color ||
+    colors.vibrantLight?.color ||
+    colors.mutedLight?.color ||
+    colors.mutedDark?.color ||
+    colors.vibrantDark?.color;
 
-  return makeColorMoreChill(secondary);
+  const fallbackColor =
+    colors.muted?.color ||
+    colors.vibrantLight?.color ||
+    colors.mutedLight?.color ||
+    colors.mutedDark?.color ||
+    colors.vibrantDark?.color;
+
+  if (colors.vibrant?.color) {
+    const chillVibrant = makeColorMoreChill(
+      colors.vibrant?.color,
+      colorToMeasureAgainst
+    );
+
+    if (c.deltaE(colors.vibrant?.color, chillVibrant) < 13) {
+      return chillVibrant;
+    } else if (fallbackColor !== undefined && fallbackColor !== color) {
+      const chillFallback = makeColorMoreChill(
+        fallbackColor,
+        colorToMeasureAgainst
+      );
+
+      if (fallbackColor === chillFallback) {
+        return chillFallback;
+      } else {
+        return chillVibrant;
+      }
+    }
+  }
+  return makeColorMoreChill(color, colorToMeasureAgainst);
 }

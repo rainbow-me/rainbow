@@ -14,7 +14,6 @@ import type {
   BottomSheetNavigationConfig,
   BottomSheetNavigationEventMap,
   BottomSheetNavigationOptions,
-  // eslint-disable-next-line import/no-unresolved
 } from './types';
 import BottomSheetNavigatorView from './views/BottomSheetNavigatorView';
 

@@ -2,7 +2,7 @@ import { getAddress } from '@ethersproject/address';
 import { BigNumber } from '@ethersproject/bignumber';
 import { isHexString as isEthersHexString } from '@ethersproject/bytes';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
-import { JsonRpcProvider } from '@ethersproject/providers';
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { parseEther } from '@ethersproject/units';
 import UnstoppableResolution from '@unstoppabledomains/resolution';
 import { get, startsWith } from 'lodash';
@@ -55,12 +55,7 @@ export let web3Provider = null;
  * @param {String} network
  */
 export const web3SetHttpProvider = async network => {
-  if (network.startsWith('http://')) {
-    web3Provider = new JsonRpcProvider(network, NetworkTypes.mainnet);
-  } else {
-    web3Provider = new JsonRpcProvider(rpcEndpoints[network]);
-  }
-  return web3Provider.ready;
+  web3Provider = await getProviderForNetwork(network);
 };
 
 /**
@@ -103,10 +98,15 @@ export const getProviderForNetwork = async (network = NetworkTypes.mainnet) => {
     return networkProviders[network];
   }
   if (network.startsWith('http://')) {
-    return new JsonRpcProvider(network, NetworkTypes.mainnet);
+    const provider = new StaticJsonRpcProvider(network, NetworkTypes.mainnet);
+    networkProviders[NetworkTypes.mainnet] = provider;
+    return provider;
   } else {
-    const provider = new JsonRpcProvider(rpcEndpoints[network]);
-    networkProviders[network] = provider;
+    const chainId = ethereumUtils.getChainIdFromNetwork(network);
+    const provider = new StaticJsonRpcProvider(rpcEndpoints[network], chainId);
+    if (!networkProviders[network]) {
+      networkProviders[network] = provider;
+    }
     await provider.ready;
     return provider;
   }
