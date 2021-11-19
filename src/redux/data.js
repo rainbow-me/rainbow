@@ -692,6 +692,11 @@ const get24HourPrice = async (address, yesterday) => {
   }
 };
 
+const callbacksOnAssetReceived = {};
+export function scheduleActionOnAssetReceived(address, action) {
+  callbacksOnAssetReceived[address.toLowerCase()] = action;
+}
+
 export const assetPricesReceived = (message, fromFallback = false) => (
   dispatch,
   getState
@@ -711,6 +716,13 @@ export const assetPricesReceived = (message, fromFallback = false) => (
       ...genericAssets,
       ...parsedAssets,
     };
+
+    const assetAddresses = Object.keys(parsedAssets);
+
+    for (let address of assetAddresses) {
+      callbacksOnAssetReceived[address.toLowerCase()]?.(parsedAssets[address]);
+      callbacksOnAssetReceived[address.toLowerCase()] = undefined;
+    }
 
     dispatch({
       payload: updatedAssets,
