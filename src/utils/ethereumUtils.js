@@ -193,8 +193,8 @@ const formatGenericAsset = (asset, nativeCurrency) => {
     native: {
       change: asset?.price?.relative_change_24h
         ? convertAmountToPercentageDisplay(
-          `${asset?.price?.relative_change_24h}`
-        )
+            `${asset?.price?.relative_change_24h}`
+          )
         : '',
       price: convertAmountAndPriceToNativeDisplay(
         1,
