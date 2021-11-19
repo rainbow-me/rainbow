@@ -343,7 +343,7 @@ export default function ChartExpandedState({ asset }) {
       {hasBalance && (
         <TokenInfoSection>
           <TokenInfoRow>
-            <TokenInfoItem asset={asset} title="Balance">
+            <TokenInfoItem asset={assetWithPrice} title="Balance">
               <TokenInfoBalanceValue asset={asset} />
             </TokenInfoItem>
             <TokenInfoItem
