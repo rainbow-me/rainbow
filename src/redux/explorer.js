@@ -17,6 +17,7 @@ import {
 import {
   fallbackExplorerClearState,
   fallbackExplorerInit,
+  fetchOnchainBalances,
 } from './fallbackExplorer';
 // eslint-disable-next-line import/no-cycle
 import { optimismExplorerInit } from './optimismExplorer';
@@ -452,16 +453,25 @@ const listenOnAddressMessages = socket => dispatch => {
   socket.on(messages.ADDRESS_TRANSACTIONS.APPENDED, message => {
     logger.log('txns appended', message?.payload?.transactions);
     dispatch(transactionsReceived(message, true));
+    // Fetch balances onchain to override zerion's
+    // which is likely behind
+    dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.CHANGED, message => {
     logger.log('txns changed', message?.payload?.transactions);
     dispatch(transactionsReceived(message, true));
+    // Fetch balances onchain to override zerion's
+    // which is likely behind
+    dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.REMOVED, message => {
     logger.log('txns removed', message?.payload?.transactions);
     dispatch(transactionsRemoved(message));
+    // Fetch balances onchain to override zerion's
+    // which is likely behind
+    dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
@@ -472,22 +482,34 @@ const listenOnAddressMessages = socket => dispatch => {
       );
       dispatch(disableFallbackIfNeeded());
       dispatch(explorerInitL2());
+      // Fetch balances onchain to override zerion's
+      // which is likely behind
+      dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
     }
   });
 
   socket.on(messages.ADDRESS_ASSETS.APPENDED, message => {
     dispatch(addressAssetsReceived(message, true));
     dispatch(disableFallbackIfNeeded());
+    // Fetch balances onchain to override zerion's
+    // which is likely behind
+    dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
   socket.on(messages.ADDRESS_ASSETS.CHANGED, message => {
     dispatch(addressAssetsReceived(message, false, true));
     dispatch(disableFallbackIfNeeded());
+    // Fetch balances onchain to override zerion's
+    // which is likely behind
+    dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
   socket.on(messages.ADDRESS_ASSETS.REMOVED, message => {
     dispatch(addressAssetsReceived(message, false, false, true));
     dispatch(disableFallbackIfNeeded());
+    // Fetch balances onchain to override zerion's
+    // which is likely behind
+    dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 };
 
