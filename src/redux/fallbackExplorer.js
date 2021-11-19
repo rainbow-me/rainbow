@@ -8,6 +8,7 @@ import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
 import { explorerInitL2 } from './explorer';
 import { AssetTypes } from '@rainbow-me/entities';
+import { getAssetsFromCovalent } from '@rainbow-me/handlers/covalent';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
@@ -19,6 +20,7 @@ import {
   migratedTokens,
 } from '@rainbow-me/references';
 import { delay } from '@rainbow-me/utilities';
+import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 let lastUpdatePayload = null;
@@ -43,6 +45,61 @@ const DISCOVER_NEW_ASSETS_FREQUENCY = 13000;
 // We need to use the current address to fetch the correct price
 const getCurrentAddress = address => {
   return migratedTokens[address] || address;
+};
+
+const getMainnetAssetsFromCovalent = async (
+  chainId,
+  address,
+  type,
+  currency,
+  coingeckoIds,
+  allAssets,
+  genericAssets
+) => {
+  const data = await getAssetsFromCovalent(chainId, address, currency);
+  if (data) {
+    const updatedAt = new Date(data.update_at).getTime();
+    const assets = data.items.map(item => {
+      const contractAddress = item.contract_address;
+      const coingeckoId = coingeckoIds[toLower(contractAddress)];
+      let price = {
+        changed_at: updatedAt,
+        relative_change_24h: 0,
+      };
+
+      // Overrides
+      const fallbackAsset =
+        ethereumUtils.getAsset(allAssets, toLower(contractAddress)) ||
+        genericAssets[toLower(contractAddress)];
+
+      if (fallbackAsset) {
+        price = {
+          ...price,
+          ...fallbackAsset.price,
+        };
+      }
+
+      return {
+        asset: {
+          asset_code: contractAddress,
+          coingecko_id: coingeckoId,
+          decimals: item.contract_decimals,
+          icon_url: item.logo_url,
+          name: item.contract_name,
+          price: {
+            value: item.quote_rate || 0,
+            ...price,
+          },
+          symbol: item.contract_ticker_symbol,
+          type,
+        },
+        quantity: Number(item.balance),
+      };
+    });
+
+    return assets;
+  }
+  return null;
 };
 
 const findNewAssetsToWatch = () => async (dispatch, getState) => {
@@ -231,11 +288,29 @@ export const fetchOnchainBalances = ({
 }) => async (dispatch, getState) => {
   logger.log('😬 FallbackExplorer:: fetchOnchainBalances');
   const { network, accountAddress, nativeCurrency } = getState().settings;
+  const { assets: allAssets, genericAssets } = getState().data;
+  const { coingeckoIds } = getState().additionalAssetsData;
   const formattedNativeCurrency = toLower(nativeCurrency);
   const { mainnetAssets } = getState().fallbackExplorer;
+  const chainId = ethereumUtils.getChainIdFromNetwork(network);
+  const covalentMainnetAssets = await getMainnetAssetsFromCovalent(
+    chainId,
+    accountAddress,
+    AssetTypes.token,
+    formattedNativeCurrency,
+    coingeckoIds,
+    allAssets,
+    genericAssets
+  );
+
   const { assets: accountAssets } = getState().data;
   let assets =
-    network === NetworkTypes.mainnet ? mainnetAssets : chainAssets[network];
+    network === NetworkTypes.mainnet
+      ? uniqBy(
+          [...mainnetAssets, ...covalentMainnetAssets],
+          token => token.asset.asset_code
+        )
+      : chainAssets[network];
 
   if (!assets.length && accountAssets.length) {
     assets = accountAssets.map(asset => ({

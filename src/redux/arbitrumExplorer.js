@@ -1,14 +1,11 @@
 import { toLower } from 'lodash';
 import isEqual from 'react-fast-compare';
-import {
-  COVALENT_ANDROID_API_KEY,
-  COVALENT_IOS_API_KEY,
-} from 'react-native-dotenv';
 // eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
 import { emitAssetRequest, emitChartsRequest } from './explorer';
 import { AssetTypes } from '@rainbow-me/entities';
+import { getAssetsFromCovalent } from '@rainbow-me/handlers/covalent';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
@@ -28,7 +25,7 @@ const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 60000;
 
 const network = networkTypes.arbitrum;
 
-const getAssetsFromCovalent = async (
+const getArbitrumAssetsFromCovalent = async (
   chainId,
   address,
   type,
@@ -37,14 +34,10 @@ const getAssetsFromCovalent = async (
   allAssets,
   genericAssets
 ) => {
-  const url = `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?nft=false&quote-currency=${currency}&key=${
-    ios ? COVALENT_IOS_API_KEY : COVALENT_ANDROID_API_KEY
-  }`;
-  const request = await fetch(url);
-  const response = await request.json();
-  if (response.data && !response.error) {
-    const updatedAt = new Date(response.data.update_at).getTime();
-    const assets = response.data.items.map(item => {
+  const data = await getAssetsFromCovalent(chainId, address, currency);
+  if (data) {
+    const updatedAt = new Date(data.update_at).getTime();
+    const assets = data.items.map(item => {
       // Arbitrum ETH has no contract address since it's the native token
       const contractAddress = item.contract_address || ARBITRUM_ETH_ADDRESS;
       const mainnetAddress = arbitrumTokenMapping[toLower(contractAddress)];
@@ -100,7 +93,7 @@ export const arbitrumExplorerInit = () => async (dispatch, getState) => {
 
   const fetchAssetsBalancesAndPrices = async () => {
     const chainId = ethereumUtils.getChainIdFromNetwork(network);
-    const assets = await getAssetsFromCovalent(
+    const assets = await getArbitrumAssetsFromCovalent(
       chainId,
       accountAddress,
       AssetTypes.arbitrum,
