@@ -9,6 +9,7 @@ import {
 import { web3SetHttpProvider } from '../handlers/web3';
 import networkTypes from '../helpers/networkTypes';
 import { updateLanguage } from '../languages';
+import { saveString } from '../model/keychain';
 
 import { ethereumUtils } from '../utils';
 import { dataResetState } from './data';
@@ -97,6 +98,10 @@ export const settingsChangeNativeCurrency = nativeCurrency => async dispatch => 
     });
     dispatch(explorerInit());
     saveNativeCurrency(nativeCurrency);
+    saveString('nativeCurrency', nativeCurrency, {
+      accessGroup: 'group.rainbow.me',
+      service: 'rainbow.me.currency',
+    });
   } catch (error) {
     logger.log('Error changing native currency', error);
   }
