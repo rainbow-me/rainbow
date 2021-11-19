@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { web3Provider } from '../../handlers/web3';
+import { isHardHat, web3Provider } from '../../handlers/web3';
 import networkInfo from '../../helpers/networkInfo';
 import networkTypes from '../../helpers/networkTypes';
 import { Icon } from '../icons';
@@ -17,7 +17,7 @@ const TestnetToast = () => {
 
   useEffect(() => {
     if (network === networkTypes.mainnet) {
-      if (providerUrl?.startsWith('http://') && providerUrl?.endsWith('8545')) {
+      if (isHardHat(providerUrl)) {
         setVisible(true);
         setNetworkName('Hardhat');
       } else {

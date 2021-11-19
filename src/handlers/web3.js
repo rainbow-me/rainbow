@@ -74,6 +74,14 @@ export const isL2Network = network => {
 };
 
 /**
+ * @desc returns whether current provider is hardhat
+ * @param {String} providerUrl
+ */
+export const isHardHat = providerUrl => {
+  return providerUrl?.startsWith('http://') && providerUrl?.endsWith('8545');
+};
+
+/**
  * @desc returns true if the given network is a testnet
  * @param {String} network
  */
