@@ -69,10 +69,10 @@ describe('Deeplinks spec', () => {
     await testEthereumDeeplink(url);
   });
 
-  // it('should be able to handle ethereum payments urls for ETH (optimism)', async () => {
-  //   const url = 'ethereum:payment-brunobarbieri.eth@10?value=1e15';
-  //   await testEthereumDeeplink(url);
-  // });
+  it('should be able to handle ethereum payments urls for ETH (optimism)', async () => {
+    const url = 'ethereum:payment-brunobarbieri.eth@10?value=1e15';
+    await testEthereumDeeplink(url);
+  });
 
   it('should be able to handle ethereum payments urls for DAI (mainnet)', async () => {
     const url =
@@ -80,11 +80,11 @@ describe('Deeplinks spec', () => {
     await testEthereumDeeplink(url);
   });
 
-  // it('should be able to handle ethereum payments urls for DAI (optimism)', async () => {
-  //   const url =
-  //     'ethereum:0xda10009cbd5d07dd0cecc66161fc93d7c9000da1@10/transfer?address=brunobarbieri.eth&uint256=1e15';
-  //   await testEthereumDeeplink(url);
-  // });
+  it('should be able to handle ethereum payments urls for DAI (optimism)', async () => {
+    const url =
+      'ethereum:0xda10009cbd5d07dd0cecc66161fc93d7c9000da1@10/transfer?address=brunobarbieri.eth&uint256=1e15';
+    await testEthereumDeeplink(url);
+  });
 
   it('should be able to handle ethereum payments urls for MATIC (polygon)', async () => {
     const url = 'ethereum:payment-brunobarbieri.eth@137?value=1e15';

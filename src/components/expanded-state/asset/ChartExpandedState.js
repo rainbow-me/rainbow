@@ -47,6 +47,7 @@ import {
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
@@ -188,23 +189,26 @@ export default function ChartExpandedState({ asset }) {
   // It's a generic asset
   const hasBalance = asset?.balance;
   const assetWithPrice = hasBalance
-    ? asset
+    ? { ...asset }
     : genericAssets[asset?.address]
     ? ethereumUtils.formatGenericAsset(
         genericAssets[asset?.address],
         nativeCurrency
       )
-    : asset;
-
+    : { ...asset };
   if (assetWithPrice?.mainnet_address) {
+    assetWithPrice.l2Address = assetWithPrice.address;
     assetWithPrice.address = assetWithPrice.mainnet_address;
   }
 
-  // This one includes the original l2 address if exists
-  const ogAsset = { ...assetWithPrice, address: assetWithPrice.uniqueId };
   const isL2 = useMemo(() => isL2Network(assetWithPrice.type), [
     assetWithPrice.type,
   ]);
+  // This one includes the original l2 address if exists
+  const ogAsset = {
+    ...assetWithPrice,
+    address: isL2 ? assetWithPrice.l2Address : assetWithPrice.address,
+  };
 
   const { height: screenHeight } = useDimensions();
   const {
@@ -261,12 +265,11 @@ export default function ChartExpandedState({ asset }) {
   });
 
   const uniswapAssetsInWallet = useUniswapAssetsInWallet();
-  const showSwapButton = find(uniswapAssetsInWallet, [
-    'uniqueId',
-    asset?.uniqueId,
-  ]);
+  const showSwapButton =
+    !isL2 && find(uniswapAssetsInWallet, ['address', assetWithPrice.address]);
 
-  const needsEth = asset?.address === 'eth' && asset?.balance?.amount === '0';
+  const needsEth =
+    asset?.address === ETH_ADDRESS && asset?.balance?.amount === '0';
 
   const duration = useRef(0);
 
@@ -340,7 +343,7 @@ export default function ChartExpandedState({ asset }) {
       {hasBalance && (
         <TokenInfoSection>
           <TokenInfoRow>
-            <TokenInfoItem asset={asset} title="Balance">
+            <TokenInfoItem asset={assetWithPrice} title="Balance">
               <TokenInfoBalanceValue asset={asset} />
             </TokenInfoItem>
             <TokenInfoItem
@@ -452,11 +455,12 @@ export default function ChartExpandedState({ asset }) {
           </ExpandedStateSection>
         )}
         <SocialLinks
+          address={ogAsset.address}
           color={color}
+          isNativeAsset={assetWithPrice?.isNativeAsset}
           links={links}
           marginTop={!delayedDescriptions && 19}
           type={asset?.type}
-          uniqueId={asset?.uniqueId}
         />
         <Spacer />
       </AdditionalContentWrapper>
