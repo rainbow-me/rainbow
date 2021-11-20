@@ -41,7 +41,6 @@ const fetchAssetBalances = async (tokens, address) => {
       abi,
       optimismProvider
     );
-
     const values = await balanceCheckerContract.balances([address], tokens);
     const balances = {};
     [address].forEach((addr, addrIdx) => {
