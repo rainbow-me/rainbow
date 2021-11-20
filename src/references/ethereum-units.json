@@ -6,6 +6,7 @@
   "basic_swap_permit": 300000,
   "basic_tx": 21000,
   "basic_withdrawal": 550000,
+  "basic_transfer": 50000,
   "weth_wrap": 30000,
   "weth_unwrap": 40000,
   "noether": 0,

@@ -68,7 +68,7 @@ const networkInfo = {
   },
   [`${networkTypes.optimism}`]: {
     balance_checker_contract_address:
-      '0x54A4E5800345c01455a7798E0D96438364e22723',
+      '0x1C8cFdE3Ba6eFc4FF8Dd5C93044B9A690b6CFf36',
     color: '#FF4040',
     disabled: false,
     exchange_enabled: false,

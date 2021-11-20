@@ -22,6 +22,7 @@ import { AssetTypes } from '@rainbow-me/entities';
 import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';
 import { debouncedFetchSuggestions } from '@rainbow-me/handlers/ens';
 import {
+  buildTransaction,
   createSignableTransaction,
   estimateGasLimit,
   getProviderForNetwork,
@@ -55,11 +56,7 @@ import {
 } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import {
-  chainAssets,
-  ETH_ADDRESS,
-  rainbowTokenList,
-} from '@rainbow-me/references';
+import { chainAssets, rainbowTokenList } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { borders } from '@rainbow-me/styles';
 import {
@@ -300,7 +297,7 @@ export default function SendSheet(props) {
   // Recalculate balance when gas price changes
   useEffect(() => {
     if (
-      selected?.address === ETH_ADDRESS &&
+      selected?.isNativeAsset &&
       (prevSelectedGasPrice?.txFee?.value?.amount ?? 0) !==
         (selectedGasPrice?.txFee?.value?.amount ?? 0)
     ) {
@@ -433,6 +430,36 @@ export default function SendSheet(props) {
     resolveAddressIfNeeded();
   }, [recipient]);
 
+  const updateTxFeeForOptimism = useCallback(
+    async updatedGasLimit => {
+      const txData = await buildTransaction(
+        {
+          address: accountAddress,
+          amount: amountDetails.assetAmount,
+          asset: selected,
+          gasLimit: updatedGasLimit,
+          recipient: toAddress,
+        },
+        currentProvider,
+        currentNetwork
+      );
+      const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+        txData,
+        currentProvider
+      );
+      updateTxFee(updatedGasLimit, null, currentNetwork, l1GasFeeOptimism);
+    },
+    [
+      accountAddress,
+      amountDetails.assetAmount,
+      currentNetwork,
+      currentProvider,
+      selected,
+      toAddress,
+      updateTxFee,
+    ]
+  );
+
   const onSubmit = useCallback(async () => {
     const validTransaction =
       isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
@@ -464,7 +491,11 @@ export default function SendSheet(props) {
         );
 
         if (!lessThan(updatedGasLimit, gasLimit)) {
-          updateTxFee(updatedGasLimit, null, currentNetwork);
+          if (network === networkTypes.optimism) {
+            updateTxFeeForOptimism(updatedGasLimit);
+          } else {
+            updateTxFee(updatedGasLimit, null, currentNetwork);
+          }
         }
         // eslint-disable-next-line no-empty
       } catch (e) {}
@@ -523,10 +554,12 @@ export default function SendSheet(props) {
     gasLimit,
     isSufficientGas,
     isValidAddress,
+    network,
     selected,
     selectedGasPrice,
     toAddress,
     updateTxFee,
+    updateTxFeeForOptimism,
   ]);
 
   const submitTransaction = useCallback(async () => {
@@ -747,10 +780,15 @@ export default function SendSheet(props) {
         currentProvider,
         currentNetwork
       )
-        .then(gasLimit => {
-          updateTxFee(gasLimit, null, currentNetwork);
+        .then(async gasLimit => {
+          if (currentNetwork === networkTypes.optimism) {
+            updateTxFeeForOptimism(gasLimit);
+          } else {
+            updateTxFee(gasLimit, null, currentNetwork);
+          }
         })
-        .catch(() => {
+        .catch(e => {
+          logger.sentry('Error getting optimism l1 fee', e);
           updateTxFee(null, null, currentNetwork);
         });
     }
@@ -764,6 +802,7 @@ export default function SendSheet(props) {
     selected,
     toAddress,
     updateTxFee,
+    updateTxFeeForOptimism,
     network,
     gasPrices,
   ]);
