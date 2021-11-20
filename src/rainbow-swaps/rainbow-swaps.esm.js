@@ -1093,7 +1093,7 @@ var Source;
 var _WETH;
 var ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 var API_BASE_URL = 'https://swap-aggregator.api.p.rainbow.me';
-var RAINBOW_ROUTER_CONTRACT_ADDRESS = '0x4EE6eCAD1c2Dae9f525404De8555724e3c35d07B';
+var RAINBOW_ROUTER_CONTRACT_ADDRESS = '0x8364b06ebf273039ca452b1f86895f7082546245';
 var WETH = (_WETH = {}, _WETH["" + ChainId.mainnet] = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', _WETH);
 var DAI_ADDRESS = '0x6b175474e89094c44da98b954eedeac495271d0f';
 var USDC_ADDRESS = '0x111111111117dc0aa78b770fa6a738034120c302';

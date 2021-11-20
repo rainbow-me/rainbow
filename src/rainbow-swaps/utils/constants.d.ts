@@ -1,7 +1,7 @@
 import { EthereumAddress } from '../types';
 export declare const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 export declare const API_BASE_URL = "https://swap-aggregator.api.p.rainbow.me";
-export declare const RAINBOW_ROUTER_CONTRACT_ADDRESS = "0x4EE6eCAD1c2Dae9f525404De8555724e3c35d07B";
+export declare const RAINBOW_ROUTER_CONTRACT_ADDRESS = "0x8364b06ebf273039ca452b1f86895f7082546245";
 export declare type MultiChainAsset = {
     [key: string]: EthereumAddress;
 };
