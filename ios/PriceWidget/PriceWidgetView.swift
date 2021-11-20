@@ -23,6 +23,13 @@ struct PriceWidgetView: View {
     return tokenData.icon!.resizeImageTo(size: CGSize(width: 20, height: 20))
   }
   
+  private func formatPercent(double: Double) -> String {
+    let nf = NumberFormatter()
+    nf.usesGroupingSeparator = true
+    nf.minimumFractionDigits = 2
+    return nf.string(for: abs(tokenData.priceChange!))! + "%"
+  }
+  
   private func convertToCurrency(double: Double, currency: Currency?) -> String {
     let nf = NumberFormatter()
     nf.usesGroupingSeparator = true
@@ -42,12 +49,14 @@ struct PriceWidgetView: View {
       nf.currencySymbol = "¥"
     case .krw:
       nf.currencySymbol = "₩"
+      nf.maximumFractionDigits = 0
     case .rub:
       nf.currencySymbol = "₽"
     case .inr:
       nf.currencySymbol = "₹"
     case .jpy:
       nf.currencySymbol = "¥"
+      nf.maximumFractionDigits = 0
     case .try:
       nf.currencySymbol = "₺"
     case .cad:
@@ -126,7 +135,7 @@ struct PriceWidgetView: View {
         if (tokenData.tokenDetails != nil && tokenData.price != nil && tokenData.priceChange != nil) {
           VStack(alignment: .leading) {
             HStack {
-              Text(tokenData.tokenDetails != nil && tokenData.price != nil ? tokenData.tokenDetails!.symbol!.uppercased() : "")
+              Text(tokenData.tokenDetails!.symbol!.uppercased())
                 .font(.custom("SF Pro Rounded", size: 18))
                 .fontWeight(.heavy)
                 .foregroundColor(fgColor)
@@ -148,52 +157,48 @@ struct PriceWidgetView: View {
             
             HStack {
               VStack(alignment: .leading, spacing: 3) {
-                if (tokenData.priceChange != nil && tokenData.price != nil) {
-                  HStack(spacing: 3) {
-                    if (tokenData.priceChange! >= 0) {
-                      Image(systemName: "arrow.up")
-                        .font(.system(size: 18, weight: .heavy, design: .rounded))
-                        .foregroundColor(fgColor)
-                    } else {
-                      Image(systemName: "arrow.down")
-                        .font(.system(size: 18, weight: .heavy, design: .rounded))
-                        .foregroundColor(fgColor)
-                    }
-                    Text(tokenData.priceChange != nil ? String(format: "%.2f", abs(tokenData.priceChange!)) + "%" : "")
-                      .font(.custom("SF Pro Rounded", size: 18))
-                      .fontWeight(.heavy)
+                HStack(spacing: 3) {
+                  if (tokenData.priceChange! >= 0) {
+                    Image(systemName: "arrow.up")
+                      .font(.system(size: 18, weight: .heavy, design: .rounded))
                       .foregroundColor(fgColor)
-                      .tracking(0.2)
-                  }.mask(
-                    LinearGradient(gradient: Gradient(colors: [fgColor.opacity(0.9), fgColor.opacity(0.8)]), startPoint: .leading, endPoint: .trailing)
-                  )
-                  Text(tokenData.price != nil ? convertToCurrency(double: tokenData.price!, currency: tokenData.currency) : "")
-                      .font(.custom("SF Pro Rounded", size: 28))
-                      .fontWeight(.heavy)
+                  } else {
+                    Image(systemName: "arrow.down")
+                      .font(.system(size: 18, weight: .heavy, design: .rounded))
                       .foregroundColor(fgColor)
-                      .minimumScaleFactor(0.01)
-                      .lineLimit(1)
-                      .frame(height: 33, alignment: .top)
-                }
+                  }
+                  Text(formatPercent(double: tokenData.priceChange!))
+                    .font(.custom("SF Pro Rounded", size: 18))
+                    .fontWeight(.heavy)
+                    .foregroundColor(fgColor)
+                    .tracking(0.2)
+                }.mask(
+                  LinearGradient(gradient: Gradient(colors: [fgColor.opacity(0.9), fgColor.opacity(0.8)]), startPoint: .leading, endPoint: .trailing)
+                )
+                Text(convertToCurrency(double: tokenData.price!, currency: tokenData.currency))
+                    .font(.custom("SF Pro Rounded", size: 28))
+                    .fontWeight(.heavy)
+                    .foregroundColor(fgColor)
+                    .minimumScaleFactor(0.01)
+                    .lineLimit(1)
+                    .frame(height: 33, alignment: .top)
               }
             }
             
             Spacer()
             
-            if (tokenData.priceChange != nil && tokenData.price != nil) {
-              if (tokenData.priceChange == 9.99 && tokenData.price == 9999.99) {
-                Text("This is fake data")
-                  .font(.custom("SF Pro Rounded", size: 10))
-                  .fontWeight(.bold)
-                  .foregroundColor(fgColor.opacity(0.4))
-                  .tracking(0.2)
-              } else {
-                (Text("Updated at ") + Text(date, style: .time))
-                  .font(.custom("SF Pro Rounded", size: 10))
-                  .fontWeight(.bold)
-                  .foregroundColor(fgColor.opacity(0.5))
-                  .tracking(0.2)
-              }
+            if (tokenData.priceChange == 9.99 && tokenData.price == 9999.99) {
+              Text("This is fake data")
+                .font(.custom("SF Pro Rounded", size: 10))
+                .fontWeight(.bold)
+                .foregroundColor(fgColor.opacity(0.4))
+                .tracking(0.2)
+            } else {
+              (Text("Updated at ") + Text(date, style: .time))
+                .font(.custom("SF Pro Rounded", size: 10))
+                .fontWeight(.bold)
+                .foregroundColor(fgColor.opacity(0.5))
+                .tracking(0.2)
             }
           }.padding(16)
         } else {
