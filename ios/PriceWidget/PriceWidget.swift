@@ -34,6 +34,31 @@ struct PriceWidgetProvider: IntentTimelineProvider {
     return CustomTokenEntry(date: Date(), tokenData: tokenData)
   }
   
+  // TODO 
+  func getCurrency() {
+    let query = [kSecClass: kSecClassInternetPassword,
+            kSecAttrServer: "nativeCurrency",
+      kSecReturnAttributes: kCFBooleanTrue!,
+            kSecReturnData: kCFBooleanTrue!,
+            kSecMatchLimit: kSecMatchLimitOne] as [String: Any]
+    var item: CFTypeRef?
+    
+    
+    let readStatus = SecItemCopyMatching(query as CFDictionary, &item)
+    if readStatus != 0 {
+      return
+    }
+    let found = item as? NSDictionary
+    if found == nil {
+      return
+    }
+    let currency = String(data: (found!.value(forKey: kSecValueData as String)) as! Data, encoding: .utf8)
+
+    if !(currency?.isEmpty ?? true) {
+      // add a logic
+    }
+  }
+  
   func getSnapshot(for configuration: SelectTokenIntent, in context: Context, completion: @escaping (CustomTokenEntry) -> Void) {
     
     let eth = defaultToken
