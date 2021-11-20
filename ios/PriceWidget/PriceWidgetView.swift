@@ -23,12 +23,42 @@ struct PriceWidgetView: View {
     return tokenData.icon!.resizeImageTo(size: CGSize(width: 20, height: 20))
   }
   
-  private func convertToCurrency(double: Double) -> String {
+  private func convertToCurrency(double: Double, currency: Currency?) -> String {
     let nf = NumberFormatter()
-    nf.locale = Locale(identifier: "en_US")
     nf.usesGroupingSeparator = true
     nf.numberStyle = .currency
-    nf.currencySymbol = "$"
+    switch currency {
+    case .eth:
+      nf.currencySymbol = "Ξ"
+    case .usd:
+      nf.currencySymbol = "$"
+    case .eur:
+      nf.currencySymbol = "€"
+    case .gbp:
+      nf.currencySymbol = "£"
+    case .aud:
+      nf.currencySymbol = "A$"
+    case .cny:
+      nf.currencySymbol = "¥"
+    case .krw:
+      nf.currencySymbol = "₩"
+    case .rub:
+      nf.currencySymbol = "₽"
+    case .inr:
+      nf.currencySymbol = "₹"
+    case .jpy:
+      nf.currencySymbol = "¥"
+    case .try:
+      nf.currencySymbol = "₺"
+    case .cad:
+      nf.currencySymbol = "CA$"
+    case .nzd:
+      nf.currencySymbol = "NZ$"
+    case .zar:
+      nf.currencySymbol = "R"
+    default:
+      nf.currencySymbol = "$"
+    }
     if (double < 1.0) {
       nf.maximumSignificantDigits = 2
     }
@@ -137,7 +167,7 @@ struct PriceWidgetView: View {
                   }.mask(
                     LinearGradient(gradient: Gradient(colors: [fgColor.opacity(0.9), fgColor.opacity(0.8)]), startPoint: .leading, endPoint: .trailing)
                   )
-                    Text(tokenData.price != nil ? convertToCurrency(double: tokenData.price!) : "")
+                  Text(tokenData.price != nil ? convertToCurrency(double: tokenData.price!, currency: tokenData.currency) : "")
                       .font(.custom("SF Pro Rounded", size: 28))
                       .fontWeight(.heavy)
                       .foregroundColor(fgColor)

@@ -9,17 +9,19 @@ import Foundation
 import UIKit
 
 @available(iOS 14.0, *)
-public struct TokenData {
-  public let tokenDetails: TokenDetails?
-  public let priceChange: Double?
-  public let price: Double?
-  public let icon: UIImage?
+struct TokenData {
+  let tokenDetails: TokenDetails?
+  let priceChange: Double?
+  let price: Double?
+  let icon: UIImage?
+  let currency: Currency?
 
-  init(tokenDetails: TokenDetails?, priceChange: Double?, price: Double?, icon: UIImage?) {
+  init(tokenDetails: TokenDetails?, priceChange: Double?, price: Double?, icon: UIImage?, currency: Currency?) {
     self.tokenDetails = tokenDetails
     self.priceChange = priceChange
     self.price = price
     self.icon = icon
+    self.currency = currency
   }
   
   init() {
@@ -27,5 +29,6 @@ public struct TokenData {
     self.priceChange = nil
     self.price = nil
     self.icon = nil
+    self.currency = nil
   }
 }
