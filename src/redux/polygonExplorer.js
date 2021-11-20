@@ -83,7 +83,7 @@ const getPolygonAssetsFromCovalent = async (
 ) => {
   const data = await getAssetsFromCovalent(chainId, address, currency);
   if (data) {
-    const updatedAt = new Date(data.update_at).getTime();
+    const updatedAt = new Date(data.updated_at).getTime();
     const assets = data.items.map(item => {
       let mainnetAddress = tokenMapping[toLower(item.contract_address)];
       let coingeckoId = coingeckoIds[toLower(mainnetAddress)];

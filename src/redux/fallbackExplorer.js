@@ -58,7 +58,7 @@ const getMainnetAssetsFromCovalent = async (
 ) => {
   const data = await getAssetsFromCovalent(chainId, address, currency);
   if (data) {
-    const updatedAt = new Date(data.update_at).getTime();
+    const updatedAt = new Date(data.updated_at).getTime();
     const assets = data.items.map(item => {
       const contractAddress = item.contract_address;
       const coingeckoId = coingeckoIds[toLower(contractAddress)];

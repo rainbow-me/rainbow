@@ -36,7 +36,7 @@ const getArbitrumAssetsFromCovalent = async (
 ) => {
   const data = await getAssetsFromCovalent(chainId, address, currency);
   if (data) {
-    const updatedAt = new Date(data.update_at).getTime();
+    const updatedAt = new Date(data.updated_at).getTime();
     const assets = data.items.map(item => {
       // Arbitrum ETH has no contract address since it's the native token
       const contractAddress = item.contract_address || ARBITRUM_ETH_ADDRESS;
