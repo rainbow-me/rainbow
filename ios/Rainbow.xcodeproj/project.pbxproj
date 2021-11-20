@@ -95,6 +95,9 @@
 		C1792981274992D100044684 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1792980274992D000044684 /* Currency.swift */; };
 		C1792982274992D100044684 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1792980274992D000044684 /* Currency.swift */; };
 		C1792983274992D100044684 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1792980274992D000044684 /* Currency.swift */; };
+		C179298527499A5B00044684 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179298427499A5B00044684 /* Constants.swift */; };
+		C179298627499A5B00044684 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179298427499A5B00044684 /* Constants.swift */; };
+		C179298727499A5B00044684 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179298427499A5B00044684 /* Constants.swift */; };
 		C18FCD32273C62230079CE28 /* PriceWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF75272BA7AA00FF5C78 /* PriceWidgetView.swift */; };
 		C18FCD37273C62C50079CE28 /* PriceWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF75272BA7AA00FF5C78 /* PriceWidgetView.swift */; };
 		C18FCD39273C64C90079CE28 /* TokenData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCFB4272BC8F100FF5C78 /* TokenData.swift */; };
@@ -285,6 +288,7 @@
 		C16DCFAF272BB8FC00FF5C78 /* PriceData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PriceData.swift; sourceTree = "<group>"; };
 		C16DCFB4272BC8F100FF5C78 /* TokenData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenData.swift; sourceTree = "<group>"; };
 		C1792980274992D000044684 /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
+		C179298427499A5B00044684 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		C1C61A6C272C9C8D00E5C0B3 /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		C1C61A81272CBDA100E5C0B3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		C1C61A902731A05700E5C0B3 /* RainbowTokenList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RainbowTokenList.swift; sourceTree = "<group>"; };
@@ -654,6 +658,7 @@
 				C1C61A6C272C9C8D00E5C0B3 /* UIImage.swift */,
 				C10074C72744D15B006D6E1E /* UIColor.swift */,
 				66DD52A92747003D0016C7CA /* UIImageColor.swift */,
+				C179298427499A5B00044684 /* Constants.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -1068,6 +1073,7 @@
 				A4277D9F23CBD1910042BAF4 /* Extensions.swift in Sources */,
 				A4D04BAC23D12FD5008C1DEC /* ButtonManager.m in Sources */,
 				C18FCD3C273C64D10079CE28 /* TokenDetails.swift in Sources */,
+				C179298527499A5B00044684 /* Constants.swift in Sources */,
 				6655FFB425BB2B0700642961 /* ThemeModule.m in Sources */,
 				1539422D24C7CF9300E4A9D1 /* SettingsBundleHelper.swift in Sources */,
 				66A1FEB624AB641100C3F539 /* RNCMScreen.m in Sources */,
@@ -1097,6 +1103,7 @@
 				C16DCFB1272BB8FC00FF5C78 /* PriceData.swift in Sources */,
 				66DD52AB2747003D0016C7CA /* UIImageColor.swift in Sources */,
 				C1792982274992D100044684 /* Currency.swift in Sources */,
+				C179298627499A5B00044684 /* Constants.swift in Sources */,
 				C1EB01302731B68400830E70 /* TokenDetails.swift in Sources */,
 				C16DCF74272BA77A00FF5C78 /* TokenProvider.swift in Sources */,
 				C16DCFB6272BC8F100FF5C78 /* TokenData.swift in Sources */,
@@ -1113,6 +1120,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C16DCFA4272BABC300FF5C78 /* SelectTokenIntent.intentdefinition in Sources */,
+				C179298727499A5B00044684 /* Constants.swift in Sources */,
 				66DD52AC2747003D0016C7CA /* UIImageColor.swift in Sources */,
 				C10074CA2744D15C006D6E1E /* UIColor.swift in Sources */,
 				C1C61A932731A05700E5C0B3 /* RainbowTokenList.swift in Sources */,
