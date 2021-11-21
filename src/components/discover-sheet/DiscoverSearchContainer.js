@@ -135,8 +135,8 @@ export default forwardRef(function DiscoverSearchContainer(
             onFocus={onTapSearch}
             placeholderText={
               isSearchModeEnabled
-                ? 'Search all of Ethereum'
-                : '􀊫 Search all of Ethereum'
+                ? 'Search all of CELO'
+                : '􀊫 Search all of CELO'
             }
             ref={searchInputRef}
             searchQuery={searchQuery}
