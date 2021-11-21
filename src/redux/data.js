@@ -529,11 +529,8 @@ export const addressAssetsReceived = (
     const restOfTheAssets = existingAssets.filter(
       asset => asset.network !== assetsNetwork
     );
-
-    parsedAssets = uniqBy(
-      concat(parsedAssets, restOfTheAssets),
-      item => item.uniqueId
-    );
+    parsedAssets = concat(parsedAssets, restOfTheAssets);
+    parsedAssets = uniqBy(parsedAssets, item => item.uniqueId);
   } else {
     // We need to merge the response with all l2 assets
     // to prevent L2 assets temporarily dissapearing
@@ -570,14 +567,14 @@ export const addressAssetsReceived = (
   //Hide tokens with a url as their token name
   const assetsWithScamURL = parsedAssets
     .filter(asset => isValidDomain(asset.name) && !asset.isVerified)
-    .map(({ address }) => address);
+    .map(({ uniqueId }) => uniqueId);
   dispatch(addCoinsToHiddenList(assetsWithScamURL));
 
   // Hide coins with price = 0 that are currently not pinned
   if (isL2) {
     const assetsWithNoPrice = parsedAssets
       .filter(asset => asset.price?.value === 0)
-      .map(({ address }) => address);
+      .map(({ uniqueId }) => uniqueId);
     dispatch(addCoinsToHiddenList(assetsWithNoPrice));
   }
 };
