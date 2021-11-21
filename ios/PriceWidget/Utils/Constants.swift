@@ -3,7 +3,7 @@
 //  Rainbow
 //
 //  Created by Ben Goldberg on 11/20/21.
-//  Copyright © 2021 Facebook. All rights reserved.
+//  Copyright © 2021 Rainbow. All rights reserved.
 //
 
 import Foundation
