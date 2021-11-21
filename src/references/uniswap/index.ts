@@ -3,7 +3,7 @@ import { ChainId, Token, CELO } from '@ubeswap/sdk';
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { filter, flatMap, keyBy, map, toLower } from 'lodash';
 import { DAI_ADDRESS, USDC_ADDRESS } from '../';
-import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
+import RAINBOW_TOKEN_LIST_DATA from '../ubeswap/ubeswap.token-list.json';
 import MULTICALL_ABI from './uniswap-multicall-abi.json';
 
 import { default as UNISWAP_TESTNET_TOKEN_LIST } from './uniswap-pairs-testnet.json';
@@ -12,7 +12,7 @@ import UNISWAP_V1_EXCHANGE_ABI from './v1-exchange-abi';
 import { RainbowToken } from '@rainbow-me/entities';
 
 const tokenList: RainbowToken[] = map(RAINBOW_TOKEN_LIST_DATA.tokens, token => {
-  const { address: rawAddress, decimals, name, symbol, extensions } = token;
+  const { address: rawAddress, decimals, name, symbol } = token;
   const address = toLower(rawAddress);
   return {
     address,
@@ -20,7 +20,6 @@ const tokenList: RainbowToken[] = map(RAINBOW_TOKEN_LIST_DATA.tokens, token => {
     name,
     symbol,
     uniqueId: address,
-    ...extensions,
   };
 });
 
@@ -41,18 +40,19 @@ const RAINBOW_TOKEN_LIST: Record<string, RainbowToken> = keyBy(
   'address'
 );
 
-const curatedRainbowTokenList: RainbowToken[] = filter(
-  tokenListWithEth,
-  'isRainbowCurated'
-);
+// TODO: Unused, as the Ubeswap Token list does not specify this.
+// const curatedRainbowTokenList: RainbowToken[] = filter(
+//   tokenListWithEth,
+//   'isRainbowCurated'
+// );
 
 const TOKEN_SAFE_LIST: Record<string, string> = keyBy(
-  flatMap(curatedRainbowTokenList, ({ name, symbol }) => [name, symbol]),
+  flatMap(tokenListWithEth, ({ name, symbol }) => [name, symbol]),
   id => toLower(id)
 );
 
 const CURATED_UNISWAP_TOKENS: Record<string, RainbowToken> = keyBy(
-  curatedRainbowTokenList,
+  tokenListWithEth,
   'address'
 );
 
