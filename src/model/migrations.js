@@ -2,7 +2,10 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
 import { findKey, isNumber, keys, uniq } from 'lodash';
 import { removeLocal } from '../handlers/localstorage/common';
-import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
+import {
+  getNativeCurrency,
+  IMAGE_METADATA,
+} from '../handlers/localstorage/globalSettings';
 import {
   getMigrationVersion,
   setMigrationVersion,
@@ -19,7 +22,7 @@ import store from '../redux/store';
 
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import colors, { getRandomColor } from '../styles/colors';
-import { hasKey } from './keychain';
+import { hasKey, saveString } from './keychain';
 import { isL2Asset } from '@rainbow-me/handlers/assets';
 import {
   getAssets,
@@ -488,6 +491,22 @@ export default async function runMigrations() {
   };
 
   migrations.push(v12);
+
+  /*
+   *************** Migration v13 ******************
+   * Exposes the selected nativeCurrency to the price widgets
+   */
+  const v13 = async () => {
+    if (ios) {
+      const nativeCurrency = await getNativeCurrency();
+      saveString('nativeCurrency', nativeCurrency, {
+        accessGroup: 'group.rainbow.me',
+        service: 'rainbow.me.currency',
+      });
+    }
+  };
+
+  migrations.push(v13);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
