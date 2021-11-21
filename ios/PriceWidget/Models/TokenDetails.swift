@@ -8,12 +8,12 @@
 import Foundation
 
 @available(iOS 14.0, *)
-public struct TokenDetails: Codable {
-  public let name: String?
-  public let coinGeckoId: String?
-  public let symbol: String?
-  public let color: String?
-  public let address: String?
+struct TokenDetails: Codable {
+  let name: String?
+  let coinGeckoId: String?
+  let symbol: String?
+  let color: String?
+  let address: String?
 
   init(name: String?, coinGeckoId: String?, symbol: String?, color: String?, address: String?) {
     self.name = name
