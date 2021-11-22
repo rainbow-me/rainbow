@@ -273,6 +273,7 @@
     "babel-plugin-styled-components": "1.11.1",
     "babel-plugin-transform-remove-console": "6.9.4",
     "detox": "19.0.0",
+    "chai": "4.2.0",
     "dotenv": "8.2.0",
     "eslint": "7.32.0",
     "eslint-config-rainbow": "2.0.0",
@@ -326,7 +327,8 @@
     "**/nth-check": "2.0.1",
     "**/is-svg": "4.3.1",
     "**/set-value": "4.1.0",
-    "**/validator": "13.7.0"
+    "**/validator": "13.7.0",
+    "**/json-schema": "0.4.0"
   },
   "jest": {
     "preset": "react-native",

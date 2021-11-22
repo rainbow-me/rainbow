@@ -29,7 +29,10 @@ export default function useUpdateAssetOnchainBalance() {
         successCallback({ ...assetToUpdate, balance });
         // Then in redux
         const allAssetsUpdated = allAssets.map(asset => {
-          if (asset.address === assetToUpdate.address) {
+          if (
+            asset.address === assetToUpdate.address &&
+            asset.network === assetToUpdate.network
+          ) {
             asset.balance = balance;
           }
           return asset;

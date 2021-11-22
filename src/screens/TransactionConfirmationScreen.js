@@ -459,9 +459,19 @@ export default function TransactionConfirmationScreen() {
       }
     } catch (error) {
       logger.log('error estimating gas', error);
+    } finally {
+      logger.log('Setting gas limit to', convertHexToString(gas));
+
+      if (network === networkTypes.optimism) {
+        const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+          txPayload,
+          provider
+        );
+        updateTxFee(gas, null, network, l1GasFeeOptimism);
+      } else {
+        updateTxFee(gas, null, network);
+      }
     }
-    logger.log('Setting gas limit to', convertHexToString(gas));
-    updateTxFee(gas, null, network);
   }, [network, params, provider, updateTxFee]);
 
   useEffect(() => {

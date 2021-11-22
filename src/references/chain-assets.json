@@ -175,7 +175,7 @@
       {
         "asset": {
           "mainnet_address": "eth",
-          "asset_code": "0x4200000000000000000000000000000000000006",
+          "asset_code": "0x0000000000000000000000000000000000000000",
           "coingecko_id": "ethereum",
           "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/ETH.png",

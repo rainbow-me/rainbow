@@ -38,7 +38,6 @@ import logger from 'logger';
 const { CUSTOM, NORMAL } = gasUtils;
 
 // -- Constants ------------------------------------------------------------- //
-const OPTIMISM_GAS_PRICE_GWEI = 0.015;
 const GAS_MULTIPLIER = 1.101;
 const GAS_UPDATE_DEFAULT_GAS_LIMIT = 'gas/GAS_UPDATE_DEFAULT_GAS_LIMIT';
 const GAS_PRICES_DEFAULT = 'gas/GAS_PRICES_DEFAULT';
@@ -139,12 +138,16 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   };
 
   const getOptimismGasPrices = async () => {
+    const provider = await getProviderForNetwork(networkTypes.optimism);
+    const baseGasPrice = await provider.getGasPrice();
+    const gasPriceGwei = Number(weiToGwei(baseGasPrice.toString()));
+
     const priceData = {
-      average: OPTIMISM_GAS_PRICE_GWEI,
+      average: gasPriceGwei,
       avgWait: 0.5,
-      fast: OPTIMISM_GAS_PRICE_GWEI,
+      fast: gasPriceGwei,
       fastWait: 0.2,
-      safeLow: OPTIMISM_GAS_PRICE_GWEI,
+      safeLow: gasPriceGwei,
       safeLowWait: 1,
     };
     return priceData;
@@ -312,10 +315,12 @@ export const gasUpdateDefaultGasLimit = (
   dispatch(gasUpdateTxFee(network, defaultGasLimit));
 };
 
-export const gasUpdateTxFee = (network, gasLimit, overrideGasOption) => (
-  dispatch,
-  getState
-) => {
+export const gasUpdateTxFee = (
+  network,
+  gasLimit,
+  overrideGasOption,
+  l1GasFeeOptimism = null
+) => (dispatch, getState) => {
   const { defaultGasLimit, gasPrices, selectedGasPriceOption } = getState().gas;
   const _gasLimit = gasLimit || defaultGasLimit;
   const _selectedGasPriceOption = overrideGasOption || selectedGasPriceOption;
@@ -331,7 +336,8 @@ export const gasUpdateTxFee = (network, gasLimit, overrideGasOption) => (
     gasPrices,
     nativeTokenPriceUnit,
     _gasLimit,
-    nativeCurrency
+    nativeCurrency,
+    l1GasFeeOptimism
   );
 
   const results = getSelectedGasPrice(
