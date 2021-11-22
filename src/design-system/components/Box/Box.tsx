@@ -27,7 +27,7 @@ export interface BoxProps {
   background?: BackgroundColor;
   children?: ReactNode;
   flexBasis?: 0;
-  flexDirection?: 'row' | 'column';
+  flexDirection?: 'row' | 'row-reverse' | 'column';
   flexGrow?: 0 | 1;
   flexShrink?: 0 | 1;
   flexWrap?: 'wrap';
