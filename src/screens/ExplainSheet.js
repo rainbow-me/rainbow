@@ -109,7 +109,7 @@ export const explainers = {
   },
   currentBaseFeeFalling: {
     emoji: '🤑',
-    extraHeight: android ? 60 : 10,
+    extraHeight: android ? 60 : 20,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_FALLING,
     title: 'Current base fee',
   },
@@ -127,13 +127,13 @@ export const explainers = {
   },
   maxBaseFee: {
     emoji: '📈',
-    extraHeight: -20,
+    extraHeight: 0,
     text: MAX_BASE_FEE_EXPLAINER,
     title: 'Max base fee',
   },
   minerTip: {
     emoji: '⛏',
-    extraHeight: -20,
+    extraHeight: 0,
     text: MINER_TIP_EXPLAINER,
     title: 'Miner tip',
   },
@@ -206,7 +206,11 @@ export const explainers = {
 };
 
 const ExplainSheet = () => {
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
+  const {
+    height: deviceHeight,
+    width: deviceWidth,
+    isSmallPhone,
+  } = useDimensions();
   const insets = useSafeArea();
   const { params: { type = 'gas', onClose } = {}, params = {} } = useRoute();
   const { colors } = useTheme();
