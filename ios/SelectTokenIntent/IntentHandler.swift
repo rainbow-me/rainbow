@@ -33,7 +33,7 @@ extension IntentHandler: SelectTokenIntentHandling {
     var tokens = Array(tokenProvider.getTokens().values)
     
     top100.keys.forEach {
-      top100[$0.lowercased()] = top100[$0]
+      top100[$0?.lowercased()] = top100[$0]
     }
 
     let partition = tokens.partition(by: { top100.keys.contains($0.address!.lowercased()) })
