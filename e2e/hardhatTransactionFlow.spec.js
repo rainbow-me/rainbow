@@ -187,7 +187,7 @@ describe('Hardhat Transaction Flow', () => {
     );
     await Helpers.tap('CryptoKitties-family-header');
     await Helpers.tapByText('Arun Cattybinky');
-    await Helpers.waitAndTap('send-sheet-confirm-action-button', 10000);
+    await Helpers.waitAndTap('send-sheet-confirm-action-button', 20000);
     await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.checkIfVisible('profile-screen');
     await Helpers.swipe('profile-screen', 'left', 'slow');
