@@ -108,14 +108,14 @@ export default function CustomGasState({ asset }) {
       additionalTopPadding
       backgroundColor={colors.black}
       borderBottomRadius={0}
-      borderRadius={39}
       contentHeight={longFormHeight}
       deviceHeight={deviceHeight}
       hideHandle
+      radius={39}
       removeTopPadding
       scrollEnabled={false}
     >
-      <FloatingPanel onLayout={setContentHeight} radius={39}>
+      <FloatingPanel onLayout={setContentHeight} radius={android ? 30 : 39}>
         <ExchangeHeader />
         <FeesPanelWrapper>
           <FeesPanel
