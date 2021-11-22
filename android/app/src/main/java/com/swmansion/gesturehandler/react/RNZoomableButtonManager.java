@@ -1,5 +1,6 @@
 package com.swmansion.gesturehandler.react;
 import android.content.Context;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.animation.Animation;
 import android.view.animation.Interpolator;
@@ -37,6 +38,7 @@ public class RNZoomableButtonManager extends
         private boolean mIsActive = false;
         private Timer mLongPressTimer = new Timer();
         private boolean mIsTaskScheduled = false;
+        private boolean mIsLongTaskScheduled = false;
         private void animate(boolean in) {
             if (mIsActive == in) {
                 return;
@@ -61,12 +63,14 @@ public class RNZoomableButtonManager extends
                 this.animate(true);
             }
             if (ev.getAction() == MotionEvent.ACTION_UP) {
+                Log.d("AAAAAA==", "ACTION_UP");
                 if (mIsTaskScheduled) {
                     onReceivePressEvent(false);
-                } else {
+                } 
+                mIsTaskScheduled = false;
+                if (mIsLongTaskScheduled) {
                     onReceivePressEndedEvent();
                 }
-                mIsTaskScheduled = false;
                 mLongPressTimer.cancel();
                 mLongPressTimer = new Timer();
             }
@@ -85,6 +89,7 @@ public class RNZoomableButtonManager extends
                     @Override
                     public void run() {
                         mIsTaskScheduled = false;
+                        mIsLongTaskScheduled = true;
                         onReceivePressEvent(true);
                         animate(false);
                     }
@@ -95,6 +100,7 @@ public class RNZoomableButtonManager extends
                 mLongPressTimer.cancel();
                 mLongPressTimer = new Timer();
                 mIsTaskScheduled = false;
+                mIsLongTaskScheduled = false;
             }
         }
 
