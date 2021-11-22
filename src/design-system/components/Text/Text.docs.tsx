@@ -1,6 +1,7 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import React, { ReactNode } from 'react';
 import { View } from 'react-native';
+import { AccentColorProvider } from '../../color/AccentColorContext';
 import { ColorModeProvider } from '../../color/ColorMode';
 import { palettes } from '../../color/palettes';
 import { CustomColor } from '../../color/useForegroundColor';
@@ -104,7 +105,12 @@ const docs: Docs = {
       name: 'With color',
       Example: () => (
         <Stack space="12px">
-          <Text color="accent">Standard color</Text>
+          <Text color="secondary50">Default mode</Text>
+          <Text color="action">Action color</Text>
+          <Text color="accent">Default accent color</Text>
+          <AccentColorProvider color="orange">
+            <Text color="accent">Accent color</Text>
+          </AccentColorProvider>
           <Text color={customTextColor}>Custom color</Text>
           <View>
             <View

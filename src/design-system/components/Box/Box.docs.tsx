@@ -102,7 +102,7 @@ const docs: Docs = {
               <TouchableOpacity
                 onPress={() => (offsetRatio.value = Math.random())}
               >
-                <Text align="center" color="accent" weight="bold">
+                <Text align="center" color="action" weight="bold">
                   Move
                 </Text>
               </TouchableOpacity>

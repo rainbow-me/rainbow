@@ -1,9 +1,11 @@
 import { flatten, mapValues } from 'lodash';
 import React, { forwardRef, ReactNode, useMemo } from 'react';
 import { View } from 'react-native';
-import { BackgroundColor } from '../../color/palettes';
 import { negativeSpace, NegativeSpace, space, Space } from '../../layout/space';
-import { BackgroundProvider } from '../BackgroundProvider/BackgroundProvider';
+import {
+  BackgroundProvider,
+  BackgroundProviderProps,
+} from '../BackgroundProvider/BackgroundProvider';
 import type * as Polymorphic from './polymorphic';
 
 const fraction = (numerator: number, denominator: number) =>
@@ -24,7 +26,7 @@ const widths = {
 
 export interface BoxProps {
   alignItems?: 'flex-start' | 'flex-end' | 'center' | 'stretch';
-  background?: BackgroundColor;
+  background?: BackgroundProviderProps['color'];
   children?: ReactNode;
   flexBasis?: 0;
   flexDirection?: 'row' | 'row-reverse' | 'column';

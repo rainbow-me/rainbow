@@ -383,7 +383,7 @@ export default () => (
 
 If you're rendering a custom background color, you can take control of the color mode by manually rendering a `ColorModeProvider`.
 
-Beyond the usual `light` and `dark` modes, there is also a `darkTinted` mode which is designed for screens with dark backgrounds generated based on user content.
+Beyond the usual `light` and `dark` modes, there are also `lightTinted` and `darkTinted` modes which are designed for non-neutral background colors where foreground colors should be desaturated.
 
 ```tsx
 import { ColorModeProvider, Box, Text } from '@rainbow-me/design-system';
@@ -395,6 +395,34 @@ export default () => (
       <Text>...</Text>
     </ColorModeProvider>
   </Box>
+);
+```
+
+#### AccentColorProvider
+
+The `"accent"` color can be configured for entire subtrees of the app. By default, it will resolve to a pale blue color.
+
+```tsx
+import { AccentColorProvider, Box, Text } from '@rainbow-me/design-system';
+
+export default () => (
+  <AccentColorProvider accent="#ff0000">
+    <Text color="accent">...</Text>
+  </AccentColorProvider>
+);
+```
+
+`AccentColorProvider` also detects whether the specified accent color is light or dark and sets the appropriate color mode for you.
+
+```tsx
+import { AccentColorProvider, Box, Text } from '@rainbow-me/design-system';
+
+export default () => (
+  <AccentColorProvider accent="#ff0000">
+    <Box background="accent" padding="19px">
+      <Text>This text will be inverted automatically.</Text>
+    </Box>
+  </AccentColorProvider>
 );
 ```
 

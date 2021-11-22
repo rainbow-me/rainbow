@@ -14,7 +14,7 @@ import { textSizes, textWeights } from '../../typography/typography';
 
 const validColors = [
   'accent',
-  'inverted',
+  'action',
   'primary',
   'secondary',
   'secondary30',

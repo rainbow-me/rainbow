@@ -1,6 +1,7 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 import { View } from 'react-native';
+import { AccentColorProvider } from '../../color/AccentColorContext';
 import { ColorModeProvider, useColorMode } from '../../color/ColorMode';
 import { Docs } from '../../playground/Docs';
 import { Columns } from '../Columns/Columns';
@@ -8,6 +9,9 @@ import { Inset } from '../Inset/Inset';
 import { Stack } from '../Stack/Stack';
 import { Text } from '../Text/Text';
 import { BackgroundProvider } from './BackgroundProvider';
+
+const darkAccentColor = 'green';
+const lightAccentColor = 'yellow';
 
 function BackgroundProviderDemo() {
   const { backgroundColors } = useColorMode();
@@ -59,6 +63,52 @@ const docs: Docs = {
             </ColorModeProvider>
           </Stack>
         </Columns>
+      ),
+    },
+    {
+      name: 'With custom accent color (dark)',
+      Example: () => (
+        <AccentColorProvider color={darkAccentColor}>
+          <BackgroundProvider color="accent">
+            {backgroundStyle => (
+              <View style={backgroundStyle}>
+                <Inset space="19px">
+                  <Stack space="10px">
+                    <Text color="primary" weight="bold">
+                      {darkAccentColor}
+                    </Text>
+                    <Text color="secondary50" weight="bold">
+                      {darkAccentColor}
+                    </Text>
+                  </Stack>
+                </Inset>
+              </View>
+            )}
+          </BackgroundProvider>
+        </AccentColorProvider>
+      ),
+    },
+    {
+      name: 'With custom accent color (light)',
+      Example: () => (
+        <AccentColorProvider color={lightAccentColor}>
+          <BackgroundProvider color="accent">
+            {backgroundStyle => (
+              <View style={backgroundStyle}>
+                <Inset space="19px">
+                  <Stack space="10px">
+                    <Text color="primary" weight="bold">
+                      {lightAccentColor}
+                    </Text>
+                    <Text color="secondary50" weight="bold">
+                      {lightAccentColor}
+                    </Text>
+                  </Stack>
+                </Inset>
+              </View>
+            )}
+          </BackgroundProvider>
+        </AccentColorProvider>
       ),
     },
   ],

@@ -285,6 +285,7 @@ const Home: NextPage = () => {
               <Title>Foreground Colors</Title>
               <Columns space={GRID_SPACING}>
                 <Heading>Light Mode</Heading>
+                <Heading>Light Tinted Mode</Heading>
                 <Heading>Dark Mode</Heading>
                 <Heading>Dark Tinted Mode</Heading>
               </Columns>
@@ -296,21 +297,29 @@ const Home: NextPage = () => {
                     {(typeof foreground === 'string'
                       ? ([
                           [foreground, 'bodyLight'],
+                          [foreground, { custom: '#dee2ff' }],
                           [foreground, 'bodyDark'],
-                          [foreground, 'bodyDark'],
+                          [foreground, { custom: '#141938' }],
                         ] as const)
                       : ([
                           [foreground.light, 'bodyLight'],
+                          [
+                            foreground.lightTinted ?? foreground.light,
+                            { custom: '#dee2ff' },
+                          ],
                           [foreground.dark, 'bodyDark'],
                           [
                             foreground.darkTinted ?? foreground.dark,
-                            'bodyDark',
+                            { custom: '#141938' },
                           ],
                         ] as const)
                     ).map(([color, backgroundColor], index) => (
                       <div
                         className={sprinkles({
-                          backgroundColor,
+                          backgroundColor:
+                            typeof backgroundColor === 'string'
+                              ? backgroundColor
+                              : undefined,
                           borderBottomRadius:
                             colorIndex === arr.length - 1
                               ? CARD_RADIUS
@@ -322,6 +331,11 @@ const Home: NextPage = () => {
                           paddingTop: colorIndex === 0 ? CARD_GUTTER : 'none',
                         })}
                         key={index}
+                        style={
+                          typeof backgroundColor === 'object'
+                            ? { backgroundColor: backgroundColor.custom }
+                            : undefined
+                        }
                       >
                         <Stack space="8px">
                           <div

@@ -19,9 +19,9 @@ interface ColorModeContextValue extends Palette {
 /**
  * @description Sets the color mode for nested elements so they can correctly
  * infer whether they are in a dark or light context. The `"dark"` and
- * `"light"` color modes are pretty self explanatory, and the `"darkTinted"`
- * color mode is designed for screens that are colored based on user content,
- * meaning that some foreground elements will need to be desaturated.
+ * `"light"` color modes are designed for neutral backgrounds, while the
+ * `"darkTinted"` and `"lightTinted"` color modes are designed for tinted
+ * backgrounds where foreground elements need to be desaturated.
  */
 export function ColorModeProvider({
   value: colorMode,

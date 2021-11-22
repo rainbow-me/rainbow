@@ -1,9 +1,10 @@
 import React, { useContext, useMemo } from 'react';
+import { AccentColorContext } from '../../color/AccentColorContext';
 import { ColorModeContext, ColorModeProvider } from '../../color/ColorMode';
 import { BackgroundColor } from '../../color/palettes';
 
 export type BackgroundProviderProps = {
-  color: BackgroundColor;
+  color: BackgroundColor | 'accent';
   children: (style: { backgroundColor: string }) => JSX.Element;
 };
 
@@ -19,7 +20,8 @@ export function BackgroundProvider({
   children,
 }: BackgroundProviderProps) {
   const { colorMode, backgroundColors } = useContext(ColorModeContext);
-  const background = backgroundColors[color];
+  const accentColor = useContext(AccentColorContext);
+  const background = color === 'accent' ? accentColor : backgroundColors[color];
   const style = useMemo(() => ({ backgroundColor: background.color }), [
     background,
   ]);

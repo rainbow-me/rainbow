@@ -1,3 +1,4 @@
+export { AccentColorProvider } from './color/AccentColorContext';
 export { BackgroundProvider } from './components/BackgroundProvider/BackgroundProvider';
 export { Bleed } from './components/Bleed/Bleed';
 export { Box } from './components/Box/Box';
