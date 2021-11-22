@@ -69,7 +69,6 @@ export const updateNonce = (
     isNil(currentNonce) ||
     (increment ? currentNonce < nonce : currentNonce >= nonce);
 
-  // TODO JIN - check how current nonce is used and incremented on when sending txns
   if (counterShouldBeUpdated) {
     const newNonce = increment ? nonce : nonce - 1;
     logger.log('Updating nonce: ', accountAddress, network, newNonce);
