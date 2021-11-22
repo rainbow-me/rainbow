@@ -206,11 +206,7 @@ export const explainers = {
 };
 
 const ExplainSheet = () => {
-  const {
-    height: deviceHeight,
-    width: deviceWidth,
-    isSmallPhone,
-  } = useDimensions();
+  const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const insets = useSafeArea();
   const { params: { type = 'gas', onClose } = {}, params = {} } = useRoute();
   const { colors } = useTheme();

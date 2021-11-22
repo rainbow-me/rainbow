@@ -884,12 +884,6 @@ export default function SendSheet(props) {
                 asset={selected}
                 currentNetwork={currentNetwork}
                 horizontalPadding={0}
-                options={
-                  currentNetwork === networkTypes.optimism ||
-                  currentNetwork === networkTypes.arbitrum
-                    ? [gasUtils.NORMAL]
-                    : undefined
-                }
                 theme={isDarkMode ? 'dark' : 'light'}
                 type="transaction"
               />

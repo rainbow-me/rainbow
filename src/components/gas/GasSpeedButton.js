@@ -310,7 +310,7 @@ const GasSpeedButton = ({
         return [NORMAL, FAST, URGENT];
       case networkTypes.optimism:
       case networkTypes.arbitrum:
-        return ['normal'];
+        return [FAST];
       default:
         return GasSpeedOrder;
     }
@@ -334,6 +334,11 @@ const GasSpeedButton = ({
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
     speedOptions,
   ]);
+
+  const defaultSelectedGasFeeOption   = useMemo(() => {
+    const fastByDefault = currentNetwork === networkTypes.arbitrum || currentNetwork === networkTypes.optimism 
+    return fastByDefault ? FAST : NORMAL
+  }, [currentNetwork])
 
   const onDonePress = useCallback(() => {
     goBack();
@@ -408,9 +413,9 @@ const GasSpeedButton = ({
     const currentSpeedIndex = gasOptions?.indexOf(selectedGasFeeOption);
     // If the option isn't available anymore, we need to reset it
     if (currentSpeedIndex === -1) {
-      handlePressSpeedOption();
+      handlePressSpeedOption(defaultSelectedGasFeeOption);
     }
-  }, [handlePressSpeedOption, options, selectedGasFeeOption]);
+  }, [handlePressSpeedOption, options, selectedGasFeeOption, isL2]);
 
   // had to do this hack because calling it directly from `onPress`
   // would make the expanded sheet come up with too much force

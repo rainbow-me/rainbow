@@ -595,7 +595,6 @@ export default function ExchangeModal({
             currentNetwork={network}
             dontBlur
             onCustomGasBlur={handleCustomGasBlur}
-            options={[NORMAL, FAST, URGENT, CUSTOM]}
             testID={`${testID}-gas`}
             topPadding={25}
             type={type}
