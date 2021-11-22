@@ -433,15 +433,17 @@ export const getDataForNftTransfer = (from, to, asset) => {
 };
 
 /**
- * @desc estimate gas limit
- * @param {Object} [{selected, address, recipient, amount, gasPrice}]
+ * @desc build transaction object
+ * @param {Object} [{address, amount, asset, gasLimit, recipient}]
+ * @param {Provider} provider
+ * @param {String} network
  * @return {String}
  */
-export const estimateGasLimit = async (
-  { asset, address, recipient, amount },
-  addPadding = false,
-  provider = null,
-  network = NetworkTypes.mainnet
+
+export const buildTransaction = async (
+  { address, amount, asset, gasLimit, recipient },
+  provider,
+  network
 ) => {
   const _amount =
     amount && Number(amount)
@@ -449,7 +451,7 @@ export const estimateGasLimit = async (
       : estimateAssetBalancePortion(asset);
   const value = _amount.toString();
   const _recipient = await resolveNameOrAddress(recipient, provider);
-  let estimateGasData = {
+  let txData = {
     data: '0x',
     from: address,
     to: _recipient,
@@ -458,20 +460,39 @@ export const estimateGasLimit = async (
   if (asset.type === AssetTypes.nft) {
     const contractAddress = get(asset, 'asset_contract.address');
     const data = getDataForNftTransfer(address, _recipient, asset);
-    estimateGasData = {
+    txData = {
       data,
       from: address,
       to: contractAddress,
     };
   } else if (!isNativeAsset(asset.address, network)) {
     const transferData = getDataForTokenTransfer(value, _recipient);
-    estimateGasData = {
+    txData = {
       data: transferData,
       from: address,
       to: asset.address,
       value: '0x0',
     };
   }
+  return { ...txData, gasLimit };
+};
+
+/**
+ * @desc estimate gas limit
+ * @param {Object} [{ address, amount, asset, recipient }]
+ * @return {String}
+ */
+export const estimateGasLimit = async (
+  { address, amount, asset, recipient },
+  addPadding = false,
+  provider = null,
+  network = NetworkTypes.mainnet
+) => {
+  const estimateGasData = await buildTransaction(
+    { address, amount, asset, recipient },
+    provider,
+    network
+  );
   if (addPadding) {
     return estimateGasWithPadding(estimateGasData, null, null, provider);
   } else {

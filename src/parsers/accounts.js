@@ -1,6 +1,8 @@
 import { get, isNil, map, toUpper } from 'lodash';
 import { dedupeUniqueTokens } from './uniqueTokens';
 import { AssetTypes } from '@rainbow-me/entities';
+import { isNativeAsset } from '@rainbow-me/handlers/assets';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   add,
   convertAmountAndPriceToNativeDisplay,
@@ -61,10 +63,18 @@ export const parseAsset = ({ asset_code: address, ...asset } = {}) => {
     ...asset,
     ...metadata,
     address,
+    isNativeAsset: isNativeAsset(
+      address,
+      asset.network || networkTypes.mainnet
+    ),
     name,
     symbol,
     type,
-    uniqueId: address || name,
+    uniqueId: address
+      ? asset.network
+        ? `${address}_${asset.network}`
+        : address
+      : name,
   };
 
   return parsedAsset;
