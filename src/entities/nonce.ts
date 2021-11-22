@@ -10,9 +10,3 @@ type AccountNonceInfo = Record<Network, NetworkNonceInfo>;
 export interface NonceManager {
   [key: EthereumAddress]: AccountNonceInfo;
 }
-
-export interface NonceManagerUpdate {
-  network: Network;
-  accountAddress: EthereumAddress;
-  nonce: number;
-}
