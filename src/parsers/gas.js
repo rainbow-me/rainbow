@@ -1,9 +1,11 @@
 import { get, map, zipObject } from 'lodash';
 import { getMinimalTimeUnitStringForMs } from '../helpers/time';
 import {
+  add,
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
   divide,
+  greaterThan,
   multiply,
 } from '../helpers/utilities';
 import ethUnits from '../references/ethereum-units.json';
@@ -119,10 +121,22 @@ export const defaultGasPriceFormat = (option, timeWait, value) => {
  * @param {Object} prices
  * @param {Number} gasLimit
  */
-export const parseTxFees = (gasPrices, priceUnit, gasLimit, nativeCurrency) => {
+export const parseTxFees = (
+  gasPrices,
+  priceUnit,
+  gasLimit,
+  nativeCurrency,
+  l1GasFeeOptimism
+) => {
   const txFees = map(GasSpeedOrder, speed => {
     const gasPrice = get(gasPrices, `${speed}.value.amount`);
-    const txFee = getTxFee(gasPrice, gasLimit, priceUnit, nativeCurrency);
+    const txFee = getTxFee(
+      gasPrice,
+      gasLimit,
+      priceUnit,
+      nativeCurrency,
+      l1GasFeeOptimism
+    );
     return {
       txFee,
     };
@@ -130,8 +144,17 @@ export const parseTxFees = (gasPrices, priceUnit, gasLimit, nativeCurrency) => {
   return zipObject(GasSpeedOrder, txFees);
 };
 
-const getTxFee = (gasPrice, gasLimit, priceUnit, nativeCurrency) => {
-  const amount = multiply(gasPrice, gasLimit);
+const getTxFee = (
+  gasPrice,
+  gasLimit,
+  priceUnit,
+  nativeCurrency,
+  l1GasFeeOptimism
+) => {
+  let amount = multiply(gasPrice, gasLimit);
+  if (l1GasFeeOptimism && greaterThan(l1GasFeeOptimism.toString(), '0')) {
+    amount = add(amount, l1GasFeeOptimism.toString());
+  }
   return {
     native: {
       value: convertRawAmountToNativeDisplay(
