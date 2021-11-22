@@ -180,7 +180,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('send-asset-form-field');
   });
 
-  it('Should send (Cryptokitties)', async () => {
+  xit('Should send (Cryptokitties)', async () => {
     await Helpers.typeTextAndHideKeyboard(
       'send-asset-form-field',
       RAINBOW_WALLET_DOT_ETH
