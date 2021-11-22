@@ -65,8 +65,6 @@ final class TokenProvider {
   }
   
   private func getRainbowTokenList() -> RainbowTokenList? {
-    
-//    let urlString = ProcessInfo.processInfo.environment["RAINBOW_TOKEN_LIST_URL"] ?? ""
     let url = URL(string: "https://metadata.p.rainbow.me/token-list/rainbow-token-list.json")!
     
     let semaphore = DispatchSemaphore(value: 0)

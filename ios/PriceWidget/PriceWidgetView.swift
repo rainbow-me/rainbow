@@ -135,7 +135,7 @@ struct PriceWidgetView: View {
         if (tokenData.tokenDetails != nil && tokenData.price != nil && tokenData.priceChange != nil) {
           VStack(alignment: .leading) {
             HStack {
-              Text(tokenData.tokenDetails!.symbol!.uppercased())
+              Text(tokenData.tokenDetails!.symbol!)
                 .font(.custom("SF Pro Rounded", size: 18))
                 .fontWeight(.heavy)
                 .foregroundColor(fgColor)
