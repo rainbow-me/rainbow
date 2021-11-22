@@ -66,7 +66,7 @@ import {
   formatInputDecimals,
   lessThan,
 } from '@rainbow-me/utilities';
-import { deviceUtils, ethereumUtils, gasUtils } from '@rainbow-me/utils';
+import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);

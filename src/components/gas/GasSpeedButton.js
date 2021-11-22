@@ -335,10 +335,12 @@ const GasSpeedButton = ({
     speedOptions,
   ]);
 
-  const defaultSelectedGasFeeOption   = useMemo(() => {
-    const fastByDefault = currentNetwork === networkTypes.arbitrum || currentNetwork === networkTypes.optimism 
-    return fastByDefault ? FAST : NORMAL
-  }, [currentNetwork])
+  const defaultSelectedGasFeeOption = useMemo(() => {
+    const fastByDefault =
+      currentNetwork === networkTypes.arbitrum ||
+      currentNetwork === networkTypes.optimism;
+    return fastByDefault ? FAST : NORMAL;
+  }, [currentNetwork]);
 
   const onDonePress = useCallback(() => {
     goBack();
@@ -415,7 +417,13 @@ const GasSpeedButton = ({
     if (currentSpeedIndex === -1) {
       handlePressSpeedOption(defaultSelectedGasFeeOption);
     }
-  }, [handlePressSpeedOption, options, selectedGasFeeOption, isL2]);
+  }, [
+    handlePressSpeedOption,
+    options,
+    selectedGasFeeOption,
+    isL2,
+    defaultSelectedGasFeeOption,
+  ]);
 
   // had to do this hack because calling it directly from `onPress`
   // would make the expanded sheet come up with too much force

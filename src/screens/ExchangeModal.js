@@ -50,11 +50,8 @@ import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
-import { gasUtils } from '@rainbow-me/utils';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
-
-const { CUSTOM, NORMAL, FAST, URGENT } = gasUtils;
 
 const FloatingPanels = ios
   ? AnimatedExchangeFloatingPanels

@@ -375,8 +375,8 @@ export const getTransferTokenTransaction = async transaction => {
     data,
     from: transaction.from,
     gasLimit: transaction.gasLimit,
-    to: transaction.asset.address,
     network: transaction.network,
+    to: transaction.asset.address,
     ...gasParams,
   };
 };
