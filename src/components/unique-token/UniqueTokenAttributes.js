@@ -6,11 +6,12 @@ import Tag from '../Tag';
 import { Row } from '../layout';
 import { margin } from '@rainbow-me/styles';
 
-const AttributeItem = ({ color, trait_type: type, slug, value }) =>
+const AttributeItem = ({ color, trait_type: type, slug, value, disableMenu }) =>
   type && value ? (
     <Tag
       color={color}
       css={margin(7, 10, 3, 0)}
+      disableMenu={disableMenu}
       key={`${type}${value}`}
       slug={slug}
       text={value}
@@ -25,11 +26,12 @@ AttributeItem.propTypes = {
   value: PropTypes.string,
 };
 
-const UniqueTokenAttributes = ({ color, slug, traits }) => {
+const UniqueTokenAttributes = ({ color, slug, traits, disableMenu }) => {
   const sortedTraits = sortList(traits, 'trait_type', 'asc');
   sortedTraits.forEach(trait => {
     trait['color'] = color;
     trait['slug'] = slug;
+    trait['disableMenu'] = disableMenu;
   });
   return (
     <Row align="start" wrap>
