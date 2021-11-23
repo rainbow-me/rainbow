@@ -64,7 +64,7 @@ public class RNZoomableButtonManager extends
             if (ev.getAction() == MotionEvent.ACTION_UP) {
                 if (mIsTaskScheduled) {
                     onReceivePressEvent(false);
-                } 
+                }
                 mIsTaskScheduled = false;
                 if (mIsLongTaskScheduled) {
                     onReceivePressEndedEvent();
