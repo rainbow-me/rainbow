@@ -29,6 +29,7 @@ import {
 import {
   getProviderForNetwork,
   isEIP1559LegacyNetwork,
+  isHardHat,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
 import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
@@ -356,10 +357,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
                   connection: { url: string };
                 })
               )?.connection?.url;
-              if (
-                providerUrl?.startsWith('http://') &&
-                providerUrl?.endsWith('8545')
-              ) {
+              if (isHardHat(providerUrl)) {
                 baseFee = parseGasFeeParam(gweiToWei(1000));
               }
             }

@@ -65,6 +65,7 @@ import {
   useAccountAssets,
   useAccountSettings,
   useBooleanState,
+  useCurrentNonce,
   useDimensions,
   useGas,
   useKeyboardHeight,
@@ -174,6 +175,7 @@ export default function TransactionConfirmationScreen() {
   const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
   const balances = useWalletBalances(wallets);
   const { accountAddress, nativeCurrency } = useAccountSettings();
+  const getNextNonce = useCurrentNonce(accountAddress, network);
   const keyboardHeight = useKeyboardHeight();
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
@@ -586,9 +588,11 @@ export default function TransactionConfirmationScreen() {
 
     const gasParams = parseGasParamsForTransaction(selectedGasFee);
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
+    const nonce = await getNextNonce();
     let txPayloadUpdated = {
       ...txPayload,
       ...gasParams,
+      nonce,
     };
     if (calculatedGasLimit) {
       txPayloadUpdated.gasLimit = calculatedGasLimit;
@@ -703,6 +707,7 @@ export default function TransactionConfirmationScreen() {
     displayDetails?.request?.asset,
     displayDetails?.request?.from,
     displayDetails?.request?.to,
+    getNextNonce,
     nativeAsset,
     dappName,
     accountAddress,

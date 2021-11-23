@@ -33,6 +33,7 @@ import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useBlockPolling,
+  useCurrentNonce,
   useGas,
   usePrevious,
   usePriceImpactDetails,
@@ -142,7 +143,8 @@ export default function ExchangeModal({
     updateTxFee,
   } = useGas();
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
-  const { nativeCurrency, network } = useAccountSettings();
+  const { accountAddress, nativeCurrency, network } = useAccountSettings();
+  const getNextNonce = useCurrentNonce(accountAddress, network);
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
@@ -402,8 +404,10 @@ export default function ExchangeModal({
         }
       };
       logger.log('[exchange - handle submit] rap');
+      const nonce = await getNextNonce();
       const swapParameters = {
         inputAmount,
+        nonce,
         outputAmount,
         tradeDetails,
       };
@@ -427,6 +431,7 @@ export default function ExchangeModal({
   }, [
     defaultInputAsset?.symbol,
     genericAssets,
+    getNextNonce,
     inputAmount,
     inputCurrency?.address,
     isHighPriceImpact,
