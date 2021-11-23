@@ -143,7 +143,7 @@ export const isL2Network = (network: Network | string) => {
 };
 
 /**
- * @desc returns whether current provider is hardhat
+ * @desc Returns whether a provider is HardHat.
  * @param providerUrl The provider URL.
  */
 export const isHardHat = (providerUrl: string): boolean => {
