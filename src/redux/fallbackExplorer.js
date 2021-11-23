@@ -306,10 +306,12 @@ export const fetchOnchainBalances = ({
   const { assets: accountAssets } = getState().data;
   let assets =
     network === NetworkTypes.mainnet
-      ? uniqBy(
-          [...mainnetAssets, ...covalentMainnetAssets],
-          token => token.asset.asset_code
-        )
+      ? covalentMainnetAssets
+        ? uniqBy(
+            [...mainnetAssets, ...covalentMainnetAssets],
+            token => token.asset.asset_code
+          )
+        : mainnetAssets
       : chainAssets[network];
 
   if (!assets.length && accountAssets.length) {
