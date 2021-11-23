@@ -92,7 +92,7 @@ const getMainnetAssetsFromCovalent = async (
           icon_url: item.logo_url,
           name: item.contract_name,
           price: {
-            value: item.quote_rate || 0,
+            value: 0,
             ...price,
           },
           symbol: item.contract_ticker_symbol,
