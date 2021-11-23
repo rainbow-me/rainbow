@@ -225,17 +225,22 @@ const GasSpeedButton = ({
 
   const handlePressSpeedOption = useCallback(
     selectedSpeed => {
-      if (selectedSpeed === CUSTOM && isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
-        const gasFeeParams = gasFeeParamsBySpeed[selectedGasFeeOption];
-        updateToCustomGasFee({
-          ...gasFeeParams,
-          option: CUSTOM,
-        });
+      if (selectedSpeed === CUSTOM) {
+        openCustomGasSheet();
+        Keyboard.dismiss();
+        if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
+          const gasFeeParams = gasFeeParamsBySpeed[selectedGasFeeOption];
+          updateToCustomGasFee({
+            ...gasFeeParams,
+            option: CUSTOM,
+          });
+        }
       } else {
         updateGasFeeOption(selectedSpeed);
       }
     },
     [
+      openCustomGasSheet,
       gasFeeParamsBySpeed,
       selectedGasFeeOption,
       updateToCustomGasFee,
@@ -436,12 +441,6 @@ const GasSpeedButton = ({
     prevShouldOpenCustomGasSheet,
     shouldOpenCustomGasSheet,
   ]);
-
-  useEffect(() => {
-    if (selectedGasFeeOption === CUSTOM) {
-      openCustomGasSheet();
-    }
-  }, [navigate, openCustomGasSheet, selectedGasFeeOption]);
 
   useEffect(() => {
     const estimatedTime = (selectedGasFee?.estimatedTime?.display || '').split(
