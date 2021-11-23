@@ -42,6 +42,7 @@ import {
   useCoinListEditOptions,
   useColorForAsset,
   useContacts,
+  useCurrentNonce,
   useDimensions,
   useGas,
   useMagicAutofocus,
@@ -121,6 +122,7 @@ export default function SendSheet(props) {
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
+  const getNextNonce = useCurrentNonce(accountAddress, network);
 
   const savings = useSendSavingsAccount();
   const fetchData = useRefreshAccountData();
@@ -513,7 +515,7 @@ export default function SendSheet(props) {
       from: accountAddress,
       gasLimit: gasLimitToUse,
       gasPrice: selectedGasPrice.value?.amount,
-      nonce: null,
+      nonce: await getNextNonce(),
       to: toAddress,
     };
     try {
@@ -552,6 +554,7 @@ export default function SendSheet(props) {
     dataAddNewTransaction,
     dispatch,
     gasLimit,
+    getNextNonce,
     isSufficientGas,
     isValidAddress,
     network,
