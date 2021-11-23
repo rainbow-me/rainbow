@@ -357,7 +357,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
                 onPress={toggleFloorDisplayCurrency}
                 showInfoButton
                 size="big"
-                title="Collection floor"
+                title="Floor price"
                 weight={floorPrice === 'None' ? 'bold' : 'heavy'}
               >
                 {showFloorInEth ||
