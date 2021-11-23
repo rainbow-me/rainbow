@@ -17,6 +17,7 @@ import {
 import {
   fallbackExplorerClearState,
   fallbackExplorerInit,
+  fetchOnchainBalances,
 } from './fallbackExplorer';
 // eslint-disable-next-line import/no-cycle
 import { optimismExplorerInit } from './optimismExplorer';
@@ -417,14 +418,27 @@ const listenOnAssetMessages = socket => dispatch => {
   });
 };
 
-export const explorerInitL2 = () => (dispatch, getState) => {
+export const explorerInitL2 = (network = null) => (dispatch, getState) => {
   if (getState().settings.network === NetworkTypes.mainnet) {
-    // Start watching arbitrum assets
-    dispatch(arbitrumExplorerInit());
-    // Start watching optimism assets
-    dispatch(optimismExplorerInit());
-    // Start watching polygon assets
-    dispatch(polygonExplorerInit());
+    switch (network) {
+      case NetworkTypes.arbitrum:
+        // Start watching arbitrum assets
+        dispatch(arbitrumExplorerInit());
+        break;
+      case NetworkTypes.optimism:
+        // Start watching optimism assets
+        dispatch(optimismExplorerInit());
+        break;
+      case NetworkTypes.polygon:
+        // Start watching polygon assets
+        dispatch(polygonExplorerInit());
+        break;
+      default:
+        // Start watching all L2 assets
+        dispatch(arbitrumExplorerInit());
+        dispatch(optimismExplorerInit());
+        dispatch(polygonExplorerInit());
+    }
   }
 };
 
@@ -441,16 +455,25 @@ const listenOnAddressMessages = socket => dispatch => {
   socket.on(messages.ADDRESS_TRANSACTIONS.APPENDED, message => {
     logger.log('txns appended', message?.payload?.transactions);
     dispatch(transactionsReceived(message, true));
+    // Fetch balances onchain to override zerion's
+    // which is likely behind
+    dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.CHANGED, message => {
     logger.log('txns changed', message?.payload?.transactions);
     dispatch(transactionsReceived(message, true));
+    // Fetch balances onchain to override zerion's
+    // which is likely behind
+    dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.REMOVED, message => {
     logger.log('txns removed', message?.payload?.transactions);
     dispatch(transactionsRemoved(message));
+    // Fetch balances onchain to override zerion's
+    // which is likely behind
+    dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
@@ -461,22 +484,34 @@ const listenOnAddressMessages = socket => dispatch => {
       );
       dispatch(disableFallbackIfNeeded());
       dispatch(explorerInitL2());
+      // Fetch balances onchain to override zerion's
+      // which is likely behind
+      dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
     }
   });
 
   socket.on(messages.ADDRESS_ASSETS.APPENDED, message => {
     dispatch(addressAssetsReceived(message, true));
     dispatch(disableFallbackIfNeeded());
+    // Fetch balances onchain to override zerion's
+    // which is likely behind
+    dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
   socket.on(messages.ADDRESS_ASSETS.CHANGED, message => {
     dispatch(addressAssetsReceived(message, false, true));
     dispatch(disableFallbackIfNeeded());
+    // Fetch balances onchain to override zerion's
+    // which is likely behind
+    dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
   socket.on(messages.ADDRESS_ASSETS.REMOVED, message => {
     dispatch(addressAssetsReceived(message, false, false, true));
     dispatch(disableFallbackIfNeeded());
+    // Fetch balances onchain to override zerion's
+    // which is likely behind
+    dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 };
 
