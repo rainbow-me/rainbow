@@ -63,6 +63,8 @@
 					</array>
 					<key>INIntentParameterSupportsDynamicEnumeration</key>
 					<true/>
+					<key>INIntentParameterSupportsSearch</key>
+					<true/>
 					<key>INIntentParameterTag</key>
 					<integer>10</integer>
 					<key>INIntentParameterType</key>
