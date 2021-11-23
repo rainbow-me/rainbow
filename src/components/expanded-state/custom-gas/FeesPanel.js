@@ -13,7 +13,7 @@ import {
   calculateMinerTipAddDifference,
   calculateMinerTipSubstDifference,
 } from '@rainbow-me/helpers/gas';
-import { isZero } from '@rainbow-me/helpers/utilities';
+import { greaterThan, isZero, multiply } from '@rainbow-me/helpers/utilities';
 import { useGas } from '@rainbow-me/hooks';
 import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
@@ -383,48 +383,58 @@ export default function FeesPanel({
 
   useEffect(() => {
     // validate not zero
-    if (!maxBaseFee || !isZero(maxBaseFee)) {
+    if (!maxBaseFee || isZero(maxBaseFee)) {
       setMaxBaseFeeError('1 Gwei to avoid failure');
     } else {
       setMaxBaseFeeError(null);
     }
-    if (maxBaseFee < MAX_BASE_FEE_RANGE[0] * currentBaseFee) {
+    if (
+      greaterThan(multiply(MAX_BASE_FEE_RANGE[0], currentBaseFee), maxBaseFee)
+    ) {
       setMaxBaseFeeWarning('Lower than recommended');
-    } else if (maxBaseFee > MAX_BASE_FEE_RANGE[1] * currentBaseFee) {
+    } else if (
+      greaterThan(maxBaseFee, multiply(MAX_BASE_FEE_RANGE[1], currentBaseFee))
+    ) {
       setMaxBaseFeeWarning('Higher than necessary');
     } else {
       setMaxBaseFeeWarning(null);
     }
-  }, [maxBaseFee, currentBaseFee, gasFeeParamsBySpeed.normal]);
+  }, [maxBaseFee, currentBaseFee]);
 
   useEffect(() => {
     // validate not zero
-    if (!maxPriorityFee || !isZero(maxPriorityFee)) {
+    if (!maxPriorityFee || isZero(maxPriorityFee)) {
       setMaxPriorityFeeError('1 Gwei to avoid failure');
     } else {
       setMaxPriorityFeeError(null);
     }
     if (
-      maxPriorityFee <
-      MINER_TIP_RANGE[0] *
-        gasFeeParamsBySpeed?.normal?.maxPriorityFeePerGas?.gwei
+      greaterThan(
+        multiply(
+          MINER_TIP_RANGE[0],
+          gasFeeParamsBySpeed?.normal?.maxPriorityFeePerGas?.gwei
+        ),
+        maxPriorityFee
+      )
     ) {
       setMaxPriorityFeeWarning('Lower than recommended');
     } else if (
-      maxPriorityFee >
-      MINER_TIP_RANGE[1] *
-        gasFeeParamsBySpeed?.urgent?.maxPriorityFeePerGas?.gwei
+      greaterThan(
+        maxPriorityFee,
+        multiply(
+          MINER_TIP_RANGE[1],
+          gasFeeParamsBySpeed?.urgent?.maxPriorityFeePerGas?.gwei
+        )
+      )
     ) {
       setMaxPriorityFeeWarning('Higher than necessary');
     } else {
       setMaxPriorityFeeWarning(null);
     }
   }, [
-    maxBaseFee,
-    currentBaseFee,
-    maxPriorityFee,
     gasFeeParamsBySpeed?.urgent?.maxPriorityFeePerGas?.gwei,
     gasFeeParamsBySpeed?.normal?.maxPriorityFeePerGas?.gwei,
+    maxPriorityFee,
   ]);
 
   return (
