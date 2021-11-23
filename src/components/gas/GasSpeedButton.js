@@ -229,8 +229,6 @@ const GasSpeedButton = ({
         const gasFeeParams = gasFeeParamsBySpeed[selectedGasFeeOption];
         updateToCustomGasFee({
           ...gasFeeParams,
-          maxBaseFeePerGas: gasFeeParams.maxFeePerGas,
-          maxPriorityFeePerGas: gasFeeParams.maxPriorityFeePerGas,
           option: CUSTOM,
         });
       } else {
@@ -429,10 +427,7 @@ const GasSpeedButton = ({
   // would make the expanded sheet come up with too much force
   // instead calling it from `useEffect` makes it appear smoothly
   useEffect(() => {
-    if (
-      shouldOpenCustomGasSheet &&
-      prevShouldOpenCustomGasSheet !== shouldOpenCustomGasSheet
-    ) {
+    if (shouldOpenCustomGasSheet && !prevShouldOpenCustomGasSheet) {
       openCustomGasSheet();
       setShouldOpenCustomGasSheet(false);
     }
