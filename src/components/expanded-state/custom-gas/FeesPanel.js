@@ -14,6 +14,7 @@ import {
   calculateMinerTipSubstDifference,
 } from '@rainbow-me/helpers/gas';
 import {
+  add,
   greaterThan,
   isZero,
   multiply,
@@ -264,34 +265,26 @@ export default function FeesPanel({
     handleFeesGweiInputFocus();
   }, [handleFeesGweiInputFocus, handleOnInputFocus]);
 
-  const updateGasFee = useCallback(
-    ({ priorityFeePerGas = 0, feePerGas = 0 }) => {
-      const maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas;
+  const updatePriorityFeePerGas = useCallback(
+    priorityFeePerGas => {
       const maxPriorityFeePerGas =
         selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas;
 
       const gweiMaxPriorityFeePerGas = Number(maxPriorityFeePerGas?.gwei || 0);
-      const gweiMaxFeePerGas = Number(maxFeePerGas?.gwei || 0);
 
       const newGweiMaxPriorityFeePerGas =
         Math.round((gweiMaxPriorityFeePerGas + priorityFeePerGas) * 100) / 100;
-      const newGweiMaxFeePerGas =
-        Math.round((gweiMaxFeePerGas + feePerGas) * 100) / 100;
 
       const newMaxPriorityFeePerGas = parseGasFeeParam(
         gweiToWei(newGweiMaxPriorityFeePerGas)
       );
-      const newMaxFeePerGas = parseGasFeeParam(gweiToWei(newGweiMaxFeePerGas));
 
-      if (newMaxPriorityFeePerGas.amount < 0 || newMaxFeePerGas.amount < 0)
-        return;
+      if (newMaxPriorityFeePerGas.amount < 0) return;
 
       setCustomMaxPriorityFee(newMaxPriorityFeePerGas?.gwei || 0);
-      setCustomMaxBaseFee(toFixedDecimals(newMaxFeePerGas?.gwei || 0, 0));
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
-        maxFeePerGas: newMaxFeePerGas,
         maxPriorityFeePerGas: newMaxPriorityFeePerGas,
       };
       updateToCustomGasFee(newGasParams);
@@ -299,26 +292,46 @@ export default function FeesPanel({
     [selectedGasFee.gasFeeParams, updateToCustomGasFee]
   );
 
+  const updateFeePerGas = useCallback(
+    feePerGas => {
+      const maxFeePerGas =
+        selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei ?? 0;
+
+      const newGweiMaxFeePerGas = toFixedDecimals(
+        add(maxFeePerGas, feePerGas),
+        0
+      );
+
+      const newMaxFeePerGas = parseGasFeeParam(gweiToWei(newGweiMaxFeePerGas));
+
+      if (newMaxFeePerGas.amount < 0) return;
+
+      setCustomMaxBaseFee(newMaxFeePerGas?.gwei);
+
+      const newGasParams = {
+        ...selectedGasFee.gasFeeParams,
+        maxFeePerGas: newMaxFeePerGas,
+      };
+      updateToCustomGasFee(newGasParams);
+    },
+    [selectedGasFee.gasFeeParams, updateToCustomGasFee]
+  );
+
   const addMinerTip = useCallback(() => {
-    updateGasFee({
-      priorityFeePerGas: calculateMinerTipAddDifference(maxPriorityFee),
-    });
-  }, [updateGasFee, maxPriorityFee]);
+    updatePriorityFeePerGas(calculateMinerTipAddDifference(maxPriorityFee));
+  }, [maxPriorityFee, updatePriorityFeePerGas]);
 
   const substMinerTip = useCallback(() => {
-    updateGasFee({
-      priorityFeePerGas: -calculateMinerTipSubstDifference(maxPriorityFee),
-    });
-  }, [updateGasFee, maxPriorityFee]);
+    updatePriorityFeePerGas(-calculateMinerTipSubstDifference(maxPriorityFee));
+  }, [maxPriorityFee, updatePriorityFeePerGas]);
 
   const addMaxFee = useCallback(() => {
-    updateGasFee({ feePerGas: GAS_FEE_INCREMENT });
-  }, [updateGasFee]);
+    updateFeePerGas(GAS_FEE_INCREMENT);
+  }, [updateFeePerGas]);
 
-  const substMaxFee = useCallback(
-    () => updateGasFee({ feePerGas: -GAS_FEE_INCREMENT }),
-    [updateGasFee]
-  );
+  const substMaxFee = useCallback(() => updateFeePerGas(-GAS_FEE_INCREMENT), [
+    updateFeePerGas,
+  ]);
 
   const onMaxBaseFeeChange = useCallback(
     ({ nativeEvent: { text } }) => {
