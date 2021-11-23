@@ -322,21 +322,15 @@ export default function FeesPanel({
 
   const onMaxBaseFeeChange = useCallback(
     ({ nativeEvent: { text } }) => {
-      text = text || 0;
-      const maxFeePerGas = parseGasFeeParam(gweiToWei(text));
-      const gweiMaxFeePerGas = maxFeePerGas?.gwei || 0;
+      const maxFeePerGasGwei = toFixedDecimals(text || 0, 0);
+      const maxFeePerGas = parseGasFeeParam(gweiToWei(maxFeePerGasGwei));
 
-      const newGweiMaxFeePerGas = Math.round(gweiMaxFeePerGas * 100) / 100;
+      if (greaterThan(0, maxFeePerGas.amount)) return;
 
-      const newMaxFeePerGas = parseGasFeeParam(gweiToWei(newGweiMaxFeePerGas));
-
-      if (newMaxFeePerGas.amount < 0) return;
-
-      setCustomMaxBaseFee(text);
-
+      setCustomMaxBaseFee(maxFeePerGasGwei);
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
-        maxFeePerGas: newMaxFeePerGas,
+        maxFeePerGas,
       };
       updateToCustomGasFee(newGasParams);
     },
@@ -345,23 +339,22 @@ export default function FeesPanel({
 
   const onMinerTipChange = useCallback(
     ({ nativeEvent: { text } }) => {
-      text = text || 0;
-      const maxPriorityFeePerGas = parseGasFeeParam(gweiToWei(text));
-      const gweiMaxPriorityFeePerGas = maxPriorityFeePerGas?.gwei || 0;
+      const maxPriorityFeePerGasGwei =
+        Math.round(Number(text) * 100) / 100 || 0;
 
-      const newGweiMaxPriorityFeePerGas =
-        Math.round(gweiMaxPriorityFeePerGas * 100) / 100;
-
-      const newMaxPriorityFeePerGas = parseGasFeeParam(
-        gweiToWei(newGweiMaxPriorityFeePerGas)
+      const maxPriorityFeePerGas = parseGasFeeParam(
+        gweiToWei(maxPriorityFeePerGasGwei)
       );
-      if (newMaxPriorityFeePerGas.amount < 0) return;
 
+      if (greaterThan(0, maxPriorityFeePerGas.amount)) return;
+
+      // we don't use the round number here, if we did
+      // when users type "1." it will default to "1"
       setCustomMaxPriorityFee(text);
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
-        maxPriorityFeePerGas: newMaxPriorityFeePerGas,
+        maxPriorityFeePerGas,
       };
       updateToCustomGasFee(newGasParams);
     },
