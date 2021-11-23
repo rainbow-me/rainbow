@@ -34,6 +34,7 @@ import {
   isEIP1559LegacyNetwork,
   toHex,
 } from '@rainbow-me/handlers/web3';
+import { greaterThan } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useDimensions, useGas } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -156,31 +157,21 @@ export default function SpeedUpAndCancelSheet() {
       const rawMaxFeePerGas =
         selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
 
-      const rawMaxPriorityFeePerGasBN = new BigNumber(rawMaxPriorityFeePerGas);
-      const minMaxPriorityFeePerGasAllowedBN = new BigNumber(
+      const maxPriorityFeePerGas = greaterThan(
+        rawMaxPriorityFeePerGas,
         minMaxPriorityFeePerGas
-      );
-      const rawMaxFeePerGasBN = new BigNumber(rawMaxFeePerGas);
-      const minMaxFeePerGasAllowedBN = new BigNumber(minMaxFeePerGas);
-
-      const maxPriorityFeePerGas = rawMaxPriorityFeePerGasBN.isGreaterThan(
-        minMaxPriorityFeePerGasAllowedBN
       )
         ? toHex(rawMaxPriorityFeePerGas)
         : toHex(minMaxPriorityFeePerGas);
 
-      const maxFeePerGas = rawMaxFeePerGasBN.isGreaterThan(
-        minMaxFeePerGasAllowedBN
-      )
+      const maxFeePerGas = greaterThan(rawMaxFeePerGas, minMaxFeePerGas)
         ? toHex(rawMaxFeePerGas)
         : toHex(minMaxFeePerGas);
       return { maxFeePerGas, maxPriorityFeePerGas };
     } else {
       const rawGasPrice = selectedGasFee?.gasFeeParams?.gasPrice?.amount;
-      const rawGasPriceBN = new BigNumber(rawGasPrice);
-      const minGasPriceAllowedBN = new BigNumber(minGasPrice);
       return {
-        gasPrice: rawGasPriceBN.isGreaterThan(minGasPriceAllowedBN)
+        gasPrice: greaterThan(rawGasPrice, minGasPrice)
           ? toHex(rawGasPrice)
           : toHex(minGasPrice),
       };
