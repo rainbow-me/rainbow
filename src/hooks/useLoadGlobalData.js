@@ -8,6 +8,7 @@ import {
 import { contactsLoadState } from '@rainbow-me/redux/contacts';
 import { imageMetadataCacheLoadState } from '@rainbow-me/redux/imageMetadata';
 import { keyboardHeightsLoadState } from '@rainbow-me/redux/keyboardHeight';
+import { nonceManagerLoadState } from '@rainbow-me/redux/nonceManager';
 import { settingsLoadState } from '@rainbow-me/redux/settings';
 import { topMoversLoadState } from '@rainbow-me/redux/topMovers';
 import { transactionSignaturesLoadState } from '@rainbow-me/redux/transactionSignatures';
@@ -30,8 +31,9 @@ export default function useLoadGlobalData() {
     const p5 = dispatch(imageMetadataCacheLoadState());
     const p6 = dispatch(keyboardHeightsLoadState());
     const p7 = dispatch(transactionSignaturesLoadState());
+    const p8 = dispatch(nonceManagerLoadState());
 
-    promises.push(p1, p2, p3, p4, p5, p6, p7);
+    promises.push(p1, p2, p3, p4, p5, p6, p7, p8);
 
     return promiseUtils.PromiseAllWithFails(promises);
   }, [dispatch]);

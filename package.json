@@ -225,7 +225,6 @@
     "reanimated-bottom-sheet": "1.0.0-alpha.22",
     "recyclerlistview": "3.0.0",
     "redux": "4.0.5",
-    "redux-devtools-extension": "2.13.8",
     "redux-thunk": "2.3.0",
     "reselect": "4.0.0",
     "rn-dominant-color": "1.7.0",
@@ -328,7 +327,8 @@
     "**/nth-check": "2.0.1",
     "**/is-svg": "4.3.1",
     "**/set-value": "4.1.0",
-    "**/validator": "13.7.0"
+    "**/validator": "13.7.0",
+    "**/json-schema": "0.4.0"
   },
   "jest": {
     "preset": "react-native",

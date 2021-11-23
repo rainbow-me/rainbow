@@ -3,6 +3,7 @@ import React, { useCallback, useContext } from 'react';
 import { Alert, ScrollView } from 'react-native';
 import { HARDHAT_URL_ANDROID, HARDHAT_URL_IOS } from 'react-native-dotenv';
 import Restart from 'react-native-restart';
+import { useDispatch } from 'react-redux';
 import { ListFooter, ListItem } from '../list';
 import { RadioListItem } from '../radio-list';
 import { deleteAllBackups } from '@rainbow-me/handlers/cloudBackup';
@@ -12,6 +13,7 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import { wipeKeychain } from '@rainbow-me/model/keychain';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
+import { explorerInit } from '@rainbow-me/redux/explorer';
 import { clearImageMetadataCache } from '@rainbow-me/redux/imageMetadata';
 import store from '@rainbow-me/redux/store';
 import { walletsUpdate } from '@rainbow-me/redux/wallets';
@@ -22,6 +24,7 @@ const DevSection = () => {
   const { navigate } = useNavigation();
   const { config, setConfig } = useContext(RainbowContext);
   const { wallets } = useWallets();
+  const dispatch = useDispatch();
 
   const onNetworkChange = useCallback(
     value => {
@@ -43,7 +46,8 @@ const DevSection = () => {
       logger.log('error connecting to hardhat');
     }
     navigate(Routes.PROFILE_SCREEN);
-  }, [navigate]);
+    dispatch(explorerInit());
+  }, [dispatch, navigate]);
 
   const checkAlert = useCallback(async () => {
     try {
