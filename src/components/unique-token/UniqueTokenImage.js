@@ -51,7 +51,6 @@ const UniqueTokenImage = ({
   lowResUrl,
   resizeMode = ImgixImage.resizeMode.cover,
   small,
-  size,
   transformSvgs = true,
 }) => {
   const { isTinyPhone } = useDimensions();
