@@ -64,7 +64,6 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   useAccountAssets,
   useAccountSettings,
-  useBooleanState,
   useCurrentNonce,
   useDimensions,
   useGas,
@@ -165,7 +164,6 @@ export default function TransactionConfirmationScreen() {
   const [provider, setProvider] = useState();
   const [network, setNetwork] = useState();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const [methodName, setMethodName] = useState(null);
   const calculatingGasLimit = useRef(false);
   const [isBalanceEnough, setIsBalanceEnough] = useState(true);
@@ -270,8 +268,14 @@ export default function TransactionConfirmationScreen() {
   } = useGas();
 
   useEffect(() => {
-    const { txFee } = selectedGasFee;
-    if (!txFee || !nativeAsset || !network || isSufficientGasChecked) return;
+    if (
+      isEmpty(selectedGasFee?.gasFee) ||
+      isEmpty(gasFeeParamsBySpeed) ||
+      !nativeAsset ||
+      !network ||
+      isSufficientGasChecked
+    )
+      return;
     updateGasFeeOption(selectedGasFeeOption, [nativeAsset]);
     setIsSufficientGasChecked(true);
   }, [
@@ -282,6 +286,7 @@ export default function TransactionConfirmationScreen() {
     selectedGasFee,
     selectedGasFeeOption,
     updateGasFeeOption,
+    gasFeeParamsBySpeed,
   ]);
 
   const request = useMemo(() => {
@@ -905,17 +910,9 @@ export default function TransactionConfirmationScreen() {
   }));
 
   useEffect(() => {
-    if (isKeyboardVisible) {
-      offset.value = withSpring(
-        -keyboardHeight + safeAreaInsetValues.bottom,
-        springConfig
-      );
-      sheetOpacity.value = withSpring(android ? 0.8 : 0.3, springConfig);
-    } else {
-      offset.value = withSpring(0, springConfig);
-      sheetOpacity.value = withSpring(1, springConfig);
-    }
-  }, [isKeyboardVisible, keyboardHeight, offset, sheetOpacity]);
+    offset.value = withSpring(0, springConfig);
+    sheetOpacity.value = withSpring(1, springConfig);
+  }, [keyboardHeight, offset, sheetOpacity]);
 
   const amount = request?.value ?? '0.00';
 
@@ -992,7 +989,7 @@ export default function TransactionConfirmationScreen() {
   return (
     <SheetKeyboardAnimation
       as={AnimatedContainer}
-      isKeyboardVisible={isKeyboardVisible}
+      isKeyboardVisible={false}
       translateY={offset}
     >
       <SlackSheet
@@ -1071,7 +1068,7 @@ export default function TransactionConfirmationScreen() {
                     {methodName || 'Placeholder'}
                   </Text>
                 </Centered>
-                {(!isKeyboardVisible || ios) && (
+                {ios && (
                   <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
                 )}
                 {renderTransactionSection()}
@@ -1134,8 +1131,6 @@ export default function TransactionConfirmationScreen() {
           {!isMessageRequest && (
             <GasSpeedButton
               currentNetwork={network}
-              onCustomGasBlur={hideKeyboard}
-              onCustomGasFocus={showKeyboard}
               theme="dark"
               type="transaction"
             />

@@ -34,13 +34,7 @@ import {
   isEIP1559LegacyNetwork,
   toHex,
 } from '@rainbow-me/handlers/web3';
-import {
-  useAccountSettings,
-  useBooleanState,
-  useDimensions,
-  useGas,
-  useKeyboardHeight,
-} from '@rainbow-me/hooks';
+import { useAccountSettings, useDimensions, useGas } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { getTitle } from '@rainbow-me/parsers';
@@ -123,7 +117,6 @@ export default function SpeedUpAndCancelSheet() {
   const { accountAddress, network } = useAccountSettings();
   const dispatch = useDispatch();
   const { height: deviceHeight } = useDimensions();
-  const keyboardHeight = useKeyboardHeight();
   const {
     gasFeeParamsBySpeed,
     updateGasFeeOption,
@@ -137,7 +130,6 @@ export default function SpeedUpAndCancelSheet() {
     params: { type, tx },
   } = useRoute();
   const [ready, setReady] = useState(false);
-  const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const [txType, setTxType] = useState();
   const [minGasPrice, setMinGasPrice] = useState(
     calcGasParamRetryValue(tx.gasPrice)
@@ -427,15 +419,9 @@ export default function SpeedUpAndCancelSheet() {
   const offset = useSharedValue(0);
 
   useEffect(() => {
-    if (isKeyboardVisible) {
-      offset.value = withSpring(
-        -keyboardHeight + safeAreaInsetValues.bottom - (android ? 50 : 10),
-        springConfig
-      );
-    } else {
-      offset.value = withSpring(0, springConfig);
-    }
-  }, [isKeyboardVisible, keyboardHeight, offset]);
+    offset.value = withSpring(0, springConfig);
+  }, [offset]);
+
   const sheetHeight = ios
     ? (type === CANCEL_TX ? 491 : 442) + safeAreaInsetValues.bottom
     : 850 + safeAreaInsetValues.bottom;
@@ -449,7 +435,7 @@ export default function SpeedUpAndCancelSheet() {
   return (
     <SheetKeyboardAnimation
       as={AnimatedContainer}
-      isKeyboardVisible={isKeyboardVisible}
+      isKeyboardVisible={false}
       translateY={offset}
     >
       <ExtendedSheetBackground />
@@ -572,12 +558,8 @@ export default function SpeedUpAndCancelSheet() {
                   <GasSpeedButtonContainer>
                     <GasSpeedButton
                       currentNetwork={currentNetwork}
-                      minMaxPriorityFeePerGas={minMaxPriorityFeePerGas}
-                      onCustomGasBlur={hideKeyboard}
-                      onCustomGasFocus={showKeyboard}
                       options={[FAST, CUSTOM]}
                       theme={isDarkMode ? 'dark' : 'light'}
-                      type="transaction"
                     />
                   </GasSpeedButtonContainer>
                 </Fragment>
