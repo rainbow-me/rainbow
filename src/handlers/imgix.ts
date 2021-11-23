@@ -109,12 +109,14 @@ const isPossibleToSignUri = (externalImageUri: string | undefined): boolean => {
 
 export const maybeSignUri = (
   externalImageUri: string | undefined,
-  options?: {}
+  options?: {},
+  skipCaching: boolean = false
 ): string | undefined => {
   // If the image has already been signed, return this quickly.
   if (
     typeof externalImageUri === 'string' &&
-    staticSignatureLRU.has(externalImageUri as string)
+    staticSignatureLRU.has(externalImageUri as string) &&
+    !skipCaching
   ) {
     return staticSignatureLRU.get(externalImageUri);
   }
@@ -137,4 +139,11 @@ export const maybeSignSource = (source: Source, options?: {}): Source => {
     };
   }
   return source;
+};
+
+export const svgToLQPng = (url: string) => {
+  return staticImgixClient?.buildURL(url, {
+    fm: 'png',
+    w: 200,
+  });
 };

@@ -10,7 +10,7 @@ export default async function getDominantColorFromImage(
   if (IS_TESTING === 'true') return undefined;
   let colors = await Palette.getNamedSwatchesFromUrl(imageUrl);
 
-  //react-native-palette keys for Andriod are not the same as iOS so we fix here
+  // react-native-palette keys for Android are not the same as iOS so we fix here
   if (android) {
     colors = Object.keys(colors).reduce((acc, key) => {
       acc[key.toLowerCase()] = colors[key];
