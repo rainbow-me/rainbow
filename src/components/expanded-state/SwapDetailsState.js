@@ -1,7 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
-import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import { ConfirmExchangeButton } from '../exchange';
 import { GasSpeedButton } from '../gas';
@@ -19,13 +18,9 @@ import {
   SwapDetailsMastheadHeight,
   SwapDetailsSlippageMessage,
 } from './swap-details';
-import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
   useAccountSettings,
-  useBooleanState,
-  useDimensions,
   useHeight,
-  useKeyboardHeight,
   usePriceImpactDetails,
   useSwapCurrencies,
   useSwapDerivedOutputs,
@@ -95,10 +90,6 @@ export default function SwapDetailsState({
   const { network } = useAccountSettings();
   const { setParams } = useNavigation();
   const { params: { longFormHeight } = {} } = useRoute();
-  const { height: deviceHeight } = useDimensions();
-  const keyboardHeight = useKeyboardHeight();
-  const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
-  const insets = useSafeArea();
   const { outputCurrency } = useSwapCurrencies();
 
   const {
@@ -130,8 +121,6 @@ export default function SwapDetailsState({
   useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
   useAndroidDisableGesturesOnFocus();
 
-  const keyboardOffset = keyboardHeight + insets.bottom + 10;
-
   const sheetHeightWithoutKeyboard =
     SheetHandleFixedToTopHeight +
     SwapDetailsMastheadHeight +
@@ -139,44 +128,17 @@ export default function SwapDetailsState({
     slippageMessageHeight +
     footerHeight;
 
-  const sheetHeightWithKeyboard =
-    sheetHeightWithoutKeyboard + keyboardHeight - 23;
-
-  const additionalScrollForKeyboard =
-    sheetHeightWithoutKeyboard + keyboardOffset >
-    deviceHeight - insets.top + insets.bottom
-      ? deviceHeight -
-        insets.top +
-        insets.bottom -
-        (sheetHeightWithoutKeyboard + keyboardOffset)
-      : 0;
-
   const contentScroll = useSharedValue(0);
 
   useEffect(() => {
-    if (isKeyboardVisible) {
-      contentScroll.value = withSpring(
-        additionalScrollForKeyboard,
-        springConfig
-      );
-      setParams({ longFormHeight: sheetHeightWithKeyboard });
-    } else {
-      contentScroll.value = withSpring(0, springConfig);
-      setParams({ longFormHeight: sheetHeightWithoutKeyboard });
-    }
-  }, [
-    additionalScrollForKeyboard,
-    contentScroll,
-    isKeyboardVisible,
-    sheetHeightWithKeyboard,
-    sheetHeightWithoutKeyboard,
-    setParams,
-  ]);
+    contentScroll.value = withSpring(0, springConfig);
+    setParams({ longFormHeight: sheetHeightWithoutKeyboard });
+  }, [contentScroll, sheetHeightWithoutKeyboard, setParams]);
 
   return (
     <SheetKeyboardAnimation
       as={AnimatedContainer}
-      isKeyboardVisible={isKeyboardVisible}
+      isKeyboardVisible={false}
       translateY={contentScroll}
     >
       <SlackSheet
@@ -221,11 +183,8 @@ export default function SwapDetailsState({
           <GasSpeedButton
             asset={outputCurrency}
             currentNetwork={network}
-            onCustomGasBlur={hideKeyboard}
-            onCustomGasFocus={showKeyboard}
             testID="swap-details-gas"
             theme="light"
-            type={ExchangeModalTypes.swap}
           />
         </Footer>
         <ToastPositionContainer>
