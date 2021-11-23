@@ -9,7 +9,6 @@ import {
   // @ts-ignore
   CLOUDINARY_CLOUD_NAME as cloudName,
 } from 'react-native-dotenv';
-import { CardSize } from '../components/unique-token/CardSize';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import { deviceUtils } from '@rainbow-me/utils';
 
@@ -31,7 +30,7 @@ function svgToPng(url, big = false) {
     type: 'fetch',
     width: big
       ? deviceUtils.dimensions.width * pixelRatio
-      : CardSize * pixelRatio,
+      : (deviceUtils.dimensions.width / 2) * pixelRatio,
   });
   const cloudinaryUrl = cloudinaryImg.split("'")[1];
   return cloudinaryUrl;
