@@ -813,12 +813,12 @@ export default function TransactionConfirmationScreen() {
     const isMessage = isMessageRequest;
     // If we don't know about gas prices yet
     // set the button state to "loading"
-    if (!isMessage && !isBalanceEnough && isSufficientGas === undefined) {
+    if (!isMessage && !isBalanceEnough && isSufficientGas === null) {
       ready = false;
     }
     return !isMessage &&
       isBalanceEnough === false &&
-      isSufficientGas !== undefined ? (
+      isSufficientGas !== null ? (
       <Column marginBottom={24} marginTop={19}>
         <SheetActionButton
           color={colors.transparent}
