@@ -10,11 +10,11 @@ import { EthereumAddress } from '@rainbow-me/entities';
 import Logger from 'logger';
 export const getAssetsFromCovalent = async (
   chainId: Number,
-  address: EthereumAddress,
+  accountAddress: EthereumAddress,
   currency: string
 ) => {
   try {
-    const url = `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/`;
+    const url = `https://api.covalenthq.com/v1/${chainId}/address/${accountAddress}/balances_v2/`;
     Logger.debug('covalent url', url);
 
     const params = {
