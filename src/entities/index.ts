@@ -33,12 +33,14 @@ export type {
   ZerionAsset,
 } from './tokens';
 export type {
+  GasFeeType,
   NewTransaction,
   RainbowTransaction,
   ZerionTransaction,
   ZerionTransactionChange,
 } from './transactions';
 export {
+  GasFeeTypes,
   TransactionDirection,
   TransactionDirections,
   TransactionStatus,
@@ -46,6 +48,5 @@ export {
   TransactionType,
   TransactionTypes,
   ZerionTransactionStatus,
-  GasFeeTypes,
 } from './transactions';
 export type { EthereumAddress } from './wallet';
