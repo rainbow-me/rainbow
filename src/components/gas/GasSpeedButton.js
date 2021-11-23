@@ -22,11 +22,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
-import {
-  gasUtils,
-  magicMemo,
-  showActionSheetWithOptions,
-} from '@rainbow-me/utils';
+import { gasUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const { GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST } = gasUtils;
 
@@ -562,4 +558,4 @@ const GasSpeedButton = ({
   );
 };
 
-export default magicMemo(GasSpeedButton, 'type');
+export default GasSpeedButton;
