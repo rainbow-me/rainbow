@@ -109,7 +109,7 @@
     "browserify-zlib": "0.1.4",
     "buffer": "4.9.2",
     "chroma-js": "2.1.0",
-    "cloudinary": "^1.27.1",
+    "cloudinary": "1.27.1",
     "console-browserify": "1.2.0",
     "constants-browserify": "1.0.0",
     "date-fns": "2.16.1",
