@@ -5,6 +5,7 @@ import { Contract } from '@ethersproject/contracts';
 import { isValidMnemonic as ethersIsValidMnemonic } from '@ethersproject/hdnode';
 import {
   Block,
+  Network as EthersNetwork,
   StaticJsonRpcProvider,
   TransactionRequest,
   TransactionResponse,
@@ -78,7 +79,7 @@ type NewTransactionNonNullable = {
  * @desc Configures `rpcEndpoints` based on a given `RainbowConfig`.
  * @param config The `RainbowConfig` to use.
  */
-export const setRpcEndpoints = (config: RainbowConfig) => {
+export const setRpcEndpoints = (config: RainbowConfig): void => {
   rpcEndpoints[Network.mainnet] = config.ethereum_mainnet_rpc;
   rpcEndpoints[Network.ropsten] = config.ethereum_ropsten_rpc;
   rpcEndpoints[Network.kovan] = config.ethereum_kovan_rpc;
@@ -104,10 +105,13 @@ const isNetworkEnum = (network: Network | string): network is Network => {
 };
 
 /**
- * @desc set a different web3 provider
- * @param {String} network
+ * @desc Sets a different web3 provider.
+ * @param network The network to set.
+ * @return A promise that resolves with an Ethers Network when the provider is ready.
  */
-export const web3SetHttpProvider = async (network: Network | string) => {
+export const web3SetHttpProvider = async (
+  network: Network | string
+): Promise<EthersNetwork> => {
   web3Provider = await getProviderForNetwork(network);
   return web3Provider.ready;
 };
@@ -128,10 +132,11 @@ export const isEIP1559LegacyNetwork = (network: Network | string): boolean => {
 };
 
 /**
- * @desc returns true if the given network is a Layer 2
+ * @desc Checks if the given network is a Layer 2.
  * @param network The network to check.
+ * @return Whether or not the network is a L2 network.
  */
-export const isL2Network = (network: Network | string) => {
+export const isL2Network = (network: Network | string): boolean => {
   switch (network) {
     case Network.arbitrum:
     case Network.optimism:
@@ -143,18 +148,20 @@ export const isL2Network = (network: Network | string) => {
 };
 
 /**
- * @desc Returns whether a provider is HardHat.
+ * @desc Checks whether a provider is HardHat.
  * @param providerUrl The provider URL.
+ * @return Whether or not the provider is HardHat.
  */
 export const isHardHat = (providerUrl: string): boolean => {
   return providerUrl?.startsWith('http://') && providerUrl?.endsWith('8545');
 };
 
 /**
- * @desc returns true if the given network is a testnet
+ * @desc Checjs if the given network is a testnet.
  * @param network The network to check.
+ * @return Whether or not the network is a testnet.
  */
-export const isTestnet = (network: Network) => {
+export const isTestnet = (network: Network): boolean => {
   switch (network) {
     case Network.goerli:
     case Network.kovan:
@@ -167,8 +174,9 @@ export const isTestnet = (network: Network) => {
 };
 
 /**
- * @desc returns a web3 provider for the specified network
+ * @desc Gets or constructs a web3 provider for the specified network.
  * @param network The network as a `Network` or string.
+ * @return The provider for the network.
  */
 export const getProviderForNetwork = async (
   network: Network | string = Network.mainnet
@@ -215,14 +223,14 @@ export const sendRpcCall = async (
  * @param value The string to check
  * @return Whether or not the string was a hex string.
  */
-export const isHexString = (value: string) => isEthersHexString(value);
+export const isHexString = (value: string): boolean => isEthersHexString(value);
 
 /**
  * Converts a number to a hex string.
  * @param value The number.
  * @return The hex string.
  */
-export const toHex = (value: BigNumberish) =>
+export const toHex = (value: BigNumberish): string =>
   BigNumber.from(value).toHexString();
 
 /**
@@ -230,7 +238,7 @@ export const toHex = (value: BigNumberish) =>
  * @param value The string.
  * @return Whether or not the string is a hex string.
  */
-export const isHexStringIgnorePrefix = (value: string) => {
+export const isHexStringIgnorePrefix = (value: string): boolean => {
   if (!value) return false;
   const trimmedValue = value.trim();
   const updatedValue = addHexPrefix(trimmedValue);
@@ -242,7 +250,7 @@ export const isHexStringIgnorePrefix = (value: string) => {
  * @param value The starting string.
  * @return The prefixed string.
  */
-export const addHexPrefix = (value: string) =>
+export const addHexPrefix = (value: string): string =>
   startsWith(value, '0x') ? value : `0x${value}`;
 
 /**
