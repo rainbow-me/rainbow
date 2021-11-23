@@ -1,5 +1,6 @@
 import { image as cloudinaryImage } from 'cloudinary/lib/cloudinary';
 import cloudinaryConfig from 'cloudinary/lib/config';
+import { PixelRatio } from 'react-native';
 import {
   // @ts-ignore
   CLOUDINARY_API_KEY as apiKey,
@@ -8,6 +9,7 @@ import {
   // @ts-ignore
   CLOUDINARY_CLOUD_NAME as cloudName,
 } from 'react-native-dotenv';
+import { CardSize } from '../components/unique-token/CardSize';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import { deviceUtils } from '@rainbow-me/utils';
 
@@ -17,6 +19,7 @@ cloudinaryConfig({
   cloud_name: cloudName,
 });
 
+const pixelRatio = PixelRatio.get();
 const RAINBOW_PROXY = 'https://images.rainbow.me/proxy?url=';
 
 function svgToPng(url, big = false) {
@@ -26,7 +29,9 @@ function svgToPng(url, big = false) {
     sign_url: true,
     transformation: [{ fetch_format: 'png' }],
     type: 'fetch',
-    ...(big && { width: deviceUtils.dimensions.width * 3 }),
+    width: big
+      ? deviceUtils.dimensions.width * pixelRatio
+      : CardSize * pixelRatio,
   });
   const cloudinaryUrl = cloudinaryImg.split("'")[1];
   return cloudinaryUrl;

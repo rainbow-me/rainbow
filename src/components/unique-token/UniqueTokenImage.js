@@ -65,15 +65,6 @@ const UniqueTokenImage = ({
   const { isDarkMode, colors } = useTheme();
   const [loadedImg, setLoadedImg] = useState(false);
   const onLoad = useCallback(() => setLoadedImg(true), [setLoadedImg]);
-  const remoteSvgStyle = useMemo(() => {
-    // I know... This shit is mad weird :|
-    // I know... This shit even weirder but it's ENS's fault :/
-    const style =
-      isENS && isSVG
-        ? { height: size * 1.1 + 0.1, width: size * 1.1 + 0.1 }
-        : { height: size + 0.1, width: size + 0.1 };
-    return style;
-  }, [isENS, isSVG, size]);
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
@@ -84,7 +75,7 @@ const UniqueTokenImage = ({
           lowResFallbackUri={svgToPngIfNeeded(imageUrl)}
           onError={handleError}
           resizeMode={resizeMode}
-          style={remoteSvgStyle}
+          style={position.coverAsObject}
           uri={item.image_url}
         />
       ) : imageUrl && !error ? (

@@ -46,8 +46,6 @@ const getHTML = (svgContent, style) =>
 
 const styles = {
   backgroundColor: 'transparent',
-  height: 100,
-  width: 200,
 };
 
 class SvgImage extends Component {
@@ -137,17 +135,17 @@ class SvgImage extends Component {
       const isSVGAnimated = html?.indexOf('<animate') !== -1;
 
       return (
-        <View style={[isSVGAnimated ? {} : props.style, props.containerStyle]}>
+        <View style={[props.style, props.containerStyle]}>
           {!this.state.trulyLoaded && props.lowResFallbackUri && (
             <ImageTile
-              resizeMode={ImgixImage.resizeMode.contain}
+              resizeMode={ImgixImage.resizeMode.cover}
               source={{ uri: props.lowResFallbackUri }}
               style={position.coverAsObject}
             />
           )}
           {!this.state.trulyLoaded && props.fallbackUri && (
             <ImageTile
-              resizeMode={ImgixImage.resizeMode.contain}
+              resizeMode={ImgixImage.resizeMode.cover}
               source={{ uri: props.fallbackUri }}
               style={position.coverAsObject}
             />
