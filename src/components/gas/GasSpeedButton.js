@@ -298,11 +298,11 @@ const GasSpeedButton = ({
   const nativeFeeCurrency = useMemo(() => {
     switch (currentNetwork) {
       case networkTypes.polygon:
-        return { address: MATIC_MAINNET_ADDRESS, symbol: 'MATIC' };
+        return { mainnet_address: MATIC_MAINNET_ADDRESS, symbol: 'MATIC' };
       case networkTypes.optimism:
       case networkTypes.arbitrum:
       default:
-        return { address: ETH_ADDRESS, symbol: 'ETH' };
+        return { mainnet_address: ETH_ADDRESS, symbol: 'ETH' };
     }
   }, [currentNetwork]);
 
