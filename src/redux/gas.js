@@ -12,6 +12,7 @@ import {
 } from '@rainbow-me/handlers/gasPrices';
 import {
   getProviderForNetwork,
+  isHardHat,
   isL2Network,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
@@ -179,10 +180,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
             // the basefee at the time we fork mainnet during our hardhat tests
             if (network === networkTypes.mainnet && IS_TESTING === 'true') {
               const providerUrl = web3Provider?.connection?.url;
-              if (
-                providerUrl?.startsWith('http://') &&
-                providerUrl?.endsWith('8545')
-              ) {
+              if (isHardHat(providerUrl)) {
                 etherscanGasPrices = {
                   FastGasPrice: 1000,
                   ProposeGasPrice: 1000,
