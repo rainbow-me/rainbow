@@ -16,7 +16,4 @@ export {
   default as TransactionDirections,
   TransactionDirection,
 } from './transactionDirection';
-export {
-  default as EIP1559TransactionTypes,
-  EIP1559TransactionType,
-} from './eip1559TransactionType';
+export { default as GasFeeTypes, GasFeeType } from './GasFeeType';

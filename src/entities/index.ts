@@ -46,6 +46,6 @@ export {
   TransactionType,
   TransactionTypes,
   ZerionTransactionStatus,
-  EIP1559TransactionTypes,
+  GasFeeTypes,
 } from './transactions';
 export type { EthereumAddress } from './wallet';

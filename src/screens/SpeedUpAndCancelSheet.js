@@ -25,10 +25,7 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
-import {
-  EIP1559TransactionTypes,
-  TransactionStatusTypes,
-} from '@rainbow-me/entities';
+import { GasFeeTypes, TransactionStatusTypes } from '@rainbow-me/entities';
 import {
   getProviderForNetwork,
   isEIP1559LegacyNetwork,
@@ -151,7 +148,7 @@ export default function SpeedUpAndCancelSheet() {
   const [value, setValue] = useState(null);
 
   const getNewTransactionGasParams = useCallback(() => {
-    if (txType === EIP1559TransactionTypes.current) {
+    if (txType === GasFeeTypes.eip1559) {
       const rawMaxPriorityFeePerGas =
         selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
       const rawMaxFeePerGas =
@@ -326,7 +323,7 @@ export default function SpeedUpAndCancelSheet() {
           setTo(tx.to);
           setGasLimit(hexGasLimit);
           if (!isEIP1559LegacyNetwork(tx.network)) {
-            setTxType(EIP1559TransactionTypes.current);
+            setTxType(GasFeeTypes.eip1559);
             const hexMaxPriorityFeePerGas = toHex(
               tx.maxPriorityFeePerGas.toString()
             );
@@ -336,7 +333,7 @@ export default function SpeedUpAndCancelSheet() {
             const hexMaxFeePerGas = toHex(tx.maxFeePerGas.toString());
             setMinMaxFeePerGas(calcGasParamRetryValue(hexMaxFeePerGas));
           } else {
-            setTxType(EIP1559TransactionTypes.legacy);
+            setTxType(GasFeeTypes.legacy);
             const hexGasPrice = toHex(tx.gasPrice.toString());
             setMinGasPrice(calcGasParamRetryValue(hexGasPrice));
           }
