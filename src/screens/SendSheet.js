@@ -290,13 +290,7 @@ export default function SendSheet(props) {
         startPollingGasFees(currentNetwork);
       });
     }
-  }, [
-    currentNetwork,
-    prevNetwork,
-    startPollingGasFees,
-    selected.type,
-    network,
-  ]);
+  }, [prevNetwork, startPollingGasFees, selected.type, currentNetwork]);
 
   // Stop polling when the sheet is unmounted
   useEffect(() => {
@@ -348,14 +342,7 @@ export default function SendSheet(props) {
       }
     };
     updateNetworkAndProvider();
-  }, [
-    currentNetwork,
-    network,
-    prevNetwork,
-    selected,
-    selected.type,
-    sendUpdateSelected,
-  ]);
+  }, [currentNetwork, network, prevNetwork, selected.type, sendUpdateSelected]);
 
   useEffect(() => {
     if (isEmpty(selected)) return;
