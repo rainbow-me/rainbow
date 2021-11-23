@@ -2,16 +2,13 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { toLower } from 'lodash';
 import isEqual from 'react-fast-compare';
-import {
-  COVALENT_ANDROID_API_KEY,
-  COVALENT_IOS_API_KEY,
-} from 'react-native-dotenv';
 // eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
 import { emitAssetRequest, emitChartsRequest } from './explorer';
 import { AssetTypes } from '@rainbow-me/entities';
 //import networkInfo from '@rainbow-me/helpers/networkInfo';
+import { getAssetsFromCovalent } from '@rainbow-me/handlers/covalent';
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
@@ -75,23 +72,19 @@ const fetchAssetsMapping = async () => {
   return mapping;
 };
 
-const getAssetsFromCovalent = async (
+const getPolygonAssetsFromCovalent = async (
   chainId,
-  address,
+  accountAddress,
   type,
   currency,
   coingeckoIds,
   allAssets,
   genericAssets
 ) => {
-  const url = `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?nft=false&quote-currency=${currency}&key=${
-    ios ? COVALENT_IOS_API_KEY : COVALENT_ANDROID_API_KEY
-  }`;
-  const request = await fetch(url);
-  const response = await request.json();
-  if (response.data && !response.error) {
-    const updatedAt = new Date(response.data.update_at).getTime();
-    const assets = response.data.items.map(item => {
+  const data = await getAssetsFromCovalent(chainId, accountAddress, currency);
+  if (data) {
+    const updatedAt = new Date(data.updated_at).getTime();
+    const assets = data.items.map(item => {
       let mainnetAddress = tokenMapping[toLower(item.contract_address)];
       let coingeckoId = coingeckoIds[toLower(mainnetAddress)];
       let price = {
@@ -265,7 +258,7 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
 
   const fetchAssetsBalancesAndPrices = async () => {
     const chainId = ethereumUtils.getChainIdFromNetwork(network);
-    const assets = await getAssetsFromCovalent(
+    const assets = await getPolygonAssetsFromCovalent(
       chainId,
       accountAddress,
       AssetTypes.polygon,

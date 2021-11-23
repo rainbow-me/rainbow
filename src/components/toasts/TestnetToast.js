@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { web3Provider } from '../../handlers/web3';
 import networkInfo from '../../helpers/networkInfo';
 import networkTypes from '../../helpers/networkTypes';
 import { Icon } from '../icons';
 import { Nbsp, Text } from '../text';
 import Toast from './Toast';
+import { isHardHat, web3Provider } from '@rainbow-me/handlers/web3';
 import { useAccountSettings, useInternetStatus } from '@rainbow-me/hooks';
 
 const TestnetToast = () => {
@@ -17,7 +17,7 @@ const TestnetToast = () => {
 
   useEffect(() => {
     if (network === networkTypes.mainnet) {
-      if (providerUrl?.startsWith('http://') && providerUrl?.endsWith('8545')) {
+      if (isHardHat(providerUrl)) {
         setVisible(true);
         setNetworkName('Hardhat');
       } else {

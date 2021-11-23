@@ -1,6 +1,7 @@
 export { default as AssetTypes, AssetType } from './assetTypes';
 export type { TxFee, SelectedGasPrice } from './gas';
 export type Numberish = string | number;
+export type { NonceManager } from './nonce';
 export { default as ProtocolTypeNames, ProtocolType } from './protocolTypes';
 export type {
   Asset,
