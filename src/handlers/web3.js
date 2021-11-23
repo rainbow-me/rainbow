@@ -301,7 +301,7 @@ export const resolveUnstoppableDomain = async domain => {
     },
   });
 
-  const res = await resolution
+  const res = resolution
     .addr(domain, 'ETH')
     .then(address => {
       return address;
