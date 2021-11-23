@@ -8,6 +8,7 @@ import {
 import { rainbowFetch } from '../rainbow-fetch';
 import { EthereumAddress } from '@rainbow-me/entities';
 import Logger from 'logger';
+
 export const getAssetsFromCovalent = async (
   chainId: Number,
   accountAddress: EthereumAddress,

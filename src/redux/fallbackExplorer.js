@@ -49,14 +49,14 @@ const getCurrentAddress = address => {
 
 const getMainnetAssetsFromCovalent = async (
   chainId,
-  address,
+  accountAddress,
   type,
   currency,
   coingeckoIds,
   allAssets,
   genericAssets
 ) => {
-  const data = await getAssetsFromCovalent(chainId, address, currency);
+  const data = await getAssetsFromCovalent(chainId, accountAddress, currency);
   if (data) {
     const updatedAt = new Date(data.updated_at).getTime();
     const assets = data.items.map(item => {
