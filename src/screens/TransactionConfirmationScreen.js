@@ -932,8 +932,7 @@ export default function TransactionConfirmationScreen() {
     (method === SIGN_TYPED_DATA ? 630 : android ? 595 : 580) +
     safeAreaInsetValues.bottom;
 
-  const balanceTooLow =
-    isBalanceEnough === false && isSufficientGas !== undefined;
+  const balanceTooLow = isBalanceEnough === false && isSufficientGas !== null;
 
   let sheetHeight =
     (isMessageRequest
@@ -1119,7 +1118,7 @@ export default function TransactionConfirmationScreen() {
                       letterSpacing="roundedTight"
                     >
                       {isBalanceEnough === false &&
-                        isSufficientGas !== undefined &&
+                        isSufficientGas !== null &&
                         '􀇿 '}
                       {walletBalance?.display}
                     </WalletText>
