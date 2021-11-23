@@ -875,7 +875,6 @@ export default function SendSheet(props) {
                 currentNetwork={currentNetwork}
                 horizontalPadding={0}
                 theme={isDarkMode ? 'dark' : 'light'}
-                type="transaction"
               />
             }
           />

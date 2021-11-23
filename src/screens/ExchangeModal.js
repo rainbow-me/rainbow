@@ -599,7 +599,6 @@ export default function ExchangeModal({
             onCustomGasBlur={handleCustomGasBlur}
             testID={`${testID}-gas`}
             topPadding={25}
-            type={type}
           />
         </FloatingPanels>
       </InnerWrapper>

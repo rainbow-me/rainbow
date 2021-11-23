@@ -1128,11 +1128,7 @@ export default function TransactionConfirmationScreen() {
             )}
           </AnimatedSheet>
           {!isMessageRequest && (
-            <GasSpeedButton
-              currentNetwork={network}
-              theme="dark"
-              type="transaction"
-            />
+            <GasSpeedButton currentNetwork={network} theme="dark" />
           )}
         </Column>
       </SlackSheet>
