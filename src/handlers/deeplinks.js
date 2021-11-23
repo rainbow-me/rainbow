@@ -44,10 +44,11 @@ export default async function handleDeeplink(url) {
         if (address && address.length > 0) {
           const { assets: allAssets, genericAssets } = store.getState().data;
           const asset =
-            allAssets.find(asset => address === asset.address.toLowerCase()) ||
             Object.values(genericAssets).find(
               asset => address === asset.address.toLowerCase()
-            );
+            ) ||
+            allAssets.find(asset => address === asset.address.toLowerCase());
+
           const action = asset => {
             Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
               asset,
