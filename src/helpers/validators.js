@@ -1,5 +1,6 @@
 import { isValidAddress } from 'ethereumjs-util';
 import { parseDomain, ParseResultType } from 'parse-domain';
+// eslint-disable-next-line import/no-cycle
 import {
   isHexStringIgnorePrefix,
   isValidMnemonic,
@@ -79,6 +80,14 @@ export const checkIsValidAddressOrDomain = async address => {
   return isValidAddress(address);
 };
 
+/**
+ * @desc validate ENS or Unstoppable format
+ * @param  {String} ENS, or Unstoppable
+ * @return {Boolean}
+ */
+export const isValidDomainFormat = domain => {
+  return isUnstoppableAddressFormat(domain) || isENSAddressFormat(domain);
+};
 /**
  * @desc validate seed phrase mnemonic
  * @param  {String} seed phrase mnemonic
