@@ -17,10 +17,7 @@ import {
   getHumanReadableDate,
   hasAddableContact,
 } from '@rainbow-me/helpers/transactions';
-import {
-  isENSAddressFormat,
-  isUnstoppableAddressFormat,
-} from '@rainbow-me/helpers/validators';
+import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountProfile,
   useOnAvatarPress,
@@ -158,11 +155,9 @@ export default function TransactionList({
         headerInfo.address = contact.nickname;
         contactColor = contact.color;
       } else {
-        headerInfo.address =
-          isENSAddressFormat(contactAddress) ||
-          isUnstoppableAddressFormat(contactAddress)
-            ? contactAddress
-            : abbreviations.address(contactAddress, 4, 10);
+        headerInfo.address = isValidDomainFormat(contactAddress)
+          ? contactAddress
+          : abbreviations.address(contactAddress, 4, 10);
         contactColor = getRandomColor();
       }
 
