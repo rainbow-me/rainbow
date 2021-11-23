@@ -63,7 +63,6 @@ public class RNZoomableButtonManager extends
                 this.animate(true);
             }
             if (ev.getAction() == MotionEvent.ACTION_UP) {
-                Log.d("AAAAAA==", "ACTION_UP");
                 if (mIsTaskScheduled) {
                     onReceivePressEvent(false);
                 } 
