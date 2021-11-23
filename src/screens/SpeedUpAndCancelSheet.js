@@ -387,8 +387,10 @@ export default function SpeedUpAndCancelSheet() {
     if (!isEmpty(gasFeeParamsBySpeed) && !calculatingGasLimit.current) {
       calculatingGasLimit.current = true;
       if (
-        Number(minMaxPriorityFeePerGas) >
-        Number(gasFeeParamsBySpeed?.fast?.maxPriorityFeePerGas?.amount)
+        greaterThan(
+          minMaxPriorityFeePerGas,
+          gasFeeParamsBySpeed?.fast?.maxPriorityFeePerGas?.amount
+        )
       ) {
         dispatch(updateGasFeeForSpeed(gasUtils.FAST, minMaxPriorityFeePerGas));
       }
