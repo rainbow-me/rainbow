@@ -32,19 +32,25 @@ export default function ChartContextButton({ asset, color }) {
       } else if (buttonIndex === 1) {
         // 🙈️ Hide
         setHiddenCoins();
-      } else if (buttonIndex === 2 && asset?.uniqueId !== 'eth') {
+      } else if (buttonIndex === 2 && !asset?.isNativeAsset) {
         // 🔍 View on Etherscan
-        ethereumUtils.openTokenEtherscanURL(asset?.uniqueId, asset?.type);
+        ethereumUtils.openTokenEtherscanURL(asset?.address, asset?.type);
       }
     },
-    [asset?.type, asset?.uniqueId, setHiddenCoins, setPinnedCoins]
+    [
+      asset?.address,
+      asset?.isNativeAsset,
+      asset?.type,
+      setHiddenCoins,
+      setPinnedCoins,
+    ]
   );
 
   const options = useMemo(
     () => [
       `📌️ ${currentAction === EditOptions.unpin ? 'Unpin' : 'Pin'}`,
       `🙈️ ${currentAction === EditOptions.unhide ? 'Unhide' : 'Hide'}`,
-      ...(asset?.uniqueId === 'eth'
+      ...(asset?.isNativeAsset
         ? []
         : [
             `🔍 View on ${startCase(
@@ -53,7 +59,7 @@ export default function ChartContextButton({ asset, color }) {
           ]),
       ...(ios ? [lang.t('wallet.action.cancel')] : []),
     ],
-    [asset.type, asset?.uniqueId, currentAction]
+    [asset?.isNativeAsset, asset?.type, currentAction]
   );
 
   return (

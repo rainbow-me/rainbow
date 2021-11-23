@@ -3,7 +3,7 @@ import delay from 'delay';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import NetworkTypes from '../helpers/networkTypes';
-import { explorerInit } from '../redux/explorer';
+import { fetchOnchainBalances } from '../redux/fallbackExplorer';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
 import { updatePositions } from '../redux/usersPositions';
 import { walletConnectLoadState } from '../redux/walletconnect';
@@ -32,7 +32,9 @@ export default function useRefreshAccountData() {
     try {
       const getWalletNames = dispatch(fetchWalletNames());
       const getUniqueTokens = dispatch(uniqueTokensRefreshState());
-      const explorer = dispatch(explorerInit());
+      const balances = dispatch(
+        fetchOnchainBalances({ keepPolling: false, withPrices: false })
+      );
       const wc = dispatch(walletConnectLoadState());
       const uniswapPositions = dispatch(updatePositions());
       return Promise.all([
@@ -40,7 +42,7 @@ export default function useRefreshAccountData() {
         getWalletNames,
         getUniqueTokens,
         refetchSavings(true),
-        explorer,
+        balances,
         wc,
         uniswapPositions,
       ]);
