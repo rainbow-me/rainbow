@@ -36,6 +36,7 @@ export const parsePoaps = data => {
 
       id: tokenId,
       image_url: event.image_url,
+      isPoap: true,
       isSendable: false,
       lastPrice: null,
       name: event.name,
