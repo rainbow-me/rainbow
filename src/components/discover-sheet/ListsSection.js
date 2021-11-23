@@ -279,6 +279,8 @@ export default function ListSection() {
   );
 
   return (
+    // TODO: This section may be interesting later. I want to
+    // show CELO by default here instead of ETH.
     <Column testID="lists-section">
       <Flex paddingHorizontal={19}>
         <Text size="larger" weight="heavy">
