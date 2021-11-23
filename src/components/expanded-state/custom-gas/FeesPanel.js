@@ -327,7 +327,8 @@ export default function FeesPanel({
 
       if (greaterThan(0, maxFeePerGas.amount)) return;
 
-      setCustomMaxBaseFee(maxFeePerGasGwei);
+      setCustomMaxBaseFee(text);
+
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
         maxFeePerGas,
