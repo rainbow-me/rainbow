@@ -303,14 +303,14 @@ export default function SettingsSection({
         <ColumnWithDividers dividerRenderer={ListItemDivider}>
           <ListItem
             icon={<Emoji name="rainbow" />}
-            label="Share Rainbow"
+            label="Share Celofi"
             onPress={onPressShare}
             testID="share-section"
             value={SettingsExternalURLs.rainbowHomepage}
           />
           <ListItem
             icon={<Emoji name="brain" />}
-            label="Learn about Rainbow and Ethereum"
+            label="Learn about celofi, and CELO"
             onPress={onPressLearn}
             testID="learn-section"
             value={SettingsExternalURLs.rainbowLearn}
