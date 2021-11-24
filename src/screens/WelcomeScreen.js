@@ -526,9 +526,7 @@ export default function WelcomeScreen() {
         {android && IS_TESTING === 'true' ? (
           <RainbowText colors={colors} />
         ) : (
-          <MaskedView maskElement={<RainbowText colors={colors} />}>
-            <RainbowTextMask style={textStyle} />
-          </MaskedView>
+          <RainbowText colors={colors} />
         )}
 
         <ButtonWrapper style={buttonStyle}>
