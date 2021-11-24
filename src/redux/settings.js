@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { NativeCurrencyKeys } from '../entities/nativeCurrencyTypes';
 import {
   getNativeCurrency,
@@ -35,6 +36,7 @@ export const settingsLoadState = () => async dispatch => {
   try {
     const nativeCurrency = await getNativeCurrency();
     const testnetsEnabled = await getTestnetsEnabled();
+    analytics.identify(null, { enabledTestnets: testnetsEnabled });
 
     dispatch({
       payload: { nativeCurrency, testnetsEnabled },
