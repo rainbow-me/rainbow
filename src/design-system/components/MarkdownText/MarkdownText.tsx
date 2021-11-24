@@ -12,7 +12,7 @@ import MarkdownDisplay, {
   ASTNode,
   RenderRules,
 } from 'react-native-markdown-display';
-import { CustomSpace, negateSpace, Space } from '../../layout/space';
+import { negateSpace, Space } from '../../layout/space';
 import { renderStringWithEmoji } from '../../typography/renderStringWithEmoji';
 import { fonts } from '../../typography/typography';
 import { Box } from '../Box/Box';
@@ -27,8 +27,8 @@ const styles = StyleSheet.create({
 });
 
 const defaultProps: {
-  nestedSpace: Space | CustomSpace;
-  space: Space | CustomSpace;
+  nestedSpace: Space;
+  space: Space;
   size: NonNullable<TextProps['size']>;
 } = {
   nestedSpace: '19px',
@@ -37,8 +37,8 @@ const defaultProps: {
 };
 
 interface MarkdownStackContextObject {
-  space: Space | CustomSpace;
-  nestedSpace: Space | CustomSpace;
+  space: Space;
+  nestedSpace: Space;
   depth: number;
 }
 const MarkdownStackContext = createContext<MarkdownStackContextObject>({
@@ -48,8 +48,8 @@ const MarkdownStackContext = createContext<MarkdownStackContextObject>({
 });
 
 interface MarkdownStackProps {
-  space?: Space | CustomSpace;
-  nestedSpace?: Space | CustomSpace;
+  space?: Space;
+  nestedSpace?: Space;
   children: ReactNode;
 }
 
@@ -118,7 +118,7 @@ export type MarkdownTextProps = {
   size?: TextProps['size'];
 } & (
   | { space?: never; nestedSpace?: never }
-  | { space: Space | CustomSpace; nestedSpace: Space | CustomSpace }
+  | { space: Space; nestedSpace: Space }
 );
 
 /**

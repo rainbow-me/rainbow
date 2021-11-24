@@ -1,5 +1,5 @@
 import React from 'react';
-import { CustomSpace, Space } from '../../layout/space';
+import { Space } from '../../layout/space';
 import { Box, BoxProps } from '../Box/Box';
 
 export type InsetProps = {
@@ -7,18 +7,18 @@ export type InsetProps = {
 } & (
   | {
       space?: never;
-      horizontal?: Space | CustomSpace;
-      vertical: Space | CustomSpace;
+      horizontal?: Space;
+      vertical: Space;
     }
   | {
       space?: never;
-      horizontal: Space | CustomSpace;
-      vertical?: Space | CustomSpace;
+      horizontal: Space;
+      vertical?: Space;
     }
   | {
-      space: Space | CustomSpace;
-      horizontal?: Space | CustomSpace;
-      vertical?: Space | CustomSpace;
+      space: Space;
+      horizontal?: Space;
+      vertical?: Space;
     }
 );
 

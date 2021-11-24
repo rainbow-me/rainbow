@@ -1,13 +1,7 @@
 import { flatten } from 'lodash';
 import React, { forwardRef, ReactNode, useMemo } from 'react';
 import { View } from 'react-native';
-import {
-  CustomSpace,
-  NegativeSpace,
-  negativeSpace,
-  Space,
-  space,
-} from '../../layout/space';
+import { NegativeSpace, negativeSpace, Space, space } from '../../layout/space';
 import {
   BackgroundProvider,
   BackgroundProviderProps,
@@ -61,20 +55,20 @@ export type BoxProps = {
     | 'center'
     | 'space-between'
     | 'space-around';
-  margin?: NegativeSpace | CustomSpace;
-  marginBottom?: NegativeSpace | CustomSpace;
-  marginHorizontal?: NegativeSpace | CustomSpace;
-  marginLeft?: NegativeSpace | CustomSpace;
-  marginRight?: NegativeSpace | CustomSpace;
-  marginTop?: NegativeSpace | CustomSpace;
-  marginVertical?: NegativeSpace | CustomSpace;
-  padding?: Space | CustomSpace;
-  paddingBottom?: Space | CustomSpace;
-  paddingHorizontal?: Space | CustomSpace;
-  paddingLeft?: Space | CustomSpace;
-  paddingRight?: Space | CustomSpace;
-  paddingTop?: Space | CustomSpace;
-  paddingVertical?: Space | CustomSpace;
+  margin?: NegativeSpace;
+  marginBottom?: NegativeSpace;
+  marginHorizontal?: NegativeSpace;
+  marginLeft?: NegativeSpace;
+  marginRight?: NegativeSpace;
+  marginTop?: NegativeSpace;
+  marginVertical?: NegativeSpace;
+  padding?: Space;
+  paddingBottom?: Space;
+  paddingHorizontal?: Space;
+  paddingLeft?: Space;
+  paddingRight?: Space;
+  paddingTop?: Space;
+  paddingVertical?: Space;
   width?: keyof typeof widths;
 } & (
   | {

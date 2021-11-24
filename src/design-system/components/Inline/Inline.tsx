@@ -1,6 +1,6 @@
 import React, { Children, ReactNode } from 'react';
 import flattenChildren from 'react-flatten-children';
-import { CustomSpace, negateSpace, Space } from '../../layout/space';
+import { negateSpace, Space } from '../../layout/space';
 import { Box } from '../Box/Box';
 
 const alignHorizontalToFlexAlign = {
@@ -24,14 +24,14 @@ export type InlineProps = {
   alignVertical?: AlignVertical;
 } & (
   | {
-      space: Space | CustomSpace;
-      horizontalSpace?: Space | CustomSpace;
-      verticalSpace?: Space | CustomSpace;
+      space: Space;
+      horizontalSpace?: Space;
+      verticalSpace?: Space;
     }
   | {
-      space?: Space | CustomSpace;
-      horizontalSpace: Space | CustomSpace;
-      verticalSpace: Space | CustomSpace;
+      space?: Space;
+      horizontalSpace: Space;
+      verticalSpace: Space;
     }
 );
 

@@ -1,15 +1,15 @@
 import React from 'react';
-import { CustomSpace, negateSpace, Space } from '../../layout/space';
+import { negateSpace, Space } from '../../layout/space';
 import { Box, BoxProps } from '../Box/Box';
 
 export type BleedProps = {
   children: BoxProps['children'];
-  top?: Space | CustomSpace;
-  bottom?: Space | CustomSpace;
-  left?: Space | CustomSpace;
-  right?: Space | CustomSpace;
-  horizontal?: Space | CustomSpace;
-  vertical?: Space | CustomSpace;
+  top?: Space;
+  bottom?: Space;
+  left?: Space;
+  right?: Space;
+  horizontal?: Space;
+  vertical?: Space;
 };
 
 /**

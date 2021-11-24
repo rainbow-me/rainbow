@@ -1,6 +1,6 @@
 import React, { Children, ReactElement, ReactNode } from 'react';
 import flattenChildren from 'react-flatten-children';
-import { CustomSpace, Space } from '../../layout/space';
+import { Space } from '../../layout/space';
 import { Box } from '../Box/Box';
 
 const alignHorizontalToFlexAlign = {
@@ -25,7 +25,7 @@ export type RowProps = {
 } & (
   | { space?: never; separator: ReactElement }
   | {
-      space: Space | CustomSpace;
+      space: Space;
       separator?: ReactElement;
     }
 );
