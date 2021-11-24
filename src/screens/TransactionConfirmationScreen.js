@@ -234,13 +234,9 @@ export default function TransactionConfirmationScreen() {
     };
   }, [network, walletConnector?._accounts, walletNames, wallets]);
 
-  const isL2 = useMemo(() => {
-    return isL2Network(network);
-  }, [network]);
+  const isL2 = isL2Network(network);
 
-  const isTestnet = useMemo(() => {
-    return isTestnetNetwork(network);
-  }, [network]);
+  const isTestnet = isTestnetNetwork(network);
 
   useEffect(() => {
     setNetwork(
