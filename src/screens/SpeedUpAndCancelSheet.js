@@ -43,7 +43,7 @@ import { position } from '@rainbow-me/styles';
 import { gasUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const { CUSTOM, FAST } = gasUtils;
+const { CUSTOM, URGENT } = gasUtils;
 
 const springConfig = {
   damping: 500,
@@ -124,6 +124,7 @@ export default function SpeedUpAndCancelSheet() {
     updateTxFee,
   } = useGas();
   const calculatingGasLimit = useRef(false);
+  const speedUrgentSelected = useRef(false);
   const {
     params: { type, tx },
   } = useRoute();
@@ -294,10 +295,15 @@ export default function SpeedUpAndCancelSheet() {
 
   // Update gas limit
   useEffect(() => {
-    if (!isEmpty(gasFeeParamsBySpeed) && gasLimit) {
+    if (
+      !speedUrgentSelected.current &&
+      !isEmpty(gasFeeParamsBySpeed) &&
+      gasLimit
+    ) {
       updateTxFee(gasLimit);
-      // Always default to fast
-      updateGasFeeOption(gasUtils.FAST);
+      // Always default to urgent
+      updateGasFeeOption(gasUtils.URGENT);
+      speedUrgentSelected.current = true;
     }
   }, [
     currentNetwork,
@@ -548,7 +554,7 @@ export default function SpeedUpAndCancelSheet() {
                   <GasSpeedButtonContainer>
                     <GasSpeedButton
                       currentNetwork={currentNetwork}
-                      options={[FAST, CUSTOM]}
+                      speeds={[URGENT, CUSTOM]}
                       theme={isDarkMode ? 'dark' : 'light'}
                     />
                   </GasSpeedButtonContainer>

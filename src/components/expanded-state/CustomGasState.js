@@ -51,7 +51,7 @@ const FeesPanelTabswrapper = styled(Column)`
 export default function CustomGasState({ asset }) {
   const { network } = useAccountSettings();
   const { setParams } = useNavigation();
-  const { params: { longFormHeight } = {} } = useRoute();
+  const { params: { longFormHeight, speeds } = {} } = useRoute();
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
@@ -131,6 +131,7 @@ export default function CustomGasState({ asset }) {
           <FeesPanelTabs
             colorForAsset={colorForAsset}
             onPressTabPill={hideKeyboard}
+            speeds={speeds}
           />
         </FeesPanelTabswrapper>
       </FloatingPanel>

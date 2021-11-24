@@ -13,6 +13,8 @@ import { gasUtils } from '@rainbow-me/utils';
 const PillScrollViewStyle = { flexGrow: 1, justifyContent: 'center' };
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
+const { CUSTOM, GasSpeedOrder } = gasUtils;
+
 export const TabPillWrapper = styled(View).attrs({})`
   ${padding(2.5, 8)};
   ${margin(0, 4, 0, 4)};
@@ -62,7 +64,11 @@ const TabPill = ({
   );
 };
 
-export default function FeesPanelTabs({ onPressTabPill, colorForAsset }) {
+export default function FeesPanelTabs({
+  onPressTabPill,
+  colorForAsset,
+  speeds = GasSpeedOrder,
+}) {
   const {
     updateGasFeeOption,
     selectedGasFeeOption,
@@ -71,14 +77,11 @@ export default function FeesPanelTabs({ onPressTabPill, colorForAsset }) {
   } = useGas();
 
   const handleOnPressTabPill = label => {
-    if (
-      label === gasUtils.CUSTOM &&
-      isEmpty(gasFeeParamsBySpeed[gasUtils.CUSTOM])
-    ) {
+    if (label === CUSTOM && isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
       const gasFeeParams = gasFeeParamsBySpeed[selectedGasFeeOption];
       updateToCustomGasFee({
         ...gasFeeParams,
-        option: gasUtils.CUSTOM,
+        option: CUSTOM,
       });
     } else {
       updateGasFeeOption(label);
@@ -89,7 +92,7 @@ export default function FeesPanelTabs({ onPressTabPill, colorForAsset }) {
   return (
     <Row align="center">
       <ScrollView contentContainerStyle={PillScrollViewStyle} horizontal>
-        {gasUtils.GasSpeedOrder.map(speed => (
+        {speeds.map(speed => (
           <Column key={speed}>
             <TabPill
               color={colorForAsset}

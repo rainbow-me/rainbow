@@ -114,7 +114,7 @@ const GasSpeedButton = ({
   asset,
   currentNetwork,
   horizontalPadding = 20,
-  options = null,
+  speeds = null,
   showGasOptions = false,
   testID,
   theme = 'dark',
@@ -191,9 +191,10 @@ const GasSpeedButton = ({
     if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
       asset,
+      speeds: speeds ?? GasSpeedOrder,
       type: 'custom_gas',
     });
-  }, [asset, navigate, gasIsNotReady]);
+  }, [gasIsNotReady, navigate, asset, speeds]);
 
   const openCustomOptions = useCallback(() => {
     android && Keyboard.dismiss();
@@ -303,7 +304,7 @@ const GasSpeedButton = ({
   }, [currentNetwork]);
 
   const speedOptions = useMemo(() => {
-    if (options) return options;
+    if (speeds) return speeds;
     switch (currentNetwork) {
       case networkTypes.polygon:
         return [NORMAL, FAST, URGENT];
@@ -313,7 +314,7 @@ const GasSpeedButton = ({
       default:
         return GasSpeedOrder;
     }
-  }, [currentNetwork, options]);
+  }, [currentNetwork, speeds]);
 
   const menuConfig = useMemo(() => {
     const menuOptions = speedOptions.map(gasOption => ({
@@ -410,7 +411,7 @@ const GasSpeedButton = ({
   ]);
 
   useEffect(() => {
-    const gasOptions = options || GasSpeedOrder;
+    const gasOptions = speeds || GasSpeedOrder;
     const currentSpeedIndex = gasOptions?.indexOf(selectedGasFeeOption);
     // If the option isn't available anymore, we need to reset it
     if (currentSpeedIndex === -1) {
@@ -418,7 +419,7 @@ const GasSpeedButton = ({
     }
   }, [
     handlePressSpeedOption,
-    options,
+    speeds,
     selectedGasFeeOption,
     isL2,
     defaultSelectedGasFeeOption,
