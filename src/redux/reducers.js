@@ -14,6 +14,7 @@ import gas from './gas';
 import imageMetadata from './imageMetadata';
 import keyboardHeight from './keyboardHeight';
 import multicall from './multicall';
+import nonceManager from './nonceManager';
 import openStateSettings from './openStateSettings';
 import optimismExplorer from './optimismExplorer';
 import polygonExplorer from './polygonExplorer';
@@ -46,6 +47,7 @@ export default combineReducers({
   imageMetadata,
   keyboardHeight,
   multicall,
+  nonceManager,
   openStateSettings,
   optimismExplorer,
   polygonExplorer,

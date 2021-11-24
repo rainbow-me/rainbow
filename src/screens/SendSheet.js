@@ -32,16 +32,14 @@ import {
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
-import {
-  checkIsValidAddressOrDomain,
-  isENSAddressFormat,
-} from '@rainbow-me/helpers/validators';
+import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import {
   useAccountAssets,
   useAccountSettings,
   useCoinListEditOptions,
   useColorForAsset,
   useContacts,
+  useCurrentNonce,
   useDimensions,
   useGas,
   useMagicAutofocus,
@@ -121,6 +119,7 @@ export default function SendSheet(props) {
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
+  const getNextNonce = useCurrentNonce(accountAddress, network);
 
   const savings = useSendSavingsAccount();
   const fetchData = useRefreshAccountData();
@@ -422,7 +421,7 @@ export default function SendSheet(props) {
   useEffect(() => {
     const resolveAddressIfNeeded = async () => {
       let realAddress = recipient;
-      if (isENSAddressFormat(recipient)) {
+      if (checkIsValidAddressOrDomain(recipient)) {
         realAddress = await resolveNameOrAddress(recipient);
       }
       setToAddress(realAddress);
@@ -513,7 +512,7 @@ export default function SendSheet(props) {
       from: accountAddress,
       gasLimit: gasLimitToUse,
       gasPrice: selectedGasPrice.value?.amount,
-      nonce: null,
+      nonce: await getNextNonce(),
       to: toAddress,
     };
     try {
@@ -552,6 +551,7 @@ export default function SendSheet(props) {
     dataAddNewTransaction,
     dispatch,
     gasLimit,
+    getNextNonce,
     isSufficientGas,
     isValidAddress,
     network,
@@ -653,7 +653,7 @@ export default function SendSheet(props) {
   const showConfirmationSheet = useCallback(async () => {
     if (buttonDisabled) return;
     let toAddress = recipient;
-    if (isENSAddressFormat(recipient)) {
+    if (checkIsValidAddressOrDomain(recipient)) {
       toAddress = await resolveNameOrAddress(recipient);
     }
     const validRecipient = await validateRecipient(toAddress);

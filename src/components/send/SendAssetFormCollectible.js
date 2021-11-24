@@ -23,11 +23,6 @@ const Footer = styled(Column).attrs({ justify: 'end' })`
   width: 100%;
 `;
 
-const NFTSizer = styled.View`
-  height: ${({ height }) => height};
-  width: ${({ width }) => width};
-`;
-
 const NFTWrapper = styled(Column).attrs({
   align: 'center',
   flex: 1,
@@ -119,18 +114,16 @@ export default function SendAssetFormCollectible({
       <Column align="end" flex={1} width="100%">
         <NFTWrapper onLayout={handleLayout}>
           {!!containerHeight && !!containerWidth && (
-            <NFTSizer height={imageHeight} width={imageWidth}>
-              <UniqueTokenExpandedStateContent
-                {...props}
-                asset={asset}
-                borderRadius={20}
-                disablePreview
-                height={imageHeight}
-                horizontalPadding={0}
-                resizeMode="cover"
-                width={imageWidth}
-              />
-            </NFTSizer>
+            <UniqueTokenExpandedStateContent
+              {...props}
+              asset={asset}
+              borderRadius={20}
+              disablePreview
+              height={imageHeight}
+              horizontalPadding={24}
+              resizeMode="cover"
+              width={imageWidth}
+            />
           )}
         </NFTWrapper>
         <Footer>
