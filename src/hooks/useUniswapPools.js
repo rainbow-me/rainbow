@@ -19,6 +19,8 @@ export const SORT_DIRECTION = {
   DESC: 'desc',
 };
 
+export const REFETCH_INTERVAL = 600000;
+
 function parseData(
   data,
   oneDayData,
@@ -173,11 +175,12 @@ export default function useUniswapPools(sortField, sortDirection, token) {
   );
 
   const { data, error } = useQuery(
-    ['uniswapV2Pools', token],
+    ['pools/uniswap/v2', token],
     () => getUniswapV2Pools(token),
     {
       onError: () => logger.log('🦄🦄🦄 error getting pairs data', error),
       onSuccess: () => handleGetUniswapV2PoolsResponse(),
+      refetchInterval: REFETCH_INTERVAL,
     }
   );
 
