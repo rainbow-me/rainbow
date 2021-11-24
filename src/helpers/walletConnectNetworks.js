@@ -1,4 +1,5 @@
 import networkInfo from './networkInfo';
+import store from '@rainbow-me/redux/store';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const androidNetworkActions = Object.values(networkInfo)
@@ -10,9 +11,12 @@ const androidReverseNetworkWithName = name =>
 
 export const NETWORK_MENU_ACTION_KEY_FILTER = 'switch-to-network-';
 
-export const networksMenuItems = () =>
-  Object.values(networkInfo)
-    .filter(({ disabled, testnet }) => !disabled && !testnet)
+export const networksMenuItems = () => {
+  const testnetsEnabled = store.getState().settings.testnetsEnabled;
+  return Object.values(networkInfo)
+    .filter(
+      ({ disabled, testnet }) => !disabled && (testnetsEnabled || !testnet)
+    )
     .map(netInfo => ({
       actionKey: `${NETWORK_MENU_ACTION_KEY_FILTER}${netInfo.value}`,
       actionTitle: netInfo.longName || netInfo.name,
@@ -23,6 +27,7 @@ export const networksMenuItems = () =>
         }`,
       },
     }));
+};
 
 const networksAvailable = networksMenuItems();
 
@@ -55,7 +60,7 @@ export const changeConnectionMenuItems = () => {
           iconType: 'SYSTEM',
           iconValue: 'network',
         },
-        menuItems: networksAvailable,
+        menuItems: networksMenuItems(),
         menuTitle: 'Switch Network',
       },
     ];
