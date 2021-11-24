@@ -97,7 +97,9 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       updatedAssets = assets.map(assetAndQuantity => {
         const assetCode = toLower(assetAndQuantity.asset.asset_code);
         return {
-          ...assetAndQuantity,
+          asset: {
+            ...assetAndQuantity.asset,
+          },
           quantity: balances?.[assetCode],
         };
       });
