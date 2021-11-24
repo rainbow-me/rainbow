@@ -6,9 +6,11 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
 target 'PriceWidgetExtension' do
+  pod 'swift-vibrant'
 end
 
 target 'SelectTokenIntent' do
+  pod 'swift-vibrant'
 end
 
 target 'Rainbow' do
@@ -19,6 +21,7 @@ target 'Rainbow' do
     # to enable hermes on iOS, change `false` to `true` and then install pods
     :hermes_enabled => ENV['USE_HERMES'] != 'NO'
   )
+  pod 'swift-vibrant'
 
   # Rainbow's Internal Modules.
   pod 'Rainbow-Internals', :path => './Internals'
