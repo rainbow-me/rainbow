@@ -38,10 +38,10 @@ import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Variables --------------------------------------- //
-let showRedirectSheetThreshold = 100;
+let showRedirectSheetThreshold = 0;
 
 // -- Constants --------------------------------------- //
-const BIOMETRICS_ANIMATION_DELAY = 0;
+const BIOMETRICS_ANIMATION_DELAY = 500;
 const WALLETCONNECT_ADD_REQUEST = 'walletconnect/WALLETCONNECT_ADD_REQUEST';
 const WALLETCONNECT_REMOVE_REQUEST =
   'walletconnect/WALLETCONNECT_REMOVE_REQUEST';
