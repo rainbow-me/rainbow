@@ -26,6 +26,21 @@ const docs: Docs = {
     },
 
     {
+      name: 'Custom space',
+      Example: () => (
+        <Inset space={{ custom: 17 }}>
+          <Stack space={{ custom: 17 }}>
+            <Placeholder height={100} />
+            <Bleed horizontal={{ custom: 17 }}>
+              <Placeholder height={100} />
+            </Bleed>
+            <Placeholder height={100} />
+          </Stack>
+        </Inset>
+      ),
+    },
+
+    {
       name: 'Right',
       Example: () => (
         <Inset space="19px">

@@ -97,6 +97,7 @@ const docs: Docs = {
               <Box
                 as={Animated.View}
                 background="accent"
+                borderRadius={20}
                 style={[sizeStyles, animatedStyles]}
               />
               <TouchableOpacity

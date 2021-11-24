@@ -24,6 +24,16 @@ const docs: Docs = {
     },
 
     {
+      name: 'Custom space',
+      Example: () => (
+        <Columns space={{ custom: 7 }}>
+          <Placeholder />
+          <Placeholder />
+        </Columns>
+      ),
+    },
+
+    {
       name: 'Custom widths',
       Example: () => (
         <Stack space="19px">
@@ -130,7 +140,7 @@ const docs: Docs = {
     },
 
     {
-      name: 'Custom width (content)',
+      name: 'Column with content width',
       Example: () => (
         <Columns space="19px">
           <Placeholder />

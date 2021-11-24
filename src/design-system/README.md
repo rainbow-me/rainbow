@@ -94,6 +94,8 @@ In a component system, the role of layout components is to apply space within co
 
 To better understand layout, let's step through the available layout components and show how they can be composed together.
 
+> Note that all layout components accept spacing values from our standard space scale (e.g. `space="19px"`) which helps reduce the amount of variation in our layouts. These are modeled as strings to make autocompletion easier and to allow for other naming conventions in the future. If you need to use a value that doesn't exist in the scale, it can be provided in the following format: `space={{ custom: 17 }}`.
+
 #### Inset
 
 Renders a **container with equal padding** on all sides.
@@ -469,16 +471,10 @@ Note that the need for this kind of low-level styling should reduce over time as
 
 ## Contribution
 
-To view the design system components in isolation, add the following line to your `.env` file.
+To view the design system components in isolation, ensure the following line is in `src/config/debug.js`.
 
 ```
-ENABLE_DESIGN_SYSTEM_PLAYGROUND=true
-```
-
-Then start the app with a clean cache.
-
-```bash
-yarn start --reset-cache
+export const designSystemPlaygroundEnabled = true;
 ```
 
 This causes the app to render the design system playground instead of the regular app. The playground code is sourced from `src/design-system/playground/Playground.tsx`. This screen imports files named `*.docs.tsx` from each component folder.

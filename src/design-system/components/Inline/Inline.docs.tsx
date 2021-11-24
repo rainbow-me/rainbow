@@ -9,9 +9,27 @@ const docs: Docs = {
   category: 'Layout',
   examples: [
     {
-      name: 'Equal spacing',
+      name: 'Basic usage',
       Example: () => (
         <Inline space="12px">
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+        </Inline>
+      ),
+    },
+
+    {
+      name: 'Custom space',
+      Example: () => (
+        <Inline space={{ custom: 8 }}>
           <Placeholder height={40} width={40} />
           <Placeholder height={40} width={40} />
           <Placeholder height={40} width={40} />
@@ -30,6 +48,24 @@ const docs: Docs = {
       name: 'Different space on each axis',
       Example: () => (
         <Inline horizontalSpace="19px" verticalSpace="12px">
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+          <Placeholder height={40} width={40} />
+        </Inline>
+      ),
+    },
+
+    {
+      name: 'Custom space on each axis',
+      Example: () => (
+        <Inline horizontalSpace={{ custom: 17 }} verticalSpace={{ custom: 8 }}>
           <Placeholder height={40} width={40} />
           <Placeholder height={40} width={40} />
           <Placeholder height={40} width={40} />

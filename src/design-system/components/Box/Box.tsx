@@ -1,7 +1,13 @@
-import { flatten, mapValues } from 'lodash';
+import { flatten } from 'lodash';
 import React, { forwardRef, ReactNode, useMemo } from 'react';
 import { View } from 'react-native';
-import { negativeSpace, NegativeSpace, space, Space } from '../../layout/space';
+import {
+  CustomSpace,
+  NegativeSpace,
+  negativeSpace,
+  Space,
+  space,
+} from '../../layout/space';
 import {
   BackgroundProvider,
   BackgroundProviderProps,
@@ -24,32 +30,66 @@ const widths = {
   full: '100%', // eslint-disable-line prettier/prettier
 } as const;
 
-export interface BoxProps {
+function resolveToken<TokenName extends string, TokenValue, CustomValue>(
+  scale: Record<TokenName, TokenValue>,
+  value: TokenName | { custom: CustomValue } | undefined
+) {
+  return value
+    ? typeof value === 'object'
+      ? value.custom
+      : scale[value]
+    : undefined;
+}
+
+export type BoxProps = {
   alignItems?: 'flex-start' | 'flex-end' | 'center' | 'stretch';
   background?: BackgroundProviderProps['color'];
+  borderRadius?: number;
+  borderTopLeftRadius?: number;
+  borderTopRightRadius?: number;
+  borderBottomLeftRadius?: number;
+  borderBottomRightRadius?: number;
   children?: ReactNode;
   flexBasis?: 0;
   flexDirection?: 'row' | 'row-reverse' | 'column';
   flexGrow?: 0 | 1;
   flexShrink?: 0 | 1;
   flexWrap?: 'wrap';
-  justifyContent?: 'flex-start' | 'flex-end' | 'center' | 'space-between';
-  margin?: NegativeSpace;
-  marginBottom?: NegativeSpace;
-  marginHorizontal?: NegativeSpace;
-  marginLeft?: NegativeSpace;
-  marginRight?: NegativeSpace;
-  marginTop?: NegativeSpace;
-  marginVertical?: NegativeSpace;
-  padding?: Space;
-  paddingBottom?: Space;
-  paddingHorizontal?: Space;
-  paddingLeft?: Space;
-  paddingRight?: Space;
-  paddingTop?: Space;
-  paddingVertical?: Space;
+  justifyContent?:
+    | 'flex-start'
+    | 'flex-end'
+    | 'center'
+    | 'space-between'
+    | 'space-around';
+  margin?: NegativeSpace | CustomSpace;
+  marginBottom?: NegativeSpace | CustomSpace;
+  marginHorizontal?: NegativeSpace | CustomSpace;
+  marginLeft?: NegativeSpace | CustomSpace;
+  marginRight?: NegativeSpace | CustomSpace;
+  marginTop?: NegativeSpace | CustomSpace;
+  marginVertical?: NegativeSpace | CustomSpace;
+  padding?: Space | CustomSpace;
+  paddingBottom?: Space | CustomSpace;
+  paddingHorizontal?: Space | CustomSpace;
+  paddingLeft?: Space | CustomSpace;
+  paddingRight?: Space | CustomSpace;
+  paddingTop?: Space | CustomSpace;
+  paddingVertical?: Space | CustomSpace;
   width?: keyof typeof widths;
-}
+} & (
+  | {
+      borderBottomRadius?: number;
+      borderLeftRadius?: never;
+      borderRightRadius?: never;
+      borderTopRadius?: number;
+    }
+  | {
+      borderBottomRadius?: never;
+      borderLeftRadius?: number;
+      borderRightRadius?: number;
+      borderTopRadius?: never;
+    }
+);
 
 type PolymorphicBox = Polymorphic.ForwardRefComponent<typeof View, BoxProps>;
 
@@ -64,6 +104,15 @@ export const Box = forwardRef(function Box(
     alignItems,
     as: Component = View,
     background,
+    borderBottomRadius,
+    borderBottomLeftRadius,
+    borderBottomRightRadius,
+    borderLeftRadius,
+    borderRadius,
+    borderRightRadius,
+    borderTopLeftRadius,
+    borderTopRadius,
+    borderTopRightRadius,
     children,
     flexBasis,
     flexDirection,
@@ -71,67 +120,98 @@ export const Box = forwardRef(function Box(
     flexShrink,
     flexWrap,
     justifyContent,
-    margin,
-    marginBottom,
-    marginHorizontal,
-    marginLeft,
-    marginRight,
-    marginTop,
-    marginVertical,
-    padding,
-    paddingBottom,
-    paddingHorizontal,
-    paddingLeft,
-    paddingRight,
-    paddingTop,
-    paddingVertical,
+    margin: marginProp,
+    marginBottom: marginBottomProp,
+    marginHorizontal: marginHorizontalProp,
+    marginLeft: marginLeftProp,
+    marginRight: marginRightProp,
+    marginTop: marginTopProp,
+    marginVertical: marginVerticalProp,
+    padding: paddingProp,
+    paddingBottom: paddingBottomProp,
+    paddingHorizontal: paddingHorizontalProp,
+    paddingLeft: paddingLeftProp,
+    paddingRight: paddingRightProp,
+    paddingTop: paddingTopProp,
+    paddingVertical: paddingVerticalProp,
     style: styleProp,
     width,
     ...restProps
   },
   ref
 ) {
+  const margin = resolveToken(negativeSpace, marginProp);
+  const marginBottom = resolveToken(negativeSpace, marginBottomProp);
+  const marginHorizontal = resolveToken(negativeSpace, marginHorizontalProp);
+  const marginLeft = resolveToken(negativeSpace, marginLeftProp);
+  const marginRight = resolveToken(negativeSpace, marginRightProp);
+  const marginTop = resolveToken(negativeSpace, marginTopProp);
+  const marginVertical = resolveToken(negativeSpace, marginVerticalProp);
+
+  const padding = resolveToken(space, paddingProp);
+  const paddingBottom = resolveToken(space, paddingBottomProp);
+  const paddingHorizontal = resolveToken(space, paddingHorizontalProp);
+  const paddingLeft = resolveToken(space, paddingLeftProp);
+  const paddingRight = resolveToken(space, paddingRightProp);
+  const paddingTop = resolveToken(space, paddingTopProp);
+  const paddingVertical = resolveToken(space, paddingVerticalProp);
+
   const styles = useMemo(() => {
-    const paddingValues = mapValues(
-      {
-        padding,
-        paddingBottom,
-        paddingHorizontal,
-        paddingLeft,
-        paddingRight,
-        paddingTop,
-        paddingVertical,
-      },
-      value => value && space[value]
-    );
-
-    const marginValues = mapValues(
-      {
-        margin,
-        marginBottom,
-        marginHorizontal,
-        marginLeft,
-        marginRight,
-        marginTop,
-        marginVertical,
-      },
-      value => value && negativeSpace[value]
-    );
-
     return {
       alignItems,
+      borderBottomLeftRadius:
+        borderBottomLeftRadius ??
+        borderBottomRadius ??
+        borderLeftRadius ??
+        borderRadius,
+      borderBottomRightRadius:
+        borderBottomRightRadius ??
+        borderBottomRadius ??
+        borderRightRadius ??
+        borderRadius,
+      borderTopLeftRadius:
+        borderTopLeftRadius ??
+        borderTopRadius ??
+        borderLeftRadius ??
+        borderRadius,
+      borderTopRightRadius:
+        borderTopRightRadius ??
+        borderTopRadius ??
+        borderRightRadius ??
+        borderRadius,
       flexBasis,
       flexDirection,
       flexGrow,
       flexShrink,
       flexWrap,
       justifyContent,
+      margin,
+      marginBottom,
+      marginHorizontal,
+      marginLeft,
+      marginRight,
+      marginTop,
+      marginVertical,
+      padding,
+      paddingBottom,
+      paddingHorizontal,
+      paddingLeft,
+      paddingRight,
+      paddingTop,
+      paddingVertical,
       width: width ? widths[width] : undefined,
-      ...paddingValues,
-      ...marginValues,
     };
   }, [
     alignItems,
+    borderBottomRadius,
+    borderBottomLeftRadius,
+    borderBottomRightRadius,
+    borderLeftRadius,
+    borderRadius,
+    borderRightRadius,
+    borderTopLeftRadius,
+    borderTopRadius,
+    borderTopRightRadius,
     flexBasis,
     flexDirection,
     flexGrow,

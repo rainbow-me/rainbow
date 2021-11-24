@@ -1,6 +1,6 @@
 import React, { Children, ReactNode } from 'react';
 import flattenChildren from 'react-flatten-children';
-import { negateSpace, Space } from '../../layout/space';
+import { CustomSpace, negateSpace, Space } from '../../layout/space';
 import { Box, BoxProps } from '../Box/Box';
 
 const alignHorizontalToFlexAlign = {
@@ -56,7 +56,7 @@ const getColumnProps = (node: NonNullable<ReactNode>): ColumnProps | null =>
     : null;
 
 interface PrivateColumnProps extends ColumnProps {
-  space: Space;
+  space: Space | CustomSpace;
   alignVertical: AlignVertical | undefined;
 }
 
@@ -87,7 +87,7 @@ function PrivateColumn({
 }
 
 export interface ColumnsProps {
-  space: Space;
+  space: Space | CustomSpace;
   children: ReactNode;
   alignHorizontal?: AlignHorizontal;
   alignVertical?: AlignVertical;

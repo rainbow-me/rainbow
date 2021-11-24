@@ -5,7 +5,7 @@ import React, {
   ReactNode,
 } from 'react';
 import flattenChildren from 'react-flatten-children';
-import { Space } from '../../layout/space';
+import { CustomSpace, Space } from '../../layout/space';
 import { Box } from '../Box/Box';
 
 const alignHorizontalToFlexAlign = {
@@ -22,7 +22,7 @@ export type StackProps = {
 } & (
   | { space?: never; separator: ReactElement }
   | {
-      space: Space;
+      space: Space | CustomSpace;
       separator?: ReactElement;
     }
 );

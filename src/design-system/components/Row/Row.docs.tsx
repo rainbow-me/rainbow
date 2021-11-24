@@ -21,6 +21,17 @@ const docs: Docs = {
     },
 
     {
+      name: 'Custom space',
+      Example: () => (
+        <Row space={{ custom: 9 }}>
+          <Placeholder width={40} />
+          <Placeholder width={40} />
+          <Placeholder width={40} />
+        </Row>
+      ),
+    },
+
+    {
       name: 'Center-aligned horizontally',
       Example: () => (
         <Row alignHorizontal="center" space="19px">

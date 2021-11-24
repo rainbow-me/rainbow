@@ -1,4 +1,4 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
+/* eslint-disable sort-keys-fix/sort-keys-fix, no-redeclare */
 export const space = {
   '3px': 3,
   '6px': 6,
@@ -12,6 +12,7 @@ export const space = {
 } as const;
 
 export type Space = keyof typeof space;
+export type CustomSpace = { custom: number };
 
 export const negativeSpace = {
   '-3px': -3,
@@ -39,5 +40,13 @@ const spaceToNegativeSpace: Record<Space, NegativeSpace> = {
   '42px': '-42px',
 };
 
-export const negateSpace = (space: Space): NegativeSpace =>
-  spaceToNegativeSpace[space];
+export function negateSpace(space: Space): NegativeSpace;
+export function negateSpace(space: CustomSpace): CustomSpace;
+export function negateSpace(
+  space: Space | CustomSpace
+): NegativeSpace | CustomSpace;
+export function negateSpace(space: Space | CustomSpace) {
+  return typeof space === 'object'
+    ? { custom: -space.custom }
+    : spaceToNegativeSpace[space];
+}

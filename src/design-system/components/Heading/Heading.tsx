@@ -41,8 +41,9 @@ export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
   ) {
     if (__DEV__) {
       if (!containsEmojiProp && nodeHasEmoji(children)) {
-        throw new Error(
-          `Heading: Emoji characters detected when "containsEmoji" prop isn't set to true: "${children}"\n\nYou must set the "containsEmoji" prop to true, otherwise vertical text alignment will be broken on iOS.`
+        // eslint-disable-next-line no-console
+        console.log(
+          `Heading: Emoji characters detected when "containsEmoji" prop isn't set to true: "${children}"\n\nYou should set the "containsEmoji" prop to true, otherwise vertical text alignment will be broken on iOS.`
         );
       }
       if (containsEmojiProp && !nodeIsString(children)) {

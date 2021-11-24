@@ -2,6 +2,7 @@
 import { precomputeValues } from '@capsizecss/core';
 import { mapValues, pick } from 'lodash';
 import { PixelRatio } from 'react-native';
+import { ForegroundColor } from './../color/palettes';
 import { fontWeights } from './fontWeights';
 import { typeHierarchy } from './typeHierarchy';
 
@@ -113,3 +114,24 @@ const createTextSize = ({
 
 export const headingSizes = mapValues(typeHierarchy.heading, createTextSize);
 export const textSizes = mapValues(typeHierarchy.text, createTextSize);
+
+function selectForegroundColors<
+  SelectedColors extends readonly (ForegroundColor | 'accent')[]
+>(...colors: SelectedColors): SelectedColors {
+  return colors;
+}
+
+export const textColors = selectForegroundColors(
+  'accent',
+  'action',
+  'primary',
+  'secondary',
+  'secondary30',
+  'secondary40',
+  'secondary50',
+  'secondary60',
+  'secondary70',
+  'secondary80'
+);
+
+export type TextColor = typeof textColors[number];

@@ -111,7 +111,7 @@ const docs: Docs = {
       Example: () => (
         <>
           <Guide />
-          <MarkdownText nestedSpace="30px" space="42px">
+          <MarkdownText nestedSpace={{ custom: 30 }} space="42px">
             {customSpaceMarkdown}
           </MarkdownText>
           <Guide />

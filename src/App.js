@@ -16,7 +16,6 @@ import {
 } from 'react-native';
 import branch from 'react-native-branch';
 import {
-  ENABLE_DESIGN_SYSTEM_PLAYGROUND,
   IS_TESTING,
   REACT_APP_SEGMENT_API_WRITE_KEY,
   SENTRY_ENDPOINT,
@@ -33,6 +32,7 @@ import ErrorBoundary from './components/error-boundary/ErrorBoundary';
 import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
 import {
+  designSystemPlaygroundEnabled,
   reactNativeDisableYellowBox,
   showNetworkRequests,
   showNetworkResponses,
@@ -296,5 +296,5 @@ const AppWithRedux = connect(
 const AppWithReduxStore = () => <AppWithRedux store={store} />;
 
 AppRegistry.registerComponent('Rainbow', () =>
-  ENABLE_DESIGN_SYSTEM_PLAYGROUND === 'true' ? Playground : AppWithReduxStore
+  designSystemPlaygroundEnabled ? Playground : AppWithReduxStore
 );

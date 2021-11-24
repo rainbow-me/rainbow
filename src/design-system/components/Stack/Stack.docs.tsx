@@ -25,6 +25,16 @@ const docs: Docs = {
       ),
     },
     {
+      name: 'Custom space',
+      Example: () => (
+        <Stack space={{ custom: 5 }}>
+          <Placeholder />
+          <Placeholder />
+          <Placeholder />
+        </Stack>
+      ),
+    },
+    {
       name: 'With text',
       Example: () => (
         <Stack space="15px">

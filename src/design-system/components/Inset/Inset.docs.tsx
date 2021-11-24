@@ -18,6 +18,15 @@ const docs: Docs = {
     },
 
     {
+      name: 'Custom space',
+      Example: () => (
+        <Inset space={{ custom: 12 }}>
+          <Placeholder height={100} />
+        </Inset>
+      ),
+    },
+
+    {
       name: 'Horizontal space',
       Example: () => (
         <Inset horizontal="19px">

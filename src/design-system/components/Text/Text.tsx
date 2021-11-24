@@ -10,24 +10,16 @@ import {
   nodeIsString,
   renderStringWithEmoji,
 } from '../../typography/renderStringWithEmoji';
-import { textSizes, textWeights } from '../../typography/typography';
-
-const validColors = [
-  'accent',
-  'action',
-  'primary',
-  'secondary',
-  'secondary30',
-  'secondary40',
-  'secondary50',
-  'secondary60',
-  'secondary70',
-  'secondary80',
-] as const;
+import {
+  TextColor,
+  textColors,
+  textSizes,
+  textWeights,
+} from '../../typography/typography';
 
 export type TextProps = {
   align?: 'center' | 'left' | 'right';
-  color?: typeof validColors[number] | CustomColor;
+  color?: TextColor | CustomColor;
   numberOfLines?: number;
   size?: keyof typeof textSizes;
   tabularNumbers?: boolean;
@@ -63,13 +55,23 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
   ) {
     if (__DEV__) {
       if (!containsEmojiProp && nodeHasEmoji(children)) {
-        throw new Error(
-          `Text: Emoji characters detected when "containsEmoji" prop isn't set to true: "${children}"\n\nYou must set the "containsEmoji" prop to true, otherwise vertical text alignment will be broken on iOS.`
+        // eslint-disable-next-line no-console
+        console.log(
+          `Text: Emoji characters detected when "containsEmoji" prop isn't set to true: "${children}"\n\nYou should set the "containsEmoji" prop to true, otherwise vertical text alignment will be broken on iOS.`
         );
       }
+
       if (containsEmojiProp && !nodeIsString(children)) {
         throw new Error(
           'Text: When "containsEmoji" is set to true, children can only be strings. If you need low-level control of emoji rendering, you can also use the "renderStringWithEmoji" function directly which accepts a string.'
+        );
+      }
+
+      if (color && typeof color === 'string' && !textColors.includes(color)) {
+        throw new Error(
+          `Text: Invalid color "${color}". Valid colors are: ${textColors
+            .map(x => `"${x}"`)
+            .join(', ')}`
         );
       }
     }

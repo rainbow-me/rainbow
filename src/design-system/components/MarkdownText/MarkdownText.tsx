@@ -7,12 +7,12 @@ import React, {
   useContext,
   useMemo,
 } from 'react';
-import { Text as NativeText, StyleSheet, View } from 'react-native';
+import { Text as NativeText, Platform, StyleSheet, View } from 'react-native';
 import MarkdownDisplay, {
   ASTNode,
   RenderRules,
 } from 'react-native-markdown-display';
-import { negateSpace, Space } from '../../layout/space';
+import { CustomSpace, negateSpace, Space } from '../../layout/space';
 import { renderStringWithEmoji } from '../../typography/renderStringWithEmoji';
 import { fonts } from '../../typography/typography';
 import { Box } from '../Box/Box';
@@ -27,8 +27,8 @@ const styles = StyleSheet.create({
 });
 
 const defaultProps: {
-  nestedSpace: Space;
-  space: Space;
+  nestedSpace: Space | CustomSpace;
+  space: Space | CustomSpace;
   size: NonNullable<TextProps['size']>;
 } = {
   nestedSpace: '19px',
@@ -37,8 +37,8 @@ const defaultProps: {
 };
 
 interface MarkdownStackContextObject {
-  space: Space;
-  nestedSpace: Space;
+  space: Space | CustomSpace;
+  nestedSpace: Space | CustomSpace;
   depth: number;
 }
 const MarkdownStackContext = createContext<MarkdownStackContextObject>({
@@ -48,8 +48,8 @@ const MarkdownStackContext = createContext<MarkdownStackContextObject>({
 });
 
 interface MarkdownStackProps {
-  space?: Space;
-  nestedSpace?: Space;
+  space?: Space | CustomSpace;
+  nestedSpace?: Space | CustomSpace;
   children: ReactNode;
 }
 
@@ -101,7 +101,7 @@ function renderBullet(parents: ASTNode[], index: number): ReactNode {
     );
   }
 
-  return `${ios ? '\u00B7' : '\u2022'}`;
+  return `${Platform.OS === 'ios' ? '\u00B7' : '\u2022'}`;
 }
 
 function isNativeText(child: ReactNode) {
@@ -118,7 +118,7 @@ export type MarkdownTextProps = {
   size?: TextProps['size'];
 } & (
   | { space?: never; nestedSpace?: never }
-  | { space: Space; nestedSpace: Space }
+  | { space: Space | CustomSpace; nestedSpace: Space | CustomSpace }
 );
 
 /**
