@@ -11,6 +11,7 @@ export const getTrendKey = (trend: number) => {
   } else if (trend > 0.6) {
     return 'surging';
   }
+  return 'stable';
 };
 
 export const calculateMinerTipAddDifference = (maxPriorityFee: string) => {
