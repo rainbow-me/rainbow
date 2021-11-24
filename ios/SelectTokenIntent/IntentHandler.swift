@@ -22,54 +22,47 @@ class IntentHandler: INExtension {
 @available(iOS 14.0, *)
 extension IntentHandler: SelectTokenIntentHandling {
   func provideTokenOptionsCollection(for intent: SelectTokenIntent, searchTerm: String?, with completion: @escaping (INObjectCollection<Token>?, Error?) -> Void) {
-    var top100 = Constants.topTokens
-    
     var topTokenItems = [Token]()
     var otherTokenItems = [Token]()
     let tokenProvider = TokenProvider.shared
-    var tokens = Array(tokenProvider.getTokens().values)
-    
-    if (searchTerm != nil) {
-      tokens = tokens.filter {
-        let displayName = $0.name! + " (" + $0.symbol! + ")"
-        return displayName.lowercased().contains(searchTerm!.lowercased())
-      }
-    }
-    
-    top100.keys.forEach {
-      top100[$0?.lowercased()] = top100[$0]
-    }
+    let tokens = tokenProvider.getTokens()
+    let top100 = Constants.topTokenAddresses
 
-    let partition = tokens.partition(by: { top100.keys.contains($0.address!.lowercased()) })
-    let otherTokens = tokens[..<partition]
-    let topTokens = tokens[partition...]
-    
-    topTokenItems = topTokens.map { token in
+    topTokenItems = tokens.topTokens.map { token in
       Token(identifier: token.address!.lowercased(), display: token.name! + " (" + token.symbol! + ")")
     }
     
+    if (searchTerm != nil) {
+      otherTokenItems = tokens.otherTokens.map { token in
+        Token(identifier: token.address!.lowercased(), display: token.name! + " (" + token.symbol! + ")")
+      }
+      
+      topTokenItems = topTokenItems.filter {
+        $0.displayString.lowercased().contains(searchTerm!.lowercased())
+      }
+      
+      otherTokenItems = otherTokenItems.filter {
+        $0.displayString.lowercased().contains(searchTerm!.lowercased())
+      }
+    }
+  
     topTokenItems.sort(by: {
       top100[$0.identifier!]! < top100[$1.identifier!]!
     })
     
-    if (searchTerm == nil) {
+    if (searchTerm != nil) {
+      otherTokenItems.sort(by: {
+        $0.displayString < $1.displayString
+      })
+      
+      completion(INObjectCollection(sections: [
+        INObjectSection(title: "Top Tokens", items: topTokenItems),
+        INObjectSection(title: "More Tokens", items: otherTokenItems)
+      ]), nil)
+    } else {
       completion(INObjectCollection(sections: [
         INObjectSection(title: "Top Tokens", items: topTokenItems)
       ]), nil)
-      return
     }
-
-    otherTokenItems = otherTokens.map { token in
-      Token(identifier: token.address!.lowercased(), display: token.name! + " (" + token.symbol! + ")")
-    }
-
-    otherTokenItems.sort(by: {
-      $0.displayString < $1.displayString
-    })
-    
-    completion(INObjectCollection(sections: [
-      INObjectSection(title: "Top Tokens", items: topTokenItems),
-      INObjectSection(title: "More Tokens", items: otherTokenItems)
-    ]), nil)
   }
 }

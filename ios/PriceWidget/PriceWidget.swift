@@ -73,7 +73,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
   
   private func lookupTokenDetails(for configuration: SelectTokenIntent) -> TokenDetails {
     let tokenId = configuration.token?.identifier?.lowercased() ?? ""
-    let tokenForConfig = tokenProvider.getTokens()[tokenId]
+    let tokenForConfig = tokenProvider.getTokens().allTokens[tokenId]
     return tokenForConfig ?? defaultToken
   }
   
