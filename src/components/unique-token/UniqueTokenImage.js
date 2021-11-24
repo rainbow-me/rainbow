@@ -69,8 +69,12 @@ const UniqueTokenImage = ({
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
-      {isSVG ? (
-        <RemoteSvg style={remoteSvgStyle} uri={imageUrl} />
+      {isSVG && !error ? (
+        <RemoteSvg
+          onError={handleError}
+          style={remoteSvgStyle}
+          uri={imageUrl}
+        />
       ) : imageUrl && !error ? (
         <Fragment>
           <ImageTile

@@ -212,7 +212,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
       }
     }
     let tokens = compact(tokensRow);
-    tokens = chunk(tokens, tokens.length > 25 ? 4 : 25);
+    tokens = chunk(tokens, 50);
     // eslint-disable-next-line no-loop-func
     tokens.forEach((tokenChunk, index) => {
       const id = tokensRow[0]
@@ -229,8 +229,8 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
       });
     });
   }
-
-  rows = sortBy(rows, ['familyName']);
+  const regex = RegExp(/\s*(the)\s/, 'i');
+  rows = sortBy(rows, row => row.familyName.replace(regex, '').toLowerCase());
 
   showcaseTokens.sort(function (a, b) {
     return (

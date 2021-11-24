@@ -113,6 +113,7 @@ export default class RecyclerActivityList extends PureComponent {
         }
       }
     );
+    this.layoutProvider.shouldRefreshWithAnchoring = false;
   }
 
   static getDerivedStateFromProps(props, state) {

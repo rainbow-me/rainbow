@@ -5,7 +5,7 @@ import {
   COVALENT_IOS_API_KEY,
 } from 'react-native-dotenv';
 // eslint-disable-next-line import/no-cycle
-import { addressAssetsReceived, fetchAssetPrices } from './data';
+import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
 import { emitAssetRequest, emitChartsRequest } from './explorer';
 import { AssetTypes } from '@rainbow-me/entities';
@@ -132,7 +132,7 @@ export const arbitrumExplorerInit = () => async (dispatch, getState) => {
     dispatch(emitAssetRequest(tokenAddresses));
     dispatch(emitChartsRequest(tokenAddresses));
 
-    const prices = await fetchAssetPrices(
+    const prices = await fetchAssetPricesWithCoingecko(
       assets.map(({ asset: { coingecko_id } }) => coingecko_id),
       formattedNativeCurrency
     );

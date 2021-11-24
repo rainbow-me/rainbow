@@ -50,7 +50,11 @@ import {
   saveAssets,
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
-import { getProviderForNetwork, isL2Network } from '@rainbow-me/handlers/web3';
+import {
+  getProviderForNetwork,
+  isL2Network,
+  web3Provider,
+} from '@rainbow-me/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
@@ -169,7 +173,10 @@ export const dataLoadState = () => async (dispatch, getState) =>
     }, GENERIC_ASSETS_FALLBACK_TIMEOUT);
   });
 
-export const fetchAssetPrices = async (coingeckoIds, nativeCurrency) => {
+export const fetchAssetPricesWithCoingecko = async (
+  coingeckoIds,
+  nativeCurrency
+) => {
   try {
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoIds
       .filter(val => !!val)
@@ -241,7 +248,7 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
     if (coingeckoAsset) {
       allAssets.push({
         asset_code: address,
-        coingecko_id: coingeckoAsset.id,
+        coingecko_id: coingeckoAsset?.id,
         name: coingeckoAsset.name,
         symbol: toUpper(coingeckoAsset.symbol),
       });
@@ -261,7 +268,7 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
         .slice(from, to)
         .map(({ coingecko_id }) => coingecko_id);
 
-      const pricesForCurrentPage = await fetchAssetPrices(
+      const pricesForCurrentPage = await fetchAssetPricesWithCoingecko(
         currentPageIds,
         formattedNativeCurrency
       );
@@ -396,7 +403,10 @@ export const transactionsReceived = (message, appended = false) => async (
     const { transactions } = getState().data;
     const { selected } = getState().wallets;
 
-    const { parsedTransactions, potentialNftTransaction } = parseTransactions(
+    const {
+      parsedTransactions,
+      potentialNftTransaction,
+    } = await parseTransactions(
       transactionData,
       accountAddress,
       nativeCurrency,
@@ -416,6 +426,7 @@ export const transactionsReceived = (message, appended = false) => async (
     });
     dispatch(updatePurchases(parsedTransactions));
     saveLocalTransactions(parsedTransactions, accountAddress, network);
+
     if (appended && parsedTransactions.length) {
       if (
         selected &&
@@ -798,8 +809,8 @@ const getConfirmedState = type => {
 };
 
 export const dataWatchPendingTransactions = (
-  cb = null,
-  provider = null
+  provider = null,
+  currentNonce = -1
 ) => async (dispatch, getState) =>
   withRunExclusive(async () => {
     const { transactions } = getState().data;
@@ -824,20 +835,22 @@ export const dataWatchPendingTransactions = (
           const p =
             provider || (await getProviderForNetwork(updatedPending.network));
           const txObj = await p.getTransaction(txHash);
-          if (txObj && txObj.blockNumber && txObj.blockHash) {
+          // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
+          const nonceAlreadyIncluded = currentNonce > tx.nonce;
+          if (
+            (txObj && txObj.blockNumber && txObj.blockHash) ||
+            nonceAlreadyIncluded
+          ) {
             // When speeding up a non "normal tx" we need to resubscribe
             // because zerion "append" event isn't reliable
             logger.log('TX CONFIRMED!', txObj);
-            appEvents.emit('transactionConfirmed', txObj);
-            if (cb) {
-              logger.log('executing cb', cb);
-              cb(tx);
-              return;
+            if (!nonceAlreadyIncluded) {
+              appEvents.emit('transactionConfirmed', txObj);
             }
             const minedAt = Math.floor(Date.now() / 1000);
             txStatusesDidChange = true;
-            const isSelf = toLower(tx?.from) === toLower(tx?.to);
-            if (!isZero(txObj.status)) {
+            if (txObj && !isZero(txObj.status)) {
+              const isSelf = toLower(tx?.from) === toLower(tx?.to);
               const newStatus = getTransactionLabel({
                 direction: isSelf
                   ? TransactionDirections.self
@@ -851,6 +864,8 @@ export const dataWatchPendingTransactions = (
                 type: tx?.type,
               });
               updatedPending.status = newStatus;
+            } else if (nonceAlreadyIncluded) {
+              updatedPending.status = TransactionStatusTypes.unknown;
             } else {
               updatedPending.status = TransactionStatusTypes.failed;
             }
@@ -869,12 +884,16 @@ export const dataWatchPendingTransactions = (
         return updatedPending;
       })
     );
-    const updatedTransactions = concat(
-      updatedPendingTransactions,
-      remainingTransactions
-    );
 
     if (txStatusesDidChange) {
+      const filteredPendingTransactions = updatedPendingTransactions?.filter(
+        ({ status }) => status !== TransactionStatusTypes.unknown
+      );
+      const updatedTransactions = concat(
+        filteredPendingTransactions,
+        remainingTransactions
+      );
+
       dispatch(updatePurchases(updatedTransactions));
       const { accountAddress, network } = getState().settings;
       dispatch({
@@ -929,6 +948,19 @@ const updatePurchases = updatedTransactions => dispatch => {
     );
   });
   dispatch(addCashUpdatePurchases(confirmedPurchases));
+};
+
+export const checkPendingTransactionsOnInitialize = (
+  accountAddressToWatch,
+  provider = null
+) => async (dispatch, getState) => {
+  const { accountAddress: currentAccountAddress } = getState().settings;
+  if (currentAccountAddress !== accountAddressToWatch) return;
+  const currentNonce = await (provider || web3Provider).getTransactionCount(
+    currentAccountAddress,
+    'latest'
+  );
+  await dispatch(dataWatchPendingTransactions(provider, currentNonce));
 };
 
 export const watchPendingTransactions = (

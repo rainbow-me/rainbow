@@ -39,6 +39,7 @@ import {
   wyreWebviewOptions,
 } from './config';
 import {
+  androidRecievePreset,
   bottomSheetPreset,
   emojiPreset,
   exchangePreset,
@@ -64,11 +65,6 @@ function SendFlowNavigator() {
       {...stackNavigationConfig}
       initialRouteName={Routes.SEND_SHEET}
     >
-      <Stack.Screen
-        component={ModalScreen}
-        name={Routes.MODAL_SCREEN}
-        options={overlayExpandedPreset}
-      />
       <Stack.Screen
         component={SendSheet}
         name={Routes.SEND_SHEET}
@@ -157,15 +153,9 @@ function MainNavigator() {
         options={exchangePreset}
       />
       <Stack.Screen
-        component={ModalScreen}
-        {...closeKeyboardOnClose}
-        name={Routes.MODAL_SCREEN}
-        options={overlayExpandedPreset}
-      />
-      <Stack.Screen
         component={ReceiveModal}
         name={Routes.RECEIVE_MODAL}
-        options={expandedPreset}
+        options={androidRecievePreset}
       />
       <Stack.Screen
         component={WalletConnectApprovalSheet}
@@ -205,7 +195,7 @@ function MainNavigator() {
       <Stack.Screen
         component={BackupSheet}
         name={Routes.BACKUP_SHEET}
-        options={bottomSheetPreset}
+        options={expandedPreset}
       />
       <Stack.Screen
         component={RestoreSheet}
@@ -256,7 +246,7 @@ function MainOuterNavigator() {
       <OuterStack.Screen
         component={BackupSheet}
         name={Routes.BACKUP_SCREEN}
-        options={sheetPreset}
+        options={expandedPreset}
       />
     </OuterStack.Navigator>
   );
@@ -299,6 +289,11 @@ function BSNavigator() {
         options={{
           height: '100%',
         }}
+      />
+      <BSStack.Screen
+        component={ModalScreen}
+        {...closeKeyboardOnClose}
+        name={Routes.MODAL_SCREEN}
       />
       <BSStack.Screen
         component={SendConfirmationSheet}
