@@ -339,6 +339,8 @@ const GasSpeedButton = ({
     const fastByDefault =
       currentNetwork === networkTypes.arbitrum ||
       currentNetwork === networkTypes.optimism;
+    console.log('defaultSelectedGasFeeOption', fastByDefault ? FAST : NORMAL);
+
     return fastByDefault ? FAST : NORMAL;
   }, [currentNetwork]);
 
@@ -375,7 +377,7 @@ const GasSpeedButton = ({
         }
         currentNetwork={currentNetwork}
         dropdownEnabled={gasOptionsAvailable}
-        label={selectedGasFeeOption}
+        label={selectedGasFeeOption ?? defaultSelectedGasFeeOption}
         showGasOptions={showGasOptions}
         showPager
         theme={theme}
@@ -400,6 +402,7 @@ const GasSpeedButton = ({
     colorForAsset,
     colors,
     currentNetwork,
+    defaultSelectedGasFeeOption,
     gasIsNotReady,
     gasOptionsAvailable,
     handlePressMenuItem,
