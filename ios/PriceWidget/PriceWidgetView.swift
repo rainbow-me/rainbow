@@ -12,6 +12,9 @@ import swift_vibrant
 
 @available(iOS 14.0, *)
 struct PriceWidgetView: View {
+  
+  @Environment(\.redactionReasons)
+  private var reasons
 
   let tokenData: TokenData
   let date: Date
@@ -136,22 +139,36 @@ struct PriceWidgetView: View {
         if (tokenData.tokenDetails != nil && tokenData.price != nil && tokenData.priceChange != nil) {
           VStack(alignment: .leading) {
             HStack {
-              Text(tokenData.tokenDetails!.symbol!)
-                .font(.custom("SF Pro Rounded", size: 18))
-                .fontWeight(.heavy)
-                .foregroundColor(fgColor)
-                .tracking(0.4)
-                .frame(height: 20)
-                .mask(
-                  LinearGradient(gradient: Gradient(colors: [fgColor.opacity(0.9), fgColor.opacity(0.8)]), startPoint: .leading, endPoint: .trailing)
-                )
+              if (reasons.isEmpty) {
+                Text(tokenData.tokenDetails!.symbol!)
+                  .font(.custom("SF Pro Rounded", size: 18))
+                  .fontWeight(.heavy)
+                  .foregroundColor(fgColor)
+                  .tracking(0.4)
+                  .frame(height: 20)
+                  .mask(
+                    LinearGradient(gradient: Gradient(colors: [fgColor.opacity(0.9), fgColor.opacity(0.8)]), startPoint: .leading, endPoint: .trailing)
+                  )
+              } else {
+                Text("    ")
+                  .font(.system(size: 24))
+                  .foregroundColor(fgColor)
+              }
 
               Spacer()
 
               if (tokenData.icon != nil) {
-                Image(uiImage: tokenData.icon!.resizeImageTo(size: CGSize(width: 20, height: 20)))
-                  .frame(width: 20, height: 20)
-                  .clipShape(Circle())
+                if (reasons.isEmpty) {
+                  Image(uiImage: tokenData.icon!.resizeImageTo(size: CGSize(width: 20, height: 20)))
+                    .frame(width: 20, height: 20)
+                    .clipShape(Circle())
+                } else {
+                  Text("         ")
+                    .font(.system(size: 100))
+                    .foregroundColor(fgColor)
+                    .clipShape(Circle())
+                    .frame(width: 20, height: 20)
+                }
               }
             }
             Spacer()
@@ -159,30 +176,43 @@ struct PriceWidgetView: View {
             HStack {
               VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 3) {
-                  if (tokenData.priceChange! >= 0) {
-                    Image(systemName: "arrow.up")
-                      .font(.system(size: 18, weight: .heavy, design: .rounded))
+                  if (reasons.isEmpty) {
+                    if (tokenData.priceChange! >= 0) {
+                      Image(systemName: "arrow.up")
+                        .font(.system(size: 18, weight: .heavy, design: .rounded))
+                        .foregroundColor(fgColor)
+                    } else {
+                      Image(systemName: "arrow.down")
+                        .font(.system(size: 18, weight: .heavy, design: .rounded))
+                        .foregroundColor(fgColor)
+                    }
+                    Text(formatPercent(double: tokenData.priceChange!))
+                      .font(.custom("SF Pro Rounded", size: 18))
+                      .fontWeight(.heavy)
                       .foregroundColor(fgColor)
+                      .tracking(0.2)
                   } else {
-                    Image(systemName: "arrow.down")
-                      .font(.system(size: 18, weight: .heavy, design: .rounded))
+                    Text("         ")
+                      .font(.system(size: 24))
                       .foregroundColor(fgColor)
                   }
-                  Text(formatPercent(double: tokenData.priceChange!))
-                    .font(.custom("SF Pro Rounded", size: 18))
-                    .fontWeight(.heavy)
-                    .foregroundColor(fgColor)
-                    .tracking(0.2)
                 }.mask(
                   LinearGradient(gradient: Gradient(colors: [fgColor.opacity(0.9), fgColor.opacity(0.8)]), startPoint: .leading, endPoint: .trailing)
                 )
-                Text(convertToCurrency(double: tokenData.price!, currency: tokenData.currency))
+                
+                if (reasons.isEmpty) {
+                  Text(convertToCurrency(double: tokenData.price!, currency: tokenData.currency))
                     .font(.custom("SF Pro Rounded", size: 28))
                     .fontWeight(.heavy)
                     .foregroundColor(fgColor)
                     .minimumScaleFactor(0.01)
                     .lineLimit(1)
                     .frame(height: 33, alignment: .top)
+                } else {
+                  Text("        ")
+                    .font(.system(size: 34))
+                    .foregroundColor(fgColor)
+                }
               }
             }
             
@@ -195,11 +225,17 @@ struct PriceWidgetView: View {
                 .foregroundColor(fgColor.opacity(0.4))
                 .tracking(0.2)
             } else {
-              (Text("Updated at ") + Text(date, style: .time))
-                .font(.custom("SF Pro Rounded", size: 10))
-                .fontWeight(.bold)
-                .foregroundColor(fgColor.opacity(0.5))
-                .tracking(0.2)
+              if (reasons.isEmpty) {
+                (Text("Updated at ") + Text(date, style: .time))
+                  .font(.custom("SF Pro Rounded", size: 10))
+                  .fontWeight(.bold)
+                  .foregroundColor(fgColor.opacity(0.5))
+                  .tracking(0.2)
+              } else {
+                Text("                ")
+                  .font(.system(size: 16))
+                  .foregroundColor(fgColor)
+              }
             }
           }.padding(16)
         } else {

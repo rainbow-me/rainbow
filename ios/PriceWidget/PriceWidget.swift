@@ -22,7 +22,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
   
   func placeholder(in context: Context) -> CustomTokenEntry {
     let currency = getCurrency()
-    
+     
     let priceData = priceDataProvider.getPriceData(token: defaultToken.coinGeckoId!)
     let priceChange = priceData?.marketData.priceChangePercentage24h
     let price = getPrice(data: priceData, currency: currency)
