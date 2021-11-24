@@ -12,8 +12,9 @@ import {
   pickBy,
   values,
 } from 'lodash';
-import { Alert, InteractionManager, Linking } from 'react-native';
+import { Alert, AppState, InteractionManager, Linking } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
+import Minimizer from 'react-native-minimizer';
 import URL, { qs } from 'url-parse';
 import {
   getAllValidWalletConnectSessions,
@@ -36,8 +37,11 @@ import Routes from '@rainbow-me/routes';
 import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';
 import logger from 'logger';
 
-// -- Constants --------------------------------------- //
+// -- Variables --------------------------------------- //
+let showRedirectSheetThreshold = 100;
 
+// -- Constants --------------------------------------- //
+const BIOMETRICS_ANIMATION_DELAY = 0;
 const WALLETCONNECT_ADD_REQUEST = 'walletconnect/WALLETCONNECT_ADD_REQUEST';
 const WALLETCONNECT_REMOVE_REQUEST =
   'walletconnect/WALLETCONNECT_REMOVE_REQUEST';
@@ -107,9 +111,24 @@ export const walletConnectRemovePendingRedirect = (
   if (scheme) {
     Linking.openURL(`${scheme}://`);
   } else if (type !== 'timedOut') {
-    return Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
-      type,
-    });
+    if (type === 'connect' || BIOMETRICS_ANIMATION_DELAY === 0) {
+      Minimizer.goBack();
+    } else {
+      showRedirectSheetThreshold += BIOMETRICS_ANIMATION_DELAY;
+      setTimeout(() => {
+        Minimizer.goBack();
+      }, BIOMETRICS_ANIMATION_DELAY);
+    }
+    // If it's still active after showRedirectSheetThreshold
+    // We need to show the redirect sheet cause the redirect
+    // didn't work
+    setTimeout(() => {
+      if (AppState.currentState === 'active') {
+        return Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
+          type,
+        });
+      }
+    }, showRedirectSheetThreshold);
   }
 };
 
