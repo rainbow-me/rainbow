@@ -1,5 +1,13 @@
 [
   {
+    "name": "Celo Network",
+    "short_name": "celo",
+    "chain": "CELO",
+    "network": "mainnet",
+    "chain_id": 42220,
+    "network_id": 42220
+  },
+  {
     "name": "Ethereum Mainnet",
     "short_name": "eth",
     "chain": "ETH",

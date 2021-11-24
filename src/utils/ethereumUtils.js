@@ -1,6 +1,5 @@
 import { Wallet } from '@ethersproject/wallet';
 import AsyncStorage from '@react-native-community/async-storage';
-import { captureException } from '@sentry/react-native';
 import { mnemonicToSeed } from 'bip39';
 import { parse } from 'eth-url-parser';
 import {
@@ -356,7 +355,7 @@ const checkIfUrlIsAScam = async url => {
     return false;
   } catch (e) {
     logger.sentry('Error fetching cryptoscamdb.org list');
-    captureException(e);
+    console.log(e);
   }
 };
 

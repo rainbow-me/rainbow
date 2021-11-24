@@ -1,4 +1,3 @@
-import { captureException } from '@sentry/react-native';
 import delay from 'delay';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
@@ -46,7 +45,7 @@ export default function useRefreshAccountData() {
       ]);
     } catch (error) {
       logger.log('Error refreshing data', error);
-      captureException(error);
+      console.log(error);
       throw error;
     }
   }, [dispatch, network, refetchSavings]);

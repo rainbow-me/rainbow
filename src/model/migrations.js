@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import { captureException } from '@sentry/react-native';
 import { findKey, isNumber, keys } from 'lodash';
 import { removeLocal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
@@ -360,7 +359,7 @@ export default async function runMigrations() {
     } catch (error) {
       logger.sentry('Migration v9 failed: ', error);
       const migrationError = new Error('Migration 9 failed');
-      captureException(migrationError);
+      console.log(migrationError);
     }
   };
 
@@ -389,7 +388,7 @@ export default async function runMigrations() {
             const migrationError = new Error(
               `Error during v10 migration contact address resolution for ${contact.address}`
             );
-            captureException(migrationError);
+            console.log(migrationError);
             continue;
           }
           const emoji = profileUtils.addressHashedEmoji(address);
@@ -407,7 +406,7 @@ export default async function runMigrations() {
     } catch (error) {
       logger.sentry('Migration v10 failed: ', error);
       const migrationError = new Error('Migration 10 failed');
-      captureException(migrationError);
+      console.log(migrationError);
     }
   };
 

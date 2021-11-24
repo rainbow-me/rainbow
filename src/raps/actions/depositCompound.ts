@@ -1,6 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
-import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
 import {
@@ -88,7 +87,7 @@ const depositCompound = async (
     logger.sentry(`[${actionName}] response`, deposit);
   } catch (e) {
     logger.sentry(`[${actionName}] error executing compound.mint`);
-    captureException(e);
+    console.log(e);
     throw e;
   }
 

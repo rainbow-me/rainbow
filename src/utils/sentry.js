@@ -1,20 +1,19 @@
-import { addBreadcrumb } from '@sentry/react-native';
 
 const addInfoBreadcrumb = message =>
-  addBreadcrumb({
+  console.log({
     level: 'info',
     message,
   });
 
 const addDataBreadcrumb = (message, data) =>
-  addBreadcrumb({
+  console.log({
     data,
     level: 'info',
     message,
   });
 
 const addNavBreadcrumb = (prevRoute, nextRoute, data) =>
-  addBreadcrumb({
+  console.log({
     data,
     level: 'info',
     message: `From ${prevRoute} to ${nextRoute}`,

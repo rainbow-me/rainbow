@@ -14,7 +14,6 @@
 #import <React/RCTLinkingManager.h>
 #import <React/RCTRootView.h>
 #import <React/RCTReloadCommand.h>
-#import <Sentry/Sentry.h>
 #import "RNSplashScreen.h"
 #import <AVFoundation/AVFoundation.h>
 #import <mach/mach.h>
@@ -106,14 +105,6 @@ RCT_EXPORT_METHOD(hideAnimated) {
   return YES;
 }
 
-- (void)handleRsEscape:(NSNotification *)notification {
-  NSDictionary* userInfo = notification.userInfo;
-  NSString *msg = [NSString stringWithFormat:@"Escape via %@", userInfo[@"url"]];
-  SentryBreadcrumb *breadcrumb = [[SentryBreadcrumb alloc] init];
-  [breadcrumb setMessage:msg];
-  [SentrySDK addBreadcrumb:breadcrumb];
-  [SentrySDK captureMessage:msg];
-}
 
 - (void)handleRapInProgress:(NSNotification *)notification {
   self.isRapRunning = YES;
@@ -155,16 +146,6 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 
 }
 
-- (void)applicationWillTerminate:(UIApplication *)application {
-
-  if(self.isRapRunning){
-    SentryMessage *msg = [[SentryMessage alloc] initWithFormatted:@"applicationWillTerminate was called"];
-    SentryEvent *sentryEvent = [[SentryEvent alloc] init];
-    [sentryEvent setMessage: msg];
-    [SentrySDK captureEvent:sentryEvent];
-  }
-
-}
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
     if ([RNBranch application:app openURL:url options:options])  {
@@ -176,7 +157,6 @@ sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 - (void)applicationDidBecomeActive:(UIApplication *)application{
   BOOL action = [SettingsBundleHelper checkAndExecuteSettings];
   if(action){
-    [SentrySDK captureMessage:@"Keychain Wiped!"];
     RCTTriggerReloadCommandListeners(@"keychain wiped");
   }
   // delete the badge

@@ -1,4 +1,3 @@
-import { captureException } from '@sentry/react-native';
 import { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -22,7 +21,7 @@ export default function useInitializeAccountData() {
       });
     } catch (error) {
       logger.sentry('Error initializing account data');
-      captureException(error);
+      console.log(error);
     }
   }, [dispatch]);
 

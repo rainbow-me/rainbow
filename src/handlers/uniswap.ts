@@ -2,13 +2,12 @@ import { Provider } from '@ethersproject/abstract-provider';
 import { Signer } from '@ethersproject/abstract-signer';
 import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
-import { captureException } from '@sentry/react-native';
 import {
   CurrencyAmount
 } from '@uniswap/sdk';
 import {
   ChainId,
-  
+
   Percent,
   Token,
   Trade,
@@ -163,7 +162,7 @@ export const estimateSwapGasLimit = async ({
     }
   } catch (error) {
     logger.sentry('error executing estimateSwapGasLimit');
-    captureException(error);
+    console.log(error);
     return {
       gasLimit: ethUnits.basic_swap,
     };

@@ -1,4 +1,3 @@
-import { captureException } from '@sentry/react-native';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { setWalletBackedUp } from '../redux/wallets';
@@ -16,7 +15,7 @@ export default function useWalletManualBackup() {
         logger.sentry(
           `error while trying to set walletId ${walletId} as manually backed up`
         );
-        captureException(e);
+        console.log(e);
       }
     },
     [dispatch]

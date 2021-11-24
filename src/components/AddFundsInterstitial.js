@@ -1,4 +1,3 @@
-import { captureMessage } from '@sentry/react-native';
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { Linking } from 'react-native';
@@ -177,7 +176,7 @@ const AddFundsInterstitial = ({ network }) => {
     amount => {
       if (isDamaged) {
         showWalletErrorAlert();
-        captureMessage('Damaged wallet preventing add cash');
+        console.log('Damaged wallet preventing add cash');
         return;
       }
       if (ios) {

@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
@@ -100,7 +99,7 @@ export default function BackupCloudStep() {
     Keyboard.addListener('keyboardDidHide', keyboardDidHide);
     if (isDamaged) {
       showWalletErrorAlert();
-      captureMessage('Damaged wallet preventing cloud backup');
+      console.log('Damaged wallet preventing cloud backup');
       goBack();
     }
     return () => {

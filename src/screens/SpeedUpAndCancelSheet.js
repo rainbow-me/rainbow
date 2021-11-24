@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import { captureException } from '@sentry/react-native';
 import { BigNumber } from 'bignumber.js';
 import { get, isEmpty } from 'lodash';
 import React, {
@@ -297,7 +296,7 @@ export default function SpeedUpAndCancelSheet() {
           }
         } catch (e) {
           logger.log('something went wrong while fetching tx info ', e);
-          captureException(e);
+          console.log(e);
           if (type === SPEED_UP) {
             Alert.alert(
               'Unable to speed up transaction',

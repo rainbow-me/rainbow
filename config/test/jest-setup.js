@@ -18,7 +18,7 @@ jest.mock('@segment/analytics-react-native', () => ({
 }));
 
 jest.mock('@sentry/react-native', () => ({
-  captureException: () => null,
+  console.log: () => null,
 }));
 
 jest.autoMockOff();
