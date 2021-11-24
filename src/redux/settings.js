@@ -2,9 +2,11 @@ import { NativeCurrencyKeys } from '../entities/nativeCurrencyTypes';
 import {
   getNativeCurrency,
   getNetwork,
+  getTestnetsEnabled,
   saveLanguage,
   saveNativeCurrency,
   saveNetwork,
+  saveTestnetsEnabled,
 } from '../handlers/localstorage/globalSettings';
 import { web3SetHttpProvider } from '../handlers/web3';
 import networkTypes from '../helpers/networkTypes';
@@ -16,6 +18,7 @@ import { explorerClearState, explorerInit } from './explorer';
 import logger from 'logger';
 
 // -- Constants ------------------------------------------------------------- //
+const SETTINGS_LOAD_STATE_SUCCESS = 'settings/SETTINGS_LOAD_STATE_SUCCESS';
 const SETTINGS_UPDATE_SETTINGS_ADDRESS =
   'settings/SETTINGS_UPDATE_SETTINGS_ADDRESS';
 const SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS =
@@ -24,15 +27,18 @@ const SETTINGS_UPDATE_LANGUAGE_SUCCESS =
   'settings/SETTINGS_UPDATE_LANGUAGE_SUCCESS';
 const SETTINGS_UPDATE_NETWORK_SUCCESS =
   'settings/SETTINGS_UPDATE_NETWORK_SUCCESS';
+const SETTINGS_UPDATE_TESTNET_PREF_SUCCESS =
+  'settings/SETTINGS_UPDATE_TESTNET_PREF_SUCCESS';
 
 // -- Actions --------------------------------------------------------------- //
 export const settingsLoadState = () => async dispatch => {
   try {
     const nativeCurrency = await getNativeCurrency();
+    const testnetsEnabled = await getTestnetsEnabled();
 
     dispatch({
-      payload: nativeCurrency,
-      type: SETTINGS_UPDATE_NATIVE_CURRENCY_SUCCESS,
+      payload: { nativeCurrency, testnetsEnabled },
+      type: SETTINGS_LOAD_STATE_SUCCESS,
     });
   } catch (error) {
     logger.log('Error loading native currency', error);
@@ -50,6 +56,29 @@ export const settingsLoadNetwork = () => async dispatch => {
     });
   } catch (error) {
     logger.log('Error loading network settings', error);
+  }
+};
+
+export const settingsLoadTestnetsEnabled = () => async dispatch => {
+  try {
+    const testnetsEnabled = await getTestnetsEnabled();
+    dispatch({
+      payload: testnetsEnabled,
+      type: SETTINGS_UPDATE_TESTNET_PREF_SUCCESS,
+    });
+  } catch (error) {
+    logger.log('Error loading testnets preference', error);
+  }
+};
+export const settingsChangeTestnetsEnabled = testnetsEnabled => async dispatch => {
+  saveTestnetsEnabled(testnetsEnabled);
+  try {
+    dispatch({
+      payload: testnetsEnabled,
+      type: SETTINGS_UPDATE_TESTNET_PREF_SUCCESS,
+    });
+  } catch (error) {
+    logger.log('Error changing testnets preference', error);
   }
 };
 
@@ -113,6 +142,12 @@ export const INITIAL_STATE = {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
+    case SETTINGS_LOAD_STATE_SUCCESS:
+      return {
+        ...state,
+        nativeCurrency: action.payload.nativeCurrency,
+        testnetsEnabled: action.payload.testnetsEnabled,
+      };
     case SETTINGS_UPDATE_SETTINGS_ADDRESS:
       return {
         ...state,
@@ -133,6 +168,11 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         language: action.payload,
+      };
+    case SETTINGS_UPDATE_TESTNET_PREF_SUCCESS:
+      return {
+        ...state,
+        testnetsEnabled: action.payload,
       };
     default:
       return state;

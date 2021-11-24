@@ -5,6 +5,7 @@ import { createSelector } from 'reselect';
 import {
   settingsChangeLanguage as changeLanguage,
   settingsChangeNativeCurrency as changeNativeCurrency,
+  settingsChangeTestnetsEnabled as changeTestnetsEnabled,
 } from '../redux/settings';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
@@ -23,13 +24,22 @@ export default function useAccountSettings() {
   const { language } = useSelector(createLanguageSelector);
   const dispatch = useDispatch();
   const settingsData = useSelector(
-    ({ settings: { accountAddress, chainId, nativeCurrency, network } }) => ({
+    ({
+      settings: {
+        accountAddress,
+        chainId,
+        testnetsEnabled,
+        nativeCurrency,
+        network,
+      },
+    }) => ({
       accountAddress,
       chainId,
       language,
       nativeCurrency,
       nativeCurrencySymbol: supportedNativeCurrencies[nativeCurrency].symbol,
       network,
+      testnetsEnabled,
     })
   );
 
@@ -43,9 +53,15 @@ export default function useAccountSettings() {
     [dispatch]
   );
 
+  const settingsChangeTestnetsEnabled = useCallback(
+    testnetsEnabled => dispatch(changeTestnetsEnabled(testnetsEnabled)),
+    [dispatch]
+  );
+
   return {
     settingsChangeLanguage,
     settingsChangeNativeCurrency,
+    settingsChangeTestnetsEnabled,
     ...settingsData,
   };
 }
