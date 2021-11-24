@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
 import { isEmpty, isNil, omit, toLower } from 'lodash';
@@ -679,7 +678,7 @@ export default function TransactionConfirmationScreen() {
         });
         logger.sentry('TX payload:', txPayloadUpdated);
         const error = new Error(`WC Tx failure - ${formattedDappUrl}`);
-        captureException(error);
+        console.log(error);
         // eslint-disable-next-line no-empty
       } catch (e) {}
 

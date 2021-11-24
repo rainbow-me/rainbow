@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { captureEvent, captureException } from '@sentry/react-native';
 import { isEmpty, isEqual, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard, StatusBar } from 'react-native';
@@ -440,7 +439,7 @@ export default function SendSheet(props) {
       logger.sentry('preventing tx submit for one of the following reasons:');
       logger.sentry('selectedGasPrice.txFee ? ', selectedGasPrice?.txFee);
       logger.sentry('validTransaction ? ', validTransaction);
-      captureEvent('Preventing tx submit');
+      console.log('Preventing tx submit');
       return false;
     }
 
@@ -505,7 +504,7 @@ export default function SendSheet(props) {
       logger.sentry('TX Details', txDetails);
       logger.sentry('SendSheet onSubmit error');
       logger.sentry(error);
-      captureException(error);
+      console.log(error);
       submitSuccess = false;
     }
     return submitSuccess;
@@ -529,7 +528,7 @@ export default function SendSheet(props) {
   const submitTransaction = useCallback(async () => {
     if (Number(amountDetails.assetAmount) <= 0) {
       logger.sentry('amountDetails.assetAmount ? ', amountDetails?.assetAmount);
-      captureEvent('Preventing tx submit due to amount <= 0');
+      console.log('Preventing tx submit due to amount <= 0');
       return false;
     }
     const submitSuccessful = await onSubmit();

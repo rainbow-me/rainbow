@@ -57,7 +57,7 @@ export const ENS_NFT_CONTRACT_ADDRESS =
 export const UNIV3_NFT_CONTRACT_ADDRESS =
   '0xc36442b4a4522e871399cd717abdd847ab11fe88';
 
-export const ETH_ICON_URL = 'https://s3.amazonaws.com/token-icons/eth.png';
+export const ETH_ICON_URL = 'https://icodrops.com/wp-content/uploads/2018/06/Celo-Logo.jpg';
 export const RAINBOW_PROFILES_BASE_URL = 'https://rainbow.me';
 
 export const ETH_COINGECKO_ID = 'ethereum';

@@ -1,4 +1,3 @@
-import { captureException, captureMessage } from '@sentry/react-native';
 import { forEach, isNil } from 'lodash';
 import DeviceInfo from 'react-native-device-info';
 import {
@@ -42,7 +41,7 @@ export async function saveString(
       resolve();
     } catch (e) {
       logger.sentry(`Keychain: failed to save string for key: ${key}`, e);
-      captureMessage('Keychain write first attempt failed');
+      console.log('Keychain write first attempt failed');
       await delay(1000);
       try {
         await setInternetCredentials(key, key, value, accessControlOptions);
@@ -52,7 +51,7 @@ export async function saveString(
         resolve();
       } catch (e) {
         logger.sentry(`Keychain: failed to save string for key: ${key}`, e);
-        captureMessage('Keychain write second attempt failed');
+        console.log('Keychain write second attempt failed');
         reject(e);
       }
     }
@@ -82,7 +81,7 @@ export async function loadString(
       'Error: The user name or passphrase you entered is not correct.'
     ) {
       // Try reading from keychain once more
-      captureMessage('Keychain read first attempt failed');
+      console.log('Keychain read first attempt failed');
       await delay(1000);
       try {
         const credentials = await getInternetCredentials(key, options);
@@ -100,18 +99,18 @@ export async function loadString(
         if (err.toString() === 'Error: Wrapped error: User not authenticated') {
           return -2;
         }
-        captureMessage('Keychain read second attempt failed');
+        console.log('Keychain read second attempt failed');
         logger.sentry(
           `Keychain: failed to load string for key: ${key} error: ${err}`
         );
-        captureException(err);
+        console.log(err);
       }
       return null;
     }
     logger.sentry(
       `Keychain: failed to load string for key: ${key} error: ${err}`
     );
-    captureException(err);
+    console.log(err);
   }
   return null;
 }
@@ -142,7 +141,7 @@ export async function loadObject(
     logger.sentry(
       `Keychain: failed to parse object for key: ${key} error: ${err}`
     );
-    captureException(err);
+    console.log(err);
   }
   return null;
 }
@@ -155,7 +154,7 @@ export async function remove(key: string): Promise<void> {
     logger.log(
       `Keychain: failed to remove value for key: ${key} error: ${err}`
     );
-    captureException(err);
+    console.log(err);
   }
 }
 
@@ -167,7 +166,7 @@ export async function loadAllKeys(): Promise<null | UserCredentials[]> {
     }
   } catch (err) {
     logger.sentry(`Keychain: failed to loadAllKeys error: ${err}`);
-    captureException(err);
+    console.log(err);
   }
   return null;
 }
@@ -193,7 +192,7 @@ export async function loadAllKeysOnly(): Promise<null | string[]> {
     }
   } catch (err) {
     logger.log(`Keychain: failed to loadAllKeys error: ${err}`);
-    captureException(err);
+    console.log(err);
   }
   return null;
 }
@@ -206,7 +205,7 @@ export async function hasKey(key: string): Promise<boolean | Result> {
     logger.sentry(
       `Keychain: failed to check if key ${key} exists -  error: ${err}`
     );
-    captureException(err);
+    console.log(err);
   }
   return false;
 }
@@ -222,7 +221,7 @@ export async function wipeKeychain(): Promise<void> {
     }
   } catch (e) {
     logger.sentry('error while wiping keychain');
-    captureException(e);
+    console.log(e);
   }
 }
 

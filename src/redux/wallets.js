@@ -1,4 +1,3 @@
-import { captureException, captureMessage } from '@sentry/react-native';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { filter, flatMap, get, isEmpty, keys, map, values } from 'lodash';
 import { backupUserDataIntoCloud } from '../handlers/cloudBackup';
@@ -113,7 +112,7 @@ export const walletsLoadState = () => async (dispatch, getState) => {
     return wallets;
   } catch (error) {
     logger.sentry('Exception during walletsLoadState');
-    captureException(error);
+    console.log(error);
   }
 };
 
@@ -170,7 +169,7 @@ export const setWalletBackedUp = (
       await backupUserDataIntoCloud({ wallets: newWallets });
     } catch (e) {
       logger.sentry('SAVING WALLET USERDATA FAILED');
-      captureException(e);
+      console.log(e);
       throw e;
     }
   }
@@ -359,13 +358,13 @@ export const checkKeychainIntegrity = () => async (dispatch, getState) => {
       }
     }
     if (!healthyKeychain) {
-      captureMessage('Keychain Integrity is not OK');
+      console.log('Keychain Integrity is not OK');
     }
     logger.sentry('[KeychainIntegrityCheck]: check completed');
     await saveKeychainIntegrityState('done');
   } catch (e) {
     logger.sentry('[KeychainIntegrityCheck]: error thrown', e);
-    captureMessage('Error running keychain integrity checks');
+    console.log('Error running keychain integrity checks');
   }
 };
 

@@ -1,5 +1,3 @@
-import { captureException } from '@sentry/react-native';
-import sentryUtils from './sentry';
 
 const Logger = {
   debug(...args) {
@@ -46,12 +44,7 @@ const Logger = {
       Array.prototype.unshift.call(args, `[${date}]`);
       console.log(...args); // eslint-disable-line no-console
     }
-    if (args.length === 1 && typeof args[0] === 'string') {
-      sentryUtils.addInfoBreadcrumb.apply(null, args);
-    } else {
-      const safeData = safelyStringifyWithFormat(args[1]);
-      sentryUtils.addDataBreadcrumb(args[0], safeData);
-    }
+    console.log('SENTRY ARGS: ', ...args)
   },
   warn(...args) {
     if (__DEV__) {
@@ -79,7 +72,7 @@ const safelyStringifyWithFormat = data => {
     );
     return { data: newData };
   } catch (e) {
-    captureException(e);
+    console.log(e);
     return {};
   }
 };

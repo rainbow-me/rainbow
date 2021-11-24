@@ -1,4 +1,3 @@
-import { captureException } from '@sentry/react-native';
 import { isNil } from 'lodash';
 import { useCallback } from 'react';
 import { Alert } from 'react-native';
@@ -141,7 +140,7 @@ export default function useInitializeWallet() {
           await runKeychainIntegrityChecks();
         }
         hideSplashScreen();
-        captureException(error);
+        console.log(error);
         Alert.alert('Something went wrong while importing. Please try again!');
         dispatch(appStateUpdate({ walletReady: true }));
         return null;

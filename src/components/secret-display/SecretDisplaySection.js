@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import { captureException } from '@sentry/react-native';
 import { upperFirst } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -106,7 +105,7 @@ export default function SecretDisplaySection({
       onSecretLoaded?.(!!s);
     } catch (e) {
       logger.sentry('Error while trying to reveal secret', e);
-      captureException(e);
+      console.log(e);
       setVisible(false);
       onSecretLoaded?.(false);
     }

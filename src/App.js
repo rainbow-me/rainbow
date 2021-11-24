@@ -1,6 +1,5 @@
 import messaging from '@react-native-firebase/messaging';
 import analytics from '@segment/analytics-react-native';
-import * as Sentry from '@sentry/react-native';
 import { get } from 'lodash';
 import nanoid from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
@@ -30,11 +29,11 @@ import PortalConsumer from './components/PortalConsumer';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
 import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
-import {
-  reactNativeDisableYellowBox,
-  showNetworkRequests,
-  showNetworkResponses,
-} from './config/debug';
+// import {
+//   reactNativeDisableYellowBox,
+//   showNetworkRequests,
+//   showNetworkResponses,
+// } from './config/debug';
 import { MainThemeProvider } from './context/ThemeContext';
 import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
@@ -59,18 +58,14 @@ const WALLETCONNECT_SYNC_DELAY = 500;
 
 StatusBar.pushStackEntry({ animated: true, barStyle: 'dark-content' });
 
-if (__DEV__) {
-  reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
-  (showNetworkRequests || showNetworkResponses) &&
-    monitorNetwork(showNetworkRequests, showNetworkResponses);
-} else {
-  let sentryOptions = {
-    dsn: SENTRY_ENDPOINT,
-    enableAutoSessionTracking: true,
-    environment: SENTRY_ENVIRONMENT,
-  };
-  Sentry.init(sentryOptions);
-}
+
+// if (__DEV__) {
+//   reactNativeDisableYellowBox && LogBox.ignoreAllLogs();
+//   (showNetworkRequests || showNetworkResponses) &&
+//     monitorNetwork(showNetworkRequests, showNetworkResponses);
+// } else {
+//   console.log('not running sentry')
+// }
 
 enableScreens();
 
@@ -86,7 +81,6 @@ class App extends Component {
   async componentDidMount() {
     if (!__DEV__ && RNTestFlight) {
       const { isTestFlight } = RNTestFlight.getConstants();
-      logger.sentry(`Test flight usage - ${isTestFlight}`);
     }
     this.identifyFlow();
     AppState.addEventListener('change', this.handleAppStateChange);
@@ -149,7 +143,6 @@ class App extends Component {
   componentDidUpdate(prevProps) {
     if (!prevProps.walletReady && this.props.walletReady) {
       // Everything we need to do after the wallet is ready goes here
-      logger.sentry('✅ Wallet ready!');
       runWalletBackupStatusChecks();
     }
   }

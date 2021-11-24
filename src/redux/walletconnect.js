@@ -1,5 +1,4 @@
 import analytics from '@segment/analytics-react-native';
-import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
 import lang from 'i18n-js';
 import {
@@ -182,7 +181,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
             payload,
           });
           logger.log('Error on wc session_request', payload);
-          captureException(error);
+          console.log(error);
           throw error;
         }
         const { peerId, peerMeta, chainId } = payload.params[0];
@@ -261,7 +260,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
       analytics.track('Exception on wc session_request', {
         error,
       });
-      captureException(error);
+      console.log(error);
       Alert.alert(lang.t('wallet.wallet_connect.error'));
     }
   } catch (error) {
@@ -270,7 +269,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
     analytics.track('FCM exception on wc session_request', {
       error,
     });
-    captureException(error);
+    console.log(error);
     Alert.alert(lang.t('wallet.wallet_connect.missing_fcm'));
   }
 };
@@ -284,7 +283,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
         payload,
       });
       logger.log('Error on wc call_request');
-      captureException(error);
+      console.log(error);
       throw error;
     }
     const { clientId, peerId, peerMeta } = walletConnector;
@@ -449,7 +448,7 @@ export const walletConnectLoadState = () => async (dispatch, getState) => {
       error,
     });
     logger.log('Error on wc walletConnectLoadState', error);
-    captureException(error);
+    console.log(error);
     newWalletConnectors = {};
   }
   if (!isEmpty(newWalletConnectors)) {

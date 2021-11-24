@@ -1,6 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
-import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
 import {
@@ -90,7 +89,7 @@ const withdrawCompound = async (
         isMax ? 'compound.redeem' : 'compound.redeemUnderlying'
       }`
     );
-    captureException(e);
+    console.log(e);
     throw e;
   }
 

@@ -1,5 +1,4 @@
 import analytics from '@segment/analytics-react-native';
-import { captureException } from '@sentry/react-native';
 import { endsWith, forEach, map } from 'lodash';
 import {
   Options,
@@ -190,7 +189,7 @@ export async function restoreCloudBackup(
     }
   } catch (e) {
     logger.sentry('Error while restoring back up');
-    captureException(e);
+    console.log(e);
     return false;
   }
 }
@@ -210,7 +209,7 @@ async function restoreSpecificBackupIntoKeychain(
     return true;
   } catch (e) {
     logger.sentry('error in restoreSpecificBackupIntoKeychain');
-    captureException(e);
+    console.log(e);
     return false;
   }
 }
@@ -240,7 +239,7 @@ async function restoreCurrentBackupIntoKeychain(
     return true;
   } catch (e) {
     logger.sentry('error in restoreBackupIntoKeychain');
-    captureException(e);
+    console.log(e);
     return false;
   }
 }
@@ -273,7 +272,7 @@ export async function fetchBackupPassword(): Promise<null | BackupPassword> {
     return null;
   } catch (e) {
     logger.sentry('Error while fetching backup password', e);
-    captureException(e);
+    console.log(e);
     return null;
   }
 }

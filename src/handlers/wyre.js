@@ -1,5 +1,4 @@
 import { PaymentRequest } from '@rainbow-me/react-native-payments';
-import { captureException } from '@sentry/react-native';
 import { get, join, split, toLower, values } from 'lodash';
 import {
   RAINBOW_WYRE_MERCHANT_ID,
@@ -115,7 +114,7 @@ export const showApplePayRequest = async (
     logger.sentry(
       `Apple Pay - Show payment request catch - ${referenceInfo.referenceId}`
     );
-    captureException(error);
+    console.log(error);
     return null;
   }
 };
@@ -269,7 +268,7 @@ export const getOrderId = async (
         data: { errorCode, exceptionId, message, type },
       } = responseBody;
 
-      captureException(
+      console.log(
         new WyreException(
           WyreExceptionTypes.CREATE_ORDER,
           referenceInfo,
@@ -287,7 +286,7 @@ export const getOrderId = async (
       logger.sentry(
         `WYRE - getOrderId response catch - ${referenceInfo.referenceId}`
       );
-      captureException(error);
+      console.log(error);
       return {};
     }
   }

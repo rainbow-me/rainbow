@@ -1,4 +1,3 @@
-import { captureException } from '@sentry/react-native';
 import React from 'react';
 import Fallback from './Fallback';
 import logger from 'logger';
@@ -19,7 +18,7 @@ export default class ErrorBoundary extends React.Component {
     );
     logger.sentry('Error is', error);
     const customError = new Error('React Crash');
-    captureException(customError);
+    console.log(customError);
   }
 
   render() {

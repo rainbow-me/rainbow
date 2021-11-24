@@ -1,6 +1,5 @@
 import Clipboard from '@react-native-community/clipboard';
 import { useRoute } from '@react-navigation/core';
-import { captureException } from '@sentry/react-native';
 import { toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import { Alert, StatusBar, TextInput, View } from 'react-native';
@@ -109,7 +108,7 @@ const ItemRow = ({ data }) => {
             } catch (e) {
               logger.sentry('Error restoring from wallet diagnostics', e);
               const customError = new Error('WalletDiagnostics restore failed');
-              captureException(customError);
+              console.log(customError);
             }
           },
           text: 'Yes, I understand',
@@ -284,7 +283,7 @@ const WalletDiagnosticsSheet = () => {
       } catch (e) {
         logger.sentry('Error processing keys for wallet diagnostics', e);
         const customError = new Error('WalletDiagnostics init failed');
-        captureException(customError);
+        console.log(customError);
       }
     };
     setTimeout(() => {

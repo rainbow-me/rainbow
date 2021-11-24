@@ -1,7 +1,6 @@
 import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
-import { captureException } from '@sentry/react-native';
 import { get, isNull, toLower } from 'lodash';
 import { alwaysRequireApprove } from '../../config/debug';
 import { Rap, RapActionParameters, UnlockActionParameters } from '../common';
@@ -36,7 +35,7 @@ export const estimateApprove = async (
     return gasLimit ? gasLimit.toString() : ethUnits.basic_approval;
   } catch (error) {
     logger.sentry('error estimateApproveWithExchange');
-    captureException(error);
+    console.log(error);
     return ethUnits.basic_approval;
   }
 };
@@ -53,7 +52,7 @@ const getRawAllowance = async (
     return allowance.toString();
   } catch (error) {
     logger.sentry('error getRawAllowance');
-    captureException(error);
+    console.log(error);
     return null;
   }
 };
@@ -108,7 +107,7 @@ const unlock = async (
     );
   } catch (e) {
     logger.sentry(`[${actionName}] Error estimating gas`);
-    captureException(e);
+    console.log(e);
     throw e;
   }
   let approval;
@@ -137,7 +136,7 @@ const unlock = async (
     );
   } catch (e) {
     logger.sentry(`[${actionName}] Error approving`);
-    captureException(e);
+    console.log(e);
     throw e;
   }
 

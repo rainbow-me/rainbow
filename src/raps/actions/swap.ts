@@ -1,5 +1,4 @@
 import { Wallet } from '@ethersproject/wallet';
-import { captureException } from '@sentry/react-native';
 import { get } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
 import {
@@ -72,7 +71,7 @@ const swap = async (
     methodName = newMethodName;
   } catch (e) {
     logger.sentry(`[${actionName}] error estimateSwapGasLimit`);
-    captureException(e);
+    console.log(e);
     throw e;
   }
 
@@ -104,7 +103,7 @@ const swap = async (
   } catch (e) {
     logger.sentry('Error', e);
     const fakeError = new Error('Failed to execute swap');
-    captureException(fakeError);
+    console.log(fakeError);
     throw e;
   }
 
