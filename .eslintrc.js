@@ -39,6 +39,8 @@ module.exports = {
   },
   plugins: [],
   globals: globalVars,
-  rules: {},
+  rules: {
+    'no-console': 'off',
+  },
   env: { browser: true, node: true },
 };

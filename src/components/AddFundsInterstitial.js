@@ -179,7 +179,8 @@ const AddFundsInterstitial = ({ network }) => {
         console.log('Damaged wallet preventing add cash');
         return;
       }
-      if (ios) {
+      // eslint-disable-next-line no-constant-condition
+      if (ios && false) {
         navigate(Routes.ADD_CASH_FLOW, {
           params: !isNaN(amount) ? { amount } : null,
           screen: Routes.ADD_CASH_SCREEN_NAVIGATOR,
