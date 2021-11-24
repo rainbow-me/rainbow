@@ -66,18 +66,14 @@ export const getTransactionSignatures = () =>
   getGlobal(TRANSACTION_SIGNATURES, {});
 
 /**
- * @desc get dev enabled preference
- * @param  {Boolean}  [value]
+ * @desc get testnets enabled preference
  */
-export const getTestnetsEnabled = async preference => {
-  const test = getGlobal(TESTNETS_ENABLED, preference);
-  return test;
-};
+export const getTestnetsEnabled = () => getGlobal(TESTNETS_ENABLED, false);
 
 /**
- * @desc save dev  enabled preference
+ * @desc save testnets enabled preference
  * @param  {Boolean}  [value]
  */
-export const saveTestnetsEnabled = async preference => {
+export const saveTestnetsEnabled = preference => {
   saveGlobal(TESTNETS_ENABLED, preference);
 };

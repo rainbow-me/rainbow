@@ -61,27 +61,12 @@ export const settingsLoadNetwork = () => async dispatch => {
   }
 };
 
-export const settingsLoadTestnetsEnabled = () => async dispatch => {
-  try {
-    const testnetsEnabled = await getTestnetsEnabled();
-    dispatch({
-      payload: testnetsEnabled,
-      type: SETTINGS_UPDATE_TESTNET_PREF_SUCCESS,
-    });
-  } catch (error) {
-    logger.log('Error loading testnets preference', error);
-  }
-};
 export const settingsChangeTestnetsEnabled = testnetsEnabled => async dispatch => {
+  dispatch({
+    payload: testnetsEnabled,
+    type: SETTINGS_UPDATE_TESTNET_PREF_SUCCESS,
+  });
   saveTestnetsEnabled(testnetsEnabled);
-  try {
-    dispatch({
-      payload: testnetsEnabled,
-      type: SETTINGS_UPDATE_TESTNET_PREF_SUCCESS,
-    });
-  } catch (error) {
-    logger.log('Error changing testnets preference', error);
-  }
 };
 
 export const settingsUpdateAccountAddress = accountAddress => async dispatch => {
