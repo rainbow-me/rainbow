@@ -4,14 +4,13 @@ const PRIORITY_FEE_THRESHOLD = 0.15;
 export const getTrendKey = (trend: number) => {
   if (trend < -0.3) {
     return 'falling';
-  } else if (trend >= -0.3 && trend <= 0.3) {
-    return 'stable';
   } else if (trend > 0.3 && trend <= 0.6) {
     return 'rising';
   } else if (trend > 0.6) {
     return 'surging';
+  } else {
+    return 'stable';
   }
-  return 'stable';
 };
 
 export const calculateMinerTipAddDifference = (maxPriorityFee: string) => {
