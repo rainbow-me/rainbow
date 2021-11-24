@@ -35,8 +35,4 @@ final class IconProvider {
     semaphore.wait(wallTimeout: .distantFuture)
     return icon
   }
-  
-  public func getCurrencyIcon(currency: String) -> UIImage? {
-    return UIImage(named: "currencyIcons/" + currency)
-  }
 }

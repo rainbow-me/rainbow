@@ -58,15 +58,8 @@ class IntentHandler: INExtension, SelectTokenIntentHandling {
   func provideCurrencyOptionsCollection(for intent: SelectTokenIntent, searchTerm: String?, with completion: @escaping (INObjectCollection<Currency>?, Error?) -> Void) {
     var currencies = [Currency]()
     
-    let iconProvider = IconProvider.shared
-    
     currencies = Constants.currencyDict.values.map { currency in
-      let icon = iconProvider.getCurrencyIcon(currency: currency.identifier)
-      if let data = icon?.pngData() {
-        return Currency(identifier: currency.identifier, display: currency.display, subtitle: "", image: INImage(imageData: data))
-      } else {
-        return Currency(identifier: currency.identifier, display: currency.display)
-      }
+      Currency(identifier: currency.identifier, display: currency.display)
     }
     
     if let searchTerm = searchTerm {
