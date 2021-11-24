@@ -31,7 +31,7 @@ import URL from 'url-parse';
 import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
 import {
   getProviderForNetwork,
-  isTestnet,
+  isTestnetNetwork,
   toHex,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
@@ -101,7 +101,7 @@ const getNativeAssetForNetwork = async (network, address) => {
     !differentWallet && getAsset(assets, toLower(nativeAssetAddress));
 
   // If the asset is on a different wallet, or not available in this wallet
-  if (differentWallet || !nativeAsset) {
+  if (differentWallet || !nativeAsset || isTestnetNetwork(network)) {
     const { genericAssets } = store.getState().data;
     const mainnetAddress =
       network === networkTypes.polygon ? MATIC_MAINNET_ADDRESS : ETH_ADDRESS;
@@ -282,7 +282,7 @@ function getEtherscanHostForNetwork(network) {
     return POLYGON_BLOCK_EXPLORER_URL;
   } else if (network === networkTypes.arbitrum) {
     return ARBITRUM_BLOCK_EXPLORER_URL;
-  } else if (isTestnet(network)) {
+  } else if (isTestnetNetwork(network)) {
     return `${network}.${base_host}`;
   } else {
     return base_host;

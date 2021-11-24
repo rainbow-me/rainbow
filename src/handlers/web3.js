@@ -87,7 +87,7 @@ export const isHardHat = providerUrl => {
  * @desc returns true if the given network is a testnet
  * @param {String} network
  */
-export const isTestnet = network => {
+export const isTestnetNetwork = network => {
   switch (network) {
     case NetworkTypes.goerli:
     case NetworkTypes.kovan:
