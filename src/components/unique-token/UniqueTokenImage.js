@@ -8,6 +8,7 @@ import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
 import { Monospace, Text } from '../text';
+import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import { useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
@@ -50,35 +51,31 @@ const UniqueTokenImage = ({
   lowResUrl,
   resizeMode = ImgixImage.resizeMode.cover,
   small,
-  size,
+  transformSvgs = true,
 }) => {
   const { isTinyPhone } = useDimensions();
   const isENS =
     toLower(item.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
   const isSVG = isSupportedUriExtension(imageUrl, ['.svg']);
-  const image = isENS && !isSVG ? `${item.image_url}=s1` : imageUrl;
+  const newImageUrl = transformSvgs ? svgToPngIfNeeded(imageUrl) : imageUrl;
+  const image = isENS && !isSVG ? `${item.image_url}=s1` : newImageUrl;
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
   const { isDarkMode, colors } = useTheme();
   const [loadedImg, setLoadedImg] = useState(false);
   const onLoad = useCallback(() => setLoadedImg(true), [setLoadedImg]);
-  const remoteSvgStyle = useMemo(() => {
-    // I know... This shit is mad weird :|
-    // I know... This shit even weirder but it's ENS's fault :/
-    const style =
-      isENS && isSVG
-        ? { height: size * 1.1 + 0.1, width: size * 1.1 + 0.1 }
-        : { height: size + 0.1, width: size + 0.1 };
-    return style;
-  }, [isENS, isSVG, size]);
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
-      {isSVG && !error ? (
+      {isSVG && !transformSvgs && !error ? (
         <RemoteSvg
+          fallbackIfNonAnimated
+          fallbackUri={svgToPngIfNeeded(imageUrl, true)}
+          lowResFallbackUri={svgToPngIfNeeded(imageUrl)}
           onError={handleError}
-          style={remoteSvgStyle}
-          uri={imageUrl}
+          resizeMode={resizeMode}
+          style={position.coverAsObject}
+          uri={item.image_url}
         />
       ) : imageUrl && !error ? (
         <Fragment>

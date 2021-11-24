@@ -36,6 +36,7 @@ const FALLBACK_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
 
 const ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT =
   '0x0000000000000000000000000000000000000000';
+const COVALENT_ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 10000;
 const DISCOVER_NEW_ASSETS_FREQUENCY = 13000;
@@ -60,7 +61,11 @@ const getMainnetAssetsFromCovalent = async (
   if (data) {
     const updatedAt = new Date(data.updated_at).getTime();
     const assets = data.items.map(item => {
-      const contractAddress = item.contract_address;
+      let contractAddress = item.contract_address;
+      if (toLower(contractAddress) === toLower(COVALENT_ETH_ADDRESS)) {
+        contractAddress = ETH_ADDRESS;
+      }
+
       const coingeckoId = coingeckoIds[toLower(contractAddress)];
       let price = {
         changed_at: updatedAt,
@@ -87,7 +92,7 @@ const getMainnetAssetsFromCovalent = async (
           icon_url: item.logo_url,
           name: item.contract_name,
           price: {
-            value: item.quote_rate || 0,
+            value: 0,
             ...price,
           },
           symbol: item.contract_ticker_symbol,
