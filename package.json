@@ -349,7 +349,8 @@
       "simulator": {
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 12 Pro Max"
+          "type": "iPhone 12 Pro Max",
+          "os": "13.7"
         }
       }
     },
