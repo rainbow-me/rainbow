@@ -15,6 +15,7 @@ import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   balanceCheckerContractAbi,
   chainAssets,
+  COVALENT_ETH_ADDRESS,
   ETH_ADDRESS,
   ETH_COINGECKO_ID,
   migratedTokens,
@@ -36,7 +37,6 @@ const FALLBACK_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
 
 const ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT =
   '0x0000000000000000000000000000000000000000';
-const COVALENT_ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 10000;
 const DISCOVER_NEW_ASSETS_FREQUENCY = 13000;
