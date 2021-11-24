@@ -68,7 +68,11 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
   const formattedNativeCurrency = toLower(nativeCurrency);
 
   const fetchAssetsBalancesAndPrices = async () => {
-    const assets = chainAssets[network];
+    logger.debug(
+      'OPITMISM fetchAssetBalancesAndPrices lastPayloadValue 1',
+      lastUpdatePayload?.assets[0].quantity
+    );
+    const assets = [...chainAssets[network]];
     if (!assets || !assets.length) {
       const optimismExplorerBalancesHandle = setTimeout(
         fetchAssetsBalancesAndPrices,
@@ -83,18 +87,32 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       return;
     }
 
+    logger.debug(
+      'OPITMISM fetchAssetBalancesAndPrices lastPayloadValue 2',
+      lastUpdatePayload?.assets[0].quantity
+    );
     const tokenAddresses = assets.map(
       ({ asset: { asset_code } }) => asset_code
     );
-
+    logger.debug(
+      'OPITMISM fetchAssetBalancesAndPrices lastPayloadValue 3',
+      lastUpdatePayload?.assets[0].quantity
+    );
     const balances = await fetchAssetBalances(
       assets.map(({ asset: { asset_code } }) => asset_code),
       accountAddress,
       network
     );
+    logger.debug(
+      'OPITMISM fetchAssetBalancesAndPrices lastPayloadValue 4',
+      lastUpdatePayload?.assets[0].quantity
+    );
 
     let total = BigNumber.from(0);
-
+    logger.debug(
+      'OPITMISM fetchAssetBalancesAndPrices lastPayloadValue 5',
+      lastUpdatePayload?.assets[0].quantity
+    );
     if (balances) {
       Object.keys(balances).forEach(key => {
         for (let i = 0; i < assets.length; i++) {
@@ -106,8 +124,15 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
         total = total.add(balances[key]);
       });
     }
-    const assetsWithBalance = assets.filter(asset => asset.quantity > 0);
-
+    logger.debug(
+      'OPITMISM fetchAssetBalancesAndPrices lastPayloadValue 6',
+      lastUpdatePayload?.assets[0].quantity
+    );
+    const assetsWithBalance = [...assets.filter(asset => asset.quantity > 0)];
+    logger.debug(
+      'OPITMISM fetchAssetBalancesAndPrices lastPayloadValue 7',
+      lastUpdatePayload?.assets[0].quantity
+    );
     if (assetsWithBalance.length) {
       dispatch(emitAssetRequest(tokenAddresses));
       dispatch(emitChartsRequest(tokenAddresses));
@@ -115,8 +140,16 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
         assetsWithBalance.map(({ asset: { coingecko_id } }) => coingecko_id),
         formattedNativeCurrency
       );
+      logger.debug(
+        'OPITMISM fetchAssetBalancesAndPrices lastPayloadValue 8',
+        lastUpdatePayload?.assets[0].quantity
+      );
 
       if (prices) {
+        logger.debug(
+          'OPITMISM fetchAssetBalancesAndPrices lastPayloadValue 9',
+          lastUpdatePayload?.assets[0].quantity
+        );
         Object.keys(prices).forEach(key => {
           for (let i = 0; i < assetsWithBalance.length; i++) {
             if (
@@ -143,9 +176,19 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
         });
       }
 
-      const newPayload = { assets: assetsWithBalance };
+      logger.debug(
+        'OPITMISM fetchAssetBalancesAndPrices lastPayloadValue 1',
+        lastUpdatePayload?.assets[0].quantity
+      );
+      const newPayload = { assets: [...assetsWithBalance] };
+
+      logger.debug('OPTIMISM balance vs old', {
+        new: newPayload.assets[0].quantity,
+        old: lastUpdatePayload?.assets[0].quantity,
+      });
 
       if (!isEqual(lastUpdatePayload, newPayload)) {
+        logger.debug('OPTIMISM dispatching');
         dispatch(
           addressAssetsReceived(
             {
@@ -162,7 +205,8 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
             networkTypes.optimism
           )
         );
-        lastUpdatePayload = newPayload;
+        logger.debug('OPTIISM UPDATING lastUpdatePayload');
+        lastUpdatePayload = { ...newPayload };
       }
     }
 
