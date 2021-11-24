@@ -66,6 +66,9 @@
 		C11640E8274DC10B00C9120A /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11640E7274DC10B00C9120A /* UIColor.swift */; };
 		C11640E9274DC10C00C9120A /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11640E7274DC10B00C9120A /* UIColor.swift */; };
 		C11640EA274DC10C00C9120A /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11640E7274DC10B00C9120A /* UIColor.swift */; };
+		C127238A274EBBB6006AC743 /* CurrencyDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1272389274EBBB6006AC743 /* CurrencyDetails.swift */; };
+		C127238B274EBBB6006AC743 /* CurrencyDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1272389274EBBB6006AC743 /* CurrencyDetails.swift */; };
+		C127238C274EBBB6006AC743 /* CurrencyDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1272389274EBBB6006AC743 /* CurrencyDetails.swift */; };
 		C151287F2739F676006517AB /* IconProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C151287D2739F676006517AB /* IconProvider.swift */; };
 		C15128802739F676006517AB /* IconProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C151287D2739F676006517AB /* IconProvider.swift */; };
 		C16DCF5E272BA6EF00FF5C78 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C16DCF5D272BA6EF00FF5C78 /* WidgetKit.framework */; };
@@ -89,9 +92,6 @@
 		C16DCFB2272BB8FC00FF5C78 /* PriceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCFAF272BB8FC00FF5C78 /* PriceData.swift */; };
 		C16DCFB6272BC8F100FF5C78 /* TokenData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCFB4272BC8F100FF5C78 /* TokenData.swift */; };
 		C16DCFB7272BC8F100FF5C78 /* TokenData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCFB4272BC8F100FF5C78 /* TokenData.swift */; };
-		C1792981274992D100044684 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1792980274992D000044684 /* Currency.swift */; };
-		C1792982274992D100044684 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1792980274992D000044684 /* Currency.swift */; };
-		C1792983274992D100044684 /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1792980274992D000044684 /* Currency.swift */; };
 		C179298527499A5B00044684 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179298427499A5B00044684 /* Constants.swift */; };
 		C179298627499A5B00044684 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179298427499A5B00044684 /* Constants.swift */; };
 		C179298727499A5B00044684 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179298427499A5B00044684 /* Constants.swift */; };
@@ -261,6 +261,7 @@
 		B92251BFB3DAE33A08362F21 /* libPods-PriceWidgetExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PriceWidgetExtension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C04D10EF25AFC8C1003BEF7A /* Extras.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Extras.json; sourceTree = "<group>"; };
 		C11640E7274DC10B00C9120A /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
+		C1272389274EBBB6006AC743 /* CurrencyDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyDetails.swift; sourceTree = "<group>"; };
 		C151287D2739F676006517AB /* IconProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconProvider.swift; sourceTree = "<group>"; };
 		C16DCF5C272BA6EF00FF5C78 /* PriceWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PriceWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C16DCF5D272BA6EF00FF5C78 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -280,7 +281,6 @@
 		C16DCFAA272BB8ED00FF5C78 /* PriceDataProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PriceDataProvider.swift; sourceTree = "<group>"; };
 		C16DCFAF272BB8FC00FF5C78 /* PriceData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PriceData.swift; sourceTree = "<group>"; };
 		C16DCFB4272BC8F100FF5C78 /* TokenData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenData.swift; sourceTree = "<group>"; };
-		C1792980274992D000044684 /* Currency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
 		C179298427499A5B00044684 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		C1C61A6C272C9C8D00E5C0B3 /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		C1C61A81272CBDA100E5C0B3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -629,7 +629,7 @@
 				C1C61A902731A05700E5C0B3 /* RainbowTokenList.swift */,
 				C16DCF6F272BA75700FF5C78 /* CoinGeckoToken.swift */,
 				C16DCFAF272BB8FC00FF5C78 /* PriceData.swift */,
-				C1792980274992D000044684 /* Currency.swift */,
+				C1272389274EBBB6006AC743 /* CurrencyDetails.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1025,7 +1025,6 @@
 				6630540924A38A1900E5B030 /* RainbowText.m in Sources */,
 				C18FCD42273C64E10079CE28 /* TokenProvider.swift in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
-				C1792981274992D100044684 /* Currency.swift in Sources */,
 				153D1AAC24777130007E4723 /* TransactionListLoadingViewCell.swift in Sources */,
 				C18FCD39273C64C90079CE28 /* TokenData.swift in Sources */,
 				6635730624939991006ACFA6 /* SafeStoreReview.m in Sources */,
@@ -1045,6 +1044,7 @@
 				C18FCD3E273C64D60079CE28 /* PriceData.swift in Sources */,
 				66F889DC260CEF1E00E27D6E /* SlackBottomSheet.m in Sources */,
 				C16DCF79272BA8A000FF5C78 /* SelectTokenIntent.intentdefinition in Sources */,
+				C127238A274EBBB6006AC743 /* CurrencyDetails.swift in Sources */,
 				A477567C23DB2FAA005AE8FD /* Transaction.swift in Sources */,
 				A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */,
 				C18FCD32273C62230079CE28 /* PriceWidgetView.swift in Sources */,
@@ -1081,8 +1081,8 @@
 				C1C61A922731A05700E5C0B3 /* RainbowTokenList.swift in Sources */,
 				C16DCF71272BA75700FF5C78 /* CoinGeckoToken.swift in Sources */,
 				C16DCFB1272BB8FC00FF5C78 /* PriceData.swift in Sources */,
+				C127238B274EBBB6006AC743 /* CurrencyDetails.swift in Sources */,
 				C11640E9274DC10C00C9120A /* UIColor.swift in Sources */,
-				C1792982274992D100044684 /* Currency.swift in Sources */,
 				C179298627499A5B00044684 /* Constants.swift in Sources */,
 				C1EB01302731B68400830E70 /* TokenDetails.swift in Sources */,
 				C16DCF74272BA77A00FF5C78 /* TokenProvider.swift in Sources */,
@@ -1099,9 +1099,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				C16DCFA4272BABC300FF5C78 /* SelectTokenIntent.intentdefinition in Sources */,
+				C127238C274EBBB6006AC743 /* CurrencyDetails.swift in Sources */,
 				C179298727499A5B00044684 /* Constants.swift in Sources */,
 				C1C61A932731A05700E5C0B3 /* RainbowTokenList.swift in Sources */,
-				C1792983274992D100044684 /* Currency.swift in Sources */,
 				C15128802739F676006517AB /* IconProvider.swift in Sources */,
 				C11640EA274DC10C00C9120A /* UIColor.swift in Sources */,
 				C1C61A6F272C9C8D00E5C0B3 /* UIImage.swift in Sources */,

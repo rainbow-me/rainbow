@@ -14,7 +14,7 @@ final class IconProvider {
   
   private init() {}
   
-  public func getIcon(token: String, address: String) -> UIImage? {
+  public func getTokenIcon(token: String, address: String) -> UIImage? {
     var icon: UIImage? = UIImage(named: "coinIcons/" + token.lowercased())
     
     if (icon != nil) {
@@ -34,5 +34,9 @@ final class IconProvider {
     task.resume()
     semaphore.wait(wallTimeout: .distantFuture)
     return icon
+  }
+  
+  public func getCurrencyIcon(currency: String) -> UIImage? {
+    return UIImage(named: "currencyIcons/" + currency)
   }
 }

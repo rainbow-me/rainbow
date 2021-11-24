@@ -8,46 +8,35 @@
 import Intents
 
 @available(iOS 14.0, *)
-class IntentHandler: INExtension {
-    
-    override func handler(for intent: INIntent) -> Any {
-        // This is the default implementation.  If you want different objects to handle different intents,
-        // you can override this and return the handler you want for that particular intent.
-        
-        return self
-    }
-    
-}
-
-@available(iOS 14.0, *)
-extension IntentHandler: SelectTokenIntentHandling {
+class IntentHandler: INExtension, SelectTokenIntentHandling {
+  
   func provideTokenOptionsCollection(for intent: SelectTokenIntent, searchTerm: String?, with completion: @escaping (INObjectCollection<Token>?, Error?) -> Void) {
     var topTokenItems = [Token]()
     var otherTokenItems = [Token]()
     let tokenProvider = TokenProvider.shared
     let tokens = tokenProvider.getTokens()
-    let top100 = Constants.topTokenAddresses
+    let topTokens = Constants.topTokenAddresses
 
     topTokenItems = tokens.topTokens.map { token in
       Token(identifier: token.address!.lowercased(), display: token.name! + " (" + token.symbol! + ")")
     }
     
-    if (searchTerm != nil) {
+    if let searchTerm = searchTerm {
       otherTokenItems = tokens.otherTokens.map { token in
         Token(identifier: token.address!.lowercased(), display: token.name! + " (" + token.symbol! + ")")
       }
       
       topTokenItems = topTokenItems.filter {
-        $0.displayString.lowercased().contains(searchTerm!.lowercased())
+        $0.displayString.lowercased().contains(searchTerm.lowercased())
       }
       
       otherTokenItems = otherTokenItems.filter {
-        $0.displayString.lowercased().contains(searchTerm!.lowercased())
+        $0.displayString.lowercased().contains(searchTerm.lowercased())
       }
     }
   
     topTokenItems.sort(by: {
-      top100[$0.identifier!]! < top100[$1.identifier!]!
+      topTokens[$0.identifier!]! < topTokens[$1.identifier!]!
     })
     
     if (searchTerm != nil) {
@@ -64,5 +53,32 @@ extension IntentHandler: SelectTokenIntentHandling {
         INObjectSection(title: "Top Tokens", items: topTokenItems)
       ]), nil)
     }
+  }
+  
+  func provideCurrencyOptionsCollection(for intent: SelectTokenIntent, searchTerm: String?, with completion: @escaping (INObjectCollection<Currency>?, Error?) -> Void) {
+    var currencies = [Currency]()
+    
+    let iconProvider = IconProvider.shared
+    
+    currencies = Constants.currencyDict.values.map { currency in
+      let icon = iconProvider.getCurrencyIcon(currency: currency.identifier)
+      if let data = icon?.pngData() {
+        return Currency(identifier: currency.identifier, display: currency.display, subtitle: "", image: INImage(imageData: data))
+      } else {
+        return Currency(identifier: currency.identifier, display: currency.display)
+      }
+    }
+    
+    if let searchTerm = searchTerm {
+      currencies = currencies.filter {
+        $0.displayString.lowercased().contains(searchTerm.lowercased())
+      }
+    }
+    
+    currencies.sort(by: {
+      Constants.currencyDict[$0.identifier!]!.rank < Constants.currencyDict[$1.identifier!]!.rank
+    })
+    
+    completion(INObjectCollection(items: currencies), nil)
   }
 }

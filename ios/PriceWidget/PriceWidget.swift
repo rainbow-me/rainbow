@@ -27,7 +27,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
     let priceChange = priceData?.marketData.priceChangePercentage24h
     let price = getPrice(data: priceData, currency: currency)
     
-    let icon = priceData != nil ? iconProvider.getIcon(token: defaultToken.symbol!, address: defaultToken.address!) : nil
+    let icon = priceData != nil ? iconProvider.getTokenIcon(token: defaultToken.symbol!, address: defaultToken.address!) : nil
     
     let tokenData = TokenData(tokenDetails: priceData != nil ? defaultToken : nil, priceChange: priceChange, price: price, icon: icon, currency: currency)
     
@@ -40,7 +40,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
     let priceChangePlaceholder = 9.99
     let pricePlaceholder = 9999.99
     
-    let icon = iconProvider.getIcon(token: defaultToken.symbol!, address: defaultToken.address!)
+    let icon = iconProvider.getTokenIcon(token: defaultToken.symbol!, address: defaultToken.address!)
     
     let tokenData = TokenData(tokenDetails: defaultToken, priceChange: priceChangePlaceholder, price: pricePlaceholder, icon: icon, currency: currency)
     let entry = CustomTokenEntry(date: Date(), tokenData: tokenData)
@@ -58,7 +58,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
     let priceChange = priceData?.marketData.priceChangePercentage24h
     let price = getPrice(data: priceData, currency: currency)
     
-    let icon = priceData != nil ? iconProvider.getIcon(token: tokenDetails.symbol!, address: tokenDetails.address!) : nil
+    let icon = priceData != nil ? iconProvider.getTokenIcon(token: tokenDetails.symbol!, address: tokenDetails.address!) : nil
     
     let tokenData = TokenData(tokenDetails: priceData != nil ? tokenDetails : nil, priceChange: priceChange, price: price, icon: icon, currency: currency)
     let date = Date()
@@ -77,7 +77,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
     return tokenForConfig ?? defaultToken
   }
   
-  private func getCurrency() -> Currency? {
+  private func getCurrency() -> CurrencyDetails {
     let query = [kSecClass: kSecClassInternetPassword,
             kSecAttrServer: "nativeCurrency",
       kSecReturnAttributes: kCFBooleanTrue!,
@@ -85,7 +85,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
             kSecMatchLimit: kSecMatchLimitOne] as [String: Any]
     var item: CFTypeRef?
     
-    let fallbackCurrency = Currency.usd
+    let fallbackCurrency = Constants.currencyDict[Constants.Currencies.usd.identifier]!
     
     let readStatus = SecItemCopyMatching(query as CFDictionary, &item)
     if readStatus != 0 {
@@ -98,42 +98,42 @@ struct PriceWidgetProvider: IntentTimelineProvider {
     let currency = String(data: (found!.value(forKey: kSecValueData as String)) as! Data, encoding: .utf8)
 
     if !(currency?.isEmpty ?? true) {
-      return Currency(rawValue: currency!.lowercased())
+      return Constants.currencyDict[currency!.lowercased()] ?? fallbackCurrency
     }
     return fallbackCurrency
   }
   
-  func getPrice(data: PriceData?, currency: Currency?) -> Double? {
+  func getPrice(data: PriceData?, currency: CurrencyDetails) -> Double? {
     let currentPrices = data?.marketData.currentPrice
     
     switch currency {
-    case .eth:
+    case Constants.Currencies.eth:
       return currentPrices?.eth
-    case .usd:
+    case Constants.Currencies.usd:
       return currentPrices?.usd
-    case .eur:
+    case Constants.Currencies.eur:
       return currentPrices?.eur
-    case .gbp:
+    case Constants.Currencies.gbp:
       return currentPrices?.gbp
-    case .aud:
+    case Constants.Currencies.aud:
       return currentPrices?.aud
-    case .cny:
+    case Constants.Currencies.cny:
       return currentPrices?.cny
-    case .krw:
+    case Constants.Currencies.krw:
       return currentPrices?.krw
-    case .rub:
+    case Constants.Currencies.rub:
       return currentPrices?.rub
-    case .inr:
+    case Constants.Currencies.inr:
       return currentPrices?.inr
-    case .jpy:
+    case Constants.Currencies.jpy:
       return currentPrices?.jpy
-    case .try:
+    case Constants.Currencies.try:
       return currentPrices?.try
-    case .cad:
+    case Constants.Currencies.cad:
       return currentPrices?.cad
-    case .nzd:
+    case Constants.Currencies.nzd:
       return currentPrices?.nzd
-    case .zar:
+    case Constants.Currencies.zar:
       return currentPrices?.zar
     default:
       return currentPrices?.usd

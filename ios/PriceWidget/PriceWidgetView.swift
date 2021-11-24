@@ -34,43 +34,14 @@ struct PriceWidgetView: View {
     return nf.string(for: abs(tokenData.priceChange!))! + "%"
   }
   
-  private func convertToCurrency(double: Double, currency: Currency?) -> String {
+  private func convertToCurrency(double: Double, currency: CurrencyDetails) -> String {
     let nf = NumberFormatter()
     nf.usesGroupingSeparator = true
     nf.numberStyle = .currency
-    switch currency {
-    case .eth:
-      nf.currencySymbol = "Ξ"
-    case .usd:
-      nf.currencySymbol = "$"
-    case .eur:
-      nf.currencySymbol = "€"
-    case .gbp:
-      nf.currencySymbol = "£"
-    case .aud:
-      nf.currencySymbol = "A$"
-    case .cny:
-      nf.currencySymbol = "¥"
-    case .krw:
-      nf.currencySymbol = "₩"
+    nf.currencySymbol = currency.symbol
+    let integerCurrencies = [Constants.Currencies.krw, Constants.Currencies.jpy]
+    if (integerCurrencies.contains(currency)) {
       nf.maximumFractionDigits = 0
-    case .rub:
-      nf.currencySymbol = "₽"
-    case .inr:
-      nf.currencySymbol = "₹"
-    case .jpy:
-      nf.currencySymbol = "¥"
-      nf.maximumFractionDigits = 0
-    case .try:
-      nf.currencySymbol = "₺"
-    case .cad:
-      nf.currencySymbol = "CA$"
-    case .nzd:
-      nf.currencySymbol = "NZ$"
-    case .zar:
-      nf.currencySymbol = "R"
-    default:
-      nf.currencySymbol = "$"
     }
     if (double < 1.0) {
       nf.maximumSignificantDigits = 2

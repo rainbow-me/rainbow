@@ -14,9 +14,9 @@ struct TokenData {
   let priceChange: Double?
   let price: Double?
   let icon: UIImage?
-  let currency: Currency?
+  let currency: CurrencyDetails
 
-  init(tokenDetails: TokenDetails?, priceChange: Double?, price: Double?, icon: UIImage?, currency: Currency?) {
+  init(tokenDetails: TokenDetails?, priceChange: Double?, price: Double?, icon: UIImage?, currency: CurrencyDetails) {
     self.tokenDetails = tokenDetails
     self.priceChange = priceChange
     self.price = price
@@ -29,6 +29,6 @@ struct TokenData {
     self.priceChange = nil
     self.price = nil
     self.icon = nil
-    self.currency = nil
+    self.currency = Constants.Currencies.usd
   }
 }
