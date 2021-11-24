@@ -54,6 +54,7 @@ import {
   estimateGasWithPadding,
   getProviderForNetwork,
   isL2Network,
+  isTestnetNetwork,
   toHex,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
@@ -237,6 +238,10 @@ export default function TransactionConfirmationScreen() {
     return isL2Network(network);
   }, [network]);
 
+  const isTestnet = useMemo(() => {
+    return isTestnetNetwork(network);
+  }, [network]);
+
   useEffect(() => {
     setNetwork(
       ethereumUtils.getNetworkFromChainId(Number(walletConnector?._chainId))
@@ -245,11 +250,12 @@ export default function TransactionConfirmationScreen() {
 
   useEffect(() => {
     const initProvider = async () => {
-      const p = isL2 ? await getProviderForNetwork(network) : web3Provider;
+      const p =
+        isL2 || isTestnet ? await getProviderForNetwork(network) : web3Provider;
       setProvider(p);
     };
     network && initProvider();
-  }, [isL2, network]);
+  }, [isL2, isTestnet, network]);
 
   useEffect(() => {
     const getNativeAsset = async () => {
@@ -307,10 +313,11 @@ export default function TransactionConfirmationScreen() {
   }, [dappUrl]);
 
   const handleL2DisclaimerPress = useCallback(() => {
+    if (isTestnet) return;
     navigate(Routes.EXPLAIN_SHEET, {
       type: network,
     });
-  }, [navigate, network]);
+  }, [isTestnet, navigate, network]);
 
   const fetchMethodName = useCallback(
     async data => {
@@ -497,7 +504,7 @@ export default function TransactionConfirmationScreen() {
   ]);
 
   const walletBalance = useMemo(() => {
-    if (isL2) {
+    if (isL2 || isTestnet) {
       return {
         amount: nativeAsset?.balance?.amount || 0,
         display: nativeAsset?.balance?.display || `0 ${nativeAsset?.symbol}`,
@@ -510,7 +517,15 @@ export default function TransactionConfirmationScreen() {
         symbol: 'ETH',
       };
     }
-  }, [nativeAsset, accountInfo.address, balances, isL2]);
+  }, [
+    isL2,
+    isTestnet,
+    nativeAsset?.balance?.amount,
+    nativeAsset?.balance?.display,
+    nativeAsset?.symbol,
+    balances,
+    accountInfo.address,
+  ]);
 
   useEffect(() => {
     if (isMessageRequest) {
@@ -706,8 +721,10 @@ export default function TransactionConfirmationScreen() {
     params,
     selectedGasPrice?.value?.amount,
     gasLimit,
-    network,
+    getNextNonce,
     provider,
+    network,
+    isTestnet,
     accountInfo.address,
     callback,
     requestId,
@@ -716,7 +733,6 @@ export default function TransactionConfirmationScreen() {
     displayDetails?.request?.asset,
     displayDetails?.request?.from,
     displayDetails?.request?.to,
-    getNextNonce,
     nativeAsset,
     dappName,
     accountAddress,
@@ -968,7 +984,7 @@ export default function TransactionConfirmationScreen() {
     sheetHeight += 140;
   }
 
-  if (isTransactionDisplayType(method) && !isL2) {
+  if (isTransactionDisplayType(method) && !isL2 && !isTestnet) {
     sheetHeight -= 70;
   }
 
@@ -1085,7 +1101,7 @@ export default function TransactionConfirmationScreen() {
                   <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
                 )}
                 {renderTransactionSection()}
-                {isL2 && !isMessageRequest && (
+                {(isL2 || isTestnet) && !isMessageRequest && (
                   <Column marginTop={0} width="100%">
                     <Row height={19} />
                     <L2Disclaimer
