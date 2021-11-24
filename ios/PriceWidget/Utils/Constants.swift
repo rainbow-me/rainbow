@@ -32,18 +32,18 @@ struct Constants {
     static let zar = CurrencyDetails(identifier: "zar", display: "South African Rand", symbol: "R", rank: 13)
   }
    
-  static let currencyDict = ["eth": Currencies.eth,
-                             "usd": Currencies.usd,
-                             "eur": Currencies.eur,
-                             "gbp": Currencies.gbp,
-                             "aud": Currencies.aud,
-                             "cny": Currencies.cny,
-                             "krw": Currencies.krw,
-                             "rub": Currencies.rub,
-                             "inr": Currencies.inr,
-                             "jpy": Currencies.jpy,
-                             "try": Currencies.try,
-                             "cad": Currencies.cad,
-                             "nzd": Currencies.nzd,
-                             "zar": Currencies.zar]
+  static let currencyDict = [Currencies.eth.identifier: Currencies.eth,
+                             Currencies.usd.identifier: Currencies.usd,
+                             Currencies.eur.identifier: Currencies.eur,
+                             Currencies.gbp.identifier: Currencies.gbp,
+                             Currencies.aud.identifier: Currencies.aud,
+                             Currencies.cny.identifier: Currencies.cny,
+                             Currencies.krw.identifier: Currencies.krw,
+                             Currencies.rub.identifier: Currencies.rub,
+                             Currencies.inr.identifier: Currencies.inr,
+                             Currencies.jpy.identifier: Currencies.jpy,
+                             Currencies.try.identifier: Currencies.try,
+                             Currencies.cad.identifier: Currencies.cad,
+                             Currencies.nzd.identifier: Currencies.nzd,
+                             Currencies.zar.identifier: Currencies.zar]
 }

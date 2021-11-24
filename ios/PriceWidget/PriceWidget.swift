@@ -35,7 +35,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
   }
   
   func getSnapshot(for configuration: SelectTokenIntent, in context: Context, completion: @escaping (CustomTokenEntry) -> Void) {
-    let currency = getCurrency()
+    let currency = lookupCurrency(for: configuration)
     
     let priceChangePlaceholder = 9.99
     let pricePlaceholder = 9999.99
@@ -51,8 +51,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
   func getTimeline(for configuration: SelectTokenIntent, in context: Context, completion: @escaping (Timeline<CustomTokenEntry>) -> Void) {
     var entries = [CustomTokenEntry]()
     let tokenDetails = lookupTokenDetails(for: configuration)
-    
-    let currency = getCurrency()
+    let currency = lookupCurrency(for: configuration)
     
     let priceData = priceDataProvider.getPriceData(token: tokenDetails.coinGeckoId!)
     let priceChange = priceData?.marketData.priceChangePercentage24h
@@ -72,9 +71,18 @@ struct PriceWidgetProvider: IntentTimelineProvider {
   }
   
   private func lookupTokenDetails(for configuration: SelectTokenIntent) -> TokenDetails {
-    let tokenId = configuration.token?.identifier?.lowercased() ?? ""
-    let tokenForConfig = tokenProvider.getTokens().allTokens[tokenId]
-    return tokenForConfig ?? defaultToken
+    if let token = configuration.token {
+      let tokenDetails = tokenProvider.getTokens().allTokens[token.identifier?.lowercased() ?? ""]
+      return tokenDetails ?? defaultToken
+    }
+    return defaultToken
+  }
+  
+  private func lookupCurrency(for configuration: SelectTokenIntent) -> CurrencyDetails {
+    if let currency = configuration.currency {
+      return Constants.currencyDict[currency.identifier!] ?? getCurrency()
+    }
+    return getCurrency()
   }
   
   private func getCurrency() -> CurrencyDetails {
