@@ -60,6 +60,7 @@ describe('Hardhat Transaction Flow', () => {
   });
 
   it('Should show the "Add wallet modal" after tapping import with a valid seed"', async () => {
+    await Helpers.clearField('import-sheet-input');
     await Helpers.typeText('import-sheet-input', process.env.TEST_SEEDS, false);
     await Helpers.checkIfElementHasString(
       'import-sheet-button-label',
