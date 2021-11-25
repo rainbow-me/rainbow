@@ -1,6 +1,6 @@
-import { Provider } from '@ethersproject/abstract-provider';
 import { Signer } from '@ethersproject/abstract-signer';
 import { Contract } from '@ethersproject/contracts';
+import { Provider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import {
@@ -212,7 +212,7 @@ const getExecutionDetails = (
   inputCurrency: Asset,
   outputCurrency: Asset,
   trade: Trade,
-  providerOrSigner: Provider | Signer | Wallet,
+  providerOrSigner: Provider | Signer,
   allowedSlippage: number,
   deadline: number = DEFAULT_DEADLINE_FROM_NOW // in seconds from now, optional
 ): {
@@ -335,7 +335,7 @@ const getContractExecutionDetails = ({
   chainId: ChainId;
   inputCurrency: Asset;
   outputCurrency: Asset;
-  providerOrSigner: Provider | Signer | Wallet;
+  providerOrSigner: Provider | Signer;
   slippage: number;
   tradeDetails: Trade;
 }) => {
