@@ -530,6 +530,7 @@ export default function SendSheet(props) {
         txDetails.network = currentNetwork;
         txDetails.data = data;
         txDetails.value = value;
+        txDetails.txTo = signableTransaction.to;
         await dispatch(
           dataAddNewTransaction(txDetails, null, false, currentProvider)
         );
