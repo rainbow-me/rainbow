@@ -41,7 +41,7 @@ import logger from 'logger';
 let showRedirectSheetThreshold = 0;
 
 // -- Constants --------------------------------------- //
-const BIOMETRICS_ANIMATION_DELAY = 500;
+const BIOMETRICS_ANIMATION_DELAY = 569;
 const WALLETCONNECT_ADD_REQUEST = 'walletconnect/WALLETCONNECT_ADD_REQUEST';
 const WALLETCONNECT_REMOVE_REQUEST =
   'walletconnect/WALLETCONNECT_REMOVE_REQUEST';
