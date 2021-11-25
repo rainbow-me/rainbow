@@ -590,12 +590,17 @@ export default function TransactionConfirmationScreen() {
     } catch (error) {
       logger.log('⛽ error estimating gas', error);
     }
-    const { gasPrice, maxFeePerGas, maxPriorityFeePerGas, ...txPayloadWithoutGas } = txPayload
+    // clean gas prices / fees sent from the dapp
+    const cleanTxPayload = omit(txPayload, [
+      'gasPrice',
+      'maxFeePerGas',
+      'maxPriorityFeePerGas',
+    ]);
     const gasParams = parseGasParamsForTransaction(selectedGasFee);
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
     const nonce = await getNextNonce();
     let txPayloadUpdated = {
-      ...txPayloadWithoutGas,
+      ...cleanTxPayload,
       ...gasParams,
       nonce,
     };
