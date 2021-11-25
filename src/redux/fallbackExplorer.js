@@ -97,7 +97,7 @@ const getMainnetAssetsFromCovalent = async (
           symbol: item.contract_ticker_symbol,
           type,
         },
-        quantity: Number(item.balance),
+        quantity: item.balance,
       };
     });
 
