@@ -524,7 +524,7 @@ export default function TransactionConfirmationScreen() {
     }
 
     const { gasFee } = selectedGasFee;
-    if (!gasFee.maxFee) {
+    if (!gasFee.estimatedFee) {
       setIsBalanceEnough(false);
       return;
     }
