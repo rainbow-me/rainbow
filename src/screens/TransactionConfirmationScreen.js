@@ -590,12 +590,12 @@ export default function TransactionConfirmationScreen() {
     } catch (error) {
       logger.log('⛽ error estimating gas', error);
     }
-
+    const { gasPrice, maxFeePerGas, maxPriorityFeePerGas, ...txPayloadWithoutGas } = txPayload
     const gasParams = parseGasParamsForTransaction(selectedGasFee);
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
     const nonce = await getNextNonce();
     let txPayloadUpdated = {
-      ...txPayload,
+      ...txPayloadWithoutGas,
       ...gasParams,
       nonce,
     };
