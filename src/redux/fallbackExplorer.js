@@ -1,4 +1,3 @@
-import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { get, toLower, uniqBy } from 'lodash';
 import isEqual from 'react-fast-compare';
@@ -347,17 +346,51 @@ export const fetchOnchainBalances = ({
     return;
   }
 
+  const tokenAddresses = assets.map(({ asset: { asset_code } }) =>
+    asset_code === ETH_ADDRESS
+      ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+      : toLower(asset_code)
+  );
+
+  const balances = await fetchAssetBalances(
+    tokenAddresses,
+    accountAddress,
+    network
+  );
+
+  let updatedAssets = assets;
+  if (balances) {
+    updatedAssets = assets.map(assetAndQuantity => {
+      const assetCode = toLower(assetAndQuantity.asset.asset_code);
+      return {
+        asset: {
+          ...assetAndQuantity.asset,
+          asset_code:
+            assetCode === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+              ? ETH_ADDRESS
+              : assetCode,
+        },
+        quantity:
+          balances?.[
+            assetCode === ETH_ADDRESS
+              ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+              : assetCode
+          ],
+      };
+    });
+  }
+
   if (withPrices) {
     const prices = await fetchAssetPricesWithCoingecko(
-      assets.map(({ asset: { coingecko_id } }) => coingecko_id),
+      updatedAssets.map(({ asset: { coingecko_id } }) => coingecko_id),
       formattedNativeCurrency
     );
 
     if (prices) {
       Object.keys(prices).forEach(key => {
-        for (let i = 0; i < assets.length; i++) {
-          if (toLower(assets[i].asset.coingecko_id) === toLower(key)) {
-            assets[i].asset.price = {
+        for (let i = 0; i < updatedAssets.length; i++) {
+          if (toLower(updatedAssets[i].asset.coingecko_id) === toLower(key)) {
+            updatedAssets[i].asset.price = {
               changed_at: prices[key].last_updated_at,
               relative_change_24h:
                 prices[key][`${formattedNativeCurrency}_24h_change`],
@@ -370,45 +403,9 @@ export const fetchOnchainBalances = ({
     }
   }
 
-  const tokenAddresses = assets.map(({ asset: { asset_code } }) =>
-    asset_code === ETH_ADDRESS
-      ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-      : asset_code
-  );
-
-  const balances = await fetchAssetBalances(
-    tokenAddresses,
-    accountAddress,
-    network
-  );
-
-  let total = BigNumber.from(0);
-
-  if (balances) {
-    Object.keys(balances).forEach(key => {
-      for (let i = 0; i < assets.length; i++) {
-        if (
-          assets[i].asset.asset_code.toLowerCase() === key.toLowerCase() ||
-          (assets[i].asset.asset_code === ETH_ADDRESS &&
-            key === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT)
-        ) {
-          assets[i].quantity = balances[key];
-          break;
-        }
-
-        if (
-          assets[i].asset.asset_code === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-        ) {
-          assets[i].asset.asset_code = ETH_ADDRESS;
-        }
-      }
-      total = total.add(balances[key]);
-    });
-  }
-
   logger.log('😬 FallbackExplorer updating assets');
 
-  const newPayload = { assets };
+  const newPayload = { assets: updatedAssets };
 
   if (!keepPolling || !isEqual(lastUpdatePayload, newPayload)) {
     dispatch(
