@@ -40,6 +40,7 @@ export const parseNewTransaction = async (
     to,
     transferId,
     type: txType,
+    txTo,
     value,
   } = txDetails;
 
@@ -97,6 +98,7 @@ export const parseNewTransaction = async (
     title,
     to,
     transferId,
+    txTo: txTo || to,
     type,
     value,
   };
