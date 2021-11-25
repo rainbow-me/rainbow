@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import { NativeCurrencyKeys } from '../entities/nativeCurrencyTypes';
 import {
   getNativeCurrency,
@@ -30,6 +31,7 @@ const SETTINGS_UPDATE_NETWORK_SUCCESS =
 export const settingsLoadState = () => async dispatch => {
   try {
     const nativeCurrency = await getNativeCurrency();
+    analytics.identify(null, { currency: nativeCurrency });
 
     dispatch({
       payload: nativeCurrency,
@@ -83,6 +85,7 @@ export const settingsChangeLanguage = language => async dispatch => {
       type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
     });
     saveLanguage(language);
+    analytics.identify(null, { language: language });
   } catch (error) {
     logger.log('Error changing language', error);
   }
@@ -102,6 +105,7 @@ export const settingsChangeNativeCurrency = nativeCurrency => async dispatch => 
       accessGroup: 'group.rainbow.me',
       service: 'rainbow.me.currency',
     });
+    analytics.identify(null, { currency: nativeCurrency });
   } catch (error) {
     logger.log('Error changing native currency', error);
   }

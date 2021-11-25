@@ -531,8 +531,7 @@ export const addressAssetsReceived = (
   );
 
   const isL2 = assetsNetwork && isL2Network(assetsNetwork);
-
-  if (!isL2) {
+  if (!isL2 && !assetsNetwork) {
     dispatch(
       uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
     );
@@ -594,7 +593,9 @@ export const addressAssetsReceived = (
   // Hide coins with price = 0 that are currently not pinned
   if (isL2) {
     const assetsWithNoPrice = parsedAssets
-      .filter(asset => asset.price?.value === 0)
+      .filter(
+        asset => asset.price?.value === 0 && asset.network === assetsNetwork
+      )
       .map(({ uniqueId }) => uniqueId);
     dispatch(addCoinsToHiddenList(assetsWithNoPrice));
   }
