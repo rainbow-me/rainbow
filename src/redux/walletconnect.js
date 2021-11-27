@@ -38,7 +38,7 @@ import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Variables --------------------------------------- //
-let showRedirectSheetThreshold = 0;
+let showRedirectSheetThreshold = 300;
 
 // -- Constants --------------------------------------- //
 const BIOMETRICS_ANIMATION_DELAY = 569;
@@ -111,13 +111,17 @@ export const walletConnectRemovePendingRedirect = (
   if (scheme) {
     Linking.openURL(`${scheme}://`);
   } else if (type !== 'timedOut') {
-    if (type === 'connect' || BIOMETRICS_ANIMATION_DELAY === 0) {
-      Minimizer.goBack();
-    } else {
+    if (type === 'sign' || type === 'transaction') {
       showRedirectSheetThreshold += BIOMETRICS_ANIMATION_DELAY;
       setTimeout(() => {
         Minimizer.goBack();
       }, BIOMETRICS_ANIMATION_DELAY);
+    } else if (type === 'sign-canceled' || type === 'transaction-canceled') {
+      setTimeout(() => {
+        Minimizer.goBack();
+      }, 300);
+    } else {
+      Minimizer.goBack();
     }
     // If it's still active after showRedirectSheetThreshold
     // We need to show the redirect sheet cause the redirect
