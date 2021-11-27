@@ -33,7 +33,7 @@ const TestnetToast = () => {
 
   return (
     <Toast isVisible={visible} testID={`testnet-toast-${networkName}`}>
-      <Icon color={color} marginHorizontal={5} marginTop={5} name="dot" />
+      <Icon color={color} marginHorizontal={5} name="dot" />
       <Text color={colors.white} size="smedium" weight="semibold">
         <Nbsp /> {networkName} <Nbsp />
       </Text>
