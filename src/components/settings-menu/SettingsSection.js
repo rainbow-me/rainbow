@@ -136,7 +136,11 @@ export default function SettingsSection({
 }) {
   const isReviewAvailable = false;
   const { wallets, isReadOnlyWallet } = useWallets();
-  const { /*language,*/ nativeCurrency, network } = useAccountSettings();
+  const {
+    /*language,*/ nativeCurrency,
+    network,
+    testnetsEnabled,
+  } = useAccountSettings();
   const { isSmallPhone } = useDimensions();
 
   const { colors, isDarkMode, setTheme, colorScheme } = useTheme();
@@ -239,20 +243,22 @@ export default function SettingsSection({
           >
             <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
           </ListItem>
-          <ListItem
-            icon={
-              <SettingIcon
-                source={isDarkMode ? NetworkIconDark : NetworkIcon}
-              />
-            }
-            label="Network"
-            onPress={onPressNetwork}
-            testID="network-section"
-          >
-            <ListItemArrowGroup>
-              {networkInfo?.[network]?.name}
-            </ListItemArrowGroup>
-          </ListItem>
+          {testnetsEnabled && (
+            <ListItem
+              icon={
+                <SettingIcon
+                  source={isDarkMode ? NetworkIconDark : NetworkIcon}
+                />
+              }
+              label="Network"
+              onPress={onPressNetwork}
+              testID="network-section"
+            >
+              <ListItemArrowGroup>
+                {networkInfo?.[network]?.name}
+              </ListItemArrowGroup>
+            </ListItem>
+          )}
           <ListItem
             icon={
               <SettingIcon
