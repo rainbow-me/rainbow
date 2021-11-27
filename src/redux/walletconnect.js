@@ -127,12 +127,11 @@ export const walletConnectRemovePendingRedirect = (
     // We need to show the redirect sheet cause the redirect
     // didn't work
     setTimeout(() => {
-      if (AppState.currentState !== 'active') return;
       if (AppState.currentState === 'active') {
         return Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
           type,
         });
-      }
+      } else return;
     }, showRedirectSheetThreshold);
   }
 };
