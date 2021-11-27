@@ -56,6 +56,10 @@ const POLYGON_EXPLAINER = `Polygon is a sidechain, a distinct network that runs 
 
 It allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum.`;
 
+const BACKUP_EXPLAINER = `Don't forget this password! It is separate from your Apple iCloud password, and you should save it in a secure location. 
+
+You will need it in order to restore your wallet from the backup in the future.`;
+
 export const explainers = {
   floor_price: {
     emoji: '📊',
@@ -134,6 +138,12 @@ export const explainers = {
     text:
       'Uh oh, something went wrong! The site may be experiencing a connection outage. Please try again later or contact the site’s team for more details.',
     title: 'Connection failed',
+  },
+  backup: {
+    emoji: '🔐',
+    extraHeight: -50,
+    text: BACKUP_EXPLAINER,
+    title: 'Important',
   },
 };
 

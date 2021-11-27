@@ -87,6 +87,7 @@ export default function BackupCloudStep() {
   const [passwordFocused, setPasswordFocused] = useState(true);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const { navigate } = useNavigation();
 
   useEffect(() => {
     const keyboardDidShow = () => {
@@ -254,13 +255,14 @@ export default function BackupCloudStep() {
 
   const onConfirmBackup = useCallback(async () => {
     analytics.track('Tapped "Confirm Backup"');
+    navigate(Routes.EXPLAIN_SHEET, { type: 'backup' });
     await walletCloudBackup({
       onError,
       onSuccess,
       password,
       walletId,
     });
-  }, [onError, onSuccess, password, walletCloudBackup, walletId]);
+  }, [navigate, onError, onSuccess, password, walletCloudBackup, walletId]);
 
   const onConfirmPasswordSubmit = useCallback(() => {
     validPassword && onConfirmBackup();
