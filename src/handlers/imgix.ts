@@ -145,9 +145,9 @@ export const maybeSignSource = (source: Source, options?: {}): Source => {
   return source;
 };
 
-export const svgToLQPng = (url: string) => {
+export const imageToPng = (url: string, w: number) => {
   return staticImgixClient?.buildURL(url, {
     fm: 'png',
-    w: 200,
+    w: w,
   });
 };
