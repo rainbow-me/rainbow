@@ -36,9 +36,10 @@ export const settingsLoadState = () => async dispatch => {
   try {
     const nativeCurrency = await getNativeCurrency();
     const testnetsEnabled = await getTestnetsEnabled();
-    analytics.identify(null, { enabledTestnets: testnetsEnabled });
-    analytics.identify(null, { currency: nativeCurrency });
-
+    analytics.identify(null, {
+      currency: nativeCurrency,
+      enabledTestnets: testnetsEnabled,
+    });
 
     dispatch({
       payload: { nativeCurrency, testnetsEnabled },
