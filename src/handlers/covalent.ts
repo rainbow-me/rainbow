@@ -16,7 +16,6 @@ export const getAssetsFromCovalent = async (
 ) => {
   try {
     const url = `https://api.covalenthq.com/v1/${chainId}/address/${accountAddress}/balances_v2/`;
-    Logger.debug('covalent url', url);
 
     const params = {
       'key': ios ? COVALENT_IOS_API_KEY : COVALENT_ANDROID_API_KEY,

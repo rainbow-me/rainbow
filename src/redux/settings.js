@@ -37,6 +37,8 @@ export const settingsLoadState = () => async dispatch => {
     const nativeCurrency = await getNativeCurrency();
     const testnetsEnabled = await getTestnetsEnabled();
     analytics.identify(null, { enabledTestnets: testnetsEnabled });
+    analytics.identify(null, { currency: nativeCurrency });
+
 
     dispatch({
       payload: { nativeCurrency, testnetsEnabled },
@@ -98,6 +100,7 @@ export const settingsChangeLanguage = language => async dispatch => {
       type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
     });
     saveLanguage(language);
+    analytics.identify(null, { language: language });
   } catch (error) {
     logger.log('Error changing language', error);
   }
@@ -113,6 +116,7 @@ export const settingsChangeNativeCurrency = nativeCurrency => async dispatch => 
     });
     dispatch(explorerInit());
     saveNativeCurrency(nativeCurrency);
+    analytics.identify(null, { currency: nativeCurrency });
   } catch (error) {
     logger.log('Error changing native currency', error);
   }
