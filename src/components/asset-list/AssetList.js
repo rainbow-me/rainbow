@@ -1,5 +1,5 @@
 import lang from 'i18n-js';
-import React, { useState } from 'react';
+import React from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { magicMemo } from '../../utils';
 import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../fab';
@@ -21,7 +21,6 @@ const AssetList = ({
   ...props
 }) => {
   const insets = useSafeArea();
-  const [isBlockingUpdate, setIsBlockingUpdate] = useState(false);
 
   return isEmpty ? (
     <EmptyAssetList
@@ -35,11 +34,9 @@ const AssetList = ({
     <RecyclerAssetList
       fetchData={fetchData}
       hideHeader={hideHeader}
-      isBlockingUpdate={isBlockingUpdate}
       paddingBottom={insets.bottom + FabSizeWithPadding - ListFooter.height}
       scrollViewTracker={scrollViewTracker}
       sections={sections}
-      setIsBlockingUpdate={setIsBlockingUpdate}
       {...props}
     />
   );
