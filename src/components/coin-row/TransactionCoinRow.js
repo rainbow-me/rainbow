@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { compact, get, startCase, toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { css } from 'styled-components';
@@ -103,7 +104,9 @@ export default function TransactionCoinRow({ item, ...props }) {
 
     const headerInfo = {
       address: '',
-      divider: isSent ? 'to' : 'from',
+      divider: isSent
+        ? lang.t('exchange.coin_row.to_divider')
+        : lang.t('exchange.coin_row.from_divider'),
       type: status.charAt(0).toUpperCase() + status.slice(1),
     };
 
@@ -120,9 +123,9 @@ export default function TransactionCoinRow({ item, ...props }) {
       contactColor = getRandomColor();
     }
 
-    const blockExplorerAction = `View on ${startCase(
-      ethereumUtils.getBlockExplorer(network)
-    )}`;
+    const blockExplorerAction = lang.t('exchange.coin_row.view_on', {
+      blockExplorerName: startCase(ethereumUtils.getBlockExplorer(network)),
+    });
     if (hash) {
       let buttons = [
         ...(canBeResubmitted ? [TransactionActions.speedUp] : []),

@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { times } from 'lodash';
 import React, { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
@@ -27,7 +28,7 @@ const DefaultShowMoreButton = ({ backgroundColor, color, onPress }) => (
         paddingTop={android ? 3 : 7}
       >
         <Text align="center" color={color} size="lmedium" weight="heavy">
-          Show more
+          {lang.t('discover.uniswap.show_more')}
         </Text>
       </Row>
     </ButtonPressAnimation>
@@ -79,19 +80,19 @@ const ListName = styled(Text)`
 const listData = [
   {
     id: 'liquidity',
-    name: 'Pool size',
+    name: lang.t('discover.uniswap.data.pool_size'),
   },
   {
     id: 'annualized_fees',
-    name: 'Annualized fees',
+    name: lang.t('discover.uniswap.data.annualized_fees'),
   },
   {
     id: 'profit30d',
-    name: '30d profit',
+    name: lang.t('discover.uniswap.data.profit_30_days'),
   },
   {
     id: 'oneDayVolumeUSD',
-    name: '24h volume',
+    name: lang.t('discover.uniswap.data.volume_24_hours'),
   },
 ];
 
@@ -255,7 +256,7 @@ export default function UniswapPools({
         <PoolEmoji>🐋</PoolEmoji>
         <Text size="larger" testID="pools-section" weight="heavy">
           {' '}
-          Uniswap Pools
+          {lang.t('discover.uniswap.title_pools')}
         </Text>
       </Row>
       <Column>
@@ -279,11 +280,11 @@ export default function UniswapPools({
       </Column>
       {error ? (
         <ErrorMessage colors={colors}>
-          There was an error loading Uniswap pool data...
+          {lang.t('discover.uniswap.error_message')}...
         </ErrorMessage>
       ) : network !== networkTypes.mainnet ? (
         <ErrorMessage colors={colors}>
-          Pools are disabled on Testnets
+          {lang.t('discover.uniswap.disabled_testnets')}
         </ErrorMessage>
       ) : pairsSorted?.length > 0 ? (
         <Fragment>

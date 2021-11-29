@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { View } from 'react-native';
@@ -129,7 +130,7 @@ const PulseIndex = () => {
                 style={ios ? {} : { marginTop: -10 }}
                 weight="semibold"
               >
-                All the top DeFi tokens in one
+                {lang.t('discover.pulse.description')}
               </Text>
             </Column>
             <Column align="end" flex={1} margin={15} marginTop={ios ? 13.5 : 6}>
@@ -164,7 +165,7 @@ const PulseIndex = () => {
           size="smedium"
           weight="semibold"
         >
-          Trading at{' '}
+          {lang.t('discover.pulse.trading_at_prefix')}{' '}
           <Text
             color={colors.dpiLight}
             letterSpacing="roundedMedium"
@@ -192,7 +193,7 @@ const PulseIndex = () => {
             weight="semibold"
           >
             {' '}
-            today
+            {lang.t('discover.pulse.today_suffix')}
           </Text>
         </Text>
       </Row>

@@ -63,9 +63,122 @@
       "show_less": "Afficher moins",
       "unknown_token": "Token inconnu"
     },
+    "activity_list": {
+      "empty_state": {
+        "default_label": "No transactions yet :)",
+        "recycler_label": "No transactions yet :)",
+        "testnet_label": "Your testnet transaction history starts now! :)"
+      }
+    },
+    "avatar_builder": {
+      "emoji_categories": {
+        "activities": "Activities :)",
+        "animals": "Animals & Nature :)",
+        "flags": "Flags :)",
+        "food": "Food & Drink :)",
+        "objects": "Objects :)",
+        "smileys": "Smileys & People :)",
+        "symbols": "Symbols :)",
+        "travel": "Travel & Places :)"
+      }
+    },
+    "back_up": {
+      "cloud": {
+        "password": {
+          "backup_placeholder": "Backup Password :)",
+          "choose": "Choose a password :)",
+          "confirm_backup": "Confirm Backup :)",
+          "confirm_label": "Confirm password :)",
+          "confirm_placeholder": "Confirm Password :)",
+          "minimum_characters": "Minimum %{minimumLength} characters :)",
+          "not_matching": "Passwords don't match :)",
+          "not_recoverable": "It can't be recovered! :)",
+          "remember": "Please use a password you'll remember. :)",
+          "strength": {
+            "level1": "Weak password :)",
+            "level2": "Good password :)",
+            "level3": "Great password :)",
+            "level4": "Strong password password :)"
+          },
+          "use_longer_password": "Use a longer password :)"
+        }
+      },
+      "confirm_password": {
+        "add_to_cloud_platform": "Add to %{cloudPlatformName} Backup :)",
+        "backup_password_placeholder": "Backup Password :)",
+        "confirm_backup": "Confirm Backup :)",
+        "enter_backup": "Enter backup password :)",
+        "enter_backup_description": "To add this wallet to your %{cloudPlatformName} backup, enter your existing backup password :)"
+      },
+      "manual": {
+        "label": "Back up manually :)",
+        "pkey": {
+          "confirm_save": "I've saved my key :)",
+          "save_them": "Copy it and save it in your password manager, or in another secure spot. :)",
+          "these_keys": "This is the key to your wallet! :)"
+        },
+        "seed": {
+          "confirm_save": "I've saved these words :)",
+          "save_them": "Write them down or save them in your password manager. :)",
+          "these_keys": "These words are the keys to your wallet! :)"
+        }
+      },
+      "restore_cloud": {
+        "backup_password_placeholder": "Backup Password :)",
+        "confirm_backup": "Confirm Backup :)",
+        "enter_backup_password": "Enter backup password :)",
+        "enter_backup_password_description": "To restore your wallet, enter the backup password you created :)",
+        "error_alert": "Error while restoring backup :)",
+        "incorrect_password": "Incorrect Password :)",
+        "restore_from_cloud_platform": "Restore from %{cloudPlatformName} :)"
+      },
+      "restore_sheet": {
+        "from_backup": {
+          "ios": {
+            "description_multiple_backups": "You have %{walletsBackedUpCount} wallets backed up :)",
+            "description_one_backup": "You have 1 wallet backed up :)"
+          },
+          "non_ios": {
+            "description_cloud_platform": "If you previously backed up your wallet on %{cloudPlatformName} tap here to restore it. :)"
+          },
+          "restore_from_cloud_platform": "Restore from %{cloudPlatformName} :)"
+        },
+        "from_key": {
+          "description": "Use your recovery phrase from Rainbow or another crypto wallet :)",
+          "label": "Restore with a recovery phrase or private key :) "
+        },
+        "watch_address": {
+          "description": "Watch a public address or ENS name :)",
+          "label": "Watch an Ethereum address  :) "
+        }
+      }
+    },
     "button": {
       "connect_walletconnect": "Utiliser WalletConnect",
       "exchange": "Échanger",
+      "exchange_again": "Échanger encore",
+      "exchange_search_uniswap": "Cherche",
+      "go_back": "Retourner",
+      "hide": "Cacher",
+      "hold_to_authorize": {
+        "authorizing": "Authorizing :)",
+        "hold_keyword": "Tenir",
+        "tap_keyword": "Tap :)"
+      },
+      "import": "Importer",
+      "learn_more": "En savoir plus",
+      "less": "Moins",
+      "loading": "Se charge",
+      "no_thanks": "No thanks :)",
+      "notify_me": "Recevoir des notifications",
+      "offline": "Hors connexion",
+      "ok": "D'accord",
+      "okay": "Okay :)",
+      "paste_address": "Paste :)",
+      "paste_seed_phrase": "Coller",
+      "pin": "Epingler",
+      "proceed": "Proceed :)",
+      "receive": "Recevoir",
       "send": "Envoyer",
       "donate": "Donner de l’ETH",
       "receive": "Recevoir",
@@ -79,6 +192,206 @@
       "try_again": "Réessayer",
       "learn_more": "En savoir plus",
       "view": "Affichage"
+    },
+    "cloud": {
+      "backup_success": "Your wallet has been backed up successfully!"
+    },
+    "contacts": {
+      "contact_row": {
+        "balance_eth": "%{balanceEth} ETH :)"
+      },
+      "options": {
+        "add": "Ajouter le contact",
+        "cancel": "Annuler",
+        "delete": "Effacer le contact",
+        "edit": "Modifier le contact"
+      }
+    },
+    "discover": {
+      "lists": {
+        "empty_description": "This list is empty! :)",
+        "title": "Lists :)"
+      },
+      "pulse": {
+        "description": "All the top DeFi tokens in one :)",
+        "today_suffix": "today :)",
+        "trading_at_prefix": "Trading at :)"
+      },
+      "search": {
+        "ens": "Ethereum Name Service :)",
+        "search_ethereum": "Search all of Ethereum :)"
+      },
+      "strategies": {
+        "description": "Smart yield strategies from yearn.finance :)",
+        "title": "Strategies :)"
+      },
+      "title_discover": "Discover :)",
+      "title_search": "Search :)",
+      "top_movers": {
+        "disabled_testnets": "Top movers are disabled on Testnets :)",
+        "title": "Top Movers :)"
+      },
+      "uniswap": {
+        "data": {
+          "annualized_fees": "Annualized fees :)",
+          "pool_size": "Pool size :)",
+          "profit_30_days": "30d profit :)",
+          "volume_24_hours": "24h volume :)"
+        },
+        "disabled_testnets": "Pools are disabled on Testnets :)",
+        "error_message": "There was an error loading Uniswap pool data :)",
+        "show_more": "Show more :)",
+        "title_pools": "Uniswap Pools :)"
+      }
+    },
+    "error_boundary": {
+      "description": "Don't worry, your wallets are safe! Just restart the app to get back to business. :)",
+      "intro": "Oops! :)",
+      "restart_button": "Restart Rainbow :)",
+      "title": "Something went wrong. :)"
+    },
+    "exchange": {
+      "coin_row": {
+        "copy_address": "Copy Contract Address :)",
+        "expires_in": "Expires in %{minutes}m :)",
+        "from_divider": "from :)",
+        "to_divider": "to :)",
+        "view_on": "View on %{blockExplorerName} :)",
+        "view_on_etherscan": "View on Etherscan :)"
+      },
+      "flip": "Flip :)",
+      "max": "Max :)",
+      "movers": {
+        "loser": "Loser :)",
+        "mover": "Mover :)"
+      },
+      "price_impact": {
+        "losing_prefix": "Losing :)",
+        "small_market": "Small Market :)"
+      },
+      "swapping_for_prefix": "Swapping for :)",
+      "unverified_token": {
+        "description": "This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens! :)",
+        "go_back": "Go Back :)",
+        "proceed_anyway": "Proceed Anyway :)",
+        "title": "Unverified Token :)"
+      },
+      "view_details": "View Details :)"
+    },
+    "expanded_state": {
+      "asset": {
+        "about_asset": "About %{assetName} :)",
+        "balance": "Balance :)",
+        "get_asset": "Get %{assetSymbol} :)",
+        "market_cap": "Market cap :)",
+        "read_more_button": "Read more :)",
+        "social": {
+          "facebook": "Facebook :)",
+          "homepage": "Homepage :)",
+          "reddit": "Reddit :)",
+          "telegram": "Telegram :)",
+          "twitter": "Twitter :)"
+        },
+        "uniswap_liquidity": "Uniswap liquidity :)",
+        "value": "Value :)",
+        "volume_24_hours": "24h volume :)"
+      },
+      "chart": {
+        "date": {
+          "months": {
+            "month_00": "Jan :)",
+            "month_01": "Feb :)",
+            "month_02": "Mar :)",
+            "month_03": "Apr :)",
+            "month_04": "May :)",
+            "month_05": "Jun :)",
+            "month_06": "Jul :)",
+            "month_07": "Aug :)",
+            "month_08": "Sep :)",
+            "month_09": "Oct :)",
+            "month_10": "Nov :)",
+            "month_11": "Dec :)"
+          }
+        },
+        "no_price_data": "No price data :)",
+        "token_pool": "%{tokenName} Poll :)"
+      },
+      "liquidity_pool": {
+        "annualized_fees": "Annualized fees :)",
+        "fees_earned": "Fees earned :)",
+        "half": "Half :)",
+        "pool_makeup": "Pool makeup :)",
+        "pool_shares": "Pool shares :)",
+        "pool_size": "Pool size :)",
+        "pool_volume_24h": "24h pool volume :)",
+        "total_value": "Total value :)",
+        "underlying_tokens": "Underlying tokens :)"
+      },
+      "supported_countries": {
+        "supported_countries": "Supported Countries :)",
+        "us_except": "United States (except Texas and New York) :)"
+      },
+      "swap": {
+        "copy": "Copy Contract Address :)",
+        "losing": "Losing :)",
+        "slippage_message": "This is a small market, so you’re getting a bad price. Try a smaller trade! :)",
+        "swapping_via": "Swapping via :)",
+        "unicorn_one": "that unicorn one :)",
+        "uniswap_v2": "Uniswap v2 :)",
+        "view_on": "View on %{blockExplorerName} :)"
+      },
+      "swap_details": {
+        "review": "Review :)"
+      },
+      "token_index": {
+        "get_token": "Get %{assetSymbol} :)",
+        "makeup_of_token": "Makeup of 1 %{assetSymbol} :)",
+        "underlying_tokens": "Underlying tokens :)"
+      },
+      "unique": {
+        "view_on_opensea": "View on OpenSea :)"
+      },
+      "unique_expanded": {
+        "about": "About %{assetFamilyName} :)",
+        "attributes": "Attributes :)",
+        "description": "Description :)",
+        "showcase": "Showcase :)",
+        "toast_added_to_showcase": "Added to showcase :)",
+        "toast_removed_from_showcase": "Removed from showcase :)"
+      }
+    },
+    "fields": {
+      "address": {
+        "long_placeholder": "Name, ENS, or address :)",
+        "short_placeholder": "ENS or address :)"
+      }
+    },
+    "homepage": {
+      "coming_soon": "À venir.",
+      "connect_ledger": {
+        "button": "Se connecter à Ledger",
+        "description": "Connectez-vous et signez vos transactions avec votre ",
+        "link_text": "portefeuille matériel Ledger",
+        "link_title": "Acheter un hardware wallet Ledger"
+      },
+      "connect_metamask": {
+        "button": "Se connecter à MetaMask",
+        "description": "Connectez-vous au ",
+        "link_text": "portefeuille navigateur MetaMask",
+        "link_title": "portefeuille navigateur MetaMask"
+      },
+      "connect_trezor": {
+        "button": "Se connecter à Trezor",
+        "description": " Connectez-vous et signez vos transactions avec votre ",
+        "link_text": "portefeuille matériel Trezor",
+        "link_title": "Acheter un hardware wallet Trezor"
+      },
+      "connect_walletconnect": {
+        "button": "Utilisez WalletConnect",
+        "description": "Connectez-vous et signez vos transactions avec votre ",
+        "link_text": "portefeuille mobile WalletConnect",
+        "link_title": "portefeuille mobile WalletConnect"
+      }
     },
     "input": {
       "recipient_address": "Adresse du destinataire",
@@ -258,6 +571,11 @@
         "warning": "Ceci est une version alpha de l'application.",
         "welcome": "Bienvenue sur Rainbow"
       },
+      "change_wallet": {
+        "balance_eth": "%{balanceEth} ETH :)",
+        "watching": "Watching :)"
+      },
+      "copy_address": "Copy Address",
       "feedback": {
         "cancel": "Non merci",
         "choice": "Souhaitez-vous copier manuellement l'adresse email de feedback dans votre presse papier ?",
@@ -270,6 +588,25 @@
         "error": "Une erreur est survenue lors du chargement du portefeuille. Veuillez redémarrer l'application.",
         "message": "Chargement"
       },
+      "message_signing": {
+        "message": "Message :)",
+        "request": "Message Signing Request :)"
+      },
+      "new": {
+        "already_have_wallet": "I already have on :) ",
+        "create_wallet": "Créez un portefeuille",
+        "ens_invalid": "Ce n'est pas un nom ENS valide",
+        "ens_try_again": "Désolé, nous ne pouvons pas ajouter ce nom ENS pour le moment. Veuillez réessayer plus tard!",
+        "enter_seeds_placeholder": "Phrase de départ, clé privée, adresse Ethereum ou nom ENS",
+        "get_new_wallet": "Get a new wallet :)",
+        "import_wallet": "Import Wallet :)",
+        "name_wallet": "Nommez votre portefeuille"
+      },
+      "push_notifications": {
+        "please_enable_body": "It looks like you are using WalletConnect. Please enable push notifications to be notified of transaction requests from WalletConnect. :)",
+        "please_enable_title": "Rainbow would like to send you push notifications :)"
+      },
+      "receive": "Recovoir",
       "settings": {
         "copy_address": "Copier adresse",
         "copy_seed_phrase": "Copier clé mnémonique",

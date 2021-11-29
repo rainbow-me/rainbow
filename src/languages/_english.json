@@ -1,5 +1,363 @@
 {
   "translation": {
+    "account": {
+      "hide": "Hide",
+      "label_24h": "24h",
+      "label_asset": "Asset",
+      "label_price": "Price",
+      "label_quantity": "Quantity",
+      "label_status": "Status",
+      "label_total": "Total",
+      "low_market_value": "with low market value",
+      "no_market_value": "with no market value",
+      "show": "Show",
+      "show_all": "Show all",
+      "show_less": "Show less",
+      "tab_balances": "Balances",
+      "tab_balances_empty_state": "Balance",
+      "tab_balances_tooltip": "Ethereum and Token Balances",
+      "tab_collectibles": "Collectibles",
+      "tab_interactions": "Interactions",
+      "tab_interactions_tooltip": "Smart Contract Interactions",
+      "tab_investments": "Pools",
+      "tab_savings": "Savings",
+      "tab_transactions": "Transactions",
+      "tab_transactions_tooltip": "Transactions and Token Transfers",
+      "tab_uniquetokens": "Unique Tokens",
+      "tab_uniquetokens_tooltip": "Unique Tokens",
+      "token": "token",
+      "tokens": "tokens",
+      "tx_failed": "Failed",
+      "tx_fee": "Fee",
+      "tx_from": "From",
+      "tx_hash": "Transaction Hash",
+      "tx_pending": "Pending",
+      "tx_received": "Received",
+      "tx_self": "Self",
+      "tx_sent": "Sent",
+      "tx_timestamp": "Timestamp",
+      "tx_to": "To",
+      "unknown_token": "Unknown Token"
+    },
+    "activity_list": {
+      "empty_state": {
+        "default_label": "No transactions yet",
+        "recycler_label": "No transactions yet",
+        "testnet_label": "Your testnet transaction history starts now!"
+      }
+    },
+    "avatar_builder": {
+      "emoji_categories": {
+        "activities": "Activities",
+        "animals": "Animals & Nature",
+        "flags": "Flags",
+        "food": "Food & Drink",
+        "objects": "Objects",
+        "smileys": "Smileys & People",
+        "symbols": "Symbols",
+        "travel": "Travel & Places"
+      }
+    },
+    "back_up": {
+      "cloud": {
+        "password": {
+          "backup_placeholder": "Backup Password",
+          "choose": "Choose a password",
+          "confirm_backup": "Confirm Backup",
+          "confirm_label": "Confirm password",
+          "confirm_placeholder": "Confirm Password",
+          "minimum_characters": "Minimum %{minimumLength} characters",
+          "not_matching": "Passwords don't match",
+          "not_recoverable": "It can't be recovered!",
+          "remember": "Please use a password you'll remember.",
+          "strength": {
+            "level1": "Weak password",
+            "level2": "Good password",
+            "level3": "Great password",
+            "level4": "Strong password"
+          },
+          "use_longer_password": "Use a longer password"
+        }
+      },
+      "confirm_password": {
+        "add_to_cloud_platform": "Add to %{cloudPlatformName} Backup",
+        "backup_password_placeholder": "Backup Password",
+        "confirm_backup": "Confirm Backup",
+        "enter_backup": "Enter backup password",
+        "enter_backup_description": "To add this wallet to your %{cloudPlatformName} backup, enter your existing backup password"
+      },
+      "manual": {
+        "label": "Your secret phrase",
+        "pkey": {
+          "confirm_save": "I’ve saved my key",
+          "save_them": "Copy it and save it in your password manager, or in another secure spot.",
+          "these_keys": "This is the key to your wallet!"
+        },
+        "seed": {
+          "confirm_save": "I’ve saved these words",
+          "save_them": "Write them down or save them in your password manager.",
+          "these_keys": "These words are the keys to your wallet!"
+        }
+      },
+      "restore_cloud": {
+        "backup_password_placeholder": "Backup Password",
+        "confirm_backup": "Confirm Backup",
+        "enter_backup_password": "Enter backup password",
+        "enter_backup_password_description": "To restore your wallet, enter the backup password you created",
+        "error_alert": "Error while restoring backup",
+        "incorrect_password": "Incorrect Password",
+        "restore_from_cloud_platform": "Restore from %{cloudPlatformName}"
+      },
+      "restore_sheet": {
+        "from_backup": {
+          "ios": {
+            "description_multiple_backups": "You have %{walletsBackedUpCount} wallets backed up",
+            "description_one_backup": "You have 1 wallet backed up"
+          },
+          "non_ios": {
+            "description_cloud_platform": "If you previously backed up your wallet on %{cloudPlatformName} tap here to restore it."
+          },
+          "restore_from_cloud_platform": "Restore from %{cloudPlatformName}"
+        },
+        "from_key": {
+          "description": "Use your secret phrase from Rainbow or another crypto wallet",
+          "label": "Restore with a secret phrase or private key"
+        },
+        "watch_address": {
+          "description": "Watch a public address or ENS name",
+          "label": "Watch an Ethereum address"
+        }
+      }
+    },
+    "button": {
+      "add_cash": "Add Cash",
+      "all": "All",
+      "cancel": "Cancel",
+      "close": "Close",
+      "confirm": "Confirm",
+      "confirm_exchange": {
+        "deposit": "Hold to Deposit",
+        "enter_amount": "Enter an Amount",
+        "fetching_details": "Fetching Details...",
+        "insufficient_eth": "Insufficient ETH",
+        "insufficient_funds": "Insufficient Funds",
+        "insufficient_liquidity": "Insufficient Liquidity",
+        "swap": "Hold to Swap",
+        "swap_anyway": "Swap Anyway",
+        "view_details": "View Details",
+        "withdraw": "Hold to Withdraw"
+      },
+      "connect_walletconnect": "Use WalletConnect",
+      "delete": "Delete",
+      "disconnect_account": "Log Out",
+      "donate": "Donate ETH",
+      "done": "Done",
+      "edit": "Edit",
+      "exchange": "Exchange",
+      "exchange_again": "Exchange Again",
+      "exchange_search_uniswap": "Search Uniswap",
+      "go_back": "Go Back",
+      "hide": "Hide",
+      "hold_to_authorize": {
+        "authorizing": "Authorizing",
+        "hold_keyword": "Hold",
+        "tap_keyword": "Tap"
+      },
+      "import": "Import",
+      "learn_more": "Learn more",
+      "less": "Less",
+      "loading": "Loading",
+      "notify_me": "Get notified",
+      "offline": "Offline",
+      "ok": "OK",
+      "okay": "Okay",
+      "paste_address": "Paste",
+      "paste_seed_phrase": "Paste",
+      "pin": "Pin",
+      "proceed": "Proceed",
+      "receive": "Receive",
+      "send": "Send",
+      "send_another": "Send Another",
+      "share": "Share",
+      "swap": "Swap",
+      "try_again": "Try again",
+      "unhide": "Unhide",
+      "unpin": "Unpin",
+      "view": "View"
+    },
+    "cloud": {
+      "backup_success": "Your wallet has been backed up successfully!"
+    },
+    "contacts": {
+      "contact_row": {
+        "balance_eth": "%{balanceEth} ETH"
+      },
+      "options": {
+        "add": "Add Contact",
+        "cancel": "Cancel",
+        "delete": "Delete Contact",
+        "edit": "Edit Contact"
+      }
+    },
+    "discover": {
+      "lists": {
+        "empty_description": "This list is empty!",
+        "title": "Lists"
+      },
+      "pulse": {
+        "description": "All the top DeFi tokens in one",
+        "today_suffix": "today",
+        "trading_at_prefix": "Trading at"
+      },
+      "search": {
+        "ens": "Ethereum Name Service",
+        "search_ethereum": "Search all of Ethereum"
+      },
+      "strategies": {
+        "description": "Smart yield strategies from yearn.finance",
+        "title": "Strategies"
+      },
+      "title_discover": "Discover",
+      "title_search": "Search",
+      "top_movers": {
+        "disabled_testnets": "Top movers are disabled on Testnets",
+        "title": "Top Movers"
+      },
+      "uniswap": {
+        "data": {
+          "annualized_fees": "Annualized fees",
+          "pool_size": "Pool size",
+          "profit_30_days": "30d profit",
+          "volume_24_hours": "24h volume"
+        },
+        "disabled_testnets": "Pools are disabled on Testnets",
+        "error_message": "There was an error loading Uniswap pool data",
+        "show_more": "Show more",
+        "title_pools": "Uniswap Pools"
+      }
+    },
+    "error_boundary": {
+      "description": "Don't worry, your wallets are safe! Just restart the app to get back to business.",
+      "intro": "Oops!",
+      "restart_button": "Restart Rainbow",
+      "title": "Something went wrong."
+    },
+    "exchange": {
+      "coin_row": {
+        "copy_address": "Copy Contract Address",
+        "expires_in": "Expires in %{minutes}m",
+        "from_divider": "from",
+        "to_divider": "to",
+        "view_on": "View on %{blockExplorerName}",
+        "view_on_etherscan": "View on Etherscan"
+      },
+      "flip": "Flip",
+      "max": "Max",
+      "movers": {
+        "loser": "Loser",
+        "mover": "Mover"
+      },
+      "price_impact": {
+        "losing_prefix": "Losing",
+        "small_market": "Small Market"
+      },
+      "swapping_for_prefix": "Swapping for",
+      "unverified_token": {
+        "description": "This token has not been verified! Rainbow surfaces all tokens that exist on Uniswap. Anyone can create a token, including fake versions of existing tokens and tokens that claim to represent projects that do not have a token. Please do your own research and be careful when interacting with unverified tokens!",
+        "go_back": "Go Back",
+        "proceed_anyway": "Proceed Anyway",
+        "title": "Unverified Token"
+      },
+      "view_details": "View Details"
+    },
+    "expanded_state": {
+      "asset": {
+        "about_asset": "About %{assetName}",
+        "balance": "Balance",
+        "get_asset": "Get %{assetSymbol}",
+        "market_cap": "Market cap",
+        "read_more_button": "Read more",
+        "social": {
+          "facebook": "Facebook",
+          "homepage": "Homepage",
+          "reddit": "Reddit",
+          "telegram": "Telegram",
+          "twitter": "Twitter"
+        },
+        "uniswap_liquidity": "Uniswap liquidity",
+        "value": "Value",
+        "volume_24_hours": "24h volume"
+      },
+      "chart": {
+        "date": {
+          "months": {
+            "month_00": "Jan",
+            "month_01": "Feb",
+            "month_02": "Mar",
+            "month_03": "Apr",
+            "month_04": "May",
+            "month_05": "Jun",
+            "month_06": "Jul",
+            "month_07": "Aug",
+            "month_08": "Sep",
+            "month_09": "Oct",
+            "month_10": "Nov",
+            "month_11": "Dec"
+          }
+        },
+        "no_price_data": "No price data",
+        "token_pool": "%{tokenName} Poll"
+      },
+      "liquidity_pool": {
+        "annualized_fees": "Annualized fees",
+        "fees_earned": "Fees earned",
+        "half": "Half",
+        "pool_makeup": "Pool makeup",
+        "pool_shares": "Pool shares",
+        "pool_size": "Pool size",
+        "pool_volume_24h": "24h pool volume",
+        "total_value": "Total value",
+        "underlying_tokens": "Underlying tokens"
+      },
+      "supported_countries": {
+        "supported_countries": "Supported Countries",
+        "us_except": "United States (except Texas and New York)"
+      },
+      "swap": {
+        "copy": "Copy Contract Address",
+        "losing": "Losing",
+        "slippage_message": "This is a small market, so you’re getting a bad price. Try a smaller trade!",
+        "swapping_via": "Swapping via",
+        "unicorn_one": "that unicorn one",
+        "uniswap_v2": "Uniswap v2",
+        "view_on": "View on %{blockExplorerName}"
+      },
+      "swap_details": {
+        "review": "Review"
+      },
+      "token_index": {
+        "get_token": "Get %{assetSymbol}",
+        "makeup_of_token": "Makeup of 1 %{assetSymbol}",
+        "underlying_tokens": "Underlying tokens"
+      },
+      "unique": {
+        "view_on_opensea": "View on OpenSea"
+      },
+      "unique_expanded": {
+        "about": "About %{assetFamilyName}",
+        "attributes": "Attributes",
+        "description": "Description",
+        "showcase": "Showcase",
+        "toast_added_to_showcase": "Added to showcase",
+        "toast_removed_from_showcase": "Removed from showcase"
+      }
+    },
+    "fields": {
+      "address": {
+        "long_placeholder": "Name, ENS, or address",
+        "short_placeholder": "ENS or address"
+      }
+    },
     "homepage": {
       "connect_metamask": {
         "description": "Connect to the ",
@@ -29,7 +387,7 @@
         "link_title_browser": "Discover Trust DApp Browser",
         "button": "Connect to Trust Wallet"
       },
-	    "connect_walletconnect": {
+      "connect_walletconnect": {
         "description": "Scan a QR code to link your mobile wallet ",
         "description_mobile": "Connect to any wallet that supports ",
         "link_text": "using WalletConnect",
@@ -39,7 +397,7 @@
         "button": "Use WalletConnect",
         "button_mobile": "Connect with WalletConnect"
       },
- 			"reassurance": {
+      "reassurance": {
         "work_title": "How does Manager work?",
         "work": "This is a web-based tool to help you manage the funds in your wallet. It does this by connecting to your wallet through its Application Programming Interface (API). Here are some important points about how we designed Balance Manager:",
         "access_link": "No access to your funds",
@@ -296,6 +654,11 @@
         "warning": "This is alpha software.",
         "welcome": "Welcome to Rainbow"
       },
+      "change_wallet": {
+        "balance_eth": "%{balanceEth} ETH",
+        "watching": "Watching"
+      },
+      "copy_address": "Copy Address",
       "feedback": {
         "cancel": "No thanks",
         "choice": "Would you like to manually copy our feedback email address to your clipboard?",
@@ -307,6 +670,24 @@
       "loading": {
         "error": "There has been an error loading the wallet. Please kill the app and retry.",
         "message": "Loading"
+      },
+      "message_signing": {
+        "failed_signing": "Failed to sign message",
+        "message": "Message",
+        "request": "Message Signing Request",
+        "sign": "Sign Message"
+      },
+      "new": {
+        "already_have_wallet": "I already have one",
+        "create_wallet": "Create Wallet",
+        "enter_seeds_placeholder": "Secret phrase, private key, Ethereum address, or ENS name",
+        "get_new_wallet": "Get a new wallet",
+        "import_wallet": "Import Wallet",
+        "name_wallet": "Name your wallet"
+      },
+      "push_notifications": {
+        "please_enable_body": "It looks like you are using WalletConnect. Please enable push notifications to be notified of transaction requests from WalletConnect.",
+        "please_enable_title": "Rainbow would like to send you push notifications"
       },
       "settings": {
         "copy_address": "Copy Address",

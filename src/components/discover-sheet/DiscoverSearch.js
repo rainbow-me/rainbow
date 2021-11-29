@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { toLower } from 'lodash';
 import { rankings } from 'match-sorter';
 import React, {
@@ -150,8 +151,8 @@ export default function DiscoverSearch() {
         {
           color: '#5893ff',
           data: ensResults,
-          key: '􀏼 Ethereum Name Service',
-          title: '􀏼 Ethereum Name Service',
+          key: `􀏼 ${lang.t('discover.search.ens')}`,
+          title: `􀏼 ${lang.t('discover.search.ens')}`,
         },
       ];
     }
