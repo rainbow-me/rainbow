@@ -78,16 +78,20 @@ export const parseTransactions = async (
   const purchaseTransactionHashes = map(purchaseTransactions, txn =>
     ethereumUtils.getHash(txn)
   );
-  const allL2Transactions = existingTransactions.filter(tx =>
-    isL2Network(tx.network || '')
+
+  const [allL2Transactions, existingWithoutL2] = partition(
+    existingTransactions,
+    tx => isL2Network(tx.network || '')
   );
+
   const data = appended
     ? transactionData
-    : dataFromLastTxHash(transactionData, existingTransactions);
+    : dataFromLastTxHash(transactionData, existingWithoutL2);
 
   const newTransactionPromises = data.map(txn =>
     parseTransaction(txn, nativeCurrency, purchaseTransactionHashes, network)
   );
+
   const newTransactions = await Promise.all(newTransactionPromises);
   const parsedNewTransactions = flatten(newTransactions);
 
@@ -320,7 +324,7 @@ const parseTransactionWithEmptyChanges = async (
       protocol: txn.protocol,
       status: TransactionStatus.contract_interaction,
       symbol: 'contract',
-      title: `Contract interaction`,
+      title: `Contract Interaction`,
       to: txn.address_to,
       type: TransactionType.contract_interaction,
     },

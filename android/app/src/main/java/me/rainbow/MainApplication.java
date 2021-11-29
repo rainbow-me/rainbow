@@ -4,11 +4,16 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
-import com.github.wumke.RNExitApp.RNExitAppPackage;
+import com.facebook.react.bridge.JSIModulePackage;
+import com.facebook.react.bridge.JSIModuleSpec;
+import com.facebook.react.bridge.JavaScriptContextHolder;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
+import com.reactnativemmkv.MmkvModule;
+import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import io.branch.rnbranch.RNBranchModule;
@@ -18,11 +23,17 @@ import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage;
 import me.rainbow.NativeModules.RNReview.RNReviewPackage;
 import me.rainbow.NativeModules.RNTextAnimatorPackage.RNTextAnimatorPackage;
 import me.rainbow.NativeModules.RNZoomableButton.RNZoomableButtonPackage;
-
 import com.facebook.react.bridge.JSIModulePackage;
 import com.rainbowmeultimatelist.UltimateListPackage;
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 
+class RainbowJSIModulePackage extends ReanimatedJSIModulePackage {
+    @Override
+    public List<JSIModuleSpec> getJSIModules(ReactApplicationContext reactApplicationContext, JavaScriptContextHolder jsContext) {
+        MmkvModule.install(jsContext, reactApplicationContext.getFilesDir().getAbsolutePath() + "/mmkv");
+        return super.getJSIModules(reactApplicationContext, jsContext);
+    }
+}
 
 public class MainApplication extends Application implements ReactApplication {
     private static Context context;
@@ -56,7 +67,7 @@ public class MainApplication extends Application implements ReactApplication {
          //_REA /* REA
          @Override
          protected JSIModulePackage getJSIModulePackage() {
-           return new ReanimatedJSIModulePackage();
+           return new RainbowJSIModulePackage();
          }
          // */
       };

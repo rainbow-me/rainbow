@@ -65,6 +65,7 @@ import {
   useAccountAssets,
   useAccountSettings,
   useBooleanState,
+  useCurrentNonce,
   useDimensions,
   useGas,
   useKeyboardHeight,
@@ -179,6 +180,7 @@ export default function TransactionConfirmationScreen() {
   const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
   const balances = useWalletBalances(wallets);
   const { accountAddress, nativeCurrency } = useAccountSettings();
+  const getNextNonce = useCurrentNonce(accountAddress, network);
   const keyboardHeight = useKeyboardHeight();
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
@@ -457,9 +459,19 @@ export default function TransactionConfirmationScreen() {
       }
     } catch (error) {
       logger.log('error estimating gas', error);
+    } finally {
+      logger.log('Setting gas limit to', convertHexToString(gas));
+
+      if (network === networkTypes.optimism) {
+        const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+          txPayload,
+          provider
+        );
+        updateTxFee(gas, null, network, l1GasFeeOptimism);
+      } else {
+        updateTxFee(gas, null, network);
+      }
     }
-    logger.log('Setting gas limit to', convertHexToString(gas));
-    updateTxFee(gas, null, network);
   }, [network, params, provider, updateTxFee]);
 
   useEffect(() => {
@@ -584,9 +596,11 @@ export default function TransactionConfirmationScreen() {
     }
 
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
+    const nonce = await getNextNonce();
     let txPayloadUpdated = {
       ...txPayload,
       gasPrice,
+      nonce,
     };
     if (calculatedGasLimit) {
       txPayloadUpdated.gasLimit = calculatedGasLimit;
@@ -633,6 +647,7 @@ export default function TransactionConfirmationScreen() {
           amount: displayDetails?.request?.value ?? 0,
           asset: nativeAsset || displayDetails?.request?.asset,
           dappName,
+          data: result.data,
           from: displayDetails?.request?.from,
           gasLimit,
           gasPrice,
@@ -640,6 +655,7 @@ export default function TransactionConfirmationScreen() {
           network,
           nonce: result.nonce,
           to: displayDetails?.request?.to,
+          value: result.value,
         };
         if (toLower(accountAddress) === toLower(txDetails.from)) {
           dispatch(dataAddNewTransaction(txDetails, null, false, provider));
@@ -700,6 +716,7 @@ export default function TransactionConfirmationScreen() {
     displayDetails?.request?.asset,
     displayDetails?.request?.from,
     displayDetails?.request?.to,
+    getNextNonce,
     nativeAsset,
     dappName,
     accountAddress,

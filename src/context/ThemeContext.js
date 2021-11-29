@@ -16,6 +16,7 @@ import { ThemeProvider } from 'styled-components';
 import { getTheme, saveTheme } from '../handlers/localstorage/theme';
 import { darkModeThemeColors, lightModeThemeColors } from '../styles/colors';
 import currentColors from './currentColors';
+import { ColorModeProvider } from '@rainbow-me/design-system';
 
 export const THEMES = {
   DARK: 'dark',
@@ -123,7 +124,9 @@ export const MainThemeProvider = props => {
   return (
     <ThemeProvider theme={currentTheme}>
       <ThemeContext.Provider value={currentTheme}>
-        {props.children}
+        <ColorModeProvider value={currentTheme.isDarkMode ? 'dark' : 'light'}>
+          {props.children}
+        </ColorModeProvider>
       </ThemeContext.Provider>
     </ThemeProvider>
   );

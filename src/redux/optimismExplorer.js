@@ -1,4 +1,3 @@
-import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { toLower } from 'lodash';
 import isEqual from 'react-fast-compare';
@@ -41,7 +40,6 @@ const fetchAssetBalances = async (tokens, address) => {
       abi,
       optimismProvider
     );
-
     const values = await balanceCheckerContract.balances([address], tokens);
     const balances = {};
     [address].forEach((addr, addrIdx) => {
@@ -84,30 +82,30 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       return;
     }
 
-    const tokenAddresses = assets.map(
-      ({ asset: { asset_code } }) => asset_code
+    const tokenAddresses = assets.map(({ asset: { asset_code } }) =>
+      toLower(asset_code)
     );
 
     const balances = await fetchAssetBalances(
-      assets.map(({ asset: { asset_code } }) => asset_code),
+      tokenAddresses,
       accountAddress,
       network
     );
 
-    let total = BigNumber.from(0);
-
+    let updatedAssets = assets;
     if (balances) {
-      Object.keys(balances).forEach(key => {
-        for (let i = 0; i < assets.length; i++) {
-          if (assets[i].asset.asset_code.toLowerCase() === key.toLowerCase()) {
-            assets[i].quantity = balances[key];
-            break;
-          }
-        }
-        total = total.add(balances[key]);
+      updatedAssets = assets.map(assetAndQuantity => {
+        const assetCode = toLower(assetAndQuantity.asset.asset_code);
+        return {
+          asset: {
+            ...assetAndQuantity.asset,
+          },
+          quantity: balances?.[assetCode],
+        };
       });
     }
-    const assetsWithBalance = assets.filter(asset => asset.quantity > 0);
+
+    const assetsWithBalance = updatedAssets.filter(asset => asset.quantity > 0);
 
     if (assetsWithBalance.length) {
       dispatch(emitAssetRequest(tokenAddresses));

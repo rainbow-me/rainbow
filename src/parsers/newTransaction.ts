@@ -23,61 +23,83 @@ export const parseNewTransaction = async (
   nativeCurrency: string = ''
 ): Promise<RainbowTransaction> => {
   let balance = null;
-  const { amount } = txDetails;
-  if (amount && txDetails.asset) {
+  const {
+    amount,
+    asset,
+    dappName,
+    data,
+    from,
+    gasLimit,
+    gasPrice,
+    network,
+    nonce,
+    hash: txHash,
+    protocol,
+    sourceAmount,
+    status: txStatus,
+    to,
+    transferId,
+    type: txType,
+    txTo,
+    value,
+  } = txDetails;
+
+  if (amount && asset) {
     balance = {
       amount,
-      display: convertAmountToBalanceDisplay(amount, txDetails.asset),
+      display: convertAmountToBalanceDisplay(amount, asset),
     };
   }
 
   const assetPrice =
-    txDetails?.asset?.price?.value ??
-    ethereumUtils.getAssetPrice(txDetails?.asset?.address);
+    asset?.price?.value ?? ethereumUtils.getAssetPrice(asset?.address);
   const native = convertAmountAndPriceToNativeDisplay(
     amount ?? 0,
     assetPrice,
     nativeCurrency
   );
-  const hash = txDetails.hash ? `${txDetails.hash}-0` : null;
+  const hash = txHash ? `${txHash}-0` : null;
 
-  const status = txDetails?.status ?? TransactionStatus.sending;
-  const type = txDetails?.type ?? TransactionType.send;
+  const status = txStatus ?? TransactionStatus.sending;
+  const type = txType ?? TransactionType.send;
 
   const title = getTitle({
-    protocol: txDetails?.protocol ?? null,
+    protocol: protocol ?? null,
     status,
     type,
   });
 
   const description = getDescription({
-    name: txDetails?.asset?.name ?? null,
+    name: asset?.name ?? null,
     status,
     type,
   });
 
   return {
-    address: txDetails?.asset?.address ?? ETH_ADDRESS,
+    address: asset?.address ?? ETH_ADDRESS,
     balance,
-    dappName: txDetails.dappName,
+    dappName,
+    data,
     description,
-    from: txDetails.from,
-    gasLimit: txDetails.gasLimit,
-    gasPrice: txDetails.gasPrice,
+    from,
+    gasLimit,
+    gasPrice,
     hash,
     minedAt: null,
-    name: txDetails?.asset?.name ?? null,
+    name: asset?.name ?? null,
     native,
-    network: txDetails.network,
-    nonce: txDetails.nonce,
+    network,
+    nonce,
     pending: true,
-    protocol: txDetails?.protocol,
-    sourceAmount: txDetails.sourceAmount,
+    protocol,
+    sourceAmount,
     status,
-    symbol: txDetails?.asset?.symbol ?? null,
+    symbol: asset?.symbol ?? null,
     title,
-    to: txDetails.to,
-    transferId: txDetails.transferId,
+    to,
+    transferId,
+    txTo: txTo || to,
     type,
+    value,
   };
 };

@@ -105,7 +105,7 @@ export const estimateSwapGasLimit = async ({
       chainId,
       inputCurrency,
       outputCurrency,
-      providerOrSigner: web3Provider,
+      providerOrSigner: web3Provider!,
       slippage,
       tradeDetails,
     });
@@ -115,6 +115,7 @@ export const estimateSwapGasLimit = async ({
       methodNames.map((methodName: string) =>
         estimateGasWithPadding(
           params,
+          // @ts-ignore
           exchange.estimateGas[methodName],
           updatedMethodArgs
         )
@@ -412,20 +413,19 @@ export const getAllTokens = async () => {
   const { dispatch } = store;
   try {
     let dataEnd = false;
-    //setting an extremely safe upper limit for token volume
-    let lastUSDVolume = '1000000000000';
+    let lastId = '';
 
     while (!dataEnd) {
       let result = await uniswapClient.query({
         query: UNISWAP_ALL_TOKENS,
         variables: {
           first: UniswapPageSize,
-          lastUSDVolume,
+          lastId,
         },
       });
       const resultTokens = result?.data?.tokens || [];
       const lastItem = resultTokens[resultTokens.length - 1];
-      lastUSDVolume = lastItem?.tradeVolumeUSD ?? '';
+      lastId = lastItem?.id ?? '';
       dispatch(uniswapUpdateTokens(resultTokens));
       if (resultTokens.length < UniswapPageSize) {
         dispatch(uniswapLoadedAllTokens());

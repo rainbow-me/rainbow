@@ -20,6 +20,7 @@ export {
 } from './signatureRegistry';
 export { default as emojis } from './emojis.json';
 export { default as erc20ABI } from './erc20-abi.json';
+export { default as optimismGasOracleAbi } from './optimism-gas-oracle-abi.json';
 export { default as ethUnits } from './ethereum-units.json';
 export { DPI_ADDRESS } from './indexes';
 
@@ -28,23 +29,24 @@ export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins.json';
 export { default as smartContractMethods } from './smartcontract-methods.json';
 export {
-  CURATED_UNISWAP_TOKENS,
   PAIR_GET_RESERVES_CALL_DATA,
   PAIR_GET_RESERVES_FRAGMENT,
   PAIR_INTERFACE,
-  RAINBOW_TOKEN_LIST,
-  TOKEN_SAFE_LIST,
   UNISWAP_TESTNET_TOKEN_LIST,
   UNISWAP_V1_EXCHANGE_ABI,
   UNISWAP_V2_BASES,
   UNISWAP_V2_ROUTER_ABI,
   UNISWAP_V2_ROUTER_ADDRESS,
 } from './uniswap';
+export { rainbowTokenList } from './rainbow-token-list';
 export {
   getWyreErrorOverride,
   wyreSupportedCountries,
   WYRE_SUPPORTED_COUNTRIES_ISO,
 } from './wyre';
+
+export const OVM_GAS_PRICE_ORACLE =
+  '0x420000000000000000000000000000000000000F';
 
 // Block Explorers
 export const ARBITRUM_BLOCK_EXPLORER_URL = 'arbiscan.io';
@@ -65,11 +67,14 @@ export const ETH_ADDRESS = 'eth';
 export const ARBITRUM_ETH_ADDRESS =
   '0x0000000000000000000000000000000000000000';
 export const OPTIMISM_ETH_ADDRESS =
-  '0x4200000000000000000000000000000000000006';
+  '0x0000000000000000000000000000000000000000';
 export const MATIC_MAINNET_ADDRESS =
   '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0';
 export const MATIC_POLYGON_ADDRESS =
   '0x0000000000000000000000000000000000001010';
+export const COVALENT_ETH_ADDRESS =
+  '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+
 export const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 export const CDAI_CONTRACT = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';
 export const SAI_ADDRESS = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359';

@@ -1,9 +1,14 @@
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { magicMemo } from '../../utils';
+import { getLowResUrl } from '../../utils/getLowResUrl';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
 import UniqueTokenImage from './UniqueTokenImage';
+import {
+  usePersistentAspectRatio,
+  usePersistentDominantColorFromImage,
+} from '@rainbow-me/hooks';
 import { shadow as shadowUtil } from '@rainbow-me/styles';
 
 const UniqueTokenCardBorderRadius = 20;
@@ -35,11 +40,16 @@ const UniqueTokenCard = ({
   width,
   ...props
 }) => {
+  const lowResUrl = getLowResUrl(item.image_url);
+
+  usePersistentAspectRatio(item.image_url);
+  usePersistentDominantColorFromImage(item.image_url);
+
   const handlePress = useCallback(() => {
     if (onPress) {
-      onPress(item);
+      onPress(item, lowResUrl);
     }
-  }, [item, onPress]);
+  }, [item, lowResUrl, onPress]);
 
   const { colors } = useTheme();
 
@@ -47,8 +57,6 @@ const UniqueTokenCard = ({
     colors,
   ]);
 
-  const imageUrl =
-    item.image_preview_url || item.image_url || item.image_original_url;
   return (
     <Container
       as={ButtonPressAnimation}
@@ -61,9 +69,10 @@ const UniqueTokenCard = ({
       <Content {...props} height={height} style={style} width={width}>
         <UniqueTokenImage
           backgroundColor={item.background || colors.lightestGrey}
-          imageUrl={imageUrl}
+          imageUrl={lowResUrl}
           item={item}
           resizeMode={resizeMode}
+          shouldRasterizeIOS
           size={width}
           small={smallENSName}
         />

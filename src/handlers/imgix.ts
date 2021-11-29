@@ -2,9 +2,10 @@ import ImgixClient from 'imgix-core-js';
 import LRUCache from 'mnemonist/lru-cache';
 import { PixelRatio } from 'react-native';
 import {
-  IMGIX_DOMAIN as domain,
-  IMGIX_TOKEN as secureURLToken,
   // @ts-ignore
+  IMGIX_DOMAIN as domain,
+  // @ts-ignore
+  IMGIX_TOKEN as secureURLToken,
 } from 'react-native-dotenv';
 import { Source } from 'react-native-fast-image';
 import parse from 'url-parse';
@@ -79,7 +80,7 @@ const shouldSignUri = (
         `Expected string signedExternalImageUri, encountered ${typeof signedExternalImageUri} (for input "${externalImageUri}").`
       );
     }
-  } catch (e) {
+  } catch (e: any) {
     logger.log(`[Imgix]: Failed to sign "${externalImageUri}"! (${e.message})`);
     // If something goes wrong, it is not safe to assume the image is valid.
     return undefined;
@@ -96,7 +97,7 @@ const isPossibleToSignUri = (externalImageUri: string | undefined): boolean => {
     try {
       const { host } = parse(externalImageUri);
       return typeof host === 'string' && !!host.length;
-    } catch (e) {
+    } catch (e: any) {
       logger.log(
         `[Imgix]: Failed to parse "${externalImageUri}"! (${e.message})`
       );
@@ -108,12 +109,14 @@ const isPossibleToSignUri = (externalImageUri: string | undefined): boolean => {
 
 export const maybeSignUri = (
   externalImageUri: string | undefined,
-  options?: {}
+  options?: {},
+  skipCaching: boolean = false
 ): string | undefined => {
   // If the image has already been signed, return this quickly.
   if (
     typeof externalImageUri === 'string' &&
-    staticSignatureLRU.has(externalImageUri as string)
+    staticSignatureLRU.has(externalImageUri as string) &&
+    !skipCaching
   ) {
     return staticSignatureLRU.get(externalImageUri);
   }
@@ -136,4 +139,11 @@ export const maybeSignSource = (source: Source, options?: {}): Source => {
     };
   }
   return source;
+};
+
+export const svgToLQPng = (url: string) => {
+  return staticImgixClient?.buildURL(url, {
+    fm: 'png',
+    w: 200,
+  });
 };

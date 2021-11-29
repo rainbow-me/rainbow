@@ -22,6 +22,7 @@ import { AssetTypes } from '@rainbow-me/entities';
 import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';
 import { debouncedFetchSuggestions } from '@rainbow-me/handlers/ens';
 import {
+  buildTransaction,
   createSignableTransaction,
   estimateGasLimit,
   getProviderForNetwork,
@@ -31,16 +32,14 @@ import {
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
-import {
-  checkIsValidAddressOrDomain,
-  isENSAddressFormat,
-} from '@rainbow-me/helpers/validators';
+import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import {
   useAccountAssets,
   useAccountSettings,
   useCoinListEditOptions,
   useColorForAsset,
   useContacts,
+  useCurrentNonce,
   useDimensions,
   useGas,
   useMagicAutofocus,
@@ -55,11 +54,7 @@ import {
 } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
-import {
-  chainAssets,
-  ETH_ADDRESS,
-  RAINBOW_TOKEN_LIST,
-} from '@rainbow-me/references';
+import { chainAssets, rainbowTokenList } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { borders } from '@rainbow-me/styles';
 import {
@@ -124,6 +119,7 @@ export default function SendSheet(props) {
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
+  const getNextNonce = useCurrentNonce(accountAddress, network);
 
   const savings = useSendSavingsAccount();
   const fetchData = useRefreshAccountData();
@@ -300,7 +296,7 @@ export default function SendSheet(props) {
   // Recalculate balance when gas price changes
   useEffect(() => {
     if (
-      selected?.address === ETH_ADDRESS &&
+      selected?.isNativeAsset &&
       (prevSelectedGasPrice?.txFee?.value?.amount ?? 0) !==
         (selectedGasPrice?.txFee?.value?.amount ?? 0)
     ) {
@@ -425,13 +421,43 @@ export default function SendSheet(props) {
   useEffect(() => {
     const resolveAddressIfNeeded = async () => {
       let realAddress = recipient;
-      if (isENSAddressFormat(recipient)) {
+      if (checkIsValidAddressOrDomain(recipient)) {
         realAddress = await resolveNameOrAddress(recipient);
       }
       setToAddress(realAddress);
     };
     resolveAddressIfNeeded();
   }, [recipient]);
+
+  const updateTxFeeForOptimism = useCallback(
+    async updatedGasLimit => {
+      const txData = await buildTransaction(
+        {
+          address: accountAddress,
+          amount: amountDetails.assetAmount,
+          asset: selected,
+          gasLimit: updatedGasLimit,
+          recipient: toAddress,
+        },
+        currentProvider,
+        currentNetwork
+      );
+      const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+        txData,
+        currentProvider
+      );
+      updateTxFee(updatedGasLimit, null, currentNetwork, l1GasFeeOptimism);
+    },
+    [
+      accountAddress,
+      amountDetails.assetAmount,
+      currentNetwork,
+      currentProvider,
+      selected,
+      toAddress,
+      updateTxFee,
+    ]
+  );
 
   const onSubmit = useCallback(async () => {
     const validTransaction =
@@ -464,7 +490,11 @@ export default function SendSheet(props) {
         );
 
         if (!lessThan(updatedGasLimit, gasLimit)) {
-          updateTxFee(updatedGasLimit, null, currentNetwork);
+          if (network === networkTypes.optimism) {
+            updateTxFeeForOptimism(updatedGasLimit);
+          } else {
+            updateTxFee(updatedGasLimit, null, currentNetwork);
+          }
         }
         // eslint-disable-next-line no-empty
       } catch (e) {}
@@ -482,7 +512,7 @@ export default function SendSheet(props) {
       from: accountAddress,
       gasLimit: gasLimitToUse,
       gasPrice: selectedGasPrice.value?.amount,
-      nonce: null,
+      nonce: await getNextNonce(),
       to: toAddress,
     };
     try {
@@ -492,11 +522,15 @@ export default function SendSheet(props) {
         transaction: signableTransaction,
       });
       const { hash, nonce } = txResult;
+      const { data, value } = signableTransaction;
       if (!isEmpty(hash)) {
         submitSuccess = true;
         txDetails.hash = hash;
         txDetails.nonce = nonce;
         txDetails.network = currentNetwork;
+        txDetails.data = data;
+        txDetails.value = value;
+        txDetails.txTo = signableTransaction.to;
         await dispatch(
           dataAddNewTransaction(txDetails, null, false, currentProvider)
         );
@@ -518,12 +552,15 @@ export default function SendSheet(props) {
     dataAddNewTransaction,
     dispatch,
     gasLimit,
+    getNextNonce,
     isSufficientGas,
     isValidAddress,
+    network,
     selected,
     selectedGasPrice,
     toAddress,
     updateTxFee,
+    updateTxFeeForOptimism,
   ]);
 
   const submitTransaction = useCallback(async () => {
@@ -559,7 +596,7 @@ export default function SendSheet(props) {
   const validateRecipient = useCallback(
     async toAddress => {
       // Don't allow send to known ERC20 contracts on mainnet
-      if (RAINBOW_TOKEN_LIST[toLower(toAddress)]) {
+      if (rainbowTokenList.RAINBOW_TOKEN_LIST[toLower(toAddress)]) {
         return false;
       }
 
@@ -617,7 +654,7 @@ export default function SendSheet(props) {
   const showConfirmationSheet = useCallback(async () => {
     if (buttonDisabled) return;
     let toAddress = recipient;
-    if (isENSAddressFormat(recipient)) {
+    if (checkIsValidAddressOrDomain(recipient)) {
       toAddress = await resolveNameOrAddress(recipient);
     }
     const validRecipient = await validateRecipient(toAddress);
@@ -744,10 +781,15 @@ export default function SendSheet(props) {
         currentProvider,
         currentNetwork
       )
-        .then(gasLimit => {
-          updateTxFee(gasLimit, null, currentNetwork);
+        .then(async gasLimit => {
+          if (currentNetwork === networkTypes.optimism) {
+            updateTxFeeForOptimism(gasLimit);
+          } else {
+            updateTxFee(gasLimit, null, currentNetwork);
+          }
         })
-        .catch(() => {
+        .catch(e => {
+          logger.sentry('Error getting optimism l1 fee', e);
           updateTxFee(null, null, currentNetwork);
         });
     }
@@ -761,6 +803,7 @@ export default function SendSheet(props) {
     selected,
     toAddress,
     updateTxFee,
+    updateTxFeeForOptimism,
     network,
     gasPrices,
   ]);

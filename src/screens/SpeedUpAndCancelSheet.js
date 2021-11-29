@@ -278,26 +278,33 @@ export default function SpeedUpAndCancelSheet() {
   useEffect(() => {
     const init = async () => {
       if (currentNetwork && currentProvider && !fetchedTx.current) {
-        const txHash = tx.hash.split('-')[0];
         try {
           fetchedTx.current = true;
-          const txObj = await currentProvider.getTransaction(txHash);
-          if (txObj) {
-            const hexGasLimit = toHex(txObj.gasLimit.toString());
-            const hexGasPrice = toHex(txObj.gasPrice.toString());
-            const hexValue = toHex(txObj.value.toString());
-            const hexData = txObj.data;
-            setReady(true);
-            setNonce(txObj.nonce);
-            setValue(hexValue);
-            setData(hexData);
-            setTo(txObj.to);
-            setGasLimit(hexGasLimit);
-            setMinGasPrice(calcMinGasPriceAllowed(hexGasPrice));
-          }
+          const hexGasLimit = toHex(tx.gasLimit.toString());
+          const hexGasPrice = toHex(tx.gasPrice.toString());
+          const hexValue = toHex(tx.value.toString());
+          const hexData = tx.data;
+          setReady(true);
+          setNonce(tx.nonce);
+          setValue(hexValue);
+          setData(hexData);
+          setTo(tx.txTo);
+          setGasLimit(hexGasLimit);
+          setMinGasPrice(calcMinGasPriceAllowed(hexGasPrice));
         } catch (e) {
           logger.log('something went wrong while fetching tx info ', e);
-          captureException(e);
+          logger.sentry(
+            'Error speeding up or canceling transaction: [error]',
+            e
+          );
+          logger.sentry(
+            'Error speeding up or canceling transaction: [transaction]',
+            tx
+          );
+          const speedUpOrCancelError = new Error(
+            'Error speeding up or canceling transaction'
+          );
+          captureException(speedUpOrCancelError);
           if (type === SPEED_UP) {
             Alert.alert(
               'Unable to speed up transaction',

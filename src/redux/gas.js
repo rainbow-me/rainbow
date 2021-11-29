@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { get, isEmpty } from 'lodash';
+import { IS_TESTING } from 'react-native-dotenv';
 import {
   etherscanGetGasEstimates,
   etherscanGetGasPrices,
@@ -9,7 +10,12 @@ import {
   polygonGasStationGetGasPrices,
   polygonGetGasEstimates,
 } from '@rainbow-me/handlers/gasPrices';
-import { getProviderForNetwork, isL2Network } from '@rainbow-me/handlers/web3';
+import {
+  getProviderForNetwork,
+  isHardHat,
+  isL2Network,
+  web3Provider,
+} from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasPriceFormat,
@@ -26,14 +32,12 @@ import {
   OPTIMISM_ETH_ADDRESS,
 } from '@rainbow-me/references';
 import { fromWei, greaterThanOrEqualTo, multiply } from '@rainbow-me/utilities';
-
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 const { CUSTOM, NORMAL } = gasUtils;
 
 // -- Constants ------------------------------------------------------------- //
-const OPTIMISM_GAS_PRICE_GWEI = 0.015;
 const GAS_MULTIPLIER = 1.101;
 const GAS_UPDATE_DEFAULT_GAS_LIMIT = 'gas/GAS_UPDATE_DEFAULT_GAS_LIMIT';
 const GAS_PRICES_DEFAULT = 'gas/GAS_PRICES_DEFAULT';
@@ -134,12 +138,16 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   };
 
   const getOptimismGasPrices = async () => {
+    const provider = await getProviderForNetwork(networkTypes.optimism);
+    const baseGasPrice = await provider.getGasPrice();
+    const gasPriceGwei = Number(weiToGwei(baseGasPrice.toString()));
+
     const priceData = {
-      average: OPTIMISM_GAS_PRICE_GWEI,
+      average: gasPriceGwei,
       avgWait: 0.5,
-      fast: OPTIMISM_GAS_PRICE_GWEI,
+      fast: gasPriceGwei,
       fastWait: 0.2,
-      safeLow: OPTIMISM_GAS_PRICE_GWEI,
+      safeLow: gasPriceGwei,
       safeLowWait: 1,
     };
     return priceData;
@@ -164,9 +172,22 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
         } else {
           try {
             // Use etherscan as our Gas Price Oracle
-            const {
+            let {
               data: { result: etherscanGasPrices },
             } = await etherscanGetGasPrices();
+
+            // Set a really gas estimate to guarantee that we're gonna be over
+            // the basefee at the time we fork mainnet during our hardhat tests
+            if (network === networkTypes.mainnet && IS_TESTING === 'true') {
+              const providerUrl = web3Provider?.connection?.url;
+              if (isHardHat(providerUrl)) {
+                etherscanGasPrices = {
+                  FastGasPrice: 1000,
+                  ProposeGasPrice: 1000,
+                  SafeGasPrice: 1000,
+                };
+              }
+            }
 
             const priceData = {
               average: Number(etherscanGasPrices.ProposeGasPrice),
@@ -294,10 +315,12 @@ export const gasUpdateDefaultGasLimit = (
   dispatch(gasUpdateTxFee(network, defaultGasLimit));
 };
 
-export const gasUpdateTxFee = (network, gasLimit, overrideGasOption) => (
-  dispatch,
-  getState
-) => {
+export const gasUpdateTxFee = (
+  network,
+  gasLimit,
+  overrideGasOption,
+  l1GasFeeOptimism = null
+) => (dispatch, getState) => {
   const { defaultGasLimit, gasPrices, selectedGasPriceOption } = getState().gas;
   const _gasLimit = gasLimit || defaultGasLimit;
   const _selectedGasPriceOption = overrideGasOption || selectedGasPriceOption;
@@ -313,7 +336,8 @@ export const gasUpdateTxFee = (network, gasLimit, overrideGasOption) => (
     gasPrices,
     nativeTokenPriceUnit,
     _gasLimit,
-    nativeCurrency
+    nativeCurrency,
+    l1GasFeeOptimism
   );
 
   const results = getSelectedGasPrice(

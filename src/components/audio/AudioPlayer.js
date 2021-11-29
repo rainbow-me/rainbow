@@ -6,10 +6,10 @@ import Spinner from '../Spinner';
 import { Centered, FlexItem } from '../layout';
 
 const Container = styled(FlexItem)`
-  background-color: ${({ theme: { colors } }) => colors.white};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 const StyledWebView = styled(WebView)`
-  background-color: ${({ theme: { colors } }) => colors.white};
+  background-color: ${({ theme: { colors } }) => colors.transparent};
   margin-top: ${android ? 30 : 50};
 `;
 
@@ -28,9 +28,9 @@ const buildPlayerUrl = options => {
   return `${base_url}?${qs}`;
 };
 
-export default function WyreWebview({ uri }) {
+export default function WyreWebview({ fontColor, imageColor, uri }) {
   const webviewRef = useRef();
-  const { colors, isDarkMode } = useTheme();
+  const { colors } = useTheme();
   const [ready, setReady] = useState(false);
   useEffect(() => {
     StatusBar.setBackgroundColor('transparent', false);
@@ -39,17 +39,13 @@ export default function WyreWebview({ uri }) {
   }, []);
 
   const playerUri = useMemo(() => {
-    const waveColor = isDarkMode
-      ? formatColor(colors.darkModeDark)
-      : formatColor(colors.lightGrey);
-    const progressColor = formatColor(colors.black);
-    const cursorColor = formatColor(colors.black);
-    const textColor = formatColor(colors.black);
-    const buttonColor = formatColor(colors.black);
-    const bgColor = formatColor(colors.white);
-    const buttonBackground = isDarkMode
-      ? formatColor(colors.darkModeDark)
-      : formatColor(colors.lighterGrey);
+    const waveColor = formatColor(imageColor);
+    const progressColor = formatColor(imageColor);
+    const cursorColor = formatColor(fontColor);
+    const textColor = formatColor(fontColor);
+    const buttonColor = formatColor(fontColor);
+    const bgColor = formatColor(colors.transparent);
+    const buttonBackground = formatColor(imageColor);
     const barWidth = 4;
     const waveformHeight = 220;
 
@@ -65,14 +61,14 @@ export default function WyreWebview({ uri }) {
       waveColor,
       waveformHeight,
     });
-  }, [colors, isDarkMode, uri]);
+  }, [colors.transparent, fontColor, imageColor, uri]);
 
   useEffect(() => {
     setTimeout(
       () => {
         setReady(true);
       },
-      ios ? 1000 : 1500
+      ios ? 500 : 800
     );
   }, []);
 
@@ -99,13 +95,15 @@ export default function WyreWebview({ uri }) {
           uri: playerUri,
         }}
       />
-
       {!ready && (
         <Centered
           flex={1}
-          style={[StyleSheet.absoluteFill, { backgroundColor: colors.white }]}
+          style={[
+            StyleSheet.absoluteFill,
+            { backgroundColor: colors.transparent },
+          ]}
         >
-          <Spinner color={colors.appleBlue} size={30} />
+          <Spinner color={imageColor} size={30} />
         </Centered>
       )}
     </Container>

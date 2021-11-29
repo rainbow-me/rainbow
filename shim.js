@@ -22,6 +22,13 @@ if (typeof atob === 'undefined') {
 
 toLocaleStringPolyfill();
 
+// https://github.com/facebook/react-native/commit/1049835b504cece42ee43ac5b554687891da1349
+// https://github.com/facebook/react-native/commit/035718ba97bb44c68f2a4ccdd95e537e3d28690
+if (ReactNative.Keyboard.removeEventListener) {
+  ReactNative.Keyboard.removeListener =
+    ReactNative.Keyboard.removeEventListener;
+}
+
 ReactNative.Platform.OS === 'ios' &&
   Animated.addWhitelistedNativeProps({ d: true });
 
