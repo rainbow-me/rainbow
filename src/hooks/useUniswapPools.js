@@ -179,7 +179,6 @@ export default function useUniswapPools(sortField, sortDirection, token) {
     () => getUniswapV2Pools(token),
     {
       onError: () => logger.log('🦄🦄🦄 error getting pairs data', error),
-      onSuccess: () => handleGetUniswapV2PoolsResponse(),
       refetchInterval: REFETCH_INTERVAL,
     }
   );
