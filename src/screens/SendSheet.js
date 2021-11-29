@@ -3,7 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
 import { isEmpty, isEqual, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, StatusBar } from 'react-native';
+import { Alert, InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
@@ -426,7 +426,7 @@ export default function SendSheet(props) {
       }
       setToAddress(realAddress);
     };
-    resolveAddressIfNeeded();
+    recipient && resolveAddressIfNeeded();
   }, [recipient]);
 
   const updateTxFeeForOptimism = useCallback(
@@ -517,6 +517,15 @@ export default function SendSheet(props) {
     };
     try {
       const signableTransaction = await createSignableTransaction(txDetails);
+      if (!signableTransaction.to) {
+        logger.sentry('txDetails', txDetails);
+        logger.sentry('signableTransaction', signableTransaction);
+        logger.sentry('"to" field is missing!');
+        const e = new Error('Transaction missing TO field');
+        captureException(e);
+        Alert.alert('Invalid transaction');
+        submitSuccess = false;
+      }
       const { result: txResult } = await sendTransaction({
         provider: currentProvider,
         transaction: signableTransaction,
