@@ -12,6 +12,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.36](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.36)
+
+### Added
+* Nonce Tracking
+* Onchain Balance Updates
+* Cloudinary SVG improvements
+
+### Changed
+* Optimism V2
+* Updated Add Cash & Search Analytics
+* Fixed Unstoppable Domain Resolution
+
 ## [1.5.35](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.35)
 
 ### Changed
