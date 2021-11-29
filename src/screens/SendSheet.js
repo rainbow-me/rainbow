@@ -525,24 +525,25 @@ export default function SendSheet(props) {
         captureException(e);
         Alert.alert('Invalid transaction');
         submitSuccess = false;
-      }
-      const { result: txResult } = await sendTransaction({
-        provider: currentProvider,
-        transaction: signableTransaction,
-      });
-      const { hash, nonce } = txResult;
-      const { data, value } = signableTransaction;
-      if (!isEmpty(hash)) {
-        submitSuccess = true;
-        txDetails.hash = hash;
-        txDetails.nonce = nonce;
-        txDetails.network = currentNetwork;
-        txDetails.data = data;
-        txDetails.value = value;
-        txDetails.txTo = signableTransaction.to;
-        await dispatch(
-          dataAddNewTransaction(txDetails, null, false, currentProvider)
-        );
+      } else {
+        const { result: txResult } = await sendTransaction({
+          provider: currentProvider,
+          transaction: signableTransaction,
+        });
+        const { hash, nonce } = txResult;
+        const { data, value } = signableTransaction;
+        if (!isEmpty(hash)) {
+          submitSuccess = true;
+          txDetails.hash = hash;
+          txDetails.nonce = nonce;
+          txDetails.network = currentNetwork;
+          txDetails.data = data;
+          txDetails.value = value;
+          txDetails.txTo = signableTransaction.to;
+          await dispatch(
+            dataAddNewTransaction(txDetails, null, false, currentProvider)
+          );
+        }
       }
     } catch (error) {
       logger.sentry('TX Details', txDetails);
