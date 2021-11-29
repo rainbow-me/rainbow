@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import analytics from '@segment/analytics-react-native';
 import React, { useEffect } from 'react';
 import Animated, {
@@ -121,14 +122,14 @@ export default function ExchangeDetailsRow({
           onPress={onFlipCurrencies}
           testID="exchange-flip-button"
         >
-          􀄬 Flip
+          􀄬 {lang.t('exchange.flip')}
         </ExchangeDetailsButton>
         <ExchangeDetailsButton
           disabled={!showDetailsButton}
           onPress={onPressViewDetails}
           testID="exchange-details-button"
         >
-          􀕹 View Details
+          􀕹 {lang.t('exchange.view_details')}
         </ExchangeDetailsButton>
       </AnimatedExchangeDetailsButtonRow>
     </Container>

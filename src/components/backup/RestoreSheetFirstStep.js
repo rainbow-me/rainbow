@@ -118,16 +118,36 @@ export default function RestoreSheetFirstStep({
               </Row>
               <TitleRow>
                 <RainbowText colors={colors}>
-                  <Title>Restore from {cloudPlatform}</Title>
+                  <Title>
+                    {lang.t(
+                      'back_up.restore_sheet.from_backup.restore_from_cloud_platform',
+                      { cloudPlatformName: cloudPlatform }
+                    )}
+                  </Title>
                 </RainbowText>
                 <CaretIcon />
               </TitleRow>
               <DescriptionText>
                 {ios
-                  ? `You have ${walletsBackedUp} ${
-                      walletsBackedUp > 1 ? 'wallets' : 'wallet'
-                    } backed up`
-                  : `If you previously backed up your wallet on ${cloudPlatform} tap here to restore it.`}
+                  ? // It is not possible for the user to be on iOS and have
+                    // no backups at this point, since `enableCloudRestore`
+                    // would be false in that case.
+                    walletsBackedUp > 1
+                    ? lang.t(
+                        'back_up.restore_sheet.from_backup.ios.description_multiple_backups',
+                        {
+                          walletsBackedUpCount: walletsBackedUp,
+                        }
+                      )
+                    : lang.t(
+                        'back_up.restore_sheet.from_backup.ios.description_one_backup'
+                      )
+                  : lang.t(
+                      'back_up.restore_sheet.from_backup.non_ios.description_cloud_platform',
+                      {
+                        cloudPlatformName: cloudPlatform,
+                      }
+                    )}
               </DescriptionText>
             </Column>
           </SheetRow>
@@ -143,11 +163,11 @@ export default function RestoreSheetFirstStep({
         <Column>
           <TextIcon color={colors.purple}>􀑚</TextIcon>
           <TitleRow justify="space-between" width="100%">
-            <Title>{lang.t('wallet.restore.phrase_key.label')}</Title>
+            <Title>{lang.t('back_up.restore_sheet.from_key.label')}</Title>
             <CaretIcon />
           </TitleRow>
           <DescriptionText>
-            {lang.t('wallet.restore.phrase_key.description')}
+            {lang.t('back_up.restore_sheet.from_key.description')}
           </DescriptionText>
         </Column>
       </SheetRow>
@@ -162,11 +182,11 @@ export default function RestoreSheetFirstStep({
         <Column>
           <TextIcon color={colors.mintDark}>􀒒</TextIcon>
           <TitleRow justify="space-between" width="100%">
-            <Title>{lang.t('wallet.restore.watch.label')}</Title>
+            <Title>{lang.t('back_up.restore_sheet.watch_address.label')}</Title>
             <CaretIcon />
           </TitleRow>
           <DescriptionText>
-            {lang.t('wallet.restore.watch.description')}
+            {lang.t('back_up.restore_sheet.watch_address.description')}
           </DescriptionText>
         </Column>
       </SheetRow>

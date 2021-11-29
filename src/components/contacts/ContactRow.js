@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { Fragment } from 'react';
 import styled from 'styled-components';
 import {
@@ -136,7 +137,9 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
                 letterSpacing="roundedMedium"
                 weight="medium"
               >
-                {cleanedUpBalance || 0} ETH
+                {lang.t('contacts.contact_row.balance_eth', {
+                  balanceEth: cleanedUpBalance || '0',
+                })}
               </BottomRowText>
             </Fragment>
           ) : (

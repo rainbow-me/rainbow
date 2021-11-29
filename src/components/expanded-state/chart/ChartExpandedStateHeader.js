@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useEffect, useMemo } from 'react';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import styled from 'styled-components';
@@ -18,7 +19,7 @@ import { padding } from '@rainbow-me/styles';
 
 const { call, cond, onChange, useCode } = Animated;
 
-const noPriceData = 'No price data';
+const noPriceData = lang.t('expanded_state.chart.no_price_data');
 
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
@@ -85,7 +86,11 @@ export default function ChartExpandedStateHeader({
     }
   }, [price, isNoPriceData, priceSharedValue]);
 
-  const title = isPool ? `${asset.tokenNames} Pool` : asset?.name;
+  const title = isPool
+    ? lang.t('expanded_state.chart.token_pool', {
+        tokenName: asset.tokenNames,
+      })
+    : asset?.name;
 
   const titleOrNoPriceData = isNoPriceData ? noPriceData : title;
 

@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { values } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
@@ -34,7 +35,7 @@ const TitleText = styled(Text).attrs({
 
 const countries = values(wyreSupportedCountries).map(c =>
   c.name === 'United States'
-    ? 'United\xa0States (except Texas and New York)'
+    ? lang.t('expanded_state.supported_countries.us_except')
     : c.name.replace(/ /g, '\xa0')
 );
 const countriesList = `${countries.join(', ')}`;
@@ -59,7 +60,9 @@ const SupportCountriesExpandedState = () => {
       >
         <AssetPanel>
           <Centered css={padding(19, 30, 24)} direction="column">
-            <TitleText>Supported Countries</TitleText>
+            <TitleText>
+              {lang.t('expanded_state.supported_countries.supported_countries')}
+            </TitleText>
             <Text
               align="center"
               color={colors.alpha(colors.blueGreyDark, 0.6)}

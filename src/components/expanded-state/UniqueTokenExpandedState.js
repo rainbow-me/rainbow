@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { Share } from 'react-native';
 import styled from 'styled-components';
@@ -97,7 +98,11 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
           <SheetActionButtonRow>
             <SheetActionButton
               color={isDarkMode ? colors.darkModeDark : colors.dark}
-              label={isShowcaseAsset ? '􀁏 Showcase' : '􀁍 Showcase'}
+              label={
+                isShowcaseAsset
+                  ? `􀁏 ${lang.t('expanded_state.unique_expanded.showcase')}`
+                  : `􀁍 ${lang.t('expanded_state.unique_expanded.showcase')}`
+              }
               onPress={handlePressShowcase}
               weight="bold"
             />
@@ -107,7 +112,7 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
           <SheetActionButtonRow>
             <SheetActionButton
               color={isDarkMode ? colors.darkModeDark : colors.dark}
-              label="􀈂 Share"
+              label={`􀈂 ${lang.t('button.share')}`}
               onPress={handlePressShare}
               weight="bold"
             />
@@ -116,17 +121,26 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
         <SheetDivider />
         <ColumnWithDividers dividerRenderer={SheetDivider}>
           {!!description && (
-            <NftExpandedStateSection title="Description">
+            <NftExpandedStateSection
+              title={lang.t('expanded_state.unique_expanded.description')}
+            >
               {description}
             </NftExpandedStateSection>
           )}
           {!!traits.length && (
-            <NftExpandedStateSection paddingBottom={14} title="Attributes">
+            <NftExpandedStateSection
+              paddingBottom={14}
+              title={lang.t('expanded_state.unique_expanded.attributes')}
+            >
               <UniqueTokenAttributes {...asset} />
             </NftExpandedStateSection>
           )}
           {!!familyDescription && (
-            <NftExpandedStateSection title={`About ${familyName}`}>
+            <NftExpandedStateSection
+              title={lang.t('expanded_state.unique_expanded.about', {
+                assetFamilyName: familyName,
+              })}
+            >
               <Column>
                 <MarkdownText
                   color={colors.alpha(colors.blueGreyDark, 0.5)}
@@ -144,9 +158,13 @@ const UniqueTokenExpandedState = ({ asset, external }) => {
       </SlackSheet>
       <ToastPositionContainer>
         <ToggleStateToast
-          addCopy="Added to showcase"
+          addCopy={lang.t(
+            'expanded_state.unique_expanded.toast_added_to_showcase'
+          )}
           isAdded={isShowcaseAsset}
-          removeCopy="Removed from showcase"
+          removeCopy={lang.t(
+            'expanded_state.unique_expanded.toast_removed_from_showcase'
+          )}
         />
       </ToastPositionContainer>
     </Fragment>

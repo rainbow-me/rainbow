@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { useRoute } from '@react-navigation/native';
 import React, {
   forwardRef,
@@ -135,8 +136,8 @@ export default forwardRef(function DiscoverSearchContainer(
             onFocus={onTapSearch}
             placeholderText={
               isSearchModeEnabled
-                ? 'Search all of Ethereum'
-                : '􀊫 Search all of Ethereum'
+                ? lang.t('discover.search.search_ethereum')
+                : `􀊫 ${lang.t('discover.search.search_ethereum')}`
             }
             ref={searchInputRef}
             searchQuery={searchQuery}
@@ -150,7 +151,9 @@ export default forwardRef(function DiscoverSearchContainer(
           }}
           testID="done-button"
         >
-          {delayedShowSearch && <CancelText>Done</CancelText>}
+          {delayedShowSearch && (
+            <CancelText>{lang.t('button.done')}</CancelText>
+          )}
         </CancelButton>
       </Row>
       <DiscoverSheetContext.Provider value={contextValue}>

@@ -487,7 +487,7 @@ class EmojiSelector extends PureComponent {
                       { color: colors.alpha(colors.blueGreyDark, 0.5) },
                     ]}
                   >
-                    Smileys & People
+                    {Categories.people.name}
                   </Text>
                 </View>
                 {null}

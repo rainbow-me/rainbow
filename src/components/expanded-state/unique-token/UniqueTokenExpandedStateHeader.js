@@ -12,8 +12,8 @@ import { padding } from '@rainbow-me/styles';
 import { buildRainbowUrl, magicMemo } from '@rainbow-me/utils';
 
 const contextButtonOptions = [
-  'Share',
-  'View on OpenSea',
+  lang.t('button.share'),
+  lang.t('expanded_state.unique.view_on_opensea'),
   ...(ios ? [lang.t('wallet.action.cancel')] : []),
 ];
 

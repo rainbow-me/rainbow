@@ -166,27 +166,29 @@ export default function BackupCloudStep() {
 
     let newLabel = '';
     if (passwordIsValid) {
-      newLabel = '􀎽 Confirm Backup';
+      newLabel = `􀎽 ${lang.t('back_up.cloud.password.confirm_backup')}`;
     } else if (password.length < cloudBackupPasswordMinLength) {
-      newLabel = `Minimum ${cloudBackupPasswordMinLength} characters`;
+      newLabel = lang.t('back_up.cloud.password.minimum_characters', {
+        minimumLength: cloudBackupPasswordMinLength,
+      });
     } else if (
       password !== '' &&
       password.length < cloudBackupPasswordMinLength &&
       !passwordRef.current?.isFocused()
     ) {
-      newLabel = 'Use a longer password';
+      newLabel = lang.t('back_up.cloud.password.use_longer_password');
     } else if (
       isCloudBackupPasswordValid(password) &&
       isCloudBackupPasswordValid(confirmPassword) &&
       confirmPassword.length >= password.length &&
       password !== confirmPassword
     ) {
-      newLabel = `Passwords don't match`;
+      newLabel = lang.t('back_up.cloud.password.not_matching');
     } else if (
       password.length >= cloudBackupPasswordMinLength &&
       !passwordFocused
     ) {
-      newLabel = 'Confirm password';
+      newLabel = lang.t('back_up.cloud.password.confirm_label');
     } else if (
       password.length >= cloudBackupPasswordMinLength &&
       passwordFocused
@@ -195,16 +197,16 @@ export default function BackupCloudStep() {
       switch (passInfo.score) {
         case 0:
         case 1:
-          newLabel = '💩 Weak password';
+          newLabel = `💩 ${lang.t('back_up.cloud.password.strength.level1')}`;
           break;
         case 2:
-          newLabel = '👌 Good password';
+          newLabel = `👌 ${lang.t('back_up.cloud.password.strength.level2')}`;
           break;
         case 3:
-          newLabel = '💪 Great password';
+          newLabel = `💪 ${lang.t('back_up.cloud.password.strength.level3')}`;
           break;
         case 4:
-          newLabel = '🏰️ Strong password';
+          newLabel = `🏰️ ${lang.t('back_up.cloud.password.strength.level4')}`;
           break;
         default:
       }
@@ -276,11 +278,13 @@ export default function BackupCloudStep() {
         {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
           <MastheadIcon>􀌍</MastheadIcon>
         )}
-        <Title isTinyPhone={isTinyPhone}>Choose a password</Title>
+        <Title isTinyPhone={isTinyPhone}>
+          {lang.t('back_up.cloud.password.choose')}
+        </Title>
         <DescriptionText isTinyPhone={isTinyPhone}>
-          Please use a password you&apos;ll remember.&nbsp;
+          {lang.t('back_up.cloud.password.remember')}&nbsp;
           <ImportantText isTinyPhone={isTinyPhone}>
-            It can&apos;t be recovered!
+            {lang.t('back_up.cloud.password.not_recoverable')}
           </ImportantText>
         </DescriptionText>
       </Masthead>
@@ -297,7 +301,7 @@ export default function BackupCloudStep() {
           onFocus={onPasswordFocus}
           onSubmitEditing={onPasswordSubmit}
           password={password}
-          placeholder="Backup Password"
+          placeholder={lang.t('back_up.cloud.password.backup_placeholder')}
           ref={passwordRef}
           returnKeyType="next"
           textContentType="newPassword"
@@ -314,7 +318,7 @@ export default function BackupCloudStep() {
           onFocus={onConfirmPasswordFocus}
           onSubmitEditing={onConfirmPasswordSubmit}
           password={confirmPassword}
-          placeholder="Confirm Password"
+          placeholder={lang.t('back_up.cloud.password.confirm_placeholder')}
           ref={confirmPasswordRef}
         />
       </ColumnWithMargins>

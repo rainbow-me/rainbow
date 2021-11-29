@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
@@ -183,7 +184,9 @@ export default function SwapDetailsState({
         contentHeight={ios ? longFormHeight : sheetHeightWithoutKeyboard}
       >
         <Header>
-          <SheetTitle weight="heavy">Review</SheetTitle>
+          <SheetTitle weight="heavy">
+            {lang.t('expanded_state.swap_details.review')}
+          </SheetTitle>
         </Header>
         <SwapDetailsMasthead
           inputAmount={inputAmount}
