@@ -1,5 +1,5 @@
 /**
- * This fine contains flags for debugging related features that
+ * This file contains flags for debugging related features that
  * could be useful during development.
  */
 
