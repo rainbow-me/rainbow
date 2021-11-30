@@ -2,7 +2,7 @@ import { RainbowFetchClient } from '../rainbow-fetch';
 import { EthereumAddress } from '@rainbow-me/entities';
 
 const dispersionApi = new RainbowFetchClient({
-  baseURL: 'http://localhost:8080',
+  baseURL: 'https://metadata.p.rainbow.me',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -12,5 +12,5 @@ const dispersionApi = new RainbowFetchClient({
 
 export const getUniswapV2Pools = async (token?: EthereumAddress) => {
   const tokenPath = token ? `/${token}` : '';
-  return await dispersionApi.get(`/pools/v1/uniswap/v2${tokenPath}`);
+  return await dispersionApi.get(`/dispersion/v1/pools/uniswap/v2${tokenPath}`);
 };
