@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, ViewStyle } from 'react-native';
+import { StyleSheet, ViewProps, ViewStyle } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   withSpring,
@@ -7,8 +7,8 @@ import Animated, {
 import { useChartData } from '../../helpers/useChartData';
 import withReanimatedFallback from '../../helpers/withReanimatedFallback';
 
-interface ChartDotProps {
-  style?: ViewStyle;
+interface ChartDotProps extends ViewProps {
+  size?: number;
   springConfig?: Animated.WithSpringConfig;
 }
 
@@ -18,14 +18,17 @@ const springDefaultConfig = {
   stiffness: 600,
 };
 
-const CURSOR = 16;
-
-const ChartDot: React.FC<ChartDotProps> = ({ style, springConfig }) => {
+const ChartDot: React.FC<ChartDotProps> = ({
+  style,
+  size = 10,
+  springConfig,
+  ...props
+}) => {
   const { isActive, positionX, positionY } = useChartData();
 
   const animatedStyle = useAnimatedStyle(() => {
-    const translateX = positionX.value - CURSOR / 2;
-    const translateY = positionY.value - CURSOR / 2;
+    const translateX = positionX.value;
+    const translateY = positionY.value + 10;
 
     return {
       opacity: withSpring(
@@ -43,12 +46,25 @@ const ChartDot: React.FC<ChartDotProps> = ({ style, springConfig }) => {
         },
       ],
     };
-  });
+  }, [size]);
 
   return (
-    <Animated.View style={[StyleSheet.absoluteFill]}>
-      <Animated.View style={[styles.cursorBody, style, animatedStyle]} />
-    </Animated.View>
+    <Animated.View
+      {...props}
+      pointerEvents="none"
+      style={[
+        {
+          borderRadius: size / 2,
+          height: size,
+          left: -size / 2,
+          position: 'absolute',
+          top: -size / 2,
+          width: size,
+        },
+        animatedStyle,
+        style,
+      ]}
+    />
   );
 };
 

@@ -11,6 +11,7 @@ import { Dimensions, StyleSheet, View, ViewStyle } from 'react-native';
 import {
   LongPressGestureHandler,
   LongPressGestureHandlerGestureEvent,
+  LongPressGestureHandlerProps,
 } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
@@ -25,8 +26,8 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { getYForX, parse as parseSvgPath } from 'react-native-redash';
-import Svg, { Path } from 'react-native-svg';
+import * as redash from 'react-native-redash';
+import Svg, { Path, PathProps } from 'react-native-svg';
 import { CurveType, DataType } from '../../helpers/ChartContext';
 import {
   requireOnWorklet,
@@ -118,7 +119,7 @@ type CallbackType = {
   height: number;
 };
 
-interface ChartPathProps {
+interface ChartPathProps extends PathProps {
   hapticsEnabled?: boolean;
   hitSlop?: number;
   fill?: string;
@@ -128,7 +129,9 @@ interface ChartPathProps {
   selectedOpacity?: number;
   strokeWidth?: number;
   stroke?: string;
+  gestureEnabled?: boolean;
   springConfig?: Animated.WithSpringConfig;
+  longPressGestureHandlerProps?: LongPressGestureHandlerProps;
   timingFeedbackConfig?: Animated.WithTimingConfig;
   timingAnimationConfig?: Animated.WithTimingConfig;
 }
@@ -144,230 +147,263 @@ function positionXWithMargin(x: number, margin: number, width: number) {
   }
 }
 
-export const ChartPath: React.FC<ChartPathProps> = ({
-  hapticsEnabled,
-  hitSlop = 0,
-  width,
-  height,
-  stroke = 'black',
-  selectedStrokeWidth = 4,
-  strokeWidth = 2,
-  selectedOpacity = 0.5,
-  timingFeedbackConfig,
-  timingAnimationConfig,
-}) => {
-  const {
-    data,
-    positionX,
-    positionY,
-    originalX,
-    originalY,
-    state,
-    isActive,
-    progress,
-    pathOpacity,
-  } = useChartData();
+interface PathData {
+  path: string;
+  parsed: null | redash.Path;
+  points: DataType['points'];
+  data: DataType['points'];
+}
 
-  const initialized = useRef(false);
-  const interpolatorWorklet = useWorkletValue();
+export const ChartPath: React.FC<ChartPathProps> = React.memo(
+  ({
+    hapticsEnabled,
+    hitSlop = 0,
+    width,
+    height,
+    stroke = 'black',
+    selectedStrokeWidth = 4,
+    strokeWidth = 2,
+    selectedOpacity = 0.5,
+    timingFeedbackConfig,
+    timingAnimationConfig,
+    longPressGestureHandlerProps = {},
+    gestureEnabled = true,
+    ...props
+  }) => {
+    const {
+      data,
+      positionX,
+      positionY,
+      originalX,
+      originalY,
+      state,
+      isActive,
+      progress,
+      pathOpacity,
+    } = useChartData();
 
-  const getScales = useCallback(({ data, width, height }: CallbackType) => {
-    const x = data.points.map(item => item.x);
-    const y = data.points.map(item => item.y);
+    console.log('Render chart');
 
-    const scaleX = scaleLinear()
-      .domain([Math.min(...x), Math.max(...x)])
-      .range([0, width]);
+    const initialized = useRef(false);
+    const interpolatorWorklet = useWorkletValue();
 
-    const scaleY = scaleLinear()
-      .domain([Math.min(...y), Math.max(...y)])
-      .range([height, 0]);
+    const getScales = useCallback(({ data, width, height }: CallbackType) => {
+      const x = data.points.map(item => item.x);
+      const y = data.points.map(item => item.y);
 
-    return {
-      scaleY,
-      scaleX,
-    };
-  }, []);
+      const scaleX = scaleLinear()
+        .domain([Math.min(...x), Math.max(...x)])
+        .range([0, width]);
 
-  const createPath = useCallback(({ data, width, height }: CallbackType) => {
-    const { scaleX, scaleY } = getScales({ data, width, height });
+      const scaleY = scaleLinear()
+        .domain([Math.min(...y), Math.max(...y)])
+        .range([height, 0]);
 
-    const points = [];
+      return {
+        scaleY,
+        scaleX,
+      };
+    }, []);
 
-    for (let i = 0; i < data.points.length; i++) {
-      points.push({
-        x: scaleX(data.points[i].x),
-        y: scaleY(data.points[i].y),
-      });
-    }
+    const createPath = useCallback(
+      ({ data, width, height }: CallbackType): PathData => {
+        const { scaleX, scaleY } = getScales({ data, width, height });
 
-    const path = shape
-      .line()
-      .x(item => scaleX(item.x))
-      .y(item => scaleY(item.y))
-      .curve(getCurveType(data.curve))(data.points);
+        if (!data.points.length) {
+          return {
+            path: '',
+            parsed: null,
+            points: [],
+            data: [],
+          };
+        }
 
-    const parsed = parseSvgPath(path);
+        const points: DataType['points'] = [];
 
-    return { path, parsed, points, data: data.points };
-  }, []);
+        for (let i = 0; i < data.points.length; i++) {
+          points.push({
+            x: scaleX(data.points[i].x),
+            y: scaleY(data.points[i].y),
+          });
+        }
 
-  const initialPath = useMemo(() => createPath({ data, width, height }), []);
+        const path = shape
+          .line()
+          .x(item => scaleX(item.x))
+          .y(item => scaleY(item.y))
+          .curve(getCurveType(data.curve!))(data.points) as string;
 
-  const [paths, setPaths] = useState(() => [initialPath, initialPath]);
+        const parsed = redash.parse(path);
 
-  useEffect(() => {
-    if (initialized.current) {
-      setPaths(([_, curr]) => [curr, createPath({ data, width, height })]);
-    } else {
-      initialized.current = true;
-    }
-  }, [data.points, data.curve, width, height]);
+        return { path, parsed, points, data: data.points };
+      },
+      []
+    );
 
-  useEffect(() => {
-    if (paths[0].path === paths[1].path) {
-      return;
-    }
+    const initialPath = useMemo(() => createPath({ data, width, height }), []);
 
-    runOnUI(() => {
-      'worklet';
+    const [paths, setPaths] = useState(() => [initialPath, initialPath]);
 
-      if (progress.value !== 0 && progress.value !== 1) {
-        cancelAnimation(progress);
+    useEffect(() => {
+      if (initialized.current) {
+        setPaths(([_, curr]) => [curr, createPath({ data, width, height })]);
+      } else {
+        initialized.current = true;
+      }
+    }, [data.points, data.curve, width, height]);
+
+    useEffect(() => {
+      if (paths[0].path === paths[1].path) {
+        return;
       }
 
-      // this stores an instance of d3-interpolate-path on worklet side
-      // it means that we don't cross threads with that function
-      // which makes it super fast
-      interpolatorWorklet().value = requireOnWorklet(
-        'd3-interpolate-path'
-      ).interpolatePath(paths[0].path, paths[1].path);
+      runOnUI(() => {
+        'worklet';
 
-      progress.value = 0;
-
-      progress.value = withDelay(
-        100,
-        withTiming(1, timingAnimationConfig || timingAnimationDefaultConfig)
-      );
-    })();
-  }, [paths]);
-
-  useAnimatedReaction(
-    () => ({ x: positionX.value, y: positionY.value }),
-    values => {
-      const path = paths[1];
-
-      console.log(values);
-
-      const index = least(path.points.length, i =>
-        Math.hypot(path.points[i].x - Math.floor(values.x))
-      );
-
-      const yForX = getYForX(path.parsed, Math.floor(values.x));
-
-      // activeIndex.value = index;
-      positionX.value = values.x;
-      positionY.value = yForX;
-      originalX.value = path.data[index].x.toString();
-      originalY.value = path.data[index].y.toString();
-    },
-    [paths, data]
-  );
-
-  const animatedProps = useAnimatedProps(() => {
-    const d = interpolatorWorklet().value
-      ? interpolatorWorklet().value(progress.value)
-      : paths[1].path;
-
-    return {
-      d,
-      strokeWidth:
-        pathOpacity.value *
-          (Number(strokeWidth) - Number(selectedStrokeWidth)) +
-        Number(selectedStrokeWidth),
-    };
-  }, [paths]);
-
-  const onGestureEvent = useAnimatedGestureHandler<LongPressGestureHandlerGestureEvent>(
-    {
-      onStart: event => {
-        state.value = event.state;
-        isActive.value = true;
-        pathOpacity.value = withTiming(
-          0,
-          timingFeedbackConfig || timingFeedbackDefaultConfig
-        );
-
-        if (hapticsEnabled) {
-          impactHeavy();
+        if (progress.value !== 0 && progress.value !== 1) {
+          cancelAnimation(progress);
         }
-      },
-      onActive: event => {
-        state.value = event.state;
-        positionX.value = positionXWithMargin(event.x, hitSlop, width);
-        positionY.value = event.y;
-      },
-      onFail: event => {
-        console.log('fail');
-        state.value = event.state;
-        isActive.value = false;
-        pathOpacity.value = withTiming(
-          1,
-          timingFeedbackConfig || timingFeedbackDefaultConfig
-        );
-      },
-      onCancel: event => {
-        console.log('cancel');
-        state.value = event.state;
-        isActive.value = false;
-        pathOpacity.value = withTiming(
-          1,
-          timingFeedbackConfig || timingFeedbackDefaultConfig
-        );
-      },
-      onEnd: event => {
-        state.value = event.state;
-        isActive.value = false;
-        pathOpacity.value = withTiming(
-          1,
-          timingFeedbackConfig || timingFeedbackDefaultConfig
-        );
 
-        if (hapticsEnabled) {
-          impactHeavy();
+        // this stores an instance of d3-interpolate-path on worklet side
+        // it means that we don't cross threads with that function
+        // which makes it super fast
+        interpolatorWorklet().value = requireOnWorklet(
+          'd3-interpolate-path'
+        ).interpolatePath(paths[0].path, paths[1].path);
+
+        progress.value = 0;
+
+        progress.value = withDelay(
+          100,
+          withTiming(1, timingAnimationConfig || timingAnimationDefaultConfig)
+        );
+      })();
+    }, [paths]);
+
+    useAnimatedReaction(
+      () => ({ x: positionX.value, y: positionY.value }),
+      values => {
+        const path = paths[1];
+
+        if (!path.parsed) {
+          return;
         }
+
+        const index = least(path.points.length, i =>
+          Math.hypot(path.points[i].x - Math.floor(values.x))
+        );
+
+        const yForX = redash.getYForX(path.parsed, Math.floor(values.x));
+
+        // activeIndex.value = index;
+        positionX.value = values.x;
+        positionY.value = yForX;
+        originalX.value = path.data[index].x.toString();
+        originalY.value = path.data[index].y.toString();
       },
-    },
-    [width, height, hapticsEnabled, hitSlop, timingFeedbackConfig]
-  );
+      [paths, data]
+    );
 
-  const pathAnimatedStyles = useAnimatedStyle(() => {
-    return {
-      opacity: pathOpacity.value * (1 - selectedOpacity) + selectedOpacity,
-    };
-  }, []);
+    const animatedProps = useAnimatedProps(() => {
+      const d = interpolatorWorklet().value
+        ? interpolatorWorklet().value(progress.value)
+        : paths[1].path;
 
-  return (
-    <View style={{ width, height }}>
-      <Svg viewBox={`0 0 ${width + 1} ${height + 1}`} style={{ width, height }}>
-        <AnimatedPath
-          style={pathAnimatedStyles}
-          animatedProps={animatedProps}
-          stroke={stroke}
-          strokeWidth={strokeWidth}
-        />
-      </Svg>
-      <LongPressGestureHandler
-        {...{ onGestureEvent }}
-        maxDist={100000}
-        minDurationMs={0}
-        shouldCancelWhenOutside={false}
-      >
-        <Animated.View style={StyleSheet.absoluteFill} />
-      </LongPressGestureHandler>
-    </View>
-  );
-};
+      return {
+        d,
+        strokeWidth:
+          pathOpacity.value *
+            (Number(strokeWidth) - Number(selectedStrokeWidth)) +
+          Number(selectedStrokeWidth),
+      };
+    }, [paths]);
+
+    const onGestureEvent = useAnimatedGestureHandler<LongPressGestureHandlerGestureEvent>(
+      {
+        onStart: event => {
+          state.value = event.state;
+          isActive.value = true;
+          pathOpacity.value = withTiming(
+            0,
+            timingFeedbackConfig || timingFeedbackDefaultConfig
+          );
+
+          if (hapticsEnabled) {
+            impactHeavy();
+          }
+        },
+        onActive: event => {
+          state.value = event.state;
+          positionX.value = positionXWithMargin(event.x, hitSlop, width);
+          positionY.value = event.y;
+        },
+        onFail: event => {
+          state.value = event.state;
+          isActive.value = false;
+          pathOpacity.value = withTiming(
+            1,
+            timingFeedbackConfig || timingFeedbackDefaultConfig
+          );
+        },
+        onCancel: event => {
+          state.value = event.state;
+          isActive.value = false;
+          pathOpacity.value = withTiming(
+            1,
+            timingFeedbackConfig || timingFeedbackDefaultConfig
+          );
+        },
+        onEnd: event => {
+          state.value = event.state;
+          isActive.value = false;
+          pathOpacity.value = withTiming(
+            1,
+            timingFeedbackConfig || timingFeedbackDefaultConfig
+          );
+
+          if (hapticsEnabled) {
+            impactHeavy();
+          }
+        },
+      },
+      [width, height, hapticsEnabled, hitSlop, timingFeedbackConfig]
+    );
+
+    const pathAnimatedStyles = useAnimatedStyle(() => {
+      return {
+        opacity: pathOpacity.value * (1 - selectedOpacity) + selectedOpacity,
+      };
+    }, []);
+
+    return (
+      <View style={{ width, height }}>
+        <LongPressGestureHandler
+          {...{ onGestureEvent }}
+          enabled={gestureEnabled}
+          maxDist={100000}
+          minDurationMs={0}
+          shouldCancelWhenOutside={false}
+          {...longPressGestureHandlerProps}
+        >
+          <Animated.View>
+            <Svg
+              viewBox={`0 0 ${width} ${height}`}
+              style={{ width, height: height + 20 }}
+            >
+              <AnimatedPath
+                style={pathAnimatedStyles}
+                animatedProps={animatedProps}
+                stroke={stroke}
+                strokeWidth={strokeWidth}
+                {...props}
+              />
+            </Svg>
+          </Animated.View>
+        </LongPressGestureHandler>
+      </View>
+    );
+  }
+);
 
 const SIZE = Dimensions.get('window').width;
 

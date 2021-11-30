@@ -197,6 +197,13 @@ export default function ChartWrapper({
     }
   }, [chartTimeSharedValue, chartType, formattedTimespan]);
 
+  const longPressGestureHandlerProps = useMemo(
+    () => ({
+      minDurationMs: 60,
+    }),
+    []
+  );
+
   return (
     <Container>
       <ChartExpandedStateHeader
@@ -218,9 +225,7 @@ export default function ChartWrapper({
               hapticsEnabled
               height={HEIGHT}
               hitSlop={30}
-              longPressGestureHandlerProps={{
-                minDurationMs: 60,
-              }}
+              longPressGestureHandlerProps={longPressGestureHandlerProps}
               selectedStrokeWidth={3}
               stroke={color}
               strokeLinecap="round"

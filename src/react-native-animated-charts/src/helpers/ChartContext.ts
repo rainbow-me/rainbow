@@ -14,7 +14,7 @@ export interface DataType {
   points: {
     x: number;
     y: number;
-  };
+  }[];
   curve?: CurveType;
 }
 
