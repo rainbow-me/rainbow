@@ -3,7 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import { captureEvent, captureException } from '@sentry/react-native';
 import { isEmpty, isEqual, isString, toLower } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { InteractionManager, Keyboard, StatusBar } from 'react-native';
+import { Alert, InteractionManager, Keyboard, StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
@@ -423,7 +423,7 @@ export default function SendSheet(props) {
       }
       setToAddress(realAddress);
     };
-    resolveAddressIfNeeded();
+    recipient && resolveAddressIfNeeded();
   }, [recipient]);
 
   const updateTxFeeForOptimism = useCallback(
@@ -517,22 +517,33 @@ export default function SendSheet(props) {
 
     try {
       const signableTransaction = await createSignableTransaction(txDetails);
-      const { result: txResult } = await sendTransaction({
-        provider: currentProvider,
-        transaction: signableTransaction,
-      });
-      const { hash, nonce } = txResult;
-      const { data, value } = signableTransaction;
-      if (!isEmpty(hash)) {
-        submitSuccess = true;
-        txDetails.hash = hash;
-        txDetails.nonce = nonce;
-        txDetails.network = currentNetwork;
-        txDetails.data = data;
-        txDetails.value = value;
-        await dispatch(
-          dataAddNewTransaction(txDetails, null, false, currentProvider)
-        );
+      if (!signableTransaction.to) {
+        logger.sentry('txDetails', txDetails);
+        logger.sentry('signableTransaction', signableTransaction);
+        logger.sentry('"to" field is missing!');
+        const e = new Error('Transaction missing TO field');
+        captureException(e);
+        Alert.alert('Invalid transaction');
+        submitSuccess = false;
+      } else {
+        const { result: txResult } = await sendTransaction({
+          provider: currentProvider,
+          transaction: signableTransaction,
+        });
+        const { hash, nonce } = txResult;
+        const { data, value } = signableTransaction;
+        if (!isEmpty(hash)) {
+          submitSuccess = true;
+          txDetails.hash = hash;
+          txDetails.nonce = nonce;
+          txDetails.network = currentNetwork;
+          txDetails.data = data;
+          txDetails.value = value;
+          txDetails.txTo = signableTransaction.to;
+          await dispatch(
+            dataAddNewTransaction(txDetails, null, false, currentProvider)
+          );
+        }
       }
     } catch (error) {
       logger.sentry('TX Details', txDetails);

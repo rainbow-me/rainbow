@@ -32,6 +32,7 @@ import ErrorBoundary from './components/error-boundary/ErrorBoundary';
 import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
 import {
+  designSystemPlaygroundEnabled,
   reactNativeDisableYellowBox,
   showNetworkRequests,
   showNetworkResponses,
@@ -39,6 +40,7 @@ import {
 import { MainThemeProvider } from './context/ThemeContext';
 import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
+import { Playground } from './design-system/playground/Playground';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
@@ -308,4 +310,6 @@ const AppWithRedux = connect(
 
 const AppWithReduxStore = () => <AppWithRedux store={store} />;
 
-AppRegistry.registerComponent('Rainbow', () => AppWithReduxStore);
+AppRegistry.registerComponent('Rainbow', () =>
+  designSystemPlaygroundEnabled ? Playground : AppWithReduxStore
+);

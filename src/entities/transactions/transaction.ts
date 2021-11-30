@@ -38,6 +38,7 @@ export interface RainbowTransaction {
   title: string;
   to: EthereumAddress | null;
   transferId?: string; // for purchases
+  txTo?: EthereumAddress | null;
   type: TransactionType;
   value?: BigNumberish; // for pending tx
 }
@@ -63,4 +64,5 @@ export interface NewTransaction {
   transferId?: string; // for purchases
   type?: TransactionType;
   value: BigNumberish;
+  txTo: EthereumAddress | null;
 }
