@@ -184,7 +184,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
 
   const handlePressShare = useCallback(() => {
     Share.share({
-      message: buildRainbowUrl(asset, accountENS, accountAddress),
+      message: android && buildRainbowUrl(asset, accountENS, accountAddress),
       title: `Share ${buildUniqueTokenName(asset)} Info`,
       url: buildRainbowUrl(asset, accountENS, accountAddress),
     });
