@@ -64,9 +64,9 @@ const UniqueTokenExpandedStateContent = ({
     if (asset.image_url?.startsWith?.(GOOGLE_USER_CONTENT_URL) && size > 0) {
       return `${asset.image_url}=w${size * MAX_IMAGE_SCALE}`;
     }
-    if (asset?.isPoap) return asset.animation_url;
+    if (asset.isPoap) return asset.animation_url;
     return asset.image_url;
-  }, [asset.animation_url, asset.image_url, asset?.isPoap, size]);
+  }, [asset.animation_url, asset.image_url, asset.isPoap, size]);
 
   const lowResUrl = isENS ? url : getLowResUrl(asset.image_url);
   const { supports3d, supportsVideo, supportsAudio } = useUniqueToken(asset);
