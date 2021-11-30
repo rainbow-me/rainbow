@@ -796,7 +796,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.5.36;
+				MARKETING_VERSION = 1.5.37;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
@@ -855,7 +855,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.5.36;
+				MARKETING_VERSION = 1.5.37;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
@@ -898,7 +898,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 i386";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -950,7 +950,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.5.36;
+				MARKETING_VERSION = 1.5.37;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
@@ -993,7 +993,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 i386";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_PREPROCESSOR_DEFINITIONS = "LOCAL_RELEASE=1";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1046,7 +1046,7 @@
 					"$(PROJECT_DIR)",
 				);
 				LLVM_LTO = YES;
-				MARKETING_VERSION = 1.5.36;
+				MARKETING_VERSION = 1.5.37;
 				OTHER_CFLAGS = (
 					"$(inherited)",
 					"-DFB_SONARKIT_ENABLED=1",
@@ -1087,7 +1087,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 i386";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1131,7 +1131,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 i386";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;

@@ -288,7 +288,7 @@ export default function SpeedUpAndCancelSheet() {
           setNonce(tx.nonce);
           setValue(hexValue);
           setData(hexData);
-          setTo(tx.to);
+          setTo(tx.txTo);
           setGasLimit(hexGasLimit);
           setMinGasPrice(calcMinGasPriceAllowed(hexGasPrice));
         } catch (e) {

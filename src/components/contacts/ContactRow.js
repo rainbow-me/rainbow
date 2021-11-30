@@ -11,7 +11,10 @@ import { Column, RowWithMargins } from '../layout';
 import { TruncatedAddress, TruncatedENS, TruncatedText } from '../text';
 import ContactAvatar from './ContactAvatar';
 import ImageAvatar from './ImageAvatar';
-import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
+import {
+  isENSAddressFormat,
+  isValidDomainFormat,
+} from '@rainbow-me/helpers/validators';
 import { useDimensions } from '@rainbow-me/hooks';
 import { margin } from '@rainbow-me/styles';
 
@@ -126,7 +129,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
                 </ContactName>
               ) : (
                 <ContactName deviceWidth={deviceWidth}>
-                  {isENSAddressFormat(address)
+                  {isValidDomainFormat(address)
                     ? address
                     : abbreviations.address(address, 4, 6)}
                 </ContactName>
@@ -144,7 +147,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
               <ContactName deviceWidth={deviceWidth} lite={!!showcaseItem}>
                 {removeFirstEmojiFromString(nickname)}
               </ContactName>
-              {isENSAddressFormat(address) ? (
+              {isValidDomainFormat(address) ? (
                 <ContactENS ens={address} />
               ) : (
                 <ContactAddress address={address} lite={!!showcaseItem} />

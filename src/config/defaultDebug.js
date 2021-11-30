@@ -1,5 +1,5 @@
 /**
- * This fine contains flags for debugging related features that
+ * This file contains flags for debugging related features that
  * could be useful during development.
  */
 
@@ -17,3 +17,4 @@ export const showNetworkResponses = false;
 export const arbitrumEnabled = false;
 export const optimismEnabled = false;
 export const polygonEnabled = false;
+export const designSystemPlaygroundEnabled = false;
