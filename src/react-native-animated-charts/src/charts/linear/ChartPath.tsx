@@ -7,7 +7,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Dimensions, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+  Dimensions,
+  Platform,
+  StyleSheet,
+  View,
+  ViewProps,
+  ViewStyle,
+} from 'react-native';
 import {
   LongPressGestureHandler,
   LongPressGestureHandlerGestureEvent,
@@ -295,9 +302,12 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
 
         const yForX = redash.getYForX(path.parsed, Math.floor(values.x));
 
+        if (yForX !== null) {
+          positionY.value = yForX;
+        }
+
         // activeIndex.value = index;
         positionX.value = values.x;
-        positionY.value = yForX;
         originalX.value = path.data[index].x.toString();
         originalY.value = path.data[index].y.toString();
       },
@@ -305,22 +315,31 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
     );
 
     const animatedProps = useAnimatedProps(() => {
-      const d = interpolatorWorklet().value
+      const props: PathProps & ViewProps = {};
+
+      props.d = interpolatorWorklet().value
         ? interpolatorWorklet().value(progress.value)
         : paths[1].path;
 
-      return {
-        d,
-        strokeWidth:
-          pathOpacity.value *
-            (Number(strokeWidth) - Number(selectedStrokeWidth)) +
-          Number(selectedStrokeWidth),
-      };
+      props.strokeWidth =
+        pathOpacity.value *
+          (Number(strokeWidth) - Number(selectedStrokeWidth)) +
+        Number(selectedStrokeWidth);
+
+      if (Platform.OS === 'ios') {
+        props.style = {
+          opacity: pathOpacity.value * (1 - selectedOpacity) + selectedOpacity,
+        };
+      }
+
+      return props;
     }, [paths]);
 
     const onGestureEvent = useAnimatedGestureHandler<LongPressGestureHandlerGestureEvent>(
       {
         onStart: event => {
+          // WARNING: the following code does not run on using iOS, but it does on Android.
+          // I use the same code from onActive
           state.value = event.state;
           isActive.value = true;
           pathOpacity.value = withTiming(
@@ -333,6 +352,19 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
           }
         },
         onActive: event => {
+          if (!isActive.value) {
+            isActive.value = true;
+
+            pathOpacity.value = withTiming(
+              0,
+              timingFeedbackConfig || timingFeedbackDefaultConfig
+            );
+
+            if (hapticsEnabled) {
+              impactHeavy();
+            }
+          }
+
           state.value = event.state;
           positionX.value = positionXWithMargin(event.x, hitSlop, width);
           positionY.value = event.y;
