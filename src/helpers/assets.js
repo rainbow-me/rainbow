@@ -15,6 +15,7 @@ import {
 import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
 import store from '@rainbow-me/redux/store';
 import {
+  ETH_ADDRESS,
   ETH_ICON_URL,
   supportedNativeCurrencies,
 } from '@rainbow-me/references';
@@ -186,6 +187,52 @@ export const buildCoinsList = (
   return { addedEth, assets: allAssets, totalBalancesValue };
 };
 
+// TODO make it better
+export const buildBriefCoinsList = (
+  assetsOriginal,
+  nativeCurrency,
+  isCoinListEdited,
+  pinnedCoins,
+  hiddenCoins,
+  includePlaceholder = false,
+  emptyCollectibles
+) => {
+  const { assets } = buildCoinsList(
+    assetsOriginal,
+    nativeCurrency,
+    isCoinListEdited,
+    pinnedCoins,
+    hiddenCoins,
+    includePlaceholder,
+    emptyCollectibles
+  );
+  console.log(assets, 'GGGG');
+  const briefAssets = assets?.reduce((acc, asset) => {
+    if (asset.coinDivider) {
+      acc.push({
+        type: 'COIN_DIVIDER',
+        uid: 'coin-divider',
+      });
+    } else if (asset.smallBalancesContainer) {
+      for (let smallAsset of asset.assets) {
+        acc.push({
+          type: 'COIN',
+          uid: 'coin-' + smallAsset.uniqueId,
+          uniqueId: smallAsset.uniqueId,
+        });
+      }
+    } else {
+      acc.push({
+        type: 'COIN',
+        uid: 'coin-' + asset.uniqueId,
+        uniqueId: asset.uniqueId,
+      });
+    }
+    return acc;
+  }, []);
+  return briefAssets;
+};
+
 export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
   let rows = [];
   const showcaseTokens = [];
@@ -266,6 +313,42 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
     row.tokens[0][0].rowNumber = i;
   });
   return rows;
+};
+
+const regex = RegExp(/\s*(the)\s/, 'i');
+
+export const buildBriefUniqueTokenList = (
+  uniqueTokens,
+  selectedShowcaseTokens
+) => {
+  const uniqueTokensNotInShowcase = uniqueTokens.filter(
+    ({ uniqueId }) => !selectedShowcaseTokens.includes(uniqueId)
+  );
+  const uniqueTokensInShowcase = uniqueTokens
+    .filter(({ uniqueId }) => selectedShowcaseTokens.includes(uniqueId))
+    .map(({ uniqueId }) => uniqueId);
+  const grouped2 = groupBy(
+    uniqueTokensNotInShowcase,
+    token => token.familyName
+  );
+  const families2 = sortBy(Object.keys(grouped2), row =>
+    row.replace(regex, '').toLowerCase()
+  );
+  const result = [];
+  if (uniqueTokensInShowcase.length > 0) {
+    result.push({ name: 'Showcase', type: 'FAMILY_HEADER', uid: 'showcase' });
+    for (let token of uniqueTokensInShowcase) {
+      result.push({ type: 'NFT', uid: token, uniqueId: token });
+    }
+  }
+  for (let family of families2) {
+    result.push({ name: family, type: 'FAMILY_HEADER', uid: family });
+    const tokens = grouped2[family].map(({ uniqueId }) => uniqueId);
+    for (let token of tokens) {
+      result.push({ type: 'NFT', uid: token, uniqueId: token });
+    }
+  }
+  return result;
 };
 
 export const buildUniqueTokenName = ({ collection, id, name }) =>

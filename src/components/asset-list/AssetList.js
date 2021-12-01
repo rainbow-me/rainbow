@@ -1,3 +1,4 @@
+import {useClipboard} from "@rainbow-me/hooks";
 import lang from 'i18n-js';
 import React, { useState } from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -6,6 +7,7 @@ import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../fab';
 import { ListFooter } from '../list';
 import EmptyAssetList from './EmptyAssetList';
 import RecyclerAssetList from './RecyclerAssetList';
+import RecyclerAssetList2 from './RecyclerAssetList2';
 
 const FabSizeWithPadding =
   FloatingActionButtonSize + FabWrapperBottomPosition * 2;
@@ -32,16 +34,18 @@ const AssetList = ({
       title={lang.t('account.tab_balances')}
     />
   ) : (
-    <RecyclerAssetList
-      fetchData={fetchData}
-      hideHeader={hideHeader}
-      isBlockingUpdate={isBlockingUpdate}
-      paddingBottom={insets.bottom + FabSizeWithPadding - ListFooter.height}
-      scrollViewTracker={scrollViewTracker}
-      sections={sections}
-      setIsBlockingUpdate={setIsBlockingUpdate}
-      {...props}
-    />
+    // <RecyclerAssetList
+    //   fetchData={fetchData}
+    //   hideHeader={hideHeader}
+    //   isBlockingUpdate={isBlockingUpdate}
+    //   paddingBottom={insets.bottom + FabSizeWithPadding - ListFooter.height}
+    //   scrollViewTracker={scrollViewTracker}
+    //   sections={sections}
+    //   setIsBlockingUpdate={setIsBlockingUpdate}
+    //   {...props}
+    // />
+
+  <RecyclerAssetList2/>
   );
 };
 

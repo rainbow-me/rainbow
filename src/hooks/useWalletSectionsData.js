@@ -7,7 +7,7 @@ import useIsWalletEthZero from './useIsWalletEthZero';
 import useSavingsAccount from './useSavingsAccount';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
-import { buildWalletSectionsSelector } from '@rainbow-me/helpers/buildWalletSections';
+import {buildBriefWalletSectionsSelector, buildWalletSectionsSelector} from '@rainbow-me/helpers/buildWalletSections';
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 
 export default function useWalletSectionsData() {
@@ -48,12 +48,14 @@ export default function useWalletSectionsData() {
     };
 
     const sectionsData = buildWalletSectionsSelector(accountInfo);
+    const briefSectionsData = buildBriefWalletSectionsSelector(accountInfo);
 
     return {
       isWalletEthZero,
       refetchSavings,
       shouldRefetchSavings,
       ...sectionsData,
+      briefSectionsData,
     };
   }, [
     accountData,
