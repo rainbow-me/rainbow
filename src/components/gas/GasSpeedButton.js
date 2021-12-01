@@ -68,7 +68,7 @@ const ChainBadgeContainer = styled.View.attrs({
 `;
 
 const NativeCoinIconWrapper = styled(Column)`
-  ${margin(0, 5, 0, 0)};
+  ${margin(1, 5, 0, 0)};
 `;
 
 const Container = styled(Column).attrs({
@@ -156,6 +156,11 @@ const GasSpeedButton = ({
   }, [nativeCurrencySymbol, selectedGasFee]);
 
   const isL2 = useMemo(() => isL2Network(currentNetwork), [currentNetwork]);
+
+  /*const formatGwei = (gasOption) =>{
+    const baseFee =  gasFeeParamsBySpeed[gasOption]?.maxFeePerGas?.display;
+    const maxFee = gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.display;
+  }*/
 
   const formatGasPrice = useCallback(
     animatedValue => {
