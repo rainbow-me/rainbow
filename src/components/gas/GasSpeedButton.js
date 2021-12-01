@@ -478,10 +478,6 @@ const GasSpeedButton = ({
               <TransactionTimeLabel
                 formatter={formatTransactionTime}
                 theme={theme}
-                value={{
-                  estimatedTimeValue,
-                  price,
-                }}
               />
             </Column>
           </Row>
