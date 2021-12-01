@@ -109,11 +109,13 @@ export default function FeesPanel({
   const { isDarkMode } = useTheme();
 
   const [customMaxPriorityFee, setCustomMaxPriorityFee] = useState(
-    selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei || 0
+    gasFeeParamsBySpeed[CUSTOM]?.maxPriorityFeePerGas?.gwei
   );
+
   const [customMaxBaseFee, setCustomMaxBaseFee] = useState(
-    selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei || 0
+    gasFeeParamsBySpeed[CUSTOM]?.maxFeePerGas?.gwei
   );
+
   const [maxPriorityFeeWarning, setMaxPriorityFeeWarning] = useState(null);
   const [maxPriorityFeeError, setMaxPriorityFeeError] = useState(null);
 
