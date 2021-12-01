@@ -283,6 +283,7 @@ export default function FeesPanel({
       if (newMaxPriorityFeePerGas.amount < 0) return;
 
       setCustomMaxPriorityFee(newMaxPriorityFeePerGas?.gwei || 0);
+      setCustomMaxBaseFee(selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei);
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
@@ -308,6 +309,9 @@ export default function FeesPanel({
       if (newMaxFeePerGas.amount < 0) return;
 
       setCustomMaxBaseFee(newMaxFeePerGas?.gwei);
+      setCustomMaxPriorityFee(
+        selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei
+      );
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
@@ -342,6 +346,9 @@ export default function FeesPanel({
       if (greaterThan(0, maxFeePerGas.amount)) return;
 
       setCustomMaxBaseFee(text);
+      setCustomMaxPriorityFee(
+        selectedGasFee.gasFeeParams.maxPriorityFeePerGas.gwei
+      );
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
@@ -366,6 +373,7 @@ export default function FeesPanel({
       // we don't use the round number here, if we did
       // when users type "1." it will default to "1"
       setCustomMaxPriorityFee(text);
+      setCustomMaxBaseFee(selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei);
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
