@@ -218,7 +218,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.checkIfVisible('send-asset-form-field');
   });
 
-  xit('Should send (Cryptokitties)', async () => {
+  it('Should send (Cryptokitties)', async () => {
     await Helpers.typeTextAndHideKeyboard(
       'send-asset-form-field',
       RAINBOW_WALLET_DOT_ETH
@@ -237,7 +237,7 @@ describe('Hardhat Transaction Flow', () => {
       throw new Error('Recepient did not recieve Cryptokitty');
   });
 
-  xit('Should send ERC20 (BAT)', async () => {
+  it('Should send ERC20 (BAT)', async () => {
     const preSendBalance = await getOnchainBalance(
       RAINBOW_WALLET_DOT_ETH,
       BAT_TOKEN_ADDRESS
@@ -262,7 +262,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.delay(2000);
   });
 
-  xit('Should send ETH', async () => {
+  it('Should send ETH', async () => {
     await Helpers.waitAndTap('send-fab');
     await Helpers.typeTextAndHideKeyboard(
       'send-asset-form-field',
