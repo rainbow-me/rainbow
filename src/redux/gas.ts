@@ -369,10 +369,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
                 ...existingGasFees[CUSTOM],
                 baseFeePerGas: baseFee,
               };
-            } else if (
-              !gasFeeParamsBySpeed[CUSTOM] ||
-              isEmpty(gasFeeParamsBySpeed[CUSTOM])
-            ) {
+            } else if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
               // set CUSTOM to URGENT if not defined
               gasFeeParamsBySpeed[CUSTOM] = existingGasFees[URGENT];
             }
