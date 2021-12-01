@@ -9,16 +9,10 @@ export {
 export {
   getFallbackGasPrices,
   parseGasPrices,
-  parseGasFeesBySpeed,
   defaultGasPriceFormat,
-  parseLegacyGasFeesBySpeed,
+  parseTxFees,
   gweiToWei,
   weiToGwei,
-  parseGasParamsForTransaction,
-  parseGasFeeParam,
-  parseGasFees,
-  defaultGasParamsFormat,
-  parseRainbowMeteorologyData,
 } from './gas';
 export { parseNewTransaction } from './newTransaction';
 export { parsePoaps } from './poap';

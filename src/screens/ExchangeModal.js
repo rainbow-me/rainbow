@@ -29,7 +29,11 @@ import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
-import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
+import {
+  convertStringToNumber,
+  divide,
+  multiply,
+} from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useBlockPolling,
@@ -135,20 +139,21 @@ export default function ExchangeModal({
     : ethUnits.basic_swap;
 
   const {
-    selectedGasFee,
-    gasFeeParamsBySpeed,
-    startPollingGasFees,
-    stopPollingGasFees,
+    gasPrices,
+    selectedGasPrice,
+    startPollingGasPrices,
+    stopPollingGasPrices,
     updateDefaultGasLimit,
     updateTxFee,
   } = useGas();
+
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
-  const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
+  const prevGasPrices = usePrevious(gasPrices);
 
   useAndroidBackHandler(() => {
     navigate(Routes.WALLET_SCREEN);
@@ -272,38 +277,33 @@ export default function ExchangeModal({
 
   // Set default gas limit
   useEffect(() => {
-    if (isEmpty(prevGasFeesParamsBySpeed) && !isEmpty(gasFeeParamsBySpeed)) {
+    if (isEmpty(prevGasPrices) && !isEmpty(gasPrices)) {
       updateTxFee(defaultGasLimit);
     }
-  }, [
-    gasFeeParamsBySpeed,
-    defaultGasLimit,
-    updateTxFee,
-    prevGasFeesParamsBySpeed,
-  ]);
+  }, [gasPrices, defaultGasLimit, updateTxFee, prevGasPrices]);
 
   // Update gas limit
   useEffect(() => {
-    if (!isEmpty(gasFeeParamsBySpeed)) {
+    if (!isEmpty(gasPrices)) {
       updateGasLimit();
     }
-  }, [gasFeeParamsBySpeed, updateGasLimit]);
+  }, [gasPrices, updateGasLimit]);
 
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
-    updateDefaultGasLimit(defaultGasLimit);
-    startPollingGasFees();
+    updateDefaultGasLimit(network, defaultGasLimit);
+    startPollingGasPrices();
     initWeb3Listener();
     return () => {
-      stopPollingGasFees();
+      stopPollingGasPrices();
       stopWeb3Listener();
     };
   }, [
     defaultGasLimit,
     network,
     initWeb3Listener,
-    startPollingGasFees,
-    stopPollingGasFees,
+    startPollingGasPrices,
+    stopPollingGasPrices,
     stopWeb3Listener,
     updateDefaultGasLimit,
   ]);
@@ -313,7 +313,8 @@ export default function ExchangeModal({
   }, [updateMaxInputAmount]);
 
   const checkGasVsOutput = async (gasPrice, outputPrice) => {
-    if (greaterThan(outputPrice, 0) && greaterThan(gasPrice, outputPrice)) {
+    const outputValue = convertStringToNumber(outputPrice);
+    if (outputValue > 0 && convertStringToNumber(gasPrice) > outputValue) {
       const res = new Promise(resolve => {
         Alert.alert(
           'Are you sure?',
@@ -377,8 +378,8 @@ export default function ExchangeModal({
       });
     }
 
-    const outputInUSD = multiply(outputPriceValue, outputAmount);
-    const gasPrice = selectedGasFee?.gasFee?.maxFee?.native?.value?.amount;
+    const outputInUSD = outputPriceValue * outputAmount;
+    const gasPrice = selectedGasPrice?.txFee?.native?.value?.amount;
     const cancelTransaction = await checkGasVsOutput(gasPrice, outputInUSD);
 
     if (cancelTransaction) {
@@ -445,7 +446,7 @@ export default function ExchangeModal({
     outputPriceValue,
     priceImpactPercentDisplay,
     priceOfEther,
-    selectedGasFee?.gasFee?.maxFee?.native?.value?.amount,
+    selectedGasPrice?.txFee?.native?.value?.amount,
     setParams,
     tradeDetails,
     type,
@@ -593,12 +594,12 @@ export default function ExchangeModal({
             />
           )}
           <GasSpeedButton
-            asset={outputCurrency}
             currentNetwork={network}
             dontBlur
             onCustomGasBlur={handleCustomGasBlur}
+            options={['normal', 'fast', 'custom']}
             testID={`${testID}-gas`}
-            topPadding={25}
+            type={type}
           />
         </FloatingPanels>
       </InnerWrapper>

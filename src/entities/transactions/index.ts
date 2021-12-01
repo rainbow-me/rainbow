@@ -16,4 +16,3 @@ export {
   default as TransactionDirections,
   TransactionDirection,
 } from './transactionDirection';
-export { default as GasFeeTypes, GasFeeType } from './gasFeeType';

@@ -59,8 +59,7 @@ const Content = styled(Animated.ScrollView).attrs(
   background-color: ${({ backgroundColor }) => backgroundColor};
   ${({ contentHeight, deviceHeight }) =>
     contentHeight ? `height: ${deviceHeight + contentHeight}` : null};
-  padding-top: ${({ removeTopPadding }) =>
-    removeTopPadding ? 0 : SheetHandleFixedToTopHeight};
+  padding-top: ${SheetHandleFixedToTopHeight};
   width: 100%;
 `;
 
@@ -79,7 +78,6 @@ const Whitespace = styled.View`
 export default forwardRef(function SlackSheet(
   {
     additionalTopPadding = false,
-    removeTopPadding = false,
     backgroundColor,
     borderRadius = 30,
     children,
@@ -154,7 +152,6 @@ export default forwardRef(function SlackSheet(
       <Container
         additionalTopPadding={additionalTopPadding}
         backgroundColor={bg}
-        borderRadius={borderRadius}
         contentHeight={contentHeight}
         deferredHeight={deferredHeight}
         deviceHeight={deviceHeight}
@@ -182,7 +179,6 @@ export default forwardRef(function SlackSheet(
             onScroll={scrollHandler}
             ref={sheet}
             removeClippedSubviews={removeClippedSubviews}
-            removeTopPadding={removeTopPadding}
             scrollEnabled={scrollEnabled}
             scrollIndicatorInsets={scrollIndicatorInsets}
           >

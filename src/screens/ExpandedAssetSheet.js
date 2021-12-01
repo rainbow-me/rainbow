@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import {
   ChartExpandedState,
-  CustomGasState,
   LiquidityPoolExpandedState,
   SwapDetailsState,
   TokenIndexExpandedState,
@@ -19,7 +18,6 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { position } from '@rainbow-me/styles';
 
 const ScreenTypes = {
-  custom_gas: CustomGasState,
   swap_details: SwapDetailsState,
   token: ChartExpandedState,
   token_index: TokenIndexExpandedState,
@@ -28,11 +26,7 @@ const ScreenTypes = {
 };
 
 const Container = styled(Centered).attrs({
-  alignItems: 'flex-end',
-  bottom: 0,
   direction: 'column',
-  flex: 1,
-  justifyContent: 'flex-end',
 })`
   ${position.cover};
   ${({ deviceHeight, height }) =>

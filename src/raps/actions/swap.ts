@@ -1,5 +1,6 @@
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
+import { get } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
 import {
   ProtocolType,
@@ -36,28 +37,14 @@ const swap = async (
     outputCurrency,
     slippageInBips: slippage,
   } = store.getState().swap;
-  const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
+  const { gasPrices, selectedGasPrice } = store.getState().gas;
 
-  let maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
-  let maxPriorityFeePerGas =
-    selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
-
+  let gasPrice = selectedGasPrice?.value?.amount;
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
-  if (
-    currentRap.actions.length - 1 > index ||
-    !maxFeePerGas ||
-    !maxPriorityFeePerGas
-  ) {
-    const fastMaxFeePerGas =
-      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas.amount;
-    const fastMaxPriorityFeePerGas =
-      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxPriorityFeePerGas.amount;
-
-    if (greaterThan(fastMaxFeePerGas, maxFeePerGas)) {
-      maxFeePerGas = fastMaxFeePerGas;
-    }
-    if (greaterThan(fastMaxPriorityFeePerGas, maxPriorityFeePerGas)) {
-      maxPriorityFeePerGas = fastMaxPriorityFeePerGas;
+  if (currentRap.actions.length - 1 > index || !gasPrice) {
+    const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+    if (greaterThan(fastPrice, gasPrice)) {
+      gasPrice = fastPrice;
     }
   }
   let gasLimit, methodName;
@@ -97,8 +84,7 @@ const swap = async (
   try {
     logger.sentry(`[${actionName}] executing rap`, {
       gasLimit,
-      maxFeePerGas,
-      maxPriorityFeePerGas,
+      gasPrice,
       methodName,
     });
     const nonce = baseNonce ? baseNonce + index : undefined;
@@ -106,9 +92,8 @@ const swap = async (
       accountAddress,
       chainId,
       gasLimit,
+      gasPrice,
       inputCurrency,
-      maxFeePerGas,
-      maxPriorityFeePerGas,
       methodName,
       nonce,
       outputCurrency,
@@ -131,9 +116,8 @@ const swap = async (
     data: swap.data,
     from: accountAddress,
     gasLimit,
+    gasPrice,
     hash: swap?.hash,
-    maxFeePerGas,
-    maxPriorityFeePerGas,
     nonce: swap?.nonce,
     protocol: ProtocolType.uniswap,
     status: TransactionStatus.swapping,

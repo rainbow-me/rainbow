@@ -61,21 +61,6 @@ export const web3SetHttpProvider = async network => {
 };
 
 /**
- * @desc returns true if the given network is EIP1559 supported
- * @param {String} network
- */
-export const isEIP1559LegacyNetwork = network => {
-  switch (network) {
-    case NetworkTypes.arbitrum:
-    case NetworkTypes.optimism:
-    case NetworkTypes.polygon:
-      return true;
-    default:
-      return false;
-  }
-};
-
-/**
  * @desc returns true if the given network is a Layer 2
  * @param {String} network
  */
@@ -292,37 +277,24 @@ export const getTransactionCount = address =>
   web3Provider.getTransactionCount(address, 'pending');
 
 /**
- * get transaction gas params depending on network
- * @returns - object with `gasPrice` or `maxFeePerGas` and `maxPriorityFeePerGas`
+ * @desc get transaction details
+ * @param  {Object} transaction { from, to, data, value, gasPrice, gasLimit }
+ * @return {Object}
  */
-export const getTransactionGasParams = transaction => {
-  return isEIP1559LegacyNetwork(transaction.network)
-    ? {
-        gasPrice: toHex(transaction.gasPrice),
-      }
-    : {
-        maxFeePerGas: toHex(transaction.maxFeePerGas),
-        maxPriorityFeePerGas: toHex(transaction.maxPriorityFeePerGas),
-      };
-};
-
-const getTxDetails = async transaction => {
+export const getTxDetails = async transaction => {
   const { to } = transaction;
   const data = transaction.data ? transaction.data : '0x';
-  const value = transaction.amount ? toHex(toWei(transaction.amount)) : '0x0';
+  const value = transaction.amount ? toHex(toWei(transaction.amount)) : '0x00';
   const gasLimit = transaction.gasLimit
     ? toHex(transaction.gasLimit)
     : undefined;
-  const baseTx = {
+  const gasPrice = toHex(transaction.gasPrice) || undefined;
+  const tx = {
     data,
     gasLimit,
+    gasPrice,
     to,
     value,
-  };
-  const gasParams = getTransactionGasParams(transaction);
-  const tx = {
-    ...baseTx,
-    ...gasParams,
   };
   return tx;
 };
@@ -357,22 +329,30 @@ export const resolveNameOrAddress = async (nameOrAddress, provider) => {
   return nameOrAddress;
 };
 
+/**
+ * @desc get transfer nft transaction
+ * @param  {Object}  transaction { asset, from, to, gasPrice }
+ * @return {Object}
+ */
 export const getTransferNftTransaction = async transaction => {
   const recipient = await resolveNameOrAddress(transaction.to);
   const { from } = transaction;
   const contractAddress = get(transaction, 'asset.asset_contract.address');
   const data = getDataForNftTransfer(from, recipient, transaction.asset);
-  const gasParams = getTransactionGasParams(transaction);
   return {
     data,
     from,
     gasLimit: transaction.gasLimit,
-    network: transaction.network,
+    gasPrice: transaction.gasPrice,
     to: contractAddress,
-    ...gasParams,
   };
 };
 
+/**
+ * @desc get transfer token transaction
+ * @param  {Object}  transaction { asset, from, to, amount, gasPrice }
+ * @return {Object}
+ */
 export const getTransferTokenTransaction = async transaction => {
   const value = convertAmountToRawAmount(
     transaction.amount,
@@ -380,14 +360,12 @@ export const getTransferTokenTransaction = async transaction => {
   );
   const recipient = await resolveNameOrAddress(transaction.to);
   const data = getDataForTokenTransfer(value, recipient);
-  const gasParams = getTransactionGasParams(transaction);
   return {
     data,
     from: transaction.from,
     gasLimit: transaction.gasLimit,
-    network: transaction.network,
+    gasPrice: transaction.gasPrice,
     to: transaction.asset.address,
-    ...gasParams,
   };
 };
 
