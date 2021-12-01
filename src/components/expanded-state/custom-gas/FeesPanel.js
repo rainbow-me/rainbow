@@ -103,7 +103,8 @@ export default function FeesPanel({
     updateToCustomGasFee,
     updateGasFeeOption,
   } = useGas();
-  const { navigate } = useNavigation();
+
+  const { navigate, dangerouslyGetState } = useNavigation();
   const { isDarkMode } = useTheme();
 
   const [customMaxPriorityFee, setCustomMaxPriorityFee] = useState(0);
@@ -113,6 +114,7 @@ export default function FeesPanel({
 
   const [maxBaseFeeWarning, setMaxBaseFeeWarning] = useState(null);
   const [maxBaseFeeError, setMaxBaseFeeError] = useState(null);
+  const trendType = 'currentBaseFee' + upperFirst(currentGasTrend);
 
   const maxBaseWarningsStyle = useAnimatedStyle(() => {
     const display = !!maxBaseFeeError || !!maxBaseFeeWarning;
@@ -183,16 +185,17 @@ export default function FeesPanel({
     customMaxPriorityFee,
   ]);
 
+  const openGasHelper = useCallback(() => {
+    Keyboard.dismiss();
+    navigate(Routes.EXPLAIN_SHEET, {
+      currentBaseFee: toFixedDecimals(currentBaseFee, 0),
+      currentGasTrend,
+      type: trendType,
+    });
+  }, [currentBaseFee, currentGasTrend, navigate, trendType]);
+
   const renderRowLabel = useCallback(
     (label, type, error, warning) => {
-      const openGasHelper = () => {
-        Keyboard.dismiss();
-        navigate(Routes.EXPLAIN_SHEET, {
-          currentBaseFee,
-          currentGasTrend,
-          type,
-        });
-      };
       let color;
       let text;
       if ((!error && !warning) || !selectedOptionIsCustom) {
@@ -223,13 +226,7 @@ export default function FeesPanel({
         </PanelColumn>
       );
     },
-    [
-      currentBaseFee,
-      currentGasTrend,
-      navigate,
-      selectedOptionIsCustom,
-      isDarkMode,
-    ]
+    [selectedOptionIsCustom, openGasHelper, isDarkMode]
   );
 
   const formattedBaseFee = useMemo(
@@ -386,6 +383,24 @@ export default function FeesPanel({
   );
 
   useEffect(() => {
+    const navigationRoutes = dangerouslyGetState().routes;
+    const lastRoute = navigationRoutes[navigationRoutes.length - 1]?.name;
+    if (lastRoute === 'ExplainSheet') {
+      navigate(Routes.EXPLAIN_SHEET, {
+        currentBaseFee: toFixedDecimals(currentBaseFee, 0),
+        currentGasTrend,
+        type: trendType,
+      });
+    }
+  }, [
+    currentBaseFee,
+    currentGasTrend,
+    dangerouslyGetState,
+    navigate,
+    trendType,
+  ]);
+
+  useEffect(() => {
     // validate not zero
     if (!maxBaseFee || isZero(maxBaseFee)) {
       setMaxBaseFeeError('1 Gwei to avoid failure');
@@ -453,10 +468,7 @@ export default function FeesPanel({
       </PanelRowThin>
 
       <PanelRow justify="space-between" marginBottom={18}>
-        {renderRowLabel(
-          'Current Base Fee',
-          'currentBaseFee' + upperFirst(currentGasTrend)
-        )}
+        {renderRowLabel('Current Base Fee', trendType)}
         <PanelColumn>
           <PanelLabel>{formattedBaseFee}</PanelLabel>
         </PanelColumn>

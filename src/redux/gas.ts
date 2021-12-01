@@ -373,7 +373,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
               !gasFeeParamsBySpeed[CUSTOM] ||
               isEmpty(gasFeeParamsBySpeed[CUSTOM])
             ) {
-              // set CUSTOM to NORMAL if not defined
+              // set CUSTOM to URGENT if not defined
               gasFeeParamsBySpeed[CUSTOM] = existingGasFees[URGENT];
             }
             dispatch({
