@@ -32,7 +32,6 @@ import {
 } from '@rainbow-me/references';
 import { TokensListenedCache } from '@rainbow-me/utils';
 import logger from 'logger';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
@@ -420,6 +419,11 @@ const listenOnAssetMessages = socket => dispatch => {
 export const explorerInitL2 = (network = null) => (dispatch, getState) => {
   if (getState().settings.network === NetworkTypes.mainnet) {
     switch (network) {
+      case NetworkTypes.arbitrum:
+      case NetworkTypes.polygon:
+        // Start watching optimism assets
+        dispatch(fetchAssetsFromRefraction());
+        break;
       case NetworkTypes.optimism:
         // Start watching optimism assets
         dispatch(optimismExplorerInit());
@@ -429,6 +433,21 @@ export const explorerInitL2 = (network = null) => (dispatch, getState) => {
         dispatch(optimismExplorerInit());
     }
   }
+};
+
+const fetchAssetsFromRefraction = () => (dispatch, getState) => {
+  const { accountAddress, nativeCurrency } = getState().settings;
+  const { addressSocket } = getState().explorer;
+  addressSocket.emit([
+    'get',
+    {
+      payload: {
+        address: accountAddress,
+        currency: toLower(nativeCurrency),
+      },
+      scope: ['assets'],
+    },
+  ]);
 };
 
 const listenOnAddressMessages = socket => dispatch => {
@@ -466,11 +485,13 @@ const listenOnAddressMessages = socket => dispatch => {
   });
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED_ARBITRUM, message => {
-    dispatch(addressAssetsReceived(message, networkTypes.arbitrum));
+    logger.debug('L2 ARBITRUM', JSON.stringify(message, null, 2));
+    dispatch(addressAssetsReceived(message, NetworkTypes.arbitrum));
   });
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED_POLYGON, message => {
-    dispatch(addressAssetsReceived(message, networkTypes.polygon));
+    logger.debug('L2 POLYGON', JSON.stringify(message, null, 2));
+    dispatch(addressAssetsReceived(message, NetworkTypes.polygon));
   });
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
