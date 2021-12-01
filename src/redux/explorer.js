@@ -421,7 +421,7 @@ export const explorerInitL2 = (network = null) => (dispatch, getState) => {
     switch (network) {
       case NetworkTypes.arbitrum:
       case NetworkTypes.polygon:
-        // Start watching optimism assets
+        // Start fetch all assets from refraction
         dispatch(fetchAssetsFromRefraction());
         break;
       case NetworkTypes.optimism:
@@ -435,7 +435,7 @@ export const explorerInitL2 = (network = null) => (dispatch, getState) => {
   }
 };
 
-const fetchAssetsFromRefraction = () => (dispatch, getState) => {
+const fetchAssetsFromRefraction = () => (_dispatch, getState) => {
   const { accountAddress, nativeCurrency } = getState().settings;
   const { addressSocket } = getState().explorer;
   addressSocket.emit([
