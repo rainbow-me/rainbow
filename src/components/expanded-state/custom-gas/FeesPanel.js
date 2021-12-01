@@ -1,11 +1,17 @@
 import { useNavigation } from '@react-navigation/core';
 import { isEmpty, upperFirst } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard, KeyboardAvoidingView } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { Keyboard, KeyboardAvoidingView, View } from 'react-native';
+
 import styled, { useTheme } from 'styled-components';
+import { ButtonPressAnimation } from '../../../components/animations';
 import colors, { darkModeThemeColors } from '../../../styles/colors';
-import { ButtonPressAnimation } from '../../animations';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import FeesGweiInput from './FeesGweiInput';
@@ -57,7 +63,9 @@ const PanelWarning = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'smedium',
   weight: 'heavy',
 }))`
-  ${margin(-20, 0, 20, 0)};
+  background-color: ${colors.red};
+  display: absolute;
+  top: -18;
 `;
 
 const PanelError = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -66,7 +74,8 @@ const PanelError = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'smedium',
   weight: 'heavy',
 }))`
-  ${margin(-20, 0, 20, 0)}
+  display: absolute;
+  top: -18;
 `;
 
 const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
@@ -106,6 +115,7 @@ export default function FeesPanel({
   } = useGas();
   const { navigate } = useNavigation();
   const { isDarkMode } = useTheme();
+  const maxBaseFeeInputRef = useRef();
 
   const [customMaxPriorityFee, setCustomMaxPriorityFee] = useState(
     selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei || 0
@@ -118,20 +128,6 @@ export default function FeesPanel({
 
   const [maxBaseFeeWarning, setMaxBaseFeeWarning] = useState(null);
   const [maxBaseFeeError, setMaxBaseFeeError] = useState(null);
-
-  const maxBaseWarningsStyle = useAnimatedStyle(() => {
-    const display = !!maxBaseFeeError || !!maxBaseFeeWarning;
-    return {
-      transform: [{ scale: display ? 1 : 0 }],
-    };
-  });
-
-  const maxPriorityWarningsStyle = useAnimatedStyle(() => {
-    const display = !!maxPriorityFeeError || !!maxPriorityFeeWarning;
-    return {
-      transform: [{ scale: display ? 1 : 0 }],
-    };
-  });
 
   const selectedOptionIsCustom = useMemo(
     () => selectedGasFee?.option === gasUtils.CUSTOM,
@@ -379,8 +375,16 @@ export default function FeesPanel({
     (error, warning) => {
       if (!selectedOptionIsCustom) return;
       return (
-        (error && <PanelError>{error}</PanelError>) ||
-        (warning && <PanelWarning>{warning}</PanelWarning>)
+        (error && (
+          <View style={{ position: 'absolute' }}>
+            <PanelError>{error}</PanelError>
+          </View>
+        )) ||
+        (warning && (
+          <View style={{ position: 'absolute' }}>
+            <PanelWarning>{warning}</PanelWarning>
+          </View>
+        ))
       );
     },
     [selectedOptionIsCustom]
@@ -442,6 +446,12 @@ export default function FeesPanel({
     maxPriorityFee,
   ]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      maxBaseFeeInputRef?.current?.focus();
+    }, 400);
+  }, []);
+
   return (
     <Wrapper>
       <PanelRowThin>
@@ -473,6 +483,7 @@ export default function FeesPanel({
         <PanelColumn>
           <FeesGweiInput
             buttonColor={colorForAsset}
+            inputRef={maxBaseFeeInputRef}
             minusAction={substMaxFee}
             onChange={onMaxBaseFeeChange}
             onPress={handleFeesGweiInputFocus}
@@ -482,9 +493,7 @@ export default function FeesPanel({
           />
         </PanelColumn>
       </MiddlePanelRow>
-      <Animated.View style={maxBaseWarningsStyle}>
-        {renderWarning(maxBaseFeeError, maxBaseFeeWarning)}
-      </Animated.View>
+      <Row>{renderWarning(maxBaseFeeError, maxBaseFeeWarning)}</Row>
 
       <MiddlePanelRow>
         {renderRowLabel(
@@ -505,9 +514,7 @@ export default function FeesPanel({
           />
         </PanelColumn>
       </MiddlePanelRow>
-      <Animated.View style={maxPriorityWarningsStyle}>
-        {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
-      </Animated.View>
+      <Row>{renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}</Row>
 
       <PanelRow marginTop={18}>
         <PanelColumn>
