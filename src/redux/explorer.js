@@ -1,8 +1,6 @@
 import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
 import io from 'socket.io-client';
 import config from '../model/config';
-// eslint-disable-next-line import/no-cycle
-import { arbitrumExplorerInit } from './arbitrumExplorer';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
 /* eslint-disable-next-line import/no-cycle */
 import {
@@ -21,8 +19,6 @@ import {
 } from './fallbackExplorer';
 // eslint-disable-next-line import/no-cycle
 import { optimismExplorerInit } from './optimismExplorer';
-// eslint-disable-next-line import/no-cycle
-import { polygonExplorerInit } from './polygonExplorer';
 import { updateTopMovers } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import { getProviderForNetwork, isHardHat } from '@rainbow-me/handlers/web3';
@@ -36,6 +32,7 @@ import {
 } from '@rainbow-me/references';
 import { TokensListenedCache } from '@rainbow-me/utils';
 import logger from 'logger';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 // -- Constants --------------------------------------- //
 const EXPLORER_UPDATE_SOCKETS = 'explorer/EXPLORER_UPDATE_SOCKETS';
@@ -55,6 +52,8 @@ const messages = {
     APPENDED: 'appended address assets',
     CHANGED: 'changed address assets',
     RECEIVED: 'received address assets',
+    RECEIVED_ARBITRUM: 'received address arbitrum-assets',
+    RECEIVED_POLYGON: 'received address polygon-assets',
     REMOVED: 'removed address assets',
   },
   ADDRESS_PORTFOLIO: {
@@ -421,23 +420,13 @@ const listenOnAssetMessages = socket => dispatch => {
 export const explorerInitL2 = (network = null) => (dispatch, getState) => {
   if (getState().settings.network === NetworkTypes.mainnet) {
     switch (network) {
-      case NetworkTypes.arbitrum:
-        // Start watching arbitrum assets
-        dispatch(arbitrumExplorerInit());
-        break;
       case NetworkTypes.optimism:
         // Start watching optimism assets
         dispatch(optimismExplorerInit());
         break;
-      case NetworkTypes.polygon:
-        // Start watching polygon assets
-        dispatch(polygonExplorerInit());
-        break;
       default:
         // Start watching all L2 assets
-        dispatch(arbitrumExplorerInit());
         dispatch(optimismExplorerInit());
-        dispatch(polygonExplorerInit());
     }
   }
 };
@@ -474,6 +463,14 @@ const listenOnAddressMessages = socket => dispatch => {
     // Fetch balances onchain to override zerion's
     // which is likely behind
     dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
+  });
+
+  socket.on(messages.ADDRESS_ASSETS.RECEIVED_ARBITRUM, message => {
+    dispatch(addressAssetsReceived(message, networkTypes.arbitrum));
+  });
+
+  socket.on(messages.ADDRESS_ASSETS.RECEIVED_POLYGON, message => {
+    dispatch(addressAssetsReceived(message, networkTypes.polygon));
   });
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
