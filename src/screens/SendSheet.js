@@ -418,7 +418,8 @@ export default function SendSheet(props) {
   useEffect(() => {
     const resolveAddressIfNeeded = async () => {
       let realAddress = recipient;
-      if (checkIsValidAddressOrDomain(recipient)) {
+      const isValid = await checkIsValidAddressOrDomain(recipient);
+      if (isValid) {
         realAddress = await resolveNameOrAddress(recipient);
       }
       setToAddress(realAddress);
@@ -666,7 +667,8 @@ export default function SendSheet(props) {
   const showConfirmationSheet = useCallback(async () => {
     if (buttonDisabled) return;
     let toAddress = recipient;
-    if (checkIsValidAddressOrDomain(recipient)) {
+    const isValid = await checkIsValidAddressOrDomain(recipient);
+    if (isValid) {
       toAddress = await resolveNameOrAddress(recipient);
     }
     const validRecipient = await validateRecipient(toAddress);
