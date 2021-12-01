@@ -100,7 +100,7 @@ export default function TokenHistoryEdgeFade() {
   return (
     <>
       <LeftFade />
-        <CenterView width = {width} colors = {colors} />
+      <CenterView width={width} colors={colors} />
       <RightFade />
     </>
   );

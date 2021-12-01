@@ -58,10 +58,6 @@ const NftExpandedStateSection = styled(ExpandedStateSection).attrs({
   isNft: true,
 })``;
 
-const TokenHistoryExpandedStateSection = styled(ExpandedStateSection).attrs({
-  isTokenHistory: true,
-})``;
-
 const BackgroundBlur = styled(VibrancyView).attrs({
   blurAmount: 100,
   blurType: 'light',
@@ -359,14 +355,14 @@ const UniqueTokenExpandedState = ({
           </TokenInfoRow>
         </TokenInfoSection>
         <Fragment>
-            <SheetDivider deviceWidth={deviceWidth} />
-            <TokenHistoryExpandedStateSection title="📍 History">
-              <TokenHistory 
-                contractAndToken={urlSuffixForAsset}
-                color={imageColorWithFallback}
-              />
-            </TokenHistoryExpandedStateSection>
-          </Fragment>
+          <SheetDivider deviceWidth={deviceWidth} />
+          <NftExpandedStateSection isTokenHistory={true} title="History">
+            <TokenHistory 
+              contractAndToken={urlSuffixForAsset}
+              color={imageColorWithFallback}
+            />
+          </NftExpandedStateSection>
+        </Fragment>
         <Column>
           
           {!!description && (
