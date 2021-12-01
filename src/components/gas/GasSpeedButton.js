@@ -229,7 +229,6 @@ const GasSpeedButton = ({
     selectedSpeed => {
       if (selectedSpeed === CUSTOM) {
         openCustomGasSheet();
-        Keyboard.dismiss();
         if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
           const gasFeeParams = gasFeeParamsBySpeed[selectedGasFeeOption];
           updateToCustomGasFee({
