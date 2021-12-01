@@ -827,7 +827,6 @@ export default function TransactionConfirmationScreen() {
         <SheetActionButton
           color={colors.transparent}
           disabled
-          fullWidth
           label={`${nativeAsset?.symbol} balance too low`}
           onPress={onCancel}
           size="big"

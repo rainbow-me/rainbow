@@ -454,7 +454,6 @@ export default function SpeedUpAndCancelSheet() {
                       >
                         <SheetActionButton
                           color={colors.red}
-                          fullWidth
                           label="􀎽 Attempt Cancellation"
                           onPress={handleCancellation}
                           size="big"
@@ -464,7 +463,6 @@ export default function SpeedUpAndCancelSheet() {
                       <SheetActionButtonRow ignorePaddingBottom>
                         <SheetActionButton
                           color={colors.white}
-                          fullWidth
                           label="Close"
                           onPress={goBack}
                           size="big"
