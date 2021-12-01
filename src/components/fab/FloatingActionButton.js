@@ -33,7 +33,7 @@ const FloatingActionButton = ({
   disabled,
   onPress,
   onPressIn,
-  scaleTo = 0.86,
+  scaleTo = 0.8,
   shadows: givenShadows,
   size = FloatingActionButtonSize,
   testID,
