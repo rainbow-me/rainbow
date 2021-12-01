@@ -56,7 +56,7 @@ import { fromWei, greaterThanOrEqualTo, multiply } from '@rainbow-me/utilities';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const { CUSTOM, NORMAL, GAS_PRICE_SOURCES } = gasUtils;
+const { CUSTOM, NORMAL, URGENT, GAS_PRICE_SOURCES } = gasUtils;
 
 let gasPricesHandle: NodeJS.Timeout | null = null;
 
@@ -183,6 +183,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     currentBlockParams,
     confirmationTimeByPriorityFee,
   } = getState().gas;
+
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
   const _gasLimit = gasLimit || defaultGasLimit;
@@ -368,9 +369,12 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
                 ...existingGasFees[CUSTOM],
                 baseFeePerGas: baseFee,
               };
-            } else if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
+            } else if (
+              !gasFeeParamsBySpeed[CUSTOM] ||
+              isEmpty(gasFeeParamsBySpeed[CUSTOM])
+            ) {
               // set CUSTOM to NORMAL if not defined
-              // gasFeeParamsBySpeed[CUSTOM] = {} as GasFeeParamsBySpeed;
+              gasFeeParamsBySpeed[CUSTOM] = existingGasFees[URGENT];
             }
             dispatch({
               payload: {
