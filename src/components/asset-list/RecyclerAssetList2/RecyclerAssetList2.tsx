@@ -1,17 +1,21 @@
-import React, { Component, useMemo } from 'react';
+import equal from 'fast-deep-equal';
+import React, { Component, useMemo, useRef } from 'react';
 import { Dimensions, View } from 'react-native';
 import {
   DataProvider,
   LayoutProvider,
   RecyclerListView,
 } from 'recyclerlistview';
-import {CoinDivider, CoinDividerHeight} from '../coin-divider';
-import { CoinRowHeight } from '../coin-row';
-import { UniqueTokenRow } from '../unique-token';
-import { AssetListHeaderHeight } from './AssetListHeader';
+import { useDeepCompareMemo } from 'use-deep-compare';
+import { CoinDivider, CoinDividerHeight } from '../../coin-divider';
+import {BalanceCoinRow, CoinRowHeight} from '../../coin-row';
+import { UniqueTokenRow } from '../../unique-token';
+import { AssetListHeaderHeight } from '../AssetListHeader';
 import { Text } from '@rainbow-me/design-system';
 import assertNever from '@rainbow-me/helpers/assertNever';
 import { useWalletSectionsData } from '@rainbow-me/hooks';
+import {AssetListHeader} from "../index";
+import WrapperBalanceCoinRow from "./WrapperBalanceCoinRow";
 
 enum CellType {
   ASSETS_HEADER = 'ASSETS_HEADER',
@@ -53,20 +57,27 @@ const ViewDimensions: Record<CellType, Dim> = {
 
 type BaseCellType = { type: CellType; uid: string };
 
-type CellTypes = BaseCellType &
-  (
-    | { type: CellType.ASSETS_HEADER }
-    | { type: CellType.COIN; uniqueId: string }
-    | { type: CellType.COIN_DIVIDER }
-    | { type: CellType.SAVINGS_HEADER }
-    | { type: CellType.SAVINGS; address: string }
-    | { type: CellType.POOLS_HEADER }
-    | { type: CellType.UNISWAP_POOL; address: string }
-    | { type: CellType.NFTS_HEADER }
-    | { type: CellType.FAMILY_HEADER }
-    | { type: CellType.LOADING_ASSETS }
-    | { type: CellType.NFT; uniqueId: string }
-  );
+type SavingsHeaderExtraData = { type: CellType.SAVINGS; address: string };
+type UniswapPoolExtraData = { type: CellType.UNISWAP_POOL; address: string };
+type CoinDividerExtraData = { type: CellType.COIN_DIVIDER; value: number };
+type AssetsHeaderExtraData = { type: CellType.COIN_DIVIDER; value: number };
+type CoinExtraData = { type: CellType.COIN; uniqueId: string };
+type NFTExtraData = { type: CellType.NFT; uniqueId: string };
+
+type CellExtraData =
+  | { type: CellType.SAVINGS_HEADER }
+  | { type: CellType.POOLS_HEADER }
+  | { type: CellType.NFTS_HEADER }
+  | { type: CellType.FAMILY_HEADER }
+  | { type: CellType.LOADING_ASSETS }
+  | SavingsHeaderExtraData
+  | UniswapPoolExtraData
+  | CoinDividerExtraData
+  | CoinExtraData
+  | NFTExtraData
+  | AssetsHeaderExtraData
+
+type CellTypes = BaseCellType & CellExtraData;
 
 const { width } = Dimensions.get('window');
 
@@ -88,10 +99,14 @@ class CellContainer extends React.Component {
 }
 
 function rowRenderer(type: CellType, data: CellTypes) {
-      switch(type) {
-        case CellType.COIN_DIVIDER:
-          return <CoinDivider />
-      }
+  switch (type) {
+    case CellType.COIN_DIVIDER:
+      return <CoinDivider balancesSum={(data as CoinDividerExtraData).value} />;
+    case CellType.ASSETS_HEADER:
+      return <AssetListHeader totalValue={(data as AssetsHeaderExtraData).value} />;
+    case CellType.COIN:
+      return <WrapperBalanceCoinRow uniqueId={(data as CoinExtraData).uniqueId} item={{ uniqueId:(data as CoinExtraData).uniqueId  }}/>
+  }
   return (
     <CellContainer style={styles.container}>
       <Text>Data: {JSON.stringify(data)}</Text>
@@ -117,9 +132,13 @@ const getLayoutProvider = (briefSectionsData: CellTypes[]) =>
     }
   );
 
-function RecyclerAssetList() {
+function useMemoBriefSectionData() {
   const { briefSectionsData } = useWalletSectionsData();
-  console.log('VVVVV', JSON.stringify(briefSectionsData));
+  return useDeepCompareMemo(() => briefSectionsData, [briefSectionsData]);
+}
+
+function RecyclerAssetList() {
+  const briefSectionsData = useMemoBriefSectionData();
   const currentDataProvider = useMemo(
     () => dataProvider.cloneWithRows(briefSectionsData),
     [briefSectionsData]

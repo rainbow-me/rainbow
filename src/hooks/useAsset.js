@@ -28,6 +28,13 @@ export default function useAsset(asset) {
             allAssets,
             matchesProperty('address', asset.mainnet_address || asset.address)
           );
+
+      if (!matched) {
+        matched = find(
+          allAssets,
+          matchesProperty('uniqueId', asset.uniqueId)
+        )
+      }
       if (!matched) {
         matched = genericAssets?.[asset.mainnet_address || asset.address];
       }

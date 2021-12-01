@@ -345,8 +345,6 @@ function RecyclerAssetList({
     };
   }, [openFamilyTabs, sections, showcase]);
 
-  console.log(itemsCount)
-
   // Defines the position of the coinDivider, if it exists.
   const coinDividerIndex = useMemo<number>(() => {
     const hasCoinDivider = items.some(({ item }) => item?.coinDivider);
@@ -483,7 +481,6 @@ function RecyclerAssetList({
       // we use custom layout description objects, so we can ignore this error.
       // @ts-ignore
       (index: number) => {
-        console.log(index)
         // Main list logic 👇
         // Every component to render properly should return object
         // containing at least height and index
