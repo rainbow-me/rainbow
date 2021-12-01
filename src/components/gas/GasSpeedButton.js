@@ -68,7 +68,7 @@ const ChainBadgeContainer = styled.View.attrs({
 `;
 
 const NativeCoinIconWrapper = styled(Column)`
-  ${margin(0, 5, 0, 0)};
+  ${margin(1.5, 5, 0, 0)};
 `;
 
 const Container = styled(Column).attrs({
@@ -218,13 +218,13 @@ const GasSpeedButton = ({
           letterSpacing="roundedTight"
           lineHeight="normal"
           size="lmedium"
-          weight="bold"
+          weight="heavy"
         >
           {priceText}
         </Text>
       );
     },
-    [colors, theme]
+    [theme, colors]
   );
 
   const handlePressSpeedOption = useCallback(
@@ -333,7 +333,7 @@ const GasSpeedButton = ({
     }));
     return {
       menuItems: menuOptions,
-      menuTitle: `Transaction Speed`,
+      menuTitle: '',
     };
   }, [speedOptions]);
 
@@ -362,7 +362,7 @@ const GasSpeedButton = ({
         cancelButtonIndex: androidContractActions.length,
         options: androidContractActions,
         showSeparators: true,
-        title: `Transaction Speed`,
+        title: '',
       },
       buttonIndex => {
         handlePressSpeedOption(lowerCase(androidContractActions[buttonIndex]));
@@ -460,6 +460,7 @@ const GasSpeedButton = ({
       <Row justify="space-between">
         <ButtonPressAnimation
           onPress={openGasHelper}
+          scaleTo={0.9}
           testID="estimated-fee-label"
         >
           <Row>
@@ -495,15 +496,17 @@ const GasSpeedButton = ({
                   : colors.alpha(colors.blueGreyDark, 0.6)
               }
               size="smedium"
+              weight="bold"
             >
-              Estimated Fee{' '}
+              Estimated fee{' '}
               <Label
                 color={
                   theme === 'dark'
-                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
-                    : colors.alpha(colors.blueGreyDark, 0.4)
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.25)
+                    : colors.alpha(colors.blueGreyDark, 0.25)
                 }
                 size="smedium"
+                weight="bold"
               >
                 􀅵
               </Label>
@@ -538,8 +541,8 @@ const GasSpeedButton = ({
               <CustomGasButton
                 borderColor={
                   theme === 'dark'
-                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
-                    : colors.alpha(colors.blueGreyDark, 0.8)
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.15)
+                    : colors.alpha(colors.blueGreyDark, 0.15)
                 }
                 onPress={openCustomOptions}
                 testID="gas-speed-custom"
