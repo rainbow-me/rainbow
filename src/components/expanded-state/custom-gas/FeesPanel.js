@@ -185,14 +185,17 @@ export default function FeesPanel({
     customMaxPriorityFee,
   ]);
 
-  const openGasHelper = useCallback(() => {
-    Keyboard.dismiss();
-    navigate(Routes.EXPLAIN_SHEET, {
-      currentBaseFee: toFixedDecimals(currentBaseFee, 0),
-      currentGasTrend,
-      type: trendType,
-    });
-  }, [currentBaseFee, currentGasTrend, navigate, trendType]);
+  const openGasHelper = useCallback(
+    type => {
+      Keyboard.dismiss();
+      navigate(Routes.EXPLAIN_SHEET, {
+        currentBaseFee: toFixedDecimals(currentBaseFee, 0),
+        currentGasTrend,
+        type,
+      });
+    },
+    [currentBaseFee, currentGasTrend, navigate]
+  );
 
   const renderRowLabel = useCallback(
     (label, type, error, warning) => {
@@ -211,9 +214,11 @@ export default function FeesPanel({
         text = '􀇿';
       }
 
+      const openHelper = () => openGasHelper(type);
+
       return (
         <PanelColumn>
-          <ButtonPressAnimation onPress={openGasHelper}>
+          <ButtonPressAnimation onPress={openHelper}>
             <Row>
               <PanelLabel>
                 {`${label} `}
