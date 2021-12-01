@@ -30,7 +30,7 @@ import {
   ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
 } from '@rainbow-me/references';
-import { TokensListenedCache } from '@rainbow-me/utils';
+import { ethereumUtils, TokensListenedCache } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -450,6 +450,27 @@ const fetchAssetsFromRefraction = () => (dispatch, getState) => {
   ]);
 };
 
+const l2AddressAssetsReceived = (message, network) => (dispatch, getState) => {
+  const { assets: allAssets, genericAssets } = getState().data;
+
+  const updatedMessage = Object.assign({}, message);
+  updatedMessage.payload.assets = message?.payload?.assets?.map(asset => {
+    const fallbackAsset =
+      ethereumUtils.getAsset(allAssets, toLower(asset.asset.mainnet_address)) ||
+      genericAssets[toLower(asset.asset.mainnet_address)];
+
+    if (fallbackAsset) {
+      asset.asset.price = {
+        ...asset.asset.price,
+        ...fallbackAsset.price,
+      };
+    }
+    return asset;
+  });
+
+  dispatch(addressAssetsReceived(updatedMessage, network));
+};
+
 const listenOnAddressMessages = socket => dispatch => {
   socket.on(messages.ADDRESS_PORTFOLIO.RECEIVED, message => {
     dispatch(portfolioReceived(message));
@@ -485,13 +506,11 @@ const listenOnAddressMessages = socket => dispatch => {
   });
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED_ARBITRUM, message => {
-    logger.debug('L2 ARBITRUM', JSON.stringify(message, null, 2));
-    dispatch(addressAssetsReceived(message, NetworkTypes.arbitrum));
+    dispatch(l2AddressAssetsReceived(message, NetworkTypes.arbitrum));
   });
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED_POLYGON, message => {
-    logger.debug('L2 POLYGON', JSON.stringify(message, null, 2));
-    dispatch(addressAssetsReceived(message, NetworkTypes.polygon));
+    dispatch(l2AddressAssetsReceived(message, NetworkTypes.polygon));
   });
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
