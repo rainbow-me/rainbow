@@ -401,7 +401,7 @@ export default function FeesPanel({
 
   useEffect(() => {
     const navigationRoutes = dangerouslyGetState().routes;
-    const lastRoute = navigationRoutes[navigationRoutes.length - 1]?.name;
+    const lastRoute = navigationRoutes?.[navigationRoutes.length - 1]?.name;
     if (lastRoute === 'ExplainSheet') {
       navigate(Routes.EXPLAIN_SHEET, {
         currentBaseFee: toFixedDecimals(currentBaseFee, 0),
