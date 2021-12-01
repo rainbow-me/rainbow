@@ -27,6 +27,7 @@ import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
 const Wrapper = styled(KeyboardAvoidingView)``;
+const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;
 
 const PanelRow = styled(Row).attrs({
   alignItems: 'center',
@@ -131,7 +132,7 @@ export default function FeesPanel({
   });
 
   const selectedOptionIsCustom = useMemo(
-    () => selectedGasFee?.option === gasUtils.CUSTOM,
+    () => selectedGasFee?.option === CUSTOM,
     [selectedGasFee?.option]
   );
 
@@ -144,7 +145,7 @@ export default function FeesPanel({
     if (selectedOptionIsCustom) {
       // block more than 2 decimals on gwei value
       const selectedCustomMaxBaseFee =
-        customMaxBaseFee || gasFeeParamsBySpeed?.urgent?.maxFeePerGas?.gwei;
+        customMaxBaseFee || gasFeeParamsBySpeed?.[URGENT]?.maxFeePerGas?.gwei;
       const decimals = Number(selectedCustomMaxBaseFee) % 1;
       maxBaseFee =
         `${decimals}`.length > 4
@@ -161,7 +162,7 @@ export default function FeesPanel({
     if (selectedOptionIsCustom) {
       const selectedCustomMaxPriorityFee =
         customMaxPriorityFee ||
-        gasFeeParamsBySpeed?.urgent?.maxPriorityFeePerGas?.gwei;
+        gasFeeParamsBySpeed?.[URGENT]?.maxPriorityFeePerGas?.gwei;
       // block more than 2 decimals on gwei value
       const decimals = Number(selectedCustomMaxPriorityFee) % 1;
       maxPriorityFee =
@@ -180,8 +181,8 @@ export default function FeesPanel({
     currentBlockParams?.baseFeePerGas?.gwei,
     selectedOptionIsCustom,
     customMaxBaseFee,
-    gasFeeParamsBySpeed?.urgent?.maxFeePerGas?.gwei,
-    gasFeeParamsBySpeed?.urgent?.maxPriorityFeePerGas?.gwei,
+    gasFeeParamsBySpeed?.[URGENT]?.maxFeePerGas?.gwei,
+    gasFeeParamsBySpeed?.[URGENT]?.maxPriorityFeePerGas?.gwei,
     customMaxPriorityFee,
   ]);
 
@@ -240,14 +241,14 @@ export default function FeesPanel({
   );
 
   const handleOnInputFocus = useCallback(() => {
-    if (isEmpty(gasFeeParamsBySpeed[gasUtils.CUSTOM])) {
-      const gasFeeParams = gasFeeParamsBySpeed[gasUtils.URGENT];
+    if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
+      const gasFeeParams = gasFeeParamsBySpeed[URGENT];
       updateToCustomGasFee({
         ...gasFeeParams,
-        option: gasUtils.CUSTOM,
+        option: CUSTOM,
       });
     } else {
-      updateGasFeeOption(gasUtils.CUSTOM);
+      updateGasFeeOption(CUSTOM);
     }
   }, [gasFeeParamsBySpeed, updateGasFeeOption, updateToCustomGasFee]);
 
@@ -444,7 +445,7 @@ export default function FeesPanel({
       greaterThan(
         multiply(
           MINER_TIP_RANGE[0],
-          gasFeeParamsBySpeed?.normal?.maxPriorityFeePerGas?.gwei
+          gasFeeParamsBySpeed?.[NORMAL]?.maxPriorityFeePerGas?.gwei
         ),
         maxPriorityFee
       )
@@ -455,7 +456,7 @@ export default function FeesPanel({
         maxPriorityFee,
         multiply(
           MINER_TIP_RANGE[1],
-          gasFeeParamsBySpeed?.urgent?.maxPriorityFeePerGas?.gwei
+          gasFeeParamsBySpeed?.[URGENT]?.maxPriorityFeePerGas?.gwei
         )
       )
     ) {
@@ -464,8 +465,8 @@ export default function FeesPanel({
       setMaxPriorityFeeWarning(null);
     }
   }, [
-    gasFeeParamsBySpeed?.urgent?.maxPriorityFeePerGas?.gwei,
-    gasFeeParamsBySpeed?.normal?.maxPriorityFeePerGas?.gwei,
+    gasFeeParamsBySpeed?.[URGENT]?.maxPriorityFeePerGas?.gwei,
+    gasFeeParamsBySpeed?.[NORMAL]?.maxPriorityFeePerGas?.gwei,
     maxPriorityFee,
   ]);
 
@@ -474,8 +475,8 @@ export default function FeesPanel({
       <PanelRowThin>
         <PanelColumn />
         <PanelColumn>
-          <GasTrendHeader color={gasUtils.GAS_TRENDS[currentGasTrend].color}>
-            {gasUtils.GAS_TRENDS[currentGasTrend].label}
+          <GasTrendHeader color={GAS_TRENDS[currentGasTrend].color}>
+            {GAS_TRENDS[currentGasTrend].label}
           </GasTrendHeader>
         </PanelColumn>
       </PanelRowThin>
