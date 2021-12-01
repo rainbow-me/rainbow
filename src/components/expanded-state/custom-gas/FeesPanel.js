@@ -108,8 +108,12 @@ export default function FeesPanel({
   const { navigate, dangerouslyGetState } = useNavigation();
   const { isDarkMode } = useTheme();
 
-  const [customMaxPriorityFee, setCustomMaxPriorityFee] = useState(0);
-  const [customMaxBaseFee, setCustomMaxBaseFee] = useState(0);
+  const [customMaxPriorityFee, setCustomMaxPriorityFee] = useState(
+    selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei || 0
+  );
+  const [customMaxBaseFee, setCustomMaxBaseFee] = useState(
+    selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei || 0
+  );
   const [maxPriorityFeeWarning, setMaxPriorityFeeWarning] = useState(null);
   const [maxPriorityFeeError, setMaxPriorityFeeError] = useState(null);
 
@@ -181,8 +185,7 @@ export default function FeesPanel({
     currentBlockParams?.baseFeePerGas?.gwei,
     selectedOptionIsCustom,
     customMaxBaseFee,
-    gasFeeParamsBySpeed?.[URGENT]?.maxFeePerGas?.gwei,
-    gasFeeParamsBySpeed?.[URGENT]?.maxPriorityFeePerGas?.gwei,
+    gasFeeParamsBySpeed,
     customMaxPriorityFee,
   ]);
 
