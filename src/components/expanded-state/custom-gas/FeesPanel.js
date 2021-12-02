@@ -150,13 +150,11 @@ export default function FeesPanel({
 
     if (selectedOptionIsCustom) {
       // block more than 2 decimals on gwei value
-      const selectedCustomMaxBaseFee =
-        customMaxBaseFee || gasFeeParamsBySpeed?.[URGENT]?.maxFeePerGas?.gwei;
-      const decimals = Number(selectedCustomMaxBaseFee) % 1;
+      const decimals = Number(customMaxBaseFee) % 1;
       maxBaseFee =
         `${decimals}`.length > 4
-          ? toFixedDecimals(selectedCustomMaxBaseFee, 0)
-          : selectedCustomMaxBaseFee;
+          ? toFixedDecimals(customMaxBaseFee, 0)
+          : customMaxBaseFee;
     } else {
       maxBaseFee = toFixedDecimals(
         selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei || 0,
@@ -166,15 +164,12 @@ export default function FeesPanel({
 
     let maxPriorityFee;
     if (selectedOptionIsCustom) {
-      const selectedCustomMaxPriorityFee =
-        customMaxPriorityFee ||
-        gasFeeParamsBySpeed?.[URGENT]?.maxPriorityFeePerGas?.gwei;
       // block more than 2 decimals on gwei value
-      const decimals = Number(selectedCustomMaxPriorityFee) % 1;
+      const decimals = Number(customMaxPriorityFee) % 1;
       maxPriorityFee =
         `${decimals}`.length > 4
-          ? Number(parseFloat(selectedCustomMaxPriorityFee).toFixed(2))
-          : selectedCustomMaxPriorityFee;
+          ? Number(parseFloat(customMaxPriorityFee).toFixed(2))
+          : customMaxPriorityFee;
     } else {
       maxPriorityFee =
         selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei || 0;
@@ -187,7 +182,6 @@ export default function FeesPanel({
     currentBlockParams?.baseFeePerGas?.gwei,
     selectedOptionIsCustom,
     customMaxBaseFee,
-    gasFeeParamsBySpeed,
     customMaxPriorityFee,
   ]);
 
@@ -469,11 +463,7 @@ export default function FeesPanel({
     } else {
       setMaxPriorityFeeWarning(null);
     }
-  }, [
-    gasFeeParamsBySpeed?.[URGENT]?.maxPriorityFeePerGas?.gwei,
-    gasFeeParamsBySpeed?.[NORMAL]?.maxPriorityFeePerGas?.gwei,
-    maxPriorityFee,
-  ]);
+  }, [gasFeeParamsBySpeed, maxPriorityFee]);
 
   return (
     <Wrapper>
