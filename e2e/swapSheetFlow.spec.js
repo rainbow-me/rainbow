@@ -333,23 +333,24 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.waitAndTap('speed-pill-normal');
   });
 
-  it('Should display warning on high custom priority fee price', async () => {
-    await Helpers.clearField('max-priority-fee-input');
-    await Helpers.typeText('max-priority-fee-input', '9999\n', true);
-    await Helpers.checkIfElementByTextIsVisible('Higher than necessary');
-    await Helpers.waitAndTap('speed-pill-normal');
-  });
-
   it('Should display warning on low custom base fee price', async () => {
     await Helpers.clearField('max-base-fee-input');
     await Helpers.typeText('max-base-fee-input', '1\n', true);
     await Helpers.checkIfElementByTextIsVisible('Lower than recommended');
   });
 
-  it('Should display warning on low custom priority fee price', async () => {
+  // it('Should display warning on low custom priority fee price', async () => {
+  //   await Helpers.clearField('max-priority-fee-input');
+  //   await Helpers.typeText('max-priority-fee-input', '0.01\n', true);
+  //   await Helpers.checkIfElementByTextIsVisible('Lower than recommended');
+  //   await Helpers.waitAndTap('speed-pill-normal');
+  // });
+
+  it('Should display warning on high custom priority fee price', async () => {
     await Helpers.clearField('max-priority-fee-input');
-    await Helpers.typeText('max-priority-fee-input', '0.01\n', true);
-    // await Helpers.checkIfElementByTextIsVisible('Lower than recommended');
+    await Helpers.typeText('max-priority-fee-input', '99\n', true);
+    await Helpers.checkIfElementByTextIsVisible('Higher than necessary');
+    await Helpers.waitAndTap('speed-pill-normal');
   });
 
   afterAll(async () => {
