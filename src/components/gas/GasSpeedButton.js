@@ -240,7 +240,6 @@ const GasSpeedButton = ({
     [
       openCustomGasSheet,
       gasFeeParamsBySpeed,
-      selectedGasFeeOption,
       updateToCustomGasFee,
       updateGasFeeOption,
     ]
