@@ -40,7 +40,6 @@ import {
   useBlockPolling,
   useCurrentNonce,
   useGas,
-  usePrevious,
   usePriceImpactDetails,
   useSwapCurrencies,
   useSwapCurrencyHandlers,
@@ -152,8 +151,6 @@ export default function ExchangeModal({
   const getNextNonce = useCurrentNonce(accountAddress, network);
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-
-  const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
 
   useAndroidBackHandler(() => {
     navigate(Routes.WALLET_SCREEN);
