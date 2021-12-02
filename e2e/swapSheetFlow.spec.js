@@ -339,12 +339,12 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfElementByTextIsVisible('Lower than recommended');
   });
 
-  // it('Should display warning on low custom priority fee price', async () => {
-  //   await Helpers.clearField('max-priority-fee-input');
-  //   await Helpers.typeText('max-priority-fee-input', '0.01\n', true);
-  //   await Helpers.checkIfElementByTextIsVisible('Lower than recommended');
-  //   await Helpers.waitAndTap('speed-pill-normal');
-  // });
+  it('Should display warning on low custom priority fee price', async () => {
+    await Helpers.clearField('max-priority-fee-input');
+    await Helpers.typeText('max-priority-fee-input', '0.01\n', true);
+    await Helpers.checkIfElementByTextToExist('Lower than recommended');
+    await Helpers.waitAndTap('speed-pill-normal');
+  });
 
   it('Should display warning on high custom priority fee price', async () => {
     await Helpers.clearField('max-priority-fee-input');
