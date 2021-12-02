@@ -108,19 +108,19 @@ export default function FeesPanel({
   const { navigate, dangerouslyGetState } = useNavigation();
   const { isDarkMode } = useTheme();
 
-  const [customMaxPriorityFee, setCustomMaxPriorityFee] = useState(
-    gasFeeParamsBySpeed[CUSTOM]?.maxPriorityFeePerGas?.gwei
-  );
-
-  const [customMaxBaseFee, setCustomMaxBaseFee] = useState(
-    gasFeeParamsBySpeed[CUSTOM]?.maxFeePerGas?.gwei
-  );
+  const [customFees, setCustomFees] = useState({
+    customMaxBaseFee: gasFeeParamsBySpeed[CUSTOM]?.maxFeePerGas?.gwei,
+    customMaxPriorityFee:
+      gasFeeParamsBySpeed[CUSTOM]?.maxPriorityFeePerGas?.gwei,
+  });
 
   const [maxPriorityFeeWarning, setMaxPriorityFeeWarning] = useState(null);
   const [maxPriorityFeeError, setMaxPriorityFeeError] = useState(null);
 
   const [maxBaseFeeWarning, setMaxBaseFeeWarning] = useState(null);
   const [maxBaseFeeError, setMaxBaseFeeError] = useState(null);
+
+  const { customMaxBaseFee, customMaxPriorityFee } = customFees;
   const trendType = 'currentBaseFee' + upperFirst(currentGasTrend);
 
   const maxBaseWarningsStyle = useAnimatedStyle(() => {
@@ -257,8 +257,10 @@ export default function FeesPanel({
     const {
       gasFeeParams: { maxFeePerGas, maxPriorityFeePerGas },
     } = selectedGasFee;
-    setCustomMaxPriorityFee(maxPriorityFeePerGas?.gwei || 0);
-    setCustomMaxBaseFee(toFixedDecimals(maxFeePerGas?.gwei || 0, 0));
+    setCustomFees({
+      customMaxBaseFee: toFixedDecimals(maxFeePerGas?.gwei || 0, 0),
+      customMaxPriorityFee: maxPriorityFeePerGas?.gwei || 0,
+    });
   }, [onCustomGasFocus, handleOnInputFocus, selectedGasFee]);
 
   const handleCustomPriorityFeeFocus = useCallback(() => {
@@ -282,8 +284,10 @@ export default function FeesPanel({
 
       if (newMaxPriorityFeePerGas.amount < 0) return;
 
-      setCustomMaxPriorityFee(newMaxPriorityFeePerGas?.gwei || 0);
-      setCustomMaxBaseFee(selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei);
+      setCustomFees({
+        customMaxBaseFee: selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei,
+        customMaxPriorityFee: newMaxPriorityFeePerGas?.gwei || 0,
+      });
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
@@ -308,10 +312,11 @@ export default function FeesPanel({
 
       if (newMaxFeePerGas.amount < 0) return;
 
-      setCustomMaxBaseFee(newMaxFeePerGas?.gwei);
-      setCustomMaxPriorityFee(
-        selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei
-      );
+      setCustomFees({
+        customMaxBaseFee: newMaxFeePerGas?.gwei,
+        customMaxPriorityFee:
+          selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei,
+      });
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
@@ -345,10 +350,11 @@ export default function FeesPanel({
 
       if (greaterThan(0, maxFeePerGas.amount)) return;
 
-      setCustomMaxBaseFee(text);
-      setCustomMaxPriorityFee(
-        selectedGasFee.gasFeeParams.maxPriorityFeePerGas.gwei
-      );
+      setCustomFees({
+        customMaxBaseFee: text,
+        customMaxPriorityFee:
+          selectedGasFee.gasFeeParams.maxPriorityFeePerGas.gwei,
+      });
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
@@ -372,8 +378,10 @@ export default function FeesPanel({
 
       // we don't use the round number here, if we did
       // when users type "1." it will default to "1"
-      setCustomMaxPriorityFee(text);
-      setCustomMaxBaseFee(selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei);
+      setCustomFees({
+        customMaxBaseFee: selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei,
+        customMaxPriorityFee: text,
+      });
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
