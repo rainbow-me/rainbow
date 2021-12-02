@@ -20,7 +20,11 @@ export const TabPillWrapper = styled(View).attrs({})`
   ${margin(0, 4, 0, 4)};
   height: 30px;
   border: ${({ isSelected, color, theme: { colors } }) =>
-    `2px solid ${isSelected ? color || colors.appleBlue : colors.alpha(colors.blueGreyDark, 0.06)}`};
+    `2px solid ${
+      isSelected
+        ? color || colors.appleBlue
+        : colors.alpha(colors.blueGreyDark, 0.06)
+    }`};
   border-radius: 15px;
   line-height: 20px;
 `;
@@ -30,7 +34,11 @@ export const TabPillText = styled(Text).attrs({
   weight: 'heavy',
 })`
   color: ${({ isSelected, theme: { colors }, color }) =>
-    `${isSelected ? color || colors.appleBlue : colors.alpha(colors.blueGreyDark, 0.4)}`};
+    `${
+      isSelected
+        ? color || colors.appleBlue
+        : colors.alpha(colors.blueGreyDark, 0.4)
+    }`};
   ${margin(
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0,

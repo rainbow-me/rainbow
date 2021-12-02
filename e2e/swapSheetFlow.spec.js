@@ -336,7 +336,7 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should display warning on low custom base fee price', async () => {
     await Helpers.clearField('max-base-fee-input');
     await Helpers.typeText('max-base-fee-input', '1\n', true);
-    await Helpers.checkIfElementByTextIsVisible('Lower than recommended');
+    await Helpers.checkIfElementByTextIsVisible('Lower than suggested');
   });
 
   it('Should display warning on low custom priority fee price', async () => {
