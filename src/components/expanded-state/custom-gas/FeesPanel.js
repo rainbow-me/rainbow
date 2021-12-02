@@ -216,13 +216,7 @@ export default function FeesPanel({
         </PanelColumn>
       );
     },
-    [
-      colors,
-      currentBaseFee,
-      currentGasTrend,
-      navigate,
-      selectedOptionIsCustom,
-    ]
+    [colors, currentBaseFee, currentGasTrend, navigate, selectedOptionIsCustom]
   );
 
   const formattedBaseFee = useMemo(
