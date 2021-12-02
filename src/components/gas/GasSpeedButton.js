@@ -19,6 +19,7 @@ import {
   usePrevious,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { weiToGwei } from '@rainbow-me/parsers';
 import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
@@ -321,19 +322,32 @@ const GasSpeedButton = ({
   }, [currentNetwork, speeds]);
 
   const menuConfig = useMemo(() => {
-    const menuOptions = speedOptions.map(gasOption => ({
-      actionKey: gasOption,
-      actionTitle: upperFirst(gasOption),
-      icon: {
-        iconType: 'ASSET',
-        iconValue: GAS_ICONS[gasOption],
-      },
-    }));
+    const menuOptions = speedOptions.map(gasOption => {
+      const wei =
+        weiToGwei(gasFeeParamsBySpeed[gasOption]?.maxFeePerGas?.amount) +
+        weiToGwei(
+          gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.amount,
+          10
+        );
+      const gweiDisplay =
+        currentNetwork === networkTypes.polygon
+          ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
+          : `${parseInt(wei, 10)} Gwei`;
+      return {
+        actionKey: gasOption,
+        actionTitle: upperFirst(gasOption),
+        discoverabilityTitle: gweiDisplay,
+        icon: {
+          iconType: 'ASSET',
+          iconValue: GAS_ICONS[gasOption],
+        },
+      };
+    });
     return {
       menuItems: menuOptions,
       menuTitle: `Transaction Speed`,
     };
-  }, [speedOptions]);
+  }, [currentNetwork, gasFeeParamsBySpeed, speedOptions]);
 
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
     speedOptions,
