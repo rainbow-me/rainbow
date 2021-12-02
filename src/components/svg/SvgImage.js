@@ -14,6 +14,11 @@ const ImageTile = styled(ImgixImage)`
 
 const getHTML = (svgContent, style) =>
   `
+<script>
+  window.alert = () => false;
+  window.prompt = () => false;
+  window.confirm  = () => false;
+</script>
 <html data-key="key-${style.height}-${style.width}">
   <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no"> 
@@ -152,6 +157,11 @@ class SvgImage extends Component {
           )}
           {(!props.fallbackIfNonAnimated || isSVGAnimated) && (
             <WebView
+              injectedJavaScript={`
+              alert('yo its your boy');
+
+
+         `}
               onMessage={this.onLoad}
               originWhitelist={['*']}
               pointerEvents="none"
