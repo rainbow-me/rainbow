@@ -1,21 +1,39 @@
 import equal from 'fast-deep-equal';
 import React, { Component, useMemo, useRef } from 'react';
 import { Dimensions, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import {
   DataProvider,
   LayoutProvider,
   RecyclerListView,
 } from 'recyclerlistview';
+import StickyContainer from 'recyclerlistview/sticky';
+
 import { useDeepCompareMemo } from 'use-deep-compare';
 import { CoinDivider, CoinDividerHeight } from '../../coin-divider';
-import {BalanceCoinRow, CoinRowHeight} from '../../coin-row';
+import { BalanceCoinRow, CoinRowHeight } from '../../coin-row';
+import SavingsListHeader from '../../savings/SavingsListHeader';
+import { TokenFamilyHeader } from '../../token-family';
 import { UniqueTokenRow } from '../../unique-token';
 import { AssetListHeaderHeight } from '../AssetListHeader';
+import { AssetListHeader } from '../index';
+import WrappedNFT from './WrappedNFT';
+import WrappedPoolRow from './WrappedPoolRow';
+import WrappedPoolsListHeader from './WrappedPoolsListHeader';
+import WrappedSavingsListHeader from './WrappedSavingsListHeader';
+import WrappedSavingsRow from './WrappedSavingsRow';
+import WrappedTokenFamilyHeader from './WrappedTokenFamilyHeader';
+import WrapperBalanceCoinRow from './WrapperBalanceCoinRow';
 import { Text } from '@rainbow-me/design-system';
 import assertNever from '@rainbow-me/helpers/assertNever';
-import { useWalletSectionsData } from '@rainbow-me/hooks';
-import {AssetListHeader} from "../index";
-import WrapperBalanceCoinRow from "./WrapperBalanceCoinRow";
+import {
+  useCoinListEdited,
+  useOpenInvestmentCards,
+  useOpenSavings,
+  useOpenSmallBalances,
+  useWalletSectionsData,
+} from '@rainbow-me/hooks';
+import { deviceUtils } from '@rainbow-me/utils';
 
 enum CellType {
   ASSETS_HEADER = 'ASSETS_HEADER',
@@ -51,31 +69,42 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.NFTS_HEADER]: { height: AssetListHeaderHeight },
   [CellType.FAMILY_HEADER]: { height: AssetListHeaderHeight },
   // @ts-ignore
-  [CellType.NFT]: { height: UniqueTokenRow.cardSize },
+  [CellType.NFT]: {
+    height: UniqueTokenRow.cardSize + UniqueTokenRow.cardMargin,
+    width: deviceUtils.dimensions.width / 2,
+  },
   [CellType.LOADING_ASSETS]: { height: AssetListHeaderHeight },
 };
 
 type BaseCellType = { type: CellType; uid: string };
 
-type SavingsHeaderExtraData = { type: CellType.SAVINGS; address: string };
+type SavingsHeaderExtraData = { type: CellType.SAVINGS_HEADER; value: string };
+type SavingExtraData = { type: CellType.SAVINGS; address: string };
 type UniswapPoolExtraData = { type: CellType.UNISWAP_POOL; address: string };
 type CoinDividerExtraData = { type: CellType.COIN_DIVIDER; value: number };
-type AssetsHeaderExtraData = { type: CellType.COIN_DIVIDER; value: number };
+type AssetsHeaderExtraData = { type: CellType.ASSETS_HEADER; value: number };
+type PoolsHeaderExtraData = { type: CellType.POOLS_HEADER; value: number };
 type CoinExtraData = { type: CellType.COIN; uniqueId: string };
 type NFTExtraData = { type: CellType.NFT; uniqueId: string };
+type NFTFamilyExtraData = {
+  type: CellType.FAMILY_HEADER;
+  name: string;
+  total?: number;
+  image?: string;
+};
 
 type CellExtraData =
-  | { type: CellType.SAVINGS_HEADER }
-  | { type: CellType.POOLS_HEADER }
   | { type: CellType.NFTS_HEADER }
-  | { type: CellType.FAMILY_HEADER }
   | { type: CellType.LOADING_ASSETS }
+  | NFTFamilyExtraData
+  | SavingExtraData
   | SavingsHeaderExtraData
   | UniswapPoolExtraData
   | CoinDividerExtraData
   | CoinExtraData
   | NFTExtraData
   | AssetsHeaderExtraData
+  | PoolsHeaderExtraData;
 
 type CellTypes = BaseCellType & CellExtraData;
 
@@ -103,9 +132,35 @@ function rowRenderer(type: CellType, data: CellTypes) {
     case CellType.COIN_DIVIDER:
       return <CoinDivider balancesSum={(data as CoinDividerExtraData).value} />;
     case CellType.ASSETS_HEADER:
-      return <AssetListHeader totalValue={(data as AssetsHeaderExtraData).value} />;
+      return (
+        <AssetListHeader totalValue={(data as AssetsHeaderExtraData).value} />
+      );
     case CellType.COIN:
-      return <WrapperBalanceCoinRow uniqueId={(data as CoinExtraData).uniqueId} item={{ uniqueId:(data as CoinExtraData).uniqueId  }}/>
+      return (
+        <WrapperBalanceCoinRow uniqueId={(data as CoinExtraData).uniqueId} />
+      );
+    case CellType.SAVINGS_HEADER:
+      return (
+        <WrappedSavingsListHeader
+          value={(data as SavingsHeaderExtraData).value}
+        />
+      );
+    case CellType.SAVINGS:
+      return <WrappedSavingsRow address={(data as SavingExtraData).address} />;
+    case CellType.POOLS_HEADER:
+      return (
+        <WrappedPoolsListHeader value={(data as PoolsHeaderExtraData).value} />
+      );
+    case CellType.UNISWAP_POOL:
+      return (
+        <WrappedPoolRow address={(data as UniswapPoolExtraData).address} />
+      );
+    case CellType.NFTS_HEADER:
+      return <AssetListHeader title="Collectibles" />;
+    case CellType.FAMILY_HEADER:
+      return <WrappedTokenFamilyHeader {...data} />;
+    case CellType.NFT:
+      return <WrappedNFT uniqueId={(data as NFTExtraData).uniqueId} />;
   }
   return (
     <CellContainer style={styles.container}>
@@ -134,11 +189,80 @@ const getLayoutProvider = (briefSectionsData: CellTypes[]) =>
 
 function useMemoBriefSectionData() {
   const { briefSectionsData } = useWalletSectionsData();
-  return useDeepCompareMemo(() => briefSectionsData, [briefSectionsData]);
+  const { isSmallBalancesOpen } = useOpenSmallBalances();
+  const { isSavingsOpen } = useOpenSavings();
+  const { isInvestmentCardsOpen } = useOpenInvestmentCards();
+
+  const { isCoinListEdited } = useCoinListEdited();
+  const openFamilyTabs = useSelector(
+    ({ openStateSettings }) => openStateSettings.openFamilyTabs
+  );
+
+  return useDeepCompareMemo(() => {
+    let afterDivider = false;
+    let isGroupOpen = true;
+    const stickyHeaders = [];
+    let index = 0;
+    const briefSectionsDataFiltered = briefSectionsData.filter(data => {
+      if (
+        data.type === CellType.ASSETS_HEADER ||
+        data.type === CellType.NFTS_HEADER
+      ) {
+        stickyHeaders.push(index);
+      }
+      if (data.type === CellType.COIN && !isSmallBalancesOpen && afterDivider) {
+        return false;
+      }
+      if (data.type === CellType.COIN_DIVIDER) {
+        afterDivider = true;
+      }
+
+      if (data.type === CellType.SAVINGS && !isSavingsOpen) {
+        return false;
+      }
+
+      if (data.type === CellType.FAMILY_HEADER) {
+        const name = (data as NFTFamilyExtraData).name;
+        const showcase = name === 'Showcase';
+        isGroupOpen = openFamilyTabs[name + (showcase ? '-showcase' : '')];
+      }
+
+      if (data.type === CellType.NFT) {
+        return isGroupOpen;
+      }
+
+      if (
+        (data.type === CellType.POOLS_HEADER ||
+          data.type === CellType.UNISWAP_POOL) &&
+        isCoinListEdited
+      ) {
+        return false;
+      }
+
+      if (data.type === CellType.UNISWAP_POOL && !isInvestmentCardsOpen) {
+        return false;
+      }
+
+      index++;
+      return true;
+    });
+
+    return {
+      briefSectionsData: briefSectionsDataFiltered,
+      stickyHeaders,
+    };
+  }, [
+    briefSectionsData,
+    isSmallBalancesOpen,
+    isSavingsOpen,
+    isInvestmentCardsOpen,
+    isCoinListEdited,
+    openFamilyTabs,
+  ]);
 }
 
 function RecyclerAssetList() {
-  const briefSectionsData = useMemoBriefSectionData();
+  const { briefSectionsData, stickyHeaders } = useMemoBriefSectionData();
   const currentDataProvider = useMemo(
     () => dataProvider.cloneWithRows(briefSectionsData),
     [briefSectionsData]
@@ -150,11 +274,14 @@ function RecyclerAssetList() {
 
   return (
     <>
-      <RecyclerListView
-        dataProvider={currentDataProvider}
-        layoutProvider={layoutProvider}
-        rowRenderer={rowRenderer}
-      />
+      <StickyContainer stickyHeaderIndices={stickyHeaders}>
+        <RecyclerListView
+          dataProvider={currentDataProvider}
+          layoutProvider={layoutProvider}
+          // @ts-ignore
+          rowRenderer={rowRenderer}
+        />
+      </StickyContainer>
     </>
   );
 }

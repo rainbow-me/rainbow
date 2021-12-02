@@ -136,7 +136,7 @@ const withUniswapSection = (
   };
 };
 
-const withBriefUniswapSection = uniswap => {
+const withBriefUniswapSection = (uniswap, uniswapTotal, nativeCurrency) => {
   const pools = uniswap.map(pool => ({
     address: pool.address,
     type: 'UNISWAP_POOL',
@@ -144,13 +144,12 @@ const withBriefUniswapSection = uniswap => {
   }));
 
   if (pools.length > 0) {
-    return [{ type: 'POOLS_HEADER', uid: 'pools-header' }, ...pools];
+    return [{ type: 'POOLS_HEADER', value:convertAmountToNativeDisplay(uniswapTotal, nativeCurrency), uid: 'pools-header' }, ...pools];
   }
   return [];
 };
 
 const withBalanceSavingsSection = savings => {
-  console.log(savings, ' SAVINGS');
   let totalUnderlyingNativeValue = '0';
   const savingsAssets = map(savings, asset => {
     const {
@@ -182,9 +181,19 @@ const withBalanceSavingsSection = savings => {
 };
 
 const withBriefBalanceSavingsSection = savings => {
+  let totalUnderlyingNativeValue = '0';
+  for (let saving of savings) {
+    const {
+      underlyingBalanceNativeValue,
+    } = saving;
+    totalUnderlyingNativeValue = add(
+      totalUnderlyingNativeValue,
+      underlyingBalanceNativeValue || 0
+    );
+  }
   const addresses = savings?.map(asset => asset.cToken.address);
   return [
-    { type: 'SAVINGS_HEADER', uid: 'savings-header' },
+    { type: 'SAVINGS_HEADER', uid: 'savings-header', value: totalUnderlyingNativeValue },
     ...addresses.map(address => ({ address, type: 'SAVINGS', uid: 'savings-' + address })),
   ];
 };
@@ -262,7 +271,6 @@ const withBalanceSection = (
     true,
     !collectibles.length
   );
-  console.log(briefAssets);
   let balanceSectionData = [...assets];
 
   const totalBalanceWithSavingsValue = add(
@@ -314,11 +322,12 @@ const withBriefBalanceSection = (
   isCoinListEdited,
   pinnedCoins,
   hiddenCoins,
-  collectibles
+  collectibles,
+  savingsSection,
+  uniswapTotal
 ) => {
-  const headerItem = { type: 'ASSETS_HEADER' };
 
-  const briefAssets = buildBriefCoinsList(
+  const {briefAssets, totalBalancesValue} = buildBriefCoinsList(
     allAssets,
     nativeCurrency,
     isCoinListEdited,
@@ -328,10 +337,50 @@ const withBriefBalanceSection = (
     !collectibles.length
   );
 
+
+  console.log(savingsSection, uniswapTotal)
+  const totalBalanceWithSavingsValue = add(
+    totalBalancesValue,
+    get(savingsSection, 'totalValue', 0)
+  );
+  const totalBalanceWithAllSectionValues = add(
+    totalBalanceWithSavingsValue,
+    uniswapTotal
+  );
+
+  const totalValue = convertAmountToNativeDisplay(
+    totalBalanceWithAllSectionValues,
+    nativeCurrency
+  );
+
+  const headerItem = { type: 'ASSETS_HEADER', value: totalValue };
+
   return [
     headerItem,
     ...(isLoadingAssets ? [{ type: 'LOADING_ASSETS', uid: 'loadings-asset' }] : briefAssets),
   ];
+};
+
+const withSmallBalancelValue = (
+  allAssets,
+  isLoadingAssets,
+  nativeCurrency,
+  isCoinListEdited,
+  pinnedCoins,
+  hiddenCoins,
+  collectibles
+) => {
+  const { smallBalancesValue } = buildCoinsList(
+    allAssets,
+    nativeCurrency,
+    isCoinListEdited,
+    pinnedCoins,
+    hiddenCoins,
+    true,
+    !collectibles.length
+  );
+
+  return smallBalancesValue;
 };
 
 let isPreloadComplete = false;
@@ -423,6 +472,8 @@ const withBriefUniqueTokenFamiliesSection = (uniqueTokens, data) => {
       name: family.familyName,
       uid: 'nfts-header-' + family.familyId,
       type: 'FAMILY_HEADER',
+      amount: family.tokens,
+      image: family.familyImage
     });
     for (let tokens of family.tokens) {
       result.push({
@@ -469,7 +520,7 @@ const uniswapSectionSelector = createSelector(
 );
 
 const briefUniswapSectionSelector = createSelector(
-  [uniswapSelector],
+  [uniswapSelector, uniswapTotalSelector, nativeCurrencySelector],
   withBriefUniswapSection
 );
 
@@ -503,8 +554,26 @@ const briefBalanceSectionSelector = createSelector(
     pinnedCoinsSelector,
     hiddenCoinsSelector,
     uniqueTokensSelector,
+    balanceSavingsSectionSelector,
+    uniswapTotalSelector,
   ],
   withBriefBalanceSection
+);
+
+
+export const briefSmallBalanceValueSelector = createSelector(
+  [
+    allAssetsSelector,
+    isLoadingAssetsSelector,
+    nativeCurrencySelector,
+    isCoinListEditedSelector,
+    pinnedCoinsSelector,
+    hiddenCoinsSelector,
+    uniqueTokensSelector,
+    balanceSavingsSectionSelector,
+    uniswapTotalSelector,
+  ],
+  withSmallBalancelValue
 );
 
 const uniqueTokenFamiliesSelector = createSelector(

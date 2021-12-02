@@ -37,6 +37,7 @@ const SavingsListHeader = ({
   showSumValue,
   title,
 }) => {
+
   const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
 

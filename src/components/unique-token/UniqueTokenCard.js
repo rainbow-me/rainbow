@@ -4,6 +4,7 @@ import { magicMemo } from '../../utils';
 import { getLowResUrl } from '../../utils/getLowResUrl';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
+import { CardSize } from './CardSize';
 import UniqueTokenImage from './UniqueTokenImage';
 import {
   usePersistentAspectRatio,
@@ -20,7 +21,7 @@ const Container = styled.View`
 
 const Content = styled.View`
   border-radius: ${UniqueTokenCardBorderRadius};
-  height: ${({ height }) => height};
+  height: ${({ height }) => height || CardSize};
   overflow: hidden;
   width: ${({ width }) => width};
 `;

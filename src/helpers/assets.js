@@ -184,7 +184,12 @@ export const buildCoinsList = (
     });
   }
 
-  return { addedEth, assets: allAssets, totalBalancesValue };
+  return {
+    addedEth,
+    assets: allAssets,
+    smallBalancesValue,
+    totalBalancesValue,
+  };
 };
 
 // TODO make it better
@@ -197,7 +202,7 @@ export const buildBriefCoinsList = (
   includePlaceholder = false,
   emptyCollectibles
 ) => {
-  const { assets } = buildCoinsList(
+  const { assets, smallBalancesValue, totalBalancesValue } = buildCoinsList(
     assetsOriginal,
     nativeCurrency,
     isCoinListEdited,
@@ -206,12 +211,12 @@ export const buildBriefCoinsList = (
     includePlaceholder,
     emptyCollectibles
   );
-  console.log(assets, 'GGGG');
   const briefAssets = assets?.reduce((acc, asset) => {
     if (asset.coinDivider) {
       acc.push({
         type: 'COIN_DIVIDER',
         uid: 'coin-divider',
+        value: smallBalancesValue,
       });
     } else if (asset.smallBalancesContainer) {
       for (let smallAsset of asset.assets) {
@@ -230,7 +235,7 @@ export const buildBriefCoinsList = (
     }
     return acc;
   }, []);
-  return briefAssets;
+  return { briefAssets, totalBalancesValue };
 };
 
 export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
@@ -334,7 +339,7 @@ export const buildBriefUniqueTokenList = (
   const families2 = sortBy(Object.keys(grouped2), row =>
     row.replace(regex, '').toLowerCase()
   );
-  const result = [];
+  const result = [{ type: 'NFTS_HEADER', uid: 'nfts-header' }];
   if (uniqueTokensInShowcase.length > 0) {
     result.push({ name: 'Showcase', type: 'FAMILY_HEADER', uid: 'showcase' });
     for (let token of uniqueTokensInShowcase) {
@@ -342,7 +347,13 @@ export const buildBriefUniqueTokenList = (
     }
   }
   for (let family of families2) {
-    result.push({ name: family, type: 'FAMILY_HEADER', uid: family });
+    result.push({
+      image: grouped2[family][0].familyImage,
+      name: family,
+      total: grouped2[family].length,
+      type: 'FAMILY_HEADER',
+      uid: family,
+    });
     const tokens = grouped2[family].map(({ uniqueId }) => uniqueId);
     for (let token of tokens) {
       result.push({ type: 'NFT', uid: token, uniqueId: token });
