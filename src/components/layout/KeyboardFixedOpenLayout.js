@@ -33,6 +33,7 @@ export default function KeyboardFixedOpenLayout({
   const { height: screenHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const ref = useRef();
+
   const containerHeight =
     screenHeight - (ios && keyboardHeight) - additionalPadding;
   ios &&

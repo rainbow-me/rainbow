@@ -1,6 +1,6 @@
+import { Provider } from '@ethersproject/abstract-provider';
 import { Signer } from '@ethersproject/abstract-signer';
 import { Contract } from '@ethersproject/contracts';
-import { Provider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import {
@@ -367,8 +367,7 @@ export const executeSwap = async ({
   accountAddress,
   chainId,
   gasLimit,
-  maxFeePerGas,
-  maxPriorityFeePerGas,
+  gasPrice,
   inputCurrency,
   nonce,
   outputCurrency,
@@ -380,8 +379,7 @@ export const executeSwap = async ({
   accountAddress: string;
   chainId: ChainId;
   gasLimit: string | number;
-  maxFeePerGas: string;
-  maxPriorityFeePerGas: string;
+  gasPrice: string;
   inputCurrency: Asset;
   nonce?: number;
   outputCurrency: Asset;
@@ -404,8 +402,7 @@ export const executeSwap = async ({
 
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
-    maxFeePerGas: toHex(maxFeePerGas) || undefined,
-    maxPriorityFeePerGas: toHex(maxPriorityFeePerGas) || undefined,
+    gasPrice: toHex(gasPrice) || undefined,
     nonce: nonce ? toHex(nonce) : undefined,
     ...(value ? { value } : {}),
   };

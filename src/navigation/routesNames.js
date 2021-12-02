@@ -12,7 +12,6 @@ const Routes = {
   CONFIRM_REQUEST: 'ConfirmRequest',
   CONNECTED_DAPPS: 'ConnectedDapps',
   CURRENCY_SELECT_SCREEN: 'CurrencySelectScreen',
-  CUSTOM_GAS_SHEET: 'CustomGasSheet',
   EXAMPLE_SCREEN: 'ExampleScreen',
   EXCHANGE_MODAL: 'ExchangeModal',
   EXPANDED_ASSET_SCREEN: 'ExpandedAssetScreen',

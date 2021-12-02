@@ -11,23 +11,9 @@ import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useDimensions } from '@rainbow-me/hooks';
-import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
-import { gasUtils } from '@rainbow-me/utils';
+import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 
 export const ExplainSheetHeight = android ? 454 : 434;
-
-const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
-  color: color || colors.appleBlue,
-  size: 'lmedium',
-  weight: 'heavy',
-  alignItems: 'center',
-  textAlign: 'center',
-}))`
-  ${padding(9.5, 15, android ? 6 : 9, 15)}
-  border-color: ${({ theme: { colors }, color }) => colors.alpha(color, 0.2)};
-  border-radius: ${android ? 24 : 20};
-  border-width: 2;
-`;
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   ${position.cover};
@@ -53,24 +39,6 @@ const FLOOR_PRICE_EXPLAINER = `A collection's floor price is the lowest asking p
 const GAS_EXPLAINER = `This is the "gas fee" used by the Ethereum blockchain to securely validate your transaction.
 
 This fee varies depending on the complexity of your transaction and how busy the network is!`;
-
-const BASE_CURRENT_BASE_FEE_EXPLAINER = `The base fee is set by the Ethereum network and changes depending on how busy the network is.\n\n`;
-
-const CURRENT_BASE_FEE_EXPLAINER_STABLE = `Network traffic is stable right now. Have fun!`;
-
-const CURRENT_BASE_FEE_EXPLAINER_FALLING = `Fees are dropping right now!`;
-
-const CURRENT_BASE_FEE_EXPLAINER_RISING = `Fees are rising right now! It’s best to use a higher max base fee to avoid a stuck transaction.`;
-
-const CURRENT_BASE_FEE_EXPLAINER_SURGING = `Fees are unusually high right now! Unless your transaction is urgent, it’s best to wait for fees to drop.`;
-
-const MAX_BASE_FEE_EXPLAINER = `This is the maximum base fee you’re willing to pay for this transaction.
-
-Setting a higher max base fee prevents your transaction from getting stuck if fees rise.`;
-
-const MINER_TIP_EXPLAINER = `The miner tip goes directly to the miner who confirms your transaction on the network.
-
-A higher tip makes your transaction more likely to be confirmed quickly.`;
 
 const VERIFIED_EXPLAINER = `Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.
 
@@ -100,42 +68,6 @@ export const explainers = {
     extraHeight: 2,
     text: GAS_EXPLAINER,
     title: 'Ethereum network fee',
-  },
-  currentBaseFeeStable: {
-    emoji: '🌞',
-    extraHeight: android ? 80 : 40,
-    text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_STABLE,
-    title: 'Current base fee',
-  },
-  currentBaseFeeFalling: {
-    emoji: '🤑',
-    extraHeight: android ? 60 : 20,
-    text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_FALLING,
-    title: 'Current base fee',
-  },
-  currentBaseFeeRising: {
-    emoji: '🥵',
-    extraHeight: android ? 100 : 50,
-    text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_RISING,
-    title: 'Current base fee',
-  },
-  currentBaseFeeSurging: {
-    emoji: '🎢',
-    extraHeight: android ? 100 : 50,
-    text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_SURGING,
-    title: 'Current base fee',
-  },
-  maxBaseFee: {
-    emoji: '📈',
-    extraHeight: 0,
-    text: MAX_BASE_FEE_EXPLAINER,
-    title: 'Max base fee',
-  },
-  minerTip: {
-    emoji: '⛏',
-    extraHeight: 0,
-    text: MINER_TIP_EXPLAINER,
-    title: 'Miner tip',
   },
   sending_funds_to_contract: {
     emoji: '✋',
@@ -208,25 +140,9 @@ export const explainers = {
 const ExplainSheet = () => {
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const insets = useSafeArea();
-  const { params: { type = 'gas', onClose } = {}, params = {} } = useRoute();
+  const { params: { type = 'gas', onClose } = {} } = useRoute();
   const { colors } = useTheme();
   const { goBack } = useNavigation();
-  const renderBaseFeeIndicator = useMemo(() => {
-    if (!type.includes('currentBaseFee')) return null;
-    const { currentGasTrend, currentBaseFee } = params;
-    return (
-      <Centered>
-        <GasTrendHeader
-          align="center"
-          color={gasUtils.GAS_TRENDS[currentGasTrend].color}
-        >
-          {`${gasUtils.GAS_TRENDS[currentGasTrend].label} • ${parseInt(
-            currentBaseFee
-          )} Gwei`}
-        </GasTrendHeader>
-      </Centered>
-    );
-  }, [params, type]);
 
   const handleClose = useCallback(() => {
     goBack();
@@ -279,10 +195,6 @@ const ExplainSheet = () => {
             <Title align="center" lineHeight="big" size="big" weight="heavy">
               {explainers[type].title}
             </Title>
-
-            {/** base fee explainer */}
-            {renderBaseFeeIndicator}
-
             <Text
               align="center"
               color={colors.alpha(colors.blueGreyDark, 0.6)}

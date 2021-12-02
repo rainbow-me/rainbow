@@ -1,6 +1,7 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
+import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import { ConfirmExchangeButton } from '../exchange';
 import { GasSpeedButton } from '../gas';
@@ -18,11 +19,14 @@ import {
   SwapDetailsMastheadHeight,
   SwapDetailsSlippageMessage,
 } from './swap-details';
+import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
   useAccountSettings,
+  useBooleanState,
+  useDimensions,
   useHeight,
+  useKeyboardHeight,
   usePriceImpactDetails,
-  useSwapCurrencies,
   useSwapDerivedOutputs,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -90,7 +94,10 @@ export default function SwapDetailsState({
   const { network } = useAccountSettings();
   const { setParams } = useNavigation();
   const { params: { longFormHeight } = {} } = useRoute();
-  const { outputCurrency } = useSwapCurrencies();
+  const { height: deviceHeight, width: deviceWidth } = useDimensions();
+  const keyboardHeight = useKeyboardHeight();
+  const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
+  const insets = useSafeArea();
 
   const {
     derivedValues: { inputAmount, outputAmount },
@@ -121,6 +128,8 @@ export default function SwapDetailsState({
   useEffect(() => () => restoreFocusOnSwapModal(), [restoreFocusOnSwapModal]);
   useAndroidDisableGesturesOnFocus();
 
+  const keyboardOffset = keyboardHeight + insets.bottom + 10;
+
   const sheetHeightWithoutKeyboard =
     SheetHandleFixedToTopHeight +
     SwapDetailsMastheadHeight +
@@ -128,17 +137,44 @@ export default function SwapDetailsState({
     slippageMessageHeight +
     footerHeight;
 
+  const sheetHeightWithKeyboard =
+    sheetHeightWithoutKeyboard + keyboardHeight - 23;
+
+  const additionalScrollForKeyboard =
+    sheetHeightWithoutKeyboard + keyboardOffset >
+    deviceHeight - insets.top + insets.bottom
+      ? deviceHeight -
+        insets.top +
+        insets.bottom -
+        (sheetHeightWithoutKeyboard + keyboardOffset)
+      : 0;
+
   const contentScroll = useSharedValue(0);
 
   useEffect(() => {
-    contentScroll.value = withSpring(0, springConfig);
-    setParams({ longFormHeight: sheetHeightWithoutKeyboard });
-  }, [contentScroll, sheetHeightWithoutKeyboard, setParams]);
+    if (isKeyboardVisible) {
+      contentScroll.value = withSpring(
+        additionalScrollForKeyboard,
+        springConfig
+      );
+      setParams({ longFormHeight: sheetHeightWithKeyboard });
+    } else {
+      contentScroll.value = withSpring(0, springConfig);
+      setParams({ longFormHeight: sheetHeightWithoutKeyboard });
+    }
+  }, [
+    additionalScrollForKeyboard,
+    contentScroll,
+    isKeyboardVisible,
+    sheetHeightWithKeyboard,
+    sheetHeightWithoutKeyboard,
+    setParams,
+  ]);
 
   return (
     <SheetKeyboardAnimation
       as={AnimatedContainer}
-      isKeyboardVisible={false}
+      isKeyboardVisible={isKeyboardVisible}
       translateY={contentScroll}
     >
       <SlackSheet
@@ -180,12 +216,20 @@ export default function SwapDetailsState({
             {...confirmButtonProps}
             testID="swap-details-confirm-button"
           />
-          <GasSpeedButton
-            asset={outputCurrency}
-            currentNetwork={network}
-            testID="swap-details-gas"
-            theme="light"
-          />
+          <Column
+            justify="center"
+            marginHorizontal={5}
+            width={deviceWidth - 10}
+          >
+            <GasSpeedButton
+              currentNetwork={network}
+              onCustomGasBlur={hideKeyboard}
+              onCustomGasFocus={showKeyboard}
+              testID="swap-details-gas"
+              theme="light"
+              type={ExchangeModalTypes.swap}
+            />
+          </Column>
         </Footer>
         <ToastPositionContainer>
           <CopyToast copiedText={copiedText} copyCount={copyCount} />

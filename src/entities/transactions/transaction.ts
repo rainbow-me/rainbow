@@ -18,8 +18,6 @@ export interface RainbowTransaction {
   from: EthereumAddress | null;
   gasLimit?: BigNumberish;
   gasPrice?: BigNumberish;
-  maxFeePerGas?: BigNumberish;
-  maxPriorityFeePerGas?: BigNumberish;
   hash: string | null;
   minedAt: number | null;
   name: string | null;
@@ -51,8 +49,6 @@ export interface NewTransaction {
   from: EthereumAddress | null;
   gasLimit?: BigNumberish;
   gasPrice?: BigNumberish;
-  maxFeePerGas?: BigNumberish;
-  maxPriorityFeePerGas?: BigNumberish;
   hash: string | null;
   network?: Network;
   nonce: number | null;
