@@ -421,7 +421,7 @@ export const explorerInitL2 = (network = null) => (dispatch, getState) => {
     switch (network) {
       case NetworkTypes.arbitrum:
       case NetworkTypes.polygon:
-        // Start watching optimism assets
+        // Start watching arbitrum and polygon assets
         dispatch(fetchAssetsFromRefraction());
         break;
       case NetworkTypes.optimism:
