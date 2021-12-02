@@ -51,6 +51,19 @@ export function getHumanReadableDate(date) {
   );
 }
 
+export function getHumanReadableDateWithoutOn(date) {
+  const timestamp = new Date(date * 1000);
+
+  return format(
+    timestamp,
+    timestamp > todayTimestamp
+      ? `'Today'`
+      : timestamp > yesterdayTimestamp
+      ? `'Yesterday'`
+      : `MMM d${timestamp > thisYearTimestamp ? '' : ' yyyy'}`
+  );
+}
+
 export function hasAddableContact(status, type) {
   if (
     (status === TransactionStatusTypes.received &&

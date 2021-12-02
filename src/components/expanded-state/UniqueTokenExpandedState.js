@@ -56,6 +56,7 @@ import {
   magicMemo,
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
+import TokenHistory from './tokenHistory/TokenHistory';
 
 const NftExpandedStateSection = styled(ExpandedStateSection).attrs({
   isNft: true,
@@ -371,6 +372,15 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
               </TokenInfoItem>
             </TokenInfoRow>
           </TokenInfoSection>
+          <Fragment>
+            <SheetDivider deviceWidth={deviceWidth} />
+            <NftExpandedStateSection isTokenHistory={true} title="History">
+              <TokenHistory 
+               contractAndToken={urlSuffixForAsset}
+               color={imageColor}
+              />
+            </NftExpandedStateSection>
+          </Fragment>
           <Column>
             {!!description && (
               <Fragment>
