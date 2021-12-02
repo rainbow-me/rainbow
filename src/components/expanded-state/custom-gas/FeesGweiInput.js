@@ -11,7 +11,11 @@ const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';
 const DELAY_THRESHOLD = 200;
 
-const Wrapper = styled(Row).attrs(() => ({}))``;
+const Wrapper = styled(Row)``;
+
+const StepButtonWrapper = styled(ButtonPressAnimation).attrs(() => ({
+  paddingHorizontal: 3,
+}))``;
 
 const StepButton = styled(Text).attrs(({ theme: { colors }, color }) => ({
   color: color || colors.appleBlue,
@@ -29,14 +33,14 @@ const GweiStepButton = ({
   buttonColor,
 }) => {
   return (
-    <ButtonPressAnimation
+    <StepButtonWrapper
       onLongPress={onLongPress}
       onLongPressEnded={onLongPressEnded}
       onPress={onPress}
       shouldLongPressEndPress={shouldLongPressEndPress}
     >
       <StepButton color={buttonColor}>{type === 'plus' ? '􀁍' : '􀁏'}</StepButton>
-    </ButtonPressAnimation>
+    </StepButtonWrapper>
   );
 };
 
