@@ -15,9 +15,13 @@ const ImageTile = styled(ImgixImage)`
 const getHTML = (svgContent, style) =>
   `
 <script>
-  window.alert = () => false;
-  window.prompt = () => false;
-  window.confirm  = () => false;
+  function overLoadFunctions() {
+    window.alert = () => false;
+    window.prompt = () => false;
+    window.confirm  = () => false;
+  }
+  overLoadFunctions();
+  window.onload = overLoadFunctions();
 </script>
 <html data-key="key-${style.height}-${style.width}">
   <head>
