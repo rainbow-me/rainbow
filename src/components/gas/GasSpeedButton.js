@@ -148,11 +148,11 @@ const GasSpeedButton = ({
   const price = useMemo(() => {
     const gasPrice =
       selectedGasFee?.gasFee?.estimatedFee?.native?.value?.display;
-    const price = (isNil(gasPrice) ? '0.00' : gasPrice)
+    if (isNil(gasPrice)) return null;
+    return gasPrice
       .replace(',', '') // In case gas price is > 1k!
       .replace(nativeCurrencySymbol, '')
       .trim();
-    return price;
   }, [nativeCurrencySymbol, selectedGasFee]);
 
   const isL2 = useMemo(() => isL2Network(currentNetwork), [currentNetwork]);
@@ -181,10 +181,11 @@ const GasSpeedButton = ({
 
   const gasIsNotReady = useMemo(
     () =>
+      isNil(price) ||
       isEmpty(gasFeeParamsBySpeed) ||
       isEmpty(selectedGasFee?.gasFee) ||
       isSufficientGas === null,
-    [gasFeeParamsBySpeed, selectedGasFee, isSufficientGas]
+    [gasFeeParamsBySpeed, isSufficientGas, price, selectedGasFee]
   );
 
   const openCustomGasSheet = useCallback(() => {
