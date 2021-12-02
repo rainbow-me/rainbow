@@ -157,8 +157,20 @@ const GasSpeedButton = ({
 
   const isL2 = useMemo(() => isL2Network(currentNetwork), [currentNetwork]);
 
+  const gasIsNotReady = useMemo(
+    () =>
+      isNil(price) ||
+      isEmpty(gasFeeParamsBySpeed) ||
+      isEmpty(selectedGasFee?.gasFee) ||
+      isSufficientGas === null,
+    [gasFeeParamsBySpeed, isSufficientGas, price, selectedGasFee]
+  );
+
   const formatGasPrice = useCallback(
     animatedValue => {
+      if (gasIsNotReady) {
+        return 'Loading...';
+      }
       // L2's are very cheap,
       // so let's default to the last 2 significant decimals
       if (isL2) {
@@ -176,16 +188,7 @@ const GasSpeedButton = ({
         }`;
       }
     },
-    [isL2, nativeCurrencySymbol, nativeCurrency]
-  );
-
-  const gasIsNotReady = useMemo(
-    () =>
-      isNil(price) ||
-      isEmpty(gasFeeParamsBySpeed) ||
-      isEmpty(selectedGasFee?.gasFee) ||
-      isSufficientGas === null,
-    [gasFeeParamsBySpeed, isSufficientGas, price, selectedGasFee]
+    [isL2, nativeCurrencySymbol, nativeCurrency, gasIsNotReady]
   );
 
   const openCustomGasSheet = useCallback(() => {
@@ -215,10 +218,10 @@ const GasSpeedButton = ({
         size="lmedium"
         weight="bold"
       >
-        {gasIsNotReady ? 'Loading...' : animatedNumber}
+        {animatedNumber}
       </Text>
     ),
-    [theme, colors, gasIsNotReady]
+    [theme, colors]
   );
 
   const handlePressSpeedOption = useCallback(
@@ -467,6 +470,7 @@ const GasSpeedButton = ({
             <Column>
               <AnimateNumber
                 formatter={formatGasPrice}
+                initial={price}
                 interval={6}
                 renderContent={renderGasPriceText}
                 steps={6}
