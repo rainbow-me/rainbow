@@ -1,20 +1,5 @@
-import { scaleLinear } from 'd3-scale';
-import * as shape from 'd3-shape';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import {
-  Dimensions,
-  Platform,
-  StyleSheet,
-  View,
-  ViewProps,
-  ViewStyle,
-} from 'react-native';
+import React, { useEffect } from 'react';
+import { Platform, View, ViewProps, ViewStyle } from 'react-native';
 import {
   LongPressGestureHandler,
   LongPressGestureHandlerGestureEvent,
@@ -29,20 +14,20 @@ import Animated, {
   useAnimatedProps,
   useAnimatedReaction,
   useAnimatedStyle,
+  useWorkletCallback,
   withDelay,
-  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import * as redash from 'react-native-redash';
 import Svg, { Path, PathProps } from 'react-native-svg';
-import { CurveType, DataType } from '../../helpers/ChartContext';
+import { PathData } from '../../helpers/ChartContext';
+import { useChartData } from '../../helpers/useChartData';
 import {
   requireOnWorklet,
   useWorkletValue,
 } from '../../helpers/requireOnWorklet';
-import { useChartData } from '../../helpers/useChartData';
 
-function ascending(a, b) {
+function ascending(a?: number, b?: number) {
   'worklet';
 
   return a == null || b == null
@@ -56,7 +41,7 @@ function ascending(a, b) {
     : NaN;
 }
 
-function least(length, compare = ascending) {
+function least(length: number, compare: typeof ascending = ascending) {
   'worklet';
 
   let min;
@@ -84,12 +69,6 @@ function impactHeavy() {
     : ReactNativeHapticFeedback.trigger)('impactHeavy');
 }
 
-const springDefaultConfig = {
-  damping: 15,
-  mass: 1,
-  stiffness: 600,
-};
-
 const timingFeedbackDefaultConfig = {
   duration: 80,
 };
@@ -99,32 +78,6 @@ const timingAnimationDefaultConfig = {
 };
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
-
-function getCurveType(curveType: CurveType) {
-  switch (curveType) {
-    case CurveType.basis:
-      return shape.curveBasis;
-    case CurveType.bump:
-      return shape.curveBumpX;
-    case CurveType.linear:
-      return shape.curveLinear;
-    case CurveType.monotone:
-      return shape.curveMonotoneX;
-    case CurveType.natural:
-      return shape.curveNatural;
-    case CurveType.step:
-      return shape.curveStep;
-
-    default:
-      return shape.curveBasis;
-  }
-}
-
-type CallbackType = {
-  data: DataType;
-  width: number;
-  height: number;
-};
 
 interface ChartPathProps extends PathProps {
   hapticsEnabled?: boolean;
@@ -154,13 +107,6 @@ function positionXWithMargin(x: number, margin: number, width: number) {
   }
 }
 
-interface PathData {
-  path: string;
-  parsed: null | redash.Path;
-  points: DataType['points'];
-  data: DataType['points'];
-}
-
 export const ChartPath: React.FC<ChartPathProps> = React.memo(
   ({
     hapticsEnabled,
@@ -168,17 +114,16 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
     width,
     height,
     stroke = 'black',
-    selectedStrokeWidth = 4,
-    strokeWidth = 2,
-    selectedOpacity = 0.5,
+    selectedStrokeWidth = 1,
+    strokeWidth = 1,
+    gestureEnabled = true,
+    selectedOpacity = 0.7,
     timingFeedbackConfig,
     timingAnimationConfig,
     longPressGestureHandlerProps = {},
-    gestureEnabled = true,
     ...props
   }) => {
     const {
-      data,
       positionX,
       positionY,
       originalX,
@@ -187,85 +132,38 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
       isActive,
       progress,
       pathOpacity,
+      paths,
+      currentPath,
     } = useChartData();
 
     console.log('Render chart');
-
-    const initialized = useRef(false);
     const interpolatorWorklet = useWorkletValue();
 
-    const getScales = useCallback(({ data, width, height }: CallbackType) => {
-      const x = data.points.map(item => item.x);
-      const y = data.points.map(item => item.y);
-
-      const scaleX = scaleLinear()
-        .domain([Math.min(...x), Math.max(...x)])
-        .range([0, width]);
-
-      const scaleY = scaleLinear()
-        .domain([Math.min(...y), Math.max(...y)])
-        .range([height, 0]);
-
-      return {
-        scaleY,
-        scaleX,
-      };
-    }, []);
-
-    const createPath = useCallback(
-      ({ data, width, height }: CallbackType): PathData => {
-        const { scaleX, scaleY } = getScales({ data, width, height });
-
-        if (!data.points.length) {
-          return {
-            path: '',
-            parsed: null,
-            points: [],
-            data: [],
-          };
+    const setOriginData = useWorkletCallback(
+      (path: PathData, index: number = 0) => {
+        if (!path.data.length) {
+          return;
         }
 
-        const points: DataType['points'] = [];
+        console.log('setOrigiinData', index);
 
-        for (let i = 0; i < data.points.length; i++) {
-          points.push({
-            x: scaleX(data.points[i].x),
-            y: scaleY(data.points[i].y),
-          });
-        }
-
-        const path = shape
-          .line()
-          .x(item => scaleX(item.x))
-          .y(item => scaleY(item.y))
-          .curve(getCurveType(data.curve!))(data.points) as string;
-
-        const parsed = redash.parse(path);
-
-        return { path, parsed, points, data: data.points };
+        originalX.value = path.data[index].x.toString();
+        originalY.value = path.data[index].y.toString();
       },
       []
     );
-
-    const initialPath = useMemo(() => createPath({ data, width, height }), []);
-
-    const [paths, setPaths] = useState(() => [initialPath, initialPath]);
-
-    useEffect(() => {
-      if (initialized.current) {
-        setPaths(([_, curr]) => [curr, createPath({ data, width, height })]);
-      } else {
-        initialized.current = true;
-      }
-    }, [data.points, data.curve, width, height]);
 
     useEffect(() => {
       if (paths[0].path === paths[1].path) {
         return;
       }
 
+      console.log('Effect');
+
       runOnUI(() => {
         'worklet';
+
+        // setOriginData(paths[1]);
 
         if (progress.value !== 0 && progress.value !== 1) {
           cancelAnimation(progress);
@@ -281,7 +179,7 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
         progress.value = 0;
 
         progress.value = withDelay(
-          100,
+          Platform.OS === 'ios' ? 0 : 100,
           withTiming(1, timingAnimationConfig || timingAnimationDefaultConfig)
         );
       })();
@@ -290,28 +188,55 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
     useAnimatedReaction(
       () => ({ x: positionX.value, y: positionY.value }),
       values => {
-        const path = paths[1];
-
-        if (!path.parsed) {
+        if (!currentPath.parsed || progress.value === 0) {
           return;
         }
 
-        const index = least(path.points.length, i =>
-          Math.hypot(path.points[i].x - Math.floor(values.x))
-        );
-
-        const yForX = redash.getYForX(path.parsed, Math.floor(values.x));
+        const yForX = redash.getYForX(currentPath.parsed, Math.floor(values.x));
 
         if (yForX !== null) {
           positionY.value = yForX;
         }
 
-        // activeIndex.value = index;
         positionX.value = values.x;
-        originalX.value = path.data[index].x.toString();
-        originalY.value = path.data[index].y.toString();
       },
-      [paths, data]
+      [currentPath]
+    );
+
+    useAnimatedReaction(
+      () => ({ x: positionX.value, y: positionY.value }),
+      values => {
+        if (!currentPath.parsed || progress.value === 0) {
+          return;
+        }
+
+        const yForX = redash.getYForX(currentPath.parsed, Math.floor(values.x));
+
+        if (yForX !== null) {
+          positionY.value = yForX;
+        }
+
+        positionX.value = values.x;
+      },
+      [currentPath]
+    );
+
+    useAnimatedReaction(
+      () => ({ x: positionX.value, y: positionY.value }),
+      values => {
+        const index = least(currentPath.points.length, i => {
+          if (typeof i === 'undefined') {
+            return 0;
+          }
+
+          return Math.hypot(currentPath.points[i].x - Math.floor(values.x));
+        });
+
+        console.log('Reaction');
+
+        setOriginData(currentPath, index);
+      },
+      [currentPath]
     );
 
     const animatedProps = useAnimatedProps(() => {
@@ -319,7 +244,7 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
 
       props.d = interpolatorWorklet().value
         ? interpolatorWorklet().value(progress.value)
-        : paths[1].path;
+        : currentPath.path;
 
       props.strokeWidth =
         pathOpacity.value *
@@ -333,7 +258,7 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
       }
 
       return props;
-    }, [paths]);
+    }, [currentPath]);
 
     const onGestureEvent = useAnimatedGestureHandler<LongPressGestureHandlerGestureEvent>(
       {
@@ -423,6 +348,7 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
               style={{ width, height: height + 20 }}
             >
               <AnimatedPath
+                // @ts-expect-error
                 style={pathAnimatedStyles}
                 animatedProps={animatedProps}
                 stroke={stroke}
@@ -436,54 +362,3 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
     );
   }
 );
-
-const SIZE = Dimensions.get('window').width;
-
-const CURSOR = 16;
-
-const styles = StyleSheet.create({
-  cursorBody: {
-    zIndex: 1,
-    width: CURSOR,
-    height: CURSOR,
-    borderRadius: 7.5,
-    backgroundColor: 'red',
-  },
-});
-
-interface ChartDotProps {
-  style?: ViewStyle;
-  springConfig?: Animated.WithSpringConfig;
-}
-
-const ChartDot: React.FC<ChartDotProps> = ({ style, springConfig }) => {
-  const { isActive, positionX, positionY } = useChartData();
-
-  const animatedStyle = useAnimatedStyle(() => {
-    const translateX = positionX.value - CURSOR / 2;
-    const translateY = positionY.value - CURSOR / 2;
-
-    return {
-      opacity: withSpring(
-        isActive.value ? 1 : 0,
-        springConfig || springDefaultConfig
-      ),
-      transform: [
-        { translateX },
-        { translateY },
-        {
-          scale: withSpring(
-            isActive.value ? 1 : 0,
-            springConfig || springDefaultConfig
-          ),
-        },
-      ],
-    };
-  });
-
-  return (
-    <Animated.View style={[StyleSheet.absoluteFill]}>
-      <Animated.View style={[styles.cursorBody, style, animatedStyle]} />
-    </Animated.View>
-  );
-};
