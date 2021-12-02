@@ -8,7 +8,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, Keyboard, NativeModules } from 'react-native';
+import {
+  Alert,
+  InteractionManager,
+  Keyboard,
+  NativeModules,
+} from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -272,15 +277,10 @@ export default function ExchangeModal({
 
   // Set default gas limit
   useEffect(() => {
-    if (isEmpty(prevGasFeesParamsBySpeed) && !isEmpty(gasFeeParamsBySpeed)) {
+    if (!isEmpty(gasFeeParamsBySpeed)) {
       updateTxFee(defaultGasLimit);
     }
-  }, [
-    gasFeeParamsBySpeed,
-    defaultGasLimit,
-    updateTxFee,
-    prevGasFeesParamsBySpeed,
-  ]);
+  }, [gasFeeParamsBySpeed, defaultGasLimit, updateTxFee]);
 
   // Update gas limit
   useEffect(() => {
@@ -292,7 +292,9 @@ export default function ExchangeModal({
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
     updateDefaultGasLimit(defaultGasLimit);
-    startPollingGasFees();
+    InteractionManager.runAfterInteractions(() => {
+      startPollingGasFees();
+    });
     initWeb3Listener();
     return () => {
       stopPollingGasFees();
