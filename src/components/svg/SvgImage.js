@@ -157,11 +157,6 @@ class SvgImage extends Component {
           )}
           {(!props.fallbackIfNonAnimated || isSVGAnimated) && (
             <WebView
-              injectedJavaScript={`
-              alert('yo its your boy');
-
-
-         `}
               onMessage={this.onLoad}
               originWhitelist={['*']}
               pointerEvents="none"
