@@ -109,9 +109,8 @@ export default function FeesPanel({
   const { isDarkMode } = useTheme();
 
   const [customFees, setCustomFees] = useState({
-    customMaxBaseFee: gasFeeParamsBySpeed[CUSTOM]?.maxFeePerGas?.gwei,
-    customMaxPriorityFee:
-      gasFeeParamsBySpeed[CUSTOM]?.maxPriorityFeePerGas?.gwei,
+    customMaxBaseFee: 0,
+    customMaxPriorityFee: 0,
   });
 
   const [maxPriorityFeeWarning, setMaxPriorityFeeWarning] = useState(null);
@@ -150,11 +149,13 @@ export default function FeesPanel({
 
     if (selectedOptionIsCustom) {
       // block more than 2 decimals on gwei value
-      const decimals = Number(customMaxBaseFee) % 1;
+      const customMaxBaseFeeValue =
+        customMaxBaseFee || gasFeeParamsBySpeed?.[URGENT]?.maxFeePerGas?.gwei;
+      const decimals = Number(customMaxBaseFeeValue) % 1;
       maxBaseFee =
         `${decimals}`.length > 4
-          ? toFixedDecimals(customMaxBaseFee, 0)
-          : customMaxBaseFee;
+          ? toFixedDecimals(customMaxBaseFeeValue, 0)
+          : customMaxBaseFeeValue;
     } else {
       maxBaseFee = toFixedDecimals(
         selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei || 0,
@@ -165,11 +166,14 @@ export default function FeesPanel({
     let maxPriorityFee;
     if (selectedOptionIsCustom) {
       // block more than 2 decimals on gwei value
-      const decimals = Number(customMaxPriorityFee) % 1;
+      const customMaxPriorityFeeValue =
+        customMaxPriorityFee ||
+        gasFeeParamsBySpeed?.[URGENT]?.maxPriorityFeePerGas?.gwei;
+      const decimals = Number(customMaxPriorityFeeValue) % 1;
       maxPriorityFee =
         `${decimals}`.length > 4
-          ? Number(parseFloat(customMaxPriorityFee).toFixed(2))
-          : customMaxPriorityFee;
+          ? Number(parseFloat(customMaxPriorityFeeValue).toFixed(2))
+          : customMaxPriorityFeeValue;
     } else {
       maxPriorityFee =
         selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei || 0;
@@ -182,6 +186,7 @@ export default function FeesPanel({
     currentBlockParams?.baseFeePerGas?.gwei,
     selectedOptionIsCustom,
     customMaxBaseFee,
+    gasFeeParamsBySpeed,
     customMaxPriorityFee,
   ]);
 
