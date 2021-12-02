@@ -25,6 +25,7 @@ export type CallbackType = {
   data: DataType;
   width: number;
   height: number;
+  yRange?: [number, number];
 };
 
 export interface PathData {
@@ -32,9 +33,13 @@ export interface PathData {
   parsed: null | redash.Path;
   points: Point[];
   data: Point[];
+  smallestX?: Point;
+  smallestY?: Point;
+  greatestX?: Point;
+  greatestY?: Point;
 }
 
-export interface ScalesFunctions {
+export interface PathScales {
   scaleX: (value: number) => number;
   scaleY: (value: number) => number;
 }

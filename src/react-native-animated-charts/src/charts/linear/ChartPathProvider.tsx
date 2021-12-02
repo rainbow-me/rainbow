@@ -17,8 +17,9 @@ import {
   DataType,
   PathData,
   Point,
-  ScalesFunctions,
+  PathScales,
 } from '../../helpers/ChartContext';
+import { findYExtremes } from '../../helpers/extremesHelpers';
 
 export const { width: WIDTH } = Dimensions.get('window');
 const HEIGHT = 146.5;
@@ -27,6 +28,7 @@ interface ChartPathProviderProps {
   data: DataType;
   width?: number;
   height?: number;
+  yRange?: [number, number];
 }
 
 function getCurveType(curveType: CurveType) {
@@ -54,6 +56,7 @@ export const ChartPathProvider: React.FC<ChartPathProviderProps> = ({
   data,
   width = WIDTH,
   height = HEIGHT,
+  yRange,
 }) => {
   const progress = useSharedValue(1);
   const dotScale = useSharedValue(0);
@@ -66,16 +69,21 @@ export const ChartPathProvider: React.FC<ChartPathProviderProps> = ({
   const positionY = useSharedValue(0);
 
   const getScales = useCallback(
-    ({ data, width, height }: CallbackType): ScalesFunctions => {
+    ({ data, width, height, yRange }: CallbackType): PathScales => {
       const x = data.points.map(item => item.x);
       const y = data.points.map(item => item.y);
 
+      const smallestX = Math.min(...x);
+      const smallestY = Math.min(...y);
+      const greatestX = Math.max(...x);
+      const greatestY = Math.max(...y);
+
       const scaleX = scaleLinear()
-        .domain([Math.min(...x), Math.max(...x)])
+        .domain([smallestX, greatestX])
         .range([0, width]);
 
       const scaleY = scaleLinear()
-        .domain([Math.min(...y), Math.max(...y)])
+        .domain(yRange ?? [smallestY, greatestY])
         .range([height, 0]);
 
       return {
@@ -87,8 +95,13 @@ export const ChartPathProvider: React.FC<ChartPathProviderProps> = ({
   );
 
   const createPath = useCallback(
-    ({ data, width, height }: CallbackType): PathData => {
-      const { scaleX, scaleY } = getScales({ data, width, height });
+    ({ data, width, height, yRange }: CallbackType): PathData => {
+      const { scaleY, scaleX } = getScales({
+        data,
+        width,
+        height,
+        yRange,
+      });
 
       if (!data.points.length) {
         return {
@@ -100,6 +113,13 @@ export const ChartPathProvider: React.FC<ChartPathProviderProps> = ({
       }
 
       const points: DataType['points'] = [];
+
+      const { greatestY, smallestY } = findYExtremes(data.points) as {
+        greatestY: Point;
+        smallestY: Point;
+      };
+      const smallestX = data.points[0];
+      const greatestX = data.points[data.points.length - 1];
 
       for (let i = 0; i < data.points.length; i++) {
         points.push({
@@ -116,14 +136,26 @@ export const ChartPathProvider: React.FC<ChartPathProviderProps> = ({
 
       const parsed = redash.parse(path);
 
-      return { path, parsed, points, data: data.points };
+      return {
+        path,
+        parsed,
+        points,
+        data: data.points,
+        smallestX,
+        smallestY,
+        greatestX,
+        greatestY,
+      };
     },
     []
   );
 
   const initialized = useRef(false);
 
-  const initialPath = useMemo(() => createPath({ data, width, height }), []);
+  const initialPath = useMemo(
+    () => createPath({ data, width, height, yRange }),
+    []
+  );
 
   const [paths, setPaths] = useState<[PathData, PathData]>(() => [
     initialPath,
@@ -132,10 +164,15 @@ export const ChartPathProvider: React.FC<ChartPathProviderProps> = ({
 
   const currentPath = paths[1];
 
+  const { smallestX, smallestY, greatestX, greatestY } = currentPath;
+
   useEffect(() => {
     console.log('Set path');
     if (initialized.current) {
-      setPaths(([_, curr]) => [curr, createPath({ data, width, height })]);
+      setPaths(([_, curr]) => [
+        curr,
+        createPath({ data, width, height, yRange }),
+      ]);
     } else {
       initialized.current = true;
     }
@@ -157,6 +194,10 @@ export const ChartPathProvider: React.FC<ChartPathProviderProps> = ({
       width,
       height,
       currentPath,
+      smallestX,
+      smallestY,
+      greatestX,
+      greatestY,
     }),
     [data]
   );
