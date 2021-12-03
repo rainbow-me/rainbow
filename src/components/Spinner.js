@@ -10,18 +10,18 @@ import { position } from '@rainbow-me/styles';
 
 const Spinner = ({ color, duration, size, ...props }) => {
   const { colors } = useTheme();
-  
+
   let style;
-  switch(size){
-    case "large":
+  switch (size) {
+    case 'large':
       style = position.sizeAsObject(36);
-    break;
-    case "small":
+      break;
+    case 'small':
       style = position.sizeAsObject(20);
-    break;
+      break;
     default:
       style = position.sizeAsObject(size);
-  };
+  }
 
   return (
     <Centered {...props}>
