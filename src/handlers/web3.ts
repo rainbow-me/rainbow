@@ -56,12 +56,31 @@ type GasParamsReturned =
   | { maxFeePerGas: string; maxPriorityFeePerGas: string };
 
 /**
+ * Gas parameter types taken as input by `getTransactionGasParams`.
+ */
+type GasParamsInput = { gasPrice: BigNumberish } & {
+  maxFeePerGas: BigNumberish;
+  maxPriorityFeePerGas: BigNumberish;
+};
+
+/**
+ * The input data provied to `getTxDetails`.
+ */
+type TransactionDetailsInput = Pick<
+  NewTransactionNonNullable,
+  'from' | 'to' | 'data' | 'gasLimit' | 'network'
+> &
+  Pick<NewTransaction, 'amount'> &
+  GasParamsInput;
+
+/**
  * The format of transaction details returned by functions such as `getTxDetails`.
  */
 type TransactionDetailsReturned = {
   data?: TransactionRequest['data'];
   from?: TransactionRequest['from'];
   gasLimit?: string;
+  network?: Network | string;
   to?: TransactionRequest['to'];
   value?: TransactionRequest['value'];
 } & GasParamsReturned;
@@ -427,10 +446,7 @@ export const getTransactionCount = async (
  * @returns - object with `gasPrice` or `maxFeePerGas` and `maxPriorityFeePerGas`
  */
 export const getTransactionGasParams = (
-  transaction: Pick<
-    NewTransactionNonNullable,
-    'network' | 'gasPrice' | 'maxFeePerGas' | 'maxPriorityFeePerGas'
-  >
+  transaction: Pick<NewTransactionNonNullable, 'network'> & GasParamsInput
 ): GasParamsReturned => {
   return isEIP1559LegacyNetwork(transaction.network)
     ? {
@@ -450,19 +466,7 @@ export const getTransactionGasParams = (
  * @return The transaction details.
  */
 export const getTxDetails = async (
-  transaction: Pick<
-    NewTransactionNonNullable,
-    | 'from'
-    | 'to'
-    | 'gasPrice'
-    | 'gasLimit'
-    | 'amount'
-    | 'network'
-    | 'gasPrice'
-    | 'maxFeePerGas'
-    | 'maxPriorityFeePerGas'
-  > &
-    Pick<TransactionRequest, 'data'>
+  transaction: TransactionDetailsInput
 ): Promise<TransactionDetailsReturned> => {
   const { to } = transaction;
   const data = transaction?.data ?? '0x';
@@ -568,7 +572,7 @@ export const getTransferNftTransaction = async (
     data,
     from,
     gasLimit: transaction.gasLimit?.toString(),
-    gasPrice: transaction.gasPrice?.toString(),
+    network: transaction.network,
     to: contractAddress,
     ...gasParams,
   };
@@ -605,7 +609,7 @@ export const getTransferTokenTransaction = async (
     data,
     from: transaction.from,
     gasLimit: transaction.gasLimit?.toString(),
-    gasPrice: transaction.gasPrice?.toString(),
+    network: transaction.network,
     to: transaction.asset.address,
     ...gasParams,
   };
@@ -631,7 +635,7 @@ export const createSignableTransaction = async (
   const result = isNft
     ? await getTransferNftTransaction(transaction)
     : await getTransferTokenTransaction(transaction);
-  return getTxDetails(result as any);
+  return getTxDetails(result as TransactionDetailsInput);
 };
 
 /**
