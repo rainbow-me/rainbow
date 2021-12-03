@@ -10,13 +10,26 @@ import { position } from '@rainbow-me/styles';
 
 const Spinner = ({ color, duration, size, ...props }) => {
   const { colors } = useTheme();
+  
+  let style;
+  switch(size){
+    case "large":
+      style = position.sizeAsObject(36);
+    break;
+    case "small":
+      style = position.sizeAsObject(20);
+    break;
+    default:
+      style = position.sizeAsObject(size);
+  };
+
   return (
     <Centered {...props}>
       {IS_TESTING !== 'true' && (
         <SpinAnimation duration={duration}>
           <ImgixImage
             source={SpinnerImageSource}
-            style={position.sizeAsObject(size)}
+            style={style}
             tintColor={color || colors.whiteLabel}
           />
         </SpinAnimation>
