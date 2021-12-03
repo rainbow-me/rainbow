@@ -15,11 +15,10 @@ export default function WrappedTokenFamilyHeader({ name, total, image }) {
         ]
   );
 
-  console.log(name, isFamilyOpen)
 
   const handleToggle = useCallback(
     () =>
-      console.log("name", name) || dispatch(
+      dispatch(
         setOpenFamilyTabs({
           index: name + (showcase ? '-showcase' : ''),
           state: !isFamilyOpen,

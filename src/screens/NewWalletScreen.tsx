@@ -75,9 +75,6 @@ export default function App() {
         };
     }, [openFamilyTabs, sections, showcase]);
 
-    console.log(items)
-
-    console.log(items.length)
   const [visible, setVisible] = useState<boolean>(true);
   const [cut, setCut] = useState<boolean>(false);
   const [altered, setAltered] = useState<boolean>(false);

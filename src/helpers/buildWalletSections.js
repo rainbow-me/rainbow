@@ -338,7 +338,6 @@ const withBriefBalanceSection = (
   );
 
 
-  console.log(savingsSection, uniswapTotal)
   const totalBalanceWithSavingsValue = add(
     totalBalancesValue,
     get(savingsSection, 'totalValue', 0)

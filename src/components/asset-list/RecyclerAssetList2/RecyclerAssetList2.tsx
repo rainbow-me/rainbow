@@ -1,8 +1,27 @@
 import equal from 'fast-deep-equal';
 import { func } from 'prop-types';
-import React, { Component, useContext, useMemo, useRef } from 'react';
+import React, {
+  Component,
+  forwardRef,
+  useCallback,
+  useContext,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+} from 'react';
 import isEqual from 'react-fast-compare';
-import { Dimensions, View } from 'react-native';
+import {
+  Dimensions,
+  Animated as RNAnimated,
+  ScrollView,
+  ScrollViewProps,
+  View,
+} from 'react-native';
+import Animated, {
+  runOnJS,
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from 'react-native-reanimated';
 import { useSelector } from 'react-redux';
 import {
   DataProvider,
@@ -10,6 +29,9 @@ import {
   RecyclerListView,
   RecyclerListViewProps,
 } from 'recyclerlistview';
+import BaseScrollView, {
+  ScrollViewDefaultProps,
+} from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
 import StickyContainer from 'recyclerlistview/sticky';
 
 import { useDeepCompareMemo } from 'use-deep-compare';
@@ -21,6 +43,7 @@ import { TokenFamilyHeader } from '../../token-family';
 import { UniqueTokenRow } from '../../unique-token';
 import { AssetListHeaderHeight } from '../AssetListHeader';
 import { AssetListHeader } from '../index';
+import { StickyHeaderContext, StickyHeaderManager } from './StickyHeaders';
 import WrappedNFT from './WrappedNFT';
 import WrappedPoolRow from './WrappedPoolRow';
 import WrappedPoolsListHeader from './WrappedPoolsListHeader';
@@ -136,9 +159,17 @@ const RecyclerAssetListContext = React.createContext<Record<string, object>>(
   {}
 );
 
+const RecyclerAssetListScrollPositionContext = React.createContext<
+  RNAnimated.Value | undefined
+>(undefined);
+
 export function useAdditionalRecyclerAssetListData(uid: string) {
   const context = useContext(RecyclerAssetListContext)[uid];
   return useDeepCompareMemo(() => context, [context]);
+}
+
+export function useRecyclerAssetListPosition() {
+  return useContext(RecyclerAssetListScrollPositionContext);
 }
 
 function CellDataProvider({
@@ -313,6 +344,44 @@ function useMemoBriefSectionData() {
   return { additionalData, memoizedResult };
 }
 
+const ExternalScrollViewWithRef = React.forwardRef(function ExternalScrollView(
+  props: ScrollViewDefaultProps,
+  ref
+): BaseScrollView {
+  const y = useRecyclerAssetListPosition()!;
+
+  const { onScroll, ...rest } = props
+  const { scrollViewRef } = useContext(StickyHeaderContext)!
+
+
+  const event = useMemoOne(
+    () =>
+      RNAnimated.event(
+        [
+          {
+            nativeEvent: {
+              contentOffset: {
+                y,
+              },
+            },
+          },
+        ],
+        { listener: onScroll, useNativeDriver: true }
+      ),
+    [onScroll, y]
+  );
+
+  useImperativeHandle(ref, () => scrollViewRef.current);
+  // @ts-ignore
+  return (
+    <RNAnimated.ScrollView
+      {...(rest as ScrollViewProps)}
+      onScroll={event}
+      ref={scrollViewRef}
+    />
+  );
+});
+
 const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   briefSectionsData,
 }: {
@@ -328,10 +397,10 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     [briefSectionsData]
   );
 
-
   return (
     <RecyclerListView
       dataProvider={currentDataProvider}
+      externalScrollView={ExternalScrollViewWithRef}
       layoutProvider={layoutProvider}
       renderAheadOffset={3000}
       // @ts-ignore
@@ -346,10 +415,16 @@ function RecyclerAssetList() {
     additionalData,
   } = useMemoBriefSectionData();
 
+  const position = useMemoOne(() => new RNAnimated.Value(0), []);
+
   return (
-    <RecyclerAssetListContext.Provider value={additionalData}>
-      <RawMemoRecyclerAssetList briefSectionsData={briefSectionsData} />
-    </RecyclerAssetListContext.Provider>
+    <RecyclerAssetListScrollPositionContext.Provider value={position}>
+      <RecyclerAssetListContext.Provider value={additionalData}>
+        <StickyHeaderManager>
+          <RawMemoRecyclerAssetList briefSectionsData={briefSectionsData} />
+        </StickyHeaderManager>
+      </RecyclerAssetListContext.Provider>
+    </RecyclerAssetListScrollPositionContext.Provider>
   );
 }
 
