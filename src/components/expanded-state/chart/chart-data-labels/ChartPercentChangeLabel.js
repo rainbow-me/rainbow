@@ -1,9 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { TextInput } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { RowWithMargins } from '../../../layout';
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
@@ -46,9 +43,6 @@ export default function ChartPercentChangeLabel({
   const { originalY, data } = useChartData();
   const { colors } = useTheme();
 
-  const firstValue = data?.points?.[0]?.y;
-  const lastValue = data?.points?.[data.points.length - 1]?.y;
-
   const defaultValue =
     !data?.points || data?.points.length === 0
       ? ''
@@ -71,6 +65,9 @@ export default function ChartPercentChangeLabel({
         })();
 
   const textProps = useAnimatedStyle(() => {
+    const firstValue = data?.points?.[0]?.y;
+    const lastValue = data?.points?.[data.points.length - 1]?.y;
+
     return {
       text:
         firstValue === Number(firstValue) && firstValue
@@ -89,7 +86,7 @@ export default function ChartPercentChangeLabel({
             })()
           : '',
     };
-  }, [firstValue, lastValue]);
+  }, [data]);
 
   const ratio = useRatio();
 
@@ -106,7 +103,7 @@ export default function ChartPercentChangeLabel({
 
   return (
     <RowWithMargins align="center" margin={4}>
-      {android ? <ChartChangeDirectionArrow /> : null}
+      {android ? <ChartChangeDirectionArrow ratio={ratio} /> : null}
       <PercentLabel
         alignSelf="flex-end"
         animatedProps={textProps}
