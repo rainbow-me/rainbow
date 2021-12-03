@@ -40,6 +40,7 @@ import {
   useBlockPolling,
   useCurrentNonce,
   useGas,
+  usePrevious,
   usePriceImpactDetails,
   useSwapCurrencies,
   useSwapCurrencyHandlers,
@@ -151,6 +152,8 @@ export default function ExchangeModal({
   const getNextNonce = useCurrentNonce(accountAddress, network);
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
+
+  const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
 
   useAndroidBackHandler(() => {
     navigate(Routes.WALLET_SCREEN);
@@ -274,10 +277,15 @@ export default function ExchangeModal({
 
   // Set default gas limit
   useEffect(() => {
-    if (!isEmpty(gasFeeParamsBySpeed)) {
+    if (isEmpty(prevGasFeesParamsBySpeed) && !isEmpty(gasFeeParamsBySpeed)) {
       updateTxFee(defaultGasLimit);
     }
-  }, [gasFeeParamsBySpeed, defaultGasLimit, updateTxFee]);
+  }, [
+    defaultGasLimit,
+    gasFeeParamsBySpeed,
+    prevGasFeesParamsBySpeed,
+    updateTxFee,
+  ]);
 
   // Update gas limit
   useEffect(() => {
