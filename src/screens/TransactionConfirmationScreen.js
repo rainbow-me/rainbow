@@ -656,7 +656,7 @@ export default function TransactionConfirmationScreen() {
           nonce: result.nonce,
           to: displayDetails?.request?.to,
           value: result.value,
-          ...selectedGasFee.gasFeeParams,
+          ...gasParams,
         };
         if (toLower(accountAddress) === toLower(txDetails.from)) {
           dispatch(dataAddNewTransaction(txDetails, null, false, provider));
