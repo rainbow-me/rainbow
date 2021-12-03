@@ -17,7 +17,7 @@ const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 7,
 })`
-  ${padding(11, 14, 14, 16)};
+  ${padding(11.5, 14, 13.5, 16)};
   height: ${TokenSelectionButtonHeight};
   z-index: 1;
 `;

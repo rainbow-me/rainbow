@@ -183,14 +183,14 @@ const SavingsSheet = () => {
                 label="􀁏 Withdraw"
                 onPress={onWithdraw}
                 radiusAndroid={24}
-                weight="bold"
+                weight="heavy"
               />
               <SheetActionButton
                 color={colors.swapPurple}
                 label="􀁍 Deposit"
                 onPress={onDeposit}
                 radiusAndroid={24}
-                weight="bold"
+                weight="heavy"
               />
             </SheetActionButtonRow>
             <Divider color={colors.rowDividerLight} zIndex={0} />
