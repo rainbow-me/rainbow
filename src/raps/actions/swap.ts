@@ -139,7 +139,7 @@ const swap = async (
     status: TransactionStatus.swapping,
     to: swap?.to,
     type: TransactionType.trade,
-    value: swap.value,
+    value: swap.value.toString(16),
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 
