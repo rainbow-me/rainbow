@@ -12,6 +12,7 @@ import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { convertStringToNumber } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useColorForAsset,
@@ -19,7 +20,6 @@ import {
   usePrevious,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { weiToGwei } from '@rainbow-me/parsers';
 import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
@@ -324,16 +324,17 @@ const GasSpeedButton = ({
 
   const menuConfig = useMemo(() => {
     const menuOptions = speedOptions.map(gasOption => {
-      const wei =
-        weiToGwei(gasFeeParamsBySpeed[gasOption]?.maxFeePerGas?.amount) +
-        weiToGwei(
-          gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.amount,
-          10
+      const totalGwei =
+        convertStringToNumber(
+          gasFeeParamsBySpeed[gasOption]?.maxFeePerGas?.gwei
+        ) +
+        convertStringToNumber(
+          gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
         );
       const gweiDisplay =
         currentNetwork === networkTypes.polygon
           ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
-          : `${parseInt(wei, 10)} Gwei`;
+          : `${parseInt(totalGwei, 10)} Gwei`;
       return {
         actionKey: gasOption,
         actionTitle: upperFirst(gasOption),
