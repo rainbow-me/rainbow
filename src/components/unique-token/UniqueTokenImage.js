@@ -4,13 +4,15 @@ import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../../references';
-import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
 import { Monospace, Text } from '../text';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
-import { useDimensions } from '@rainbow-me/hooks';
+import {
+  useDimensions,
+  usePersistentDominantColorFromImage,
+} from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 
@@ -45,7 +47,7 @@ const ENSText = styled(Text).attrs(
 `;
 
 const UniqueTokenImage = ({
-  backgroundColor,
+  backgroundColor: givenBackgroundColor,
   imageUrl,
   item,
   lowResUrl,
@@ -64,6 +66,16 @@ const UniqueTokenImage = ({
   const { isDarkMode, colors } = useTheme();
   const [loadedImg, setLoadedImg] = useState(false);
   const onLoad = useCallback(() => setLoadedImg(true), [setLoadedImg]);
+  let backgroundColor = givenBackgroundColor;
+  const { result: dominantColor } = usePersistentDominantColorFromImage(
+    item.image_url
+  );
+
+  const isOldENS = isENS && !isSVG;
+
+  if (isOldENS && dominantColor) {
+    backgroundColor = dominantColor;
+  }
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
@@ -78,29 +90,29 @@ const UniqueTokenImage = ({
           uri={item.image_url}
         />
       ) : imageUrl && !error ? (
-        <Fragment>
-          <ImageTile
-            onError={handleError}
-            onLoad={onLoad}
-            resizeMode={ImgixImage.resizeMode[resizeMode]}
-            source={{ uri: image }}
-            style={position.coverAsObject}
-          >
-            {isENS && !isSVG && (
-              <ENSText isTinyPhone={isTinyPhone} small={small}>
-                {item.name}
-              </ENSText>
-            )}
-          </ImageTile>
-          {!loadedImg && lowResUrl && (
+        isOldENS ? (
+          <ENSText isTinyPhone={isTinyPhone} small={small}>
+            {item.name}
+          </ENSText>
+        ) : (
+          <Fragment>
             <ImageTile
-              playing={false}
+              onError={handleError}
+              onLoad={onLoad}
               resizeMode={ImgixImage.resizeMode[resizeMode]}
-              source={{ uri: lowResUrl }}
+              source={{ uri: image }}
               style={position.coverAsObject}
             />
-          )}
-        </Fragment>
+            {!loadedImg && lowResUrl && (
+              <ImageTile
+                playing={false}
+                resizeMode={ImgixImage.resizeMode[resizeMode]}
+                source={{ uri: lowResUrl }}
+                style={position.coverAsObject}
+              />
+            )}
+          </Fragment>
+        )
       ) : (
         <Monospace
           align="center"
@@ -115,4 +127,4 @@ const UniqueTokenImage = ({
   );
 };
 
-export default magicMemo(UniqueTokenImage, 'imageUrl');
+export default UniqueTokenImage;

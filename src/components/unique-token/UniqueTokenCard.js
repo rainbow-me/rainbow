@@ -23,7 +23,7 @@ const Content = styled.View`
   border-radius: ${UniqueTokenCardBorderRadius};
   height: ${({ height }) => height || CardSize};
   overflow: hidden;
-  width: ${({ width }) => width};
+  width: ${({ width }) => width || CardSize};
 `;
 
 const UniqueTokenCard = ({
@@ -89,9 +89,4 @@ const UniqueTokenCard = ({
   );
 };
 
-export default magicMemo(UniqueTokenCard, [
-  'height',
-  'item.uniqueId',
-  'style',
-  'width',
-]);
+export default UniqueTokenCard;
