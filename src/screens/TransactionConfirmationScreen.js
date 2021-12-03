@@ -655,7 +655,7 @@ export default function TransactionConfirmationScreen() {
           network,
           nonce: result.nonce,
           to: displayDetails?.request?.to,
-          value: result.value,
+          value: result.value.toString(),
         };
         if (toLower(accountAddress) === toLower(txDetails.from)) {
           dispatch(dataAddNewTransaction(txDetails, null, false, provider));
