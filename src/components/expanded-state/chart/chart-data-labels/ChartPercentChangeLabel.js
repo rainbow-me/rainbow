@@ -46,11 +46,11 @@ export default function ChartPercentChangeLabel({
   const { originalY, data } = useChartData();
   const { colors } = useTheme();
 
-  const firstValue = useSharedValue(data?.points?.[0]?.y);
-  const lastValue = useSharedValue(data?.points?.[data.points.length - 1]?.y);
+  const firstValue = data?.points?.[0]?.y;
+  const lastValue = data?.points?.[data.points.length - 1]?.y;
 
   const defaultValue =
-    data?.points.length === 0
+    !data?.points || data?.points.length === 0
       ? ''
       : (() => {
           const value = overrideValue
@@ -70,22 +70,15 @@ export default function ChartPercentChangeLabel({
           );
         })();
 
-  useEffect(() => {
-    firstValue.value = data?.points?.[0]?.y || 0;
-    lastValue.value = data?.points?.[data.points.length - 1]?.y;
-  }, [data, firstValue, lastValue, latestChange, overrideValue]);
-
   const textProps = useAnimatedStyle(() => {
     return {
       text:
-        firstValue.value === Number(firstValue.value) && firstValue.value
+        firstValue === Number(firstValue) && firstValue
           ? (() => {
               const value =
-                originalY?.value === lastValue?.value || !originalY?.value
+                originalY?.value === lastValue || !originalY?.value
                   ? latestChange
-                  : ((originalY.value || lastValue.value) / firstValue.value) *
-                      100 -
-                    100;
+                  : ((originalY.value || lastValue) / firstValue) * 100 - 100;
 
               return (
                 (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
@@ -96,7 +89,7 @@ export default function ChartPercentChangeLabel({
             })()
           : '',
     };
-  });
+  }, [firstValue, lastValue]);
 
   const ratio = useRatio();
 

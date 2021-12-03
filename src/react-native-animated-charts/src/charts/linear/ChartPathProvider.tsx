@@ -51,158 +51,163 @@ function getCurveType(curveType: CurveType) {
   }
 }
 
-export const ChartPathProvider: React.FC<ChartPathProviderProps> = ({
-  children,
-  data,
-  width = WIDTH,
-  height = HEIGHT,
-  yRange,
-}) => {
-  const progress = useSharedValue(1);
-  const dotScale = useSharedValue(0);
-  const isActive = useSharedValue(false);
-  const originalX = useSharedValue('');
-  const originalY = useSharedValue('');
-  const pathOpacity = useSharedValue(1);
-  const state = useSharedValue(0);
-  const positionX = useSharedValue(0);
-  const positionY = useSharedValue(0);
+export const ChartPathProvider = React.memo<ChartPathProviderProps>(
+  ({ children, data, width = WIDTH, height = HEIGHT, yRange }) => {
+    console.log('Provider', !!data);
 
-  const getScales = useCallback(
-    ({ data, width, height, yRange }: CallbackType): PathScales => {
-      const x = data.points.map(item => item.x);
-      const y = data.points.map(item => item.y);
+    const progress = useSharedValue(1);
+    const dotScale = useSharedValue(0);
+    const isActive = useSharedValue(false);
+    const originalX = useSharedValue('');
+    const originalY = useSharedValue('');
+    const pathOpacity = useSharedValue(1);
+    const state = useSharedValue(0);
+    const positionX = useSharedValue(0);
+    const positionY = useSharedValue(0);
 
-      const smallestX = Math.min(...x);
-      const smallestY = Math.min(...y);
-      const greatestX = Math.max(...x);
-      const greatestY = Math.max(...y);
+    const getScales = useCallback(
+      ({ data, width, height, yRange }: CallbackType): PathScales => {
+        const x = data.points.map(item => item.x);
+        const y = data.points.map(item => item.y);
 
-      const scaleX = scaleLinear()
-        .domain([smallestX, greatestX])
-        .range([0, width]);
+        const smallestX = Math.min(...x);
+        const smallestY = Math.min(...y);
+        const greatestX = Math.max(...x);
+        const greatestY = Math.max(...y);
 
-      const scaleY = scaleLinear()
-        .domain(yRange ?? [smallestY, greatestY])
-        .range([height, 0]);
+        const scaleX = scaleLinear()
+          .domain([smallestX, greatestX])
+          .range([0, width]);
 
-      return {
-        scaleY,
-        scaleX,
-      };
-    },
-    []
-  );
+        const scaleY = scaleLinear()
+          .domain(yRange ?? [smallestY, greatestY])
+          .range([height, 0]);
 
-  const createPath = useCallback(
-    ({ data, width, height, yRange }: CallbackType): PathData => {
-      const { scaleY, scaleX } = getScales({
+        return {
+          scaleY,
+          scaleX,
+        };
+      },
+      []
+    );
+
+    const createPath = useCallback(
+      ({ data, width, height, yRange }: CallbackType): PathData => {
+        const { scaleY, scaleX } = getScales({
+          data,
+          width,
+          height,
+          yRange,
+        });
+
+        if (!data.points.length) {
+          return {
+            path: '',
+            parsed: null,
+            points: [],
+            data: [],
+          };
+        }
+
+        const points: Point[] = [];
+
+        const { greatestY, smallestY } = findYExtremes(data.points) as {
+          greatestY: Point;
+          smallestY: Point;
+        };
+        const smallestX = data.points[0];
+        const greatestX = data.points[data.points.length - 1];
+
+        for (let i = 0; i < data.points.length; i++) {
+          points.push({
+            x: scaleX(data.points[i].x),
+            y: scaleY(data.points[i].y),
+          });
+        }
+
+        const path = shape
+          .line()
+          .x((item: Point) => scaleX(item.x))
+          .y((item: Point) => scaleY(item.y))
+          .curve(getCurveType(data.curve!))(data.points) as string;
+
+        const parsed = redash.parse(path);
+
+        return {
+          path,
+          parsed,
+          points,
+          data: data.points,
+          smallestX,
+          smallestY,
+          greatestX,
+          greatestY,
+        };
+      },
+      []
+    );
+
+    const initialized = useRef(false);
+
+    const initialPath = useMemo(
+      () =>
+        data.points.length ? createPath({ data, width, height, yRange }) : null,
+      []
+    );
+
+    const [paths, setPaths] = useState<[PathData | null, PathData | null]>(
+      () => [initialPath, initialPath]
+    );
+
+    const previousPath = paths[0];
+    const currentPath = paths[1];
+
+    useEffect(() => {
+      console.log('CurrentPathChange');
+    }, [currentPath]);
+
+    useEffect(() => {
+      // console.log('Change path', currentPath);
+      // if (initialized.current) {
+      setPaths(([_, curr]) => [
+        curr,
+        data.points.length ? createPath({ data, width, height, yRange }) : null,
+      ]);
+
+      console.log('Effect', data.points.length);
+      // } else {
+      //   initialized.current = true;
+      // }
+    }, [data.points, data.curve, width, height]);
+
+    const value = useMemo(() => {
+      const ctx = {
+        progress,
+        dotScale,
+        originalX,
+        originalY,
+        pathOpacity,
+        state,
+        positionX,
+        positionY,
+        isActive,
         data,
         width,
         height,
-        yRange,
-      });
+        previousPath,
+        currentPath,
+      };
 
-      if (!data.points.length) {
-        return {
-          path: '',
-          parsed: null,
-          points: [],
-          data: [],
-        };
+      if (currentPath) {
+        const { smallestX, smallestY, greatestX, greatestY } = currentPath;
+        Object.assign(ctx, { smallestX, smallestY, greatestX, greatestY });
       }
 
-      const points: DataType['points'] = [];
+      return ctx;
+    }, [data]);
 
-      const { greatestY, smallestY } = findYExtremes(data.points) as {
-        greatestY: Point;
-        smallestY: Point;
-      };
-      const smallestX = data.points[0];
-      const greatestX = data.points[data.points.length - 1];
-
-      for (let i = 0; i < data.points.length; i++) {
-        points.push({
-          x: scaleX(data.points[i].x),
-          y: scaleY(data.points[i].y),
-        });
-      }
-
-      const path = shape
-        .line()
-        .x((item: Point) => scaleX(item.x))
-        .y((item: Point) => scaleY(item.y))
-        .curve(getCurveType(data.curve!))(data.points) as string;
-
-      const parsed = redash.parse(path);
-
-      return {
-        path,
-        parsed,
-        points,
-        data: data.points,
-        smallestX,
-        smallestY,
-        greatestX,
-        greatestY,
-      };
-    },
-    []
-  );
-
-  const initialized = useRef(false);
-
-  const initialPath = useMemo(
-    () => createPath({ data, width, height, yRange }),
-    []
-  );
-
-  const [paths, setPaths] = useState<[PathData, PathData]>(() => [
-    initialPath,
-    initialPath,
-  ]);
-
-  const currentPath = paths[1];
-
-  const { smallestX, smallestY, greatestX, greatestY } = currentPath;
-
-  useEffect(() => {
-    console.log('Set path');
-    if (initialized.current) {
-      setPaths(([_, curr]) => [
-        curr,
-        createPath({ data, width, height, yRange }),
-      ]);
-    } else {
-      initialized.current = true;
-    }
-  }, [data.points, data.curve, width, height]);
-
-  const value = useMemo(
-    () => ({
-      progress,
-      dotScale,
-      originalX,
-      originalY,
-      pathOpacity,
-      state,
-      positionX,
-      positionY,
-      isActive,
-      data,
-      paths,
-      width,
-      height,
-      currentPath,
-      smallestX,
-      smallestY,
-      greatestX,
-      greatestY,
-    }),
-    [data]
-  );
-
-  return (
-    <ChartContext.Provider value={value}>{children}</ChartContext.Provider>
-  );
-};
+    return (
+      <ChartContext.Provider value={value}>{children}</ChartContext.Provider>
+    );
+  }
+);

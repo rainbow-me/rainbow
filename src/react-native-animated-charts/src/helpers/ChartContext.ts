@@ -57,8 +57,8 @@ export interface ChartData {
   isActive: Animated.SharedValue<boolean>;
   positionX: Animated.SharedValue<number>;
   positionY: Animated.SharedValue<number>;
-  paths: [PathData, PathData];
-  currentPath: PathData;
+  previousPath: PathData | null;
+  currentPath: PathData | null;
 }
 
 export const ChartContext = React.createContext<ChartData | null>(null);

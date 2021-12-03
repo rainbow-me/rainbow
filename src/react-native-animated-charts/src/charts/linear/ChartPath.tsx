@@ -132,17 +132,21 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
       isActive,
       progress,
       pathOpacity,
-      paths,
       currentPath,
+      previousPath,
     } = useChartData();
 
-    console.log('Render chart');
+    console.log('Render chart', !!currentPath);
     const interpolatorWorklet = useWorkletValue();
 
     const setOriginData = useWorkletCallback(
-      (path: PathData, index: number = 0) => {
+      (path: PathData, index?: number) => {
         if (!path.data.length) {
           return;
+        }
+
+        if (typeof index === 'undefined') {
+          index = path.data.length - 1;
         }
 
         console.log('setOrigiinData', index);
@@ -154,7 +158,7 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
     );
 
     useEffect(() => {
-      if (paths[0].path === paths[1].path) {
+      if (currentPath?.path === previousPath?.path) {
         return;
       }
 
@@ -169,26 +173,34 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
           cancelAnimation(progress);
         }
 
+        progress.value = 0;
+
         // this stores an instance of d3-interpolate-path on worklet side
         // it means that we don't cross threads with that function
         // which makes it super fast
-        interpolatorWorklet().value = requireOnWorklet(
-          'd3-interpolate-path'
-        ).interpolatePath(paths[0].path, paths[1].path);
+        if (previousPath && currentPath) {
+          interpolatorWorklet().value = requireOnWorklet(
+            'd3-interpolate-path'
+          ).interpolatePath(previousPath, currentPath);
 
-        progress.value = 0;
+          console.log('Interpolate');
 
-        progress.value = withDelay(
-          Platform.OS === 'ios' ? 0 : 100,
-          withTiming(1, timingAnimationConfig || timingAnimationDefaultConfig)
-        );
+          progress.value = withDelay(
+            Platform.OS === 'ios' ? 0 : 100,
+            withTiming(1, timingAnimationConfig || timingAnimationDefaultConfig)
+          );
+        } else {
+          interpolatorWorklet().value = undefined;
+          progress.value = 1;
+          console.log('Do not interpolate');
+        }
       })();
-    }, [paths]);
+    }, [currentPath, previousPath]);
 
     useAnimatedReaction(
       () => ({ x: positionX.value, y: positionY.value }),
       values => {
-        if (!currentPath.parsed || progress.value === 0) {
+        if (!currentPath || !currentPath.parsed || progress.value === 0) {
           return;
         }
 
@@ -206,7 +218,7 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
     useAnimatedReaction(
       () => ({ x: positionX.value, y: positionY.value }),
       values => {
-        if (!currentPath.parsed || progress.value === 0) {
+        if (!currentPath || !currentPath.parsed || progress.value === 0) {
           return;
         }
 
@@ -224,6 +236,10 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
     useAnimatedReaction(
       () => ({ x: positionX.value, y: positionY.value }),
       values => {
+        if (!currentPath) {
+          return;
+        }
+
         const index = least(currentPath.points.length, i => {
           if (typeof i === 'undefined') {
             return 0;
@@ -241,6 +257,14 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
 
     const animatedProps = useAnimatedProps(() => {
       const props: PathProps & ViewProps = {};
+
+      console.log('Animated props', !!currentPath);
+
+      if (!currentPath) {
+        return {
+          d: '',
+        };
+      }
 
       props.d = interpolatorWorklet().value
         ? interpolatorWorklet().value(progress.value)

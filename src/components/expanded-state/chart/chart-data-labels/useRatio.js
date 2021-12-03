@@ -11,14 +11,14 @@ function useReactiveSharedValue(prop) {
 export function useRatio() {
   const { originalY, data } = useChartData();
 
-  const firstValue = useReactiveSharedValue(data?.points?.[0]?.y);
-  const lastValue = useReactiveSharedValue(
-    data?.points?.[data.points.length - 1]?.y
-  );
+  const firstValue = data?.points?.[0]?.y;
+  const lastValue = data?.points?.[data.points.length - 1]?.y;
 
-  return useDerivedValue(() =>
-    firstValue.value === Number(firstValue.value)
-      ? (originalY.value || lastValue.value) / firstValue.value
-      : 1
+  return useDerivedValue(
+    () =>
+      firstValue === Number(firstValue)
+        ? (originalY.value || lastValue) / firstValue
+        : 1,
+    [firstValue, lastValue]
   );
 }
