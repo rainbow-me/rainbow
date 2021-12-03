@@ -11,6 +11,10 @@ export { default as coingeckoIdsFallback } from './coingecko/ids.json';
 export { compoundCERC20ABI, compoundCETHABI } from './compound';
 export { default as DefaultTokenLists } from './default-token-lists.json';
 export {
+  reverseRecordsABI,
+  REVERSE_RECORDS_MAINNET_ADDRESS,
+} from './reverse-records';
+export {
   defiSdkAdapterRegistryABI,
   DEFI_SDK_ADAPTER_REGISTRY_ADDRESS,
 } from './defisdk';

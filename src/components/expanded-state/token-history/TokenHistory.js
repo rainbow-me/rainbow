@@ -16,20 +16,10 @@ import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 
 const EventEnum = {
-  DELIST: {
-    icon: `􀎩`,
-    label: `Delisted`,
-    type: 'cancelled',
-  },
   ENS: {
     icon: `􀈐`,
     label: `Registered`,
     type: 'ens-registration',
-  },
-  LIST: {
-    icon: `􀎧`,
-    label: `Listed for `,
-    type: 'created',
   },
   MINT: {
     icon: `􀎛`,
@@ -47,6 +37,13 @@ const EventEnum = {
     type: 'transfer',
   },
 };
+
+const filteredTransactionTypes = new Set([
+  EventEnum.ENS.type,
+  EventEnum.MINT.type,
+  EventEnum.SALE.type,
+  EventEnum.TRANSFER.type
+]);
 
 const Timeline = styled(View)`
   height: 3;
@@ -83,6 +80,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
 
   //Query opensea using the contract address + tokenID
   useEffect(() => {
+    console.log("hi456");
     async function fetch() {
       const results = await apiGetTokenHistory(
         network,
@@ -90,11 +88,20 @@ const TokenHistory = ({ contractAndToken, color }) => {
         tokenID,
         accountAddress
       );
-      setTokenHistory(results);
-      if (results.length <= 2) {
+      console.log("hi");
+      console.log(results);
+      console.log("Bye");
+      const filteredResults = results.filter((transaction) => {
+        console.log(transaction.event_type);
+        return filteredTransactionTypes.has(transaction.event_type);
+      });
+      console.log(filteredResults);
+      setTokenHistory(filteredResults);
+      if (filteredResults.length <= 2) {
         setTokenHistoryShort(true);
       }
     }
+    console.log("hi789");
     setIsLoading(true);
     fetch();
     setIsLoading(false);
@@ -110,26 +117,16 @@ const TokenHistory = ({ contractAndToken, color }) => {
   );
 
   const renderItem = ({ item, index }) => {
+    console.log("nina");
     let isFirst = index === 0;
     let suffixIcon = `􀆊`;
     let isClickable = false;
     let label, icon, suffix;
 
     switch (item?.event_type) {
-      case EventEnum.DELIST.type:
-        label = EventEnum.DELIST.label;
-        icon = EventEnum.DELIST.icon;
-        break;
-
       case EventEnum.ENS.type:
         label = EventEnum.ENS.label;
         icon = EventEnum.ENS.icon;
-        break;
-
-      case EventEnum.LIST.type:
-        suffix = `${item.list_amount} ${item.payment_token}`;
-        label = EventEnum.LIST.label;
-        icon = EventEnum.LIST.icon;
         break;
 
       case EventEnum.MINT.type:
@@ -152,10 +149,9 @@ const TokenHistory = ({ contractAndToken, color }) => {
         break;
 
       default:
-        logger.debug('default');
         break;
     }
-
+    console.log(index);
     return renderHistoryDescription({
       icon,
       isClickable,
@@ -183,16 +179,13 @@ const TokenHistory = ({ contractAndToken, color }) => {
     return (
       <Column>
         <Row style={{height: 10, marginBottom: 6, marginTop: 4}}>
-          {/* <Gradient color={color} /> */}
           <View style={{width: 10, height: 10, borderRadius: 10 / 2, backgroundColor: color}} />
           {!isFirst && <Timeline color={color} />}
         </Row>
-
         <Column style={{ paddingRight: 24 }}>
           <Row style={{ marginBottom: 3 }}>
             <AccentText color={color}>{date}</AccentText>
           </Row>
-
           <ButtonPressAnimation
             disabled={!isClickable}
             hapticType="selection"
@@ -223,7 +216,8 @@ const TokenHistory = ({ contractAndToken, color }) => {
     );
   };
 
-  const renderFlatlist = () => {
+  const renderFlatList = () => {
+    console.log("paris");
     return (
       <MaskedView maskElement={<TokenHistoryEdgeFade />}>
         <FlatList
@@ -240,8 +234,8 @@ const TokenHistory = ({ contractAndToken, color }) => {
 
   return (
     <>
-      {isLoading && <TokenHistoryLoader />}
-      {!isLoading && (tokenHistoryShort ? renderTwoOrLessDataItems() : renderFlatlist())}
+      {/* {isLoading && <TokenHistoryLoader />} */}
+      {!isLoading && (tokenHistoryShort ? renderTwoOrLessDataItems() : renderFlatList())}
     </>
   );
 };

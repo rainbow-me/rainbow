@@ -56,7 +56,7 @@ import {
   magicMemo,
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
-import TokenHistory from './tokenHistory/TokenHistory';
+import TokenHistory from './token-history/TokenHistory';
 
 const NftExpandedStateSection = styled(ExpandedStateSection).attrs({
   isNft: true,
