@@ -82,7 +82,7 @@ export default function Labels({ color, width }) {
           color={colors.alpha(color, 0.8)}
           position={positionMin}
           style={{
-            bottom: -20,
+            bottom: -40,
           }}
           width={width}
         >
