@@ -1,16 +1,22 @@
+import { gasUtils } from '@rainbow-me/utils';
+
+const { GasTrends } = gasUtils;
+const { FALLING, RISING, SURGING, STABLE, NO_TREND } = GasTrends;
+
 const PRIORITY_FEE_INCREMENT = 0.5;
 const PRIORITY_FEE_THRESHOLD = 0.15;
 
 export const getTrendKey = (trend: number) => {
   if (trend === -1) {
-    return 'falling';
+    return FALLING;
   } else if (trend === 1) {
-    return 'rising';
+    return RISING;
   } else if (trend === 2) {
-    return 'surging';
-  } else {
-    return 'stable';
+    return SURGING;
+  } else if (trend === 0) {
+    return STABLE;
   }
+  return NO_TREND;
 };
 
 export const calculateMinerTipAddDifference = (maxPriorityFee: string) => {

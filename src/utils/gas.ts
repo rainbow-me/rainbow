@@ -6,7 +6,14 @@ const FAST = 'fast';
 const NORMAL = 'normal';
 const SLOW = 'slow';
 
+const SURGING = 'surging';
+const RISING = 'rising';
+const STABLE = 'stable';
+const FALLING = 'falling';
+const NO_TREND = 'notrend';
+
 const GasSpeedOrder = [NORMAL, FAST, URGENT, CUSTOM];
+const GasTrends = { FALLING, NO_TREND, RISING, STABLE, SURGING };
 
 const GAS_PRICE_SOURCES = {
   ARBITRUM_NODE: 'arbitrumNode',
@@ -24,10 +31,11 @@ const GAS_ICONS = {
 };
 
 const GAS_TRENDS = {
-  falling: { color: colors.green, label: '􀄱 Falling' },
-  rising: { color: colors.orange, label: '􀰾 Rising' },
-  stable: { color: colors.yellowOrange, label: '􀆮 Stable' },
-  surging: { color: colors.red, label: '􀇿 Surging' },
+  [FALLING]: { color: colors.green, label: '􀄱 Falling' },
+  [NO_TREND]: { color: colors.appleBlue, label: '' },
+  [RISING]: { color: colors.orange, label: '􀰾 Rising' },
+  [STABLE]: { color: colors.yellowOrange, label: '􀆮 Stable' },
+  [SURGING]: { color: colors.red, label: '􀇿 Surging' },
 };
 
 export default {
@@ -37,6 +45,7 @@ export default {
   GAS_PRICE_SOURCES,
   GAS_TRENDS,
   GasSpeedOrder,
+  GasTrends,
   NORMAL,
   SLOW,
   URGENT,

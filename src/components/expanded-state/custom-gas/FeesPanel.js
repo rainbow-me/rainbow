@@ -501,8 +501,8 @@ export default function FeesPanel({
       <PanelRowThin>
         <PanelColumn />
         <PanelColumn>
-          <GasTrendHeader color={GAS_TRENDS[currentGasTrend].color}>
-            {GAS_TRENDS[currentGasTrend].label}
+          <GasTrendHeader color={GAS_TRENDS[currentGasTrend]?.color}>
+            {GAS_TRENDS[currentGasTrend]?.label}
           </GasTrendHeader>
         </PanelColumn>
       </PanelRowThin>
