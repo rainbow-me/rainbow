@@ -63,6 +63,7 @@ function GweiInputPill(
             onBlur={onBlur}
             onChange={onChange}
             onFocus={onFocus}
+            placeholder="0"
             placeholderTextColor={colors.grey}
             ref={ref}
             selectionColor={color}
