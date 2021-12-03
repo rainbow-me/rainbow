@@ -139,8 +139,8 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
 
     const interpolatorWorklet = useWorkletValue();
 
-    const translationX = useSharedValue(0);
-    const translationY = useSharedValue(0);
+    const translationX = useSharedValue<number | null>(null);
+    const translationY = useSharedValue<number | null>(null);
 
     const setOriginData = useWorkletCallback(
       (path: PathData, index?: number) => {
@@ -157,6 +157,18 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
       },
       []
     );
+
+    const resetGestureState = useWorkletCallback(() => {
+      originalX.value = '';
+      originalY.value = '';
+      isActive.value = false;
+      pathOpacity.value = withTiming(
+        1,
+        timingFeedbackConfig || timingFeedbackDefaultConfig
+      );
+      translationX.value = null;
+      translationY.value = null;
+    }, []);
 
     useEffect(() => {
       if (currentPath?.path === previousPath?.path) {
@@ -199,7 +211,13 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
     useAnimatedReaction(
       () => ({ x: translationX.value, y: translationY.value }),
       values => {
-        if (!currentPath || !currentPath.parsed || progress.value === 0) {
+        if (
+          !currentPath ||
+          !currentPath.parsed ||
+          progress.value === 0 ||
+          values.x === null ||
+          values.y === null
+        ) {
           return;
         }
 
@@ -210,16 +228,6 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
         }
 
         positionX.value = values.x;
-      },
-      [currentPath]
-    );
-
-    useAnimatedReaction(
-      () => ({ x: positionX.value, y: positionY.value }),
-      values => {
-        if (!currentPath) {
-          return;
-        }
 
         const index = least(currentPath.points.length, i => {
           if (typeof i === 'undefined') {
@@ -297,27 +305,15 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
         },
         onFail: event => {
           state.value = event.state;
-          isActive.value = false;
-          pathOpacity.value = withTiming(
-            1,
-            timingFeedbackConfig || timingFeedbackDefaultConfig
-          );
+          resetGestureState();
         },
         onCancel: event => {
           state.value = event.state;
-          isActive.value = false;
-          pathOpacity.value = withTiming(
-            1,
-            timingFeedbackConfig || timingFeedbackDefaultConfig
-          );
+          resetGestureState();
         },
         onEnd: event => {
           state.value = event.state;
-          isActive.value = false;
-          pathOpacity.value = withTiming(
-            1,
-            timingFeedbackConfig || timingFeedbackDefaultConfig
-          );
+          resetGestureState();
 
           if (hapticsEnabled) {
             impactHeavy();

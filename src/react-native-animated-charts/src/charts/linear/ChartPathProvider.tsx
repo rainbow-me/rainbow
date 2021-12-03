@@ -197,7 +197,7 @@ export const ChartPathProvider = React.memo<ChartPathProviderProps>(
       }
 
       return ctx;
-    }, [currentPath, previousPath, width, height]);
+    }, [data, currentPath, previousPath, width, height]);
 
     return (
       <ChartContext.Provider value={value}>{children}</ChartContext.Provider>
