@@ -19,7 +19,6 @@ import {
 } from '@rainbow-me/helpers/gas';
 import {
   add,
-  delay,
   greaterThan,
   isZero,
   multiply,
@@ -98,7 +97,7 @@ const MAX_BASE_FEE_RANGE = [1, 3];
 const MINER_TIP_RANGE = [1, 2];
 
 const warningsAnimationConfig = {
-  duration: 100,
+  duration: 50,
   easing: Easing.linear,
 };
 
@@ -159,20 +158,18 @@ export default function FeesPanel({
   ]);
 
   const maxBaseWarningsStyle = useAnimatedStyle(() => {
-    // const display = displayMaxBaseFeeMessage;
     const display = !!maxBaseFeeWarning || !!maxBaseFeeError;
-    const value = withTiming(display ? 1 : 0, warningsAnimationConfig);
+    const value = withTiming(display ? 20 : 0, warningsAnimationConfig);
     return {
-      transform: [{ scaleY: value }],
+      height: value,
     };
   });
 
   const maxPriorityWarningsStyle = useAnimatedStyle(() => {
-    // const display = displayMaxPriorityFeeMessage;
     const display = !!maxPriorityFeeWarning || !!maxPriorityFeeError;
-    const value = withTiming(display ? 1 : 0, warningsAnimationConfig);
+    const value = withTiming(display ? 20 : 0, warningsAnimationConfig);
     return {
-      transform: [{ scaleY: value }],
+      height: value,
     };
   });
 
