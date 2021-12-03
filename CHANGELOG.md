@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.39](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.39)
+### Changed
+* Full fix for deeplink send bug
 
 ## [1.5.37](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.37)
 

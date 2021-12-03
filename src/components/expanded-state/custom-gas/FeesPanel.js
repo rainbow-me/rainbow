@@ -27,6 +27,7 @@ import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
 const Wrapper = styled(KeyboardAvoidingView)``;
+const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;
 
 const PanelRow = styled(Row).attrs({
   alignItems: 'center',
@@ -99,27 +100,51 @@ export default function FeesPanel({
   const {
     selectedGasFee,
     currentBlockParams,
+    customGasFeeModifiedByUser,
     gasFeeParamsBySpeed,
     updateToCustomGasFee,
     updateGasFeeOption,
-    selectedGasFeeOption,
   } = useGas();
-  const { navigate } = useNavigation();
+
+  const { navigate, dangerouslyGetState } = useNavigation();
   const { isDarkMode } = useTheme();
 
-  const [customMaxPriorityFee, setCustomMaxPriorityFee] = useState(
-    selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei || 0
-  );
-  const [customMaxBaseFee, setCustomMaxBaseFee] = useState(
-    selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei || 0
-  );
+  const [customFees, setCustomFees] = useState({
+    customMaxBaseFee: gasFeeParamsBySpeed?.[CUSTOM]?.maxFeePerGas?.gwei,
+    customMaxPriorityFee:
+      gasFeeParamsBySpeed?.[CUSTOM]?.maxPriorityFeePerGas?.gwei,
+  });
+
   const [maxPriorityFeeWarning, setMaxPriorityFeeWarning] = useState(null);
   const [maxPriorityFeeError, setMaxPriorityFeeError] = useState(null);
-  const [startPriorityFeeTimeout, stopPriorityFeeTimeout] = useTimeout();
 
   const [maxBaseFeeWarning, setMaxBaseFeeWarning] = useState(null);
   const [maxBaseFeeError, setMaxBaseFeeError] = useState(null);
-  const [startBaseFeeTimeout, stopBaseFeeTimeout] = useTimeout();
+
+  const { customMaxBaseFee, customMaxPriorityFee } = customFees;
+  const trendType = 'currentBaseFee' + upperFirst(currentGasTrend);
+
+  const updatedCustomMaxBaseFee =
+    gasFeeParamsBySpeed?.[CUSTOM]?.maxFeePerGas?.gwei;
+  const updatedCustomMaxPriorityFee =
+    gasFeeParamsBySpeed?.[CUSTOM]?.maxPriorityFeePerGas?.gwei;
+
+  useEffect(() => {
+    if (
+      !customGasFeeModifiedByUser &&
+      updatedCustomMaxBaseFee &&
+      updatedCustomMaxPriorityFee
+    ) {
+      setCustomFees({
+        customMaxBaseFee: updatedCustomMaxBaseFee,
+        customMaxPriorityFee: updatedCustomMaxPriorityFee,
+      });
+    }
+  }, [
+    customGasFeeModifiedByUser,
+    updatedCustomMaxBaseFee,
+    updatedCustomMaxPriorityFee,
+  ]);
 
   const maxBaseWarningsStyle = useAnimatedStyle(() => {
     const display = !!maxBaseFeeError || !!maxBaseFeeWarning;
@@ -136,7 +161,7 @@ export default function FeesPanel({
   });
 
   const selectedOptionIsCustom = useMemo(
-    () => selectedGasFee?.option === gasUtils.CUSTOM,
+    () => selectedGasFee?.option === CUSTOM,
     [selectedGasFee?.option]
   );
 
@@ -174,23 +199,29 @@ export default function FeesPanel({
     }
     return { currentBaseFee, maxBaseFee, maxFee, maxPriorityFee };
   }, [
-    selectedGasFee,
-    currentBlockParams,
+    selectedGasFee?.gasFee?.maxFee?.native?.value?.display,
+    selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei,
+    selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei,
+    currentBlockParams?.baseFeePerGas?.gwei,
     selectedOptionIsCustom,
     customMaxBaseFee,
     customMaxPriorityFee,
   ]);
 
+  const openGasHelper = useCallback(
+    type => {
+      Keyboard.dismiss();
+      navigate(Routes.EXPLAIN_SHEET, {
+        currentBaseFee: toFixedDecimals(currentBaseFee, 0),
+        currentGasTrend,
+        type,
+      });
+    },
+    [currentBaseFee, currentGasTrend, navigate]
+  );
+
   const renderRowLabel = useCallback(
     (label, type, error, warning) => {
-      const openGasHelper = () => {
-        Keyboard.dismiss();
-        navigate(Routes.EXPLAIN_SHEET, {
-          currentBaseFee,
-          currentGasTrend,
-          type,
-        });
-      };
       let color;
       let text;
       if ((!error && !warning) || !selectedOptionIsCustom) {
@@ -206,9 +237,11 @@ export default function FeesPanel({
         text = '􀇿';
       }
 
+      const openHelper = () => openGasHelper(type);
+
       return (
         <PanelColumn>
-          <ButtonPressAnimation onPress={openGasHelper}>
+          <ButtonPressAnimation onPress={openHelper}>
             <Row>
               <PanelLabel>
                 {`${label} `}
@@ -221,13 +254,7 @@ export default function FeesPanel({
         </PanelColumn>
       );
     },
-    [
-      currentBaseFee,
-      currentGasTrend,
-      navigate,
-      selectedOptionIsCustom,
-      isDarkMode,
-    ]
+    [selectedOptionIsCustom, openGasHelper, isDarkMode]
   );
 
   const formattedBaseFee = useMemo(
@@ -236,21 +263,16 @@ export default function FeesPanel({
   );
 
   const handleOnInputFocus = useCallback(() => {
-    if (isEmpty(gasFeeParamsBySpeed[gasUtils.CUSTOM])) {
-      const gasFeeParams = gasFeeParamsBySpeed[selectedGasFeeOption];
+    if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
+      const gasFeeParams = gasFeeParamsBySpeed[URGENT];
       updateToCustomGasFee({
         ...gasFeeParams,
-        option: gasUtils.CUSTOM,
+        option: CUSTOM,
       });
     } else {
-      updateGasFeeOption(gasUtils.CUSTOM);
+      updateGasFeeOption(CUSTOM);
     }
-  }, [
-    gasFeeParamsBySpeed,
-    selectedGasFeeOption,
-    updateGasFeeOption,
-    updateToCustomGasFee,
-  ]);
+  }, [gasFeeParamsBySpeed, updateGasFeeOption, updateToCustomGasFee]);
 
   const handleFeesGweiInputFocus = useCallback(() => {
     onCustomGasFocus?.();
@@ -258,8 +280,10 @@ export default function FeesPanel({
     const {
       gasFeeParams: { maxFeePerGas, maxPriorityFeePerGas },
     } = selectedGasFee;
-    setCustomMaxPriorityFee(maxPriorityFeePerGas?.gwei || 0);
-    setCustomMaxBaseFee(toFixedDecimals(maxFeePerGas?.gwei || 0, 0));
+    setCustomFees({
+      customMaxBaseFee: toFixedDecimals(maxFeePerGas?.gwei || 0, 0),
+      customMaxPriorityFee: maxPriorityFeePerGas?.gwei || 0,
+    });
   }, [onCustomGasFocus, handleOnInputFocus, selectedGasFee]);
 
   const handleCustomPriorityFeeFocus = useCallback(() => {
@@ -283,7 +307,10 @@ export default function FeesPanel({
 
       if (newMaxPriorityFeePerGas.amount < 0) return;
 
-      setCustomMaxPriorityFee(newMaxPriorityFeePerGas?.gwei || 0);
+      setCustomFees({
+        customMaxBaseFee: selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei,
+        customMaxPriorityFee: newMaxPriorityFeePerGas?.gwei || 0,
+      });
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
@@ -308,7 +335,11 @@ export default function FeesPanel({
 
       if (newMaxFeePerGas.amount < 0) return;
 
-      setCustomMaxBaseFee(newMaxFeePerGas?.gwei);
+      setCustomFees({
+        customMaxBaseFee: newMaxFeePerGas?.gwei,
+        customMaxPriorityFee:
+          selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei,
+      });
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
@@ -342,7 +373,11 @@ export default function FeesPanel({
 
       if (greaterThan(0, maxFeePerGas.amount)) return;
 
-      setCustomMaxBaseFee(text);
+      setCustomFees({
+        customMaxBaseFee: text,
+        customMaxPriorityFee:
+          selectedGasFee.gasFeeParams.maxPriorityFeePerGas.gwei,
+      });
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
@@ -366,7 +401,10 @@ export default function FeesPanel({
 
       // we don't use the round number here, if we did
       // when users type "1." it will default to "1"
-      setCustomMaxPriorityFee(text);
+      setCustomFees({
+        customMaxBaseFee: selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei,
+        customMaxPriorityFee: text,
+      });
 
       const newGasParams = {
         ...selectedGasFee.gasFeeParams,
@@ -389,85 +427,88 @@ export default function FeesPanel({
   );
 
   useEffect(() => {
-    stopBaseFeeTimeout();
-    startBaseFeeTimeout(() => {
-      // validate not zero
-      if (!maxBaseFee || isZero(maxBaseFee)) {
-        setMaxBaseFeeError('1 Gwei to avoid failure');
-      } else {
-        setMaxBaseFeeError(null);
-      }
-      if (
-        greaterThan(multiply(MAX_BASE_FEE_RANGE[0], currentBaseFee), maxBaseFee)
-      ) {
-        setMaxBaseFeeWarning('Lower than recommended');
-      } else if (
-        greaterThan(maxBaseFee, multiply(MAX_BASE_FEE_RANGE[1], currentBaseFee))
-      ) {
-        setMaxBaseFeeWarning('Higher than necessary');
-      } else {
-        setMaxBaseFeeWarning(null);
-      }
-    }, 200);
-  }, [maxBaseFee, currentBaseFee, stopBaseFeeTimeout, startBaseFeeTimeout]);
+    const navigationRoutes = dangerouslyGetState().routes;
+    const lastRoute = navigationRoutes?.[navigationRoutes.length - 1]?.name;
+    if (lastRoute === 'ExplainSheet') {
+      navigate(Routes.EXPLAIN_SHEET, {
+        currentBaseFee: toFixedDecimals(currentBaseFee, 0),
+        currentGasTrend,
+        type: trendType,
+      });
+    }
+  }, [
+    currentBaseFee,
+    currentGasTrend,
+    dangerouslyGetState,
+    navigate,
+    trendType,
+  ]);
 
   useEffect(() => {
-    stopPriorityFeeTimeout();
-    startPriorityFeeTimeout(() => {
-      // validate not zero
-      if (!maxPriorityFee || isZero(maxPriorityFee)) {
-        setMaxPriorityFeeError('1 Gwei to avoid failure');
-      } else {
-        setMaxPriorityFeeError(null);
-      }
-      if (
-        greaterThan(
-          multiply(
-            MINER_TIP_RANGE[0],
-            gasFeeParamsBySpeed?.normal?.maxPriorityFeePerGas?.gwei
-          ),
-          maxPriorityFee
+    // validate not zero
+    if (!maxBaseFee || isZero(maxBaseFee)) {
+      setMaxBaseFeeError('1 Gwei to avoid failure');
+    } else {
+      setMaxBaseFeeError(null);
+    }
+    if (
+      greaterThan(multiply(MAX_BASE_FEE_RANGE[0], currentBaseFee), maxBaseFee)
+    ) {
+      setMaxBaseFeeWarning('Lower than recommended');
+    } else if (
+      greaterThan(maxBaseFee, multiply(MAX_BASE_FEE_RANGE[1], currentBaseFee))
+    ) {
+      setMaxBaseFeeWarning('Higher than necessary');
+    } else {
+      setMaxBaseFeeWarning(null);
+    }
+  }, [maxBaseFee, currentBaseFee]);
+
+  useEffect(() => {
+    // validate not zero
+    if (!maxPriorityFee || isZero(maxPriorityFee)) {
+      setMaxPriorityFeeError('1 Gwei to avoid failure');
+    } else {
+      setMaxPriorityFeeError(null);
+    }
+    if (
+      greaterThan(
+        multiply(
+          MINER_TIP_RANGE[0],
+          gasFeeParamsBySpeed?.[NORMAL]?.maxPriorityFeePerGas?.gwei
+        ),
+        maxPriorityFee
+      )
+    ) {
+      setMaxPriorityFeeWarning('Lower than recommended');
+    } else if (
+      greaterThan(
+        maxPriorityFee,
+        multiply(
+          MINER_TIP_RANGE[1],
+          gasFeeParamsBySpeed?.[URGENT]?.maxPriorityFeePerGas?.gwei
         )
-      ) {
-        setMaxPriorityFeeWarning('Lower than recommended');
-      } else if (
-        greaterThan(
-          maxPriorityFee,
-          multiply(
-            MINER_TIP_RANGE[1],
-            gasFeeParamsBySpeed?.urgent?.maxPriorityFeePerGas?.gwei
-          )
-        )
-      ) {
-        setMaxPriorityFeeWarning('Higher than necessary');
-      } else {
-        setMaxPriorityFeeWarning(null);
-      }
-    }, 200);
-  }, [
-    gasFeeParamsBySpeed?.urgent?.maxPriorityFeePerGas?.gwei,
-    gasFeeParamsBySpeed?.normal?.maxPriorityFeePerGas?.gwei,
-    maxPriorityFee,
-    stopPriorityFeeTimeout,
-    startPriorityFeeTimeout,
-  ]);
+      )
+    ) {
+      setMaxPriorityFeeWarning('Higher than necessary');
+    } else {
+      setMaxPriorityFeeWarning(null);
+    }
+  }, [gasFeeParamsBySpeed, maxPriorityFee]);
 
   return (
     <Wrapper>
       <PanelRowThin>
         <PanelColumn />
         <PanelColumn>
-          <GasTrendHeader color={gasUtils.GAS_TRENDS[currentGasTrend].color}>
-            {gasUtils.GAS_TRENDS[currentGasTrend].label}
+          <GasTrendHeader color={GAS_TRENDS[currentGasTrend].color}>
+            {GAS_TRENDS[currentGasTrend].label}
           </GasTrendHeader>
         </PanelColumn>
       </PanelRowThin>
 
       <PanelRow justify="space-between" marginBottom={18}>
-        {renderRowLabel(
-          'Current Base Fee',
-          'currentBaseFee' + upperFirst(currentGasTrend)
-        )}
+        {renderRowLabel('Current Base Fee', trendType)}
         <PanelColumn>
           <PanelLabel>{formattedBaseFee}</PanelLabel>
         </PanelColumn>

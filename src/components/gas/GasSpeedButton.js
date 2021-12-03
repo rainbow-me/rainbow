@@ -149,22 +149,29 @@ const GasSpeedButton = ({
   const price = useMemo(() => {
     const gasPrice =
       selectedGasFee?.gasFee?.estimatedFee?.native?.value?.display;
-    const price = (isNil(gasPrice) ? '0.00' : gasPrice)
+    if (isNil(gasPrice)) return null;
+    return gasPrice
       .replace(',', '') // In case gas price is > 1k!
       .replace(nativeCurrencySymbol, '')
       .trim();
-    return price;
   }, [nativeCurrencySymbol, selectedGasFee]);
 
   const isL2 = useMemo(() => isL2Network(currentNetwork), [currentNetwork]);
 
-  /*const formatGwei = (gasOption) =>{
-    const baseFee =  gasFeeParamsBySpeed[gasOption]?.maxFeePerGas?.display;
-    const maxFee = gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.display;
-  }*/
+  const gasIsNotReady = useMemo(
+    () =>
+      isNil(price) ||
+      isEmpty(gasFeeParamsBySpeed) ||
+      isEmpty(selectedGasFee?.gasFee) ||
+      isSufficientGas === null,
+    [gasFeeParamsBySpeed, isSufficientGas, price, selectedGasFee]
+  );
 
   const formatGasPrice = useCallback(
     animatedValue => {
+      if (animatedValue === null) {
+        return 0;
+      }
       // L2's are very cheap,
       // so let's default to the last 2 significant decimals
       if (isL2) {
@@ -185,14 +192,6 @@ const GasSpeedButton = ({
     [isL2, nativeCurrencySymbol, nativeCurrency]
   );
 
-  const gasIsNotReady = useMemo(
-    () =>
-      isEmpty(gasFeeParamsBySpeed) ||
-      isEmpty(selectedGasFee?.gasFee) ||
-      isSufficientGas === null,
-    [gasFeeParamsBySpeed, selectedGasFee, isSufficientGas]
-  );
-
   const openCustomGasSheet = useCallback(() => {
     if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
@@ -208,22 +207,25 @@ const GasSpeedButton = ({
   }, [setShouldOpenCustomGasSheet]);
 
   const renderGasPriceText = useCallback(
-    animatedNumber => (
-      <Text
-        color={
-          theme === 'dark'
-            ? colors.whiteLabel
-            : colors.alpha(colors.blueGreyDark, 0.8)
-        }
-        letterSpacing="roundedTight"
-        lineHeight="normal"
-        size="lmedium"
-        weight="bold"
-      >
-        {gasIsNotReady ? 'Loading...' : animatedNumber}
-      </Text>
-    ),
-    [theme, colors, gasIsNotReady]
+    animatedNumber => {
+      const priceText = animatedNumber === 0 ? 'Loading...' : animatedNumber;
+      return (
+        <Text
+          color={
+            theme === 'dark'
+              ? colors.whiteLabel
+              : colors.alpha(colors.blueGreyDark, 0.8)
+          }
+          letterSpacing="roundedTight"
+          lineHeight="normal"
+          size="lmedium"
+          weight="bold"
+        >
+          {priceText}
+        </Text>
+      );
+    },
+    [colors, theme]
   );
 
   const handlePressSpeedOption = useCallback(
@@ -231,7 +233,7 @@ const GasSpeedButton = ({
       if (selectedSpeed === CUSTOM) {
         openCustomGasSheet();
         if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
-          const gasFeeParams = gasFeeParamsBySpeed[selectedGasFeeOption];
+          const gasFeeParams = gasFeeParamsBySpeed[URGENT];
           updateToCustomGasFee({
             ...gasFeeParams,
             option: CUSTOM,
@@ -244,7 +246,6 @@ const GasSpeedButton = ({
     [
       openCustomGasSheet,
       gasFeeParamsBySpeed,
-      selectedGasFeeOption,
       updateToCustomGasFee,
       updateGasFeeOption,
     ]
@@ -496,10 +497,6 @@ const GasSpeedButton = ({
               <TransactionTimeLabel
                 formatter={formatTransactionTime}
                 theme={theme}
-                value={{
-                  estimatedTimeValue,
-                  price,
-                }}
               />
             </Column>
           </Row>

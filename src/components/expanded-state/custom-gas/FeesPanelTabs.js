@@ -13,7 +13,7 @@ import { gasUtils } from '@rainbow-me/utils';
 const PillScrollViewStyle = { flexGrow: 1, justifyContent: 'center' };
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
-const { CUSTOM, GasSpeedOrder } = gasUtils;
+const { CUSTOM, URGENT, GasSpeedOrder } = gasUtils;
 
 export const TabPillWrapper = styled(View).attrs({})`
   ${padding(2.5, 8)};
@@ -78,7 +78,7 @@ export default function FeesPanelTabs({
 
   const handleOnPressTabPill = label => {
     if (label === CUSTOM && isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
-      const gasFeeParams = gasFeeParamsBySpeed[selectedGasFeeOption];
+      const gasFeeParams = gasFeeParamsBySpeed[URGENT];
       updateToCustomGasFee({
         ...gasFeeParams,
         option: CUSTOM,
