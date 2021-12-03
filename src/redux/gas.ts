@@ -56,7 +56,8 @@ import { fromWei, greaterThanOrEqualTo, multiply } from '@rainbow-me/utilities';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const { CUSTOM, NORMAL, GAS_PRICE_SOURCES } = gasUtils;
+const { CUSTOM, NORMAL, URGENT, GAS_PRICE_SOURCES } = gasUtils;
+const GAS_PRICE_INTERVAL = 5000; // 5 seconds
 
 let gasPricesHandle: NodeJS.Timeout | null = null;
 
@@ -70,6 +71,7 @@ interface GasState {
   txNetwork: Network | null;
   currentBlockParams: CurrentBlockParams;
   confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee;
+  customGasFeeModifiedByUser: boolean;
 }
 
 // -- Constants ------------------------------------------------------------- //
@@ -78,7 +80,7 @@ const GAS_UPDATE_DEFAULT_GAS_LIMIT = 'gas/GAS_UPDATE_DEFAULT_GAS_LIMIT';
 const GAS_PRICES_SUCCESS = 'gas/GAS_PRICES_SUCCESS';
 const GAS_FEES_SUCCESS = 'gas/GAS_FEES_SUCCESS';
 const GAS_PRICES_FAILURE = 'gas/GAS_PRICES_FAILURE';
-const GAS_PRICES_CUSTOM_UPDATE_FAILURE = 'gas/GAS_PRICES_CUSTOM_UPDATE_FAILURE';
+const GAS_PRICES_CUSTOM_UPDATE = 'gas/GAS_PRICES_CUSTOM_UPDATE';
 
 const GAS_PRICES_RESET = 'gas/GAS_PRICES_RESET';
 const GAS_UPDATE_TX_FEE = 'gas/GAS_UPDATE_TX_FEE';
@@ -183,6 +185,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     currentBlockParams,
     confirmationTimeByPriorityFee,
   } = getState().gas;
+
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
   const _gasLimit = gasLimit || defaultGasLimit;
@@ -218,11 +221,12 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   );
   dispatch({
     payload: {
+      customGasFeeModifiedByUser: true,
       gasFeeParamsBySpeed: newGasFeeParamsBySpeed,
       gasFeesBySpeed: newGasFeesBySpeed,
       selectedGasFee: newSelectedGasFee.selectedGasFee,
     },
-    type: GAS_PRICES_CUSTOM_UPDATE_FAILURE,
+    type: GAS_PRICES_CUSTOM_UPDATE,
   });
 };
 
@@ -311,8 +315,12 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   const getGasPrices = (network: Network) =>
     new Promise(async (fetchResolve, fetchReject) => {
       try {
-        const { gasFeeParamsBySpeed: existingGasFees } = getState().gas;
+        const {
+          gasFeeParamsBySpeed: existingGasFees,
+          customGasFeeModifiedByUser,
+        } = getState().gas;
         const isLegacy = isEIP1559LegacyNetwork(network);
+
         if (isLegacy) {
           let adjustedGasFees;
           let source = GAS_PRICE_SOURCES.ETHERSCAN;
@@ -362,15 +370,15 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
               }
             }
 
-            if (!isEmpty(existingGasFees[CUSTOM])) {
+            if (customGasFeeModifiedByUser) {
               // Preserve custom values while updating prices
               gasFeeParamsBySpeed[CUSTOM] = {
                 ...existingGasFees[CUSTOM],
                 baseFeePerGas: baseFee,
               };
-            } else if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
-              // set CUSTOM to NORMAL if not defined
-              // gasFeeParamsBySpeed[CUSTOM] = {} as GasFeeParamsBySpeed;
+            } else {
+              // set CUSTOM to URGENT if not defined
+              gasFeeParamsBySpeed[CUSTOM] = gasFeeParamsBySpeed[URGENT];
             }
             dispatch({
               payload: {
@@ -407,7 +415,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
     } finally {
       gasPricesHandle = setTimeout(() => {
         watchGasPrices(network);
-      }, 15000); // 15 secs
+      }, GAS_PRICE_INTERVAL);
     }
   };
 
@@ -524,6 +532,7 @@ export const gasPricesStopPolling = () => (dispatch: AppDispatch) => {
 const INITIAL_STATE: GasState = {
   confirmationTimeByPriorityFee: {} as ConfirmationTimeByPriorityFee,
   currentBlockParams: {} as CurrentBlockParams,
+  customGasFeeModifiedByUser: false,
   defaultGasLimit: ethUnits.basic_tx,
   gasFeeParamsBySpeed: {},
   gasFeesBySpeed: {},
@@ -561,9 +570,10 @@ export default (
         ...state,
         gasFeeParamsBySpeed: action.payload.gasFeeParamsBySpeed,
       };
-    case GAS_PRICES_CUSTOM_UPDATE_FAILURE:
+    case GAS_PRICES_CUSTOM_UPDATE:
       return {
         ...state,
+        customGasFeeModifiedByUser: action.payload.customGasFeeModifiedByUser,
         gasFeeParamsBySpeed: action.payload.gasFeeParamsBySpeed,
         gasFeesBySpeed: action.payload.gasFeesBySpeed,
         selectedGasFee: action.payload.selectedGasFee,
