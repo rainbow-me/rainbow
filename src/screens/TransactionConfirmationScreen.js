@@ -655,7 +655,7 @@ export default function TransactionConfirmationScreen() {
           network,
           nonce: result.nonce,
           to: displayDetails?.request?.to,
-          value: result.value,
+          value: result.value.toString(),
           ...gasParams,
         };
         if (toLower(accountAddress) === toLower(txDetails.from)) {
