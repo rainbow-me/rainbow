@@ -16,7 +16,7 @@ const GweiPill = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
 }))`
   border-radius: 15;
   ${padding(10, 12)}
-  ${margin(0, 6)}
+  ${margin(0, 3)}
 `;
 
 const GweiNumberInput = styled(Input).attrs(({ theme: { colors }, value }) => ({
