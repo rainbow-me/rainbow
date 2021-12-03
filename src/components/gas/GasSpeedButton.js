@@ -168,8 +168,8 @@ const GasSpeedButton = ({
 
   const formatGasPrice = useCallback(
     animatedValue => {
-      if (gasIsNotReady) {
-        return 'Loading...';
+      if (animatedValue === null) {
+        return 0;
       }
       // L2's are very cheap,
       // so let's default to the last 2 significant decimals
@@ -188,7 +188,7 @@ const GasSpeedButton = ({
         }`;
       }
     },
-    [isL2, nativeCurrencySymbol, nativeCurrency, gasIsNotReady]
+    [isL2, nativeCurrencySymbol, nativeCurrency]
   );
 
   const openCustomGasSheet = useCallback(() => {
@@ -206,22 +206,25 @@ const GasSpeedButton = ({
   }, [setShouldOpenCustomGasSheet]);
 
   const renderGasPriceText = useCallback(
-    animatedNumber => (
-      <Text
-        color={
-          theme === 'dark'
-            ? colors.whiteLabel
-            : colors.alpha(colors.blueGreyDark, 0.8)
-        }
-        letterSpacing="roundedTight"
-        lineHeight="normal"
-        size="lmedium"
-        weight="bold"
-      >
-        {animatedNumber}
-      </Text>
-    ),
-    [theme, colors]
+    animatedNumber => {
+      const priceText = animatedNumber === 0 ? 'Loading...' : animatedNumber;
+      return (
+        <Text
+          color={
+            theme === 'dark'
+              ? colors.whiteLabel
+              : colors.alpha(colors.blueGreyDark, 0.8)
+          }
+          letterSpacing="roundedTight"
+          lineHeight="normal"
+          size="lmedium"
+          weight="bold"
+        >
+          {priceText}
+        </Text>
+      );
+    },
+    [colors, theme]
   );
 
   const handlePressSpeedOption = useCallback(
