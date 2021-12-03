@@ -157,8 +157,14 @@ export default function FeesPanel({
     updatedCustomMaxPriorityFee,
   ]);
 
+  const selectedOptionIsCustom = useMemo(
+    () => selectedGasFee?.option === CUSTOM,
+    [selectedGasFee?.option]
+  );
+
   const maxBaseWarningsStyle = useAnimatedStyle(() => {
-    const display = !!maxBaseFeeWarning || !!maxBaseFeeError;
+    const display =
+      selectedOptionIsCustom && (!!maxBaseFeeWarning || !!maxBaseFeeError);
     const value = withTiming(display ? 20 : 0, warningsAnimationConfig);
     return {
       height: value,
@@ -166,17 +172,14 @@ export default function FeesPanel({
   });
 
   const maxPriorityWarningsStyle = useAnimatedStyle(() => {
-    const display = !!maxPriorityFeeWarning || !!maxPriorityFeeError;
+    const display =
+      selectedOptionIsCustom &&
+      (!!maxPriorityFeeWarning || !!maxPriorityFeeError);
     const value = withTiming(display ? 20 : 0, warningsAnimationConfig);
     return {
       height: value,
     };
   });
-
-  const selectedOptionIsCustom = useMemo(
-    () => selectedGasFee?.option === CUSTOM,
-    [selectedGasFee?.option]
-  );
 
   const { maxFee, currentBaseFee, maxBaseFee, maxPriorityFee } = useMemo(() => {
     const maxFee = selectedGasFee?.gasFee?.maxFee?.native?.value?.display || 0;
