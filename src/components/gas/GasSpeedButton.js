@@ -470,7 +470,6 @@ const GasSpeedButton = ({
             <Column>
               <AnimateNumber
                 formatter={formatGasPrice}
-                initial={price}
                 interval={6}
                 renderContent={renderGasPriceText}
                 steps={6}
