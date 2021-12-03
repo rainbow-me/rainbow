@@ -12,7 +12,7 @@ import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
-import { convertStringToNumber } from '@rainbow-me/helpers/utilities';
+import { add } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useColorForAsset,
@@ -324,13 +324,10 @@ const GasSpeedButton = ({
 
   const menuConfig = useMemo(() => {
     const menuOptions = speedOptions.map(gasOption => {
-      const totalGwei =
-        convertStringToNumber(
-          gasFeeParamsBySpeed[gasOption]?.maxFeePerGas?.gwei
-        ) +
-        convertStringToNumber(
-          gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
-        );
+      const totalGwei = add(
+        gasFeeParamsBySpeed[gasOption]?.maxFeePerGas?.gwei,
+        gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
+      );
       const gweiDisplay =
         currentNetwork === networkTypes.polygon
           ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
