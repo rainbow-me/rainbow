@@ -23,7 +23,7 @@ const EventEnum = {
   },
   MINT: {
     icon: `􀎛`,
-    label: `Minted`,
+    label: `Minted by `,
     type: 'mint',
   },
   SALE: {
@@ -130,6 +130,9 @@ const TokenHistory = ({ contractAndToken, color }) => {
         break;
 
       case EventEnum.MINT.type:
+        suffix = `${item.to_account}`;
+        isClickable =
+          accountAddress.toLowerCase() !== item.to_account_eth_address;
         label = EventEnum.MINT.label;
         icon = EventEnum.MINT.icon;
         break;
@@ -219,7 +222,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
   const renderFlatList = () => {
     console.log("paris");
     return (
-      <MaskedView maskElement={<TokenHistoryEdgeFade />}>
+      <MaskedView maskElement={<TokenHistoryEdgeFade style={{backgroundColor: 'transparent'}}/>}>
         <FlatList
           ListFooterComponent={<View style={{ paddingLeft: 24 }} />}
           data={tokenHistory}

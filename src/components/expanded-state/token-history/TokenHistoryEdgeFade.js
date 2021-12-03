@@ -98,10 +98,10 @@ export default function TokenHistoryEdgeFade() {
   const { width } = useDimensions();
   const { colors } = useTheme();
   return (
-    <>
+    <View style={{backgroundColor: 'transparent'}}>
       <LeftFade />
       <CenterView width={width} colors={colors} />
       <RightFade />
-    </>
+    </View>
   );
 }
