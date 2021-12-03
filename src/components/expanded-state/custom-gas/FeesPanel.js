@@ -97,7 +97,7 @@ const MAX_BASE_FEE_RANGE = [1, 3];
 const MINER_TIP_RANGE = [1, 2];
 
 const warningsAnimationConfig = {
-  duration: 50,
+  duration: 80,
   easing: Easing.linear,
 };
 
