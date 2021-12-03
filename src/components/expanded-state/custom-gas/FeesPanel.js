@@ -20,7 +20,7 @@ import {
   multiply,
   toFixedDecimals,
 } from '@rainbow-me/helpers/utilities';
-import { useGas, useTimeout } from '@rainbow-me/hooks';
+import { useGas } from '@rainbow-me/hooks';
 import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
