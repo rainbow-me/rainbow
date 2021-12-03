@@ -635,6 +635,12 @@ export const createSignableTransaction = async (
   const result = isNft
     ? await getTransferNftTransaction(transaction)
     : await getTransferTokenTransaction(transaction);
+
+  // `result` will conform to `TransactionDetailsInput`, except it will have
+  // either { gasPrice: string } | { maxFeePerGas: string; maxPriorityFeePerGas: string }
+  // due to the type of `GasParamsReturned`, not both. This is fine, since
+  // `getTxDetails` only needs to use one or the other in `getTransactionGasParams`, but
+  // must be casted to conform to the type.
   return getTxDetails(result as TransactionDetailsInput);
 };
 
