@@ -14,6 +14,7 @@ import Animated, {
   useAnimatedProps,
   useAnimatedReaction,
   useAnimatedStyle,
+  useSharedValue,
   useWorkletCallback,
   withDelay,
   withTiming,
@@ -136,8 +137,10 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
       previousPath,
     } = useChartData();
 
-    console.log('Render chart', !!currentPath);
     const interpolatorWorklet = useWorkletValue();
+
+    const translationX = useSharedValue(0);
+    const translationY = useSharedValue(0);
 
     const setOriginData = useWorkletCallback(
       (path: PathData, index?: number) => {
@@ -149,8 +152,6 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
           index = path.data.length - 1;
         }
 
-        console.log('setOrigiinData', index);
-
         originalX.value = path.data[index].x.toString();
         originalY.value = path.data[index].y.toString();
       },
@@ -161,8 +162,6 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
       if (currentPath?.path === previousPath?.path) {
         return;
       }
-
-      console.log('Effect');
 
       runOnUI(() => {
         'worklet';
@@ -179,11 +178,12 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
         // it means that we don't cross threads with that function
         // which makes it super fast
         if (previousPath && currentPath) {
-          interpolatorWorklet().value = requireOnWorklet(
-            'd3-interpolate-path'
-          ).interpolatePath(previousPath, currentPath);
+          const d3Interpolate = requireOnWorklet('d3-interpolate-path');
 
-          console.log('Interpolate');
+          interpolatorWorklet().value = d3Interpolate.interpolatePath(
+            previousPath.path,
+            currentPath.path
+          );
 
           progress.value = withDelay(
             Platform.OS === 'ios' ? 0 : 100,
@@ -192,31 +192,12 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
         } else {
           interpolatorWorklet().value = undefined;
           progress.value = 1;
-          console.log('Do not interpolate');
         }
       })();
     }, [currentPath, previousPath]);
 
     useAnimatedReaction(
-      () => ({ x: positionX.value, y: positionY.value }),
-      values => {
-        if (!currentPath || !currentPath.parsed || progress.value === 0) {
-          return;
-        }
-
-        const yForX = redash.getYForX(currentPath.parsed, Math.floor(values.x));
-
-        if (yForX !== null) {
-          positionY.value = yForX;
-        }
-
-        positionX.value = values.x;
-      },
-      [currentPath]
-    );
-
-    useAnimatedReaction(
-      () => ({ x: positionX.value, y: positionY.value }),
+      () => ({ x: translationX.value, y: translationY.value }),
       values => {
         if (!currentPath || !currentPath.parsed || progress.value === 0) {
           return;
@@ -248,8 +229,6 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
           return Math.hypot(currentPath.points[i].x - Math.floor(values.x));
         });
 
-        console.log('Reaction');
-
         setOriginData(currentPath, index);
       },
       [currentPath]
@@ -257,8 +236,6 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
 
     const animatedProps = useAnimatedProps(() => {
       const props: PathProps & ViewProps = {};
-
-      console.log('Animated props', !!currentPath);
 
       if (!currentPath) {
         return {
@@ -315,8 +292,8 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
           }
 
           state.value = event.state;
-          positionX.value = positionXWithMargin(event.x, hitSlop, width);
-          positionY.value = event.y;
+          translationX.value = positionXWithMargin(event.x, hitSlop, width);
+          translationY.value = event.y;
         },
         onFail: event => {
           state.value = event.state;

@@ -53,8 +53,6 @@ function getCurveType(curveType: CurveType) {
 
 export const ChartPathProvider = React.memo<ChartPathProviderProps>(
   ({ children, data, width = WIDTH, height = HEIGHT, yRange }) => {
-    console.log('Provider', !!data);
-
     const progress = useSharedValue(1);
     const dotScale = useSharedValue(0);
     const isActive = useSharedValue(false);
@@ -163,21 +161,16 @@ export const ChartPathProvider = React.memo<ChartPathProviderProps>(
     const currentPath = paths[1];
 
     useEffect(() => {
-      console.log('CurrentPathChange');
-    }, [currentPath]);
-
-    useEffect(() => {
-      // console.log('Change path', currentPath);
-      // if (initialized.current) {
-      setPaths(([_, curr]) => [
-        curr,
-        data.points.length ? createPath({ data, width, height, yRange }) : null,
-      ]);
-
-      console.log('Effect', data.points.length);
-      // } else {
-      //   initialized.current = true;
-      // }
+      if (initialized.current) {
+        setPaths(([_, curr]) => [
+          curr,
+          data.points.length
+            ? createPath({ data, width, height, yRange })
+            : null,
+        ]);
+      } else {
+        initialized.current = true;
+      }
     }, [data.points, data.curve, width, height]);
 
     const value = useMemo(() => {
@@ -204,7 +197,7 @@ export const ChartPathProvider = React.memo<ChartPathProviderProps>(
       }
 
       return ctx;
-    }, [data]);
+    }, [currentPath, previousPath, width, height]);
 
     return (
       <ChartContext.Provider value={value}>{children}</ChartContext.Provider>
