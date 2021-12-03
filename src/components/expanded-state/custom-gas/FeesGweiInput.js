@@ -14,6 +14,7 @@ const DELAY_THRESHOLD = 100;
 const Wrapper = styled(Row)``;
 
 const StepButtonWrapper = styled(ButtonPressAnimation).attrs(() => ({
+  marginHorizontal: -3,
   paddingHorizontal: 3,
 }))``;
 
