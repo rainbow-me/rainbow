@@ -90,7 +90,7 @@ const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
       <Row align="center" css={padding(15, 19, 19)}>
         <RowWithMargins align="center" margin={5}>
           <CrystalBallEmoji />
-          <Text color={colors.dark} size="lmedium">
+          <Text color={colors.dark} size="lmedium" weight="medium">
             {`Est. ${Object.keys(steps)[step]} Earnings`}
           </Text>
         </RowWithMargins>

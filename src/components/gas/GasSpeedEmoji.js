@@ -2,55 +2,50 @@ import { has } from 'lodash';
 import React from 'react';
 import styled from 'styled-components';
 import { Emoji } from '../text';
+import { margin } from '@rainbow-me/styles';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
 const EmojiForGasSpeedType = {
+  [gasUtils.URGENT]: {
+    emoji: 'police_car_light',
+    // 🚨
+    top: android ? 0 : -0.5,
+  },
   [gasUtils.FAST]: {
-    emoji: 'rocket', // 🚀️
-    position: [android ? 2 : 0.5, android ? 5 : 0], // (x, y)
+    emoji: 'rocket',
+    // 🚀️
+    top: android ? 0 : -0.5,
   },
   [gasUtils.NORMAL]: {
-    emoji: 'stopwatch', // ⏱️
-    position: [android ? 3.5 : 1, android ? 3.25 : -1], // (x, y)
+    emoji: 'stopwatch',
+    // ⏱️
+    top: android ? -2 : -1,
   },
   [gasUtils.SLOW]: {
-    emoji: 'snail', // 🐌️
-    position: [android ? 2 : 0, android ? 3.5 : -2], // (x, y)
+    emoji: 'snail',
+    // 🐌️
+    top: android ? 0 : -1,
   },
   [gasUtils.CUSTOM]: {
-    emoji: 'gear', // ⚙️
-    position: [android ? 3 : 1, android ? 3.5 : -0.25], // (x, y)
+    emoji: 'gear',
+    // ⚙️
+    top: android ? -2 : -0.5,
   },
 };
 
-const Container = styled.View`
-  height: ${({ height }) => height};
-  width: 25;
-`;
-
 const GasEmoji = styled(Emoji).attrs({
-  lineHeight: 'loosest',
-  size: 'medium',
+  lineHeight: 'looserLoose',
+  size: 'lmedium',
 })`
-  left: ${({ left }) => left};
-  position: absolute;
-  top: ${({ top }) => top};
+  ${({ top }) => margin(top, 0, 0, 0)}
 `;
 
-const GasSpeedEmoji = ({ containerHeight, label }) => {
+const GasSpeedEmoji = ({ label }) => {
   const gasSpeed = has(EmojiForGasSpeedType, label)
     ? EmojiForGasSpeedType[label]
     : EmojiForGasSpeedType[gasUtils.NORMAL];
 
-  return (
-    <Container height={containerHeight}>
-      <GasEmoji
-        left={gasSpeed.position[0]}
-        name={gasSpeed.emoji}
-        top={gasSpeed.position[1]}
-      />
-    </Container>
-  );
+  return <GasEmoji name={gasSpeed.emoji} top={gasSpeed.top} />;
 };
 
 export default magicMemo(GasSpeedEmoji, 'label');
