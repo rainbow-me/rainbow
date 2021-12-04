@@ -60,9 +60,9 @@ export function StickyHeader({
             },
           ]
         : [],
-      zIndex: 10,
+      zIndex: 1000,
     }),
-    [position, range]
+    [last, position, range]
   );
   const ref = useRef<Animated.View>() as MutableRefObject<Animated.View>;
   const onLayout = useCallback(() => {

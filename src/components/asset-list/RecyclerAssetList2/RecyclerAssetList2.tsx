@@ -8,6 +8,7 @@ import React, {
   useImperativeHandle,
   useMemo,
   useRef,
+  useState,
 } from 'react';
 import isEqual from 'react-fast-compare';
 import {
@@ -350,9 +351,8 @@ const ExternalScrollViewWithRef = React.forwardRef(function ExternalScrollView(
 ): BaseScrollView {
   const y = useRecyclerAssetListPosition()!;
 
-  const { onScroll, ...rest } = props
-  const { scrollViewRef } = useContext(StickyHeaderContext)!
-
+  const { onScroll, ...rest } = props;
+  const { scrollViewRef } = useContext(StickyHeaderContext)!;
 
   const event = useMemoOne(
     () =>
@@ -397,12 +397,13 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     [briefSectionsData]
   );
 
+
   return (
     <RecyclerListView
       dataProvider={currentDataProvider}
       externalScrollView={ExternalScrollViewWithRef}
       layoutProvider={layoutProvider}
-      renderAheadOffset={3000}
+      renderAheadOffset={ios ? 1000 : 2000}
       // @ts-ignore
       rowRenderer={rowRenderer}
     />
@@ -421,7 +422,7 @@ function RecyclerAssetList() {
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
       <RecyclerAssetListContext.Provider value={additionalData}>
         <StickyHeaderManager>
-          <RawMemoRecyclerAssetList briefSectionsData={briefSectionsData} />
+          <RawMemoRecyclerAssetList briefSectionsData={briefSectionsData}/>
         </StickyHeaderManager>
       </RecyclerAssetListContext.Provider>
     </RecyclerAssetListScrollPositionContext.Provider>

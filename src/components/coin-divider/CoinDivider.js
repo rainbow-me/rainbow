@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import {useRecyclerAssetListHelpers} from "../asset-list/RecyclerAssetList2/RecyclerAssetList2";
 import { Row, RowWithMargins } from '../layout';
 import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 import CoinDividerEditButton from './CoinDividerEditButton';
