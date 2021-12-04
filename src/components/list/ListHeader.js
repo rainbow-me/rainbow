@@ -59,8 +59,6 @@ const Content = styled(Row).attrs({
   justify: 'space-between',
 })`
   ${padding(5, 19)};
-  background-color: ${({ theme: { colors } }) =>
-    colors.white};
   height: ${ListHeaderHeight};
   width: 100%;
 `;

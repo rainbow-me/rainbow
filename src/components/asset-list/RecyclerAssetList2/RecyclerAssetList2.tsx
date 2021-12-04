@@ -26,6 +26,9 @@ import Animated, {
 import { useSelector } from 'react-redux';
 import {
   DataProvider,
+  Dimension,
+  Layout,
+  LayoutManager,
   LayoutProvider,
   RecyclerListView,
   RecyclerListViewProps,
@@ -249,8 +252,61 @@ const dataProvider = new DataProvider((r1, r2) => {
   return r1.uid === r2.uid;
 });
 
-const getLayoutProvider = (briefSectionsData: BaseCellType[]) =>
-  new LayoutProvider(
+const getStyleOverridesForIndex = (indices: number[]) => (index: number) => {
+  if (indices.includes(index)) {
+    return {
+      zIndex: 1000,
+    };
+  }
+  return undefined;
+};
+
+class BetterLayoutProvider extends LayoutProvider {
+  private readonly indicesToOverride: number[];
+  constructor(
+    getLayoutTypeForIndex: (index: number) => string | number,
+    setLayoutForType: (
+      type: string | number,
+      dim: Dimension,
+      index: number
+    ) => void,
+    indicesToOverride: number[]
+  ) {
+    super(getLayoutTypeForIndex, setLayoutForType);
+    this.indicesToOverride = indicesToOverride;
+  }
+  public newLayoutManager(
+    renderWindowSize: Dimension,
+    isHorizontal?: boolean,
+    cachedLayouts?: Layout[]
+  ): LayoutManager {
+    const oldLayoutManager = super.newLayoutManager(
+      renderWindowSize,
+      isHorizontal,
+      cachedLayouts
+    );
+    oldLayoutManager.getStyleOverridesForIndex = getStyleOverridesForIndex(
+      this.indicesToOverride
+    );
+    return oldLayoutManager;
+  }
+}
+
+const getLayoutProvider = (briefSectionsData: BaseCellType[]) => {
+  const indicesToOverride = briefSectionsData
+    .map((val, index) => {
+      if (
+        val.type === CellType.ASSETS_HEADER ||
+        val.type === CellType.NFTS_HEADER
+      ) {
+        return { index };
+      }
+      return undefined;
+    })
+    .filter(Boolean)
+    .map(wrapped => wrapped?.index) as number[];
+
+  return new BetterLayoutProvider(
     index => briefSectionsData[index].type,
     // @ts-ignore
     (type: CellType, dim) => {
@@ -259,8 +315,10 @@ const getLayoutProvider = (briefSectionsData: BaseCellType[]) =>
         dim.height = ViewDimensions[type].height;
         dim.width = ViewDimensions[type].width || dim.width;
       }
-    }
+    },
+    indicesToOverride
   );
+};
 
 function useMemoBriefSectionData() {
   const { briefSectionsData } = useWalletSectionsData();
@@ -301,7 +359,7 @@ function useMemoBriefSectionData() {
         if (data.type === CellType.FAMILY_HEADER) {
           const name = (data as NFTFamilyExtraData).name;
           const showcase = name === 'Showcase';
-          console.log(openFamilies, name)
+          console.log(openFamilies, name);
           isGroupOpen = openFamilies[name + (showcase ? '-showcase' : '')];
         }
 
@@ -395,7 +453,6 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     [briefSectionsData]
   );
 
-
   return (
     <RecyclerListView
       dataProvider={currentDataProvider}
@@ -420,7 +477,7 @@ function RecyclerAssetList() {
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
       <RecyclerAssetListContext.Provider value={additionalData}>
         <StickyHeaderManager>
-          <RawMemoRecyclerAssetList briefSectionsData={briefSectionsData}/>
+          <RawMemoRecyclerAssetList briefSectionsData={briefSectionsData} />
         </StickyHeaderManager>
       </RecyclerAssetListContext.Provider>
     </RecyclerAssetListScrollPositionContext.Provider>

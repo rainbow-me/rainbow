@@ -60,7 +60,6 @@ export function StickyHeader({
             },
           ]
         : [],
-      zIndex: 1000,
     }),
     [last, position, range]
   );
