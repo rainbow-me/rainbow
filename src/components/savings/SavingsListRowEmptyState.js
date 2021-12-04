@@ -23,7 +23,6 @@ const sxFactory = (darkMode, colors) =>
       backgroundColor: colors.swapPurple,
       borderRadius: ButtonBorderRadius,
       height: 30,
-      paddingBottom: 1,
       paddingRight: 2,
       width: 97,
     },
@@ -51,7 +50,7 @@ const SavingsListRowEmptyState = ({ onPress }) => {
           color={colors.whiteLabel}
           letterSpacing="roundedTight"
           size="lmedium"
-          weight="semibold"
+          weight="bold"
         >
           􀁍 Deposit
         </Text>
