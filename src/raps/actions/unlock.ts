@@ -177,7 +177,7 @@ const unlock = async (
     status: TransactionStatus.approving,
     to: approval?.to,
     type: TransactionType.authorize,
-    value: approval.value,
+    value: toHex(approval.value),
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
   await dispatch(dataAddNewTransaction(newTransaction, accountAddress));
