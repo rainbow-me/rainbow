@@ -289,7 +289,7 @@ describe('Hardhat Transaction Flow', () => {
     }
   });
 
-  it('Should be able to sign via eth_sign messages via WC', async () => {
+  it('Should be able to sign eth_sign messages via WC', async () => {
     const message = `My email is john@doe.com`;
     const hexMsg = convertUtf8ToHex(message);
     const msgParams = [account, hexMsg];
