@@ -10,7 +10,7 @@ export default function useOpenSmallBalances() {
 
   useEffect(() => {
     if (stagger) {
-      setTimeout(() => setStagger(false), 400);
+      setTimeout(() => setStagger(false), 700);
     }
   }, [setStagger, stagger]);
 
