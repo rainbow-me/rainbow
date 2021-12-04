@@ -329,9 +329,8 @@ export const signMessage = async (
       existingWallet || (await loadWallet(undefined, true, provider));
     try {
       if (!wallet) return null;
-      const signingKey = new SigningKey(wallet.privateKey);
-      const sigParams = await signingKey.signDigest(arrayify(message));
-      return { result: joinSignature(sigParams) };
+      const result = await wallet.signMessage(arrayify(message));
+      return { result };
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
       logger.sentry('Error', error);
