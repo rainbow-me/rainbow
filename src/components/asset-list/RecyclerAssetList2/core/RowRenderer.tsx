@@ -2,6 +2,13 @@ import React from 'react';
 import { View } from 'react-native';
 import { CoinDivider } from '../../../coin-divider';
 import { AssetListHeader } from '../../index';
+import WrappedNFT from '../WrappedNFT';
+import WrappedPoolRow from '../WrappedPoolRow';
+import WrappedPoolsListHeader from '../WrappedPoolsListHeader';
+import WrappedSavingsListHeader from '../WrappedSavingsListHeader';
+import WrappedSavingsRow from '../WrappedSavingsRow';
+import WrappedTokenFamilyHeader from '../WrappedTokenFamilyHeader';
+import WrapperBalanceCoinRow from '../WrapperBalanceCoinRow';
 import { useAdditionalRecyclerAssetListData } from './Contexts';
 import {
   AssetsHeaderExtraData,
@@ -15,13 +22,6 @@ import {
   SavingsHeaderExtraData,
   UniswapPoolExtraData,
 } from './ViewTypes';
-import WrappedNFT from '../WrappedNFT';
-import WrappedPoolRow from '../WrappedPoolRow';
-import WrappedPoolsListHeader from '../WrappedPoolsListHeader';
-import WrappedSavingsListHeader from '../WrappedSavingsListHeader';
-import WrappedSavingsRow from '../WrappedSavingsRow';
-import WrappedTokenFamilyHeader from '../WrappedTokenFamilyHeader';
-import WrapperBalanceCoinRow from '../WrapperBalanceCoinRow';
 import { Text } from '@rainbow-me/design-system';
 
 let containerCount = 0;
