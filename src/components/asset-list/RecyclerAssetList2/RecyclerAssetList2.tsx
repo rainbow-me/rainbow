@@ -56,6 +56,7 @@ import { Text } from '@rainbow-me/design-system';
 import assertNever from '@rainbow-me/helpers/assertNever';
 import {
   useCoinListEdited,
+  useOpenFamilies,
   useOpenInvestmentCards,
   useOpenSavings,
   useOpenSmallBalances,
@@ -105,7 +106,7 @@ const ViewDimensions: Record<CellType, Dim> = {
   [CellType.LOADING_ASSETS]: { height: AssetListHeaderHeight },
 };
 
-type BaseCellType = { type: CellType; uid: string };
+type BaseCellType = { type: CellType; uid: string; hidden?: boolean };
 
 type SavingsHeaderExtraData = { type: CellType.SAVINGS_HEADER; value: string };
 type SavingExtraData = { type: CellType.SAVINGS; address: string };
@@ -257,7 +258,6 @@ const getLayoutProvider = (briefSectionsData: BaseCellType[]) =>
       if (ViewDimensions[type]) {
         dim.height = ViewDimensions[type].height;
         dim.width = ViewDimensions[type].width || dim.width;
-        return;
       }
     }
   );
@@ -267,11 +267,8 @@ function useMemoBriefSectionData() {
   const { isSmallBalancesOpen } = useOpenSmallBalances();
   const { isSavingsOpen } = useOpenSavings();
   const { isInvestmentCardsOpen } = useOpenInvestmentCards();
-
   const { isCoinListEdited } = useCoinListEdited();
-  const openFamilyTabs = useSelector(
-    ({ openStateSettings }) => openStateSettings.openFamilyTabs
-  );
+  const { openFamilies } = useOpenFamilies();
 
   const result = useDeepCompareMemo(() => {
     let afterDivider = false;
@@ -304,7 +301,8 @@ function useMemoBriefSectionData() {
         if (data.type === CellType.FAMILY_HEADER) {
           const name = (data as NFTFamilyExtraData).name;
           const showcase = name === 'Showcase';
-          isGroupOpen = openFamilyTabs[name + (showcase ? '-showcase' : '')];
+          console.log(openFamilies, name)
+          isGroupOpen = openFamilies[name + (showcase ? '-showcase' : '')];
         }
 
         if (data.type === CellType.NFT) {
@@ -335,7 +333,7 @@ function useMemoBriefSectionData() {
     isSavingsOpen,
     isInvestmentCardsOpen,
     isCoinListEdited,
-    openFamilyTabs,
+    openFamilies,
   ]);
   const memoizedResult = useDeepCompareMemo(() => result, [result]);
   const additionalData = briefSectionsData.reduce((acc, data) => {
@@ -403,7 +401,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       dataProvider={currentDataProvider}
       externalScrollView={ExternalScrollViewWithRef}
       layoutProvider={layoutProvider}
-      renderAheadOffset={ios ? 1000 : 2000}
+      renderAheadOffset={2000}
       // @ts-ignore
       rowRenderer={rowRenderer}
     />

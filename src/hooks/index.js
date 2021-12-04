@@ -53,6 +53,7 @@ export { default as useUniqueToken } from './useUniqueToken';
 export { default as useOpenInvestmentCards } from './useOpenInvestmentCards';
 export { default as useOpenSavings } from './useOpenSavings';
 export { default as useOpenSmallBalances } from './useOpenSmallBalances';
+export { default as useOpenFamilies } from './useOpenFamilies';
 export { default as usePrevious } from './usePrevious';
 export { default as usePurchaseTransactionStatus } from './usePurchaseTransactionStatus';
 export { default as usePortfolios } from './usePortfolios';

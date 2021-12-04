@@ -1,16 +1,14 @@
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setOpenInvestmentCards } from '../redux/openStateSettings';
+import { useMMKVBoolean } from 'react-native-mmkv';
 
-export default function useOpenInvestmentCards() {
-  const dispatch = useDispatch();
-  const isInvestmentCardsOpen = useSelector(
-    ({ openStateSettings: { openInvestmentCards } }) => openInvestmentCards
+export default function useOpenSavings() {
+  const [isInvestmentCardsOpen, setIsInvestmentCardsOpen] = useMMKVBoolean(
+    'investments-open'
   );
 
   const toggleOpenInvestmentCards = useCallback(
-    () => dispatch(setOpenInvestmentCards(!isInvestmentCardsOpen)),
-    [dispatch, isInvestmentCardsOpen]
+    () => setIsInvestmentCardsOpen(prev => !prev),
+    [setIsInvestmentCardsOpen]
   );
 
   return {

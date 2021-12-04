@@ -5,6 +5,7 @@ import {
   addShowcaseToken as rawAddShowcaseToken,
   removeShowcaseToken as rawRemoveShowcaseToken,
 } from '../redux/showcaseTokens';
+import useOpenFamilies from './useOpenFamilies';
 import useWallets from './useWallets';
 import useWebData from './useWebData';
 
@@ -12,6 +13,7 @@ export default function useShowcaseTokens() {
   const dispatch = useDispatch();
   const { updateWebShowcase } = useWebData();
   const { isReadOnlyWallet } = useWallets();
+  const { updateOpenFamilies } = useOpenFamilies();
 
   const showcaseTokens = useSelector(
     state => state.showcaseTokens.showcaseTokens
@@ -20,10 +22,16 @@ export default function useShowcaseTokens() {
   const addShowcaseToken = useCallback(
     async asset => {
       dispatch(rawAddShowcaseToken(asset));
-      dispatch(setOpenFamilyTabs({ index: 'Showcase', state: true }));
+      updateOpenFamilies({ 'Showcase-showcase': true });
       !isReadOnlyWallet && updateWebShowcase([...showcaseTokens, asset]);
     },
-    [dispatch, isReadOnlyWallet, updateWebShowcase, showcaseTokens]
+    [
+      dispatch,
+      updateOpenFamilies,
+      isReadOnlyWallet,
+      updateWebShowcase,
+      showcaseTokens,
+    ]
   );
 
   const removeShowcaseToken = useCallback(
