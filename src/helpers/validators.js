@@ -1,6 +1,5 @@
 import { isValidAddress } from 'ethereumjs-util';
 import { parseDomain, ParseResultType } from 'parse-domain';
-// eslint-disable-next-line import/no-cycle
 import {
   isHexStringIgnorePrefix,
   isValidMnemonic,
