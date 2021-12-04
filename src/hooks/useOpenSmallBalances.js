@@ -10,9 +10,9 @@ export default function useOpenSmallBalances() {
 
   useEffect(() => {
     if (stagger) {
-      setTimeout(() => setStagger(false), 1000);
+      setTimeout(() => setStagger(false), 400);
     }
-  }, [stagger]);
+  }, [setStagger, stagger]);
 
   const toggleOpenSmallBalances = useCallback(() => {
     if (!isSmallBalancesOpen) {
