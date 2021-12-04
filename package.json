@@ -67,7 +67,6 @@
     "@ethersproject/providers": "5.4.0",
     "@ethersproject/random": "5.4.0",
     "@ethersproject/shims": "5.4.0",
-    "@ethersproject/signing-key": "5.4.0",
     "@ethersproject/solidity": "5.4.0",
     "@ethersproject/transactions": "5.4.0",
     "@ethersproject/units": "5.4.0",
@@ -361,8 +360,7 @@
       "simulator": {
         "type": "ios.simulator",
         "device": {
-          "type": "iPhone 11 Pro Max",
-          "os": "13.7"
+          "type": "iPhone 11 Pro Max"
         }
       }
     },

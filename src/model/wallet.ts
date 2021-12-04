@@ -1,13 +1,7 @@
 import { TransactionRequest } from '@ethersproject/abstract-provider';
-import {
-  arrayify,
-  BytesLike,
-  Hexable,
-  joinSignature,
-} from '@ethersproject/bytes';
+import { arrayify, BytesLike, Hexable } from '@ethersproject/bytes';
 import { HDNode } from '@ethersproject/hdnode';
 import { Provider } from '@ethersproject/providers';
-import { SigningKey } from '@ethersproject/signing-key';
 import { Transaction } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
 import {
