@@ -104,7 +104,7 @@ const depositCompound = async (
     status: TransactionStatus.depositing,
     to: deposit?.to,
     type: TransactionType.deposit,
-    value: deposit.value,
+    value: toHex(deposit.value),
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
   // Disable the txn watcher because Compound can silently fail
