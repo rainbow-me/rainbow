@@ -49,7 +49,7 @@ import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
-import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
+import { convertAmountToNativeDisplay, handleSignificantDecimals } from '@rainbow-me/utilities';
 import {
   buildRainbowUrl,
   ethereumUtils,
@@ -57,6 +57,7 @@ import {
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
 import TokenHistory from './token-history/TokenHistory';
+import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 const NftExpandedStateSection = styled(ExpandedStateSection).attrs({
   isNft: true,
@@ -145,8 +146,10 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
     usePersistentDominantColorFromImage(asset.image_url).result ||
     colors.paleBlue;
 
-  const lastSalePrice = lastPrice || 'None';
   const priceOfEth = ethereumUtils.getEthPriceUnit();
+  const lastSalePrice = lastPrice
+    ? `${handleSignificantDecimals(parseFloat(lastPrice), supportedNativeCurrencies.ETH.decimals)} ${supportedNativeCurrencies.ETH.currency}`
+    : 'None';
 
   const textColor = useMemo(() => {
     const contrastWithWhite = c.contrast(imageColor, colors.whiteLabel);
@@ -336,7 +339,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
                 }
               >
                 {showCurrentPriceInEth ||
-                nativeCurrency === 'ETH' ||
+                nativeCurrency === supportedNativeCurrencies.ETH.currency ||
                 !currentPrice
                   ? currentPrice || lastSalePrice
                   : convertAmountToNativeDisplay(
@@ -362,7 +365,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
                 weight={floorPrice === 'None' ? 'bold' : 'heavy'}
               >
                 {showFloorInEth ||
-                nativeCurrency === 'ETH' ||
+                nativeCurrency === supportedNativeCurrencies.ETH.currency ||
                 floorPrice === 'None'
                   ? floorPrice
                   : convertAmountToNativeDisplay(
