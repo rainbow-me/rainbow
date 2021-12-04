@@ -9,7 +9,7 @@ import { usePrevious } from '@rainbow-me/hooks';
 
 const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';
-const DELAY_THRESHOLD = 200;
+const DELAY_THRESHOLD = 100;
 
 const Wrapper = styled(Row).attrs(() => ({}))``;
 
