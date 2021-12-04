@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useMMKVBoolean } from 'react-native-mmkv';
 
 export default function useOpenSmallBalances() {
@@ -6,13 +6,26 @@ export default function useOpenSmallBalances() {
     'small-balances-open'
   );
 
-  const toggleOpenSmallBalances = useCallback(
-    () => setIsSmallBalancesOpen(prev => !prev),
-    [setIsSmallBalancesOpen]
-  );
+  const [stagger, setStagger] = useMMKVBoolean('small-balances-open-stagger');
+
+  useEffect(() => {
+    if (stagger) {
+      setTimeout(() => setStagger(false), 1000);
+    }
+  }, [stagger]);
+
+  const toggleOpenSmallBalances = useCallback(() => {
+    if (!isSmallBalancesOpen) {
+      setStagger(true);
+    }
+    setIsSmallBalancesOpen(prev => {
+      return !prev;
+    });
+  }, [isSmallBalancesOpen, setIsSmallBalancesOpen]);
 
   return {
     isSmallBalancesOpen,
+    stagger,
     toggleOpenSmallBalances,
   };
 }

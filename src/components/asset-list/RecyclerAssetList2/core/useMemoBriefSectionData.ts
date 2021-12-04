@@ -11,7 +11,7 @@ import {
 
 export default function useMemoBriefSectionData() {
   const { briefSectionsData } = useWalletSectionsData();
-  const { isSmallBalancesOpen } = useOpenSmallBalances();
+  const { isSmallBalancesOpen, stagger } = useOpenSmallBalances();
   const { isSavingsOpen } = useOpenSavings();
   const { isInvestmentCardsOpen } = useOpenInvestmentCards();
   const { isCoinListEdited } = useCoinListEdited();
@@ -22,6 +22,8 @@ export default function useMemoBriefSectionData() {
     let isGroupOpen = true;
     const stickyHeaders = [];
     let index = 0;
+    // load firstly 12, then the rest after 1 sec
+    let numberOfSmallBalancesAllowed = stagger ? 12 : briefSectionsData.length;
     const briefSectionsDataFiltered = briefSectionsData
       .filter(data => {
         if (
@@ -37,8 +39,17 @@ export default function useMemoBriefSectionData() {
         ) {
           return false;
         }
+
         if (data.type === CellType.COIN_DIVIDER) {
           afterDivider = true;
+        }
+
+        if (afterDivider && data.type === CellType.COIN) {
+          numberOfSmallBalancesAllowed--;
+          console.log("TTTT", stagger, numberOfSmallBalancesAllowed);
+          if (numberOfSmallBalancesAllowed <= 0) {
+            return false;
+          }
         }
 
         if (data.type === CellType.SAVINGS && !isSavingsOpen) {
@@ -80,6 +91,7 @@ export default function useMemoBriefSectionData() {
     isInvestmentCardsOpen,
     isCoinListEdited,
     openFamilies,
+    stagger,
   ]);
   const memoizedResult = useDeepCompareMemo(() => result, [result]);
   const additionalData = briefSectionsData.reduce((acc, data) => {
