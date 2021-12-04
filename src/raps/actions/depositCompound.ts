@@ -1,7 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
-import { get } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
 import {
   Asset,
@@ -47,7 +46,7 @@ const depositCompound = async (
   const tokenToDeposit = requiresSwap ? outputCurrency : inputCurrency;
 
   const { accountAddress, network } = store.getState().settings;
-  const { gasPrices, selectedGasPrice } = store.getState().gas;
+  const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
   logger.log(`[${actionName}] amount`, amountToDeposit);
   const rawInputAmount = convertAmountToRawAmount(
     amountToDeposit,
@@ -55,11 +54,20 @@ const depositCompound = async (
   );
   logger.log(`[${actionName}] raw input amount`, rawInputAmount);
 
-  let gasPrice = selectedGasPrice?.value?.amount;
-  if (!gasPrice) {
-    gasPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
+  let maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
+  let maxPriorityFeePerGas =
+    selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
+
+  if (!maxFeePerGas) {
+    maxFeePerGas = gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount;
   }
-  logger.log(`[${actionName}] gas price`, gasPrice);
+  if (!maxPriorityFeePerGas) {
+    maxPriorityFeePerGas =
+      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxPriorityFeePerGas?.amount;
+  }
+
+  logger.log(`[${actionName}] max fee per gas`, maxFeePerGas);
+  logger.log(`[${actionName}] max priority fee per gas`, maxPriorityFeePerGas);
 
   const cTokenContract =
     savingsAssetsListByUnderlying[network][tokenToDeposit.address]
@@ -76,7 +84,8 @@ const depositCompound = async (
 
   const transactionParams = {
     gasLimit: getDepositGasLimit(tokenToDeposit),
-    gasPrice: toHex(gasPrice) || undefined,
+    maxFeePerGas: toHex(maxFeePerGas) || undefined,
+    maxPriorityFeePerGas: toHex(maxPriorityFeePerGas) || undefined,
     nonce: baseNonce ? toHex(baseNonce + index) : undefined,
   };
 
@@ -97,14 +106,15 @@ const depositCompound = async (
     data: deposit.data,
     from: accountAddress,
     gasLimit: transactionParams.gasLimit,
-    gasPrice: transactionParams.gasPrice,
     hash: deposit?.hash,
+    maxFeePerGas: transactionParams.maxFeePerGas,
+    maxPriorityFeePerGas: transactionParams.maxPriorityFeePerGas,
     nonce: deposit?.nonce,
     protocol: ProtocolType.compound,
     status: TransactionStatus.depositing,
     to: deposit?.to,
     type: TransactionType.deposit,
-    value: deposit.value,
+    value: toHex(deposit.value),
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
   // Disable the txn watcher because Compound can silently fail
