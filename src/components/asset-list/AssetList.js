@@ -7,7 +7,7 @@ import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../fab';
 import { ListFooter } from '../list';
 import EmptyAssetList from './EmptyAssetList';
 import RecyclerAssetList from './RecyclerAssetList';
-import RecyclerAssetList2 from './RecyclerAssetList2/RecyclerAssetList2';
+import RecyclerAssetList2 from './RecyclerAssetList2';
 
 const FabSizeWithPadding =
   FloatingActionButtonSize + FabWrapperBottomPosition * 2;

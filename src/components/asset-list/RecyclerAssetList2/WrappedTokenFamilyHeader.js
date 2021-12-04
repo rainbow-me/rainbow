@@ -1,12 +1,9 @@
-import {useOpenFamilies} from "@rainbow-me/hooks";
-import {setOpenFamilyTabs} from "@rainbow-me/redux/openStateSettings";
-import React, { useCallback } from 'react'
-import {TokenFamilyHeader} from "../../token-family";
-import { useSelector, useDispatch } from 'react-redux';
-
+import React, { useCallback } from 'react';
+import { TokenFamilyHeader } from '../../token-family';
+import { useOpenFamilies } from '@rainbow-me/hooks';
 
 export default function WrappedTokenFamilyHeader({ name, total, image }) {
-  const showcase = (name === 'Showcase')
+  const showcase = name === 'Showcase';
 
   const { openFamilies, updateOpenFamilies } = useOpenFamilies();
   const isFamilyOpen = openFamilies[name + (showcase ? '-showcase' : '')];
@@ -19,15 +16,13 @@ export default function WrappedTokenFamilyHeader({ name, total, image }) {
     [name, isFamilyOpen, showcase, updateOpenFamilies]
   );
 
-
   return (
     <TokenFamilyHeader
-      title={name}
+      childrenAmount={total}
+      familyImage={image}
       isOpen={isFamilyOpen}
       onPress={handleToggle}
-      familyImage={image}
-      childrenAmount={total}
-
+      title={name}
     />
-  )
+  );
 }

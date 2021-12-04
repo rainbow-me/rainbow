@@ -1,28 +1,21 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { sortBy } from 'lodash';
-import { number } from 'prop-types';
 import React, {
-  LegacyRef,
   MutableRefObject,
+  ReactElement,
   useCallback,
   useContext,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import { Animated as RNAnimated, View } from 'react-native';
-
-import Animated, {
-  Extrapolate,
-  interpolate,
-  ScrollView,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
-import { useRecyclerAssetListPosition } from './RecyclerAssetList2';
+import { Animated as RNAnimated, ScrollView } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { useRecyclerAssetListPosition } from './Contexts';
 
 const Context = React.createContext<
   | {
-      scrollViewRef: MutableRefObject<ScrollView>;
+      scrollViewRef: MutableRefObject<ScrollView | undefined>;
       interpolationsRanges: Record<string, { range: number[]; last: boolean }>;
       setMeasures: (position: number, height: number, name: string) => void;
     }
@@ -66,6 +59,7 @@ export function StickyHeader({
   );
   const ref = useRef<Animated.View>() as MutableRefObject<Animated.View>;
   const onLayout = useCallback(() => {
+    // @ts-ignore
     const nativeScrollRef = scrollViewRef?.current?.getNativeScrollRef();
     // @ts-ignore
     ref.current?.measureLayout?.(
@@ -87,11 +81,7 @@ export function StickyHeader({
   );
 }
 
-export function StickyHeaderManager({
-  children,
-}: {
-  children: React.ReactChildren;
-}) {
+export function StickyHeaderManager({ children }: { children: ReactElement }) {
   const [positions, setPositions] = useState<
     Record<string, { height: number; position: number; name: string }>
   >({});

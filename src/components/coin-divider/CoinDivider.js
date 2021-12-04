@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import {useRecyclerAssetListHelpers} from "../asset-list/RecyclerAssetList2/RecyclerAssetList2";
 import { Row, RowWithMargins } from '../layout';
 import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 import CoinDividerEditButton from './CoinDividerEditButton';
@@ -48,7 +47,9 @@ const EditButtonWrapper = styled(Row).attrs({
   right: 0;
 `;
 
-export default function CoinDivider({ balancesSum, isSticky, onEndEdit }) {
+const onEndEdit = () => {}; // TODO osdnk
+
+export default function CoinDivider({ balancesSum }) {
   const { nativeCurrency } = useAccountSettings();
   const dispatch = useDispatch();
   const assets = useSelector(({ data: { assets } }) => assets);
@@ -99,7 +100,7 @@ export default function CoinDivider({ balancesSum, isSticky, onEndEdit }) {
   useEffect(() => () => clearSelectedCoins(), [clearSelectedCoins]);
 
   return (
-    <Container deviceWidth={deviceWidth} isSticky={isSticky}>
+    <Container deviceWidth={deviceWidth}>
       <Row>
         <View pointerEvents={isCoinListEdited ? 'none' : 'auto'}>
           <CoinDividerOpenButton

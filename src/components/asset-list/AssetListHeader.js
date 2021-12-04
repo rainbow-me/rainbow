@@ -10,13 +10,13 @@ import { Icon } from '../icons';
 import { Centered, Row } from '../layout';
 import { ListHeader, ListHeaderHeight } from '../list';
 import { H1, TruncatedText } from '../text';
-import { useRecyclerAssetListPosition } from './RecyclerAssetList2/RecyclerAssetList2';
+import { useRecyclerAssetListPosition } from './RecyclerAssetList2';
 import { useTheme } from '@rainbow-me/context';
 import { useAccountProfile, useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { fonts, position } from '@rainbow-me/styles';
-import {StickyHeader} from "./RecyclerAssetList2/StickyHeaders";
+import {StickyHeader} from "./RecyclerAssetList2/core/StickyHeaders";
 
 export const AssetListHeaderHeight = ListHeaderHeight + DividerSize;
 
