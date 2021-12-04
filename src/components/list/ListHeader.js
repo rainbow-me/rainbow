@@ -64,7 +64,7 @@ const Content = styled(Row).attrs({
 `;
 
 const StickyBackgroundBlocker = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.transparent};
+  background-color: ${({ theme: { colors } }) => colors.white};
   height: ${({ isEditMode }) => (isEditMode ? ListHeaderHeight : 0)};
   top: ${({ isEditMode }) => (isEditMode ? -40 : 0)};
   width: ${({ deviceDimensions }) => deviceDimensions.width};
@@ -74,7 +74,6 @@ export default function ListHeader({
   children,
   contextMenuOptions,
   isCoinListEdited,
-  isSticky,
   showDivider = true,
   title,
   titleRenderer = H1,
@@ -122,7 +121,7 @@ export default function ListHeader({
     return (
       <Fragment>
         <BackgroundGradient />
-        <Content isSticky={isSticky}>
+        <Content>
           {title && (
             <Row align="center">
               {createElement(titleRenderer, { children: title })}
@@ -141,12 +140,10 @@ export default function ListHeader({
           {children}
         </Content>
         {showDivider && <Divider color={colors.rowDividerLight} />}
-        {!isSticky && title !== 'Balances' && (
-          <StickyBackgroundBlocker
-            deviceDimensions={deviceDimensions}
-            isEditMode={isCoinListEdited}
-          />
-        )}
+        <StickyBackgroundBlocker
+          deviceDimensions={deviceDimensions}
+          isEditMode={isCoinListEdited}
+        />
       </Fragment>
     );
   }

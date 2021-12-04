@@ -48,6 +48,7 @@ export function StickyHeader({
   const position = useRecyclerAssetListPosition();
   const oldAnimatedStyle = useMemo(
     () => ({
+      backgroundColor: 'white',
       transform: range
         ? [
             {

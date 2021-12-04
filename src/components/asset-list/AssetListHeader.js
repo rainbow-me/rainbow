@@ -86,7 +86,6 @@ const WalletSelectButton = ({
 const AssetListHeader = ({
   contextMenuOptions,
   isCoinListEdited,
-  isSticky,
   title,
   totalValue,
   ...props
@@ -131,7 +130,6 @@ const AssetListHeader = ({
       <ListHeader
         contextMenuOptions={contextMenuOptions}
         isCoinListEdited={isCoinListEdited}
-        isSticky
         title={title}
         totalValue={totalValue}
         {...props}
