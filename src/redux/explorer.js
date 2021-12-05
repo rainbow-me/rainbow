@@ -483,7 +483,7 @@ const l2AddressAssetsReceived = (message, network) => (dispatch, getState) => {
     },
   };
 
-  dispatch(addressAssetsReceived(updatedMessage, network));
+  dispatch(addressAssetsReceived(updatedMessage, false, false, false, network));
 };
 
 const listenOnAddressMessages = socket => dispatch => {
