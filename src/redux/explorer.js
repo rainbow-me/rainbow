@@ -430,6 +430,7 @@ export const explorerInitL2 = (network = null) => (dispatch, getState) => {
         break;
       default:
         // Start watching all L2 assets
+        dispatch(fetchAssetsFromRefraction());
         dispatch(optimismExplorerInit());
     }
   }
