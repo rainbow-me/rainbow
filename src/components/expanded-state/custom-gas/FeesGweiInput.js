@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../../animations';
 import { Row } from '../../layout';
@@ -9,7 +10,7 @@ import { usePrevious } from '@rainbow-me/hooks';
 
 const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';
-const DELAY_THRESHOLD = 100;
+const DELAY_THRESHOLD = 69;
 
 const Wrapper = styled(Row).attrs(() => ({}))``;
 
@@ -32,8 +33,9 @@ const GweiStepButton = ({
     <ButtonPressAnimation
       onLongPress={onLongPress}
       onLongPressEnded={onLongPressEnded}
-      onPress={onPress}
+      onPressStart={onPress}
       shouldLongPressEndPress={shouldLongPressEndPress}
+      useLateHaptic={false}
     >
       <StepButton color={buttonColor}>{type === 'plus' ? '􀁍' : '􀁏'}</StepButton>
     </ButtonPressAnimation>
@@ -103,8 +105,14 @@ export default function FeesGweiInput({
     if (!prevTrigger && trigger) {
       if (actionType === PLUS_ACTION_TYPE) {
         plusAction();
+        if (!android) {
+          ReactNativeHapticFeedback.trigger('selection');
+        }
       } else if (actionType === MINUS_ACTION_TYPE) {
         minusAction();
+        if (!android) {
+          ReactNativeHapticFeedback.trigger('selection');
+        }
       }
     }
   }, [trigger, prevTrigger, actionType, plusAction, minusAction]);
