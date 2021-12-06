@@ -55,14 +55,14 @@ const DiscoverSheet = (_, forwardedRef) => {
       addOnCrossMagicBorderListener(listener) {
         listeners.current.push(listener);
         return () =>
-          listeners.current.splice(listeners.current.indexOf(listener), 1);
+          listeners.current.splice(listeners.current?.indexOf(listener), 1);
       },
       jumpToLong() {
-        bottomSheetModalRef.current.expand();
+        bottomSheetModalRef.current?.expand();
       },
       jumpToShort() {
         sheet.current.scrollTo({ animated: false, x: 0, y: 0 });
-        bottomSheetModalRef.current.collapse();
+        bottomSheetModalRef.current?.collapse();
       },
       onFabSearch,
       ...headerButtonsHandlers,
