@@ -252,10 +252,10 @@ export default function TransactionConfirmationScreen() {
         network,
         accountInfo.address
       );
-      setNativeAsset(asset);
+      provider && setNativeAsset(asset);
     };
     getNativeAsset();
-  }, [accountInfo.address, allAssets, network]);
+  }, [accountInfo.address, allAssets, network, provider]);
 
   const {
     gasLimit,
