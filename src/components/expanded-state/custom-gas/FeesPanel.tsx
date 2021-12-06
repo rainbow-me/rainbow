@@ -7,10 +7,12 @@ import styled, { useTheme } from 'styled-components';
 import { ButtonPressAnimation } from '../../animations';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './FeesGweiInput' was resolved to '/Users/n... Remove this comment to see the full error message
 import FeesGweiInput from './FeesGweiInput';
 import {
   calculateMinerTipAddDifference,
   calculateMinerTipSubstDifference,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/gas' or it... Remove this comment to see the full error message
 } from '@rainbow-me/helpers/gas';
 import {
   add,
@@ -18,11 +20,17 @@ import {
   isZero,
   multiply,
   toFixedDecimals,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/utilities'... Remove this comment to see the full error message
 } from '@rainbow-me/helpers/utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useGas } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/parsers' or its co... Remove this comment to see the full error message
 import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { gasUtils } from '@rainbow-me/utils';
 
 const Wrapper = styled(KeyboardAvoidingView)``;
@@ -95,7 +103,7 @@ export default function FeesPanel({
   currentGasTrend,
   colorForAsset,
   onCustomGasFocus,
-}) {
+}: any) {
   const {
     selectedGasFee,
     currentBlockParams,
@@ -106,6 +114,7 @@ export default function FeesPanel({
   } = useGas();
 
   const { navigate, dangerouslyGetState } = useNavigation();
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'colors' does not exist on type 'DefaultT... Remove this comment to see the full error message
   const { colors } = useTheme();
 
   const [customFees, setCustomFees] = useState({
@@ -237,11 +246,24 @@ export default function FeesPanel({
       const openHelper = () => openGasHelper(type);
 
       return (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <PanelColumn>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ButtonPressAnimation onPress={openHelper}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Row>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <PanelLabel>
                 {`${label} `}
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Label color={color} weight="bold">
                   {text}
                 </Label>
@@ -416,7 +438,9 @@ export default function FeesPanel({
     (error, warning) => {
       if (!selectedOptionIsCustom) return;
       return (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         (error && <PanelError>{error}</PanelError>) ||
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         (warning && <PanelWarning>{warning}</PanelWarning>)
       );
     },
@@ -444,6 +468,7 @@ export default function FeesPanel({
   useEffect(() => {
     // validate not zero
     if (!maxBaseFee || isZero(maxBaseFee)) {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '"1 Gwei to avoid failure"' is no... Remove this comment to see the full error message
       setMaxBaseFeeError('1 Gwei to avoid failure');
     } else {
       setMaxBaseFeeError(null);
@@ -451,10 +476,12 @@ export default function FeesPanel({
     if (
       greaterThan(multiply(MAX_BASE_FEE_RANGE[0], currentBaseFee), maxBaseFee)
     ) {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '"Lower than suggested"' is not a... Remove this comment to see the full error message
       setMaxBaseFeeWarning('Lower than suggested');
     } else if (
       greaterThan(maxBaseFee, multiply(MAX_BASE_FEE_RANGE[1], currentBaseFee))
     ) {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '"Higher than necessary"' is not ... Remove this comment to see the full error message
       setMaxBaseFeeWarning('Higher than necessary');
     } else {
       setMaxBaseFeeWarning(null);
@@ -464,6 +491,7 @@ export default function FeesPanel({
   useEffect(() => {
     // validate not zero
     if (!maxPriorityFee || isZero(maxPriorityFee)) {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '"1 Gwei to avoid failure"' is no... Remove this comment to see the full error message
       setMaxPriorityFeeError('1 Gwei to avoid failure');
     } else {
       setMaxPriorityFeeError(null);
@@ -477,6 +505,7 @@ export default function FeesPanel({
         maxPriorityFee
       )
     ) {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '"Lower than suggested"' is not a... Remove this comment to see the full error message
       setMaxPriorityFeeWarning('Lower than suggested');
     } else if (
       greaterThan(
@@ -487,6 +516,7 @@ export default function FeesPanel({
         )
       )
     ) {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '"Higher than necessary"' is not ... Remove this comment to see the full error message
       setMaxPriorityFeeWarning('Higher than necessary');
     } else {
       setMaxPriorityFeeWarning(null);
@@ -494,23 +524,48 @@ export default function FeesPanel({
   }, [gasFeeParamsBySpeed, maxPriorityFee]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Wrapper>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <PanelRowThin>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <PanelColumn />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <PanelColumn>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <GasTrendHeader color={GAS_TRENDS[currentGasTrend].color}>
             {GAS_TRENDS[currentGasTrend].label}
           </GasTrendHeader>
         </PanelColumn>
       </PanelRowThin>
-
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <PanelRow justify="space-between" marginBottom={18}>
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but
+        got 2.
         {renderRowLabel('Current base fee', trendType)}
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <PanelColumn>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <PanelLabel>{formattedBaseFee}</PanelLabel>
         </PanelColumn>
       </PanelRow>
-
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <MiddlePanelRow>
         {renderRowLabel(
           'Max base fee',
@@ -518,7 +573,13 @@ export default function FeesPanel({
           maxBaseFeeError,
           maxBaseFeeWarning
         )}
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <PanelColumn>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <FeesGweiInput
             buttonColor={colorForAsset}
             minusAction={substMaxFee}
@@ -530,10 +591,15 @@ export default function FeesPanel({
           />
         </PanelColumn>
       </MiddlePanelRow>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Animated.View style={maxBaseWarningsStyle}>
         {renderWarning(maxBaseFeeError, maxBaseFeeWarning)}
       </Animated.View>
-
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <MiddlePanelRow>
         {renderRowLabel(
           'Miner tip',
@@ -541,7 +607,13 @@ export default function FeesPanel({
           maxPriorityFeeError,
           maxPriorityFeeWarning
         )}
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <PanelColumn>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <FeesGweiInput
             buttonColor={colorForAsset}
             minusAction={substMinerTip}
@@ -553,15 +625,32 @@ export default function FeesPanel({
           />
         </PanelColumn>
       </MiddlePanelRow>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Animated.View style={maxPriorityWarningsStyle}>
         {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
       </Animated.View>
-
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <PanelRow marginTop={15}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <PanelColumn>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <PanelLabel>Max transaction fee</PanelLabel>
         </PanelColumn>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <PanelColumn>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <PanelLabel>{maxFee}</PanelLabel>
         </PanelColumn>
       </PanelRow>

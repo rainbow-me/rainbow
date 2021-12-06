@@ -1,12 +1,16 @@
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module '../references/meta/tokens-meta... Remove this comment to see the full error message
 import OfflineMetadata from '../references/meta/tokens-metadata.json';
 import useDimensions from './useDimensions';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/imageMetadat... Remove this comment to see the full error message
 import { updateImageMetadataCache } from '@rainbow-me/redux/imageMetadata';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { getDominantColorFromImage } from '@rainbow-me/utils';
 
-export default function useImageMetadata(imageUrl) {
+export default function useImageMetadata(imageUrl: any) {
   const dispatch = useDispatch();
   const { width: deviceWidth } = useDimensions();
 

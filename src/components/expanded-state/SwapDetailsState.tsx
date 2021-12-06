@@ -24,9 +24,13 @@ import {
   usePriceImpactDetails,
   useSwapCurrencies,
   useSwapDerivedOutputs,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding, position } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { abbreviations } from '@rainbow-me/utils';
 
 const springConfig = {
@@ -65,6 +69,7 @@ function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();
   const isFocused = useIsFocused();
   useEffect(() => {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android && params?.toggleGestureEnabled?.(!isFocused);
   }, [isFocused, params]);
 }
@@ -86,9 +91,10 @@ function useSwapDetailsClipboardState() {
 export default function SwapDetailsState({
   confirmButtonProps,
   restoreFocusOnSwapModal,
-}) {
+}: any) {
   const { network } = useAccountSettings();
   const { setParams } = useNavigation();
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'longFormHeight' does not exist on type '... Remove this comment to see the full error message
   const { params: { longFormHeight } = {} } = useRoute();
   const { outputCurrency } = useSwapCurrencies();
 
@@ -136,19 +142,34 @@ export default function SwapDetailsState({
   }, [contentScroll, sheetHeightWithoutKeyboard, setParams]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <SheetKeyboardAnimation
       as={AnimatedContainer}
       isKeyboardVisible={false}
       translateY={contentScroll}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <SlackSheet
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
         additionalTopPadding={android}
         borderRadius={39}
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
         contentHeight={ios ? longFormHeight : sheetHeightWithoutKeyboard}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Header>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <SheetTitle weight="heavy">Review</SheetTitle>
         </Header>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <SwapDetailsMasthead
           inputAmount={inputAmount}
           inputAmountDisplay={inputAmountDisplay}
@@ -159,6 +180,9 @@ export default function SwapDetailsState({
           outputPriceValue={outputPriceValue}
           priceImpactColor={priceImpactColor}
         />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <SwapDetailsSlippageMessage
           isHighPriceImpact={isHighPriceImpact}
           onLayout={setSlippageMessageHeight}
@@ -166,6 +190,9 @@ export default function SwapDetailsState({
           priceImpactNativeAmount={priceImpactNativeAmount}
           priceImpactPercentDisplay={priceImpactPercentDisplay}
         />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <SwapDetailsContent
           isHighPriceImpact={isHighPriceImpact}
           onCopySwapDetailsText={onCopySwapDetailsText}
@@ -175,11 +202,20 @@ export default function SwapDetailsState({
           priceImpactPercentDisplay={priceImpactPercentDisplay}
           tradeDetails={tradeDetails}
         />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Footer onLayout={setFooterHeight}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ConfirmExchangeButton
             {...confirmButtonProps}
             testID="swap-details-confirm-button"
           />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <GasSpeedButton
             asset={outputCurrency}
             currentNetwork={network}
@@ -187,7 +223,13 @@ export default function SwapDetailsState({
             theme="light"
           />
         </Footer>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ToastPositionContainer>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <CopyToast copiedText={copiedText} copyCount={copyCount} />
         </ToastPositionContainer>
       </SlackSheet>

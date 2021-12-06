@@ -1,7 +1,7 @@
 import { verifyMessage, Wallet } from '@ethersproject/wallet';
 import { generateMnemonic } from 'bip39';
 import { default as LibWallet } from 'ethereumjs-wallet';
-// @ts-ignore
+// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import { loadString, saveString } from '../model/keychain';
 import { loadWallet, publicAccessControlOptions } from '../model/wallet';
@@ -9,9 +9,13 @@ import {
   signingWalletAddress,
   signingWallet as signingWalletKeychain,
 } from '../utils/keychainConstants';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { EthereumAddress } from '@rainbow-me/entities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/aesEncryp... Remove this comment to see the full error message
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils, logger } from '@rainbow-me/utils';
 
 export async function getPublicKeyOfTheSigningWalletAndCreateWalletIfNeeded(): Promise<EthereumAddress> {

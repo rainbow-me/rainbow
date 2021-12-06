@@ -33,12 +33,16 @@ import {
 import { addressHashedColorIndex } from '../utils/profileUtils';
 import * as keychain from './keychain';
 import { PreferenceActionType, setPreference } from './preferences';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { EthereumAddress } from '@rainbow-me/entities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/aesEncryp... Remove this comment to see the full error message
 import AesEncryptor from '@rainbow-me/handlers/aesEncryption';
 import {
   authenticateWithPIN,
   getExistingPIN,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/authentic... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/authentication';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/localstor... Remove this comment to see the full error message
 import { saveAccountEmptyState } from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
   addHexPrefix,
@@ -46,15 +50,25 @@ import {
   isHexStringIgnorePrefix,
   isValidMnemonic,
   web3Provider,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/signingWal... Remove this comment to see the full error message
 import { createSignature } from '@rainbow-me/helpers/signingWallet';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/support' o... Remove this comment to see the full error message
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/walletLoad... Remove this comment to see the full error message
 import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/walletType... Remove this comment to see the full error message
 import { EthereumWalletType } from '@rainbow-me/helpers/walletTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/showcaseToke... Remove this comment to see the full error message
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/store' or it... Remove this comment to see the full error message
 import store from '@rainbow-me/redux/store';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/wallets' or ... Remove this comment to see the full error message
 import { setIsWalletLoading } from '@rainbow-me/redux/wallets';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils } from '@rainbow-me/utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 const encryptor = new AesEncryptor();
@@ -232,9 +246,9 @@ export const loadWallet = async (
     return null;
   }
   if (privateKey) {
-    // @ts-ignore
     return new Wallet(privateKey, provider || web3Provider);
   }
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
   if (ios && showErrorIfNotLoaded) {
     showWalletErrorAlert();
   }
@@ -475,6 +489,7 @@ const loadPrivateKey = async (
       privateKey = get(privateKeyData, 'privateKey', null);
 
       let userPIN = null;
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
       if (android) {
         const hasBiometricsEnabled = await getSupportedBiometryType();
         // Fallback to custom PIN
@@ -618,6 +633,7 @@ export const createWallet = async (
 
     // Android users without biometrics need to secure their keys with a PIN
     let userPIN = null;
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     if (android) {
       const hasBiometricsEnabled = await getSupportedBiometryType();
       // Fallback to custom PIN
@@ -1026,6 +1042,7 @@ export const generateAccount = async (
     }
 
     let userPIN = null;
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     if (android) {
       const hasBiometricsEnabled = await getSupportedBiometryType();
       // Fallback to custom PIN
@@ -1256,6 +1273,7 @@ export const loadSeedPhraseAndMigrateIfNeeded = async (
       const seedData = await getSeedPhrase(id);
       seedPhrase = get(seedData, 'seedphrase', null);
       let userPIN = null;
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
       if (android) {
         const hasBiometricsEnabled = await getSupportedBiometryType();
         // Fallback to custom PIN

@@ -9,13 +9,18 @@ import {
 import useAccountProfile from './useAccountProfile';
 import useAccountSettings from './useAccountSettings';
 import useWallets from './useWallets';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/findWallet... Remove this comment to see the full error message
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/strings' o... Remove this comment to see the full error message
 import { containsEmoji } from '@rainbow-me/helpers/strings';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/walletType... Remove this comment to see the full error message
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/showcaseToke... Remove this comment to see the full error message
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
-const getAccountSymbol = name => {
+const getAccountSymbol = (name: any) => {
   if (!name) {
     return null;
   }
@@ -23,7 +28,7 @@ const getAccountSymbol = name => {
   return accountSymbol;
 };
 
-const wipeNotEmoji = text => {
+const wipeNotEmoji = (text: any) => {
   const characters = new GraphemeSplitter().splitGraphemes(text);
   if (characters.length !== 1) {
     return null;
@@ -37,12 +42,14 @@ export default function useWebData() {
   const { wallets } = useWallets();
 
   const { showcaseTokens, webDataEnabled } = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'showcaseTokens' does not exist on type '... Remove this comment to see the full error message
     ({ showcaseTokens: { webDataEnabled, showcaseTokens } }) => ({
       showcaseTokens,
       webDataEnabled,
     })
   );
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const { accountSymbol, accountColor } = useAccountProfile();
 
@@ -109,6 +116,7 @@ export default function useWebData() {
       if (!webDataEnabled) return;
       const response = await getPreference('showcase', accountAddress);
       // If the showcase is populated, just updated it
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'ids' does not exist on type 'Object'.
       if (response?.ids?.length > 0) {
         setPreference(
           PreferenceActionType.update,
@@ -133,6 +141,7 @@ export default function useWebData() {
         if (webDataEnabled) {
           const response = await getPreference('showcase', accountAddress);
           // If the showcase is populated, nothing to do
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'ids' does not exist on type 'Object'.
           if (response?.ids?.length > 0) {
             logger.log('showcase already initialized. skipping');
           } else {

@@ -1,5 +1,7 @@
 import { Alert } from 'react-native';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { Navigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
 
 export default function watchingAlert() {

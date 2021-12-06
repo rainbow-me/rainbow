@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { isValidAddress } from 'ethereumjs-util';
 import lang from 'i18n-js';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'qs'.... Remove this comment to see the full error message
 import qs from 'qs';
 import { useCallback, useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
@@ -8,17 +9,24 @@ import { PERMISSIONS, request } from 'react-native-permissions';
 import URL from 'url-parse';
 import { Alert } from '../components/alerts';
 import { checkPushNotificationPermissions } from '../model/firebase';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../navigation/Navigation' was resolved to ... Remove this comment to see the full error message
 import { useNavigation } from '../navigation/Navigation';
 import usePrevious from './usePrevious';
 import useWalletConnectConnections from './useWalletConnectConnections';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/validators... Remove this comment to see the full error message
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { Navigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { addressUtils, ethereumUtils, haptics } from '@rainbow-me/utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
-function useScannerState(enabled) {
+function useScannerState(enabled: any) {
   const [isCameraAuthorized, setIsCameraAuthorized] = useState(true);
   const [isScanningEnabled, setIsScanningEnabled] = useState(enabled);
   const wasEnabled = usePrevious(enabled);
@@ -40,6 +48,7 @@ function useScannerState(enabled) {
   }, [enabled]);
 
   useEffect(() => {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
     if (enabled && !wasEnabled && ios) {
       request(PERMISSIONS.IOS.CAMERA)
         .then(permission => {
@@ -72,7 +81,7 @@ function useScannerState(enabled) {
   };
 }
 
-export default function useScanner(enabled) {
+export default function useScanner(enabled: any) {
   const { navigate } = useNavigation();
   const { walletConnectOnSessionRequest } = useWalletConnectConnections();
 
@@ -183,6 +192,7 @@ export default function useScanner(enabled) {
         urlObj?.protocol === 'https:' &&
         urlObj?.pathname?.split('/')?.[1] === 'wc'
       ) {
+        // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
         const { uri } = qs.parse(urlObj.query.substring(1));
         return handleScanWalletConnect(uri);
       }

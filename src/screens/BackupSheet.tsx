@@ -4,6 +4,7 @@ import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { InteractionManager, StatusBar } from 'react-native';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { DelayedAlert } from '../components/alerts';
 import {
@@ -15,18 +16,23 @@ import {
 import { Column } from '../components/layout';
 import { SlackSheet } from '../components/sheet';
 import { cloudPlatform } from '../utils/platform';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/support' o... Remove this comment to see the full error message
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/walletBack... Remove this comment to see the full error message
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import {
   useDimensions,
   useRouteExistsInNavigationState,
   useWalletCloudBackup,
   useWallets,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
 
-const onError = error => DelayedAlert({ title: error }, 500);
+const onError = (error: any) => DelayedAlert({ title: error }, 500);
 
 const AndroidHeight = 400;
 
@@ -37,10 +43,15 @@ export default function BackupSheet() {
   const walletCloudBackup = useWalletCloudBackup();
   const {
     params: {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'longFormHeight' does not exist on type '... Remove this comment to see the full error message
       longFormHeight = 0,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'missingPassword' does not exist on type ... Remove this comment to see the full error message
       missingPassword = null,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'step' does not exist on type '{}'.
       step = WalletBackupStepTypes.first,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'walletId' does not exist on type '{}'.
       walletId = selectedWallet.id,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'nativeScreen' does not exist on type '{}... Remove this comment to see the full error message
       nativeScreen = false,
     } = {},
   } = useRoute();
@@ -50,6 +61,7 @@ export default function BackupSheet() {
   );
 
   const handleNoLatestBackup = useCallback(() => {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     if (android) {
       goBack();
       navigate(Routes.BACKUP_SCREEN, {
@@ -62,6 +74,7 @@ export default function BackupSheet() {
   }, [goBack, navigate, setParams]);
 
   const handlePasswordNotFound = useCallback(() => {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     if (android) {
       goBack();
       navigate(Routes.BACKUP_SCREEN, {
@@ -119,6 +132,7 @@ export default function BackupSheet() {
 
   const onManualBackup = useCallback(() => {
     analytics.track('Tapped "Back up manually"');
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     if (android) {
       goBack();
       navigate(Routes.BACKUP_SCREEN, {
@@ -143,6 +157,7 @@ export default function BackupSheet() {
     switch (step) {
       case WalletBackupStepTypes.existing_user:
         return (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <BackupSheetSection
             descriptionText="You have wallets that have not been backed up yet. Back them up in case you lose this device."
             onPrimaryAction={onBackupNow}
@@ -155,6 +170,7 @@ export default function BackupSheet() {
         );
       case WalletBackupStepTypes.imported:
         return (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <BackupSheetSection
             descriptionText={`Don't lose your wallet! Save an encrypted copy to ${cloudPlatform}.`}
             onPrimaryAction={onIcloudBackup}
@@ -168,14 +184,18 @@ export default function BackupSheet() {
         );
       case WalletBackupStepTypes.cloud:
         return missingPassword ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <BackupConfirmPasswordStep />
         ) : (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <BackupCloudStep />
         );
       case WalletBackupStepTypes.manual:
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         return <BackupManualStep />;
       default:
         return (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <BackupSheetSection
             descriptionText={`Don't lose your wallet! Save an encrypted copy to ${cloudPlatform}.`}
             onPrimaryAction={onIcloudBackup}
@@ -197,17 +217,21 @@ export default function BackupSheet() {
   ]);
 
   let sheetHeight =
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android && !nativeScreen
       ? AndroidHeight
       : longFormHeight + getSoftMenuBarHeight();
   let wrapperHeight =
     deviceHeight +
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     (android && !nativeScreen ? AndroidHeight : longFormHeight) +
     getSoftMenuBarHeight();
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   let additionalTopPadding = android && !nativeScreen;
 
   //If the sheet is full screen we should handle the sheet heights and padding differently
   if (
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android &&
     (step === WalletBackupStepTypes.cloud ||
       step === WalletBackupStepTypes.manual)
@@ -217,8 +241,15 @@ export default function BackupSheet() {
   }
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Column height={wrapperHeight} testID="backup-sheet">
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <StatusBar barStyle="light-content" />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <SlackSheet
         additionalTopPadding={additionalTopPadding}
         contentHeight={sheetHeight}

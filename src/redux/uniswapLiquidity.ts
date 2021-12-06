@@ -4,6 +4,7 @@ import { emitChartsRequest } from './explorer';
 import {
   getLiquidity,
   saveLiquidity,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/localstor... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/localstorage/uniswap';
 
 // -- Constants ------------------------------------------------------------- //
@@ -15,7 +16,10 @@ const UNISWAP_POOLS_DETAILS = 'uniswap/UNISWAP_POOLS_DETAILS';
 
 // -- Actions --------------------------------------------------------------- //
 
-export const uniswapLiquidityLoadState = () => async (dispatch, getState) => {
+export const uniswapLiquidityLoadState = () => async (
+  dispatch: any,
+  getState: any
+) => {
   const { accountAddress, network } = getState().settings;
   try {
     const liquidityTokens = await getLiquidity(accountAddress, network);
@@ -27,16 +31,16 @@ export const uniswapLiquidityLoadState = () => async (dispatch, getState) => {
   } catch (error) {}
 };
 
-export const uniswapLiquidityResetState = () => dispatch =>
+export const uniswapLiquidityResetState = () => (dispatch: any) =>
   dispatch({ type: UNISWAP_LP_TOKENS_CLEAR_STATE });
 
-export const setPoolsDetails = fees => dispatch =>
+export const setPoolsDetails = (fees: any) => (dispatch: any) =>
   dispatch({ payload: fees, type: UNISWAP_POOLS_DETAILS });
 
 export const uniswapUpdateLiquidityTokens = (
-  liquidityTokens,
-  appendOrChange
-) => (dispatch, getState) => {
+  liquidityTokens: any,
+  appendOrChange: any
+) => (dispatch: any, getState: any) => {
   if (appendOrChange && isEmpty(liquidityTokens)) return;
   let updatedLiquidityTokens = liquidityTokens;
   if (appendOrChange) {
@@ -52,6 +56,7 @@ export const uniswapUpdateLiquidityTokens = (
     );
   } else {
     const assetCodes = map(liquidityTokens, token => token.address);
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 1.
     dispatch(emitChartsRequest(assetCodes));
   }
   const { accountAddress, network } = getState().settings;
@@ -68,7 +73,7 @@ export const INITIAL_UNISWAP_LIQUIDITY_STATE = {
   poolsDetails: {},
 };
 
-export default (state = INITIAL_UNISWAP_LIQUIDITY_STATE, action) => {
+export default (state = INITIAL_UNISWAP_LIQUIDITY_STATE, action: any) => {
   switch (action.type) {
     case UNISWAP_UPDATE_LIQUIDITY_TOKENS:
       return { ...state, liquidityTokens: action.payload };

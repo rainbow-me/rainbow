@@ -8,16 +8,23 @@ import { Alert } from '../alerts';
 import { runSpring } from '../animations';
 import { Centered, ColumnWithMargins } from '../layout';
 import { Numpad, NumpadValue } from '../numpad';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './AddCashFooter' was resolved to '/Users/n... Remove this comment to see the full error message
 import AddCashFooter from './AddCashFooter';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './AddCashSelector' was resolved to '/Users... Remove this comment to see the full error message
 import AddCashSelector from './AddCashSelector';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
 import {
   useAccountSettings,
   useDimensions,
   useIsWalletEthZero,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { DAI_ADDRESS, ETH_ADDRESS } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { abbreviations } from '@rainbow-me/utils';
 
 const currencies = [DAI_ADDRESS, ETH_ADDRESS];
@@ -30,7 +37,7 @@ const AddCashForm = ({
   onPurchase,
   onShake,
   shakeAnim,
-}) => {
+}: any) => {
   const isWalletEthZero = useIsWalletEthZero();
   const { params } = useRoute();
   const [paymentSheetVisible, setPaymentSheetVisible] = useState(false);
@@ -41,6 +48,7 @@ const AddCashForm = ({
   const initialCurrencyIndex = 1;
   const [currency, setCurrency] = useState(currencies[initialCurrencyIndex]);
   const [value, setValue] = useState(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'amount' does not exist on type 'object'.
     params?.amount ? params?.amount?.toString() : ''
   );
 
@@ -103,7 +111,7 @@ const AddCashForm = ({
 
   const handleNumpadPress = useCallback(
     newValue => {
-      setValue(prevValue => {
+      setValue((prevValue: any) => {
         const isExceedingWeeklyLimit =
           parseFloat(prevValue + parseFloat(newValue)) > limitWeekly;
 
@@ -148,9 +156,11 @@ const AddCashForm = ({
         if (nextValue.length > 3) {
           const characterCount = 1 - (nextValue.length - 3) * 0.075;
           setScaleAnim(
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'AnimatedNode<number>' is not ass... Remove this comment to see the full error message
             runSpring(new Clock(), prevPosition, characterCount, 0, 400, 40)
           );
         } else if (nextValue.length === 3) {
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'AnimatedNode<number>' is not ass... Remove this comment to see the full error message
           setScaleAnim(runSpring(new Clock(), prevPosition, 1, 0, 400, 40));
         }
 
@@ -189,8 +199,15 @@ const AddCashForm = ({
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Fragment>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Centered flex={1}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ColumnWithMargins
           align="center"
           css={padding(0, 24, isNarrowPhone ? 12 : 24)}
@@ -198,7 +215,13 @@ const AddCashForm = ({
           margin={isSmallPhone ? 0 : 8}
           width="100%"
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <NumpadValue scale={scaleAnim} translateX={shakeAnim} value={value} />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <AddCashSelector
             currencies={currencies}
             initialCurrencyIndex={initialCurrencyIndex}
@@ -207,13 +230,25 @@ const AddCashForm = ({
           />
         </ColumnWithMargins>
       </Centered>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ColumnWithMargins align="center" margin={isTallPhone ? 27 : 12}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Centered maxWidth={313}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Numpad
             onPress={handleNumpadPress}
             width={isNarrowPhone ? 275 : '100%'}
           />
         </Centered>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <AddCashFooter
           disabled={
             isEmpty(value) || parseFloat(value) < minimumPurchaseAmountUSD

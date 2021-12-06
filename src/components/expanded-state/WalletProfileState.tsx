@@ -1,11 +1,14 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../context/ThemeContext' was resolved t... Remove this comment to see the full error message
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../Divider' was resolved to '/Users/nickby... Remove this comment to see the full error message
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { BiometricButtonContent } from '../buttons';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../contacts/ImageAvatar' was resolved to '... Remove this comment to see the full error message
 import ImageAvatar from '../contacts/ImageAvatar';
 import CopyTooltip from '../copy-tooltip';
 import { Centered, ColumnWithDividers } from '../layout';
@@ -15,12 +18,18 @@ import { ProfileModal, ProfileNameInput } from './profile';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/emojiHandl... Remove this comment to see the full error message
 } from '@rainbow-me/helpers/emojiHandler';
 
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useAccountProfile } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { margin, padding, position } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { profileUtils } from '@rainbow-me/utils';
 
 const WalletProfileAddressText = styled(TruncatedAddress).attrs(
@@ -33,10 +42,12 @@ const WalletProfileAddressText = styled(TruncatedAddress).attrs(
     weight: 'bold',
   })
 )`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${margin(android ? 0 : 6, 0, android ? 0 : 5)};
   width: 100%;
 `;
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const Spacer = styled.View`
   height: 19;
 `;
@@ -77,7 +88,7 @@ export default function WalletProfileState({
   onCloseModal,
   profile,
   forceColor,
-}) {
+}: any) {
   const nameEmoji =
     isNewProfile && !forceColor
       ? profileUtils.addressHashedEmoji(address)
@@ -136,31 +147,45 @@ export default function WalletProfileState({
     value,
   ]);
 
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
   const handleTriggerFocusInput = useCallback(() => inputRef.current?.focus(), [
     inputRef,
   ]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <WalletProfileModal>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Centered
         direction="column"
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
         paddingBottom={android ? 15 : 30}
         testID="wallet-info-modal"
         width="100%"
       >
         {profileImage ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <ProfileImage image={profileImage} size="large" />
         ) : (
           // hide avatar if creating new wallet since we
           // don't know what emoji / color it will be (determined by address)
           (!isNewProfile || address) && (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <AvatarCircle
               showcaseAccountColor={color}
               showcaseAccountSymbol={nameEmoji}
             />
           )
         )}
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         {isNewProfile && !address && <Spacer />}
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ProfileNameInput
           onChange={setValue}
           onSubmitEditing={handleSubmit}
@@ -171,28 +196,48 @@ export default function WalletProfileState({
           value={value}
         />
         {address && (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <CopyTooltip
             onHide={handleTriggerFocusInput}
             textToCopy={address}
             tooltipText="Copy Address"
           >
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <WalletProfileAddressText address={address} />
           </CopyTooltip>
         )}
       </Centered>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ColumnWithDividers dividerRenderer={WalletProfileDivider} width="100%">
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <WalletProfileButton onPress={handleSubmit}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <BiometricButtonContent
             label={isNewProfile ? `${actionType} Wallet` : 'Done'}
             showIcon={actionType === 'Create'}
             testID="wallet-info-submit-button"
           />
         </WalletProfileButton>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <WalletProfileButton onPress={handleCancel}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <WalletProfileButtonText
             color={colors.alpha(colors.blueGreyDark, 0.6)}
             letterSpacing="roundedMedium"
             weight="medium"
+            // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
             {...(android && { lineHeight: 21 })}
           >
             Cancel

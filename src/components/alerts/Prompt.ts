@@ -1,6 +1,6 @@
 import BaseAlert from './BaseAlert';
 
-const Prompt = options =>
+const Prompt = (options: any) =>
   BaseAlert({
     ...options,
     alertType: 'prompt',

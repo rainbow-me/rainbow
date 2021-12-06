@@ -2,11 +2,14 @@ import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../context/ThemeContext' was resolved t... Remove this comment to see the full error message
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../coin-row/CoinCheckButton' was resolved ... Remove this comment to see the full error message
 import CoinCheckButton from '../coin-row/CoinCheckButton';
 import { ContactAvatar } from '../contacts';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../contacts/ImageAvatar' was resolved to '... Remove this comment to see the full error message
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Icon } from '../icons';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
@@ -14,8 +17,11 @@ import { Text, TruncatedAddress, TruncatedText } from '../text';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/emojiHandl... Remove this comment to see the full error message
 } from '@rainbow-me/helpers/emojiHandler';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { deviceUtils, profileUtils } from '@rainbow-me/utils';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
@@ -91,14 +97,21 @@ const ReadOnlyText = styled(Text)`
   ${fontWithWidth(sx.readOnlyText.fontWeight)}
 `;
 
-const OptionsIcon = ({ onPress }) => {
+const OptionsIcon = ({ onPress }: any) => {
   const { colors } = useTheme();
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Centered height={40} width={60}>
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
         {android ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <Icon circle color={colors.appleBlue} name="threeDots" tightDots />
         ) : (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <Text style={sx.editIcon}>􀍡</Text>
         )}
       </Centered>
@@ -112,7 +125,7 @@ export default function AddressRow({
   onPress,
   onEditWallet,
   watchOnly,
-}) {
+}: any) {
   const {
     address,
     balance,
@@ -132,7 +145,7 @@ export default function AddressRow({
     cleanedUpBalance = '0';
   }
 
-  let cleanedUpLabel = null;
+  let cleanedUpLabel: any = null;
   if (label) {
     cleanedUpLabel = removeFirstEmojiFromString(label);
   }
@@ -155,22 +168,34 @@ export default function AddressRow({
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <View style={sx.accountRow}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ButtonPressAnimation
         enableHapticFeedback={!editMode}
         onLongPress={!watchOnly ? onOptionsPress : onPress}
         onPress={editMode ? onOptionsPress : onPress}
         scaleTo={editMode ? 1 : 0.98}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Row align="center">
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Row align="center" flex={1} height={59}>
             {accountImage ? (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <ImageAvatar
                 image={accountImage}
                 marginRight={10}
                 size="medium"
               />
             ) : (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <ContactAvatar
                 color={accountColor}
                 marginRight={10}
@@ -183,12 +208,17 @@ export default function AddressRow({
                 }
               />
             )}
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <ColumnWithMargins margin={android ? -6 : 3}>
               {cleanedUpLabel || ens ? (
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                 <StyledTruncatedText color={colors.dark}>
                   {cleanedUpLabel || ens}
                 </StyledTruncatedText>
               ) : (
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                 <TruncatedAddress
                   address={address}
                   color={colors.dark}
@@ -199,6 +229,9 @@ export default function AddressRow({
                   weight="medium"
                 />
               )}
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <StyledBottomRowText
                 color={colors.alpha(colors.blueGreyDark, 0.5)}
               >
@@ -206,20 +239,32 @@ export default function AddressRow({
               </StyledBottomRowText>
             </ColumnWithMargins>
           </Row>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Column style={sx.rightContent}>
             {isReadOnly && (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <LinearGradient
                 {...linearGradientProps}
+                // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
                 marginRight={editMode || isSelected ? -9 : 19}
               >
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <ReadOnlyText color={colors.alpha(colors.blueGreyDark, 0.5)}>
                   Watching
                 </ReadOnlyText>
               </LinearGradient>
             )}
             {!editMode && isSelected && (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <CoinCheckButton style={sx.coinCheckIcon} toggle={isSelected} />
             )}
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             {editMode && <OptionsIcon onPress={NOOP} />}
           </Column>
         </Row>

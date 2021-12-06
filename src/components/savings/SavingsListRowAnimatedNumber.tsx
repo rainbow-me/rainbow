@@ -1,10 +1,13 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { requireNativeComponent, StyleSheet } from 'react-native';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../context/ThemeContext' was resolved t... Remove this comment to see the full error message
 import { useTheme } from '../../context/ThemeContext';
 import isRainbowTextAvailable from '../../helpers/isRainbowTextAvailable';
 import { formatSavingsAmount, isSymbolStablecoin } from '../../helpers/savings';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './AndroidAnimatedNumbers' was resolved to ... Remove this comment to see the full error message
 import AndroidText from './AndroidAnimatedNumbers';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { fonts } from '@rainbow-me/styles';
 
 const sx = StyleSheet.create({
@@ -35,7 +38,7 @@ const SavingsListRowAnimatedNumber = ({
   steps,
   symbol,
   value,
-}) => {
+}: any) => {
   const formatter = useCallback(
     val => `${formatSavingsAmount(val)} ${symbol} `,
     [symbol]
@@ -48,6 +51,7 @@ const SavingsListRowAnimatedNumber = ({
     : AndroidText;
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <TextComponent
       animationConfig={{
         color: colors.green, // HEX
@@ -68,6 +72,7 @@ const SavingsListRowAnimatedNumber = ({
         sx.text,
         { color: colors.dark },
         isRainbowTextAvailable ? sx.animatedNumber : null,
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
         android ? sx.animatedNumberAndroid : null,
       ]}
       time={interval}

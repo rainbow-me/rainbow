@@ -8,6 +8,7 @@ import useSwapCurrencies from './useSwapCurrencies';
 import {
   PAIR_GET_RESERVES_CALL_DATA,
   UNISWAP_V2_BASES,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 } from '@rainbow-me/references';
 
 export default function useUniswapCalls() {
@@ -34,12 +35,12 @@ export default function useUniswapCalls() {
       // the direct pair
       [inputToken, outputToken],
       // token A against all bases
-      ...bases.map((base): [Token, Token] => [inputToken, base]),
+      ...bases.map((base: any): [Token, Token] => [inputToken, base]),
       // token B against all bases
-      ...bases.map((base): [Token, Token] => [outputToken, base]),
+      ...bases.map((base: any): [Token, Token] => [outputToken, base]),
       // each base against all bases
       ...flatMap(bases, (base): [Token, Token][] =>
-        bases.map(otherBase => [base, otherBase])
+        bases.map((otherBase: any) => [base, otherBase])
       ),
     ];
 

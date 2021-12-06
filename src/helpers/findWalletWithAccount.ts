@@ -1,10 +1,10 @@
-export function findWalletWithAccount(wallets, accountAddress) {
+export function findWalletWithAccount(wallets: any, accountAddress: any) {
   const sortedKeys = Object.keys(wallets).sort();
   let walletWithAccount;
   sortedKeys.forEach(key => {
     const wallet = wallets[key];
     const found = wallet.addresses.find(
-      account => account.address === accountAddress
+      (account: any) => account.address === accountAddress
     );
     if (found) {
       walletWithAccount = wallet;

@@ -6,16 +6,22 @@ import useAccountSettings from './useAccountSettings';
 import {
   saveWalletBalances,
   WALLET_BALANCES_FROM_STORAGE,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/localstor... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/localstorage/walletBalances';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 import { web3Provider } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkInf... Remove this comment to see the full error message
 import networkInfo from '@rainbow-me/helpers/networkInfo';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { balanceCheckerContractAbi } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utilities' or its ... Remove this comment to see the full error message
 import { fromWei, handleSignificantDecimals } from '@rainbow-me/utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
 
-const useWalletBalances = wallets => {
+const useWalletBalances = (wallets: any) => {
   const { network } = useAccountSettings();
 
   const fetchBalances = useCallback(async () => {
@@ -24,6 +30,7 @@ const useWalletBalances = wallets => {
     // Get list of addresses to get balances for
     forEach(values(wallets), wallet => {
       forEach(wallet.addresses, account => {
+        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         walletBalances[account.address] = '0.00';
       });
     });
@@ -44,6 +51,7 @@ const useWalletBalances = wallets => {
       forEach(keys(walletBalances), (address, index) => {
         const amountInETH = fromWei(balances[index].toString());
         const formattedBalance = handleSignificantDecimals(amountInETH, 4);
+        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         walletBalances[address] = formattedBalance;
       });
       saveWalletBalances(walletBalances);

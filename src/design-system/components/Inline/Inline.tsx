@@ -1,6 +1,7 @@
 import React, { Children, ReactNode } from 'react';
 import flattenChildren from 'react-flatten-children';
 import { negateSpace, Space } from '../../layout/space';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../Box/Box' was resolved to '/Users/nickby... Remove this comment to see the full error message
 import { Box } from '../Box/Box';
 
 const alignHorizontalToFlexAlign = {
@@ -51,6 +52,7 @@ export function Inline({
   const horizontalSpace = horizontalSpaceProp ?? space;
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Box
       alignItems={
         alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined
@@ -66,6 +68,7 @@ export function Inline({
       marginLeft={horizontalSpace ? negateSpace(horizontalSpace) : undefined}
     >
       {Children.map(flattenChildren(children), child => (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <Box paddingBottom={verticalSpace} paddingLeft={horizontalSpace}>
           {child}
         </Box>

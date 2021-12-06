@@ -12,11 +12,17 @@ import {
   saveAuthTimelock,
   savePinAuthAttemptsLeft,
 } from '../handlers/localstorage/globalSettings';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../navigation/Navigation' was resolved to ... Remove this comment to see the full error message
 import { useNavigation } from '../navigation/Navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useDimensions, useShakeAnimation } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks/useBlockBack... Remove this comment to see the full error message
 import { useBlockBackButton } from '@rainbow-me/hooks/useBlockBackButton';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/images' or its cor... Remove this comment to see the full error message
 import { ImgixImage } from '@rainbow-me/images';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { haptics } from '@rainbow-me/utils';
 
 const Logo = styled(ImgixImage).attrs({
@@ -41,6 +47,7 @@ const PinAuthenticationScreen = () => {
   const [value, setValue] = useState('');
   const [initialPin, setInitialPin] = useState('');
   const [actionType, setActionType] = useState(
+    // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
     params.validPin ? 'authentication' : 'creation'
   );
 
@@ -61,6 +68,7 @@ const PinAuthenticationScreen = () => {
 
     return () => {
       if (!finished.current) {
+        // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
         params.onCancel();
       }
     };
@@ -87,6 +95,7 @@ const PinAuthenticationScreen = () => {
             'Still blocked',
             `You still need to wait ~ ${timeAmount} ${unit} before trying again`
           );
+          // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
           params.onCancel();
           finished.current = true;
           goBack();
@@ -108,6 +117,7 @@ const PinAuthenticationScreen = () => {
       );
       // Set global
       saveAuthTimelock(Date.now() + TIMELOCK_INTERVAL_MINUTES * 60 * 1000);
+      // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
       params.onCancel();
       finished.current = true;
       goBack();
@@ -116,6 +126,7 @@ const PinAuthenticationScreen = () => {
 
   const handleNumpadPress = useCallback(
     newValue => {
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
       android && haptics.keyboardPress();
       setValue(prevValue => {
         let nextValue = prevValue;
@@ -140,6 +151,7 @@ const PinAuthenticationScreen = () => {
 
         if (nextValue.length === 4) {
           if (actionType === 'authentication') {
+            // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
             const valid = params.validPin === nextValue;
             if (!valid) {
               onShake();
@@ -149,6 +161,7 @@ const PinAuthenticationScreen = () => {
                 setValue('');
               }, 300);
             } else {
+              // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
               params.onSuccess(nextValue);
               finished.current = true;
               setTimeout(() => {
@@ -172,6 +185,7 @@ const PinAuthenticationScreen = () => {
             if (!valid) {
               onShake();
             } else {
+              // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
               params.onSuccess(nextValue);
               finished.current = true;
               setTimeout(() => {
@@ -187,15 +201,23 @@ const PinAuthenticationScreen = () => {
     [actionType, attemptsLeft, goBack, initialPin, onShake, params]
   );
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Column
       backgroundColor={colors.white}
       flex={1}
       testID="pin-authentication-screen"
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Centered flex={1}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ColumnWithMargins
           align="center"
           css={padding(0, 24, isNarrowPhone ? 12 : 24)}
@@ -203,7 +225,13 @@ const PinAuthenticationScreen = () => {
           justify="center"
           margin={isSmallPhone ? 0 : 28}
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Logo />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <SheetTitle>
             {actionType === 'authentication'
               ? 'Type your PIN'
@@ -211,11 +239,23 @@ const PinAuthenticationScreen = () => {
               ? 'Choose your PIN'
               : 'Confirm your PIN'}
           </SheetTitle>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <PinValue translateX={errorAnimation} value={value} />
         </ColumnWithMargins>
       </Centered>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ColumnWithMargins align="center" margin={isTallPhone ? 27 : 12}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Centered maxWidth={313}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Numpad
             decimal={false}
             onPress={handleNumpadPress}

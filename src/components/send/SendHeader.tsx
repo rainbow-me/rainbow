@@ -3,9 +3,13 @@ import { get, isEmpty, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../context/ThemeContext' was resolved t... Remove this comment to see the full error message
 import { useTheme } from '../../context/ThemeContext';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../navigation/Navigation' was resolved ... Remove this comment to see the full error message
 import { useNavigation } from '../../navigation/Navigation';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../Divider' was resolved to '/Users/nickby... Remove this comment to see the full error message
 import Divider from '../Divider';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../Spinner' was resolved to '/Users/nickby... Remove this comment to see the full error message
 import Spinner from '../Spinner';
 import { ButtonPressAnimation } from '../animations';
 import { PasteAddressButton } from '../buttons';
@@ -13,15 +17,22 @@ import { AddressField } from '../fields';
 import { Row } from '../layout';
 import { SheetHandleFixedToTop, SheetTitle } from '../sheet';
 import { Label, Text } from '../text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/emojiHandl... Remove this comment to see the full error message
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { profileUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
   ${({ isSmallPhone, isTinyPhone }) =>
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android
       ? padding(0, 19)
       : isTinyPhone
@@ -43,6 +54,7 @@ const AddressFieldLabel = styled(Label).attrs({
   opacity: 1;
 `;
 
+// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
     color: colors.alpha(colors.blueGreyDark, 0.3),
@@ -54,7 +66,9 @@ const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
 const SendSheetTitle = styled(SheetTitle).attrs({
   weight: 'heavy',
 })`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   margin-bottom: ${android ? -10 : 0};
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   margin-top: ${android ? 10 : 17};
 `;
 
@@ -78,7 +92,7 @@ export default function SendHeader({
   showAssetList,
   userAccounts,
   watchedAccounts,
-}) {
+}: any) {
   const { setClipboard } = useClipboard();
   const { isSmallPhone, isTinyPhone } = useDimensions();
   const { navigate } = useNavigation();
@@ -87,8 +101,10 @@ export default function SendHeader({
   const contact = useMemo(() => {
     return get(contacts, `${[toLower(recipient)]}`, defaultContactItem);
   }, [contacts, recipient]);
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useState'.
   const [hexAddress, setHexAddress] = useState(null);
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useEffect'.
   useEffect(() => {
     if (isValidAddress && !contact.address) {
       resolveAndStoreAddress();
@@ -119,6 +135,7 @@ export default function SendHeader({
       nickname = isHexString(recipient) ? emoji : `${emoji} ${recipient}`;
     }
 
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android && Keyboard.dismiss();
     navigate(Routes.MODAL_SCREEN, {
       additionalPadding: true,
@@ -144,7 +161,7 @@ export default function SendHeader({
           'Cancel', // <-- cancelButtonIndex
         ],
       },
-      async buttonIndex => {
+      async (buttonIndex: any) => {
         if (buttonIndex === 0) {
           showActionSheetWithOptions(
             {
@@ -152,7 +169,7 @@ export default function SendHeader({
               destructiveButtonIndex: 0,
               options: ['Delete Contact', 'Cancel'],
             },
-            async buttonIndex => {
+            async (buttonIndex: any) => {
               if (buttonIndex === 0) {
                 removeContact(recipient);
                 onRefocusInput();
@@ -188,14 +205,30 @@ export default function SendHeader({
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Fragment>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <SheetHandleFixedToTop />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       {isTinyPhone ? null : <SendSheetTitle>Send</SendSheetTitle>}
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <AddressInputContainer
         isSmallPhone={isSmallPhone}
         isTinyPhone={isTinyPhone}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <AddressFieldLabel>To:</AddressFieldLabel>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <AddressField
           address={recipient}
           autoFocus={!showAssetList}
@@ -208,6 +241,7 @@ export default function SendHeader({
         {isValidAddress &&
           !userWallet &&
           (hexAddress || !isEmpty(contact?.address)) && (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <ButtonPressAnimation
               onPress={
                 isPreExistingContact
@@ -215,6 +249,9 @@ export default function SendHeader({
                   : handleNavigateToContact
               }
             >
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Text
                 align="right"
                 color="appleBlue"
@@ -232,11 +269,16 @@ export default function SendHeader({
             </ButtonPressAnimation>
           )}
         {isValidAddress && !hexAddress && isEmpty(contact?.address) && (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <LoadingSpinner />
         )}
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         {!isValidAddress && <PasteAddressButton onPress={onPressPaste} />}
       </AddressInputContainer>
       {hideDivider && !isTinyPhone ? null : (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <Divider color={colors.rowDividerExtraLight} flex={0} inset={[0, 19]} />
       )}
     </Fragment>

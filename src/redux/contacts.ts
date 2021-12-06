@@ -7,7 +7,7 @@ const CONTACTS_LOAD = 'contacts/CONTACTS_LOAD';
 const CONTACTS_CLEAR_STATE = 'contacts/CONTACTS_CLEAR_STATE';
 
 // -- Actions ---------------------------------------- //
-export const contactsLoadState = () => async dispatch => {
+export const contactsLoadState = () => async (dispatch: any) => {
   try {
     const contacts = await getContacts();
     dispatch({
@@ -18,10 +18,12 @@ export const contactsLoadState = () => async dispatch => {
   } catch (error) {}
 };
 
-export const contactsAddOrUpdate = (address, nickname, color, network) => (
-  dispatch,
-  getState
-) => {
+export const contactsAddOrUpdate = (
+  address: any,
+  nickname: any,
+  color: any,
+  network: any
+) => (dispatch: any, getState: any) => {
   const loweredAddress = toLower(address);
   const { contacts } = getState().contacts;
   const updatedContacts = {
@@ -40,7 +42,10 @@ export const contactsAddOrUpdate = (address, nickname, color, network) => (
   });
 };
 
-export const removeContact = address => (dispatch, getState) => {
+export const removeContact = (address: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { contacts } = getState().contacts;
   const updatedContacts = omit(contacts, toLower(address));
   saveContacts(updatedContacts);
@@ -55,7 +60,7 @@ const INITIAL_STATE = {
   contacts: {},
 };
 
-export default (state = INITIAL_STATE, action) => {
+export default (state = INITIAL_STATE, action: any) => {
   switch (action.type) {
     case CONTACTS_UPDATE:
       return { ...state, contacts: action.payload };

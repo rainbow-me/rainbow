@@ -1,16 +1,20 @@
 import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../../context/ThemeContext' was resolve... Remove this comment to see the full error message
 import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/strings' o... Remove this comment to see the full error message
 import { containsEmoji } from '@rainbow-me/helpers/strings';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'react-native-shadow-stack' or ... Remove this comment to see the full error message
 import ShadowStack from 'react-native-shadow-stack';
 
-const addChartsStyling = isCharts =>
+const addChartsStyling = (isCharts: any) =>
   isCharts ? 'position: absolute; width: 100%;' : '';
 
 const Button = styled(Centered)`
@@ -31,8 +35,11 @@ const Content = styled(RowWithMargins).attrs({
 const neverRerender = () => true;
 // eslint-disable-next-line react/display-name
 const WhiteButtonGradient = React.memo(
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'colors' does not exist on type '{ childr... Remove this comment to see the full error message
   ({ colors }) => (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <LinearGradient
+      // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       borderRadius={49}
       colors={colors.gradients.whiteButton}
       end={{ x: 0.5, y: 1 }}
@@ -64,7 +71,7 @@ const SheetActionButton = ({
   textColor: givenTextColor,
   weight = 'semibold',
   ...props
-}) => {
+}: any) => {
   const { isDarkMode, colors } = useTheme();
   const color = givenColor || colors.appleBlue;
   const isWhite = color === colors.white;
@@ -97,11 +104,13 @@ const SheetActionButton = ({
   ]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Button
       as={ButtonPressAnimation}
       contentContainerStyle={{
         height: size === 'big' ? 56 : 46,
       }}
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
       elevation={android ? elevation : null}
       isCharts={isCharts}
       overflowMargin={30}
@@ -111,6 +120,9 @@ const SheetActionButton = ({
       testID={`${testID}-action-button`}
       {...props}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ShadowStack
         {...position.coverAsObject}
         backgroundColor={color}
@@ -118,8 +130,12 @@ const SheetActionButton = ({
         height={size === 'big' ? 56 : 46}
         shadows={shadowsForButtonColor}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         {isWhite && <WhiteButtonGradient colors={colors} />}
         {!isWhite && !isTransparent && !nftShadows && (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <InnerBorder
             color={disabled ? textColor : null}
             opacity={disabled ? 0.02 : null}
@@ -128,10 +144,20 @@ const SheetActionButton = ({
           />
         )}
       </ShadowStack>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Content label={label} size={size}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         {emoji && <Emoji lineHeight={23} name={emoji} size="medium" />}
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         {icon && <Icon color="white" height={18} name={icon} size={18} />}
         {label ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <Text
             align="center"
             color={textColor}

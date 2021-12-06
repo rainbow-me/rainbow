@@ -6,7 +6,9 @@ import {
   ACCESSIBLE,
   AUTHENTICATION_TYPE,
   canImplyAuthentication,
+  // @ts-expect-error ts-migrate(2724) FIXME: '"react-native-keychain"' has no exported member n... Remove this comment to see the full error message
   getAllInternetCredentials,
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-keychain"' has no exported m... Remove this comment to see the full error message
   getAllInternetCredentialsKeys,
   getInternetCredentials,
   getSupportedBiometryType,
@@ -18,6 +20,7 @@ import {
   UserCredentials,
 } from 'react-native-keychain';
 import { delay } from '../helpers/utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 interface AnonymousKey {
@@ -231,6 +234,7 @@ export async function getPrivateAccessControlOptions(): Promise<Options> {
   try {
     let canAuthenticate;
 
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
     if (ios) {
       canAuthenticate = await canImplyAuthentication({
         authenticationType: AUTHENTICATION_TYPE.DEVICE_PASSCODE_OR_BIOMETRICS,
@@ -247,6 +251,7 @@ export async function getPrivateAccessControlOptions(): Promise<Options> {
     }
     if (canAuthenticate && !isSimulator) {
       res = {
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
         accessControl: ios
           ? ACCESS_CONTROL.USER_PRESENCE
           : ACCESS_CONTROL.BIOMETRY_CURRENT_SET_OR_DEVICE_PASSCODE,

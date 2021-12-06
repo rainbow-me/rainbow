@@ -18,7 +18,9 @@ import Animated, {
 import styled from 'styled-components';
 import useReactiveSharedValue from '../../../react-native-animated-charts/src/helpers/useReactiveSharedValue';
 import { ButtonPressAnimation } from '../../animations';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useDimensions } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position } from '@rainbow-me/styles';
 
 const adjustConfig = {
@@ -36,10 +38,13 @@ const exitConfig = {
   stiffness: 800,
 };
 const GestureBlocker = styled(View)`
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'height' does not exist on type 'ViewProp... Remove this comment to see the full error message
   height: ${({ height }) => height};
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'containerWidth' does not exist on type '... Remove this comment to see the full error message
   left: ${({ containerWidth, width }) => -(width - containerWidth) / 2};
   position: absolute;
   top: -85;
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'width' does not exist on type 'ViewProps... Remove this comment to see the full error message
   width: ${({ width }) => width};
 `;
 const Container = styled(Animated.View)`
@@ -55,7 +60,9 @@ const ImageWrapper = styled(Animated.View)`
   overflow: hidden;
 `;
 const ZoomContainer = styled(Animated.View)`
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'height' does not exist on type '{ hitSlo... Remove this comment to see the full error message
   height: ${({ height }) => height};
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'width' does not exist on type '{ hitSlop... Remove this comment to see the full error message
   width: ${({ width }) => width};
 `;
 
@@ -71,7 +78,7 @@ export const ZoomableWrapper = ({
   borderRadius,
   disableAnimations,
   yDisplacement: givenYDisplacement,
-}) => {
+}: any) => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const animationProgress = givenAnimationProgress || useSharedValue(0);
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -84,6 +91,7 @@ export const ZoomableWrapper = ({
   const [
     containerWidth = maxImageWidth,
     containerHeight = maxImageWidth,
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   ] = useMemo(() => {
     const isSquare = aspectRatio === 1;
     const isLandscape = aspectRatio > 1;
@@ -106,15 +114,19 @@ export const ZoomableWrapper = ({
     }
   }, [aspectRatio, maxImageHeight, maxImageWidth]);
 
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
   const containerWidthValue = useReactiveSharedValue(
     containerWidth || maxImageWidth
   );
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
   const containerHeightValue = useReactiveSharedValue(
     containerHeight || maxImageWidth
   );
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useState'.
   const [isZoomed, setIsZoomed] = useState(false);
   const isZoomedValue = useSharedValue(false);
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useEffect'.
   useEffect(() => {
     if (isZoomed) {
       StatusBar.setHidden(true);
@@ -125,6 +137,7 @@ export const ZoomableWrapper = ({
 
   const fullSizeHeight = Math.min(deviceHeight, deviceWidth / aspectRatio);
   const fullSizeWidth = Math.min(deviceWidth, deviceHeight * aspectRatio);
+  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
   const zooming = fullSizeHeight / containerHeightValue.value;
 
   const containerStyle = useAnimatedStyle(
@@ -138,6 +151,7 @@ export const ZoomableWrapper = ({
         {
           translateY:
             (animationProgress.value *
+              // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
               (fullSizeHeight - containerHeightValue.value)) /
             2,
         },
@@ -244,6 +258,7 @@ export const ZoomableWrapper = ({
 
     if (!isZoomedValue.value) {
       // handle entering zoom state by pinching
+      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
       if (scale.value * containerWidthValue.value >= deviceWidth) {
         const adjustedScale = scale.value / (fullSizeWidth / containerWidth);
         isZoomedValue.value = true;
@@ -395,6 +410,7 @@ export const ZoomableWrapper = ({
   const pinchGestureHandler = useAnimatedGestureHandler({
     onActive: (event, ctx) => {
       if (!ctx.initEventScale) {
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'scale' does not exist on type 'Readonly<... Remove this comment to see the full error message
         ctx.initEventScale = event.scale;
 
         const maxAllowedEventScale =
@@ -408,16 +424,20 @@ export const ZoomableWrapper = ({
         if (
           isZoomedValue.value &&
           ctx.startScale <= MIN_IMAGE_SCALE &&
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'scale' does not exist on type 'Readonly<... Remove this comment to see the full error message
           event.scale > MIN_IMAGE_SCALE
         ) {
           ctx.blockExitZoom = true;
         }
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'scale' does not exist on type 'Readonly<... Remove this comment to see the full error message
         scale.value = ctx.startScale * (event.scale / ctx.initEventScale);
         if (ctx.prevScale) {
           translateX.value +=
+            // @ts-expect-error ts-migrate(2339) FIXME: Property 'scale' does not exist on type 'Readonly<... Remove this comment to see the full error message
             (ctx.focalDisplacementX * (event.scale - ctx.prevScale)) /
             ctx.initEventScale;
           translateY.value +=
+            // @ts-expect-error ts-migrate(2339) FIXME: Property 'scale' does not exist on type 'Readonly<... Remove this comment to see the full error message
             (ctx.focalDisplacementY * (event.scale - ctx.prevScale)) /
             ctx.initEventScale;
         } else {
@@ -426,6 +446,7 @@ export const ZoomableWrapper = ({
 
         ctx.prevTranslateX = translateX.value;
         ctx.prevTranslateY = translateY.value;
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'scale' does not exist on type 'Readonly<... Remove this comment to see the full error message
         ctx.prevScale = event.scale;
       }
     },
@@ -438,9 +459,11 @@ export const ZoomableWrapper = ({
       ctx.blockExitZoom = false;
 
       ctx.focalDisplacementX =
+        // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
         (containerWidthValue.value / 2 - event.focalX) * scale.value;
 
       ctx.focalDisplacementY =
+        // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
         (containerHeightValue.value / 2 - event.focalY) * scale.value;
     },
   });
@@ -541,12 +564,17 @@ export const ZoomableWrapper = ({
     };
   });
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useRef'.
   const pan = useRef();
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useRef'.
   const pinch = useRef();
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useRef'.
   const doubleTap = useRef();
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useRef'.
   const singleTap = useRef();
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ButtonPressAnimation
       disabled={disableAnimations}
       enableHapticFeedback={false}
@@ -554,6 +582,9 @@ export const ZoomableWrapper = ({
       scaleTo={1}
       style={{ alignItems: 'center', zIndex: 10 }}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <PanGestureHandler
         enabled={!disableAnimations}
         maxPointers={2}
@@ -562,24 +593,47 @@ export const ZoomableWrapper = ({
         ref={pan}
         simultaneousHandlers={[pinch]}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Animated.View>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Animated.View>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <TapGestureHandler
               enabled={!disableAnimations}
               numberOfTaps={1}
+              // @ts-expect-error ts-migrate(2322) FIXME: Type 'OnGestureEvent<PanGestureHandlerGestureEvent... Remove this comment to see the full error message
               onHandlerStateChange={singleTapGestureHandler}
               ref={singleTap}
               waitFor={isZoomed && doubleTap}
             >
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <ZoomContainer height={containerHeight} width={containerWidth}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <GestureBlocker
+                  // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
                   containerHeight={containerHeight}
                   containerWidth={containerWidth}
                   height={deviceHeight}
                   pointerEvents={isZoomed ? 'auto' : 'none'}
                   width={deviceWidth}
                 />
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Animated.View style={[StyleSheet.absoluteFillObject]}>
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                  unless the '--jsx' flag is provided... Remove this comment to
+                  see the full error message
                   <TapGestureHandler
                     enabled={!disableAnimations && isZoomed}
                     maxDelayMs={420}
@@ -587,19 +641,30 @@ export const ZoomableWrapper = ({
                     maxDurationMs={420}
                     maxPointers={1}
                     numberOfTaps={2}
+                    // @ts-expect-error ts-migrate(2322) FIXME: Type 'OnGestureEvent<PanGestureHandlerGestureEvent... Remove this comment to see the full error message
                     onHandlerStateChange={doubleTapGestureHandler}
                     ref={doubleTap}
                     waitFor={pinch}
                   >
+                    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                    unless the '--jsx' flag is provided... Remove this comment
+                    to see the full error message
                     <Container
                       style={[containerStyle, StyleSheet.absoluteFillObject]}
                     >
+                      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use
+                      JSX unless the '--jsx' flag is provided... Remove this
+                      comment to see the full error message
                       <PinchGestureHandler
                         enabled={!disableAnimations}
+                        // @ts-expect-error ts-migrate(2322) FIXME: Type 'OnGestureEvent<PanGestureHandlerGestureEvent... Remove this comment to see the full error message
                         onGestureEvent={pinchGestureHandler}
                         ref={pinch}
                         simultaneousHandlers={[pan]}
                       >
+                        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use
+                        JSX unless the '--jsx' flag is provided... Remove this
+                        comment to see the full error message
                         <ImageWrapper
                           style={[
                             animatedStyle,

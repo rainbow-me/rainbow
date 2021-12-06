@@ -5,7 +5,7 @@ import { checkIsValidAddressOrDomain } from '../helpers/validators';
  * @param  {String}  data - qr code data
  * @return {String}  address - ethereum address
  */
-export const getEthereumAddressFromQRCodeData = async data => {
+export const getEthereumAddressFromQRCodeData = async (data: any) => {
   if (!data) return null;
 
   const parts = data.split(':');

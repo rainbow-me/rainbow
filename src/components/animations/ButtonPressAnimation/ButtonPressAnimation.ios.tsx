@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { createNativeWrapper, State } from 'react-native-gesture-handler';
+// @ts-expect-error ts-migrate(6142) FIXME: Module 'react-native-gesture-handler/src/component... Remove this comment to see the full error message
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
@@ -10,11 +11,14 @@ import Animated, {
   timing,
   Value,
 } from 'react-native-reanimated';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import stylePropType from 'react-style-proptype';
 import { useMemoOne } from 'use-memo-one';
 import useNativeButtonAvailable from '../../../helpers/isNativeButtonAvailable';
 import { directionPropType } from '../../../utils';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './NativeButton' was resolved to '/Users/ni... Remove this comment to see the full error message
 import NativeButton from './NativeButton';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useInteraction, useTransformOrigin } from '@rainbow-me/hooks';
 
 const {
@@ -54,12 +58,14 @@ function usePressHandler({
   onLongPress,
   onPress,
   optionallyTriggerHaptic,
-}) {
+}: any) {
   const longPressHandle = useRef();
 
   const createHandle = useCallback(() => {
+    // @ts-expect-error ts-migrate(2322) FIXME: Type 'number' is not assignable to type 'undefined... Remove this comment to see the full error message
     longPressHandle.current = setTimeout(() => {
       onLongPress();
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'null' is not assignable to type 'undefined'.
       longPressHandle.current = null;
       optionallyTriggerHaptic();
     }, minLongPressDuration);
@@ -74,6 +80,7 @@ function usePressHandler({
   const removeHandle = useCallback(() => {
     if (interactionHandle.current) {
       clearTimeout(longPressHandle.current);
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'null' is not assignable to type 'undefined'.
       longPressHandle.current = null;
     }
   }, [interactionHandle]);
@@ -82,25 +89,26 @@ function usePressHandler({
   return [handlePress, createHandle, removeHandle];
 }
 
-const maybeProc = ios ? a => a : proc;
+// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
+const maybeProc = ios ? (a: any) => a : proc;
 
 const ButtonPressAnimationProc = maybeProc(function (
-  animationState,
-  durationVal,
-  finished,
-  frameTime,
-  gestureState,
-  onGestureEvent,
-  prevGestureState,
-  scaleValue,
-  time,
-  toValue,
-  zoomClock,
-  scaleTo,
-  onPressCall,
-  onPressStartCall,
-  onLongPressCall,
-  interactionCall
+  animationState: any,
+  durationVal: any,
+  finished: any,
+  frameTime: any,
+  gestureState: any,
+  onGestureEvent: any,
+  prevGestureState: any,
+  scaleValue: any,
+  time: any,
+  toValue: any,
+  zoomClock: any,
+  scaleTo: any,
+  onPressCall: any,
+  onPressStartCall: any,
+  onLongPressCall: any,
+  interactionCall: any
 ) {
   return block([
     cond(neq(prevGestureState, gestureState), [
@@ -160,6 +168,7 @@ const ButtonPressAnimationProc = maybeProc(function (
         },
         {
           duration: durationVal,
+          // @ts-expect-error ts-migrate(2322) FIXME: Type 'EasingFunction' is not assignable to type 'E... Remove this comment to see the full error message
           easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
           toValue,
         }
@@ -174,10 +183,10 @@ const ButtonPressAnimationProc = maybeProc(function (
 });
 
 const ButtonPressAnimationHelperProc = maybeProc(function (
-  animationState,
-  gestureState,
-  prevGestureState,
-  zoomClock
+  animationState: any,
+  gestureState: any,
+  prevGestureState: any,
+  zoomClock: any
 ) {
   return block([
     cond(
@@ -208,7 +217,7 @@ function ButtonPressAnimationJS({
   style,
   testID,
   transformOrigin,
-}) {
+}: any) {
   const [createHandle, removeHandle, interactionHandle] = useInteraction();
   const {
     onLayout: measureInnerElement,
@@ -306,6 +315,7 @@ function ButtonPressAnimationJS({
             if (!onLongPress) {
               return;
             }
+            // @ts-expect-error ts-migrate(2367) FIXME: This condition will always return 'false' since th... Remove this comment to see the full error message
             if (gs === ACTIVE) {
               createLongPressHandle();
             } else {
@@ -316,6 +326,7 @@ function ButtonPressAnimationJS({
             if (!isInteraction) {
               return;
             }
+            // @ts-expect-error ts-migrate(2367) FIXME: This condition will always return 'false' since th... Remove this comment to see the full error message
             if (gs === ACTIVE) {
               createHandle();
             } else {
@@ -349,12 +360,16 @@ function ButtonPressAnimationJS({
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <AnimatedRawButton
       enabled={!disabled}
       onHandlerStateChange={onGestureEvent}
       onLayout={onLayout}
       testID={testID}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Animated.View
         accessible
         onLayout={measureInnerElement}
@@ -381,6 +396,7 @@ const ButtonPressAnimation = React.forwardRef((props, ref) => {
   const Component = isNativeButtonAvailable
     ? NativeButton
     : ButtonPressAnimationJS;
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   return <Component {...props} ref={ref} />;
 });
 ButtonPressAnimation.displayName = 'ButtonPressAnimation';
@@ -388,6 +404,7 @@ ButtonPressAnimation.displayName = 'ButtonPressAnimation';
 export default ButtonPressAnimation;
 
 ButtonPressAnimation.propTypes = {
+  // @ts-expect-error ts-migrate(2322) FIXME: Type '{ activeOpacity: PropTypes.Requireable<numbe... Remove this comment to see the full error message
   activeOpacity: PropTypes.number,
   children: PropTypes.any,
   disabled: PropTypes.bool,
@@ -411,6 +428,7 @@ ButtonPressAnimation.propTypes = {
 };
 
 ButtonPressAnimation.defaultProps = {
+  // @ts-expect-error ts-migrate(2322) FIXME: Type '{ activeOpacity: number; duration: number; e... Remove this comment to see the full error message
   activeOpacity: 1,
   duration: 160,
   enableHapticFeedback: true,

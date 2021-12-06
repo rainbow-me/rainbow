@@ -64,6 +64,7 @@ class ImgixImage extends React.PureComponent<
     // (The source prop may point to an untrusted URL.)
     const { source } = this.state;
     const Component = maybeComponent || FastImage;
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     return <Component {...props} source={source} />;
   }
 }
@@ -89,6 +90,7 @@ const preload = (sources: Source[], size?: Number): void => {
 
 const ImgixImageWithForwardRef = React.forwardRef(
   (props: ImgixImageProps, ref: React.Ref<any>) => (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ImgixImage forwardedRef={ref} {...props} />
   )
 );

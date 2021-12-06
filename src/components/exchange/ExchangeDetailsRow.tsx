@@ -8,9 +8,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { Centered, Row } from '../layout';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './ExchangeDetailsButton' was resolved to '... Remove this comment to see the full error message
 import ExchangeDetailsButton from './ExchangeDetailsButton';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './PriceImpactWarning' was resolved to '/Us... Remove this comment to see the full error message
 import PriceImpactWarning from './PriceImpactWarning';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { usePrevious, useSwapCurrencies } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding, position } from '@rainbow-me/styles';
 
 const defaultPriceImpactScale = 1.15;
@@ -47,7 +51,7 @@ export default function ExchangeDetailsRow({
   showDetailsButton,
   type,
   ...props
-}) {
+}: any) {
   const detailsRowOpacity = useSharedValue(1);
   const priceImpactOpacity = useSharedValue(0);
   const priceImpactScale = useSharedValue(defaultPriceImpactScale);
@@ -103,7 +107,11 @@ export default function ExchangeDetailsRow({
   ]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container {...props}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <PriceImpactWarning
         isHighPriceImpact={isHighPriceImpact}
         onPress={onPressViewDetails}
@@ -113,16 +121,25 @@ export default function ExchangeDetailsRow({
         priceImpactPercentDisplay={priceImpactPercentDisplay}
         style={priceImpactAnimatedStyle}
       />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <AnimatedExchangeDetailsButtonRow
         pointerEvents={isHighPriceImpact ? 'none' : 'auto'}
         style={detailsRowAnimatedStyle}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ExchangeDetailsButton
           onPress={onFlipCurrencies}
           testID="exchange-flip-button"
         >
           􀄬 Flip
         </ExchangeDetailsButton>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ExchangeDetailsButton
           disabled={!showDetailsButton}
           onPress={onPressViewDetails}

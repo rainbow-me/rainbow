@@ -1,11 +1,13 @@
 import React, { ElementRef, forwardRef, ReactNode, useMemo } from 'react';
 import { Text as NativeText } from 'react-native';
 import { useForegroundColor } from '../../color/useForegroundColor';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../typography/createLineHeightFixNode' ... Remove this comment to see the full error message
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';
 import {
   nodeHasEmoji,
   nodeIsString,
   renderStringWithEmoji,
+  // @ts-expect-error ts-migrate(6142) FIXME: Module '../../typography/renderStringWithEmoji' wa... Remove this comment to see the full error message
 } from '../../typography/renderStringWithEmoji';
 import { headingSizes, headingWeights } from '../../typography/typography';
 
@@ -74,6 +76,7 @@ export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
     );
 
     return (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <NativeText
         allowFontScaling={false}
         numberOfLines={numberOfLines}
@@ -81,6 +84,7 @@ export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
         style={textStyle}
         testID={testID}
       >
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
         {ios && containsEmojiProp && nodeIsString(children)
           ? renderStringWithEmoji(children)
           : children}

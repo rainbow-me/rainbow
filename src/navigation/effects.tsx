@@ -3,9 +3,13 @@ import { Animated, View } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { AvatarCircle } from '../components/profile';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/context' or its co... Remove this comment to see the full error message
 import { currentColors as colors } from '@rainbow-me/context';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { lightModeThemeColors } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { deviceUtils } from '@rainbow-me/utils';
 
 const statusBarHeight = getStatusBarHeight(true);
@@ -14,7 +18,7 @@ export const sheetVerticalOffset = statusBarHeight;
 const backgroundInterpolator = ({
   current: { progress: current },
   layouts: { screen },
-}) => {
+}: any) => {
   const cardOpacity = current.interpolate({
     inputRange: [0, 1],
     outputRange: [0, 1],
@@ -38,7 +42,7 @@ const backgroundInterpolator = ({
 const emojiStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },
-}) => {
+}: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, 1, 1],
@@ -62,7 +66,7 @@ const emojiStyleInterpolator = ({
 export const speedUpAndCancelStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },
-}) => {
+}: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.925, 2],
     outputRange: [0, 0, 0.6, 1],
@@ -90,7 +94,7 @@ export const speedUpAndCancelStyleInterpolator = ({
 const exchangeStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },
-}) => {
+}: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.925, 2],
     outputRange: [0, 0, 1, 1],
@@ -115,10 +119,10 @@ const exchangeStyleInterpolator = ({
   };
 };
 
-const expandStyleInterpolator = targetOpacity => ({
+const expandStyleInterpolator = (targetOpacity: any) => ({
   current: { progress: current },
   layouts: { screen },
-}) => {
+}: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, targetOpacity, targetOpacity],
@@ -147,7 +151,7 @@ const expandStyleInterpolator = targetOpacity => ({
 const savingsStyleInterpolator = ({
   current: { progress: current },
   layouts: { screen },
-}) => {
+}: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, 0.4, 0.4],
@@ -177,7 +181,7 @@ const savingsStyleInterpolator = ({
 const sheetStyleInterpolator = (targetOpacity = 1) => ({
   current: { progress: current },
   layouts: { screen },
-}) => {
+}: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, targetOpacity, targetOpacity],
@@ -207,7 +211,7 @@ const sheetStyleInterpolator = (targetOpacity = 1) => ({
 const swapDetailInterpolator = ({
   current: { progress: current },
   layouts: { screen },
-}) => {
+}: any) => {
   const backgroundOpacity = current.interpolate({
     inputRange: [-1, 0, 0.975, 2],
     outputRange: [0, 0, 0.6, 0.6],
@@ -267,7 +271,7 @@ const sheetOpenSpec = {
   },
 };
 
-const gestureResponseDistanceFactory = distance => ({
+const gestureResponseDistanceFactory = (distance: any) => ({
   vertical: distance,
 });
 
@@ -283,13 +287,14 @@ export const backgroundPreset = {
 };
 
 export const emojiPreset = {
-  cardOverlay: ({ style }) => {
+  cardOverlay: ({ style }: any) => {
     const backgroundOpacity = style.opacity.interpolate({
       inputRange: [-1, 0, 0.975, 2],
       outputRange: [0, 0, 1, 1],
     });
 
     return (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <Animated.View
         pointerEvents="none"
         style={{
@@ -303,12 +308,18 @@ export const emojiPreset = {
           width: deviceUtils.dimensions.width,
         }}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <View
           style={{
             alignItems: 'center',
             top: HeaderHeightWithStatusBar,
           }}
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <AvatarCircle overlayStyles />
         </View>
       </Animated.View>
@@ -384,7 +395,9 @@ export const bottomSheetPreset = {
   transitionSpec: { close: closeSpec, open: sheetOpenSpec },
 };
 
-export const sheetPresetWithSmallGestureResponseDistance = navigation => ({
+export const sheetPresetWithSmallGestureResponseDistance = (
+  navigation: any
+) => ({
   ...sheetPreset(navigation),
   gestureResponseDistance: smallGestureResponseDistance,
 });
@@ -394,7 +407,7 @@ export const expandedPresetWithSmallGestureResponseDistance = {
   gestureResponseDistance: smallGestureResponseDistance,
 };
 
-export const sheetPreset = ({ route }) => {
+export const sheetPreset = ({ route }: any) => {
   const shouldUseNonTransparentOverlay =
     route.params?.type === 'token' ||
     route.params?.type === 'unique_token' ||
@@ -419,7 +432,7 @@ export const sheetPreset = ({ route }) => {
   };
 };
 
-export const settingsPreset = ({ route }) => ({
+export const settingsPreset = ({ route }: any) => ({
   ...sheetPreset({ route }),
   cardStyleInterpolator: sheetStyleInterpolator(0.7),
 });

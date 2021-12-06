@@ -1,6 +1,6 @@
 import { Animated } from 'react-native';
 
-export const transformOrigin = ({ x, y }, ...transformations) => [
+export const transformOrigin = ({ x, y }: any, ...transformations: any[]) => [
   { translateX: x },
   { translateY: y },
   ...transformations,

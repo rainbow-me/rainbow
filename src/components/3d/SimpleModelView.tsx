@@ -8,7 +8,9 @@ import {
 } from 'react-native';
 import { WebView } from 'react-native-webview';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/images' or its cor... Remove this comment to see the full error message
 import { ImgixImage } from '@rainbow-me/images';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding, position } from '@rainbow-me/styles';
 
 export type ModelViewerProps = {
@@ -121,17 +123,27 @@ export default function ModelViewer({
     [loading]
   );
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <View style={style} {...panHandlers}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <StyledWebView
         cacheEnabled
         onMessage={onMessage}
         originWhitelist={originWhiteList}
         source={source}
       />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ProgressIndicatorContainer
         pointerEvents={loading ? 'auto' : 'none'}
         style={{ opacity }}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ImgixImage
           source={{ uri: fallbackUri }}
           style={StyleSheet.absoluteFill}

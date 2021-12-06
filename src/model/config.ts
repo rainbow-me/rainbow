@@ -1,44 +1,47 @@
 import remoteConfig from '@react-native-firebase/remote-config';
 import { captureException } from '@sentry/react-native';
 import {
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   ARBITRUM_MAINNET_RPC,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   DATA_API_KEY,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   DATA_ENDPOINT,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   DATA_ORIGIN,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   ETHEREUM_GOERLI_RPC,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   ETHEREUM_GOERLI_RPC_DEV,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   ETHEREUM_KOVAN_RPC,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   ETHEREUM_KOVAN_RPC_DEV,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   ETHEREUM_MAINNET_RPC,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   ETHEREUM_MAINNET_RPC_DEV,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   ETHEREUM_RINKEBY_RPC,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   ETHEREUM_RINKEBY_RPC_DEV,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   ETHEREUM_ROPSTEN_RPC,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   ETHEREUM_ROPSTEN_RPC_DEV,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   OPTIMISM_MAINNET_RPC,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   POLYGON_MAINNET_RPC,
 } from 'react-native-dotenv';
 import {
   setRpcEndpoints,
   web3SetHttpProvider,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import Logger from 'logger';
 
 export interface RainbowConfig extends Record<string, any> {

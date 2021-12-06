@@ -31,7 +31,7 @@ export const UNISWAP_PAIRS_ID_QUERY_BY_TOKEN = gql`
   }
 `;
 
-export const UNISWAP_PAIR_DATA_QUERY = (pairAddress, block) => {
+export const UNISWAP_PAIR_DATA_QUERY = (pairAddress: any, block: any) => {
   const queryString = `
     fragment PairFields on Pair {
       id
@@ -68,7 +68,10 @@ export const UNISWAP_PAIR_DATA_QUERY = (pairAddress, block) => {
   `;
 };
 
-export const UNISWAP_PAIR_DATA_QUERY_VOLUME = (pairAddress, block) => {
+export const UNISWAP_PAIR_DATA_QUERY_VOLUME = (
+  pairAddress: any,
+  block: any
+) => {
   const queryString = `
     fragment PairFields on Pair {
       volumeUSD
@@ -174,7 +177,7 @@ export const COMPOUND_ACCOUNT_AND_MARKET_QUERY = gql`
   }
 `;
 
-export const UNISWAP_24HOUR_PRICE_QUERY = (tokenAddress, block) => {
+export const UNISWAP_24HOUR_PRICE_QUERY = (tokenAddress: any, block: any) => {
   const queryString = `
     query tokens {
       tokens(${
@@ -219,7 +222,7 @@ const TokenFields = `
   }
 `;
 
-export const TOKEN_DATA = (tokenAddress, block) => {
+export const TOKEN_DATA = (tokenAddress: any, block: any) => {
   const queryString = `
     ${TokenFields}
     query tokens {
@@ -257,9 +260,9 @@ export const UNISWAP_ADDITIONAL_TOKEN_DATA = gql`
   }
 `;
 
-export const GET_BLOCKS_QUERY = timestamps => {
+export const GET_BLOCKS_QUERY = (timestamps: any) => {
   let queryString = 'query blocks {';
-  queryString += timestamps.map(timestamp => {
+  queryString += timestamps.map((timestamp: any) => {
     return `t${timestamp}:blocks(first: 1, orderBy: timestamp, orderDirection: desc, where: { timestamp_gt: ${timestamp}, timestamp_lt: ${
       timestamp + 600
     } }) {

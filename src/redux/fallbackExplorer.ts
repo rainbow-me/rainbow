@@ -1,15 +1,21 @@
 import { Contract } from '@ethersproject/contracts';
 import { get, toLower, uniqBy } from 'lodash';
 import isEqual from 'react-fast-compare';
+// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 // eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
 import { explorerInitL2 } from './explorer';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { AssetTypes } from '@rainbow-me/entities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/covalent'... Remove this comment to see the full error message
 import { getAssetsFromCovalent } from '@rainbow-me/handlers/covalent';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 import { web3Provider } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkInf... Remove this comment to see the full error message
 import networkInfo from '@rainbow-me/helpers/networkInfo';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   balanceCheckerContractAbi,
@@ -18,12 +24,16 @@ import {
   ETH_ADDRESS,
   ETH_COINGECKO_ID,
   migratedTokens,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utilities' or its ... Remove this comment to see the full error message
 import { delay } from '@rainbow-me/utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils } from '@rainbow-me/utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
-let lastUpdatePayload = null;
+let lastUpdatePayload: any = null;
 // -- Constants --------------------------------------- //
 const FALLBACK_EXPLORER_CLEAR_STATE = 'explorer/FALLBACK_EXPLORER_CLEAR_STATE';
 const FALLBACK_EXPLORER_SET_ASSETS = 'explorer/FALLBACK_EXPLORER_SET_ASSETS';
@@ -43,23 +53,23 @@ const DISCOVER_NEW_ASSETS_FREQUENCY = 13000;
 // Some contracts like SNX / SUSD use an ERC20 proxy
 // some of those tokens have been migrated to a new address
 // We need to use the current address to fetch the correct price
-const getCurrentAddress = address => {
+const getCurrentAddress = (address: any) => {
   return migratedTokens[address] || address;
 };
 
 const getMainnetAssetsFromCovalent = async (
-  chainId,
-  accountAddress,
-  type,
-  currency,
-  coingeckoIds,
-  allAssets,
-  genericAssets
+  chainId: any,
+  accountAddress: any,
+  type: any,
+  currency: any,
+  coingeckoIds: any,
+  allAssets: any,
+  genericAssets: any
 ) => {
   const data = await getAssetsFromCovalent(chainId, accountAddress, currency);
   if (data) {
     const updatedAt = new Date(data.updated_at).getTime();
-    const assets = data.items.map(item => {
+    const assets = data.items.map((item: any) => {
       let contractAddress = item.contract_address;
       if (toLower(contractAddress) === toLower(COVALENT_ETH_ADDRESS)) {
         contractAddress = ETH_ADDRESS;
@@ -106,7 +116,7 @@ const getMainnetAssetsFromCovalent = async (
   return null;
 };
 
-const findNewAssetsToWatch = () => async (dispatch, getState) => {
+const findNewAssetsToWatch = () => async (dispatch: any, getState: any) => {
   const { accountAddress } = getState().settings;
   const { mainnetAssets, latestTxBlockNumber } = getState().fallbackExplorer;
   const { coingeckoIds } = getState().additionalAssetsData;
@@ -137,10 +147,10 @@ const findNewAssetsToWatch = () => async (dispatch, getState) => {
 };
 
 const findAssetsToWatch = async (
-  address,
-  latestTxBlockNumber,
-  dispatch,
-  coingeckoIds
+  address: any,
+  latestTxBlockNumber: any,
+  dispatch: any,
+  coingeckoIds: any
 ) => {
   // 1 - Discover the list of tokens for the address
   const tokensInWallet = await discoverTokens(
@@ -167,7 +177,7 @@ const findAssetsToWatch = async (
   ];
 };
 
-const getTokenType = tx => {
+const getTokenType = (tx: any) => {
   if (tx.tokenSymbol === 'UNI-V1') return AssetTypes.uniswap;
   if (tx.tokenSymbol === 'UNI-V2') return AssetTypes.uniswapV2;
   if (
@@ -179,14 +189,14 @@ const getTokenType = tx => {
 };
 
 const discoverTokens = async (
-  coingeckoIds,
-  address,
-  latestTxBlockNumber,
-  dispatch
+  coingeckoIds: any,
+  address: any,
+  latestTxBlockNumber: any,
+  dispatch: any
 ) => {
   let page = 1;
   const offset = 1000;
-  let allTxs = [];
+  let allTxs: any = [];
   let poll = true;
   while (poll) {
     const txs = await getTokenTxDataFromEtherscan(
@@ -222,6 +232,7 @@ const discoverTokens = async (
     });
 
     return uniqBy(
+      // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'tx' implicitly has an 'any' type.
       allTxs.map(tx => {
         const type = getTokenType(tx);
         return {
@@ -235,6 +246,7 @@ const discoverTokens = async (
           },
         };
       }),
+      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
       token => token.asset.asset_code
     );
   }
@@ -242,10 +254,10 @@ const discoverTokens = async (
 };
 
 const getTokenTxDataFromEtherscan = async (
-  address,
-  page,
-  offset,
-  latestTxBlockNumber
+  address: any,
+  page: any,
+  offset: any,
+  latestTxBlockNumber: any
 ) => {
   let url = `https://api.etherscan.io/api?module=account&action=tokentx&address=${address}&page=${page}&offset=${offset}&sort=desc&apikey=${ETHERSCAN_API_KEY}`;
   if (latestTxBlockNumber) {
@@ -259,7 +271,7 @@ const getTokenTxDataFromEtherscan = async (
   return null;
 };
 
-const fetchAssetBalances = async (tokens, address, network) => {
+const fetchAssetBalances = async (tokens: any, address: any, network: any) => {
   const balanceCheckerContract = new Contract(
     get(networkInfo[network], 'balance_checker_contract_address'),
     balanceCheckerContractAbi,
@@ -269,12 +281,15 @@ const fetchAssetBalances = async (tokens, address, network) => {
     const values = await balanceCheckerContract.balances([address], tokens);
     const balances = {};
     [address].forEach((addr, addrIdx) => {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       balances[addr] = {};
-      tokens.forEach((tokenAddr, tokenIdx) => {
+      tokens.forEach((tokenAddr: any, tokenIdx: any) => {
         const balance = values[addrIdx * tokens.length + tokenIdx];
+        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         balances[addr][tokenAddr] = balance.toString();
       });
     });
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     return balances[address];
   } catch (e) {
     logger.log(
@@ -289,7 +304,7 @@ const fetchAssetBalances = async (tokens, address, network) => {
 export const fetchOnchainBalances = ({
   keepPolling = true,
   withPrices = true,
-}) => async (dispatch, getState) => {
+}) => async (dispatch: any, getState: any) => {
   logger.log('😬 FallbackExplorer:: fetchOnchainBalances');
   const { network, accountAddress, nativeCurrency } = getState().settings;
   const { assets: allAssets, genericAssets } = getState().data;
@@ -319,7 +334,7 @@ export const fetchOnchainBalances = ({
       : chainAssets[network];
 
   if (!assets.length && accountAssets.length) {
-    assets = accountAssets.map(asset => ({
+    assets = accountAssets.map((asset: any) => ({
       asset: {
         asset_code: asset.address,
         decimals: asset.decimals,
@@ -328,6 +343,7 @@ export const fetchOnchainBalances = ({
         price: asset.price,
         symbol: asset.symbol,
       },
+
       quantity: 0,
     }));
   }
@@ -346,7 +362,7 @@ export const fetchOnchainBalances = ({
     return;
   }
 
-  const tokenAddresses = assets.map(({ asset: { asset_code } }) =>
+  const tokenAddresses = assets.map(({ asset: { asset_code } }: any) =>
     asset_code === ETH_ADDRESS
       ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
       : toLower(asset_code)
@@ -360,7 +376,7 @@ export const fetchOnchainBalances = ({
 
   let updatedAssets = assets;
   if (balances) {
-    updatedAssets = assets.map(assetAndQuantity => {
+    updatedAssets = assets.map((assetAndQuantity: any) => {
       const assetCode = toLower(assetAndQuantity.asset.asset_code);
       return {
         asset: {
@@ -382,7 +398,7 @@ export const fetchOnchainBalances = ({
 
   if (withPrices) {
     const prices = await fetchAssetPricesWithCoingecko(
-      updatedAssets.map(({ asset: { coingecko_id } }) => coingecko_id),
+      updatedAssets.map(({ asset: { coingecko_id } }: any) => coingecko_id),
       formattedNativeCurrency
     );
 
@@ -450,7 +466,10 @@ export const fetchOnchainBalances = ({
   }
 };
 
-export const fallbackExplorerInit = () => async (dispatch, getState) => {
+export const fallbackExplorerInit = () => async (
+  dispatch: any,
+  getState: any
+) => {
   const { accountAddress, network } = getState().settings;
   const { latestTxBlockNumber, mainnetAssets } = getState().fallbackExplorer;
   const { coingeckoIds } = getState().additionalAssetsData;
@@ -481,7 +500,10 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
   dispatch(explorerInitL2());
 };
 
-export const fallbackExplorerClearState = () => (dispatch, getState) => {
+export const fallbackExplorerClearState = () => (
+  dispatch: any,
+  getState: any
+) => {
   const {
     fallbackExplorerBalancesHandle,
     fallbackExplorerAssetsHandle,
@@ -501,7 +523,7 @@ const INITIAL_STATE = {
   mainnetAssets: [],
 };
 
-export default (state = INITIAL_STATE, action) => {
+export default (state = INITIAL_STATE, action: any) => {
   switch (action.type) {
     case FALLBACK_EXPLORER_SET_ASSETS:
       return {

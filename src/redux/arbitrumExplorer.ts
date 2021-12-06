@@ -4,17 +4,23 @@ import isEqual from 'react-fast-compare';
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
 import { emitAssetRequest, emitChartsRequest } from './explorer';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { AssetTypes } from '@rainbow-me/entities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/covalent'... Remove this comment to see the full error message
 import { getAssetsFromCovalent } from '@rainbow-me/handlers/covalent';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkInf... Remove this comment to see the full error message
 import networkInfo from '@rainbow-me/helpers/networkInfo';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   ARBITRUM_ETH_ADDRESS,
   arbitrumTokenMapping,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils } from '@rainbow-me/utils';
 
-let lastUpdatePayload = null;
+let lastUpdatePayload: any = null;
 // -- Constants --------------------------------------- //
 const ARBITRUM_EXPLORER_CLEAR_STATE = 'explorer/ARBITRUM_EXPLORER_CLEAR_STATE';
 const ARBITRUM_EXPLORER_SET_BALANCE_HANDLER =
@@ -26,18 +32,18 @@ const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 60000;
 const network = networkTypes.arbitrum;
 
 const getArbitrumAssetsFromCovalent = async (
-  chainId,
-  accountAddress,
-  type,
-  currency,
-  coingeckoIds,
-  allAssets,
-  genericAssets
+  chainId: any,
+  accountAddress: any,
+  type: any,
+  currency: any,
+  coingeckoIds: any,
+  allAssets: any,
+  genericAssets: any
 ) => {
   const data = await getAssetsFromCovalent(chainId, accountAddress, currency);
   if (data) {
     const updatedAt = new Date(data.updated_at).getTime();
-    const assets = data.items.map(item => {
+    const assets = data.items.map((item: any) => {
       // Arbitrum ETH has no contract address since it's the native token
       const contractAddress = item.contract_address || ARBITRUM_ETH_ADDRESS;
       const mainnetAddress = arbitrumTokenMapping[toLower(contractAddress)];
@@ -84,7 +90,10 @@ const getArbitrumAssetsFromCovalent = async (
   return null;
 };
 
-export const arbitrumExplorerInit = () => async (dispatch, getState) => {
+export const arbitrumExplorerInit = () => async (
+  dispatch: any,
+  getState: any
+) => {
   if (networkInfo[networkTypes.arbitrum]?.disabled) return;
   const { accountAddress, nativeCurrency } = getState().settings;
   const { assets: allAssets, genericAssets } = getState().data;
@@ -119,14 +128,15 @@ export const arbitrumExplorerInit = () => async (dispatch, getState) => {
     }
 
     const tokenAddresses = assets.map(
-      ({ asset: { asset_code } }) => asset_code
+      ({ asset: { asset_code } }: any) => asset_code
     );
 
     dispatch(emitAssetRequest(tokenAddresses));
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 1.
     dispatch(emitChartsRequest(tokenAddresses));
 
     const prices = await fetchAssetPricesWithCoingecko(
-      assets.map(({ asset: { coingecko_id } }) => coingecko_id),
+      assets.map(({ asset: { coingecko_id } }: any) => coingecko_id),
       formattedNativeCurrency
     );
 
@@ -183,7 +193,10 @@ export const arbitrumExplorerInit = () => async (dispatch, getState) => {
   fetchAssetsBalancesAndPrices();
 };
 
-export const arbitrumExplorerClearState = () => (dispatch, getState) => {
+export const arbitrumExplorerClearState = () => (
+  dispatch: any,
+  getState: any
+) => {
   const {
     arbitrumExplorerBalancesHandle,
     arbitrumExplorerAssetsHandle,
@@ -201,7 +214,7 @@ const INITIAL_STATE = {
   arbitrumExplorerBalancesHandle: null,
 };
 
-export default (state = INITIAL_STATE, action) => {
+export default (state = INITIAL_STATE, action: any) => {
   switch (action.type) {
     case ARBITRUM_EXPLORER_CLEAR_STATE:
       return {

@@ -4,6 +4,7 @@ import {
   RecyclerListViewProps,
   RecyclerListViewState,
 } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../RecyclerViewTypes' was resolved to '/Us... Remove this comment to see the full error message
 import { ViewTypes } from '../RecyclerViewTypes';
 
 // TODO: make reusable
@@ -24,6 +25,7 @@ const springAnimation = {
   duration: 200,
   update: {
     initialVelocity: 0,
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
     springDamping: ios ? 1 : 3,
     type: LayoutAnimation.Types.spring,
   },

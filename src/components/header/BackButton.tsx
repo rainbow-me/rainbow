@@ -1,11 +1,15 @@
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../navigation/Navigation' was resolved ... Remove this comment to see the full error message
 import { useNavigation } from '../../navigation/Navigation';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../icons/Icon' was resolved to '/Users/nic... Remove this comment to see the full error message
 import Icon from '../icons/Icon';
 import { Row } from '../layout';
 import Text from '../text/Text';
 import HeaderButton from './HeaderButton';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const Container = styled(Row).attrs({ align: 'center' })`
@@ -28,7 +32,7 @@ export default function BackButton({
   testID,
   textChevron,
   ...props
-}) {
+}: any) {
   const navigation = useNavigation();
 
   const handlePress = useCallback(
@@ -43,6 +47,7 @@ export default function BackButton({
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <HeaderButton
       {...(__DEV__
         ? {
@@ -66,10 +71,15 @@ export default function BackButton({
       throttle={throttle}
       transformOrigin={direction}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Container {...props} textChevron={textChevron}>
         {textChevron ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <IconText color={color}>←</IconText>
         ) : (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <Icon color={color} direction={direction} name="caret" {...props} />
         )}
       </Container>

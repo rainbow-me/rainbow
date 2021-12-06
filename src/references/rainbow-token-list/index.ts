@@ -2,13 +2,16 @@ import { EventEmitter } from 'events';
 import path from 'path';
 import { captureException } from '@sentry/react-native';
 import { keyBy } from 'lodash';
-// @ts-ignore
+// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { RAINBOW_TOKEN_LIST_URL } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
 import { rainbowFetch } from '../../rainbow-fetch';
 import { ETH_ADDRESS } from '../index';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './rainbow-token-list.json'. Co... Remove this comment to see the full error message
 import RAINBOW_TOKEN_LIST_DATA from './rainbow-token-list.json';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { RainbowToken } from '@rainbow-me/entities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 const RB_TOKEN_LIST_CACHE = 'rb-token-list.json';
@@ -31,7 +34,7 @@ const ethWithAddress: RainbowToken = {
  * generateDerivedData generates derived data lists from RAINBOW_TOKEN_LIST_DATA.
  */
 function generateDerivedData(tokenListData: TokenListData) {
-  const tokenList: RainbowToken[] = tokenListData.tokens.map(token => {
+  const tokenList: RainbowToken[] = tokenListData.tokens.map((token: any) => {
     const { address: rawAddress, decimals, name, symbol, extensions } = token;
     const address = rawAddress.toLowerCase();
     return {
@@ -74,7 +77,6 @@ async function readRNFSJsonData<T>(filename: string): Promise<T | null> {
 
     return JSON.parse(data);
   } catch (error) {
-    // @ts-ignore: Skip missing file errors.
     if (error?.code !== 'ENOENT') {
       logger.sentry('Error parsing token-list-cache data');
       logger.error(error);
@@ -144,7 +146,6 @@ async function getTokenListUpdate(
       return { newTokenList: undefined, status };
     }
   } catch (error) {
-    // @ts-ignore
     if (error?.response?.status !== 304) {
       // Log errors that are not 304 no change errors
       logger.sentry('Error fetching token list');
@@ -153,15 +154,17 @@ async function getTokenListUpdate(
     }
     return {
       newTokenList: undefined,
-      // @ts-ignore
       status: error?.response?.status,
     };
   }
 }
 
 class RainbowTokenList extends EventEmitter {
+  // @ts-expect-error ts-migrate(18028) FIXME: Private identifiers are only available when target... Remove this comment to see the full error message
   #tokenListDataStorage = RAINBOW_TOKEN_LIST_DATA;
+  // @ts-expect-error ts-migrate(18028) FIXME: Private identifiers are only available when target... Remove this comment to see the full error message
   #derivedData = generateDerivedData(RAINBOW_TOKEN_LIST_DATA);
+  // @ts-expect-error ts-migrate(18028) FIXME: Private identifiers are only available when target... Remove this comment to see the full error message
   #updateJob: Promise<void> | null = null;
 
   constructor() {

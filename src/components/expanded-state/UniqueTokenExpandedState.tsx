@@ -16,6 +16,7 @@ import Animated, {
 import styled from 'styled-components';
 import useWallets from '../../hooks/useWallets';
 import { lightModeThemeColors } from '../../styles/colors';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../Link' was resolved to '/Users/nickbytes... Remove this comment to see the full error message
 import Link from '../Link';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, Column, Row } from '../layout';
@@ -30,13 +31,17 @@ import { MarkdownText, Text } from '../text';
 import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { TokenInfoItem, TokenInfoRow, TokenInfoSection } from '../token-info';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './ExpandedStateSection' was resolved to '/... Remove this comment to see the full error message
 import ExpandedStateSection from './ExpandedStateSection';
 import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
 } from './unique-token';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/opensea-a... Remove this comment to see the full error message
 import { apiGetUniqueTokenFloorPrice } from '@rainbow-me/handlers/opensea-api';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/assets' or... Remove this comment to see the full error message
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/isSupporte... Remove this comment to see the full error message
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   useAccountProfile,
@@ -44,17 +49,24 @@ import {
   useDimensions,
   usePersistentDominantColorFromImage,
   useShowcaseTokens,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/images' or its cor... Remove this comment to see the full error message
 import { ImgixImage } from '@rainbow-me/images';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utilities' or its ... Remove this comment to see the full error message
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 import {
   buildRainbowUrl,
   ethereumUtils,
   magicMemo,
   safeAreaInsetValues,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/utils';
 
 const NftExpandedStateSection = styled(ExpandedStateSection).attrs({
@@ -68,19 +80,22 @@ const BackgroundBlur = styled(BlurView).attrs({
   ${position.cover};
 `;
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const BackgroundImage = styled.View`
   ${position.cover};
 `;
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const BlurWrapper = styled.View.attrs({
   shouldRasterizeIOS: true,
 })`
-  background-color: ${({ theme: { colors } }) => colors.trueBlack};
-  height: ${({ height }) => height};
+  background-color: ${({ theme: { colors } }: any) => colors.trueBlack};
+  height: ${({ height }: any) => height};
   left: 0;
   overflow: hidden;
   position: absolute;
-  width: ${({ width }) => width};
+  width: ${({ width }: any) => width};
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${android && 'border-top-left-radius: 30; border-top-right-radius: 30;'}
 `;
 
@@ -93,15 +108,17 @@ const SheetDivider = styled(Row)`
   width: ${({ deviceWidth }) => deviceWidth - 48};
 `;
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const Spacer = styled.View`
   height: ${safeAreaInsetValues.bottom + 20};
 `;
 
-const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
+const UniqueTokenExpandedState = ({ asset, external, lowResUrl }: any) => {
   const { accountAddress, accountENS } = useAccountProfile();
   const { nativeCurrency, network } = useAccountSettings();
   const { height: deviceHeight, width: deviceWidth } = useDimensions();
   const { navigate } = useNavigation();
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
 
@@ -158,9 +175,11 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
   }, [colors.whiteLabel, imageColor]);
 
   useEffect(() => {
-    apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then(result => {
-      setFloorPrice(result);
-    });
+    apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then(
+      (result: any) => {
+        setFloorPrice(result);
+      }
+    );
   }, [network, urlSuffixForAsset]);
 
   const handlePressCollectionFloor = useCallback(() => {
@@ -184,6 +203,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
 
   const handlePressShare = useCallback(() => {
     Share.share({
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
       message: android && buildRainbowUrl(asset, accountENS, accountAddress),
       title: `Share ${buildUniqueTokenName(asset)} Info`,
       url: buildRainbowUrl(asset, accountENS, accountAddress),
@@ -207,10 +227,18 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
   const yPosition = useSharedValue(0);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Fragment>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <BlurWrapper height={deviceHeight} width={deviceWidth}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <BackgroundImage>
           {isSVG ? (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <UniqueTokenImage
               backgroundColor={asset.background}
               imageUrl={lowResUrl}
@@ -218,21 +246,29 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
               size={deviceHeight}
             />
           ) : (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <ImgixImage
               resizeMode="cover"
               source={{ uri: lowResUrl }}
               style={{ height: deviceHeight, width: deviceWidth }}
             />
           )}
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <BackgroundBlur />
         </BackgroundImage>
       </BlurWrapper>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <SlackSheet
         backgroundColor={
           isDarkMode ? 'rgba(22, 22, 22, 0.4)' : 'rgba(26, 26, 26, 0.4)'
         }
         bottomInset={42}
         hideHandle
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
         {...(ios
           ? { height: '100%' }
           : { additionalTopPadding: true, contentHeight: deviceHeight })}
@@ -240,11 +276,23 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
         scrollEnabled
         yPosition={yPosition}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Centered paddingBottom={30} paddingTop={33}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Animated.View style={sheetHandleStyle}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <SheetHandle color={colors.alpha(colors.whiteLabel, 0.24)} />
           </Animated.View>
         </Centered>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <UniqueTokenExpandedStateContent
           animationProgress={animationProgress}
           asset={asset}
@@ -254,13 +302,25 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
           textColor={textColor}
           yPosition={yPosition}
         />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Animated.View style={opacityStyle}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Row justify="space-between" marginTop={14} paddingHorizontal={19}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <ButtonPressAnimation
               onPress={handlePressShowcase}
               padding={5}
               scaleTo={0.88}
             >
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Text
                 color={imageColor}
                 lineHeight="loosest"
@@ -270,11 +330,17 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
                 {isShowcaseAsset ? '􀫝 In Showcase' : '􀐇 Showcase'}
               </Text>
             </ButtonPressAnimation>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <ButtonPressAnimation
               onPress={handlePressShare}
               padding={5}
               scaleTo={0.88}
             >
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Text
                 align="right"
                 color={imageColor}
@@ -286,15 +352,24 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
               </Text>
             </ButtonPressAnimation>
           </Row>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <UniqueTokenExpandedStateHeader
             asset={asset}
             imageColor={imageColor}
           />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <SheetActionButtonRow
             ignorePaddingTop
             paddingBottom={24}
             paddingHorizontal={16.5}
           >
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <SheetActionButton
               color={imageColor}
               label={
@@ -308,6 +383,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
               weight="heavy"
             />
             {!external && !isReadOnlyWallet && isSendable ? (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <SendActionButton
                 asset={asset}
                 color={imageColor}
@@ -316,8 +392,17 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
               />
             ) : null}
           </SheetActionButtonRow>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TokenInfoSection isNft>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <TokenInfoRow>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TokenInfoItem
                 color={
                   lastSalePrice === 'None' && !currentPrice
@@ -342,6 +427,9 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
                       nativeCurrency
                     )}
               </TokenInfoItem>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TokenInfoItem
                 align="right"
                 color={
@@ -364,25 +452,46 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
                 floorPrice === 'None'
                   ? floorPrice
                   : convertAmountToNativeDisplay(
+                      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'null' is not assignable to param... Remove this comment to see the full error message
                       parseFloat(floorPrice) * priceOfEth,
                       nativeCurrency
                     )}
               </TokenInfoItem>
             </TokenInfoRow>
           </TokenInfoSection>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Column>
             {!!description && (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <Fragment>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <SheetDivider deviceWidth={deviceWidth} />
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <NftExpandedStateSection title="Description">
                   {description}
                 </NftExpandedStateSection>
               </Fragment>
             )}
             {!!traits.length && (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <Fragment>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <SheetDivider deviceWidth={deviceWidth} />
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <NftExpandedStateSection title="Properties">
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                  unless the '--jsx' flag is provided... Remove this comment to
+                  see the full error message
                   <UniqueTokenAttributes
                     {...asset}
                     color={imageColor}
@@ -392,10 +501,23 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
               </Fragment>
             )}
             {!!familyDescription && (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <Fragment>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <SheetDivider deviceWidth={deviceWidth} />
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <NftExpandedStateSection title={`About ${familyName}`}>
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                  unless the '--jsx' flag is provided... Remove this comment to
+                  see the full error message
                   <Column>
+                    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                    unless the '--jsx' flag is provided... Remove this comment
+                    to see the full error message
                     <MarkdownText
                       color={colors.alpha(colors.whiteLabel, 0.5)}
                       lineHeight="big"
@@ -403,16 +525,28 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
                     >
                       {familyDescription}
                     </MarkdownText>
+                    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                    unless the '--jsx' flag is provided... Remove this comment
+                    to see the full error message
                     {familyLink && <Link url={familyLink} />}
                   </Column>
                 </NftExpandedStateSection>
               </Fragment>
             )}
           </Column>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Spacer />
         </Animated.View>
       </SlackSheet>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ToastPositionContainer>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ToggleStateToast
           addCopy="Added to showcase"
           isAdded={isShowcaseAsset}

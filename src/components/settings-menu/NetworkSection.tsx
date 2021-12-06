@@ -11,6 +11,7 @@ import {
   useInitializeAccountData,
   useLoadAccountData,
   useResetAccountState,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
 
 const networks = values(networkInfo).filter(network => !network.layer2);
@@ -36,6 +37,7 @@ const NetworkSection = () => {
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <RadioList
       extraData={network}
       items={networks.map(({ disabled, name, value }) => ({

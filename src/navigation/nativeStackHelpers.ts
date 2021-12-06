@@ -1,2 +1,3 @@
 export const appearListener = { current: null };
-export const setListener = listener => (appearListener.current = listener);
+export const setListener = (listener: any) =>
+  (appearListener.current = listener);

@@ -9,32 +9,44 @@ import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
 import useExperimentalFlag, {
   AVATAR_PICKER,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/config/experimenta... Remove this comment to see the full error message
 } from '@rainbow-me/config/experimentalHooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { TransactionStatusTypes } from '@rainbow-me/entities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/support' o... Remove this comment to see the full error message
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/transactio... Remove this comment to see the full error message
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
 import {
   getHumanReadableDate,
   hasAddableContact,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/transactio... Remove this comment to see the full error message
 } from '@rainbow-me/helpers/transactions';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/validators... Remove this comment to see the full error message
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountProfile,
   useOnAvatarPress,
   useSafeImageUri,
   useWallets,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation/Navigat... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/requests' or... Remove this comment to see the full error message
 import { removeRequest } from '@rainbow-me/redux/requests';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
 import {
   abbreviations,
   ethereumUtils,
   showActionSheetWithOptions,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/utils';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const Container = styled.View`
   flex: 1;
   margin-top: 0;
@@ -62,7 +74,7 @@ export default function TransactionList({
   isLoading,
   requests,
   transactions,
-}) {
+}: any) {
   const { isDamaged } = useWallets();
   const [tapTarget, setTapTarget] = useState([0, 0, 0, 0]);
   const onNewEmoji = useRef();
@@ -175,6 +187,7 @@ export default function TransactionList({
           ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
           ...(canBeCancelled ? [TransactionActions.cancel] : []),
           blockExplorerAction,
+          // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
           ...(ios ? [TransactionActions.close] : []),
         ];
         if (showContactInfo) {
@@ -199,7 +212,7 @@ export default function TransactionList({
               ? `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`
               : `${headerInfo.type} ${date}`,
           },
-          buttonIndex => {
+          (buttonIndex: any) => {
             const action = buttons[buttonIndex];
             switch (action) {
               case TransactionActions.viewContact:
@@ -247,6 +260,7 @@ export default function TransactionList({
       const { x, y, width, height } = e.nativeEvent;
       setTapTarget([x, y, width, height]);
       if (onNewEmoji && onNewEmoji.current) {
+        // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
         onNewEmoji.current();
       }
       Clipboard.setString(accountAddress);
@@ -267,6 +281,7 @@ export default function TransactionList({
   const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
 
   const safeAccountImage = useSafeImageUri(accountImage);
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { isDarkMode, colors } = useTheme();
 
   const onNativeAvatarMenuSelect = useCallback(
@@ -298,7 +313,7 @@ export default function TransactionList({
   );
 
   const data = useMemo(() => {
-    const requestsNative = requests.map(request =>
+    const requestsNative = requests.map((request: any) =>
       pick(request, [
         'clientId',
         'dappName',
@@ -314,7 +329,11 @@ export default function TransactionList({
   }, [requests, transactions]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Container
         accountAddress={accountName}
         accountColor={colors.avatarBackgrounds[accountColor]}
@@ -337,6 +356,9 @@ export default function TransactionList({
         onRequestPress={onRequestPress}
         onTransactionPress={onTransactionPress}
       />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <FloatingEmojisRegion
         setOnNewEmoji={setOnNewEmoji}
         tapTarget={tapTarget}

@@ -2,7 +2,9 @@ import React, { createElement } from 'react';
 import styled from 'styled-components';
 import { CoinIcon, CoinIconGroup, CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useAccountSettings } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding } from '@rainbow-me/styles';
 
 const CoinRowPaddingTop = 9;
@@ -45,12 +47,14 @@ export default function CoinRow({
   topRowRender,
   tokens,
   ...props
-}) {
+}: any) {
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container css={containerStyles}>
       {isPool ? (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <CoinIconGroup tokens={tokens} />
       ) : (
         createElement(coinIconRender, {
@@ -64,7 +68,13 @@ export default function CoinRow({
           ...props,
         })
       )}
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Content isHidden={isHidden} justify="center" style={contentStyles}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Row align="center" testID={`${testID}-${symbol || ''}`}>
           {topRowRender({
             name,
@@ -74,6 +84,9 @@ export default function CoinRow({
             ...props,
           })}
         </Row>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Row align="center" marginBottom={0.5}>
           {bottomRowRender({
             nativeCurrency,

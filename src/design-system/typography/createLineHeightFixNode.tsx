@@ -10,6 +10,8 @@ import { Text as NativeText } from 'react-native';
 // To remove this additional space we've dropped the line height offset to an
 // arbitrarily small number that's close to zero.
 export const createLineHeightFixNode = (lineHeight: number | undefined) =>
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   android && lineHeight !== undefined ? (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <NativeText style={{ lineHeight: lineHeight - 0.001 }} />
   ) : null;

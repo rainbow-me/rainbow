@@ -1,5 +1,7 @@
 import React, { useContext, useMemo } from 'react';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../color/AccentColorContext' was resolv... Remove this comment to see the full error message
 import { AccentColorContext } from '../../color/AccentColorContext';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../color/ColorMode' was resolved to '/U... Remove this comment to see the full error message
 import { ColorModeContext, ColorModeProvider } from '../../color/ColorMode';
 import { BackgroundColor } from '../../color/palettes';
 
@@ -29,6 +31,7 @@ export function BackgroundProvider({
   const child = children(style);
 
   return background.mode !== colorMode ? (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ColorModeProvider value={background.mode}>{child}</ColorModeProvider>
   ) : (
     child

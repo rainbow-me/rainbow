@@ -18,12 +18,13 @@ let config = { ...DefaultConfig };
 
 const getSpringConfig = () => config;
 
-const setSpringConfig = changesToConfig => {
+const setSpringConfig = (changesToConfig: any) => {
   const newConfig = {
     ...config,
     ...changesToConfig,
   };
 
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 5 arguments, but got 1.
   const alphabeticalConfigKeys = sortList(Object.keys(newConfig));
   const arrayOfConfigObjects = alphabeticalConfigKeys.map(key => ({
     [key]: newConfig[key],

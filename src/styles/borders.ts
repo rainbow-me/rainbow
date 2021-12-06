@@ -5,26 +5,37 @@ import position from './position';
 
 const border = {};
 
+// @ts-expect-error ts-migrate(2339) FIXME: Property 'color' does not exist on type '{}'.
 border.color = colors.lighterGrey;
+// @ts-expect-error ts-migrate(2339) FIXME: Property 'radius' does not exist on type '{}'.
 border.radius = 6;
+// @ts-expect-error ts-migrate(2339) FIXME: Property 'width' does not exist on type '{}'.
 border.width = 1;
 
+// @ts-expect-error ts-migrate(2339) FIXME: Property 'default' does not exist on type '{}'.
 border.default = css`
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'color' does not exist on type '{}'.
   border-color: ${border.color};
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'width' does not exist on type '{}'.
   border-width: ${border.width};
 `;
 
-border.buildCircle = size => `
+// @ts-expect-error ts-migrate(2339) FIXME: Property 'buildCircle' does not exist on type '{}'... Remove this comment to see the full error message
+border.buildCircle = (size: any) => `
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'size' does not exist on type '{}'.
   ${position.size(size)};
   border-radius: ${size / 2};
 `;
 
-border.buildCircleAsObject = size => ({
+// @ts-expect-error ts-migrate(2339) FIXME: Property 'buildCircleAsObject' does not exist on t... Remove this comment to see the full error message
+border.buildCircleAsObject = (size: any) => ({
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'sizeAsObject' does not exist on type '{}... Remove this comment to see the full error message
   ...position.sizeAsObject(size),
   borderRadius: size / 2,
 });
 
-border.buildRadius = (direction, value = border.radius) => {
+// @ts-expect-error ts-migrate(2339) FIXME: Property 'buildRadius' does not exist on type '{}'... Remove this comment to see the full error message
+border.buildRadius = (direction: any, value = border.radius) => {
   if (direction === 'bottom' || direction === 'top') {
     return `
       border-${direction}-left-radius: ${value};
@@ -46,7 +57,8 @@ border.buildRadius = (direction, value = border.radius) => {
   `;
 };
 
-border.buildRadiusAsObject = (direction, value = border.radius) => {
+// @ts-expect-error ts-migrate(2339) FIXME: Property 'buildRadiusAsObject' does not exist on t... Remove this comment to see the full error message
+border.buildRadiusAsObject = (direction: any, value = border.radius) => {
   if (direction === 'bottom' || direction === 'top') {
     return {
       [`border${upperFirst(direction)}LeftRadius`]: value,

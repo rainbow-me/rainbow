@@ -21,10 +21,15 @@ const EmptyValue = styled(Column)`
   margin-right: 10;
 `;
 
-const PinValue = ({ translateX, value, ...props }) => {
+const PinValue = ({ translateX, value, ...props }: any) => {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Flex {...props}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Animated.View
         style={{
           flexDirection: 'row',
@@ -32,23 +37,31 @@ const PinValue = ({ translateX, value, ...props }) => {
         }}
       >
         {value && value.length ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <FilledValue backgroundColor={colors.appleBlue} />
         ) : (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <EmptyValue />
         )}
         {value && value.length > 1 ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <FilledValue backgroundColor={colors.appleBlue} />
         ) : (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <EmptyValue />
         )}
         {value && value.length > 2 ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <FilledValue backgroundColor={colors.appleBlue} />
         ) : (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <EmptyValue />
         )}
         {value && value.length > 3 ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <FilledValue backgroundColor={colors.appleBlue} />
         ) : (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <EmptyValue />
         )}
       </Animated.View>

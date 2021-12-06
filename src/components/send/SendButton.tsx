@@ -9,7 +9,8 @@ export default function SendButton({
   onLongPress,
   testID,
   ...props
-}) {
+}: any) {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors, isDarkMode } = useTheme();
   const colorForAsset = isNft ? colors.appleBlue : backgroundColor;
 
@@ -25,6 +26,7 @@ export default function SendButton({
   };
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <HoldToAuthorizeButton
       {...props}
       backgroundColor={colorForAsset}

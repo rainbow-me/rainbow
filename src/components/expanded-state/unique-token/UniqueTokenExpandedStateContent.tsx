@@ -9,13 +9,17 @@ import { SimpleModelView } from '../../3d';
 import { AudioPlayer } from '../../audio';
 import { UniqueTokenImage } from '../../unique-token';
 import { SimpleVideo } from '../../video';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './ZoomableWrapper' was resolved to '/Users... Remove this comment to see the full error message
 import { ZoomableWrapper } from './ZoomableWrapper';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/isSupporte... Remove this comment to see the full error message
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   useDimensions,
   usePersistentAspectRatio,
   useUniqueToken,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position } from '@rainbow-me/styles';
 
 const pixelRatio = PixelRatio.get();
@@ -46,7 +50,7 @@ const UniqueTokenExpandedStateContent = ({
   textColor,
   disablePreview,
   yPosition,
-}) => {
+}: any) => {
   const { width: deviceWidth } = useDimensions();
 
   const maxImageWidth = deviceWidth - horizontalPadding * 2;
@@ -80,6 +84,7 @@ const UniqueTokenExpandedStateContent = ({
   const [loading, setLoading] = React.useState(supports3d || supportsVideo);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ZoomableWrapper
       animationProgress={animationProgress}
       aspectRatio={aspectRatioWithFallback}
@@ -89,8 +94,12 @@ const UniqueTokenExpandedStateContent = ({
       isENS={isENS}
       yDisplacement={yPosition}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <View style={StyleSheet.absoluteFill}>
         {supportsVideo ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <SimpleVideo
             loading={loading}
             posterUri={imageUrl}
@@ -99,6 +108,7 @@ const UniqueTokenExpandedStateContent = ({
             uri={asset.animation_url || imageUrl}
           />
         ) : supports3d ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <ModelView
             fallbackUri={imageUrl}
             loading={loading}
@@ -106,12 +116,14 @@ const UniqueTokenExpandedStateContent = ({
             uri={asset.animation_url || imageUrl}
           />
         ) : supportsAudio ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <AudioPlayer
             fontColor={textColor}
             imageColor={imageColor}
             uri={asset.animation_url || imageUrl}
           />
         ) : (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <UniqueTokenImage
             backgroundColor={asset.background}
             imageUrl={isSVG ? asset.image_url : url}
@@ -123,7 +135,11 @@ const UniqueTokenExpandedStateContent = ({
           />
         )}
         {!!loading && (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <LoadingWrapper>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <ActivityIndicator />
           </LoadingWrapper>
         )}
@@ -132,4 +148,5 @@ const UniqueTokenExpandedStateContent = ({
   );
 };
 
+// @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
 export default magicMemo(UniqueTokenExpandedStateContent, 'asset.uniqueId');

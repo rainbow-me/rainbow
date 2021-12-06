@@ -7,8 +7,10 @@ import { InteractionManager } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/Divider' was resolved to '/U... Remove this comment to see the full error message
 import Divider from '../components/Divider';
 import { ButtonPressAnimation } from '../components/animations';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/change-wallet/WalletList' wa... Remove this comment to see the full error message
 import WalletList from '../components/change-wallet/WalletList';
 import { Centered, Column, Row } from '../components/layout';
 import { Sheet, SheetTitle } from '../components/sheet';
@@ -19,6 +21,7 @@ import showWalletErrorAlert from '../helpers/support';
 import WalletLoadingStates from '../helpers/walletLoadingStates';
 import WalletTypes from '../helpers/walletTypes';
 import { cleanUpWalletKeys, createWallet } from '../model/wallet';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../navigation/Navigation' was resolved to ... Remove this comment to see the full error message
 import { useNavigation } from '../navigation/Navigation';
 import {
   addressSetSelected,
@@ -27,7 +30,9 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/utilities'... Remove this comment to see the full error message
 import { asyncSome } from '@rainbow-me/helpers/utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/walletBack... Remove this comment to see the full error message
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import {
   useAccountSettings,
@@ -35,14 +40,18 @@ import {
   useWallets,
   useWalletsWithBalancesAndNames,
   useWebData,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
 import {
   abbreviations,
   deviceUtils,
   showActionSheetWithOptions,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/utils';
 
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 const deviceHeight = deviceUtils.dimensions.height;
@@ -57,6 +66,7 @@ const EditButton = styled(ButtonPressAnimation).attrs(({ editMode }) => ({
     width: editMode ? 70 : 58,
   },
 }))`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
   ${ios
     ? `
     position: absolute;
@@ -81,20 +91,22 @@ const EditButtonLabel = styled(Text).attrs(
 )`
   height: 40px;
 `;
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const Whitespace = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.white};
+  background-color: ${({ theme: { colors } }: any) => colors.white};
   bottom: -400px;
   height: 400px;
   position: absolute;
   width: 100%;
 `;
 
-const getWalletRowCount = wallets => {
+const getWalletRowCount = (wallets: any) => {
   let count = 0;
   if (wallets) {
     Object.keys(wallets).forEach(key => {
       // Addresses
-      count += wallets[key].addresses.filter(account => account.visible).length;
+      count += wallets[key].addresses.filter((account: any) => account.visible)
+        .length;
     });
   }
   return count;
@@ -102,6 +114,7 @@ const getWalletRowCount = wallets => {
 
 export default function ChangeWalletSheet() {
   const { params = {} } = useRoute();
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'onChangeWallet' does not exist on type '... Remove this comment to see the full error message
   const { onChangeWallet, watchOnly = false, currentAccountAddress } = params;
   const {
     isDamaged,
@@ -110,6 +123,7 @@ export default function ChangeWalletSheet() {
     wallets,
   } = useWallets();
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const { updateWebProfile } = useWebData();
   const { accountAddress } = useAccountSettings();
@@ -132,6 +146,7 @@ export default function ChangeWalletSheet() {
   let headerHeight = 30;
   let listHeight =
     walletRowHeight * walletRowCount +
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     (!watchOnly ? footerHeight + listPaddingBottom : android ? 20 : 0);
   let scrollEnabled = false;
   let showDividers = false;
@@ -184,7 +199,7 @@ export default function ChangeWalletSheet() {
         ...wallets,
         [walletId]: {
           ...wallets[walletId],
-          addresses: wallets[walletId].addresses.map(account =>
+          addresses: wallets[walletId].addresses.map((account: any) =>
             toLower(account.address) === toLower(address)
               ? { ...account, visible: false }
               : account
@@ -194,7 +209,7 @@ export default function ChangeWalletSheet() {
       // If there are no visible wallets
       // then delete the wallet
       const visibleAddresses = newWallets[walletId].addresses.filter(
-        account => account.visible
+        (account: any) => account.visible
       );
       if (visibleAddresses.length === 0) {
         delete newWallets[walletId];
@@ -211,7 +226,7 @@ export default function ChangeWalletSheet() {
     (walletId, address) => {
       const wallet = wallets[walletId];
       const account = wallet.addresses.find(
-        account => account.address === address
+        (account: any) => account.address === address
       );
 
       InteractionManager.runAfterInteractions(() => {
@@ -223,7 +238,7 @@ export default function ChangeWalletSheet() {
           navigate(Routes.MODAL_SCREEN, {
             address,
             asset: [],
-            onCloseModal: async args => {
+            onCloseModal: async (args: any) => {
               if (args) {
                 const newWallets = { ...wallets };
                 if ('name' in args) {
@@ -232,7 +247,7 @@ export default function ChangeWalletSheet() {
                   });
                   asyncSome(
                     newWallets[walletId].addresses,
-                    async (account, index) => {
+                    async (account: any, index: any) => {
                       if (account.address === address) {
                         newWallets[walletId].addresses[index].label = args.name;
                         newWallets[walletId].addresses[index].color =
@@ -289,7 +304,7 @@ export default function ChangeWalletSheet() {
         const key = Object.keys(wallets)[i];
         const someWallet = wallets[key];
         const otherAccount = someWallet.addresses.find(
-          account => account.visible && account.address !== address
+          (account: any) => account.visible && account.address !== address
         );
         if (otherAccount) {
           isLastAvailableWallet = true;
@@ -308,7 +323,7 @@ export default function ChangeWalletSheet() {
           options: buttons,
           title: `${label || abbreviations.address(address, 4, 6)}`,
         },
-        buttonIndex => {
+        (buttonIndex: any) => {
           if (buttonIndex === 0) {
             // Edit wallet
             analytics.track('Tapped "Edit Wallet"');
@@ -323,7 +338,7 @@ export default function ChangeWalletSheet() {
                 message: `Are you sure you want to delete this wallet?`,
                 options: ['Delete Wallet', 'Cancel'],
               },
-              async buttonIndex => {
+              async (buttonIndex: any) => {
                 if (buttonIndex === 0) {
                   analytics.track('Tapped "Delete Wallet" (final confirm)');
                   await deleteWallet(walletId, address);
@@ -340,7 +355,7 @@ export default function ChangeWalletSheet() {
                         const key = Object.keys(wallets)[i];
                         const someWallet = wallets[key];
                         const found = someWallet.addresses.find(
-                          account =>
+                          (account: any) =>
                             account.visible && account.address !== address
                         );
 
@@ -373,6 +388,7 @@ export default function ChangeWalletSheet() {
     try {
       analytics.track('Tapped "Create a new wallet"');
       if (creatingWallet.current) return;
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'true' is not assignable to type 'undefined'.
       creatingWallet.current = true;
 
       // Show naming modal
@@ -385,7 +401,7 @@ export default function ChangeWalletSheet() {
             actionType: 'Create',
             asset: [],
             isNewProfile: true,
-            onCloseModal: async args => {
+            onCloseModal: async (args: any) => {
               if (args) {
                 setIsWalletLoading(WalletLoadingStates.CREATING_WALLET);
                 const name = get(args, 'name', '');
@@ -465,6 +481,7 @@ export default function ChangeWalletSheet() {
                   }
                 }
               }
+              // @ts-expect-error ts-migrate(2322) FIXME: Type 'false' is not assignable to type 'undefined'... Remove this comment to see the full error message
               creatingWallet.current = false;
               setIsWalletLoading(null);
             },
@@ -503,15 +520,32 @@ export default function ChangeWalletSheet() {
   }, []);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Sheet borderRadius={30}>
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
       {android && <Whitespace />}
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Column height={headerHeight} justify="space-between">
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Centered>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <SheetTitle>Wallets</SheetTitle>
-
           {!watchOnly && (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <Row style={{ position: 'absolute', right: 0 }}>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <EditButton editMode={editMode} onPress={onPressEditMode}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <EditButtonLabel editMode={editMode}>
                   {editMode ? 'Done' : 'Edit'}
                 </EditButtonLabel>
@@ -520,10 +554,13 @@ export default function ChangeWalletSheet() {
           )}
         </Centered>
         {showDividers && (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
         )}
       </Column>
-
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <WalletList
         accountAddress={currentAddress}
         allWallets={walletsWithBalancesAndNames}

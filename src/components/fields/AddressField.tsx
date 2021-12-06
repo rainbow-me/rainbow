@@ -6,12 +6,15 @@ import { checkIsValidAddressOrDomain } from '../../helpers/validators';
 import { Input } from '../inputs';
 import { Row } from '../layout';
 import { Label } from '../text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { abbreviations, addressUtils } from '@rainbow-me/utils';
 
 const AddressInput = styled(Input).attrs({
   autoCapitalize: 'none',
   autoCorrect: false,
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   keyboardType: android ? 'visible-password' : 'default',
   maxLength: addressUtils.maxLength,
   selectTextOnFocus: true,
@@ -19,6 +22,7 @@ const AddressInput = styled(Input).attrs({
   spellCheck: false,
   weight: 'bold',
 })`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${android && 'height: 56;'}
   flex-grow: 1;
   margin-top: 1;
@@ -26,7 +30,9 @@ const AddressInput = styled(Input).attrs({
 `;
 
 const Placeholder = styled(Row)`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   margin-left: ${android ? 4 : 0};
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   margin-top: ${android ? 11 : 0};
   position: absolute;
   top: 0;
@@ -41,16 +47,17 @@ const PlaceholderText = styled(Label).attrs({
   opacity: 1;
 `;
 
-const formatValue = value =>
+const formatValue = (value: any) =>
   isHexString(value) && value.length === addressUtils.maxLength
     ? abbreviations.address(value, 4, 4)
     : value;
 
 const AddressField = (
-  { address, autoFocus, name, onChange, onFocus, testID, ...props },
-  ref
+  { address, autoFocus, name, onChange, onFocus, testID, ...props }: any,
+  ref: any
 ) => {
   const { isTinyPhone } = useDimensions();
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const { clipboard, setClipboard } = useClipboard();
   const [inputValue, setInputValue] = useState('');
@@ -84,7 +91,11 @@ const AddressField = (
   }, [address, inputValue, name, validateAddress]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Row flex={1}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <AddressInput
         {...props}
         autoFocus={autoFocus}
@@ -98,9 +109,18 @@ const AddressField = (
         value={formatValue(inputValue)}
       />
       {!inputValue && (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <Placeholder>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableWithoutFeedback onPress={ref?.current?.focus}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <PlaceholderText>
+              // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name
+              'android'.
               {android || isTinyPhone
                 ? 'ENS or address'
                 : 'Name, ENS, or address'}

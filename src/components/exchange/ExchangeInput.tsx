@@ -1,13 +1,17 @@
 import React, { Fragment, useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import TextInputMask from 'react-native-text-input-mask';
 import styled from 'styled-components';
 import { Text } from '../text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { buildTextStyles } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { magicMemo } from '@rainbow-me/utils';
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const AndroidMaskWrapper = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.white};
+  background-color: ${({ theme: { colors } }: any) => colors.white};
   bottom: 0;
   left: 68.7;
   position: absolute;
@@ -20,6 +24,7 @@ const Input = styled(TextInputMask).attrs({
   keyboardType: 'decimal-pad',
 })`
   ${buildTextStyles};
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${android ? 'font-weight: normal' : ''};
   flex: 1;
 `;
@@ -46,9 +51,10 @@ const ExchangeInput = (
     value = '',
     weight = 'semibold',
     ...props
-  },
-  ref
+  }: any,
+  ref: any
 ) => {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const color = givenColor || colors.dark;
   const placeholderTextColor =
@@ -109,7 +115,11 @@ const ExchangeInput = (
   }
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Fragment>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Input
         {...props}
         color={color}
@@ -132,7 +142,11 @@ const ExchangeInput = (
         weight={weight}
       />
       {useCustomAndroidMask && value > 0 && !ref.current?.isFocused() && (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <AndroidMaskWrapper>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Text
             color={color}
             letterSpacing={letterSpacing}

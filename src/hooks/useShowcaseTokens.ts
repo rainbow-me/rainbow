@@ -14,6 +14,7 @@ export default function useShowcaseTokens() {
   const { isReadOnlyWallet } = useWallets();
 
   const showcaseTokens = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'showcaseTokens' does not exist on type '... Remove this comment to see the full error message
     state => state.showcaseTokens.showcaseTokens
   );
 
@@ -30,7 +31,7 @@ export default function useShowcaseTokens() {
     async asset => {
       dispatch(rawRemoveShowcaseToken(asset));
       !isReadOnlyWallet &&
-        updateWebShowcase(showcaseTokens.filter(id => id !== asset));
+        updateWebShowcase(showcaseTokens.filter((id: any) => id !== asset));
     },
     [dispatch, isReadOnlyWallet, showcaseTokens, updateWebShowcase]
   );

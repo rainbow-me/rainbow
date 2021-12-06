@@ -2,12 +2,14 @@ import { upperCase, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Linking } from 'react-native';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
 import { magicMemo, showActionSheetWithOptions } from '../utils';
 import { ButtonPressAnimation } from './animations';
 import { Centered, Column } from './layout';
 import { Text as TextElement } from './text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding } from '@rainbow-me/styles';
 
 const PropertyActionsEnum = {
@@ -60,9 +62,10 @@ const Title = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
   margin-bottom: 1;
 `;
 
-const Tag = ({ color, slug, text, title, ...props }) => {
+const Tag = ({ color, slug, text, title, ...props }: any) => {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useCallback'.
   const handlePressMenuItem = useCallback(
-    ({ nativeEvent: { actionKey } }) => {
+    ({ nativeEvent: { actionKey } }: any) => {
       if (actionKey === PropertyActionsEnum.viewTraitOnOpensea) {
         Linking.openURL(
           'https://opensea.io/collection/' +
@@ -77,6 +80,7 @@ const Tag = ({ color, slug, text, title, ...props }) => {
     [slug, text, title]
   );
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const menuConfig = useMemo(() => {
     return {
       menuItems: [
@@ -88,6 +92,7 @@ const Tag = ({ color, slug, text, title, ...props }) => {
     };
   }, []);
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useCallback'.
   const onPressAndroid = useCallback(() => {
     const androidContractActions = ['View All With Property'];
 
@@ -97,7 +102,7 @@ const Tag = ({ color, slug, text, title, ...props }) => {
         showSeparators: true,
         title: '',
       },
-      idx => {
+      (idx: any) => {
         if (idx === 0) {
           Linking.openURL(
             'https://opensea.io/collection/' +
@@ -113,19 +118,36 @@ const Tag = ({ color, slug, text, title, ...props }) => {
   }, []);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ContextMenuButton
       activeOpacity={0}
       menuConfig={menuConfig}
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
       {...(android ? { onPress: onPressAndroid } : {})}
       isMenuPrimaryAction
       onPressMenuItem={handlePressMenuItem}
       useActionSheetFallback={false}
       wrapNativeComponent={false}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ButtonPressAnimation>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <OuterBorder {...props} color={color}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Container>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Title color={color}>{upperCase(title)}</Title>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text>{upperFirst(text)}</Text>
           </Container>
         </OuterBorder>
@@ -141,4 +163,5 @@ Tag.propTypes = {
   title: PropTypes.string.isRequired,
 };
 
+// @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
 export default magicMemo(Tag, ['color', 'slug', 'text', 'title']);

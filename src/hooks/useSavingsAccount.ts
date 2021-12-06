@@ -12,26 +12,35 @@ import {
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/apollo/client' or ... Remove this comment to see the full error message
 import { compoundClient } from '@rainbow-me/apollo/client';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/apollo/queries' or... Remove this comment to see the full error message
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@rainbow-me/apollo/queries';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { AssetTypes } from '@rainbow-me/entities';
 import {
   getSavings,
   saveSavings,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/localstor... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/localstorage/accountLocal';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/utilities'... Remove this comment to see the full error message
 import { multiply } from '@rainbow-me/helpers/utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/parsers' or its co... Remove this comment to see the full error message
 import { parseAssetName, parseAssetSymbol } from '@rainbow-me/parsers';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/explorer' or... Remove this comment to see the full error message
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 import {
   CDAI_CONTRACT,
   DAI_ADDRESS,
   ETH_ADDRESS,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 
 const COMPOUND_QUERY_INTERVAL = 120000; // 120 seconds
 
-const getMarketData = marketData => {
+const getMarketData = (marketData: any) => {
   if (!marketData) return {};
   const underlying = getUnderlyingData(marketData);
   const cToken = getCTokenData(marketData);
@@ -45,7 +54,7 @@ const getMarketData = marketData => {
   };
 };
 
-const getCTokenData = marketData => {
+const getCTokenData = (marketData: any) => {
   const {
     id: cTokenAddress,
     name: originalName,
@@ -63,7 +72,7 @@ const getCTokenData = marketData => {
   };
 };
 
-const getUnderlyingData = marketData => {
+const getUnderlyingData = (marketData: any) => {
   const {
     underlyingAddress,
     underlyingDecimals,
@@ -82,7 +91,7 @@ const getUnderlyingData = marketData => {
   };
 };
 
-const getUnderlyingPrice = token => {
+const getUnderlyingPrice = (token: any) => {
   const underlyingPrice = ethereumUtils.getAssetPrice(token.underlying.address);
   const underlyingBalanceNativeValue =
     underlyingPrice && token.supplyBalanceUnderlying
@@ -95,10 +104,11 @@ const getUnderlyingPrice = token => {
   };
 };
 
-export default function useSavingsAccount(includeDefaultDai) {
+export default function useSavingsAccount(includeDefaultDai: any) {
   const [result, setResult] = useState({});
   const [backupSavings, setBackupSavings] = useState(null);
   const genericAssets = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
     ({ data: { genericAssets } }) => genericAssets
   );
 
@@ -108,6 +118,7 @@ export default function useSavingsAccount(includeDefaultDai) {
   const hasAccountAddress = !!accountAddress;
 
   const { shouldRefetchSavings } = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
     ({ data: { shouldRefetchSavings } }) => ({
       shouldRefetchSavings,
     })
@@ -180,6 +191,7 @@ export default function useSavingsAccount(includeDefaultDai) {
       saveSavings(result, accountAddress, network);
       setResult(result);
     } else if (loading && !isNil(backupSavings)) {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'null' is not assignable to param... Remove this comment to see the full error message
       setResult(backupSavings);
     } else {
       setResult({});
@@ -194,6 +206,7 @@ export default function useSavingsAccount(includeDefaultDai) {
   const savings = useMemo(() => {
     if (isEmpty(result)) return [];
 
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'accountTokens' does not exist on type '{... Remove this comment to see the full error message
     const { accountTokens, daiMarketData } = result;
     const accountTokensWithPrices = map(accountTokens, getUnderlyingPrice);
 

@@ -1,4 +1,5 @@
 import { getGlobal, saveGlobal } from './common';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { NonceManager } from '@rainbow-me/entities';
 
 export const NONCE_MANAGER = 'nonceManager';

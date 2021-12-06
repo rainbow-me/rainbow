@@ -2,7 +2,7 @@
 const APP_STATE_UPDATE = 'contacts/APP_STATE_UPDATE';
 // -- Actions ---------------------------------------- //
 
-export const appStateUpdate = stateToUpdate => dispatch => {
+export const appStateUpdate = (stateToUpdate: any) => (dispatch: any) => {
   dispatch({
     payload: stateToUpdate,
     type: APP_STATE_UPDATE,
@@ -14,7 +14,7 @@ const INITIAL_STATE = {
   walletReady: false,
 };
 
-export default (state = INITIAL_STATE, action) => {
+export default (state = INITIAL_STATE, action: any) => {
   switch (action.type) {
     case APP_STATE_UPDATE:
       return { ...state, ...action.payload };

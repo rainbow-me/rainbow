@@ -15,39 +15,47 @@ import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentRow } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../navigation/Navigation' was resolved to ... Remove this comment to see the full error message
 import { withNavigation } from '../navigation/Navigation';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../utils/recompactAdapters' was resolved t... Remove this comment to see the full error message
 import { compose, withHandlers } from '../utils/recompactAdapters';
 import { buildCoinsList, buildUniqueTokenList } from './assets';
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/images' or its cor... Remove this comment to see the full error message
 import { ImgixImage } from '@rainbow-me/images';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/editOptions'... Remove this comment to see the full error message
 import { setIsCoinListEdited } from '@rainbow-me/redux/editOptions';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/openStateSet... Remove this comment to see the full error message
 import { setOpenSmallBalances } from '@rainbow-me/redux/openStateSettings';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/store' or it... Remove this comment to see the full error message
 import store from '@rainbow-me/redux/store';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
 
-const allAssetsSelector = state => state.allAssets;
-const allAssetsCountSelector = state => state.allAssetsCount;
-const assetsTotalSelector = state => state.assetsTotal;
-const currentActionSelector = state => state.currentAction;
-const hiddenCoinsSelector = state => state.hiddenCoins;
-const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
-const isCoinListEditedSelector = state => state.isCoinListEdited;
-const isLoadingAssetsSelector = state => state.isLoadingAssets;
-const languageSelector = state => state.language;
-const networkSelector = state => state.network;
-const nativeCurrencySelector = state => state.nativeCurrency;
-const pinnedCoinsSelector = state => state.pinnedCoins;
-const savingsSelector = state => state.savings;
-const showcaseTokensSelector = state => state.showcaseTokens;
-const uniqueTokensSelector = state => state.uniqueTokens;
-const uniswapSelector = state => state.uniswap;
-const uniswapTotalSelector = state => state.uniswapTotal;
+const allAssetsSelector = (state: any) => state.allAssets;
+const allAssetsCountSelector = (state: any) => state.allAssetsCount;
+const assetsTotalSelector = (state: any) => state.assetsTotal;
+const currentActionSelector = (state: any) => state.currentAction;
+const hiddenCoinsSelector = (state: any) => state.hiddenCoins;
+const isBalancesSectionEmptySelector = (state: any) =>
+  state.isBalancesSectionEmpty;
+const isCoinListEditedSelector = (state: any) => state.isCoinListEdited;
+const isLoadingAssetsSelector = (state: any) => state.isLoadingAssets;
+const languageSelector = (state: any) => state.language;
+const networkSelector = (state: any) => state.network;
+const nativeCurrencySelector = (state: any) => state.nativeCurrency;
+const pinnedCoinsSelector = (state: any) => state.pinnedCoins;
+const savingsSelector = (state: any) => state.savings;
+const showcaseTokensSelector = (state: any) => state.showcaseTokens;
+const uniqueTokensSelector = (state: any) => state.uniqueTokens;
+const uniswapSelector = (state: any) => state.uniswap;
+const uniswapTotalSelector = (state: any) => state.uniswapTotal;
 
 const enhanceRenderItem = compose(
   withNavigation,
   withHandlers({
-    onPress: ({ assetType, navigation }) => (item, params) => {
+    onPress: ({ assetType, navigation }: any) => (item: any, params: any) => {
       navigation.navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: item,
         type: assetType,
@@ -59,28 +67,34 @@ const enhanceRenderItem = compose(
 
 const TokenItem = enhanceRenderItem(BalanceCoinRow);
 
-const balancesSkeletonRenderItem = item => (
+const balancesSkeletonRenderItem = (item: any) => (
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   <AssetListItemSkeleton animated descendingOpacity={false} {...item} />
 );
 
-const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
+const balancesRenderItem = (item: any) => (
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
+  <TokenItem {...item} assetType="token" />
+);
 
-export const tokenFamilyItem = item => (
+export const tokenFamilyItem = (item: any) => (
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />
 );
-const uniswapRenderItem = item => (
+const uniswapRenderItem = (item: any) => (
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   <UniswapInvestmentRow {...item} assetType="uniswap" isCollapsible />
 );
 
-const filterWalletSections = sections =>
-  sections.filter(({ data, header }) =>
+const filterWalletSections = (sections: any) =>
+  sections.filter(({ data, header }: any) =>
     data ? get(header, 'totalItems') : true
   );
 
 const buildWalletSections = (
-  balanceSection,
-  uniqueTokenFamiliesSection,
-  uniswapSection
+  balanceSection: any,
+  uniqueTokenFamiliesSection: any,
+  uniswapSection: any
 ) => {
   const sections = [balanceSection, uniswapSection, uniqueTokenFamiliesSection];
 
@@ -94,10 +108,10 @@ const buildWalletSections = (
 };
 
 const withUniswapSection = (
-  language,
-  nativeCurrency,
-  uniswap,
-  uniswapTotal
+  language: any,
+  nativeCurrency: any,
+  uniswap: any,
+  uniswapTotal: any
 ) => {
   return {
     data: uniswap,
@@ -112,7 +126,7 @@ const withUniswapSection = (
   };
 };
 
-const withBalanceSavingsSection = savings => {
+const withBalanceSavingsSection = (savings: any) => {
   let totalUnderlyingNativeValue = '0';
   const savingsAssets = map(savings, asset => {
     const {
@@ -144,14 +158,14 @@ const withBalanceSavingsSection = savings => {
 };
 
 const coinEditContextMenu = (
-  allAssets,
-  balanceSectionData,
-  isCoinListEdited,
-  currentAction,
-  isLoadingAssets,
-  allAssetsCount,
-  totalValue,
-  addedEth
+  allAssets: any,
+  balanceSectionData: any,
+  isCoinListEdited: any,
+  currentAction: any,
+  isLoadingAssets: any,
+  allAssetsCount: any,
+  totalValue: any,
+  addedEth: any
 ) => {
   const noSmallBalances = !find(balanceSectionData, 'smallBalancesContainer');
 
@@ -163,7 +177,7 @@ const coinEditContextMenu = (
             dynamicOptions: () => {
               return ['Cancel', 'Edit'];
             },
-            onPressActionSheet: async index => {
+            onPressActionSheet: async (index: any) => {
               if (index === 1) {
                 store.dispatch(setIsCoinListEdited(!isCoinListEdited));
                 store.dispatch(setOpenSmallBalances(true));
@@ -181,21 +195,21 @@ const coinEditContextMenu = (
 };
 
 const withBalanceSection = (
-  allAssets,
-  allAssetsCount,
-  assetsTotal,
-  savingsSection,
-  isBalancesSectionEmpty,
-  isLoadingAssets,
-  language,
-  nativeCurrency,
-  network,
-  isCoinListEdited,
-  pinnedCoins,
-  hiddenCoins,
-  currentAction,
-  uniswapTotal,
-  collectibles
+  allAssets: any,
+  allAssetsCount: any,
+  assetsTotal: any,
+  savingsSection: any,
+  isBalancesSectionEmpty: any,
+  isLoadingAssets: any,
+  language: any,
+  nativeCurrency: any,
+  network: any,
+  isCoinListEdited: any,
+  pinnedCoins: any,
+  hiddenCoins: any,
+  currentAction: any,
+  uniswapTotal: any,
+  collectibles: any
 ) => {
   const { addedEth, assets, totalBalancesValue } = buildCoinsList(
     allAssets,
@@ -255,12 +269,12 @@ const largeFamilyThreshold = 4;
 const jumboFamilyThreshold = largeFamilyThreshold * 2;
 const minTopFoldThreshold = 10;
 
-const buildImagesToPreloadArray = (family, index, families) => {
+const buildImagesToPreloadArray = (family: any, index: any, families: any) => {
   const isLargeFamily = family.tokens.length > largeFamilyThreshold;
   const isJumboFamily = family.tokens.length >= jumboFamilyThreshold;
   const isTopFold = index < Math.max(families.length / 2, minTopFoldThreshold);
 
-  return family.tokens.map((token, rowIndex) => {
+  return family.tokens.map((token: any, rowIndex: any) => {
     let priority = ImgixImage.priority[isTopFold ? 'high' : 'normal'];
 
     if (isTopFold && isLargeFamily) {
@@ -275,7 +289,7 @@ const buildImagesToPreloadArray = (family, index, families) => {
       }
     }
 
-    const images = token.map(({ image_preview_url, uniqueId }) => {
+    const images = token.map(({ image_preview_url, uniqueId }: any) => {
       if (!image_preview_url) return null;
       return {
         id: uniqueId,
@@ -288,7 +302,7 @@ const buildImagesToPreloadArray = (family, index, families) => {
   });
 };
 
-const sortImagesToPreload = images => {
+const sortImagesToPreload = (images: any) => {
   const filtered = compact(flattenDeep(images));
   const grouped = groupBy(filtered, property('priority'));
   return [
@@ -298,7 +312,11 @@ const sortImagesToPreload = images => {
   ];
 };
 
-const withUniqueTokenFamiliesSection = (language, uniqueTokens, data) => {
+const withUniqueTokenFamiliesSection = (
+  language: any,
+  uniqueTokens: any,
+  data: any
+) => {
   // TODO preload elsewhere?
   if (!isPreloadComplete) {
     const imagesToPreload = sortImagesToPreload(

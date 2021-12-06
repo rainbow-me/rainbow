@@ -1,17 +1,21 @@
 import { startCase } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import Animated from 'react-native-reanimated';
 import { mixColor, useTimingTransition } from 'react-native-redash/src/v1';
 import { useMemoOne } from 'use-memo-one';
 import { ButtonPressAnimation, interpolate } from '../../animations';
 import { TruncatedAddress } from '../../text';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './SwapDetailsRow' was resolved to '/Users/... Remove this comment to see the full error message
 import SwapDetailsRow, { SwapDetailsValue } from './SwapDetailsRow';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useClipboard, useColorForAsset } from '@rainbow-me/hooks';
 import {
   abbreviations,
   ethereumUtils,
   showActionSheetWithOptions,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/utils';
 
 const AnimatedTruncatedAddress = Animated.createAnimatedComponent(
@@ -34,7 +38,7 @@ const ContractActions = {
   },
 };
 
-const buildBlockExplorerAction = type => {
+const buildBlockExplorerAction = (type: any) => {
   const blockExplorerText =
     'View on ' + startCase(ethereumUtils.getBlockExplorer(type));
   return {
@@ -52,7 +56,8 @@ function SwapDetailsContractRowContent({
   menuVisible,
   scaleTo = 1.06,
   ...props
-}) {
+}: any) {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const colorForAsset = useColorForAsset(asset);
   const animation = useTimingTransition(menuVisible, { duration: 150 });
@@ -72,15 +77,28 @@ function SwapDetailsContractRowContent({
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Animated.View style={{ transform: [{ scale }] }}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ButtonPressAnimation scaleTo={scaleTo} {...props}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <SwapDetailsRow label={`${asset?.symbol} contract`}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <SwapDetailsValue
             address={asset?.address}
             as={AnimatedTruncatedAddress}
             color={addressColor}
             firstSectionLength={6}
           />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <SwapDetailsValue color={colors.alpha(colors.blueGreyDark, 0.5)}>
             {` 􀁰`}
           </SwapDetailsValue>
@@ -94,7 +112,7 @@ export default function SwapDetailsContractRow({
   asset,
   onCopySwapDetailsText,
   ...props
-}) {
+}: any) {
   const { setClipboard } = useClipboard();
   const handleCopyContractAddress = useCallback(
     address => {
@@ -146,7 +164,7 @@ export default function SwapDetailsContractRow({
         showSeparators: true,
         title: `${asset?.name} (${asset?.symbol})`,
       },
-      idx => {
+      (idx: any) => {
         if (idx === 0) {
           handleCopyContractAddress(asset?.address);
         }
@@ -158,15 +176,20 @@ export default function SwapDetailsContractRow({
   }, [asset, handleCopyContractAddress]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ContextMenuButton
       activeOpacity={1}
       isMenuPrimaryAction
       menuConfig={menuConfig}
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
       {...(android ? { onPress: onPressAndroid } : {})}
       onPressMenuItem={handlePressMenuItem}
       useActionSheetFallback={false}
       {...props}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <SwapDetailsContractRowContent asset={asset} />
     </ContextMenuButton>
   );

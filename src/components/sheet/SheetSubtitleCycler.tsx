@@ -9,29 +9,39 @@ import { magicMemo } from '../../utils';
 import { interpolate } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useInterval, useTimeout, useTransformOrigin } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position } from '@rainbow-me/styles';
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
 
-const SheetSubtitleCyclerItem = ({ error, selected, subtitle }) => {
+const SheetSubtitleCyclerItem = ({ error, selected, subtitle }: any) => {
   const ease = EasingNode[error ? 'out' : 'in'](EasingNode.ease);
 
   const opacity = useTimingTransition(selected, {
     duration: 200,
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ duration: number; ease: Animat... Remove this comment to see the full error message
     ease,
   });
 
   const textColorAnimation = useTimingTransition(error, {
     duration: error ? 50 : 200,
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ duration: number; ease: Animat... Remove this comment to see the full error message
     ease,
   });
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Animated.View {...position.coverAsObject} style={{ opacity }}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <AnimatedText
+        // @ts-expect-error ts-migrate(2322) FIXME: Type '{ children: any; align: string; color: Anima... Remove this comment to see the full error message
         align="center"
         color={mixColor(
           textColorAnimation,
@@ -58,7 +68,7 @@ const SheetSubtitleCycler = ({
   interval,
   items,
   ...props
-}) => {
+}: any) => {
   const [selectedIndex, setSelectedIndex] = useState(defaultSelectedIndex);
   const { onLayout, withTransformOrigin } = useTransformOrigin('top');
 
@@ -70,7 +80,7 @@ const SheetSubtitleCycler = ({
   }, [stopInterval, stopTimeout]);
 
   const cycleTextOnce = useCallback(
-    () => setSelectedIndex(i => (i + 1) % items.length),
+    () => setSelectedIndex((i: any) => (i + 1) % items.length),
     [items]
   );
 
@@ -96,6 +106,7 @@ const SheetSubtitleCycler = ({
   }, [clearTimers, cycleTextOnce, interval, startCycling, startTimeout]);
 
   const scale = Animated.cond(
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'boolean' is not assignable to pa... Remove this comment to see the full error message
     !isNil(errorIndex),
     interpolate(animatedValue, {
       inputRange: [-20, -10, 0, 10, 20],
@@ -105,14 +116,22 @@ const SheetSubtitleCycler = ({
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <TouchableWithoutFeedback onPress={handlePress}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Centered width="100%" {...props}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Animated.View
           {...position.coverAsObject}
           onLayout={onLayout}
           style={{ transform: withTransformOrigin({ scale }) }}
         >
-          {items.map((subtitle, index) => (
+          {items.map((subtitle: any, index: any) => (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <MemoizedSheetSubtitleCyclerItem
               error={index === errorIndex}
               key={subtitle}
@@ -139,6 +158,7 @@ SheetSubtitleCycler.defaultProps = {
   interval: 3000,
 };
 
+// @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
 export default magicMemo(SheetSubtitleCycler, [
   'animatedValue',
   'errorIndex',

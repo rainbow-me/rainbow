@@ -1,5 +1,7 @@
 import { filter, find, get, isNil, map, pick, uniq } from 'lodash';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { AssetTypes } from '@rainbow-me/entities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 
 /**
@@ -8,7 +10,7 @@ import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
  * @return {Array}
  */
 
-export const parseAccountUniqueTokens = data => {
+export const parseAccountUniqueTokens = (data: any) => {
   const erc721s = get(data, 'data.assets', null);
   if (isNil(erc721s)) throw new Error('Invalid data from OpenSea');
   return erc721s
@@ -19,7 +21,7 @@ export const parseAccountUniqueTokens = data => {
         collection,
         token_id,
         ...asset
-      }) => ({
+      }: any) => ({
         ...pick(asset, [
           'animation_url',
           'current_price',
@@ -88,13 +90,13 @@ export const parseAccountUniqueTokens = data => {
         urlSuffixForAsset: `${get(asset_contract, 'address')}/${token_id}`,
       })
     )
-    .filter(token => !!token.familyName);
+    .filter((token: any) => !!token.familyName);
 };
 
-export const getFamilies = uniqueTokens =>
+export const getFamilies = (uniqueTokens: any) =>
   uniq(map(uniqueTokens, u => get(u, 'asset_contract.address', '')));
 
-export const dedupeUniqueTokens = (assets, uniqueTokens) => {
+export const dedupeUniqueTokens = (assets: any, uniqueTokens: any) => {
   const uniqueTokenFamilies = getFamilies(uniqueTokens);
   let updatedAssets = assets;
   if (assets.length) {
@@ -110,7 +112,7 @@ export const dedupeUniqueTokens = (assets, uniqueTokens) => {
   return updatedAssets;
 };
 
-export const dedupeAssetsWithFamilies = (assets, families) =>
+export const dedupeAssetsWithFamilies = (assets: any, families: any) =>
   filter(
     assets,
     asset => !find(families, family => family === get(asset, 'address'))

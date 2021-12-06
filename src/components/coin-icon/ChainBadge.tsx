@@ -14,7 +14,9 @@ import PolygonBadgeDark from '../../assets/badges/polygonBadgeDark.png';
 import PolygonBadgeLarge from '../../assets/badges/polygonBadgeLarge.png';
 import PolygonBadgeLargeDark from '../../assets/badges/polygonBadgeLargeDark.png';
 import { Centered } from '../layout';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { AssetType } from '@rainbow-me/entities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position } from '@rainbow-me/styles';
 
 const sizeConfigs = {
@@ -37,8 +39,11 @@ const sizeConfigs = {
 };
 
 const ChainIcon = styled(FastImage)`
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'containerSize' does not exist on type 'T... Remove this comment to see the full error message
   height: ${({ containerSize }) => containerSize};
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'iconSize' does not exist on type 'Themed... Remove this comment to see the full error message
   top: ${({ iconSize }) => iconSize / 5};
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'containerSize' does not exist on type 'T... Remove this comment to see the full error message
   width: ${({ containerSize }) => containerSize};
 `;
 
@@ -62,11 +67,14 @@ export default function ChainBadge({
   marginBottom = 0,
   position,
   size = 'small',
-}) {
+}: any) {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { isDarkMode } = useTheme();
 
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   const { containerSize, iconSize } = sizeConfigs[size];
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const source = useMemo(() => {
     let val = null;
     if (size === 'large') {
@@ -92,6 +100,7 @@ export default function ChainBadge({
   if (!source) return null;
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <IndicatorIconContainer
       badgeXPosition={badgeXPosition}
       badgeYPosition={badgeYPosition}
@@ -99,7 +108,11 @@ export default function ChainBadge({
       marginBottom={marginBottom}
       position={position}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ChainIcon
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
         containerSize={containerSize}
         iconSize={iconSize}
         source={source}

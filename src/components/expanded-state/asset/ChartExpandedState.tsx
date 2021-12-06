@@ -7,16 +7,22 @@ import React, {
   useState,
 } from 'react';
 import { LayoutAnimation, View } from 'react-native';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import useAdditionalAssetData from '../../../hooks/useAdditionalAssetData';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../../react-native-cool-modals/NativeSt... Remove this comment to see the full error message
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../L2Disclaimer' was resolved to '/User... Remove this comment to see the full error message
 import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
 import { CoinDividerHeight } from '../../coin-divider';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../coin-divider/CoinDividerOpenButton' ... Remove this comment to see the full error message
 import CoinDividerOpenButton from '../../coin-divider/CoinDividerOpenButton';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../discover-sheet/EdgeFade' was resolve... Remove this comment to see the full error message
 import EdgeFade from '../../discover-sheet/EdgeFade';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../discover-sheet/UniswapPoolsSection' ... Remove this comment to see the full error message
 import UniswapPools from '../../discover-sheet/UniswapPoolsSection';
 import {
   BuyActionButton,
@@ -34,10 +40,15 @@ import {
   TokenInfoSection,
 } from '../../token-info';
 import { Chart } from '../../value-chart';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../ExpandedStateSection' was resolved to '... Remove this comment to see the full error message
 import ExpandedStateSection from '../ExpandedStateSection';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './SocialLinks' was resolved to '/Users/nic... Remove this comment to see the full error message
 import SocialLinks from './SocialLinks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/animated-charts' o... Remove this comment to see the full error message
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 import { isL2Network } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/assetInput... Remove this comment to see the full error message
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
   useAccountSettings,
@@ -45,20 +56,28 @@ import {
   useDelayedValueWithLayoutAnimation,
   useDimensions,
   useUniswapAssetsInWallet,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { ETH_ADDRESS } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
 const defaultCarouselHeight = 60;
 const baseHeight =
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   386 + (android && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
+// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
 const heightWithoutChart = baseHeight + (android && 30);
 const heightWithChart = baseHeight + 292;
 
 export const initialChartExpandedStateSheetHeight = undefined;
 
+// @ts-expect-error ts-migrate(2339) FIXME: Property 'ScrollView' does not exist on type 'Styl... Remove this comment to see the full error message
 const Carousel = styled.ScrollView.attrs({
   contentContainerStyle: {
     paddingBottom: 11,
@@ -69,6 +88,7 @@ const Carousel = styled.ScrollView.attrs({
   showsHorizontalScrollIndicator: false,
 })``;
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const AdditionalContentWrapper = styled.View``;
 
 const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
@@ -94,12 +114,13 @@ function CarouselWrapper({
   isAnyItemLoading,
   setCarouselHeight,
   ...props
-}) {
+}: any) {
   const [visible, setVisible] = useState(true);
   const timeout = useRef();
   useEffect(() => {
     clearTimeout(timeout.current);
     if (!isAnyItemVisible) {
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'Timeout' is not assignable to type 'undefine... Remove this comment to see the full error message
       timeout.current = setTimeout(
         () => {
           setVisible(false);
@@ -114,6 +135,7 @@ function CarouselWrapper({
   }, [isAnyItemLoading, isAnyItemVisible, setCarouselHeight]);
   const delayedVisible = useDelayedValueWithLayoutAnimation(visible);
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <View
       {...props}
       style={[
@@ -126,12 +148,13 @@ function CarouselWrapper({
   );
 }
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const Spacer = styled.View`
   height: ${safeAreaInsetValues.bottom + 20 + getSoftMenuBarHeight()};
 `;
 
 // truncate after the first paragraph or 4th dot
-function truncate(text) {
+function truncate(text: any) {
   const firstParagraph = text?.split('\n')[0];
   const first4Sentences = text?.split('.').slice(0, 4).join('.') + '.';
   const shorterOne =
@@ -146,7 +169,7 @@ function truncate(text) {
   return shorterOne;
 }
 
-function Description({ text }) {
+function Description({ text }: any) {
   const truncatedText = truncate(text);
   const needToTruncate = truncatedText.length !== text.length;
   const [truncated, setTruncated] = useState(true);
@@ -155,13 +178,18 @@ function Description({ text }) {
     LayoutAnimation.Properties.scaleXY
   );
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ButtonPressAnimation
       disabled={!needToTruncate || !truncated}
       onPress={() => setTruncated(prev => !prev)}
       scaleTo={1}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Text
         color={colors.alpha(colors.blueGreyDark, 0.5)}
         lineHeight="big"
@@ -170,13 +198,15 @@ function Description({ text }) {
         {delayedTruncated ? truncatedText : text}
       </Text>
       {truncated && needToTruncate && (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <ReadMoreButton>Read more 􀯼</ReadMoreButton>
       )}
     </ButtonPressAnimation>
   );
 }
 
-export default function ChartExpandedState({ asset }) {
+export default function ChartExpandedState({ asset }: any) {
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
   }));
@@ -201,6 +231,7 @@ export default function ChartExpandedState({ asset }) {
     assetWithPrice.address = assetWithPrice.mainnet_address;
   }
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const isL2 = useMemo(() => isL2Network(assetWithPrice.type), [
     assetWithPrice.type,
   ]);
@@ -212,13 +243,21 @@ export default function ChartExpandedState({ asset }) {
 
   const { height: screenHeight } = useDimensions();
   const {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'description' does not exist on type '{ d... Remove this comment to see the full error message
     description,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'marketCap' does not exist on type '{ des... Remove this comment to see the full error message
     marketCap,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'totalLiquidity' does not exist on type '... Remove this comment to see the full error message
     totalLiquidity,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'totalVolume' does not exist on type '{ d... Remove this comment to see the full error message
     totalVolume,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'marketCapLoading' does not exist on type... Remove this comment to see the full error message
     marketCapLoading,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'totalLiquidityLoading' does not exist on... Remove this comment to see the full error message
     totalLiquidityLoading,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'totalVolumeLoading' does not exist on ty... Remove this comment to see the full error message
     totalVolumeLoading,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'links' does not exist on type '{ descrip... Remove this comment to see the full error message
     links,
   } = useAdditionalAssetData(asset?.address, assetWithPrice?.price?.value);
 
@@ -241,6 +280,7 @@ export default function ChartExpandedState({ asset }) {
     heightWithChart: Math.min(
       carouselHeight +
         heightWithChart -
+        // @ts-expect-error ts-migrate(2363) FIXME: The right-hand side of an arithmetic operation mus... Remove this comment to see the full error message
         (!hasBalance && 68) +
         additionalContentHeight +
         (additionalContentHeight === 0 ? 0 : scrollableContentHeight),
@@ -249,16 +289,19 @@ export default function ChartExpandedState({ asset }) {
     heightWithoutChart: Math.min(
       carouselHeight +
         heightWithoutChart -
+        // @ts-expect-error ts-migrate(2363) FIXME: The right-hand side of an arithmetic operation mus... Remove this comment to see the full error message
         (!hasBalance && 68) +
         additionalContentHeight +
         (additionalContentHeight === 0 ? 0 : scrollableContentHeight),
       screenHeight
     ),
     shortHeightWithChart: Math.min(
+      // @ts-expect-error ts-migrate(2363) FIXME: The right-hand side of an arithmetic operation mus... Remove this comment to see the full error message
       carouselHeight + heightWithChart - (!hasBalance && 68),
       screenHeight
     ),
     shortHeightWithoutChart: Math.min(
+      // @ts-expect-error ts-migrate(2363) FIXME: The right-hand side of an arithmetic operation mus... Remove this comment to see the full error message
       carouselHeight + heightWithoutChart - (!hasBalance && 68),
       screenHeight
     ),
@@ -278,8 +321,10 @@ export default function ChartExpandedState({ asset }) {
   }
 
   let ChartExpandedStateSheetHeight =
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
     ios || showChart ? heightWithChart : heightWithoutChart;
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   if (android && !hasBalance) {
     ChartExpandedStateSheetHeight -= 60;
   }
@@ -300,10 +345,12 @@ export default function ChartExpandedState({ asset }) {
     morePoolsVisible
   );
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
 
   const MoreButton = useCallback(() => {
     return (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <CoinDividerOpenButton
         coinDividerHeight={CoinDividerHeight}
         isActive
@@ -317,15 +364,24 @@ export default function ChartExpandedState({ asset }) {
   }, [delayedMorePoolsVisible]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <SlackSheet
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
       additionalTopPadding={android}
       contentHeight={ChartExpandedStateSheetHeight}
       scrollEnabled
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       {...(ios
         ? { height: '100%' }
         : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ChartPathProvider data={throttledData}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Chart
           {...chartData}
           {...initialChartDataLabels}
@@ -339,13 +395,29 @@ export default function ChartExpandedState({ asset }) {
           throttledData={throttledData}
         />
       </ChartPathProvider>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <SheetDivider />
       {hasBalance && (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <TokenInfoSection>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TokenInfoRow>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <TokenInfoItem asset={assetWithPrice} title="Balance">
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TokenInfoBalanceValue asset={asset} />
             </TokenInfoItem>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <TokenInfoItem
               title={asset?.native?.balance.display ? 'Value' : ' '}
               weight="bold"
@@ -356,17 +428,25 @@ export default function ChartExpandedState({ asset }) {
         </TokenInfoSection>
       )}
       {needsEth ? (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <SheetActionButtonRow paddingBottom={isL2 && 19}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <BuyActionButton color={color} />
         </SheetActionButtonRow>
       ) : (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <SheetActionButtonRow paddingBottom={isL2 && 19}>
           {showSwapButton && (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
           {hasBalance ? (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <SendActionButton asset={ogAsset} color={color} />
           ) : (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <SwapActionButton
               color={color}
               inputType={AssetInputTypes.out}
@@ -379,6 +459,7 @@ export default function ChartExpandedState({ asset }) {
         </SheetActionButtonRow>
       )}
       {isL2 && (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <L2Disclaimer
           assetType={assetWithPrice.type}
           colors={colors}
@@ -386,8 +467,8 @@ export default function ChartExpandedState({ asset }) {
           symbol={assetWithPrice.symbol}
         />
       )}
-
       {!isL2 && (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <CarouselWrapper
           isAnyItemLoading={
             totalVolumeLoading || totalLiquidityLoading || marketCapLoading
@@ -395,7 +476,13 @@ export default function ChartExpandedState({ asset }) {
           isAnyItemVisible={!!(totalVolume || totalLiquidity || marketCap)}
           setCarouselHeight={setCarouselHeight}
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Carousel>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <CarouselItem
               loading={totalVolumeLoading}
               showDivider
@@ -404,6 +491,9 @@ export default function ChartExpandedState({ asset }) {
             >
               {totalVolume}
             </CarouselItem>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <CarouselItem
               loading={totalLiquidityLoading}
               showDivider
@@ -412,6 +502,9 @@ export default function ChartExpandedState({ asset }) {
             >
               {totalLiquidity}
             </CarouselItem>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <CarouselItem
               loading={marketCapLoading}
               title="Market cap"
@@ -420,20 +513,27 @@ export default function ChartExpandedState({ asset }) {
               {marketCap}
             </CarouselItem>
           </Carousel>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <EdgeFade />
         </CarouselWrapper>
       )}
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <AdditionalContentWrapper
         onLayout={({
           nativeEvent: {
             layout: { height },
           },
-        }) => {
+        }: any) => {
           setAdditionalContentHeight(height);
           layout?.();
         }}
       >
         {!isL2 && (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <UniswapPools
             ShowMoreButton={MoreButton}
             alwaysShowMoreButton
@@ -443,12 +543,18 @@ export default function ChartExpandedState({ asset }) {
             token={asset?.address}
           />
         )}
-
         {!!delayedDescriptions && (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <ExpandedStateSection isL2 title={`About ${asset?.name}`}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Description text={description} />
           </ExpandedStateSection>
         )}
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <SocialLinks
           address={ogAsset.address}
           color={color}
@@ -457,6 +563,9 @@ export default function ChartExpandedState({ asset }) {
           marginTop={!delayedDescriptions && 19}
           type={asset?.type}
         />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Spacer />
       </AdditionalContentWrapper>
     </SlackSheet>

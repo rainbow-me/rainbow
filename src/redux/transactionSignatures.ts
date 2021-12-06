@@ -2,6 +2,7 @@ import { AppDispatch, AppGetState } from './store';
 import {
   getTransactionSignatures,
   saveTransactionSignatures,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/localstor... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/localstorage/globalSettings';
 
 export const TRANSACTION_SIGNATURES_ADD_NEW_TRANSACTION_SIGNATURE_SUCCESS =

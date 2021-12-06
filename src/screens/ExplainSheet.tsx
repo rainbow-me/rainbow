@@ -8,12 +8,18 @@ import { ChainBadge } from '../components/coin-icon';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../navigation/Navigation' was resolved to ... Remove this comment to see the full error message
 import { useNavigation } from '../navigation/Navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useDimensions } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { gasUtils } from '@rainbow-me/utils';
 
+// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
 export const ExplainSheetHeight = android ? 454 : 434;
 
 const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
@@ -23,8 +29,10 @@ const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   alignItems: 'center',
   textAlign: 'center',
 }))`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${padding(9.5, 15, android ? 6 : 9, 15)}
   border-color: ${({ theme: { colors }, color }) => colors.alpha(color, 0.2)};
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   border-radius: ${android ? 24 : 20};
   border-width: 2;
 `;
@@ -103,24 +111,28 @@ export const explainers = {
   },
   currentBaseFeeStable: {
     emoji: '🌞',
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     extraHeight: android ? 80 : 40,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_STABLE,
     title: 'Current base fee',
   },
   currentBaseFeeFalling: {
     emoji: '🤑',
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     extraHeight: android ? 60 : 20,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_FALLING,
     title: 'Current base fee',
   },
   currentBaseFeeRising: {
     emoji: '🥵',
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     extraHeight: android ? 100 : 50,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_RISING,
     title: 'Current base fee',
   },
   currentBaseFeeSurging: {
     emoji: '🎢',
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     extraHeight: android ? 100 : 50,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_SURGING,
     title: 'Current base fee',
@@ -152,6 +164,7 @@ export const explainers = {
     emoji: '⛽️',
     extraHeight: 150,
     logo: (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <ChainBadge
         assetType={networkTypes.optimism}
         marginBottom={8}
@@ -168,6 +181,7 @@ export const explainers = {
     emoji: '⛽️',
     extraHeight: 144,
     logo: (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <ChainBadge
         assetType={networkTypes.arbitrum}
         marginBottom={8}
@@ -184,6 +198,7 @@ export const explainers = {
     emoji: '⛽️',
     extraHeight: 120,
     logo: (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <ChainBadge
         assetType={networkTypes.polygon}
         marginBottom={8}
@@ -208,14 +223,22 @@ export const explainers = {
 const ExplainSheet = () => {
   const { height: deviceHeight } = useDimensions();
   const insets = useSafeArea();
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
   const { params: { type = 'gas', onClose } = {}, params = {} } = useRoute();
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const { goBack } = useNavigation();
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const renderBaseFeeIndicator = useMemo(() => {
     if (!type.includes('currentBaseFee')) return null;
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'currentGasTrend' does not exist on type ... Remove this comment to see the full error message
     const { currentGasTrend, currentBaseFee } = params;
     return (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <Centered>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <GasTrendHeader
           align="center"
           color={gasUtils.GAS_TRENDS[currentGasTrend].color}
@@ -234,29 +257,42 @@ const ExplainSheet = () => {
   }, [onClose, goBack]);
 
   const handleReadMore = useCallback(() => {
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     Linking.openURL(explainers[type].readMoreLink);
   }, [type]);
 
   const EmojiText = type === 'verified' ? Gradient : Emoji;
   const Title = type === 'verified' ? Gradient : SheetTitle;
 
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   const sheetHeight = ExplainSheetHeight + (explainers[type]?.extraHeight || 0);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       {ios && <StatusBar barStyle="light-content" />}
-
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <SlackSheet
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
         additionalTopPadding={android}
         contentHeight={sheetHeight}
         scrollEnabled={false}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Centered
           direction="column"
           height={sheetHeight}
           testID="add-token-sheet"
           width="100%"
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ColumnWithMargins
             margin={15}
             style={{
@@ -265,24 +301,39 @@ const ExplainSheet = () => {
               width: '100%',
             }}
           >
+            // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has
+            an 'any' type because expre... Remove this comment to see the full
+            error message
             {explainers[type]?.logo ? (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <Centered>{explainers[type].logo}</Centered>
             ) : (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <EmojiText
                 align="center"
                 size="h1"
                 style={{ ...fontWithWidth(fonts.weight.bold) }}
               >
+                // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly
+                has an 'any' type because expre... Remove this comment to see
+                the full error message
                 {explainers[type].emoji}
               </EmojiText>
             )}
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Title align="center" lineHeight="big" size="big" weight="heavy">
+              // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has
+              an 'any' type because expre... Remove this comment to see the full
+              error message
               {explainers[type].title}
             </Title>
-
             {/** base fee explainer */}
             {renderBaseFeeIndicator}
-
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text
               align="center"
               color={colors.alpha(colors.blueGreyDark, 0.6)}
@@ -295,10 +346,20 @@ const ExplainSheet = () => {
                 paddingHorizontal: 23,
               }}
             >
+              // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has
+              an 'any' type because expre... Remove this comment to see the full
+              error message
               {explainers[type].text}
             </Text>
+            // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has
+            an 'any' type because expre... Remove this comment to see the full
+            error message
             {explainers[type].readMoreLink && (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <Column height={60}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <SheetActionButton
                   color={colors.blueGreyDarkLight}
                   isTransparent
@@ -310,6 +371,9 @@ const ExplainSheet = () => {
                 />
               </Column>
             )}
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <SheetActionButton
               color={colors.alpha(colors.appleBlue, 0.04)}
               isTransparent

@@ -6,15 +6,19 @@ import { dataUpdateAssets } from './data';
 import {
   getUniqueTokens,
   saveUniqueTokens,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/localstor... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
   apiGetAccountUniqueTokens,
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/opensea-a... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/opensea-api';
 //import { fetchPoaps } from '@rainbow-me/handlers/poap';
 
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/networkTypes' or i... Remove this comment to see the full error message
 import NetworkTypes from '@rainbow-me/networkTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/parsers' or its co... Remove this comment to see the full error message
 import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
 
 // -- Constants ------------------------------------------------------------- //
@@ -37,9 +41,12 @@ const UNIQUE_TOKENS_CLEAR_STATE_SHOWCASE =
   'uniqueTokens/UNIQUE_TOKENS_CLEAR_STATE_SHOWCASE';
 
 // -- Actions --------------------------------------------------------------- //
-let uniqueTokensHandle = null;
+let uniqueTokensHandle: any = null;
 
-export const uniqueTokensLoadState = () => async (dispatch, getState) => {
+export const uniqueTokensLoadState = () => async (
+  dispatch: any,
+  getState: any
+) => {
   const { accountAddress, network } = getState().settings;
   dispatch({ type: UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST });
   try {
@@ -53,12 +60,15 @@ export const uniqueTokensLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const uniqueTokensResetState = () => dispatch => {
+export const uniqueTokensResetState = () => (dispatch: any) => {
   uniqueTokensHandle && clearTimeout(uniqueTokensHandle);
   dispatch({ type: UNIQUE_TOKENS_CLEAR_STATE });
 };
 
-export const uniqueTokensRefreshState = () => async (dispatch, getState) => {
+export const uniqueTokensRefreshState = () => async (
+  dispatch: any,
+  getState: any
+) => {
   const { network } = getState().settings;
 
   // Currently not supported in testnets
@@ -66,12 +76,13 @@ export const uniqueTokensRefreshState = () => async (dispatch, getState) => {
     return;
   }
 
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
   dispatch(fetchUniqueTokens());
 };
 
-export const fetchUniqueTokens = showcaseAddress => async (
-  dispatch,
-  getState
+export const fetchUniqueTokens = (showcaseAddress: any) => async (
+  dispatch: any,
+  getState: any
 ) => {
   dispatch({
     showcase: !!showcaseAddress,
@@ -91,7 +102,7 @@ export const fetchUniqueTokens = showcaseAddress => async (
 
   let shouldStopFetching = false;
   let page = 0;
-  let uniqueTokens = [];
+  let uniqueTokens: any = [];
 
   const fetchPage = async () => {
     try {
@@ -169,7 +180,7 @@ export const INITIAL_UNIQUE_TOKENS_STATE = {
   uniqueTokensShowcase: [],
 };
 
-export default (state = INITIAL_UNIQUE_TOKENS_STATE, action) => {
+export default (state = INITIAL_UNIQUE_TOKENS_STATE, action: any) => {
   switch (action.type) {
     case UNIQUE_TOKENS_LOAD_UNIQUE_TOKENS_REQUEST:
       return {

@@ -1,15 +1,19 @@
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'clou... Remove this comment to see the full error message
 import { image as cloudinaryImage } from 'cloudinary/lib/cloudinary';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'clou... Remove this comment to see the full error message
 import cloudinaryConfig from 'cloudinary/lib/config';
 import { PixelRatio } from 'react-native';
 import {
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   CLOUDINARY_API_KEY as apiKey,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   CLOUDINARY_API_SECRET as apiSecret,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   CLOUDINARY_CLOUD_NAME as cloudName,
 } from 'react-native-dotenv';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/isSupporte... Remove this comment to see the full error message
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { deviceUtils } from '@rainbow-me/utils';
 
 cloudinaryConfig({
@@ -21,7 +25,7 @@ cloudinaryConfig({
 const pixelRatio = PixelRatio.get();
 const RAINBOW_PROXY = 'https://images.rainbow.me/proxy?url=';
 
-function svgToPng(url, big = false) {
+function svgToPng(url: any, big = false) {
   const encoded = encodeURI(url);
   const rainbowedUrl = `${RAINBOW_PROXY}${encoded}&v=2`;
   const cloudinaryImg = cloudinaryImage(rainbowedUrl, {
@@ -42,7 +46,7 @@ function svgToPng(url, big = false) {
   return cloudinaryUrl;
 }
 
-export default function svgToPngIfNeeded(url, big) {
+export default function svgToPngIfNeeded(url: any, big: any) {
   const isSVG = isSupportedUriExtension(url, ['.svg']);
   return isSVG ? svgToPng(url, big) : url;
 }

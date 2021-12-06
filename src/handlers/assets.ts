@@ -1,6 +1,8 @@
 import { Contract } from '@ethersproject/contracts';
 import { toLower } from 'lodash';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { AssetTypes } from '@rainbow-me/entities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   ARBITRUM_ETH_ADDRESS,
@@ -8,10 +10,12 @@ import {
   ETH_ADDRESS,
   MATIC_POLYGON_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 } from '@rainbow-me/references';
 import {
   convertAmountToBalanceDisplay,
   convertRawAmountToDecimalFormat,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utilities' or its ... Remove this comment to see the full error message
 } from '@rainbow-me/utilities';
 
 const nativeAssetsPerNetwork = {
@@ -24,7 +28,7 @@ const nativeAssetsPerNetwork = {
   [networkTypes.ropsten]: ETH_ADDRESS,
 };
 
-export function isL2Asset(type) {
+export function isL2Asset(type: any) {
   switch (type) {
     case AssetTypes.arbitrum:
     case AssetTypes.optimism:
@@ -35,15 +39,15 @@ export function isL2Asset(type) {
   }
 }
 
-export function isNativeAsset(address, network) {
+export function isNativeAsset(address: any, network: any) {
   return toLower(nativeAssetsPerNetwork[network]) === toLower(address);
 }
 
 export async function getOnchainAssetBalance(
-  { address, decimals, symbol },
-  userAddress,
-  network,
-  provider
+  { address, decimals, symbol }: any,
+  userAddress: any,
+  network: any,
+  provider: any
 ) {
   // Check if it's the native chain asset
   if (isNativeAsset(address, network)) {
@@ -61,9 +65,9 @@ export async function getOnchainAssetBalance(
 }
 
 async function getOnchainTokenBalance(
-  { address, decimals, symbol },
-  userAddress,
-  provider
+  { address, decimals, symbol }: any,
+  userAddress: any,
+  provider: any
 ) {
   try {
     const tokenContract = new Contract(address, erc20ABI, provider);
@@ -88,9 +92,9 @@ async function getOnchainTokenBalance(
 }
 
 async function getOnchainNativeAssetBalance(
-  { decimals, symbol },
-  userAddress,
-  provider
+  { decimals, symbol }: any,
+  userAddress: any,
+  provider: any
 ) {
   try {
     const balance = await provider.getBalance(userAddress);

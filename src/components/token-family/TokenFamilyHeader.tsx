@@ -6,8 +6,11 @@ import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './TokenFamilyHeaderIcon' was resolved to '... Remove this comment to see the full error message
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/images' or its cor... Remove this comment to see the full error message
 import { ImgixImage } from '@rainbow-me/images';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding } from '@rainbow-me/styles';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
@@ -68,13 +71,14 @@ const TokenFamilyHeader = ({
   onPress,
   testID,
   title,
-}) => {
+}: any) => {
   const animation = useTimingTransition(!isOpen, {
     duration: TokenFamilyHeaderAnimationDuration,
     easing: EasingNode.bezier(0.25, 0.1, 0.25, 1),
   });
 
   const rotate = toRad(
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'AnimatedNode<number> | undefined... Remove this comment to see the full error message
     interpolate(animation, {
       inputRange: [0, 1],
       outputRange: [90, 0],
@@ -82,17 +86,26 @@ const TokenFamilyHeader = ({
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ButtonPressAnimation
       key={`token_family_header_${emoji || familyImage || title}`}
       onPress={onPress}
       scaleTo={1.05}
       testID={testID}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Content isCoinRow={isCoinRow}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <RowWithMargins align="center" margin={emoji ? 5 : 9}>
           {emoji ? (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <Emoji name={emoji} size="lmedium" />
           ) : (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <TokenFamilyHeaderIcon
               familyImage={familyImage}
               familyName={title}
@@ -100,11 +113,26 @@ const TokenFamilyHeader = ({
             />
           )}
         </RowWithMargins>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <TitleText isShowcase={title === 'Showcase'}>{title}</TitleText>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <RowWithMargins align="center" margin={10}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Animated.View style={{ opacity: animation }}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <ChildrenAmountText>{childrenAmount}</ChildrenAmountText>
           </Animated.View>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <RotatingArrowIcon style={{ transform: [{ rotate }] }} />
         </RowWithMargins>
       </Content>

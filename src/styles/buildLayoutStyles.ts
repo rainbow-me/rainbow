@@ -1,7 +1,7 @@
 import { isNil } from 'lodash';
 import { css } from 'styled-components';
 
-export default (values, type, shouldReturnCss) => {
+export default (values: any, type: any, shouldReturnCss: any) => {
   // Replicating the CSS API, if no second value parameter is given
   // apply the first parameter as both horizontal and vertical values.
   const defaultHorizontal = !isNil(values[1]) ? values[1] : values[0];

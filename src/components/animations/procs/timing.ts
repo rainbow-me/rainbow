@@ -11,6 +11,7 @@ const { block, clockRunning, cond, set, startClock, stopClock } = Animated;
 const timingProc = Animated.proc(
   (clock, finished, position, time, frameTime, toValue, duration) =>
     timing(
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Adaptable<Value> | undefined' is... Remove this comment to see the full error message
       clock,
       {
         finished,
@@ -26,7 +27,7 @@ const timingProc = Animated.proc(
     )
 );
 
-const runTiming = (clock, state, config) =>
+const runTiming = (clock: any, state: any, config: any) =>
   timingProc(
     clock,
     state.finished,
@@ -37,8 +38,8 @@ const runTiming = (clock, state, config) =>
     config.duration
   );
 
-export default function localTiming(params) {
-  const { clock, duration, easing, from, to } = {
+export default function localTiming(params: any) {
+  const { clock, duration, easing, from, to }: any = {
     clock: new Clock(),
     duration: 250,
     easing: Easing.linear,

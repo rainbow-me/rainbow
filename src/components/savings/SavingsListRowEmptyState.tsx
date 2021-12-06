@@ -1,14 +1,16 @@
 import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../context/ThemeContext' was resolved t... Remove this comment to see the full error message
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder, RowWithMargins } from '../layout';
 import { Text } from '../text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position, shadow } from '@rainbow-me/styles';
 
 const ButtonBorderRadius = 15;
 
-const sxFactory = (darkMode, colors) =>
+const sxFactory = (darkMode: any, colors: any) =>
   StyleSheet.create({
     // eslint-disable-next-line react-native/no-unused-styles
     button: {
@@ -28,13 +30,17 @@ const sxFactory = (darkMode, colors) =>
     },
   });
 
-const SavingsListRowEmptyState = ({ onPress }) => {
+const SavingsListRowEmptyState = ({ onPress }: any) => {
   const { isDarkMode, colors } = useTheme();
 
   const sx = useMemo(() => sxFactory(isDarkMode, colors), [isDarkMode, colors]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <RowWithMargins align="center" margin={8} paddingLeft={4}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Text
         color={colors.blueGreyDark}
         letterSpacing="roundedTightest"
@@ -44,7 +50,13 @@ const SavingsListRowEmptyState = ({ onPress }) => {
       >
         $0.00
       </Text>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ButtonPressAnimation onPress={onPress} scaleTo={0.92} style={sx.button}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Text
           align="center"
           color={colors.whiteLabel}
@@ -54,6 +66,9 @@ const SavingsListRowEmptyState = ({ onPress }) => {
         >
           􀁍 Deposit
         </Text>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <InnerBorder radius={ButtonBorderRadius} />
       </ButtonPressAnimation>
     </RowWithMargins>

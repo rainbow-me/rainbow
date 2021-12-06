@@ -4,9 +4,13 @@ import { LayoutAnimation, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Row, RowWithMargins } from '../layout';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './CoinDividerAssetsValue' was resolved to ... Remove this comment to see the full error message
 import CoinDividerAssetsValue from './CoinDividerAssetsValue';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './CoinDividerEditButton' was resolved to '... Remove this comment to see the full error message
 import CoinDividerEditButton from './CoinDividerEditButton';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './CoinDividerOpenButton' was resolved to '... Remove this comment to see the full error message
 import CoinDividerOpenButton from './CoinDividerOpenButton';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/editOption... Remove this comment to see the full error message
 import EditOptions from '@rainbow-me/helpers/editOptionTypes';
 import {
   useAccountSettings,
@@ -14,8 +18,11 @@ import {
   useCoinListEditOptions,
   useDimensions,
   useOpenSmallBalances,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/explorer' or... Remove this comment to see the full error message
 import { emitChartsRequest } from '@rainbow-me/redux/explorer';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding } from '@rainbow-me/styles';
 
 export const CoinDividerHeight = 30;
@@ -47,9 +54,10 @@ const EditButtonWrapper = styled(Row).attrs({
   right: 0;
 `;
 
-export default function CoinDivider({ balancesSum, isSticky, onEndEdit }) {
+export default function CoinDivider({ balancesSum, isSticky, onEndEdit }: any) {
   const { nativeCurrency } = useAccountSettings();
   const dispatch = useDispatch();
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
   const assets = useSelector(({ data: { assets } }) => assets);
 
   const [fetchedCharts, setFetchedCharts] = useState(false);
@@ -98,9 +106,19 @@ export default function CoinDivider({ balancesSum, isSticky, onEndEdit }) {
   useEffect(() => () => clearSelectedCoins(), [clearSelectedCoins]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container deviceWidth={deviceWidth} isSticky={isSticky}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Row>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <View pointerEvents={isCoinListEdited ? 'none' : 'auto'}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <CoinDividerOpenButton
             coinDividerHeight={CoinDividerHeight}
             isSmallBalancesOpen={isSmallBalancesOpen}
@@ -108,7 +126,13 @@ export default function CoinDivider({ balancesSum, isSticky, onEndEdit }) {
             onPress={toggleOpenSmallBalances}
           />
         </View>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <CoinDividerButtonRow isCoinListEdited={isCoinListEdited}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <CoinDividerEditButton
             isActive={currentAction !== EditOptions.none}
             isVisible={isCoinListEdited}
@@ -116,6 +140,9 @@ export default function CoinDivider({ balancesSum, isSticky, onEndEdit }) {
             shouldReloadList
             text={currentAction === EditOptions.unpin ? 'Unpin' : 'Pin'}
           />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <CoinDividerEditButton
             isActive={currentAction !== EditOptions.none}
             isVisible={isCoinListEdited}
@@ -125,17 +152,29 @@ export default function CoinDivider({ balancesSum, isSticky, onEndEdit }) {
           />
         </CoinDividerButtonRow>
       </Row>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Row justify="end">
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <CoinDividerAssetsValue
           balancesSum={balancesSum}
           nativeCurrency={nativeCurrency}
           openSmallBalances={isSmallBalancesOpen}
         />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <EditButtonWrapper
           pointerEvents={
             isCoinListEdited || isSmallBalancesOpen ? 'auto' : 'none'
           }
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <CoinDividerEditButton
             isActive={isCoinListEdited}
             isVisible={isCoinListEdited || isSmallBalancesOpen}

@@ -4,11 +4,13 @@ import {
   CustomColor,
   useForegroundColor,
 } from '../../color/useForegroundColor';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../typography/createLineHeightFixNode' ... Remove this comment to see the full error message
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';
 import {
   nodeHasEmoji,
   nodeIsString,
   renderStringWithEmoji,
+  // @ts-expect-error ts-migrate(6142) FIXME: Module '../../typography/renderStringWithEmoji' wa... Remove this comment to see the full error message
 } from '../../typography/renderStringWithEmoji';
 import {
   TextColor,
@@ -108,6 +110,7 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
     );
 
     return (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <NativeText
         allowFontScaling={false}
         numberOfLines={numberOfLines}
@@ -115,6 +118,7 @@ export const Text = forwardRef<ElementRef<typeof NativeText>, TextProps>(
         style={textStyle}
         testID={testID}
       >
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
         {ios && containsEmojiProp && nodeIsString(children)
           ? renderStringWithEmoji(children)
           : children}

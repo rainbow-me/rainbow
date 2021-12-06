@@ -3,11 +3,15 @@ import React from 'react';
 import { ScrollView, View } from 'react-native';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../../animations';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../discover-sheet/EdgeFade' was resolve... Remove this comment to see the full error message
 import EdgeFade from '../../discover-sheet/EdgeFade';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useGas } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { margin, padding } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { gasUtils } from '@rainbow-me/utils';
 
 const PillScrollViewStyle = { flexGrow: 1, justifyContent: 'center' };
@@ -19,6 +23,7 @@ export const TabPillWrapper = styled(View).attrs({})`
   ${padding(3, 8)};
   ${margin(0, 4, 0, 4)};
   height: 30px;
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'isSelected' does not exist on type 'View... Remove this comment to see the full error message
   border: ${({ isSelected, color, theme: { colors } }) =>
     `2px solid ${
       isSelected
@@ -40,8 +45,10 @@ export const TabPillText = styled(Text).attrs({
         : colors.alpha(colors.blueGreyDark, 0.4)
     }`};
   ${margin(
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0,
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0
   )}
@@ -53,13 +60,20 @@ const TabPill = ({
   handleOnPressTabPill,
   color,
   testID,
-}) => {
+}: any) => {
   const handleOnPress = () => {
     handleOnPressTabPill(label);
   };
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ButtonPressAnimation onPress={handleOnPress} testID={testID}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <TabPillWrapper color={color} isSelected={isSelected}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <TabPillText
           color={color}
           isSelected={isSelected}
@@ -77,7 +91,7 @@ export default function FeesPanelTabs({
   onPressTabPill,
   colorForAsset,
   speeds = GasSpeedOrder,
-}) {
+}: any) {
   const {
     updateGasFeeOption,
     selectedGasFeeOption,
@@ -85,7 +99,7 @@ export default function FeesPanelTabs({
     updateToCustomGasFee,
   } = useGas();
 
-  const handleOnPressTabPill = label => {
+  const handleOnPressTabPill = (label: any) => {
     if (label === CUSTOM && isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
       const gasFeeParams = gasFeeParamsBySpeed[URGENT];
       updateToCustomGasFee({
@@ -99,10 +113,18 @@ export default function FeesPanelTabs({
   };
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Row align="center">
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ScrollView contentContainerStyle={PillScrollViewStyle} horizontal>
-        {speeds.map(speed => (
+        {speeds.map((speed: any) => (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <Column key={speed}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <TabPill
               color={colorForAsset}
               handleOnPressTabPill={handleOnPressTabPill}
@@ -113,6 +135,9 @@ export default function FeesPanelTabs({
           </Column>
         ))}
       </ScrollView>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <EdgeFade />
     </Row>
   );

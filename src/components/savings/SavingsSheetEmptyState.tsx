@@ -1,16 +1,23 @@
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/config/debug' or i... Remove this comment to see the full error message
+import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { calculateAPY } from '../../helpers/savings';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../navigation/Navigation' was resolved ... Remove this comment to see the full error message
 import { useNavigation } from '../../navigation/Navigation';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../Divider' was resolved to '/Users/nickby... Remove this comment to see the full error message
 import Divider from '../Divider';
 import { CoinIcon } from '../coin-icon';
 import { Centered, ColumnWithMargins } from '../layout';
 import { SheetActionButton } from '../sheet';
 import { Br, GradientText, Text } from '../text';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { DAI_ADDRESS } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';
 
 const APYHeadingText = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -41,9 +48,10 @@ const SavingsSheetEmptyState = ({
   isReadOnlyWallet,
   supplyRate,
   underlying,
-}) => {
+}: any) => {
   const { navigate } = useNavigation();
 
+  // @ts-expect-error ts-migrate(2362) FIXME: The left-hand side of an arithmetic operation must... Remove this comment to see the full error message
   const apy = useMemo(() => Math.floor(calculateAPY(supplyRate) * 10) / 10, [
     supplyRate,
   ]);
@@ -64,22 +72,53 @@ const SavingsSheetEmptyState = ({
     }
   }, [isReadOnlyWallet, navigate, underlying]);
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Centered direction="column" paddingTop={9}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <CoinIcon address={DAI_ADDRESS} size={50} symbol="DAI" />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Centered marginBottom={12} marginTop={15}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <APYHeadingText>Get </APYHeadingText>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <GradientAPYHeadingText>{apy}%</GradientAPYHeadingText>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <APYHeadingText> on your dollars</APYHeadingText>
       </Centered>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <BodyText>
-        With digital dollars like Dai, saving <Br />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message With digital dollars like Dai, saving <Br />
         earns you more than ever before
       </BodyText>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Divider color={colors.rowDividerLight} inset={[0, 42]} />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ColumnWithMargins css={padding(19, 15)} margin={19} width="100%">
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <SheetActionButton
           color={colors.swapPurple}
           label="􀁍 Deposit from Wallet"

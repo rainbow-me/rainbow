@@ -2,10 +2,14 @@ import { debounce, isEmpty } from 'lodash';
 import { web3Provider } from '../handlers/web3';
 import store from '../redux/store';
 import { multicallUpdateOutdatedListeners } from './multicall';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 // -- Actions ---------------------------------------- //
-const updateMulticall = blockNumber => async (dispatch, getState) => {
+const updateMulticall = (blockNumber: any) => async (
+  dispatch: any,
+  getState: any
+) => {
   const { listeners } = getState().multicall;
   try {
     if (isEmpty(listeners)) return;

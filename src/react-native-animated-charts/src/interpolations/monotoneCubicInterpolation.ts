@@ -5,12 +5,12 @@ export default function monotoneCubicInterpolation({
   range,
   includeExtremes = false,
   removePointsSurroundingExtremes = true,
-}) {
+}: any) {
   if (!data || data.length === 0) {
     return () => [];
   }
   const { x, y } = data.reduce(
-    (acc, curr) => {
+    (acc: any, curr: any) => {
       acc.x.push(curr.x);
       acc.y.push(curr.y);
       return acc;

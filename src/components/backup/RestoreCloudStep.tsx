@@ -12,29 +12,40 @@ import { cloudPlatform } from '../../utils/platform';
 import { PasswordField } from '../fields';
 import { Centered, Column } from '../layout';
 import { GradientText, Text } from '../text';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './BackupSheetKeyboardLayout' was resolved ... Remove this comment to see the full error message
 import BackupSheetKeyboardLayout from './BackupSheetKeyboardLayout';
 import {
   cloudBackupPasswordMinLength,
   isCloudBackupPasswordValid,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/cloudBack... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/cloudBackup';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/localstor... Remove this comment to see the full error message
 import { removeWalletData } from '@rainbow-me/handlers/localstorage/removeWallet';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/walletBack... Remove this comment to see the full error message
 import walletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/walletLoad... Remove this comment to see the full error message
 import WalletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
 import {
   useDimensions,
   useInitializeWallet,
   useUserAccounts,
   useWallets,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
 import {
   addressSetSelected,
   setWalletBackedUp,
   walletsLoadState,
   walletsSetSelected,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/wallets' or ... Remove this comment to see the full error message
 } from '@rainbow-me/redux/wallets';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { margin, padding } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -69,13 +80,14 @@ const Title = styled(Text).attrs({
   ${margin(15, 0, 12)};
 `;
 
+// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
 const samsungGalaxy = (android && isSamsungGalaxy()) || false;
 
 export default function RestoreCloudStep({
   userData,
   backupSelected,
   fromSettings,
-}) {
+}: any) {
   const dispatch = useDispatch();
   const { isTinyPhone } = useDimensions();
   const { navigate, goBack, replace } = useNavigation();
@@ -224,27 +236,45 @@ export default function RestoreCloudStep({
   }, [onSubmit, validPassword]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <BackupSheetKeyboardLayout
       footerButtonDisabled={!validPassword}
       footerButtonLabel={label}
       onSubmit={onSubmit}
       type="restore"
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Masthead>
         {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <MastheadIcon>􀙶</MastheadIcon>
         )}
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Title>Enter backup password</Title>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <DescriptionText>
           To restore your wallet, enter the backup password you created
         </DescriptionText>
       </Masthead>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Column align="center" flex={1}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <PasswordField
           autoFocus
           isInvalid={
             (password !== '' &&
               password.length < cloudBackupPasswordMinLength &&
+              // @ts-expect-error ts-migrate(2339) FIXME: Property 'isFocused' does not exist on type 'never... Remove this comment to see the full error message
               !passwordRef?.current?.isFocused?.()) ||
             incorrectPassword
           }

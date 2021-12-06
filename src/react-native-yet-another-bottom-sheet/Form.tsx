@@ -11,9 +11,10 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import Context from './Context';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './ScrollView' was resolved to '/Users/nick... Remove this comment to see the full error message
 import { svid } from './ScrollView';
 
-function useReactiveSharedValue(prop) {
+function useReactiveSharedValue(prop: any) {
   const sharedValue = useSharedValue(prop);
   useEffect(() => {
     sharedValue.value = prop;
@@ -27,7 +28,7 @@ export default function Form({
   toss = 0.0001,
   panGHProps = {},
   ...props
-}) {
+}: any) {
   const layoutProvider = useRef({ height: 0, width: 0, x: 0, y: 0 });
   const { simultaneousHandlers, ...restPanGHProps } = panGHProps;
   const sharedPoints = useReactiveSharedValue(points);
@@ -45,6 +46,7 @@ export default function Form({
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: event => {
       if (isBlockedScrolling.value) {
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'RefObject<Component<{}, {}, any>... Remove this comment to see the full error message
         scrollTo(animatedRef, 0, prevPosition.value, false);
       } else {
         prevPosition.value = event.contentOffset.y;
@@ -104,6 +106,7 @@ export default function Form({
       );
     },
     onStart: event => {
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'boolean' is not assignable to type 'number'.
       hasTouchedHeader.value =
         event.y < layout.value.y ||
         event.y > layout.value.y + layout.value.height ||
@@ -142,7 +145,11 @@ export default function Form({
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Context.Provider value={contextValue}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <PanGestureHandler
         {...{ onGestureEvent }}
         minDist={0}
@@ -156,6 +163,9 @@ export default function Form({
         ]}
         {...restPanGHProps}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Animated.View {...props} style={[propStyle, style]} />
       </PanGestureHandler>
     </Context.Provider>

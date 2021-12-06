@@ -4,6 +4,7 @@ import { InteractionManager } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { explorerInit } from '../redux/explorer';
 import { uniqueTokensRefreshState } from '../redux/uniqueTokens';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 export default function useInitializeAccountData() {

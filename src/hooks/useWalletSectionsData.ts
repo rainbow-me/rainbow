@@ -7,7 +7,9 @@ import useIsWalletEthZero from './useIsWalletEthZero';
 import useSavingsAccount from './useSavingsAccount';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/buildWalle... Remove this comment to see the full error message
 import { buildWalletSectionsSelector } from '@rainbow-me/helpers/buildWalletSections';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/uniswapLiq... Remove this comment to see the full error message
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 
 export default function useWalletSectionsData() {
@@ -42,6 +44,7 @@ export default function useWalletSectionsData() {
       savings,
       ...accountData,
       ...uniqueTokens,
+      // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
       ...uniswap,
       ...isWalletEthZero,
       showcaseTokens,

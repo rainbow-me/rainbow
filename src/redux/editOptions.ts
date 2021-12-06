@@ -21,7 +21,7 @@ const SET_HIDDEN_COINS = 'editOptions/SET_HIDDEN_COINS';
 const UPDATE_SELECTED_COIN = 'editOptions/UPDATE_SELECTED_COIN';
 
 // -- Actions --------------------------------------------------------------- //
-export const coinListLoadState = () => async (dispatch, getState) => {
+export const coinListLoadState = () => async (dispatch: any, getState: any) => {
   try {
     const { accountAddress, network } = getState().settings;
     const hiddenCoins = await getHiddenCoins(accountAddress, network);
@@ -40,9 +40,9 @@ export const coinListLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const setIsCoinListEdited = newIsCoinListEdited => (
-  dispatch,
-  getState
+export const setIsCoinListEdited = (newIsCoinListEdited: any) => (
+  dispatch: any,
+  getState: any
 ) => {
   const { currentAction, selectedCoins } = getState().editOptions;
 
@@ -56,16 +56,22 @@ export const setIsCoinListEdited = newIsCoinListEdited => (
   });
 };
 
-export const clearSelectedCoins = () => dispatch =>
+export const clearSelectedCoins = () => (dispatch: any) =>
   dispatch(updateCurrentAction([]));
 
-export const pushSelectedCoin = selectedCoin => (dispatch, getState) => {
+export const pushSelectedCoin = (selectedCoin: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { selectedCoins } = getState().editOptions;
   const updatedSelectedCoins = concat(selectedCoins, selectedCoin);
   dispatch(updateCurrentAction(updatedSelectedCoins));
 };
 
-export const removeSelectedCoin = selectedCoin => (dispatch, getState) => {
+export const removeSelectedCoin = (selectedCoin: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { selectedCoins } = getState().editOptions;
   const updatedSelectedCoins = filter(
     selectedCoins,
@@ -74,7 +80,10 @@ export const removeSelectedCoin = selectedCoin => (dispatch, getState) => {
   dispatch(updateCurrentAction(updatedSelectedCoins));
 };
 
-const updateCurrentAction = newSelectedCoins => (dispatch, getState) => {
+const updateCurrentAction = (newSelectedCoins: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { currentAction, hiddenCoins, pinnedCoins } = getState().editOptions;
   const newSelectedCoinsLength = newSelectedCoins.length;
   let newCurrentAction = currentAction;
@@ -105,7 +114,7 @@ const updateCurrentAction = newSelectedCoins => (dispatch, getState) => {
   });
 };
 
-export const setPinnedCoins = () => (dispatch, getState) => {
+export const setPinnedCoins = () => (dispatch: any, getState: any) => {
   const { accountAddress, network } = getState().settings;
   const {
     currentAction,
@@ -145,9 +154,9 @@ export const setPinnedCoins = () => (dispatch, getState) => {
   });
 };
 
-export const addCoinsToHiddenList = additionalCoinsToHide => (
-  dispatch,
-  getState
+export const addCoinsToHiddenList = (additionalCoinsToHide: any) => (
+  dispatch: any,
+  getState: any
 ) => {
   const { accountAddress, network } = getState().settings;
   const {
@@ -181,7 +190,7 @@ export const addCoinsToHiddenList = additionalCoinsToHide => (
   });
 };
 
-export const setHiddenCoins = () => (dispatch, getState) => {
+export const setHiddenCoins = () => (dispatch: any, getState: any) => {
   const { accountAddress, network } = getState().settings;
   const {
     currentAction,
@@ -231,7 +240,7 @@ const INITIAL_STATE = {
   selectedCoins: [],
 };
 
-export default (state = INITIAL_STATE, action) =>
+export default (state = INITIAL_STATE, action: any) =>
   produce(state, draft => {
     if (action.type === COIN_LIST_OPTIONS_LOAD_SUCCESS) {
       draft.pinnedCoins = action.payload.pinnedCoins;
@@ -240,6 +249,7 @@ export default (state = INITIAL_STATE, action) =>
       draft.currentAction = action.payload.currentAction;
       draft.isCoinListEdited = action.payload.isCoinListEdited;
       draft.isCoinListEditedValue.setValue(
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '0 | 1' is not assignable to para... Remove this comment to see the full error message
         action.payload.isCoinListEdited ? 1 : 0
       );
       draft.selectedCoins = action.payload.selectedCoins;

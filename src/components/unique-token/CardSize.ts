@@ -1,3 +1,4 @@
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { deviceUtils } from '@rainbow-me/utils';
 
 export const UniqueTokenCardMargin = 15;

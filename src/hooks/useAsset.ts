@@ -3,11 +3,13 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import useAccountAssets from './useAccountAssets';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { AssetTypes } from '@rainbow-me/entities';
 
-export default function useAsset(asset) {
+export default function useAsset(asset: any) {
   const { allAssets, collectibles } = useAccountAssets();
   const genericAssets = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
     ({ data: { genericAssets } }) => genericAssets
   );
   const uniswapAssetsInWallet = useUniswapAssetsInWallet();

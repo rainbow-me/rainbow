@@ -37,7 +37,7 @@ export const polygonGasStationGetGasPrices = () =>
  * @params {data}
  * @return {Promise}
  */
-export const polygonGetGasEstimates = data => {
+export const polygonGetGasEstimates = (data: any) => {
   return {
     ...data,
     avgWait: 0.5,

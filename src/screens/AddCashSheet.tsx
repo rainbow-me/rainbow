@@ -10,6 +10,7 @@ import {
   SheetSubtitleCycler,
   SheetTitle,
 } from '../components/sheet';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../context/ThemeContext' was resolved to '... Remove this comment to see the full error message
 import { useTheme } from '../context/ThemeContext';
 import isNativeStackAvailable from '../helpers/isNativeStackAvailable';
 import { deviceUtils } from '../utils';
@@ -19,9 +20,12 @@ import {
   useShakeAnimation,
   useTimeout,
   useWyreApplePay,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { borders } from '@rainbow-me/styles';
 
+// @ts-expect-error ts-migrate(2339) FIXME: Property 'dimensions' does not exist on type '{}'.
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);
 const sheetHeight =
@@ -80,6 +84,7 @@ export default function AddCashSheet() {
   const onLimitExceeded = useCallback(
     limit => {
       stopErrorTimeout();
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number' is not assignable to par... Remove this comment to see the full error message
       setErrorIndex(Object.keys(cashLimits).indexOf(limit));
       startErrorTimeout(() => onClearError(), SubtitleInterval);
     },
@@ -87,22 +92,42 @@ export default function AddCashSheet() {
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <SheetContainer colors={colors}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <StatusBar barStyle="light-content" />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Column
         align="center"
         height={isNativeStackAvailable ? sheetHeight : '100%'}
         justify="end"
         paddingBottom={isNarrowPhone ? 15 : insets.bottom + 11}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Column align="center" paddingVertical={6}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <SheetHandle />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ColumnWithMargins
             margin={4}
             paddingTop={isNativeStackAvailable ? 7 : 5}
           >
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <SheetTitle>Add Cash</SheetTitle>
             {!isPaymentComplete && (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <SheetSubtitleCycler
                 animatedValue={errorAnimation}
                 errorIndex={errorIndex}
@@ -113,8 +138,12 @@ export default function AddCashSheet() {
             )}
           </ColumnWithMargins>
         </Column>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <FlexItem width="100%">
           {isPaymentComplete ? (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <AddCashStatus
               error={error}
               orderCurrency={orderCurrency}
@@ -124,6 +153,7 @@ export default function AddCashSheet() {
               transferStatus={transferStatus}
             />
           ) : (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <AddCashForm
               limitWeekly={weeklyRemainingLimit}
               onClearError={onClearError}

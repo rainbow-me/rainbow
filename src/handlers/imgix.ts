@@ -2,13 +2,14 @@ import ImgixClient from 'imgix-core-js';
 import LRUCache from 'mnemonist/lru-cache';
 import { PixelRatio } from 'react-native';
 import {
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   IMGIX_DOMAIN as domain,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   IMGIX_TOKEN as secureURLToken,
 } from 'react-native-dotenv';
 import { Source } from 'react-native-fast-image';
 import parse from 'url-parse';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 const shouldCreateImgixClient = (): ImgixClient | null => {

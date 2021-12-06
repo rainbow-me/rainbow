@@ -1,6 +1,8 @@
 import { captureException } from '@sentry/react-native';
 import { sortBy } from 'lodash';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import RNCloudFs from 'react-native-cloud-fs';
+// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
 import RNFS from 'react-native-fs';
 import AesEncryptor from '../handlers/aesEncryption';
@@ -22,11 +24,13 @@ export const CLOUD_BACKUP_ERRORS = {
 };
 
 export function logoutFromGoogleDrive() {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   android && RNCloudFs.logout();
 }
 
 // This is used for dev purposes only!
 export async function deleteAllBackups() {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   if (android) {
     await RNCloudFs.loginIfNeeded();
   }
@@ -35,13 +39,14 @@ export async function deleteAllBackups() {
     targetPath: REMOTE_BACKUP_WALLET_DIR,
   });
   await Promise.all(
-    backups.files.map(async file => {
+    backups.files.map(async (file: any) => {
       await RNCloudFs.deleteFromCloud(file);
     })
   );
 }
 
 export async function fetchAllBackups() {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   if (android) {
     await RNCloudFs.loginIfNeeded();
   }
@@ -51,7 +56,11 @@ export async function fetchAllBackups() {
   });
 }
 
-export async function encryptAndSaveDataToCloud(data, password, filename) {
+export async function encryptAndSaveDataToCloud(
+  data: any,
+  password: any,
+  filename: any
+) {
   // Encrypt the data
   try {
     const encryptedData = await encryptor.encrypt(
@@ -60,12 +69,14 @@ export async function encryptAndSaveDataToCloud(data, password, filename) {
     );
     // Store it on the FS first
     const path = `${RNFS.DocumentDirectoryPath}/${filename}`;
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | undefined' is not assig... Remove this comment to see the full error message
     await RNFS.writeFile(path, encryptedData, 'utf8');
     const sourceUri = { path };
     const destinationPath = `${REMOTE_BACKUP_WALLET_DIR}/${filename}`;
     const mimeType = 'application/json';
     // Only available to our app
     const scope = 'hidden';
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     if (android) {
       await RNCloudFs.loginIfNeeded();
     }
@@ -77,6 +88,7 @@ export async function encryptAndSaveDataToCloud(data, password, filename) {
     });
     // Now we need to verify the file has been stored in the cloud
     const exists = await RNCloudFs.fileExists(
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       ios
         ? {
             scope,
@@ -104,22 +116,24 @@ export async function encryptAndSaveDataToCloud(data, password, filename) {
   }
 }
 
-function getICloudDocument(filename) {
+function getICloudDocument(filename: any) {
   return RNCloudFs.getIcloudDocument(filename);
 }
 
-function getGoogleDriveDocument(id) {
+function getGoogleDriveDocument(id: any) {
   return RNCloudFs.getGoogleDriveDocument(id);
 }
 
 export function syncCloud() {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
   if (ios) {
     return RNCloudFs.syncCloud();
   }
   return true;
 }
 
-export async function getDataFromCloud(backupPassword, filename = null) {
+export async function getDataFromCloud(backupPassword: any, filename = null) {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   if (android) {
     await RNCloudFs.loginIfNeeded();
   }
@@ -138,13 +152,15 @@ export async function getDataFromCloud(backupPassword, filename = null) {
 
   let document;
   if (filename) {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
     if (ios) {
       // .icloud are files that were not yet synced
       document = backups.files.find(
-        file => file.name === filename || file.name === `.${filename}.icloud`
+        (file: any) =>
+          file.name === filename || file.name === `.${filename}.icloud`
       );
     } else {
-      document = backups.files.find(file => {
+      document = backups.files.find((file: any) => {
         return file.name === `${REMOTE_BACKUP_WALLET_DIR}/${filename}`;
       });
     }
@@ -159,6 +175,7 @@ export async function getDataFromCloud(backupPassword, filename = null) {
     const sortedBackups = sortBy(backups.files, 'lastModified').reverse();
     document = sortedBackups[0];
   }
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
   const encryptedData = ios
     ? await getICloudDocument(filename)
     : await getGoogleDriveDocument(document.id);
@@ -185,7 +202,7 @@ export async function getDataFromCloud(backupPassword, filename = null) {
   throw error;
 }
 
-export async function backupUserDataIntoCloud(data) {
+export async function backupUserDataIntoCloud(data: any) {
   const filename = USERDATA_FILE;
   const password = RAINBOW_MASTER_KEY;
   return encryptAndSaveDataToCloud(data, password, filename);
@@ -194,12 +211,13 @@ export async function backupUserDataIntoCloud(data) {
 export async function fetchUserDataFromCloud() {
   const filename = USERDATA_FILE;
   const password = RAINBOW_MASTER_KEY;
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '"UserData.json"' is not assignab... Remove this comment to see the full error message
   return getDataFromCloud(password, filename);
 }
 
 export const cloudBackupPasswordMinLength = 8;
 
-export function isCloudBackupPasswordValid(password) {
+export function isCloudBackupPasswordValid(password: any) {
   return !!(
     password &&
     password !== '' &&
@@ -208,6 +226,7 @@ export function isCloudBackupPasswordValid(password) {
 }
 
 export function isCloudBackupAvailable() {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
   if (ios) {
     return RNCloudFs.isAvailable();
   }

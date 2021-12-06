@@ -5,6 +5,7 @@ import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'zxcv... Remove this comment to see the full error message
 import zxcvbn from 'zxcvbn';
 import { isSamsungGalaxy } from '../../helpers/samsung';
 import { saveBackupPassword } from '../../model/backup';
@@ -13,11 +14,14 @@ import { DelayedAlert } from '../alerts';
 import { PasswordField } from '../fields';
 import { Centered, ColumnWithMargins } from '../layout';
 import { GradientText, Text } from '../text';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './BackupSheetKeyboardLayout' was resolved ... Remove this comment to see the full error message
 import BackupSheetKeyboardLayout from './BackupSheetKeyboardLayout';
 import {
   cloudBackupPasswordMinLength,
   isCloudBackupPasswordValid,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/cloudBack... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/cloudBackup';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/support' o... Remove this comment to see the full error message
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import {
   useDimensions,
@@ -25,10 +29,15 @@ import {
   useRouteExistsInNavigationState,
   useWalletCloudBackup,
   useWallets,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 const DescriptionText = styled(Text).attrs(
@@ -73,6 +82,7 @@ const Title = styled(Text).attrs(({ isTinyPhone }) => ({
   ${({ isTinyPhone }) => (isTinyPhone ? padding(0) : padding(15, 0, 12))};
 `;
 
+// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
 const samsungGalaxy = (android && isSamsungGalaxy()) || false;
 
 export default function BackupCloudStep() {
@@ -113,6 +123,7 @@ export default function BackupCloudStep() {
     Routes.SETTINGS_MODAL
   );
 
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'walletId' does not exist on type 'object... Remove this comment to see the full error message
   const walletId = params?.walletId || selectedWallet.id;
 
   const [label, setLabel] = useState(
@@ -123,6 +134,7 @@ export default function BackupCloudStep() {
 
   useEffect(() => {
     setTimeout(() => {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
       passwordRef.current?.focus();
     }, 1);
     analytics.track('Choose Password Step', {
@@ -155,6 +167,7 @@ export default function BackupCloudStep() {
   }, []);
 
   const onPasswordSubmit = useCallback(() => {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
     confirmPasswordRef.current?.focus();
   }, []);
 
@@ -172,6 +185,7 @@ export default function BackupCloudStep() {
     } else if (
       password !== '' &&
       password.length < cloudBackupPasswordMinLength &&
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'isFocused' does not exist on type 'never... Remove this comment to see the full error message
       !passwordRef.current?.isFocused()
     ) {
       newLabel = 'Use a longer password';
@@ -267,28 +281,48 @@ export default function BackupCloudStep() {
   }, [onConfirmBackup, validPassword]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <BackupSheetKeyboardLayout
       footerButtonDisabled={!validPassword}
       footerButtonLabel={label}
       onSubmit={onConfirmBackup}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Masthead isTallPhone={isTallPhone} isTinyPhone={isTinyPhone}>
         {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <MastheadIcon>􀌍</MastheadIcon>
         )}
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Title isTinyPhone={isTinyPhone}>Choose a password</Title>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <DescriptionText isTinyPhone={isTinyPhone}>
-          Please use a password you&apos;ll remember.&nbsp;
+          Please use a password you&apos;ll remember.&nbsp; // @ts-expect-error
+          ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is
+          provided... Remove this comment to see the full error message
           <ImportantText isTinyPhone={isTinyPhone}>
             It can&apos;t be recovered!
           </ImportantText>
         </DescriptionText>
       </Masthead>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ColumnWithMargins align="center" flex={1} margin={android ? 0 : 19}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <PasswordField
           isInvalid={
             password !== '' &&
             password.length < cloudBackupPasswordMinLength &&
+            // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
             !passwordRef.current.isFocused()
           }
           isValid={isCloudBackupPasswordValid(password)}
@@ -302,6 +336,9 @@ export default function BackupCloudStep() {
           returnKeyType="next"
           textContentType="newPassword"
         />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <PasswordField
           editable={isCloudBackupPasswordValid(password)}
           isInvalid={

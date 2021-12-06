@@ -2,7 +2,9 @@ import { toLower } from 'lodash';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/store' or it... Remove this comment to see the full error message
 import { AppState } from '@rainbow-me/redux/store';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/usersPositio... Remove this comment to see the full error message
 import { UniswapPosition } from '@rainbow-me/redux/usersPositions';
 
 export default function useTotalFeeEarnedPerAsset(

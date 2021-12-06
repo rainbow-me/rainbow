@@ -6,15 +6,18 @@ import {
   getUrlForTrustIconFallback,
   isETH,
   pseudoRandomArrayItemFromString,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/utils';
 
 export default function useColorForAsset(
   asset = {},
-  fallbackColor,
+  fallbackColor: any,
   forceLightMode = false,
   forceETHColor = false
 ) {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { isDarkMode: isDarkModeTheme, colors } = useTheme();
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'address' does not exist on type '{}'.
   const { address, color, mainnet_address } = asset;
   const token = getTokenMetadata(mainnet_address || address);
   const tokenListColor = token?.color;

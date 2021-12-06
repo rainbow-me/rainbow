@@ -13,6 +13,7 @@ import { uniswapLiquidityLoadState } from '../redux/uniswapLiquidity';
 import { uniswapPositionsLoadState } from '../redux/usersPositions';
 import { walletConnectLoadState } from '../redux/walletconnect';
 import { promiseUtils } from '../utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 export default function useLoadAccountData() {

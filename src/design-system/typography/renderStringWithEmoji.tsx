@@ -35,6 +35,7 @@ export const renderStringWithEmoji = (stringNode: StringNode) => {
   const strings = Array.isArray(stringNode) ? stringNode : [stringNode];
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Fragment>
       {strings.map(node => {
         if (typeof node !== 'string') {
@@ -49,9 +50,11 @@ export const renderStringWithEmoji = (stringNode: StringNode) => {
         }
 
         return string.split(emojiRegex).map((stringPart, index) => (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <Fragment key={index}>
             {stringPart}
             {emojis[index] ? (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <NativeText style={styles.emoji}>{emojis[index]}</NativeText>
             ) : null}
           </Fragment>

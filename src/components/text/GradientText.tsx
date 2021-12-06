@@ -15,15 +15,20 @@ const GradientText = ({
   start,
   steps,
   ...props
-}) => {
+}: any) => {
   const textElement =
     Array.isArray(children) || typeof children === 'string'
       ? createElement(renderer, { ...props, children })
       : children;
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <MaskedView maskElement={textElement}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <LinearGradient
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
         angle={android && angle === false ? 45 : angle}
         angleCenter={angleCenter}
         colors={colors}
@@ -32,6 +37,9 @@ const GradientText = ({
         start={start}
         useAngle={!!angle}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <View opacity={0}>{textElement}</View>
       </LinearGradient>
     </MaskedView>

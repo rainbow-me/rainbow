@@ -15,13 +15,18 @@ import useWallets from './useWallets';
 import {
   CLOUD_BACKUP_ERRORS,
   isCloudBackupAvailable,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/cloudBack... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/cloudBackup';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/utilities'... Remove this comment to see the full error message
 import { delay } from '@rainbow-me/helpers/utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/walletBack... Remove this comment to see the full error message
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/walletLoad... Remove this comment to see the full error message
 import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
-function getUserError(e) {
+function getUserError(e: any) {
   switch (e.message) {
     case CLOUD_BACKUP_ERRORS.KEYCHAIN_ACCESS_ERROR:
       return 'You need to authenticate to proceed with the Backup process';
@@ -138,6 +143,7 @@ export default function useWalletCloudBackup() {
           updatedBackupFile = await addWalletToCloudBackup(
             fetchedPassword,
             wallets[walletId],
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | true' is not assignable... Remove this comment to see the full error message
             latestBackup
           );
         }

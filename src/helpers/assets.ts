@@ -13,15 +13,17 @@ import {
   sortBy,
 } from 'lodash';
 import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/store' or it... Remove this comment to see the full error message
 import store from '@rainbow-me/redux/store';
 import {
   ETH_ICON_URL,
   supportedNativeCurrencies,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 } from '@rainbow-me/references';
 
 const COINS_TO_SHOW = 5;
 
-export const buildAssetUniqueIdentifier = item => {
+export const buildAssetUniqueIdentifier = (item: any) => {
   const balance = get(item, 'balance.amount', '');
   const nativePrice = get(item, 'native.price.display', '');
   const uniqueId = get(item, 'uniqueId');
@@ -30,11 +32,11 @@ export const buildAssetUniqueIdentifier = item => {
 };
 
 const addEthPlaceholder = (
-  assets,
-  includePlaceholder,
-  pinnedCoins,
-  nativeCurrency,
-  emptyCollectibles
+  assets: any,
+  includePlaceholder: any,
+  pinnedCoins: any,
+  nativeCurrency: any,
+  emptyCollectibles: any
 ) => {
   const hasEth = !!find(assets, asset => asset.address === 'eth');
 
@@ -85,9 +87,10 @@ const addEthPlaceholder = (
   return { addedEth: false, assets };
 };
 
-const getTotal = assets =>
+const getTotal = (assets: any) =>
   reduce(
     assets,
+    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     (acc, asset) => {
       const balance = asset?.native?.balance?.amount ?? 0;
       return add(acc, balance);
@@ -96,18 +99,18 @@ const getTotal = assets =>
   );
 
 export const buildCoinsList = (
-  assetsOriginal,
-  nativeCurrency,
-  isCoinListEdited,
-  pinnedCoins,
-  hiddenCoins,
+  assetsOriginal: any,
+  nativeCurrency: any,
+  isCoinListEdited: any,
+  pinnedCoins: any,
+  hiddenCoins: any,
   includePlaceholder = false,
-  emptyCollectibles
+  emptyCollectibles: any
 ) => {
-  let standardAssets = [],
-    pinnedAssets = [],
-    smallAssets = [],
-    hiddenAssets = [];
+  let standardAssets: any = [],
+    pinnedAssets: any = [],
+    smallAssets: any = [],
+    hiddenAssets: any = [];
 
   const { addedEth, assets } = addEthPlaceholder(
     assetsOriginal,
@@ -186,8 +189,11 @@ export const buildCoinsList = (
   return { addedEth, assets: allAssets, totalBalancesValue };
 };
 
-export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
-  let rows = [];
+export const buildUniqueTokenList = (
+  uniqueTokens: any,
+  selectedShowcaseTokens: any
+) => {
+  let rows: any = [];
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];
 
@@ -195,7 +201,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
   const families = Object.keys(grouped);
 
   for (let i = 0; i < families.length; i++) {
-    const tokensRow = [];
+    const tokensRow: any = [];
     for (let j = 0; j < grouped[families[i]].length; j += 2) {
       if (includes(selectedShowcaseTokens, grouped[families[i]][j].uniqueId)) {
         showcaseTokens.push(grouped[families[i]][j]);
@@ -216,7 +222,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
     // eslint-disable-next-line no-loop-func
     tokens.forEach((tokenChunk, index) => {
       const id = tokensRow[0]
-        .map(({ uniqueId }) => uniqueId)
+        .map(({ uniqueId }: any) => uniqueId)
         .join(`__${index}`);
       rows.push({
         childrenAmount: grouped[families[i]].length,
@@ -261,6 +267,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
     ].concat(rows);
   }
 
+  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'row' implicitly has an 'any' type.
   rows.forEach((row, i) => {
     row.familyId = i;
     row.tokens[0][0].rowNumber = i;
@@ -268,5 +275,5 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
   return rows;
 };
 
-export const buildUniqueTokenName = ({ collection, id, name }) =>
+export const buildUniqueTokenName = ({ collection, id, name }: any) =>
   name || `${collection.name} #${id}`;

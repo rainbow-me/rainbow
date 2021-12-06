@@ -1,10 +1,14 @@
 import { Interface } from '@ethersproject/abi';
 import { ChainId, Token, WETH } from '@uniswap/sdk';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module '@uniswap/v2-core/build/IUniswa... Remove this comment to see the full error message
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json';
 import { DAI_ADDRESS, USDC_ADDRESS } from '../';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './uniswap-multicall-abi.json'.... Remove this comment to see the full error message
 import MULTICALL_ABI from './uniswap-multicall-abi.json';
 
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './uniswap-pairs-testnet.json'.... Remove this comment to see the full error message
 import { default as UNISWAP_TESTNET_TOKEN_LIST } from './uniswap-pairs-testnet.json';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './uniswap-v2-router.json'. Con... Remove this comment to see the full error message
 import { abi as UNISWAP_V2_ROUTER_ABI } from './uniswap-v2-router.json';
 import UNISWAP_V1_EXCHANGE_ABI from './v1-exchange-abi';
 

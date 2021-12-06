@@ -18,6 +18,7 @@ import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
 import { dismissingScreenListener } from '../../shim';
 import {
   AnimatedExchangeFloatingPanels,
@@ -33,7 +34,9 @@ import {
 import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers' or its co... Remove this comment to see the full error message
 import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/utilities'... Remove this comment to see the full error message
 import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
@@ -47,27 +50,41 @@ import {
   useSwapDerivedOutputs,
   useSwapInputHandlers,
   useSwapInputRefs,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/model/wallet' or i... Remove this comment to see the full error message
 import { loadWallet } from '@rainbow-me/model/wallet';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/raps' or its corre... Remove this comment to see the full error message
 import { executeRap, getRapEstimationByType } from '@rainbow-me/raps';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/multicall' o... Remove this comment to see the full error message
 import { multicallClearState } from '@rainbow-me/redux/multicall';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/swap' or its... Remove this comment to see the full error message
 import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils/ethereumUtil... Remove this comment to see the full error message
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
+// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
 const FloatingPanels = ios
   ? AnimatedExchangeFloatingPanels
   : ExchangeFloatingPanels;
 
+// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
 const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
 
 const InnerWrapper = styled(Centered).attrs({
   direction: 'column',
 })`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
   ${ios
     ? position.sizeAsObject('100%')
     : `
@@ -77,11 +94,12 @@ const InnerWrapper = styled(Centered).attrs({
   background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const Spacer = styled.View`
   height: 20;
 `;
 
-const getInputHeaderTitle = (type, defaultInputAsset) => {
+const getInputHeaderTitle = (type: any, defaultInputAsset: any) => {
   switch (type) {
     case ExchangeModalTypes.deposit:
       return 'Deposit';
@@ -92,7 +110,7 @@ const getInputHeaderTitle = (type, defaultInputAsset) => {
   }
 };
 
-const getShowOutputField = type => {
+const getShowOutputField = (type: any) => {
   switch (type) {
     case ExchangeModalTypes.deposit:
     case ExchangeModalTypes.withdrawal:
@@ -108,7 +126,7 @@ export default function ExchangeModal({
   testID,
   type,
   typeSpecificParams,
-}) {
+}: any) {
   const dispatch = useDispatch();
 
   useLayoutEffect(() => {
@@ -119,6 +137,7 @@ export default function ExchangeModal({
   const showOutputField = getShowOutputField(type);
   const priceOfEther = useEthUSDPrice();
   const genericAssets = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
     ({ data: { genericAssets } }) => genericAssets
   );
 
@@ -210,6 +229,7 @@ export default function ExchangeModal({
 
   const isDismissing = useRef(false);
   useEffect(() => {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
     if (ios) {
       return;
     }
@@ -219,7 +239,7 @@ export default function ExchangeModal({
     };
     const unsubscribe = (
       dangerouslyGetParent()?.dangerouslyGetParent()?.addListener || addListener
-    )('transitionEnd', ({ data: { closing } }) => {
+    )('transitionEnd', ({ data: { closing } }: any) => {
       if (!closing && isDismissing.current) {
         isDismissing.current = false;
         lastFocusedInputHandle?.current?.focus();
@@ -319,7 +339,7 @@ export default function ExchangeModal({
     updateMaxInputAmount();
   }, [updateMaxInputAmount]);
 
-  const checkGasVsOutput = async (gasPrice, outputPrice) => {
+  const checkGasVsOutput = async (gasPrice: any, outputPrice: any) => {
     if (greaterThan(outputPrice, 0) && greaterThan(gasPrice, outputPrice)) {
       const res = new Promise(resolve => {
         Alert.alert(
@@ -350,6 +370,7 @@ export default function ExchangeModal({
 
   const handleSubmit = useCallback(async () => {
     let amountInUSD = 0;
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
     let NotificationManager = ios ? NativeModules.NotificationManager : null;
     try {
       // Tell iOS we're running a rap (for tracking purposes)
@@ -407,6 +428,7 @@ export default function ExchangeModal({
           setParams({ focused: false });
           navigate(Routes.PROFILE_SCREEN);
         } else if (errorMessage) {
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'null' is not assignable to param... Remove this comment to see the full error message
           Alert.alert(errorMessage);
         }
       };
@@ -482,18 +504,22 @@ export default function ExchangeModal({
   );
 
   const navigateToSwapDetailsModal = useCallback(() => {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android && Keyboard.dismiss();
     const lastFocusedInputHandleTemporary = lastFocusedInputHandle.current;
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android && (lastFocusedInputHandle.current = null);
     inputFieldRef?.current?.blur();
     outputFieldRef?.current?.blur();
     nativeFieldRef?.current?.blur();
     const internalNavigate = () => {
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
       android && Keyboard.removeListener('keyboardDidHide', internalNavigate);
       setParams({ focused: false });
       navigate(Routes.SWAP_DETAILS_SHEET, {
         confirmButtonProps,
         restoreFocusOnSwapModal: () => {
+          // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
           android &&
             (lastFocusedInputHandle.current = lastFocusedInputHandleTemporary);
           setParams({ focused: true });
@@ -507,6 +533,7 @@ export default function ExchangeModal({
         type,
       });
     };
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
     ios || !isKeyboardOpen()
       ? internalNavigate()
       : Keyboard.addListener('keyboardDidHide', internalNavigate);
@@ -527,17 +554,36 @@ export default function ExchangeModal({
     : !!inputCurrency && !!outputCurrency;
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Wrapper>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <InnerWrapper>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <FloatingPanels>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <FloatingPanel
             overflow="visible"
             paddingBottom={showOutputField ? 0 : 26}
             radius={39}
             testID={testID}
           >
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             {showOutputField && <ExchangeNotch />}
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <ExchangeHeader testID={testID} title={title} />
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <ExchangeInputField
               disableInputCurrencySelection={isWithdrawal}
               inputAmount={inputAmountDisplay}
@@ -555,6 +601,7 @@ export default function ExchangeModal({
               testID={`${testID}-input`}
             />
             {showOutputField && (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <ExchangeOutputField
                 onFocus={handleFocus}
                 onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
@@ -568,6 +615,7 @@ export default function ExchangeModal({
             )}
           </FloatingPanel>
           {isDeposit && (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <DepositInfo
               amount={(inputAmount > 0 && outputAmount) || null}
               asset={outputCurrency}
@@ -580,6 +628,7 @@ export default function ExchangeModal({
             />
           )}
           {!isSavings && showConfirmButton && (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <ExchangeDetailsRow
               isHighPriceImpact={isHighPriceImpact}
               onFlipCurrencies={flipCurrencies}
@@ -591,14 +640,21 @@ export default function ExchangeModal({
               type={type}
             />
           )}
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           {isWithdrawal && <Spacer />}
           {showConfirmButton && (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <ConfirmExchangeButton
               {...confirmButtonProps}
               onPressViewDetails={navigateToSwapDetailsModal}
               testID={`${testID}-confirm-button`}
             />
           )}
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <GasSpeedButton
             asset={outputCurrency}
             currentNetwork={network}

@@ -10,6 +10,7 @@ export default function useAnimatedListener(defaultValue = 0) {
 
   const create = useCallback(
     listener => {
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'string' is not assignable to type 'undefined... Remove this comment to see the full error message
       id.current = value.addListener(listener);
     },
     [value]
@@ -17,6 +18,7 @@ export default function useAnimatedListener(defaultValue = 0) {
 
   const remove = useCallback(() => {
     if (id.current) {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'undefined' is not assignable to ... Remove this comment to see the full error message
       value.removeListener(id.current);
     }
   }, [value]);

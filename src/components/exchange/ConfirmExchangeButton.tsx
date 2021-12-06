@@ -5,7 +5,9 @@ import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Centered } from '../layout';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/context' or its co... Remove this comment to see the full error message
 import { useTheme } from '@rainbow-me/context';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers' or its co... Remove this comment to see the full error message
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import {
   useColorForAsset,
@@ -13,9 +15,13 @@ import {
   useSwapCurrencies,
   useSwapIsSufficientBalance,
   useSwapIsSufficientLiquidity,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { ETH_ADDRESS } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { lightModeThemeColors, padding } from '@rainbow-me/styles';
 
 const paddingHorizontal = 19;
@@ -44,7 +50,7 @@ export default function ConfirmExchangeButton({
   tradeDetails,
   type = ExchangeModalTypes.swap,
   ...props
-}) {
+}: any) {
   const isSufficientBalance = useSwapIsSufficientBalance(inputAmount);
   const isSufficientLiquidity = useSwapIsSufficientLiquidity(
     doneLoadingReserves,
@@ -131,7 +137,11 @@ export default function ConfirmExchangeButton({
     !isSufficientLiquidity;
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ConfirmButton
         backgroundColor={buttonColor}
         disableLongPress={shouldOpenSwapDetails}
@@ -139,9 +149,11 @@ export default function ConfirmExchangeButton({
         disabledBackgroundColor={
           isSwapDetailsRoute
             ? isDarkMode
-              ? darkModeThemeColors.blueGreyDark04
+              ? // @ts-expect-error ts-migrate(2551) FIXME: Property 'blueGreyDark04' does not exist on type '... Remove this comment to see the full error message
+                darkModeThemeColors.blueGreyDark04
               : lightModeThemeColors.blueGreyDark50
-            : darkModeThemeColors.blueGreyDark04
+            : // @ts-expect-error ts-migrate(2551) FIXME: Property 'blueGreyDark04' does not exist on type '... Remove this comment to see the full error message
+              darkModeThemeColors.blueGreyDark04
         }
         label={label}
         onLongPress={shouldOpenSwapDetails ? onPressViewDetails : onSubmit}

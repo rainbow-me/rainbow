@@ -7,9 +7,13 @@ import {
   RapActionTypes,
   SwapActionParameters,
 } from './common';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/uniswap' ... Remove this comment to see the full error message
 import { estimateSwapGasLimit } from '@rainbow-me/handlers/uniswap';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/store' or it... Remove this comment to see the full error message
 import store from '@rainbow-me/redux/store';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { ethUnits, UNISWAP_V2_ROUTER_ADDRESS } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utilities' or its ... Remove this comment to see the full error message
 import { add } from '@rainbow-me/utilities';
 
 export const estimateUnlockAndSwap = async (

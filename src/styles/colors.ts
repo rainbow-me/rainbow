@@ -3,7 +3,8 @@ import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import currentColors from '../context/currentColors';
 
-const buildRgba = (color, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`;
+const buildRgba = (color: any, alpha = 1) =>
+  `rgba(${chroma(color).rgb()},${alpha})`;
 
 const darkModeColors = {
   appleBlue: '#0E76FD',
@@ -71,7 +72,7 @@ const avatarBackgrounds = [
   '#FFB35A',
 ];
 
-const getColorsByTheme = darkMode => {
+const getColorsByTheme = (darkMode: any) => {
   let base = {
     appleBlue: '#0E76FD', // '14, 118, 253'
     black: '#000000', // '0, 0, 0'
@@ -193,6 +194,7 @@ const getColorsByTheme = darkMode => {
     clearGrey: buildRgba(base.blueGreyDark, 0.06),
   };
 
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'random' does not exist on type '{ blue: ... Remove this comment to see the full error message
   assetIcon.random = () => {
     const assetIconColors = Object.values(assetIcon);
     return assetIconColors[Math.floor(Math.random() * assetIconColors.length)];
@@ -205,29 +207,30 @@ const getColorsByTheme = darkMode => {
     walletconnect: '#4099FF', // '64, 153, 255'
   };
 
-  const isColorLight = targetColor =>
+  const isColorLight = (targetColor: any) =>
     chroma(targetColor || base.white).luminance() > 0.5;
 
-  const getTextColorForBackground = (targetColor, textColors = {}) => {
+  const getTextColorForBackground = (targetColor: any, textColors = {}) => {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'dark' does not exist on type '{}'.
     const { dark = base.black, light = base.white } = textColors;
 
     return isColorLight(targetColor) ? dark : light;
   };
 
-  const getFallbackTextColor = bg =>
+  const getFallbackTextColor = (bg: any) =>
     colors.getTextColorForBackground(bg, {
       dark: colors.alpha(colors.blueGreyDark, 0.5),
       light: colors.whiteLabel,
     });
 
-  const isColorDark = targetColor => {
+  const isColorDark = (targetColor: any) => {
     return (
       chroma.contrast(targetColor, darkModeColors.white) < 1.5 ||
       chroma(targetColor || base.white).luminance() < 0.11
     );
   };
 
-  const brighten = targetColor =>
+  const brighten = (targetColor: any) =>
     chroma(targetColor).brighten(2).saturate(0.3).hex();
 
   const transparent = {
@@ -302,6 +305,7 @@ const getColorForString = (colorString = '', providedThemeColors = colors) => {
   if (!colorString) return null;
 
   const isValidColorString = isHex(colorString) || isRGB(colorString);
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   return isValidColorString ? colorString : providedThemeColors[colorString];
 };
 
@@ -311,6 +315,7 @@ const colors = currentColors.themedColors || lightModeThemeColors;
 export const getRandomColor = () =>
   Math.floor(Math.random() * colors.avatarColor.length);
 
+// @ts-expect-error ts-migrate(2322) FIXME: Type '{ etherscan: string; ethplorer: string; ledg... Remove this comment to see the full error message
 currentColors.themedColors = lightModeThemeColors;
 
 export default {

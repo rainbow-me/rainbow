@@ -11,7 +11,9 @@ import { ButtonPressAnimation, interpolate } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Centered, RowWithMargins } from '../layout';
 import { Text } from '../text';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './PriceImpactWarning' was resolved to '/Us... Remove this comment to see the full error message
 import PriceImpactWarning from './PriceImpactWarning';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding } from '@rainbow-me/styles';
 
 const springConfig = {
@@ -27,6 +29,7 @@ const Container = styled(RowWithMargins).attrs({
   centered: true,
   margin: 5,
 })`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${padding(android ? 6 : 10, 10, 2)};
   width: 100%;
 `;
@@ -39,7 +42,8 @@ export default function DepositInfo({
   priceImpactColor,
   priceImpactNativeAmount,
   priceImpactPercentDisplay,
-}) {
+}: any) {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const isVisible = !!(asset && amount);
 
@@ -71,8 +75,13 @@ export default function DepositInfo({
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Animated.View>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Animated.View
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
         style={{
           height: interpolate(animationHeight, {
             inputRange: [0, 1],
@@ -97,15 +106,30 @@ export default function DepositInfo({
         }}
         testID="deposit-info"
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ButtonPressAnimation onPress={onPress} scaleTo={0.96}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Container>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <CoinIcon
               address={asset?.address}
               size={20}
               symbol={asset?.symbol}
               testID="deposit-info-container"
             />
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Centered>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Text
                 color={colors.alpha(darkModeThemeColors.blueGreyDark, 0.6)}
                 size="smedium"
@@ -113,6 +137,9 @@ export default function DepositInfo({
               >
                 Swapping for{' '}
               </Text>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Text color="whiteLabel" size="smedium" weight="bold">
                 {`${amountToDisplay} ${asset?.symbol || ''}`}
               </Text>
@@ -120,6 +147,9 @@ export default function DepositInfo({
           </Container>
         </ButtonPressAnimation>
       </Animated.View>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Animated.View
         style={{
           height: interpolate(priceImpactHeightAnimation, {
@@ -132,6 +162,9 @@ export default function DepositInfo({
           }),
         }}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <PriceImpactWarning
           isHighPriceImpact={isHighPriceImpact}
           onPress={onPress}

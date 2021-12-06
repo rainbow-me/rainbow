@@ -6,11 +6,17 @@ import {
   deleteAllBackups,
   fetchAllBackups,
   fetchUserDataFromCloud,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/cloudBack... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/cloudBackup';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/walletBack... Remove this comment to see the full error message
 import walletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation/Navigat... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/wallets' or ... Remove this comment to see the full error message
 import { walletsUpdate } from '@rainbow-me/redux/wallets';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 export default function useManageCloudBackups() {
@@ -18,6 +24,7 @@ export default function useManageCloudBackups() {
   const { wallets } = useWallets();
   const { navigate } = useNavigation();
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useCallback'.
   const manageCloudBackups = useCallback(() => {
     const buttons = [
       `Restore from ${cloudPlatform} Backups`,
@@ -32,13 +39,13 @@ export default function useManageCloudBackups() {
         options: buttons,
         title: `Manage ${cloudPlatform} Backups`,
       },
-      async buttonIndex => {
+      async (buttonIndex: any) => {
         if (buttonIndex === 0) {
           const { files } = await fetchAllBackups();
           const filteredFiles = files.filter(
-            file => file.name.indexOf('backup_') !== -1
+            (file: any) => file.name.indexOf('backup_') !== -1
           );
-          const backupFiles = filteredFiles.map((file, i) => {
+          const backupFiles = filteredFiles.map((file: any, i: any) => {
             const ts = Number(
               file.name
                 .replace('.backup_', '')
@@ -59,7 +66,7 @@ export default function useManageCloudBackups() {
                 message: `Choose your ${cloudPlatform} backups`,
                 options: backupFiles.concat(['Cancel']),
               },
-              async buttonIndex => {
+              async (buttonIndex: any) => {
                 showActionSheetWithOptions(
                   {
                     cancelButtonIndex: 1,
@@ -67,7 +74,7 @@ export default function useManageCloudBackups() {
                     message: `This will override all your current wallets. Are you sure?`,
                     options: [`Yes, Restore my backup`, 'Cancel'],
                   },
-                  async actionIndex => {
+                  async (actionIndex: any) => {
                     if (actionIndex === 0) {
                       const potentialUserData = await fetchUserDataFromCloud();
                       let backupSelected = null;
@@ -112,7 +119,7 @@ export default function useManageCloudBackups() {
               message: `Are you sure you want to delete your ${cloudPlatform} wallet backups?`,
               options: [`Confirm and Delete Backups`, 'Cancel'],
             },
-            async buttonIndex => {
+            async (buttonIndex: any) => {
               if (buttonIndex === 0) {
                 const newWallets = { ...wallets };
                 Object.keys(newWallets).forEach(key => {

@@ -16,15 +16,22 @@ import { ContactRow } from '../contacts';
 import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { GradientText, Text } from '../text';
 import { CopyToast, ToastPositionContainer } from '../toasts';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers' or its co... Remove this comment to see the full error message
 import { TokenSectionTypes } from '@rainbow-me/helpers';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { usePrevious } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { abbreviations, deviceUtils, magicMemo } from '@rainbow-me/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const Header = styled.View`
   ${padding(11, 0, 2.5, 19)};
   position: relative;
@@ -58,12 +65,13 @@ const HeaderTitleGradient = styled(GradientText).attrs({
   weight: 'heavy',
 })``;
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const HeaderTitleWrapper = styled.View``;
 
 const contentContainerStyle = { paddingBottom: 9.5 };
-const keyExtractor = ({ uniqueId }) => `ExchangeAssetList-${uniqueId}`;
+const keyExtractor = ({ uniqueId }: any) => `ExchangeAssetList-${uniqueId}`;
 const scrollIndicatorInsets = { bottom: 24 };
-const getItemLayout = ({ showBalance }, index) => {
+const getItemLayout = ({ showBalance }: any, index: any) => {
   const height = showBalance ? CoinRowHeight + 1 : CoinRowHeight;
   return {
     index,
@@ -73,11 +81,13 @@ const getItemLayout = ({ showBalance }, index) => {
 };
 
 function useSwapDetailsClipboardState() {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useState'.
   const [copiedText, setCopiedText] = useState(undefined);
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useState'.
   const [copyCount, setCopyCount] = useState(0);
   const onCopySwapDetailsText = useCallback(text => {
     setCopiedText(abbreviations.formatAddressForDisplay(text));
-    setCopyCount(count => count + 1);
+    setCopyCount((count: any) => count + 1);
   }, []);
   return {
     copiedText,
@@ -86,6 +96,7 @@ function useSwapDetailsClipboardState() {
   };
 }
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const Spacer = styled.View`
   height: 35px;
   width: 100%;
@@ -116,9 +127,10 @@ const ExchangeAssetList = (
     onLayout,
     query,
     testID,
-  },
-  ref
+  }: any,
+  ref: any
 ) => {
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'sectionListRef' does not exist on type '... Remove this comment to see the full error message
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { sectionListRef = useRef() } = useContext(DiscoverSheetContext) || {};
   useImperativeHandle(ref, () => sectionListRef.current);
@@ -166,24 +178,38 @@ const ExchangeAssetList = (
   );
 
   const openVerifiedExplainer = useCallback(() => {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android && Keyboard.dismiss();
     navigate(Routes.EXPLAIN_SHEET, { type: 'verified' });
   }, [navigate]);
 
-  const ExchangeAssetSectionListHeader = ({ section }) => {
+  const ExchangeAssetSectionListHeader = ({ section }: any) => {
     const TitleComponent = section.useGradientText
       ? HeaderTitleGradient
       : HeaderTitle;
     const isVerified = section.title === TokenSectionTypes.verifiedTokenSection;
     return section?.title ? (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <ButtonPressAnimation
         disabled={!isVerified}
         onPress={openVerifiedExplainer}
         scaleTo={0.96}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Header>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <HeaderBackground />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <HeaderTitleWrapper>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <TitleComponent color={section.color}>
               {`${section.title}${isVerified ? '  􀅵' : ' '}`}
             </TitleComponent>
@@ -197,6 +223,7 @@ const ExchangeAssetList = (
   const LineToRender = useCallback(
     ({ item }) => {
       return item.ens ? (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <ContactRow
           accountType="contact"
           address={item.address}
@@ -207,6 +234,7 @@ const ExchangeAssetList = (
           testID={testID}
         />
       ) : (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <ExchangeCoinRow
           {...itemProps}
           isVerified={item.isVerified}
@@ -223,6 +251,7 @@ const ExchangeAssetList = (
   const renderItemCallback = useCallback(
     ({ item, index, section }) => (
       // in the Discover screen search results, we mix in ENS rows with coin rows
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <LineToRender
         item={item}
         key={`${item.address}_${index}_${section.key}`}
@@ -231,16 +260,22 @@ const ExchangeAssetList = (
     []
   );
 
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   const FooterSpacer = useCallback(() => (footerSpacer ? <Spacer /> : null), [
     footerSpacer,
   ]);
 
   const isFocused = useIsFocused();
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const sections = useMemo(() => items.map(createItem), [createItem, items]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Fragment>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ExchangeAssetSectionList
         ListFooterComponent={FooterSpacer}
         keyboardDismissMode={keyboardDismissMode}
@@ -251,7 +286,13 @@ const ExchangeAssetList = (
         scrollsToTop={isFocused}
         sections={sections}
       />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ToastPositionContainer>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <CopyToast copiedText={copiedText} copyCount={copyCount} />
       </ToastPositionContainer>
     </Fragment>

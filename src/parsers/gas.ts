@@ -9,7 +9,9 @@ import {
   greaterThan,
   multiply,
 } from '../helpers/utilities';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module '../references/ethereum-units.j... Remove this comment to see the full error message
 import ethUnits from '../references/ethereum-units.json';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module '../references/time-units.json'... Remove this comment to see the full error message
 import timeUnits from '../references/time-units.json';
 import { gasUtils } from '../utils';
 import {
@@ -26,7 +28,9 @@ import {
   Numberish,
   RainbowMeteorologyData,
   SelectedGasFee,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 } from '@rainbow-me/entities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 import { toHex } from '@rainbow-me/handlers/web3';
 
 type BigNumberish = number | string | BigNumber;
@@ -111,6 +115,7 @@ const parseGasDataConfirmationTime = (
 
   return {
     amount: timeAmount,
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 1.
     display: getMinimalTimeUnitStringForMs(
       multiply(timeAmount, timeUnits.ms.second)
     ),
@@ -234,6 +239,7 @@ export const defaultGasPriceFormat = (
   return {
     estimatedTime: {
       amount: timeAmount,
+      // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 1.
       display: getMinimalTimeUnitStringForMs(timeAmount),
     },
     gasPrice: {

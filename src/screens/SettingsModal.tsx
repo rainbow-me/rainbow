@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { Animated, InteractionManager, View } from 'react-native';
 import styled from 'styled-components';
 import { Modal } from '../components/modal';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/modal/ModalHeaderButton' was... Remove this comment to see the full error message
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
   CurrencySection,
@@ -12,14 +13,22 @@ import {
   PrivacySection,
   SettingsSection,
 } from '../components/settings-menu';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/settings-menu/BackupSection/... Remove this comment to see the full error message
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/settings-menu/BackupSection/... Remove this comment to see the full error message
 import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/settings-menu/BackupSection/... Remove this comment to see the full error message
 import WalletSelectionView from '../components/settings-menu/BackupSection/WalletSelectionView';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/settings-menu/DevSection' wa... Remove this comment to see the full error message
 import DevSection from '../components/settings-menu/DevSection';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../context/ThemeContext' was resolved to '... Remove this comment to see the full error message
 import { useTheme } from '../context/ThemeContext';
 import WalletTypes from '../helpers/walletTypes';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../navigation/config' was resolved to '/Us... Remove this comment to see the full error message
 import { settingsOptions } from '../navigation/config';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useDimensions, useWallets } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
 
 function cardStyleInterpolator({
@@ -27,7 +36,7 @@ function cardStyleInterpolator({
   next,
   inverted,
   layouts: { screen },
-}) {
+}: any) {
   const translateFocused = Animated.multiply(
     current.progress.interpolate({
       inputRange: [0, 1],
@@ -73,6 +82,7 @@ const SettingsPages = {
     title: 'Settings',
   },
   dev: {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'IS_DEV'.
     component: IS_DEV ? DevSection : null,
     key: 'DevSection',
     title: 'Dev',
@@ -94,6 +104,7 @@ const SettingsPages = {
   },
 };
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const Container = styled.View`
   flex: 1;
   overflow: hidden;
@@ -113,6 +124,7 @@ export default function SettingsModal() {
       let route = key;
       let paramsToPass = {};
       if (key === SettingsPages.backup.key) {
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'walletId' does not exist on type 'object... Remove this comment to see the full error message
         const walletId = params?.walletId;
         if (
           !walletId &&
@@ -123,7 +135,9 @@ export default function SettingsModal() {
           route = 'WalletSelectionView';
         } else {
           if (Object.keys(wallets).length === 1 && selectedWallet.imported) {
+            // @ts-expect-error ts-migrate(2339) FIXME: Property 'imported' does not exist on type '{}'.
             paramsToPass.imported = true;
+            // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
             paramsToPass.type = 'AlreadyBackedUpView';
           }
           route = 'SettingsBackupView';
@@ -144,14 +158,18 @@ export default function SettingsModal() {
 
   const renderHeaderRight = useCallback(
     () =>
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       ios ? (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <ModalHeaderButton label="Done" onPress={goBack} side="right" />
       ) : null,
     [goBack]
   );
 
   useEffect(() => {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'initialRoute' does not exist on type 'ob... Remove this comment to see the full error message
     if (params?.initialRoute) {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'initialRoute' does not exist on type 'ob... Remove this comment to see the full error message
       const { route, params: routeParams } = getRealRoute(params?.initialRoute);
       InteractionManager.runAfterInteractions(() => {
         navigate(route, routeParams);
@@ -161,21 +179,33 @@ export default function SettingsModal() {
 
   const memoSettingsOptions = useMemo(() => settingsOptions(colors), [colors]);
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Modal
       minHeight={height - 100}
       onCloseModal={goBack}
       radius={18}
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       showDoneButton={ios}
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
       skipStatusBar={android}
       testID="settings-modal"
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Container>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Stack.Navigator
           screenOptions={{
             ...memoSettingsOptions,
             headerRight: renderHeaderRight,
           }}
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Stack.Screen
             name="SettingsSection"
             options={{
@@ -183,6 +213,7 @@ export default function SettingsModal() {
             }}
           >
             {() => (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <SettingsSection
                 onCloseModal={goBack}
                 onPressBackup={onPressSection(SettingsPages.backup)}
@@ -197,6 +228,7 @@ export default function SettingsModal() {
           {Object.values(SettingsPages).map(
             ({ component, title, key }) =>
               component && (
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                 <Stack.Screen
                   component={component}
                   key={key}
@@ -205,11 +237,14 @@ export default function SettingsModal() {
                     cardStyleInterpolator,
                     title,
                   }}
+                  // @ts-expect-error ts-migrate(2322) FIXME: Type '{ component: any; key: string; name: string;... Remove this comment to see the full error message
                   title={title}
                 />
               )
           )}
-
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Stack.Screen
             component={WalletSelectionView}
             name="WalletSelectionView"
@@ -219,19 +254,27 @@ export default function SettingsModal() {
               title: 'Backup',
             }}
           />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Stack.Screen
             component={SettingsBackupView}
             name="SettingsBackupView"
             options={({ route }) => ({
               cardStyleInterpolator,
+              // @ts-expect-error ts-migrate(2339) FIXME: Property 'title' does not exist on type 'object'.
               title: route.params?.title || 'Backup',
             })}
           />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Stack.Screen
             component={ShowSecretView}
             name="ShowSecretView"
             options={({ route }) => ({
               cardStyleInterpolator,
+              // @ts-expect-error ts-migrate(2339) FIXME: Property 'title' does not exist on type 'object'.
               title: route.params?.title || 'Backup',
             })}
           />

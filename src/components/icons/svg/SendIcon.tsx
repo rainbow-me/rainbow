@@ -3,8 +3,12 @@ import React from 'react';
 import { Path } from 'react-native-svg';
 import Svg from '../Svg';
 
-const SendIcon = ({ color, colors, ...props }) => (
+const SendIcon = ({ color, colors, ...props }: any) => (
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   <Svg height={23} viewBox="0 0 23 22" width={22} {...props}>
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+    '--jsx' flag is provided... Remove this comment to see the full error
+    message
     <Path
       d="M22.2521752,19.7010605 C22.9929795,21.133282 22.3308642,22.0021207 20.7694019,21.6407639 L14.3640515,20.158425 C13.5835218,19.9777933 12.8789302,19.1963793 12.7874069,18.3874992 L11.7690784,9.38754741 C11.4982482,6.99396034 11.0638229,6.98551216 10.7966635,9.38754741 L9.79567028,18.3874992 C9.70697915,19.1849228 8.99950549,19.9780561 8.21802685,20.158425 L1.79554488,21.6407639 C0.231656011,22.0017169 -0.442156838,21.1459859 0.305218367,19.7010605 L9.93735205,1.07893545 C10.6781562,-0.353286208 11.8726663,-0.36599007 12.6200415,1.07893545 L22.2521752,19.7010605 Z"
       fill={color || colors.white}

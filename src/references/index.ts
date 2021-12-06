@@ -1,14 +1,22 @@
 import { mapKeys, mapValues } from 'lodash';
 import { savingsAssets } from './compound';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { Asset, SavingsAsset } from '@rainbow-me/entities';
 
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './balances-checker-abi.json'. ... Remove this comment to see the full error message
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './balances-checker-abi-ovm.jso... Remove this comment to see the full error message
 export { default as balanceCheckerContractAbiOVM } from './balances-checker-abi-ovm.json';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './chains.json'. Consider using... Remove this comment to see the full error message
 export { default as chains } from './chains.json';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './arbitrum-token-mapping.json'... Remove this comment to see the full error message
 export { default as arbitrumTokenMapping } from './arbitrum-token-mapping.json';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './chain-assets.json'. Consider... Remove this comment to see the full error message
 export { default as chainAssets } from './chain-assets.json';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './coingecko/ids.json'. Conside... Remove this comment to see the full error message
 export { default as coingeckoIdsFallback } from './coingecko/ids.json';
 export { compoundCERC20ABI, compoundCETHABI } from './compound';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './default-token-lists.json'. C... Remove this comment to see the full error message
 export { default as DefaultTokenLists } from './default-token-lists.json';
 export {
   defiSdkAdapterRegistryABI,
@@ -18,15 +26,23 @@ export {
   signatureRegistryABI,
   SIGNATURE_REGISTRY_ADDRESS,
 } from './signatureRegistry';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './emojis.json'. Consider using... Remove this comment to see the full error message
 export { default as emojis } from './emojis.json';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './erc20-abi.json'. Consider us... Remove this comment to see the full error message
 export { default as erc20ABI } from './erc20-abi.json';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './optimism-gas-oracle-abi.json... Remove this comment to see the full error message
 export { default as optimismGasOracleAbi } from './optimism-gas-oracle-abi.json';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './ethereum-units.json'. Consid... Remove this comment to see the full error message
 export { default as ethUnits } from './ethereum-units.json';
 export { DPI_ADDRESS } from './indexes';
 
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './migratedTokens.json'. Consid... Remove this comment to see the full error message
 export { default as migratedTokens } from './migratedTokens.json';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './native-currencies.json'. Con... Remove this comment to see the full error message
 export { default as supportedNativeCurrencies } from './native-currencies.json';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './shitcoins.json'. Consider us... Remove this comment to see the full error message
 export { default as shitcoins } from './shitcoins.json';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './smartcontract-methods.json'.... Remove this comment to see the full error message
 export { default as smartContractMethods } from './smartcontract-methods.json';
 export {
   PAIR_GET_RESERVES_CALL_DATA,

@@ -4,6 +4,7 @@ import { Dimensions } from 'react-native';
 import Animated, {
   cancelAnimation,
   Easing,
+  // @ts-expect-error ts-migrate(2614) FIXME: Module '"react-native-reanimated"' has no exported... Remove this comment to see the full error message
   repeat,
   useAnimatedStyle,
   useSharedValue,
@@ -14,12 +15,19 @@ import Spinner from '../../assets/chartSpinner.png';
 import { nativeStackConfig } from '../../navigation/nativeStackConfig';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
 import { Column } from '../layout';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './ExtremeLabels' was resolved to '/Users/n... Remove this comment to see the full error message
 import Labels from './ExtremeLabels';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './TimespanSelector' was resolved to '/User... Remove this comment to see the full error message
 import TimespanSelector from './TimespanSelector';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/animated-charts' o... Remove this comment to see the full error message
 import { ChartDot, ChartPath, useChartData } from '@rainbow-me/animated-charts';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/chartTypes... Remove this comment to see the full error message
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/images' or its cor... Remove this comment to see the full error message
 import { ImgixImage } from '@rainbow-me/images';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position } from '@rainbow-me/styles';
 
 export const { width: WIDTH } = Dimensions.get('window');
@@ -33,8 +41,9 @@ const ChartTimespans = [
   //ChartTypes.max, todo restore after receiving proper data from zerion
 ];
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const ChartContainer = styled.View`
-  margin-vertical: ${({ showChart }) => (showChart ? '17px' : '0px')};
+  margin-vertical: ${({ showChart }: any) => (showChart ? '17px' : '0px')};
 `;
 
 const ChartSpinner = styled(ImgixImage).attrs(({ color }) => ({
@@ -48,15 +57,17 @@ const ChartSpinner = styled(ImgixImage).attrs(({ color }) => ({
 
 const Container = styled(Column)`
   padding-bottom: 30px;
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
   padding-top: ${ios ? 0 : 20}px;
   width: 100%;
 `;
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const InnerDot = styled.View`
   height: 10px;
   border-radius: 5px;
-  background-color: ${({ color }) => color};
-  shadow-color: ${({ color, theme: { colors, isDarkMode } }) =>
+  background-color: ${({ color }: any) => color};
+  shadow-color: ${({ color, theme: { colors, isDarkMode } }: any) =>
     isDarkMode ? colors.shadow : color};
   shadow-offset: 0 3px;
   shadow-opacity: 0.6;
@@ -91,11 +102,12 @@ const timingConfig = {
   duration: 300,
 };
 
-function useShowLoadingState(isFetching) {
+function useShowLoadingState(isFetching: any) {
   const [isShow, setIsShow] = useState(false);
   const timeout = useRef();
   useEffect(() => {
     if (isFetching) {
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'Timeout' is not assignable to type 'undefine... Remove this comment to see the full error message
       timeout.current = setTimeout(() => setIsShow(isFetching), 500);
     } else {
       clearTimeout(timeout.current);
@@ -118,7 +130,7 @@ export default function ChartWrapper({
   throttledData,
   overrideValue = false,
   ...props
-}) {
+}: any) {
   const timespanIndex = useMemo(() => ChartTimespans.indexOf(chartType), [
     chartType,
   ]);
@@ -127,6 +139,7 @@ export default function ChartWrapper({
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0);
   const chartTimeSharedValue = useSharedValue('');
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
 
   const { setOptions } = useNavigation();
@@ -158,6 +171,7 @@ export default function ChartWrapper({
       spinnerScale.value = withTiming(1, timingConfig);
     } else {
       spinnerScale.value = withTiming(0, timingConfig);
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'Timeout' is not assignable to type 'undefine... Remove this comment to see the full error message
       spinnerTimeout.current = setTimeout(
         () => (spinnerRotation.value = 0),
         timingConfig.duration
@@ -198,7 +212,11 @@ export default function ChartWrapper({
   }, [chartTimeSharedValue, chartType, formattedTimespan]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ChartExpandedStateHeader
         {...props}
         chartTimeSharedValue={chartTimeSharedValue}
@@ -208,10 +226,20 @@ export default function ChartWrapper({
         showChart={showChart}
         testID={testID}
       />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ChartContainer showChart={showChart}>
         {showChart && (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Labels color={color} width={WIDTH} />
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <ChartPath
               fill="none"
               gestureEnabled={!fetchingCharts && !!throttledData}
@@ -228,11 +256,26 @@ export default function ChartWrapper({
               strokeWidth={3.5}
               width={WIDTH}
             />
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Dot color={colors.alpha(color, 0.03)} size={65}>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <InnerDot color={color} />
             </Dot>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Overlay style={overlayStyle}>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Animated.View style={spinnerStyle}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <ChartSpinner color={color} />
               </Animated.View>
             </Overlay>
@@ -240,6 +283,7 @@ export default function ChartWrapper({
         )}
       </ChartContainer>
       {showChart ? (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <TimespanSelector
           color={color}
           defaultIndex={timespanIndex}

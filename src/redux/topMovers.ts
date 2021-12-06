@@ -6,6 +6,7 @@ import {
 } from '../handlers/localstorage/topMovers';
 import { emitChartsRequest } from './explorer';
 import { AppDispatch, AppGetState } from './store';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/parsers' or its co... Remove this comment to see the full error message
 import { parseAsset, parseAssetsNative } from '@rainbow-me/parsers';
 
 interface ZerionAsset {
@@ -103,12 +104,13 @@ export const updateTopMovers = (message: ZerionAssetInfoResponse) => (
   const info = parseAssetsNative(assets, nativeCurrency);
 
   const assetCodes = map(info, asset => asset.address);
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 1.
   dispatch(emitChartsRequest(assetCodes));
 
   if (orderByDirection === 'asc') {
     // If it's less than 5 better not to show anything lol
     const fixedLosers = info.filter(
-      ({ price: { relative_change_24h } }) =>
+      ({ price: { relative_change_24h } }: any) =>
         typeof relative_change_24h === 'number' && relative_change_24h < 0
     );
 
@@ -120,7 +122,7 @@ export const updateTopMovers = (message: ZerionAssetInfoResponse) => (
     saveTopLosers(isEnoughTopLosers ? fixedLosers : []);
   } else {
     const fixedGainers = info.filter(
-      ({ price: { relative_change_24h } }) =>
+      ({ price: { relative_change_24h } }: any) =>
         typeof relative_change_24h === 'number' && relative_change_24h > 0
     );
     const isEnoughTopGainers = fixedGainers.length >= MIN_MOVERS;

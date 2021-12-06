@@ -3,7 +3,10 @@ import { useAnimatedStyle } from 'react-native-reanimated';
 
 import ChartContext, { useGenerateValues } from '../../helpers/ChartContext';
 
-export default function ChartPathProvider({ data: providedData, children }) {
+export default function ChartPathProvider({
+  data: providedData,
+  children,
+}: any) {
   const values = useGenerateValues();
   const dotStyle = useAnimatedStyle(
     () => ({
@@ -29,6 +32,7 @@ export default function ChartPathProvider({ data: providedData, children }) {
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ChartContext.Provider value={contextValue}>
       {children}
     </ChartContext.Provider>

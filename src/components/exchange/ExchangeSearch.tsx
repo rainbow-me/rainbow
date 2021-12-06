@@ -1,9 +1,11 @@
 import analytics from '@segment/analytics-react-native';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import RadialGradient from 'react-native-radial-gradient';
 import Animated, {
   Easing,
+  // @ts-expect-error ts-migrate(2614) FIXME: Module '"react-native-reanimated"' has no exported... Remove this comment to see the full error message
   repeat,
   useAnimatedStyle,
   useSharedValue,
@@ -15,8 +17,11 @@ import DiscoverSheetContext from '../discover-sheet/DiscoverSheetContext';
 import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
 import { Text } from '../text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/images' or its cor... Remove this comment to see the full error message
 import { ImgixImage } from '@rainbow-me/images';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { margin, padding } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { deviceUtils } from '@rainbow-me/utils';
 
 export const ExchangeSearchHeight = 40;
@@ -52,6 +57,7 @@ const SearchIcon = styled(Text).attrs(({ theme: { colors } }) => ({
 }))``;
 
 const SearchIconWrapper = styled(Animated.View)`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   margin-top: ${android ? '5' : '8'};
 `;
 
@@ -73,6 +79,7 @@ const SearchInput = styled(Input).attrs(
     weight: 'semibold',
   })
 )`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${android
     ? `margin-top: -6;
   margin-bottom: -10;`
@@ -80,6 +87,7 @@ const SearchInput = styled(Input).attrs(
   flex: 1;
   text-align: ${({ isSearchModeEnabled }) =>
     isSearchModeEnabled ? 'left' : 'center'};
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
   height: ${ios ? 38 : 56};
   margin-bottom: 1;
   margin-left: ${({ isSearchModeEnabled }) => (isSearchModeEnabled ? 3 : 0)};
@@ -122,8 +130,8 @@ const ExchangeSearch = (
     testID,
     placeholderText = 'Search Uniswap',
     clearTextOnFocus = true,
-  },
-  ref
+  }: any,
+  ref: any
 ) => {
   const handleClearInput = useCallback(() => {
     if (isDiscover && searchQuery.length > 1) {
@@ -139,6 +147,7 @@ const ExchangeSearch = (
 
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0);
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'isSearchModeEnabled' does not exist on t... Remove this comment to see the full error message
   const { isSearchModeEnabled = true } = useContext(DiscoverSheetContext) || {};
 
   const spinnerTimeout = useRef();
@@ -154,6 +163,7 @@ const ExchangeSearch = (
       spinnerScale.value = withTiming(1, timingConfig);
     } else {
       spinnerScale.value = withTiming(0, timingConfig);
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'Timeout' is not assignable to type 'undefine... Remove this comment to see the full error message
       spinnerTimeout.current = setTimeout(
         () => (spinnerRotation.value = 0),
         timingConfig.duration
@@ -180,18 +190,38 @@ const ExchangeSearch = (
   });
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container isSearchModeEnabled={isSearchModeEnabled}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <BackgroundGradient />
       {isSearchModeEnabled && (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <SearchIconWrapper style={searchIconStyle}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <SearchIcon>􀊫</SearchIcon>
           </SearchIconWrapper>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <SearchSpinnerWrapper style={spinnerStyle}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <SearchSpinner />
           </SearchSpinnerWrapper>
         </>
       )}
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <SearchInput
         clearTextOnFocus={clearTextOnFocus}
         isSearchModeEnabled={isSearchModeEnabled}
@@ -202,6 +232,9 @@ const ExchangeSearch = (
         testID={testID + '-input'}
         value={searchQuery}
       />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ClearInputDecorator
         inputHeight={ExchangeSearchHeight}
         isVisible={searchQuery !== ''}

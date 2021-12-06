@@ -2,19 +2,27 @@ import { differenceInDays, differenceInYears } from 'date-fns';
 import { findIndex, sumBy, take } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 
 const DEFAULT_WEEKLY_LIMIT = 500;
 const DEFAULT_YEARLY_LIMIT = 5000;
 
-const findRemainingAmount = (limit, purchaseTransactions, index) => {
+const findRemainingAmount = (
+  limit: any,
+  purchaseTransactions: any,
+  index: any
+) => {
   const transactionsInTimeline =
     index >= 0 ? take(purchaseTransactions, index) : purchaseTransactions;
   const purchasedAmount = sumBy(transactionsInTimeline, txn =>
+    // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
     txn.status === TransactionStatusTypes.failed
       ? 0
-      : txn.sourceAmount
-      ? Number(txn.sourceAmount)
+      : // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
+      txn.sourceAmount
+      ? // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
+        Number(txn.sourceAmount)
       : 0
   );
   return limit - purchasedAmount;
@@ -22,6 +30,7 @@ const findRemainingAmount = (limit, purchaseTransactions, index) => {
 
 export default function useAddCashLimits() {
   const purchaseTransactions = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'addCash' does not exist on type 'Default... Remove this comment to see the full error message
     ({ addCash: { purchaseTransactions } }) => purchaseTransactions
   );
 
@@ -29,6 +38,7 @@ export default function useAddCashLimits() {
     const now = Date.now();
 
     const firstIndexBeyondThisWeek = findIndex(purchaseTransactions, txn => {
+      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
       const txnTimestampInMs = txn.timestamp || txn.minedAt * 1000;
       return differenceInDays(now, txnTimestampInMs) >= 7;
     });
@@ -42,6 +52,7 @@ export default function useAddCashLimits() {
     const firstIndexBeyondThisYear = findIndex(
       purchaseTransactions,
       txn => {
+        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
         const txnTimestampInMs = txn.timestamp || txn.minedAt * 1000;
         return differenceInYears(now, txnTimestampInMs) >= 1;
       },

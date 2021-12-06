@@ -4,7 +4,7 @@ import { wyreSupportedCountries } from './supportedCountries';
 
 const WYRE_SUPPORTED_COUNTRIES_ISO = keys(wyreSupportedCountries);
 
-const getWyreErrorOverride = error => {
+const getWyreErrorOverride = (error: any) => {
   const { errorCategory, errorCode, errorMessage } = error;
   const errorMessageDetails = get(orderExceptions, [
     `${errorCategory}`,

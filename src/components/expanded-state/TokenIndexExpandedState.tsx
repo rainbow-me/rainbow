@@ -12,28 +12,36 @@ import {
 } from '../sheet';
 import { Text } from '../text';
 import { Chart } from '../value-chart';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './unique-token/UnderlyingAsset' was resolv... Remove this comment to see the full error message
 import UnderlyingAsset from './unique-token/UnderlyingAsset';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/animated-charts' o... Remove this comment to see the full error message
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/assetInput... Remove this comment to see the full error message
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
   useAccountSettings,
   useChartThrottledPoints,
   useDimensions,
   useDPI,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import {
   convertRawAmountToNativeDisplay,
   divide,
   handleSignificantDecimals,
   multiply,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utilities' or its ... Remove this comment to see the full error message
 } from '@rainbow-me/utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils } from '@rainbow-me/utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'react-native-cool-modals/Nativ... Remove this comment to see the full error message
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
 const formatItem = (
-  { address, name, price, symbol, color },
-  nativeCurrencySymbol
+  { address, name, price, symbol, color }: any,
+  nativeCurrencySymbol: any
 ) => {
   const change = `${parseFloat(
     (price.relative_change_24h || 0).toFixed(2)
@@ -55,9 +63,11 @@ const formatItem = (
   };
 };
 
-export default function TokenIndexExpandedState({ asset }) {
+export default function TokenIndexExpandedState({ asset }: any) {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const genericAssets = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
     ({ data: { genericAssets } }) => genericAssets
   );
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
@@ -71,7 +81,7 @@ export default function TokenIndexExpandedState({ asset }) {
       nativeCurrency
     );
 
-    const underlyingAssets = dpi?.underlying.map(asset => {
+    const underlyingAssets = dpi?.underlying.map((asset: any) => {
       const genericAsset = genericAssets[toLower(asset?.address)];
       if (!genericAsset) return null;
       const assetWithPrice = ethereumUtils.formatGenericAsset(
@@ -101,7 +111,7 @@ export default function TokenIndexExpandedState({ asset }) {
       };
     });
     return sortBy(
-      underlyingAssets.filter(asset => asset !== null),
+      underlyingAssets.filter((asset: any) => asset !== null),
       'percentageAllocation'
     ).reverse();
   }, [dpi, genericAssets, nativeCurrency, nativeCurrencySymbol]);
@@ -147,15 +157,26 @@ export default function TokenIndexExpandedState({ asset }) {
   const { height: screenHeight } = useDimensions();
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Fragment>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <SlackSheet
         bottomInset={42}
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
         {...(ios
           ? { height: '100%' }
           : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
         testID="index-expanded-state"
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ChartPathProvider data={throttledData}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Chart
             {...chartData}
             {...initialChartDataLabels}
@@ -170,14 +191,28 @@ export default function TokenIndexExpandedState({ asset }) {
             throttledData={throttledData}
           />
         </ChartPathProvider>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <SheetDivider />
         {needsEth ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <SheetActionButtonRow>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <BuyActionButton color={color} />
           </SheetActionButtonRow>
         ) : (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <SheetActionButtonRow>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Column marginTop={5}>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <SwapActionButton
                 color={color}
                 inputType={AssetInputTypes.out}
@@ -187,8 +222,17 @@ export default function TokenIndexExpandedState({ asset }) {
             </Column>
           </SheetActionButtonRow>
         )}
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Row marginHorizontal={19} marginTop={6}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Column align="start" flex={1}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text
               color={colors.alpha(colors.blueGreyDark, 0.5)}
               letterSpacing="roundedMedium"
@@ -199,7 +243,13 @@ export default function TokenIndexExpandedState({ asset }) {
               Underlying tokens
             </Text>
           </Column>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Column align="end" flex={1}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text
               align="right"
               color={colors.alpha(colors.blueGreyDark, 0.5)}
@@ -211,12 +261,17 @@ export default function TokenIndexExpandedState({ asset }) {
             </Text>
           </Column>
         </Row>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Column marginBottom={55} marginHorizontal={19} marginTop={12}>
           {underlying?.length
             ? underlying.map(item => (
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                 <UnderlyingAsset {...item} changeVisible key={item.address} />
               ))
             : times(3, index => (
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                 <AssetListItemSkeleton
                   animated
                   descendingOpacity

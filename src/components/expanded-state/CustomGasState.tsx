@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../Divider' was resolved to '/Users/nickby... Remove this comment to see the full error message
 import Divider from '../Divider';
 import { ExchangeHeader } from '../exchange';
 import { FloatingPanel } from '../floating-panels';
@@ -10,6 +11,7 @@ import { GasSpeedButton } from '../gas';
 import { Column } from '../layout';
 import { SlackSheet } from '../sheet';
 import { FeesPanel, FeesPanelTabs } from './custom-gas';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/gas' or it... Remove this comment to see the full error message
 import { getTrendKey } from '@rainbow-me/helpers/gas';
 import {
   useAccountSettings,
@@ -19,8 +21,11 @@ import {
   useGas,
   useHeight,
   useKeyboardHeight,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { margin } from '@rainbow-me/styles';
 
 const springConfig = {
@@ -36,6 +41,7 @@ function useAndroidDisableGesturesOnFocus() {
   const { params } = useRoute();
   const isFocused = useIsFocused();
   useEffect(() => {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android && params?.toggleGestureEnabled?.(!isFocused);
   }, [isFocused, params]);
 }
@@ -48,10 +54,12 @@ const FeesPanelTabswrapper = styled(Column)`
   ${margin(19, 0, 24, 0)}
 `;
 
-export default function CustomGasState({ asset }) {
+export default function CustomGasState({ asset }: any) {
   const { network } = useAccountSettings();
   const { setParams } = useNavigation();
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'longFormHeight' does not exist on type '... Remove this comment to see the full error message
   const { params: { longFormHeight, speeds } = {} } = useRoute();
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
@@ -66,9 +74,11 @@ export default function CustomGasState({ asset }) {
 
   const keyboardOffset = keyboardHeight + insets.bottom + 10;
   const sheetHeightWithoutKeyboard =
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     contentHeight + footerHeight + (android ? 10 : 0);
 
   const sheetHeightWithKeyboard =
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     sheetHeightWithoutKeyboard + keyboardHeight + (android ? 0 : -28);
 
   const additionalScrollForKeyboard =
@@ -80,6 +90,7 @@ export default function CustomGasState({ asset }) {
         (sheetHeightWithoutKeyboard + keyboardOffset)
       : 0;
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const currentGasTrend = useMemo(
     () => getTrendKey(currentBlockParams?.trend),
     [currentBlockParams?.trend]
@@ -105,6 +116,7 @@ export default function CustomGasState({ asset }) {
     setParams,
   ]);
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <SlackSheet
       additionalTopPadding
       backgroundColor={colors.shadowBlack}
@@ -116,9 +128,21 @@ export default function CustomGasState({ asset }) {
       removeTopPadding
       scrollEnabled={false}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <FloatingPanel onLayout={setContentHeight} radius={android ? 30 : 39}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ExchangeHeader />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <FeesPanelWrapper>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <FeesPanel
             colorForAsset={colorForAsset}
             currentGasTrend={currentGasTrend}
@@ -127,8 +151,17 @@ export default function CustomGasState({ asset }) {
             selectedGasFee={selectedGasFee}
           />
         </FeesPanelWrapper>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Divider color={colors.rowDividerExtraLight} inset={[0, 24, 0, 24]} />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <FeesPanelTabswrapper>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <FeesPanelTabs
             colorForAsset={colorForAsset}
             onPressTabPill={hideKeyboard}
@@ -136,7 +169,13 @@ export default function CustomGasState({ asset }) {
           />
         </FeesPanelTabswrapper>
       </FloatingPanel>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Column onLayout={setFooterHeight}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <GasSpeedButton
           asset={asset}
           currentNetwork={network}

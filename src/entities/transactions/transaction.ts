@@ -4,6 +4,7 @@ import { ParsedAddressAsset } from '../tokens';
 import { EthereumAddress } from '../wallet';
 import { TransactionStatus } from './transactionStatus';
 import { TransactionType } from './transactionType';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import { Network } from '@rainbow-me/helpers/networkTypes';
 
 export interface RainbowTransaction {

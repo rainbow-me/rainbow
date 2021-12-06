@@ -1,4 +1,5 @@
 import { get } from 'lodash';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { AssetTypes } from '@rainbow-me/entities';
 
 /**
@@ -7,9 +8,9 @@ import { AssetTypes } from '@rainbow-me/entities';
  * @return {Array}
  */
 
-export const parsePoaps = data => {
+export const parsePoaps = (data: any) => {
   const poaps = get(data, 'data', null);
-  return poaps.map(({ tokenId, event }) => {
+  return poaps.map(({ tokenId, event }: any) => {
     return {
       asset_contract: {
         address: '0x22c1f6050e56d2876009903609a2cc3fef83b415',

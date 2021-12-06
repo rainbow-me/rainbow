@@ -1,4 +1,10 @@
-const controlPoint = (current, previous, next, reverse, smoothing) => {
+const controlPoint = (
+  current: any,
+  previous: any,
+  next: any,
+  reverse: any,
+  smoothing: any
+) => {
   'worklet';
   const p = previous || current;
   const n = next || current;
@@ -18,11 +24,11 @@ const controlPoint = (current, previous, next, reverse, smoothing) => {
   return [x, y];
 };
 
-export const svgBezierPath = (points, smoothing, strategy) => {
+export const svgBezierPath = (points: any, smoothing: any, strategy: any) => {
   'worklet';
-  const traversed = points.map(p => [p.x, p.y]);
+  const traversed = points.map((p: any) => [p.x, p.y]);
   // build the d attributes by looping over the points
-  return traversed.reduce((acc, point, i, a) => {
+  return traversed.reduce((acc: any, point: any, i: any, a: any) => {
     if (i === 0) {
       return `M ${point[0]},${point[1]}`;
     } else {

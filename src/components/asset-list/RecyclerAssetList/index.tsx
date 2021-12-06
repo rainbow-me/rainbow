@@ -30,14 +30,20 @@ import {
 } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../../context/ThemeContext' was resolve... Remove this comment to see the full error message
 import { withThemeContext } from '../../../context/ThemeContext';
 import { CoinDivider, CoinDividerHeight } from '../../coin-divider';
 import { CoinRowHeight } from '../../coin-row';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../AssetListHeader' was resolved to '/User... Remove this comment to see the full error message
 import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../RecyclerViewTypes' was resolved to '/Us... Remove this comment to see the full error message
 import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
 import LayoutItemAnimator from './LayoutItemAnimator';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { EthereumAddress } from '@rainbow-me/entities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { usePrevious } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { deviceUtils, logger } from '@rainbow-me/utils';
 
 const extractCollectiblesIdFromRow = (row: {
@@ -354,6 +360,7 @@ function RecyclerAssetList({
   // HACK: Force synchronization of the StickyHeader on iOS when mounted.
   React.useEffect(() => {
     !!ref &&
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       ios &&
       requestAnimationFrame(() => {
         ref.scrollToOffset(0, 1 / PixelRatio.get(), false);
@@ -406,6 +413,7 @@ function RecyclerAssetList({
   const stickyRowRenderer = React.useCallback(
     // TODO: What does the data look like?
     (_type: string | number | undefined, data: any) => {
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       return <AssetListHeader {...data} isSticky />;
     },
     []
@@ -474,7 +482,7 @@ function RecyclerAssetList({
     return new LayoutProvider(
       // The LayoutProvider expects us to return ReactText, however internally
       // we use custom layout description objects, so we can ignore this error.
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(index: number) => { height: any... Remove this comment to see the full error message
       (index: number) => {
         // Main list logic 👇
         // Every component to render properly should return object
@@ -674,8 +682,10 @@ function RecyclerAssetList({
         ? {}
         : {
             refreshControl: (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <RefreshControl
                 onRefresh={handleRefresh}
+                // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
                 progressViewOffset={android ? 30 : 0}
                 refreshing={isRefreshing}
                 tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
@@ -761,7 +771,7 @@ function RecyclerAssetList({
       const colleciblesStartHeight =
         balancesHeight + smallBalancesHeight + savingsHeight + poolsHeight;
 
-      lastSections.forEach(section => {
+      lastSections.forEach((section: any) => {
         if (section.collectibles) {
           prevCollectibles = section;
         }
@@ -810,8 +820,11 @@ function RecyclerAssetList({
   const isInsideBottomSheet = !!useContext(BottomSheetContext);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <StyledContainer onLayout={onLayout}>
-      {/* @ts-ignore */}
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <MaybeStickyContainer
         overrideRowRenderer={stickyRowRenderer}
         stickyHeaderIndices={
@@ -822,7 +835,9 @@ function RecyclerAssetList({
             : stickyComponentsIndices
         }
       >
-        {/* @ts-ignore */}
+        // @ts-expect-error ts-migrate(2322) FIXME: Type 'Element' is not
+        assignable to type 'Recycler... Remove this comment to see the full
+        error message
         <StyledRecyclerListView
           dataProvider={dataProvider}
           extendedState={extendedState}
@@ -839,6 +854,9 @@ function RecyclerAssetList({
           {...extras}
         />
       </MaybeStickyContainer>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <View
         pointerEvents="none"
         ref={stickyCoinDividerRef}
@@ -850,6 +868,9 @@ function RecyclerAssetList({
           },
         ]}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <CoinDivider balancesSum={0} isSticky onEndEdit={() => null} />
       </View>
     </StyledContainer>

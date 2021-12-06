@@ -1,15 +1,20 @@
 import { convertHexToUtf8 } from '@walletconnect/utils';
 import BigNumber from 'bignumber.js';
 import { get, isNil } from 'lodash';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 import { isHexString } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/store' or it... Remove this comment to see the full error message
 import store from '@rainbow-me/redux/store';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { ethUnits, smartContractMethods } from '@rainbow-me/references';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertHexToString,
   convertRawAmountToDecimalFormat,
   fromWei,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utilities' or its ... Remove this comment to see the full error message
 } from '@rainbow-me/utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils } from '@rainbow-me/utils';
 import {
   PERSONAL_SIGN,
@@ -17,12 +22,13 @@ import {
   SIGN,
   SIGN_TRANSACTION,
   SIGN_TYPED_DATA,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils/signingMetho... Remove this comment to see the full error message
 } from '@rainbow-me/utils/signingMethods';
 
 export const getRequestDisplayDetails = (
-  payload,
-  nativeCurrency,
-  dappNetwork
+  payload: any,
+  nativeCurrency: any,
+  dappNetwork: any
 ) => {
   let timestampInMs = Date.now();
   if (payload.id) {
@@ -91,16 +97,17 @@ export const getRequestDisplayDetails = (
   return {};
 };
 
+// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'message' implicitly has an 'any' type.
 const getMessageDisplayDetails = (message, timestampInMs) => ({
   request: message,
   timestampInMs,
 });
 
 const getTransactionDisplayDetails = (
-  transaction,
-  nativeCurrency,
-  timestampInMs,
-  dappNetwork
+  transaction: any,
+  nativeCurrency: any,
+  timestampInMs: any,
+  dappNetwork: any
 ) => {
   const tokenTransferHash = smartContractMethods.token_transfer.hash;
   const nativeAsset = ethereumUtils.getNativeAssetForNetwork(dappNetwork);
@@ -116,7 +123,9 @@ const getTransactionDisplayDetails = (
       request: {
         asset: nativeAsset,
         from: transaction.from,
+        // @ts-expect-error ts-migrate(2348) FIXME: Value of type 'typeof BigNumber' is not callable. ... Remove this comment to see the full error message
         gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
+        // @ts-expect-error ts-migrate(2348) FIXME: Value of type 'typeof BigNumber' is not callable. ... Remove this comment to see the full error message
         gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
         nativeAmount: amount,
         nativeAmountDisplay: display,
@@ -150,7 +159,9 @@ const getTransactionDisplayDetails = (
       request: {
         asset,
         from: transaction.from,
+        // @ts-expect-error ts-migrate(2348) FIXME: Value of type 'typeof BigNumber' is not callable. ... Remove this comment to see the full error message
         gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
+        // @ts-expect-error ts-migrate(2348) FIXME: Value of type 'typeof BigNumber' is not callable. ... Remove this comment to see the full error message
         gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
         nativeAmount: native.amount,
         nativeAmountDisplay: native.display,
@@ -174,7 +185,9 @@ const getTransactionDisplayDetails = (
         asset: nativeAsset,
         data: transaction.data,
         from: transaction.from,
+        // @ts-expect-error ts-migrate(2348) FIXME: Value of type 'typeof BigNumber' is not callable. ... Remove this comment to see the full error message
         gasLimit: BigNumber(convertHexToString(transaction.gasLimit)),
+        // @ts-expect-error ts-migrate(2348) FIXME: Value of type 'typeof BigNumber' is not callable. ... Remove this comment to see the full error message
         gasPrice: BigNumber(convertHexToString(transaction.gasPrice)),
         ...(!isNil(transaction.nonce)
           ? { nonce: Number(convertHexToString(transaction.nonce)) }
@@ -189,5 +202,5 @@ const getTransactionDisplayDetails = (
   return null;
 };
 
-const getTimestampFromPayload = payload =>
+const getTimestampFromPayload = (payload: any) =>
   parseInt(payload?.id.toString().slice(0, -3), 10);

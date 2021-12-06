@@ -28,11 +28,15 @@ import Animated, {
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import URL from 'url-parse';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/Divider' was resolved to '/U... Remove this comment to see the full error message
 import Divider from '../components/Divider';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/L2Disclaimer' was resolved t... Remove this comment to see the full error message
 import L2Disclaimer from '../components/L2Disclaimer';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/Spinner' was resolved to '/U... Remove this comment to see the full error message
 import Spinner from '../components/Spinner';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/contacts/ImageAvatar' was re... Remove this comment to see the full error message
 import ImageAvatar from '../components/contacts/ImageAvatar';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
@@ -56,10 +60,15 @@ import {
   isL2Network,
   toHex,
   web3Provider,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/accountInf... Remove this comment to see the full error message
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/dappNameHa... Remove this comment to see the full error message
 import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/findWallet... Remove this comment to see the full error message
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   useAccountAssets,
@@ -71,6 +80,7 @@ import {
   useTransactionConfirmation,
   useWalletBalances,
   useWallets,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
 import {
   loadWallet,
@@ -79,11 +89,17 @@ import {
   signPersonalMessage,
   signTransaction,
   signTypedDataMessage,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/model/wallet' or i... Remove this comment to see the full error message
 } from '@rainbow-me/model/wallet';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/parsers' or its co... Remove this comment to see the full error message
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/walletconnec... Remove this comment to see the full error message
 import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding } from '@rainbow-me/styles';
 import {
   convertAmountToNativeDisplay,
@@ -92,8 +108,11 @@ import {
   greaterThan,
   greaterThanOrEqualTo,
   multiply,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utilities' or its ... Remove this comment to see the full error message
 } from '@rainbow-me/utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils/methodRegist... Remove this comment to see the full error message
 import { methodRegistryLookupAndParse } from '@rainbow-me/utils/methodRegistry';
 import {
   isMessageDisplayType,
@@ -104,7 +123,9 @@ import {
   SEND_TRANSACTION,
   SIGN,
   SIGN_TYPED_DATA,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils/signingMetho... Remove this comment to see the full error message
 } from '@rainbow-me/utils/signingMethods';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 const springConfig = {
@@ -113,6 +134,7 @@ const springConfig = {
   stiffness: 1000,
 };
 
+// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
     color: colors.alpha(colors.blueGreyDark, 0.3),
@@ -159,6 +181,7 @@ const WalletText = styled(Text).attrs(
 const NOOP = () => undefined;
 
 export default function TransactionConfirmationScreen() {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const { allAssets } = useAccountAssets();
   const [provider, setProvider] = useState();
@@ -180,10 +203,12 @@ export default function TransactionConfirmationScreen() {
   const { goBack, navigate } = useNavigation();
 
   const pendingRedirect = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'walletconnect' does not exist on type 'D... Remove this comment to see the full error message
     ({ walletconnect }) => walletconnect.pendingRedirect
   );
 
   const walletConnectors = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'walletconnect' does not exist on type 'D... Remove this comment to see the full error message
     ({ walletconnect }) => walletconnect.walletConnectors
   );
 
@@ -194,7 +219,9 @@ export default function TransactionConfirmationScreen() {
   } = useTransactionConfirmation();
 
   const {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'callback' does not exist on type 'Readon... Remove this comment to see the full error message
     callback,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'transactionDetails' does not exist on ty... Remove this comment to see the full error message
     transactionDetails: {
       dappName,
       dappScheme,
@@ -295,6 +322,7 @@ export default function TransactionConfirmationScreen() {
       : { ...displayDetails.request, asset: nativeAsset };
   }, [displayDetails.request, nativeAsset, isMessageRequest]);
 
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'openAutomatically' does not exist on typ... Remove this comment to see the full error message
   const openAutomatically = routeParams?.openAutomatically;
 
   const formattedDappUrl = useMemo(() => {
@@ -319,6 +347,7 @@ export default function TransactionConfirmationScreen() {
       let fallbackHandler;
       try {
         fallbackHandler = setTimeout(() => {
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '"Transaction Request"' is not as... Remove this comment to see the full error message
           setMethodName('Transaction Request');
         }, 5000);
         const { name } = await methodRegistryLookupAndParse(
@@ -329,7 +358,9 @@ export default function TransactionConfirmationScreen() {
           clearTimeout(fallbackHandler);
         }
       } catch (e) {
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '"Transaction Request"' is not as... Remove this comment to see the full error message
         setMethodName('Transaction Request');
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
         clearTimeout(fallbackHandler);
       }
     },
@@ -346,6 +377,7 @@ export default function TransactionConfirmationScreen() {
           startPollingGasFees(network);
           fetchMethodName(params[0].data);
         } else {
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
           setMethodName(lang.t('wallet.message_signing.request'));
         }
         analytics.track('Shown Walletconnect signing request');
@@ -428,6 +460,7 @@ export default function TransactionConfirmationScreen() {
     ]
   );
 
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
   const onPressCancel = useCallback(() => onCancel(), [onCancel]);
 
   useEffect(() => {
@@ -437,6 +470,7 @@ export default function TransactionConfirmationScreen() {
         'Please go back to the dapp and reconnect it to your wallet',
         [
           {
+            // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
             onPress: () => onCancel(),
           },
         ]
@@ -499,8 +533,11 @@ export default function TransactionConfirmationScreen() {
   const walletBalance = useMemo(() => {
     if (isL2) {
       return {
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'balance' does not exist on type 'never'.
         amount: nativeAsset?.balance?.amount || 0,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'balance' does not exist on type 'never'.
         display: nativeAsset?.balance?.display || `0 ${nativeAsset?.symbol}`,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'symbol' does not exist on type 'never'.
         symbol: nativeAsset?.symbol || 'ETH',
       };
     } else {
@@ -539,6 +576,7 @@ export default function TransactionConfirmationScreen() {
     const value = txPayload?.value ?? 0;
 
     // Check that there's enough ETH to pay for everything!
+    // @ts-expect-error ts-migrate(2348) FIXME: Value of type 'typeof BigNumber' is not callable. ... Remove this comment to see the full error message
     const totalAmount = BigNumber(fromWei(value)).plus(txFeeAmount);
     const isEnough = greaterThanOrEqualTo(balanceAmount, totalAmount);
 
@@ -642,7 +680,7 @@ export default function TransactionConfirmationScreen() {
         callback({ result: result.hash });
       }
       let txSavedInCurrentWallet = false;
-      let txDetails = null;
+      let txDetails: any = null;
       if (sendInsteadOfSign) {
         txDetails = {
           amount: displayDetails?.request?.value ?? 0,
@@ -824,10 +862,15 @@ export default function TransactionConfirmationScreen() {
     return !isMessage &&
       isBalanceEnough === false &&
       isSufficientGas !== null ? (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <Column marginBottom={24} marginTop={19}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <SheetActionButton
           color={colors.transparent}
           disabled
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'symbol' does not exist on type 'never'.
           label={`${nativeAsset?.symbol} balance too low`}
           onPress={onCancel}
           size="big"
@@ -836,7 +879,11 @@ export default function TransactionConfirmationScreen() {
         />
       </Column>
     ) : (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <SheetActionButtonRow ignorePaddingTop>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <SheetActionButton
           color={colors.white}
           label="Cancel"
@@ -845,6 +892,9 @@ export default function TransactionConfirmationScreen() {
           textColor={colors.alpha(colors.blueGreyDark, 0.8)}
           weight="bold"
         />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <SheetActionButton
           color={colors.appleBlue}
           label="􀎽 Confirm"
@@ -860,6 +910,7 @@ export default function TransactionConfirmationScreen() {
     isBalanceEnough,
     isMessageRequest,
     isSufficientGas,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'symbol' does not exist on type 'never'.
     nativeAsset?.symbol,
     onCancel,
     onPressSend,
@@ -869,7 +920,11 @@ export default function TransactionConfirmationScreen() {
   const renderTransactionSection = useCallback(() => {
     if (isMessageRequest) {
       return (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <RowWithMargins css={padding(24, 0)}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <MessageSigningSection message={request.message} method={method} />
         </RowWithMargins>
       );
@@ -887,6 +942,7 @@ export default function TransactionConfirmationScreen() {
       );
       if (!amount) return;
       return (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <TransactionConfirmationSection
           address={request?.asset?.mainnet_address || request?.asset?.address}
           amount={amount}
@@ -898,6 +954,7 @@ export default function TransactionConfirmationScreen() {
       );
     }
     return (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <DefaultTransactionConfirmationSection
         address={request?.to}
         data={request?.data}
@@ -922,6 +979,7 @@ export default function TransactionConfirmationScreen() {
 
   const isAndroidApprovalRequest = useMemo(
     () =>
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
       android &&
       isTransactionDisplayType(method) &&
       !!request?.asset &&
@@ -933,6 +991,7 @@ export default function TransactionConfirmationScreen() {
   const ShortSheetHeight = 486 + safeAreaInsetValues.bottom;
   const TallSheetHeight = 656 + safeAreaInsetValues.bottom;
   const MessageSheetHeight =
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     (method === SIGN_TYPED_DATA ? 630 : android ? 595 : 580) +
     safeAreaInsetValues.bottom;
 
@@ -943,8 +1002,10 @@ export default function TransactionConfirmationScreen() {
       ? MessageSheetHeight
       : (amount && amount !== '0.00') || !isBalanceEnough
       ? TallSheetHeight
-      : ShortSheetHeight) * (android ? 1.5 : 1);
+      : // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
+        ShortSheetHeight) * (android ? 1.5 : 1);
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   let marginTop = android
     ? method === SIGN_TYPED_DATA
       ? deviceHeight - sheetHeight + 275
@@ -952,6 +1013,7 @@ export default function TransactionConfirmationScreen() {
     : null;
 
   if (isTransactionDisplayType(method) && !request?.asset) {
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     marginTop += 50;
   }
 
@@ -990,11 +1052,15 @@ export default function TransactionConfirmationScreen() {
     (isTransactionDisplayType(method) ? (isL2 ? 84 : 72) : 0);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <SheetKeyboardAnimation
       as={AnimatedContainer}
       isKeyboardVisible={false}
       translateY={offset}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <SlackSheet
         backgroundColor={colors.transparent}
         borderRadius={0}
@@ -1002,7 +1068,13 @@ export default function TransactionConfirmationScreen() {
         hideHandle
         scrollEnabled={false}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Column testID="wc-request-sheet">
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <AnimatedSheet
             backgroundColor={colors.white}
             borderRadius={39}
@@ -1010,31 +1082,54 @@ export default function TransactionConfirmationScreen() {
             marginTop={marginTop}
             paddingBottom={
               isMessageRequest
-                ? safeAreaInsetValues.bottom + (android ? 20 : 0)
+                ? // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
+                  safeAreaInsetValues.bottom + (android ? 20 : 0)
                 : 0
             }
+            // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
             paddingTop={android && isTransactionDisplayType(method) ? 84 : 24}
             style={[
               animatedSheetStyles,
+              // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
               android && isMessageRequest
                 ? { borderBottomLeftRadius: 0, borderBottomRightRadius: 0 }
                 : null,
             ]}
           >
             {!ready ? (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <Centered height={spinnerHeight}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <LoadingSpinner size={android ? 40 : 'large'} />
               </Centered>
             ) : (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <Fragment>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <SheetHandleFixedToTop showBlur={false} />
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Column marginBottom={17} />
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <DappLogo
                   dappName={dappName || ''}
                   imageUrl={imageUrl || ''}
                   network={network}
                 />
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Row marginBottom={5}>
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                  unless the '--jsx' flag is provided... Remove this comment to
+                  see the full error message
                   <Text
                     align="center"
                     color={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -1048,6 +1143,7 @@ export default function TransactionConfirmationScreen() {
                     //We only show the checkmark
                     // if it's on the override list (dappNameHandler.js)
                     isAuthenticated && (
+                      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                       <Text
                         align="center"
                         color={colors.appleBlue}
@@ -1060,7 +1156,13 @@ export default function TransactionConfirmationScreen() {
                     )
                   }
                 </Row>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Centered marginBottom={24} paddingHorizontal={24}>
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                  unless the '--jsx' flag is provided... Remove this comment to
+                  see the full error message
                   <Text
                     align="center"
                     color={methodName ? 'dark' : 'white'}
@@ -1071,13 +1173,23 @@ export default function TransactionConfirmationScreen() {
                     {methodName || 'Placeholder'}
                   </Text>
                 </Centered>
+                // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name
+                'ios'.
                 {ios && (
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                   <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
                 )}
                 {renderTransactionSection()}
                 {isL2 && !isMessageRequest && (
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                   <Column marginTop={0} width="100%">
+                    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                    unless the '--jsx' flag is provided... Remove this comment
+                    to see the full error message
                     <Row height={19} />
+                    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                    unless the '--jsx' flag is provided... Remove this comment
+                    to see the full error message
                     <L2Disclaimer
                       assetType={network}
                       colors={colors}
@@ -1089,17 +1201,34 @@ export default function TransactionConfirmationScreen() {
                   </Column>
                 )}
                 {renderTransactionButtons()}
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <RowWithMargins css={padding(6, 24, 30)} margin={15}>
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                  unless the '--jsx' flag is provided... Remove this comment to
+                  see the full error message
                   <Column>
+                    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                    unless the '--jsx' flag is provided... Remove this comment
+                    to see the full error message
                     <WalletLabel>Wallet</WalletLabel>
+                    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                    unless the '--jsx' flag is provided... Remove this comment
+                    to see the full error message
                     <RowWithMargins margin={5}>
+                      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use
+                      JSX unless the '--jsx' flag is provided... Remove this
+                      comment to see the full error message
                       <Column marginTop={ios ? 2 : 8}>
                         {accountInfo.accountImage ? (
+                          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                           <ImageAvatar
                             image={accountInfo.accountImage}
                             size="smaller"
                           />
                         ) : (
+                          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                           <ContactAvatar
                             color={
                               isNaN(accountInfo.accountColor)
@@ -1111,11 +1240,23 @@ export default function TransactionConfirmationScreen() {
                           />
                         )}
                       </Column>
+                      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use
+                      JSX unless the '--jsx' flag is provided... Remove this
+                      comment to see the full error message
                       <WalletText>{accountInfo.accountName}</WalletText>
                     </RowWithMargins>
                   </Column>
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                  unless the '--jsx' flag is provided... Remove this comment to
+                  see the full error message
                   <Column align="flex-end" flex={1} justify="end">
+                    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                    unless the '--jsx' flag is provided... Remove this comment
+                    to see the full error message
                     <WalletLabel align="right">Balance</WalletLabel>
+                    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                    unless the '--jsx' flag is provided... Remove this comment
+                    to see the full error message
                     <WalletText
                       align="right"
                       balanceTooLow={balanceTooLow}
@@ -1132,6 +1273,7 @@ export default function TransactionConfirmationScreen() {
             )}
           </AnimatedSheet>
           {!isMessageRequest && (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <GasSpeedButton currentNetwork={network} theme="dark" />
           )}
         </Column>

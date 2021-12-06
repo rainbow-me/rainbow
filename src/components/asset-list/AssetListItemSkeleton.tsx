@@ -10,27 +10,31 @@ import Animated, {
   Value,
 } from 'react-native-reanimated';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../context/ThemeContext' was resolved t... Remove this comment to see the full error message
 import { withThemeContext } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { interpolate } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding, position } from '@rainbow-me/styles';
 
 const { block, cond, set, startClock, stopClock } = Animated;
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const Container = styled.View`
   height: ${CoinRowHeight};
-  opacity: ${({ descendingOpacity, index }) =>
+  opacity: ${({ descendingOpacity, index }: any) =>
     1 - 0.2 * (descendingOpacity ? index : 0)};
   width: 100%;
 `;
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const FakeAvatar = styled.View`
   ${position.size(40)};
-  background-color: ${({ theme: { colors } }) => colors.skeleton};
+  background-color: ${({ theme: { colors } }: any) => colors.skeleton};
   border-radius: 20;
 `;
 
@@ -43,8 +47,9 @@ const FakeRow = styled(Row).attrs({
   paddingTop: 5,
 })(Row);
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const FakeText = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.skeleton};
+  background-color: ${({ theme: { colors } }: any) => colors.skeleton};
   border-radius: 5;
   height: 10;
 `;
@@ -95,6 +100,7 @@ class AssetListItemSkeleton extends PureComponent {
 
     return block([
       startClock(clock),
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ duration: Value<1250>; easing:... Remove this comment to see the full error message
       timing(clock, state, config),
       cond(state.finished, [
         stopClock(clock),
@@ -107,9 +113,11 @@ class AssetListItemSkeleton extends PureComponent {
     ]);
   }
 
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'animated' does not exist on type 'Readon... Remove this comment to see the full error message
   animation = this.props.animated && ios ? this.startShimmerLoop() : () => null;
 
   renderShimmer() {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'colors' does not exist on type 'Readonly... Remove this comment to see the full error message
     const { colors } = this.props;
     const gradientColors = [
       colors.skeleton,
@@ -123,13 +131,19 @@ class AssetListItemSkeleton extends PureComponent {
     const translateX = interpolate(this.animation, {
       inputRange: [0, 1],
       outputRange: [
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'dimensions' does not exist on type '{}'.
         deviceUtils.dimensions.width * -1.17,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'dimensions' does not exist on type '{}'.
         deviceUtils.dimensions.width * 1.17,
       ],
     });
 
     return (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <View backgroundColor={gradientColors[0]} css={position.size('100%')}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <AnimatedLinearGradient
           {...position.sizeAsObject('100%')}
           colors={gradientColors}
@@ -144,27 +158,57 @@ class AssetListItemSkeleton extends PureComponent {
 
   render() {
     const {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'animated' does not exist on type 'Readon... Remove this comment to see the full error message
       animated,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'descendingOpacity' does not exist on typ... Remove this comment to see the full error message
       descendingOpacity,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'ignorePaddingHorizontal' does not exist ... Remove this comment to see the full error message
       ignorePaddingHorizontal,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'index' does not exist on type 'Readonly<... Remove this comment to see the full error message
       index,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'colors' does not exist on type 'Readonly... Remove this comment to see the full error message
       colors,
     } = this.props;
 
     const skeletonElement = (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <Wrapper ignorePaddingHorizontal={ignorePaddingHorizontal} index={index}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <FakeAvatar />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ColumnWithMargins
           backgroundColor={colors.transparent}
           flex={1}
           margin={10}
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <FakeRow>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <FakeText width={100} />
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <FakeText width={80} />
           </FakeRow>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <FakeRow>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <FakeText width={60} />
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <FakeText width={50} />
           </FakeRow>
         </ColumnWithMargins>
@@ -172,8 +216,11 @@ class AssetListItemSkeleton extends PureComponent {
     );
 
     return (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <Container descendingOpacity={descendingOpacity} index={index}>
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
         {animated && ios ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <MaskedView maskElement={skeletonElement}>
             {this.renderShimmer()}
           </MaskedView>

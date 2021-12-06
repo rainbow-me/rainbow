@@ -5,6 +5,7 @@ import { NegativeSpace, negativeSpace, Space, space } from '../../layout/space';
 import {
   BackgroundProvider,
   BackgroundProviderProps,
+  // @ts-expect-error ts-migrate(6142) FIXME: Module '../BackgroundProvider/BackgroundProvider' ... Remove this comment to see the full error message
 } from '../BackgroundProvider/BackgroundProvider';
 import type * as Polymorphic from './polymorphic';
 
@@ -238,14 +239,17 @@ export const Box = forwardRef(function Box(
   }, [styles, styleProp, Component]);
 
   return background ? (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <BackgroundProvider color={background}>
-      {backgroundStyle => (
+      {(backgroundStyle: any) => (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <Component style={[backgroundStyle, ...style]} {...restProps} ref={ref}>
           {children}
         </Component>
       )}
     </BackgroundProvider>
   ) : (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Component style={style} {...restProps} ref={ref}>
       {children}
     </Component>

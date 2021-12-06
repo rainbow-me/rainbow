@@ -1,9 +1,12 @@
 import { RainbowFetchClient } from '../rainbow-fetch';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { EthereumAddress } from '@rainbow-me/entities';
 import {
   getSignatureForSigningWalletAndCreateSignatureIfNeeded,
   signWithSigningWallet,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/signingWal... Remove this comment to see the full error message
 } from '@rainbow-me/helpers/signingWallet';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 export enum PreferenceActionType {

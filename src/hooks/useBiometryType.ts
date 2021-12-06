@@ -5,6 +5,7 @@ import * as Keychain from 'react-native-keychain';
 import useAppState from './useAppState';
 import useIsMounted from './useIsMounted';
 import usePrevious from './usePrevious';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers' or its co... Remove this comment to see the full error message
 import { BiometryTypes } from '@rainbow-me/helpers';
 
 export default function useBiometryType() {
@@ -27,6 +28,7 @@ export default function useBiometryType() {
       }
 
       if (isMounted.current && type !== prevBiometricType) {
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'BIOMETRY_TYPE | null' is not ass... Remove this comment to see the full error message
         setBiometryType(type);
       }
     };

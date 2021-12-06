@@ -11,12 +11,17 @@ import PolygonBadge from '../assets/badges/polygonBadge.png';
 import PolygonBadgeDark from '../assets/badges/polygonBadgeDark.png';
 import PolygonBadgeNoShadow from '../assets/badges/polygonBadgeNoShadow.png';
 import { Centered } from './layout';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position } from '@rainbow-me/styles';
 
 const ChainIcon = styled(FastImage)`
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'size' does not exist on type 'ThemedStyl... Remove this comment to see the full error message
   height: ${({ size }) => size};
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'size' does not exist on type 'ThemedStyl... Remove this comment to see the full error message
   top: ${({ size }) => (size * 20) / 44 / 5};
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'size' does not exist on type 'ThemedStyl... Remove this comment to see the full error message
   width: ${({ size }) => size};
 `;
 
@@ -30,8 +35,10 @@ export default function ChainLogo({
   size = 44,
   withShadows = true,
   ...props
-}) {
+}: any) {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { isDarkMode } = useTheme();
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const source = useMemo(() => {
     let val = null;
     if (network === networkTypes.arbitrum) {
@@ -59,7 +66,11 @@ export default function ChainLogo({
   if (!source) return null;
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Content size={size} {...props}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ChainIcon size={size} source={source} />
     </Content>
   );

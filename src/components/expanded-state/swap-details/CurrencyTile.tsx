@@ -1,13 +1,18 @@
 import React from 'react';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import RadialGradient from 'react-native-radial-gradient';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { CoinIcon } from '../../coin-icon';
 import { Centered, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedText } from '../../text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useAccountSettings, useColorForAsset } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/swap' or its... Remove this comment to see the full error message
 import { SwapModalField } from '@rainbow-me/redux/swap';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utilities' or its ... Remove this comment to see the full error message
 import { convertAmountAndPriceToNativeDisplay } from '@rainbow-me/utilities';
 
 export const CurrencyTileHeight = 143;
@@ -62,8 +67,9 @@ export default function CurrencyTile({
   priceValue,
   type = 'input',
   ...props
-}) {
+}: any) {
   const inputAsExact = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'swap' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
     state => state.swap.independentField !== SwapModalField.output
   );
   const { nativeCurrency } = useAccountSettings();
@@ -81,21 +87,47 @@ export default function CurrencyTile({
     : '-';
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container {...props}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Gradient color={colorForAsset} type={type} />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ColumnWithMargins centered margin={15}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <CoinIcon address={address} size={50} symbol={symbol} />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ColumnWithMargins centered margin={4} paddingHorizontal={8}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <NativePriceText>
             {priceDisplay}
             {isHighPriceImpact && (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <NativePriceText color={priceImpactColor}>{` 􀇿`}</NativePriceText>
             )}
           </NativePriceText>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Row align="center">
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <TruncatedAmountText>
               {`${isOther ? '~' : ''}${amountDisplay}`}
             </TruncatedAmountText>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <AmountText>{` ${symbol}`}</AmountText>
           </Row>
         </ColumnWithMargins>

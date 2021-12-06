@@ -30,7 +30,7 @@ function useEvent<T>(
 ): MutableRefObject<WorkletEventHandler | null> {
   const initRef = useRef<WorkletEventHandler | null>(null);
   if (initRef.current === null) {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string[]' is not assignable to p... Remove this comment to see the full error message
     initRef.current = new WorkletEventHandler(handler, eventNames);
   } else if (rebuild) {
     initRef.current.updateWorklet(handler);

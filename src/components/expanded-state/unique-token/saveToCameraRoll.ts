@@ -21,7 +21,7 @@ const getPermissionAndroid = async () => {
   }
 };
 
-function alertError(err) {
+function alertError(err: any) {
   Alert.alert(
     'Save remote Image',
     'Failed to save Image' + err.message ? `: ${err.message}` : '',
@@ -30,7 +30,7 @@ function alertError(err) {
   );
 }
 
-function getFilename(url) {
+function getFilename(url: any) {
   url = url
     .split('/')
     .pop()
@@ -40,7 +40,7 @@ function getFilename(url) {
   return { ext: url[1], filename: url[0] || '' };
 }
 
-async function downloadImageAndroid(url) {
+async function downloadImageAndroid(url: any) {
   const granted = await getPermissionAndroid();
   if (!granted) {
     alertError('no permission');
@@ -53,11 +53,13 @@ async function downloadImageAndroid(url) {
   })
     .fetch('GET', url)
     .catch(alertError);
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'respInfo' does not exist on type 'void |... Remove this comment to see the full error message
   const mime = result?.respInfo?.headers['content-type'];
   if (!ext) {
     ext = mime?.split('/')?.[1];
   }
   if (!ext) {
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
     alertError();
     return;
   }
@@ -79,11 +81,11 @@ async function downloadImageAndroid(url) {
   config(options).fetch('GET', url).catch(alertError);
 }
 
-function downloadImageIOS(url) {
+function downloadImageIOS(url: any) {
   CameraRoll.save(url).catch(alertError);
 }
 
-const saveToCameraRoll = async url => {
+const saveToCameraRoll = async (url: any) => {
   // if device is android you have to ensure you have permission
   if (Platform.OS === 'android') {
     downloadImageAndroid(url);

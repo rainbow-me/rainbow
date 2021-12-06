@@ -9,7 +9,8 @@ const ActivityListHeaderTitle = styled(Text).attrs({
   weight: 'bold',
 })``;
 
-const ActivityListHeader = props => (
+const ActivityListHeader = (props: any) => (
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   <ListHeader
     {...props}
     isSticky
@@ -18,4 +19,5 @@ const ActivityListHeader = props => (
   />
 );
 
+// @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
 export default magicMemo(ActivityListHeader, 'title');

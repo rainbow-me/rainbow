@@ -5,8 +5,11 @@ import styled from 'styled-components';
 import { PERSONAL_SIGN, SIGN_TYPED_DATA } from '../../utils/signingMethods';
 import { Row } from '../layout';
 import { Text } from '../text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 import { isHexString } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { deviceUtils } from '@rainbow-me/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;
@@ -26,7 +29,8 @@ const MessageWrapper = styled(ScrollView)`
   min-width: ${deviceWidth - horizontalPadding * 2};
 `;
 
-const TransactionMessage = ({ maxHeight = 150, message, method }) => {
+const TransactionMessage = ({ maxHeight = 150, message, method }: any) => {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   let msg = message;
   let maximumHeight = maxHeight;
@@ -49,8 +53,15 @@ const TransactionMessage = ({ maxHeight = 150, message, method }) => {
   }
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container maxHeight={maximumHeight} minHeight={minimumHeight}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <MessageWrapper>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Text color={colors.alpha(colors.blueGreyDark, 0.6)} size="lmedium">
           {msg}
         </Text>

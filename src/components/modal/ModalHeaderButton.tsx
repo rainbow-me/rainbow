@@ -12,6 +12,7 @@ const BackArrow = styled(Icon).attrs(({ theme: { colors } }) => ({
   name: 'caret',
 }))`
   height: 16;
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   margin-top: ${android ? 6 : 0};
 `;
 
@@ -36,10 +37,20 @@ const Text = styled(UnstyledText).attrs(({ theme: { colors } }) => ({
   margin-left: ${({ side }) => (side === 'left' ? 4 : 0)};
 `;
 
-const ModalHeaderButton = ({ label, onPress, side }) => (
+const ModalHeaderButton = ({ label, onPress, side }: any) => (
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   <Container as={ios ? BorderlessButton : Button} onPress={onPress} side={side}>
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+    '--jsx' flag is provided... Remove this comment to see the full error
+    message
     <Row>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       {side === 'left' && <BackArrow />}
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Text side={side}>{label}</Text>
     </Row>
   </Container>

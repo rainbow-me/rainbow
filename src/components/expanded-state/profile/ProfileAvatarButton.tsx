@@ -9,8 +9,9 @@ const ProfileAvatarButton = ({
   testID,
   value,
   radiusAndroid,
-}) => {
+}: any) => {
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ButtonPressAnimation
       onPress={changeAvatar}
       overflowMargin={15}
@@ -18,6 +19,9 @@ const ProfileAvatarButton = ({
       scaleTo={0.9}
       testID={testID}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ContactAvatar
         color={color}
         marginBottom={marginBottom}

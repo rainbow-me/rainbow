@@ -18,6 +18,7 @@ import {
   uniqBy,
   upperFirst,
 } from 'lodash';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '../config/debug' or its corres... Remove this comment to see the full error message
 import { parseAllTxnsOnReceive } from '../config/debug';
 import {
   AssetType,
@@ -32,15 +33,22 @@ import {
   ZerionTransaction,
   ZerionTransactionChange,
   ZerionTransactionStatus,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 } from '@rainbow-me/entities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/transacti... Remove this comment to see the full error message
 import { getTransactionMethodName } from '@rainbow-me/handlers/transactions';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 import { isL2Network } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import { Network } from '@rainbow-me/helpers/networkTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { ETH_ADDRESS, savingsAssetsList } from '@rainbow-me/references';
 import {
   convertRawAmountToBalance,
   convertRawAmountToNativeDisplay,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utilities' or its ... Remove this comment to see the full error message
 } from '@rainbow-me/utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 
 const LAST_TXN_HASH_BUFFER = 20;

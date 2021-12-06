@@ -16,8 +16,10 @@ const ArrowIcon = styled(Icon).attrs({
 })``;
 
 export default function ChartChangeDirectionArrow() {
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
   const ratio = useRatio('ChartChangeDirectionArrowRatio');
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const arrowColor = useDerivedValue(() =>
     ratio.value === 1
@@ -40,11 +42,19 @@ export default function ChartChangeDirectionArrow() {
   });
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Animated.View style={arrowWrapperStyle}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <AnimatedMaskedView
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         maskElement={<ArrowIcon />}
         style={{ height: 18, width: 15 }}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Animated.View
           style={[
             { backgroundColor: '#324376', flex: 1, height: '100%' },

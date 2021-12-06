@@ -1,4 +1,6 @@
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import XHRInterceptor from 'react-native/Libraries/Network/XHRInterceptor';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 let internalCounter = 0;
@@ -10,12 +12,12 @@ const EXCLUDED_URLS = [
 ];
 
 export default function monitorNetwork(
-  showNetworkRequests,
-  showNetworkResponses
+  showNetworkRequests: any,
+  showNetworkResponses: any
 ) {
   const requestCache = {};
 
-  const getEmojiForStatusCode = status => {
+  const getEmojiForStatusCode = (status: any) => {
     if (status >= 200 && status < 400) {
       return '✅';
     } else {
@@ -31,7 +33,7 @@ export default function monitorNetwork(
   };
 
   if (showNetworkRequests) {
-    XHRInterceptor.setSendCallback((data, xhr) => {
+    XHRInterceptor.setSendCallback((data: any, xhr: any) => {
       if (EXCLUDED_URLS.indexOf(xhr._url) === -1) {
         internalCounter++;
         xhr._trackingName = internalCounter;
@@ -59,6 +61,7 @@ export default function monitorNetwork(
         }
         emptyLine();
 
+        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         requestCache[internalCounter] = {
           startTime: Date.now(),
         };
@@ -68,11 +71,20 @@ export default function monitorNetwork(
 
   if (showNetworkResponses) {
     XHRInterceptor.setResponseCallback(
-      (status, timeout, response, url, type, xhr) => {
+      (
+        status: any,
+        timeout: any,
+        response: any,
+        url: any,
+        type: any,
+        xhr: any
+      ) => {
         if (EXCLUDED_URLS.indexOf(url) === -1) {
           // fetch and clear the request data from the cache
           const rid = xhr._trackingName;
+          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           const cachedRequest = requestCache[rid] || {};
+          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           requestCache[rid] = null;
           const time =
             (cachedRequest.startTime && Date.now() - cachedRequest.startTime) ||

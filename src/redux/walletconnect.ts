@@ -1,3 +1,5 @@
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/config/debug' or i... Remove this comment to see the full error message
+import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
@@ -13,6 +15,7 @@ import {
   values,
 } from 'lodash';
 import { Alert, InteractionManager, Linking } from 'react-native';
+// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import URL, { qs } from 'url-parse';
 import {
@@ -27,13 +30,19 @@ import { getFCMToken } from '../model/firebase';
 import { Navigation } from '../navigation';
 import { isSigningMethod } from '../utils/signingMethods';
 import { addRequestToApprove } from './requests';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/findWallet... Remove this comment to see the full error message
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/utilities'... Remove this comment to see the full error message
 import { convertHexToString, delay } from '@rainbow-me/helpers/utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/walletConn... Remove this comment to see the full error message
 import WalletConnectApprovalSheetType from '@rainbow-me/helpers/walletConnectApprovalSheetTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils, watchingAlert } from '@rainbow-me/utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -92,15 +101,14 @@ const getNativeOptions = async () => {
   return nativeOptions;
 };
 
-export const walletConnectSetPendingRedirect = () => dispatch => {
+export const walletConnectSetPendingRedirect = () => (dispatch: any) => {
   dispatch({
     type: WALLETCONNECT_SET_PENDING_REDIRECT,
   });
 };
-export const walletConnectRemovePendingRedirect = (
-  type,
-  scheme
-) => dispatch => {
+export const walletConnectRemovePendingRedirect = (type: any, scheme: any) => (
+  dispatch: any
+) => {
   dispatch({
     type: WALLETCONNECT_REMOVE_PENDING_REDIRECT,
   });
@@ -113,30 +121,30 @@ export const walletConnectRemovePendingRedirect = (
   }
 };
 
-export const walletConnectOnSessionRequest = (uri, callback) => async (
-  dispatch,
-  getState
-) => {
-  let timeout = null;
+export const walletConnectOnSessionRequest = (
+  uri: any,
+  callback: any
+) => async (dispatch: any, getState: any) => {
+  let timeout: any = null;
   getState().appState;
-  let walletConnector = null;
+  let walletConnector: any = null;
   const receivedTimestamp = Date.now();
   try {
     const { clientMeta, push } = await getNativeOptions();
     try {
       walletConnector = new WalletConnect({ clientMeta, uri }, push);
-      let meta = null;
+      let meta: any = null;
       let navigated = false;
       let timedOut = false;
       let routeParams = {
         callback: async (
-          approved,
-          chainId,
-          accountAddress,
-          peerId,
-          dappScheme,
-          dappName,
-          dappUrl
+          approved: any,
+          chainId: any,
+          accountAddress: any,
+          peerId: any,
+          dappScheme: any,
+          dappName: any,
+          dappUrl: any
         ) => {
           if (approved) {
             dispatch(setPendingRequest(peerId, walletConnector));
@@ -163,6 +171,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
           } else {
             callback?.('timedOut', dappScheme);
             const url = new URL(uri);
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ [key: string]: string | undefi... Remove this comment to see the full error message
             const bridge = qs.parse(url?.query)?.bridge;
             analytics.track('New WalletConnect session time out', {
               bridge,
@@ -174,6 +183,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         receivedTimestamp,
       };
 
+      // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'error' implicitly has an 'any' type.
       walletConnector?.on('session_request', (error, payload) => {
         clearTimeout(timeout);
         if (error) {
@@ -211,6 +221,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         // We need navigate to the same route with the updated params
         // which now includes the meta
         if (navigated && !timedOut) {
+          // @ts-expect-error ts-migrate(2322) FIXME: Type '{ meta: any; timeout: any; callback: (approv... Remove this comment to see the full error message
           routeParams = { ...routeParams, meta, timeout };
           Navigation.handleAction(
             Routes.WALLET_CONNECT_APPROVAL_SHEET,
@@ -221,6 +232,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
 
       let waitingFn = InteractionManager.runAfterInteractions;
       if (IS_TESTING === 'true') {
+        // @ts-expect-error ts-migrate(2322) FIXME: Type 'typeof setTimeout' is not assignable to type... Remove this comment to see the full error message
         waitingFn = setTimeout;
       }
 
@@ -238,6 +250,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
         timeout = setTimeout(() => {
           if (meta) return;
           timedOut = true;
+          // @ts-expect-error ts-migrate(2322) FIXME: Type '{ timedOut: boolean; callback: (approved: an... Remove this comment to see the full error message
           routeParams = { ...routeParams, timedOut };
           Navigation.handleAction(
             Routes.WALLET_CONNECT_APPROVAL_SHEET,
@@ -247,6 +260,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
 
         // If we have the meta, send it
         if (meta) {
+          // @ts-expect-error ts-migrate(2322) FIXME: Type '{ meta: any; callback: (approved: any, chain... Remove this comment to see the full error message
           routeParams = { ...routeParams, meta };
         }
         navigated = true;
@@ -254,6 +268,7 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
           Routes.WALLET_CONNECT_APPROVAL_SHEET,
           routeParams
         );
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 0-1 arguments, but got 2.
       }, 2000);
     } catch (error) {
       clearTimeout(timeout);
@@ -275,8 +290,11 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
   }
 };
 
-const listenOnNewMessages = walletConnector => (dispatch, getState) => {
-  walletConnector.on('call_request', async (error, payload) => {
+const listenOnNewMessages = (walletConnector: any) => (
+  dispatch: any,
+  getState: any
+) => {
+  walletConnector.on('call_request', async (error: any, payload: any) => {
     logger.log('WC Request!', error, payload);
     if (error) {
       analytics.track('Error on wc call_request', {
@@ -314,7 +332,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       if (supportedChains.includes(numericChainId)) {
         dispatch(walletConnectSetPendingRedirect());
         Navigation.handleAction(Routes.WALLET_CONNECT_APPROVAL_SHEET, {
-          callback: async approved => {
+          callback: async (approved: any) => {
             if (approved) {
               walletConnector.approveRequest({
                 id: requestId,
@@ -335,6 +353,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
                 dappName,
                 dappUrl,
               });
+              // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
               dispatch(walletConnectRemovePendingRedirect('connect'));
             } else {
               walletConnector.rejectRequest({
@@ -410,7 +429,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
       }
     }
   });
-  walletConnector.on('disconnect', error => {
+  walletConnector.on('disconnect', (error: any) => {
     if (error) {
       throw error;
     }
@@ -419,7 +438,10 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
   return walletConnector;
 };
 
-export const walletConnectLoadState = () => async (dispatch, getState) => {
+export const walletConnectLoadState = () => async (
+  dispatch: any,
+  getState: any
+) => {
   while (!getState().walletconnect.walletConnectors) {
     await delay(300);
   }
@@ -460,9 +482,9 @@ export const walletConnectLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const setPendingRequest = (peerId, walletConnector) => (
-  dispatch,
-  getState
+export const setPendingRequest = (peerId: any, walletConnector: any) => (
+  dispatch: any,
+  getState: any
 ) => {
   const { pendingRequests } = getState().walletconnect;
   const updatedPendingRequests = {
@@ -475,12 +497,18 @@ export const setPendingRequest = (peerId, walletConnector) => (
   });
 };
 
-export const getPendingRequest = peerId => (dispatch, getState) => {
+export const getPendingRequest = (peerId: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { pendingRequests } = getState().walletconnect;
   return pendingRequests[peerId];
 };
 
-export const removePendingRequest = peerId => (dispatch, getState) => {
+export const removePendingRequest = (peerId: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { pendingRequests } = getState().walletconnect;
   const updatedPendingRequests = pendingRequests;
   if (updatedPendingRequests[peerId]) {
@@ -492,7 +520,10 @@ export const removePendingRequest = peerId => (dispatch, getState) => {
   });
 };
 
-export const setWalletConnector = walletConnector => (dispatch, getState) => {
+export const setWalletConnector = (walletConnector: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { walletConnectors } = getState().walletconnect;
   const updatedWalletConnectors = {
     ...walletConnectors,
@@ -504,13 +535,19 @@ export const setWalletConnector = walletConnector => (dispatch, getState) => {
   });
 };
 
-export const getWalletConnector = peerId => (dispatch, getState) => {
+export const getWalletConnector = (peerId: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { walletConnectors } = getState().walletconnect;
   const walletConnector = walletConnectors[peerId];
   return walletConnector;
 };
 
-export const removeWalletConnector = peerId => (dispatch, getState) => {
+export const removeWalletConnector = (peerId: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { walletConnectors } = getState().walletconnect;
   const updatedWalletConnectors = walletConnectors;
   if (updatedWalletConnectors[peerId]) {
@@ -522,7 +559,10 @@ export const removeWalletConnector = peerId => (dispatch, getState) => {
   });
 };
 
-export const walletConnectUpdateSessions = () => (dispatch, getState) => {
+export const walletConnectUpdateSessions = () => (
+  dispatch: any,
+  getState: any
+) => {
   const { accountAddress, chainId } = getState().settings;
   const { walletConnectors } = getState().walletconnect;
 
@@ -539,10 +579,10 @@ export const walletConnectUpdateSessions = () => (dispatch, getState) => {
 };
 
 export const walletConnectUpdateSessionConnectorByDappUrl = (
-  dappUrl,
-  accountAddress,
-  chainId
-) => (dispatch, getState) => {
+  dappUrl: any,
+  accountAddress: any,
+  chainId: any
+) => (dispatch: any, getState: any) => {
   const { walletConnectors } = getState().walletconnect;
   const connectors = pickBy(walletConnectors, connector => {
     return connector?.peerMeta?.url === dappUrl;
@@ -562,12 +602,12 @@ export const walletConnectUpdateSessionConnectorByDappUrl = (
 };
 
 export const walletConnectApproveSession = (
-  peerId,
-  callback,
-  dappScheme,
-  chainId,
-  accountAddress
-) => dispatch => {
+  peerId: any,
+  callback: any,
+  dappScheme: any,
+  chainId: any,
+  accountAddress: any
+) => (dispatch: any) => {
   const walletConnector = dispatch(getPendingRequest(peerId));
   walletConnector.approveSession({
     accounts: [accountAddress],
@@ -588,16 +628,16 @@ export const walletConnectApproveSession = (
 };
 
 export const walletConnectRejectSession = (
-  peerId,
-  walletConnector
-) => dispatch => {
+  peerId: any,
+  walletConnector: any
+) => (dispatch: any) => {
   walletConnector.rejectSession();
   dispatch(removePendingRequest(peerId));
 };
 
-export const walletConnectDisconnectAllByDappUrl = dappUrl => async (
-  dispatch,
-  getState
+export const walletConnectDisconnectAllByDappUrl = (dappUrl: any) => async (
+  dispatch: any,
+  getState: any
 ) => {
   const { walletConnectors } = getState().walletconnect;
   const matchingWalletConnectors = values(
@@ -627,10 +667,11 @@ export const walletConnectDisconnectAllByDappUrl = dappUrl => async (
   }
 };
 
-export const walletConnectSendStatus = (peerId, requestId, response) => async (
-  dispatch,
-  getState
-) => {
+export const walletConnectSendStatus = (
+  peerId: any,
+  requestId: any,
+  response: any
+) => async (dispatch: any, getState: any) => {
   const walletConnector = getState().walletconnect.walletConnectors[peerId];
   if (walletConnector) {
     const { result, error } = response;
@@ -660,7 +701,7 @@ const INITIAL_STATE = {
   walletConnectors: {},
 };
 
-export default (state = INITIAL_STATE, action) => {
+export default (state = INITIAL_STATE, action: any) => {
   switch (action.type) {
     case WALLETCONNECT_ADD_REQUEST:
       return { ...state, pendingRequests: action.payload };

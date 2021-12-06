@@ -2,12 +2,15 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useMemo } from 'react';
 import Animated, { EasingNode } from 'react-native-reanimated';
 import { mixColor, useTimingTransition } from 'react-native-redash/src/v1';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../context/ThemeContext' was resolved t... Remove this comment to see the full error message
 import { useTheme } from '../../context/ThemeContext';
 import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { Icon } from '../icons';
 import { Centered, InnerBorder } from '../layout';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'react-native-shadow-stack' or ... Remove this comment to see the full error message
 import ShadowStack from 'react-native-shadow-stack';
 
 const AnimatedCenter = Animated.createAnimatedComponent(Centered);
@@ -19,7 +22,12 @@ const ApplePayButtonDimensions = {
   width: '100%',
 };
 
-const ApplePayButtonShadowElement = ({ backgroundColor, opacity, shadow }) => (
+const ApplePayButtonShadowElement = ({
+  backgroundColor,
+  opacity,
+  shadow,
+}: any) => (
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   <AnimatedShadowStack
     {...position.coverAsObject}
     {...ApplePayButtonDimensions}
@@ -30,7 +38,7 @@ const ApplePayButtonShadowElement = ({ backgroundColor, opacity, shadow }) => (
   />
 );
 
-const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
+const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }: any) => {
   const { isDarkMode: darkMode, colors } = useTheme();
 
   const ApplePayButtonShadows = useMemo(() => {
@@ -48,6 +56,7 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
 
   const disabledAnimation = useTimingTransition(!disabled, {
     duration: 66,
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ duration: number; ease: Animat... Remove this comment to see the full error message
     ease: EasingNode.out(EasingNode.ease),
   });
 
@@ -56,6 +65,7 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
     darkMode
       ? colors.alpha(darkModeThemeColors.grey20, 0.3)
       : lightModeThemeColors.blueGreyDark50,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'darkModeDark' does not exist on type '{ ... Remove this comment to see the full error message
     darkMode ? darkModeThemeColors.darkModeDark : lightModeThemeColors.dark
   );
 
@@ -75,25 +85,41 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ButtonPressAnimation
       hapticType={disabled ? 'notificationWarning' : 'selection'}
       onPress={handlePress}
       scaleTo={disabled ? 0.99 : 0.97}
       style={ApplePayButtonDimensions}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Centered {...position.sizeAsObject('100%')}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Centered {...position.sizeAsObject('100%')}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ApplePayButtonShadowElement
             backgroundColor={colors.white}
             opacity={disabledShadowOpacity}
             shadow={ApplePayButtonShadows}
           />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ApplePayButtonShadowElement
             backgroundColor={colors.white}
             opacity={defaultShadowOpacity}
             shadow={ApplePayButtonShadows}
           />
         </Centered>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <AnimatedCenter
           {...position.coverAsObject}
           {...ApplePayButtonDimensions}
@@ -101,7 +127,13 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
           borderRadius={ApplePayButtonBorderRadius}
           zIndex={1}
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Centered {...position.sizeAsObject('100%')}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Icon
               color={
                 darkMode && disabled
@@ -113,6 +145,9 @@ const ApplePayButton = ({ disabled, onDisabledPress, onSubmit }) => {
               name="applePay"
             />
           </Centered>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <InnerBorder radius={ApplePayButtonBorderRadius} />
         </AnimatedCenter>
       </Centered>

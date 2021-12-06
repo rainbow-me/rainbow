@@ -1,7 +1,9 @@
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@ban... Remove this comment to see the full error message
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { isEmpty, isNil, lowerCase, upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
@@ -10,7 +12,9 @@ import { ChainBadge, CoinIcon } from '../coin-icon';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 import { isL2Network } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { add, toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import {
@@ -18,11 +22,17 @@ import {
   useColorForAsset,
   useGas,
   usePrevious,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { gasUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const { GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST } = gasUtils;
@@ -37,6 +47,7 @@ const CustomGasButton = styled(ButtonPressAnimation).attrs({
   border-radius: 19;
   border: ${({ borderColor, color, theme: { colors } }) =>
     `2px solid ${borderColor || color || colors.appleBlue}`};
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${padding(android ? 2 : 3, 0)}
 `;
 
@@ -46,6 +57,7 @@ const Symbol = styled(Text).attrs({
   size: 'lmedium',
   weight: 'heavy',
 })`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${padding(android ? 1 : 0, 6, 0, 7)};
 `;
 
@@ -60,6 +72,7 @@ const DoneCustomGas = styled(Text).attrs({
   ${margin(0, 10, 0, 10)}
 `;
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const ChainBadgeContainer = styled.View.attrs({
   hapticType: 'impactHeavy',
   scaleTo: 0.9,
@@ -77,6 +90,7 @@ const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
   justifyContent: 'center',
 })`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${margin(android ? 8 : 19, 0)};
   ${({ horizontalPadding }) => padding(0, horizontalPadding)};
   width: 100%;
@@ -93,9 +107,11 @@ const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
   marginRight: 8,
 }))``;
 
-const TransactionTimeLabel = ({ formatter, theme }) => {
+const TransactionTimeLabel = ({ formatter, theme }: any) => {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Label
       align="right"
       color={
@@ -119,7 +135,8 @@ const GasSpeedButton = ({
   showGasOptions = false,
   testID,
   theme = 'dark',
-}) => {
+}: any) => {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
@@ -202,6 +219,7 @@ const GasSpeedButton = ({
   }, [gasIsNotReady, navigate, asset, speeds]);
 
   const openCustomOptions = useCallback(() => {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android && Keyboard.dismiss();
     setShouldOpenCustomGasSheet(true);
   }, [setShouldOpenCustomGasSheet]);
@@ -210,6 +228,7 @@ const GasSpeedButton = ({
     animatedNumber => {
       const priceText = animatedNumber === 0 ? 'Loading...' : animatedNumber;
       return (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <Text
           color={
             theme === 'dark'
@@ -252,6 +271,7 @@ const GasSpeedButton = ({
   );
 
   const formatTransactionTime = useCallback(() => {
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number' is not assignable to par... Remove this comment to see the full error message
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
     let timeSymbol = '~';
 
@@ -287,6 +307,7 @@ const GasSpeedButton = ({
   ]);
 
   const openGasHelper = useCallback(() => {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android && Keyboard.dismiss();
     navigate(Routes.EXPLAIN_SHEET, { type: 'gas' });
   }, [navigate]);
@@ -323,25 +344,15 @@ const GasSpeedButton = ({
   }, [currentNetwork, speeds]);
 
   const menuConfig = useMemo(() => {
-    const menuOptions = speedOptions.map(gasOption => {
-      const totalGwei = add(
-        gasFeeParamsBySpeed[gasOption]?.maxFeePerGas?.gwei,
-        gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
-      );
-      const gweiDisplay =
-        currentNetwork === networkTypes.polygon
-          ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
-          : `${toFixedDecimals(totalGwei, 0)} Gwei`;
-      return {
-        actionKey: gasOption,
-        actionTitle: upperFirst(gasOption),
-        discoverabilityTitle: gweiDisplay,
-        icon: {
-          iconType: 'ASSET',
-          iconValue: GAS_ICONS[gasOption],
-        },
-      };
-    });
+    const menuOptions = speedOptions.map((gasOption: any) => ({
+      actionKey: gasOption,
+      actionTitle: upperFirst(gasOption),
+
+      icon: {
+        iconType: 'ASSET',
+        iconValue: GAS_ICONS[gasOption],
+      },
+    }));
     return {
       menuItems: menuOptions,
       menuTitle: '',
@@ -365,7 +376,9 @@ const GasSpeedButton = ({
 
   const onPressAndroid = useCallback(() => {
     if (gasIsNotReady) return;
-    const uppercasedSpeedOptions = speedOptions.map(speed => upperFirst(speed));
+    const uppercasedSpeedOptions = speedOptions.map((speed: any) =>
+      upperFirst(speed)
+    );
     const androidContractActions = [...uppercasedSpeedOptions];
 
     showActionSheetWithOptions(
@@ -375,7 +388,7 @@ const GasSpeedButton = ({
         showSeparators: true,
         title: '',
       },
-      buttonIndex => {
+      (buttonIndex: any) => {
         handlePressSpeedOption(lowerCase(androidContractActions[buttonIndex]));
       }
     );
@@ -384,6 +397,7 @@ const GasSpeedButton = ({
   const renderGasSpeedPager = useMemo(() => {
     if (showGasOptions) return;
     const pager = (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <GasSpeedLabelPager
         colorForAsset={
           gasOptionsAvailable
@@ -400,10 +414,12 @@ const GasSpeedButton = ({
     );
     if (!gasOptionsAvailable || gasIsNotReady) return pager;
     return (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <ContextMenuButton
         activeOpacity={0}
         enableContextMenu
         menuConfig={menuConfig}
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
         {...(android ? { onPress: onPressAndroid } : {})}
         isMenuPrimaryAction
         onPressMenuItem={handlePressMenuItem}
@@ -467,22 +483,45 @@ const GasSpeedButton = ({
   }, [selectedGasFee, selectedGasFeeOption]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container horizontalPadding={horizontalPadding} testID={testID}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Row justify="space-between">
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ButtonPressAnimation
           onPress={openGasHelper}
           scaleTo={0.9}
           testID="estimated-fee-label"
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Row>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <NativeCoinIconWrapper>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <CoinIcon
+                // @ts-expect-error ts-migrate(2339) FIXME: Property 'address' does not exist on type '{ mainn... Remove this comment to see the full error message
                 address={nativeFeeCurrency.address}
                 size={18}
                 symbol={nativeFeeCurrency.symbol}
               />
             </NativeCoinIconWrapper>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Column>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <AnimateNumber
                 formatter={formatGasPrice}
                 interval={6}
@@ -492,14 +531,26 @@ const GasSpeedButton = ({
                 value={price}
               />
             </Column>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Column>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TransactionTimeLabel
                 formatter={formatTransactionTime}
                 theme={theme}
               />
             </Column>
           </Row>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Row justify="space-between">
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Label
               color={
                 theme === 'dark'
@@ -509,7 +560,9 @@ const GasSpeedButton = ({
               size="smedium"
               weight="bold"
             >
-              Estimated fee{' '}
+              Estimated fee // @ts-expect-error ts-migrate(17004) FIXME: Cannot
+              use JSX unless the '--jsx' flag is provided... Remove this comment
+              to see the full error message
               <Label
                 color={
                   theme === 'dark'
@@ -524,20 +577,37 @@ const GasSpeedButton = ({
             </Label>
           </Row>
         </ButtonPressAnimation>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Centered>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <GasSpeedPagerCentered testID="gas-speed-pager">
             {renderGasSpeedPager}
           </GasSpeedPagerCentered>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Centered>
             {isL2 ? (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <ChainBadgeContainer>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <ChainBadge assetType={currentNetwork} position="relative" />
               </ChainBadgeContainer>
             ) : showGasOptions ? (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <CustomGasButton
                 borderColor={colorForAsset}
                 onPress={onDonePress}
               >
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <DoneCustomGas
                   color={
                     theme !== 'light'
@@ -549,6 +619,7 @@ const GasSpeedButton = ({
                 </DoneCustomGas>
               </CustomGasButton>
             ) : (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <CustomGasButton
                 borderColor={
                   theme === 'dark'
@@ -558,6 +629,9 @@ const GasSpeedButton = ({
                 onPress={openCustomOptions}
                 testID="gas-speed-custom"
               >
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Symbol
                   color={
                     theme === 'dark'

@@ -2,15 +2,19 @@ import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { useAccountSettings } from './index';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/bigNumberF... Remove this comment to see the full error message
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
 import {
   additionalAssetsDataAddCoingecko,
   additionalAssetsDataAddUniswap,
   AdditionalDataCongecko,
   AdditionalDataUniswap,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/additionalAs... Remove this comment to see the full error message
 } from '@rainbow-me/redux/additionalAssetsData';
 
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/store' or it... Remove this comment to see the full error message
 import type { AppState } from '@rainbow-me/redux/store';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { WETH_ADDRESS } from '@rainbow-me/references';
 
 function cutIfOver10000(value: number): number {
@@ -31,23 +35,20 @@ export default function useAdditionalAssetData(
       marketCapLoading: boolean;
     }
   | undefined {
-  // @ts-ignore
   const coingeckoId: string | undefined = useSelector(
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'additionalAssetsData' does not exist on ... Remove this comment to see the full error message
     ({ additionalAssetsData: { coingeckoIds } }): AppState =>
       coingeckoIds[address?.toLowerCase()]
   );
 
-  // @ts-ignore
   const coingeckoData: AdditionalDataCongecko | undefined = useSelector(
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'additionalAssetsData' does not exist on ... Remove this comment to see the full error message
     ({ additionalAssetsData: { coingeckoData } }): AppState =>
       coingeckoData[address?.toLowerCase()]
   );
 
-  // @ts-ignore
   const uniswapData: AdditionalDataUniswap | undefined = useSelector(
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'additionalAssetsData' does not exist on ... Remove this comment to see the full error message
     ({ additionalAssetsData: { uniswapData } }): AppState =>
       uniswapData[address?.toLowerCase()]
   );

@@ -7,10 +7,12 @@ import React, {
   useState,
 } from 'react';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../context/ThemeContext' was resolved t... Remove this comment to see the full error message
 import { useTheme } from '../../context/ThemeContext';
 import { MiniButton } from '../buttons';
 import { ExchangeInput } from '../exchange';
 import { Column, Row } from '../layout';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useDimensions } from '@rainbow-me/hooks';
 
 const BubbleInput = styled(ExchangeInput).attrs(
@@ -18,10 +20,12 @@ const BubbleInput = styled(ExchangeInput).attrs(
     disableTabularNums: true,
     keyboardAppearance: isDarkMode ? 'dark' : 'light',
     letterSpacing: 'roundedTightest',
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     lineHeight: android
       ? isTinyPhone
         ? 27
-        : android || isSmallPhone
+        : // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
+        android || isSmallPhone
         ? 31
         : 38
       : undefined,
@@ -30,13 +34,16 @@ const BubbleInput = styled(ExchangeInput).attrs(
   })
 )`
   ${({ isTinyPhone }) =>
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android ? (isTinyPhone ? 'height: 40' : 'height: 46;') : ''}}
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${android ? 'padding-bottom: 0;' : ''}
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${android ? 'padding-top: 0;' : ''}
   margin-right: 10;
 `;
 
-const defaultFormatter = string => string;
+const defaultFormatter = (string: any) => string;
 
 const BubbleField = (
   {
@@ -56,8 +63,8 @@ const BubbleField = (
     testID,
     value: valueProp,
     ...props
-  },
-  forwardedRef
+  }: any,
+  forwardedRef: any
 ) => {
   const { isSmallPhone, isTinyPhone } = useDimensions();
 
@@ -83,6 +90,7 @@ const BubbleField = (
 
   const handleButtonPress = useCallback(
     event => {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
       ref.current?.focus?.();
       setWasButtonPressed(true);
       onPressButton?.(event);
@@ -113,6 +121,7 @@ const BubbleField = (
   useEffect(() => {
     if (
       valueProp !== value &&
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'isFocused' does not exist on type 'never... Remove this comment to see the full error message
       (!ref.current?.isFocused?.() || wasButtonPressed)
     ) {
       setValue(valueProp);
@@ -123,16 +132,25 @@ const BubbleField = (
   const { colors, isDarkMode } = useTheme();
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Column
       flex={1}
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
       pointerEvents={android || isFocused ? 'auto' : 'none'}
       {...props}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Row align="center" justify="space-between">
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <BubbleInput
           autoFocus={autoFocus}
           color={colorForAsset}
           isDarkMode={isDarkMode}
+          // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
           isSmallPhone={android || isSmallPhone}
           isTinyPhone={isTinyPhone}
           keyboardType={keyboardType}
@@ -152,6 +170,7 @@ const BubbleField = (
           value={formattedValue}
         />
         {buttonText && isFocused && (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <MiniButton
             backgroundColor={
               maxLabelColor

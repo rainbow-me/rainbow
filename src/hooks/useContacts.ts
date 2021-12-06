@@ -15,12 +15,15 @@ const contactsSelector = createSelector(
 
 export default function useContacts() {
   const dispatch = useDispatch();
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'settings' does not exist on type 'Defaul... Remove this comment to see the full error message
   const { network } = useSelector(({ settings: { network } }) => ({
     network,
   }));
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'OutputParametricSelector<{ conta... Remove this comment to see the full error message
   const { contacts, sortedContacts } = useSelector(contactsSelector);
 
   const onAddOrUpdateContacts = useCallback(
+    // @ts-expect-error ts-migrate(2556) FIXME: Expected 4 arguments, but got 0 or more.
     (...data) => dispatch(contactsAddOrUpdate(...data)),
     [dispatch]
   );

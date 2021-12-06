@@ -1,7 +1,9 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 import { Docs } from '../../playground/Docs';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../playground/Guide' was resolved to '/... Remove this comment to see the full error message
 import { Guide } from '../../playground/Guide';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './MarkdownText' was resolved to '/Users/ni... Remove this comment to see the full error message
 import { MarkdownText } from './MarkdownText';
 
 const loremIpsum =
@@ -98,9 +100,19 @@ const docs: Docs = {
     {
       name: 'Basic usage',
       Example: () => (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Guide />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <MarkdownText>{markdown}</MarkdownText>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Guide />
         </>
       ),
@@ -109,11 +121,21 @@ const docs: Docs = {
     {
       name: 'Custom space',
       Example: () => (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Guide />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <MarkdownText nestedSpace={{ custom: 30 }} space="42px">
             {customSpaceMarkdown}
           </MarkdownText>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Guide />
         </>
       ),

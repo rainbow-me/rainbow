@@ -6,9 +6,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { RowWithMargins } from '../../../layout';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './ChartChangeDirectionArrow' was resolved ... Remove this comment to see the full error message
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
 import { useRatio } from './useRatio';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/animated-charts' o... Remove this comment to see the full error message
 import { useChartData } from '@rainbow-me/animated-charts';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 Animated.addWhitelistedNativeProps({ color: true });
@@ -22,10 +25,11 @@ const PercentLabel = styled(AnimatedTextInput)`
   font-variant: tabular-nums;
   letter-spacing: ${fonts.letterSpacing.roundedTightest};
   text-align: right;
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${android && `margin-vertical: -19px;`}
 `;
 
-function formatNumber(num) {
+function formatNumber(num: any) {
   'worklet';
   const first = num.split('.');
   const digits = first[0].split('').reverse();
@@ -42,8 +46,9 @@ function formatNumber(num) {
 export default function ChartPercentChangeLabel({
   overrideValue = false,
   latestChange,
-}) {
+}: any) {
   const { originalY, data } = useChartData();
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
 
   const firstValue = useSharedValue(data?.points?.[0]?.y);
@@ -63,6 +68,7 @@ export default function ChartPercentChangeLabel({
             return '';
           }
           return (
+            // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
             (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
             ' ' +
             formatNumber(Math.abs(value).toFixed(2)) +
@@ -75,6 +81,7 @@ export default function ChartPercentChangeLabel({
     lastValue.value = data?.points?.[data.points.length - 1]?.y;
   }, [data, firstValue, lastValue, latestChange, overrideValue]);
 
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '() => { text: string; }' is not ... Remove this comment to see the full error message
   const textProps = useAnimatedStyle(() => {
     return {
       text:
@@ -88,6 +95,7 @@ export default function ChartPercentChangeLabel({
                     100;
 
               return (
+                // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
                 (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
                 ' ' +
                 formatNumber(Math.abs(value).toFixed(2)) +
@@ -112,10 +120,16 @@ export default function ChartPercentChangeLabel({
   });
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <RowWithMargins align="center" margin={4}>
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
       {android ? <ChartChangeDirectionArrow /> : null}
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <PercentLabel
         alignSelf="flex-end"
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
         animatedProps={textProps}
         defaultValue={defaultValue}
         editable={false}

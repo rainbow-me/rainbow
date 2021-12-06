@@ -1,12 +1,14 @@
 import Clipboard from '@react-native-community/clipboard';
 import { useCallback, useEffect, useState } from 'react';
 import useAppState from './useAppState';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { deviceUtils } from '@rainbow-me/utils';
 
 const listeners = new Set();
 
-function setClipboard(content) {
+function setClipboard(content: any) {
   Clipboard.setString(content);
+  // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
   listeners.forEach(listener => listener(content));
 }
 
@@ -34,6 +36,7 @@ export default function useClipboard() {
     if (deviceUtils.isIOS14) {
       checkClipboard();
     } else {
+      // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
       getClipboard();
     }
   }, [checkClipboard, getClipboard]);
@@ -44,6 +47,7 @@ export default function useClipboard() {
       if (deviceUtils.isIOS14) {
         checkClipboard();
       } else {
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
         getClipboard();
       }
     }

@@ -13,7 +13,9 @@ import { ActivityIndicator, Alert } from 'react-native';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/Divider' was resolved to '/U... Remove this comment to see the full error message
 import Divider from '../components/Divider';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/Spinner' was resolved to '/U... Remove this comment to see the full error message
 import Spinner from '../components/Spinner';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row } from '../components/layout';
@@ -25,22 +27,35 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { GasFeeTypes, TransactionStatusTypes } from '@rainbow-me/entities';
 import {
   getProviderForNetwork,
   isEIP1559LegacyNetwork,
   toHex,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/utilities'... Remove this comment to see the full error message
 import { greaterThan } from '@rainbow-me/helpers/utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useAccountSettings, useDimensions, useGas } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/model/wallet' or i... Remove this comment to see the full error message
 import { sendTransaction } from '@rainbow-me/model/wallet';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/parsers' or its co... Remove this comment to see the full error message
 import { getTitle } from '@rainbow-me/parsers';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/data' or its... Remove this comment to see the full error message
 import { dataUpdateTransaction } from '@rainbow-me/redux/data';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/gas' or its ... Remove this comment to see the full error message
 import { updateGasFeeForSpeed } from '@rainbow-me/redux/gas';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { ethUnits } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { gasUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 const { CUSTOM, URGENT } = gasUtils;
@@ -64,14 +79,16 @@ const CenteredSheet = styled(Centered)`
   border-top-right-radius: 39;
 `;
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const ExtendedSheetBackground = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.white};
+  background-color: ${({ theme: { colors } }: any) => colors.white};
   height: 1000;
   position: absolute;
   bottom: -800;
   width: 100%;
 `;
 
+// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
     color: colors.alpha(colors.blueGreyDark, 0.3),
@@ -99,7 +116,7 @@ const text = {
   [SPEED_UP]: `This will speed up your pending transaction by replacing it. There’s still a chance your original transaction will confirm first!`,
 };
 
-const calcGasParamRetryValue = prevWeiValue => {
+const calcGasParamRetryValue = (prevWeiValue: any) => {
   const prevWeiValueBN = new BigNumber(prevWeiValue);
 
   const newWeiValueBN = prevWeiValueBN
@@ -126,6 +143,7 @@ export default function SpeedUpAndCancelSheet() {
   const calculatingGasLimit = useRef(false);
   const speedUrgentSelected = useRef(false);
   const {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type 'Readonly<o... Remove this comment to see the full error message
     params: { type, tx },
   } = useRoute();
   const [ready, setReady] = useState(false);
@@ -418,23 +436,33 @@ export default function SpeedUpAndCancelSheet() {
     offset.value = withSpring(0, springConfig);
   }, [offset]);
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
   const sheetHeight = ios
     ? (type === CANCEL_TX ? 491 : 442) + safeAreaInsetValues.bottom
     : 850 + safeAreaInsetValues.bottom;
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   const marginTop = android
     ? deviceHeight - sheetHeight + (type === CANCEL_TX ? 290 : 340)
     : null;
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors, isDarkMode } = useTheme();
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <SheetKeyboardAnimation
       as={AnimatedContainer}
       isKeyboardVisible={false}
       translateY={offset}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ExtendedSheetBackground />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <SlackSheet
         backgroundColor={colors.transparent}
         borderRadius={0}
@@ -442,17 +470,31 @@ export default function SpeedUpAndCancelSheet() {
         hideHandle
         scrollEnabled={false}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Column>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <AnimatedSheet
             backgroundColor={colors.white}
             borderRadius={39}
             direction="column"
             marginTop={marginTop}
+            // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
             paddingBottom={android ? 30 : 0}
           >
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <SheetHandleFixedToTop showBlur={false} />
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Centered direction="column">
               {!ready ? (
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                 <Column
                   align="center"
                   backgroundColor={colors.white}
@@ -461,11 +503,21 @@ export default function SpeedUpAndCancelSheet() {
                   marginBottom={12}
                   marginTop={30}
                 >
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                  unless the '--jsx' flag is provided... Remove this comment to
+                  see the full error message
                   <LoadingSpinner />
                 </Column>
               ) : (
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                 <Fragment>
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                  unless the '--jsx' flag is provided... Remove this comment to
+                  see the full error message
                   <Column marginBottom={12} marginTop={30}>
+                    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                    unless the '--jsx' flag is provided... Remove this comment
+                    to see the full error message
                     <Emoji
                       name={
                         type === CANCEL_TX ? 'skull_and_crossbones' : 'rocket'
@@ -473,21 +525,36 @@ export default function SpeedUpAndCancelSheet() {
                       size="biggest"
                     />
                   </Column>
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                  unless the '--jsx' flag is provided... Remove this comment to
+                  see the full error message
                   <Column marginBottom={12}>
+                    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                    unless the '--jsx' flag is provided... Remove this comment
+                    to see the full error message
                     <Text
                       align="center"
                       color={colors.dark}
                       size="big"
                       weight="heavy"
                     >
+                      // @ts-expect-error ts-migrate(7053) FIXME: Element
+                      implicitly has an 'any' type because expre... Remove this
+                      comment to see the full error message
                       {title[type]}
                     </Text>
                   </Column>
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                  unless the '--jsx' flag is provided... Remove this comment to
+                  see the full error message
                   <Column
                     marginBottom={30}
                     maxWidth={375}
                     paddingHorizontal={42}
                   >
+                    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                    unless the '--jsx' flag is provided... Remove this comment
+                    to see the full error message
                     <Text
                       align="center"
                       color={colors.alpha(colors.blueGreyDark, 0.5)}
@@ -495,21 +562,38 @@ export default function SpeedUpAndCancelSheet() {
                       size="large"
                       weight="regular"
                     >
+                      // @ts-expect-error ts-migrate(7053) FIXME: Element
+                      implicitly has an 'any' type because expre... Remove this
+                      comment to see the full error message
                       {text[type]}
                     </Text>
                   </Column>
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                  unless the '--jsx' flag is provided... Remove this comment to
+                  see the full error message
                   <Centered marginBottom={24}>
+                    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                    unless the '--jsx' flag is provided... Remove this comment
+                    to see the full error message
                     <Divider
                       color={colors.rowDividerExtraLight}
                       inset={[0, 143.5]}
                     />
                   </Centered>
                   {type === CANCEL_TX && (
+                    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                     <Column marginBottom={android && 15}>
+                      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use
+                      JSX unless the '--jsx' flag is provided... Remove this
+                      comment to see the full error message
                       <SheetActionButtonRow
                         ignorePaddingBottom
+                        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
                         ignorePaddingTop={ios}
                       >
+                        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use
+                        JSX unless the '--jsx' flag is provided... Remove this
+                        comment to see the full error message
                         <SheetActionButton
                           color={colors.red}
                           label="􀎽 Attempt Cancellation"
@@ -518,7 +602,13 @@ export default function SpeedUpAndCancelSheet() {
                           weight="bold"
                         />
                       </SheetActionButtonRow>
+                      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use
+                      JSX unless the '--jsx' flag is provided... Remove this
+                      comment to see the full error message
                       <SheetActionButtonRow ignorePaddingBottom>
+                        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use
+                        JSX unless the '--jsx' flag is provided... Remove this
+                        comment to see the full error message
                         <SheetActionButton
                           color={colors.white}
                           label="Close"
@@ -531,10 +621,16 @@ export default function SpeedUpAndCancelSheet() {
                     </Column>
                   )}
                   {type === SPEED_UP && (
+                    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                     <SheetActionButtonRow
+                      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
                       ignorePaddingBottom={ios}
+                      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
                       ignorePaddingTop={ios}
                     >
+                      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use
+                      JSX unless the '--jsx' flag is provided... Remove this
+                      comment to see the full error message
                       <SheetActionButton
                         color={colors.white}
                         label="Cancel"
@@ -543,6 +639,9 @@ export default function SpeedUpAndCancelSheet() {
                         textColor={colors.alpha(colors.blueGreyDark, 0.8)}
                         weight="bold"
                       />
+                      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use
+                      JSX unless the '--jsx' flag is provided... Remove this
+                      comment to see the full error message
                       <SheetActionButton
                         color={colors.appleBlue}
                         label="􀎽 Confirm"
@@ -552,7 +651,13 @@ export default function SpeedUpAndCancelSheet() {
                       />
                     </SheetActionButtonRow>
                   )}
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                  unless the '--jsx' flag is provided... Remove this comment to
+                  see the full error message
                   <GasSpeedButtonContainer>
+                    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                    unless the '--jsx' flag is provided... Remove this comment
+                    to see the full error message
                     <GasSpeedButton
                       currentNetwork={currentNetwork}
                       speeds={[URGENT, CUSTOM]}

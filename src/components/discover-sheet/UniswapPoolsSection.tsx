@@ -8,24 +8,38 @@ import { AssetListItemSkeleton } from '../asset-list';
 import { UniswapPoolListRow } from '../investment-cards';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './EdgeFade' was resolved to '/Users/nickby... Remove this comment to see the full error message
 import EdgeFade from './EdgeFade';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useAccountSettings, useUniswapPools } from '@rainbow-me/hooks';
 
 const INITIAL_PAGE_AMOUNT = 15;
 
 const flatListContainerStyle = { paddingBottom: 10 };
 
-const DefaultShowMoreButton = ({ backgroundColor, color, onPress }) => (
+const DefaultShowMoreButton = ({ backgroundColor, color, onPress }: any) => (
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   <Row justify="center">
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+    '--jsx' flag is provided... Remove this comment to see the full error
+    message
     <ButtonPressAnimation onPress={onPress}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Row
         backgroundColor={backgroundColor}
         borderRadius={18}
         height={36}
         paddingHorizontal={12}
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
         paddingTop={android ? 3 : 7}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Text align="center" color={color} size="lmedium" weight="heavy">
           Show more
         </Text>
@@ -34,8 +48,12 @@ const DefaultShowMoreButton = ({ backgroundColor, color, onPress }) => (
   </Row>
 );
 
-const ErrorMessage = ({ colors, children }) => (
+const ErrorMessage = ({ colors, children }: any) => (
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   <Centered marginVertical={50}>
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+    '--jsx' flag is provided... Remove this comment to see the full error
+    message
     <Text
       color={colors.alpha(colors.blueGreyDark, 0.3)}
       size="large"
@@ -50,6 +68,7 @@ const PoolEmoji = styled(Text).attrs({
   size: 'large',
   weight: 'heavy',
 })`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   margin-top: ${android ? 0 : -4};
 `;
 
@@ -64,15 +83,18 @@ const PoolListButton = styled(ButtonPressAnimation).attrs({
         border-radius: 12px;
         height: 30px;
         padding-horizontal: 8px;
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
         padding-top: ${ios ? 6.5 : 4.5}px;
       `
       : `
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
         padding-top: ${ios ? 6.5 : 4.5}px;
       `}
 `;
 
 const ListName = styled(Text)`
   margin-left: 3px;
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
   margin-top: ${ios ? -4.5 : 0}px;
 `;
 
@@ -95,7 +117,8 @@ const listData = [
   },
 ];
 
-const renderUniswapPoolListRow = ({ item }) => (
+const renderUniswapPoolListRow = ({ item }: any) => (
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   <UniswapPoolListRow assetType="uniswap" item={item} key={item.address} />
 );
 
@@ -106,8 +129,9 @@ export default function UniswapPools({
   ShowMoreButton = DefaultShowMoreButton,
   forceShowAll,
   alwaysShowMoreButton,
-}) {
+}: any) {
   const listRef = useRef(null);
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const { network } = useAccountSettings();
   const [showAllState, setShowAll] = useState(false);
@@ -135,6 +159,7 @@ export default function UniswapPools({
     (id, index) => {
       // This crashes the app on android
       // that's why it's disabled...
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       ios &&
         LayoutAnimation.configureNext(
           LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
@@ -149,6 +174,7 @@ export default function UniswapPools({
         setSelectedList(id);
         sortDirection === SORT_DIRECTION.ASC &&
           setSortDirection(SORT_DIRECTION.DESC);
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'scrollToIndex' does not exist on type 'n... Remove this comment to see the full error message
         listRef.current?.scrollToIndex({
           animated: true,
           index,
@@ -185,12 +211,12 @@ export default function UniswapPools({
     if (!pairs) return [];
 
     const sortedPairs = pairs
-      .filter(pair => {
+      .filter((pair: any) => {
         if (pair[selectedList] === 0) return false;
         if (pair[selectedList] <= 0.005 && pair[selectedList] > 0) return false;
         return selectedList !== 'profit30d' || pair.profit30d !== undefined;
       })
-      .map(item => ({
+      .map((item: any) => ({
         ...item,
         attribute: selectedList,
       }));
@@ -200,7 +226,7 @@ export default function UniswapPools({
 
   const pairsSorted = useMemo(() => {
     if (sortDirection === SORT_DIRECTION.ASC) {
-      allPairs.sort((a, b) => a[selectedList] - b[selectedList]);
+      allPairs.sort((a: any, b: any) => a[selectedList] - b[selectedList]);
     }
     if (!showAll) {
       return allPairs.slice(0, initialPageAmount);
@@ -211,6 +237,7 @@ export default function UniswapPools({
 
   const renderTypeItem = useCallback(
     ({ item: list, index }) => (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <PoolListButton
         disabled={pairsSorted.length === 1 && selectedList === list?.id}
         key={`list-${list?.id}`}
@@ -219,7 +246,13 @@ export default function UniswapPools({
         testID={`pools-list-${list?.id}`}
         titleColor={getTitleColor(selectedList === list?.id, list?.id)}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Row>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ListName
             color={getTitleColor(selectedList === list?.id, list?.id)}
             lineHeight="paragraphSmall"
@@ -250,16 +283,35 @@ export default function UniswapPools({
   }
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Column marginTop={25}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Row marginBottom={12} paddingHorizontal={19}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <PoolEmoji>🐋</PoolEmoji>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Text size="larger" testID="pools-section" weight="heavy">
           {' '}
           Uniswap Pools
         </Text>
       </Row>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Column>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Column>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <FlatList
             contentContainerStyle={{
               paddingBottom: 10,
@@ -274,28 +326,39 @@ export default function UniswapPools({
             showsHorizontalScrollIndicator={false}
             testID={`pools-section-${selectedList}`}
           />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <EdgeFade />
         </Column>
       </Column>
       {error ? (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <ErrorMessage colors={colors}>
           There was an error loading Uniswap pool data...
         </ErrorMessage>
       ) : network !== networkTypes.mainnet ? (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <ErrorMessage colors={colors}>
           Pools are disabled on Testnets
         </ErrorMessage>
       ) : pairsSorted?.length > 0 ? (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <Fragment>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <FlatList
             contentContainerStyle={flatListContainerStyle}
             data={pairsSorted}
+            // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
             keyExtractor={(item, index) => index}
             renderItem={renderUniswapPoolListRow}
             scrollsToTop={false}
           />
           {(!showAll || alwaysShowMoreButton) &&
             initialPageAmount < allPairs.length && (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <ShowMoreButton
                 backgroundColor={colors.alpha(colors.blueGreyDark, 0.06)}
                 color={colors.alpha(colors.blueGreyDark, 0.6)}
@@ -306,6 +369,7 @@ export default function UniswapPools({
         </Fragment>
       ) : (
         times(3, index => (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <AssetListItemSkeleton
             animated
             descendingOpacity

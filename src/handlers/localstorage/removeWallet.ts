@@ -5,9 +5,10 @@ import { accountLocalKeys } from './accountLocal';
 import { getKey } from './common';
 import { uniswapAccountLocalKeys } from './uniswap';
 import { walletConnectAccountLocalKeys } from './walletconnectRequests';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
-export const removeWalletData = async accountAddress => {
+export const removeWalletData = async (accountAddress: any) => {
   logger.log('[remove wallet]', accountAddress);
   const allPrefixes = concat(
     accountLocalKeys,

@@ -1,6 +1,7 @@
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
-const compareInputs = (oldInputs, newInputs, prefix) => {
+const compareInputs = (oldInputs: any, newInputs: any, prefix: any) => {
   // Edge-case: different array lengths
   if (oldInputs.length !== newInputs.length) {
     // Not helpful to compare item by item, so just output the whole array
@@ -15,7 +16,7 @@ const compareInputs = (oldInputs, newInputs, prefix) => {
   }
 
   // Compare individual items
-  oldInputs.forEach((oldInput, index) => {
+  oldInputs.forEach((oldInput: any, index: any) => {
     const newInput = newInputs[index];
     if (oldInput !== newInput) {
       logger.log(`${prefix} - The input changed in position ${index}`);
@@ -25,9 +26,11 @@ const compareInputs = (oldInputs, newInputs, prefix) => {
   });
 };
 
-const useEffectDebugger = (func, inputs, prefix = 'useEffect') => {
+const useEffectDebugger = (func: any, inputs: any, prefix = 'useEffect') => {
   // Using a ref to hold the inputs from the previous run (or same run for initial run
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useRef'.
   const oldInputsRef = useRef(inputs);
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useEffect'.
   useEffect(() => {
     // Get the old inputs
     const oldInputs = oldInputsRef.current;

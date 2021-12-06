@@ -3,6 +3,7 @@ import { isValidAddress } from 'ethereumjs-util';
 import { keys } from 'lodash';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, InteractionManager, Keyboard } from 'react-native';
+// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import useAccountSettings from './useAccountSettings';
 import useInitializeWallet from './useInitializeWallet';
@@ -14,17 +15,25 @@ import useWallets from './useWallets';
 import {
   resolveUnstoppableDomain,
   web3Provider,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/web3';
 import {
   isENSAddressFormat,
   isUnstoppableAddressFormat,
   isValidWallet,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/validators... Remove this comment to see the full error message
 } from '@rainbow-me/helpers/validators';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/walletBack... Remove this comment to see the full error message
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/walletLoad... Remove this comment to see the full error message
 import walletLoadingStates from '@rainbow-me/helpers/walletLoadingStates';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils, sanitizeSeedPhrase } from '@rainbow-me/utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 export default function useImportingWallet() {
@@ -47,11 +56,14 @@ export default function useImportingWallet() {
   const inputRef = useRef(null);
 
   useEffect(() => {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android &&
       setTimeout(() => {
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
         inputRef.current?.focus();
       }, 500);
   }, []);
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 2-3 arguments, but got 1.
   const { handleFocus } = useMagicAutofocus(inputRef);
 
   const isSecretValid = useMemo(() => {
@@ -76,6 +88,7 @@ export default function useImportingWallet() {
 
   const showWalletProfileModal = useCallback(
     (name, forceColor, address = null) => {
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
       android && Keyboard.dismiss();
       navigate(Routes.MODAL_SCREEN, {
         actionType: 'Import',
@@ -84,7 +97,7 @@ export default function useImportingWallet() {
         asset: [],
         forceColor,
         isNewProfile: true,
-        onCloseModal: ({ color, name }) => {
+        onCloseModal: ({ color, name }: any) => {
           if (color !== null) setColor(color);
           if (name) setName(name);
           handleSetImporting(true);
@@ -108,7 +121,7 @@ export default function useImportingWallet() {
           : null;
       if ((!isSecretValid || !seedPhrase) && !forceAddress) return null;
       const input = sanitizeSeedPhrase(seedPhrase || forceAddress);
-      let name = null;
+      let name: any = null;
       // Validate ENS
       if (isENSAddressFormat(input)) {
         try {
@@ -199,12 +212,14 @@ export default function useImportingWallet() {
 
   useEffect(() => {
     if (!wasImporting && isImporting) {
+      // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
       startAnalyticsTimeout(async () => {
         const input = resolvedAddress
           ? resolvedAddress
           : sanitizeSeedPhrase(seedPhrase);
 
         const previousWalletCount = keys(wallets).length;
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 7 arguments, but got 6.
         initializeWallet(
           input,
           color,
@@ -250,7 +265,9 @@ export default function useImportingWallet() {
             } else {
               // Wait for error messages then refocus
               setTimeout(() => {
+                // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
                 inputRef.current?.focus();
+                // @ts-expect-error ts-migrate(2554) FIXME: Expected 7 arguments, but got 0.
                 initializeWallet();
               }, 100);
             }
@@ -259,7 +276,9 @@ export default function useImportingWallet() {
             handleSetImporting(false);
             logger.error('error importing seed phrase: ', error);
             setTimeout(() => {
+              // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
               inputRef.current?.focus();
+              // @ts-expect-error ts-migrate(2554) FIXME: Expected 7 arguments, but got 0.
               initializeWallet();
             }, 100);
           });
@@ -278,7 +297,9 @@ export default function useImportingWallet() {
     replace,
     resolvedAddress,
     seedPhrase,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
     selectedWallet.id,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
     selectedWallet.type,
     startAnalyticsTimeout,
     wallets,

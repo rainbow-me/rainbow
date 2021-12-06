@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/animated-charts' o... Remove this comment to see the full error message
 import { useChartData } from '@rainbow-me/animated-charts';
-function useReactiveSharedValue(prop) {
+function useReactiveSharedValue(prop: any) {
   const sharedValue = useSharedValue(prop);
   useEffect(() => {
     sharedValue.value = prop;

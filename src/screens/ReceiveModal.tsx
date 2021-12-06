@@ -4,19 +4,26 @@ import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/TouchableBackdrop' was resol... Remove this comment to see the full error message
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { CopyFloatingEmojis } from '../components/floating-emojis';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/qr-code/QRCode' was resolved... Remove this comment to see the full error message
 import QRCode from '../components/qr-code/QRCode';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/qr-code/ShareButton' was res... Remove this comment to see the full error message
 import ShareButton from '../components/qr-code/ShareButton';
 import { SheetHandle } from '../components/sheet';
 import { Text, TruncatedAddress } from '../components/text';
 import { CopyToast, ToastPositionContainer } from '../components/toasts';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../navigation/Navigation' was resolved to ... Remove this comment to see the full error message
 import { useNavigation } from '../navigation/Navigation';
 import { abbreviations, deviceUtils } from '../utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useAccountProfile } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding, shadow } from '@rainbow-me/styles';
 
+// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
 const QRCodeSize = ios ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
 
 const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
@@ -59,7 +66,7 @@ const NameText = styled(Text).attrs(({ theme: { colors } }) => ({
   weight: 'bold',
 }))``;
 
-const accountAddressSelector = state => state.settings.accountAddress;
+const accountAddressSelector = (state: any) => state.settings.accountAddress;
 const lowercaseAccountAddressSelector = createSelector(
   accountAddressSelector,
   toLower
@@ -77,30 +84,68 @@ export default function ReceiveModal() {
     setCopyCount(count => count + 1);
   }, []);
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const checksummedAddress = useMemo(() => toChecksumAddress(accountAddress), [
     accountAddress,
   ]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container testID="receive-modal">
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <TouchableBackdrop onPress={goBack} />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Handle />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ColumnWithMargins align="center" margin={24}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <QRWrapper>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <QRCode size={QRCodeSize} value={checksummedAddress} />
         </QRWrapper>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <CopyFloatingEmojis
           onPress={handleCopiedText}
           textToCopy={checksummedAddress}
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ColumnWithMargins margin={2}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <NameText>{accountName}</NameText>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <AddressText address={checksummedAddress} />
           </ColumnWithMargins>
         </CopyFloatingEmojis>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ShareButton accountAddress={checksummedAddress} />
       </ColumnWithMargins>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ToastPositionContainer>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <CopyToast copiedText={copiedText} copyCount={copyCount} />
       </ToastPositionContainer>
     </Container>

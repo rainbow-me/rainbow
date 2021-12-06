@@ -4,11 +4,15 @@ import { Linking } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../navigation/Navigation' was resolved to ... Remove this comment to see the full error message
 import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
 import useWallets from './useWallets';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/wallets' or ... Remove this comment to see the full error message
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { buildRainbowUrl, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 export default () => {
@@ -26,9 +30,12 @@ export default () => {
   const onAvatarRemovePhoto = useCallback(async () => {
     const newWallets = {
       ...wallets,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
       [selectedWallet.id]: {
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
         ...wallets[selectedWallet.id],
         addresses: wallets[
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
           selectedWallet.id
         ].addresses.map((account: RainbowAccount) =>
           toLower(account.address) === toLower(accountAddress)
@@ -38,6 +45,7 @@ export default () => {
       },
     };
 
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
     dispatch(walletsSetSelected(newWallets[selectedWallet.id]));
     await dispatch(walletsUpdate(newWallets));
   }, [dispatch, selectedWallet, accountAddress, wallets]);
@@ -47,9 +55,12 @@ export default () => {
       const stringIndex = image?.path.indexOf('/tmp');
       const newWallets = {
         ...wallets,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
         [selectedWallet.id]: {
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
           ...wallets[selectedWallet.id],
           addresses: wallets[
+            // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
             selectedWallet.id
           ].addresses.map((account: RainbowAccount) =>
             toLower(account.address) === toLower(accountAddress)
@@ -59,9 +70,11 @@ export default () => {
         },
       };
 
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
       dispatch(walletsSetSelected(newWallets[selectedWallet.id]));
       dispatch(walletsUpdate(newWallets));
     },
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'id' does not exist on type '{}'.
     [accountAddress, dispatch, selectedWallet.id, wallets]
   );
 
@@ -91,6 +104,7 @@ export default () => {
       'Choose from Library',
       ...(!accountImage ? ['Pick an Emoji'] : []),
       ...(accountImage ? ['Remove Photo'] : []),
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       ...(ios ? ['Cancel'] : []),
     ];
 

@@ -4,8 +4,11 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import useUniswapPairs from './useUniswapPairs';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/uniswap' ... Remove this comment to see the full error message
 import { getTokenForCurrency } from '@rainbow-me/handlers/uniswap';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/store' or it... Remove this comment to see the full error message
 import { AppState } from '@rainbow-me/redux/store';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/swap' or its... Remove this comment to see the full error message
 import { SwapModalField } from '@rainbow-me/redux/swap';
 import {
   convertAmountFromNativeValue,
@@ -14,7 +17,9 @@ import {
   convertNumberToString,
   isZero,
   updatePrecisionToDisplay,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utilities' or its ... Remove this comment to see the full error message
 } from '@rainbow-me/utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils } from '@rainbow-me/utils';
 
 enum DisplayValue {

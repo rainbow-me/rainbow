@@ -31,34 +31,48 @@ const capsize = (options: Parameters<typeof precomputeValues>[0]) => {
 export const fonts = {
   SFProRounded: {
     regular: {
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Regular',
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       fontWeight: ios ? fontWeights.regular : 'normal',
     },
     medium: {
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Medium',
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       fontWeight: ios ? fontWeights.medium : 'normal',
     },
     semibold: {
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Semibold',
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       fontWeight: ios ? fontWeights.semibold : 'normal',
     },
     bold: {
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Bold',
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       fontWeight: ios ? fontWeights.bold : 'normal',
     },
     heavy: {
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       fontFamily: ios ? 'SF Pro Rounded' : 'SF-Pro-Rounded-Heavy',
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       fontWeight: ios ? fontWeights.heavy : 'normal',
     },
   },
 
   SFMono: {
     regular: {
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       fontFamily: ios ? 'SF Mono' : 'SFMono-Regular',
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       fontWeight: ios ? fontWeights.regular : 'normal',
     },
     medium: {
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       fontFamily: ios ? 'SF Mono' : 'SFMono-Medium',
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       fontWeight: ios ? fontWeights.medium : 'normal',
     },
   },
@@ -99,6 +113,7 @@ const createTextSize = ({
     }),
   } as const;
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
   const marginCorrectionForPlatform = marginCorrection[ios ? 'ios' : 'android'];
 
   return {

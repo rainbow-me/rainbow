@@ -14,7 +14,7 @@ export default function FlyInAnimation({
   duration = 175,
   style,
   ...props
-}) {
+}: any) {
   const opacity = useTimingTransition(true, {
     duration,
     easing: EasingNode.bezier(0.165, 0.84, 0.44, 1),
@@ -26,6 +26,7 @@ export default function FlyInAnimation({
   });
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <AnimatedContainer
       {...props}
       style={[style, { opacity, transform: [{ translateY }] }]}

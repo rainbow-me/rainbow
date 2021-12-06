@@ -1,35 +1,48 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../ChainLogo' was resolved to '/Users/nick... Remove this comment to see the full error message
 import ChainLogo from '../ChainLogo';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../NetworkPill' was resolved to '/Users/ni... Remove this comment to see the full error message
 import NetworkPill from '../NetworkPill';
 import { RequestVendorLogoIcon } from '../coin-icon';
 import { ContactAvatar } from '../contacts';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../contacts/ImageAvatar' was resolved to '... Remove this comment to see the full error message
 import ImageAvatar from '../contacts/ImageAvatar';
 import { ContextMenuButton } from '../context-menu';
 import { Centered, Column, ColumnWithMargins, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/accountInf... Remove this comment to see the full error message
 import { getAccountProfileInfo } from '@rainbow-me/helpers/accountInfo';
 import {
   dappLogoOverride,
   dappNameOverride,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/dappNameHa... Remove this comment to see the full error message
 } from '@rainbow-me/helpers/dappNameHandler';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/findWallet... Remove this comment to see the full error message
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkInf... Remove this comment to see the full error message
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   androidShowNetworksActionSheet,
   changeConnectionMenuItems,
   NETWORK_MENU_ACTION_KEY_FILTER,
   networksMenuItems,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/walletConn... Remove this comment to see the full error message
 } from '@rainbow-me/helpers/walletConnectNetworks';
 import {
   useAccountSettings,
   useWalletConnectConnections,
   useWallets,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const ContainerPadding = 15;
@@ -68,12 +81,13 @@ export default function WalletConnectListItem({
   dappIcon,
   dappName,
   dappUrl,
-}) {
+}: any) {
   const {
     walletConnectDisconnectAllByDappUrl,
     walletConnectUpdateSessionConnectorByDappUrl,
   } = useWalletConnectConnections();
   const { goBack } = useNavigation();
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const { wallets, walletNames } = useWallets();
   const { network } = useAccountSettings();
@@ -112,7 +126,7 @@ export default function WalletConnectListItem({
   const handlePressChangeWallet = useCallback(() => {
     Navigation.handleAction(Routes.CHANGE_WALLET_SHEET, {
       currentAccountAddress: account,
-      onChangeWallet: address => {
+      onChangeWallet: (address: any) => {
         walletConnectUpdateSessionConnectorByDappUrl(dappUrl, address, chainId);
         goBack();
       },
@@ -133,9 +147,9 @@ export default function WalletConnectListItem({
         showSeparators: true,
         title: overrideName || dappName,
       },
-      idx => {
+      (idx: any) => {
         if (idx === 0 && networksAvailable.length > 1) {
-          androidShowNetworksActionSheet(({ chainId }) => {
+          androidShowNetworksActionSheet(({ chainId }: any) => {
             walletConnectUpdateSessionConnectorByDappUrl(
               dappUrl,
               account,
@@ -196,40 +210,69 @@ export default function WalletConnectListItem({
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ContextMenuButton
       menuItems={changeConnectionMenuItems()}
       menuTitle={overrideName || dappName}
       onPressAndroid={onPressAndroid}
       onPressMenuItem={handleOnPressMenuItem}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Row align="center" height={WalletConnectListItemHeight}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Row
           align="center"
           css={padding(ContainerPadding, 0, ContainerPadding, ContainerPadding)}
           flex={1}
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <RequestVendorLogoIcon
             backgroundColor={colors.white}
             dappName={dappName}
             imageUrl={overrideLogo || dappIcon}
             size={VendorLogoIconSize}
           />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ColumnWithMargins css={padding(0, 19, 0, 12)} flex={1} margin={5}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Row width="70%">
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TruncatedText size="lmedium" weight="heavy">
                 {overrideName || dappName || 'Unknown Application'}{' '}
               </TruncatedText>
             </Row>
-
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <SessionRow>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Centered>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <AvatarWrapper>
                   {approvalAccountInfo.accountImage ? (
+                    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                     <ImageAvatar
                       image={approvalAccountInfo.accountImage}
                       size="smaller"
                     />
                   ) : (
+                    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                     <ContactAvatar
                       color={
                         isNaN(approvalAccountInfo.accountColor)
@@ -241,6 +284,9 @@ export default function WalletConnectListItem({
                     />
                   )}
                 </AvatarWrapper>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <TruncatedText
                   size="medium"
                   style={{ color: colors.alpha(colors.blueGreyDark, 0.6) }}
@@ -251,14 +297,26 @@ export default function WalletConnectListItem({
               </Centered>
             </SessionRow>
           </ColumnWithMargins>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ContextMenuButton
             menuItems={networksMenuItems()}
             menuTitle="Change Network"
             onPressAndroid={onPressAndroid}
             onPressMenuItem={handleOnPressMenuItem}
           >
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <NetworkPill mainnet={connectionNetworkInfo.value === 'mainnet'}>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <ChainLogo network={connectionNetworkInfo.value} />
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <LabelText
                 color={
                   connectionNetworkInfo.value === 'mainnet'

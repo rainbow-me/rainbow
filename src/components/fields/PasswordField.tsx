@@ -1,12 +1,17 @@
 import React, { useCallback } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../context/ThemeContext' was resolved t... Remove this comment to see the full error message
 import { useTheme } from '../../context/ThemeContext';
 import { Icon } from '../icons';
 import { Input } from '../inputs';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/cloudBack... Remove this comment to see the full error message
 import { cloudBackupPasswordMinLength } from '@rainbow-me/handlers/cloudBackup';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useDimensions } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding, position } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'react-native-shadow-stack' or ... Remove this comment to see the full error message
 import ShadowStack from 'react-native-shadow-stack';
 
 const FieldAccessoryBadgeSize = 22;
@@ -26,10 +31,15 @@ const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(
 `;
 
 const StyledTouchable = styled(TouchableWithoutFeedback)`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${android ? 'padding-left: 30;' : ''}
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${android ? 'padding-right: 30;' : ''}
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${android ? 'padding-top: 30;' : ''}
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${android ? 'padding-bottom: 30;' : ''}
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${android ? 'margin-top: -30;' : ''}
 `;
 
@@ -63,9 +73,13 @@ const ShadowContainer = styled(ShadowStack).attrs(
   elevation: 15;
 `;
 
-function FieldAccessoryBadge({ color, name }) {
+function FieldAccessoryBadge({ color, name }: any) {
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <FieldAccessoryBadgeWrapper color={color}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Icon color={color} name={name} size={FieldAccessoryBadgeSize} />
     </FieldAccessoryBadgeWrapper>
   );
@@ -80,20 +94,27 @@ const PasswordField = (
     style,
     textContentType = 'password',
     ...props
-  },
-  ref
+  }: any,
+  ref: any
 ) => {
   const { width: deviceWidth } = useDimensions();
   const handleFocus = useCallback(() => ref?.current?.focus?.(), [ref]);
   const { isDarkMode, colors } = useTheme();
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <StyledTouchable onPress={handleFocus}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ShadowContainer
         deviceWidth={deviceWidth}
         isDarkMode={isDarkMode}
         style={style}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <PasswordInput
           ref={ref}
           returnKeyType={returnKeyType}
@@ -102,9 +123,11 @@ const PasswordField = (
           {...props}
         />
         {isValid && (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <FieldAccessoryBadge color={colors.green} name="checkmarkCircled" />
         )}
         {isInvalid && (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <FieldAccessoryBadge
             color={colors.orangeLight}
             name="warningCircled"

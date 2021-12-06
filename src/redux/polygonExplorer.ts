@@ -4,21 +4,28 @@ import isEqual from 'react-fast-compare';
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
 import { emitAssetRequest, emitChartsRequest } from './explorer';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { AssetTypes } from '@rainbow-me/entities';
 //import networkInfo from '@rainbow-me/helpers/networkInfo';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/covalent'... Remove this comment to see the full error message
 import { getAssetsFromCovalent } from '@rainbow-me/handlers/covalent';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkInf... Remove this comment to see the full error message
 import networkInfo from '@rainbow-me/helpers/networkInfo';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   COVALENT_ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
   MATIC_POLYGON_ADDRESS,
   WETH_ADDRESS,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils } from '@rainbow-me/utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
-let lastUpdatePayload = null;
+let lastUpdatePayload: any = null;
 // -- Constants --------------------------------------- //
 const POLYGON_EXPLORER_CLEAR_STATE = 'explorer/POLYGON_EXPLORER_CLEAR_STATE';
 const POLYGON_EXPLORER_SET_BALANCE_HANDLER =
@@ -30,7 +37,7 @@ const network = networkTypes.polygon;
 let tokenMapping = {};
 
 const fetchAssetsMapping = async () => {
-  const fetchPage = async page => {
+  const fetchPage = async (page: any) => {
     try {
       const limit = 200;
       const url = `https://tokenmapper.api.matic.today/api/v1/mapping?map_type=[%22POS%22]&chain_id=137&limit=${limit}&offset=${
@@ -50,7 +57,7 @@ const fetchAssetsMapping = async () => {
 
   let next = true;
   let page = 0;
-  let fullMapping = [];
+  let fullMapping: any = [];
   while (next) {
     const pageData = await fetchPage(page);
     next = pageData.has_next_page;
@@ -61,25 +68,28 @@ const fetchAssetsMapping = async () => {
   }
 
   const mapping = {};
+  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'mappingData' implicitly has an 'any' ty... Remove this comment to see the full error message
   fullMapping.forEach(mappingData => {
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     mapping[`${toLower(mappingData.child_token)}`] = mappingData.root_token;
   });
   return mapping;
 };
 
 const getPolygonAssetsFromCovalent = async (
-  chainId,
-  accountAddress,
-  type,
-  currency,
-  coingeckoIds,
-  allAssets,
-  genericAssets
+  chainId: any,
+  accountAddress: any,
+  type: any,
+  currency: any,
+  coingeckoIds: any,
+  allAssets: any,
+  genericAssets: any
 ) => {
   const data = await getAssetsFromCovalent(chainId, accountAddress, currency);
   if (data) {
     const updatedAt = new Date(data.updated_at).getTime();
-    const assets = data.items.map(item => {
+    const assets = data.items.map((item: any) => {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       let mainnetAddress = tokenMapping[toLower(item.contract_address)];
       let coingeckoId = coingeckoIds[toLower(mainnetAddress)];
       let price = {
@@ -134,7 +144,10 @@ const getPolygonAssetsFromCovalent = async (
   return null;
 };
 
-export const polygonExplorerInit = () => async (dispatch, getState) => {
+export const polygonExplorerInit = () => async (
+  dispatch: any,
+  getState: any
+) => {
   if (networkInfo[networkTypes.polygon]?.disabled) return;
   const { accountAddress, nativeCurrency } = getState().settings;
   const { assets: allAssets, genericAssets } = getState().data;
@@ -170,14 +183,15 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
     }
 
     const tokenAddresses = assets.map(
-      ({ asset: { asset_code } }) => asset_code
+      ({ asset: { asset_code } }: any) => asset_code
     );
 
     dispatch(emitAssetRequest(tokenAddresses));
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 1.
     dispatch(emitChartsRequest(tokenAddresses));
 
     const prices = await fetchAssetPricesWithCoingecko(
-      assets.map(({ asset: { coingecko_id } }) => coingecko_id),
+      assets.map(({ asset: { coingecko_id } }: any) => coingecko_id),
       formattedNativeCurrency
     );
 
@@ -234,7 +248,10 @@ export const polygonExplorerInit = () => async (dispatch, getState) => {
   fetchAssetsBalancesAndPrices();
 };
 
-export const polygonExplorerClearState = () => (dispatch, getState) => {
+export const polygonExplorerClearState = () => (
+  dispatch: any,
+  getState: any
+) => {
   const {
     polygonExplorerBalancesHandle,
     polygonExplorerAssetsHandle,
@@ -251,7 +268,7 @@ const INITIAL_STATE = {
   polygonExplorerBalancesHandle: null,
 };
 
-export default (state = INITIAL_STATE, action) => {
+export default (state = INITIAL_STATE, action: any) => {
   switch (action.type) {
     case POLYGON_EXPLORER_CLEAR_STATE:
       return {

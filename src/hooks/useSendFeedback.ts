@@ -1,6 +1,7 @@
 import Clipboard from '@react-native-community/clipboard';
 import { debounce } from 'lodash';
 import { useCallback } from 'react';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import Mailer from 'react-native-mail';
 import { Alert } from '../components/alerts';
 import useAppVersion from './useAppVersion';
@@ -32,9 +33,10 @@ const handleMailError = debounce(
   250
 );
 
-function feedbackEmailOptions(appVersion) {
+function feedbackEmailOptions(appVersion: any) {
   return {
     recipients: [FeedbackEmailAddress],
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
     subject: `🌈️ Rainbow Feedback - ${ios ? 'iOS' : 'Android'} ${appVersion}`,
   };
 }

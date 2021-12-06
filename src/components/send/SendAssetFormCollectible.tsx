@@ -5,7 +5,9 @@ import styled from 'styled-components';
 import { OpacityToggler } from '../animations';
 import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token';
 import { Column } from '../layout';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useDimensions, useImageMetadata } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding, position } from '@rainbow-me/styles';
 
 const defaultImageDimensions = { height: 512, width: 512 };
@@ -32,6 +34,7 @@ const NFTWrapper = styled(Column).attrs({
 `;
 
 const Gradient = styled(LinearGradient).attrs(
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'isTallPhone' does not exist on type 'Lin... Remove this comment to see the full error message
   ({ isTallPhone, theme: { colors } }) => ({
     colors: colors.gradients.sendBackground,
     end: { x: 0.5, y: isTallPhone ? 0.2 : 0.4 },
@@ -54,7 +57,7 @@ export default function SendAssetFormCollectible({
   buttonRenderer,
   txSpeedRenderer,
   ...props
-}) {
+}: any) {
   const {
     height: deviceHeight,
     isTallPhone,
@@ -102,7 +105,9 @@ export default function SendAssetFormCollectible({
   const handleLayout = useCallback(
     ({ nativeEvent: { layout } }) => {
       const newContainerHeight = layout.height - layout.y * 2;
+      // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
       setIsGradientVisible(newContainerHeight < containerHeight);
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number' is not assignable to par... Remove this comment to see the full error message
       setContainerHeight(newContainerHeight);
       setContainerWidth(layout.width);
     },
@@ -110,10 +115,18 @@ export default function SendAssetFormCollectible({
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Column align="end" flex={1} width="100%">
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <NFTWrapper onLayout={handleLayout}>
           {!!containerHeight && !!containerWidth && (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <UniqueTokenExpandedStateContent
               {...props}
               asset={asset}
@@ -126,12 +139,24 @@ export default function SendAssetFormCollectible({
             />
           )}
         </NFTWrapper>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Footer>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ButtonWrapper isTallPhone={isTallPhone}>
             {buttonRenderer}
             {txSpeedRenderer}
           </ButtonWrapper>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <GradientToggler isVisible={!isGradientVisible}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Gradient isTallPhone={isTallPhone} />
           </GradientToggler>
         </Footer>

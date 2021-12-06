@@ -14,6 +14,7 @@ export default function useCoinListEditOptions() {
 
   const editData = useSelector(
     ({
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'editOptions' does not exist on type 'Def... Remove this comment to see the full error message
       editOptions: {
         currentAction,
         hiddenCoins,
@@ -44,6 +45,7 @@ export default function useCoinListEditOptions() {
   );
 
   const setHiddenCoins = useCallback(
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
     data => dispatch(rawSetHiddenCoins(data)),
     [dispatch]
   );
@@ -54,6 +56,7 @@ export default function useCoinListEditOptions() {
   );
 
   const setPinnedCoins = useCallback(
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
     data => dispatch(rawSetPinnedCoins(data)),
     [dispatch]
   );

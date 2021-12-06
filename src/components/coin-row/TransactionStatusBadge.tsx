@@ -1,11 +1,15 @@
 import { includes } from 'lodash';
 import React from 'react';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../Spinner' was resolved to '/Users/nickby... Remove this comment to see the full error message
 import Spinner from '../Spinner';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text } from '../text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { TransactionStatusTypes } from '@rainbow-me/entities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { magicMemo } from '@rainbow-me/utils';
 
 const StatusProps = {
@@ -84,7 +88,8 @@ const StatusProps = {
   },
 };
 
-const TransactionStatusBadge = ({ pending, status, style, title }) => {
+const TransactionStatusBadge = ({ pending, status, style, title }: any) => {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const isSwapping = status === TransactionStatusTypes.swapping;
 
@@ -100,20 +105,26 @@ const TransactionStatusBadge = ({ pending, status, style, title }) => {
   }
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Row align="center" style={style}>
       {pending && (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <Spinner
           color={isSwapping ? colors.swapPurple : colors.appleBlue}
           size={12}
         />
       )}
       {status && includes(Object.keys(StatusProps), status) && (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <Icon
           color={statusColor}
           style={position.maxSizeAsObject(10)}
           {...StatusProps[status]}
         />
       )}
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Text color={statusColor} size="smedium" weight="semibold">
         {title}
       </Text>

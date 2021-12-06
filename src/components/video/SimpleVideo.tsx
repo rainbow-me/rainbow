@@ -12,12 +12,15 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-// @ts-ignore
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import Video from 'react-native-video';
 import convertToProxyURL from 'react-native-video-cache';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/images' or its cor... Remove this comment to see the full error message
 import { ImgixImage } from '@rainbow-me/images';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 export type SimpleVideoProps = {
@@ -93,11 +96,21 @@ export default function SimpleVideo({
     };
   }, [ref]);
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <TouchableWithoutFeedback
       onPress={() => !controlsEnabled && setControlsEnabled(true)}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <View style={[styles.flex, StyleSheet.flatten(style)]}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <StyledBackground />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <StyledVideo
           controls={controlsEnabled}
           onLoad={() => setLoading(false)}
@@ -106,10 +119,16 @@ export default function SimpleVideo({
           resizeMode="cover"
           source={source}
         />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <StyledPosterContainer
           pointerEvents={loading ? 'auto' : 'none'}
           style={{ opacity }}
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <StyledImgixImage source={{ uri: posterUri }} />
         </StyledPosterContainer>
       </View>

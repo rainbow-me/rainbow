@@ -1,5 +1,5 @@
 export default function simplifyData(
-  data,
+  data: any,
   pickRange = 10,
   includeExtremes = true
 ) {
@@ -23,7 +23,7 @@ export default function simplifyData(
   }
 
   return data.filter(
-    (_, i) =>
+    (_: any, i: any) =>
       i % pickRange === 0 ||
       i === min ||
       i === max ||

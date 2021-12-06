@@ -1,4 +1,7 @@
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/config/debug' or i... Remove this comment to see the full error message
+import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'sock... Remove this comment to see the full error message
 import io from 'socket.io-client';
 import config from '../model/config';
 // eslint-disable-next-line import/no-cycle
@@ -24,17 +27,23 @@ import { optimismExplorerInit } from './optimismExplorer';
 // eslint-disable-next-line import/no-cycle
 import { polygonExplorerInit } from './polygonExplorer';
 import { updateTopMovers } from './topMovers';
-import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 import { getProviderForNetwork, isHardHat } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/chartTypes... Remove this comment to see the full error message
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/currencyTy... Remove this comment to see the full error message
 import currencyTypes from '@rainbow-me/helpers/currencyTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   DPI_ADDRESS,
   ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { TokensListenedCache } from '@rainbow-me/utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -44,7 +53,7 @@ const EXPLORER_ENABLE_FALLBACK = 'explorer/EXPLORER_ENABLE_FALLBACK';
 const EXPLORER_DISABLE_FALLBACK = 'explorer/EXPLORER_DISABLE_FALLBACK';
 const EXPLORER_SET_FALLBACK_HANDLER = 'explorer/EXPLORER_SET_FALLBACK_HANDLER';
 
-let assetInfoHandle = null;
+let assetInfoHandle: any = null;
 
 const TRANSACTIONS_LIMIT = 250;
 const ZERION_ASSETS_TIMEOUT = 15000; // 15 seconds
@@ -85,7 +94,7 @@ const messages = {
 };
 
 // -- Actions ---------------------------------------- //
-const createSocket = endpoint =>
+const createSocket = (endpoint: any) =>
   io(`${config.data_endpoint}/${endpoint}`, {
     extraHeaders: { origin: config.data_origin },
     query: {
@@ -94,7 +103,11 @@ const createSocket = endpoint =>
     transports: ['websocket'],
   });
 
-const addressSubscription = (address, currency, action = 'subscribe') => [
+const addressSubscription = (
+  address: any,
+  currency: any,
+  action = 'subscribe'
+) => [
   action,
   {
     payload: {
@@ -106,7 +119,7 @@ const addressSubscription = (address, currency, action = 'subscribe') => [
   },
 ];
 
-const portfolioSubscription = (address, currency, action = 'get') => [
+const portfolioSubscription = (address: any, currency: any, action = 'get') => [
   action,
   {
     payload: {
@@ -119,8 +132,8 @@ const portfolioSubscription = (address, currency, action = 'get') => [
 ];
 
 const assetPricesSubscription = (
-  tokenAddresses,
-  currency,
+  tokenAddresses: any,
+  currency: any,
   action = 'subscribe'
 ) => {
   const assetCodes = concat(
@@ -152,7 +165,7 @@ const ethUSDSubscription = [
   },
 ];
 
-const assetInfoRequest = (currency, order = 'desc') => [
+const assetInfoRequest = (currency: any, order = 'desc') => [
   'get',
   {
     payload: {
@@ -168,7 +181,12 @@ const assetInfoRequest = (currency, order = 'desc') => [
   },
 ];
 
-const chartsRetrieval = (assetCodes, currency, chartType, action = 'get') => [
+const chartsRetrieval = (
+  assetCodes: any,
+  currency: any,
+  chartType: any,
+  action = 'get'
+) => [
   action,
   {
     payload: {
@@ -180,7 +198,10 @@ const chartsRetrieval = (assetCodes, currency, chartType, action = 'get') => [
   },
 ];
 
-export const fetchAssetPrices = assetAddress => (dispatch, getState) => {
+export const fetchAssetPrices = (assetAddress: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { assetsSocket } = getState().explorer;
   const { nativeCurrency } = getState().settings;
 
@@ -197,7 +218,7 @@ export const fetchAssetPrices = assetAddress => (dispatch, getState) => {
   assetsSocket?.emit(...payload);
 };
 
-const explorerUnsubscribe = () => (dispatch, getState) => {
+const explorerUnsubscribe = () => (dispatch: any, getState: any) => {
   const {
     addressSocket,
     addressSubscribed,
@@ -219,7 +240,7 @@ const explorerUnsubscribe = () => (dispatch, getState) => {
   }
 };
 
-const disableFallbackIfNeeded = () => (dispatch, getState) => {
+const disableFallbackIfNeeded = () => (dispatch: any, getState: any) => {
   const { fallback, assetsTimeoutHandler } = getState().explorer;
 
   if (fallback) {
@@ -233,7 +254,7 @@ const disableFallbackIfNeeded = () => (dispatch, getState) => {
   });
 };
 
-const isValidAssetsResponseFromZerion = msg => {
+const isValidAssetsResponseFromZerion = (msg: any) => {
   // Check that the payload meta is valid
   if (msg?.meta?.status === 'ok') {
     // Check that there's an assets property in the payload
@@ -248,13 +269,13 @@ const isValidAssetsResponseFromZerion = msg => {
   return false;
 };
 
-export const explorerClearState = () => dispatch => {
+export const explorerClearState = () => (dispatch: any) => {
   dispatch(disableFallbackIfNeeded());
   dispatch(explorerUnsubscribe());
   dispatch({ type: EXPLORER_CLEAR_STATE });
 };
 
-export const explorerInit = () => async (dispatch, getState) => {
+export const explorerInit = () => async (dispatch: any, getState: any) => {
   const { network, accountAddress, nativeCurrency } = getState().settings;
   const { pairs } = getState().uniswap;
   const { addressSocket, assetsSocket } = getState().explorer;
@@ -303,6 +324,7 @@ export const explorerInit = () => async (dispatch, getState) => {
     dispatch(emitAssetInfoRequest());
     if (!disableCharts) {
       // We need this for Uniswap Pools profit calculation
+      // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
       dispatch(emitChartsRequest([ETH_ADDRESS, DPI_ADDRESS], ChartTypes.month));
       dispatch(
         emitChartsRequest([ETH_ADDRESS], ChartTypes.month, currencyTypes.usd)
@@ -331,9 +353,9 @@ export const explorerInit = () => async (dispatch, getState) => {
   }
 };
 
-export const emitPortfolioRequest = (address, currency) => (
-  dispatch,
-  getState
+export const emitPortfolioRequest = (address: any, currency: any) => (
+  dispatch: any,
+  getState: any
 ) => {
   const nativeCurrency = currency || getState().settings.nativeCurrency;
   const { addressSocket } = getState().explorer;
@@ -341,7 +363,10 @@ export const emitPortfolioRequest = (address, currency) => (
   addressSocket?.emit(...portfolioSubscription(address, nativeCurrency));
 };
 
-export const emitAssetRequest = assetAddress => (dispatch, getState) => {
+export const emitAssetRequest = (assetAddress: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { nativeCurrency } = getState().settings;
   const { assetsSocket } = getState().explorer;
 
@@ -368,7 +393,7 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
   }
 };
 
-export const emitAssetInfoRequest = () => (dispatch, getState) => {
+export const emitAssetInfoRequest = () => (dispatch: any, getState: any) => {
   assetInfoHandle && clearTimeout(assetInfoHandle);
 
   const { nativeCurrency } = getState().settings;
@@ -382,10 +407,10 @@ export const emitAssetInfoRequest = () => (dispatch, getState) => {
 };
 
 export const emitChartsRequest = (
-  assetAddress,
+  assetAddress: any,
   chartType = DEFAULT_CHART_TYPE,
-  givenNativeCurrency
-) => (dispatch, getState) => {
+  givenNativeCurrency: any
+) => (dispatch: any, getState: any) => {
   const nativeCurrency =
     givenNativeCurrency || getState().settings.nativeCurrency;
   const { assetsSocket } = getState().explorer;
@@ -399,26 +424,29 @@ export const emitChartsRequest = (
   }
 };
 
-const listenOnAssetMessages = socket => dispatch => {
-  socket.on(messages.ASSET_INFO.RECEIVED, message => {
+const listenOnAssetMessages = (socket: any) => (dispatch: any) => {
+  socket.on(messages.ASSET_INFO.RECEIVED, (message: any) => {
     dispatch(updateTopMovers(message));
   });
 
-  socket.on(messages.ASSETS.RECEIVED, message => {
+  socket.on(messages.ASSETS.RECEIVED, (message: any) => {
     dispatch(assetPricesReceived(message));
   });
 
-  socket.on(messages.ASSETS.CHANGED, message => {
+  socket.on(messages.ASSETS.CHANGED, (message: any) => {
     dispatch(assetPricesChanged(message));
   });
 
-  socket.on(messages.ASSET_CHARTS.RECEIVED, message => {
+  socket.on(messages.ASSET_CHARTS.RECEIVED, (message: any) => {
     // logger.log('charts received', message?.payload?.charts);
     dispatch(assetChartsReceived(message));
   });
 };
 
-export const explorerInitL2 = (network = null) => (dispatch, getState) => {
+export const explorerInitL2 = (network = null) => (
+  dispatch: any,
+  getState: any
+) => {
   if (getState().settings.network === NetworkTypes.mainnet) {
     switch (network) {
       case NetworkTypes.arbitrum:
@@ -442,17 +470,17 @@ export const explorerInitL2 = (network = null) => (dispatch, getState) => {
   }
 };
 
-const listenOnAddressMessages = socket => dispatch => {
-  socket.on(messages.ADDRESS_PORTFOLIO.RECEIVED, message => {
+const listenOnAddressMessages = (socket: any) => (dispatch: any) => {
+  socket.on(messages.ADDRESS_PORTFOLIO.RECEIVED, (message: any) => {
     dispatch(portfolioReceived(message));
   });
 
-  socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED, message => {
+  socket.on(messages.ADDRESS_TRANSACTIONS.RECEIVED, (message: any) => {
     // logger.log('txns received', message?.payload?.transactions);
     dispatch(transactionsReceived(message));
   });
 
-  socket.on(messages.ADDRESS_TRANSACTIONS.APPENDED, message => {
+  socket.on(messages.ADDRESS_TRANSACTIONS.APPENDED, (message: any) => {
     logger.log('txns appended', message?.payload?.transactions);
     dispatch(transactionsReceived(message, true));
     // Fetch balances onchain to override zerion's
@@ -460,7 +488,7 @@ const listenOnAddressMessages = socket => dispatch => {
     dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
-  socket.on(messages.ADDRESS_TRANSACTIONS.CHANGED, message => {
+  socket.on(messages.ADDRESS_TRANSACTIONS.CHANGED, (message: any) => {
     logger.log('txns changed', message?.payload?.transactions);
     dispatch(transactionsReceived(message, true));
     // Fetch balances onchain to override zerion's
@@ -468,7 +496,7 @@ const listenOnAddressMessages = socket => dispatch => {
     dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
-  socket.on(messages.ADDRESS_TRANSACTIONS.REMOVED, message => {
+  socket.on(messages.ADDRESS_TRANSACTIONS.REMOVED, (message: any) => {
     logger.log('txns removed', message?.payload?.transactions);
     dispatch(transactionsRemoved(message));
     // Fetch balances onchain to override zerion's
@@ -476,7 +504,7 @@ const listenOnAddressMessages = socket => dispatch => {
     dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
-  socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
+  socket.on(messages.ADDRESS_ASSETS.RECEIVED, (message: any) => {
     dispatch(addressAssetsReceived(message));
     if (isValidAssetsResponseFromZerion(message)) {
       logger.log(
@@ -490,7 +518,7 @@ const listenOnAddressMessages = socket => dispatch => {
     }
   });
 
-  socket.on(messages.ADDRESS_ASSETS.APPENDED, message => {
+  socket.on(messages.ADDRESS_ASSETS.APPENDED, (message: any) => {
     dispatch(addressAssetsReceived(message, true));
     dispatch(disableFallbackIfNeeded());
     // Fetch balances onchain to override zerion's
@@ -498,7 +526,7 @@ const listenOnAddressMessages = socket => dispatch => {
     dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
-  socket.on(messages.ADDRESS_ASSETS.CHANGED, message => {
+  socket.on(messages.ADDRESS_ASSETS.CHANGED, (message: any) => {
     dispatch(addressAssetsReceived(message, false, true));
     dispatch(disableFallbackIfNeeded());
     // Fetch balances onchain to override zerion's
@@ -506,7 +534,7 @@ const listenOnAddressMessages = socket => dispatch => {
     dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
-  socket.on(messages.ADDRESS_ASSETS.REMOVED, message => {
+  socket.on(messages.ADDRESS_ASSETS.REMOVED, (message: any) => {
     dispatch(addressAssetsReceived(message, false, false, true));
     dispatch(disableFallbackIfNeeded());
     // Fetch balances onchain to override zerion's
@@ -524,7 +552,7 @@ const INITIAL_STATE = {
   fallback: false,
 };
 
-export default (state = INITIAL_STATE, action) => {
+export default (state = INITIAL_STATE, action: any) => {
   switch (action.type) {
     case EXPLORER_UPDATE_SOCKETS:
       return {

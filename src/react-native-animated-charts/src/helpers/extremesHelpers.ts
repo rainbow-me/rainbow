@@ -1,4 +1,4 @@
-export function findYExtremes(data) {
+export function findYExtremes(data: any) {
   let smallestY = null;
   let greatestY = null;
   for (const d of data) {
@@ -17,14 +17,15 @@ export function findYExtremes(data) {
 }
 
 export function addExtremesIfNeeded(
-  res,
-  data,
-  includeExtremes,
-  removePointsSurroundingExtremes
+  res: any,
+  data: any,
+  includeExtremes: any,
+  removePointsSurroundingExtremes: any
 ) {
   if (includeExtremes) {
     const { greatestY, smallestY } = findYExtremes(data);
 
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(a: any, b: any) => boolean' is ... Remove this comment to see the full error message
     const [ex1, ex2] = [greatestY, smallestY].sort((a, b) => a.x < b.x);
     let added1 = false;
     let added2 = false;

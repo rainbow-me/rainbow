@@ -2,7 +2,9 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../redux/store';
 import usePrevious from './usePrevious';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { GasFeeParams } from '@rainbow-me/entities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   gasPricesStartPolling,
@@ -11,6 +13,7 @@ import {
   gasUpdateGasFeeOption,
   gasUpdateToCustomGasFee,
   gasUpdateTxFee,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/gas' or its ... Remove this comment to see the full error message
 } from '@rainbow-me/redux/gas';
 
 export default function useGas() {

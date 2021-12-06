@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 import { AppState } from '../redux/store';
 import { uniswapUpdateFavorites } from '../redux/uniswap';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { RainbowToken } from '@rainbow-me/entities';
 
 const uniswapLoadingAllTokensSelector = (state: AppState) =>
@@ -75,6 +76,7 @@ export default function useUniswapAssets() {
   const dispatch = useDispatch();
   const uniswapAssets = useSelector(withUniswapAssetsSelector);
   const updateFavorites = useCallback(
+    // @ts-expect-error ts-migrate(2556) FIXME: Expected 1-2 arguments, but got 0 or more.
     (...data) => dispatch(uniswapUpdateFavorites(...data)),
     [dispatch]
   );

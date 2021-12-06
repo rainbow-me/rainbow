@@ -87,6 +87,7 @@ const RoutesWithNativeStackAvailability = {
     ? Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR
     : Routes.IMPORT_SEED_PHRASE_SHEET,
   SEND_FLOW:
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     isNativeStackAvailable || android
       ? Routes.SEND_SHEET_NAVIGATOR
       : Routes.SEND_SHEET,

@@ -9,7 +9,9 @@ import type {
   BottomSheetNavigationConfig,
   BottomSheetNavigationHelpers,
 } from '../types';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './BottomSheetRoute' was resolved to '/User... Remove this comment to see the full error message
 import BottomSheetRoute from './BottomSheetRoute';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useForceUpdate } from '@rainbow-me/hooks';
 
 type Props = BottomSheetNavigationConfig & {
@@ -74,10 +76,12 @@ const BottomSheetNavigatorView = ({
   }, []);
   //#endregion
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <NavigationHelpersContext.Provider value={navigation}>
       {descriptors[firstKey].render()}
 
       {Object.keys(descriptorsCache.current).map(key => (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <BottomSheetRoute
           descriptor={descriptorsCache.current[key]}
           key={key}

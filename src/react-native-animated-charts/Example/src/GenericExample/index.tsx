@@ -1,3 +1,13 @@
+import {
+  ChartDot,
+  ChartPath,
+  ChartPathProvider,
+  ChartXLabel,
+  ChartYLabel,
+  monotoneCubicInterpolation,
+  simplifyData,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/animated-charts' o... Remove this comment to see the full error message
+} from '@rainbow-me/animated-charts';
 import React, {useEffect, useState} from 'react';
 import {
   Dimensions,
@@ -8,19 +18,10 @@ import {
 } from 'react-native';
 import bSplineInterpolation from '../../../src/interpolations/bSplineInterpolation';
 import {data1, data2} from './data';
-import {
-  ChartDot,
-  ChartPath,
-  ChartPathProvider,
-  ChartXLabel,
-  ChartYLabel,
-  monotoneCubicInterpolation,
-  simplifyData,
-} from '@rainbow-me/animated-charts';
 
 export const {width: SIZE} = Dimensions.get('window');
 
-export const formatUSD = value => {
+export const formatUSD = (value: any) => {
   'worklet';
   if (value === '') {
     return '';
@@ -30,7 +31,7 @@ export const formatUSD = value => {
   })}`;
 };
 
-export const formatDatetime = value => {
+export const formatDatetime = (value: any) => {
   'worklet';
   if (value === '') {
     return '';
@@ -79,12 +80,12 @@ function GenericExample() {
           return bSplineInterpolation({
             data: simplifiedData,
             degree: bSplineDegree,
-            range: numberOfPointsInterpolated
+            range: numberOfPointsInterpolated,
           });
         case 'mono':
           return monotoneCubicInterpolation({
             data: simplifiedData,
-            range: numberOfPointsInterpolated
+            range: numberOfPointsInterpolated,
           });
       }
     })();
@@ -107,44 +108,75 @@ function GenericExample() {
   ]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <View
       style={{
         backgroundColor: 'black',
       }}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ScrollView style={{backgroundColor: 'black'}}>
         {/*<Text style={{color: 'white', fontWeight: 'bold'}}>*/}
         {/*  Generic Example (swipe right for a real-life example)*/}
         {/*</Text>*/}
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ChartPathProvider data={data}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ChartPath
+            fill="none"
             hapticsEnabled={hapticsEnabled}
+            height={SIZE / 2}
             hitSlop={hitSlop}
             smoothingWhileTransitioningEnabled={
               smoothingWhileTransitioningEnabled
             }
-            fill="none"
-            height={SIZE / 2}
             stroke="red"
             strokeWidth="2"
             width={SIZE}
           />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ChartDot
             style={{
               backgroundColor: 'blue',
             }}
           />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ChartYLabel
             format={formatUSD}
             style={{backgroundColor: 'black', color: 'green', margin: 4}}
           />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ChartXLabel
             format={formatDatetime}
             style={{backgroundColor: 'black', color: 'red', margin: 4}}
           />
         </ChartPathProvider>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Text style={{color: 'white', fontWeight: 'bold'}}>Haptics:</Text>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableOpacity onPress={() => setHapticsEnabled(true)}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text
               style={{
                 color: hapticsEnabled ? 'lightgreen' : 'white',
@@ -152,7 +184,13 @@ function GenericExample() {
               Yes
             </Text>
           </TouchableOpacity>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableOpacity onPress={() => setHapticsEnabled(false)}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text
               style={{
                 color: !hapticsEnabled ? 'lightgreen' : 'white',
@@ -161,12 +199,24 @@ function GenericExample() {
             </Text>
           </TouchableOpacity>
         </View>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Text style={{color: 'white', fontWeight: 'bold'}}>
           Disable smoothing while transitioning:
         </Text>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableOpacity
             onPress={() => setSmoothingWhileTransitioningEnabled(true)}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text
               style={{
                 color: smoothingWhileTransitioningEnabled
@@ -176,8 +226,14 @@ function GenericExample() {
               Yes
             </Text>
           </TouchableOpacity>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableOpacity
             onPress={() => setSmoothingWhileTransitioningEnabled(false)}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text
               style={{
                 color: !smoothingWhileTransitioningEnabled
@@ -188,9 +244,21 @@ function GenericExample() {
             </Text>
           </TouchableOpacity>
         </View>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Text style={{color: 'white', fontWeight: 'bold'}}>Soft margin:</Text>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableOpacity onPress={() => setHitSlop(0)}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text
               style={{
                 color: hitSlop === 0 ? 'lightgreen' : 'white',
@@ -198,7 +266,13 @@ function GenericExample() {
               0
             </Text>
           </TouchableOpacity>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableOpacity onPress={() => setHitSlop(30)}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text
               style={{
                 color: hitSlop === 30 ? 'lightgreen' : 'white',
@@ -206,7 +280,13 @@ function GenericExample() {
               30
             </Text>
           </TouchableOpacity>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableOpacity onPress={() => setHitSlop(50)}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text
               style={{
                 color: hitSlop === 50 ? 'lightgreen' : 'white',
@@ -215,73 +295,158 @@ function GenericExample() {
             </Text>
           </TouchableOpacity>
         </View>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Text style={{color: 'white', fontWeight: 'bold'}}>Data source:</Text>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableOpacity onPress={() => setDataSource(1)}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text style={{color: dataSource === 1 ? 'lightgreen' : 'white'}}>
               Data 1
             </Text>
           </TouchableOpacity>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableOpacity onPress={() => setDataSource(2)}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text style={{color: dataSource === 2 ? 'lightgreen' : 'white'}}>
               Data 2
             </Text>
           </TouchableOpacity>
         </View>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Text style={{color: 'white', fontWeight: 'bold'}}>Simplifying:</Text>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableOpacity onPress={() => setSimplifying(true)}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text style={{color: simplifying ? 'lightgreen' : 'white'}}>
               Yes
             </Text>
           </TouchableOpacity>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableOpacity onPress={() => setSimplifying(false)}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text style={{color: !simplifying ? 'lightgreen' : 'white'}}>
               No
             </Text>
           </TouchableOpacity>
         </View>
         {simplifying ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text style={{color: 'white', fontStyle: 'italic'}}>
               Pick range:
             </Text>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <View
               style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity onPress={() => setPickRange(2)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text style={{color: pickRange === 2 ? 'lightgreen' : 'white'}}>
                   2
                 </Text>
               </TouchableOpacity>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity onPress={() => setPickRange(5)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text style={{color: pickRange === 5 ? 'lightgreen' : 'white'}}>
                   5
                 </Text>
               </TouchableOpacity>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity onPress={() => setPickRange(10)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   style={{color: pickRange === 10 ? 'lightgreen' : 'white'}}>
                   10
                 </Text>
               </TouchableOpacity>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity onPress={() => setPickRange(25)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   style={{color: pickRange === 25 ? 'lightgreen' : 'white'}}>
                   25
                 </Text>
               </TouchableOpacity>
             </View>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text style={{color: 'white', fontStyle: 'italic'}}>
               Include extremes:
             </Text>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <View
               style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity onPress={() => setIncludeExtremes(true)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text style={{color: includeExtremes ? 'lightgreen' : 'white'}}>
                   Yes
                 </Text>
               </TouchableOpacity>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity onPress={() => setIncludeExtremes(false)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   style={{color: !includeExtremes ? 'lightgreen' : 'white'}}>
                   No
@@ -290,11 +455,23 @@ function GenericExample() {
             </View>
           </>
         ) : null}
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Text style={{color: 'white', fontWeight: 'bold'}}>
           Interpolation strategy:
         </Text>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableOpacity onPress={() => setInterpolationStrategy('none')}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text
               style={{
                 color:
@@ -303,7 +480,13 @@ function GenericExample() {
               None
             </Text>
           </TouchableOpacity>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableOpacity onPress={() => setInterpolationStrategy('b')}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text
               style={{
                 color: interpolationStrategy === 'b' ? 'lightgreen' : 'white',
@@ -311,7 +494,13 @@ function GenericExample() {
               B Spline
             </Text>
           </TouchableOpacity>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableOpacity onPress={() => setInterpolationStrategy('mono')}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text
               style={{
                 color:
@@ -322,13 +511,26 @@ function GenericExample() {
           </TouchableOpacity>
         </View>
         {interpolationStrategy === 'b' ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text style={{color: 'white', fontStyle: 'italic'}}>
               BSpline degree:
             </Text>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <View
               style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity onPress={() => setBSplineDegree(2)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   style={{
                     color: bSplineDegree === 2 ? 'lightgreen' : 'white',
@@ -336,7 +538,13 @@ function GenericExample() {
                   2
                 </Text>
               </TouchableOpacity>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity onPress={() => setBSplineDegree(3)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   style={{
                     color: bSplineDegree === 3 ? 'lightgreen' : 'white',
@@ -344,7 +552,13 @@ function GenericExample() {
                   3
                 </Text>
               </TouchableOpacity>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity onPress={() => setBSplineDegree(4)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   style={{
                     color: bSplineDegree === 4 ? 'lightgreen' : 'white',
@@ -352,7 +566,13 @@ function GenericExample() {
                   4
                 </Text>
               </TouchableOpacity>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity onPress={() => setBSplineDegree(5)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   style={{
                     color: bSplineDegree === 5 ? 'lightgreen' : 'white',
@@ -364,14 +584,27 @@ function GenericExample() {
           </>
         ) : null}
         {interpolationStrategy !== 'none' ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text style={{color: 'white', fontStyle: 'italic'}}>
               Number of points Interpolated:
             </Text>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <View
               style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity
                 onPress={() => setNumberOfPointsInterpolated(30)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   style={{
                     color:
@@ -382,8 +615,14 @@ function GenericExample() {
                   30
                 </Text>
               </TouchableOpacity>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity
                 onPress={() => setNumberOfPointsInterpolated(80)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   style={{
                     color:
@@ -394,8 +633,14 @@ function GenericExample() {
                   80
                 </Text>
               </TouchableOpacity>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity
                 onPress={() => setNumberOfPointsInterpolated(120)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   style={{
                     color:
@@ -406,8 +651,14 @@ function GenericExample() {
                   120
                 </Text>
               </TouchableOpacity>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity
                 onPress={() => setNumberOfPointsInterpolated(200)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   style={{
                     color:
@@ -421,11 +672,23 @@ function GenericExample() {
             </View>
           </>
         ) : null}
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Text style={{color: 'white', fontWeight: 'bold'}}>
           Smoothing strategy:
         </Text>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableOpacity onPress={() => setSmoothingStrategy('none')}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text
               style={{
                 color: smoothingStrategy === 'none' ? 'lightgreen' : 'white',
@@ -433,7 +696,13 @@ function GenericExample() {
               None
             </Text>
           </TouchableOpacity>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableOpacity onPress={() => setSmoothingStrategy('simple')}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text
               style={{
                 color: smoothingStrategy === 'simple' ? 'lightgreen' : 'white',
@@ -442,8 +711,17 @@ function GenericExample() {
             </Text>
           </TouchableOpacity>
         </View>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableOpacity onPress={() => setSmoothingStrategy('complex')}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text
               style={{
                 color: smoothingStrategy === 'complex' ? 'lightgreen' : 'white',
@@ -451,7 +729,13 @@ function GenericExample() {
               Complex (Cubic bezier)
             </Text>
           </TouchableOpacity>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <TouchableOpacity onPress={() => setSmoothingStrategy('bezier')}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text
               style={{
                 color: smoothingStrategy === 'bezier' ? 'lightgreen' : 'white',
@@ -461,13 +745,26 @@ function GenericExample() {
           </TouchableOpacity>
         </View>
         {smoothingStrategy !== 'none' && smoothingStrategy !== 'bezier' ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text style={{color: 'white', fontStyle: 'italic'}}>
               Smoothing factor:
             </Text>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <View
               style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity onPress={() => setSmoothingFactor(0.05)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   style={{
                     color: smoothingFactor === 0.05 ? 'lightgreen' : 'white',
@@ -475,7 +772,13 @@ function GenericExample() {
                   0.05
                 </Text>
               </TouchableOpacity>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity onPress={() => setSmoothingFactor(0.1)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   style={{
                     color: smoothingFactor === 0.1 ? 'lightgreen' : 'white',
@@ -483,7 +786,13 @@ function GenericExample() {
                   0.1
                 </Text>
               </TouchableOpacity>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity onPress={() => setSmoothingFactor(0.2)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   style={{
                     color: smoothingFactor === 0.2 ? 'lightgreen' : 'white',
@@ -491,7 +800,13 @@ function GenericExample() {
                   0.2
                 </Text>
               </TouchableOpacity>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity onPress={() => setSmoothingFactor(0.3)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   style={{
                     color: smoothingFactor === 0.3 ? 'lightgreen' : 'white',
@@ -499,7 +814,13 @@ function GenericExample() {
                   0.3
                 </Text>
               </TouchableOpacity>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity onPress={() => setSmoothingFactor(0.5)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   style={{
                     color: smoothingFactor === 0.5 ? 'lightgreen' : 'white',
@@ -507,7 +828,13 @@ function GenericExample() {
                   0.5
                 </Text>
               </TouchableOpacity>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity onPress={() => setSmoothingFactor(0.7)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   style={{
                     color: smoothingFactor === 0.7 ? 'lightgreen' : 'white',
@@ -515,7 +842,13 @@ function GenericExample() {
                   0.7
                 </Text>
               </TouchableOpacity>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <TouchableOpacity onPress={() => setSmoothingFactor(0.9)}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   style={{
                     color: smoothingFactor === 0.9 ? 'lightgreen' : 'white',

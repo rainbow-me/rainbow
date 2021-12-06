@@ -1,6 +1,7 @@
 import { compact, get, startCase, toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { css } from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../context/ThemeContext' was resolved t... Remove this comment to see the full error message
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
@@ -9,29 +10,39 @@ import { FlexItem, Row, RowWithMargins } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './CoinRow' was resolved to '/Users/nickbyt... Remove this comment to see the full error message
 import CoinRow from './CoinRow';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './TransactionStatusBadge' was resolved to ... Remove this comment to see the full error message
 import TransactionStatusBadge from './TransactionStatusBadge';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/transactio... Remove this comment to see the full error message
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
 import {
   getHumanReadableDate,
   hasAddableContact,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/transactio... Remove this comment to see the full error message
 } from '@rainbow-me/helpers/transactions';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/validators... Remove this comment to see the full error message
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useAccountSettings } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
 import {
   abbreviations,
   ethereumUtils,
   showActionSheetWithOptions,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/utils';
 
 const containerStyles = css`
   padding-left: 19;
 `;
 
-const BottomRow = ({ description, native, status, type }) => {
+const BottomRow = ({ description, native, status, type }: any) => {
   const { colors } = useTheme();
   const isFailed = status === TransactionStatusTypes.failed;
   const isReceived =
@@ -59,10 +70,20 @@ const BottomRow = ({ description, native, status, type }) => {
     : '';
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Row align="center" justify="space-between">
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <FlexItem flex={1}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <CoinName color={coinNameColor}>{description}</CoinName>
       </FlexItem>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <BalanceText
         color={balanceTextColor}
         weight={isReceived ? 'medium' : null}
@@ -73,16 +94,26 @@ const BottomRow = ({ description, native, status, type }) => {
   );
 };
 
-const TopRow = ({ balance, pending, status, title }) => (
+const TopRow = ({ balance, pending, status, title }: any) => (
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   <RowWithMargins align="center" justify="space-between" margin={19}>
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+    '--jsx' flag is provided... Remove this comment to see the full error
+    message
     <TransactionStatusBadge pending={pending} status={status} title={title} />
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+    '--jsx' flag is provided... Remove this comment to see the full error
+    message
     <Row align="center" flex={1} justify="end">
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <BottomRowText align="right">{get(balance, 'display', '')}</BottomRowText>
     </Row>
   </RowWithMargins>
 );
 
-export default function TransactionCoinRow({ item, ...props }) {
+export default function TransactionCoinRow({ item, ...props }: any) {
   const { contact } = item;
   const { accountAddress } = useAccountSettings();
   const { navigate } = useNavigation();
@@ -128,6 +159,7 @@ export default function TransactionCoinRow({ item, ...props }) {
         ...(canBeResubmitted ? [TransactionActions.speedUp] : []),
         ...(canBeCancelled ? [TransactionActions.cancel] : []),
         blockExplorerAction,
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
         ...(ios ? [TransactionActions.close] : []),
       ];
       if (showContactInfo) {
@@ -152,7 +184,7 @@ export default function TransactionCoinRow({ item, ...props }) {
             ? `${headerInfo.type} ${date} ${headerInfo.divider} ${headerInfo.address}`
             : `${headerInfo.type} ${date}`,
         },
-        buttonIndex => {
+        (buttonIndex: any) => {
           const action = buttons[buttonIndex];
           switch (action) {
             case TransactionActions.viewContact:
@@ -190,12 +222,17 @@ export default function TransactionCoinRow({ item, ...props }) {
   }, [accountAddress, contact, item, navigate]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ButtonPressAnimation onPress={onPressTransaction} scaleTo={0.96}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <CoinRow
         {...item}
         {...props}
         bottomRowRender={BottomRow}
         containerStyles={containerStyles}
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
         {...(android
           ? {
               contentStyles: {

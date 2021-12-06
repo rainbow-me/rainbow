@@ -12,19 +12,25 @@ import useUniswapCalls from './useUniswapCalls';
 import {
   CurrencySelectionTypes,
   ExchangeModalTypes,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers' or its co... Remove this comment to see the full error message
 } from '@rainbow-me/helpers';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
 import {
   multicallAddListeners,
   multicallUpdateOutdatedListeners,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/multicall' o... Remove this comment to see the full error message
 } from '@rainbow-me/redux/multicall';
 import {
   flipSwapCurrencies,
   updateSwapDepositCurrency,
   updateSwapInputCurrency,
   updateSwapOutputCurrency,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/swap' or its... Remove this comment to see the full error message
 } from '@rainbow-me/redux/swap';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const { currentlyFocusedInput, focusTextInput } = TextInput.State;
@@ -37,12 +43,13 @@ export default function useSwapCurrencyHandlers({
   outputFieldRef,
   title,
   type,
-}) {
+}: any) {
   const dispatch = useDispatch();
   const { allAssets } = useAccountAssets();
   const { chainId } = useAccountSettings();
   const { navigate, setParams, dangerouslyGetParent } = useNavigation();
   const {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'blockInteractions' does not exist on typ... Remove this comment to see the full error message
     params: { blockInteractions },
   } = useRoute();
 
@@ -103,6 +110,7 @@ export default function useSwapCurrencyHandlers({
   const [startFlipFocusTimeout] = useTimeout();
   const flipCurrencies = useCallback(() => {
     dispatch(flipSwapCurrencies());
+    // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
     startFlipFocusTimeout(() => {
       if (inputFieldRef.current === currentlyFocusedInput()) {
         focusTextInput(outputFieldRef.current);

@@ -1,11 +1,12 @@
-import React from 'react';
-import {Dimensions, View} from 'react-native';
 import {
   ChartDot,
   ChartPath,
   ChartPathProvider,
   monotoneCubicInterpolation,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/animated-charts' o... Remove this comment to see the full error message
 } from '@rainbow-me/animated-charts';
+import React from 'react';
+import {Dimensions, View} from 'react-native';
 
 export const {width: SIZE} = Dimensions.get('window');
 
@@ -29,16 +30,26 @@ export const data = [
 const points = monotoneCubicInterpolation({data, range: 40});
 
 const BasicExample = () => (
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   <View
     style={{
       backgroundColor: 'black',
     }}>
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+    '--jsx' flag is provided... Remove this comment to see the full error
+    message
     <ChartPathProvider
       data={{
         points,
         smoothingStrategy: 'bezier',
       }}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ChartPath height={SIZE / 2} stroke="yellow" width={SIZE} />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ChartDot
         style={{
           backgroundColor: 'blue',

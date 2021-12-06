@@ -1,10 +1,11 @@
 /*global storage*/
 import { toLower } from 'lodash';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 const defaultVersion = '0.1.0';
 
-export const getKey = (prefix, accountAddress, network) =>
+export const getKey = (prefix: any, accountAddress: any, network: any) =>
   `${prefix}-${toLower(accountAddress)}-${toLower(network)}`;
 
 /**
@@ -19,7 +20,9 @@ export const saveLocal = async (
   version = defaultVersion
 ) => {
   try {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'storageVersion' does not exist on type '... Remove this comment to see the full error message
     data.storageVersion = version;
+    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'storage'. Did you mean 'Storage'... Remove this comment to see the full error message
     await storage.save({
       data,
       expires: null,
@@ -37,6 +40,7 @@ export const saveLocal = async (
  */
 export const getLocal = async (key = '', version = defaultVersion) => {
   try {
+    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'storage'. Did you mean 'Storage'... Remove this comment to see the full error message
     const result = await storage.load({
       autoSync: false,
       key,
@@ -63,24 +67,29 @@ export const getLocal = async (key = '', version = defaultVersion) => {
  */
 export const removeLocal = (key = '') => {
   try {
+    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'storage'. Did you mean 'Storage'... Remove this comment to see the full error message
     storage.remove({ key });
   } catch (error) {
     logger.log('Storage: error removing local with key', key);
   }
 };
 
-export const getGlobal = async (key, emptyState, version = defaultVersion) => {
+export const getGlobal = async (
+  key: any,
+  emptyState: any,
+  version = defaultVersion
+) => {
   const result = await getLocal(key, version);
   return result ? result.data : emptyState;
 };
 
-export const saveGlobal = (key, data, version = defaultVersion) =>
+export const saveGlobal = (key: any, data: any, version = defaultVersion) =>
   saveLocal(key, { data }, version);
 
 export const getAccountLocal = async (
-  prefix,
-  accountAddress,
-  network,
+  prefix: any,
+  accountAddress: any,
+  network: any,
   emptyState = [],
   version = defaultVersion
 ) => {
@@ -90,14 +99,18 @@ export const getAccountLocal = async (
 };
 
 export const saveAccountLocal = (
-  prefix,
-  data,
-  accountAddress,
-  network,
+  prefix: any,
+  data: any,
+  accountAddress: any,
+  network: any,
   version = defaultVersion
 ) => saveLocal(getKey(prefix, accountAddress, network), { data }, version);
 
-export const removeAccountLocal = (prefix, accountAddress, network) => {
+export const removeAccountLocal = (
+  prefix: any,
+  accountAddress: any,
+  network: any
+) => {
   const key = getKey(prefix, accountAddress, network);
   removeLocal(key);
 };

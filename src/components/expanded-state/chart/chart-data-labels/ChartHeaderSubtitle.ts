@@ -17,6 +17,7 @@ const ChartHeaderSubtitle = styled(TruncatedText).attrs(
   })
 )`
   flex: 1;
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${android &&
   `margin-vertical: -10px
     margin-left: 9`}

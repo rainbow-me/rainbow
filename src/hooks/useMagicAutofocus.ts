@@ -7,7 +7,7 @@ import useInteraction from './useInteraction';
 
 const { currentlyFocusedInput, focusTextInput } = TextInput.State;
 
-let timeout = null;
+let timeout: any = null;
 let delay = false;
 
 export function delayNext() {
@@ -19,8 +19,8 @@ export function delayNext() {
 }
 
 export default function useMagicAutofocus(
-  defaultAutofocusInputRef,
-  customTriggerFocusCallback,
+  defaultAutofocusInputRef: any,
+  customTriggerFocusCallback: any,
   shouldFocusOnNavigateOnAndroid = false
 ) {
   const isScreenFocused = useIsFocused();
@@ -45,12 +45,14 @@ export default function useMagicAutofocus(
     }
 
     if (lastFocusedInputHandle.current !== currentlyFocusedInput()) {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'null' is not assignable to param... Remove this comment to see the full error message
       return focusTextInput(lastFocusedInputHandle.current);
     }
   }, [customTriggerFocusCallback, defaultAutofocusInputRef]);
 
   const [createRefocusInteraction] = useInteraction();
   const fallbackRefocusLastInput = useCallback(() => {
+    // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
     createRefocusInteraction(() => {
       if (isScreenFocused) {
         triggerFocus();
@@ -61,6 +63,7 @@ export default function useMagicAutofocus(
   // ✨️ Make the magic happen
   useFocusEffect(
     useCallback(() => {
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
       if (android && !shouldFocusOnNavigateOnAndroid) {
         return;
       }

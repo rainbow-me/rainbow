@@ -2,8 +2,11 @@ import React, { useCallback, useState } from 'react';
 import { Pressable } from 'react-native';
 import styled from 'styled-components';
 import { Text } from './text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useAppVersion, useTimeout } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
 
 const DEBUG_TAP_COUNT = 15;
@@ -43,7 +46,11 @@ export default function AppVersionStamp() {
   }, [navigate, numberOfTaps, startTimeout, stopTimeout]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <StyledButton onPress={handleVersionPress}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <StampText>{appVersion}</StampText>
     </StyledButton>
   );

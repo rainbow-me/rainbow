@@ -5,6 +5,7 @@ const CoinName = styled(TruncatedText).attrs(
   ({ color, size, theme: { colors } }) => ({
     color: color || colors.dark,
     letterSpacing: 'roundedMedium',
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     lineHeight: android ? 'normalTight' : 'normal',
     size: size || 'lmedium',
   })

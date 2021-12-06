@@ -38,7 +38,7 @@ export default async function maybeReviewAlert() {
           if (reviewDisplayedInTheSession) {
             return;
           }
-          RainbowRequestReview?.requestReview(handled => {
+          RainbowRequestReview?.requestReview((handled: any) => {
             if (!handled) {
               Linking.openURL(AppleReviewAddress);
             }

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../Spinner' was resolved to '/Users/nickby... Remove this comment to see the full error message
 import Spinner from '../Spinner';
 import { Centered, FlexItem } from '../layout';
 
@@ -10,12 +11,13 @@ const Container = styled(FlexItem)`
 `;
 const StyledWebView = styled(WebView)`
   background-color: ${({ theme: { colors } }) => colors.transparent};
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   margin-top: ${android ? 30 : 50};
 `;
 
-const formatColor = color => color.replace('#', '');
+const formatColor = (color: any) => color.replace('#', '');
 
-const buildPlayerUrl = options => {
+const buildPlayerUrl = (options: any) => {
   let qsArray = [];
   for (let p in options)
     if (options.hasOwnProperty(p)) {
@@ -28,9 +30,12 @@ const buildPlayerUrl = options => {
   return `${base_url}?${qs}`;
 };
 
-export default function WyreWebview({ fontColor, imageColor, uri }) {
+export default function WyreWebview({ fontColor, imageColor, uri }: any) {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useRef'.
   const webviewRef = useRef();
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useState'.
   const [ready, setReady] = useState(false);
   useEffect(() => {
     StatusBar.setBackgroundColor('transparent', false);
@@ -38,6 +43,7 @@ export default function WyreWebview({ fontColor, imageColor, uri }) {
     StatusBar.setBarStyle('dark-content', true);
   }, []);
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const playerUri = useMemo(() => {
     const waveColor = formatColor(imageColor);
     const progressColor = formatColor(imageColor);
@@ -68,6 +74,7 @@ export default function WyreWebview({ fontColor, imageColor, uri }) {
       () => {
         setReady(true);
       },
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       ios ? 500 : 800
     );
   }, []);
@@ -86,7 +93,11 @@ export default function WyreWebview({ fontColor, imageColor, uri }) {
   }, []);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <StyledWebView
         ref={webviewRef}
         scalesPageToFit
@@ -96,6 +107,7 @@ export default function WyreWebview({ fontColor, imageColor, uri }) {
         }}
       />
       {!ready && (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <Centered
           flex={1}
           style={[
@@ -103,6 +115,9 @@ export default function WyreWebview({ fontColor, imageColor, uri }) {
             { backgroundColor: colors.transparent },
           ]}
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Spinner color={imageColor} size={30} />
         </Centered>
       )}

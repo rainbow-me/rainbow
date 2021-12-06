@@ -1,7 +1,12 @@
 import { addExtremesIfNeeded } from '../helpers/extremesHelpers';
 
 class BSpline {
-  constructor(points, degree, copy) {
+  baseFunc: any;
+  baseFuncRangeInt: any;
+  degree: any;
+  dimension: any;
+  points: any;
+  constructor(points: any, degree: any, copy: any) {
     if (copy) {
       this.points = [];
       for (let i = 0; i < points.length; i++) {
@@ -27,10 +32,10 @@ class BSpline {
     }
   }
 
-  seqAt(dim) {
+  seqAt(dim: any) {
     let points = this.points;
     let margin = this.degree + 1;
-    return function (n) {
+    return function (n: any) {
       if (n < margin) {
         return points[0][dim];
       } else if (points.length + margin <= n) {
@@ -41,7 +46,7 @@ class BSpline {
     };
   }
 
-  basisDeg2(x) {
+  basisDeg2(x: any) {
     if (-0.5 <= x && x < 0.5) {
       return 0.75 - x * x;
     } else if (0.5 <= x && x <= 1.5) {
@@ -53,7 +58,7 @@ class BSpline {
     }
   }
 
-  basisDeg3(x) {
+  basisDeg3(x: any) {
     if (-1 <= x && x < 0) {
       return 2.0 / 3.0 + (-1.0 - x / 2.0) * x * x;
     } else if (1 <= x && x <= 2) {
@@ -67,7 +72,7 @@ class BSpline {
     }
   }
 
-  basisDeg4(x) {
+  basisDeg4(x: any) {
     if (-1.5 <= x && x < -0.5) {
       return (
         55.0 / 96.0 +
@@ -96,7 +101,7 @@ class BSpline {
     }
   }
 
-  getInterpol(seq, t) {
+  getInterpol(seq: any, t: any) {
     let f = this.baseFunc;
     let rangeInt = this.baseFuncRangeInt;
     let tInt = Math.floor(t);
@@ -107,7 +112,7 @@ class BSpline {
     return result;
   }
 
-  basisDeg5(x) {
+  basisDeg5(x: any) {
     if (-2 <= x && x < -1) {
       return (
         17.0 / 40.0 +
@@ -152,7 +157,7 @@ class BSpline {
     }
   }
 
-  calcAt(t) {
+  calcAt(t: any) {
     t = t * ((this.degree + 1) * 2 + this.points.length); //t must be in [0,1]
     if (this.dimension === 2) {
       return [
@@ -181,11 +186,11 @@ export default function bSplineInterpolation({
   range,
   includeExtremes = false,
   removePointsSurroundingExtremes = true,
-}) {
+}: any) {
   if (!data || data.length === 0) {
     return () => [];
   }
-  const parsed = data.map(({ x, y }) => [x, y]);
+  const parsed = data.map(({ x, y }: any) => [x, y]);
   const spline = new BSpline(parsed, degree, true);
 
   const res = [];

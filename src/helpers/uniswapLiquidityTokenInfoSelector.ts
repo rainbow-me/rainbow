@@ -10,13 +10,18 @@ import {
   toLower,
 } from 'lodash';
 import { createSelector } from 'reselect';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/parsers' or its co... Remove this comment to see the full error message
 import { parseAssetsNative } from '@rainbow-me/parsers';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/store' or it... Remove this comment to see the full error message
 import { AppState } from '@rainbow-me/redux/store';
 import {
   PositionsState,
   UniswapPosition,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/usersPositio... Remove this comment to see the full error message
 } from '@rainbow-me/redux/usersPositions';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import {
   convertAmountToNativeDisplay,
@@ -24,7 +29,9 @@ import {
   handleSignificantDecimals,
   handleSignificantDecimalsWithThreshold,
   multiply,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utilities' or its ... Remove this comment to see the full error message
 } from '@rainbow-me/utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { getTokenMetadata } from '@rainbow-me/utils';
 
 const accountAddressSelector = (state: AppState) =>
@@ -65,9 +72,11 @@ interface UniswapCard {
 }
 
 const switchWethToEth = (token: Token, chainId: ChainId): Token => {
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'address' does not exist on type 'Token'.
   if (toLower(token.address) === toLower(WETH[chainId].address)) {
     return {
       ...token,
+      // @ts-expect-error ts-migrate(2322) FIXME: Type '{ address: any; decimals: number; name: stri... Remove this comment to see the full error message
       address: ETH_ADDRESS,
       decimals: 18,
       name: 'Ethereum',
@@ -128,6 +137,7 @@ const transformPool = (
 
   const formattedTokens = map(tokens, token => ({
     ...token,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'address' does not exist on type 'Token'.
     ...getTokenMetadata(token.address),
     value: handleSignificantDecimalsWithThreshold(token.balance, 4),
   }));

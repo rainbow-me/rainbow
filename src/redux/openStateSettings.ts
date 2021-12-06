@@ -22,7 +22,10 @@ const REMOVE_SHOWCASE = 'openStateSettings/REMOVE_SHOWCASE';
 const SET_OPEN_INVESTMENT_CARDS = 'openStateSettings/SET_OPEN_INVESTMENT_CARDS';
 
 // -- Actions --------------------------------------------------------------- //
-export const openStateSettingsLoadState = () => async (dispatch, getState) => {
+export const openStateSettingsLoadState = () => async (
+  dispatch: any,
+  getState: any
+) => {
   try {
     const { accountAddress, network } = getState().settings;
     const openInvestmentCards = await getOpenInvestmentCards(
@@ -44,7 +47,10 @@ export const openStateSettingsLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const setOpenSavings = payload => (dispatch, getState) => {
+export const setOpenSavings = (payload: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { accountAddress, network } = getState().settings;
   saveSavingsToggle(payload, accountAddress, network);
   dispatch({
@@ -53,24 +59,27 @@ export const setOpenSavings = payload => (dispatch, getState) => {
   });
 };
 
-export const setOpenSmallBalances = payload => dispatch =>
+export const setOpenSmallBalances = (payload: any) => (dispatch: any) =>
   dispatch({
     payload,
     type: SET_OPEN_SMALL_BALANCES,
   });
 
-export const removeShowcase = dispatch =>
+export const removeShowcase = (dispatch: any) =>
   dispatch({
     type: REMOVE_SHOWCASE,
   });
 
-export const pushOpenFamilyTab = payload => dispatch =>
+export const pushOpenFamilyTab = (payload: any) => (dispatch: any) =>
   dispatch({
     payload,
     type: PUSH_OPEN_FAMILY_TAB,
   });
 
-export const setOpenFamilyTabs = payload => (dispatch, getState) => {
+export const setOpenFamilyTabs = (payload: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { accountAddress, network } = getState().settings;
   const { openFamilyTabs } = getState().openStateSettings;
   const updatedFamilyTabs = {
@@ -84,7 +93,10 @@ export const setOpenFamilyTabs = payload => (dispatch, getState) => {
   });
 };
 
-export const setOpenInvestmentCards = payload => (dispatch, getState) => {
+export const setOpenInvestmentCards = (payload: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { accountAddress, network } = getState().settings;
   saveOpenInvestmentCards(payload, accountAddress, network);
   dispatch({
@@ -93,7 +105,7 @@ export const setOpenInvestmentCards = payload => (dispatch, getState) => {
   });
 };
 
-export const resetOpenStateSettings = () => dispatch =>
+export const resetOpenStateSettings = () => (dispatch: any) =>
   dispatch({
     type: CLEAR_OPEN_STATE_SETTINGS,
   });
@@ -106,16 +118,17 @@ export const INITIAL_STATE = {
   openSmallBalances: false,
 };
 
-function removeShowcaseFromDictionary(input) {
+function removeShowcaseFromDictionary(input: any) {
   return Object.keys(input).reduce((acc, curr) => {
     if (!curr.endsWith('-showcase')) {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       acc[curr] = input[curr];
     }
     return acc;
   }, {});
 }
 
-export default (state = INITIAL_STATE, action) =>
+export default (state = INITIAL_STATE, action: any) =>
   produce(state, draft => {
     if (action.type === OPEN_STATE_SETTINGS_LOAD_SUCCESS) {
       draft.openFamilyTabs = action.payload.openFamilyTabs;

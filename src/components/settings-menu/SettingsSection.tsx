@@ -5,7 +5,9 @@ import styled from 'styled-components';
 // import { REVIEW_ANDROID } from '../../config/experimental';
 // import useExperimentalFlag from '../../config/experimentalHooks';
 // import { supportedLanguages } from '../../languages';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../context/ThemeContext' was resolved t... Remove this comment to see the full error message
 import { THEMES, useTheme } from '../../context/ThemeContext';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../AppVersionStamp' was resolved to '/User... Remove this comment to see the full error message
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
 import { Column, ColumnWithDividers } from '../layout';
@@ -26,18 +28,23 @@ import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
 import NetworkIconDark from '@rainbow-me/assets/settingsNetworkDark.png';
 import PrivacyIcon from '@rainbow-me/assets/settingsPrivacy.png';
 import PrivacyIconDark from '@rainbow-me/assets/settingsPrivacyDark.png';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkInf... Remove this comment to see the full error message
 import networkInfo from '@rainbow-me/helpers/networkInfo';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/walletType... Remove this comment to see the full error message
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
   useAccountSettings,
   useDimensions,
   useSendFeedback,
   useWallets,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position } from '@rainbow-me/styles';
 import {
   AppleReviewAddress,
   REVIEW_DONE_KEY,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils/reviewAlert'... Remove this comment to see the full error message
 } from '@rainbow-me/utils/reviewAlert';
 
 const { RainbowRequestReview, RNReview } = NativeModules;
@@ -95,11 +102,11 @@ const WarningIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   margin-top: 1;
 `;
 
-function capitalizeFirstLetter(string) {
+function capitalizeFirstLetter(string: any) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-const checkAllWallets = wallets => {
+const checkAllWallets = (wallets: any) => {
   if (!wallets) return false;
   let areBackedUp = true;
   let canBeBackedUp = false;
@@ -129,11 +136,13 @@ export default function SettingsSection({
   onPressCurrency,
   onPressDev,
   onPressIcloudBackup,
+
   /*onPressLanguage,*/
   onPressNetwork,
+
   onPressPrivacy,
   onPressShowSecret,
-}) {
+}: any) {
   const isReviewAvailable = false;
   const { wallets, isReadOnlyWallet } = useWallets();
   const { /*language,*/ nativeCurrency, network } = useAccountSettings();
@@ -144,9 +153,10 @@ export default function SettingsSection({
   const onSendFeedback = useSendFeedback();
 
   const onPressReview = useCallback(async () => {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
     if (ios) {
       onCloseModal();
-      RainbowRequestReview.requestReview(handled => {
+      RainbowRequestReview.requestReview((handled: any) => {
         if (!handled) {
           AsyncStorage.setItem(REVIEW_DONE_KEY, 'true');
           Linking.openURL(AppleReviewAddress);
@@ -176,6 +186,7 @@ export default function SettingsSection({
     []
   );
 
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'allBackedUp' does not exist on type 'fal... Remove this comment to see the full error message
   const { allBackedUp, areBackedUp, canBeBackedUp } = useMemo(
     () => checkAllWallets(wallets),
     [wallets]
@@ -196,15 +207,24 @@ export default function SettingsSection({
   }, [setTheme, colorScheme]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container backgroundColor={colors.white}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ScrollContainer
         contentContainerStyle={!isSmallPhone && scrollContainerStyle}
         scrollEnabled={isSmallPhone}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ColumnWithDividers dividerRenderer={ListItemDivider} marginTop={7}>
           {canBeBackedUp && (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <ListItem
               icon={
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                 <SettingIcon
                   source={isDarkMode ? BackupIconDark : BackupIcon}
                 />
@@ -215,20 +235,29 @@ export default function SettingsSection({
               onPressShowSecret={onPressShowSecret}
               testID="backup-section"
             >
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <ListItemArrowGroup>
                 {areBackedUp ? (
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                   <CheckmarkIcon
                     color={backupStatusColor}
                     isDarkMode={isDarkMode}
                   />
                 ) : (
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                   <WarningIcon />
                 )}
               </ListItemArrowGroup>
             </ListItem>
           )}
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ListItem
             icon={
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <SettingIcon
                 source={isDarkMode ? CurrencyIconDark : CurrencyIcon}
               />
@@ -237,10 +266,17 @@ export default function SettingsSection({
             onPress={onPressCurrency}
             testID="currency-section"
           >
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <ListItemArrowGroup>{nativeCurrency || ''}</ListItemArrowGroup>
           </ListItem>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ListItem
             icon={
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <SettingIcon
                 source={isDarkMode ? NetworkIconDark : NetworkIcon}
               />
@@ -249,12 +285,19 @@ export default function SettingsSection({
             onPress={onPressNetwork}
             testID="network-section"
           >
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <ListItemArrowGroup>
               {networkInfo?.[network]?.name}
             </ListItemArrowGroup>
           </ListItem>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ListItem
             icon={
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <SettingIcon
                 source={isDarkMode ? DarkModeIconDark : DarkModeIcon}
               />
@@ -263,7 +306,13 @@ export default function SettingsSection({
             onPress={toggleTheme}
             testID={`darkmode-section-${isDarkMode}`}
           >
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Column align="end" flex="1" justify="end">
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Text
                 color={colors.alpha(colors.blueGreyDark, 0.6)}
                 size="large"
@@ -274,8 +323,10 @@ export default function SettingsSection({
             </Column>
           </ListItem>
           {!isReadOnlyWallet && (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <ListItem
               icon={
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                 <SettingIcon
                   source={isDarkMode ? PrivacyIconDark : PrivacyIcon}
                 />
@@ -284,6 +335,9 @@ export default function SettingsSection({
               onPress={onPressPrivacy}
               testID="privacy"
             >
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <ListItemArrowGroup />
             </ListItem>
           )}
@@ -299,37 +353,63 @@ export default function SettingsSection({
           {/*  </ListItemArrowGroup>*/}
           {/*</ListItem>*/}
         </ColumnWithDividers>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ListFooter />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ColumnWithDividers dividerRenderer={ListItemDivider}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ListItem
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             icon={<Emoji name="rainbow" />}
             label="Share Rainbow"
             onPress={onPressShare}
             testID="share-section"
             value={SettingsExternalURLs.rainbowHomepage}
           />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ListItem
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             icon={<Emoji name="brain" />}
             label="Learn about Rainbow and Ethereum"
             onPress={onPressLearn}
             testID="learn-section"
             value={SettingsExternalURLs.rainbowLearn}
           />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ListItem
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             icon={<Emoji name="bird" />}
             label="Follow Us on Twitter"
             onPress={onPressTwitter}
             testID="twitter-section"
+            // @ts-expect-error ts-migrate(2339) FIXME: Property 'twitter' does not exist on type '{ rainb... Remove this comment to see the full error message
             value={SettingsExternalURLs.twitter}
           />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ListItem
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             icon={<Emoji name={ios ? 'speech_balloon' : 'lady_beetle'} />}
+            // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
             label={ios ? 'Feedback and Support' : 'Feedback & Bug Reports'}
             onPress={onSendFeedback}
             testID="feedback-section"
           />
           {isReviewAvailable && (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <ListItem
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               icon={<Emoji name="red_heart" />}
               label="Review Rainbow"
               onPress={onPressReview}
@@ -337,10 +417,19 @@ export default function SettingsSection({
             />
           )}
         </ColumnWithDividers>
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'IS_DEV'.
         {IS_DEV && (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <Fragment>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <ListFooter height={10} />
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <ListItem
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               icon={<Emoji name="construction" />}
               label="Developer Settings"
               onPress={onPressDev}
@@ -348,8 +437,13 @@ export default function SettingsSection({
             />
           </Fragment>
         )}
-
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <VersionStampContainer>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <AppVersionStamp />
         </VersionStampContainer>
       </ScrollContainer>

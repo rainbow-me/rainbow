@@ -5,17 +5,23 @@ import isEqual from 'react-fast-compare';
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
 import { emitAssetRequest, emitChartsRequest } from './explorer';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 import { getProviderForNetwork } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkInf... Remove this comment to see the full error message
 import networkInfo from '@rainbow-me/helpers/networkInfo';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   balanceCheckerContractAbiOVM,
   chainAssets,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils } from '@rainbow-me/utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
-let lastUpdatePayload = null;
+let lastUpdatePayload: any = null;
 // -- Constants --------------------------------------- //
 const OPTIMISM_EXPLORER_CLEAR_STATE = 'explorer/OPTIMISM_EXPLORER_CLEAR_STATE';
 const OPTIMISM_EXPLORER_SET_BALANCE_HANDLER =
@@ -27,7 +33,7 @@ const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 60000;
 
 const network = networkTypes.optimism;
 
-const fetchAssetBalances = async (tokens, address) => {
+const fetchAssetBalances = async (tokens: any, address: any) => {
   try {
     const abi = balanceCheckerContractAbiOVM;
 
@@ -43,12 +49,15 @@ const fetchAssetBalances = async (tokens, address) => {
     const values = await balanceCheckerContract.balances([address], tokens);
     const balances = {};
     [address].forEach((addr, addrIdx) => {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       balances[addr] = {};
-      tokens.forEach((tokenAddr, tokenIdx) => {
+      tokens.forEach((tokenAddr: any, tokenIdx: any) => {
         const balance = values[addrIdx * tokens.length + tokenIdx];
+        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         balances[addr][tokenAddr] = balance.toString();
       });
     });
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     return balances[address];
   } catch (e) {
     logger.log(
@@ -60,7 +69,10 @@ const fetchAssetBalances = async (tokens, address) => {
   }
 };
 
-export const optimismExplorerInit = () => async (dispatch, getState) => {
+export const optimismExplorerInit = () => async (
+  dispatch: any,
+  getState: any
+) => {
   if (networkInfo[networkTypes.optimism]?.disabled) return;
   const { assets: allAssets, genericAssets } = getState().data;
   const { accountAddress, nativeCurrency } = getState().settings;
@@ -82,19 +94,20 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       return;
     }
 
-    const tokenAddresses = assets.map(({ asset: { asset_code } }) =>
+    const tokenAddresses = assets.map(({ asset: { asset_code } }: any) =>
       toLower(asset_code)
     );
 
     const balances = await fetchAssetBalances(
       tokenAddresses,
       accountAddress,
+      // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 3.
       network
     );
 
     let updatedAssets = assets;
     if (balances) {
-      updatedAssets = assets.map(assetAndQuantity => {
+      updatedAssets = assets.map((assetAndQuantity: any) => {
         const assetCode = toLower(assetAndQuantity.asset.asset_code);
         return {
           asset: {
@@ -105,13 +118,18 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       });
     }
 
-    const assetsWithBalance = updatedAssets.filter(asset => asset.quantity > 0);
+    const assetsWithBalance = updatedAssets.filter(
+      (asset: any) => asset.quantity > 0
+    );
 
     if (assetsWithBalance.length) {
       dispatch(emitAssetRequest(tokenAddresses));
+      // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 1.
       dispatch(emitChartsRequest(tokenAddresses));
       const prices = await fetchAssetPricesWithCoingecko(
-        assetsWithBalance.map(({ asset: { coingecko_id } }) => coingecko_id),
+        assetsWithBalance.map(
+          ({ asset: { coingecko_id } }: any) => coingecko_id
+        ),
         formattedNativeCurrency
       );
 
@@ -184,7 +202,10 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
   fetchAssetsBalancesAndPrices();
 };
 
-export const optimismExplorerClearState = () => (dispatch, getState) => {
+export const optimismExplorerClearState = () => (
+  dispatch: any,
+  getState: any
+) => {
   const {
     optimismExplorerBalancesHandle,
     optimismExplorerAssetsHandle,
@@ -202,7 +223,7 @@ const INITIAL_STATE = {
   optimismExplorerBalancesHandle: null,
 };
 
-export default (state = INITIAL_STATE, action) => {
+export default (state = INITIAL_STATE, action: any) => {
   switch (action.type) {
     case OPTIMISM_EXPLORER_CLEAR_STATE:
       return {

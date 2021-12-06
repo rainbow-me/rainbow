@@ -8,6 +8,7 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
 import { dismissingScreenListener } from '../../shim';
 import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
@@ -18,8 +19,11 @@ import {
   SendHeader,
 } from '../components/send';
 import { SheetActionButton } from '../components/sheet';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { AssetTypes } from '@rainbow-me/entities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/assets' o... Remove this comment to see the full error message
 import { isL2Asset, isNativeAsset } from '@rainbow-me/handlers/assets';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/ens' or i... Remove this comment to see the full error message
 import { debouncedFetchSuggestions } from '@rainbow-me/handlers/ens';
 import {
   buildTransaction,
@@ -29,9 +33,13 @@ import {
   isL2Network,
   resolveNameOrAddress,
   web3Provider,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/isNativeSt... Remove this comment to see the full error message
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/validators... Remove this comment to see the full error message
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import {
   useAccountAssets,
@@ -50,27 +58,39 @@ import {
   useTransactionConfirmation,
   useUpdateAssetOnchainBalance,
   useUserAccounts,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/model/wallet' or i... Remove this comment to see the full error message
 import { sendTransaction } from '@rainbow-me/model/wallet';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation/Navigat... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/parsers' or its co... Remove this comment to see the full error message
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { chainAssets, rainbowTokenList } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { borders } from '@rainbow-me/styles';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountFromNativeValue,
   formatInputDecimals,
   lessThan,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utilities' or its ... Remove this comment to see the full error message
 } from '@rainbow-me/utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
+// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const Container = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.transparent};
+  background-color: ${({ theme: { colors } }: any) => colors.transparent};
   flex: 1;
   padding-top: ${isNativeStackAvailable ? 0 : statusBarHeight};
   width: 100%;
@@ -82,17 +102,19 @@ const SheetContainer = styled(Column).attrs({
 })`
   ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
   background-color: ${({ theme: { colors } }) => colors.white};
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   height: ${isNativeStackAvailable || android ? sheetHeight : '100%'};
   width: 100%;
 `;
 
 const KeyboardSizeView = styled(KeyboardArea)`
   width: 100%;
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'showAssetForm' does not exist on type 'I... Remove this comment to see the full error message
   background-color: ${({ showAssetForm, theme: { colors } }) =>
     showAssetForm ? colors.lighterGrey : colors.white};
 `;
 
-export default function SendSheet(props) {
+export default function SendSheet(props: any) {
   const dispatch = useDispatch();
   const { goBack, navigate, addListener } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
@@ -132,10 +154,13 @@ export default function SendSheet(props) {
   const [currentInput, setCurrentInput] = useState('');
 
   const { params } = useRoute();
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'asset' does not exist on type 'object'.
   const assetOverride = params?.asset;
   const prevAssetOverride = usePrevious(assetOverride);
 
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'address' does not exist on type 'object'... Remove this comment to see the full error message
   const recipientOverride = params?.address;
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'nativeAmount' does not exist on type 'ob... Remove this comment to see the full error message
   const nativeAmountOverride = params?.nativeAmount;
   const [recipient, setRecipient] = useState('');
   const [selected, setSelected] = useState({});
@@ -143,15 +168,18 @@ export default function SendSheet(props) {
 
   const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
   const [currentProvider, setCurrentProvider] = useState();
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors, isDarkMode } = useTheme();
 
   const showEmptyState = !isValidAddress;
   const showAssetList = isValidAddress && isEmpty(selected);
   const showAssetForm = isValidAddress && !isEmpty(selected);
 
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
   const isNft = selected?.type === AssetTypes.nft;
   let colorForAsset = useColorForAsset(
     {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'mainnet_address' does not exist on type ... Remove this comment to see the full error message
       address: selected?.mainnet_address || selected.address,
     },
     null,
@@ -162,6 +190,7 @@ export default function SendSheet(props) {
     colorForAsset = colors.appleBlue;
   }
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const isL2 = useMemo(() => {
     return isL2Network(currentNetwork);
   }, [currentNetwork]);
@@ -169,6 +198,7 @@ export default function SendSheet(props) {
   const { triggerFocus } = useMagicAutofocus(recipientFieldRef);
 
   useEffect(() => {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
     if (ios) {
       return;
     }
@@ -178,9 +208,10 @@ export default function SendSheet(props) {
     };
     const unsubscribe = addListener(
       'transitionEnd',
-      ({ data: { closing } }) => {
+      ({ data: { closing } }: any) => {
         if (!closing && isDismissing.current) {
           isDismissing.current = false;
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
           recipientFieldRef?.current?.focus();
         }
       }
@@ -196,6 +227,7 @@ export default function SendSheet(props) {
       const _assetAmount = newAssetAmount.replace(/[^0-9.]/g, '');
       let _nativeAmount = '';
       if (_assetAmount.length) {
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'price' does not exist on type '{}'.
         const priceUnit = selected?.price?.value ?? 0;
         const {
           amount: convertedNativeAmount,
@@ -234,6 +266,7 @@ export default function SendSheet(props) {
         });
 
         // Prevent a state update loop
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'uniqueId' does not exist on type '{}'.
         if (selected?.uniqueId !== newSelected?.uniqueId) {
           setSelected({
             ...newSelected,
@@ -285,6 +318,7 @@ export default function SendSheet(props) {
         startPollingGasFees(currentNetwork);
       });
     }
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
   }, [prevNetwork, startPollingGasFees, selected.type, currentNetwork]);
 
   // Stop polling when the sheet is unmounted
@@ -299,6 +333,7 @@ export default function SendSheet(props) {
   // Recalculate balance when gas price changes
   useEffect(() => {
     if (
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'isNativeAsset' does not exist on type '{... Remove this comment to see the full error message
       selected?.isNativeAsset &&
       (prevSelectedGasFee?.gasFee?.estimatedFee?.value?.amount ?? 0) !==
         (selectedGasFee?.gasFee?.estimatedFee?.value?.amount ?? 0)
@@ -309,14 +344,17 @@ export default function SendSheet(props) {
 
   useEffect(() => {
     const updateNetworkAndProvider = async () => {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
       const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
       if (
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
         selected?.type &&
         (assetNetwork !== currentNetwork ||
           !currentNetwork ||
           prevNetwork !== currentNetwork)
       ) {
         let provider = web3Provider;
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
         switch (selected.type) {
           case AssetTypes.polygon:
             setCurrentNetwork(networkTypes.polygon);
@@ -337,15 +375,19 @@ export default function SendSheet(props) {
       }
     };
     updateNetworkAndProvider();
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
   }, [currentNetwork, network, prevNetwork, selected.type, sendUpdateSelected]);
 
   useEffect(() => {
     if (isEmpty(selected)) return;
+    // @ts-expect-error ts-migrate(2339) FIXME: Property '_network' does not exist on type 'never'... Remove this comment to see the full error message
     if (currentProvider?._network?.chainId) {
       const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
+        // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
         currentProvider._network.chainId
       );
 
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
       const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
 
       if (
@@ -357,7 +399,7 @@ export default function SendSheet(props) {
           accountAddress,
           currentNetwork,
           currentProvider,
-          updatedAsset => {
+          (updatedAsset: any) => {
             // set selected asset with new balance
             if (!isEqual(selected, updatedAsset)) {
               setSelected(updatedAsset);
@@ -377,10 +419,12 @@ export default function SendSheet(props) {
       const _nativeAmount = newNativeAmount.replace(/[^0-9.]/g, '');
       let _assetAmount = '';
       if (_nativeAmount.length) {
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'price' does not exist on type '{}'.
         const priceUnit = selected?.price?.value ?? 0;
         const convertedAssetAmount = convertAmountFromNativeValue(
           _nativeAmount,
           priceUnit,
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'decimals' does not exist on type '{}'.
           selected.decimals
         );
         _assetAmount = formatInputDecimals(convertedAssetAmount, _nativeAmount);
@@ -420,6 +464,7 @@ export default function SendSheet(props) {
       if (isValid) {
         realAddress = await resolveNameOrAddress(recipient);
       }
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
       setToAddress(realAddress);
     };
     recipient && resolveAddressIfNeeded();
@@ -463,6 +508,7 @@ export default function SendSheet(props) {
       logger.sentry('selectedGasFee ? ', selectedGasFee);
       logger.sentry('selectedGasFee.maxFee ? ', selectedGasFee?.maxFee);
       logger.sentry('validTransaction ? ', validTransaction);
+      // @ts-expect-error ts-migrate(2559) FIXME: Type '"Preventing tx submit"' has no properties in... Remove this comment to see the full error message
       captureEvent('Preventing tx submit');
       return false;
     }
@@ -471,6 +517,7 @@ export default function SendSheet(props) {
     let updatedGasLimit = null;
 
     // Attempt to update gas limit before sending ERC20 / ERC721
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'address' does not exist on type '{}'.
     if (!isNativeAsset(selected.address, currentNetwork)) {
       try {
         // Estimate the tx with gas limit padding before sending
@@ -575,12 +622,15 @@ export default function SendSheet(props) {
   const submitTransaction = useCallback(async () => {
     if (Number(amountDetails.assetAmount) <= 0) {
       logger.sentry('amountDetails.assetAmount ? ', amountDetails?.assetAmount);
+      // @ts-expect-error ts-migrate(2559) FIXME: Type '"Preventing tx submit due to amount <= 0"' h... Remove this comment to see the full error message
       captureEvent('Preventing tx submit due to amount <= 0');
       return false;
     }
     const submitSuccessful = await onSubmit();
     analytics.track('Sent transaction', {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'name' does not exist on type '{}'.
       assetName: selected?.name || '',
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
       assetType: selected?.type || '',
       isRecepientENS: toLower(recipient.slice(-4)) === '.eth',
     });
@@ -598,7 +648,9 @@ export default function SendSheet(props) {
     navigate,
     onSubmit,
     recipient,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'name' does not exist on type '{}'.
     selected?.name,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
     selected?.type,
   ]);
 
@@ -613,7 +665,7 @@ export default function SendSheet(props) {
       if (isL2) {
         const currentChainAssets = chainAssets[currentNetwork];
         const found = currentChainAssets.find(
-          item => toLower(item.asset?.asset_code) === toLower(toAddress)
+          (item: any) => toLower(item.asset?.asset_code) === toLower(toAddress)
         );
         if (found) {
           return false;
@@ -624,6 +676,7 @@ export default function SendSheet(props) {
     [currentNetwork, isL2]
   );
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const { buttonDisabled, buttonLabel } = useMemo(() => {
     const isZeroAssetAmount = Number(amountDetails.assetAmount) <= 0;
 
@@ -677,6 +730,7 @@ export default function SendSheet(props) {
           // Nasty workaround to take control over useMagicAutofocus :S
           InteractionManager.runAfterInteractions(() => {
             setTimeout(() => {
+              // @ts-expect-error ts-migrate(2339) FIXME: Property 'focus' does not exist on type 'never'.
               recipientFieldRef?.current?.focus();
             }, 210);
           });
@@ -726,6 +780,7 @@ export default function SendSheet(props) {
   useEffect(() => {
     if (
       (isValidAddress && showAssetList) ||
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
       (isValidAddress && showAssetForm && selected?.type === AssetTypes.nft)
     ) {
       Keyboard.dismiss();
@@ -759,10 +814,13 @@ export default function SendSheet(props) {
   }, [checkAddress, recipient]);
 
   useEffect(() => {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property '_network' does not exist on type 'never'... Remove this comment to see the full error message
     if (!currentProvider?._network?.chainId) return;
     const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
+      // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
       currentProvider._network.chainId
     );
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
     const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
     if (
       assetNetwork === currentNetwork &&
@@ -782,14 +840,14 @@ export default function SendSheet(props) {
         currentProvider,
         currentNetwork
       )
-        .then(async gasLimit => {
+        .then(async (gasLimit: any) => {
           if (currentNetwork === networkTypes.optimism) {
             updateTxFeeForOptimism(gasLimit);
           } else {
             updateTxFee(gasLimit, null, currentNetwork);
           }
         })
-        .catch(e => {
+        .catch((e: any) => {
           logger.sentry('Error getting optimism l1 fee', e);
           updateTxFee(null, null, currentNetwork);
         });
@@ -810,9 +868,17 @@ export default function SendSheet(props) {
   ]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container>
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       {ios && <StatusBar barStyle="light-content" />}
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <SheetContainer>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <SendHeader
           contacts={contacts}
           hideDivider={showAssetForm}
@@ -828,6 +894,7 @@ export default function SendSheet(props) {
           watchedAccounts={watchedAccounts}
         />
         {showEmptyState && (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <SendContactList
             contacts={filteredContacts}
             currentInput={currentInput}
@@ -839,6 +906,7 @@ export default function SendSheet(props) {
           />
         )}
         {showAssetList && (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <SendAssetList
             allAssets={allAssets}
             fetchData={fetchData}
@@ -852,10 +920,12 @@ export default function SendSheet(props) {
           />
         )}
         {showAssetForm && (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <SendAssetForm
             {...props}
             assetAmount={amountDetails.assetAmount}
             buttonRenderer={
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <SheetActionButton
                 color={colorForAsset}
                 disabled={buttonDisabled}
@@ -876,6 +946,7 @@ export default function SendSheet(props) {
             selected={selected}
             sendMaxBalance={sendMaxBalance}
             txSpeedRenderer={
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <GasSpeedButton
                 asset={selected}
                 currentNetwork={currentNetwork}
@@ -885,7 +956,9 @@ export default function SendSheet(props) {
             }
           />
         )}
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
         {android && showAssetForm ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <KeyboardSizeView showAssetForm={showAssetForm} />
         ) : null}
       </SheetContainer>

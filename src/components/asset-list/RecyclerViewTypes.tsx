@@ -7,14 +7,19 @@ import {
   SmallBalancesWrapper,
 } from '../coin-divider';
 import { CoinRowHeight } from '../coin-row';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../coin-row/SavingsCoinRow' was resolved t... Remove this comment to see the full error message
 import { SavingsCoinRowHeight } from '../coin-row/SavingsCoinRow';
 import { FloatingActionButtonSize } from '../fab';
 import { ListFooter } from '../list';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../pools/PoolsListWrapper' was resolved to... Remove this comment to see the full error message
 import PoolsListWrapper from '../pools/PoolsListWrapper';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../savings/SavingsListWrapper' was resolve... Remove this comment to see the full error message
 import SavingsListWrapper from '../savings/SavingsListWrapper';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../showcase/ShowcaseHeader' was resolved t... Remove this comment to see the full error message
 import { Header } from '../showcase/ShowcaseHeader';
 import { TokenFamilyHeaderHeight } from '../token-family';
 import { UniqueTokenRow } from '../unique-token';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './AssetListHeader' was resolved to '/Users... Remove this comment to see the full error message
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 
 export const firstCoinRowMarginTop = 6;
@@ -44,7 +49,8 @@ export const ViewTypes = {
     calculateHeight: ({ hideHeader = false }) =>
       hideHeader ? 0 : AssetListHeaderHeight,
     index: 0,
-    renderComponent: ({ data, isCoinListEdited }) => {
+    renderComponent: ({ data, isCoinListEdited }: any) => {
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       return <AssetListHeader {...data} isCoinListEdited={isCoinListEdited} />;
     },
     visibleDuringCoinEdit: true,
@@ -53,21 +59,23 @@ export const ViewTypes = {
   SHOWCASE_HEADER: {
     calculateHeight: () => 380,
     index: 8,
-    renderComponent: data => {
+    renderComponent: (data: any) => {
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       return <Header {...data} />;
     },
     visibleDuringCoinEdit: true,
   },
 
   COIN_ROW: {
-    calculateHeight: ({ isFirst, isLast, areSmallCollectibles }) =>
+    calculateHeight: ({ isFirst, isLast, areSmallCollectibles }: any) =>
       CoinRowHeight +
       (isFirst ? firstCoinRowMarginTop : 0) +
       (!isFirst && isLast && !areSmallCollectibles
-        ? ListFooter.height + lastCoinRowAdditionalHeight
+        ? // @ts-expect-error ts-migrate(2339) FIXME: Property 'height' does not exist on type 'MemoExot... Remove this comment to see the full error message
+          ListFooter.height + lastCoinRowAdditionalHeight
         : 0),
     index: 1,
-    renderComponent: ({ type, data }) => {
+    renderComponent: ({ type, data }: any) => {
       const { item = {}, renderItem } = data;
       return renderItem({
         firstCoinRowMarginTop: firstCoinRowMarginTop,
@@ -81,15 +89,16 @@ export const ViewTypes = {
   COIN_DIVIDER: {
     calculateHeight: () => CoinDividerHeight,
     index: 2,
-    renderComponent: ({ data }) => {
+    renderComponent: ({ data }: any) => {
       const { item = {} } = data;
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       return <CoinDivider balancesSum={item.value} />;
     },
     visibleDuringCoinEdit: true,
   },
 
   COIN_SMALL_BALANCES: {
-    calculateHeight: ({ isOpen, smallBalancesLength, isCoinListEdited }) =>
+    calculateHeight: ({ isOpen, smallBalancesLength, isCoinListEdited }: any) =>
       smallBalancesLength > 0
         ? isOpen
           ? smallBalancesLength * CoinRowHeight +
@@ -98,7 +107,7 @@ export const ViewTypes = {
           : closedSmallBalancesAdditionalHeight
         : 0,
     index: 3,
-    renderComponent: ({ data }) => {
+    renderComponent: ({ data }: any) => {
       const { item = {}, renderItem } = data;
       const renderList = [];
       for (let i = 0; i < item.assets.length; i++) {
@@ -113,27 +122,31 @@ export const ViewTypes = {
         );
       }
       // TODO: moize the renderList
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       return <SmallBalancesWrapper assets={renderList} />;
     },
     visibleDuringCoinEdit: true,
   },
 
   COIN_SAVINGS: {
-    calculateHeight: ({ isOpen, isLast, amountOfRows }) =>
+    calculateHeight: ({ isOpen, isLast, amountOfRows }: any) =>
       isOpen
         ? TokenFamilyHeaderHeight +
           (isLast
-            ? ListFooter.height + savingsLastOpenAdditionalHeight
+            ? // @ts-expect-error ts-migrate(2339) FIXME: Property 'height' does not exist on type 'MemoExot... Remove this comment to see the full error message
+              ListFooter.height + savingsLastOpenAdditionalHeight
             : savingsOpenAdditionalHeight) +
           SavingsCoinRowHeight * amountOfRows
         : TokenFamilyHeaderHeight +
           (isLast
-            ? ListFooter.height + savingsLastClosedAdditionalHeight
+            ? // @ts-expect-error ts-migrate(2339) FIXME: Property 'height' does not exist on type 'MemoExot... Remove this comment to see the full error message
+              ListFooter.height + savingsLastClosedAdditionalHeight
             : savingsClosedAdditionalHeight),
     index: 4,
-    renderComponent: ({ data }) => {
+    renderComponent: ({ data }: any) => {
       const { item = {} } = data;
       return (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <SavingsListWrapper assets={item.assets} totalValue={item.totalValue} />
       );
     },
@@ -141,26 +154,29 @@ export const ViewTypes = {
   },
 
   POOLS: {
-    calculateHeight: ({ isOpen, isLast, amountOfRows }) =>
+    calculateHeight: ({ isOpen, isLast, amountOfRows }: any) =>
       isOpen
         ? TokenFamilyHeaderHeight +
           (isLast
-            ? ListFooter.height + poolsLastOpenAdditionalHeight
+            ? // @ts-expect-error ts-migrate(2339) FIXME: Property 'height' does not exist on type 'MemoExot... Remove this comment to see the full error message
+              ListFooter.height + poolsLastOpenAdditionalHeight
             : poolsOpenAdditionalHeight) +
           CoinRowHeight * amountOfRows
         : TokenFamilyHeaderHeight +
           (isLast
-            ? ListFooter.height + poolsLastClosedAdditionalHeight
+            ? // @ts-expect-error ts-migrate(2339) FIXME: Property 'height' does not exist on type 'MemoExot... Remove this comment to see the full error message
+              ListFooter.height + poolsLastClosedAdditionalHeight
             : poolsClosedAdditionalHeight),
     index: 5,
-    renderComponent: ({ data, isCoinListEdited }) => {
+    renderComponent: ({ data, isCoinListEdited }: any) => {
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       return <PoolsListWrapper {...data} isCoinListEdited={isCoinListEdited} />;
     },
     visibleDuringCoinEdit: false,
   },
 
   UNIQUE_TOKEN_ROW: {
-    calculateHeight: ({ amountOfRows, isFirst, isHeader, isOpen }) => {
+    calculateHeight: ({ amountOfRows, isFirst, isHeader, isOpen }: any) => {
       const SectionHeaderHeight = isHeader ? TokenFamilyHeaderHeight : 0;
       const firstRowExtraTopPadding = isFirst ? firstUniqueTokenMarginTop : 0;
       const heightOfRows = amountOfRows * UniqueTokenRow.cardSize;
@@ -174,7 +190,7 @@ export const ViewTypes = {
       return height;
     },
     index: 6,
-    renderComponent: ({ type, data, index, sections }) => {
+    renderComponent: ({ type, data, index, sections }: any) => {
       const { item = {}, renderItem } = data;
       return renderItem({
         childrenAmount: item.childrenAmount,
@@ -195,7 +211,7 @@ export const ViewTypes = {
   },
 
   FOOTER: {
-    calculateHeight: ({ paddingBottom }) =>
+    calculateHeight: ({ paddingBottom }: any) =>
       paddingBottom - FloatingActionButtonSize / 2,
     index: 7,
     visibleDuringCoinEdit: false,

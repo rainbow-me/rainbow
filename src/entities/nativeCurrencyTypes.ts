@@ -1,4 +1,5 @@
 import { mapValues } from 'lodash';
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module '../references/native-currencie... Remove this comment to see the full error message
 import nativeCurrencyReference from '../references/native-currencies.json';
 
 type NativeCurrencyKey = keyof typeof nativeCurrencyReference;

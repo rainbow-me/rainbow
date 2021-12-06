@@ -1,25 +1,30 @@
 import { debounce } from 'lodash';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/animated-charts' o... Remove this comment to see the full error message
 import { monotoneCubicInterpolation } from '@rainbow-me/animated-charts';
 import {
   useAccountSettings,
   useChartData,
   useChartDataLabels,
   useColorForAsset,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
 
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { ETH_ADDRESS } from '@rainbow-me/references';
 
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'react-native-cool-modals/Nativ... Remove this comment to see the full error message
 import { ModalContext } from 'react-native-cool-modals/NativeStackView';
 
 export const UniBalanceHeightDifference = 100;
 
-const traverseData = (prev, data) => {
+const traverseData = (prev: any, data: any) => {
   if (!data || data.length === 0) {
     return prev;
   }
-  const filtered = data.filter(({ y }) => y);
+  const filtered = data.filter(({ y }: any) => y);
   if (
     filtered[0]?.y === prev?.nativePoints[0]?.y &&
     filtered[0]?.x === prev?.nativePoints[0]?.x
@@ -38,11 +43,11 @@ const traverseData = (prev, data) => {
 };
 
 function useJumpingForm(
-  isLong,
-  heightWithChart,
-  heightWithoutChart,
-  shortHeightWithChart,
-  shortHeightWithoutChart
+  isLong: any,
+  heightWithChart: any,
+  heightWithoutChart: any,
+  shortHeightWithChart: any,
+  shortHeightWithoutChart: any
 ) {
   const { setOptions } = useNavigation();
 
@@ -92,7 +97,7 @@ export default function useChartThrottledPoints({
   secondStore,
   shortHeightWithChart,
   shortHeightWithoutChart,
-}) {
+}: any) {
   const { nativeCurrency } = useAccountSettings();
 
   let assetForColor = asset;
@@ -114,7 +119,7 @@ export default function useChartThrottledPoints({
   );
 
   useEffect(() => {
-    setThrottledPoints(prev => traverseData(prev, chart));
+    setThrottledPoints((prev: any) => traverseData(prev, chart));
   }, [chart]);
 
   const initialChartDataLabels = useChartDataLabels({

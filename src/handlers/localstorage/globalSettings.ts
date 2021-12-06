@@ -1,5 +1,7 @@
 import { getGlobal, saveGlobal } from './common';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { NativeCurrencyKeys } from '@rainbow-me/entities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 export const IMAGE_METADATA = 'imageMetadata';
@@ -15,47 +17,48 @@ const TRANSACTION_SIGNATURES = 'transactionSignatures';
 export const getKeychainIntegrityState = () =>
   getGlobal(KEYCHAIN_INTEGRITY_STATE, null);
 
-export const saveKeychainIntegrityState = state =>
+export const saveKeychainIntegrityState = (state: any) =>
   saveGlobal(KEYCHAIN_INTEGRITY_STATE, state);
 
 export const getAuthTimelock = () => getGlobal(AUTH_TIMELOCK, null);
 
-export const saveAuthTimelock = ts => saveGlobal(AUTH_TIMELOCK, ts);
+export const saveAuthTimelock = (ts: any) => saveGlobal(AUTH_TIMELOCK, ts);
 
 export const getPinAuthAttemptsLeft = () =>
   getGlobal(PIN_AUTH_ATTEMPTS_LEFT, null);
 
-export const savePinAuthAttemptsLeft = amount =>
+export const savePinAuthAttemptsLeft = (amount: any) =>
   saveGlobal(PIN_AUTH_ATTEMPTS_LEFT, amount);
 
 export const getLanguage = () => getGlobal(LANGUAGE, 'en');
 
-export const saveLanguage = language => saveGlobal(LANGUAGE, language);
+export const saveLanguage = (language: any) => saveGlobal(LANGUAGE, language);
 
 export const getNetwork = () => getGlobal(NETWORK, networkTypes.mainnet);
 
-export const saveNetwork = network => saveGlobal(NETWORK, network);
+export const saveNetwork = (network: any) => saveGlobal(NETWORK, network);
 
 export const getKeyboardHeight = () => getGlobal(KEYBOARD_HEIGHT, null);
 
-export const setKeyboardHeight = height => saveGlobal(KEYBOARD_HEIGHT, height);
+export const setKeyboardHeight = (height: any) =>
+  saveGlobal(KEYBOARD_HEIGHT, height);
 
 export const getNativeCurrency = () =>
   getGlobal(NATIVE_CURRENCY, NativeCurrencyKeys.USD);
 
-export const saveNativeCurrency = nativeCurrency =>
+export const saveNativeCurrency = (nativeCurrency: any) =>
   saveGlobal(NATIVE_CURRENCY, nativeCurrency);
 
 export const getImageMetadata = () => getGlobal(IMAGE_METADATA, {});
 
-export const saveImageMetadata = imageMetadata =>
+export const saveImageMetadata = (imageMetadata: any) =>
   saveGlobal(IMAGE_METADATA, imageMetadata);
 
 /**
  * @desc save transaction signatures
  * @param  {Object}   [transactionSignatures]
  */
-export const saveTransactionSignatures = transactionSignatures =>
+export const saveTransactionSignatures = (transactionSignatures: any) =>
   saveGlobal(TRANSACTION_SIGNATURES, transactionSignatures);
 
 /**

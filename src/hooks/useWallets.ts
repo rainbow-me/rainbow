@@ -9,8 +9,11 @@ import {
   walletsSetSelected,
 } from '../redux/wallets';
 import useInitializeWallet from './useInitializeWallet';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 import { toChecksumAddress } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/walletType... Remove this comment to see the full error message
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 const walletSelector = createSelector(
@@ -38,6 +41,7 @@ export default function useWallets() {
     selectedWallet,
     walletNames,
     wallets,
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'OutputParametricSelector<{ walle... Remove this comment to see the full error message
   } = useSelector(walletSelector);
 
   const setIsWalletLoading = useCallback(
@@ -46,6 +50,7 @@ export default function useWallets() {
   );
 
   const isDamaged = useMemo(() => {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'damaged' does not exist on type '{}'.
     const bool = selectedWallet?.damaged;
     if (bool) {
       logger.sentry('Wallet is damaged. Check values below:');
@@ -55,11 +60,11 @@ export default function useWallets() {
     return bool;
   }, [selectedWallet, wallets]);
 
-  const switchToWalletWithAddress = async address => {
+  const switchToWalletWithAddress = async (address: any) => {
     const walletKey = Object.keys(wallets).find(key => {
       // Addresses
       return wallets[key].addresses.find(
-        account => toLower(account.address) === toLower(address)
+        (account: any) => toLower(account.address) === toLower(address)
       );
     });
 
@@ -72,6 +77,7 @@ export default function useWallets() {
 
   return {
     isDamaged,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type '{}'.
     isReadOnlyWallet: selectedWallet.type === WalletTypes.readOnly,
     isWalletLoading,
     latestBackup,

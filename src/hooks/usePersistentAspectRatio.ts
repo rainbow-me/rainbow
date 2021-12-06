@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { Image } from 'react-native';
 import { MMKV, useMMKVNumber } from 'react-native-mmkv';
 import { getLowResUrl } from '../utils/getLowResUrl';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/imgix' or... Remove this comment to see the full error message
 import { svgToLQPng } from '@rainbow-me/handlers/imgix';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/isSupporte... Remove this comment to see the full error message
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 
 const id = 'ASPECT_RATIO';

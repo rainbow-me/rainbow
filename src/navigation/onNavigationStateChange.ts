@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { get } from 'lodash';
 import { StatusBar } from 'react-native';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 // eslint-disable-next-line import/default
 import AndroidKeyboardAdjust from 'react-native-android-keyboard-adjust';
 import currentColors from '../context/currentColors';
@@ -8,19 +9,19 @@ import { sentryUtils } from '../utils';
 import Routes from './routesNames';
 import { Navigation } from './index';
 
-let memRouteName;
-let memState;
+let memRouteName: any;
+let memState: any;
 
-let action = null;
+let action: any = null;
 
-const isOnSwipeScreen = name =>
+const isOnSwipeScreen = (name: any) =>
   [
     Routes.WALLET_SCREEN,
     Routes.QR_SCANNER_SCREEN,
     Routes.PROFILE_SCREEN,
   ].includes(name);
 
-export function triggerOnSwipeLayout(newAction) {
+export function triggerOnSwipeLayout(newAction: any) {
   if (isOnSwipeScreen(Navigation.getActiveRoute()?.name)) {
     newAction();
   } else {
@@ -28,7 +29,7 @@ export function triggerOnSwipeLayout(newAction) {
   }
 }
 
-export function onNavigationStateChange(currentState) {
+export function onNavigationStateChange(currentState: any) {
   const prevState = memState;
   memState = currentState;
   const { name: routeName } = Navigation.getActiveRoute();
@@ -53,6 +54,7 @@ export function onNavigationStateChange(currentState) {
   if (currentColors.theme === 'dark') {
     StatusBar.setBarStyle('light-content');
   } else {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
     if (ios) {
       const oldBottomSheetStackRoute = prevState?.routes[prevState.index].name;
       const newBottomSheetStackRoute =
@@ -87,6 +89,7 @@ export function onNavigationStateChange(currentState) {
           routeName === Routes.MAIN_EXCHANGE_SCREEN ||
           routeName === Routes.SAVINGS_WITHDRAW_MODAL ||
           routeName === Routes.SEND_SHEET ||
+          // @ts-expect-error ts-migrate(2551) FIXME: Property 'SWAP_DETAILS_SCREEN' does not exist on t... Remove this comment to see the full error message
           routeName === Routes.SWAP_DETAILS_SCREEN ||
           routeName === Routes.SWAP_DETAILS_SHEET ||
           routeName === Routes.QR_SCANNER_SCREEN
@@ -139,8 +142,10 @@ export function onNavigationStateChange(currentState) {
     }
 
     sentryUtils.addNavBreadcrumb(prevRouteName, routeName, paramsToTrack);
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     return android
       ? paramsToTrack && analytics.screen(routeName, paramsToTrack)
-      : analytics.screen(routeName, paramsToTrack);
+      : // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ assetContractAddress: any; ass... Remove this comment to see the full error message
+        analytics.screen(routeName, paramsToTrack);
   }
 }

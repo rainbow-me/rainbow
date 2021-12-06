@@ -1,14 +1,23 @@
+// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { OPENSEA_API_KEY, OPENSEA_RINKEBY_API_KEY } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/networkTypes' or i... Remove this comment to see the full error message
 import NetworkTypes from '@rainbow-me/networkTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/parsers' or its co... Remove this comment to see the full error message
 import { parseAccountUniqueTokens } from '@rainbow-me/parsers';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utilities' or its ... Remove this comment to see the full error message
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
 export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;
 
-export const apiGetAccountUniqueTokens = async (network, address, page) => {
+export const apiGetAccountUniqueTokens = async (
+  network: any,
+  address: any,
+  page: any
+) => {
   try {
     const API_KEY =
       network === NetworkTypes.rinkeby
@@ -23,6 +32,7 @@ export const apiGetAccountUniqueTokens = async (network, address, page) => {
         'X-Api-Key': API_KEY,
       },
       method: 'get',
+      // @ts-expect-error ts-migrate(2322) FIXME: Type '{ limit: number; offset: number; owner: any;... Remove this comment to see the full error message
       params: {
         limit: UNIQUE_TOKENS_LIMIT_PER_PAGE,
         offset: offset,
@@ -38,13 +48,14 @@ export const apiGetAccountUniqueTokens = async (network, address, page) => {
 };
 
 export const apiGetUniqueTokenFloorPrice = async (
-  network,
-  urlSuffixForAsset
+  network: any,
+  urlSuffixForAsset: any
 ) => {
   try {
     const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
     const url = `https://${networkPrefix}api.opensea.io/api/v1/asset/${urlSuffixForAsset}`;
     const data = await rainbowFetch(url, {
+      // @ts-expect-error ts-migrate(2322) FIXME: Type '{ Accept: string; method: string; timeout: n... Remove this comment to see the full error message
       headers: {
         Accept: 'application/json',
         method: 'get',

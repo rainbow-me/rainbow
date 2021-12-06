@@ -2,8 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 import { Row } from '../layout';
 import { Text } from '../text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/bigNumberF... Remove this comment to see the full error message
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useAccountSettings } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding } from '@rainbow-me/styles';
 
 const PoolValueWrapper = styled(Row)`
@@ -19,11 +22,13 @@ const PoolValueText = styled(Text).attrs(({ simple, size }) => ({
   size: size || 'lmedium',
   weight: simple ? 'semibold' : 'bold',
 }))`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${android && 'line-height: 28px; height: 30px;'}
 `;
 
-export const PoolValue = ({ type, value, simple, ...props }) => {
+export const PoolValue = ({ type, value, simple, ...props }: any) => {
   let formattedValue = value;
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   let color = type === 'oneDayVolumeUSD' ? colors.swapPurple : colors.appleBlue;
   const { nativeCurrency } = useAccountSettings();
@@ -46,8 +51,10 @@ export const PoolValue = ({ type, value, simple, ...props }) => {
     if (fixedPercent === '0.00') {
       formattedValue = '0%';
     }
+    // @ts-expect-error ts-migrate(2365) FIXME: Operator '>' cannot be applied to types 'string' a... Remove this comment to see the full error message
     if (fixedPercent > 0) {
       color = colors.green;
+      // @ts-expect-error ts-migrate(2365) FIXME: Operator '>' cannot be applied to types 'string' a... Remove this comment to see the full error message
       if (fixedPercent > 100) {
         formattedValue = `+${percent
           ?.toFixed(2)
@@ -64,10 +71,14 @@ export const PoolValue = ({ type, value, simple, ...props }) => {
     formattedValue = bigNumberFormat(value, nativeCurrency, value >= 10000);
   }
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <PoolValueWrapper
       backgroundColor={colors.alpha(color, simple ? 0 : 0.06)}
       simple={simple}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <PoolValueText color={color} simple={simple} {...props}>
         {formattedValue}
       </PoolValueText>

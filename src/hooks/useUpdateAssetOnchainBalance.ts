@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { getOnchainAssetBalance } from '../handlers/assets';
 import { dataUpdateAssets } from '../redux/data';
 import useAccountAssets from './useAccountAssets';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { logger } from '@rainbow-me/utils';
 
 export default function useUpdateAssetOnchainBalance() {
@@ -28,7 +29,7 @@ export default function useUpdateAssetOnchainBalance() {
         // First in the state
         successCallback({ ...assetToUpdate, balance });
         // Then in redux
-        const allAssetsUpdated = allAssets.map(asset => {
+        const allAssetsUpdated = allAssets.map((asset: any) => {
           if (
             asset.address === assetToUpdate.address &&
             asset.network === assetToUpdate.network

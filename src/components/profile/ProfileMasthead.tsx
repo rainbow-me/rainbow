@@ -2,6 +2,7 @@ import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useRef } from 'react';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../Divider' was resolved to '/Users/nickby... Remove this comment to see the full error message
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RainbowButton } from '../buttons';
@@ -9,20 +10,28 @@ import { FloatingEmojis } from '../floating-emojis';
 import { Icon } from '../icons';
 import { Centered, Column, Row, RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './AvatarCircle' was resolved to '/Users/ni... Remove this comment to see the full error message
 import AvatarCircle from './AvatarCircle';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './ProfileAction' was resolved to '/Users/n... Remove this comment to see the full error message
 import ProfileAction from './ProfileAction';
 import useExperimentalFlag, {
   AVATAR_PICKER,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/config/experimenta... Remove this comment to see the full error message
 } from '@rainbow-me/config/experimentalHooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/support' o... Remove this comment to see the full error message
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import {
   useAccountProfile,
   useDimensions,
   useOnAvatarPress,
   useWallets,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { abbreviations } from '@rainbow-me/utils';
 
 const dropdownArrowWidth = 21;
@@ -50,8 +59,11 @@ const AccountName = styled(TruncatedText).attrs({
   truncationLength: 4,
   weight: 'bold',
 })`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   height: ${android ? '38' : '33'};
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   margin-top: ${android ? '-10' : '-1'};
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   margin-bottom: ${android ? '10' : '1'};
   max-width: ${({ deviceWidth }) => deviceWidth - dropdownArrowWidth - 60};
   padding-right: 6;
@@ -84,7 +96,7 @@ export default function ProfileMasthead({
   addCashAvailable,
   recyclerListRef,
   showBottomDivider = true,
-}) {
+}: any) {
   const { isDamaged } = useWallets();
   const onNewEmoji = useRef();
   const setOnNewEmoji = useCallback(
@@ -130,6 +142,7 @@ export default function ProfileMasthead({
       category: 'add cash',
     });
 
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
     if (ios) {
       navigate(Routes.ADD_CASH_FLOW);
     } else {
@@ -151,13 +164,16 @@ export default function ProfileMasthead({
       showWalletErrorAlert();
     }
     if (onNewEmoji && onNewEmoji.current) {
+      // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
       onNewEmoji.current();
     }
     Clipboard.setString(accountAddress);
   }, [accountAddress, isDamaged]);
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Column
       align="center"
       height={addCashAvailable ? 260 : 185}
@@ -165,6 +181,9 @@ export default function ProfileMasthead({
       marginTop={0}
     >
       {/* [AvatarCircle -> ImageAvatar -> ImgixImage], so no need to sign accountImage here. */}
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <AvatarCircle
         accountColor={accountColor}
         accountSymbol={accountSymbol}
@@ -172,15 +191,36 @@ export default function ProfileMasthead({
         isAvatarPickerAvailable={isAvatarPickerAvailable}
         onPress={handlePressAvatar}
       />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ButtonPressAnimation onPress={handlePressChangeWallet}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Row>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <AccountName deviceWidth={deviceWidth}>{accountName}</AccountName>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <DropdownArrow>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Icon color={colors.dark} direction="down" name="caret" />
           </DropdownArrow>
         </Row>
       </ButtonPressAnimation>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <RowWithMargins align="center" margin={19}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ProfileAction
           icon="copy"
           onPress={handlePressCopyAddress}
@@ -196,7 +236,13 @@ export default function ProfileMasthead({
             },
           }}
         />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <FloatingEmojisRegion setOnNewEmoji={setOnNewEmoji} />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ProfileAction
           icon="qrCode"
           onPress={handlePressReceive}
@@ -213,7 +259,13 @@ export default function ProfileMasthead({
           }}
         />
       </RowWithMargins>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       {addCashAvailable && <AddCashButton onPress={handlePressAddCash} />}
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       {showBottomDivider && <ProfileMastheadDivider />}
     </Column>
   );

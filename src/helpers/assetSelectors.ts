@@ -1,23 +1,24 @@
 import { filter, get, groupBy, isEmpty, isNil, map, toNumber } from 'lodash';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/parsers' or its co... Remove this comment to see the full error message
 import { parseAssetsNativeWithTotals } from '@rainbow-me/parsers';
 
-const EMPTY_ARRAY = [];
+const EMPTY_ARRAY: any = [];
 
-const assetPricesFromUniswapSelector = state =>
+const assetPricesFromUniswapSelector = (state: any) =>
   state.data.assetPricesFromUniswap;
-const assetsSelector = state => state.data.assets;
-const isLoadingAssetsSelector = state => state.data.isLoadingAssets;
-const nativeCurrencySelector = state => state.settings.nativeCurrency;
-const hiddenCoinsSelector = state => state.editOptions.hiddenCoins;
+const assetsSelector = (state: any) => state.data.assets;
+const isLoadingAssetsSelector = (state: any) => state.data.isLoadingAssets;
+const nativeCurrencySelector = (state: any) => state.settings.nativeCurrency;
+const hiddenCoinsSelector = (state: any) => state.editOptions.hiddenCoins;
 
 const sortAssetsByNativeAmount = (
-  originalAssets,
-  assetPricesFromUniswap,
-  isLoadingAssets,
-  nativeCurrency,
-  hiddenCoins
+  originalAssets: any,
+  assetPricesFromUniswap: any,
+  isLoadingAssets: any,
+  nativeCurrency: any,
+  hiddenCoins: any
 ) => {
   let updatedAssets = originalAssets;
   if (!isEmpty(assetPricesFromUniswap)) {
@@ -66,10 +67,12 @@ const sortAssetsByNativeAmount = (
     0,
     toNumber
   );
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 5 arguments, but got 3.
   const sortedShitcoins = sortList(noValue, 'name', 'asc');
   const allAssets = sortedAssets.concat(sortedShitcoins);
   const allAssetsWithoutHidden = filter(
     allAssets,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'uniqueId' does not exist on type 'never'... Remove this comment to see the full error message
     asset => hiddenCoins && !hiddenCoins.includes(asset.uniqueId)
   );
 
@@ -89,7 +92,7 @@ const sortAssetsByNativeAmount = (
   };
 };
 
-const groupAssetsByMarketValue = assets =>
+const groupAssetsByMarketValue = (assets: any) =>
   groupBy(assets, ({ native }) => (isNil(native) ? 'noValue' : 'hasValue'));
 
 export const sortAssetsByNativeAmountSelector = createSelector(

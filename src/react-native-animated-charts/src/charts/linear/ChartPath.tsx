@@ -51,30 +51,32 @@ const timingAnimationDefaultConfig = {
   duration: 300,
 };
 
-function combineConfigs(a, b) {
+function combineConfigs(a: any, b: any) {
   'worklet';
   const r = {};
   const keysA = Object.keys(a);
   for (let i = 0; i < keysA.length; i++) {
     const key = keysA[i];
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     r[key] = a[key];
   }
   const keysB = Object.keys(b);
   for (let i = 0; i < keysB.length; i++) {
     const key = keysB[i];
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     r[key] = b[key];
   }
   return r;
 }
 
-const parse = (data, yRange) => {
+const parse = (data: any, yRange: any) => {
   const { greatestY, smallestY } = findYExtremes(data);
   const minY = yRange ? yRange[0] : smallestY.y;
   const maxY = yRange ? yRange[1] : greatestY.y;
   const smallestX = data[0];
   const greatestX = data[data.length - 1];
   return [
-    data.map(({ x, y }) => ({
+    data.map(({ x, y }: any) => ({
       originalX: x,
       originalY: y,
       x: (x - smallestX.x) / (greatestX.x - smallestX.x),
@@ -90,10 +92,10 @@ const parse = (data, yRange) => {
 };
 
 function setoriginalXYAccordingToPosition(
-  originalX,
-  originalY,
-  position,
-  data
+  originalX: any,
+  originalY: any,
+  position: any,
+  data: any
 ) {
   'worklet';
   let idx = 0;
@@ -120,7 +122,7 @@ function setoriginalXYAccordingToPosition(
     : 'undefined';
 }
 
-function positionXWithMargin(x, margin, width) {
+function positionXWithMargin(x: any, margin: any, width: any) {
   'worklet';
   if (x < margin) {
     return Math.max(3 * x - 2 * margin, 0);
@@ -131,7 +133,7 @@ function positionXWithMargin(x, margin, width) {
   }
 }
 
-function getValue(data, i, smoothingStrategy) {
+function getValue(data: any, i: any, smoothingStrategy: any) {
   'worklet';
   if (smoothingStrategy.value === 'bezier') {
     if (i === 0) {
@@ -164,9 +166,10 @@ export default function ChartPathProvider({
   timingAnimationConfig = {},
   children,
   ...rest
-}) {
+}: any) {
   const valuesStore = useRef(null);
   if (valuesStore.current == null) {
+    // @ts-expect-error ts-migrate(2322) FIXME: Type '{ currData: never[]; curroriginalData: never... Remove this comment to see the full error message
     valuesStore.current = {
       currData: [],
       curroriginalData: [],
@@ -187,22 +190,30 @@ export default function ChartPathProvider({
     progress,
     layoutSize,
     state,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'setContextValue' does not exist on type ... Remove this comment to see the full error message
     setContextValue = () => {},
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'providedData' does not exist on type '{ ... Remove this comment to see the full error message
     providedData = rawData,
   } = useContext(ChartContext) || generateValues();
 
+  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
   const prevData = useSharedValue(valuesStore.current.prevData, 'prevData');
+  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
   const currData = useSharedValue(valuesStore.current.currData, 'currData');
   const curroriginalData = useSharedValue(
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     valuesStore.current.curroriginalData,
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 2.
     'curroriginalData'
   );
   const hitSlopValue = useSharedValue(hitSlop);
   const hapticsEnabledValue = useSharedValue(hapticsEnabled);
   const [extremes, setExtremes] = useState({});
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 2.
   const isAnimationInProgress = useSharedValue(false, 'isAnimationInProgress');
 
   const [data, setData] = useState(providedData);
+  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
   const dataQueue = useSharedValue(valuesStore.current.dataQueue, 'dataQueue');
   useEffect(() => {
     if (isAnimationInProgress.value) {
@@ -219,18 +230,26 @@ export default function ChartPathProvider({
       return;
     }
     const [parsedData] = parse(data.points, data.yRange);
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
     const [parsedoriginalData, newExtremes] = parse(
       data.nativePoints || data.points
     );
-    setContextValue(prev => ({ ...prev, ...newExtremes, data }));
+    setContextValue((prev: any) => ({
+      ...prev,
+      ...newExtremes,
+      data,
+    }));
     setExtremes(newExtremes);
     if (prevData.value.length !== 0) {
+      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
       valuesStore.current.prevData = currData.value;
       prevData.value = currData.value;
       prevSmoothing.value = currSmoothing.value;
       progress.value = 0;
+      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
       valuesStore.current.currData = parsedData;
       currData.value = parsedData;
+      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
       valuesStore.current.curroriginalData = parsedoriginalData;
       curroriginalData.value = parsedoriginalData;
       currSmoothing.value = data.smoothingFactor || 0;
@@ -254,7 +273,9 @@ export default function ChartPathProvider({
     } else {
       prevSmoothing.value = data.smoothing || 0;
       currSmoothing.value = data.smoothing || 0;
+      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
       valuesStore.current.currData = parsedData;
+      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
       valuesStore.current.curroriginalData = parsedData;
       prevData.value = parsedData;
       currData.value = parsedData;
@@ -262,6 +283,7 @@ export default function ChartPathProvider({
     }
   }, [data]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 2.
   const isStarted = useSharedValue(false, 'isStarted');
 
   const onLongPressGestureEvent = useAnimatedGestureHandler({
@@ -289,12 +311,14 @@ export default function ChartPathProvider({
       const eventX = positionXWithMargin(
         event.x,
         hitSlopValue.value,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'width' does not exist on type 'number'.
         layoutSize.value.width
       );
 
       let idx = 0;
       const ss = smoothingStrategy;
       for (let i = 0; i < currData.value.length; i++) {
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'width' does not exist on type 'number'.
         if (getValue(currData, i, ss).x > eventX / layoutSize.value.width) {
           idx = i;
           break;
@@ -307,6 +331,7 @@ export default function ChartPathProvider({
       if (
         ss.value === 'bezier' &&
         currData.value.length > 30 &&
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'width' does not exist on type 'number'.
         eventX / layoutSize.value.width >=
           currData.value[currData.value.length - 2].x
       ) {
@@ -315,12 +340,15 @@ export default function ChartPathProvider({
         const lastY = currData.value[currData.value.length - 1].y;
         const lastX = currData.value[currData.value.length - 1].x;
         const progress =
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'width' does not exist on type 'number'.
           (eventX / layoutSize.value.width - prevLastX) / (lastX - prevLastX);
         positionY.value =
           (prevLastY + progress * (lastY - prevLastY)) *
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'height' does not exist on type 'number'.
           layoutSize.value.height;
       } else if (idx === 0) {
         positionY.value =
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'height' does not exist on type 'number'.
           getValue(currData, idx, ss).y * layoutSize.value.height;
       } else {
         // prev + diff over X
@@ -328,16 +356,19 @@ export default function ChartPathProvider({
           (getValue(currData, idx - 1, ss).y +
             (getValue(currData, idx, ss).y -
               getValue(currData, idx - 1, ss).y) *
+              // @ts-expect-error ts-migrate(2339) FIXME: Property 'width' does not exist on type 'number'.
               ((eventX / layoutSize.value.width -
                 getValue(currData, idx - 1, ss).x) /
                 (getValue(currData, idx, ss).x -
                   getValue(currData, idx - 1, ss).x))) *
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'height' does not exist on type 'number'.
           layoutSize.value.height;
       }
 
       setoriginalXYAccordingToPosition(
         originalX,
         originalY,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'width' does not exist on type 'number'.
         eventX / layoutSize.value.width,
         curroriginalData
       );
@@ -427,6 +458,7 @@ export default function ChartPathProvider({
       const eventX = positionXWithMargin(
         event.x,
         hitSlopValue.value,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'width' does not exist on type 'number'.
         layoutSize.value.width
       );
 
@@ -434,6 +466,7 @@ export default function ChartPathProvider({
       let idx = 0;
       const ss = smoothingStrategy;
       for (let i = 0; i < currData.value.length; i++) {
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'width' does not exist on type 'number'.
         if (getValue(currData, i, ss).x > eventX / layoutSize.value.width) {
           idx = i;
           break;
@@ -446,6 +479,7 @@ export default function ChartPathProvider({
       if (
         ss.value === 'bezier' &&
         currData.value.length > 30 &&
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'width' does not exist on type 'number'.
         eventX / layoutSize.value.width >=
           currData.value[currData.value.length - 2].x
       ) {
@@ -454,12 +488,15 @@ export default function ChartPathProvider({
         const lastY = currData.value[currData.value.length - 1].y;
         const lastX = currData.value[currData.value.length - 1].x;
         const progress =
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'width' does not exist on type 'number'.
           (eventX / layoutSize.value.width - prevLastX) / (lastX - prevLastX);
         positionY.value =
           (prevLastY + progress * (lastY - prevLastY)) *
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'height' does not exist on type 'number'.
           layoutSize.value.height;
       } else if (idx === 0) {
         positionY.value =
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'height' does not exist on type 'number'.
           getValue(currData, idx, ss).y * layoutSize.value.height;
       } else {
         // prev + diff over X
@@ -467,16 +504,19 @@ export default function ChartPathProvider({
           (getValue(currData, idx - 1, ss).y +
             (getValue(currData, idx, ss).y -
               getValue(currData, idx - 1, ss).y) *
+              // @ts-expect-error ts-migrate(2339) FIXME: Property 'width' does not exist on type 'number'.
               ((eventX / layoutSize.value.width -
                 getValue(currData, idx - 1, ss).x) /
                 (getValue(currData, idx, ss).x -
                   getValue(currData, idx - 1, ss).x))) *
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'height' does not exist on type 'number'.
           layoutSize.value.height;
       }
 
       setoriginalXYAccordingToPosition(
         originalX,
         originalY,
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'width' does not exist on type 'number'.
         eventX / layoutSize.value.width,
         curroriginalData
       );
@@ -497,6 +537,7 @@ export default function ChartPathProvider({
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ChartPath
       {...{
         children,
@@ -545,7 +586,7 @@ function ChartPath({
   __disableRendering,
   children,
   ...props
-}) {
+}: any) {
   const smoothingWhileTransitioningEnabledValue = useSharedValue(
     smoothingWhileTransitioningEnabled
   );
@@ -602,7 +643,7 @@ function ChartPath({
         }
       }
 
-      res = fromValue.map(({ x, y }, i) => {
+      res = fromValue.map(({ x, y }: any, i: any) => {
         const { x: nX, y: nY } = toValue[i];
         const mX = (x + (nX - x) * progress.value) * layoutSize.value.width;
         const mY = (y + (nY - y) * progress.value) * layoutSize.value.height;
@@ -610,7 +651,7 @@ function ChartPath({
       });
     } else {
       smoothing = currSmoothing.value;
-      res = toValue.map(({ x, y }) => {
+      res = toValue.map(({ x, y }: any) => {
         return {
           x: x * layoutSize.value.width,
           y: y * layoutSize.value.height,
@@ -619,7 +660,7 @@ function ChartPath({
     }
 
     // For som reason isNaN(y) does not work
-    res = res.filter(({ y }) => y === Number(y));
+    res = res.filter(({ y }: any) => y === Number(y));
 
     if (res.length !== 0) {
       const firstValue = res[0];
@@ -650,13 +691,14 @@ function ChartPath({
     }
 
     return res
-      .map(({ x, y }) => {
+      .map(({ x, y }: any) => {
         return `L ${x} ${y}`;
       })
       .join(' ')
       .replace('L', 'M');
   });
 
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '() => { d: any; strokeWidth: num... Remove this comment to see the full error message
   const animatedProps = useAnimatedStyle(() => {
     const props = {
       d: path.value,
@@ -667,6 +709,7 @@ function ChartPath({
         Number(selectedStrokeWidthValue.value),
     };
     if (Platform.OS === 'ios') {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'style' does not exist on type '{ d: any;... Remove this comment to see the full error message
       props.style = {
         opacity: pathOpacity.value * (1 - selectedOpacity) + selectedOpacity,
       };
@@ -690,7 +733,9 @@ function ChartPath({
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <InternalContext.Provider
+      // @ts-expect-error ts-migrate(2322) FIXME: Type '{ animatedProps: Animated.AnimatedStyleProp<... Remove this comment to see the full error message
       value={{
         animatedProps,
         animatedStyle,
@@ -705,12 +750,15 @@ function ChartPath({
         width,
       }}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       {__disableRendering ? children : <SvgComponent />}
     </InternalContext.Provider>
   );
 }
 
-function useDelayedValue(value) {
+function useDelayedValue(value: any) {
   const [delayedValue, setValue] = useState(value);
 
   useEffect(() => {
@@ -722,21 +770,33 @@ function useDelayedValue(value) {
 
 export function SvgComponent() {
   const {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'style' does not exist on type 'null'.
     style,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'animatedStyle' does not exist on type 'n... Remove this comment to see the full error message
     animatedStyle,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'height' does not exist on type 'null'.
     height,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'width' does not exist on type 'null'.
     width,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'animatedProps' does not exist on type 'n... Remove this comment to see the full error message
     animatedProps,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'props' does not exist on type 'null'.
     props,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'onLongPressGestureEvent' does not exist ... Remove this comment to see the full error message
     onLongPressGestureEvent,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'gestureEnabled' does not exist on type '... Remove this comment to see the full error message
     gestureEnabled,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'longPressGestureHandlerProps' does not e... Remove this comment to see the full error message
     longPressGestureHandlerProps,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'pathState' does not exist on type 'null'... Remove this comment to see the full error message
     pathState,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'strokeWidth' does not exist on type 'nul... Remove this comment to see the full error message
     strokeWidth,
   } = useContext(InternalContext);
 
   const delayedPathValue = useDelayedValue(pathState === '');
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <LongPressGestureHandler
       enabled={gestureEnabled}
       maxDist={100000}
@@ -745,12 +805,21 @@ export function SvgComponent() {
       {...longPressGestureHandlerProps}
       {...{ onGestureEvent: onLongPressGestureEvent }}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Animated.View>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Svg
           height={height + 20} // temporary fix for clipped chart
           viewBox={`0 0 ${width} ${height}`}
           width={width}
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <AnimatedPath
             {...(delayedPathValue ? { animatedProps } : {})}
             d={pathState}

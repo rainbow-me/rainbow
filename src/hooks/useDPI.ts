@@ -7,11 +7,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { web3Provider } from '../handlers/web3';
 import { emitAssetRequest } from '../redux/explorer';
 import { AppState } from '../redux/store';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { IndexToken } from '@rainbow-me/entities';
 import {
   DEFI_SDK_ADAPTER_REGISTRY_ADDRESS,
   defiSdkAdapterRegistryABI,
   DPI_ADDRESS,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 } from '@rainbow-me/references';
 
 const TOKENSETS_V2 = 'SetToken V2';

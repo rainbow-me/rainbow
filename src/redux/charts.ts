@@ -1,7 +1,9 @@
 import { get, mapValues, reverse, toLower } from 'lodash';
 
 import ChartTypes from '../helpers/chartTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/currencyTy... Remove this comment to see the full error message
 import currenyTypes from '@rainbow-me/helpers/currencyTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { ETH_ADDRESS } from '@rainbow-me/references';
 
 // -- Constants --------------------------------------- //
@@ -13,14 +15,19 @@ const CHARTS_UPDATE_USD_MONTH = 'charts/CHARTS_UPDATE_USD_MONTH';
 export const DEFAULT_CHART_TYPE = ChartTypes.day;
 
 // -- Actions ---------------------------------------- //
-export const chartsUpdateChartType = (chartType, secondStore) => dispatch =>
+export const chartsUpdateChartType = (chartType: any, secondStore: any) => (
+  dispatch: any
+) =>
   dispatch({
     payload: chartType,
     secondStore,
     type: CHARTS_UPDATE_CHART_TYPE,
   });
 
-export const assetChartsReceived = message => (dispatch, getState) => {
+export const assetChartsReceived = (message: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const chartType = get(message, 'meta.charts_type');
   const { charts: existingCharts } = getState().charts;
   const assetCharts = get(message, 'payload.charts', {});
@@ -70,7 +77,7 @@ const INITIAL_STATE = {
   fetchingCharts2: false,
 };
 
-export default (state = INITIAL_STATE, action) => {
+export default (state = INITIAL_STATE, action: any) => {
   switch (action.type) {
     case CHARTS_UPDATE_CHART_TYPE:
       return {

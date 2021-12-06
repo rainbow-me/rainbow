@@ -6,7 +6,9 @@ import {
   getWebDataEnabled,
   saveShowcaseTokens,
   saveWebDataEnabled,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/localstor... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/localstorage/accountLocal';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 // -- Constants --------------------------------------- //
@@ -18,7 +20,10 @@ const UPDATE_WEB_DATA_ENABLED = 'showcaseTokens/UPDATE_WEB_DATA_ENABLED';
 const ADD_SHOWCASE_TOKEN = 'showcaseTokens/ADD_SHOWCASE_TOKEN';
 const REMOVE_SHOWCASE_TOKEN = 'showcaseTokens/REMOVE_SHOWCASE_TOKEN';
 
-export const showcaseTokensLoadState = () => async (dispatch, getState) => {
+export const showcaseTokensLoadState = () => async (
+  dispatch: any,
+  getState: any
+) => {
   try {
     const { accountAddress, network } = getState().settings;
 
@@ -32,9 +37,12 @@ export const showcaseTokensLoadState = () => async (dispatch, getState) => {
         accountAddress
       );
       if (
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'showcase' does not exist on type 'Object... Remove this comment to see the full error message
         showcaseTokensFromCloud?.showcase?.ids &&
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'showcase' does not exist on type 'Object... Remove this comment to see the full error message
         showcaseTokensFromCloud?.showcase?.ids.length > 0
       ) {
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'showcase' does not exist on type 'Object... Remove this comment to see the full error message
         showcaseTokens = showcaseTokensFromCloud.showcase.ids;
       }
     }
@@ -51,7 +59,10 @@ export const showcaseTokensLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const addShowcaseToken = tokenId => (dispatch, getState) => {
+export const addShowcaseToken = (tokenId: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { accountAddress, network } = getState().settings;
   const { showcaseTokens } = getState().showcaseTokens;
   const updatedShowcaseTokens = concat(showcaseTokens, tokenId);
@@ -62,7 +73,10 @@ export const addShowcaseToken = tokenId => (dispatch, getState) => {
   saveShowcaseTokens(updatedShowcaseTokens, accountAddress, network);
 };
 
-export const removeShowcaseToken = tokenId => (dispatch, getState) => {
+export const removeShowcaseToken = (tokenId: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { accountAddress, network } = getState().settings;
   const { showcaseTokens } = getState().showcaseTokens;
 
@@ -77,10 +91,10 @@ export const removeShowcaseToken = tokenId => (dispatch, getState) => {
 };
 
 export const updateWebDataEnabled = (
-  enabled,
-  address,
+  enabled: any,
+  address: any,
   network = networkTypes.mainnet
-) => async dispatch => {
+) => async (dispatch: any) => {
   dispatch({
     payload: enabled,
     type: UPDATE_WEB_DATA_ENABLED,
@@ -94,7 +108,7 @@ const INITIAL_STATE = {
   webDataEnabled: false,
 };
 
-export default (state = INITIAL_STATE, action) =>
+export default (state = INITIAL_STATE, action: any) =>
   produce(state, draft => {
     if (action.type === ADD_SHOWCASE_TOKEN) {
       draft.showcaseTokens = action.payload;

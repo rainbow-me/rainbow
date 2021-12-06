@@ -3,12 +3,12 @@ import Animated, { spring, Value } from 'react-native-reanimated';
 const { block, clockRunning, cond, set, startClock } = Animated;
 
 export default function runSpring(
-  clock,
-  value,
-  dest,
-  velocity,
-  stiffness,
-  damping
+  clock: any,
+  value: any,
+  dest: any,
+  velocity: any,
+  stiffness: any,
+  damping: any
 ) {
   const state = {
     finished: new Value(0),

@@ -3,16 +3,24 @@ import { captureException, captureMessage } from '@sentry/react-native';
 import { find, map, toLower } from 'lodash';
 /* eslint-disable-next-line import/no-cycle */
 import { dataAddNewTransaction } from './data';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
 import {
   getPurchaseTransactions,
   savePurchaseTransactions,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/localstor... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/localstorage/accountLocal';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/wyre' or ... Remove this comment to see the full error message
 import { trackWyreOrder, trackWyreTransfer } from '@rainbow-me/handlers/wyre';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/wyreStatus... Remove this comment to see the full error message
 import { WYRE_ORDER_STATUS_TYPES } from '@rainbow-me/helpers/wyreStatusTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { AddCashCurrencies, AddCashCurrencyInfo } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils } from '@rainbow-me/utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils/reviewAlert'... Remove this comment to see the full error message
 import maybeReviewAlert from '@rainbow-me/utils/reviewAlert';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -35,13 +43,13 @@ const ADD_CASH_ORDER_FAILURE = 'addCash/ADD_CASH_ORDER_FAILURE';
 const ADD_CASH_CLEAR_STATE = 'addCash/ADD_CASH_CLEAR_STATE';
 
 // -- Actions ---------------------------------------- //
-let orderStatusHandle = null;
-let transferHashHandle = null;
+let orderStatusHandle: any = null;
+let transferHashHandle: any = null;
 
 const MAX_TRIES = 10 * 60;
 const MAX_ERROR_TRIES = 3;
 
-export const addCashLoadState = () => async (dispatch, getState) => {
+export const addCashLoadState = () => async (dispatch: any, getState: any) => {
   const { accountAddress, network } = getState().settings;
   try {
     const purchases = await getPurchaseTransactions(accountAddress, network);
@@ -53,13 +61,16 @@ export const addCashLoadState = () => async (dispatch, getState) => {
   } catch (error) {}
 };
 
-export const addCashClearState = () => dispatch => {
+export const addCashClearState = () => (dispatch: any) => {
   orderStatusHandle && clearTimeout(orderStatusHandle);
   transferHashHandle && clearTimeout(transferHashHandle);
   dispatch({ type: ADD_CASH_CLEAR_STATE });
 };
 
-export const addCashUpdatePurchases = purchases => (dispatch, getState) => {
+export const addCashUpdatePurchases = (purchases: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { purchaseTransactions } = getState().addCash;
   const { accountAddress, network } = getState().settings;
 
@@ -88,7 +99,10 @@ export const addCashUpdatePurchases = purchases => (dispatch, getState) => {
   savePurchaseTransactions(updatedPurchases, accountAddress, network);
 };
 
-const addCashNewPurchaseTransaction = txDetails => (dispatch, getState) => {
+const addCashNewPurchaseTransaction = (txDetails: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { purchaseTransactions } = getState().addCash;
   const { accountAddress, network } = getState().settings;
   const updatedPurchases = [txDetails, ...purchaseTransactions];
@@ -100,20 +114,20 @@ const addCashNewPurchaseTransaction = txDetails => (dispatch, getState) => {
 };
 
 export const addCashGetOrderStatus = (
-  referenceInfo,
-  destCurrency,
-  orderId,
-  paymentResponse,
-  sourceAmount
-) => async (dispatch, getState) => {
+  referenceInfo: any,
+  destCurrency: any,
+  orderId: any,
+  paymentResponse: any,
+  sourceAmount: any
+) => async (dispatch: any, getState: any) => {
   logger.log('[add cash] - watch for order status', orderId);
   const { accountAddress, network } = getState().settings;
   const getOrderStatus = async (
-    referenceInfo,
-    destCurrency,
-    orderId,
-    paymentResponse,
-    sourceAmount,
+    referenceInfo: any,
+    destCurrency: any,
+    orderId: any,
+    paymentResponse: any,
+    sourceAmount: any,
     remainingTries = MAX_TRIES,
     remainingErrorTries = MAX_ERROR_TRIES
   ) => {
@@ -214,17 +228,17 @@ export const addCashGetOrderStatus = (
 };
 
 const addCashGetTransferHash = (
-  referenceInfo,
-  transferId,
-  sourceAmount
-) => async (dispatch, getState) => {
+  referenceInfo: any,
+  transferId: any,
+  sourceAmount: any
+) => async (dispatch: any, getState: any) => {
   logger.log('[add cash] - watch for transfer hash');
   const { accountAddress, network } = getState().settings;
   const { assets } = getState().data;
   const getTransferHash = async (
-    referenceInfo,
-    transferId,
-    sourceAmount,
+    referenceInfo: any,
+    transferId: any,
+    sourceAmount: any,
     remainingTries = MAX_TRIES,
     remainingErrorTries = MAX_ERROR_TRIES
   ) => {
@@ -299,12 +313,12 @@ const addCashGetTransferHash = (
   await getTransferHash(referenceInfo, transferId, sourceAmount);
 };
 
-export const addCashResetCurrentOrder = () => dispatch =>
+export const addCashResetCurrentOrder = () => (dispatch: any) =>
   dispatch({
     type: ADD_CASH_RESET_CURRENT_ORDER,
   });
 
-export const addCashOrderCreationFailure = error => dispatch =>
+export const addCashOrderCreationFailure = (error: any) => (dispatch: any) =>
   dispatch({
     payload: error,
     type: ADD_CASH_ORDER_CREATION_FAILURE,
@@ -318,7 +332,7 @@ const INITIAL_STATE = {
   purchaseTransactions: [],
 };
 
-export default (state = INITIAL_STATE, action) => {
+export default (state = INITIAL_STATE, action: any) => {
   switch (action.type) {
     case ADD_CASH_RESET_CURRENT_ORDER:
       return {

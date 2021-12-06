@@ -3,12 +3,15 @@ import Animated from 'react-native-reanimated';
 import { useSpringTransition } from 'react-native-redash/src/v1';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../context/ThemeContext' was resolved t... Remove this comment to see the full error message
 import { useTheme } from '../../context/ThemeContext';
 import { interpolate } from '../animations';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useDimensions } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding, position, shadow } from '@rainbow-me/styles';
 
 const springConfig = {
@@ -35,12 +38,14 @@ const Container = styled(RowWithMargins).attrs({
   z-index: 100;
 `;
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const ToastsWrapper = styled.View`
   position: absolute;
-  bottom: ${({ insets }) => (insets.bottom || 40) + 3};
+  bottom: ${({ insets }: any) => (insets.bottom || 40) + 3};
 `;
 
-export function ToastsContainer({ children }) {
+export function ToastsContainer({ children }: any) {
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   return <ToastsWrapper>{children}</ToastsWrapper>;
 }
 
@@ -55,7 +60,7 @@ export default function Toast({
   text,
   textColor,
   ...props
-}) {
+}: any) {
   const { colors, isDarkMode } = useTheme();
   const { width: deviceWidth } = useDimensions();
   const insets = useSafeArea();
@@ -75,7 +80,11 @@ export default function Toast({
   const currentColor = color || isDarkMode ? colors.darkModeDark : colors.dark;
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Animated.View style={{ opacity, transform: [{ translateY }] }}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Container
         color={currentColor}
         deviceWidth={deviceWidth}
@@ -84,14 +93,19 @@ export default function Toast({
         {...props}
       >
         {children || (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <Fragment>
             {icon && (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <Icon
                 color={textColor || colors.whiteLabel}
                 marginTop={3}
                 name={icon}
               />
             )}
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <TruncatedText
               color={textColor || colors.whiteLabel}
               size="smedium"

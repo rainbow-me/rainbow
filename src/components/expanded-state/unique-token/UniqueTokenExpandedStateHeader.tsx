@@ -1,6 +1,7 @@
 import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
 import URL from 'url-parse';
@@ -9,19 +10,25 @@ import { ButtonPressAnimation } from '../../animations';
 import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import saveToCameraRoll from './saveToCameraRoll';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/isSupporte... Remove this comment to see the full error message
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   useAccountProfile,
   useClipboard,
   useDimensions,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/images' or its cor... Remove this comment to see the full error message
 import { ImgixImage } from '@rainbow-me/images';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding, position } from '@rainbow-me/styles';
 import {
   buildRainbowUrl,
   magicMemo,
   showActionSheetWithOptions,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/utils';
 
 const AssetActionsEnum = {
@@ -91,6 +98,7 @@ const FamilyActions = {
       iconValue: 'safari.fill',
     },
   },
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'etherscan' does not exist on type '{ col... Remove this comment to see the full error message
   [FamilyActionsEnum.etherscan]: {
     actionKey: AssetActionsEnum.etherscan,
     actionTitle: 'View on Etherscan',
@@ -134,10 +142,11 @@ const FamilyName = styled(TruncatedText).attrs(({ theme: { colors } }) => ({
   max-width: ${({ deviceWidth }) => deviceWidth - paddingHorizontal * 6};
 `;
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const FamilyImageWrapper = styled.View`
   height: 20;
   margin-right: 7;
-  shadow-color: ${({ theme: { colors } }) => colors.shadowBlack};
+  shadow-color: ${({ theme: { colors } }: any) => colors.shadowBlack};
   shadow-offset: 0 3px;
   shadow-opacity: 0.15;
   shadow-radius: 4.5px;
@@ -157,12 +166,14 @@ const HeadingColumn = styled(ColumnWithMargins).attrs({
   width: 100%;
 `;
 
-const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
+const UniqueTokenExpandedStateHeader = ({ asset, imageColor }: any) => {
   const { accountAddress, accountENS } = useAccountProfile();
   const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const formattedCollectionUrl = useMemo(() => {
     const { hostname } = new URL(asset.external_link);
     const { hostname: hostnameFallback } = new URL(
@@ -172,6 +183,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
     return formattedUrl;
   }, [asset.collection.external_url, asset.external_link]);
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const familyMenuConfig = useMemo(() => {
     return {
       menuItems: [
@@ -198,6 +210,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
     toLower(asset.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
 
   const isPhotoDownloadAvailable = !isSVG && !isENS;
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useMemo'.
   const assetMenuConfig = useMemo(() => {
     return {
       menuItems: [
@@ -277,7 +290,9 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
       'Discord',
     ];
 
+    // @ts-expect-error ts-migrate(2363) FIXME: The right-hand side of an arithmetic operation mus... Remove this comment to see the full error message
     const twitterIndex = 2 - (!hasWebsite && 1);
+    // @ts-expect-error ts-migrate(2363) FIXME: The right-hand side of an arithmetic operation mus... Remove this comment to see the full error message
     const discordIndex = 3 - (!hasWebsite && 1) - (!hasTwitter && 1);
 
     if (!hasWebsite) baseActions.splice(1, 1);
@@ -290,7 +305,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         showSeparators: true,
         title: '',
       },
-      idx => {
+      (idx: any) => {
         if (idx === 0) {
           Linking.openURL(
             'https://opensea.io/collection/' +
@@ -351,7 +366,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         showSeparators: true,
         title: '',
       },
-      idx => {
+      (idx: any) => {
         if (idx === 0) {
           Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
         } else if (idx === 1) {
@@ -377,52 +392,95 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
   ]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <HeadingColumn>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <RowWithMargins margin={10}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Column flex={1}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Text color={colors.whiteLabel} size="big" weight="heavy">
               {buildUniqueTokenName(asset)}
             </Text>
           </Column>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ContextMenuButton
             activeOpacity={1}
             menuConfig={assetMenuConfig}
+            // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
             {...(android ? { onPress: onPressAndroidAsset } : {})}
             isMenuPrimaryAction
             onPressMenuItem={handlePressAssetMenuItem}
             useActionSheetFallback={false}
             wrapNativeComponent
           >
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <ButtonPressAnimation scaleTo={0.75}>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Text align="right" color={imageColor} size="big" weight="heavy">
                 􀍡
               </Text>
             </ButtonPressAnimation>
           </ContextMenuButton>
         </RowWithMargins>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ContextMenuButton
           activeOpacity={0}
           menuConfig={familyMenuConfig}
+          // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
           {...(android ? { onPress: onPressAndroidFamily } : {})}
           isMenuPrimaryAction
           onPressMenuItem={handlePressFamilyMenuItem}
           useActionSheetFallback={false}
           wrapNativeComponent={false}
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ButtonPressAnimation scaleTo={0.88}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Row align="center" marginTop={android ? -10 : 0}>
               {asset.familyImage ? (
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                 <FamilyImageWrapper>
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                  unless the '--jsx' flag is provided... Remove this comment to
+                  see the full error message
                   <FamilyImage
                     source={{ uri: asset?.familyImage }}
                     style={position.cover}
                   />
                 </FamilyImageWrapper>
               ) : null}
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <FamilyName deviceWidth={deviceWidth}>
                 {asset.familyName}
               </FamilyName>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Text
                 color={colors.alpha(colors.whiteLabel, 0.5)}
                 size="lmedium"

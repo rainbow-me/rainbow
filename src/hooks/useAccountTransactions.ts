@@ -7,10 +7,15 @@ import useRequests from './useRequests';
 
 export const NOE_PAGE = 30;
 
-export default function useAccountTransactions(initialized, isFocused) {
+export default function useAccountTransactions(
+  initialized: any,
+  isFocused: any
+) {
   const { isLoadingTransactions, network, transactions } = useSelector(
     ({
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
       data: { isLoadingTransactions, transactions },
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'settings' does not exist on type 'Defaul... Remove this comment to see the full error message
       settings: { network },
     }) => ({
       isLoadingTransactions,
@@ -61,6 +66,7 @@ export default function useAccountTransactions(initialized, isFocused) {
     nextPage,
     remainingItemsLabel,
     sections,
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
     transactions: ios ? transactions : slicedTransaction,
     transactionsCount,
   };

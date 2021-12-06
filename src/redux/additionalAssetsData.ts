@@ -3,10 +3,15 @@ import { uniswapClient } from '../apollo/client';
 import { TOKEN_DATA, UNISWAP_ADDITIONAL_TOKEN_DATA } from '../apollo/queries';
 import { getOneDayVolume } from '../hooks/useUniswapPools';
 import { rainbowFetch } from '../rainbow-fetch';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/data' or its... Remove this comment to see the full error message
 import { fetchCoingeckoIds } from '@rainbow-me/redux/data';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/store' or it... Remove this comment to see the full error message
 import { AppDispatch, AppState } from '@rainbow-me/redux/store';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { getBlocksFromTimestamps } from '@rainbow-me/utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 // -- Constants ------------------------------------------------------------- //
@@ -175,7 +180,6 @@ export const additionalDataCoingeckoIds = async (
   dispatch: AppDispatch,
   getState: () => AppState
 ) => {
-  // @ts-ignore
   if (Object.keys(getState().additionalAssetsData.coingeckoIds).length === 0) {
     const ids: { [key: string]: string } = (await fetchCoingeckoIds()) as {
       [key: string]: string;

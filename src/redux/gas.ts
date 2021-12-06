@@ -1,10 +1,8 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import { isEmpty } from 'lodash';
-import {
-  // @ts-ignore
-  IS_TESTING,
-} from 'react-native-dotenv';
+// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
+import { IS_TESTING } from 'react-native-dotenv';
 import { AppDispatch, AppGetState } from './store';
 import {
   ConfirmationTimeByPriorityFee,
@@ -20,18 +18,22 @@ import {
   LegacySelectedGasFee,
   RainbowMeteorologyData,
   SelectedGasFee,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/entities' or its c... Remove this comment to see the full error message
 } from '@rainbow-me/entities';
 import {
   polygonGasStationGetGasPrices,
   polygonGetGasEstimates,
   rainbowMeteorologyGetData,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/gasFees' ... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/gasFees';
 import {
   getProviderForNetwork,
   isEIP1559LegacyNetwork,
   isHardHat,
   web3Provider,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasParamsFormat,
@@ -44,6 +46,7 @@ import {
   parseLegacyGasFeesBySpeed,
   parseRainbowMeteorologyData,
   weiToGwei,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/parsers' or its co... Remove this comment to see the full error message
 } from '@rainbow-me/parsers';
 import {
   ARBITRUM_ETH_ADDRESS,
@@ -51,9 +54,13 @@ import {
   ethUnits,
   MATIC_POLYGON_ADDRESS,
   OPTIMISM_ETH_ADDRESS,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utilities' or its ... Remove this comment to see the full error message
 import { fromWei, greaterThanOrEqualTo, multiply } from '@rainbow-me/utilities';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 const { CUSTOM, NORMAL, URGENT, GAS_PRICE_SOURCES } = gasUtils;

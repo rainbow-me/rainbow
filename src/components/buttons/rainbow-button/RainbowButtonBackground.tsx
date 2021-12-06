@@ -1,33 +1,44 @@
 import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
 import { View } from 'react-native';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../../context/ThemeContext' was resolve... Remove this comment to see the full error message
 import { useTheme } from '../../../context/ThemeContext';
 import { darkModeThemeColors } from '../../../styles/colors';
 import RainbowButtonTypes from './RainbowButtonTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { margin } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { magicMemo } from '@rainbow-me/utils';
 
-const RainbowGradientColorsFactory = darkMode => ({
+const RainbowGradientColorsFactory = (darkMode: any) => ({
   inner: {
     addCash: ['#FFB114', '#FF54BB', '#00F0FF'],
     default: darkModeThemeColors.gradients.rainbow,
     disabled: darkMode
       ? [
+          // @ts-expect-error ts-migrate(2551) FIXME: Property 'blueGreyDark20' does not exist on type '... Remove this comment to see the full error message
           darkModeThemeColors.blueGreyDark20,
+          // @ts-expect-error ts-migrate(2551) FIXME: Property 'blueGreyDark20' does not exist on type '... Remove this comment to see the full error message
           darkModeThemeColors.blueGreyDark20,
+          // @ts-expect-error ts-migrate(2551) FIXME: Property 'blueGreyDark20' does not exist on type '... Remove this comment to see the full error message
           darkModeThemeColors.blueGreyDark20,
         ]
       : ['#B0B3B9', '#B0B3B9', '#B0B3B9'],
   },
+
   outer: {
     addCash: ['#F5AA13', '#F551B4', '#00E6F5'],
     default: ['#F5AA13', '#F551B4', '#799DD5'],
     disabled: darkMode
       ? [
+          // @ts-expect-error ts-migrate(2551) FIXME: Property 'blueGreyDark20' does not exist on type '... Remove this comment to see the full error message
           darkModeThemeColors.blueGreyDark20,
+          // @ts-expect-error ts-migrate(2551) FIXME: Property 'blueGreyDark20' does not exist on type '... Remove this comment to see the full error message
           darkModeThemeColors.blueGreyDark20,
+          // @ts-expect-error ts-migrate(2551) FIXME: Property 'blueGreyDark20' does not exist on type '... Remove this comment to see the full error message
           darkModeThemeColors.blueGreyDark20,
         ]
       : ['#A5A8AE', '#A5A8AE', '#A5A8AE'],
@@ -49,10 +60,14 @@ const RainbowButtonGradient = styled(RadialGradient).attrs(
 `;
 
 const InnerButton = styled(View)`
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'strokeWidth' does not exist on type 'Vie... Remove this comment to see the full error message
   ${({ strokeWidth }) => margin(strokeWidth)}
   background-color: ${({ theme: { colors } }) => colors.dark};
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'strokeWidth' does not exist on type 'Vie... Remove this comment to see the full error message
   border-radius: ${({ strokeWidth, height }) => height / 2 - strokeWidth};
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'strokeWidth' does not exist on type 'Vie... Remove this comment to see the full error message
   height: ${({ strokeWidth, height }) => height - strokeWidth * 2};
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'strokeWidth' does not exist on type 'Vie... Remove this comment to see the full error message
   width: ${({ strokeWidth, width }) => width - strokeWidth * 2};
 `;
 
@@ -85,14 +100,16 @@ const OuterGradient = styled(RainbowButtonGradient).attrs(
   width: ${({ width }) => width * 2};
 `;
 
+// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
 const WrapperView = android
-  ? styled.View`
+  ? // @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
+    styled.View`
       overflow: hidden;
       position: absolute;
-      height: ${({ height }) => height};
-      width: ${({ width }) => width};
+      height: ${({ height }: any) => height};
+      width: ${({ width }: any) => width};
     `
-  : ({ children }) => children;
+  : ({ children }: any) => children;
 
 const RainbowButtonBackground = ({
   disabled,
@@ -100,13 +117,14 @@ const RainbowButtonBackground = ({
   strokeWidth,
   type,
   width,
-}) => {
+}: any) => {
   const { isDarkMode } = useTheme();
 
   const gradientColors = isDarkMode
     ? RainbowGradientColorsDark
     : RainbowGradientColorsLight;
   const maskElement = (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <InnerButton height={height} strokeWidth={strokeWidth} width={width} />
   );
   const innerGradientCenter = [
@@ -116,7 +134,11 @@ const RainbowButtonBackground = ({
   const outerGradientCenter = [width * 1.5, width];
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <WrapperView height={height} width={width}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <OuterGradient
         center={outerGradientCenter}
         disabled={disabled}
@@ -125,7 +147,13 @@ const RainbowButtonBackground = ({
         type={type}
         width={width}
       />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <MaskedView maskElement={maskElement}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <InnerGradient
           center={innerGradientCenter}
           disabled={disabled}

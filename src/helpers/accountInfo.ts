@@ -8,10 +8,10 @@ import { addressHashedEmoji } from '../utils/profileUtils';
 import networkTypes from './networkTypes';
 
 export function getAccountProfileInfo(
-  selectedWallet,
-  walletNames,
-  network,
-  accountAddress
+  selectedWallet: any,
+  walletNames: any,
+  network: any,
+  accountAddress: any
 ) {
   if (!selectedWallet) {
     return {};
@@ -28,7 +28,7 @@ export function getAccountProfileInfo(
   const accountENS = get(walletNames, `${accountAddress}`);
 
   const selectedAccount = selectedWallet.addresses.find(
-    account => account.address === accountAddress
+    (account: any) => account.address === accountAddress
   );
 
   if (!selectedAccount) {

@@ -1,7 +1,9 @@
 import { Trade } from '@uniswap/sdk';
 import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/context' or its co... Remove this comment to see the full error message
 import { useTheme } from '@rainbow-me/context';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/store' or it... Remove this comment to see the full error message
 import { AppState } from '@rainbow-me/redux/store';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -12,6 +14,7 @@ import {
   greaterThanOrEqualTo,
   isPositive,
   subtract,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utilities' or its ... Remove this comment to see the full error message
 } from '@rainbow-me/utilities';
 
 const PriceImpactWarningThreshold = 0.05;

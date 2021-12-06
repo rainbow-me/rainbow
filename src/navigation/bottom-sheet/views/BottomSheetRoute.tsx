@@ -36,6 +36,7 @@ const BottomSheetRoute = ({
     backdropColor = DEFAULT_BACKDROP_COLOR,
     backdropOpacity = DEFAULT_BACKDROP_OPACITY,
     height = DEFAULT_HEIGHT,
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     offsetY = android ? 20 : 3,
   } = options || {};
   //#endregion
@@ -127,6 +128,7 @@ const BottomSheetRoute = ({
   //#region renders
   const renderBackdropComponent = useCallback(
     (props: BottomSheetBackdropProps) => (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <BottomSheetBackdrop
         appearsOnIndex={0}
         disappearsOnIndex={-1}
@@ -139,7 +141,11 @@ const BottomSheetRoute = ({
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <BottomSheetNavigatorContext.Provider value={contextVariables}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <BottomSheet
         activeOffsetY={[-offsetY, offsetY]}
         animateOnMount
@@ -157,6 +163,9 @@ const BottomSheetRoute = ({
         snapPoints={snapPoints}
         waitFor={[]}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <View style={screenContainerStyle}>{render()}</View>
       </BottomSheet>
     </BottomSheetNavigatorContext.Provider>

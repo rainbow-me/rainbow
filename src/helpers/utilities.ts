@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { get, isNil } from 'lodash';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 type BigNumberish = number | string | BigNumber;
@@ -408,6 +409,7 @@ export const asyncSome = async (
   callback: (element: any, index: number) => any
 ) => {
   if (!arr || !callback) return null;
+  // @ts-expect-error ts-migrate(2569) FIXME: Type 'IterableIterator<[number, any]>' is not an a... Remove this comment to see the full error message
   for (let [index, element] of arr.entries()) {
     if (await callback(element, index)) return true;
   }

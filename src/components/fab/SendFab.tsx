@@ -1,12 +1,18 @@
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/config/debug' or i... Remove this comment to see the full error message
+import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../context/ThemeContext' was resolved t... Remove this comment to see the full error message
 import { useTheme } from '../../context/ThemeContext';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../navigation/Navigation' was resolved ... Remove this comment to see the full error message
 import { useNavigation } from '../../navigation/Navigation';
 import { lightModeThemeColors } from '../../styles/colors';
 import { Text } from '../text';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './FloatingActionButton' was resolved to '/... Remove this comment to see the full error message
 import FloatingActionButton from './FloatingActionButton';
-import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';
 
 const FabShadow = [
@@ -22,7 +28,7 @@ const FabIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   weight: 'semibold',
 }))``;
 
-const SendFab = ({ disabled, isReadOnlyWallet, ...props }) => {
+const SendFab = ({ disabled, isReadOnlyWallet, ...props }: any) => {
   const { navigate } = useNavigation();
   const { colors } = useTheme();
 
@@ -35,6 +41,7 @@ const SendFab = ({ disabled, isReadOnlyWallet, ...props }) => {
   }, [navigate, isReadOnlyWallet]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <FloatingActionButton
       {...props}
       backgroundColor={colors.paleBlue}
@@ -43,6 +50,9 @@ const SendFab = ({ disabled, isReadOnlyWallet, ...props }) => {
       shadows={FabShadow}
       testID="send-fab"
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <FabIcon color={colors.whiteLabel}>􀈠</FabIcon>
     </FloatingActionButton>
   );

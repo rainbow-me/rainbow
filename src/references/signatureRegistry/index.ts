@@ -1,3 +1,4 @@
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './signatureRegistryABI.json'. ... Remove this comment to see the full error message
 export { default as signatureRegistryABI } from './signatureRegistryABI.json';
 
 export const SIGNATURE_REGISTRY_ADDRESS =

@@ -4,6 +4,7 @@ import Animated from 'react-native-reanimated';
 import { G, Path } from 'react-native-svg';
 import { Centered } from '../../layout';
 import Svg from '../Svg';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position } from '@rainbow-me/styles';
 
 const AnimatedSvg = Animated.createAnimatedComponent(Svg);
@@ -27,10 +28,11 @@ const {
 const AnimatedPath = createAnimatedComponent(Path);
 
 const convertProgress = proc(progress =>
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Adaptable<Value> | undefined' is... Remove this comment to see the full error message
   divide(multiply(360, min(100, max(0, progress))), 100)
 );
 
-function polarToCartesian(center, radius, angleInDegrees) {
+function polarToCartesian(center: any, radius: any, angleInDegrees: any) {
   const angleInRadians = divide(
     multiply(sub(angleInDegrees, 90), Math.PI),
     180
@@ -42,7 +44,7 @@ function polarToCartesian(center, radius, angleInDegrees) {
   };
 }
 
-function circlePath(center, radius, startAngle, endAngle) {
+function circlePath(center: any, radius: any, startAngle: any, endAngle: any) {
   const start = polarToCartesian(center, radius, multiply(endAngle, 0.9999));
   const end = polarToCartesian(center, radius, startAngle);
   const largeArcFlag = cond(lessOrEq(sub(endAngle, startAngle), 180), 0, 1);
@@ -72,7 +74,8 @@ const ProgressIcon = ({
   size,
   strokeWidth,
   ...props
-}) => {
+}: any) => {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const progressColor = givenProgressColor || colors.whiteLabel;
   const color = givenColor || colors.alpha(colors.sendScreen.grey, 0.3);
@@ -81,12 +84,22 @@ const ProgressIcon = ({
   const viewBoxSize = size + strokeWidth * 2;
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Centered {...props} {...position.sizeAsObject(size)}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <AnimatedSvg
         {...position.sizeAsObject(size)}
         viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <G originX={center} originY={center}>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <AnimatedPath
             d={circlePath(center, radius, 0, 360)}
             fill="transparent"
@@ -94,6 +107,9 @@ const ProgressIcon = ({
             strokeLinecap="round"
             strokeWidth={strokeWidth}
           />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <AnimatedPath
             d={circlePath(center, radius, 0, convertProgress(progress))}
             fill="transparent"

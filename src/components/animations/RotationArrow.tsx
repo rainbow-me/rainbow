@@ -19,7 +19,13 @@ const {
   sub,
 } = Animated;
 
-function runTiming(clock, value, dest, friction, tension) {
+function runTiming(
+  clock: any,
+  value: any,
+  dest: any,
+  friction: any,
+  tension: any
+) {
   const state = {
     finished: new Value(1),
     position: new Value(value),
@@ -40,6 +46,7 @@ function runTiming(clock, value, dest, friction, tension) {
   ];
 
   return block([
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Adaptable<number>' is not assign... Remove this comment to see the full error message
     cond(state.finished, [...reset, set(config.toValue, dest)]),
     cond(clockRunning(clock), 0, startClock(clock)),
     spring(clock, state, config),
@@ -62,7 +69,10 @@ export default class RotationArrow extends Component {
     tension: 200,
   };
 
+  _transform: any;
+
   UNSAFE_componentWillMount() {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'isOpen' does not exist on type 'Readonly... Remove this comment to see the full error message
     if (!this.props.isOpen === true) {
       this._transform = new Value(1);
     } else {
@@ -70,7 +80,8 @@ export default class RotationArrow extends Component {
     }
   }
 
-  UNSAFE_componentWillUpdate(prevProps) {
+  UNSAFE_componentWillUpdate(prevProps: any) {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'friction' does not exist on type 'Readon... Remove this comment to see the full error message
     const { friction, isOpen, tension } = this.props;
 
     if (prevProps.isOpen !== undefined && prevProps.isOpen !== isOpen) {
@@ -90,6 +101,7 @@ export default class RotationArrow extends Component {
   }
 
   render() {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'endingOffset' does not exist on type 'Re... Remove this comment to see the full error message
     const { children, endingOffset, endingPosition } = this.props;
 
     let translateX = 0;
@@ -101,6 +113,7 @@ export default class RotationArrow extends Component {
 
     let rotate = `${endingPosition}deg`;
     if (this._transform) {
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'AnimatedNode<string>' is not assignable to t... Remove this comment to see the full error message
       rotate = concat(
         sub(endingPosition, multiply(this._transform, endingPosition)),
         'deg'
@@ -108,7 +121,11 @@ export default class RotationArrow extends Component {
     }
 
     return (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <Animated.View style={{ transform: [{ translateX }] }}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Animated.View style={{ transform: [{ rotate }] }}>
           {children}
         </Animated.View>

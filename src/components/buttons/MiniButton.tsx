@@ -1,15 +1,18 @@
 import React from 'react';
 import { View } from 'react-native';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../context/ThemeContext' was resolved t... Remove this comment to see the full error message
 import { useTheme } from '../../context/ThemeContext';
 import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding, position } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'react-native-shadow-stack' or ... Remove this comment to see the full error message
 import ShadowStack from 'react-native-shadow-stack';
 
-const shadowsFactory = darkMode => ({
+const shadowsFactory = (darkMode: any) => ({
   default: [
     [
       0,
@@ -19,6 +22,7 @@ const shadowsFactory = darkMode => ({
       0.4,
     ],
   ],
+
   disabled: [
     [
       0,
@@ -28,6 +32,7 @@ const shadowsFactory = darkMode => ({
       darkMode ? 0 : 0.4,
     ],
   ],
+
   none: [[0, 0, 0, lightModeThemeColors.transparent, 0]],
 });
 
@@ -61,12 +66,13 @@ export default function MiniButton({
   weight,
   width,
   ...props
-}) {
+}: any) {
   const { isDarkMode, colors } = useTheme();
 
   const shadows = isDarkMode ? shadowsDark : shadowLight;
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ButtonPressAnimation
       disabled={disabled}
       onPress={onPress}
@@ -75,10 +81,17 @@ export default function MiniButton({
       scaleTo={scaleTo}
       {...props}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <View style={{ borderRadius }}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ShadowStack
           {...position.coverAsObject}
           backgroundColor={
+            // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
             android
               ? 'none'
               : disabled
@@ -96,8 +109,12 @@ export default function MiniButton({
           }
           width={width}
         />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Content
           backgroundColor={
+            // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
             android
               ? disabled
                 ? colors.lightGrey
@@ -108,10 +125,12 @@ export default function MiniButton({
           small={small}
         >
           {typeof children === 'string' ? (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <Text
               align="center"
               color={color || colors.whiteLabel}
               letterSpacing={letterSpacing}
+              // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
               lineHeight={android ? 19 : null}
               weight={weight || 'bold'}
             >

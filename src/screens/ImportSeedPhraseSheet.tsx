@@ -2,7 +2,9 @@ import React, { useCallback, useMemo } from 'react';
 import { StatusBar } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/ActivityIndicator' was resol... Remove this comment to see the full error message
 import ActivityIndicator from '../components/ActivityIndicator';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/Spinner' was resolved to '/U... Remove this comment to see the full error message
 import Spinner from '../components/Spinner';
 import { MiniButton } from '../components/buttons';
 import { Input } from '../components/inputs';
@@ -13,8 +15,11 @@ import {
   InvalidPasteToast,
   ToastPositionContainer,
 } from '../components/toasts';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../context/ThemeContext' was resolved to '... Remove this comment to see the full error message
 import { useTheme } from '../context/ThemeContext';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/isNativeSt... Remove this comment to see the full error message
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/validators... Remove this comment to see the full error message
 import { isValidWallet } from '@rainbow-me/helpers/validators';
 import {
   useAccountSettings,
@@ -23,23 +28,31 @@ import {
   useImportingWallet,
   useInvalidPaste,
   useKeyboardHeight,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation/effects... Remove this comment to see the full error message
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { borders, padding } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { deviceUtils } from '@rainbow-me/utils';
 
 const sheetBottomPadding = 19;
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const Container = styled.View`
   flex: 1;
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   padding-top: ${android
     ? 0
     : isNativeStackAvailable
     ? 0
     : sheetVerticalOffset};
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${android ? `margin-top: ${sheetVerticalOffset};` : ''}
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${android
-    ? `background-color: ${({ theme: { colors } }) => colors.transparent};`
+    ? `background-color: ${({ theme: { colors } }: any) => colors.transparent};`
     : ''}
 `;
 
@@ -47,22 +60,28 @@ const Footer = styled(Row).attrs({
   align: 'start',
   justify: 'end',
 })`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   bottom: ${android ? 15 : 0};
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   position: ${android ? 'absolute' : 'relative'};
   right: 0;
   width: 100%;
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${android
-    ? `top: ${({ isSmallPhone }) =>
+    ? `top: ${({ isSmallPhone }: any) =>
         isSmallPhone ? sheetBottomPadding * 2 : 0};`
     : ``}
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   ${android ? 'margin-right: 18;' : ''}
 `;
 
+// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs({
   color: 'white',
   size: 15,
 })`
   margin-right: 5;
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   margin-top: ${android ? 0 : 2};
 `;
 
@@ -80,6 +99,7 @@ const SecretTextArea = styled(Input).attrs({
   autoCorrect: false,
   autoFocus: true,
   enablesReturnKeyAutomatically: true,
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   keyboardType: android ? 'visible-password' : 'default',
   lineHeight: 'looser',
   multiline: true,
@@ -90,7 +110,9 @@ const SecretTextArea = styled(Input).attrs({
   spellCheck: false,
   weight: 'semibold',
 })`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   margin-bottom: ${android ? 55 : 0};
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   min-height: ${android ? 100 : 50};
   width: 100%;
 `;
@@ -138,7 +160,7 @@ export default function ImportSeedPhraseSheet() {
 
   const handlePressPasteButton = useCallback(() => {
     if (deviceUtils.isIOS14 && !hasClipboardData) return;
-    getClipboard(result => {
+    getClipboard((result: any) => {
       if (result !== accountAddress && isValidWallet(result)) {
         return handleSetSeedPhrase(result);
       }
@@ -154,14 +176,33 @@ export default function ImportSeedPhraseSheet() {
 
   const { colors } = useTheme();
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container testID="import-sheet">
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <StatusBar barStyle="light-content" />
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Sheet>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <SheetHandle marginBottom={7} marginTop={6} />
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Text size="large" weight="bold">
           Add Wallet
         </Text>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <SecretTextAreaContainer>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <SecretTextArea
             color={isSecretValid ? colors.appleBlue : colors.dark}
             onChangeText={handleSetSeedPhrase}
@@ -177,22 +218,35 @@ export default function ImportSeedPhraseSheet() {
             value={seedPhrase}
           />
         </SecretTextAreaContainer>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Footer isSmallPhone={isSmallPhone}>
           {seedPhrase ? (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <FooterButton
               disabled={!isSecretValid}
               hasLeadingIcon
+              // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
               {...(android && { height: 30, overflowMargin: 15, width: 89 })}
               onPress={handlePressImportButton}
             >
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Row>
                 {busy ? (
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                   <LoadingSpinner />
                 ) : (
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                   <Text align="center" color="whiteLabel" weight="bold">
                     􀂍{' '}
                   </Text>
                 )}
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Text
                   align="center"
                   color="whiteLabel"
@@ -204,11 +258,16 @@ export default function ImportSeedPhraseSheet() {
               </Row>
             </FooterButton>
           ) : (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <FooterButton
+              // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
               {...(android && { height: 30, overflowMargin: 15, width: 63 })}
               disabled={!isClipboardValidSecret}
               onPress={handlePressPasteButton}
             >
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Text
                 align="center"
                 color="whiteLabel"
@@ -221,9 +280,16 @@ export default function ImportSeedPhraseSheet() {
           )}
         </Footer>
       </Sheet>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ToastPositionContainer bottom={keyboardHeight}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <InvalidPasteToast />
       </ToastPositionContainer>
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       {ios ? <KeyboardSizeView isOpen /> : null}
     </Container>
   );

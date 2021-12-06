@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useMemo } from 'react';
 import { processColor, requireNativeComponent, View } from 'react-native';
 import { createNativeWrapper } from 'react-native-gesture-handler';
+// @ts-expect-error ts-migrate(6142) FIXME: Module 'react-native-gesture-handler/src/component... Remove this comment to see the full error message
 import { PureNativeButton } from 'react-native-gesture-handler/src/components/GestureButtons';
 import Animated, {
   Easing,
@@ -12,7 +13,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './NativeButton' was resolved to '/Users/ni... Remove this comment to see the full error message
 import { normalizeTransformOrigin } from './NativeButton';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useLongPressEvents } from '@rainbow-me/hooks';
 
 const ZoomableRawButton = requireNativeComponent('RNZoomableButton');
@@ -31,6 +34,7 @@ const OVERFLOW_MARGIN = 5;
 
 const ScaleButtonContext = createContext(null);
 
+// @ts-expect-error ts-migrate(2551) FIXME: Property 'View' does not exist on type 'StyledInte... Remove this comment to see the full error message
 const Content = styled.View`
   overflow: visible;
 `;
@@ -40,7 +44,11 @@ const Content = styled.View`
 // I couldn't just expend boundaries, because then it intercepts touches, so I managed to
 // extract animated component to external value
 
-export const ScaleButtonZoomable = ({ children, style, duration = 160 }) => {
+export const ScaleButtonZoomable = ({
+  children,
+  style,
+  duration = 160,
+}: any) => {
   const scale = useSharedValue(1);
   const scaleTraversed = useDerivedValue(() => {
     const value = withTiming(scale.value, {
@@ -60,7 +68,11 @@ export const ScaleButtonZoomable = ({ children, style, duration = 160 }) => {
   });
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ScaleButtonContext.Provider value={scale}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Animated.View style={[style, sz]}>{children}</Animated.View>
     </ScaleButtonContext.Provider>
   );
@@ -78,7 +90,7 @@ const ScaleButton = ({
   wrapperStyle,
   onPressStart,
   onPressCancel,
-}) => {
+}: any) => {
   const parentScale = useContext(ScaleButtonContext);
   const childScale = useSharedValue(1);
   const scale = parentScale || childScale;
@@ -136,16 +148,33 @@ const ScaleButton = ({
   });
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <View style={[{ overflow: 'visible' }, wrapperStyle]}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <View style={{ margin: -overflowMargin }}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <AnimatedRawButton
           hitSlop={-overflowMargin}
+          // @ts-expect-error ts-migrate(2322) FIXME: Type 'OnGestureEvent<PanGestureHandlerGestureEvent... Remove this comment to see the full error message
           onGestureEvent={gestureHandler}
           rippleColor={processColor('transparent')}
           style={{ overflow: 'visible' }}
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <View style={{ backgroundColor: 'transparent' }}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <View style={{ padding: overflowMargin }}>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Animated.View style={[sz, contentContainerStyle]}>
                 {children}
               </Animated.View>
@@ -173,7 +202,7 @@ const SimpleScaleButton = ({
   skipTopMargin,
   transformOrigin,
   wrapperStyle,
-}) => {
+}: any) => {
   const onNativePress = useCallback(
     ({ nativeEvent: { type } }) => {
       if (type === 'longPress') {
@@ -188,6 +217,7 @@ const SimpleScaleButton = ({
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <View
       style={[
         {
@@ -198,12 +228,18 @@ const SimpleScaleButton = ({
         wrapperStyle,
       ]}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <View
         style={{
           margin: -overflowMargin,
           marginTop: skipTopMargin ? -OVERFLOW_MARGIN : -overflowMargin,
         }}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ZoomableButton
           duration={duration}
           hitSlop={-overflowMargin}
@@ -214,13 +250,22 @@ const SimpleScaleButton = ({
           style={{ overflow: 'visible' }}
           transformOrigin={transformOrigin}
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <View style={{ backgroundColor: 'transparent' }}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <View
               style={{
                 padding: overflowMargin,
                 paddingTop: skipTopMargin ? OVERFLOW_MARGIN : overflowMargin,
               }}
             >
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Animated.View style={contentContainerStyle}>
                 {children}
               </Animated.View>
@@ -234,7 +279,9 @@ const SimpleScaleButton = ({
 
 export default function ButtonPressAnimation({
   // eslint-disable-next-line no-unused-vars
-  activeOpacity = 1, // TODO
+  // TODO
+  activeOpacity = 1,
+
   backgroundColor = 'transparent',
   borderRadius = 0,
   children,
@@ -257,7 +304,7 @@ export default function ButtonPressAnimation({
   transformOrigin,
   wrapperStyle,
   onPressCancel,
-}) {
+}: any) {
   const normalizedTransformOrigin = useMemo(
     () => normalizeTransformOrigin(transformOrigin),
     [transformOrigin]
@@ -265,8 +312,10 @@ export default function ButtonPressAnimation({
 
   const ButtonElement = reanimatedButton ? ScaleButton : SimpleScaleButton;
   return disabled ? (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Content style={style}>{children}</Content>
   ) : (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ButtonElement
       backgroundColor={backgroundColor}
       borderRadius={borderRadius}
@@ -287,6 +336,9 @@ export default function ButtonPressAnimation({
       transformOrigin={normalizedTransformOrigin}
       wrapperStyle={wrapperStyle}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Content pointerEvents="box-only" style={style}>
         {children}
       </Content>

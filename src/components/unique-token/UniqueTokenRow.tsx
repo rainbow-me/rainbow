@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../navigation/Navigation' was resolved ... Remove this comment to see the full error message
 import { useNavigation } from '../../navigation/Navigation';
 import { magicMemo } from '../../utils';
 import { Row } from '../layout';
@@ -9,9 +10,13 @@ import {
   UniqueTokenCardMargin,
   UniqueTokenRowPadding,
 } from './CardSize';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './UniqueTokenCard' was resolved to '/Users... Remove this comment to see the full error message
 import UniqueTokenCard from './UniqueTokenCard';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useWallets } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding, position } from '@rainbow-me/styles';
 
 const Container = styled(Row).attrs({ align: 'center' })`
@@ -26,7 +31,8 @@ const UniqueTokenCardItem = styled(UniqueTokenCard).attrs({
   margin-left: ${({ index }) => (index >= 1 ? UniqueTokenCardMargin : 0)};
 `;
 
-const UniqueTokenRow = magicMemo(({ item, external = false }) => {
+// @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
+const UniqueTokenRow = magicMemo(({ item, external = false }: any) => {
   const { isReadOnlyWallet } = useWallets();
   const { navigate } = useNavigation();
 
@@ -48,8 +54,10 @@ const UniqueTokenRow = magicMemo(({ item, external = false }) => {
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container>
-      {item.map((uniqueToken, index) => (
+      {item.map((uniqueToken: any, index: any) => (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <UniqueTokenCardItem
           disabled={false}
           index={index}
@@ -62,13 +70,18 @@ const UniqueTokenRow = magicMemo(({ item, external = false }) => {
   );
 }, 'item.uniqueId');
 
+// @ts-expect-error ts-migrate(2339) FIXME: Property 'propTypes' does not exist on type 'MemoE... Remove this comment to see the full error message
 UniqueTokenRow.propTypes = {
   item: PropTypes.array,
 };
 
+// @ts-expect-error ts-migrate(2339) FIXME: Property 'height' does not exist on type 'MemoExot... Remove this comment to see the full error message
 UniqueTokenRow.height = CardSize + UniqueTokenCardMargin;
+// @ts-expect-error ts-migrate(2339) FIXME: Property 'cardSize' does not exist on type 'MemoEx... Remove this comment to see the full error message
 UniqueTokenRow.cardSize = CardSize;
+// @ts-expect-error ts-migrate(2339) FIXME: Property 'cardMargin' does not exist on type 'Memo... Remove this comment to see the full error message
 UniqueTokenRow.cardMargin = UniqueTokenCardMargin;
+// @ts-expect-error ts-migrate(2339) FIXME: Property 'rowPadding' does not exist on type 'Memo... Remove this comment to see the full error message
 UniqueTokenRow.rowPadding = UniqueTokenRowPadding;
 
 export default UniqueTokenRow;

@@ -22,8 +22,10 @@ export const onEitherGestureActiveChange = proc(
   (gestureStateOne, gestureStateTwo, onSuccess, onFailure) =>
     onChange(
       isEitherGestureActiveProc(gestureStateOne, gestureStateTwo),
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'AnimatedNode<Value>' is not assi... Remove this comment to see the full error message
       cond(
         isEitherGestureActiveProc(gestureStateOne, gestureStateTwo),
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'Adaptable<Value> | undefined' is... Remove this comment to see the full error message
         onSuccess,
         onFailure
       )

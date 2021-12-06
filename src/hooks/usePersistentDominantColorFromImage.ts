@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { MMKV, useMMKVString } from 'react-native-mmkv';
 import { getLowResUrl } from '../utils/getLowResUrl';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/imgix' or... Remove this comment to see the full error message
 import { svgToLQPng } from '@rainbow-me/handlers/imgix';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/isSupporte... Remove this comment to see the full error message
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { getDominantColorFromImage } from '@rainbow-me/utils';
 
 const id = 'DOMINANT_COLOR';
@@ -39,10 +42,10 @@ export default function usePersistentDominantColorFromImage(
     if (state === State.init && nonSvgUrl) {
       const lowResUrl = getLowResUrl(nonSvgUrl);
       setState(State.loading);
-      getDominantColorFromImage(lowResUrl, colorToMeasureAgainst).then(color =>
-        // @ts-ignore
-        setPersistentDominantColor(color)
-      );
+      getDominantColorFromImage(
+        lowResUrl,
+        colorToMeasureAgainst
+      ).then((color: any) => setPersistentDominantColor(color));
     }
   }, [colorToMeasureAgainst, setPersistentDominantColor, state, nonSvgUrl]);
 

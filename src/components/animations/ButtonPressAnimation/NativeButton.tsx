@@ -5,6 +5,7 @@ import styled from 'styled-components';
 const RawNativeButton = requireNativeComponent('Button');
 
 const ButtonWithTransformOrigin = styled(RawNativeButton)`
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'transformOrigin' does not exist on type ... Remove this comment to see the full error message
   ${({ transformOrigin }) => {
     if (!transformOrigin) return '';
     const [x, y] = transformOrigin;
@@ -20,7 +21,7 @@ const ButtonWithTransformOrigin = styled(RawNativeButton)`
   }};
 `;
 
-export function normalizeTransformOrigin(transformOrigin) {
+export function normalizeTransformOrigin(transformOrigin: any) {
   if (Array.isArray(transformOrigin) && transformOrigin.length === 2) {
     return transformOrigin;
   }
@@ -40,8 +41,8 @@ export function normalizeTransformOrigin(transformOrigin) {
 }
 
 const NativeButton = (
-  { compensateForTransformOrigin, transformOrigin, testID, ...props },
-  ref
+  { compensateForTransformOrigin, transformOrigin, testID, ...props }: any,
+  ref: any
 ) => {
   const normalizedTransformOrigin = useMemo(
     () => normalizeTransformOrigin(transformOrigin),
@@ -49,12 +50,16 @@ const NativeButton = (
   );
 
   return compensateForTransformOrigin ? (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <View>
       {/*
         👆️ This wrapper View is necessary.
         In order to compensate for the way our NativeButton's transformOrigin effects layout/positioning,
         we set the NativeButton's left / top values relative to this wrapper View.
       */}
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ButtonWithTransformOrigin
         {...props}
         ref={ref}
@@ -63,6 +68,7 @@ const NativeButton = (
       />
     </View>
   ) : (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <RawNativeButton
       {...props}
       ref={ref}

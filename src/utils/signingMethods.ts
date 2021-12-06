@@ -15,16 +15,16 @@ const secondParamSigning = [SIGN, SIGN_TYPED_DATA];
 
 const allTypes = concat(displayTypes.message, ...displayTypes.transaction);
 
-export const isSigningMethod = method => includes(allTypes, method);
+export const isSigningMethod = (method: any) => includes(allTypes, method);
 
-export const isMessageDisplayType = method =>
+export const isMessageDisplayType = (method: any) =>
   includes(displayTypes.message, method);
 
-export const isTransactionDisplayType = method =>
+export const isTransactionDisplayType = (method: any) =>
   includes(displayTypes.transaction, method);
 
-export const isSignSecondParamType = method =>
+export const isSignSecondParamType = (method: any) =>
   includes(secondParamSigning, method);
 
-export const isSignFirstParamType = method =>
+export const isSignFirstParamType = (method: any) =>
   includes(firstParamSigning, method);

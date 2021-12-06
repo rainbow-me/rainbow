@@ -3,9 +3,9 @@ import { isValidDomainFormat } from '../helpers/validators';
 const defaultNumCharsPerSection = 6;
 
 export function address(
-  currentAddress,
+  currentAddress: any,
   truncationLength = defaultNumCharsPerSection,
-  firstSectionLength
+  firstSectionLength: any
 ) {
   if (!currentAddress) return;
 
@@ -16,7 +16,7 @@ export function address(
 }
 
 export function formatAddressForDisplay(
-  text,
+  text: any,
   truncationLength = 4,
   firstSectionLength = 10
 ) {
@@ -25,7 +25,7 @@ export function formatAddressForDisplay(
     : address(text, truncationLength, firstSectionLength);
 }
 
-export function abbreviateEnsForDisplay(text, truncationLength = 20) {
+export function abbreviateEnsForDisplay(text: any, truncationLength = 20) {
   if (typeof text !== 'string' || !isValidDomainFormat(text)) {
     return null;
   }
@@ -37,7 +37,7 @@ export function abbreviateEnsForDisplay(text, truncationLength = 20) {
   }
 }
 
-export function isAddress(currentAddress) {
+export function isAddress(currentAddress: any) {
   return (
     (currentAddress || '').substring(0, 2) === '0x' &&
     (currentAddress || '').indexOf('...') > -1

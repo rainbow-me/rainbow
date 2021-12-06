@@ -1,16 +1,22 @@
 import { filter, get, omit, values } from 'lodash';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/imgix' or... Remove this comment to see the full error message
 import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import {
   getLocalRequests,
   removeLocalRequest,
   saveLocalRequests,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/localstor... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/localstorage/walletconnectRequests';
 import {
   dappLogoOverride,
   dappNameOverride,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/dappNameHa... Remove this comment to see the full error message
 } from '@rainbow-me/helpers/dappNameHandler';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/parsers' or its co... Remove this comment to see the full error message
 import { getRequestDisplayDetails } from '@rainbow-me/parsers';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils } from '@rainbow-me/utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -21,7 +27,7 @@ const REQUESTS_CLEAR_STATE = 'requests/REQUESTS_CLEAR_STATE';
 // Requests expire automatically after 1 hour
 const EXPIRATION_THRESHOLD_IN_MS = 1000 * 60 * 60;
 
-export const requestsLoadState = () => async (dispatch, getState) => {
+export const requestsLoadState = () => async (dispatch: any, getState: any) => {
   const { accountAddress, network } = getState().settings;
   try {
     const requests = await getLocalRequests(accountAddress, network);
@@ -32,12 +38,12 @@ export const requestsLoadState = () => async (dispatch, getState) => {
 };
 
 export const addRequestToApprove = (
-  clientId,
-  peerId,
-  requestId,
-  payload,
-  peerMeta
-) => (dispatch, getState) => {
+  clientId: any,
+  peerId: any,
+  requestId: any,
+  payload: any,
+  peerMeta: any
+) => (dispatch: any, getState: any) => {
   const { requests } = getState().requests;
   const { walletConnectors } = getState().walletconnect;
   const { accountAddress, network, nativeCurrency } = getState().settings;
@@ -82,15 +88,21 @@ export const addRequestToApprove = (
   return request;
 };
 
-export const requestsForTopic = topic => (dispatch, getState) => {
+export const requestsForTopic = (topic: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { requests } = getState().requests;
   return filter(values(requests), { clientId: topic });
 };
 
-export const requestsResetState = () => dispatch =>
+export const requestsResetState = () => (dispatch: any) =>
   dispatch({ type: REQUESTS_CLEAR_STATE });
 
-export const removeRequest = requestId => (dispatch, getState) => {
+export const removeRequest = (requestId: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { accountAddress, network } = getState().settings;
   const { requests } = getState().requests;
   const updatedRequests = omit(requests, [requestId]);
@@ -106,7 +118,7 @@ const INITIAL_STATE = {
   requests: {},
 };
 
-export default (state = INITIAL_STATE, action) => {
+export default (state = INITIAL_STATE, action: any) => {
   switch (action.type) {
     case REQUESTS_UPDATE_REQUESTS_TO_APPROVE:
       return {

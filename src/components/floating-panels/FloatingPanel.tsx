@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
 import { Column } from '../layout';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { shadow } from '@rainbow-me/styles';
 
 const FloatingPanelBorderRadius = 18;
@@ -11,7 +12,7 @@ export const FloatingPanelPadding = {
   y: 0,
 };
 
-const FloatingPanelShadow = colors =>
+const FloatingPanelShadow = (colors: any) =>
   shadow.build(0, 10, 50, colors.shadow, 0.6);
 
 const Container = styled(Column)`
@@ -33,9 +34,11 @@ const FloatingPanel = ({
   radius = FloatingPanelBorderRadius,
   testID,
   ...props
-}) => {
+}: any) => {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Container
       {...props}
       color={color || colors.white}

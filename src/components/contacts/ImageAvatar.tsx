@@ -1,16 +1,19 @@
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { Centered } from '../layout';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/images' or its cor... Remove this comment to see the full error message
 import { ImgixImage } from '@rainbow-me/images';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { borders } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'react-native-shadow-stack' or ... Remove this comment to see the full error message
 import ShadowStack from 'react-native-shadow-stack';
 
-const buildSmallShadows = (color, colors) => [
+const buildSmallShadows = (color: any, colors: any) => [
   [0, 3, 5, colors.shadow, 0.14],
   [0, 6, 10, colors.avatarBackgrounds[color] || color, 0.2],
 ];
 
-const sizeConfigs = colors => ({
+const sizeConfigs = (colors: any) => ({
   large: {
     dimensions: 65,
     shadow: [
@@ -19,6 +22,7 @@ const sizeConfigs = colors => ({
     ],
     textSize: 'bigger',
   },
+
   lmedium: {
     dimensions: 50,
     shadow: [
@@ -27,6 +31,7 @@ const sizeConfigs = colors => ({
     ],
     textSize: 28,
   },
+
   medium: {
     dimensions: 40,
     shadow: [
@@ -35,10 +40,12 @@ const sizeConfigs = colors => ({
     ],
     textSize: 'larger',
   },
+
   small: {
     dimensions: 34,
     textSize: 'large',
   },
+
   smaller: {
     dimensions: 20,
     textSize: 'small',
@@ -50,8 +57,10 @@ const Avatar = styled(ImgixImage)`
   width: ${({ dimensions }) => dimensions};
 `;
 
-const ImageAvatar = ({ image, size = 'medium', ...props }) => {
+const ImageAvatar = ({ image, size = 'medium', ...props }: any) => {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   const { dimensions, shadow } = useMemo(() => sizeConfigs(colors)[size], [
     colors,
     size,
@@ -66,13 +75,20 @@ const ImageAvatar = ({ image, size = 'medium', ...props }) => {
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ShadowStack
       {...props}
       {...borders.buildCircleAsObject(dimensions)}
       backgroundColor={colors.white}
       shadows={shadows}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Centered flex={1}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Avatar
           dimensions={dimensions}
           source={{

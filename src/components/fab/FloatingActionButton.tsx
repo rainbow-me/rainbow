@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../context/ThemeContext' was resolved t... Remove this comment to see the full error message
 import { useTheme } from '../../context/ThemeContext';
 import { darkModeThemeColors } from '../../styles/colors';
 import { magicMemo } from '../../utils';
@@ -7,12 +8,14 @@ import ButtonPressAnimation, {
   ScaleButtonZoomableAndroid,
 } from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../layout';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { borders, position } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'react-native-shadow-stack' or ... Remove this comment to see the full error message
 import ShadowStack from 'react-native-shadow-stack';
 
 export const FloatingActionButtonSize = 56;
 
-export const FloatingActionButtonShadow = colors => [
+export const FloatingActionButtonShadow = (colors: any) => [
   [0, 2, 5, colors.shadow, 0.2],
   [0, 6, 10, colors.shadow, 0.14],
   [0, 1, 18, colors.shadow, 0.12],
@@ -25,6 +28,7 @@ const Content = styled(Centered)`
   background-color: ${({ backgroundColor }) => backgroundColor};
 `;
 
+// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
 const Wrapper = android ? ScaleButtonZoomableAndroid : ButtonPressAnimation;
 
 const FloatingActionButton = ({
@@ -38,7 +42,7 @@ const FloatingActionButton = ({
   size = FloatingActionButtonSize,
   testID,
   ...props
-}) => {
+}: any) => {
   const { isDarkMode, colors } = useTheme();
   const shadows = useMemo(
     () => givenShadows || FloatingActionButtonShadow(colors),
@@ -60,7 +64,9 @@ const FloatingActionButton = ({
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Wrapper
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
       disabled={disabled || android}
       hapticType="impactLight"
       onPress={handlePress}
@@ -70,13 +76,20 @@ const FloatingActionButton = ({
       useLateHaptic={false}
       {...props}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <ShadowStack
         {...borders.buildCircleAsObject(size)}
         backgroundColor={colors.alpha(backgroundColor, isDarkMode ? 0.8 : 0.5)}
         hideShadow={disabled}
         shadows={isDarkMode ? DarkModeShadow : shadows}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <ButtonPressAnimation
+          // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
           disabled={disabled || ios}
           onPress={handlePress}
           reanimatedButton
@@ -85,8 +98,14 @@ const FloatingActionButton = ({
           }}
           testID={testID}
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Content backgroundColor={disabled ? colors.grey : backgroundColor}>
             {typeof children === 'function' ? children({ size }) : children}
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             {!disabled && <InnerBorder opacity={0.06} radius={size / 2} />}
           </Content>
         </ButtonPressAnimation>
@@ -95,6 +114,7 @@ const FloatingActionButton = ({
   );
 };
 
+// @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
 export default magicMemo(FloatingActionButton, [
   'disabled',
   'onPress',

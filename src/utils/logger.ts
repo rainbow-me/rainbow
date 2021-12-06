@@ -2,7 +2,7 @@ import { captureException } from '@sentry/react-native';
 import sentryUtils from './sentry';
 
 const Logger = {
-  debug(...args) {
+  debug(...args: any[]) {
     if (__DEV__) {
       const date = new Date().toLocaleTimeString();
       Array.prototype.unshift.call(args, `[${date}] ⚡⚡⚡ `);
@@ -10,13 +10,13 @@ const Logger = {
     }
   },
 
-  error(...args) {
+  error(...args: any[]) {
     if (__DEV__) {
       console.error(...args); // eslint-disable-line no-console
     }
   },
 
-  log(...args) {
+  log(...args: any[]) {
     if (__DEV__) {
       const date = new Date().toLocaleTimeString();
       Array.prototype.unshift.call(args, `[${date}]`);
@@ -40,29 +40,30 @@ const Logger = {
       console.log(allArgs.length > 0 ? allArgs : allArgs[0]); // eslint-disable-line no-console
     }
   },
-  sentry(...args) {
+  sentry(...args: any[]) {
     if (__DEV__) {
       const date = new Date().toLocaleTimeString();
       Array.prototype.unshift.call(args, `[${date}]`);
       console.log(...args); // eslint-disable-line no-console
     }
     if (args.length === 1 && typeof args[0] === 'string') {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'any[]' is not assignable to para... Remove this comment to see the full error message
       sentryUtils.addInfoBreadcrumb.apply(null, args);
     } else {
       const safeData = safelyStringifyWithFormat(args[1]);
       sentryUtils.addDataBreadcrumb(args[0], safeData);
     }
   },
-  warn(...args) {
+  warn(...args: any[]) {
     if (__DEV__) {
       console.warn(...args); // eslint-disable-line no-console
     }
   },
 };
 
-const safelyStringifyWithFormat = data => {
+const safelyStringifyWithFormat = (data: any) => {
   try {
-    const seen = [];
+    const seen: any = [];
     const newData = JSON.stringify(
       data,
       // Required to ignore cyclic structures

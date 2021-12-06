@@ -6,6 +6,7 @@ import useUniswapCalls from './useUniswapCalls';
 import {
   PAIR_GET_RESERVES_FRAGMENT,
   PAIR_INTERFACE,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 } from '@rainbow-me/references';
 
 export default function useUniswapPairs() {

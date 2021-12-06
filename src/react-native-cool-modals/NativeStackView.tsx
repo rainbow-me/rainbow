@@ -1,8 +1,10 @@
 import { StackActions, useTheme } from '@react-navigation/native';
 import React, { createContext, useMemo, useRef } from 'react';
 import { findNodeHandle, NativeModules, StyleSheet, View } from 'react-native';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './screens' was resolved to '/Users/nickbyt... Remove this comment to see the full error message
 import Components from './screens';
 
+// @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
 export const ModalContext = createContext();
 
 const sx = StyleSheet.create({
@@ -13,7 +15,14 @@ const sx = StyleSheet.create({
 
 const { RNCMScreenManager } = NativeModules;
 
-function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
+function ScreenView({
+  colors,
+  descriptors,
+  navigation,
+  route,
+  state,
+  hidden,
+}: any) {
   const { options, render: renderScene } = descriptors[route.key];
   const ref = useRef();
   const {
@@ -49,18 +58,21 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
   const context = useMemo(
     () => ({
       jumpToLong: () => {
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'undefined' is not assignable to ... Remove this comment to see the full error message
         const screen = findNodeHandle(ref.current);
         if (screen) {
           RNCMScreenManager.jumpTo(true, screen);
         }
       },
       jumpToShort: () => {
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'undefined' is not assignable to ... Remove this comment to see the full error message
         const screen = findNodeHandle(ref.current);
         if (screen) {
           RNCMScreenManager.jumpTo(false, screen);
         }
       },
       layout: () => {
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'undefined' is not assignable to ... Remove this comment to see the full error message
         const screen = findNodeHandle(ref.current);
         if (screen) {
           RNCMScreenManager.layout(screen);
@@ -75,7 +87,11 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
   }
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ModalContext.Provider value={context}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Components.Screen
         allowsDragToDismiss={allowsDragToDismiss}
         allowsTapToDismiss={allowsTapToDismiss}
@@ -134,6 +150,9 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
         topOffset={topOffset}
         transitionDuration={transitionDuration}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <View
           style={[
             sx.container,
@@ -153,20 +172,26 @@ function ScreenView({ colors, descriptors, navigation, route, state, hidden }) {
   );
 }
 
-export default function NativeStackView({ state, navigation, descriptors }) {
+export default function NativeStackView({
+  state,
+  navigation,
+  descriptors,
+}: any) {
   const { colors } = useTheme();
 
-  const nonSingleRoutesLength = state.routes.filter(route => {
+  const nonSingleRoutesLength = state.routes.filter((route: any) => {
     const { options } = descriptors[route.key];
     return !options.single;
   }).length;
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Components.ScreenStack style={sx.container}>
-      {state.routes.map((route, i) => {
+      {state.routes.map((route: any, i: any) => {
         const { options } = descriptors[route.key];
         const { limitActiveModals } = options;
         return (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <ScreenView
             colors={colors}
             descriptors={descriptors}

@@ -2,10 +2,12 @@ import { isArray, isString } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../../../context/ThemeContext' was resolve... Remove this comment to see the full error message
 import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { padding } from '@rainbow-me/styles';
 
 const ButtonSizeTypes = {
@@ -24,7 +26,7 @@ const ButtonShapeTypes = {
   rounded: 'rounded',
 };
 
-const shadowStyles = (colors, disabled, isDarkMode) => `
+const shadowStyles = (colors: any, disabled: any, isDarkMode: any) => `
   shadow-color: ${colors.alpha(
     isDarkMode ? colors.shadow : colors.blueGreyDark,
     isDarkMode && disabled ? 0.2 : 0.5
@@ -37,13 +39,14 @@ const shadowStyles = (colors, disabled, isDarkMode) => `
 const Container = styled(Centered)`
   ${({ disabled, showShadow, theme: { colors, isDarkMode } }) =>
     showShadow ? shadowStyles(colors, disabled, isDarkMode) : ''}
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   ${({ size }) => padding(...ButtonSizeTypes[size].padding)}
   background-color: ${({ backgroundColor }) => backgroundColor};
   border-radius: ${({ type }) => (type === 'rounded' ? 14 : 50)};
   flex-grow: 0;
 `;
 
-const shouldRenderChildrenAsText = children =>
+const shouldRenderChildrenAsText = (children: any) =>
   isArray(children) ? isString(children[0]) : isString(children);
 
 const Button = ({
@@ -63,17 +66,21 @@ const Button = ({
   disabled,
   testID,
   ...props
-}) => {
+}: any) => {
   const borderRadius = type === 'rounded' ? 14 : 50;
   const { colors, isDarkMode } = useTheme();
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ButtonPressAnimation
       disabled={disabled}
       onPress={onPress}
       radiusAndroid={borderRadius}
       testID={testID}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Container
         {...props}
         backgroundColor={
@@ -87,8 +94,10 @@ const Button = ({
         type={type}
       >
         {shouldRenderChildrenAsText(children) ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <Text
             color={color || colors.whiteLabel}
+            // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
             size={ButtonSizeTypes[size].fontSize}
             weight="semibold"
             {...textProps}
@@ -99,6 +108,7 @@ const Button = ({
           children
         )}
         {(!onPress || !disabled) && (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <InnerBorder
             color={borderColor}
             opacity={borderOpacity}

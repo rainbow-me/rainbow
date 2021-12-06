@@ -11,9 +11,11 @@ import React, {
   useState,
 } from 'react';
 import { StatusBar } from 'react-native';
+// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import styled from 'styled-components';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/GestureBlocker' was resolved... Remove this comment to see the full error message
 import GestureBlocker from '../components/GestureBlocker';
 import {
   CurrencySelectionList,
@@ -23,7 +25,9 @@ import {
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers' or its co... Remove this comment to see the full error message
 import { CurrencySelectionTypes, TokenSectionTypes } from '@rainbow-me/helpers';
 import {
   useInteraction,
@@ -32,21 +36,28 @@ import {
   useTimeout,
   useUniswapAssets,
   useUniswapAssetsInWallet,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks/useMagicAuto... Remove this comment to see the full error message
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation/Navigat... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position } from '@rainbow-me/styles';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { filterList } from '@rainbow-me/utils';
 
 const TabTransitionAnimation = styled(Animated.View)`
   ${position.size('100%')};
 `;
 
-const headerlessSection = data => [{ data, title: '' }];
+const headerlessSection = (data: any) => [{ data, title: '' }];
+// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
 const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
 
-const searchCurrencyList = (searchList, query) => {
+const searchCurrencyList = (searchList: any, query: any) => {
   const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);
 
   if (isAddress) {
@@ -67,10 +78,15 @@ export default function CurrencySelectModal() {
   const { navigate, dangerouslyGetState } = useNavigation();
   const {
     params: {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'onSelectCurrency' does not exist on type... Remove this comment to see the full error message
       onSelectCurrency,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'restoreFocusOnSwapModal' does not exist ... Remove this comment to see the full error message
       restoreFocusOnSwapModal,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'setPointerEvents' does not exist on type... Remove this comment to see the full error message
       setPointerEvents,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'toggleGestureEnabled' does not exist on ... Remove this comment to see the full error message
       toggleGestureEnabled,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'type' does not exist on type 'Readonly<o... Remove this comment to see the full error message
       type,
     },
   } = useRoute();
@@ -88,6 +104,7 @@ export default function CurrencySelectModal() {
     searchQuery,
   ]);
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const {
     curatedNotFavorited,
@@ -101,7 +118,7 @@ export default function CurrencySelectModal() {
   const uniswapAssetsInWallet = useUniswapAssetsInWallet();
 
   const currencyList = useMemo(() => {
-    let filteredList = [];
+    let filteredList: any = [];
     if (type === CurrencySelectionTypes.input) {
       filteredList = headerlessSection(uniswapAssetsInWallet);
       if (searchQueryForSearch) {
@@ -252,6 +269,7 @@ export default function CurrencySelectModal() {
   const handleApplyFavoritesQueue = useCallback(
     () =>
       Object.keys(assetsToFavoriteQueue).map(assetToFavorite =>
+        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         updateFavorites(assetToFavorite, assetsToFavoriteQueue[assetToFavorite])
       ),
     [assetsToFavoriteQueue, updateFavorites]
@@ -261,8 +279,10 @@ export default function CurrencySelectModal() {
   useEffect(() => {
     // on new focus state
     if (isFocused !== prevIsFocused) {
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
       android && toggleGestureEnabled(!isFocused);
       startInteraction(() => {
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
         ios && toggleGestureEnabled(!isFocused);
       });
     }
@@ -282,6 +302,7 @@ export default function CurrencySelectModal() {
     toggleGestureEnabled,
   ]);
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   const isFocusedAndroid = useIsFocused() && android;
 
   const shouldUpdateFavoritesRef = useRef(false);
@@ -295,16 +316,26 @@ export default function CurrencySelectModal() {
   }, [assetsToFavoriteQueue, handleApplyFavoritesQueue, searchQueryExists]);
 
   const style = useAnimatedStyle(() => ({
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     opacity: scrollPosition.value,
     transform: [
+      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
       { scale: 0.9 + scrollPosition.value / 10 },
+      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
       { translateX: (1 - scrollPosition.value) * 8 },
     ],
   }));
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Wrapper>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <TabTransitionAnimation style={style}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Modal
           containerPadding={0}
           fullScreenOnAndroid
@@ -312,10 +343,25 @@ export default function CurrencySelectModal() {
           overflow="hidden"
           radius={30}
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           {isFocusedAndroid && <StatusBar barStyle="dark-content" />}
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <GestureBlocker type="top" />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Column flex={1}>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <CurrencySelectModalHeader testID="currency-select-header" />
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <ExchangeSearch
               isFetching={loadingAllTokens}
               isSearching={isSearching}
@@ -326,6 +372,7 @@ export default function CurrencySelectModal() {
               testID="currency-select-search"
             />
             {type === null || type === undefined ? null : (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <CurrencySelectionList
                 itemProps={itemProps}
                 listItems={currencyList}
@@ -337,6 +384,9 @@ export default function CurrencySelectModal() {
               />
             )}
           </Column>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <GestureBlocker type="bottom" />
         </Modal>
       </TabTransitionAnimation>

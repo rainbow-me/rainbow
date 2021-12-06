@@ -22,16 +22,20 @@ const USER_LISTS_CLEAR_STATE = 'userLists/USER_LISTS_CLEAR_STATE';
 const USER_LISTS_SET_SELECTED_LIST = 'userLists/USER_LISTS_SET_SELECTED_LIST';
 const FAVORITES_LIST_ID = 'favorites';
 // -- Actions --------------------------------------------------------------- //
-export const userListsLoadState = () => async (dispatch, getState) => {
+export const userListsLoadState = () => async (
+  dispatch: any,
+  getState: any
+) => {
   const { network } = getState().settings;
 
   dispatch({ type: USER_LISTS_LOAD_REQUEST });
   try {
     const defaultLists = DefaultTokenLists[network] || [];
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
     const userLists = await getUserLists(network);
     const lists = userLists?.length ? userLists : defaultLists;
-    let allAddresses = [];
-    lists.forEach(list => {
+    let allAddresses: any = [];
+    lists.forEach((list: any) => {
       allAddresses = [...allAddresses, ...list.tokens];
     });
 
@@ -55,7 +59,9 @@ export const userListsLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const userListsSetSelectedList = (listId, save = true) => dispatch => {
+export const userListsSetSelectedList = (listId: any, save = true) => (
+  dispatch: any
+) => {
   dispatch({
     payload: listId,
     type: USER_LISTS_SET_SELECTED_LIST,
@@ -67,7 +73,10 @@ export const userListsSetSelectedList = (listId, save = true) => dispatch => {
   }
 };
 
-export const userListsClearList = listId => (dispatch, getState) => {
+export const userListsClearList = (listId: any) => (
+  dispatch: any,
+  getState: any
+) => {
   const { lists } = getState().userLists;
   const allNewLists = [...lists];
 
@@ -82,8 +91,10 @@ export const userListsClearList = listId => (dispatch, getState) => {
   });
 
   // update the list
+  // @ts-expect-error ts-migrate(2538) FIXME: Type 'null' cannot be used as an index type.
   const newList = { ...allNewLists[listIndex] };
   newList.tokens = [];
+  // @ts-expect-error ts-migrate(2538) FIXME: Type 'null' cannot be used as an index type.
   allNewLists[listIndex] = newList;
 
   dispatch({
@@ -93,10 +104,11 @@ export const userListsClearList = listId => (dispatch, getState) => {
   saveUserLists(allNewLists);
 };
 
-export const userListsUpdateList = (assetAddress, listId, add = true) => (
-  dispatch,
-  getState
-) => {
+export const userListsUpdateList = (
+  assetAddress: any,
+  listId: any,
+  add = true
+) => (dispatch: any, getState: any) => {
   if (listId === FAVORITES_LIST_ID) {
     dispatch(uniswapUpdateFavorites(assetAddress, add));
   } else {
@@ -115,17 +127,22 @@ export const userListsUpdateList = (assetAddress, listId, add = true) => (
 
     // add or remove
     const updatedListTokens = add
-      ? uniq(concat(allNewLists[listIndex].tokens, assetAddress))
+      ? // @ts-expect-error ts-migrate(2538) FIXME: Type 'null' cannot be used as an index type.
+        uniq(concat(allNewLists[listIndex].tokens, assetAddress))
       : isArray(assetAddress)
-      ? without(allNewLists[listIndex].tokens, ...assetAddress)
-      : without(allNewLists[listIndex].tokens, assetAddress);
+      ? // @ts-expect-error ts-migrate(2538) FIXME: Type 'null' cannot be used as an index type.
+        without(allNewLists[listIndex].tokens, ...assetAddress)
+      : // @ts-expect-error ts-migrate(2538) FIXME: Type 'null' cannot be used as an index type.
+        without(allNewLists[listIndex].tokens, assetAddress);
     if (add) {
       dispatch(emitAssetRequest(assetAddress));
     }
 
     // update the list
+    // @ts-expect-error ts-migrate(2538) FIXME: Type 'null' cannot be used as an index type.
     const newList = { ...allNewLists[listIndex] };
     newList.tokens = updatedListTokens;
+    // @ts-expect-error ts-migrate(2538) FIXME: Type 'null' cannot be used as an index type.
     allNewLists[listIndex] = newList;
 
     dispatch({
@@ -144,7 +161,7 @@ export const INITIAL_USER_LISTS_STATE = {
   selectedList: null,
 };
 
-export default (state = INITIAL_USER_LISTS_STATE, action) =>
+export default (state = INITIAL_USER_LISTS_STATE, action: any) =>
   produce(state, draft => {
     switch (action.type) {
       case USER_LISTS_LOAD_REQUEST:

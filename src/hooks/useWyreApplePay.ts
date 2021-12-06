@@ -18,7 +18,9 @@ import {
 import useAccountSettings from './useAccountSettings';
 import usePurchaseTransactionStatus from './usePurchaseTransactionStatus';
 import useTimeout from './useTimeout';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { getTokenMetadata } from '@rainbow-me/utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 export default function useWyreApplePay() {
@@ -46,6 +48,7 @@ export default function useWyreApplePay() {
   const handlePaymentCallback = useCallback(() => {
     // In order to have the UI appear to be in-sync with the Apple Pay modal's
     // animation, we need to artificially delay before marking a purchase as pending.
+    // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
     startPaymentCompleteTimeout(() => setPaymentComplete(true), 1500);
   }, [startPaymentCompleteTimeout]);
 
@@ -127,6 +130,7 @@ export default function useWyreApplePay() {
           reservationId
         );
         if (orderId) {
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'orderId' does not exist on type '{ refer... Remove this comment to see the full error message
           referenceInfo.orderId = orderId;
           applePayResponse.complete(PaymentRequestStatusTypes.SUCCESS);
           setOrderId(orderId);

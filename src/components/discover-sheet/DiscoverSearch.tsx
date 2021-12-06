@@ -9,6 +9,7 @@ import React, {
   useState,
 } from 'react';
 import { InteractionManager, View } from 'react-native';
+// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -18,24 +19,30 @@ import tokenSectionTypes from '../../helpers/tokenSectionTypes';
 import { emitAssetRequest } from '../../redux/explorer';
 import deviceUtils from '../../utils/deviceUtils';
 import { CurrencySelectionList } from '../exchange';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../expanded-state/asset/ChartExpandedState... Remove this comment to see the full error message
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/ens' or i... Remove this comment to see the full error message
 import { fetchSuggestions } from '@rainbow-me/handlers/ens';
 import {
   useAccountAssets,
   useTimeout,
   useUniswapAssets,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { filterList } from '@rainbow-me/utils';
 
 export const SearchContainer = styled(Row)`
   height: 100%;
 `;
 
-const searchCurrencyList = (searchList = [], query) => {
+const searchCurrencyList = (searchList = [], query: any) => {
   const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);
 
   if (isAddress) {
@@ -62,15 +69,21 @@ export default function DiscoverSearch() {
     loadingAllTokens,
   } = useUniswapAssets();
   const {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'isFetchingEns' does not exist on type 'n... Remove this comment to see the full error message
     isFetchingEns,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'setIsSearching' does not exist on type '... Remove this comment to see the full error message
     setIsSearching,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'setIsFetchingEns' does not exist on type... Remove this comment to see the full error message
     setIsFetchingEns,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'searchQuery' does not exist on type 'nul... Remove this comment to see the full error message
     searchQuery,
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'isSearchModeEnabled' does not exist on t... Remove this comment to see the full error message
     isSearchModeEnabled,
   } = useContext(DiscoverSheetContext);
 
   const currencySelectionListRef = useRef();
   const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const [startQueryDebounce, stopQueryDebounce] = useTimeout();
   const [fastCurrencyList, setFastCurrencyList] = useState([]);
@@ -92,7 +105,9 @@ export default function DiscoverSearch() {
           });
         });
       } else {
-        const asset = allAssets.find(asset => item.address === asset.address);
+        const asset = allAssets.find(
+          (asset: any) => item.address === asset.address
+        );
         dispatch(emitAssetRequest(item.address));
         navigate(Routes.EXPANDED_ASSET_SHEET, {
           asset: asset || item,
@@ -128,7 +143,7 @@ export default function DiscoverSearch() {
           globalLowLiquidityAssets,
           searchQueryForSearch
         );
-        let lowCurrencyList = [];
+        let lowCurrencyList: any = [];
         if (filteredLow.length) {
           lowCurrencyList = [
             {
@@ -144,7 +159,7 @@ export default function DiscoverSearch() {
   );
 
   const addEnsResults = useCallback(ensResults => {
-    let ensSearchResults = [];
+    let ensSearchResults: any = [];
     if (ensResults && ensResults.length) {
       ensSearchResults = [
         {
@@ -211,6 +226,7 @@ export default function DiscoverSearch() {
         ];
       }
       setIsSearching(false);
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '({ color: any; data: any; title:... Remove this comment to see the full error message
       setFastCurrencyList(filteredList);
     },
     [
@@ -239,6 +255,7 @@ export default function DiscoverSearch() {
   }, [searchQuery, setIsSearching, startQueryDebounce, stopQueryDebounce]);
 
   useEffect(() => {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'scrollToLocation' does not exist on type... Remove this comment to see the full error message
     currencySelectionListRef.current?.scrollToLocation({
       animated: false,
       itemIndex: 0,
@@ -249,8 +266,15 @@ export default function DiscoverSearch() {
   }, [isSearchModeEnabled]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <View style={[!android && { height: deviceUtils.dimensions.height - 140 }]}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <SearchContainer>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <CurrencySelectionList
           footerSpacer
           itemProps={itemProps}

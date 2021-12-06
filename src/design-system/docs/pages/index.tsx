@@ -19,6 +19,7 @@ const fontWeightFromString = {
 } as const;
 
 const Title = ({ children }: { children: ReactNode }) => (
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   <h1
     className={sprinkles({
       color: 'primary',
@@ -31,6 +32,7 @@ const Title = ({ children }: { children: ReactNode }) => (
 );
 
 const Heading = ({ children }: { children: ReactNode }) => (
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   <h2
     className={sprinkles({
       color: 'secondary',
@@ -43,6 +45,7 @@ const Heading = ({ children }: { children: ReactNode }) => (
 );
 
 const Stack = ({ space, children }: { space: Space; children: ReactNode }) => (
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   <div
     className={sprinkles({
       display: 'flex',
@@ -61,6 +64,7 @@ const Columns = ({
   space: Space;
   children: ReactNode;
 }) => (
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   <div
     className={sprinkles({
       display: 'flex',
@@ -70,6 +74,7 @@ const Columns = ({
     })}
   >
     {Children.map(children, child => (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <div
         className={sprinkles({
           flexBasis: 0,
@@ -92,6 +97,7 @@ const Card = ({
   height?: 'full';
   children: ReactNode;
 }) => (
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   <div
     className={sprinkles({
       borderRadius: CARD_RADIUS,
@@ -107,11 +113,24 @@ const Card = ({
 
 const Home: NextPage = () => {
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Head>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <title>Rainbow Design System Cheat Sheet</title>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <link href="/favicon.ico" rel="icon" />
       </Head>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <div
         className={sprinkles({
           display: 'flex',
@@ -125,25 +144,62 @@ const Home: NextPage = () => {
           paddingTop: '48px',
         })}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Stack space="64px">
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Stack space="24px">
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Stack space="12px">
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Title>Typography</Title>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Columns space={GRID_SPACING}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Heading>Heading Sizes</Heading>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Heading>Text Sizes</Heading>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Heading>Font Weights</Heading>
               </Columns>
             </Stack>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Columns space={GRID_SPACING}>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Card height="full">
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Stack space={CARD_GUTTER}>
                   {Object.entries(typeHierarchy.heading).map(
                     (
                       [sizeName, { fontSize, lineHeight, letterSpacing }],
                       index
                     ) => (
+                      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                       <div key={index} style={{ fontSize }}>
+                        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use
+                        JSX unless the '--jsx' flag is provided... Remove this
+                        comment to see the full error message
                         <div
                           className={sprinkles({
                             color: 'primary',
@@ -152,6 +208,9 @@ const Home: NextPage = () => {
                         >
                           {sizeName} heading
                         </div>
+                        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use
+                        JSX unless the '--jsx' flag is provided... Remove this
+                        comment to see the full error message
                         <div
                           className={sprinkles({
                             color: 'secondary',
@@ -159,7 +218,10 @@ const Home: NextPage = () => {
                           })}
                         >
                           {lineHeight}
-                          px line height
+                          px line height // @ts-expect-error ts-migrate(17004)
+                          FIXME: Cannot use JSX unless the '--jsx' flag is
+                          provided... Remove this comment to see the full error
+                          message
                           <br />
                           {letterSpacing}px spacing
                         </div>
@@ -168,15 +230,24 @@ const Home: NextPage = () => {
                   )}
                 </Stack>
               </Card>
-
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Card height="full">
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Stack space={CARD_GUTTER}>
                   {Object.entries(typeHierarchy.text).map(
                     (
                       [sizeName, { fontSize, lineHeight, letterSpacing }],
                       index
                     ) => (
+                      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                       <div key={index} style={{ fontSize }}>
+                        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use
+                        JSX unless the '--jsx' flag is provided... Remove this
+                        comment to see the full error message
                         <div
                           className={sprinkles({
                             color: 'primary',
@@ -185,6 +256,9 @@ const Home: NextPage = () => {
                         >
                           {sizeName} text
                         </div>
+                        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use
+                        JSX unless the '--jsx' flag is provided... Remove this
+                        comment to see the full error message
                         <div
                           className={sprinkles({
                             color: 'secondary',
@@ -192,7 +266,10 @@ const Home: NextPage = () => {
                           })}
                         >
                           {lineHeight}
-                          px line height
+                          px line height // @ts-expect-error ts-migrate(17004)
+                          FIXME: Cannot use JSX unless the '--jsx' flag is
+                          provided... Remove this comment to see the full error
+                          message
                           <br />
                           {letterSpacing}px spacing
                         </div>
@@ -201,11 +278,17 @@ const Home: NextPage = () => {
                   )}
                 </Stack>
               </Card>
-
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Card height="full">
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Stack space="12px">
                   {Object.entries(fontWeights).map(
                     ([fontWeightName, fontWeight], index) => (
+                      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                       <div
                         className={sprinkles({
                           color: 'primary',
@@ -222,23 +305,45 @@ const Home: NextPage = () => {
               </Card>
             </Columns>
           </Stack>
-
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Stack space="24px">
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Stack space="12px">
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Title>Background Colors</Title>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Columns space={GRID_SPACING}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Heading>Light Mode</Heading>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Heading>Dark Mode</Heading>
               </Columns>
             </Stack>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Stack space={GRID_SPACING}>
               {Object.entries(backgroundColors).map(
                 ([backgroundName, background], i) => (
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                   <Columns key={i} space={GRID_SPACING}>
                     {('color' in background
                       ? [background, background]
                       : [background.light, background.dark]
                     ).map(({ color: backgroundColor, mode }, index) => (
+                      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                       <div
                         className={sprinkles({
                           borderRadius: CARD_RADIUS,
@@ -248,7 +353,13 @@ const Home: NextPage = () => {
                         key={index}
                         style={{ backgroundColor }}
                       >
+                        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use
+                        JSX unless the '--jsx' flag is provided... Remove this
+                        comment to see the full error message
                         <Stack space="8px">
+                          // @ts-expect-error ts-migrate(17004) FIXME: Cannot
+                          use JSX unless the '--jsx' flag is provided... Remove
+                          this comment to see the full error message
                           <div
                             className={sprinkles({
                               fontSize: '18px',
@@ -258,6 +369,9 @@ const Home: NextPage = () => {
                           >
                             {backgroundName}
                           </div>
+                          // @ts-expect-error ts-migrate(17004) FIXME: Cannot
+                          use JSX unless the '--jsx' flag is provided... Remove
+                          this comment to see the full error message
                           <div
                             className={sprinkles({
                               color:
@@ -279,20 +393,47 @@ const Home: NextPage = () => {
               )}
             </Stack>
           </Stack>
-
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Stack space="24px">
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Stack space="12px">
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Title>Foreground Colors</Title>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Columns space={GRID_SPACING}>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Heading>Light Mode</Heading>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Heading>Light Tinted Mode</Heading>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Heading>Dark Mode</Heading>
+                // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX
+                unless the '--jsx' flag is provided... Remove this comment to
+                see the full error message
                 <Heading>Dark Tinted Mode</Heading>
               </Columns>
             </Stack>
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+            the '--jsx' flag is provided... Remove this comment to see the full
+            error message
             <Stack space="none">
               {Object.entries(foregroundColors).map(
                 ([foregroundName, foreground], colorIndex, arr) => (
+                  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                   <Columns key={colorIndex} space={GRID_SPACING}>
                     {(typeof foreground === 'string'
                       ? ([
@@ -314,6 +455,7 @@ const Home: NextPage = () => {
                           ],
                         ] as const)
                     ).map(([color, backgroundColor], index) => (
+                      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                       <div
                         className={sprinkles({
                           backgroundColor:
@@ -337,7 +479,13 @@ const Home: NextPage = () => {
                             : undefined
                         }
                       >
+                        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use
+                        JSX unless the '--jsx' flag is provided... Remove this
+                        comment to see the full error message
                         <Stack space="8px">
+                          // @ts-expect-error ts-migrate(17004) FIXME: Cannot
+                          use JSX unless the '--jsx' flag is provided... Remove
+                          this comment to see the full error message
                           <div
                             className={sprinkles({
                               fontSize: '18px',
@@ -348,6 +496,9 @@ const Home: NextPage = () => {
                           >
                             {foregroundName}
                           </div>
+                          // @ts-expect-error ts-migrate(17004) FIXME: Cannot
+                          use JSX unless the '--jsx' flag is provided... Remove
+                          this comment to see the full error message
                           <div
                             className={sprinkles({
                               fontSize: '18px',

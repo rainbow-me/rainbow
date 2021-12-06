@@ -2,13 +2,17 @@ import { castArray } from 'lodash';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Animated, View } from 'react-native';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './FloatingEmoji' was resolved to '/Users/n... Remove this comment to see the full error message
 import FloatingEmoji from './FloatingEmoji';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 import { useTimeout } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { position } from '@rainbow-me/styles';
 
-const EMPTY_ARRAY = [];
-const getEmoji = emojis => Math.floor(Math.random() * emojis.length);
-const getRandomNumber = (min, max) => Math.random() * (max - min) + min;
+const EMPTY_ARRAY: any = [];
+const getEmoji = (emojis: any) => Math.floor(Math.random() * emojis.length);
+const getRandomNumber = (min: any, max: any) =>
+  Math.random() * (max - min) + min;
 
 const FloatingEmojis = ({
   centerVertically,
@@ -29,7 +33,7 @@ const FloatingEmojis = ({
   size,
   wiggleFactor,
   ...props
-}) => {
+}: any) => {
   const emojisArray = useMemo(() => castArray(emojis), [emojis]);
   const [floatingEmojis, setEmojis] = useState(EMPTY_ARRAY);
   const [startTimeout, stopTimeout] = useTimeout();
@@ -45,6 +49,7 @@ const FloatingEmojis = ({
       stopTimeout();
       startTimeout(clearEmojis, duration * 1.1);
 
+      // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'existingEmojis' implicitly has an 'any'... Remove this comment to see the full error message
       setEmojis(existingEmojis => {
         const newEmoji = {
           // if a user has smashed the button 7 times, they deserve a 🌈 rainbow
@@ -54,6 +59,7 @@ const FloatingEmojis = ({
               : emojisArray.length === 1
               ? emojisArray[0]
               : emojisArray[getEmoji(emojisArray)],
+          // @ts-expect-error ts-migrate(2556) FIXME: Expected 2 arguments, but got 0 or more.
           x: x ? x - getRandomNumber(-20, 20) : getRandomNumber(...range) + '%',
           y: y || 0,
         };
@@ -77,8 +83,12 @@ const FloatingEmojis = ({
   }, [setOnNewEmoji, onNewEmoji]);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <View zIndex={1} {...props}>
       {typeof children === 'function' ? children({ onNewEmoji }) : children}
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Animated.View
         pointerEvents="none"
         style={{
@@ -86,7 +96,11 @@ const FloatingEmojis = ({
           ...position.coverAsObject,
         }}
       >
+        // @ts-expect-error ts-migrate(7031) FIXME: Binding element
+        'emojiToRender' implicitly has an ... Remove this comment to see the
+        full error message
         {floatingEmojis.map(({ emojiToRender, x, y }, index) => (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <FloatingEmoji
             centerVertically={centerVertically}
             disableHorizontalMovement={disableHorizontalMovement}

@@ -7,23 +7,28 @@ import React, {
   useState,
 } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/dev-buttons/DevButton' was r... Remove this comment to see the full error message
 import DevButton from '../components/dev-buttons/DevButton';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../components/text/Emoji' was resolved to ... Remove this comment to see the full error message
 import Emoji from '../components/text/Emoji';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '../config/debug' or its corres... Remove this comment to see the full error message
 import { showReloadButton, showSwitchModeButton } from '../config/debug';
 import { defaultConfig } from '../config/experimental';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../context/ThemeContext' was resolved to '... Remove this comment to see the full error message
 import { useTheme } from '../context/ThemeContext';
 
 export const RainbowContext = createContext({});
 
 const EXPERIMENTAL_CONFIG = 'experimentalConfig';
 
-export default function RainbowContextWrapper({ children }) {
+export default function RainbowContextWrapper({ children }: any) {
   // This value is hold here to prevent JS VM from shutting down
   // on unmounting all shared values.
   useSharedValue(0);
   const [config, setConfig] = useState(defaultConfig);
   const [globalState, updateGlobalState] = useState({});
 
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '() => Promise<void>' is not assi... Remove this comment to see the full error message
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(async () => {
     const configFromStorage = await AsyncStorage.getItem(EXPERIMENTAL_CONFIG);
@@ -55,14 +60,22 @@ export default function RainbowContextWrapper({ children }) {
   const { isDarkMode, setTheme, colors } = useTheme();
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <RainbowContext.Provider value={initialValue}>
       {children}
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       {showReloadButton && __DEV__ && <DevButton initialDisplacement={200} />}
       {showSwitchModeButton && __DEV__ && (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <DevButton
           color={colors.dark}
           onPress={() => setTheme(isDarkMode ? 'light' : 'dark')}
         >
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Emoji>{isDarkMode ? '🌞' : '🌚'}</Emoji>
         </DevButton>
       )}

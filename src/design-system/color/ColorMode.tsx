@@ -31,6 +31,7 @@ export function ColorModeProvider({
   children: ReactNode;
 }) {
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ColorModeContext.Provider
       value={useMemo(() => contextValueForColorMode(colorMode), [colorMode])}
     >

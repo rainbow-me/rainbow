@@ -6,10 +6,11 @@ import {
   userListsUpdateList,
 } from '../redux/userLists';
 
-const userListsSelector = state => state.userLists.lists;
-const userListsReadySelector = state => state.userLists.ready;
-const userListsSelectedListSelector = state => state.userLists.selectedList;
-const uniswapFavoritesSelector = state => state.uniswap.favorites;
+const userListsSelector = (state: any) => state.userLists.lists;
+const userListsReadySelector = (state: any) => state.userLists.ready;
+const userListsSelectedListSelector = (state: any) =>
+  state.userLists.selectedList;
+const uniswapFavoritesSelector = (state: any) => state.uniswap.favorites;
 
 export default function useUserLists() {
   const dispatch = useDispatch();
@@ -19,6 +20,7 @@ export default function useUserLists() {
   const favorites = useSelector(uniswapFavoritesSelector);
 
   const updateList = useCallback(
+    // @ts-expect-error ts-migrate(2556) FIXME: Expected 2-3 arguments, but got 0 or more.
     (...data) => dispatch(userListsUpdateList(...data)),
     [dispatch]
   );

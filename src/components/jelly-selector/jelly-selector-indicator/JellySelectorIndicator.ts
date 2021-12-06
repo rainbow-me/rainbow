@@ -7,7 +7,7 @@ export default function JellySelectorIndicator({
   translateX,
   width,
   ...props
-}) {
+}: any) {
   return createElement(renderIndicator, {
     ...props,
     backgroundColor,

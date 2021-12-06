@@ -1,12 +1,16 @@
 import { useContext } from 'react';
 import { defaultConfig } from './experimental';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/RainbowCon... Remove this comment to see the full error message
 import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
 
-const useExperimentalFlag = name => {
+const useExperimentalFlag = (name: any) => {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'IS_DEV'.
   if (IS_DEV) {
+    // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
     // eslint-disable-next-line react-hooks/rules-of-hooks
     return useContext(RainbowContext).config[name];
   } else {
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     return defaultConfig[name];
   }
 };

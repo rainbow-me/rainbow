@@ -17,6 +17,7 @@ import {
   getAllWallets,
   getSelectedWallet,
   loadAddress,
+  // @ts-expect-error ts-migrate(2459) FIXME: Module '"../model/wallet"' declares 'oldSeedPhrase... Remove this comment to see the full error message
   oldSeedPhraseMigratedKey,
   saveAddress,
   saveAllWallets,
@@ -31,6 +32,7 @@ import {
 } from '../utils/keychainConstants';
 import { addressHashedColorIndex } from '../utils/profileUtils';
 import { updateWebDataEnabled } from './showcaseTokens';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { lightModeThemeColors } from '@rainbow-me/styles';
 
 // -- Constants --------------------------------------- //
@@ -42,7 +44,7 @@ const WALLETS_SET_IS_LOADING = 'wallets/WALLETS_SET_IS_LOADING';
 const WALLETS_SET_SELECTED = 'wallets/SET_SELECTED';
 
 // -- Actions ---------------------------------------- //
-export const walletsLoadState = () => async (dispatch, getState) => {
+export const walletsLoadState = () => async (dispatch: any, getState: any) => {
   try {
     const { accountAddress } = getState().settings;
     let addressFromKeychain = accountAddress;
@@ -85,13 +87,17 @@ export const walletsLoadState = () => async (dispatch, getState) => {
       );
     }
 
+    // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
     const selectedAddress = selectedWallet.addresses.find(a => {
       return a.visible && a.address === addressFromKeychain;
     });
 
     if (!selectedAddress) {
+      // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
       const account = selectedWallet.addresses.find(a => a.visible);
+      // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
       await dispatch(settingsUpdateAccountAddress(account.address));
+      // @ts-expect-error ts-migrate(2532) FIXME: Object is possibly 'undefined'.
       await saveAddress(account.address);
       logger.sentry(
         'Selected the first visible address because there was not selected one'
@@ -117,7 +123,7 @@ export const walletsLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const walletsUpdate = wallets => async dispatch => {
+export const walletsUpdate = (wallets: any) => async (dispatch: any) => {
   await saveAllWallets(wallets);
   dispatch({
     payload: wallets,
@@ -125,7 +131,7 @@ export const walletsUpdate = wallets => async dispatch => {
   });
 };
 
-export const walletsSetSelected = wallet => async dispatch => {
+export const walletsSetSelected = (wallet: any) => async (dispatch: any) => {
   await setSelectedWallet(wallet);
   dispatch({
     payload: wallet,
@@ -133,7 +139,7 @@ export const walletsSetSelected = wallet => async dispatch => {
   });
 };
 
-export const setIsWalletLoading = val => dispatch => {
+export const setIsWalletLoading = (val: any) => (dispatch: any) => {
   dispatch({
     payload: val,
     type: WALLETS_SET_IS_LOADING,
@@ -141,10 +147,10 @@ export const setIsWalletLoading = val => dispatch => {
 };
 
 export const setWalletBackedUp = (
-  walletId,
-  method,
+  walletId: any,
+  method: any,
   backupFile = null
-) => async (dispatch, getState) => {
+) => async (dispatch: any, getState: any) => {
   const { wallets, selected } = getState().wallets;
   const newWallets = { ...wallets };
   newWallets[walletId] = {
@@ -176,23 +182,26 @@ export const setWalletBackedUp = (
   }
 };
 
-export const addressSetSelected = address => () => saveAddress(address);
+export const addressSetSelected = (address: any) => () => saveAddress(address);
 
-export const createAccountForWallet = (id, color, name) => async (
-  dispatch,
-  getState
-) => {
+export const createAccountForWallet = (
+  id: any,
+  color: any,
+  name: any
+) => async (dispatch: any, getState: any) => {
   const { wallets } = getState().wallets;
   const newWallets = { ...wallets };
   let index = 0;
   newWallets[id].addresses.forEach(
-    account => (index = Math.max(index, account.index))
+    (account: any) => (index = Math.max(index, account.index))
   );
   const newIndex = index + 1;
   const account = await generateAccount(id, newIndex);
   const walletColorIndex =
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     color !== null ? color : addressHashedColorIndex(account.address);
   newWallets[id].addresses.push({
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     address: account.address,
     avatar: null,
     color: walletColorIndex,
@@ -201,14 +210,17 @@ export const createAccountForWallet = (id, color, name) => async (
     visible: true,
   });
 
+  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
   setPreference(PreferenceActionType.init, 'profile', account.address, {
     accountColor: lightModeThemeColors.avatarBackgrounds[walletColorIndex],
   });
 
+  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
   await dispatch(updateWebDataEnabled(true, account.address));
   // Save all the wallets
   saveAllWallets(newWallets);
   // Set the address selected (KEYCHAIN)
+  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
   await saveAddress(account.address);
   // Set the wallet selected (KEYCHAIN)
   await setSelectedWallet(newWallets[id]);
@@ -221,7 +233,7 @@ export const createAccountForWallet = (id, color, name) => async (
   return newWallets;
 };
 
-export const fetchWalletNames = () => async (dispatch, getState) => {
+export const fetchWalletNames = () => async (dispatch: any, getState: any) => {
   const { wallets } = getState().wallets;
   const updatedWalletNames = {};
 
@@ -233,6 +245,7 @@ export const fetchWalletNames = () => async (dispatch, getState) => {
         try {
           const ens = await web3Provider.lookupAddress(account.address);
           if (ens && ens !== account.address) {
+            // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
             updatedWalletNames[account.address] = ens;
           }
           // eslint-disable-next-line no-empty
@@ -249,7 +262,10 @@ export const fetchWalletNames = () => async (dispatch, getState) => {
   saveWalletNames(updatedWalletNames);
 };
 
-export const checkKeychainIntegrity = () => async (dispatch, getState) => {
+export const checkKeychainIntegrity = () => async (
+  dispatch: any,
+  getState: any
+) => {
   try {
     let healthyKeychain = true;
     logger.sentry('[KeychainIntegrityCheck]: starting checks');
@@ -377,7 +393,7 @@ const INITIAL_STATE = {
   wallets: null,
 };
 
-export default (state = INITIAL_STATE, action) => {
+export default (state = INITIAL_STATE, action: any) => {
   switch (action.type) {
     case WALLETS_SET_IS_LOADING:
       return { ...state, isWalletLoading: action.payload };

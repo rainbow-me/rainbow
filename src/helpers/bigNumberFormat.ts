@@ -1,6 +1,11 @@
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utilities' or its ... Remove this comment to see the full error message
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 
-export const bigNumberFormat = (num, nativeCurrency, skipDecimals) => {
+export const bigNumberFormat = (
+  num: any,
+  nativeCurrency: any,
+  skipDecimals: any
+) => {
   let ret;
   if (num > 1000000000) {
     ret = `${convertAmountToNativeDisplay(

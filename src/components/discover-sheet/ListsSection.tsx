@@ -15,29 +15,36 @@ import { DefaultTokenLists } from '../../references';
 import { ButtonPressAnimation } from '../animations';
 import { AssetListItemSkeleton } from '../asset-list';
 import { ListCoinRow } from '../coin-row';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../expanded-state/asset/ChartExpandedState... Remove this comment to see the full error message
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { Centered, Column, Flex, Row } from '../layout';
 import { Emoji, Text } from '../text';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './EdgeFade' was resolved to '/Users/nickby... Remove this comment to see the full error message
 import EdgeFade from './EdgeFade';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/networkTyp... Remove this comment to see the full error message
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   useAccountAssets,
   useAccountSettings,
   useUserLists,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/hooks' or its corr... Remove this comment to see the full error message
 } from '@rainbow-me/hooks';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation' or its... Remove this comment to see the full error message
 import { useNavigation } from '@rainbow-me/navigation';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/routes' or its cor... Remove this comment to see the full error message
 import Routes from '@rainbow-me/routes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const COINGECKO_TRENDING_ENDPOINT =
   'https://api.coingecko.com/api/v3/search/trending';
 
-const fetchTrendingAddresses = async coingeckoIds => {
-  const trendingAddresses = [];
+const fetchTrendingAddresses = async (coingeckoIds: any) => {
+  const trendingAddresses: any = [];
   try {
     const request = await fetch(COINGECKO_TRENDING_ENDPOINT);
     const trending = await request.json();
-    const idsToLookUp = trending.coins.map(coin => coin.item?.id);
+    const idsToLookUp = trending.coins.map((coin: any) => coin.item?.id);
     keys(coingeckoIds).forEach(address => {
       if (idsToLookUp.indexOf(coingeckoIds[address]) !== -1) {
         trendingAddresses.push(toLower(address));
@@ -59,15 +66,18 @@ const ListButton = styled(ButtonPressAnimation).attrs({
         border-radius: 12px;
         height: 30px;
         padding-horizontal: 8px;
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
         padding-top: ${ios ? 6.5 : 4.5}px;
       `
       : `
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
         padding-top: ${ios ? 6.5 : 4.5}px;
       `}
 `;
 
 const ListName = styled(Text)`
   margin-left: 3px;
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
   margin-top: ${ios ? -4.5 : 0}px;
 `;
 
@@ -81,6 +91,7 @@ const layouts = [
   { length: 81, offset: 320 },
   { length: 92, offset: 400 },
 ];
+// @ts-expect-error ts-migrate(7006) FIXME: Parameter '_' implicitly has an 'any' type.
 const getItemLayout = (_, index) => ({
   index,
   ...layouts[index],
@@ -103,23 +114,29 @@ export default function ListSection() {
   const initialized = useRef(false);
   const { allAssets } = useAccountAssets();
   const genericAssets = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
     ({ data: { genericAssets } }) => genericAssets
   );
 
   const coingeckoIds = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'additionalAssetsData' does not exist on ... Remove this comment to see the full error message
     ({ additionalAssetsData: { coingeckoIds } }) => coingeckoIds
   );
 
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const listData = useMemo(() => DefaultTokenLists[network], [network]);
 
   const assetsSocket = useSelector(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'explorer' does not exist on type 'Defaul... Remove this comment to see the full error message
     ({ explorer: { assetsSocket } }) => assetsSocket
   );
   useEffect(() => {
     if (assetsSocket !== null) {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '({ tokens }: { tokens: any; }) =... Remove this comment to see the full error message
       Object.values(listData).forEach(({ tokens }) => {
         dispatch(emitAssetRequest(tokens));
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 1.
         dispatch(emitChartsRequest(tokens));
       });
     }
@@ -132,9 +149,11 @@ export default function ListSection() {
     clearList('trending');
 
     dispatch(emitAssetRequest(tokens));
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 1.
     dispatch(emitChartsRequest(tokens));
     updateList(tokens, 'trending', true);
 
+    // @ts-expect-error ts-migrate(2322) FIXME: Type 'Timeout' is not assignable to type 'null'.
     trendingListHandler.current = setTimeout(
       () => updateTrendingList(),
       TRENDING_LIST_UPDATE_INTERVAL
@@ -147,6 +166,7 @@ export default function ListSection() {
         LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
       );
       setSelectedList(id);
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'scrollToIndex' does not exist on type 'n... Remove this comment to see the full error message
       listRef.current?.scrollToIndex({
         animated: true,
         index,
@@ -161,6 +181,7 @@ export default function ListSection() {
       ready && updateTrendingList();
       const currentListIndex = findIndex(
         lists,
+        // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
         list => list?.id === selectedList
       );
       if (listData?.length > 0) {
@@ -173,6 +194,7 @@ export default function ListSection() {
       initialized.current = true;
     }
     return () => {
+      // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       clearTimeout(trendingListHandler.current);
     };
   }, [
@@ -195,23 +217,23 @@ export default function ListSection() {
     if (selectedList === 'favorites') {
       items = favorites
         .map(
-          address =>
+          (address: any) =>
             ethereumUtils.getAsset(allAssets, toLower(address)) ||
             ethereumUtils.formatGenericAsset(
               genericAssets[toLower(address)],
               nativeCurrency
             )
         )
-        .sort((a, b) => (a.name > b.name ? 1 : -1));
+        .sort((a: any, b: any) => (a.name > b.name ? 1 : -1));
     } else {
       if (!lists?.length) return [];
-      const currentList = lists.find(list => list?.id === selectedList);
+      const currentList = lists.find((list: any) => list?.id === selectedList);
       if (!currentList) {
         return [];
       }
 
       items = currentList.tokens.map(
-        address =>
+        (address: any) =>
           ethereumUtils.getAsset(allAssets, toLower(address)) ||
           ethereumUtils.formatGenericAsset(
             genericAssets[toLower(address)],
@@ -220,7 +242,9 @@ export default function ListSection() {
       );
     }
 
-    return items.filter(item => item.symbol && Number(item.price?.value) > 0);
+    return items.filter(
+      (item: any) => item.symbol && Number(item.price?.value) > 0
+    );
   }, [
     allAssets,
     favorites,
@@ -258,14 +282,24 @@ export default function ListSection() {
 
   const renderItem = useCallback(
     ({ item: list, index }) => (
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <ListButton
         key={`list-${list?.id}`}
         onPress={() => handleSwitchList(list?.id, index)}
         selected={selectedList === list?.id}
         testID={`list-${list?.id}`}
       >
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Row>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <Emoji name={list.emoji} size="small" />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <ListName
             color={
               selectedList === list?.id
@@ -285,15 +319,30 @@ export default function ListSection() {
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Column testID="lists-section">
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Flex paddingHorizontal={19}>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Text size="larger" weight="heavy">
           Lists
         </Text>
       </Flex>
-
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Fragment>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Column>
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <FlatList
             contentContainerStyle={{
               paddingBottom: 6,
@@ -310,11 +359,18 @@ export default function ListSection() {
             showsHorizontalScrollIndicator={false}
             testID={`lists-section-${selectedList}`}
           />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <EdgeFade />
         </Column>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Column>
           {!ready ? (
             times(2, index => (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <AssetListItemSkeleton
                 animated
                 descendingOpacity
@@ -322,7 +378,8 @@ export default function ListSection() {
               />
             ))
           ) : listItems?.length ? (
-            listItems.map(item => (
+            listItems.map((item: any) => (
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <ListCoinRow
                 {...itemProps}
                 item={item}
@@ -331,7 +388,11 @@ export default function ListSection() {
               />
             ))
           ) : (
+            // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <Centered marginVertical={42}>
+              // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless
+              the '--jsx' flag is provided... Remove this comment to see the
+              full error message
               <Text
                 color={colors.alpha(colors.blueGreyDark, 0.3)}
                 size="large"

@@ -2,8 +2,11 @@ import produce from 'immer';
 import {
   getKeyboardHeight as loadKeyboardHeights,
   setKeyboardHeight as saveKeyboardHeight,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/localstor... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/localstorage/globalSettings';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/keyboardTy... Remove this comment to see the full error message
 import KeyboardTypes from '@rainbow-me/helpers/keyboardTypes';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { deviceUtils } from '@rainbow-me/utils';
 
 // -- Constants --------------------------------------- //
@@ -43,7 +46,7 @@ const INITIAL_STATE = {
   },
 };
 
-export const keyboardHeightsLoadState = () => async dispatch => {
+export const keyboardHeightsLoadState = () => async (dispatch: any) => {
   const cachedKeyboardHeights = await loadKeyboardHeights();
 
   dispatch({
@@ -58,7 +61,7 @@ export const keyboardHeightsLoadState = () => async dispatch => {
 export const setKeyboardHeight = ({
   height,
   keyboardType = KeyboardTypes.default,
-}) => async (dispatch, getState) => {
+}: any) => async (dispatch: any, getState: any) => {
   await dispatch({
     height,
     keyboardType,
@@ -73,7 +76,7 @@ export const setKeyboardHeight = ({
 };
 
 // -- Reducer ----------------------------------------- //
-export default (state = INITIAL_STATE, action) =>
+export default (state = INITIAL_STATE, action: any) =>
   produce(state, draft => {
     switch (action.type) {
       case LOAD:

@@ -8,13 +8,15 @@ const Placeholder = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'big',
   weight: 'semibold',
 }))`
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   margin-bottom: ${android ? -48 : -27};
   width: 100%;
 `;
 
-const PlaceholderText = (props, ref) => {
+const PlaceholderText = (props: any, ref: any) => {
   const [value, updateValue] = useState(' ');
   useImperativeHandle(ref, () => ({ updateValue }));
+  // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
   return <Placeholder ref={ref}>{value}</Placeholder>;
 };
 

@@ -28,6 +28,7 @@ import {
   RainbowWallet,
 } from './wallet';
 
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 type BackupPassword = string;
@@ -101,7 +102,7 @@ export async function addWalletToCloudBackup(
   wallet: RainbowWallet,
   filename: string
 ): Promise<null | boolean> {
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
   const backup = await getDataFromCloud(password, filename);
 
   const now = Date.now();
@@ -156,7 +157,7 @@ export async function restoreCloudBackup(
       return false;
     }
     // 2- download that backup
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
     const data = await getDataFromCloud(password, filename);
     if (!data) {
       throw new Error('Invalid password');
@@ -252,6 +253,7 @@ export async function saveBackupPassword(
   password: BackupPassword
 ): Promise<void> {
   try {
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
     if (ios) {
       await setSharedWebCredentials('rainbow.me', 'Backup Password', password);
       analytics.track('Saved backup password on iCloud');
@@ -263,6 +265,7 @@ export async function saveBackupPassword(
 
 // Attempts to fetch the password to decrypt the backup from the iCloud keychain
 export async function fetchBackupPassword(): Promise<null | BackupPassword> {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   if (android) {
     return null;
   }

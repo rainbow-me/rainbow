@@ -19,9 +19,13 @@ import useInitializeDiscoverData from './useInitializeDiscoverData';
 import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalData from './useLoadGlobalData';
 import useResetAccountState from './useResetAccountState';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/walletRea... Remove this comment to see the full error message
 import { runKeychainIntegrityChecks } from '@rainbow-me/handlers/walletReadyEvents';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/additionalAs... Remove this comment to see the full error message
 import { additionalDataCoingeckoIds } from '@rainbow-me/redux/additionalAssetsData';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/data' or its... Remove this comment to see the full error message
 import { checkPendingTransactionsOnInitialize } from '@rainbow-me/redux/data';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 export default function useInitializeWallet() {

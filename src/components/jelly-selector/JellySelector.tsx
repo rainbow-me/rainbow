@@ -3,15 +3,17 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { spring } from 'react-native-reanimated';
 import { useValues } from 'react-native-redash/src/v1';
+// @ts-expect-error ts-migrate(6142) FIXME: Module './JellySelectorItem' was resolved to '/Use... Remove this comment to see the full error message
 import JellySelectorItem from './JellySelectorItem';
 import JellySelectorRow from './JellySelectorRow';
 import {
   JellySelectorColorIndicator,
   JellySelectorIndicator,
 } from './jelly-selector-indicator';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { magicMemo } from '@rainbow-me/utils';
 
-const springTo = (node, toValue) =>
+const springTo = (node: any, toValue: any) =>
   spring(node, {
     damping: 38,
     mass: 1,
@@ -23,8 +25,8 @@ const springTo = (node, toValue) =>
   }).start();
 
 let calculatedItemWidths = 0;
-let positions = [];
-let widths = [];
+let positions: any = [];
+let widths: any = [];
 
 function resetPositionCalculations() {
   calculatedItemWidths = 0;
@@ -46,7 +48,8 @@ const JellySelector = ({
   renderRow,
   scaleTo,
   ...props
-}) => {
+}: any) => {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   const color = givenColor || colors.dark;
   const [selected, setSelected] = useState(defaultIndex);
@@ -94,6 +97,7 @@ const JellySelector = ({
   const handleItemPress = useCallback(
     (event, index) => {
       if (!disableSelection) {
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
         animateTransition(index);
         setSelected(index);
       }
@@ -103,8 +107,10 @@ const JellySelector = ({
   );
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <View {...props}>
       {selectorVisible ? (
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <JellySelectorIndicator
           backgroundColor={backgroundColor}
           height={height}
@@ -113,8 +119,12 @@ const JellySelector = ({
           width={width}
         />
       ) : null}
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <JellySelectorRow height={height} renderRow={renderRow}>
-        {items.map((item, index) => (
+        {items.map((item: any, index: any) => (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <JellySelectorItem
             color={color}
             enableHapticFeedback={enableHapticFeedback}

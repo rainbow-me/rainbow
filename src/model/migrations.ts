@@ -11,8 +11,10 @@ import WalletTypes from '../helpers/walletTypes';
 import {
   DEFAULT_WALLET_NAME,
   loadAddress,
+  // @ts-expect-error ts-migrate(2459) FIXME: Module '"../model/wallet"' declares 'oldSeedPhrase... Remove this comment to see the full error message
   oldSeedPhraseMigratedKey,
   saveAddress,
+  // @ts-expect-error ts-migrate(2459) FIXME: Module '"../model/wallet"' declares 'seedPhraseKey... Remove this comment to see the full error message
   seedPhraseKey,
 } from '../model/wallet';
 import store from '../redux/store';
@@ -20,6 +22,7 @@ import store from '../redux/store';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import colors, { getRandomColor } from '../styles/colors';
 import { hasKey } from './keychain';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/assets' o... Remove this comment to see the full error message
 import { isL2Asset } from '@rainbow-me/handlers/assets';
 import {
   getAssets,
@@ -27,21 +30,31 @@ import {
   getPinnedCoins,
   saveHiddenCoins,
   savePinnedCoins,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/localstor... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
   getContacts,
   saveContacts,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/localstor... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/localstorage/contacts';
 import {
   getUserLists,
   saveUserLists,
+  // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/localstor... Remove this comment to see the full error message
 } from '@rainbow-me/handlers/localstorage/userLists';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/handlers/web3' or ... Remove this comment to see the full error message
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/emojiHandl... Remove this comment to see the full error message
 import { returnStringFirstEmoji } from '@rainbow-me/helpers/emojiHandler';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/redux/showcaseToke... Remove this comment to see the full error message
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/references' or its... Remove this comment to see the full error message
 import { DefaultTokenLists } from '@rainbow-me/references';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { ethereumUtils, profileUtils } from '@rainbow-me/utils';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils/reviewAlert'... Remove this comment to see the full error message
 import { REVIEW_ASKED_KEY } from '@rainbow-me/utils/reviewAlert';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'logger' or its corresponding t... Remove this comment to see the full error message
 import logger from 'logger';
 
 export default async function runMigrations() {
@@ -243,6 +256,7 @@ export default async function runMigrations() {
         if (selected.id === incorrectDamagedWalletId) {
           logger.sentry('need to update the selected wallet');
           const updatedSelectedWallet =
+            // @ts-expect-error ts-migrate(2538) FIXME: Type 'null' cannot be used as an index type.
             updatedWallets[incorrectDamagedWalletId];
           await store.dispatch(walletsSetSelected(updatedSelectedWallet));
           logger.sentry('selected wallet updated');
@@ -258,12 +272,12 @@ export default async function runMigrations() {
   const v6 = async () => {
     try {
       const userLists = await getUserLists();
-      const newLists = userLists.map(list => {
+      const newLists = userLists.map((list: any) => {
         if (list?.id !== 'dollars') {
           return list;
         }
         return DefaultTokenLists['mainnet'].find(
-          ({ id }) => id === 'stablecoins'
+          ({ id }: any) => id === 'stablecoins'
         );
       });
       await saveUserLists(newLists);
@@ -317,7 +331,7 @@ export default async function runMigrations() {
       let updatedWallets = { ...wallets };
       for (let i = 0; i < walletKeys.length; i++) {
         const wallet = wallets[walletKeys[i]];
-        const newAddresses = wallet.addresses.map(account => {
+        const newAddresses = wallet.addresses.map((account: any) => {
           const accountEmoji = returnStringFirstEmoji(account?.label);
           return {
             ...account,
@@ -460,7 +474,7 @@ export default async function runMigrations() {
         logger.log(JSON.stringify({ pinnedCoins }, null, 2));
         logger.log(JSON.stringify({ hiddenCoins }, null, 2));
 
-        const pinnedCoinsMigrated = pinnedCoins.map(address => {
+        const pinnedCoinsMigrated = pinnedCoins.map((address: any) => {
           const asset = ethereumUtils.getAsset(assets, address);
           if (asset?.type && isL2Asset(asset.type)) {
             return `${asset.address}_${asset.network}`;
@@ -469,7 +483,7 @@ export default async function runMigrations() {
           }
         });
 
-        const hiddenCoinsMigrated = hiddenCoins.map(address => {
+        const hiddenCoinsMigrated = hiddenCoins.map((address: any) => {
           const asset = ethereumUtils.getAsset(assets, address);
           if (asset?.type && isL2Asset(asset.type)) {
             return `${asset.address}_${asset.network}`;
@@ -500,6 +514,7 @@ export default async function runMigrations() {
 
   for (let i = currentVersion; i < migrations.length; i++) {
     logger.sentry(`Migrations: Running migration v${i}`);
+    // @ts-expect-error ts-migrate(2684) FIXME: The 'this' context of type '(() => Promise<void>) ... Remove this comment to see the full error message
     await migrations[i].apply(null);
     logger.sentry(`Migrations: Migration ${i} completed succesfully`);
     await setMigrationVersion(i + 1);

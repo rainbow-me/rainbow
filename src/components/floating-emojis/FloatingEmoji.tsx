@@ -23,7 +23,7 @@ const FloatingEmoji = ({
   size,
   top,
   wiggleFactor,
-}) => {
+}: any) => {
   const { opacity, rotate, scale, translateX, translateY } = useMemoOne(() => {
     const animation = timing({ duration, easing: EasingNode.elastic() });
     const progress = interpolate(animation, {
@@ -37,6 +37,7 @@ const FloatingEmoji = ({
         outputRange: [1, fadeOut ? 0.89 : 1, fadeOut ? 0 : 1],
       }),
       rotate: concat(
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'AnimatedNode<number> | undefined... Remove this comment to see the full error message
         interpolate(progress, {
           inputRange: [0, distance / 4, distance / 3, distance / 2, distance],
           outputRange: [0, -2, 0, 2, 0],
@@ -55,7 +56,9 @@ const FloatingEmoji = ({
           index % 2 === 0 ? -1 : 1
         ),
         multiply(
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'AnimatedNode<number> | undefined... Remove this comment to see the full error message
           sin(multiply(progress, distance / (350 / 15))), // i rly dont understand math plz help
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'AnimatedNode<number> | undefined... Remove this comment to see the full error message
           interpolate(progress, {
             inputRange: [0, distance / 10, distance],
             outputRange: [
@@ -71,7 +74,9 @@ const FloatingEmoji = ({
   }, []);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Animated.View
+      // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       style={{
         left,
         marginTop,
@@ -86,6 +91,9 @@ const FloatingEmoji = ({
         ],
       }}
     >
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <Emoji name={emoji} size={size} />
     </Animated.View>
   );

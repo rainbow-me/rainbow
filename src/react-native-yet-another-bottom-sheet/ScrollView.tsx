@@ -9,12 +9,15 @@ let id = 0;
 
 export const svid = 'AnimatedScrollViewYABS' + id;
 
-export default function ScrollView(props) {
+export default function ScrollView(props: any) {
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'scrollHandler' does not exist on type 'n... Remove this comment to see the full error message
   const { scrollHandler, animatedRef, onLayout } = useContext(Context);
 
+  // @ts-expect-error ts-migrate(2322) FIXME: Type '() => number' is not assignable to type 'voi... Remove this comment to see the full error message
   useEffect(() => () => ++id, []);
 
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <AnimatedScrollView
       bounces={false}
       decelerationRate="fast"

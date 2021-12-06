@@ -5,6 +5,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { Input } from '../../inputs';
 import { Row } from '../../layout';
 import { Text } from '../../text';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/styles' or its cor... Remove this comment to see the full error message
 import { margin, padding } from '@rainbow-me/styles';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
@@ -32,8 +33,10 @@ const GweiNumberInput = styled(Input).attrs(({ theme: { colors }, value }) => ({
 }))`
   ${padding(0, 0, 0, 0)}
   ${margin(
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0,
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0
   )}
@@ -45,22 +48,35 @@ const GweiLabel = styled(Text).attrs(() => ({
   weight: 'heavy',
 }))`
   ${margin(
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0,
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0
   )}
 `;
 
 function GweiInputPill(
-  { value, onPress, onChange, onFocus, onBlur, testID, color },
-  ref
+  { value, onPress, onChange, onFocus, onBlur, testID, color }: any,
+  ref: any
 ) {
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'useTheme'.
   const { colors } = useTheme();
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <ButtonPressAnimation onPress={onPress}>
+      // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+      '--jsx' flag is provided... Remove this comment to see the full error
+      message
       <GweiPill>
+        // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+        '--jsx' flag is provided... Remove this comment to see the full error
+        message
         <Row alignSelf="center">
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <GweiNumberInput
             keyboardType="numeric"
             onBlur={onBlur}
@@ -73,6 +89,9 @@ function GweiInputPill(
             testID={testID}
             value={!!value && `${value}`}
           />
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the
+          '--jsx' flag is provided... Remove this comment to see the full error
+          message
           <GweiLabel> Gwei</GweiLabel>
         </Row>
       </GweiPill>

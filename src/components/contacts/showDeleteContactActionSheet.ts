@@ -1,5 +1,7 @@
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/helpers/emojiHandl... Remove this comment to see the full error message
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/utils' or its corr... Remove this comment to see the full error message
 import { showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const showDeleteContactActionSheet = ({
@@ -7,7 +9,7 @@ const showDeleteContactActionSheet = ({
   nickname,
   onDelete,
   removeContact,
-}) =>
+}: any) =>
   showActionSheetWithOptions(
     {
       cancelButtonIndex: 1,
@@ -17,7 +19,7 @@ const showDeleteContactActionSheet = ({
       }" from your contacts?`,
       options: ['Delete Contact', 'Cancel'],
     },
-    async buttonIndex => {
+    async (buttonIndex: any) => {
       if (buttonIndex === 0) {
         removeContact(address);
         ReactNativeHapticFeedback.trigger('notificationSuccess');

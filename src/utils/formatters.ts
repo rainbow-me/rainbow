@@ -3,18 +3,19 @@ import { isString } from 'lodash';
 
 const grapheme = new GraphemeSplitter();
 
-const firstCharacterOfString = n => n.charAt(0);
+const firstCharacterOfString = (n: any) => n.charAt(0);
 
-export const getFirstGrapheme = string => {
+export const getFirstGrapheme = (string: any) => {
   if (!string) return '';
   return grapheme.splitGraphemes(string)[0];
 };
 
-export const initials = string =>
+export const initials = (string: any) =>
   !string || !isString(string)
     ? '?'
     : string.split(' ').map(firstCharacterOfString).join('');
 
+// @ts-expect-error ts-migrate(7023) FIXME: 'removeLeadingZeros' implicitly has return type 'a... Remove this comment to see the full error message
 export function removeLeadingZeros(value = '') {
   if (
     value.length > 1 &&
@@ -38,13 +39,13 @@ export function removeLeadingZeros(value = '') {
   return value;
 }
 
-export function sanitizeSeedPhrase(string) {
+export function sanitizeSeedPhrase(string: any) {
   // trim extraneous whitespaces + remove new lines / line breaks
   return string
     .replace(/(\r\n|\n|\r)/gm, ' ')
     .trim()
     .split(' ')
-    .filter(word => !!word)
+    .filter((word: any) => !!word)
     .join(' ');
 }
 

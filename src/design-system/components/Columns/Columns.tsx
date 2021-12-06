@@ -1,6 +1,7 @@
 import React, { Children, ReactNode } from 'react';
 import flattenChildren from 'react-flatten-children';
 import { negateSpace, Space } from '../../layout/space';
+// @ts-expect-error ts-migrate(6142) FIXME: Module '../Box/Box' was resolved to '/Users/nickby... Remove this comment to see the full error message
 import { Box, BoxProps } from '../Box/Box';
 
 const alignHorizontalToFlexAlign = {
@@ -50,7 +51,7 @@ const getColumnProps = (node: NonNullable<ReactNode>): ColumnProps | null =>
   // This lets us detect Column elements even if they've been hot reloaded.
   // If we checked that node.type === Column, it will fail if Column has been
   // dynamically replaced with a new component.
-  // @ts-expect-error
+  // @ts-expect-error ts-migrate(2339) FIXME: Property '__isColumn__' does not exist on type 'st... Remove this comment to see the full error message
   node.type.__isColumn__
     ? (node.props as ColumnProps)
     : null;
@@ -71,6 +72,7 @@ function PrivateColumn({
   children,
 }: PrivateColumnProps) {
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Box
       flexBasis={width ? undefined : 0}
       flexGrow={width ? 0 : 1}
@@ -113,6 +115,7 @@ export function Columns({
   space,
 }: ColumnsProps) {
   return (
+    // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <Box
       alignItems={
         alignVertical ? alignVerticalToFlexAlign[alignVertical] : undefined
@@ -129,12 +132,14 @@ export function Columns({
         const columnProps = getColumnProps(child);
 
         return columnProps ? (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <PrivateColumn
             {...columnProps}
             alignVertical={alignVertical}
             space={space}
           />
         ) : (
+          // @ts-expect-error ts-migrate(17004) FIXME: Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <PrivateColumn alignVertical={alignVertical} space={space}>
             {child}
           </PrivateColumn>
