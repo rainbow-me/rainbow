@@ -67,10 +67,9 @@ const SheetActionButton = ({
 }) => {
   const { isDarkMode, colors } = useTheme();
   const color = givenColor || colors.appleBlue;
+  const isWhite = color === colors.white;
   const textColor = givenTextColor || colors.whiteLabel;
   const shadowsForButtonColor = useMemo(() => {
-    const isWhite = color === colors.white;
-
     if (nftShadows) {
       return [[0, 10, 30, colors.alpha(colors.shadowBlack, 0.3)]];
     } else if (!forceShadows && (disabled || isTransparent)) {
@@ -94,6 +93,7 @@ const SheetActionButton = ({
     isTransparent,
     isDarkMode,
     nftShadows,
+    isWhite,
   ]);
 
   return (
@@ -118,8 +118,8 @@ const SheetActionButton = ({
         height={size === 'big' ? 56 : 46}
         shadows={shadowsForButtonColor}
       >
-        {color === colors.white && <WhiteButtonGradient colors={colors} />}
-        {color !== colors.white && !isTransparent && !nftShadows && (
+        {isWhite && <WhiteButtonGradient colors={colors} />}
+        {!isWhite && !isTransparent && !nftShadows && (
           <InnerBorder
             color={disabled ? textColor : null}
             opacity={disabled ? 0.02 : null}
