@@ -116,7 +116,7 @@ const withdrawCompound = async (
     status: TransactionStatus.withdrawing,
     to: withdraw?.to,
     type: TransactionType.withdraw,
-    value: withdraw.value,
+    value: toHex(withdraw.value),
   };
 
   logger.log(`[${actionName}] adding new txn`, newTransaction);

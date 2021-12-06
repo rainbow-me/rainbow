@@ -5,7 +5,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { Input } from '../../inputs';
 import { Row } from '../../layout';
 import { Text } from '../../text';
-import { colors, margin, padding } from '@rainbow-me/styles';
+import { margin, padding } from '@rainbow-me/styles';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
@@ -16,7 +16,8 @@ const GweiPill = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
 }))`
   border-radius: 15;
   ${padding(10, 12)}
-  ${margin(0, 3)}
+  ${margin(0, 6)}
+  min-width: 105;
 `;
 
 const GweiNumberInput = styled(Input).attrs(({ theme: { colors }, value }) => ({
@@ -25,7 +26,7 @@ const GweiNumberInput = styled(Input).attrs(({ theme: { colors }, value }) => ({
   letterSpacing: 'roundedTight',
   size: 'lmedium',
   steps: 1,
-  textAlign: 'left',
+  textAlign: 'center',
   timing: 'linear',
   weight: 'heavy',
 }))`
@@ -39,6 +40,7 @@ const GweiNumberInput = styled(Input).attrs(({ theme: { colors }, value }) => ({
 `;
 
 const GweiLabel = styled(Text).attrs(() => ({
+  align: 'center',
   size: 'lmedium',
   weight: 'heavy',
 }))`
@@ -54,17 +56,18 @@ function GweiInputPill(
   { value, onPress, onChange, onFocus, onBlur, testID, color },
   ref
 ) {
+  const { colors } = useTheme();
   return (
     <ButtonPressAnimation onPress={onPress}>
       <GweiPill>
-        <Row>
+        <Row alignSelf="center">
           <GweiNumberInput
             keyboardType="numeric"
             onBlur={onBlur}
             onChange={onChange}
             onFocus={onFocus}
             placeholder="0"
-            placeholderTextColor={colors.grey}
+            placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.4)}
             ref={ref}
             selectionColor={color}
             testID={testID}

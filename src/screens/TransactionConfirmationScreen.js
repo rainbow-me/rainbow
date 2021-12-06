@@ -655,8 +655,8 @@ export default function TransactionConfirmationScreen() {
           network,
           nonce: result.nonce,
           to: displayDetails?.request?.to,
-          value: result.value,
-          ...selectedGasFee.gasFeeParams,
+          value: result.value.toString(),
+          ...gasParams,
         };
         if (toLower(accountAddress) === toLower(txDetails.from)) {
           dispatch(dataAddNewTransaction(txDetails, null, false, provider));
@@ -828,7 +828,6 @@ export default function TransactionConfirmationScreen() {
         <SheetActionButton
           color={colors.transparent}
           disabled
-          fullWidth
           label={`${nativeAsset?.symbol} balance too low`}
           onPress={onCancel}
           size="big"
