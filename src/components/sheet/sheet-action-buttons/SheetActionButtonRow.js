@@ -20,9 +20,6 @@ const Container = styled(Row).attrs({
 `;
 
 function renderButton(child) {
-  if (android) {
-    return child;
-  }
   if (!child) return null;
   return <FlexItem marginHorizontal={7.5}>{child}</FlexItem>;
 }
