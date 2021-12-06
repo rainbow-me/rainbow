@@ -10,6 +10,7 @@ import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import { useDimensions } from '@rainbow-me/hooks';
 import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
@@ -228,7 +229,7 @@ const ExplainSheet = () => {
     return (
       <Centered>
         <GasTrendHeader align="center" color={color}>
-          {`${baseFeeLabel} ${parseInt(currentBaseFee)} Gwei`}
+          {`${baseFeeLabel} ${toFixedDecimals(currentBaseFee, 0)} Gwei`}
         </GasTrendHeader>
       </Centered>
     );

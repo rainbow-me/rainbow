@@ -1,7 +1,7 @@
 import { gasUtils } from '@rainbow-me/utils';
 
 const { GasTrends } = gasUtils;
-const { FALLING, RISING, SURGING, STABLE, NO_TREND } = GasTrends;
+const { FALLING, NO_TREND, RISING, STABLE, SURGING } = GasTrends;
 
 const PRIORITY_FEE_INCREMENT = 1;
 

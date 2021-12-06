@@ -291,9 +291,8 @@ export default function ExchangeModal({
   useEffect(() => {
     if (!isEmpty(gasFeeParamsBySpeed)) {
       updateGasLimit();
-      updateTxFee();
     }
-  }, [gasFeeParamsBySpeed, updateGasLimit, updateTxFee]);
+  }, [gasFeeParamsBySpeed, updateGasLimit]);
 
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
