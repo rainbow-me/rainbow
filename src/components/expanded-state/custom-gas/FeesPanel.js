@@ -164,7 +164,7 @@ export default function FeesPanel({
   const maxBaseWarningsStyle = useAnimatedStyle(() => {
     const display =
       selectedOptionIsCustom && (!!maxBaseFeeWarning || !!maxBaseFeeError);
-    const value = withTiming(display ? 24 : 0, warningsAnimationConfig);
+    const value = withTiming(display ? 28 : 0, warningsAnimationConfig);
     return {
       height: value,
     };
@@ -174,7 +174,7 @@ export default function FeesPanel({
     const display =
       selectedOptionIsCustom &&
       (!!maxPriorityFeeWarning || !!maxPriorityFeeError);
-    const value = withTiming(display ? 24 : 0, warningsAnimationConfig);
+    const value = withTiming(display ? 28 : 0, warningsAnimationConfig);
     return {
       height: value,
     };
