@@ -334,7 +334,7 @@ export default function CurrencySelectModal() {
                 listItems={currencyList}
                 loading={loadingAllTokens}
                 query={searchQueryForSearch}
-                showList
+                showList={isFocused}
                 testID="currency-select-list"
                 type={type}
               />
