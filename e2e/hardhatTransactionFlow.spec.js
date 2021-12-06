@@ -5,6 +5,7 @@ import { exec } from 'child_process';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import WalletConnect from '@walletconnect/client';
+import { convertUtf8ToHex } from '@walletconnect/utils';
 import { ethers } from 'ethers';
 import * as Helpers from './helpers';
 
@@ -285,6 +286,26 @@ describe('Hardhat Transaction Flow', () => {
       '0x9b08221727750e582b43e14f50069083ac6d8a2670a9f28009f14cbef7e66ba16d3370330aed5b6744027bd6a0bef32cb97bb9da3db34c67ba2237b2ef5d1ec71b'
     ) {
       throw new Error('WC personal sign failed');
+    }
+  });
+
+  it('Should be able to sign eth_sign messages via WC', async () => {
+    const message = `My email is john@doe.com`;
+    const hexMsg = convertUtf8ToHex(message);
+    const msgParams = [account, hexMsg];
+    const result = connector.signMessage(msgParams);
+    await Helpers.checkIfVisible('wc-request-sheet');
+    await Helpers.waitAndTap('wc-confirm-action-button');
+    await Helpers.delay(1000);
+
+    if (!result) throw new Error('WC Connection failed');
+    const signature = await result;
+    // verify signature
+    if (
+      signature !==
+      '0x141d62e1aaa2202ededb07f1684ef6d3d9958d334713010ea91df3831e3a3c99303a83f334d1e5e935c4edd7146a2f3f4301c5d509ccfeffd55f5db4e971958b1c'
+    ) {
+      throw new Error('WC eth_sign failed');
     }
   });
 

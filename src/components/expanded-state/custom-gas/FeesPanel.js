@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import styled, { useTheme } from 'styled-components';
-import colors, { darkModeThemeColors } from '../../../styles/colors';
 import { ButtonPressAnimation } from '../../animations';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
@@ -58,7 +57,7 @@ const PanelWarning = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'smedium',
   weight: 'heavy',
 }))`
-  ${margin(-20, 0, 20, 0)};
+  ${margin(-15, 0, 20, 0)};
 `;
 
 const PanelError = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -67,7 +66,7 @@ const PanelError = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'smedium',
   weight: 'heavy',
 }))`
-  ${margin(-20, 0, 20, 0)}
+  ${margin(-15, 0, 20, 0)}
 `;
 
 const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
@@ -107,7 +106,7 @@ export default function FeesPanel({
   } = useGas();
 
   const { navigate, dangerouslyGetState } = useNavigation();
-  const { isDarkMode } = useTheme();
+  const { colors } = useTheme();
 
   const [customFees, setCustomFees] = useState({
     customMaxBaseFee: gasFeeParamsBySpeed?.[CUSTOM]?.maxFeePerGas?.gwei,
@@ -225,9 +224,7 @@ export default function FeesPanel({
       let color;
       let text;
       if ((!error && !warning) || !selectedOptionIsCustom) {
-        color = isDarkMode
-          ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.25)
-          : colors.alpha(colors.blueGreyDark, 0.25);
+        color = colors.alpha(colors.blueGreyDark, 0.25);
         text = '􀅵';
       } else if (error) {
         color = colors.red;
@@ -245,7 +242,7 @@ export default function FeesPanel({
             <Row>
               <PanelLabel>
                 {`${label} `}
-                <Label color={color} size="smedium" weight="bold">
+                <Label color={color} weight="bold">
                   {text}
                 </Label>
               </PanelLabel>
@@ -254,7 +251,7 @@ export default function FeesPanel({
         </PanelColumn>
       );
     },
-    [selectedOptionIsCustom, openGasHelper, isDarkMode]
+    [colors, openGasHelper, selectedOptionIsCustom]
   );
 
   const formattedBaseFee = useMemo(
@@ -454,7 +451,7 @@ export default function FeesPanel({
     if (
       greaterThan(multiply(MAX_BASE_FEE_RANGE[0], currentBaseFee), maxBaseFee)
     ) {
-      setMaxBaseFeeWarning('Lower than recommended');
+      setMaxBaseFeeWarning('Lower than suggested');
     } else if (
       greaterThan(maxBaseFee, multiply(MAX_BASE_FEE_RANGE[1], currentBaseFee))
     ) {
@@ -480,7 +477,7 @@ export default function FeesPanel({
         maxPriorityFee
       )
     ) {
-      setMaxPriorityFeeWarning('Lower than recommended');
+      setMaxPriorityFeeWarning('Lower than suggested');
     } else if (
       greaterThan(
         maxPriorityFee,
@@ -508,7 +505,7 @@ export default function FeesPanel({
       </PanelRowThin>
 
       <PanelRow justify="space-between" marginBottom={18}>
-        {renderRowLabel('Current Base Fee', trendType)}
+        {renderRowLabel('Current base fee', trendType)}
         <PanelColumn>
           <PanelLabel>{formattedBaseFee}</PanelLabel>
         </PanelColumn>
@@ -516,7 +513,7 @@ export default function FeesPanel({
 
       <MiddlePanelRow>
         {renderRowLabel(
-          'Max Base Fee',
+          'Max base fee',
           'maxBaseFee',
           maxBaseFeeError,
           maxBaseFeeWarning
@@ -539,7 +536,7 @@ export default function FeesPanel({
 
       <MiddlePanelRow>
         {renderRowLabel(
-          'Miner Tip',
+          'Miner tip',
           `minerTip`,
           maxPriorityFeeError,
           maxPriorityFeeWarning
@@ -560,9 +557,9 @@ export default function FeesPanel({
         {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
       </Animated.View>
 
-      <PanelRow marginTop={18}>
+      <PanelRow marginTop={15}>
         <PanelColumn>
-          <PanelLabel>Max Transaction Fee</PanelLabel>
+          <PanelLabel>Max transaction fee</PanelLabel>
         </PanelColumn>
         <PanelColumn>
           <PanelLabel>{maxFee}</PanelLabel>

@@ -1,13 +1,7 @@
 import { TransactionRequest } from '@ethersproject/abstract-provider';
-import {
-  arrayify,
-  BytesLike,
-  Hexable,
-  joinSignature,
-} from '@ethersproject/bytes';
+import { arrayify, BytesLike, Hexable } from '@ethersproject/bytes';
 import { HDNode } from '@ethersproject/hdnode';
 import { Provider } from '@ethersproject/providers';
-import { SigningKey } from '@ethersproject/signing-key';
 import { Transaction } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
 import {
@@ -329,9 +323,8 @@ export const signMessage = async (
       existingWallet || (await loadWallet(undefined, true, provider));
     try {
       if (!wallet) return null;
-      const signingKey = new SigningKey(wallet.privateKey);
-      const sigParams = await signingKey.signDigest(arrayify(message));
-      return { result: joinSignature(sigParams) };
+      const result = await wallet.signMessage(arrayify(message));
+      return { result };
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
       logger.sentry('Error', error);

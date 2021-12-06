@@ -1926,18 +1926,6 @@
   resolved "https://registry.yarnpkg.com/@ethersproject/shims/-/shims-5.4.0.tgz#7c243cea96a8ffdbc04bb031cd55e7897431276b"
   integrity sha512-J/M1oudCBPw4T8pBoE8wO65dIJruGBSZ1HyKVSygO3rF95Sq1LasQFEfKNzJl2nJP20ni4eXTNlEdKFKoVxnpw==
 
-"@ethersproject/signing-key@5.4.0":
-  version "5.4.0"
-  resolved "https://registry.yarnpkg.com/@ethersproject/signing-key/-/signing-key-5.4.0.tgz#2f05120984e81cf89a3d5f6dec5c68ee0894fbec"
-  integrity sha512-q8POUeywx6AKg2/jX9qBYZIAmKSB4ubGXdQ88l40hmATj29JnG5pp331nAWwwxPn2Qao4JpWHNZsQN+bPiSW9A==
-  dependencies:
-    "@ethersproject/bytes" "^5.4.0"
-    "@ethersproject/logger" "^5.4.0"
-    "@ethersproject/properties" "^5.4.0"
-    bn.js "^4.11.9"
-    elliptic "6.5.4"
-    hash.js "1.1.7"
-
 "@ethersproject/signing-key@5.5.0", "@ethersproject/signing-key@^5.4.0", "@ethersproject/signing-key@^5.5.0":
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/signing-key/-/signing-key-5.5.0.tgz#2aa37169ce7e01e3e80f2c14325f624c29cedbe0"

@@ -67,7 +67,6 @@
     "@ethersproject/providers": "5.4.0",
     "@ethersproject/random": "5.4.0",
     "@ethersproject/shims": "5.4.0",
-    "@ethersproject/signing-key": "5.4.0",
     "@ethersproject/solidity": "5.4.0",
     "@ethersproject/transactions": "5.4.0",
     "@ethersproject/units": "5.4.0",

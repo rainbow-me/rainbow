@@ -26,7 +26,7 @@ const GAS_ICONS = {
 const GAS_TRENDS = {
   falling: { color: colors.green, label: '􀄱 Falling' },
   rising: { color: colors.orange, label: '􀰾 Rising' },
-  stable: { color: colors.yellowOrange, label: '􀆮 Stable' },
+  stable: { color: colors.yellowFavorite, label: '􀆮 Stable' },
   surging: { color: colors.red, label: '􀇿 Surging' },
 };
 
