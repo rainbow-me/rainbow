@@ -22,25 +22,34 @@ const ETH_ADDRESS = 'eth';
 const BAT_TOKEN_ADDRESS = '0x0d8775f648430679a709e98d2b0cb6250d2887ef';
 const CRYPTOKITTIES_ADDRESS = '0x06012c8cf97BEaD5deAe237070F9587f8E7A266d';
 
-const getOnchainBalance = async (address, tokenContractAddress) => {
-  const provider = new JsonRpcProvider(
-    device.getPlatform() === 'ios'
-      ? process.env.HARDHAT_URL_IOS
-      : process.env.HARDHAT_URL_ANDROID,
-    'any'
+const getProvider = () => {
+  if (!getProvider._instance) {
+    getProvider._instance = new JsonRpcProvider(
+      device.getPlatform() === 'ios'
+        ? process.env.HARDHAT_URL_IOS
+        : process.env.HARDHAT_URL_ANDROID,
+      'any'
+    );
+  }
+  return getProvider._instance;
+};
+
+const isNFTOwner = async address => {
+  const provider = getProvider();
+  const kittiesContract = new Contract(
+    CRYPTOKITTIES_ADDRESS,
+    kittiesABI,
+    provider
   );
+  const ownerAddress = await kittiesContract.ownerOf('1368227');
+  return ownerAddress === address;
+};
+
+const getOnchainBalance = async (address, tokenContractAddress) => {
+  const provider = getProvider();
   if (tokenContractAddress === ETH_ADDRESS) {
     const balance = await provider.getBalance(RAINBOW_WALLET_DOT_ETH);
     return balance;
-  }
-  if (tokenContractAddress === CRYPTOKITTIES_ADDRESS) {
-    const kittiesContract = new Contract(
-      CRYPTOKITTIES_ADDRESS,
-      kittiesABI,
-      provider
-    );
-    const ownerAddress = await kittiesContract.ownerOf('1368227');
-    return ownerAddress === address;
   } else {
     const tokenContract = new Contract(
       tokenContractAddress,
@@ -53,13 +62,7 @@ const getOnchainBalance = async (address, tokenContractAddress) => {
 };
 
 const sendETHtoTestWallet = async () => {
-  // Send additional ETH to wallet before start sending
-  const provider = new JsonRpcProvider(
-    device.getPlatform() === 'ios'
-      ? process.env.HARDHAT_URL_IOS
-      : process.env.HARDHAT_URL_ANDROID,
-    'any'
-  );
+  const provider = getProvider();
   // Hardhat account 0 that has 10000 ETH
   const wallet = new Wallet(
     '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
@@ -229,10 +232,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tapAndLongPress('send-confirmation-button');
     await Helpers.checkIfVisible('profile-screen');
     await Helpers.swipe('profile-screen', 'left', 'slow');
-    const isOwnerRecipient = await getOnchainBalance(
-      RAINBOW_WALLET_DOT_ETH,
-      CRYPTOKITTIES_ADDRESS
-    );
+    const isOwnerRecipient = await isNFTOwner(RAINBOW_WALLET_DOT_ETH);
     if (!isOwnerRecipient)
       throw new Error('Recepient did not recieve Cryptokitty');
   });
