@@ -1,15 +1,9 @@
 import { scaleLinear } from 'd3-scale';
 import * as shape from 'd3-shape';
-import React, {
-  useCallback,
-  useMemo,
-  useEffect,
-  useState,
-  useRef,
-} from 'react';
+import React, { useMemo, useEffect, useState, useRef } from 'react';
 import { Dimensions } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
-import * as redash from 'react-native-redash';
+import { parse as parseSvg } from 'react-native-redash';
 import {
   CallbackType,
   ChartContext,
@@ -51,106 +45,111 @@ function getCurveType(curveType: CurveType) {
   }
 }
 
+function getScales({ data, width, height, yRange }: CallbackType): PathScales {
+  const x = data.points.map(item => item.x);
+  const y = data.points.map(item => item.y);
+
+  const smallestX = Math.min(...x);
+  const smallestY = Array.isArray(yRange) ? yRange[0] : Math.min(...y);
+  const greatestX = Math.max(...x);
+  const greatestY = Array.isArray(yRange) ? yRange[1] : Math.max(...y);
+
+  const scaleX = scaleLinear().domain([smallestX, greatestX]).range([0, width]);
+
+  const scaleY = scaleLinear()
+    .domain([smallestY, greatestY])
+    .range([height, 0]);
+
+  return {
+    scaleY,
+    scaleX,
+  };
+}
+
+function createPath({ data, width, height, yRange }: CallbackType): PathData {
+  const { scaleY, scaleX } = getScales({
+    data,
+    width,
+    height,
+    yRange,
+  });
+
+  if (!data.points.length) {
+    return {
+      path: '',
+      parsed: null,
+      points: [],
+      data: [],
+    };
+  }
+
+  const points: Point[] = [];
+
+  const { greatestY, smallestY } = findYExtremes(data.points) as {
+    greatestY: Point;
+    smallestY: Point;
+  };
+  const smallestX = data.points[0];
+  const greatestX = data.points[data.points.length - 1];
+
+  for (let i = 0; i < data.points.length; i++) {
+    points.push({
+      x: scaleX(data.points[i].x),
+      y: scaleY(data.points[i].y),
+    });
+  }
+
+  const path = shape
+    .line()
+    .x((item: Point) => scaleX(item.x))
+    .y((item: Point) => scaleY(item.y))
+    .curve(getCurveType(data.curve!))(data.points) as string;
+
+  const parsed = parseSvg(path);
+
+  return {
+    path,
+    parsed,
+    points,
+    data: data.points,
+    smallestX,
+    smallestY,
+    greatestX,
+    greatestY,
+  };
+}
+
 export const ChartPathProvider = React.memo<ChartPathProviderProps>(
   ({ children, data, width = WIDTH, height = HEIGHT, yRange }) => {
+    console.log(data);
+    // path interpolation animation progress
     const progress = useSharedValue(1);
+
+    // animated scale of the dot
     const dotScale = useSharedValue(0);
+
+    // gesture state
     const isActive = useSharedValue(false);
+
+    // current (according to finger position) item of data fields
     const originalX = useSharedValue('');
     const originalY = useSharedValue('');
+
     const pathOpacity = useSharedValue(1);
+    // gesture event state
     const state = useSharedValue(0);
+
+    // position of the dot
     const positionX = useSharedValue(0);
     const positionY = useSharedValue(0);
 
-    const getScales = useCallback(
-      ({ data, width, height, yRange }: CallbackType): PathScales => {
-        const x = data.points.map(item => item.x);
-        const y = data.points.map(item => item.y);
-
-        const smallestX = Math.min(...x);
-        const smallestY = Math.min(...y);
-        const greatestX = Math.max(...x);
-        const greatestY = Math.max(...y);
-
-        const scaleX = scaleLinear()
-          .domain([smallestX, greatestX])
-          .range([0, width]);
-
-        const scaleY = scaleLinear()
-          .domain(yRange ?? [smallestY, greatestY])
-          .range([height, 0]);
-
-        return {
-          scaleY,
-          scaleX,
-        };
-      },
-      []
-    );
-
-    const createPath = useCallback(
-      ({ data, width, height, yRange }: CallbackType): PathData => {
-        const { scaleY, scaleX } = getScales({
-          data,
-          width,
-          height,
-          yRange,
-        });
-
-        if (!data.points.length) {
-          return {
-            path: '',
-            parsed: null,
-            points: [],
-            data: [],
-          };
-        }
-
-        const points: Point[] = [];
-
-        const { greatestY, smallestY } = findYExtremes(data.points) as {
-          greatestY: Point;
-          smallestY: Point;
-        };
-        const smallestX = data.points[0];
-        const greatestX = data.points[data.points.length - 1];
-
-        for (let i = 0; i < data.points.length; i++) {
-          points.push({
-            x: scaleX(data.points[i].x),
-            y: scaleY(data.points[i].y),
-          });
-        }
-
-        const path = shape
-          .line()
-          .x((item: Point) => scaleX(item.x))
-          .y((item: Point) => scaleY(item.y))
-          .curve(getCurveType(data.curve!))(data.points) as string;
-
-        const parsed = redash.parse(path);
-
-        return {
-          path,
-          parsed,
-          points,
-          data: data.points,
-          smallestX,
-          smallestY,
-          greatestX,
-          greatestY,
-        };
-      },
-      []
-    );
-
+    // componentDidMount hack
     const initialized = useRef(false);
 
-    const initialPath = useMemo(
-      () =>
-        data.points.length ? createPath({ data, width, height, yRange }) : null,
-      []
+    // used for memoization since useMemo with empty deps array
+    // still can be re-run according to the docs
+    const [initialPath] = useState<PathData | null>(() =>
+      data.points.length ? createPath({ data, width, height, yRange }) : null
     );
 
     const [paths, setPaths] = useState<[PathData | null, PathData | null]>(
@@ -161,6 +160,10 @@ export const ChartPathProvider = React.memo<ChartPathProviderProps>(
     const currentPath = paths[1];
 
     useEffect(() => {
+      console.log('Effect');
+      // we run it only after the first render
+      // because we do have initial data in the paths
+      // we wait until we receive new stuff in deps
       if (initialized.current) {
         setPaths(([_, curr]) => [
           curr,
@@ -169,6 +172,7 @@ export const ChartPathProvider = React.memo<ChartPathProviderProps>(
             : null,
         ]);
       } else {
+        // componentDidMount hack
         initialized.current = true;
       }
     }, [data.points, data.curve, width, height]);
@@ -193,7 +197,14 @@ export const ChartPathProvider = React.memo<ChartPathProviderProps>(
 
       if (currentPath) {
         const { smallestX, smallestY, greatestX, greatestY } = currentPath;
-        Object.assign(ctx, { smallestX, smallestY, greatestX, greatestY });
+
+        return {
+          ...ctx,
+          smallestX,
+          smallestY,
+          greatestX,
+          greatestY,
+        };
       }
 
       return ctx;

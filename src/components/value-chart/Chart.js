@@ -105,6 +105,10 @@ function useShowLoadingState(isFetching) {
   return isShow;
 }
 
+const longPressGestureHandlerProps = {
+  minDurationMs: 60,
+};
+
 export default function ChartWrapper({
   chartType,
   color,
@@ -197,13 +201,6 @@ export default function ChartWrapper({
     }
   }, [chartTimeSharedValue, chartType, formattedTimespan]);
 
-  const longPressGestureHandlerProps = useMemo(
-    () => ({
-      minDurationMs: 60,
-    }),
-    []
-  );
-
   return (
     <Container>
       <ChartExpandedStateHeader
@@ -233,7 +230,7 @@ export default function ChartWrapper({
               strokeWidth={3.5}
               width={WIDTH}
             />
-            <Dot color={colors.alpha(color, 0.03)} size={65}>
+            <Dot color={colors.alpha(color, 0.03)} size={100}>
               <InnerDot color={color} />
             </Dot>
             <Overlay style={overlayStyle}>

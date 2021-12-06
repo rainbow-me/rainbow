@@ -78,10 +78,10 @@ export default function ChartExpandedStateHeader({
   const priceSharedValue = useSharedValue('');
 
   useEffect(() => {
-    if (!isNoPriceData) {
-      priceSharedValue.value = price;
-    } else {
+    if (isNoPriceData) {
       priceSharedValue.value = '';
+    } else {
+      priceSharedValue.value = price;
     }
   }, [price, isNoPriceData, priceSharedValue]);
 

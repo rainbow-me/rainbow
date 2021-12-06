@@ -1,6 +1,7 @@
 import { get } from 'lodash';
 import React from 'react';
 import { PixelRatio, Text } from 'react-native';
+import { useWorkletCallback } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { Row } from '../../../layout';
 import ChartHeaderTitle from './ChartHeaderTitle';
@@ -75,6 +76,19 @@ export default function ChartPriceLabel({
 }) {
   const { nativeCurrency } = useAccountSettings();
   const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
+
+  const format = useWorkletCallback(
+    value => {
+      'worklet';
+      const formatted = formatNative(value, priceSharedValue, nativeSelected);
+      if (android) {
+        return formatted.replace(/[^\d.,-]/g, '');
+      }
+      return formatted;
+    },
+    [nativeSelected]
+  );
+
   return isNoPriceData ? (
     <ChartHeaderTitle>{defaultValue}</ChartHeaderTitle>
   ) : (
@@ -88,20 +102,7 @@ export default function ChartPriceLabel({
           {nativeSelected?.symbol}
         </AndroidCurrencySymbolLabel>
       )}
-      <Label
-        format={value => {
-          'worklet';
-          const formatted = formatNative(
-            value,
-            priceSharedValue,
-            nativeSelected
-          );
-          if (android) {
-            return formatted.replace(/[^\d.,-]/g, '');
-          }
-          return formatted;
-        }}
-      />
+      <Label format={format} />
     </ChartPriceRow>
   );
 }

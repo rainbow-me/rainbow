@@ -6,6 +6,7 @@ import Animated, {
 import { Svg, Line, LineProps } from 'react-native-svg';
 import { useChartData } from '../../helpers/useChartData';
 import withReanimatedFallback from '../../helpers/withReanimatedFallback';
+import { FIX_CLIPPED_PATH_MAGIC_NUMBER } from './ChartPath';
 
 interface ChartLineProps extends LineProps {
   color?: string;
@@ -32,12 +33,13 @@ function ChartLineFactory(orientation: 'horizontal' | 'vertical') {
     );
 
     const openingPositionHorizontalLineStyle = useAnimatedStyle(() => {
+      const firstPoint = currentPath?.points?.[0];
       return {
-        opacity: currentPath.points.length === 0 ? 0 : 1,
+        opacity: currentPath?.points.length === 0 ? 0 : 1,
         transform: [
           {
             translateY: withTiming(
-              currentPath?.points?.[0].y * height + 10 || 0
+              firstPoint ? firstPoint?.y * height + 10 : 0
             ),
           },
         ],
@@ -51,7 +53,9 @@ function ChartLineFactory(orientation: 'horizontal' | 'vertical') {
             ? currentPositionVerticalLineStyle
             : openingPositionHorizontalLineStyle,
           {
-            height: isVertical ? length + 20 : thickness,
+            height: isVertical
+              ? length + FIX_CLIPPED_PATH_MAGIC_NUMBER
+              : thickness,
             position: 'absolute',
             left: 0,
             top: 0,
@@ -68,7 +72,7 @@ function ChartLineFactory(orientation: 'horizontal' | 'vertical') {
             x1={0}
             y1={0}
             x2={isVertical ? 0 : length}
-            y2={isVertical ? length + 20 : 0}
+            y2={isVertical ? length + FIX_CLIPPED_PATH_MAGIC_NUMBER : 0}
             {...props}
           />
         </Svg>

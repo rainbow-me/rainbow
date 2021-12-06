@@ -30,12 +30,14 @@ export function requireOnWorklet(name: 'd3-interpolate-path') {
   }
 }
 
+let _id = Number.MIN_SAFE_INTEGER;
+
 export function useWorkletValue() {
   const idRef = useRef<number>();
 
   if (!idRef.current) {
     // TODO: use some uuid here
-    idRef.current = Date.now() + Math.floor(Math.random() * 10000);
+    idRef.current = `workletValue_${_id++}`;
   }
 
   const { current } = idRef;

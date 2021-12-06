@@ -28,6 +28,9 @@ import {
   useWorkletValue,
 } from '../../helpers/requireOnWorklet';
 
+export const FIX_CLIPPED_PATH_MAGIC_NUMBER_OFFSET = 4;
+export const FIX_CLIPPED_PATH_MAGIC_NUMBER = 22;
+
 function ascending(a?: number, b?: number) {
   'worklet';
 
@@ -171,14 +174,15 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
     }, []);
 
     useEffect(() => {
-      if (currentPath?.path === previousPath?.path) {
-        return;
-      }
-
       runOnUI(() => {
         'worklet';
+        if (currentPath) {
+          setOriginData(currentPath);
+        }
 
-        // setOriginData(paths[1]);
+        if (currentPath?.path === previousPath?.path) {
+          return;
+        }
 
         if (progress.value !== 0 && progress.value !== 1) {
           cancelAnimation(progress);
@@ -274,15 +278,18 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
         onStart: event => {
           // WARNING: the following code does not run on using iOS, but it does on Android.
           // I use the same code from onActive
-          state.value = event.state;
-          isActive.value = true;
-          pathOpacity.value = withTiming(
-            0,
-            timingFeedbackConfig || timingFeedbackDefaultConfig
-          );
+          // platform is for safety
+          if (Platform.OS === 'android') {
+            state.value = event.state;
+            isActive.value = true;
+            pathOpacity.value = withTiming(
+              0,
+              timingFeedbackConfig || timingFeedbackDefaultConfig
+            );
 
-          if (hapticsEnabled) {
-            impactHeavy();
+            if (hapticsEnabled) {
+              impactHeavy();
+            }
           }
         },
         onActive: event => {
@@ -341,8 +348,12 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
         >
           <Animated.View>
             <Svg
-              viewBox={`0 0 ${width} ${height}`}
-              style={{ width, height: height + 20 }}
+              viewBox={`0 0 ${width} ${
+                height +
+                FIX_CLIPPED_PATH_MAGIC_NUMBER -
+                FIX_CLIPPED_PATH_MAGIC_NUMBER_OFFSET
+              }`}
+              style={{ width, height: height + FIX_CLIPPED_PATH_MAGIC_NUMBER }}
             >
               <AnimatedPath
                 // @ts-expect-error
