@@ -32,6 +32,7 @@ import WyreWebview from '../screens/WyreWebview';
 import { SwipeNavigator } from './SwipeNavigator';
 import { createBottomSheetNavigator } from './bottom-sheet';
 import {
+  addTokenSheetConfig,
   closeKeyboardOnClose,
   defaultScreenStackOptions,
   restoreSheetConfig,
@@ -139,6 +140,7 @@ function MainNavigator() {
         name={Routes.CONFIRM_REQUEST}
         options={exchangePreset}
       />
+
       <Stack.Screen
         component={SpeedUpAndCancelSheet}
         name={Routes.SPEED_UP_AND_CANCEL_SHEET}
@@ -170,7 +172,7 @@ function MainNavigator() {
       <Stack.Screen
         component={AddCashSheet}
         name={Routes.ADD_CASH_SHEET}
-        options={sheetPreset}
+        options={addTokenSheetConfig}
       />
       <Stack.Screen
         component={ImportSeedPhraseSheet}
@@ -286,9 +288,7 @@ function BSNavigator() {
       <BSStack.Screen
         component={ExplainSheet}
         name={Routes.EXPLAIN_SHEET}
-        options={{
-          height: '100%',
-        }}
+        options={bottomSheetPreset}
       />
       <BSStack.Screen
         component={ModalScreen}
@@ -299,6 +299,10 @@ function BSNavigator() {
         component={SendConfirmationSheet}
         name={Routes.SEND_CONFIRMATION_SHEET}
         options={sheetPreset}
+      />
+      <BSStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.CUSTOM_GAS_SHEET}
       />
       <BSStack.Screen
         component={WalletDiagnosticsSheet}

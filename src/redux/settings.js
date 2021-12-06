@@ -1,5 +1,4 @@
 import analytics from '@segment/analytics-react-native';
-import { NativeCurrencyKeys } from '../entities/nativeCurrencyTypes';
 import {
   getNativeCurrency,
   getNetwork,
@@ -12,10 +11,10 @@ import {
 import { web3SetHttpProvider } from '../handlers/web3';
 import networkTypes from '../helpers/networkTypes';
 import { updateLanguage } from '../languages';
-
-import { ethereumUtils } from '../utils';
-import { dataResetState } from './data';
-import { explorerClearState, explorerInit } from './explorer';
+import { NativeCurrencyKeys } from '@rainbow-me/entities';
+import { dataResetState } from '@rainbow-me/redux/data';
+import { explorerClearState, explorerInit } from '@rainbow-me/redux/explorer';
+import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants ------------------------------------------------------------- //

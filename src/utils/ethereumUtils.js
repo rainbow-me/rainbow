@@ -167,7 +167,7 @@ const getEthPriceUnit = () => getAssetPrice();
 
 const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
 
-const getBalanceAmount = (selectedGasPrice, selected) => {
+const getBalanceAmount = (selectedGasFee, selected) => {
   const { assets } = store.getState().data;
   let amount =
     selected?.balance?.amount ??
@@ -175,8 +175,8 @@ const getBalanceAmount = (selectedGasPrice, selected) => {
     0;
 
   if (selected?.isNativeAsset) {
-    if (!isEmpty(selectedGasPrice)) {
-      const txFeeRaw = selectedGasPrice?.txFee?.value?.amount;
+    if (!isEmpty(selectedGasFee)) {
+      const txFeeRaw = selectedGasFee?.gasFee?.estimatedFee?.value.amount;
       const txFeeAmount = fromWei(txFeeRaw);
       const remaining = subtract(amount, txFeeAmount);
       amount = greaterThan(remaining, 0) ? remaining : '0';

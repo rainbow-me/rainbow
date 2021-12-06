@@ -64,10 +64,10 @@ const PoolListButton = styled(ButtonPressAnimation).attrs({
         border-radius: 12px;
         height: 30px;
         padding-horizontal: 8px;
-        padding-top: ${ios ? 6 : 4}px;
+        padding-top: ${ios ? 6.5 : 4.5}px;
       `
       : `
-        padding-top: ${ios ? 6 : 4}px;
+        padding-top: ${ios ? 6.5 : 4.5}px;
       `}
 `;
 
