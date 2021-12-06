@@ -164,7 +164,7 @@ export default function FeesPanel({
   const maxBaseWarningsStyle = useAnimatedStyle(() => {
     const display =
       selectedOptionIsCustom && (!!maxBaseFeeWarning || !!maxBaseFeeError);
-    const value = withTiming(display ? 20 : 0, warningsAnimationConfig);
+    const value = withTiming(display ? 24 : 0, warningsAnimationConfig);
     return {
       height: value,
     };
@@ -174,7 +174,7 @@ export default function FeesPanel({
     const display =
       selectedOptionIsCustom &&
       (!!maxPriorityFeeWarning || !!maxPriorityFeeError);
-    const value = withTiming(display ? 20 : 0, warningsAnimationConfig);
+    const value = withTiming(display ? 24 : 0, warningsAnimationConfig);
     return {
       height: value,
     };
@@ -469,11 +469,11 @@ export default function FeesPanel({
       if (
         greaterThan(multiply(MAX_BASE_FEE_RANGE[0], currentBaseFee), maxBaseFee)
       ) {
-        setMaxBaseFeeWarning('Lower than recommended');
+        setMaxBaseFeeWarning('Lower than suggested');
       } else if (
         greaterThan(maxBaseFee, multiply(MAX_BASE_FEE_RANGE[1], currentBaseFee))
       ) {
-        setMaxBaseFeeWarning('Higher than necessary');
+        setMaxBaseFeeWarning('Higher than suggested');
       } else {
         setMaxBaseFeeWarning(null);
       }
