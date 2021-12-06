@@ -27,6 +27,7 @@ import {
   RainbowMeteorologyData,
   SelectedGasFee,
 } from '@rainbow-me/entities';
+import { toHex } from '@rainbow-me/handlers/web3';
 
 type BigNumberish = number | string | BigNumber;
 
@@ -404,14 +405,12 @@ export const parseGasParamsForTransaction = (
     .gasFeeParams;
   const gasPrice = legacyGasFeeParams?.gasPrice;
   if (gasPrice) {
-    return {
-      gasPrice: gasPrice.amount,
-    };
+    return { gasPrice: toHex(gasPrice.amount) };
   }
   const gasFeeParams = (selectedGasFee as SelectedGasFee).gasFeeParams;
   return {
-    maxFeePerGas: gasFeeParams.maxFeePerGas.amount,
-    maxPriorityFeePerGas: gasFeeParams.maxPriorityFeePerGas.amount,
+    maxFeePerGas: toHex(gasFeeParams.maxFeePerGas.amount),
+    maxPriorityFeePerGas: toHex(gasFeeParams.maxPriorityFeePerGas.amount),
   };
 };
 

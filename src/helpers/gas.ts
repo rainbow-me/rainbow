@@ -3,7 +3,8 @@ import { gasUtils } from '@rainbow-me/utils';
 const { GasTrends } = gasUtils;
 const { FALLING, RISING, SURGING, STABLE, NO_TREND } = GasTrends;
 
-const PRIORITY_FEE_INCREMENT = 0.5;
+const PRIORITY_FEE_INCREMENT = 1;
+
 const PRIORITY_FEE_THRESHOLD = 0.15;
 
 export const getTrendKey = (trend: number) => {

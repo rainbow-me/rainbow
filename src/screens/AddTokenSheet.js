@@ -192,7 +192,6 @@ export default function AddTokenSheet() {
           <SheetActionButtonRow>
             <SheetActionButton
               color={colors.white}
-              fullWidth
               label="Cancel"
               onPress={goBack}
               size="big"
