@@ -430,6 +430,7 @@ export const explorerInitL2 = (network = null) => (dispatch, getState) => {
         break;
       default:
         // Start watching all L2 assets
+        dispatch(fetchAssetsFromRefraction());
         dispatch(optimismExplorerInit());
     }
   }
@@ -453,22 +454,37 @@ const fetchAssetsFromRefraction = () => (dispatch, getState) => {
 const l2AddressAssetsReceived = (message, network) => (dispatch, getState) => {
   const { assets: allAssets, genericAssets } = getState().data;
 
-  const updatedMessage = Object.assign({}, message);
-  updatedMessage.payload.assets = message?.payload?.assets?.map(asset => {
+  const newAssets = message?.payload?.assets?.map(asset => {
+    const mainnetAddress = toLower(asset?.asset?.mainnet_address);
     const fallbackAsset =
-      ethereumUtils.getAsset(allAssets, toLower(asset.asset.mainnet_address)) ||
-      genericAssets[toLower(asset.asset.mainnet_address)];
+      mainnetAddress &&
+      (ethereumUtils.getAsset(allAssets, mainnetAddress) ||
+        genericAssets[mainnetAddress]);
 
     if (fallbackAsset) {
-      asset.asset.price = {
-        ...asset.asset.price,
-        ...fallbackAsset.price,
+      return {
+        ...asset,
+        asset: {
+          ...asset?.asset,
+          price: {
+            ...asset?.asset?.price,
+            ...fallbackAsset.price,
+          },
+        },
       };
     }
     return asset;
   });
 
-  dispatch(addressAssetsReceived(updatedMessage, network));
+  const updatedMessage = {
+    ...message,
+    payload: {
+      ...message?.payload,
+      assets: newAssets,
+    },
+  };
+
+  dispatch(addressAssetsReceived(updatedMessage, false, false, false, network));
 };
 
 const listenOnAddressMessages = socket => dispatch => {
