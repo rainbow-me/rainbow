@@ -1,12 +1,12 @@
 {
   "name": "Rainbow",
-  "version": "1.5.38-1",
+  "version": "1.5.40-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn allow-scripts && yarn postinstall",
     "android": "yarn uninstall:android && react-native run-android",
     "android:apk": "yarn gradle assembleRelease && yarn uninstall:android && yarn android:load-apk",
-    "android:bundle": "./scripts/check-env.sh && yarn update-tokens && yarn gradle bundleRelease && open android/app/build/outputs/bundle/release/",
+    "android:bundle": "./scripts/check-env.sh && yarn gradle bundleRelease && open android/app/build/outputs/bundle/release/",
     "android:load-apk": "adb install android/app/build/outputs/apk/release/app-release.apk",
     "clean:android": "yarn uninstall:android && yarn gradle clean",
     "detox:android": "detox build -c android.emu.debug && detox test -R 1 -c android.emu.debug --loglevel verbose",

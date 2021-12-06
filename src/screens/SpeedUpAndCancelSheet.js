@@ -505,10 +505,10 @@ export default function SpeedUpAndCancelSheet() {
                     />
                   </Centered>
                   {type === CANCEL_TX && (
-                    <Column>
+                    <Column marginBottom={android && 15}>
                       <SheetActionButtonRow
                         ignorePaddingBottom
-                        ignorePaddingTop
+                        ignorePaddingTop={ios}
                       >
                         <SheetActionButton
                           color={colors.red}
@@ -531,7 +531,10 @@ export default function SpeedUpAndCancelSheet() {
                     </Column>
                   )}
                   {type === SPEED_UP && (
-                    <SheetActionButtonRow ignorePaddingBottom ignorePaddingTop>
+                    <SheetActionButtonRow
+                      ignorePaddingBottom={ios}
+                      ignorePaddingTop={ios}
+                    >
                       <SheetActionButton
                         color={colors.white}
                         label="Cancel"

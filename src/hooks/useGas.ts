@@ -20,6 +20,7 @@ export default function useGas() {
     ({
       gas: {
         currentBlockParams,
+        customGasFeeModifiedByUser,
         gasFeeParamsBySpeed,
         gasFeesBySpeed,
         gasLimit,
@@ -28,6 +29,7 @@ export default function useGas() {
       },
     }: AppState) => ({
       currentBlockParams,
+      customGasFeeModifiedByUser,
       gasFeeParamsBySpeed,
       gasFeesBySpeed,
       gasLimit,

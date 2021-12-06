@@ -10,6 +10,7 @@ import {
   estimateSwapGasLimit,
   executeSwap,
 } from '@rainbow-me/handlers/uniswap';
+import { toHex } from '@rainbow-me/handlers/web3';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { ethUnits } from '@rainbow-me/references';
@@ -139,7 +140,7 @@ const swap = async (
     status: TransactionStatus.swapping,
     to: swap?.to,
     type: TransactionType.trade,
-    value: swap.value,
+    value: toHex(swap.value),
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 
