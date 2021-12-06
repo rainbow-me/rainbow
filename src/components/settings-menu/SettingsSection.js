@@ -288,17 +288,6 @@ export default function SettingsSection({
               <ListItemArrowGroup />
             </ListItem>
           )}
-          {/*<ListItem
-        {/*  icon={*/}
-          {/*    <SettingIcon source={darkMode ? LanguageIconDark : LanguageIcon} />*/}
-          {/*  }*/}
-          {/*  label="Language"*/}
-          {/*  onPress={onPressLanguage}*/}
-          {/*>*/}
-          {/*  <ListItemArrowGroup>*/}
-          {/*    {supportedLanguages[language] || ''}*/}
-          {/*  </ListItemArrowGroup>*/}
-          {/*</ListItem>*/}
         </ColumnWithDividers>
         <ListFooter />
         <ColumnWithDividers dividerRenderer={ListItemDivider}>
