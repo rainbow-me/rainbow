@@ -129,18 +129,13 @@ export default function SettingsSection({
   onPressCurrency,
   onPressDev,
   onPressIcloudBackup,
-  /*onPressLanguage,*/
   onPressNetwork,
   onPressPrivacy,
   onPressShowSecret,
 }) {
   const isReviewAvailable = false;
   const { wallets, isReadOnlyWallet } = useWallets();
-  const {
-    /*language,*/ nativeCurrency,
-    network,
-    testnetsEnabled,
-  } = useAccountSettings();
+  const { nativeCurrency, network, testnetsEnabled } = useAccountSettings();
   const { isSmallPhone } = useDimensions();
 
   const { colors, isDarkMode, setTheme, colorScheme } = useTheme();
