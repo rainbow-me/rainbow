@@ -13,6 +13,15 @@ import { web3Provider } from './web3';
 import { abbreviations } from '@rainbow-me/utils';
 import { FormatAssetForDisplay } from '@rainbow-me/helpers';
 import logger from 'logger';
+import { EventTypes } from '@rainbow-me/utils/tokenHistoryUtils';
+
+const reverseRecordContract = new Contract(
+  REVERSE_RECORDS_MAINNET_ADDRESS,
+  reverseRecordsABI,
+  web3Provider
+);
+
+const emptyAddress = "0x0000000000000000000000000000000000000000";
 
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
 export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;
@@ -110,7 +119,7 @@ export const apiGetTokenHistory = async (
     const semiFungible =
       fungData?.data?.asset_events[0]?.asset?.asset_contract
         ?.asset_contract_type === 'semi-fungible';
-
+    console.log("zooty");
     const allEvents = await fetchAllTokenHistoryEvents({
       accountAddress,
       contractAddress,
@@ -139,10 +148,12 @@ const fetchAllTokenHistoryEvents = async ({
   let array = [];
   let nextPage = true;
   while (nextPage) {
+    console.log(nextPage);
     const urlPage = semiFungible
-      ? `https://${networkPrefix}api.opensea.io/api/v1/events?account_address=${accountAddress}&asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`
-      : `https://${networkPrefix}api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=299`;
-
+      ? `https://${networkPrefix}api.opensea.io/api/v1/events?account_address=${accountAddress}&asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=300`
+      : `https://${networkPrefix}api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=300`;
+    console.log("zorble");
+    console.log(urlPage);
     let currentPage = await rainbowFetch(urlPage, {
       headers: {
         'Accept': 'application/json',
@@ -151,90 +162,37 @@ const fetchAllTokenHistoryEvents = async ({
       method: 'get',
       timeout: 10000, // 10 secs
     });
-
+    console.log("yup");
     array = array.concat(currentPage?.data?.asset_events || []);
     offset = array.length + 1;
-    nextPage = currentPage?.data?.asset_events?.length === 299;
+    nextPage = currentPage?.data?.asset_events?.length === 300;
   }
-  return array;
+  return array.filter(
+    ({ event_type }) =>
+      event_type === EventTypes.TRANSFER.type ||
+      event_type === EventTypes.SALE.type
+  );
 };
-
-//Need to figure out how to do this without querying ethers 1000 times
-// Follow up with Bruno
-async function getAddresses(addressArray) {
-  try {
-    // logger.debug('REVERSE ADDRESS: ', REVERSE_RECORDS_MAINNET_ADDRESS);
-    // logger.debug('ABI: ', reverseRecordsABI);
-    console.log("zoopy");
-    console.log(REVERSE_RECORDS_MAINNET_ADDRESS);
-    console.log("a");
-    console.log(reverseRecordsABI);
-    console.log("b");
-    console.log(web3Provider);
-    console.log("zoink");
-    const reverseRecordContract = new Contract(
-      REVERSE_RECORDS_MAINNET_ADDRESS,
-      reverseRecordsABI,
-      web3Provider
-    );
-    console.log("benten");
-    const result = await reverseRecordContract.getNames(addressArray);
-    console.log("chickens");
-    return result;
-  }
-  catch(error) {
-    logger.debug('CONTRACT ERROR:', error);
-  }
-  
-}
 
 const filterAndMapData = async (contractAddress, array) => {
   let addressArray = new Array();
   const events = await array
-    .filter(
-      ({ event_type }) =>
-        event_type === 'created' ||
-        event_type === 'transfer' ||
-        event_type === 'successful' ||
-        event_type === 'cancelled'
-    )
     .map(function (uniqueEvent) {
       let event_type = uniqueEvent.event_type;
       let created_date = uniqueEvent.created_date;
-      let from_account = '0x123';
-      let to_account = '0x123';
-      let sale_amount = '0';
-      let list_amount = '0';
-      let payment_token = 'x';
-      let to_account_eth_address = '0x0000000000000000000000000000000000000000';
-      let event_object;
+      let to_account_eth_address = uniqueEvent.to_account?.address;
+      let sale_amount, payment_token, to_account;
       console.log("zap");
       console.log(ENS_NFT_CONTRACT_ADDRESS);
       switch (event_type) {
-        case 'transfer': {
-          const address = uniqueEvent.to_account?.address || '????';
-          let from_acc = uniqueEvent.from_account?.address;
-          if (
-            contractAddress === ENS_NFT_CONTRACT_ADDRESS &&
-            from_acc === '0x0000000000000000000000000000000000000000'
-          ) {
-            event_type = 'ens-registration';
-            to_account_eth_address = uniqueEvent.to_account.address;
-            to_account = address;
-          } else if (
-            contractAddress !== ENS_NFT_CONTRACT_ADDRESS &&
-            from_acc === '0x0000000000000000000000000000000000000000'
-          ) {
-            event_type = 'mint';
-            to_account_eth_address = uniqueEvent.to_account.address;
-            to_account = address;
-          } else {
-            to_account_eth_address = uniqueEvent.to_account.address;
-            to_account = address;
+        case EventTypes.TRANSFER.type:
+          if (uniqueEvent.from_account?.address === emptyAddress) {
+            event_type = contractAddress === ENS_NFT_CONTRACT_ADDRESS ? EventTypes.ENS.type : EventTypes.MINT.type;
           }
           break;
-        }
-        case 'successful':
+
+        case EventTypes.SALE.type:
+          console.log("hiiiiiiiii");
           payment_token =
             uniqueEvent.payment_token?.symbol === 'WETH'
               ? 'ETH'
@@ -251,53 +209,44 @@ const filterAndMapData = async (contractAddress, array) => {
           sale_amount = handleSignificantDecimals(temp_sale_amount, 5);
           break;
 
-        case 'created':
-          payment_token =
-            uniqueEvent.payment_token?.symbol === 'WETH'
-              ? 'ETH'
-              : uniqueEvent.payment_token?.symbol;
-          // eslint-disable-next-line no-case-declarations
-          const yy = uniqueEvent.starting_price.split('.');
-          // eslint-disable-next-line no-case-declarations
-          const temp_list_amount = FormatAssetForDisplay({
-            amount: yy[0],
-            token: payment_token,
-          });
-          list_amount = handleSignificantDecimals(temp_list_amount, 5);
-
-          break;
-
         default:
-        case 'cancelled':
           break;
       }
-      event_object = {
+
+      if (to_account_eth_address) {
+        addressArray.push(to_account_eth_address);
+      }
+      return {
         created_date,
         event_type,
-        from_account,
-        list_amount,
         payment_token,
         sale_amount,
         to_account,
-        to_account_eth_address,
+        to_account_eth_address
       };
-
-      addressArray.push(to_account_eth_address);
-      return event_object;
     });
   console.log("xyz");
   console.log(addressArray);
-  const allNames = await getAddresses(addressArray);
+  let allNames = await reverseRecordContract.getNames(addressArray);
+  let index = 0;
   console.log("okok");
   console.log(allNames);
-  await events.map(function(uniqueEvent, index) {
-    if (allNames[index] != '') {
-      const abbrevENS = abbreviations.formatAddressForDisplay(allNames[index]);
-      uniqueEvent.to_account = abbrevENS;
-    }
-    else {
-      const abbrevAddress = abbreviations.address(uniqueEvent.to_account, 2);
-      uniqueEvent.to_account = abbrevAddress;
+  events.map((uniqueEvent) => {
+    if (uniqueEvent.to_account_eth_address) {
+      if (allNames[index] !== '') {
+        const abbrevENS = abbreviations.formatAddressForDisplay(allNames[index]);
+        console.log("a");
+        console.log(allNames[index]);
+        console.log(abbrevENS);
+        uniqueEvent.to_account = abbrevENS;
+        index += 1;
+      }
+      else {
+        const abbrevAddress = abbreviations.address(uniqueEvent.to_account, 2);
+        console.log("b");
+        console.log(abbrevAddress);
+        uniqueEvent.to_account = abbrevAddress;
+      }
     }
   });
   console.log("brookie");

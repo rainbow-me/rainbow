@@ -14,35 +14,13 @@ import { useAccountProfile, useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
-
-const EventEnum = {
-  ENS: {
-    icon: `􀈐`,
-    label: `Registered`,
-    type: 'ens-registration',
-  },
-  MINT: {
-    icon: `􀎛`,
-    label: `Minted by `,
-    type: 'mint',
-  },
-  SALE: {
-    icon: `􀋢`,
-    label: `Sold for `,
-    type: 'successful',
-  },
-  TRANSFER: {
-    icon: `􀈠`,
-    label: `Sent to `,
-    type: 'transfer',
-  },
-};
+import { EventTypes } from '@rainbow-me/utils/tokenHistoryUtils';
 
 const filteredTransactionTypes = new Set([
-  EventEnum.ENS.type,
-  EventEnum.MINT.type,
-  EventEnum.SALE.type,
-  EventEnum.TRANSFER.type
+  EventTypes.ENS.type,
+  EventTypes.MINT.type,
+  EventTypes.SALE.type,
+  EventTypes.TRANSFER.type
 ]);
 
 const Timeline = styled(View)`
@@ -124,31 +102,31 @@ const TokenHistory = ({ contractAndToken, color }) => {
     let label, icon, suffix;
 
     switch (item?.event_type) {
-      case EventEnum.ENS.type:
-        label = EventEnum.ENS.label;
-        icon = EventEnum.ENS.icon;
+      case EventTypes.ENS.type:
+        label = EventTypes.ENS.label;
+        icon = EventTypes.ENS.icon;
         break;
 
-      case EventEnum.MINT.type:
+      case EventTypes.MINT.type:
         suffix = `${item.to_account}`;
         isClickable =
           accountAddress.toLowerCase() !== item.to_account_eth_address;
-        label = EventEnum.MINT.label;
-        icon = EventEnum.MINT.icon;
+        label = EventTypes.MINT.label;
+        icon = EventTypes.MINT.icon;
         break;
 
-      case EventEnum.SALE.type:
+      case EventTypes.SALE.type:
         suffix = `${item.sale_amount} ${item.payment_token}`;
-        label = EventEnum.SALE.label;
-        icon = EventEnum.SALE.icon;
+        label = EventTypes.SALE.label;
+        icon = EventTypes.SALE.icon;
         break;
 
-      case EventEnum.TRANSFER.type:
+      case EventTypes.TRANSFER.type:
         suffix = `${item.to_account}`;
         isClickable =
           accountAddress.toLowerCase() !== item.to_account_eth_address;
-        label = EventEnum.TRANSFER.label;
-        icon = EventEnum.TRANSFER.icon;
+        label = EventTypes.TRANSFER.label;
+        icon = EventTypes.TRANSFER.icon;
         break;
 
       default:
@@ -222,7 +200,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
   const renderFlatList = () => {
     console.log("paris");
     return (
-      <MaskedView maskElement={<TokenHistoryEdgeFade style={{backgroundColor: 'transparent'}}/>}>
+      <MaskedView maskElement={<TokenHistoryEdgeFade />}>
         <FlatList
           ListFooterComponent={<View style={{ paddingLeft: 24 }} />}
           data={tokenHistory}
@@ -237,7 +215,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
 
   return (
     <>
-      {/* {isLoading && <TokenHistoryLoader />} */}
+      {isLoading && <TokenHistoryLoader />}
       {!isLoading && (tokenHistoryShort ? renderTwoOrLessDataItems() : renderFlatList())}
     </>
   );
