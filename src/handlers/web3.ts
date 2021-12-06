@@ -176,11 +176,11 @@ export const isHardHat = (providerUrl: string): boolean => {
 };
 
 /**
- * @desc Checjs if the given network is a testnet.
+ * @desc Checks if the given network is a testnet.
  * @param network The network to check.
  * @return Whether or not the network is a testnet.
  */
-export const isTestnet = (network: Network): boolean => {
+export const isTestnetNetwork = (network: Network): boolean => {
   switch (network) {
     case Network.goerli:
     case Network.kovan:
