@@ -184,7 +184,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
 
   const handlePressShare = useCallback(() => {
     Share.share({
-      message: buildRainbowUrl(asset, accountENS, accountAddress),
+      message: android && buildRainbowUrl(asset, accountENS, accountAddress),
       title: `Share ${buildUniqueTokenName(asset)} Info`,
       url: buildRainbowUrl(asset, accountENS, accountAddress),
     });
@@ -297,7 +297,6 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
           >
             <SheetActionButton
               color={imageColor}
-              fullWidth={external || isReadOnlyWallet || !isSendable}
               label={
                 !external && !isReadOnlyWallet && isSendable
                   ? '􀮶 OpenSea'
@@ -357,7 +356,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
                 onPress={toggleFloorDisplayCurrency}
                 showInfoButton
                 size="big"
-                title="Collection floor"
+                title="Floor price"
                 weight={floorPrice === 'None' ? 'bold' : 'heavy'}
               >
                 {showFloorInEth ||

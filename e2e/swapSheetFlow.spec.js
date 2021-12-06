@@ -311,46 +311,45 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should display warning on invalid custom gas price', async () => {
-    await Helpers.waitAndTap('exchange-modal-gas');
+    await Helpers.waitAndTap('gas-speed-custom');
     await Helpers.checkIfElementByTextIsVisible('Fast');
-    await Helpers.waitAndTap('exchange-modal-gas');
     await Helpers.checkIfElementByTextIsVisible('Custom');
-    await Helpers.waitAndTap('custom-gas-edit-button');
-    await Helpers.clearField('custom-gas-input');
-    await Helpers.typeText('custom-gas-input', '0\n', true);
-    await Helpers.checkIfElementByTextIsVisible('Invalid Gas Price');
-    await Helpers.tapAlertWithButton('OK');
+    await Helpers.clearField('max-base-fee-input');
+    await Helpers.typeText('max-base-fee-input', '\n', false);
+    await Helpers.checkIfElementByTextIsVisible('1 Gwei to avoid failure');
   });
 
-  it('Should display warning on high custom gas price', async () => {
-    await Helpers.typeText('custom-gas-input', '9999\n', true);
-    await Helpers.checkIfElementByTextIsVisible('High gas price!');
-    await Helpers.tapAlertWithButton('Proceed Anyway');
+  it('Should rotate between Normal, Fast, Urgent, & Custom', async () => {
+    await Helpers.waitAndTap('speed-pill-normal');
+    await Helpers.waitAndTap('speed-pill-fast');
+    await Helpers.waitAndTap('speed-pill-urgent');
+    await Helpers.waitAndTap('speed-pill-custom');
   });
 
-  it('Should display warning on low custom gas price', async () => {
-    await Helpers.waitAndTap('custom-gas-edit-button');
-    await Helpers.clearField('custom-gas-input');
-    await Helpers.typeText('custom-gas-input', '1\n', true);
-    await Helpers.checkIfElementByTextIsVisible(
-      'Low gas price–transaction might get stuck!'
-    );
-    await Helpers.tapAlertWithButton('Proceed Anyway');
+  it('Should display warning on high custom base fee price', async () => {
+    await Helpers.clearField('max-base-fee-input');
+    await Helpers.typeText('max-base-fee-input', '9999\n', false);
+    await Helpers.checkIfElementByTextToExist('Higher than necessary');
+    await Helpers.waitAndTap('speed-pill-normal');
   });
 
-  it('Should rotate between Normal, Fast, & Custom when Gas Button is Pressed', async () => {
-    await Helpers.waitAndTap('exchange-modal-gas');
-    await Helpers.checkIfElementByTextIsVisible('Normal');
-    await Helpers.waitAndTap('exchange-modal-gas');
-    await Helpers.checkIfElementByTextIsVisible('Fast');
-    await Helpers.waitAndTap('exchange-modal-gas');
-    await Helpers.checkIfElementByTextIsVisible('Custom');
+  it('Should display warning on high custom priority fee price', async () => {
+    await Helpers.clearField('max-priority-fee-input');
+    await Helpers.typeText('max-priority-fee-input', '9999\n', false);
+    await Helpers.checkIfElementByTextToExist('Higher than necessary');
+    await Helpers.waitAndTap('speed-pill-normal');
   });
 
-  it('Should throw alert if gas price is greater than input amount', async () => {
-    await Helpers.typeText('exchange-modal-input', '0.000001', false);
-    await Helpers.tapAndLongPress('exchange-modal-confirm-button');
-    await Helpers.tapAlertWithButton('Cancel');
+  it('Should display warning on low custom base fee price', async () => {
+    await Helpers.clearField('max-base-fee-input');
+    await Helpers.typeText('max-base-fee-input', '1\n', false);
+    await Helpers.checkIfElementByTextToExist('Lower than suggested');
+  });
+
+  it('Should display warning on low custom priority fee price', async () => {
+    await Helpers.clearField('max-priority-fee-input');
+    await Helpers.typeText('max-priority-fee-input', '0.01\n', false);
+    await Helpers.checkIfElementByTextToExist('Lower than suggested');
   });
 
   afterAll(async () => {

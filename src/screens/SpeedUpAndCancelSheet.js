@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import { BigNumber } from 'bignumber.js';
-import { get, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import React, {
   Fragment,
   useCallback,
@@ -25,24 +25,25 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { Emoji, Text } from '../components/text';
-import { TransactionStatusTypes } from '@rainbow-me/entities';
-import { getProviderForNetwork, toHex } from '@rainbow-me/handlers/web3';
+import { GasFeeTypes, TransactionStatusTypes } from '@rainbow-me/entities';
 import {
-  useAccountSettings,
-  useBooleanState,
-  useDimensions,
-  useGas,
-  useKeyboardHeight,
-} from '@rainbow-me/hooks';
+  getProviderForNetwork,
+  isEIP1559LegacyNetwork,
+  toHex,
+} from '@rainbow-me/handlers/web3';
+import { greaterThan } from '@rainbow-me/helpers/utilities';
+import { useAccountSettings, useDimensions, useGas } from '@rainbow-me/hooks';
 import { sendTransaction } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
-import { getTitle, gweiToWei, weiToGwei } from '@rainbow-me/parsers';
+import { getTitle } from '@rainbow-me/parsers';
 import { dataUpdateTransaction } from '@rainbow-me/redux/data';
-import { updateGasPriceForSpeed } from '@rainbow-me/redux/gas';
+import { updateGasFeeForSpeed } from '@rainbow-me/redux/gas';
 import { ethUnits } from '@rainbow-me/references';
 import { position } from '@rainbow-me/styles';
-import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+import { gasUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 import logger from 'logger';
+
+const { CUSTOM, URGENT } = gasUtils;
 
 const springConfig = {
   damping: 500,
@@ -83,11 +84,7 @@ const AnimatedSheet = Animated.createAnimatedComponent(CenteredSheet);
 
 const GasSpeedButtonContainer = styled(Row).attrs({
   justify: 'center',
-})`
-  margin-bottom: 19px;
-  margin-top: 4px;
-  width: ${deviceUtils.dimensions.width - 10};
-`;
+})``;
 
 const CANCEL_TX = 'cancel';
 const SPEED_UP = 'speed_up';
@@ -102,15 +99,15 @@ const text = {
   [SPEED_UP]: `This will speed up your pending transaction by replacing it. There’s still a chance your original transaction will confirm first!`,
 };
 
-const calcMinGasPriceAllowed = prevGasPrice => {
-  const prevGasPriceBN = new BigNumber(prevGasPrice);
+const calcGasParamRetryValue = prevWeiValue => {
+  const prevWeiValueBN = new BigNumber(prevWeiValue);
 
-  const newGasPriceBN = prevGasPriceBN
+  const newWeiValueBN = prevWeiValueBN
     .times(new BigNumber('110'))
     .dividedBy(new BigNumber('100'));
 
-  const newGasPrice = newGasPriceBN.toFixed();
-  return Number(weiToGwei(newGasPrice));
+  const newWeiValue = newWeiValueBN.toFixed(0);
+  return Number(newWeiValue);
 };
 
 export default function SpeedUpAndCancelSheet() {
@@ -118,23 +115,29 @@ export default function SpeedUpAndCancelSheet() {
   const { accountAddress, network } = useAccountSettings();
   const dispatch = useDispatch();
   const { height: deviceHeight } = useDimensions();
-  const keyboardHeight = useKeyboardHeight();
   const {
-    gasPrices,
-    updateGasPriceOption,
-    selectedGasPrice,
-    startPollingGasPrices,
-    stopPollingGasPrices,
+    gasFeeParamsBySpeed,
+    updateGasFeeOption,
+    selectedGasFee,
+    startPollingGasFees,
+    stopPollingGasFees,
     updateTxFee,
   } = useGas();
   const calculatingGasLimit = useRef(false);
+  const speedUrgentSelected = useRef(false);
   const {
     params: { type, tx },
   } = useRoute();
   const [ready, setReady] = useState(false);
-  const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
+  const [txType, setTxType] = useState();
   const [minGasPrice, setMinGasPrice] = useState(
-    calcMinGasPriceAllowed(tx.gasPrice)
+    calcGasParamRetryValue(tx.gasPrice)
+  );
+  const [minMaxPriorityFeePerGas, setMinMaxPriorityFeePerGas] = useState(
+    calcGasParamRetryValue(tx.maxPriorityFeePerGas)
+  );
+  const [minMaxFeePerGas, setMinMaxFeePerGas] = useState(
+    calcGasParamRetryValue(tx.maxFeePerGas)
   );
   const fetchedTx = useRef(false);
   const [currentNetwork, setCurrentNetwork] = useState(null);
@@ -145,23 +148,47 @@ export default function SpeedUpAndCancelSheet() {
   const [to, setTo] = useState(tx.to);
   const [value, setValue] = useState(null);
 
-  const getNewGasPrice = useCallback(() => {
-    const rawGasPrice = get(selectedGasPrice, 'value.amount');
-    const minGasPriceAllowed = gweiToWei(minGasPrice);
-    const rawGasPriceBN = new BigNumber(rawGasPrice);
-    const minGasPriceAllowedBN = new BigNumber(minGasPriceAllowed);
-    return rawGasPriceBN.isGreaterThan(minGasPriceAllowedBN)
-      ? toHex(rawGasPrice)
-      : toHex(minGasPriceAllowed);
-  }, [minGasPrice, selectedGasPrice]);
+  const getNewTransactionGasParams = useCallback(() => {
+    if (txType === GasFeeTypes.eip1559) {
+      const rawMaxPriorityFeePerGas =
+        selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
+      const rawMaxFeePerGas =
+        selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
+
+      const maxPriorityFeePerGas = greaterThan(
+        rawMaxPriorityFeePerGas,
+        minMaxPriorityFeePerGas
+      )
+        ? toHex(rawMaxPriorityFeePerGas)
+        : toHex(minMaxPriorityFeePerGas);
+
+      const maxFeePerGas = greaterThan(rawMaxFeePerGas, minMaxFeePerGas)
+        ? toHex(rawMaxFeePerGas)
+        : toHex(minMaxFeePerGas);
+      return { maxFeePerGas, maxPriorityFeePerGas };
+    } else {
+      const rawGasPrice = selectedGasFee?.gasFeeParams?.gasPrice?.amount;
+      return {
+        gasPrice: greaterThan(rawGasPrice, minGasPrice)
+          ? toHex(rawGasPrice)
+          : toHex(minGasPrice),
+      };
+    }
+  }, [
+    txType,
+    selectedGasFee,
+    minMaxPriorityFeePerGas,
+    minMaxFeePerGas,
+    minGasPrice,
+  ]);
 
   const handleCancellation = useCallback(async () => {
     try {
-      const gasPrice = getNewGasPrice();
+      const newGasParams = getNewTransactionGasParams();
       const cancelTxPayload = {
-        gasPrice,
         nonce,
         to: accountAddress,
+        ...newGasParams,
       };
       const originalHash = tx.hash;
       const {
@@ -191,7 +218,7 @@ export default function SpeedUpAndCancelSheet() {
     accountAddress,
     currentProvider,
     dispatch,
-    getNewGasPrice,
+    getNewTransactionGasParams,
     goBack,
     nonce,
     tx,
@@ -199,14 +226,14 @@ export default function SpeedUpAndCancelSheet() {
 
   const handleSpeedUp = useCallback(async () => {
     try {
-      const gasPrice = getNewGasPrice();
+      const newGasParams = getNewTransactionGasParams();
       const fasterTxPayload = {
         data,
         gasLimit,
-        gasPrice,
         nonce,
         to,
         value,
+        ...newGasParams,
       };
       const originalHash = tx.hash;
       const {
@@ -236,7 +263,7 @@ export default function SpeedUpAndCancelSheet() {
     data,
     dispatch,
     gasLimit,
-    getNewGasPrice,
+    getNewTransactionGasParams,
     goBack,
     nonce,
     to,
@@ -252,7 +279,7 @@ export default function SpeedUpAndCancelSheet() {
   // Set the provider
   useEffect(() => {
     if (currentNetwork) {
-      startPollingGasPrices(currentNetwork);
+      startPollingGasFees(currentNetwork);
       const updateProvider = async () => {
         const provider = await getProviderForNetwork(currentNetwork);
         setCurrentProvider(provider);
@@ -261,19 +288,30 @@ export default function SpeedUpAndCancelSheet() {
       updateProvider();
 
       return () => {
-        stopPollingGasPrices();
+        stopPollingGasFees();
       };
     }
-  }, [currentNetwork, startPollingGasPrices, stopPollingGasPrices]);
+  }, [currentNetwork, startPollingGasFees, stopPollingGasFees]);
 
   // Update gas limit
   useEffect(() => {
-    if (!isEmpty(gasPrices) && gasLimit) {
-      updateTxFee(gasLimit, null, currentNetwork);
-      // Always default to fast
-      updateGasPriceOption('fast');
+    if (
+      !speedUrgentSelected.current &&
+      !isEmpty(gasFeeParamsBySpeed) &&
+      gasLimit
+    ) {
+      updateTxFee(gasLimit);
+      // Always default to urgent
+      updateGasFeeOption(gasUtils.URGENT);
+      speedUrgentSelected.current = true;
     }
-  }, [currentNetwork, gasLimit, gasPrices, updateGasPriceOption, updateTxFee]);
+  }, [
+    currentNetwork,
+    gasLimit,
+    gasFeeParamsBySpeed,
+    updateGasFeeOption,
+    updateTxFee,
+  ]);
 
   useEffect(() => {
     const init = async () => {
@@ -281,16 +319,30 @@ export default function SpeedUpAndCancelSheet() {
         try {
           fetchedTx.current = true;
           const hexGasLimit = toHex(tx.gasLimit.toString());
-          const hexGasPrice = toHex(tx.gasPrice.toString());
           const hexValue = toHex(tx.value.toString());
           const hexData = tx.data;
+
           setReady(true);
           setNonce(tx.nonce);
           setValue(hexValue);
           setData(hexData);
-          setTo(tx.to);
+          setTo(tx.txTo);
           setGasLimit(hexGasLimit);
-          setMinGasPrice(calcMinGasPriceAllowed(hexGasPrice));
+          if (!isEIP1559LegacyNetwork(tx.network)) {
+            setTxType(GasFeeTypes.eip1559);
+            const hexMaxPriorityFeePerGas = toHex(
+              tx.maxPriorityFeePerGas.toString()
+            );
+            setMinMaxPriorityFeePerGas(
+              calcGasParamRetryValue(hexMaxPriorityFeePerGas)
+            );
+            const hexMaxFeePerGas = toHex(tx.maxFeePerGas.toString());
+            setMinMaxFeePerGas(calcGasParamRetryValue(hexMaxFeePerGas));
+          } else {
+            setTxType(GasFeeTypes.legacy);
+            const hexGasPrice = toHex(tx.gasPrice.toString());
+            setMinGasPrice(calcGasParamRetryValue(hexGasPrice));
+          }
         } catch (e) {
           logger.log('something went wrong while fetching tx info ', e);
           logger.sentry(
@@ -329,37 +381,43 @@ export default function SpeedUpAndCancelSheet() {
     network,
     tx,
     tx.gasLimit,
-    tx.gasPrice,
     tx.hash,
     type,
-    updateGasPriceOption,
+    updateGasFeeOption,
   ]);
 
   useEffect(() => {
-    if (!isEmpty(gasPrices) && !calculatingGasLimit.current) {
+    if (!isEmpty(gasFeeParamsBySpeed) && !calculatingGasLimit.current) {
       calculatingGasLimit.current = true;
-      if (Number(gweiToWei(minGasPrice)) > Number(gasPrices.fast.value)) {
-        dispatch(updateGasPriceForSpeed('fast', gweiToWei(minGasPrice)));
+      if (
+        greaterThan(
+          minMaxPriorityFeePerGas,
+          gasFeeParamsBySpeed?.fast?.maxPriorityFeePerGas?.amount
+        )
+      ) {
+        dispatch(updateGasFeeForSpeed(gasUtils.FAST, minMaxPriorityFeePerGas));
       }
       const gasLimitForNewTx =
         type === CANCEL_TX ? ethUnits.basic_tx : tx.gasLimit;
       updateTxFee(gasLimitForNewTx);
       calculatingGasLimit.current = false;
     }
-  }, [dispatch, gasPrices, minGasPrice, tx, tx.gasLimit, type, updateTxFee]);
+  }, [
+    dispatch,
+    gasFeeParamsBySpeed,
+    minMaxPriorityFeePerGas,
+    tx,
+    tx.gasLimit,
+    type,
+    updateTxFee,
+  ]);
 
   const offset = useSharedValue(0);
 
   useEffect(() => {
-    if (isKeyboardVisible) {
-      offset.value = withSpring(
-        -keyboardHeight + safeAreaInsetValues.bottom - (android ? 50 : 10),
-        springConfig
-      );
-    } else {
-      offset.value = withSpring(0, springConfig);
-    }
-  }, [isKeyboardVisible, keyboardHeight, offset]);
+    offset.value = withSpring(0, springConfig);
+  }, [offset]);
+
   const sheetHeight = ios
     ? (type === CANCEL_TX ? 491 : 442) + safeAreaInsetValues.bottom
     : 850 + safeAreaInsetValues.bottom;
@@ -373,7 +431,7 @@ export default function SpeedUpAndCancelSheet() {
   return (
     <SheetKeyboardAnimation
       as={AnimatedContainer}
-      isKeyboardVisible={isKeyboardVisible}
+      isKeyboardVisible={false}
       translateY={offset}
     >
       <ExtendedSheetBackground />
@@ -447,14 +505,13 @@ export default function SpeedUpAndCancelSheet() {
                     />
                   </Centered>
                   {type === CANCEL_TX && (
-                    <Column>
+                    <Column marginBottom={android && 15}>
                       <SheetActionButtonRow
                         ignorePaddingBottom
-                        ignorePaddingTop
+                        ignorePaddingTop={ios}
                       >
                         <SheetActionButton
                           color={colors.red}
-                          fullWidth
                           label="􀎽 Attempt Cancellation"
                           onPress={handleCancellation}
                           size="big"
@@ -464,7 +521,6 @@ export default function SpeedUpAndCancelSheet() {
                       <SheetActionButtonRow ignorePaddingBottom>
                         <SheetActionButton
                           color={colors.white}
-                          fullWidth
                           label="Close"
                           onPress={goBack}
                           size="big"
@@ -475,7 +531,10 @@ export default function SpeedUpAndCancelSheet() {
                     </Column>
                   )}
                   {type === SPEED_UP && (
-                    <SheetActionButtonRow ignorePaddingBottom ignorePaddingTop>
+                    <SheetActionButtonRow
+                      ignorePaddingBottom={ios}
+                      ignorePaddingTop={ios}
+                    >
                       <SheetActionButton
                         color={colors.white}
                         label="Cancel"
@@ -496,12 +555,8 @@ export default function SpeedUpAndCancelSheet() {
                   <GasSpeedButtonContainer>
                     <GasSpeedButton
                       currentNetwork={currentNetwork}
-                      minGasPrice={minGasPrice}
-                      onCustomGasBlur={hideKeyboard}
-                      onCustomGasFocus={showKeyboard}
-                      options={['fast', 'custom']}
+                      speeds={[URGENT, CUSTOM]}
                       theme={isDarkMode ? 'dark' : 'light'}
-                      type="transaction"
                     />
                   </GasSpeedButtonContainer>
                 </Fragment>
