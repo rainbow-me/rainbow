@@ -28,8 +28,7 @@ import {
   useWorkletValue,
 } from '../../helpers/requireOnWorklet';
 
-export const FIX_CLIPPED_PATH_MAGIC_NUMBER_OFFSET = 4;
-export const FIX_CLIPPED_PATH_MAGIC_NUMBER = 22;
+export const FIX_CLIPPED_PATH_MAGIC_NUMBER = 24;
 
 function ascending(a?: number, b?: number) {
   'worklet';
@@ -348,12 +347,11 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
         >
           <Animated.View>
             <Svg
-              viewBox={`0 0 ${width} ${
-                height +
-                FIX_CLIPPED_PATH_MAGIC_NUMBER -
-                FIX_CLIPPED_PATH_MAGIC_NUMBER_OFFSET
-              }`}
-              style={{ width, height: height + FIX_CLIPPED_PATH_MAGIC_NUMBER }}
+              viewBox={`0 0 ${width} ${height}`}
+              style={{
+                width,
+                height: height + FIX_CLIPPED_PATH_MAGIC_NUMBER,
+              }}
             >
               <AnimatedPath
                 // @ts-expect-error

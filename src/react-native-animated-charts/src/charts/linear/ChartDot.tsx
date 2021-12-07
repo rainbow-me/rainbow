@@ -6,7 +6,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useChartData } from '../../helpers/useChartData';
 import withReanimatedFallback from '../../helpers/withReanimatedFallback';
-import { FIX_CLIPPED_PATH_MAGIC_NUMBER_OFFSET } from './ChartPath';
+import { FIX_CLIPPED_PATH_MAGIC_NUMBER } from './ChartPath';
 
 interface ChartDotProps extends ViewProps {
   size?: number;
@@ -29,7 +29,7 @@ const ChartDot: React.FC<ChartDotProps> = ({
 
   const animatedStyle = useAnimatedStyle(() => {
     const translateX = positionX.value;
-    const translateY = positionY.value + FIX_CLIPPED_PATH_MAGIC_NUMBER_OFFSET;
+    const translateY = positionY.value + FIX_CLIPPED_PATH_MAGIC_NUMBER / 2;
 
     return {
       opacity: withSpring(
