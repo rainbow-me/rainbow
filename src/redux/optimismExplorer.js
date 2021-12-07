@@ -14,6 +14,7 @@ import {
 } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
+import { captureException } from '@sentry/react-native';
 
 let lastUpdatePayload = null;
 // -- Constants --------------------------------------- //
@@ -51,11 +52,12 @@ const fetchAssetBalances = async (tokens, address) => {
     });
     return balances[address];
   } catch (e) {
-    logger.log(
+    logger.sentry(
       'Error fetching balances from balanceCheckerContract',
       network,
       e
     );
+    captureException(new Error('fallbackExplorer::balanceChecker failure'));
     return null;
   }
 };
@@ -144,7 +146,7 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
 
       const newPayload = { assets: assetsWithBalance };
 
-      if (!isEqual(lastUpdatePayload, newPayload)) {
+      if (balances && !isEqual(lastUpdatePayload, newPayload)) {
         dispatch(
           addressAssetsReceived(
             {
