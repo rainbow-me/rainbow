@@ -11,6 +11,7 @@ import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import { isL2Network } from '@rainbow-me/handlers/web3';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { add, toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import {
@@ -288,8 +289,9 @@ const GasSpeedButton = ({
 
   const openGasHelper = useCallback(() => {
     android && Keyboard.dismiss();
-    navigate(Routes.EXPLAIN_SHEET, { type: 'gas' });
-  }, [navigate]);
+    const networkName = networkInfo[currentNetwork].name;
+    navigate(Routes.EXPLAIN_SHEET, { network: networkName, type: 'gas' });
+  }, [currentNetwork, navigate]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
