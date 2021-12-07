@@ -199,9 +199,7 @@ export default function TransactionCoinRow({ item, ...props }) {
         {...(android
           ? {
               contentStyles: {
-                height:
-                  CoinIconSize +
-                  (item.status === TransactionStatusTypes.swapped ? 0 : 14),
+                height: CoinIconSize + 14,
               },
             }
           : {})}

@@ -485,7 +485,11 @@ export const gasUpdateTxFee = (
       ? ethereumUtils.getEthPriceUnit()
       : ethereumUtils.getMaticPriceUnit();
 
-  if (isEmpty(gasFeeParamsBySpeed)) return;
+  if (
+    isEmpty(gasFeeParamsBySpeed) ||
+    (txNetwork === networkTypes.optimism && l1GasFeeOptimism === null)
+  )
+    return;
 
   const isLegacyNetwork = isEIP1559LegacyNetwork(txNetwork);
 
