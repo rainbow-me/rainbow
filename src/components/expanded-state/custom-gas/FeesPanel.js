@@ -1,4 +1,5 @@
 import { useNavigation } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
 import { isEmpty, upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
@@ -108,9 +109,11 @@ const ALERT_TITLE_HIGHER_MINER_TIP_NEEDED =
 const ALERT_TITLE_LOWER_MAX_BASE_FEE_NEEDED = 'High max base fee!';
 const ALERT_TITLE_LOWER_MINER_TIP_NEEDED = 'High miner tip!';
 
+const FOCUS_TO_MAX_BASE_FEE = 'focusToMaxBaseFee';
+const FOCUS_TO_MINER_TIP = 'focusToMinerTip';
+
 export default function FeesPanel({
   asset,
-  speeds,
   currentGasTrend,
   colorForAsset,
   onCustomGasFocus,
@@ -129,6 +132,7 @@ export default function FeesPanel({
   const { navigate, dangerouslyGetState } = useNavigation();
   const { colors } = useTheme();
 
+  const { params: { speeds, focusToInput } = {} } = useRoute();
   const maxBaseFeeInputRef = useRef(null);
   const minerTipInputRef = useRef(null);
 
@@ -537,10 +541,10 @@ export default function FeesPanel({
           onPress: () => {
             navigate(Routes.CUSTOM_GAS_SHEET, {
               asset,
+              focusToInput: FOCUS_TO_MAX_BASE_FEE,
               speeds: speeds ?? gasUtils.GasSpeedOrder,
               type: 'custom_gas',
             });
-            maxBaseFeeInputRef?.current?.focus();
           },
           style: 'cancel',
           text: 'Edit Max Base Fee',
@@ -571,10 +575,10 @@ export default function FeesPanel({
           onPress: () => {
             navigate(Routes.CUSTOM_GAS_SHEET, {
               asset,
+              focusToInput: FOCUS_TO_MINER_TIP,
               speeds: speeds ?? gasUtils.GasSpeedOrder,
               type: 'custom_gas',
             });
-            minerTipInputRef?.current?.focus();
           },
           style: 'cancel',
           text: 'Edit Miner Tip',
@@ -640,6 +644,16 @@ export default function FeesPanel({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (focusToInput === FOCUS_TO_MAX_BASE_FEE) {
+        maxBaseFeeInputRef?.current?.focus();
+      } else if (focusToInput === FOCUS_TO_MINER_TIP) {
+        minerTipInputRef?.current?.focus();
+      }
+    }, 500);
+  }, [focusToInput]);
 
   return (
     <Wrapper>
