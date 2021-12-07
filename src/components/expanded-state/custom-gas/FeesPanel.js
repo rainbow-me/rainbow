@@ -528,11 +528,13 @@ export default function FeesPanel({
     <Wrapper>
       <PanelRowThin>
         <PanelColumn />
-        <PanelColumn>
-          <GasTrendHeader color={GAS_TRENDS[currentGasTrend]?.color}>
-            {GAS_TRENDS[currentGasTrend]?.label}
-          </GasTrendHeader>
-        </PanelColumn>
+        <ButtonPressAnimation onPress={() => openGasHelper(trendType)}>
+          <PanelColumn>
+            <GasTrendHeader color={GAS_TRENDS[currentGasTrend]?.color}>
+              {GAS_TRENDS[currentGasTrend]?.label}
+            </GasTrendHeader>
+          </PanelColumn>
+        </ButtonPressAnimation>
       </PanelRowThin>
 
       <PanelRow justify="space-between" marginBottom={18}>
