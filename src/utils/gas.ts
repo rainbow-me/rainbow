@@ -10,7 +10,6 @@ const GasSpeedOrder = [NORMAL, FAST, URGENT, CUSTOM];
 
 const GAS_PRICE_SOURCES = {
   ARBITRUM_NODE: 'arbitrumNode',
-  ETH_GAS_STATION: 'ethGasStation',
   ETHERSCAN: 'etherscan',
   OPTIMISM_NODE: 'optimismNode',
   POLYGON_GAS_STATION: 'polygonGasStation',

@@ -168,20 +168,6 @@ export const parseRainbowMeteorologyData = (
   };
 };
 
-const parseGasPricesEthGasStation = (data: GasPricesAPIData) => ({
-  [CUSTOM]: null,
-  [FAST]: defaultGasPriceFormat(FAST, data.fastWait, Number(data.fast) / 10),
-  [NORMAL]: defaultGasPriceFormat(
-    NORMAL,
-    data.avgWait,
-    Number(data.average) / 10
-  ),
-  [URGENT]: defaultGasPriceFormat(
-    URGENT,
-    data.fastestWait,
-    Number(data.fastest) / 10
-  ),
-});
 const parseGasPricesPolygonGasStation = (data: GasPricesAPIData) => {
   const polygonGasPriceBumpFactor = 1.05;
   return {
@@ -215,8 +201,6 @@ export const parseGasPrices = (
 ) => {
   if (!data) return getFallbackGasPrices();
   switch (source) {
-    case gasUtils.GAS_PRICE_SOURCES.ETH_GAS_STATION:
-      return parseGasPricesEthGasStation(data);
     case gasUtils.GAS_PRICE_SOURCES.POLYGON_GAS_STATION:
       return parseGasPricesPolygonGasStation(data);
     default:
