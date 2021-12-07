@@ -29,9 +29,7 @@ const formatPercentageString = percentString =>
 
 const BalanceCoinRowCoinCheckButton = styled(CoinCheckButton).attrs({
   isAbsolute: true,
-})`
-  top: ${({ top }) => top};
-`;
+})``;
 
 const PercentageText = styled(BottomRowText).attrs({
   align: 'right',
@@ -147,7 +145,8 @@ const BalanceCoinRow = ({
 
   const paddingStyle = useAnimatedStyle(
     () => ({
-      paddingLeft: isCoinListEditedSharedValue.value * editTranslateOffset,
+      paddingLeft:
+        (isCoinListEditedSharedValue.value ? 1 : 0) * editTranslateOffset,
       position: 'absolute',
       width: '100%',
     }),
@@ -157,7 +156,9 @@ const BalanceCoinRow = ({
   const marginStyle = useAnimatedStyle(
     () => ({
       marginLeft:
-        -editTranslateOffset * 1.5 * (1 - isCoinListEditedSharedValue.value),
+        -editTranslateOffset *
+        1.5 *
+        (isCoinListEditedSharedValue.value ? 0 : 1),
       position: 'absolute',
     }),
     []

@@ -36,7 +36,7 @@ export default function CoinIconIndicator({ isFirstCoinRow, isPinned }) {
   const isCoinListEditedSharedValue = useIsCoinListEditedSharedValue();
   const style = useAnimatedStyle(
     () => ({
-      opacity: isCoinListEditedSharedValue.value,
+      opacity: isCoinListEditedSharedValue.value ? 1 : 0,
     }),
     []
   );
