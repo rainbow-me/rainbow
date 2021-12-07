@@ -467,9 +467,9 @@ export default function TransactionConfirmationScreen() {
           txPayload,
           provider
         );
-        updateTxFee(gas, null, network, l1GasFeeOptimism);
+        updateTxFee(gas, null, l1GasFeeOptimism);
       } else {
-        updateTxFee(gas, null, network);
+        updateTxFee(gas, null);
       }
     }
   }, [network, params, provider, updateTxFee]);
