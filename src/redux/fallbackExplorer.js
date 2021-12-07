@@ -356,7 +356,6 @@ export const fetchOnchainBalances = ({
       : toLower(asset_code)
   );
 
-  // Solution: we should return right here and prevent any (boken) state updates.
   const balances = await fetchAssetBalances(
     tokenAddresses,
     accountAddress,
