@@ -42,9 +42,9 @@ import {
   Divider,
   Heading,
   Inset,
-  InsetProps,
   MarkdownText,
   Row,
+  Space,
   Stack,
   Text,
   TextProps,
@@ -112,13 +112,13 @@ const TextButton = ({
   children: ReactNode;
   align?: TextProps['align'];
 }) => {
-  const hitArea: InsetProps['vertical'] = '12px';
+  const hitArea: Space = '12px';
 
   return (
     <Bleed vertical={hitArea}>
       <ButtonPressAnimation onPress={onPress} scaleTo={0.88}>
         <Inset vertical={hitArea}>
-          <Text align={align} color="accent" weight="heavy">
+          <Text align={align} color="accent" size="16px" weight="heavy">
             {children}
           </Text>
         </Inset>
@@ -127,6 +127,12 @@ const TextButton = ({
   );
 };
 
+const textSize: TextProps['size'] = '18px';
+const textColor: TextProps['color'] = 'secondary50';
+const sectionSpace: Space = '30px';
+const paragraphSpace: Space = '24px';
+const listSpace: Space = '19px';
+
 const Section = ({
   title,
   children,
@@ -134,18 +140,18 @@ const Section = ({
   title: string;
   children: ReactNode;
 }) => (
-  <Stack space="24px">
-    <Heading size="18px">{title}</Heading>
+  <Stack space={paragraphSpace}>
+    <Heading size={textSize}>{title}</Heading>
     {children}
   </Stack>
 );
 
 const Markdown = ({ children }: { children: string }) => (
   <MarkdownText
-    color="secondary50"
-    listSpace="19px"
-    paragraphSpace="24px"
-    size="18px"
+    color={textColor}
+    listSpace={listSpace}
+    paragraphSpace={paragraphSpace}
+    size={textSize}
   >
     {children}
   </MarkdownText>
@@ -266,6 +272,8 @@ const UniqueTokenExpandedState = ({
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
 
+  const hasSendButton = !external && !isReadOnlyWallet && isSendable;
+
   return (
     <Fragment>
       <BlurWrapper height={deviceHeight} width={deviceWidth}>
@@ -303,7 +311,7 @@ const UniqueTokenExpandedState = ({
       >
         <ColorModeProvider value="darkTinted">
           <AccentColorProvider color={imageColor}>
-            <Inset bottom="30px" top={{ custom: 33 }}>
+            <Inset bottom={sectionSpace} top={{ custom: 33 }}>
               <Stack alignHorizontal="center">
                 <Animated.View style={sheetHandleStyle}>
                   {/* @ts-expect-error JavaScript component */}
@@ -311,7 +319,6 @@ const UniqueTokenExpandedState = ({
                 </Animated.View>
               </Stack>
             </Inset>
-
             <UniqueTokenExpandedStateContent
               animationProgress={animationProgress}
               asset={asset}
@@ -323,39 +330,31 @@ const UniqueTokenExpandedState = ({
               textColor={textColor}
               yPosition={yPosition}
             />
-
             <Animated.View style={opacityStyle}>
-              <Inset horizontal="24px" vertical="30px">
-                <Stack space="30px">
+              <Inset horizontal="24px" vertical={sectionSpace}>
+                <Stack space={sectionSpace}>
                   <Stack space="42px">
                     <Row alignHorizontal="justify">
                       <TextButton onPress={handlePressShowcase}>
                         {isShowcaseAsset ? '􀫝 In Showcase' : '􀐇 Showcase'}
                       </TextButton>
-
                       <TextButton align="right" onPress={handlePressShare}>
                         􀈂 Share
                       </TextButton>
                     </Row>
-
                     <UniqueTokenExpandedStateHeader asset={asset} />
                   </Stack>
-
                   <Columns space="19px">
                     <SheetActionButton
                       color={imageColor}
                       // @ts-expect-error JavaScript component
-                      label={
-                        !external && !isReadOnlyWallet && isSendable
-                          ? '􀮶 OpenSea'
-                          : '􀮶 View on OpenSea'
-                      }
+                      label={hasSendButton ? '􀮶 OpenSea' : '􀮶 View on OpenSea'}
                       nftShadows
                       onPress={handlePressOpensea}
                       textColor={textColor}
                       weight="heavy"
                     />
-                    {!external && !isReadOnlyWallet && isSendable ? (
+                    {hasSendButton ? (
                       <SendActionButton
                         asset={asset}
                         color={imageColor}
@@ -364,8 +363,10 @@ const UniqueTokenExpandedState = ({
                       />
                     ) : null}
                   </Columns>
-
-                  <Stack separator={<Divider color="divider20" />} space="30px">
+                  <Stack
+                    separator={<Divider color="divider20" />}
+                    space={sectionSpace}
+                  >
                     <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
                       bottom={android ? '15px' : '6px'}
                       top={android ? '10px' : '4px'}
@@ -400,7 +401,6 @@ const UniqueTokenExpandedState = ({
                                 nativeCurrency
                               )}
                         </TokenInfoItem>
-
                         {/* @ts-expect-error JavaScript component */}
                         <TokenInfoItem
                           align="right"
@@ -431,13 +431,11 @@ const UniqueTokenExpandedState = ({
                         </TokenInfoItem>
                       </Columns>
                     </Bleed>
-
                     {description ? (
                       <Section title="Description">
                         <Markdown>{description}</Markdown>
                       </Section>
                     ) : null}
-
                     {traits.length ? (
                       <Section title="Properties">
                         <UniqueTokenAttributes
@@ -447,12 +445,10 @@ const UniqueTokenExpandedState = ({
                         />
                       </Section>
                     ) : null}
-
                     {familyDescription ? (
                       <Section title={`About ${familyName}`}>
-                        <Stack space="30px">
+                        <Stack space={sectionSpace}>
                           <Markdown>{familyDescription}</Markdown>
-
                           {familyLink ? (
                             <Bleed // Manually crop surrounding space until Link uses design system components
                               bottom={android ? '15px' : undefined}

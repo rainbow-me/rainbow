@@ -33,11 +33,11 @@ const docs: Docs = {
       name: 'Vertical',
       Example: () => (
         <Row space="19px">
-          <Placeholder height={100} width={20} />
+          <Placeholder width={20} />
           <Divider direction="vertical" />
-          <Placeholder height={100} width={20} />
+          <Placeholder width={20} />
           <Divider direction="vertical" />
-          <Placeholder height={100} width={20} />
+          <Placeholder width={20} />
         </Row>
       ),
     },

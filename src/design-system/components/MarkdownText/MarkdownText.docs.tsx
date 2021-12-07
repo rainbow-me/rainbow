@@ -8,19 +8,19 @@ const loremIpsum =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
 
 const headingsAndParagraphMarkdown = `
-# Heading 1
+  # Heading 1
 
-## Heading 2
+  ## Heading 2
 
-### Heading 3
+  ### Heading 3
 
-#### Heading 4
+  #### Heading 4
 
-##### Heading 5
+  ##### Heading 5
 
-###### Heading 6
+  ###### Heading 6
 
-Paragraph. ${loremIpsum}
+  Paragraph. ${loremIpsum}
 `;
 
 const markdown = `

@@ -25,6 +25,7 @@ export type { InlineProps } from './components/Inline/Inline';
 export type { InsetProps } from './components/Inset/Inset';
 export type { MarkdownTextProps } from './components/MarkdownText/MarkdownText';
 export type { RowProps } from './components/Row/Row';
+export type { Space } from './layout/space';
 export type { StackProps } from './components/Stack/Stack';
 export type { TextLinkProps } from './components/TextLink/TextLink';
 export type { TextProps } from './components/Text/Text';
