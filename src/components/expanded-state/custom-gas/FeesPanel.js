@@ -3,6 +3,7 @@ import { useRoute } from '@react-navigation/native';
 import { isEmpty, upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import styled, { useTheme } from 'styled-components';
 import { Alert } from '../../../components/alerts';
@@ -482,12 +483,19 @@ export default function FeesPanel({
     } else {
       setMaxBaseFeeError(null);
     }
+    const maxBaseFeeToValidate = IS_TESTING === 'true' ? 100 : currentBaseFee;
     if (
-      greaterThan(multiply(MAX_BASE_FEE_RANGE[0], currentBaseFee), maxBaseFee)
+      greaterThan(
+        multiply(MAX_BASE_FEE_RANGE[0], maxBaseFeeToValidate),
+        maxBaseFee
+      )
     ) {
       setMaxBaseFeeWarning(LOWER_THAN_SUGGESTED);
     } else if (
-      greaterThan(maxBaseFee, multiply(MAX_BASE_FEE_RANGE[1], currentBaseFee))
+      greaterThan(
+        maxBaseFee,
+        multiply(MAX_BASE_FEE_RANGE[1], maxBaseFeeToValidate)
+      )
     ) {
       setMaxBaseFeeWarning(HIGHER_THAN_NECESSARY);
     } else {
@@ -506,7 +514,9 @@ export default function FeesPanel({
       greaterThan(
         multiply(
           MINER_TIP_RANGE[0],
-          gasFeeParamsBySpeed?.[NORMAL]?.maxPriorityFeePerGas?.gwei
+          IS_TESTING === 'true'
+            ? 1
+            : gasFeeParamsBySpeed?.[NORMAL]?.maxPriorityFeePerGas?.gwei
         ),
         maxPriorityFee
       )
@@ -517,7 +527,9 @@ export default function FeesPanel({
         maxPriorityFee,
         multiply(
           MINER_TIP_RANGE[1],
-          gasFeeParamsBySpeed?.[URGENT]?.maxPriorityFeePerGas?.gwei
+          IS_TESTING === 'true'
+            ? 1
+            : gasFeeParamsBySpeed?.[URGENT]?.maxPriorityFeePerGas?.gwei
         )
       )
     ) {
