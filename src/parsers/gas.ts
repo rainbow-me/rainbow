@@ -195,7 +195,7 @@ const parseGasPricesPolygonGasStation = (data: GasPricesAPIData) => {
  * @param {Object} data
  * @param {String} source
  */
-export const parseGasPrices = (
+export const parseLegacyGasPrices = (
   data: GasPricesAPIData,
   source = gasUtils.GAS_PRICE_SOURCES.ETHERSCAN
 ) => {
