@@ -4,6 +4,7 @@ import { Box, BoxProps } from '../Box/Box';
 
 export type BleedProps = {
   children: BoxProps['children'];
+  space?: Space;
   top?: Space;
   bottom?: Space;
   left?: Space;
@@ -21,6 +22,7 @@ export type BleedProps = {
  */
 export function Bleed({
   top,
+  space,
   bottom,
   left,
   right,
@@ -28,14 +30,23 @@ export function Bleed({
   vertical,
   children,
 }: BleedProps) {
+  const bottomSpace = bottom ?? space;
+  const topSpace = top ?? space;
+  const leftSpace = left ?? space;
+  const rightSpace = right ?? space;
+  const horizontalSpace = horizontal ?? space;
+  const verticalSpace = vertical ?? space;
+
   return (
     <Box
-      marginBottom={bottom ? negateSpace(bottom) : undefined}
-      marginHorizontal={horizontal ? negateSpace(horizontal) : undefined}
-      marginLeft={left ? negateSpace(left) : undefined}
-      marginRight={right ? negateSpace(right) : undefined}
-      marginTop={top ? negateSpace(top) : undefined}
-      marginVertical={vertical ? negateSpace(vertical) : undefined}
+      marginBottom={bottomSpace ? negateSpace(bottomSpace) : undefined}
+      marginHorizontal={
+        horizontalSpace ? negateSpace(horizontalSpace) : undefined
+      }
+      marginLeft={leftSpace ? negateSpace(leftSpace) : undefined}
+      marginRight={rightSpace ? negateSpace(rightSpace) : undefined}
+      marginTop={topSpace ? negateSpace(topSpace) : undefined}
+      marginVertical={verticalSpace ? negateSpace(verticalSpace) : undefined}
     >
       {children}
     </Box>

@@ -1,14 +1,23 @@
 import { toLower } from 'lodash';
-import React, { useCallback } from 'react';
-import { Linking } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { Linking, View } from 'react-native';
+// @ts-expect-error
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
 import URL from 'url-parse';
 import { buildUniqueTokenName } from '../../../helpers/assets';
 import { ButtonPressAnimation } from '../../animations';
-import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
-import { Text, TruncatedText } from '../../text';
+import { UniqueTokenExpandedStateProps } from '../UniqueTokenExpandedStateProps';
 import saveToCameraRoll from './saveToCameraRoll';
+import {
+  Bleed,
+  Column,
+  Columns,
+  Heading,
+  Row,
+  Stack,
+  Text,
+} from '@rainbow-me/design-system';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   useAccountProfile,
@@ -17,7 +26,7 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
-import { padding, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import {
   buildRainbowUrl,
   magicMemo,
@@ -29,7 +38,7 @@ const AssetActionsEnum = {
   download: 'download',
   etherscan: 'etherscan',
   rainbowWeb: 'rainbowWeb',
-};
+} as const;
 
 const AssetActions = {
   [AssetActionsEnum.copyTokenID]: {
@@ -64,14 +73,14 @@ const AssetActions = {
       iconValue: 'safari.fill',
     },
   },
-};
+} as const;
 
 const FamilyActionsEnum = {
   collectionWebsite: 'collectionWebsite',
   discord: 'discord',
   twitter: 'twitter',
   viewCollection: 'viewCollection',
-};
+} as const;
 
 const FamilyActions = {
   [FamilyActionsEnum.viewCollection]: {
@@ -86,14 +95,6 @@ const FamilyActions = {
   [FamilyActionsEnum.collectionWebsite]: {
     actionKey: FamilyActionsEnum.collectionWebsite,
     actionTitle: 'Collection Website',
-    icon: {
-      iconType: 'SYSTEM',
-      iconValue: 'safari.fill',
-    },
-  },
-  [FamilyActionsEnum.etherscan]: {
-    actionKey: AssetActionsEnum.etherscan,
-    actionTitle: 'View on Etherscan',
     icon: {
       iconType: 'SYSTEM',
       iconValue: 'safari.fill',
@@ -115,28 +116,12 @@ const FamilyActions = {
       iconValue: 'at.circle.fill',
     },
   },
-};
+} as const;
 
 const paddingHorizontal = 24;
 
-const Container = styled(Row).attrs({
-  align: 'center',
-  justify: 'space-between',
-})`
-  ${padding(21, paddingHorizontal, paddingHorizontal)};
-`;
-
-const FamilyName = styled(TruncatedText).attrs(({ theme: { colors } }) => ({
-  color: colors.alpha(colors.whiteLabel, 0.5),
-  size: 'lmedium',
-  weight: 'bold',
-}))`
-  max-width: ${({ deviceWidth }) => deviceWidth - paddingHorizontal * 6};
-`;
-
-const FamilyImageWrapper = styled.View`
+const FamilyImageWrapper = styled(View)`
   height: 20;
-  margin-right: 7;
   shadow-color: ${({ theme: { colors } }) => colors.shadowBlack};
   shadow-offset: 0 3px;
   shadow-opacity: 0.15;
@@ -149,19 +134,16 @@ const FamilyImage = styled(ImgixImage)`
   border-radius: 10;
 `;
 
-const HeadingColumn = styled(ColumnWithMargins).attrs({
-  align: 'start',
-  justify: 'start',
-  margin: 6,
-})`
-  width: 100%;
-`;
+interface UniqueTokenExpandedStateHeaderProps {
+  asset: UniqueTokenExpandedStateProps['asset'];
+}
 
-const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
+const UniqueTokenExpandedStateHeader = ({
+  asset,
+}: UniqueTokenExpandedStateHeaderProps) => {
   const { accountAddress, accountENS } = useAccountProfile();
   const { setClipboard } = useClipboard();
   const { width: deviceWidth } = useDimensions();
-  const { colors } = useTheme();
 
   const formattedCollectionUrl = useMemo(() => {
     const { hostname } = new URL(asset.external_link);
@@ -190,7 +172,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         },
       ],
       menuTitle: '',
-    };
+    } as const;
   }, [asset, formattedCollectionUrl]);
 
   const isSVG = isSupportedUriExtension(asset.image_url, ['.svg']);
@@ -222,7 +204,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         },
       ],
       menuTitle: '',
-    };
+    } as const;
   }, [asset.id, isPhotoDownloadAvailable]);
 
   const handlePressFamilyMenuItem = useCallback(
@@ -239,7 +221,10 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         Linking.openURL(
           'https://twitter.com/' + asset.collection.twitter_username
         );
-      } else if (actionKey === FamilyActionsEnum.discord) {
+      } else if (
+        actionKey === FamilyActionsEnum.discord &&
+        asset.collection.discord_url
+      ) {
         Linking.openURL(asset.collection.discord_url);
       }
     },
@@ -277,8 +262,8 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
       'Discord',
     ];
 
-    const twitterIndex = 2 - (!hasWebsite && 1);
-    const discordIndex = 3 - (!hasWebsite && 1) - (!hasTwitter && 1);
+    const twitterIndex = 2 - (!hasWebsite ? 1 : 0);
+    const discordIndex = 3 - (!hasWebsite ? 1 : 0) - (!hasTwitter ? 1 : 0);
 
     if (!hasWebsite) baseActions.splice(1, 1);
     if (!hasTwitter) baseActions.splice(twitterIndex, 1);
@@ -290,7 +275,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         showSeparators: true,
         title: '',
       },
-      idx => {
+      (idx: number) => {
         if (idx === 0) {
           Linking.openURL(
             'https://opensea.io/collection/' +
@@ -324,7 +309,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
             );
           }
         }
-        if (idx === 3) {
+        if (idx === 3 && asset.collection.discord_url) {
           Linking.openURL(asset.collection.discord_url);
         }
       }
@@ -341,9 +326,9 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
     const androidContractActions = [
       'View On Web',
       'View on Etherscan',
-      ...(isPhotoDownloadAvailable ? ['Save to Photos'] : []),
+      ...(isPhotoDownloadAvailable ? (['Save to Photos'] as const) : []),
       'Copy Token ID',
-    ];
+    ] as const;
 
     showActionSheetWithOptions(
       {
@@ -351,7 +336,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
         showSeparators: true,
         title: '',
       },
-      idx => {
+      (idx: number) => {
         if (idx === 0) {
           Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
         } else if (idx === 1) {
@@ -377,14 +362,12 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
   ]);
 
   return (
-    <Container>
-      <HeadingColumn>
-        <RowWithMargins margin={10}>
-          <Column flex={1}>
-            <Text color={colors.whiteLabel} size="big" weight="heavy">
-              {buildUniqueTokenName(asset)}
-            </Text>
-          </Column>
+    <Stack space="15px">
+      <Columns space="24px">
+        <Heading size="23px" weight="heavy">
+          {buildUniqueTokenName(asset)}
+        </Heading>
+        <Column width="content">
           <ContextMenuButton
             activeOpacity={1}
             menuConfig={assetMenuConfig}
@@ -395,12 +378,14 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
             wrapNativeComponent
           >
             <ButtonPressAnimation scaleTo={0.75}>
-              <Text align="right" color={imageColor} size="big" weight="heavy">
+              <Text color="accent" size="23px" weight="heavy">
                 􀍡
               </Text>
             </ButtonPressAnimation>
           </ContextMenuButton>
-        </RowWithMargins>
+        </Column>
+      </Columns>
+      <Row>
         <ContextMenuButton
           activeOpacity={0}
           menuConfig={familyMenuConfig}
@@ -411,30 +396,29 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
           wrapNativeComponent={false}
         >
           <ButtonPressAnimation scaleTo={0.88}>
-            <Row align="center" marginTop={android ? -10 : 0}>
+            <Row alignVertical="center" space="6px">
               {asset.familyImage ? (
-                <FamilyImageWrapper>
-                  <FamilyImage
-                    source={{ uri: asset?.familyImage }}
-                    style={position.cover}
-                  />
-                </FamilyImageWrapper>
+                <Bleed vertical="6px">
+                  <FamilyImageWrapper>
+                    <FamilyImage source={{ uri: asset.familyImage }} />
+                  </FamilyImageWrapper>
+                </Bleed>
               ) : null}
-              <FamilyName deviceWidth={deviceWidth}>
-                {asset.familyName}
-              </FamilyName>
-              <Text
-                color={colors.alpha(colors.whiteLabel, 0.5)}
-                size="lmedium"
-                weight="bold"
-              >
-                {' 􀆊'}
-              </Text>
+              <Row space="4px">
+                <View style={{ maxWidth: deviceWidth - paddingHorizontal * 6 }}>
+                  <Text color="secondary50" numberOfLines={1} weight="bold">
+                    {asset.familyName}
+                  </Text>
+                </View>
+                <Text color="secondary50" weight="bold">
+                  􀆊
+                </Text>
+              </Row>
             </Row>
           </ButtonPressAnimation>
         </ContextMenuButton>
-      </HeadingColumn>
-    </Container>
+      </Row>
+    </Stack>
   );
 };
 

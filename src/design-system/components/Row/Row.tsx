@@ -22,13 +22,9 @@ export type RowProps = {
   children: ReactNode;
   alignHorizontal?: AlignHorizontal;
   alignVertical?: AlignVertical;
-} & (
-  | { space?: never; separator: ReactElement }
-  | {
-      space: Space;
-      separator?: ReactElement;
-    }
-);
+  space?: Space;
+  separator?: ReactElement;
+};
 
 /**
  * @description Arranges child nodes horizontally with equal spacing between

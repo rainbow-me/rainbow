@@ -12,7 +12,7 @@ const docs: Docs = {
       name: 'Basic usage',
       Example: () => (
         <Inset space="19px">
-          <Placeholder height={100} />
+          <Placeholder />
         </Inset>
       ),
     },
@@ -21,7 +21,7 @@ const docs: Docs = {
       name: 'Custom space',
       Example: () => (
         <Inset space={{ custom: 12 }}>
-          <Placeholder height={100} />
+          <Placeholder />
         </Inset>
       ),
     },
@@ -30,7 +30,7 @@ const docs: Docs = {
       name: 'Horizontal space',
       Example: () => (
         <Inset horizontal="19px">
-          <Placeholder height={100} />
+          <Placeholder />
         </Inset>
       ),
     },
@@ -39,7 +39,43 @@ const docs: Docs = {
       name: 'Vertical space',
       Example: () => (
         <Inset vertical="19px">
-          <Placeholder height={100} />
+          <Placeholder />
+        </Inset>
+      ),
+    },
+
+    {
+      name: 'Top space',
+      Example: () => (
+        <Inset top="19px">
+          <Placeholder />
+        </Inset>
+      ),
+    },
+
+    {
+      name: 'Bottom space',
+      Example: () => (
+        <Inset bottom="19px">
+          <Placeholder />
+        </Inset>
+      ),
+    },
+
+    {
+      name: 'Left space',
+      Example: () => (
+        <Inset left="19px">
+          <Placeholder />
+        </Inset>
+      ),
+    },
+
+    {
+      name: 'Right space',
+      Example: () => (
+        <Inset right="19px">
+          <Placeholder />
         </Inset>
       ),
     },

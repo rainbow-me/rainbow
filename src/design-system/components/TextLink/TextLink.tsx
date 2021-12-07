@@ -1,6 +1,9 @@
-import React, { ReactNode, useCallback, useMemo } from 'react';
-import { Linking, Text as NativeText } from 'react-native';
-import { useForegroundColor } from '../../color/useForegroundColor';
+import React, { ReactNode, useCallback } from 'react';
+import { Linking, Text as NativeText, TextStyle } from 'react-native';
+
+const style: TextStyle = {
+  textDecorationLine: 'underline',
+};
 
 export interface TextLinkProps {
   url: string;
@@ -12,12 +15,10 @@ export interface TextLinkProps {
  * block of text.
  */
 export function TextLink({ children, url }: TextLinkProps) {
-  const accentColor = useForegroundColor('accent');
-
   return (
     <NativeText
       onPress={useCallback(() => Linking.openURL(url), [url])}
-      style={useMemo(() => ({ color: accentColor }), [accentColor])}
+      style={style}
     >
       {children}
     </NativeText>

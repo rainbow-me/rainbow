@@ -1,7 +1,11 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import React, { Children, Fragment, ReactNode } from 'react';
-import { backgroundColors, foregroundColors } from '../../color/palettes';
+import {
+  backgroundColors,
+  foregroundColors,
+  textColors,
+} from '../../color/palettes';
 import { fontWeights } from '../../typography/fontWeights';
 import { typeHierarchy } from '../../typography/typeHierarchy';
 import { Radii, Space, sprinkles } from '../styles/sprinkles.css';
@@ -282,7 +286,7 @@ const Home: NextPage = () => {
 
           <Stack space="24px">
             <Stack space="12px">
-              <Title>Foreground Colors</Title>
+              <Title>Text Colors</Title>
               <Columns space={GRID_SPACING}>
                 <Heading>Light Mode</Heading>
                 <Heading>Light Tinted Mode</Heading>
@@ -291,8 +295,11 @@ const Home: NextPage = () => {
               </Columns>
             </Stack>
             <Stack space="none">
-              {Object.entries(foregroundColors).map(
-                ([foregroundName, foreground], colorIndex, arr) => (
+              {Object.entries(foregroundColors)
+                .filter(([name]) =>
+                  textColors.includes(name as typeof textColors[number])
+                )
+                .map(([foregroundName, foreground], colorIndex, arr) => (
                   <Columns key={colorIndex} space={GRID_SPACING}>
                     {(typeof foreground === 'string'
                       ? ([
@@ -362,8 +369,7 @@ const Home: NextPage = () => {
                       </div>
                     ))}
                   </Columns>
-                )
-              )}
+                ))}
             </Stack>
           </Stack>
         </Stack>

@@ -19,13 +19,9 @@ type AlignHorizontal = keyof typeof alignHorizontalToFlexAlign;
 export type StackProps = {
   children: ReactNode;
   alignHorizontal?: AlignHorizontal;
-} & (
-  | { space?: never; separator: ReactElement }
-  | {
-      space: Space;
-      separator?: ReactElement;
-    }
-);
+  space?: Space;
+  separator?: ReactElement;
+};
 
 /**
  * @description Arranges child nodes vertically with equal spacing between

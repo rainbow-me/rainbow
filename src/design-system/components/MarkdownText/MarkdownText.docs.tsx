@@ -7,20 +7,24 @@ import { MarkdownText } from './MarkdownText';
 const loremIpsum =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
 
+const headingsAndParagraphMarkdown = `
+# Heading 1
+
+## Heading 2
+
+### Heading 3
+
+#### Heading 4
+
+##### Heading 5
+
+###### Heading 6
+
+Paragraph. ${loremIpsum}
+`;
+
 const markdown = `
-  # Heading 1
-
-  ## Heading 2
-
-  ### Heading 3
-
-  #### Heading 4
-
-  ##### Heading 5
-
-  ###### Heading 6
-
-  Paragraph. ${loremIpsum}
+  ${headingsAndParagraphMarkdown}
 
   > Blockquote paragraph. ${loremIpsum}
 
@@ -100,7 +104,13 @@ const docs: Docs = {
       Example: () => (
         <>
           <Guide />
-          <MarkdownText>{markdown}</MarkdownText>
+          <MarkdownText
+            color="secondary60"
+            listSpace="19px"
+            paragraphSpace="30px"
+          >
+            {markdown}
+          </MarkdownText>
           <Guide />
         </>
       ),
@@ -111,8 +121,31 @@ const docs: Docs = {
       Example: () => (
         <>
           <Guide />
-          <MarkdownText nestedSpace={{ custom: 30 }} space="42px">
+          <MarkdownText
+            color="secondary60"
+            listSpace={{ custom: 30 }}
+            paragraphSpace="42px"
+          >
             {customSpaceMarkdown}
+          </MarkdownText>
+          <Guide />
+        </>
+      ),
+    },
+
+    {
+      name: 'Custom heading colors',
+      Example: () => (
+        <>
+          <Guide />
+          <MarkdownText
+            color="secondary60"
+            heading1Color="primary"
+            heading2Color="secondary80"
+            listSpace="19px"
+            paragraphSpace="30px"
+          >
+            {headingsAndParagraphMarkdown}
           </MarkdownText>
           <Guide />
         </>

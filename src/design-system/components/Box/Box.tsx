@@ -238,9 +238,9 @@ export const Box = forwardRef(function Box(
   }, [styles, styleProp, Component]);
 
   return background ? (
-    <BackgroundProvider color={background}>
+    <BackgroundProvider color={background} style={style}>
       {backgroundStyle => (
-        <Component style={[backgroundStyle, ...style]} {...restProps} ref={ref}>
+        <Component style={backgroundStyle} {...restProps} ref={ref}>
           {children}
         </Component>
       )}

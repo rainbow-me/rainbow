@@ -22,18 +22,10 @@ export type InlineProps = {
   children: ReactNode;
   alignHorizontal?: AlignHorizontal;
   alignVertical?: AlignVertical;
-} & (
-  | {
-      space: Space;
-      horizontalSpace?: Space;
-      verticalSpace?: Space;
-    }
-  | {
-      space?: Space;
-      horizontalSpace: Space;
-      verticalSpace: Space;
-    }
-);
+  space?: Space;
+  horizontalSpace?: Space;
+  verticalSpace?: Space;
+};
 
 /**
  * @description Renders flowing content with equal spacing between items

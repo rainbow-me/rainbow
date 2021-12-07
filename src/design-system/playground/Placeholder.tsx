@@ -12,9 +12,10 @@ export const Placeholder = ({
 }) => (
   <View
     style={{
-      backgroundColor: '#eee',
-      borderColor: '#aaa',
-      borderWidth: 1,
+      backgroundColor: 'rgba(180, 180, 180, 0.3)',
+      borderColor: 'rgba(150, 150, 150, 0.6)',
+      borderRadius: 14,
+      borderWidth: 2,
       flexGrow,
       height,
       width,

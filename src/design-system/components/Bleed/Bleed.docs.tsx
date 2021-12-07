@@ -15,11 +15,11 @@ const docs: Docs = {
       Example: () => (
         <Inset space="19px">
           <Stack space="19px">
-            <Placeholder height={100} />
+            <Placeholder />
             <Bleed horizontal="19px">
-              <Placeholder height={100} />
+              <Placeholder />
             </Bleed>
-            <Placeholder height={100} />
+            <Placeholder />
           </Stack>
         </Inset>
       ),
@@ -30,11 +30,41 @@ const docs: Docs = {
       Example: () => (
         <Inset space={{ custom: 17 }}>
           <Stack space={{ custom: 17 }}>
-            <Placeholder height={100} />
+            <Placeholder />
             <Bleed horizontal={{ custom: 17 }}>
-              <Placeholder height={100} />
+              <Placeholder />
             </Bleed>
-            <Placeholder height={100} />
+            <Placeholder />
+          </Stack>
+        </Inset>
+      ),
+    },
+
+    {
+      name: 'Horizontal',
+      Example: () => (
+        <Inset space="19px">
+          <Stack space="19px">
+            <Placeholder />
+            <Bleed horizontal="19px">
+              <Placeholder />
+            </Bleed>
+            <Placeholder />
+          </Stack>
+        </Inset>
+      ),
+    },
+
+    {
+      name: 'Vertical',
+      Example: () => (
+        <Inset space="19px">
+          <Stack space="19px">
+            <Placeholder />
+            <Bleed vertical="19px">
+              <Placeholder />
+            </Bleed>
+            <Placeholder />
           </Stack>
         </Inset>
       ),
@@ -45,11 +75,11 @@ const docs: Docs = {
       Example: () => (
         <Inset space="19px">
           <Stack space="19px">
-            <Placeholder height={100} />
+            <Placeholder />
             <Bleed right="19px">
-              <Placeholder height={100} />
+              <Placeholder />
             </Bleed>
-            <Placeholder height={100} />
+            <Placeholder />
           </Stack>
         </Inset>
       ),
@@ -60,11 +90,11 @@ const docs: Docs = {
       Example: () => (
         <Inset space="19px">
           <Stack space="19px">
-            <Placeholder height={100} />
+            <Placeholder />
             <Bleed left="19px">
-              <Placeholder height={100} />
+              <Placeholder />
             </Bleed>
-            <Placeholder height={100} />
+            <Placeholder />
           </Stack>
         </Inset>
       ),
@@ -75,11 +105,11 @@ const docs: Docs = {
       Example: () => (
         <Inset space="19px">
           <Stack space="19px">
+            <Placeholder />
             <Bleed top="19px">
-              <Placeholder height={100} />
+              <Placeholder />
             </Bleed>
-            <Placeholder height={100} />
-            <Placeholder height={100} />
+            <Placeholder />
           </Stack>
         </Inset>
       ),
@@ -90,11 +120,26 @@ const docs: Docs = {
       Example: () => (
         <Inset space="19px">
           <Stack space="19px">
-            <Placeholder height={100} />
-            <Placeholder height={100} />
+            <Placeholder />
             <Bleed bottom="19px">
-              <Placeholder height={100} />
+              <Placeholder />
             </Bleed>
+            <Placeholder />
+          </Stack>
+        </Inset>
+      ),
+    },
+
+    {
+      name: 'All sides',
+      Example: () => (
+        <Inset space="19px">
+          <Stack space="19px">
+            <Placeholder />
+            <Bleed space="19px">
+              <Placeholder />
+            </Bleed>
+            <Placeholder />
           </Stack>
         </Inset>
       ),

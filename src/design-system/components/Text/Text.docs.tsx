@@ -13,6 +13,7 @@ import { Stack } from '../Stack/Stack';
 import { Text, TextProps } from './Text';
 
 const textExamples: Required<Pick<TextProps, 'size' | 'weight'>>[] = [
+  { size: '23px', weight: 'bold' },
   { size: '18px', weight: 'bold' },
   { size: '16px', weight: 'bold' },
   { size: '14px', weight: 'bold' },
