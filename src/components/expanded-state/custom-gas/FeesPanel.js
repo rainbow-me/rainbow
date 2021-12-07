@@ -632,6 +632,7 @@ export default function FeesPanel({
     const maxPriorityValidated = !maxPriorityFeeError && !maxPriorityFeeWarning;
     if (
       !userProcededOnWarnings &&
+      selectedOptionIsCustom &&
       (!maxBaseValidated || !maxPriorityValidated)
     ) {
       setCanGoBack(false);
@@ -645,6 +646,7 @@ export default function FeesPanel({
     maxBaseFeeWarning,
     maxPriorityFeeError,
     maxPriorityFeeWarning,
+    selectedOptionIsCustom,
     setCanGoBack,
     userProcededOnWarnings,
   ]);
