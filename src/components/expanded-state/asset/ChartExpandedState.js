@@ -357,7 +357,7 @@ export default function ChartExpandedState({ asset }) {
       )}
       {needsEth ? (
         <SheetActionButtonRow paddingBottom={isL2 && 19}>
-          <BuyActionButton color={color} fullWidth />
+          <BuyActionButton color={color} />
         </SheetActionButtonRow>
       ) : (
         <SheetActionButtonRow paddingBottom={isL2 && 19}>
@@ -365,15 +365,10 @@ export default function ChartExpandedState({ asset }) {
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}
           {hasBalance ? (
-            <SendActionButton
-              asset={ogAsset}
-              color={color}
-              fullWidth={!showSwapButton}
-            />
+            <SendActionButton asset={ogAsset} color={color} />
           ) : (
             <SwapActionButton
               color={color}
-              fullWidth={!showSwapButton}
               inputType={AssetInputTypes.out}
               label={`􀖅 Get ${asset?.symbol}`}
               requireVerification
