@@ -45,10 +45,10 @@ export const getFallbackGasPrices = () => ({
   [URGENT]: defaultGasPriceFormat(URGENT, '0.5', '200'),
 });
 
-const parseGasPricesEtherscan = (data: GasPricesAPIData) => ({
+const parseL2GasPrices = (data: GasPricesAPIData) => ({
   [CUSTOM]: null,
   [FAST]: defaultGasPriceFormat(FAST, data.avgWait, data.average),
-  [NORMAL]: defaultGasPriceFormat(NORMAL, data.safeLowWait, data.safeLow),
+  [NORMAL]: defaultGasPriceFormat(NORMAL, data.avgWait, data.average),
   [URGENT]: defaultGasPriceFormat(URGENT, data.fastWait, data.fast),
 });
 
@@ -220,7 +220,7 @@ export const parseGasPrices = (
     case gasUtils.GAS_PRICE_SOURCES.POLYGON_GAS_STATION:
       return parseGasPricesPolygonGasStation(data);
     default:
-      return parseGasPricesEtherscan(data);
+      return parseL2GasPrices(data);
   }
 };
 
