@@ -1,21 +1,21 @@
 import { get } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import Animated from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { View } from 'react-primitives';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
+import useCoinListEditOptions from '../../hooks/useCoinListEditOptions';
 import { ButtonPressAnimation } from '../animations';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
-import { Column, FlexItem, Row } from '../layout';
+import { FlexItem, Row } from '../layout';
 import BalanceText from './BalanceText';
 import BottomRowText from './BottomRowText';
 import CoinCheckButton from './CoinCheckButton';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
+import { useIsCoinListEditedSharedValue } from '@rainbow-me/helpers/SharedValuesContext';
 import { buildAssetUniqueIdentifier } from '@rainbow-me/helpers/assets';
-import { useCoinListEdited } from '@rainbow-me/hooks';
-import { useCoinListEditedValue } from '@rainbow-me/hooks/useCoinListEdited';
 import {
   pushSelectedCoin,
   removeSelectedCoin,
@@ -115,8 +115,9 @@ const BalanceCoinRow = ({
 }) => {
   const [toggle, setToggle] = useState(false);
   const [previousPinned, setPreviousPinned] = useState(0);
-  const { isCoinListEdited } = useCoinListEdited();
-  const isCoinListEditedValue = useCoinListEditedValue();
+  const isCoinListEdited = false;
+  const isCoinListEditedSharedValue = useIsCoinListEditedSharedValue();
+
   useEffect(() => {
     if (toggle && (recentlyPinnedCount > previousPinned || !isCoinListEdited)) {
       setPreviousPinned(recentlyPinnedCount);
@@ -144,16 +145,31 @@ const BalanceCoinRow = ({
     }
   }, [handleEditModePress, isCoinListEdited, item, onPress]);
 
+  const paddingStyle = useAnimatedStyle(
+    () => ({
+      paddingLeft: isCoinListEditedSharedValue.value * editTranslateOffset,
+      position: 'absolute',
+      width: '100%',
+    }),
+    []
+  );
+
+  const marginStyle = useAnimatedStyle(
+    () => ({
+      marginLeft:
+        -editTranslateOffset * 1.5 * (1 - isCoinListEditedSharedValue.value),
+      position: 'absolute',
+    }),
+    []
+  );
+
+  const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
+  const isPinned = pinnedCoins.includes(item.uniqueId);
+  const isHidden = hiddenCoins.includes(item.uniqueId);
+
   return (
-    <Column flex={1} justify={isFirstCoinRow ? 'end' : 'start'}>
-      <Animated.View
-        style={{
-          paddingLeft: Animated.multiply(
-            editTranslateOffset,
-            isCoinListEditedValue
-          ),
-        }}
-      >
+    <Row flex={1}>
+      <Animated.View style={paddingStyle}>
         <ButtonPressAnimation
           onPress={handlePress}
           scaleTo={0.96}
@@ -172,25 +188,15 @@ const BalanceCoinRow = ({
           </Animated.View>
         </ButtonPressAnimation>
       </Animated.View>
-      <Animated.View
-        style={{
-          marginLeft: Animated.multiply(
-            -editTranslateOffset * 1.5,
-            Animated.sub(1, isCoinListEditedValue)
-          ),
-          position: 'absolute',
-        }}
-      >
+      <Animated.View style={marginStyle}>
         <BalanceCoinRowCoinCheckButton
-          isHidden={item.isHidden}
-          isPinned={item.isPinned}
+          isHidden={isHidden}
+          isPinned={isPinned}
           onPress={handleEditModePress}
-          pointerEvents={isCoinListEdited ? 'auto' : 'none'}
           toggle={toggle}
-          top={isFirstCoinRow ? -50 : 9}
         />
       </Animated.View>
-    </Column>
+    </Row>
   );
 };
 

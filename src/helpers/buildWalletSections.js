@@ -11,7 +11,6 @@ import {
 import React from 'react';
 import { LayoutAnimation } from 'react-native';
 import { createSelector } from 'reselect';
-import { assets } from '../../react-native.config';
 import { AssetListItemSkeleton } from '../components/asset-list';
 import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentRow } from '../components/investment-cards';
@@ -19,7 +18,8 @@ import { CollectibleTokenFamily } from '../components/token-family';
 import { withNavigation } from '../navigation/Navigation';
 import { compose, withHandlers } from '../utils/recompactAdapters';
 import {
-  buildBriefCoinsList, buildBriefUniqueTokenList,
+  buildBriefCoinsList,
+  buildBriefUniqueTokenList,
   buildCoinsList,
   buildUniqueTokenList,
 } from './assets';
@@ -140,11 +140,18 @@ const withBriefUniswapSection = (uniswap, uniswapTotal, nativeCurrency) => {
   const pools = uniswap.map(pool => ({
     address: pool.address,
     type: 'UNISWAP_POOL',
-    uid: 'pool-' + pool.address
+    uid: 'pool-' + pool.address,
   }));
 
   if (pools.length > 0) {
-    return [{ type: 'POOLS_HEADER', value:convertAmountToNativeDisplay(uniswapTotal, nativeCurrency), uid: 'pools-header' }, ...pools];
+    return [
+      {
+        type: 'POOLS_HEADER',
+        uid: 'pools-header',
+        value: convertAmountToNativeDisplay(uniswapTotal, nativeCurrency),
+      },
+      ...pools,
+    ];
   }
   return [];
 };
@@ -183,9 +190,7 @@ const withBalanceSavingsSection = savings => {
 const withBriefBalanceSavingsSection = savings => {
   let totalUnderlyingNativeValue = '0';
   for (let saving of savings) {
-    const {
-      underlyingBalanceNativeValue,
-    } = saving;
+    const { underlyingBalanceNativeValue } = saving;
     totalUnderlyingNativeValue = add(
       totalUnderlyingNativeValue,
       underlyingBalanceNativeValue || 0
@@ -193,8 +198,16 @@ const withBriefBalanceSavingsSection = savings => {
   }
   const addresses = savings?.map(asset => asset.cToken.address);
   return [
-    { type: 'SAVINGS_HEADER', uid: 'savings-header', value: totalUnderlyingNativeValue },
-    ...addresses.map(address => ({ address, type: 'SAVINGS', uid: 'savings-' + address })),
+    {
+      type: 'SAVINGS_HEADER',
+      uid: 'savings-header',
+      value: totalUnderlyingNativeValue,
+    },
+    ...addresses.map(address => ({
+      address,
+      type: 'SAVINGS',
+      uid: 'savings-' + address,
+    })),
   ];
 };
 
@@ -262,15 +275,6 @@ const withBalanceSection = (
     !collectibles.length
   );
 
-  const briefAssets = buildBriefCoinsList(
-    allAssets,
-    nativeCurrency,
-    isCoinListEdited,
-    pinnedCoins,
-    hiddenCoins,
-    true,
-    !collectibles.length
-  );
   let balanceSectionData = [...assets];
 
   const totalBalanceWithSavingsValue = add(
@@ -326,8 +330,7 @@ const withBriefBalanceSection = (
   savingsSection,
   uniswapTotal
 ) => {
-
-  const {briefAssets, totalBalancesValue} = buildBriefCoinsList(
+  const { briefAssets, totalBalancesValue } = buildBriefCoinsList(
     allAssets,
     nativeCurrency,
     isCoinListEdited,
@@ -336,7 +339,6 @@ const withBriefBalanceSection = (
     true,
     !collectibles.length
   );
-
 
   const totalBalanceWithSavingsValue = add(
     totalBalancesValue,
@@ -356,30 +358,10 @@ const withBriefBalanceSection = (
 
   return [
     headerItem,
-    ...(isLoadingAssets ? [{ type: 'LOADING_ASSETS', uid: 'loadings-asset' }] : briefAssets),
+    ...(isLoadingAssets
+      ? [{ type: 'LOADING_ASSETS', uid: 'loadings-asset' }]
+      : briefAssets),
   ];
-};
-
-const withSmallBalancelValue = (
-  allAssets,
-  isLoadingAssets,
-  nativeCurrency,
-  isCoinListEdited,
-  pinnedCoins,
-  hiddenCoins,
-  collectibles
-) => {
-  const { smallBalancesValue } = buildCoinsList(
-    allAssets,
-    nativeCurrency,
-    isCoinListEdited,
-    pinnedCoins,
-    hiddenCoins,
-    true,
-    !collectibles.length
-  );
-
-  return smallBalancesValue;
 };
 
 let isPreloadComplete = false;
@@ -454,38 +436,6 @@ const withUniqueTokenFamiliesSection = (uniqueTokens, data) => {
   };
 };
 
-const withBriefUniqueTokenFamiliesSection = (uniqueTokens, data) => {
-  // TODO preload elsewhere?
-  if (!isPreloadComplete) {
-    const imagesToPreload = sortImagesToPreload(
-      data.map(buildImagesToPreloadArray)
-    );
-    isPreloadComplete = !!imagesToPreload.length;
-    ImgixImage.preload(imagesToPreload, 200);
-  }
-
-  const result = [{ type: 'NFTS_HEADER', uid: 'nfts-header' }];
-  for (let family of data) {
-    result.push({
-      id: family.familyId,
-      name: family.familyName,
-      uid: 'nfts-header-' + family.familyId,
-      type: 'FAMILY_HEADER',
-      amount: family.tokens,
-      image: family.familyImage
-    });
-    for (let tokens of family.tokens) {
-      result.push({
-        uid: 'nft-' + tokens[0].uniqueId,
-        nfts: tokens.map(token => token.uniqueId),
-        type: 'NFTS_ROW',
-      });
-    }
-  }
-
-  return result;
-};
-
 const uniqueTokenDataSelector = createSelector(
   [uniqueTokensSelector, showcaseTokensSelector],
   buildUniqueTokenList
@@ -501,12 +451,10 @@ const balanceSavingsSectionSelector = createSelector(
   withBalanceSavingsSection
 );
 
-
 const briefBalanceSavingsSectionSelector = createSelector(
   [savingsSelector],
   withBriefBalanceSavingsSection
 );
-
 
 const uniswapSectionSelector = createSelector(
   [
@@ -559,30 +507,9 @@ const briefBalanceSectionSelector = createSelector(
   withBriefBalanceSection
 );
 
-
-export const briefSmallBalanceValueSelector = createSelector(
-  [
-    allAssetsSelector,
-    isLoadingAssetsSelector,
-    nativeCurrencySelector,
-    isCoinListEditedSelector,
-    pinnedCoinsSelector,
-    hiddenCoinsSelector,
-    uniqueTokensSelector,
-    balanceSavingsSectionSelector,
-    uniswapTotalSelector,
-  ],
-  withSmallBalancelValue
-);
-
 const uniqueTokenFamiliesSelector = createSelector(
   [uniqueTokensSelector, uniqueTokenDataSelector],
   withUniqueTokenFamiliesSection
-);
-
-const briefUniqueTokenFamiliesSelector = createSelector(
-  [uniqueTokensSelector, uniqueTokenDataSelector],
-  withBriefUniqueTokenFamiliesSection
 );
 
 export const buildWalletSectionsSelector = createSelector(

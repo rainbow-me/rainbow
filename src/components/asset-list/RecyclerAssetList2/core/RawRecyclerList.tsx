@@ -32,7 +32,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
   const ref = useRef<RecyclerListViewRef>();
   const onLayout = useCallback(
     () => ({ nativeEvent }: LayoutChangeEvent) => {
-      topMarginRef.current = nativeEvent.layout.y
+      topMarginRef.current = nativeEvent.layout.y;
     },
     []
   );
@@ -48,7 +48,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       layoutProvider={layoutProvider}
       onLayout={onLayout}
       ref={ref as LegacyRef<RecyclerListViewRef>}
-      renderAheadOffset={__DEV__ ? 2000 : 800}
+      renderAheadOffset={800}
       rowRenderer={rowRenderer}
     />
   );

@@ -15,7 +15,6 @@ import {
 import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
 import store from '@rainbow-me/redux/store';
 import {
-  ETH_ADDRESS,
   ETH_ICON_URL,
   supportedNativeCurrencies,
 } from '@rainbow-me/references';

@@ -1,26 +1,13 @@
-import {readableUniswapSelector} from "@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector";
-import {useOpenSavings} from "@rainbow-me/hooks";
-import {add, multiply} from "@rainbow-me/utilities";
-import React, { useMemo } from 'react';
-import {assets} from "../../../../react-native.config";
-import useSavingsAccount from "../../../hooks/useSavingsAccount";
-import {UniswapInvestmentRow} from "../../investment-cards";
+import React from 'react';
 import { useSelector } from 'react-redux';
-
-
-
-import SavingsListRow from "../../savings/SavingsListRow";
+import { UniswapInvestmentRow } from '../../investment-cards';
+import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 
 export default function WrappedPoolRow({ address }) {
-  const { savings } = useSavingsAccount(
-    true
+  const { uniswap } = useSelector(readableUniswapSelector);
+  const found = uniswap.find(
+    ({ address: uniswapAddress }) => uniswapAddress === address
   );
 
-  const {uniswap} = useSelector(readableUniswapSelector);
-  const found = uniswap.find(({ address: uniswapAddress }) => uniswapAddress === address)
-
-
-  return (
-    <UniswapInvestmentRow assetType="uniswap" item={found} />
-  )
+  return <UniswapInvestmentRow assetType="uniswap" item={found} />;
 }

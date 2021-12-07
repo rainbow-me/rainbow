@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setOpenFamilyTabs } from '../redux/openStateSettings';
 import {
   addShowcaseToken as rawAddShowcaseToken,
   removeShowcaseToken as rawRemoveShowcaseToken,

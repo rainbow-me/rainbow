@@ -59,6 +59,7 @@ import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
 import { ethereumUtils } from './utils';
+import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
@@ -281,17 +282,19 @@ class App extends Component {
           <Portal>
             <SafeAreaProvider>
               <Provider store={store}>
-                <FlexItem>
-                  {this.state.initialRoute && (
-                    <InitialRouteContext.Provider
-                      value={this.state.initialRoute}
-                    >
-                      <RoutesComponent ref={this.handleNavigatorRef} />
-                      <PortalConsumer />
-                    </InitialRouteContext.Provider>
-                  )}
-                  <OfflineToast />
-                </FlexItem>
+                <SharedValuesProvider>
+                  <FlexItem>
+                    {this.state.initialRoute && (
+                      <InitialRouteContext.Provider
+                        value={this.state.initialRoute}
+                      >
+                        <RoutesComponent ref={this.handleNavigatorRef} />
+                        <PortalConsumer />
+                      </InitialRouteContext.Provider>
+                    )}
+                    <OfflineToast />
+                  </FlexItem>
+                </SharedValuesProvider>
               </Provider>
             </SafeAreaProvider>
           </Portal>

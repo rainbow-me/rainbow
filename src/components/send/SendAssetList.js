@@ -384,7 +384,7 @@ export default class SendAssetList extends React.Component {
     );
   };
 
-  shitcoinsRenderItem = item => {
+  shitcoinsRenderItem = () => {
     const { savings } = this.props;
     const { openShitcoins } = this.state;
     return (

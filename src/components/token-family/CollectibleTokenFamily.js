@@ -1,6 +1,4 @@
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setOpenFamilyTabs } from '../../redux/openStateSettings';
 import { UniqueTokenRow } from '../unique-token';
 import TokenFamilyWrap from './TokenFamilyWrap';
 import { useOpenFamilies } from '@rainbow-me/hooks';

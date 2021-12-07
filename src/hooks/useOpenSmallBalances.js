@@ -21,7 +21,7 @@ export default function useOpenSmallBalances() {
     setIsSmallBalancesOpen(prev => {
       return !prev;
     });
-  }, [isSmallBalancesOpen, setIsSmallBalancesOpen]);
+  }, [isSmallBalancesOpen, setIsSmallBalancesOpen, setStagger]);
 
   return {
     isSmallBalancesOpen,

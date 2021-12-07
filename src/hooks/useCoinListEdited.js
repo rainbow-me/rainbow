@@ -1,13 +1,12 @@
-import { useSelector } from 'react-redux';
+import { atom, useAtom } from 'jotai';
+
+const countAtom = atom(false);
 
 export default function useCoinListEdited() {
-  return useSelector(({ editOptions: { isCoinListEdited } }) => ({
-    isCoinListEdited,
-  }));
-}
+  const [isCoinListEdited, setIsCoinListEdited] = useAtom(countAtom);
 
-export function useCoinListEditedValue() {
-  return useSelector(
-    ({ editOptions: { isCoinListEditedValue } }) => isCoinListEditedValue
-  );
+  return {
+    isCoinListEdited,
+    setIsCoinListEdited,
+  };
 }

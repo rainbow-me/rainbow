@@ -1,22 +1,19 @@
-import {useOpenSavings} from "@rainbow-me/hooks";
-import {add, multiply} from "@rainbow-me/utilities";
 import React, { useMemo } from 'react';
-import {assets} from "../../../../react-native.config";
-import useSavingsAccount from "../../../hooks/useSavingsAccount";
+import useSavingsAccount from '../../../hooks/useSavingsAccount';
 
-
-import SavingsListRow from "../../savings/SavingsListRow";
+import SavingsListRow from '../../savings/SavingsListRow';
+import { multiply } from '@rainbow-me/utilities';
 
 export default function WrappedSavingsRow({ address }) {
-  const { savings } = useSavingsAccount(
-    true
-  );
+  const { savings } = useSavingsAccount(true);
 
   const props = useMemo(() => {
-    const found = savings.find(({ cToken: { address: cTokenAddress } }) => (cTokenAddress === address))
+    const found = savings.find(
+      ({ cToken: { address: cTokenAddress } }) => cTokenAddress === address
+    );
 
     if (!found) {
-      return null
+      return null;
     }
 
     const {
@@ -33,11 +30,7 @@ export default function WrappedSavingsRow({ address }) {
       lifetimeSupplyInterestAccruedNative,
       underlyingBalanceNativeValue,
     };
-  }, [address, savings])
+  }, [address, savings]);
 
-  return (
-    <SavingsListRow
-      {...props}
-    />
-  )
+  return <SavingsListRow {...props} />;
 }

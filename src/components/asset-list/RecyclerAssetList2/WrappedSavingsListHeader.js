@@ -1,8 +1,7 @@
-import {useOpenSavings} from "@rainbow-me/hooks";
-import React, { Fragment } from 'react';
+import React from 'react';
 
-
-import SavingsListHeader from "../../savings/SavingsListHeader";
+import SavingsListHeader from '../../savings/SavingsListHeader';
+import { useOpenSavings } from '@rainbow-me/hooks';
 
 export default function WrappedSavingsListHeader({ value }) {
   const { isSavingsOpen, toggleOpenSavings } = useOpenSavings();
@@ -13,5 +12,5 @@ export default function WrappedSavingsListHeader({ value }) {
       savingsSumValue={value}
       showSumValue
     />
-  )
+  );
 }

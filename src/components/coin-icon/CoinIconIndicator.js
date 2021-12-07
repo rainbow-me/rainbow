@@ -1,9 +1,9 @@
 import React from 'react';
-import Animated from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
-import { useCoinListEditedValue } from '@rainbow-me/hooks/useCoinListEdited';
+import { useIsCoinListEditedSharedValue } from '@rainbow-me/helpers/SharedValuesContext';
 import { borders, shadow } from '@rainbow-me/styles';
 
 const IndicatorIcon = styled(Icon).attrs(({ isPinned, theme: { colors } }) => ({
@@ -33,13 +33,19 @@ const IndicatorIconContainer = styled(Centered)`
 `;
 
 export default function CoinIconIndicator({ isFirstCoinRow, isPinned }) {
-  const isCoinListEditedValue = useCoinListEditedValue();
+  const isCoinListEditedSharedValue = useIsCoinListEditedSharedValue();
+  const style = useAnimatedStyle(
+    () => ({
+      opacity: isCoinListEditedSharedValue.value,
+    }),
+    []
+  );
 
   return (
     <IndicatorIconContainer
       as={Animated.View}
       isFirstCoinRow={isFirstCoinRow}
-      style={{ opacity: isCoinListEditedValue }}
+      style={style}
     >
       <IndicatorIcon isPinned={isPinned} />
     </IndicatorIconContainer>

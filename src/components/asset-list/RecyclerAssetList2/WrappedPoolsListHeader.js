@@ -1,11 +1,9 @@
-import {useOpenInvestmentCards, useOpenSavings} from "@rainbow-me/hooks";
-import React, { Fragment } from 'react';
+import React from 'react';
 
-
-import SavingsListHeader from "../../savings/SavingsListHeader";
+import SavingsListHeader from '../../savings/SavingsListHeader';
+import { useOpenInvestmentCards } from '@rainbow-me/hooks';
 
 export default function WrappedPoolsListHeader({ value }) {
-  const { isSavingsOpen, toggleOpenSavings } = useOpenSavings();
   const {
     isInvestmentCardsOpen,
     toggleOpenInvestmentCards,
@@ -20,5 +18,5 @@ export default function WrappedPoolsListHeader({ value }) {
       showSumValue
       title="Pools"
     />
-  )
+  );
 }

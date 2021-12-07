@@ -47,9 +47,7 @@ const EditButtonWrapper = styled(Row).attrs({
   right: 0;
 `;
 
-const onEndEdit = () => {}; // TODO osdnk
-
-export default function CoinDivider({ balancesSum }) {
+export default function CoinDivider({ balancesSum, isSticky = false }) {
   const { nativeCurrency } = useAccountSettings();
   const dispatch = useDispatch();
   const assets = useSelector(({ data: { assets } }) => assets);
@@ -61,11 +59,10 @@ export default function CoinDivider({ balancesSum }) {
     clearSelectedCoins,
     currentAction,
     setHiddenCoins,
-    setIsCoinListEdited,
     setPinnedCoins,
   } = useCoinListEditOptions();
 
-  const { isCoinListEdited } = useCoinListEdited();
+  const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
 
   const {
     isSmallBalancesOpen,
@@ -87,20 +84,17 @@ export default function CoinDivider({ balancesSum }) {
   ]);
 
   const handlePressEdit = useCallback(() => {
-    if (isCoinListEdited && onEndEdit) {
-      onEndEdit();
-    }
-    setIsCoinListEdited(!isCoinListEdited);
+    setIsCoinListEdited(prev => !prev);
     LayoutAnimation.configureNext(
       LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
     );
-  }, [isCoinListEdited, onEndEdit, setIsCoinListEdited]);
+  }, [setIsCoinListEdited]);
 
   // Clear CoinListEditOptions selection queue on unmount.
   useEffect(() => () => clearSelectedCoins(), [clearSelectedCoins]);
 
   return (
-    <Container deviceWidth={deviceWidth}>
+    <Container deviceWidth={deviceWidth} isSticky={isSticky}>
       <Row>
         <View pointerEvents={isCoinListEdited ? 'none' : 'auto'}>
           <CoinDividerOpenButton

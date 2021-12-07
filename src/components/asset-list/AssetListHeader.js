@@ -1,7 +1,6 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { abbreviations, magicMemo, measureText } from '../../utils';
 import { DividerSize } from '../Divider';
@@ -10,13 +9,12 @@ import { Icon } from '../icons';
 import { Centered, Row } from '../layout';
 import { ListHeader, ListHeaderHeight } from '../list';
 import { H1, TruncatedText } from '../text';
-import { useRecyclerAssetListPosition } from './RecyclerAssetList2';
+import { StickyHeader } from './RecyclerAssetList2/core/StickyHeaders';
 import { useTheme } from '@rainbow-me/context';
 import { useAccountProfile, useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { fonts, position } from '@rainbow-me/styles';
-import {StickyHeader} from "./RecyclerAssetList2/core/StickyHeaders";
 
 export const AssetListHeaderHeight = ListHeaderHeight + DividerSize;
 
@@ -123,7 +121,6 @@ const AssetListHeader = ({
     }
     return accountName;
   }, [accountName, truncated]);
-
 
   return (
     <StickyHeader name={title || 'Balances'}>

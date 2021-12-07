@@ -850,7 +850,7 @@ function RecyclerAssetList({
           },
         ]}
       >
-        <CoinDivider balancesSum={0} isSticky onEndEdit={() => null} />
+        <CoinDivider balancesSum={0} isSticky />
       </View>
     </StyledContainer>
   );

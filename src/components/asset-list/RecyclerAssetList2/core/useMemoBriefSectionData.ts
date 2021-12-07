@@ -46,7 +46,6 @@ export default function useMemoBriefSectionData() {
 
         if (afterDivider && data.type === CellType.COIN) {
           numberOfSmallBalancesAllowed--;
-          console.log("TTTT", stagger, numberOfSmallBalancesAllowed);
           if (numberOfSmallBalancesAllowed <= 0) {
             return false;
           }
