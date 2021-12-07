@@ -15801,6 +15801,10 @@ react-native-markdown-display@7.0.0-alpha.2:
     prop-types "^15.7.2"
     react-native-fit-image "^1.5.5"
 
+react-native-minimizer@brunobar79/react-native-minimizer#26ae6dce10d353de701cebc3a1ae126729bf87f0:
+  version "1.3.5"
+  resolved "https://codeload.github.com/brunobar79/react-native-minimizer/tar.gz/26ae6dce10d353de701cebc3a1ae126729bf87f0"
+
 react-native-mmkv@1.5.2:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/react-native-mmkv/-/react-native-mmkv-1.5.2.tgz#d2b84f22f13d3ed0c2395addbd6ef8f2fe986c35"
