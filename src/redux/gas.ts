@@ -56,7 +56,7 @@ import { fromWei, greaterThanOrEqualTo, multiply } from '@rainbow-me/utilities';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const { CUSTOM, NORMAL, URGENT, GAS_PRICE_SOURCES } = gasUtils;
+const { CUSTOM, NORMAL, URGENT } = gasUtils;
 
 const getGasPricePollingInterval = (network: Network): number => {
   switch (network) {
@@ -333,20 +333,16 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
 
         if (isLegacy) {
           let adjustedGasFees;
-          let source = GAS_PRICE_SOURCES.ETHERSCAN;
           if (network === networkTypes.polygon) {
-            source = GAS_PRICE_SOURCES.POLYGON_GAS_STATION;
             adjustedGasFees = await getPolygonGasPrices();
           } else if (network === networkTypes.arbitrum) {
-            source = GAS_PRICE_SOURCES.ARBITRUM_NODE;
             adjustedGasFees = await getArbitrumGasPrices();
           } else if (network === networkTypes.optimism) {
-            source = GAS_PRICE_SOURCES.OPTIMISM_NODE;
             adjustedGasFees = await getOptimismGasPrices();
           }
           const gasFeeParamsBySpeed = parseLegacyGasPrices(
             adjustedGasFees,
-            source
+            network
           );
           if (existingGasFees[CUSTOM] !== null) {
             // Preserve custom values while updating prices

@@ -28,10 +28,11 @@ import {
   SelectedGasFee,
 } from '@rainbow-me/entities';
 import { toHex } from '@rainbow-me/handlers/web3';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 
 type BigNumberish = number | string | BigNumber;
 
-const { CUSTOM, FAST, NORMAL, URGENT, GasSpeedOrder } = gasUtils;
+const { CUSTOM, FAST, GasSpeedOrder, NORMAL, URGENT } = gasUtils;
 
 /**
  * @desc parse ether gas prices
@@ -193,16 +194,18 @@ const parseGasPricesPolygonGasStation = (data: GasPricesAPIData) => {
 /**
  * @desc parse ether gas prices
  * @param {Object} data
- * @param {String} source
+ * @param {String} network
  */
 export const parseLegacyGasPrices = (
   data: GasPricesAPIData,
-  source = gasUtils.GAS_PRICE_SOURCES.ETHERSCAN
+  network: Network
 ) => {
   if (!data) return getFallbackGasPrices();
-  switch (source) {
-    case gasUtils.GAS_PRICE_SOURCES.POLYGON_GAS_STATION:
+  switch (network) {
+    case Network.polygon:
       return parseGasPricesPolygonGasStation(data);
+    case Network.arbitrum:
+    case Network.optimism:
     default:
       return parseL2GasPrices(data);
   }
