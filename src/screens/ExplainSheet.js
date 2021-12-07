@@ -1,6 +1,5 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import { useRoute } from '@react-navigation/native';
-import { startCase } from 'lodash';
 import React, { useCallback } from 'react';
 import { Linking, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -104,7 +103,7 @@ export const explainers = network => ({
     emoji: '⛽️',
     extraHeight: 2,
     text: gasExplainer(network),
-    title: `${startCase(network)} network fee`,
+    title: `${network} network fee`,
   },
   currentBaseFeeStable: {
     emoji: '🌞',
