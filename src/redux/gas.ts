@@ -32,7 +32,7 @@ import {
   isHardHat,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
-import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasParamsFormat,
   getFallbackGasPrices,
@@ -60,9 +60,9 @@ const { CUSTOM, NORMAL, URGENT } = gasUtils;
 
 const getGasPricePollingInterval = (network: Network): number => {
   switch (network) {
-    case networkTypes.polygon:
+    case Network.polygon:
       return 2000;
-    case networkTypes.arbitrum:
+    case Network.arbitrum:
       return 3000;
     default:
       return 5000;
@@ -100,13 +100,13 @@ const GAS_UPDATE_TRANSACTION_NETWORK = 'gas/GAS_UPDATE_TRANSACTION_NETWORK';
 const getNetworkNativeAsset = (assets: any[], network: Network) => {
   let nativeAssetAddress;
   switch (network) {
-    case networkTypes.polygon:
+    case Network.polygon:
       nativeAssetAddress = MATIC_POLYGON_ADDRESS;
       break;
-    case networkTypes.arbitrum:
+    case Network.arbitrum:
       nativeAssetAddress = ARBITRUM_ETH_ADDRESS;
       break;
-    case networkTypes.optimism:
+    case Network.optimism:
       nativeAssetAddress = OPTIMISM_ETH_ADDRESS;
       break;
     default:
@@ -199,8 +199,9 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
   const _gasLimit = gasLimit || defaultGasLimit;
+
   const nativeTokenPriceUnit =
-    txNetwork !== networkTypes.polygon
+    txNetwork !== Network.polygon
       ? ethereumUtils.getEthPriceUnit()
       : ethereumUtils.getMaticPriceUnit();
 
@@ -240,7 +241,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   });
 };
 
-export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
+export const gasPricesStartPolling = (network = Network.mainnet) => async (
   dispatch: AppDispatch,
   getState: AppGetState
 ) => {
@@ -265,7 +266,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   };
 
   const getArbitrumGasPrices = async () => {
-    const provider = await getProviderForNetwork(networkTypes.arbitrum);
+    const provider = await getProviderForNetwork(Network.arbitrum);
     const baseGasPrice = await provider.getGasPrice();
     const baseGasPriceGwei = weiToGwei(baseGasPrice.toString());
 
@@ -287,7 +288,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   };
 
   const getOptimismGasPrices = async () => {
-    const provider = await getProviderForNetwork(networkTypes.optimism);
+    const provider = await getProviderForNetwork(Network.optimism);
     const baseGasPrice = await provider.getGasPrice();
     const gasPriceGwei = Number(weiToGwei(baseGasPrice.toString()));
 
@@ -333,11 +334,11 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
 
         if (isLegacy) {
           let adjustedGasFees;
-          if (network === networkTypes.polygon) {
+          if (network === Network.polygon) {
             adjustedGasFees = await getPolygonGasPrices();
-          } else if (network === networkTypes.arbitrum) {
+          } else if (network === Network.arbitrum) {
             adjustedGasFees = await getArbitrumGasPrices();
-          } else if (network === networkTypes.optimism) {
+          } else if (network === Network.optimism) {
             adjustedGasFees = await getOptimismGasPrices();
           }
           const gasFeeParamsBySpeed = parseLegacyGasPrices(
@@ -367,7 +368,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
             // Set a really gas estimate to guarantee that we're gonna be over
             // the basefee at the time we fork mainnet during our hardhat tests
             let baseFee = baseFeePerGas;
-            if (network === networkTypes.mainnet && IS_TESTING === 'true') {
+            if (network === Network.mainnet && IS_TESTING === 'true') {
               const providerUrl = (
                 web3Provider ||
                 ({} as {
@@ -491,13 +492,13 @@ export const gasUpdateTxFee = (
   const _selectedGasFeeOption =
     overrideGasOption || selectedGasFee.option || NORMAL;
   const nativeTokenPriceUnit =
-    txNetwork !== networkTypes.polygon
+    txNetwork !== Network.polygon
       ? ethereumUtils.getEthPriceUnit()
       : ethereumUtils.getMaticPriceUnit();
 
   if (
     isEmpty(gasFeeParamsBySpeed) ||
-    (txNetwork === networkTypes.optimism && l1GasFeeOptimism === null)
+    (txNetwork === Network.optimism && l1GasFeeOptimism === null)
   )
     return;
 
