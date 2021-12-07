@@ -3,7 +3,8 @@ import React, { Fragment } from 'react';
 import { OpacityToggler } from '../animations';
 import { UniswapInvestmentRow } from '../investment-cards';
 import SavingsListHeader from '../savings/SavingsListHeader';
-import { useOpenInvestmentCards } from '@rainbow-me/hooks';
+import { isTestnetNetwork } from '@rainbow-me/handlers/web3';
+import { useAccountSettings, useOpenInvestmentCards } from '@rainbow-me/hooks';
 
 const renderInvestmentsListRow = item => (
   <UniswapInvestmentRow assetType="uniswap" item={item} key={item.uniqueId} />
@@ -19,9 +20,9 @@ export default function PoolsListWrapper({
     toggleOpenInvestmentCards,
   } = useOpenInvestmentCards();
 
-  if (isCoinListEdited) {
-    return null;
-  }
+  const { network } = useAccountSettings();
+
+  if (isCoinListEdited || isTestnetNetwork(network)) return null;
   return (
     <Fragment>
       <SavingsListHeader
