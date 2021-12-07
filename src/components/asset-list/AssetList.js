@@ -34,7 +34,9 @@ const AssetList = ({
     <RecyclerAssetList
       fetchData={fetchData}
       hideHeader={hideHeader}
-      paddingBottom={insets.bottom + FabSizeWithPadding - ListFooter.height}
+      paddingBottom={
+        insets.bottom + FabSizeWithPadding - ListFooter.height + (android && 60)
+      }
       scrollViewTracker={scrollViewTracker}
       sections={sections}
       {...props}

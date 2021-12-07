@@ -26,7 +26,13 @@ const DefaultShowMoreButton = ({ backgroundColor, color, onPress }) => (
         paddingHorizontal={12}
         paddingTop={android ? 3 : 7}
       >
-        <Text align="center" color={color} size="lmedium" weight="heavy">
+        <Text
+          align="center"
+          color={color}
+          lineHeight={30}
+          size="lmedium"
+          weight="heavy"
+        >
           Show more
         </Text>
       </Row>

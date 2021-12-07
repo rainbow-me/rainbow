@@ -7,7 +7,7 @@ import { ImgixImage } from '@rainbow-me/images';
 import { borders } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
-const shadowsFactory = colors => [[0, 3, 9, colors.shadow, 0.1]];
+const shadowsFactory = colors => [[0, 3, android ? 5 : 9, colors.shadow, 0.1]];
 
 const TrophyEmoji = styled(Emoji).attrs({
   align: 'center',
