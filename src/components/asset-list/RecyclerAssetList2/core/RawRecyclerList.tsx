@@ -48,7 +48,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       layoutProvider={layoutProvider}
       onLayout={onLayout}
       ref={ref as LegacyRef<RecyclerListViewRef>}
-      renderAheadOffset={2000}
+      renderAheadOffset={__DEV__ ? 2000 : 800}
       rowRenderer={rowRenderer}
     />
   );
