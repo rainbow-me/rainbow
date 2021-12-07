@@ -1,4 +1,4 @@
-const PRIORITY_FEE_INCREMENT = 0.5;
+const PRIORITY_FEE_INCREMENT = 1;
 const PRIORITY_FEE_THRESHOLD = 0.15;
 
 export const getTrendKey = (trend: number) => {

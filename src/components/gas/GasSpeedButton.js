@@ -12,6 +12,7 @@ import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { add, toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useColorForAsset,
@@ -68,7 +69,7 @@ const ChainBadgeContainer = styled.View.attrs({
 `;
 
 const NativeCoinIconWrapper = styled(Column)`
-  ${margin(0, 5, 0, 0)};
+  ${margin(1.5, 5, 0, 0)};
 `;
 
 const Container = styled(Column).attrs({
@@ -218,20 +219,19 @@ const GasSpeedButton = ({
           letterSpacing="roundedTight"
           lineHeight="normal"
           size="lmedium"
-          weight="bold"
+          weight="heavy"
         >
           {priceText}
         </Text>
       );
     },
-    [colors, theme]
+    [theme, colors]
   );
 
   const handlePressSpeedOption = useCallback(
     selectedSpeed => {
       if (selectedSpeed === CUSTOM) {
         openCustomGasSheet();
-        Keyboard.dismiss();
         if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
           const gasFeeParams = gasFeeParamsBySpeed[URGENT];
           updateToCustomGasFee({
@@ -323,19 +323,30 @@ const GasSpeedButton = ({
   }, [currentNetwork, speeds]);
 
   const menuConfig = useMemo(() => {
-    const menuOptions = speedOptions.map(gasOption => ({
-      actionKey: gasOption,
-      actionTitle: upperFirst(gasOption),
-      icon: {
-        iconType: 'ASSET',
-        iconValue: GAS_ICONS[gasOption],
-      },
-    }));
+    const menuOptions = speedOptions.map(gasOption => {
+      const totalGwei = add(
+        gasFeeParamsBySpeed[gasOption]?.maxFeePerGas?.gwei,
+        gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
+      );
+      const gweiDisplay =
+        currentNetwork === networkTypes.polygon
+          ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
+          : `${toFixedDecimals(totalGwei, 0)} Gwei`;
+      return {
+        actionKey: gasOption,
+        actionTitle: upperFirst(gasOption),
+        discoverabilityTitle: gweiDisplay,
+        icon: {
+          iconType: 'ASSET',
+          iconValue: GAS_ICONS[gasOption],
+        },
+      };
+    });
     return {
       menuItems: menuOptions,
-      menuTitle: `Transaction Speed`,
+      menuTitle: '',
     };
-  }, [speedOptions]);
+  }, [currentNetwork, gasFeeParamsBySpeed, speedOptions]);
 
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
     speedOptions,
@@ -362,7 +373,7 @@ const GasSpeedButton = ({
         cancelButtonIndex: androidContractActions.length,
         options: androidContractActions,
         showSeparators: true,
-        title: `Transaction Speed`,
+        title: '',
       },
       buttonIndex => {
         handlePressSpeedOption(lowerCase(androidContractActions[buttonIndex]));
@@ -460,6 +471,7 @@ const GasSpeedButton = ({
       <Row justify="space-between">
         <ButtonPressAnimation
           onPress={openGasHelper}
+          scaleTo={0.9}
           testID="estimated-fee-label"
         >
           <Row>
@@ -495,15 +507,17 @@ const GasSpeedButton = ({
                   : colors.alpha(colors.blueGreyDark, 0.6)
               }
               size="smedium"
+              weight="bold"
             >
-              Estimated Fee{' '}
+              Estimated fee{' '}
               <Label
                 color={
                   theme === 'dark'
-                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
-                    : colors.alpha(colors.blueGreyDark, 0.4)
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.25)
+                    : colors.alpha(colors.blueGreyDark, 0.25)
                 }
                 size="smedium"
+                weight="bold"
               >
                 􀅵
               </Label>
@@ -538,8 +552,8 @@ const GasSpeedButton = ({
               <CustomGasButton
                 borderColor={
                   theme === 'dark'
-                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
-                    : colors.alpha(colors.blueGreyDark, 0.8)
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.15)
+                    : colors.alpha(colors.blueGreyDark, 0.15)
                 }
                 onPress={openCustomOptions}
                 testID="gas-speed-custom"

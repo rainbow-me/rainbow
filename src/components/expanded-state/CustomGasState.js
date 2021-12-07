@@ -21,7 +21,7 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { colors, margin } from '@rainbow-me/styles';
+import { margin } from '@rainbow-me/styles';
 
 const springConfig = {
   damping: 500,
@@ -41,17 +41,18 @@ function useAndroidDisableGesturesOnFocus() {
 }
 
 const FeesPanelWrapper = styled(Column)`
-  ${margin(16, 19, 29, 24)}
+  ${margin(18, 19, 29, 24)}
 `;
 
 const FeesPanelTabswrapper = styled(Column)`
-  ${margin(16, 0, 29, 0)}
+  ${margin(19, 0, 24, 0)}
 `;
 
 export default function CustomGasState({ asset }) {
   const { network } = useAccountSettings();
   const { setParams } = useNavigation();
   const { params: { longFormHeight, speeds } = {} } = useRoute();
+  const { colors } = useTheme();
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
   const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
@@ -106,7 +107,7 @@ export default function CustomGasState({ asset }) {
   return (
     <SlackSheet
       additionalTopPadding
-      backgroundColor={colors.black}
+      backgroundColor={colors.shadowBlack}
       borderBottomRadius={0}
       contentHeight={longFormHeight}
       deviceHeight={deviceHeight}
@@ -126,7 +127,7 @@ export default function CustomGasState({ asset }) {
             selectedGasFee={selectedGasFee}
           />
         </FeesPanelWrapper>
-        <Divider inset={[0, 24, 0, 24]} />
+        <Divider color={colors.rowDividerExtraLight} inset={[0, 24, 0, 24]} />
         <FeesPanelTabswrapper>
           <FeesPanelTabs
             colorForAsset={colorForAsset}

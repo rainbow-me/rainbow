@@ -28,6 +28,7 @@ export default function Pill({ children, ...props }) {
         letterSpacing="uppercase"
         size="smedium"
         weight="semibold"
+        {...props}
       >
         {children}
       </TruncatedText>

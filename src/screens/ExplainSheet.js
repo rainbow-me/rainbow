@@ -206,7 +206,7 @@ export const explainers = {
 };
 
 const ExplainSheet = () => {
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
+  const { height: deviceHeight } = useDimensions();
   const insets = useSafeArea();
   const { params: { type = 'gas', onClose } = {}, params = {} } = useRoute();
   const { colors } = useTheme();
@@ -300,7 +300,6 @@ const ExplainSheet = () => {
             {explainers[type].readMoreLink && (
               <Column height={60}>
                 <SheetActionButton
-                  androidWidth={deviceWidth - 38}
                   color={colors.blueGreyDarkLight}
                   isTransparent
                   label="Read More"
@@ -312,7 +311,6 @@ const ExplainSheet = () => {
               </Column>
             )}
             <SheetActionButton
-              androidWidth={deviceWidth - 38}
               color={colors.alpha(colors.appleBlue, 0.04)}
               isTransparent
               label="Got it"
