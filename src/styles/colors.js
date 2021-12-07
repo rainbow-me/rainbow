@@ -2,8 +2,11 @@ import chroma from 'chroma-js';
 import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import currentColors from '../context/currentColors';
+import { memoFn } from '../utils/memoFn';
 
-const buildRgba = (color, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`;
+const buildRgba = memoFn(
+  (color, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`
+);
 
 const darkModeColors = {
   appleBlue: '#0E76FD',
@@ -42,8 +45,10 @@ const darkModeColors = {
   whiteLabel: '#FFFFFF',
 };
 
-const isHex = (color = '') => color.length >= 3 && color.charAt(0) === '#';
-const isRGB = (color = '') => toLower(color).substring(0, 3) === 'rgb';
+const isHex = memoFn(
+  (color = '') => color.length >= 3 && color.charAt(0) === '#'
+);
+const isRGB = memoFn((color = '') => toLower(color).substring(0, 3) === 'rgb');
 
 const avatarBackgrounds = [
   '#FC5C54',
@@ -205,8 +210,9 @@ const getColorsByTheme = darkMode => {
     walletconnect: '#4099FF', // '64, 153, 255'
   };
 
-  const isColorLight = targetColor =>
-    chroma(targetColor || base.white).luminance() > 0.5;
+  const isColorLight = memoFn(
+    targetColor => chroma(targetColor || base.white).luminance() > 0.5
+  );
 
   const getTextColorForBackground = (targetColor, textColors = {}) => {
     const { dark = base.black, light = base.white } = textColors;
@@ -220,15 +226,16 @@ const getColorsByTheme = darkMode => {
       light: colors.whiteLabel,
     });
 
-  const isColorDark = targetColor => {
+  const isColorDark = memoFn(targetColor => {
     return (
       chroma.contrast(targetColor, darkModeColors.white) < 1.5 ||
       chroma(targetColor || base.white).luminance() < 0.11
     );
-  };
+  });
 
-  const brighten = targetColor =>
-    chroma(targetColor).brighten(2).saturate(0.3).hex();
+  const brighten = memoFn(targetColor =>
+    chroma(targetColor).brighten(2).saturate(0.3).hex()
+  );
 
   const transparent = {
     appleBlueTransparent: buildRgba(base.appleBlue, 0.2), // '50, 50, 93'
