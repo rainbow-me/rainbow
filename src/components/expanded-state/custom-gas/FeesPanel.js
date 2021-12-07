@@ -109,6 +109,8 @@ const ALERT_TITLE_LOWER_MAX_BASE_FEE_NEEDED = 'High max base fee!';
 const ALERT_TITLE_LOWER_MINER_TIP_NEEDED = 'High miner tip!';
 
 export default function FeesPanel({
+  asset,
+  speeds,
   currentGasTrend,
   colorForAsset,
   onCustomGasFocus,
@@ -534,8 +536,8 @@ export default function FeesPanel({
         {
           onPress: () => {
             navigate(Routes.CUSTOM_GAS_SHEET, {
-              asset: {},
-              speeds: gasUtils.GasSpeedOrder,
+              asset,
+              speeds: speeds ?? gasUtils.GasSpeedOrder,
               type: 'custom_gas',
             });
             maxBaseFeeInputRef?.current?.focus();
@@ -553,7 +555,7 @@ export default function FeesPanel({
           ? ALERT_TITLE_HIGHER_MAX_BASE_FEE_NEEDED
           : ALERT_TITLE_LOWER_MAX_BASE_FEE_NEEDED,
     });
-  }, [maxBaseFeeWarning, navigate, setCanGoBack]);
+  }, [asset, maxBaseFeeWarning, navigate, setCanGoBack, speeds]);
 
   const alertMaxPriority = useCallback(() => {
     Alert({
@@ -568,8 +570,8 @@ export default function FeesPanel({
         {
           onPress: () => {
             navigate(Routes.CUSTOM_GAS_SHEET, {
-              asset: {},
-              speeds: gasUtils.GasSpeedOrder,
+              asset,
+              speeds: speeds ?? gasUtils.GasSpeedOrder,
               type: 'custom_gas',
             });
             minerTipInputRef?.current?.focus();
@@ -587,11 +589,12 @@ export default function FeesPanel({
           ? ALERT_TITLE_HIGHER_MINER_TIP_NEEDED
           : ALERT_TITLE_LOWER_MINER_TIP_NEEDED,
     });
-  }, [maxPriorityFeeWarning, navigate, setCanGoBack]);
+  }, [asset, maxPriorityFeeWarning, navigate, setCanGoBack, speeds]);
 
   validateGasParams.current = () => validateParams();
 
   const validateParams = useCallback(() => {
+    if (userProcededOnWarnings) return;
     const maxBaseValidated = !maxBaseFeeError && !maxBaseFeeWarning;
     const maxPriorityValidated = !maxPriorityFeeError && !maxPriorityFeeWarning;
     if (!maxBaseValidated) {
@@ -606,6 +609,7 @@ export default function FeesPanel({
     maxBaseFeeWarning,
     maxPriorityFeeError,
     maxPriorityFeeWarning,
+    userProcededOnWarnings,
   ]);
 
   useEffect(() => {

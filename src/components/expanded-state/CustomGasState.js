@@ -123,12 +123,14 @@ export default function CustomGasState({ asset }) {
         <ExchangeHeader />
         <FeesPanelWrapper>
           <FeesPanel
+            asset={asset}
             colorForAsset={colorForAsset}
             currentGasTrend={currentGasTrend}
             onCustomGasBlur={hideKeyboard}
             onCustomGasFocus={showKeyboard}
             selectedGasFee={selectedGasFee}
             setCanGoBack={setCanGoBack}
+            speeds={speeds}
             validateGasParams={validateGasParams}
           />
         </FeesPanelWrapper>
