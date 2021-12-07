@@ -1,4 +1,3 @@
-import { JsonRpcProvider } from '@ethersproject/providers';
 import { debounce, isEmpty } from 'lodash';
 import { ThunkDispatch } from 'redux-thunk';
 import { web3Provider } from '@rainbow-me/handlers/web3';
@@ -27,17 +26,15 @@ const debouncedUpdateMulticallListeners = debounce(blockNumber => {
   store.dispatch(updateMulticall(blockNumber));
 }, 1000);
 
-let typedWeb3Provider = web3Provider as JsonRpcProvider | null;
-
 export const web3ListenerInit = (): void => {
-  if (!typedWeb3Provider) {
+  if (!web3Provider) {
     return;
   }
 
-  typedWeb3Provider.pollingInterval = 10000;
-  typedWeb3Provider.on('block', debouncedUpdateMulticallListeners);
+  web3Provider.pollingInterval = 10000;
+  web3Provider.on('block', debouncedUpdateMulticallListeners);
 };
 
 export const web3ListenerStop = (): void => {
-  typedWeb3Provider?.removeAllListeners('block');
+  web3Provider?.removeAllListeners('block');
 };
