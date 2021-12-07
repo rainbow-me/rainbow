@@ -528,6 +528,7 @@ export default function FeesPanel({
   }, [gasFeeParamsBySpeed, maxPriorityFee]);
 
   const alertMaxBaseFee = useCallback(() => {
+    const highAlert = maxBaseFeeWarning === HIGHER_THAN_NECESSARY;
     Alert({
       buttons: [
         {
@@ -550,18 +551,17 @@ export default function FeesPanel({
           text: 'Edit Max Base Fee',
         },
       ],
-      message:
-        maxBaseFeeWarning === LOWER_THAN_SUGGESTED
-          ? ALERT_MESSAGE_HIGHER_MAX_BASE_FEE_NEEDED
-          : ALERT_MESSAGE_LOWER,
-      title:
-        maxBaseFeeWarning === LOWER_THAN_SUGGESTED
-          ? ALERT_TITLE_HIGHER_MAX_BASE_FEE_NEEDED
-          : ALERT_TITLE_LOWER_MAX_BASE_FEE_NEEDED,
+      message: highAlert
+        ? ALERT_MESSAGE_LOWER
+        : ALERT_MESSAGE_HIGHER_MAX_BASE_FEE_NEEDED,
+      title: highAlert
+        ? ALERT_TITLE_LOWER_MAX_BASE_FEE_NEEDED
+        : ALERT_TITLE_HIGHER_MAX_BASE_FEE_NEEDED,
     });
   }, [asset, maxBaseFeeWarning, navigate, setCanGoBack, speeds]);
 
   const alertMaxPriority = useCallback(() => {
+    const highAlert = maxPriorityFeeWarning === HIGHER_THAN_NECESSARY;
     Alert({
       buttons: [
         {
@@ -584,14 +584,12 @@ export default function FeesPanel({
           text: 'Edit Miner Tip',
         },
       ],
-      message:
-        maxPriorityFeeWarning === LOWER_THAN_SUGGESTED
-          ? ALERT_MESSAGE_HIGHER_MINER_TIP_NEEDED
-          : ALERT_MESSAGE_LOWER,
-      title:
-        maxPriorityFeeWarning === LOWER_THAN_SUGGESTED
-          ? ALERT_TITLE_HIGHER_MINER_TIP_NEEDED
-          : ALERT_TITLE_LOWER_MINER_TIP_NEEDED,
+      message: highAlert
+        ? ALERT_MESSAGE_LOWER
+        : ALERT_MESSAGE_HIGHER_MINER_TIP_NEEDED,
+      title: highAlert
+        ? ALERT_TITLE_LOWER_MINER_TIP_NEEDED
+        : ALERT_TITLE_HIGHER_MINER_TIP_NEEDED,
     });
   }, [asset, maxPriorityFeeWarning, navigate, setCanGoBack, speeds]);
 
