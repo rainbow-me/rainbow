@@ -12,7 +12,12 @@ const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';
 const DELAY_THRESHOLD = 69;
 
-const Wrapper = styled(Row).attrs(() => ({}))``;
+const Wrapper = styled(Row)``;
+
+const StepButtonWrapper = styled(ButtonPressAnimation).attrs(() => ({
+  marginHorizontal: -3,
+  paddingHorizontal: 3,
+}))``;
 
 const StepButton = styled(Text).attrs(({ theme: { colors }, color }) => ({
   color: color || colors.appleBlue,
@@ -30,7 +35,7 @@ const GweiStepButton = ({
   buttonColor,
 }) => {
   return (
-    <ButtonPressAnimation
+    <StepButtonWrapper
       onLongPress={onLongPress}
       onLongPressEnded={onLongPressEnded}
       onPressStart={onPress}
@@ -38,7 +43,7 @@ const GweiStepButton = ({
       useLateHaptic={false}
     >
       <StepButton color={buttonColor}>{type === 'plus' ? '􀁍' : '􀁏'}</StepButton>
-    </ButtonPressAnimation>
+    </StepButtonWrapper>
   );
 };
 
@@ -53,7 +58,6 @@ export default function FeesGweiInput({
   testID,
 }) {
   const inputRef = useRef(null);
-
   const longPressHandle = useRef(null);
   const [trigger, setTrigger] = useState(false);
   const [actionType, setActionType] = useState(null);

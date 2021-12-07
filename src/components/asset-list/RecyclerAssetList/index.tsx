@@ -232,7 +232,6 @@ const NoStickyContainer = ({
 export type RecyclerAssetListProps = {
   readonly isCoinListEdited: boolean;
   readonly fetchData: () => Promise<unknown>;
-  readonly setIsBlockingUpdate: (isBlockingUpdate: boolean) => void;
   // TODO: This needs to be migrated into a global type.
   readonly colors: {
     readonly alpha: (color: string, alpha: number) => string;
@@ -240,7 +239,6 @@ export type RecyclerAssetListProps = {
   };
   readonly sections: readonly RecyclerAssetListSection[];
   readonly paddingBottom?: number;
-  readonly isBlockingUpdate: boolean;
   readonly hideHeader: boolean;
   readonly renderAheadOffset?: number;
   readonly openInvestmentCards: boolean;
@@ -268,7 +266,6 @@ function RecyclerAssetList({
   paddingBottom = 0,
   hideHeader,
   renderAheadOffset = deviceUtils.dimensions.height,
-  setIsBlockingUpdate,
   showcase,
   disableStickyHeaders,
   disableAutoScrolling,
@@ -383,15 +380,13 @@ function RecyclerAssetList({
     }
     try {
       setIsRefreshing(true);
-      setIsBlockingUpdate(true);
       await fetchData();
     } catch (e) {
       logger.error(e);
     } finally {
-      setTimeout(() => setIsBlockingUpdate(false), 200);
       setIsRefreshing(false);
     }
-  }, [isRefreshing, fetchData, setIsBlockingUpdate]);
+  }, [isRefreshing, setIsRefreshing, fetchData]);
   const onLayout = useCallback(
     ({ nativeEvent }: LayoutChangeEvent) => {
       // set globalDeviceDimensions
@@ -877,8 +872,4 @@ export default connect(
     openSavings,
     openSmallBalances,
   })
-)(
-  withThemeContext(
-    React.memo(RecyclerAssetList, (_, curr) => curr.isBlockingUpdate)
-  )
-);
+)(withThemeContext(RecyclerAssetList));

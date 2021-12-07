@@ -1,3 +1,4 @@
+import analytics from '@segment/analytics-react-native';
 import produce from 'immer';
 import { concat, difference, filter, union, uniq, without } from 'lodash';
 import { Value } from 'react-native-reanimated';
@@ -25,6 +26,7 @@ export const coinListLoadState = () => async (dispatch, getState) => {
     const { accountAddress, network } = getState().settings;
     const hiddenCoins = await getHiddenCoins(accountAddress, network);
     const pinnedCoins = await getPinnedCoins(accountAddress, network);
+    analytics.identify(null, { hiddenCoins, pinnedCoins });
 
     dispatch({
       payload: {
@@ -125,8 +127,12 @@ export const setPinnedCoins = () => (dispatch, getState) => {
   } else if (currentAction === EditOptions.unpin) {
     updatedPinnedCoins = without(pinnedCoins, ...selectedCoins);
   }
-  savePinnedCoins(updatedPinnedCoins, accountAddress, network);
 
+  analytics.identify(null, {
+    hiddenCoins: updatedHiddenCoins,
+    pinnedCoins: updatedPinnedCoins,
+  });
+  savePinnedCoins(updatedPinnedCoins, accountAddress, network);
   dispatch({
     payload: {
       currentAction: EditOptions.none,
@@ -158,6 +164,10 @@ export const addCoinsToHiddenList = additionalCoinsToHide => (
     return;
   }
 
+  analytics.identify(null, {
+    hiddenCoins: updatedHiddenCoins,
+    pinnedCoins: updatedPinnedCoins,
+  });
   saveHiddenCoins(updatedHiddenCoins, accountAddress, network);
   dispatch({
     payload: {
@@ -193,6 +203,10 @@ export const setHiddenCoins = () => (dispatch, getState) => {
     updatedHiddenCoins = without(hiddenCoins, ...selectedCoins);
   }
 
+  analytics.identify(null, {
+    hiddenCoins: updatedHiddenCoins,
+    pinnedCoins: updatedPinnedCoins,
+  });
   saveHiddenCoins(updatedHiddenCoins, accountAddress, network);
   dispatch({
     payload: {
