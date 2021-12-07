@@ -115,9 +115,8 @@ const AmountButtonWrapper = styled(Row).attrs({
   ${android ? 'width: 100' : ''};
 `;
 
-const onAddFromFaucet = network => {
-  const faucetUrl = get(networkInfo[network], 'faucet_url');
-  Linking.openURL(faucetUrl);
+const onAddFromFaucet = () => {
+  Linking.openURL('https://faucet.paradigm.xyz');
 };
 
 const InnerBPA = android ? ButtonPressAnimation : ({ children }) => children;
