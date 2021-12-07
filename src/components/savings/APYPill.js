@@ -12,7 +12,7 @@ import { position } from '@rainbow-me/styles';
 const sx = StyleSheet.create({
   container: {
     height: 30,
-    paddingBottom: 1,
+    paddingBottom: 0.5,
     paddingHorizontal: 10,
   },
   containerSmall: {

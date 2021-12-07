@@ -33,7 +33,8 @@ export default async function handleDeeplink(url) {
       }
       default: {
         const addressOrENS = urlObj.pathname?.split('/')?.[1] || '';
-        if (checkIsValidAddressOrDomain(addressOrENS)) {
+        const isValid = await checkIsValidAddressOrDomain(addressOrENS);
+        if (isValid) {
           return Navigation.handleAction(Routes.SHOWCASE_SHEET, {
             address: addressOrENS,
           });

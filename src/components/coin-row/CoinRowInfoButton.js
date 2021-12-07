@@ -52,7 +52,7 @@ const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
   weight: 'bold',
 }))`
   height: 100%;
-  line-height: 29px;
+  line-height: 30px;
   width: 100%;
   ${fontWithWidth(fonts.weight.bold)};
 `;

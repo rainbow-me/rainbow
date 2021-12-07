@@ -5,19 +5,19 @@ import { ethereumUtils } from '@rainbow-me/utils';
 export default function useMaxInputBalance() {
   const [maxInputBalance, setMaxInputBalance] = useState(0);
 
-  const { selectedGasPrice } = useGas();
+  const { selectedGasFee } = useGas();
 
   const updateMaxInputBalance = useCallback(
     inputCurrency => {
       // Update current balance
       const newInputBalance = ethereumUtils.getBalanceAmount(
-        selectedGasPrice,
+        selectedGasFee,
         inputCurrency
       );
       setMaxInputBalance(newInputBalance);
       return newInputBalance;
     },
-    [selectedGasPrice]
+    [selectedGasFee]
   );
 
   return {

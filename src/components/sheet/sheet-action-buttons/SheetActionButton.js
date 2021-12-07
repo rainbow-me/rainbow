@@ -25,7 +25,7 @@ const Content = styled(RowWithMargins).attrs({
   margin: 4,
 })`
   height: ${({ size }) => (size === 'big' ? 56 : 46)};
-  padding-bottom: ${({ label }) => (label && containsEmoji(label) ? 5.5 : 3)};
+  padding-bottom: ${({ label }) => (label && containsEmoji(label) ? 4 : 2)};
   padding-horizontal: 19;
   z-index: 1;
 `;
