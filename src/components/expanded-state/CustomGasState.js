@@ -1,5 +1,5 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
@@ -62,6 +62,9 @@ export default function CustomGasState({ asset }) {
   const contentScroll = useSharedValue(0);
   const colorForAsset = useColorForAsset(asset || {}, null, false, true);
   const { selectedGasFee, currentBlockParams } = useGas();
+  const [canGoBack, setCanGoBack] = useState(true);
+
+  const validateGasParams = useRef(null);
   useAndroidDisableGesturesOnFocus();
 
   const keyboardOffset = keyboardHeight + insets.bottom + 10;
@@ -125,6 +128,8 @@ export default function CustomGasState({ asset }) {
             onCustomGasBlur={hideKeyboard}
             onCustomGasFocus={showKeyboard}
             selectedGasFee={selectedGasFee}
+            setCanGoBack={setCanGoBack}
+            validateGasParams={validateGasParams}
           />
         </FeesPanelWrapper>
         <Divider color={colors.rowDividerExtraLight} inset={[0, 24, 0, 24]} />
@@ -139,10 +144,12 @@ export default function CustomGasState({ asset }) {
       <Column onLayout={setFooterHeight}>
         <GasSpeedButton
           asset={asset}
+          canGoBack={canGoBack}
           currentNetwork={network}
           showGasOptions
           testID="swap-details-gas"
           theme="dark"
+          validateGasParams={validateGasParams}
         />
       </Column>
     </SlackSheet>

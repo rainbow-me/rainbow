@@ -118,6 +118,8 @@ const GasSpeedButton = ({
   showGasOptions = false,
   testID,
   theme = 'dark',
+  canGoBack = true,
+  validateGasParams,
 }) => {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
@@ -349,8 +351,12 @@ const GasSpeedButton = ({
   }, [currentNetwork]);
 
   const onDonePress = useCallback(() => {
-    goBack();
-  }, [goBack]);
+    if (canGoBack) {
+      goBack();
+    } else {
+      validateGasParams?.current?.();
+    }
+  }, [canGoBack, goBack, validateGasParams]);
 
   const onPressAndroid = useCallback(() => {
     if (gasIsNotReady) return;
