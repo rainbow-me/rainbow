@@ -543,6 +543,7 @@ const GasSpeedButton = ({
               <CustomGasButton
                 borderColor={colorForAsset}
                 onPress={onDonePress}
+                testID="gas-speed-done-button"
               >
                 <DoneCustomGas
                   color={

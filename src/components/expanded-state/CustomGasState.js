@@ -120,7 +120,7 @@ export default function CustomGasState({ asset }) {
       scrollEnabled={false}
     >
       <FloatingPanel onLayout={setContentHeight} radius={android ? 30 : 39}>
-        <ExchangeHeader />
+        <ExchangeHeader testID="custom-gas" />
         <FeesPanelWrapper>
           <FeesPanel
             asset={asset}

@@ -100,7 +100,7 @@ const ALERT_MESSAGE_HIGHER_MINER_TIP_NEEDED =
   'Setting a higher miner tip is recommended to avoid issues.';
 const ALERT_MESSAGE_HIGHER_MAX_BASE_FEE_NEEDED =
   'Setting a higher max base fee is recommended to avoid issues.';
-const ALERT_MESSAGE__LOWER =
+const ALERT_MESSAGE_LOWER =
   'Double check that you entered the correct amount—you’re likely paying more than you need to!';
 const ALERT_TITLE_HIGHER_MAX_BASE_FEE_NEEDED =
   'Low max base fee–transaction might get stuck!';
@@ -553,7 +553,7 @@ export default function FeesPanel({
       message:
         maxBaseFeeWarning === LOWER_THAN_SUGGESTED
           ? ALERT_MESSAGE_HIGHER_MAX_BASE_FEE_NEEDED
-          : ALERT_MESSAGE__LOWER,
+          : ALERT_MESSAGE_LOWER,
       title:
         maxBaseFeeWarning === LOWER_THAN_SUGGESTED
           ? ALERT_TITLE_HIGHER_MAX_BASE_FEE_NEEDED
@@ -587,7 +587,7 @@ export default function FeesPanel({
       message:
         maxPriorityFeeWarning === LOWER_THAN_SUGGESTED
           ? ALERT_MESSAGE_HIGHER_MINER_TIP_NEEDED
-          : ALERT_MESSAGE__LOWER,
+          : ALERT_MESSAGE_LOWER,
       title:
         maxPriorityFeeWarning === LOWER_THAN_SUGGESTED
           ? ALERT_TITLE_HIGHER_MINER_TIP_NEEDED
