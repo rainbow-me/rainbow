@@ -80,19 +80,11 @@ const markdown = `
 const customSpaceMarkdown = `
   ${loremIpsum}
 
-  ${loremIpsum}
-
   - Bullet list
 
     ${loremIpsum}
 
   - Bullet list
-
-    ${loremIpsum}
-
-  - Bullet list
-
-    ${loremIpsum}
 `;
 
 const docs: Docs = {
@@ -104,11 +96,7 @@ const docs: Docs = {
       Example: () => (
         <>
           <Guide />
-          <MarkdownText
-            color="secondary60"
-            listSpace="19px"
-            paragraphSpace="30px"
-          >
+          <MarkdownText listSpace="19px" paragraphSpace="30px">
             {markdown}
           </MarkdownText>
           <Guide />
@@ -121,11 +109,7 @@ const docs: Docs = {
       Example: () => (
         <>
           <Guide />
-          <MarkdownText
-            color="secondary60"
-            listSpace={{ custom: 30 }}
-            paragraphSpace="42px"
-          >
+          <MarkdownText listSpace={{ custom: 30 }} paragraphSpace="42px">
             {customSpaceMarkdown}
           </MarkdownText>
           <Guide />
@@ -134,7 +118,24 @@ const docs: Docs = {
     },
 
     {
-      name: 'Custom heading colors',
+      name: 'Custom text color',
+      Example: () => (
+        <>
+          <Guide />
+          <MarkdownText
+            color="secondary60"
+            listSpace="19px"
+            paragraphSpace="30px"
+          >
+            {headingsAndParagraphMarkdown}
+          </MarkdownText>
+          <Guide />
+        </>
+      ),
+    },
+
+    {
+      name: 'Custom text and heading colors',
       Example: () => (
         <>
           <Guide />

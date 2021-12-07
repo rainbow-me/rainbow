@@ -118,7 +118,7 @@ function isNativeText(child: ReactNode) {
 export type MarkdownTextProps = {
   children: string;
   size?: TextProps['size'];
-  color: TextProps['color'];
+  color?: TextProps['color'];
   heading1Color?: TextProps['color'];
   heading2Color?: TextProps['color'];
   paragraphSpace: Space;
@@ -134,12 +134,12 @@ export const MarkdownText = memo(function MarkdownText({
   paragraphSpace = defaultProps.paragraphSpace,
   listSpace = defaultProps.listSpace,
   size = defaultProps.size,
-  color = 'secondary50',
+  color,
   heading1Color: heading1ColorProp,
   heading2Color: heading2ColorProp,
 }: MarkdownTextProps) {
   const heading1Color = heading1ColorProp ?? color;
-  const heading2Color = heading2ColorProp ?? color;
+  const heading2Color = heading2ColorProp ?? heading1ColorProp ?? color;
 
   const spaceProps = useMemo(() => ({ listSpace, paragraphSpace }), [
     paragraphSpace,
