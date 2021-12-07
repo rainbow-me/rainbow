@@ -608,7 +608,7 @@ export default function FeesPanel({
   validateGasParams.current = () => validateParams();
 
   const validateParams = useCallback(() => {
-    if (userProcededOnWarnings) return;
+    if (userProcededOnWarnings || !selectedOptionIsCustom) return;
     const maxBaseValidated = !maxBaseFeeError && !maxBaseFeeWarning;
     const maxPriorityValidated = !maxPriorityFeeError && !maxPriorityFeeWarning;
     if (!maxBaseValidated) {
@@ -623,6 +623,7 @@ export default function FeesPanel({
     maxBaseFeeWarning,
     maxPriorityFeeError,
     maxPriorityFeeWarning,
+    selectedOptionIsCustom,
     userProcededOnWarnings,
   ]);
 
