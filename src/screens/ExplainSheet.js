@@ -1,5 +1,6 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import { useRoute } from '@react-navigation/native';
+import { startCase } from 'lodash';
 import React, { useCallback } from 'react';
 import { Linking, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -52,7 +53,7 @@ Double check the address, verify it with the recipient, or contact support first
 
 const FLOOR_PRICE_EXPLAINER = `A collection's floor price is the lowest asking price across all the items currently for sale in a collection.`;
 
-const GAS_EXPLAINER = `This is the "gas fee" used by the Ethereum blockchain to securely validate your transaction.
+const gasExplainer = network => `This is the "gas fee" used by the ${network} blockchain to securely validate your transaction.
 
 This fee varies depending on the complexity of your transaction and how busy the network is!`;
 
@@ -92,7 +93,7 @@ const POLYGON_EXPLAINER = `Polygon is a sidechain, a distinct network that runs 
 
 It allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum.`;
 
-export const explainers = {
+export const explainers = network => ({
   floor_price: {
     emoji: '📊',
     extraHeight: -102,
@@ -102,8 +103,8 @@ export const explainers = {
   gas: {
     emoji: '⛽️',
     extraHeight: 2,
-    text: GAS_EXPLAINER,
-    title: 'Ethereum network fee',
+    text: gasExplainer(network),
+    title: `${startCase(network)} network fee`,
   },
   currentBaseFeeStable: {
     emoji: '🌞',
@@ -137,13 +138,13 @@ export const explainers = {
   },
   maxBaseFee: {
     emoji: '📈',
-    extraHeight: 0,
+    extraHeight: -40,
     text: MAX_BASE_FEE_EXPLAINER,
     title: 'Max base fee',
   },
   minerTip: {
     emoji: '⛏',
-    extraHeight: 0,
+    extraHeight: -40,
     text: MINER_TIP_EXPLAINER,
     title: 'Miner tip',
   },
@@ -213,12 +214,15 @@ export const explainers = {
       'Uh oh, something went wrong! The site may be experiencing a connection outage. Please try again later or contact the site’s team for more details.',
     title: 'Connection failed',
   },
-};
+});
 
 const ExplainSheet = () => {
   const { height: deviceHeight } = useDimensions();
   const insets = useSafeArea();
-  const { params: { type = 'gas', onClose } = {}, params = {} } = useRoute();
+  const {
+    params: { type = 'gas', network = networkTypes.mainnet, onClose } = {},
+    params = {},
+  } = useRoute();
   const { colors } = useTheme();
   const { goBack } = useNavigation();
   const renderBaseFeeIndicator = useMemo(() => {
@@ -235,19 +239,24 @@ const ExplainSheet = () => {
     );
   }, [params, type]);
 
+  const explainSheetConfig = useMemo(() => {
+    return explainers(network)[type];
+  }, [network, type]);
+
   const handleClose = useCallback(() => {
     goBack();
     onClose?.();
   }, [onClose, goBack]);
 
   const handleReadMore = useCallback(() => {
-    Linking.openURL(explainers[type].readMoreLink);
-  }, [type]);
+    Linking.openURL(explainSheetConfig.readMoreLink);
+  }, [explainSheetConfig.readMoreLink]);
 
   const EmojiText = type === 'verified' ? Gradient : Emoji;
   const Title = type === 'verified' ? Gradient : SheetTitle;
 
-  const sheetHeight = ExplainSheetHeight + (explainers[type]?.extraHeight || 0);
+  const sheetHeight =
+    ExplainSheetHeight + (explainSheetConfig?.extraHeight || 0);
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
@@ -272,19 +281,19 @@ const ExplainSheet = () => {
               width: '100%',
             }}
           >
-            {explainers[type]?.logo ? (
-              <Centered>{explainers[type].logo}</Centered>
+            {explainSheetConfig?.logo ? (
+              <Centered>{explainSheetConfig.logo}</Centered>
             ) : (
               <EmojiText
                 align="center"
                 size="h1"
                 style={{ ...fontWithWidth(fonts.weight.bold) }}
               >
-                {explainers[type].emoji}
+                {explainSheetConfig.emoji}
               </EmojiText>
             )}
             <Title align="center" lineHeight="big" size="big" weight="heavy">
-              {explainers[type].title}
+              {explainSheetConfig.title}
             </Title>
 
             {/** base fee explainer */}
@@ -302,9 +311,9 @@ const ExplainSheet = () => {
                 paddingHorizontal: 23,
               }}
             >
-              {explainers[type].text}
+              {explainSheetConfig.text}
             </Text>
-            {explainers[type].readMoreLink && (
+            {explainSheetConfig.readMoreLink && (
               <Column height={60}>
                 <SheetActionButton
                   color={colors.blueGreyDarkLight}
