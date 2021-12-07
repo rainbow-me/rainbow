@@ -239,8 +239,7 @@ export default function TransactionConfirmationScreen() {
 
   useEffect(() => {
     const initProvider = async () => {
-      const p =
-        isL2 || isTestnet ? await getProviderForNetwork(network) : web3Provider;
+      const p = await getProviderForNetwork(network);
       setProvider(p);
     };
     network && initProvider();
