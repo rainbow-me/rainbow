@@ -1,9 +1,9 @@
 import { atom, useAtom } from 'jotai';
 
-const countAtom = atom(false);
+const isCoinListEditedAtom = atom(false);
 
 export default function useCoinListEdited() {
-  const [isCoinListEdited, setIsCoinListEdited] = useAtom(countAtom);
+  const [isCoinListEdited, setIsCoinListEdited] = useAtom(isCoinListEditedAtom);
 
   return {
     isCoinListEdited,
