@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.5.40-1",
+  "version": "1.5.41-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn allow-scripts && yarn postinstall",
@@ -67,7 +67,6 @@
     "@ethersproject/providers": "5.4.0",
     "@ethersproject/random": "5.4.0",
     "@ethersproject/shims": "5.4.0",
-    "@ethersproject/signing-key": "5.4.0",
     "@ethersproject/solidity": "5.4.0",
     "@ethersproject/transactions": "5.4.0",
     "@ethersproject/units": "5.4.0",

@@ -6,7 +6,7 @@ import ButtonPressAnimation from './animations/ButtonPressAnimation';
 import ChainBadge from './coin-icon/ChainBadge';
 import { Column, Row } from './layout';
 import { Text } from './text';
-import { position } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 
 const L2Disclaimer = ({
   assetType,
@@ -35,7 +35,11 @@ const L2Disclaimer = ({
         onPress={onPress}
         scaleTo={0.95}
       >
-        <Row borderRadius={16} marginHorizontal={19} padding={10}>
+        <Row
+          borderRadius={16}
+          css={padding(android ? 6 : 10, 10, android ? 6 : 10, 10)}
+          marginHorizontal={19}
+        >
           <RadialGradient
             {...radialGradientProps}
             borderRadius={16}

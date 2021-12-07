@@ -12,6 +12,7 @@ import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { add, toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useColorForAsset,
@@ -231,7 +232,6 @@ const GasSpeedButton = ({
     selectedSpeed => {
       if (selectedSpeed === CUSTOM) {
         openCustomGasSheet();
-        Keyboard.dismiss();
         if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
           const gasFeeParams = gasFeeParamsBySpeed[URGENT];
           updateToCustomGasFee({
@@ -323,19 +323,30 @@ const GasSpeedButton = ({
   }, [currentNetwork, speeds]);
 
   const menuConfig = useMemo(() => {
-    const menuOptions = speedOptions.map(gasOption => ({
-      actionKey: gasOption,
-      actionTitle: upperFirst(gasOption),
-      icon: {
-        iconType: 'ASSET',
-        iconValue: GAS_ICONS[gasOption],
-      },
-    }));
+    const menuOptions = speedOptions.map(gasOption => {
+      const totalGwei = add(
+        gasFeeParamsBySpeed[gasOption]?.maxFeePerGas?.gwei,
+        gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
+      );
+      const gweiDisplay =
+        currentNetwork === networkTypes.polygon
+          ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
+          : `${toFixedDecimals(totalGwei, 0)} Gwei`;
+      return {
+        actionKey: gasOption,
+        actionTitle: upperFirst(gasOption),
+        discoverabilityTitle: gweiDisplay,
+        icon: {
+          iconType: 'ASSET',
+          iconValue: GAS_ICONS[gasOption],
+        },
+      };
+    });
     return {
       menuItems: menuOptions,
       menuTitle: '',
     };
-  }, [speedOptions]);
+  }, [currentNetwork, gasFeeParamsBySpeed, speedOptions]);
 
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
     speedOptions,
