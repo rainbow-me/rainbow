@@ -132,7 +132,7 @@ export default function FeesPanel({
   const { navigate, dangerouslyGetState } = useNavigation();
   const { colors } = useTheme();
 
-  const { params: { speeds, focusToInput } = {} } = useRoute();
+  const { params: { speeds, focusToInput, type } = {} } = useRoute();
   const maxBaseFeeInputRef = useRef(null);
   const minerTipInputRef = useRef(null);
 
@@ -141,6 +141,7 @@ export default function FeesPanel({
 
   useMagicAutofocus(maxBaseFeeInputRef);
 
+  // had to add this for actions happening on the gas speed button
   if (prevIsFocused && !isFocused) {
     Keyboard.dismiss();
   }
@@ -455,7 +456,9 @@ export default function FeesPanel({
   useEffect(() => {
     const navigationRoutes = dangerouslyGetState().routes;
     const lastRoute = navigationRoutes?.[navigationRoutes.length - 1]?.name;
-    if (lastRoute === 'ExplainSheet') {
+    const lastType =
+      navigationRoutes?.[navigationRoutes.length - 1]?.params?.type;
+    if (lastRoute === 'ExplainSheet' && lastType.includes('currentBaseFee')) {
       navigate(Routes.EXPLAIN_SHEET, {
         currentBaseFee: toFixedDecimals(currentBaseFee, 0),
         currentGasTrend,
@@ -468,6 +471,7 @@ export default function FeesPanel({
     dangerouslyGetState,
     navigate,
     trendType,
+    type,
   ]);
 
   useEffect(() => {
