@@ -440,8 +440,13 @@ export default function FeesPanel({
 
   useEffect(() => {
     const navigationRoutes = dangerouslyGetState().routes;
-    const lastRoute = navigationRoutes?.[navigationRoutes.length - 1]?.name;
-    if (lastRoute === 'ExplainSheet') {
+    const lastRouteName = navigationRoutes?.[navigationRoutes.length - 1]?.name;
+    const lastRouteType =
+      navigationRoutes?.[navigationRoutes.length - 1]?.params?.type;
+    if (
+      lastRouteName === 'ExplainSheet' &&
+      lastRouteType.includes('currentBaseFee')
+    ) {
       navigate(Routes.EXPLAIN_SHEET, {
         currentBaseFee: toFixedDecimals(currentBaseFee, 0),
         currentGasTrend,
