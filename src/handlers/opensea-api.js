@@ -11,9 +11,9 @@ import {
 import { Contract } from '@ethersproject/contracts';
 import { web3Provider } from './web3';
 import { abbreviations } from '@rainbow-me/utils';
-import { FormatAssetForDisplay } from '@rainbow-me/helpers';
+import { formatAssetForDisplay } from '@rainbow-me/helpers';
 import logger from 'logger';
-import { EventTypes } from '@rainbow-me/utils/tokenHistoryUtils';
+import { EventTypes, PaymentTokens } from '@rainbow-me/utils/tokenHistoryUtils';
 
 const reverseRecordContract = new Contract(
   REVERSE_RECORDS_MAINNET_ADDRESS,
@@ -193,23 +193,25 @@ const filterAndMapData = async (contractAddress, array) => {
 
         case EventTypes.SALE.type:
           console.log("hiiiiiiiii");
+          console.log(PaymentTokens);
+          console.log(PaymentTokens.WETH);
+          console.log(EventTypes);
           payment_token =
-            uniqueEvent.payment_token?.symbol === 'WETH'
-              ? 'ETH'
+            uniqueEvent.payment_token?.symbol === PaymentTokens.WETH
+              ? PaymentTokens.ETH
               : uniqueEvent.payment_token?.symbol;
 
           // eslint-disable-next-line no-case-declarations
           const zz = uniqueEvent.total_price.split('.');
           // eslint-disable-next-line no-case-declarations
-          const temp_sale_amount = FormatAssetForDisplay({
+          const temp_sale_amount = formatAssetForDisplay({
             amount: zz[0],
             token: payment_token,
           });
 
           sale_amount = handleSignificantDecimals(temp_sale_amount, 5);
-          break;
-
-        default:
+          console.log("zoot");
+          console.log(sale_amount);
           break;
       }
 

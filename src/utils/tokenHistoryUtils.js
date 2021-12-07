@@ -18,5 +18,12 @@ export const EventTypes = {
     icon: `􀈠`,
     label: `Sent to `,
     type: 'transfer',
-  },
+  }
+};
+
+export const PaymentTokens = {
+  ETH: 'ETH',
+  WETH: 'WETH',
+  DAI: 'DAI',
+  USDC: 'USDC'
 };
