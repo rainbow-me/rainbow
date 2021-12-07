@@ -121,7 +121,6 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
 
 export const ChartPathProvider = React.memo<ChartPathProviderProps>(
   ({ children, data, width = WIDTH, height = HEIGHT, yRange }) => {
-    console.log(data);
     // path interpolation animation progress
     const progress = useSharedValue(1);
 
@@ -160,7 +159,6 @@ export const ChartPathProvider = React.memo<ChartPathProviderProps>(
     const currentPath = paths[1];
 
     useEffect(() => {
-      console.log('Effect');
       // we run it only after the first render
       // because we do have initial data in the paths
       // we wait until we receive new stuff in deps
