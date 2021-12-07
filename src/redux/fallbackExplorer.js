@@ -475,10 +475,10 @@ export const fallbackExplorerInit = () => async (dispatch, getState) => {
       },
       type: FALLBACK_EXPLORER_SET_ASSETS,
     });
+    dispatch(explorerInitL2());
   }
 
   dispatch(fetchOnchainBalances({ keepPolling: true, withPrices: true }));
-  dispatch(explorerInitL2());
 };
 
 export const fallbackExplorerClearState = () => (dispatch, getState) => {
