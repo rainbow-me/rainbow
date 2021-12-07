@@ -111,7 +111,7 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
     path,
     parsed,
     points,
-    data: data.points,
+    data: data.nativePoints || data.points,
     smallestX,
     smallestY,
     greatestX,

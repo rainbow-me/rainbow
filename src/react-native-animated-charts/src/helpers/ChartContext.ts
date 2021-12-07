@@ -17,7 +17,9 @@ export interface Point {
 }
 
 export interface DataType {
+  yRange: [number, number];
   points: Point[];
+  nativePoints?: Point[];
   curve?: CurveType;
 }
 
