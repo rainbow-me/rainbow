@@ -1,4 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
+import { captureException } from '@sentry/react-native';
 import { get, toLower, uniqBy } from 'lodash';
 import isEqual from 'react-fast-compare';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
@@ -22,7 +23,6 @@ import {
 import { delay } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-import { captureException } from '@sentry/react-native';
 
 let lastUpdatePayload = null;
 // -- Constants --------------------------------------- //
@@ -60,7 +60,7 @@ const getMainnetAssetsFromCovalent = async (
   const data = await getAssetsFromCovalent(chainId, accountAddress, currency);
   if (data) {
     const updatedAt = new Date(data.updated_at).getTime();
-    const assets = data.items.map( item => {
+    const assets = data.items.map(item => {
       let contractAddress = item.contract_address;
       const isETH = toLower(contractAddress) === toLower(COVALENT_ETH_ADDRESS);
       if (isETH) {
@@ -280,7 +280,6 @@ const fetchAssetBalances = async (tokens, address, network) => {
     });
     return balances[address];
   } catch (e) {
-    
     logger.sentry(
       'Error fetching balances from balanceCheckerContract',
       network,
@@ -322,7 +321,7 @@ export const fetchOnchainBalances = ({
           )
         : mainnetAssets
       : chainAssets[network];
-  
+
   if (!assets.length && accountAssets.length) {
     assets = accountAssets.map(asset => ({
       asset: {
@@ -351,14 +350,12 @@ export const fetchOnchainBalances = ({
     return;
   }
 
-  
   const tokenAddresses = assets.map(({ asset: { asset_code } }) =>
     asset_code === ETH_ADDRESS
       ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
       : toLower(asset_code)
   );
 
-  
   // Solution: we should return right here and prevent any (boken) state updates.
   const balances = await fetchAssetBalances(
     tokenAddresses,

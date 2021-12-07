@@ -1,4 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
+import { captureException } from '@sentry/react-native';
 import { toLower } from 'lodash';
 import isEqual from 'react-fast-compare';
 // eslint-disable-next-line import/no-cycle
@@ -14,7 +15,6 @@ import {
 } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-import { captureException } from '@sentry/react-native';
 
 let lastUpdatePayload = null;
 // -- Constants --------------------------------------- //
