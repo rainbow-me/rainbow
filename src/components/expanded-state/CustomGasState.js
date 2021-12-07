@@ -89,16 +89,8 @@ export default function CustomGasState({ asset }) {
   );
 
   useEffect(() => {
-    if (isKeyboardVisible) {
-      contentScroll.value = withSpring(
-        additionalScrollForKeyboard,
-        springConfig
-      );
-      setParams({ longFormHeight: sheetHeightWithKeyboard });
-    } else {
-      contentScroll.value = withSpring(0, springConfig);
-      setParams({ longFormHeight: sheetHeightWithoutKeyboard });
-    }
+    contentScroll.value = withSpring(additionalScrollForKeyboard, springConfig);
+    setParams({ longFormHeight: sheetHeightWithKeyboard });
   }, [
     additionalScrollForKeyboard,
     contentScroll,
@@ -107,6 +99,7 @@ export default function CustomGasState({ asset }) {
     sheetHeightWithoutKeyboard,
     setParams,
   ]);
+
   return (
     <SlackSheet
       additionalTopPadding

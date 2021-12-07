@@ -1,6 +1,6 @@
-import { useNavigation } from '@react-navigation/core';
+import { useIsFocused, useNavigation } from '@react-navigation/core';
 import { useRoute } from '@react-navigation/native';
-import { isEmpty, upperFirst } from 'lodash';
+import { upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -22,7 +22,7 @@ import {
   multiply,
   toFixedDecimals,
 } from '@rainbow-me/helpers/utilities';
-import { useGas } from '@rainbow-me/hooks';
+import { useGas, usePrevious } from '@rainbow-me/hooks';
 import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
@@ -127,7 +127,6 @@ export default function FeesPanel({
     customGasFeeModifiedByUser,
     gasFeeParamsBySpeed,
     updateToCustomGasFee,
-    updateGasFeeOption,
   } = useGas();
 
   const { navigate, dangerouslyGetState } = useNavigation();
@@ -136,6 +135,15 @@ export default function FeesPanel({
   const { params: { speeds, focusToInput } = {} } = useRoute();
   const maxBaseFeeInputRef = useRef(null);
   const minerTipInputRef = useRef(null);
+
+  const isFocused = useIsFocused();
+  const prevIsFocused = usePrevious(isFocused);
+
+  if (!prevIsFocused && isFocused) {
+    maxBaseFeeInputRef?.current?.focus();
+  } else if (prevIsFocused && !isFocused) {
+    Keyboard.dismiss();
+  }
 
   const [customFees, setCustomFees] = useState({
     customMaxBaseFee: gasFeeParamsBySpeed?.[CUSTOM]?.maxFeePerGas?.gwei,
@@ -290,21 +298,8 @@ export default function FeesPanel({
     [currentBaseFee]
   );
 
-  const handleOnInputFocus = useCallback(() => {
-    if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
-      const gasFeeParams = gasFeeParamsBySpeed[URGENT];
-      updateToCustomGasFee({
-        ...gasFeeParams,
-        option: CUSTOM,
-      });
-    } else {
-      updateGasFeeOption(CUSTOM);
-    }
-  }, [gasFeeParamsBySpeed, updateGasFeeOption, updateToCustomGasFee]);
-
   const handleFeesGweiInputFocus = useCallback(() => {
     onCustomGasFocus?.();
-    handleOnInputFocus();
     const {
       gasFeeParams: { maxFeePerGas, maxPriorityFeePerGas },
     } = selectedGasFee;
@@ -312,12 +307,11 @@ export default function FeesPanel({
       customMaxBaseFee: toFixedDecimals(maxFeePerGas?.gwei || 0, 0),
       customMaxPriorityFee: maxPriorityFeePerGas?.gwei || 0,
     });
-  }, [onCustomGasFocus, handleOnInputFocus, selectedGasFee]);
+  }, [onCustomGasFocus, selectedGasFee]);
 
   const handleCustomPriorityFeeFocus = useCallback(() => {
-    handleOnInputFocus();
     handleFeesGweiInputFocus();
-  }, [handleFeesGweiInputFocus, handleOnInputFocus]);
+  }, [handleFeesGweiInputFocus]);
 
   const updatePriorityFeePerGas = useCallback(
     priorityFeePerGas => {
