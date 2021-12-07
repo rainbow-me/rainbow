@@ -133,4 +133,7 @@ const styles = {
   },
 };
 
-export default rowRenderer;
+export default rowRenderer as (
+  type: string | number,
+  data: any
+) => React.ReactElement;

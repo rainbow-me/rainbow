@@ -1,3 +1,6 @@
+import { RecyclerListView, RecyclerListViewProps } from 'recyclerlistview';
+import { RecyclerListViewState } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
+
 export enum CellType {
   ASSETS_HEADER = 'ASSETS_HEADER',
   COIN = 'COIN',
@@ -11,6 +14,10 @@ export enum CellType {
   NFT = 'NFT',
   LOADING_ASSETS = 'LOADING_ASSETS',
 }
+export type RecyclerListViewRef = RecyclerListView<
+  RecyclerListViewProps,
+  RecyclerListViewState
+>;
 
 export type BaseCellType = { type: CellType; uid: string; hidden?: boolean };
 

@@ -82,7 +82,7 @@ export default function useAsset(asset) {
       }
 
       if (!matched && asset.uniqueId === 'eth') {
-        getZeroEth();
+        return getZeroEth();
       }
     } else if (asset.type === AssetTypes.nft) {
       matched = find(collectibles, matchesProperty('uniqueId', asset.uniqueId));
