@@ -22,7 +22,7 @@ import {
   multiply,
   toFixedDecimals,
 } from '@rainbow-me/helpers/utilities';
-import { useGas, usePrevious } from '@rainbow-me/hooks';
+import { useGas, useMagicAutofocus, usePrevious } from '@rainbow-me/hooks';
 import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
@@ -139,9 +139,9 @@ export default function FeesPanel({
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
 
-  if (!prevIsFocused && isFocused) {
-    maxBaseFeeInputRef?.current?.focus();
-  } else if (prevIsFocused && !isFocused) {
+  useMagicAutofocus(maxBaseFeeInputRef);
+
+  if (prevIsFocused && !isFocused) {
     Keyboard.dismiss();
   }
 
