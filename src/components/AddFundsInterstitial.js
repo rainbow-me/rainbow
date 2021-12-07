@@ -115,9 +115,7 @@ const AmountButtonWrapper = styled(Row).attrs({
   ${android ? 'width: 100' : ''};
 `;
 
-const onAddFromFaucet = () => {
-  Linking.openURL('https://faucet.paradigm.xyz');
-};
+const onAddFromFaucet = () => Linking.openURL('https://faucet.paradigm.xyz');
 
 const InnerBPA = android ? ButtonPressAnimation : ({ children }) => children;
 
@@ -272,7 +270,7 @@ const AddFundsInterstitial = ({ network }) => {
             faucet
           </Title>
           <Row marginTop={30}>
-            <InterstitialButton onPress={() => onAddFromFaucet(network)}>
+            <InterstitialButton onPress={onAddFromFaucet}>
               <Text
                 align="center"
                 color={colors.alpha(colors.blueGreyDark, 0.6)}
