@@ -108,6 +108,7 @@ export const walletConnectRemovePendingRedirect = (
   dispatch({
     type: WALLETCONNECT_REMOVE_PENDING_REDIRECT,
   });
+  const lastActiveTime = new Date().getTime();
   if (scheme) {
     Linking.openURL(`${scheme}://`);
   } else if (type !== 'timedOut') {
@@ -127,11 +128,14 @@ export const walletConnectRemovePendingRedirect = (
     // We need to show the redirect sheet cause the redirect
     // didn't work
     setTimeout(() => {
-      if (AppState.currentState === 'active') {
+      const now = new Date().getTime();
+      const delta = now - lastActiveTime;
+      if (AppState.currentState === 'active' && delta < 1000) {
         return Navigation.handleAction(Routes.WALLET_CONNECT_REDIRECT_SHEET, {
           type,
         });
-      } else return;
+      }
+      return;
     }, showRedirectSheetThreshold);
   }
 };
