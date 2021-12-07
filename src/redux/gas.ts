@@ -58,7 +58,7 @@ import logger from 'logger';
 
 const { CUSTOM, NORMAL, URGENT, GAS_PRICE_SOURCES } = gasUtils;
 
-const getGasPricePollingInterval = (network: Network) => {
+const getGasPricePollingInterval = (network: Network): number => {
   switch (network) {
     case networkTypes.polygon:
       return 2000;
@@ -417,19 +417,20 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
       }
     });
 
-  const watchGasPrices = async (network: Network) => {
+  const watchGasPrices = async (network: Network, pollingInterval: number) => {
     try {
       await getGasPrices(network);
       // eslint-disable-next-line no-empty
     } catch (e) {
     } finally {
       gasPricesHandle = setTimeout(() => {
-        watchGasPrices(network);
-      }, getGasPricePollingInterval(network));
+        watchGasPrices(network, pollingInterval);
+      }, pollingInterval);
     }
   };
 
-  watchGasPrices(network);
+  const pollingInterval = getGasPricePollingInterval(network);
+  watchGasPrices(network, pollingInterval);
 };
 
 export const gasUpdateGasFeeOption = (
