@@ -28,10 +28,11 @@ import {
   SelectedGasFee,
 } from '@rainbow-me/entities';
 import { toHex } from '@rainbow-me/handlers/web3';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 
 type BigNumberish = number | string | BigNumber;
 
-const { CUSTOM, FAST, NORMAL, URGENT, GasSpeedOrder } = gasUtils;
+const { CUSTOM, FAST, GasSpeedOrder, NORMAL, URGENT } = gasUtils;
 
 /**
  * @desc parse ether gas prices
@@ -45,10 +46,10 @@ export const getFallbackGasPrices = () => ({
   [URGENT]: defaultGasPriceFormat(URGENT, '0.5', '200'),
 });
 
-const parseGasPricesEtherscan = (data: GasPricesAPIData) => ({
+const parseOtherL2GasPrices = (data: GasPricesAPIData) => ({
   [CUSTOM]: null,
   [FAST]: defaultGasPriceFormat(FAST, data.avgWait, data.average),
-  [NORMAL]: defaultGasPriceFormat(NORMAL, data.safeLowWait, data.safeLow),
+  [NORMAL]: defaultGasPriceFormat(NORMAL, data.avgWait, data.average),
   [URGENT]: defaultGasPriceFormat(URGENT, data.fastWait, data.fast),
 });
 
@@ -168,20 +169,6 @@ export const parseRainbowMeteorologyData = (
   };
 };
 
-const parseGasPricesEthGasStation = (data: GasPricesAPIData) => ({
-  [CUSTOM]: null,
-  [FAST]: defaultGasPriceFormat(FAST, data.fastWait, Number(data.fast) / 10),
-  [NORMAL]: defaultGasPriceFormat(
-    NORMAL,
-    data.avgWait,
-    Number(data.average) / 10
-  ),
-  [URGENT]: defaultGasPriceFormat(
-    URGENT,
-    data.fastestWait,
-    Number(data.fastest) / 10
-  ),
-});
 const parseGasPricesPolygonGasStation = (data: GasPricesAPIData) => {
   const polygonGasPriceBumpFactor = 1.05;
   return {
@@ -207,20 +194,17 @@ const parseGasPricesPolygonGasStation = (data: GasPricesAPIData) => {
 /**
  * @desc parse ether gas prices
  * @param {Object} data
- * @param {String} source
+ * @param {String} network
  */
-export const parseGasPrices = (
-  data: GasPricesAPIData,
-  source = gasUtils.GAS_PRICE_SOURCES.ETHERSCAN
-) => {
+export const parseL2GasPrices = (data: GasPricesAPIData, network: Network) => {
   if (!data) return getFallbackGasPrices();
-  switch (source) {
-    case gasUtils.GAS_PRICE_SOURCES.ETH_GAS_STATION:
-      return parseGasPricesEthGasStation(data);
-    case gasUtils.GAS_PRICE_SOURCES.POLYGON_GAS_STATION:
+  switch (network) {
+    case Network.polygon:
       return parseGasPricesPolygonGasStation(data);
+    case Network.arbitrum:
+    case Network.optimism:
     default:
-      return parseGasPricesEtherscan(data);
+      return parseOtherL2GasPrices(data);
   }
 };
 

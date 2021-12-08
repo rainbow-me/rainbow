@@ -8,14 +8,6 @@ const SLOW = 'slow';
 
 const GasSpeedOrder = [NORMAL, FAST, URGENT, CUSTOM];
 
-const GAS_PRICE_SOURCES = {
-  ARBITRUM_NODE: 'arbitrumNode',
-  ETH_GAS_STATION: 'ethGasStation',
-  ETHERSCAN: 'etherscan',
-  OPTIMISM_NODE: 'optimismNode',
-  POLYGON_GAS_STATION: 'polygonGasStation',
-};
-
 const GAS_ICONS = {
   [CUSTOM]: 'gear',
   [FAST]: 'rocket',
@@ -34,7 +26,6 @@ export default {
   CUSTOM,
   FAST,
   GAS_ICONS,
-  GAS_PRICE_SOURCES,
   GAS_TRENDS,
   GasSpeedOrder,
   NORMAL,

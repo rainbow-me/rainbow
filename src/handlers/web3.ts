@@ -136,21 +136,6 @@ export const web3SetHttpProvider = async (
 };
 
 /**
- * @desc returns true if the given network is EIP1559 supported
- * @param network The network to check.
- */
-export const isEIP1559LegacyNetwork = (network: Network | string): boolean => {
-  switch (network) {
-    case Network.arbitrum:
-    case Network.optimism:
-    case Network.polygon:
-      return true;
-    default:
-      return false;
-  }
-};
-
-/**
  * @desc Checks if the given network is a Layer 2.
  * @param network The network to check.
  * @return Whether or not the network is a L2 network.
@@ -448,7 +433,7 @@ export const getTransactionCount = async (
 export const getTransactionGasParams = (
   transaction: Pick<NewTransactionNonNullable, 'network'> & GasParamsInput
 ): GasParamsReturned => {
-  return isEIP1559LegacyNetwork(transaction.network)
+  return isL2Network(transaction.network)
     ? {
         gasPrice: toHex(transaction.gasPrice),
       }
