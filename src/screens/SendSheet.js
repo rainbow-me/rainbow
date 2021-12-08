@@ -442,7 +442,7 @@ export default function SendSheet(props) {
         txData,
         currentProvider
       );
-      updateTxFee(updatedGasLimit, null, l1GasFeeOptimism);
+      updateTxFee(updatedGasLimit, null, l1GasFeeOptimism, selected?.uniqueId);
     },
     [
       accountAddress,
@@ -490,7 +490,7 @@ export default function SendSheet(props) {
           if (network === networkTypes.optimism) {
             updateTxFeeForOptimism(updatedGasLimit);
           } else {
-            updateTxFee(updatedGasLimit, null);
+            updateTxFee(updatedGasLimit, null, null, selected?.uniqueId);
           }
         }
         // eslint-disable-next-line no-empty
@@ -787,12 +787,12 @@ export default function SendSheet(props) {
           if (currentNetwork === networkTypes.optimism) {
             updateTxFeeForOptimism(gasLimit);
           } else {
-            updateTxFee(gasLimit, null);
+            updateTxFee(gasLimit, null, null, selected?.uniqueId);
           }
         })
         .catch(e => {
           logger.sentry('Error calculating gas limit', e);
-          updateTxFee(null, null);
+          updateTxFee(null, null, null, selected?.uniqueId);
         });
     }
   }, [

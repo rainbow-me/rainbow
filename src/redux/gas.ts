@@ -84,6 +84,7 @@ interface GasState {
   confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee;
   customGasFeeModifiedByUser: boolean;
   l1GasFeeOptimism: BigNumber | null;
+  transactionIdentifier: null | string;
 }
 
 // -- Constants ------------------------------------------------------------- //
@@ -580,7 +581,8 @@ export const gasUpdateDefaultGasLimit = (
 export const gasUpdateTxFee = (
   updatedGasLimit?: number,
   overrideGasOption?: string,
-  l1GasFeeOptimism: BigNumber | null = null
+  l1GasFeeOptimism: BigNumber | null = null,
+  id?: string 
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const {
     defaultGasLimit,
@@ -611,7 +613,6 @@ export const gasUpdateTxFee = (
 
     const {
       isSufficientGas,
-      l1GasFeeOptimism,
       selectedGasFee: updatedSelectedGasFee,
       gasFeesBySpeed,
     } = getUpdatedGasFeeParams(
@@ -631,6 +632,7 @@ export const gasUpdateTxFee = (
         gasLimit: _gasLimit,
         isSufficientGas,
         selectedGasFee: updatedSelectedGasFee,
+        transactionIdentifier: id,
       },
       type: GAS_UPDATE_TX_FEE,
     });
@@ -656,6 +658,7 @@ const INITIAL_STATE: GasState = {
   isSufficientGas: null,
   l1GasFeeOptimism: null,
   selectedGasFee: {} as SelectedGasFee,
+  transactionIdentifier: null,
   txNetwork: null,
 };
 
@@ -706,6 +709,7 @@ export default (
         isSufficientGas: action.payload.isSufficientGas,
         l1GasFeeOptimism: action.payload.l1GasFeeOptimism,
         selectedGasFee: action.payload.selectedGasFee,
+        transactionIdentifier: action.payload.transactionIdentifier,
       };
     case GAS_UPDATE_GAS_PRICE_OPTION:
       return {

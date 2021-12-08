@@ -26,6 +26,8 @@ export default function useGas() {
         gasLimit,
         isSufficientGas,
         selectedGasFee,
+        transactionIdentifier,
+        txNetwork,
       },
     }: AppState) => ({
       currentBlockParams,
@@ -36,6 +38,8 @@ export default function useGas() {
       isSufficientGas,
       selectedGasFee,
       selectedGasFeeOption: selectedGasFee.option,
+      transactionIdentifier,
+      txNetwork,
     })
   );
 
@@ -63,9 +67,14 @@ export default function useGas() {
   );
 
   const updateTxFee = useCallback(
-    (newGasLimit, overrideGasOption, l1GasFeeOptimism = null) => {
+    (
+      newGasLimit,
+      overrideGasOption,
+      l1GasFeeOptimism = null,
+      id: string | undefined = undefined
+    ) => {
       dispatch(
-        gasUpdateTxFee(newGasLimit, overrideGasOption, l1GasFeeOptimism)
+        gasUpdateTxFee(newGasLimit, overrideGasOption, l1GasFeeOptimism, id)
       );
     },
     [dispatch]
