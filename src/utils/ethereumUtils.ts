@@ -1,3 +1,4 @@
+import { BigNumberish } from '@ethersproject/bignumber';
 import { Provider } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
@@ -82,7 +83,6 @@ import {
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
-import { BigNumberish } from '@ethersproject/bignumber';
 
 const { RNBip39 } = NativeModules;
 

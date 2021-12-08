@@ -1,4 +1,3 @@
-import { toLower } from 'lodash';
 import { matchSorter } from 'match-sorter';
 
 export const filterList = (
