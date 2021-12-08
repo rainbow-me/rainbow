@@ -32,7 +32,7 @@
     "start": "react-native start",
     "start:clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* && rm -rf $TMPDIR/haste-map-* && react-native start -- --reset-cache",
     "test": "jest test.js",
-    "ts-coverage": "./scripts/ts-coverage.sh",
+    "ts-coverage": "typescript-coverage-report",
     "ts-migrate-folder": "./scripts/ts-migrate-folder.sh",
     "uninstall:android": "adb uninstall me.rainbow; true",
     "uninstall:ios": "echo 'Script not yet added.'",
