@@ -1,3 +1,4 @@
+import { BigNumberish } from '@ethersproject/bignumber';
 import { Provider } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
