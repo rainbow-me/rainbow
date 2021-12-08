@@ -1,12 +1,12 @@
 import React, { useCallback, useState } from 'react';
-import { RefreshControl } from 'react-native';
+import { RefreshControl, RefreshControlProps } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useTheme } from '@rainbow-me/context';
 import { useRefreshAccountData } from '@rainbow-me/hooks';
 import { AppState } from '@rainbow-me/redux/store';
 import { logger } from '@rainbow-me/utils';
 
-export default function RefreshControlWrapped() {
+export default function RefreshControlWrapped(props: RefreshControlProps) {
   const isLoadingAssets = useSelector(
     (state: AppState) => state.data.isLoadingAssets
   );
@@ -29,6 +29,7 @@ export default function RefreshControlWrapped() {
 
   return isLoadingAssets ? null : (
     <RefreshControl
+      {...props}
       onRefresh={handleRefresh}
       progressViewOffset={android ? 30 : 0}
       refreshing={isRefreshing}
