@@ -84,7 +84,7 @@ interface GasState {
   confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee;
   customGasFeeModifiedByUser: boolean;
   l1GasFeeOptimism: BigNumber | null;
-  transactionIdentifier: null | string;
+  transactionUniqueId: null | string;
 }
 
 // -- Constants ------------------------------------------------------------- //
@@ -632,7 +632,7 @@ export const gasUpdateTxFee = (
         gasLimit: _gasLimit,
         isSufficientGas,
         selectedGasFee: updatedSelectedGasFee,
-        transactionIdentifier: id,
+        transactionUniqueId: id,
       },
       type: GAS_UPDATE_TX_FEE,
     });
@@ -658,7 +658,7 @@ const INITIAL_STATE: GasState = {
   isSufficientGas: null,
   l1GasFeeOptimism: null,
   selectedGasFee: {} as SelectedGasFee,
-  transactionIdentifier: null,
+  transactionUniqueId: null,
   txNetwork: null,
 };
 
@@ -709,7 +709,7 @@ export default (
         isSufficientGas: action.payload.isSufficientGas,
         l1GasFeeOptimism: action.payload.l1GasFeeOptimism,
         selectedGasFee: action.payload.selectedGasFee,
-        transactionIdentifier: action.payload.transactionIdentifier,
+        transactionUniqueId: action.payload.transactionUniqueId,
       };
     case GAS_UPDATE_GAS_PRICE_OPTION:
       return {

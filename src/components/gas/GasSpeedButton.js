@@ -137,7 +137,7 @@ const GasSpeedButton = ({
     selectedGasFeeOption,
     updateToCustomGasFee,
     txNetwork,
-    transactionIdentifier,
+    transactionUniqueId,
   } = useGas();
 
   const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
@@ -155,7 +155,7 @@ const GasSpeedButton = ({
   const price = useMemo(() => {
     if (
       txNetwork !== currentNetwork ||
-      asset?.uniqueId !== transactionIdentifier
+      asset?.uniqueId !== transactionUniqueId
     ) {
       return null;
     }

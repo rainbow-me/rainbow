@@ -26,7 +26,7 @@ export default function useGas() {
         gasLimit,
         isSufficientGas,
         selectedGasFee,
-        transactionIdentifier,
+        transactionUniqueId,
         txNetwork,
       },
     }: AppState) => ({
@@ -38,7 +38,7 @@ export default function useGas() {
       isSufficientGas,
       selectedGasFee,
       selectedGasFeeOption: selectedGasFee.option,
-      transactionIdentifier,
+      transactionUniqueId,
       txNetwork,
     })
   );
