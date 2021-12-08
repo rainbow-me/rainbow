@@ -1,14 +1,14 @@
-// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/apollo/client' or ... Remove this comment to see the full error message
+import { ApolloClient } from '@apollo/client';
+import { DocumentNode } from 'graphql';
 import { blockClient } from '@rainbow-me/apollo/client';
-// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/apollo/queries' or... Remove this comment to see the full error message
 import { GET_BLOCKS_QUERY } from '@rainbow-me/apollo/queries';
 import logger from 'logger';
 
 async function splitQuery(
-  query: any,
-  localClient: any,
-  vars: any,
-  list: any,
+  query: DocumentNode,
+  localClient: ApolloClient<any>,
+  vars: any[],
+  list: number[],
   skipCount = 100
 ) {
   let fetchedData = {};
@@ -24,6 +24,7 @@ async function splitQuery(
     try {
       const result = await localClient.query({
         fetchPolicy: 'network-only',
+        // @ts-ignore
         query: query(...vars, sliced),
       });
       fetchedData = {
@@ -56,6 +57,7 @@ export default async function getBlocksFromTimestamps(
   }
 
   const fetchedData = await splitQuery(
+    // @ts-expect-error ts-migrate(100007) FIXME: Remove this comment to see the full error message
     GET_BLOCKS_QUERY,
     blockClient,
     [],
