@@ -1,4 +1,5 @@
 import { AssetType } from './assetTypes';
+import { EthereumAddress } from '.';
 
 interface ZerionAssetPrice {
   value: number;
@@ -7,7 +8,7 @@ interface ZerionAssetPrice {
 }
 
 export interface Asset {
-  address: string;
+  address: EthereumAddress;
   decimals: number;
   name: string;
   symbol: string;
@@ -50,6 +51,7 @@ export interface ParsedAddressAsset extends Asset {
   type?: string;
   id: string;
   uniqueId: string;
+  mainnet_address?: EthereumAddress;
 }
 
 export interface UniswapCurrency extends ParsedAddressAsset {

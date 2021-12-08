@@ -5,7 +5,9 @@ import methodRegistryABI from '../references/method-registry-abi.json';
 
 const METHOD_REGISTRY_ADDRESS = '0x44691B39d1a75dC4E0A0346CBB15E310e6ED1E86';
 
-export const methodRegistryLookupAndParse = async methodSignatureBytes => {
+export const methodRegistryLookupAndParse = async (
+  methodSignatureBytes: any
+) => {
   const registry = new Contract(
     METHOD_REGISTRY_ADDRESS,
     methodRegistryABI,
@@ -25,7 +27,9 @@ export const methodRegistryLookupAndParse = async methodSignatureBytes => {
         .split(/(?=[A-Z]{1})/)
         .join(' ');
 
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     if (namesOverrides[parsedName]) {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       parsedName = namesOverrides[parsedName];
     }
   } else {
@@ -38,7 +42,7 @@ export const methodRegistryLookupAndParse = async methodSignatureBytes => {
 
   let args = [];
   if (match) {
-    args = match[1].match(/[A-z1-9]+/g).map(arg => {
+    args = match[1].match(/[A-z1-9]+/g).map((arg: any) => {
       return { type: arg };
     });
   }

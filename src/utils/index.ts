@@ -1,5 +1,3 @@
-/* eslint-disable import/no-cycle */
-
 // disabled because cycle is created by outside files that import files from
 // this folder - it wouldn't make sense to separate them there
 // and break imports concept just to remove eslint error here

@@ -13,7 +13,7 @@ export const HapticFeedbackTypes = {
   selection: 'selection',
 };
 
-const hapticToTrigger = haptic => ({
+const hapticToTrigger = (haptic: any) => ({
   [haptic]: () => ReactNativeHapticFeedback.trigger(haptic),
 });
 

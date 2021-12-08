@@ -1,8 +1,16 @@
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/apollo/client' or ... Remove this comment to see the full error message
 import { blockClient } from '@rainbow-me/apollo/client';
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/apollo/queries' or... Remove this comment to see the full error message
 import { GET_BLOCKS_QUERY } from '@rainbow-me/apollo/queries';
 import logger from 'logger';
 
-async function splitQuery(query, localClient, vars, list, skipCount = 100) {
+async function splitQuery(
+  query: any,
+  localClient: any,
+  vars: any,
+  list: any,
+  skipCount = 100
+) {
   let fetchedData = {};
   let allFound = false;
   let skip = 0;
@@ -40,7 +48,7 @@ async function splitQuery(query, localClient, vars, list, skipCount = 100) {
 }
 
 export default async function getBlocksFromTimestamps(
-  timestamps,
+  timestamps: any,
   skipCount = 500
 ) {
   if (timestamps?.length === 0) {
@@ -58,8 +66,10 @@ export default async function getBlocksFromTimestamps(
   const blocks = [];
   if (fetchedData) {
     for (let t in fetchedData) {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       if (fetchedData[t].length > 0) {
         blocks.push({
+          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           number: fetchedData[t][0]['number'],
           timestamp: t.split('t')[1],
         });

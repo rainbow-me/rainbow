@@ -77,7 +77,7 @@ export const parseTransactions = async (
 ) => {
   const purchaseTransactionHashes = map(purchaseTransactions, txn =>
     ethereumUtils.getHash(txn)
-  );
+  ).filter(hash => !!hash);
 
   const [allL2Transactions, existingWithoutL2] = partition(
     existingTransactions,
@@ -89,7 +89,12 @@ export const parseTransactions = async (
     : dataFromLastTxHash(transactionData, existingWithoutL2);
 
   const newTransactionPromises = data.map(txn =>
-    parseTransaction(txn, nativeCurrency, purchaseTransactionHashes, network)
+    parseTransaction(
+      txn,
+      nativeCurrency,
+      purchaseTransactionHashes as string[],
+      network
+    )
   );
 
   const newTransactions = await Promise.all(newTransactionPromises);

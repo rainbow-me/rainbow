@@ -10,6 +10,7 @@ It looks like you imported this wallet using only its public address. In order t
     [
       {
         onPress: () => {
+          // @ts-expect-error ts-migrate(2554) FIXME: Expected 2-3 arguments, but got 1.
           Navigation.handleAction(Routes.IMPORT_SEED_PHRASE_FLOW);
         },
         text: 'Finish Importing',

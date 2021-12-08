@@ -1,15 +1,18 @@
 import { maxBy, minBy } from 'lodash';
 
-export default function simplifyChartData(data, destinatedNumberOfPoints) {
+export default function simplifyChartData(
+  data: any,
+  destinatedNumberOfPoints: any
+) {
   if (!data) return null;
 
-  let allSegmentDividers = [];
-  let allSegmentsPoints = [];
+  let allSegmentDividers: any = [];
+  let allSegmentsPoints: any = [];
   let colors = [];
   let lines = [];
   let dividers = [];
   let lastPoints = [];
-  let createdLastPoints = [];
+  let createdLastPoints: any = [];
 
   if (data.segments.length > 0) {
     for (let i = 0; i < 1; i++) {
@@ -48,8 +51,10 @@ export default function simplifyChartData(data, destinatedNumberOfPoints) {
       const secondValue = allSegmentsPoints[f + 1].y * (1 - r);
 
       let finalValue;
+      // @ts-expect-error ts-migrate(2367) FIXME: This condition will always return 'false' since th... Remove this comment to see the full error message
       if (firstValue === maxValue) {
         finalValue = maxValue;
+        // @ts-expect-error ts-migrate(2367) FIXME: This condition will always return 'false' since th... Remove this comment to see the full error message
       } else if (secondValue === minValue) {
         finalValue = minValue;
       } else {

@@ -1,8 +1,11 @@
+import { BigNumberish } from '@ethersproject/bignumber';
+import { Provider } from '@ethersproject/providers';
 import { serialize } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
 import { mnemonicToSeed } from 'bip39';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'eth-... Remove this comment to see the full error message
 import { parse } from 'eth-url-parser';
 import {
   addHexPrefix,
@@ -25,9 +28,21 @@ import {
   Linking,
   NativeModules,
 } from 'react-native';
+// @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
 import URL from 'url-parse';
+import {
+  DEFAULT_HD_PATH,
+  EthereumPrivateKey,
+  identifyWalletType,
+  WalletLibraryType,
+} from '../model/wallet';
+import {
+  EthereumAddress,
+  ParsedAddressAsset,
+  RainbowTransaction,
+} from '@rainbow-me/entities';
 import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
 import {
   getProviderForNetwork,
@@ -35,7 +50,7 @@ import {
   toHex,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import networkTypes from '@rainbow-me/helpers/networkTypes';
+import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToPercentageDisplay,
@@ -47,11 +62,6 @@ import {
   subtract,
 } from '@rainbow-me/helpers/utilities';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
-import {
-  DEFAULT_HD_PATH,
-  identifyWalletType,
-  WalletLibraryType,
-} from '@rainbow-me/model/wallet';
 import { Navigation } from '@rainbow-me/navigation';
 import { parseAssetsNative } from '@rainbow-me/parsers';
 import store from '@rainbow-me/redux/store';
@@ -74,7 +84,7 @@ import logger from 'logger';
 
 const { RNBip39 } = NativeModules;
 
-const getNativeAssetAddressForNetwork = network => {
+const getNativeAssetAddressForNetwork = (network: Network): EthereumAddress => {
   let nativeAssetAddress;
   switch (network) {
     case networkTypes.arbitrum:
@@ -92,7 +102,10 @@ const getNativeAssetAddressForNetwork = network => {
   return nativeAssetAddress;
 };
 
-const getNativeAssetForNetwork = async (network, address) => {
+const getNativeAssetForNetwork = async (
+  network: Network,
+  address: EthereumAddress
+): Promise<ParsedAddressAsset> => {
   const nativeAssetAddress = getNativeAssetAddressForNetwork(network);
   const { accountAddress } = store.getState().settings;
   let differentWallet = toLower(address) !== toLower(accountAddress);
@@ -105,7 +118,7 @@ const getNativeAssetForNetwork = async (network, address) => {
     const { genericAssets } = store.getState().data;
     const mainnetAddress =
       network === networkTypes.polygon ? MATIC_MAINNET_ADDRESS : ETH_ADDRESS;
-    nativeAsset = genericAssets[mainnetAddress];
+    nativeAsset = genericAssets[mainnetAddress] as ParsedAddressAsset;
 
     if (network === networkTypes.polygon) {
       nativeAsset.mainnet_address = mainnetAddress;
@@ -125,15 +138,17 @@ const getNativeAssetForNetwork = async (network, address) => {
       balance,
     };
 
-    return assetWithBalance;
+    return assetWithBalance as ParsedAddressAsset;
   }
   return nativeAsset;
 };
 
-const getAsset = (assets, address = 'eth') =>
-  find(assets, matchesProperty('address', toLower(address)));
+const getAsset = (
+  assets: ParsedAddressAsset[],
+  address: EthereumAddress = ETH_ADDRESS
+) => find(assets, matchesProperty('address', toLower(address)));
 
-const getAssetPrice = (address = ETH_ADDRESS) => {
+const getAssetPrice = (address: EthereumAddress = ETH_ADDRESS) => {
   const { assets, genericAssets } = store.getState().data;
   const genericPrice = genericAssets[address]?.price?.value;
   return genericPrice || getAsset(assets, address)?.price?.value || 0;
@@ -142,6 +157,7 @@ const getAssetPrice = (address = ETH_ADDRESS) => {
 export const useEth = () => {
   return useSelector(
     ({
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
       data: {
         genericAssets: { [ETH_ADDRESS]: asset },
       },
@@ -150,14 +166,16 @@ export const useEth = () => {
 };
 
 export const useEthUSDPrice = () => {
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
   return useSelector(({ data: { ethUSDPrice } }) => ethUSDPrice);
 };
 
 export const useEthUSDMonthChart = () => {
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'charts' does not exist on type 'DefaultR... Remove this comment to see the full error message
   return useSelector(({ charts: { chartsEthUSDMonth } }) => chartsEthUSDMonth);
 };
 
-const getPriceOfNativeAssetForNetwork = network => {
+const getPriceOfNativeAssetForNetwork = (network: Network) => {
   return network === networkTypes.polygon
     ? getMaticPriceUnit()
     : getEthPriceUnit();
@@ -167,7 +185,7 @@ const getEthPriceUnit = () => getAssetPrice();
 
 const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
 
-const getBalanceAmount = (selectedGasFee, selected) => {
+const getBalanceAmount = (selectedGasFee: any, selected: any) => {
   const { assets } = store.getState().data;
   let amount =
     selected?.balance?.amount ??
@@ -185,9 +203,12 @@ const getBalanceAmount = (selectedGasFee, selected) => {
   return amount;
 };
 
-const getHash = txn => txn.hash.split('-').shift();
+const getHash = (txn: RainbowTransaction) => txn.hash?.split('-').shift();
 
-const formatGenericAsset = (asset, nativeCurrency) => {
+const formatGenericAsset = (
+  asset: ParsedAddressAsset,
+  nativeCurrency: string
+) => {
   return {
     ...asset,
     native: {
@@ -198,15 +219,17 @@ const formatGenericAsset = (asset, nativeCurrency) => {
         : '',
       price: convertAmountAndPriceToNativeDisplay(
         1,
-        asset?.price?.value,
+        asset?.price?.value || 0,
         nativeCurrency
       ),
     },
   };
 };
 
-export const checkWalletEthZero = assets => {
+export const checkWalletEthZero = (assets: ParsedAddressAsset) => {
+  // @ts-ignore
   const ethAsset = find(assets, asset => asset.address === ETH_ADDRESS);
+  // @ts-ignore
   let amount = ethAsset?.balance?.amount ?? 0;
   return isZero(amount);
 };
@@ -216,7 +239,7 @@ export const checkWalletEthZero = assets => {
  * @param  {String} hex
  * @return {String}
  */
-const removeHexPrefix = hex => replace(toLower(hex), '0x', '');
+const removeHexPrefix = (hex: any) => replace(toLower(hex), '0x', '');
 
 /**
  * @desc pad string to specific width and padding
@@ -225,7 +248,7 @@ const removeHexPrefix = hex => replace(toLower(hex), '0x', '');
  * @param  {String} z
  * @return {String}
  */
-const padLeft = (n, width, z = '0') => {
+const padLeft = (n: any, width: any, z = '0') => {
   n = n + '';
   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 };
@@ -236,8 +259,9 @@ const padLeft = (n, width, z = '0') => {
  * @param  {Array}  arrVals
  * @return {String}
  */
-const getDataString = (func, arrVals) => {
+const getDataString = (func: any, arrVals: any) => {
   let val = '';
+  // eslint-disable-next-line @typescript-eslint/prefer-for-of
   for (let i = 0; i < arrVals.length; i++) val += padLeft(arrVals[i], 64);
   const data = func + val;
   return data;
@@ -247,7 +271,7 @@ const getDataString = (func, arrVals) => {
  * @desc get network string from chainId
  * @param  {Number} chainId
  */
-const getNetworkFromChainId = chainId => {
+const getNetworkFromChainId = (chainId: number) => {
   const networkData = find(chains, ['chain_id', chainId]);
   return networkData?.network ?? networkTypes.mainnet;
 };
@@ -256,7 +280,7 @@ const getNetworkFromChainId = chainId => {
  * @desc get network string from chainId
  * @param  {Number} chainId
  */
-const getNetworkNameFromChainId = chainId => {
+const getNetworkNameFromChainId = (chainId: number): string | undefined => {
   const networkData = find(chains, ['chain_id', chainId]);
   return networkData?.name;
 };
@@ -265,7 +289,7 @@ const getNetworkNameFromChainId = chainId => {
  * @desc get chainId from network string
  * @param  {String} network
  */
-const getChainIdFromNetwork = network => {
+const getChainIdFromNetwork = (network: Network): number => {
   const chainData = find(chains, ['network', network]);
   return chainData?.chain_id ?? 1;
 };
@@ -274,7 +298,7 @@ const getChainIdFromNetwork = network => {
  * @desc get etherscan host from network string
  * @param  {String} network
  */
-function getEtherscanHostForNetwork(network) {
+function getEtherscanHostForNetwork(network: Network): string {
   const base_host = 'etherscan.io';
   if (network === networkTypes.optimism) {
     return OPTIMISM_BLOCK_EXPLORER_URL;
@@ -294,12 +318,12 @@ function getEtherscanHostForNetwork(network) {
  * @param  {String} str
  * @return {Boolean}
  */
-const isEthAddress = str => {
+const isEthAddress = (str: string) => {
   const withHexPrefix = addHexPrefix(str);
   return isValidAddress(withHexPrefix);
 };
 
-const fetchTxWithAlwaysCache = async address => {
+const fetchTxWithAlwaysCache = async (address: EthereumAddress) => {
   const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&tag=oldest&page=1&offset=1&apikey=${ETHERSCAN_API_KEY}`;
   const cachedTxTime = await AsyncStorage.getItem(`first-tx-${address}`);
   if (cachedTxTime) {
@@ -312,7 +336,7 @@ const fetchTxWithAlwaysCache = async address => {
   return txTime;
 };
 
-export const daysFromTheFirstTx = address => {
+export const daysFromTheFirstTx = (address: EthereumAddress) => {
   return new Promise(async resolve => {
     try {
       if (address === 'eth') {
@@ -332,7 +356,9 @@ export const daysFromTheFirstTx = address => {
  * @param  {String} address
  * @return {Promise<Boolean>}
  */
-const hasPreviousTransactions = address => {
+const hasPreviousTransactions = (
+  address: EthereumAddress
+): Promise<boolean> => {
   return new Promise(async resolve => {
     try {
       const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&tag=latest&page=1&offset=1&apikey=${ETHERSCAN_API_KEY}`;
@@ -351,12 +377,14 @@ const hasPreviousTransactions = address => {
   });
 };
 
-const checkIfUrlIsAScam = async url => {
+const checkIfUrlIsAScam = async (url: string) => {
   try {
     const request = await fetch('https://api.cryptoscamdb.org/v1/scams');
     const { result } = await request.json();
     const { hostname } = new URL(url);
-    const found = result.find(s => toLower(s.name) === toLower(hostname));
+    const found = result.find(
+      (s: any) => toLower(s.name) === toLower(hostname)
+    );
     if (found) {
       return true;
     }
@@ -367,7 +395,7 @@ const checkIfUrlIsAScam = async url => {
   }
 };
 
-const deriveAccountFromMnemonic = async (mnemonic, index = 0) => {
+const deriveAccountFromMnemonic = async (mnemonic: string, index = 0) => {
   let seed;
   if (ios) {
     seed = await mnemonicToSeed(mnemonic);
@@ -389,7 +417,7 @@ const deriveAccountFromMnemonic = async (mnemonic, index = 0) => {
   };
 };
 
-const deriveAccountFromPrivateKey = privateKey => {
+const deriveAccountFromPrivateKey = (privateKey: EthereumPrivateKey) => {
   const ethersWallet = new Wallet(addHexPrefix(privateKey));
   return {
     address: ethersWallet.address,
@@ -401,7 +429,7 @@ const deriveAccountFromPrivateKey = privateKey => {
   };
 };
 
-const deriveAccountFromWalletInput = input => {
+const deriveAccountFromWalletInput = (input: any) => {
   const type = identifyWalletType(input);
   if (type === WalletTypes.privateKey) {
     return deriveAccountFromPrivateKey(input);
@@ -419,7 +447,7 @@ const deriveAccountFromWalletInput = input => {
   return deriveAccountFromMnemonic(input);
 };
 
-function getBlockExplorer(network) {
+function getBlockExplorer(network: Network) {
   switch (network) {
     case networkTypes.mainnet:
       return 'etherscan';
@@ -434,25 +462,28 @@ function getBlockExplorer(network) {
   }
 }
 
-function openAddressInBlockExplorer(address, network) {
+function openAddressInBlockExplorer(
+  address: EthereumAddress,
+  network: Network
+) {
   const etherscanHost = getEtherscanHostForNetwork(network);
   Linking.openURL(`https://${etherscanHost}/address/${address}`);
 }
 
-function openTokenEtherscanURL(address, network) {
+function openTokenEtherscanURL(address: EthereumAddress, network: Network) {
   if (!isString(address)) return;
   const etherscanHost = getEtherscanHostForNetwork(network);
   Linking.openURL(`https://${etherscanHost}/token/${address}`);
 }
 
-function openTransactionInBlockExplorer(hash, network) {
+function openTransactionInBlockExplorer(hash: string, network: Network) {
   const normalizedHash = hash.replace(/-.*/g, '');
   if (!isString(hash)) return;
   const etherscanHost = getEtherscanHostForNetwork(network);
   Linking.openURL(`https://${etherscanHost}/tx/${normalizedHash}`);
 }
 
-async function parseEthereumUrl(data) {
+async function parseEthereumUrl(data: string) {
   let ethUrl;
   try {
     ethUrl = parse(data);
@@ -464,8 +495,8 @@ async function parseEthereumUrl(data) {
   const functionName = ethUrl.function_name;
   let asset = null;
   const network = getNetworkFromChainId(Number(ethUrl.chain_id || 1));
-  let address = null;
-  let nativeAmount = null;
+  let address: any = null;
+  let nativeAmount: any = null;
   const { nativeCurrency } = store.getState().settings;
 
   while (store.getState().data.isLoadingAssets) {
@@ -475,9 +506,12 @@ async function parseEthereumUrl(data) {
 
   if (!functionName) {
     // Send native asset
-    const nativeAssetAddress = getNativeAssetAddressForNetwork(network);
+    const nativeAssetAddress = getNativeAssetAddressForNetwork(
+      network as Network
+    );
     asset = getAsset(assets, toLower(nativeAssetAddress));
 
+    // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
       Alert.alert(
         'Ooops!',
@@ -490,6 +524,7 @@ async function parseEthereumUrl(data) {
   } else if (functionName === 'transfer') {
     // Send ERC-20
     asset = getAsset(assets, toLower(ethUrl.target_address));
+    // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
       Alert.alert(
         'Ooops!',
@@ -524,19 +559,28 @@ async function parseEthereumUrl(data) {
   });
 }
 
-const calculateL1FeeOptimism = async (tx, provider) => {
+const calculateL1FeeOptimism = async (
+  tx: RainbowTransaction,
+  provider: Provider
+) => {
   try {
-    tx.value = toHex(tx.value);
-    tx.nonce = Number(await provider.getTransactionCount(tx.from));
+    tx.value = toHex(tx.value as BigNumberish);
+    tx.nonce = Number(
+      await provider.getTransactionCount(tx.from as EthereumAddress)
+    );
+    // @ts-ignore
     delete tx.from;
+    // @ts-ignore
     delete tx.gas;
-    tx.to = toChecksumAddress(tx.to);
+    tx.to = toChecksumAddress(tx.to as EthereumAddress);
     tx.gasLimit =
-      toHex(tx.gasLimit) ||
+      toHex(tx.gasLimit as BigNumberish) ||
       toHex(tx.data === '0x' ? ethUnits.basic_tx : ethUnits.basic_transfer);
+    // @ts-expect-error ts-migrate(2551) FIXME: Property 'selectedGasPrice' does not exist on type... Remove this comment to see the full error message
     const currentGasPrice = store.getState().gas.selectedGasPrice?.value
       ?.amount;
     if (currentGasPrice) tx.gasPrice = toHex(currentGasPrice);
+    // @ts-ignore
     const serializedTx = serialize(tx);
 
     const OVM_GasPriceOracle = new Contract(

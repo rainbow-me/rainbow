@@ -1,11 +1,14 @@
 import { checkIsValidAddressOrDomain } from '../helpers/validators';
+import { EthereumAddress } from '@rainbow-me/entities';
 
 /**
  * @desc get ethereum address from raw QR Code data
  * @param  {String}  data - qr code data
  * @return {String}  address - ethereum address
  */
-export const getEthereumAddressFromQRCodeData = async data => {
+export const getEthereumAddressFromQRCodeData = async (
+  data: string
+): Promise<EthereumAddress | null> => {
   if (!data) return null;
 
   const parts = data.split(':');

@@ -1,12 +1,13 @@
 import { isValidDomainFormat } from '../helpers/validators';
+import { EthereumAddress } from '@rainbow-me/entities';
 
 const defaultNumCharsPerSection = 6;
 
 export function address(
-  currentAddress,
+  currentAddress: EthereumAddress,
   truncationLength = defaultNumCharsPerSection,
-  firstSectionLength
-) {
+  firstSectionLength: any
+): string | undefined {
   if (!currentAddress) return;
 
   return [
@@ -16,16 +17,19 @@ export function address(
 }
 
 export function formatAddressForDisplay(
-  text,
+  text: string,
   truncationLength = 4,
   firstSectionLength = 10
-) {
+): string | undefined {
   return isValidDomainFormat(text)
     ? text
     : address(text, truncationLength, firstSectionLength);
 }
 
-export function abbreviateEnsForDisplay(text, truncationLength = 20) {
+export function abbreviateEnsForDisplay(
+  text: string,
+  truncationLength = 20
+): string | null {
   if (typeof text !== 'string' || !isValidDomainFormat(text)) {
     return null;
   }
@@ -37,7 +41,7 @@ export function abbreviateEnsForDisplay(text, truncationLength = 20) {
   }
 }
 
-export function isAddress(currentAddress) {
+export function isAddress(currentAddress: any): boolean {
   return (
     (currentAddress || '').substring(0, 2) === '0x' &&
     (currentAddress || '').indexOf('...') > -1

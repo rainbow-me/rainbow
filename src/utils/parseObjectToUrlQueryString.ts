@@ -1,6 +1,6 @@
 import { keys } from 'lodash';
 
-export default params =>
+export default (params: any) =>
   keys(params)
     .map(key => {
       const encodedKey = encodeURIComponent(key);

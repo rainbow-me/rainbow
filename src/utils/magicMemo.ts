@@ -2,7 +2,11 @@ import { pick } from 'lodash';
 import React from 'react';
 import isEqual from 'react-fast-compare';
 
-export default function magicMemo(Component, deps, customComparisonFunc) {
+export default function magicMemo(
+  Component: any,
+  deps: any,
+  customComparisonFunc: any
+) {
   return React.memo(Component, (prev, next) => {
     const magicDeps = typeof deps === 'string' ? [deps] : deps;
     const magicPrev = pick(prev, magicDeps);

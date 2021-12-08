@@ -3,19 +3,19 @@ import { isString } from 'lodash';
 
 const grapheme = new GraphemeSplitter();
 
-const firstCharacterOfString = n => n.charAt(0);
+const firstCharacterOfString = (n: string) => n.charAt(0);
 
-export const getFirstGrapheme = string => {
+export const getFirstGrapheme = (string: string) => {
   if (!string) return '';
   return grapheme.splitGraphemes(string)[0];
 };
 
-export const initials = string =>
+export const initials = (string: string) =>
   !string || !isString(string)
     ? '?'
     : string.split(' ').map(firstCharacterOfString).join('');
 
-export function removeLeadingZeros(value = '') {
+export function removeLeadingZeros(value = ''): string {
   if (
     value.length > 1 &&
     value.substring(0, 1) === '0' &&
@@ -38,13 +38,13 @@ export function removeLeadingZeros(value = '') {
   return value;
 }
 
-export function sanitizeSeedPhrase(string) {
+export function sanitizeSeedPhrase(string: string): string {
   // trim extraneous whitespaces + remove new lines / line breaks
   return string
     .replace(/(\r\n|\n|\r)/gm, ' ')
     .trim()
     .split(' ')
-    .filter(word => !!word)
+    .filter((word: any) => !!word)
     .join(' ');
 }
 
