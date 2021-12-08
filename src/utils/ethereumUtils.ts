@@ -518,9 +518,7 @@ async function parseEthereumUrl(data: string) {
 
   if (!functionName) {
     // Send native asset
-    const nativeAssetAddress = getNativeAssetAddressForNetwork(
-      network as Network
-    );
+    const nativeAssetAddress = getNativeAssetAddressForNetwork(network);
     asset = getAsset(assets, toLower(nativeAssetAddress));
 
     // @ts-ignore
