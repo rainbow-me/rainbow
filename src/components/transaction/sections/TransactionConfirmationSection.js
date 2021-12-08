@@ -21,7 +21,7 @@ const AmountRow = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   end: { x: 0, y: 0.5 },
   start: { x: 1, y: 0.5 },
 }))`
-  ${padding(7, 12, 9, 11)};
+  ${padding(android ? 1 : 7, 12, android ? 2 : 9, 11)};
   border-radius: 40;
   margin: auto;
   margin-bottom: 17;
@@ -35,8 +35,8 @@ const NativeAmount = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'headline',
   weight: 'heavy',
 }))`
-  margin-bottom: 10;
-  margin-top: 19;
+  margin-bottom: ${android ? -10 : 10};
+  margin-top: ${android ? 0 : 19};
 `;
 
 export default function TransactionConfirmationSection({

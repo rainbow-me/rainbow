@@ -34,7 +34,7 @@ const Title = styled(TruncatedText).attrs({
   height: 21;
 `;
 
-export default function CurrencySelectModalHeader({ testID }) {
+export default function CurrencySelectModalHeader({ setSearchQuery, testID }) {
   const { navigate, dangerouslyGetState } = useNavigation();
   const {
     params: { setPointerEvents, title },
@@ -44,8 +44,9 @@ export default function CurrencySelectModalHeader({ testID }) {
     dangerouslyGetState().index = 1;
     setPointerEvents(false);
     delayNext();
+    setSearchQuery('');
     navigate(Routes.MAIN_EXCHANGE_SCREEN);
-  }, [dangerouslyGetState, navigate, setPointerEvents]);
+  }, [dangerouslyGetState, navigate, setPointerEvents, setSearchQuery]);
 
   return (
     <HeaderContainer>

@@ -10,10 +10,11 @@ import ShadowStack from 'react-native-shadow-stack';
 const Label = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.whiteLabel,
+  lineHeight: 'looser',
   size: 'larger',
-  weight: 'bold',
+  weight: 'heavy',
 }))`
-  margin-bottom: 4;
+  bottom: 2;
 `;
 
 export default function ShareButton({ accountAddress, ...props }) {

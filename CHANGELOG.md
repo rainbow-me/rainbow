@@ -12,6 +12,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.40](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.40)
+
+### Changed
+* Fix Speed up and cancel sheet bug
+
+## [1.5.39](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.39)
+
+### Changed
+* Full fix for deeplink send bug
+
+## [1.5.37](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.37)
+
+### Added
+* Design System
+
+### Changed
+* Fixed Deeplink Send Bug
+
 ## [1.5.36](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.36)
 
 ### Added
