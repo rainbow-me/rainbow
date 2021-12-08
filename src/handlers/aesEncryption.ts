@@ -5,29 +5,34 @@ export default class AesEncryptor {
   generateSalt(byteCount = 32) {
     const view = new Uint8Array(byteCount);
     global.crypto.getRandomValues(view);
+    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     const b64encoded = btoa(String.fromCharCode.apply(null, view));
     return b64encoded;
   }
 
-  generateKey = (password, salt) =>
+  generateKey = (password: any, salt: any) =>
+    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android
       ? AesEncryption.pbkdf2(password, salt, 5000, 256)
       : AesEncryption.pbkdf2(password, salt);
 
-  keyFromPassword = (password, salt) => this.generateKey(password, salt);
+  keyFromPassword = (password: any, salt: any) =>
+    this.generateKey(password, salt);
 
-  encryptWithKey = (text, keyBase64) => {
+  encryptWithKey = (text: any, keyBase64: any) => {
     const ivBase64 = this.generateSalt(32);
-    return AesEncryption.encrypt(text, keyBase64, ivBase64).then(cipher => ({
-      cipher,
-      iv: ivBase64,
-    }));
+    return AesEncryption.encrypt(text, keyBase64, ivBase64).then(
+      (cipher: any) => ({
+        cipher,
+        iv: ivBase64,
+      })
+    );
   };
 
-  decryptWithKey = (encryptedData, key) =>
+  decryptWithKey = (encryptedData: any, key: any) =>
     AesEncryption.decrypt(encryptedData.cipher, key, encryptedData.iv);
 
-  encrypt = async (password, string) => {
+  encrypt = async (password: any, string: any) => {
     try {
       const salt = this.generateSalt(16);
       const key = await this.keyFromPassword(password, salt);
@@ -38,7 +43,7 @@ export default class AesEncryptor {
     } catch (e) {}
   };
 
-  decrypt = async (password, encryptedString) => {
+  decrypt = async (password: any, encryptedString: any) => {
     try {
       const encryptedData = JSON.parse(encryptedString);
       const key = await this.keyFromPassword(password, encryptedData.salt);

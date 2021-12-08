@@ -7,5 +7,5 @@ const WALLET_BALANCES = 'walletBalances';
 
 export const getWalletBalances = () => getGlobal(WALLET_BALANCES, {});
 
-export const saveWalletBalances = walletBalances =>
+export const saveWalletBalances = (walletBalances: any) =>
   saveGlobal(WALLET_BALANCES, walletBalances);

@@ -115,7 +115,6 @@ export const estimateSwapGasLimit = async ({
       methodNames.map((methodName: string) =>
         estimateGasWithPadding(
           params,
-          // @ts-ignore
           exchange.estimateGas[methodName],
           updatedMethodArgs
         )
