@@ -120,6 +120,8 @@ const GasSpeedButton = ({
   showGasOptions = false,
   testID,
   theme = 'dark',
+  canGoBack = true,
+  validateGasParams,
 }) => {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
@@ -138,9 +140,10 @@ const GasSpeedButton = ({
 
   const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
   const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
-  const [shouldOpenCustomGasSheet, setShouldOpenCustomGasSheet] = useState(
-    false
-  );
+  const [shouldOpenCustomGasSheet, setShouldOpenCustomGasSheet] = useState({
+    focusTo: null,
+    shouldOpen: false,
+  });
   const prevShouldOpenCustomGasSheet = usePrevious(shouldOpenCustomGasSheet);
 
   // Because of the animated number component
@@ -193,19 +196,31 @@ const GasSpeedButton = ({
     [isL2, nativeCurrencySymbol, nativeCurrency]
   );
 
+  const openCustomOptions = useCallback(
+    focusTo => {
+      android && Keyboard.dismiss();
+      setShouldOpenCustomGasSheet({ focusTo, shouldOpen: true });
+    },
+    [setShouldOpenCustomGasSheet]
+  );
+
   const openCustomGasSheet = useCallback(() => {
     if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
       asset,
+      focusTo: shouldOpenCustomGasSheet.focusTo,
+      openCustomOptions: focusTo => openCustomOptions(focusTo),
       speeds: speeds ?? GasSpeedOrder,
       type: 'custom_gas',
     });
-  }, [gasIsNotReady, navigate, asset, speeds]);
-
-  const openCustomOptions = useCallback(() => {
-    android && Keyboard.dismiss();
-    setShouldOpenCustomGasSheet(true);
-  }, [setShouldOpenCustomGasSheet]);
+  }, [
+    gasIsNotReady,
+    navigate,
+    asset,
+    shouldOpenCustomGasSheet.focusTo,
+    speeds,
+    openCustomOptions,
+  ]);
 
   const renderGasPriceText = useCallback(
     animatedNumber => {
@@ -356,8 +371,12 @@ const GasSpeedButton = ({
   ]);
 
   const onDonePress = useCallback(() => {
-    goBack();
-  }, [goBack]);
+    if (canGoBack) {
+      goBack();
+    } else {
+      validateGasParams?.current?.(goBack);
+    }
+  }, [canGoBack, goBack, validateGasParams]);
 
   const onPressAndroid = useCallback(() => {
     if (gasIsNotReady) return;
@@ -436,9 +455,12 @@ const GasSpeedButton = ({
   // would make the expanded sheet come up with too much force
   // instead calling it from `useEffect` makes it appear smoothly
   useEffect(() => {
-    if (shouldOpenCustomGasSheet && !prevShouldOpenCustomGasSheet) {
+    if (
+      shouldOpenCustomGasSheet.shouldOpen &&
+      !prevShouldOpenCustomGasSheet.shouldOpen
+    ) {
       openCustomGasSheet();
-      setShouldOpenCustomGasSheet(false);
+      setShouldOpenCustomGasSheet({ focusTo: null, shouldOpen: false });
     }
   }, [
     openCustomGasSheet,
@@ -526,6 +548,7 @@ const GasSpeedButton = ({
               <CustomGasButton
                 borderColor={colorForAsset}
                 onPress={onDonePress}
+                testID="gas-speed-done-button"
               >
                 <DoneCustomGas
                   color={
