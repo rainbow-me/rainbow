@@ -1,8 +1,8 @@
 // For a given string, will always return same item from an array.
-export default function pseudoRandomArrayItemFromString(
+export default function pseudoRandomArrayItemFromString<T>(
   string: string,
-  array: any[]
-) {
+  array: T[]
+): T | null {
   if (!string) return null;
 
   const numberFromString = [...string]

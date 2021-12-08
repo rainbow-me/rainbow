@@ -52,6 +52,7 @@ export interface ParsedAddressAsset extends Asset {
   id: string;
   uniqueId: string;
   mainnet_address?: EthereumAddress;
+  isNativeAsset?: boolean;
 }
 
 export interface UniswapCurrency extends ParsedAddressAsset {

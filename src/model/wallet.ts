@@ -62,7 +62,7 @@ const encryptor = new AesEncryptor();
 export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
 type EthereumSeed = string;
-type EthereumWalletSeed =
+export type EthereumWalletSeed =
   | EthereumAddress
   | EthereumPrivateKey
   | EthereumMnemonic

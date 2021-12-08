@@ -33,6 +33,7 @@ import { useSelector } from 'react-redux';
 import URL from 'url-parse';
 import {
   EthereumAddress,
+  LegacySelectedGasFee,
   ParsedAddressAsset,
   RainbowTransaction,
 } from '@rainbow-me/entities';
@@ -58,6 +59,7 @@ import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
   DEFAULT_HD_PATH,
   EthereumPrivateKey,
+  EthereumWalletSeed,
   identifyWalletType,
   WalletLibraryType,
 } from '@rainbow-me/model/wallet';
@@ -80,6 +82,7 @@ import {
 } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
+import { BigNumberish } from '@ethersproject/bignumber';
 
 const { RNBip39 } = NativeModules;
 
@@ -150,13 +153,13 @@ const getAsset = (
   address: EthereumAddress = ETH_ADDRESS
 ) => find(assets, matchesProperty('address', toLower(address)));
 
-const getAssetPrice = (address: EthereumAddress = ETH_ADDRESS) => {
+const getAssetPrice = (address: EthereumAddress = ETH_ADDRESS): number => {
   const { assets, genericAssets } = store.getState().data;
   const genericPrice = genericAssets[address]?.price?.value;
   return genericPrice || getAsset(assets, address)?.price?.value || 0;
 };
 
-export const useEth = () => {
+export const useEth = (): ParsedAddressAsset => {
   return useSelector(
     ({
       // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
@@ -167,12 +170,12 @@ export const useEth = () => {
   );
 };
 
-export const useEthUSDPrice = () => {
+export const useEthUSDPrice = (): number => {
   // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
   return useSelector(({ data: { ethUSDPrice } }) => ethUSDPrice);
 };
 
-export const useEthUSDMonthChart = () => {
+export const useEthUSDMonthChart = (): number => {
   // @ts-expect-error ts-migrate(2339) FIXME: Property 'charts' does not exist on type 'DefaultR... Remove this comment to see the full error message
   return useSelector(({ charts: { chartsEthUSDMonth } }) => chartsEthUSDMonth);
 };
@@ -185,7 +188,10 @@ const getEthPriceUnit = () => getAssetPrice();
 
 const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
 
-const getBalanceAmount = (selectedGasFee: any, selected: any) => {
+const getBalanceAmount = (
+  selectedGasFee: LegacySelectedGasFee,
+  selected: ParsedAddressAsset
+) => {
   const { assets } = store.getState().data;
   let amount =
     selected?.balance?.amount ??
@@ -239,7 +245,7 @@ export const checkWalletEthZero = (assets: ParsedAddressAsset) => {
  * @param  {String} hex
  * @return {String}
  */
-const removeHexPrefix = (hex: any) => replace(toLower(hex), '0x', '');
+const removeHexPrefix = (hex: string) => replace(toLower(hex), '0x', '');
 
 /**
  * @desc pad string to specific width and padding
@@ -248,7 +254,7 @@ const removeHexPrefix = (hex: any) => replace(toLower(hex), '0x', '');
  * @param  {String} z
  * @return {String}
  */
-const padLeft = (n: any, width: any, z = '0') => {
+const padLeft = (n: string, width: number, z = '0') => {
   n = n + '';
   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 };
@@ -259,7 +265,7 @@ const padLeft = (n: any, width: any, z = '0') => {
  * @param  {Array}  arrVals
  * @return {String}
  */
-const getDataString = (func: any, arrVals: any) => {
+const getDataString = (func: string, arrVals: string[]) => {
   let val = '';
   // eslint-disable-next-line @typescript-eslint/prefer-for-of
   for (let i = 0; i < arrVals.length; i++) val += padLeft(arrVals[i], 64);
@@ -429,7 +435,7 @@ const deriveAccountFromPrivateKey = (privateKey: EthereumPrivateKey) => {
   };
 };
 
-const deriveAccountFromWalletInput = (input: any) => {
+const deriveAccountFromWalletInput = (input: EthereumWalletSeed) => {
   const type = identifyWalletType(input);
   if (type === WalletTypes.privateKey) {
     return deriveAccountFromPrivateKey(input);
@@ -560,7 +566,7 @@ async function parseEthereumUrl(data: string) {
 const calculateL1FeeOptimism = async (
   tx: RainbowTransaction,
   provider: Provider
-) => {
+): Promise<BigNumberish | undefined> => {
   try {
     if (tx.value) {
       tx.value = toHex(tx.value);
