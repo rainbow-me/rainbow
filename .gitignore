@@ -93,3 +93,6 @@ patches/react-native-webview+11.2.3.patch
 
 .eslintcache
 .next
+
+# Ts-coverage
+coverage-ts
