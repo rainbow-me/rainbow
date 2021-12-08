@@ -10,6 +10,8 @@ import colors from '../context/currentColors';
 import { explainers, ExplainSheetHeight } from '../screens/ExplainSheet';
 import { SendConfirmationSheetHeight } from '../screens/SendConfirmationSheet';
 import { onWillPop } from './Navigation';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { fonts } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
@@ -128,14 +130,15 @@ export const sendConfirmationSheetConfig = {
 };
 
 export const explainSheetConfig = {
-  options: ({ route: { params = {} } }) => {
+  options: ({
+    route: { params = { network: networkInfo[networkTypes.mainnet].name } },
+  }) => {
+    const explainerConfig = explainers(params.network)[params?.type];
     return buildCoolModalConfig({
       ...params,
       longFormHeight:
         ExplainSheetHeight +
-        (explainers[params?.type]?.extraHeight
-          ? explainers[params?.type]?.extraHeight
-          : 0),
+        (explainerConfig?.extraHeight ? explainerConfig?.extraHeight : 0),
     });
   },
 };
