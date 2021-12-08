@@ -44,7 +44,13 @@
     },
     "resolveJsonModule": true
   },
-  "globals": ["useTheme"],
+  "globals": [
+    "useTheme", 
+    "ios", 
+    "android", 
+    "__DEV__", 
+    "IS_DEV" 
+  ],
   "exclude": [
     "ios",
     "patches/reanimated",
