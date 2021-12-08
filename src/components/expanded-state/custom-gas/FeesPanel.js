@@ -543,7 +543,7 @@ export default function FeesPanel({
     stopPriorityFeeTimeout();
     startPriorityFeeTimeout(() => {
       if (!maxPriorityFee) {
-        setMaxPriorityFeeError('0 Gwei to avoid failure');
+        setMaxPriorityFeeError('1 Gwei to avoid failure');
       } else {
         setMaxPriorityFeeError(null);
       }
