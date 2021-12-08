@@ -1,16 +1,5 @@
 import BigNumber from 'bignumber.js';
 import { map, zipObject } from 'lodash';
-import { getMinimalTimeUnitStringForMs } from '../helpers/time';
-import {
-  add,
-  convertRawAmountToBalance,
-  convertRawAmountToNativeDisplay,
-  divide,
-  greaterThan,
-  multiply,
-} from '../helpers/utilities';
-import ethUnits from '../references/ethereum-units.json';
-import timeUnits from '../references/time-units.json';
 import { gasUtils } from '../utils';
 import {
   ConfirmationTimeByPriorityFee,
@@ -19,6 +8,7 @@ import {
   GasFeeParamsBySpeed,
   GasFeesBySpeed,
   GasPricesAPIData,
+  LegacyGasFeeParams,
   LegacyGasFeeParamsBySpeed,
   LegacyGasFeesBySpeed,
   LegacySelectedGasFee,
@@ -29,25 +19,23 @@ import {
 } from '@rainbow-me/entities';
 import { toHex } from '@rainbow-me/handlers/web3';
 import { Network } from '@rainbow-me/helpers/networkTypes';
+import { getMinimalTimeUnitStringForMs } from '@rainbow-me/helpers/time';
+import { ethUnits, timeUnits } from '@rainbow-me/references';
+import {
+  add,
+  convertRawAmountToBalance,
+  convertRawAmountToNativeDisplay,
+  divide,
+  greaterThan,
+  multiply,
+  toFixedDecimals,
+} from '@rainbow-me/utilities';
 
 type BigNumberish = number | string | BigNumber;
 
 const { CUSTOM, FAST, GasSpeedOrder, NORMAL, URGENT } = gasUtils;
 
-/**
- * @desc parse ether gas prices
- * @param {Object} data
- * @param {Boolean} short - use short format or not
- */
-export const getFallbackGasPrices = () => ({
-  [CUSTOM]: null,
-  [FAST]: defaultGasPriceFormat(FAST, '2.5', '100'),
-  [NORMAL]: defaultGasPriceFormat(NORMAL, '2.5', '100'),
-  [URGENT]: defaultGasPriceFormat(URGENT, '0.5', '200'),
-});
-
 const parseOtherL2GasPrices = (data: GasPricesAPIData) => ({
-  [CUSTOM]: null,
   [FAST]: defaultGasPriceFormat(FAST, data.avgWait, data.average),
   [NORMAL]: defaultGasPriceFormat(NORMAL, data.avgWait, data.average),
   [URGENT]: defaultGasPriceFormat(URGENT, data.fastWait, data.fast),
@@ -172,7 +160,6 @@ export const parseRainbowMeteorologyData = (
 const parseGasPricesPolygonGasStation = (data: GasPricesAPIData) => {
   const polygonGasPriceBumpFactor = 1.05;
   return {
-    [CUSTOM]: null,
     [FAST]: defaultGasPriceFormat(
       FAST,
       0.5,
@@ -196,8 +183,11 @@ const parseGasPricesPolygonGasStation = (data: GasPricesAPIData) => {
  * @param {Object} data
  * @param {String} network
  */
-export const parseL2GasPrices = (data: GasPricesAPIData, network: Network) => {
-  if (!data) return getFallbackGasPrices();
+export const parseL2GasPrices = (
+  data: GasPricesAPIData,
+  network: Network
+): LegacyGasFeeParamsBySpeed | null => {
+  if (!data) return null;
   switch (network) {
     case Network.polygon:
       return parseGasPricesPolygonGasStation(data);
@@ -212,17 +202,18 @@ export const defaultGasPriceFormat = (
   option: string,
   timeWait: Numberish,
   value: Numberish
-) => {
+): LegacyGasFeeParams => {
   const timeAmount = multiply(timeWait, timeUnits.ms.minute);
   const weiAmount = multiply(value, ethUnits.gwei);
   return {
     estimatedTime: {
-      amount: timeAmount,
+      amount: Number(timeAmount),
       display: getMinimalTimeUnitStringForMs(timeAmount),
     },
     gasPrice: {
-      amount: Math.round(Number(weiAmount)),
-      display: `${parseInt(value.toString(), 10)} Gwei`,
+      amount: weiAmount,
+      display: `${toFixedDecimals(value, 0)} Gwei`,
+      gwei: toFixedDecimals(value, 0),
     },
     option,
   };
