@@ -440,8 +440,13 @@ export default function FeesPanel({
 
   useEffect(() => {
     const navigationRoutes = dangerouslyGetState().routes;
-    const lastRoute = navigationRoutes?.[navigationRoutes.length - 1]?.name;
-    if (lastRoute === 'ExplainSheet') {
+    const lastRouteName = navigationRoutes?.[navigationRoutes.length - 1]?.name;
+    const lastRouteType =
+      navigationRoutes?.[navigationRoutes.length - 1]?.params?.type;
+    if (
+      lastRouteName === 'ExplainSheet' &&
+      lastRouteType.includes('currentBaseFee')
+    ) {
       navigate(Routes.EXPLAIN_SHEET, {
         currentBaseFee: toFixedDecimals(currentBaseFee, 0),
         currentGasTrend,
@@ -523,11 +528,13 @@ export default function FeesPanel({
     <Wrapper>
       <PanelRowThin>
         <PanelColumn />
-        <PanelColumn>
-          <GasTrendHeader color={GAS_TRENDS[currentGasTrend]?.color}>
-            {GAS_TRENDS[currentGasTrend]?.label}
-          </GasTrendHeader>
-        </PanelColumn>
+        <ButtonPressAnimation onPress={() => openGasHelper(trendType)}>
+          <PanelColumn>
+            <GasTrendHeader color={GAS_TRENDS[currentGasTrend]?.color}>
+              {GAS_TRENDS[currentGasTrend]?.label}
+            </GasTrendHeader>
+          </PanelColumn>
+        </ButtonPressAnimation>
       </PanelRowThin>
 
       <PanelRow justify="space-between" marginBottom={18}>
