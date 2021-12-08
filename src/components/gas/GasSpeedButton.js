@@ -289,7 +289,8 @@ const GasSpeedButton = ({
 
   const openGasHelper = useCallback(() => {
     android && Keyboard.dismiss();
-    const networkName = networkInfo[currentNetwork].name;
+    const network = currentNetwork ?? networkTypes.mainnet;
+    const networkName = networkInfo[network].name;
     navigate(Routes.EXPLAIN_SHEET, { network: networkName, type: 'gas' });
   }, [currentNetwork, navigate]);
 
