@@ -196,10 +196,7 @@ const parseGasPricesPolygonGasStation = (data: GasPricesAPIData) => {
  * @param {Object} data
  * @param {String} network
  */
-export const parseLegacyGasPrices = (
-  data: GasPricesAPIData,
-  network: Network
-) => {
+export const parseL2GasPrices = (data: GasPricesAPIData, network: Network) => {
   if (!data) return getFallbackGasPrices();
   switch (network) {
     case Network.polygon:

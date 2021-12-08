@@ -40,8 +40,8 @@ import {
   parseGasFeeParam,
   parseGasFees,
   parseGasFeesBySpeed,
+  parseL2GasPrices,
   parseLegacyGasFeesBySpeed,
-  parseLegacyGasPrices,
   parseRainbowMeteorologyData,
   weiToGwei,
 } from '@rainbow-me/parsers';
@@ -341,7 +341,7 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
           } else if (network === Network.optimism) {
             adjustedGasFees = await getOptimismGasPrices();
           }
-          const gasFeeParamsBySpeed = parseLegacyGasPrices(
+          const gasFeeParamsBySpeed = parseL2GasPrices(
             adjustedGasFees,
             network
           );

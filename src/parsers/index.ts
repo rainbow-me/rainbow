@@ -8,7 +8,7 @@ export {
 } from './accounts';
 export {
   getFallbackGasPrices,
-  parseLegacyGasPrices,
+  parseL2GasPrices,
   parseGasFeesBySpeed,
   defaultGasPriceFormat,
   parseLegacyGasFeesBySpeed,
