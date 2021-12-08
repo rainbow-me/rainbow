@@ -162,7 +162,7 @@ struct PriceWidgetEntryView : View {
   var body: some View {
     PriceWidgetView(tokenData: entry.tokenData, date: entry.date)
       .widgetURL(URL.init(string:
-                            "https://rnbwappdotcom.app.link/token?addr=" + (entry.tokenData.tokenDetails?.address)!
+                            "https://rnbwapp.com/token?addr=" + (entry.tokenData.tokenDetails?.address)!
                          ))
   }
 }

@@ -39,15 +39,15 @@ export default async function handleDeeplink(url) {
       }
       case 'token': {
         const { dispatch } = store;
-        const { addr } = qs.parse(urlObj.query.substring(1));
-        const address = addr.toLowerCase();
+        const { addr } = qs.parse(urlObj.query?.substring(1));
+        const address = toLower(addr);
         if (address && address.length > 0) {
           const { assets: allAssets, genericAssets } = store.getState().data;
           const asset =
             Object.values(genericAssets).find(
               asset => address === asset.address.toLowerCase()
             ) ||
-            (address !== 'eth' &&
+            (address !== ETH_ADDRESS &&
               allAssets.find(asset => address === asset.address.toLowerCase()));
 
           const action = asset => {

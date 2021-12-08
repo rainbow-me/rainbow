@@ -739,8 +739,8 @@ export const assetPricesReceived = (message, fromFallback = false) => (
     const assetAddresses = Object.keys(parsedAssets);
 
     for (let address of assetAddresses) {
-      callbacksOnAssetReceived[address.toLowerCase()]?.(parsedAssets[address]);
-      callbacksOnAssetReceived[address.toLowerCase()] = undefined;
+      callbacksOnAssetReceived[toLower(address)]?.(parsedAssets[address]);
+      callbacksOnAssetReceived[toLower(address)] = undefined;
     }
 
     dispatch({
