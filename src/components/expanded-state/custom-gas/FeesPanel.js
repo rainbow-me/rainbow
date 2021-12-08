@@ -123,7 +123,7 @@ const FOCUS_TO_MAX_BASE_FEE = 'focusToMaxBaseFee';
 const FOCUS_TO_MINER_TIP = 'focusToMinerTip';
 
 const warningsAnimationConfig = {
-  duration: 50,
+  duration: 30,
   easing: Easing.linear,
 };
 
