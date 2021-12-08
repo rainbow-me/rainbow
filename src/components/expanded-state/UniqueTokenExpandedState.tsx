@@ -344,7 +344,7 @@ const UniqueTokenExpandedState = ({
                     </Row>
                     <UniqueTokenExpandedStateHeader asset={asset} />
                   </Stack>
-                  <Columns space="19px">
+                  <Columns space="15px">
                     <SheetActionButton
                       color={imageColor}
                       // @ts-expect-error JavaScript component
