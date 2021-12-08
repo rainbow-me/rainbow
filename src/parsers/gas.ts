@@ -323,22 +323,27 @@ export const parseGasFees = (
   priceUnit: BigNumberish,
   nativeCurrency: string
 ) => {
-  const {
-    maxPriorityFeePerGas: maxPriorityFeePerGasGwei,
-    maxFeePerGas: maxFeePerGasGwei,
-  } = gasFeeParams || {};
-
-  const priorityFee = maxPriorityFeePerGasGwei?.amount || 0;
-  const maxFeePerGasAmount = maxFeePerGasGwei?.amount || 0;
+  const { maxPriorityFeePerGas, maxFeePerGas } = gasFeeParams || {};
+  const priorityFee = maxPriorityFeePerGas?.amount || 0;
+  const maxFeePerGasAmount = maxFeePerGas?.amount || 0;
   const baseFeePerGasAmount = baseFeePerGas?.amount || 0;
+
+  // if user sets the max base fee to lower than the current base fee
+  const estimatedFeePerGas = greaterThan(
+    maxFeePerGasAmount,
+    baseFeePerGasAmount
+  )
+    ? baseFeePerGasAmount
+    : maxFeePerGasAmount;
+
   const maxFee = getTxFee(
-    Number(maxFeePerGasAmount) + Number(priorityFee),
+    add(maxFeePerGasAmount, priorityFee),
     gasLimit,
     priceUnit,
     nativeCurrency
   );
   const estimatedFee = getTxFee(
-    Number(baseFeePerGasAmount) + Number(priorityFee),
+    add(estimatedFeePerGas, priorityFee),
     gasLimit,
     priceUnit,
     nativeCurrency
