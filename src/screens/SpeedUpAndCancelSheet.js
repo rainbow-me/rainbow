@@ -28,7 +28,7 @@ import { Emoji, Text } from '../components/text';
 import { GasFeeTypes, TransactionStatusTypes } from '@rainbow-me/entities';
 import {
   getProviderForNetwork,
-  isEIP1559LegacyNetwork,
+  isL2Network,
   toHex,
 } from '@rainbow-me/handlers/web3';
 import { greaterThan } from '@rainbow-me/helpers/utilities';
@@ -328,7 +328,7 @@ export default function SpeedUpAndCancelSheet() {
           setData(hexData);
           setTo(tx.txTo);
           setGasLimit(hexGasLimit);
-          if (!isEIP1559LegacyNetwork(tx.network)) {
+          if (!isL2Network(tx.network)) {
             setTxType(GasFeeTypes.eip1559);
             const hexMaxPriorityFeePerGas = toHex(
               tx.maxPriorityFeePerGas.toString()

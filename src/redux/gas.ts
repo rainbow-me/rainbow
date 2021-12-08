@@ -28,8 +28,8 @@ import {
 } from '@rainbow-me/handlers/gasFees';
 import {
   getProviderForNetwork,
-  isEIP1559LegacyNetwork,
   isHardHat,
+  isL2Network,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
 import { Network } from '@rainbow-me/helpers/networkTypes';
@@ -330,9 +330,9 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
           gasFeeParamsBySpeed: existingGasFees,
           customGasFeeModifiedByUser,
         } = getState().gas;
-        const isLegacy = isEIP1559LegacyNetwork(network);
+        const isL2 = isL2Network(network);
 
-        if (isLegacy) {
+        if (isL2) {
           let adjustedGasFees;
           if (network === Network.polygon) {
             adjustedGasFees = await getPolygonGasPrices();
@@ -502,9 +502,9 @@ export const gasUpdateTxFee = (
   )
     return;
 
-  const isLegacyNetwork = isEIP1559LegacyNetwork(txNetwork);
+  const isL2 = isL2Network(txNetwork);
 
-  const gasFeesBySpeed = isLegacyNetwork
+  const gasFeesBySpeed = isL2
     ? parseLegacyGasFeesBySpeed(
         gasFeeParamsBySpeed,
         _gasLimit,
