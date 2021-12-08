@@ -25,6 +25,7 @@
       "@rainbow-me/hooks": ["src/hooks"],
       "@rainbow-me/images": ["src/components/images"],
       "@rainbow-me/model": ["src/model"],
+      "@rainbow-me/model/*": ["src/model/*"],
       "@rainbow-me/navigation": ["src/navigation"],
       "@rainbow-me/networkTypes": ["./src/helpers/networkTypes"],
       "@rainbow-me/parsers": ["src/parsers"],

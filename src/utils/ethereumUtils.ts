@@ -33,12 +33,6 @@ import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { useSelector } from 'react-redux';
 import URL from 'url-parse';
 import {
-  DEFAULT_HD_PATH,
-  EthereumPrivateKey,
-  identifyWalletType,
-  WalletLibraryType,
-} from '../model/wallet';
-import {
   EthereumAddress,
   ParsedAddressAsset,
   RainbowTransaction,
@@ -50,7 +44,7 @@ import {
   toHex,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
   convertAmountToPercentageDisplay,
@@ -62,6 +56,12 @@ import {
   subtract,
 } from '@rainbow-me/helpers/utilities';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import {
+  DEFAULT_HD_PATH,
+  EthereumPrivateKey,
+  identifyWalletType,
+  WalletLibraryType,
+} from '@rainbow-me/model/wallet';
 import { Navigation } from '@rainbow-me/navigation';
 import { parseAssetsNative } from '@rainbow-me/parsers';
 import store from '@rainbow-me/redux/store';
@@ -87,13 +87,13 @@ const { RNBip39 } = NativeModules;
 const getNativeAssetAddressForNetwork = (network: Network): EthereumAddress => {
   let nativeAssetAddress;
   switch (network) {
-    case networkTypes.arbitrum:
+    case Network.arbitrum:
       nativeAssetAddress = ARBITRUM_ETH_ADDRESS;
       break;
-    case networkTypes.optimism:
+    case Network.optimism:
       nativeAssetAddress = OPTIMISM_ETH_ADDRESS;
       break;
-    case networkTypes.polygon:
+    case Network.polygon:
       nativeAssetAddress = MATIC_POLYGON_ADDRESS;
       break;
     default:
@@ -105,40 +105,43 @@ const getNativeAssetAddressForNetwork = (network: Network): EthereumAddress => {
 const getNativeAssetForNetwork = async (
   network: Network,
   address: EthereumAddress
-): Promise<ParsedAddressAsset> => {
+): Promise<ParsedAddressAsset | undefined> => {
   const nativeAssetAddress = getNativeAssetAddressForNetwork(network);
   const { accountAddress } = store.getState().settings;
   let differentWallet = toLower(address) !== toLower(accountAddress);
   const { assets } = store.getState().data;
   let nativeAsset =
-    !differentWallet && getAsset(assets, toLower(nativeAssetAddress));
+    (!differentWallet && getAsset(assets, toLower(nativeAssetAddress))) ||
+    undefined;
 
   // If the asset is on a different wallet, or not available in this wallet
   if (differentWallet || !nativeAsset) {
     const { genericAssets } = store.getState().data;
     const mainnetAddress =
-      network === networkTypes.polygon ? MATIC_MAINNET_ADDRESS : ETH_ADDRESS;
-    nativeAsset = genericAssets[mainnetAddress] as ParsedAddressAsset;
-
-    if (network === networkTypes.polygon) {
-      nativeAsset.mainnet_address = mainnetAddress;
-      nativeAsset.address = MATIC_POLYGON_ADDRESS;
-    }
+      network === Network.polygon ? MATIC_MAINNET_ADDRESS : ETH_ADDRESS;
+    nativeAsset = genericAssets[mainnetAddress];
 
     const provider = await getProviderForNetwork(network);
-    const balance = await getOnchainAssetBalance(
-      nativeAsset,
-      address,
-      network,
-      provider
-    );
+    if (nativeAsset) {
+      if (network === Network.polygon) {
+        nativeAsset.mainnet_address = mainnetAddress;
+        nativeAsset.address = MATIC_POLYGON_ADDRESS;
+      }
+      const balance = await getOnchainAssetBalance(
+        nativeAsset,
+        address,
+        network,
+        provider
+      );
 
-    const assetWithBalance = {
-      ...nativeAsset,
-      balance,
-    };
-
-    return assetWithBalance as ParsedAddressAsset;
+      if (balance) {
+        const assetWithBalance = {
+          ...nativeAsset,
+          balance,
+        };
+        return assetWithBalance;
+      }
+    }
   }
   return nativeAsset;
 };
@@ -176,9 +179,7 @@ export const useEthUSDMonthChart = () => {
 };
 
 const getPriceOfNativeAssetForNetwork = (network: Network) => {
-  return network === networkTypes.polygon
-    ? getMaticPriceUnit()
-    : getEthPriceUnit();
+  return network === Network.polygon ? getMaticPriceUnit() : getEthPriceUnit();
 };
 
 const getEthPriceUnit = () => getAssetPrice();
@@ -271,9 +272,9 @@ const getDataString = (func: any, arrVals: any) => {
  * @desc get network string from chainId
  * @param  {Number} chainId
  */
-const getNetworkFromChainId = (chainId: number) => {
+const getNetworkFromChainId = (chainId: number): Network => {
   const networkData = find(chains, ['chain_id', chainId]);
-  return networkData?.network ?? networkTypes.mainnet;
+  return (networkData?.network as Network) ?? Network.mainnet;
 };
 
 /**
@@ -300,11 +301,11 @@ const getChainIdFromNetwork = (network: Network): number => {
  */
 function getEtherscanHostForNetwork(network: Network): string {
   const base_host = 'etherscan.io';
-  if (network === networkTypes.optimism) {
+  if (network === Network.optimism) {
     return OPTIMISM_BLOCK_EXPLORER_URL;
-  } else if (network === networkTypes.polygon) {
+  } else if (network === Network.polygon) {
     return POLYGON_BLOCK_EXPLORER_URL;
-  } else if (network === networkTypes.arbitrum) {
+  } else if (network === Network.arbitrum) {
     return ARBITRUM_BLOCK_EXPLORER_URL;
   } else if (isTestnet(network)) {
     return `${network}.${base_host}`;
@@ -449,13 +450,13 @@ const deriveAccountFromWalletInput = (input: any) => {
 
 function getBlockExplorer(network: Network) {
   switch (network) {
-    case networkTypes.mainnet:
+    case Network.mainnet:
       return 'etherscan';
-    case networkTypes.polygon:
+    case Network.polygon:
       return 'polygonScan';
-    case networkTypes.optimism:
+    case Network.optimism:
       return 'etherscan';
-    case networkTypes.arbitrum:
+    case Network.arbitrum:
       return 'arbiscan';
     default:
       return 'etherscan';
@@ -506,9 +507,7 @@ async function parseEthereumUrl(data: string) {
 
   if (!functionName) {
     // Send native asset
-    const nativeAssetAddress = getNativeAssetAddressForNetwork(
-      network as Network
-    );
+    const nativeAssetAddress = getNativeAssetAddressForNetwork(network);
     asset = getAsset(assets, toLower(nativeAssetAddress));
 
     // @ts-ignore
@@ -564,23 +563,31 @@ const calculateL1FeeOptimism = async (
   provider: Provider
 ) => {
   try {
-    tx.value = toHex(tx.value as BigNumberish);
-    tx.nonce = Number(
-      await provider.getTransactionCount(tx.from as EthereumAddress)
-    );
-    // @ts-ignore
+    if (tx.value) {
+      tx.value = toHex(tx.value);
+    }
+    if (tx.from) {
+      tx.nonce = Number(await provider.getTransactionCount(tx.from));
+    }
+    // @ts-expect-error ts-migrate(100005) FIXME: Remove this comment to see the full error message
     delete tx.from;
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(100006) FIXME: Remove this comment to see the full error message
     delete tx.gas;
-    tx.to = toChecksumAddress(tx.to as EthereumAddress);
-    tx.gasLimit =
-      toHex(tx.gasLimit as BigNumberish) ||
-      toHex(tx.data === '0x' ? ethUnits.basic_tx : ethUnits.basic_transfer);
+    if (tx.to) {
+      tx.to = toChecksumAddress(tx.to);
+    }
+    if (tx.gasLimit) {
+      tx.gasLimit = toHex(tx.gasLimit);
+    } else {
+      tx.gasLimit = toHex(
+        tx.data === '0x' ? ethUnits.basic_tx : ethUnits.basic_transfer
+      );
+    }
     // @ts-expect-error ts-migrate(2551) FIXME: Property 'selectedGasPrice' does not exist on type... Remove this comment to see the full error message
     const currentGasPrice = store.getState().gas.selectedGasPrice?.value
       ?.amount;
     if (currentGasPrice) tx.gasPrice = toHex(currentGasPrice);
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(100005) FIXME: Remove this comment to see the full error message
     const serializedTx = serialize(tx);
 
     const OVM_GasPriceOracle = new Contract(
