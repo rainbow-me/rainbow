@@ -22,7 +22,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     () => dataProvider.cloneWithRows(briefSectionsData),
     [briefSectionsData]
   );
-
+  
   const layoutProvider = useMemoOne(
     () => getLayoutProvider(briefSectionsData),
     [briefSectionsData]

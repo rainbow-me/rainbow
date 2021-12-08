@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { View } from 'react-primitives';
@@ -16,6 +16,10 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { useIsCoinListEditedSharedValue } from '@rainbow-me/helpers/SharedValuesContext';
 import { buildAssetUniqueIdentifier } from '@rainbow-me/helpers/assets';
+import { ethereumUtils } from '@rainbow-me/utils';
+import Routes from '@rainbow-me/routes';
+import { useNavigation } from '@rainbow-me/navigation';
+import { useAccountAssets } from '@rainbow-me/hooks';
 import {
   pushSelectedCoin,
   removeSelectedCoin,
@@ -105,7 +109,6 @@ const BalanceCoinRow = ({
   containerStyles,
   isFirstCoinRow,
   item,
-  onPress,
   pushSelectedCoin,
   recentlyPinnedCount,
   removeSelectedCoin,
@@ -115,6 +118,8 @@ const BalanceCoinRow = ({
   const [previousPinned, setPreviousPinned] = useState(0);
   const isCoinListEdited = false;
   const isCoinListEditedSharedValue = useIsCoinListEditedSharedValue();
+  const { navigate } = useNavigation();
+  const { allAssets } = useAccountAssets();
 
   useEffect(() => {
     if (toggle && (recentlyPinnedCount > previousPinned || !isCoinListEdited)) {
@@ -134,14 +139,23 @@ const BalanceCoinRow = ({
   }, [item.uniqueId, pushSelectedCoin, removeSelectedCoin, setToggle, toggle]);
 
   const handlePress = useCallback(() => {
+    console.log("test123");
     if (isCoinListEdited) {
       handleEditModePress();
     } else {
-      onPress?.(item, {
+      console.log("check");
+      console.log(item);
+      // const assetFormatted =
+      //   ethereumUtils.getAsset(allAssets, toLower(item.address)) || item;
+        
+      navigate(Routes.EXPANDED_ASSET_SHEET, {
+        asset: item,
+        fromDiscover: true,
         longFormHeight: initialChartExpandedStateSheetHeight,
+        type: 'token',
       });
     }
-  }, [handleEditModePress, isCoinListEdited, item, onPress]);
+  }, [handleEditModePress, isCoinListEdited, item]);
 
   const paddingStyle = useAnimatedStyle(
     () => ({

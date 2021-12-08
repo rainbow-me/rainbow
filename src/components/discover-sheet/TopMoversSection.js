@@ -38,7 +38,7 @@ export default function TopMoversSection() {
     asset => {
       const assetFormatted =
         ethereumUtils.getAsset(allAssets, toLower(asset.address)) || asset;
-
+        
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: assetFormatted,
         fromDiscover: true,
