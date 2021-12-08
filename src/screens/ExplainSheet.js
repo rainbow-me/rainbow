@@ -10,10 +10,12 @@ import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import { useDimensions } from '@rainbow-me/hooks';
 import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
+const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
 
 const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
@@ -54,15 +56,17 @@ const GAS_EXPLAINER = `This is the "gas fee" used by the Ethereum blockchain to 
 
 This fee varies depending on the complexity of your transaction and how busy the network is!`;
 
-const BASE_CURRENT_BASE_FEE_EXPLAINER = `The base fee is set by the Ethereum network and changes depending on how busy the network is.\n\n`;
+const CURRENT_BASE_FEE_TITLE = `Current base fee`;
 
-const CURRENT_BASE_FEE_EXPLAINER_STABLE = `Network traffic is stable right now. Have fun!`;
+const BASE_CURRENT_BASE_FEE_EXPLAINER = `The base fee is set by the Ethereum network and changes depending on how busy the network is.`;
 
-const CURRENT_BASE_FEE_EXPLAINER_FALLING = `Fees are dropping right now!`;
+const CURRENT_BASE_FEE_EXPLAINER_STABLE = `\n\nNetwork traffic is stable right now. Have fun!`;
 
-const CURRENT_BASE_FEE_EXPLAINER_RISING = `Fees are rising right now! It’s best to use a higher max base fee to avoid a stuck transaction.`;
+const CURRENT_BASE_FEE_EXPLAINER_FALLING = `\n\nFees are dropping right now!`;
 
-const CURRENT_BASE_FEE_EXPLAINER_SURGING = `Fees are unusually high right now! Unless your transaction is urgent, it’s best to wait for fees to drop.`;
+const CURRENT_BASE_FEE_EXPLAINER_RISING = `\n\nFees are rising right now! It’s best to use a higher max base fee to avoid a stuck transaction.`;
+
+const CURRENT_BASE_FEE_EXPLAINER_SURGING = `\n\nFees are unusually high right now! Unless your transaction is urgent, it’s best to wait for fees to drop.`;
 
 const MAX_BASE_FEE_EXPLAINER = `This is the maximum base fee you’re willing to pay for this transaction.
 
@@ -105,25 +109,31 @@ export const explainers = {
     emoji: '🌞',
     extraHeight: android ? 80 : 40,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_STABLE,
-    title: 'Current base fee',
+    title: CURRENT_BASE_FEE_TITLE,
   },
   currentBaseFeeFalling: {
     emoji: '🤑',
     extraHeight: android ? 60 : 20,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_FALLING,
-    title: 'Current base fee',
+    title: CURRENT_BASE_FEE_TITLE,
   },
   currentBaseFeeRising: {
     emoji: '🥵',
     extraHeight: android ? 100 : 50,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_RISING,
-    title: 'Current base fee',
+    title: CURRENT_BASE_FEE_TITLE,
   },
   currentBaseFeeSurging: {
     emoji: '🎢',
     extraHeight: android ? 100 : 50,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_SURGING,
-    title: 'Current base fee',
+    title: CURRENT_BASE_FEE_TITLE,
+  },
+  currentBaseFeeNotrend: {
+    emoji: '⛽',
+    extraHeight: android ? 0 : -40,
+    text: BASE_CURRENT_BASE_FEE_EXPLAINER,
+    title: CURRENT_BASE_FEE_TITLE,
   },
   maxBaseFee: {
     emoji: '📈',
@@ -214,15 +224,12 @@ const ExplainSheet = () => {
   const renderBaseFeeIndicator = useMemo(() => {
     if (!type.includes('currentBaseFee')) return null;
     const { currentGasTrend, currentBaseFee } = params;
+    const { color, label } = GAS_TRENDS[currentGasTrend];
+    const baseFeeLabel = label ? `${label} •` : '';
     return (
       <Centered>
-        <GasTrendHeader
-          align="center"
-          color={gasUtils.GAS_TRENDS[currentGasTrend].color}
-        >
-          {`${gasUtils.GAS_TRENDS[currentGasTrend].label} • ${parseInt(
-            currentBaseFee
-          )} Gwei`}
+        <GasTrendHeader align="center" color={color}>
+          {`${baseFeeLabel} ${toFixedDecimals(currentBaseFee, 0)} Gwei`}
         </GasTrendHeader>
       </Centered>
     );
