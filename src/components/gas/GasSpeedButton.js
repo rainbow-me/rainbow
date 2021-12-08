@@ -361,7 +361,7 @@ const GasSpeedButton = ({
     if (canGoBack) {
       goBack();
     } else {
-      validateGasParams?.current?.();
+      validateGasParams?.current?.(goBack);
     }
   }, [canGoBack, goBack, validateGasParams]);
 

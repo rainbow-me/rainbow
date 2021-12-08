@@ -123,7 +123,7 @@ const FOCUS_TO_MAX_BASE_FEE = 'focusToMaxBaseFee';
 const FOCUS_TO_MINER_TIP = 'focusToMinerTip';
 
 const warningsAnimationConfig = {
-  duration: 80,
+  duration: 50,
   easing: Easing.linear,
 };
 
@@ -569,93 +569,105 @@ export default function FeesPanel({
     stopPriorityFeeTimeout,
   ]);
 
-  const alertMaxBaseFee = useCallback(() => {
-    const highAlert = maxBaseFeeWarning === HIGHER_THAN_NECESSARY;
-    Alert({
-      buttons: [
-        {
-          onPress: () => {
-            setUserProcededOnWarnings(true);
-            setCanGoBack?.(true);
+  const alertMaxBaseFee = useCallback(
+    callback => {
+      const highAlert = maxBaseFeeWarning === HIGHER_THAN_NECESSARY;
+      Alert({
+        buttons: [
+          {
+            onPress: () => {
+              setUserProcededOnWarnings(true);
+              setCanGoBack?.(true);
+              callback?.();
+            },
+            text: 'Proceed Anyway',
           },
-          text: 'Proceed Anyway',
-        },
-        {
-          onPress: () => {
-            navigate(Routes.CUSTOM_GAS_SHEET, {
-              asset,
-              focusToInput: FOCUS_TO_MAX_BASE_FEE,
-              speeds: speeds ?? gasUtils.GasSpeedOrder,
-              type: 'custom_gas',
-            });
+          {
+            onPress: () => {
+              navigate(Routes.CUSTOM_GAS_SHEET, {
+                asset,
+                focusToInput: FOCUS_TO_MAX_BASE_FEE,
+                speeds: speeds ?? gasUtils.GasSpeedOrder,
+                type: 'custom_gas',
+              });
+            },
+            style: 'cancel',
+            text: 'Edit Max Base Fee',
           },
-          style: 'cancel',
-          text: 'Edit Max Base Fee',
-        },
-      ],
-      message: highAlert
-        ? ALERT_MESSAGE_LOWER
-        : ALERT_MESSAGE_HIGHER_MAX_BASE_FEE_NEEDED,
-      title: highAlert
-        ? ALERT_TITLE_LOWER_MAX_BASE_FEE_NEEDED
-        : ALERT_TITLE_HIGHER_MAX_BASE_FEE_NEEDED,
-    });
-  }, [asset, maxBaseFeeWarning, navigate, setCanGoBack, speeds]);
+        ],
+        message: highAlert
+          ? ALERT_MESSAGE_LOWER
+          : ALERT_MESSAGE_HIGHER_MAX_BASE_FEE_NEEDED,
+        title: highAlert
+          ? ALERT_TITLE_LOWER_MAX_BASE_FEE_NEEDED
+          : ALERT_TITLE_HIGHER_MAX_BASE_FEE_NEEDED,
+      });
+    },
+    [asset, maxBaseFeeWarning, navigate, setCanGoBack, speeds]
+  );
 
-  const alertMaxPriority = useCallback(() => {
-    const highAlert = maxPriorityFeeWarning === HIGHER_THAN_NECESSARY;
-    Alert({
-      buttons: [
-        {
-          onPress: () => {
-            setUserProcededOnWarnings(true);
-            setCanGoBack?.(true);
+  const alertMaxPriority = useCallback(
+    callback => {
+      const highAlert = maxPriorityFeeWarning === HIGHER_THAN_NECESSARY;
+      Alert({
+        buttons: [
+          {
+            onPress: () => {
+              setUserProcededOnWarnings(true);
+              setCanGoBack?.(true);
+              callback?.();
+            },
+            text: 'Proceed Anyway',
           },
-          text: 'Proceed Anyway',
-        },
-        {
-          onPress: () => {
-            navigate(Routes.CUSTOM_GAS_SHEET, {
-              asset,
-              focusToInput: FOCUS_TO_MINER_TIP,
-              speeds: speeds ?? gasUtils.GasSpeedOrder,
-              type: 'custom_gas',
-            });
+          {
+            onPress: () => {
+              navigate(Routes.CUSTOM_GAS_SHEET, {
+                asset,
+                focusToInput: FOCUS_TO_MINER_TIP,
+                speeds: speeds ?? gasUtils.GasSpeedOrder,
+                type: 'custom_gas',
+              });
+            },
+            style: 'cancel',
+            text: 'Edit Miner Tip',
           },
-          style: 'cancel',
-          text: 'Edit Miner Tip',
-        },
-      ],
-      message: highAlert
-        ? ALERT_MESSAGE_LOWER
-        : ALERT_MESSAGE_HIGHER_MINER_TIP_NEEDED,
-      title: highAlert
-        ? ALERT_TITLE_LOWER_MINER_TIP_NEEDED
-        : ALERT_TITLE_HIGHER_MINER_TIP_NEEDED,
-    });
-  }, [asset, maxPriorityFeeWarning, navigate, setCanGoBack, speeds]);
+        ],
+        message: highAlert
+          ? ALERT_MESSAGE_LOWER
+          : ALERT_MESSAGE_HIGHER_MINER_TIP_NEEDED,
+        title: highAlert
+          ? ALERT_TITLE_LOWER_MINER_TIP_NEEDED
+          : ALERT_TITLE_HIGHER_MINER_TIP_NEEDED,
+      });
+    },
+    [asset, maxPriorityFeeWarning, navigate, setCanGoBack, speeds]
+  );
 
-  validateGasParams.current = () => validateParams();
+  validateGasParams.current = callback => validateParams(callback);
 
-  const validateParams = useCallback(() => {
-    if (userProceededOnWarnings || !selectedOptionIsCustom) return;
-    const maxBaseValidated = !maxBaseFeeError && !maxBaseFeeWarning;
-    const maxPriorityValidated = !maxPriorityFeeError && !maxPriorityFeeWarning;
-    if (!maxBaseValidated) {
-      alertMaxBaseFee();
-    } else if (!maxPriorityValidated) {
-      alertMaxPriority();
-    }
-  }, [
-    alertMaxBaseFee,
-    alertMaxPriority,
-    maxBaseFeeError,
-    maxBaseFeeWarning,
-    maxPriorityFeeError,
-    maxPriorityFeeWarning,
-    selectedOptionIsCustom,
-    userProceededOnWarnings,
-  ]);
+  const validateParams = useCallback(
+    callback => {
+      if (userProceededOnWarnings || !selectedOptionIsCustom) return;
+      const maxBaseValidated = !maxBaseFeeError && !maxBaseFeeWarning;
+      const maxPriorityValidated =
+        !maxPriorityFeeError && !maxPriorityFeeWarning;
+      if (!maxBaseValidated) {
+        alertMaxBaseFee(callback);
+      } else if (!maxPriorityValidated) {
+        alertMaxPriority(callback);
+      }
+    },
+    [
+      alertMaxBaseFee,
+      alertMaxPriority,
+      maxBaseFeeError,
+      maxBaseFeeWarning,
+      maxPriorityFeeError,
+      maxPriorityFeeWarning,
+      selectedOptionIsCustom,
+      userProceededOnWarnings,
+    ]
+  );
 
   useEffect(() => {
     const maxBaseValidated = !maxBaseFeeError && !maxBaseFeeWarning;
