@@ -517,6 +517,7 @@ export default function FeesPanel({
       } else {
         setMaxBaseFeeError(null);
       }
+      // there's an e2e modifying this panel so I needed values that aren't dependant on the network conditions
       const maxBaseFeeToValidate = IS_TESTING === 'true' ? 100 : currentBaseFee;
       if (
         greaterThan(
@@ -546,6 +547,7 @@ export default function FeesPanel({
       } else {
         setMaxPriorityFeeError(null);
       }
+      // there's an e2e modifying this panel so I needed values that aren't dependant on the network conditions
       if (
         greaterThan(
           multiply(
@@ -559,6 +561,7 @@ export default function FeesPanel({
       ) {
         setMaxPriorityFeeWarning(LOWER_THAN_SUGGESTED);
       } else if (
+        // there's an e2e modifying this panel so I needed values that aren't dependant on the network conditions
         greaterThan(
           maxPriorityFee,
           multiply(
