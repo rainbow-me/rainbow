@@ -1,7 +1,6 @@
 import React from 'react';
-import { View } from 'react-native';
 import { CoinDivider } from '../../../coin-divider';
-import { AssetListHeader } from '../../index';
+import { AssetListHeader, AssetListItemSkeleton } from '../../index';
 import WrappedNFT from '../WrappedNFT';
 import WrappedPoolRow from '../WrappedPoolRow';
 import WrappedPoolsListHeader from '../WrappedPoolsListHeader';
@@ -22,26 +21,7 @@ import {
   SavingsHeaderExtraData,
   UniswapPoolExtraData,
 } from './ViewTypes';
-import { Text } from '@rainbow-me/design-system';
-
-let containerCount = 0;
-
-class CellContainer extends React.Component {
-  constructor(args: any) {
-    super(args);
-    this._containerId = containerCount++;
-  }
-  private _containerId = 0;
-
-  render() {
-    return (
-      <View {...this.props}>
-        {this.props.children}
-        <Text>Cell Id: {this._containerId}</Text>
-      </View>
-    );
-  }
-}
+import assertNever from '@rainbow-me/helpers/assertNever';
 
 function CellDataProvider({
   uid,
@@ -111,27 +91,14 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
           }
           case CellType.NFT:
             return <WrappedNFT uniqueId={(data as NFTExtraData).uniqueId} />;
+          case CellType.LOADING_ASSETS:
+            return <AssetListItemSkeleton />;
         }
-        return (
-          // @ts-ignore
-          <CellContainer style={styles.container}>
-            <Text>Data: {JSON.stringify(data)}</Text>
-          </CellContainer>
-        );
+        assertNever(type);
       }}
     </CellDataProvider>
   );
 }
-
-const styles = {
-  container: {
-    alignItems: 'center',
-    backgroundColor: '#00a1f1',
-    borderWidth: 2,
-    flex: 1,
-    justifyContent: 'space-around',
-  },
-};
 
 export default rowRenderer as (
   type: string | number,
