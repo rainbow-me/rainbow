@@ -46,7 +46,7 @@ export const getFallbackGasPrices = () => ({
   [URGENT]: defaultGasPriceFormat(URGENT, '0.5', '200'),
 });
 
-const parseL2GasPrices = (data: GasPricesAPIData) => ({
+const parseOtherL2GasPrices = (data: GasPricesAPIData) => ({
   [CUSTOM]: null,
   [FAST]: defaultGasPriceFormat(FAST, data.avgWait, data.average),
   [NORMAL]: defaultGasPriceFormat(NORMAL, data.avgWait, data.average),
@@ -207,7 +207,7 @@ export const parseLegacyGasPrices = (
     case Network.arbitrum:
     case Network.optimism:
     default:
-      return parseL2GasPrices(data);
+      return parseOtherL2GasPrices(data);
   }
 };
 
