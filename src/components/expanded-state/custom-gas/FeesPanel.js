@@ -27,8 +27,8 @@ import {
   toFixedDecimals,
 } from '@rainbow-me/helpers/utilities';
 import {
+  useFeesPanelInputRefs,
   useGas,
-  useMagicAutofocus,
   usePrevious,
   useTimeout,
 } from '@rainbow-me/hooks';
@@ -131,7 +131,6 @@ export default function FeesPanel({
   asset,
   currentGasTrend,
   colorForAsset,
-  onCustomGasFocus,
   setCanGoBack,
   validateGasParams,
 }) {
@@ -147,13 +146,14 @@ export default function FeesPanel({
   const { colors } = useTheme();
 
   const { params: { speeds, focusToInput, type } = {} } = useRoute();
-  const maxBaseFeeInputRef = useRef(null);
-  const minerTipInputRef = useRef(null);
 
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
-
-  useMagicAutofocus(maxBaseFeeInputRef);
+  const {
+    setLastFocusedInputHandle,
+    maxBaseFieldRef,
+    minerTipFieldRef,
+  } = useFeesPanelInputRefs();
 
   // had to add this for actions happening on the gas speed button
   if (prevIsFocused && !isFocused) {
@@ -319,23 +319,19 @@ export default function FeesPanel({
     [currentBaseFee]
   );
 
-  const handleFeesGweiInputFocus = useCallback(() => {
-    onCustomGasFocus?.();
-    const {
-      gasFeeParams: { maxFeePerGas, maxPriorityFeePerGas },
-    } = selectedGasFee;
-    setCustomFees({
-      customMaxBaseFee: toFixedDecimals(maxFeePerGas?.gwei || 0, 0),
-      customMaxPriorityFee: maxPriorityFeePerGas?.gwei || 0,
-    });
-  }, [onCustomGasFocus, selectedGasFee]);
+  const handleMaxBaseInputGweiPress = useCallback(
+    () => setLastFocusedInputHandle(maxBaseFieldRef),
+    [maxBaseFieldRef, setLastFocusedInputHandle]
+  );
 
-  const handleCustomPriorityFeeFocus = useCallback(() => {
-    handleFeesGweiInputFocus();
-  }, [handleFeesGweiInputFocus]);
+  const handleMinerTipInputGweiPress = useCallback(
+    () => setLastFocusedInputHandle(minerTipFieldRef),
+    [minerTipFieldRef, setLastFocusedInputHandle]
+  );
 
   const updatePriorityFeePerGas = useCallback(
     priorityFeePerGas => {
+      setLastFocusedInputHandle(minerTipFieldRef);
       const maxPriorityFeePerGas =
         selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas;
 
@@ -361,11 +357,17 @@ export default function FeesPanel({
       };
       updateToCustomGasFee(newGasParams);
     },
-    [selectedGasFee.gasFeeParams, updateToCustomGasFee]
+    [
+      minerTipFieldRef,
+      selectedGasFee.gasFeeParams,
+      setLastFocusedInputHandle,
+      updateToCustomGasFee,
+    ]
   );
 
   const updateFeePerGas = useCallback(
     feePerGas => {
+      setLastFocusedInputHandle(maxBaseFieldRef);
       const maxFeePerGas =
         selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei ?? 0;
 
@@ -390,26 +392,27 @@ export default function FeesPanel({
       };
       updateToCustomGasFee(newGasParams);
     },
-    [selectedGasFee.gasFeeParams, updateToCustomGasFee]
+    [
+      maxBaseFieldRef,
+      selectedGasFee.gasFeeParams,
+      setLastFocusedInputHandle,
+      updateToCustomGasFee,
+    ]
   );
 
   const addMinerTip = useCallback(() => {
-    minerTipInputRef?.current?.focus();
     updatePriorityFeePerGas(calculateMinerTipAddDifference(maxPriorityFee));
   }, [maxPriorityFee, updatePriorityFeePerGas]);
 
   const substMinerTip = useCallback(() => {
-    minerTipInputRef?.current?.focus();
     updatePriorityFeePerGas(-calculateMinerTipSubstDifference(maxPriorityFee));
   }, [maxPriorityFee, updatePriorityFeePerGas]);
 
   const addMaxFee = useCallback(() => {
-    maxBaseFeeInputRef?.current?.focus();
     updateFeePerGas(GAS_FEE_INCREMENT);
   }, [updateFeePerGas]);
 
   const substMaxFee = useCallback(() => {
-    maxBaseFeeInputRef?.current?.focus();
     updateFeePerGas(-GAS_FEE_INCREMENT);
   }, [updateFeePerGas]);
 
@@ -702,13 +705,20 @@ export default function FeesPanel({
 
   useEffect(() => {
     setTimeout(() => {
-      if (focusToInput === FOCUS_TO_MAX_BASE_FEE) {
-        maxBaseFeeInputRef?.current?.focus();
-      } else if (focusToInput === FOCUS_TO_MINER_TIP) {
-        minerTipInputRef?.current?.focus();
+      if (focusToInput === FOCUS_TO_MINER_TIP) {
+        setLastFocusedInputHandle(minerTipFieldRef);
+        // minerTipFieldRef?.current?.focus();
+      } else {
+        setLastFocusedInputHandle(maxBaseFieldRef);
+        // maxBaseFieldRef?.current?.focus();
       }
     }, 500);
-  }, [focusToInput]);
+  }, [
+    focusToInput,
+    maxBaseFieldRef,
+    minerTipFieldRef,
+    setLastFocusedInputHandle,
+  ]);
 
   return (
     <Wrapper>
@@ -740,10 +750,10 @@ export default function FeesPanel({
         <PanelColumn>
           <FeesGweiInput
             buttonColor={colorForAsset}
-            inputRef={maxBaseFeeInputRef}
+            inputRef={maxBaseFieldRef}
             minusAction={substMaxFee}
             onChange={onMaxBaseFeeChange}
-            onPress={handleFeesGweiInputFocus}
+            onPress={handleMaxBaseInputGweiPress}
             plusAction={addMaxFee}
             testID="max-base-fee-input"
             value={maxBaseFee}
@@ -765,10 +775,10 @@ export default function FeesPanel({
         <PanelColumn>
           <FeesGweiInput
             buttonColor={colorForAsset}
-            inputRef={minerTipInputRef}
+            inputRef={minerTipFieldRef}
             minusAction={substMinerTip}
             onChange={onMinerTipChange}
-            onPress={handleCustomPriorityFeeFocus}
+            onPress={handleMinerTipInputGweiPress}
             plusAction={addMinerTip}
             testID="max-priority-fee-input"
             value={maxPriorityFee}
