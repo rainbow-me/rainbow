@@ -1,16 +1,5 @@
 import BigNumber from 'bignumber.js';
 import { map, zipObject } from 'lodash';
-import { getMinimalTimeUnitStringForMs } from '../helpers/time';
-import {
-  add,
-  convertRawAmountToBalance,
-  convertRawAmountToNativeDisplay,
-  divide,
-  greaterThan,
-  multiply,
-} from '../helpers/utilities';
-import ethUnits from '../references/ethereum-units.json';
-import timeUnits from '../references/time-units.json';
 import { gasUtils } from '../utils';
 import {
   ConfirmationTimeByPriorityFee,
@@ -29,6 +18,16 @@ import {
 } from '@rainbow-me/entities';
 import { toHex } from '@rainbow-me/handlers/web3';
 import { Network } from '@rainbow-me/helpers/networkTypes';
+import { getMinimalTimeUnitStringForMs } from '@rainbow-me/helpers/time';
+import { ethUnits, timeUnits } from '@rainbow-me/references';
+import {
+  add,
+  convertRawAmountToBalance,
+  convertRawAmountToNativeDisplay,
+  divide,
+  greaterThan,
+  multiply,
+} from '@rainbow-me/utilities';
 
 type BigNumberish = number | string | BigNumber;
 
