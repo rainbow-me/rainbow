@@ -174,7 +174,7 @@ export default function FeesPanel({
   const [maxBaseFeeWarning, setMaxBaseFeeWarning] = useState(null);
   const [maxBaseFeeError, setMaxBaseFeeError] = useState(null);
 
-  const [userProcededOnWarnings, setUserProcededOnWarnings] = useState(false);
+  const [userProceededOnWarnings, setUserProcededOnWarnings] = useState(false);
 
   const { customMaxBaseFee, customMaxPriorityFee } = customFees;
   const trendType = 'currentBaseFee' + upperFirst(currentGasTrend);
@@ -638,7 +638,7 @@ export default function FeesPanel({
   validateGasParams.current = () => validateParams();
 
   const validateParams = useCallback(() => {
-    if (userProcededOnWarnings || !selectedOptionIsCustom) return;
+    if (userProceededOnWarnings || !selectedOptionIsCustom) return;
     const maxBaseValidated = !maxBaseFeeError && !maxBaseFeeWarning;
     const maxPriorityValidated = !maxPriorityFeeError && !maxPriorityFeeWarning;
     if (!maxBaseValidated) {
@@ -654,14 +654,14 @@ export default function FeesPanel({
     maxPriorityFeeError,
     maxPriorityFeeWarning,
     selectedOptionIsCustom,
-    userProcededOnWarnings,
+    userProceededOnWarnings,
   ]);
 
   useEffect(() => {
     const maxBaseValidated = !maxBaseFeeError && !maxBaseFeeWarning;
     const maxPriorityValidated = !maxPriorityFeeError && !maxPriorityFeeWarning;
     if (
-      !userProcededOnWarnings &&
+      !userProceededOnWarnings &&
       selectedOptionIsCustom &&
       (!maxBaseValidated || !maxPriorityValidated)
     ) {
@@ -678,7 +678,7 @@ export default function FeesPanel({
     maxPriorityFeeWarning,
     selectedOptionIsCustom,
     setCanGoBack,
-    userProcededOnWarnings,
+    userProceededOnWarnings,
   ]);
 
   useEffect(() => {
