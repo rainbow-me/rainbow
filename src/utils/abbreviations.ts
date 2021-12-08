@@ -6,7 +6,7 @@ const defaultNumCharsPerSection = 6;
 export function address(
   currentAddress: EthereumAddress,
   truncationLength = defaultNumCharsPerSection,
-  firstSectionLength: any
+  firstSectionLength: number
 ): string | undefined {
   if (!currentAddress) return;
 
@@ -41,7 +41,7 @@ export function abbreviateEnsForDisplay(
   }
 }
 
-export function isAddress(currentAddress: any): boolean {
+export function isAddress(currentAddress: string): boolean {
   return (
     (currentAddress || '').substring(0, 2) === '0x' &&
     (currentAddress || '').indexOf('...') > -1

@@ -1,7 +1,7 @@
 // For a given string, will always return same item from an array.
 export default function pseudoRandomArrayItemFromString(
-  string: any,
-  array: any
+  string: string,
+  array: any[]
 ) {
   if (!string) return null;
 

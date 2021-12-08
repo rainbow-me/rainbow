@@ -44,7 +44,7 @@ export function sanitizeSeedPhrase(string: string): string {
     .replace(/(\r\n|\n|\r)/gm, ' ')
     .trim()
     .split(' ')
-    .filter((word: any) => !!word)
+    .filter((word: string) => !!word)
     .join(' ');
 }
 

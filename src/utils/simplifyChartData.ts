@@ -2,7 +2,7 @@ import { maxBy, minBy } from 'lodash';
 
 export default function simplifyChartData(
   data: any,
-  destinatedNumberOfPoints: any
+  destinatedNumberOfPoints: number
 ) {
   if (!data) return null;
 

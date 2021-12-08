@@ -1,4 +1,4 @@
-export default (queryString: any) => {
+export default (queryString: string) => {
   const result = {};
 
   const pairs = (queryString[0] === '?'
