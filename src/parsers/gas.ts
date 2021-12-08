@@ -33,18 +33,6 @@ type BigNumberish = number | string | BigNumber;
 
 const { CUSTOM, FAST, GasSpeedOrder, NORMAL, URGENT } = gasUtils;
 
-/**
- * @desc parse ether gas prices
- * @param {Object} data
- * @param {Boolean} short - use short format or not
- */
-export const getFallbackGasPrices = () => ({
-  [CUSTOM]: null,
-  [FAST]: defaultGasPriceFormat(FAST, '2.5', '100'),
-  [NORMAL]: defaultGasPriceFormat(NORMAL, '2.5', '100'),
-  [URGENT]: defaultGasPriceFormat(URGENT, '0.5', '200'),
-});
-
 const parseOtherL2GasPrices = (data: GasPricesAPIData) => ({
   [CUSTOM]: null,
   [FAST]: defaultGasPriceFormat(FAST, data.avgWait, data.average),
@@ -196,7 +184,7 @@ const parseGasPricesPolygonGasStation = (data: GasPricesAPIData) => {
  * @param {String} network
  */
 export const parseL2GasPrices = (data: GasPricesAPIData, network: Network) => {
-  if (!data) return getFallbackGasPrices();
+  if (!data) return null;
   switch (network) {
     case Network.polygon:
       return parseGasPricesPolygonGasStation(data);

@@ -341,20 +341,24 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
           } else if (network === Network.optimism) {
             adjustedGasFees = await getOptimismGasPrices();
           }
+
           const gasFeeParamsBySpeed = parseL2GasPrices(
             adjustedGasFees,
             network
           );
-          if (existingGasFees[CUSTOM] !== null) {
-            // Preserve custom values while updating prices
-            gasFeeParamsBySpeed[CUSTOM] = existingGasFees[CUSTOM];
+
+          if (gasFeeParamsBySpeed) {
+            if (existingGasFees[CUSTOM] !== null) {
+              // Preserve custom values while updating prices
+              gasFeeParamsBySpeed[CUSTOM] = existingGasFees[CUSTOM];
+            }
+            dispatch({
+              payload: {
+                gasFeeParamsBySpeed,
+              },
+              type: GAS_FEES_SUCCESS,
+            });
           }
-          dispatch({
-            payload: {
-              gasFeeParamsBySpeed,
-            },
-            type: GAS_FEES_SUCCESS,
-          });
         } else {
           try {
             const {
