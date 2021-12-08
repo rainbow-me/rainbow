@@ -11,6 +11,7 @@ import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import { isL2Network } from '@rainbow-me/handlers/web3';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { add, toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import {
@@ -288,8 +289,10 @@ const GasSpeedButton = ({
 
   const openGasHelper = useCallback(() => {
     android && Keyboard.dismiss();
-    navigate(Routes.EXPLAIN_SHEET, { type: 'gas' });
-  }, [navigate]);
+    const network = currentNetwork ?? networkTypes.mainnet;
+    const networkName = networkInfo[network].name;
+    navigate(Routes.EXPLAIN_SHEET, { network: networkName, type: 'gas' });
+  }, [currentNetwork, navigate]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -316,7 +319,7 @@ const GasSpeedButton = ({
         return [NORMAL, FAST, URGENT];
       case networkTypes.optimism:
       case networkTypes.arbitrum:
-        return [FAST];
+        return [NORMAL];
       default:
         return GasSpeedOrder;
     }
@@ -352,13 +355,6 @@ const GasSpeedButton = ({
     speedOptions,
   ]);
 
-  const defaultSelectedGasFeeOption = useMemo(() => {
-    const fastByDefault =
-      currentNetwork === networkTypes.arbitrum ||
-      currentNetwork === networkTypes.optimism;
-    return fastByDefault ? FAST : NORMAL;
-  }, [currentNetwork]);
-
   const onDonePress = useCallback(() => {
     goBack();
   }, [goBack]);
@@ -392,7 +388,7 @@ const GasSpeedButton = ({
         }
         currentNetwork={currentNetwork}
         dropdownEnabled={gasOptionsAvailable}
-        label={selectedGasFeeOption ?? defaultSelectedGasFeeOption}
+        label={selectedGasFeeOption ?? NORMAL}
         showGasOptions={showGasOptions}
         showPager
         theme={theme}
@@ -417,7 +413,6 @@ const GasSpeedButton = ({
     colorForAsset,
     colors,
     currentNetwork,
-    defaultSelectedGasFeeOption,
     gasIsNotReady,
     gasOptionsAvailable,
     handlePressMenuItem,
@@ -433,15 +428,9 @@ const GasSpeedButton = ({
     const currentSpeedIndex = gasOptions?.indexOf(selectedGasFeeOption);
     // If the option isn't available anymore, we need to reset it
     if (currentSpeedIndex === -1) {
-      handlePressSpeedOption(defaultSelectedGasFeeOption);
+      handlePressSpeedOption(NORMAL);
     }
-  }, [
-    handlePressSpeedOption,
-    speeds,
-    selectedGasFeeOption,
-    isL2,
-    defaultSelectedGasFeeOption,
-  ]);
+  }, [handlePressSpeedOption, speeds, selectedGasFeeOption, isL2]);
 
   // had to do this hack because calling it directly from `onPress`
   // would make the expanded sheet come up with too much force

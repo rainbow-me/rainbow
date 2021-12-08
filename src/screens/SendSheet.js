@@ -442,7 +442,7 @@ export default function SendSheet(props) {
         txData,
         currentProvider
       );
-      updateTxFee(updatedGasLimit, null, currentNetwork, l1GasFeeOptimism);
+      updateTxFee(updatedGasLimit, null, l1GasFeeOptimism);
     },
     [
       accountAddress,
@@ -490,7 +490,7 @@ export default function SendSheet(props) {
           if (network === networkTypes.optimism) {
             updateTxFeeForOptimism(updatedGasLimit);
           } else {
-            updateTxFee(updatedGasLimit, null, currentNetwork);
+            updateTxFee(updatedGasLimit, null);
           }
         }
         // eslint-disable-next-line no-empty
@@ -786,12 +786,12 @@ export default function SendSheet(props) {
           if (currentNetwork === networkTypes.optimism) {
             updateTxFeeForOptimism(gasLimit);
           } else {
-            updateTxFee(gasLimit, null, currentNetwork);
+            updateTxFee(gasLimit, null);
           }
         })
         .catch(e => {
           logger.sentry('Error getting optimism l1 fee', e);
-          updateTxFee(null, null, currentNetwork);
+          updateTxFee(null, null);
         });
     }
   }, [
