@@ -31,6 +31,8 @@ export const parseNewTransaction = async (
     from,
     gasLimit,
     gasPrice,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
     network,
     nonce,
     hash: txHash,
@@ -40,6 +42,7 @@ export const parseNewTransaction = async (
     to,
     transferId,
     type: txType,
+    txTo,
     value,
   } = txDetails;
 
@@ -84,6 +87,8 @@ export const parseNewTransaction = async (
     gasLimit,
     gasPrice,
     hash,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
     minedAt: null,
     name: asset?.name ?? null,
     native,
@@ -97,6 +102,7 @@ export const parseNewTransaction = async (
     title,
     to,
     transferId,
+    txTo: txTo || to,
     type,
     value,
   };

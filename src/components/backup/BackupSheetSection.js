@@ -11,7 +11,6 @@ import BackupIcon from '@rainbow-me/assets/backupIcon.png';
 import BackupIconDark from '@rainbow-me/assets/backupIconDark.png';
 import { ImgixImage } from '@rainbow-me/images';
 import { padding } from '@rainbow-me/styles';
-import { deviceUtils } from '@rainbow-me/utils';
 
 const Footer = styled(ColumnWithMargins).attrs({
   margin: 19,
@@ -64,8 +63,6 @@ export default function BackupSheetSection({
     });
   }, [type]);
 
-  const maxButtonWidth = deviceUtils.dimensions.width - 30;
-
   return (
     <Fragment>
       <Masthead>
@@ -83,7 +80,6 @@ export default function BackupSheetSection({
           testID={primaryButtonTestId}
         />
         <SheetActionButton
-          androidWidth={maxButtonWidth}
           color={colors.white}
           label={secondaryLabel}
           onPress={onSecondaryAction}

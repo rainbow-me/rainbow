@@ -8,7 +8,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Alert, Keyboard, NativeModules } from 'react-native';
+import {
+  Alert,
+  InteractionManager,
+  Keyboard,
+  NativeModules,
+} from 'react-native';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -29,11 +34,7 @@ import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, KeyboardFixedOpenLayout } from '../components/layout';
 import { ExchangeModalTypes, isKeyboardOpen } from '@rainbow-me/helpers';
-import {
-  convertStringToNumber,
-  divide,
-  multiply,
-} from '@rainbow-me/helpers/utilities';
+import { divide, greaterThan, multiply } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useBlockPolling,
@@ -139,21 +140,20 @@ export default function ExchangeModal({
     : ethUnits.basic_swap;
 
   const {
-    gasPrices,
-    selectedGasPrice,
-    startPollingGasPrices,
-    stopPollingGasPrices,
+    selectedGasFee,
+    gasFeeParamsBySpeed,
+    startPollingGasFees,
+    stopPollingGasFees,
     updateDefaultGasLimit,
     updateTxFee,
   } = useGas();
-
   const { initWeb3Listener, stopWeb3Listener } = useBlockPolling();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
   const getNextNonce = useCurrentNonce(accountAddress, network);
 
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
-  const prevGasPrices = usePrevious(gasPrices);
+  const prevGasFeesParamsBySpeed = usePrevious(gasFeeParamsBySpeed);
 
   useAndroidBackHandler(() => {
     navigate(Routes.WALLET_SCREEN);
@@ -277,33 +277,40 @@ export default function ExchangeModal({
 
   // Set default gas limit
   useEffect(() => {
-    if (isEmpty(prevGasPrices) && !isEmpty(gasPrices)) {
+    if (isEmpty(prevGasFeesParamsBySpeed) && !isEmpty(gasFeeParamsBySpeed)) {
       updateTxFee(defaultGasLimit);
     }
-  }, [gasPrices, defaultGasLimit, updateTxFee, prevGasPrices]);
+  }, [
+    defaultGasLimit,
+    gasFeeParamsBySpeed,
+    prevGasFeesParamsBySpeed,
+    updateTxFee,
+  ]);
 
   // Update gas limit
   useEffect(() => {
-    if (!isEmpty(gasPrices)) {
+    if (!isEmpty(gasFeeParamsBySpeed)) {
       updateGasLimit();
     }
-  }, [gasPrices, updateGasLimit]);
+  }, [gasFeeParamsBySpeed, updateGasLimit]);
 
   // Liten to gas prices, Uniswap reserves updates
   useEffect(() => {
-    updateDefaultGasLimit(network, defaultGasLimit);
-    startPollingGasPrices();
+    updateDefaultGasLimit(defaultGasLimit);
+    InteractionManager.runAfterInteractions(() => {
+      startPollingGasFees();
+    });
     initWeb3Listener();
     return () => {
-      stopPollingGasPrices();
+      stopPollingGasFees();
       stopWeb3Listener();
     };
   }, [
     defaultGasLimit,
     network,
     initWeb3Listener,
-    startPollingGasPrices,
-    stopPollingGasPrices,
+    startPollingGasFees,
+    stopPollingGasFees,
     stopWeb3Listener,
     updateDefaultGasLimit,
   ]);
@@ -313,8 +320,7 @@ export default function ExchangeModal({
   }, [updateMaxInputAmount]);
 
   const checkGasVsOutput = async (gasPrice, outputPrice) => {
-    const outputValue = convertStringToNumber(outputPrice);
-    if (outputValue > 0 && convertStringToNumber(gasPrice) > outputValue) {
+    if (greaterThan(outputPrice, 0) && greaterThan(gasPrice, outputPrice)) {
       const res = new Promise(resolve => {
         Alert.alert(
           'Are you sure?',
@@ -378,8 +384,8 @@ export default function ExchangeModal({
       });
     }
 
-    const outputInUSD = outputPriceValue * outputAmount;
-    const gasPrice = selectedGasPrice?.txFee?.native?.value?.amount;
+    const outputInUSD = multiply(outputPriceValue, outputAmount);
+    const gasPrice = selectedGasFee?.gasFee?.maxFee?.native?.value?.amount;
     const cancelTransaction = await checkGasVsOutput(gasPrice, outputInUSD);
 
     if (cancelTransaction) {
@@ -446,7 +452,7 @@ export default function ExchangeModal({
     outputPriceValue,
     priceImpactPercentDisplay,
     priceOfEther,
-    selectedGasPrice?.txFee?.native?.value?.amount,
+    selectedGasFee?.gasFee?.maxFee?.native?.value?.amount,
     setParams,
     tradeDetails,
     type,
@@ -594,12 +600,12 @@ export default function ExchangeModal({
             />
           )}
           <GasSpeedButton
+            asset={outputCurrency}
             currentNetwork={network}
             dontBlur
             onCustomGasBlur={handleCustomGasBlur}
-            options={['normal', 'fast', 'custom']}
             testID={`${testID}-gas`}
-            type={type}
+            topPadding={25}
           />
         </FloatingPanels>
       </InnerWrapper>

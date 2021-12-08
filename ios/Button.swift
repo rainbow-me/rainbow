@@ -10,6 +10,7 @@ class Button : RCTView {
   @objc lazy var onCancel: RCTBubblingEventBlock = { _ in }
   @objc lazy var onPressStart: RCTBubblingEventBlock = { _ in }
   @objc lazy var onLongPress: RCTBubblingEventBlock = { _ in };
+  @objc lazy var onLongPressEnded: RCTBubblingEventBlock = { _ in };
   @objc var disabled: Bool = false {
     didSet {
       isUserInteractionEnabled = !disabled
@@ -27,6 +28,8 @@ class Button : RCTView {
   @objc var hapticType: String = "selection"
   @objc var useLateHaptic: Bool = true
   @objc var throttle: Bool = false
+  @objc var shouldLongPressEndPress: Bool = false
+
   var blocked: Bool = false
   var invalidated: Bool = false;
 
@@ -43,6 +46,11 @@ class Button : RCTView {
       switch sender!.state {
       case .began:
         onLongPress([:])
+      case .ended:
+        if shouldLongPressEndPress {
+            onLongPressEnded([:])
+            animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
+        }
       default: break
       }
     }
@@ -146,7 +154,9 @@ class Button : RCTView {
       let location = touch.location(in: self)
       onCancel(["close":Button.isClose(locationA: location, locationB: tapLocation!), "state": self.longPress?.value(forKey: "_state")])
     }
-    animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
+    if shouldLongPressEndPress == false {
+      animator = animateTapEnd(duration: pressOutDuration == -1 ? duration : pressOutDuration)
+    }
     if throttle {
       blocked = true;
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
