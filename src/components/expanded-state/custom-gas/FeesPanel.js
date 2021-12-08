@@ -145,7 +145,7 @@ export default function FeesPanel({
   const { navigate, dangerouslyGetState } = useNavigation();
   const { colors } = useTheme();
 
-  const { params: { speeds, focusToInput, type } = {} } = useRoute();
+  const { params: { speeds, type } = {} } = useRoute();
 
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
@@ -593,6 +593,9 @@ export default function FeesPanel({
                 speeds: speeds ?? gasUtils.GasSpeedOrder,
                 type: 'custom_gas',
               });
+              setTimeout(() => {
+                maxBaseFieldRef?.current?.focus();
+              }, 500);
             },
             style: 'cancel',
             text: 'Edit Max Base Fee',
@@ -606,7 +609,7 @@ export default function FeesPanel({
           : ALERT_TITLE_HIGHER_MAX_BASE_FEE_NEEDED,
       });
     },
-    [asset, maxBaseFeeWarning, navigate, setCanGoBack, speeds]
+    [asset, maxBaseFeeWarning, maxBaseFieldRef, navigate, setCanGoBack, speeds]
   );
 
   const alertMaxPriority = useCallback(
@@ -630,6 +633,9 @@ export default function FeesPanel({
                 speeds: speeds ?? gasUtils.GasSpeedOrder,
                 type: 'custom_gas',
               });
+              setTimeout(() => {
+                minerTipFieldRef?.current?.focus();
+              }, 500);
             },
             style: 'cancel',
             text: 'Edit Miner Tip',
@@ -643,7 +649,14 @@ export default function FeesPanel({
           : ALERT_TITLE_HIGHER_MINER_TIP_NEEDED,
       });
     },
-    [asset, maxPriorityFeeWarning, navigate, setCanGoBack, speeds]
+    [
+      asset,
+      maxPriorityFeeWarning,
+      minerTipFieldRef,
+      navigate,
+      setCanGoBack,
+      speeds,
+    ]
   );
 
   validateGasParams.current = callback => validateParams(callback);
@@ -702,23 +715,6 @@ export default function FeesPanel({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (focusToInput === FOCUS_TO_MINER_TIP) {
-        setLastFocusedInputHandle(minerTipFieldRef);
-        // minerTipFieldRef?.current?.focus();
-      } else {
-        setLastFocusedInputHandle(maxBaseFieldRef);
-        // maxBaseFieldRef?.current?.focus();
-      }
-    }, 500);
-  }, [
-    focusToInput,
-    maxBaseFieldRef,
-    minerTipFieldRef,
-    setLastFocusedInputHandle,
-  ]);
 
   return (
     <Wrapper>

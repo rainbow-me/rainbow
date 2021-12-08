@@ -13,7 +13,6 @@ import { FeesPanel, FeesPanelTabs } from './custom-gas';
 import { getTrendKey } from '@rainbow-me/helpers/gas';
 import {
   useAccountSettings,
-  useBooleanState,
   useColorForAsset,
   useDimensions,
   useGas,
@@ -55,7 +54,6 @@ export default function CustomGasState({ asset }) {
   const { colors } = useTheme();
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
-  const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const insets = useSafeArea();
   const [footerHeight, setFooterHeight] = useHeight(FOOTER_MIN_HEIGHT);
   const [contentHeight, setContentHeight] = useHeight(CONTENT_MIN_HEIGHT);
@@ -94,7 +92,6 @@ export default function CustomGasState({ asset }) {
   }, [
     additionalScrollForKeyboard,
     contentScroll,
-    isKeyboardVisible,
     sheetHeightWithKeyboard,
     sheetHeightWithoutKeyboard,
     setParams,
@@ -119,8 +116,6 @@ export default function CustomGasState({ asset }) {
             asset={asset}
             colorForAsset={colorForAsset}
             currentGasTrend={currentGasTrend}
-            onCustomGasBlur={hideKeyboard}
-            onCustomGasFocus={showKeyboard}
             selectedGasFee={selectedGasFee}
             setCanGoBack={setCanGoBack}
             speeds={speeds}
@@ -129,11 +124,7 @@ export default function CustomGasState({ asset }) {
         </FeesPanelWrapper>
         <Divider color={colors.rowDividerExtraLight} inset={[0, 24, 0, 24]} />
         <FeesPanelTabswrapper>
-          <FeesPanelTabs
-            colorForAsset={colorForAsset}
-            onPressTabPill={hideKeyboard}
-            speeds={speeds}
-          />
+          <FeesPanelTabs colorForAsset={colorForAsset} speeds={speeds} />
         </FeesPanelTabswrapper>
       </FloatingPanel>
       <Column onLayout={setFooterHeight}>
