@@ -128,11 +128,11 @@ const warningsAnimationConfig = {
 };
 
 export default function FeesPanel({
-  asset,
   currentGasTrend,
   colorForAsset,
   setCanGoBack,
   validateGasParams,
+  openCustomOptions,
 }) {
   const {
     selectedGasFee,
@@ -145,7 +145,7 @@ export default function FeesPanel({
   const { navigate, dangerouslyGetState } = useNavigation();
   const { colors } = useTheme();
 
-  const { params: { speeds, type } = {} } = useRoute();
+  const { params: { type, focusTo } = {} } = useRoute();
 
   const isFocused = useIsFocused();
   const prevIsFocused = usePrevious(isFocused);
@@ -476,6 +476,15 @@ export default function FeesPanel({
     [selectedOptionIsCustom]
   );
 
+  const onAlertProceeded = useCallback(
+    callback => {
+      setUserProcededOnWarnings(true);
+      setCanGoBack?.(true);
+      callback?.();
+    },
+    [setCanGoBack]
+  );
+
   useEffect(() => {
     const navigationRoutes = dangerouslyGetState().routes;
     const lastRouteName = navigationRoutes?.[navigationRoutes.length - 1]?.name;
@@ -578,25 +587,11 @@ export default function FeesPanel({
       Alert({
         buttons: [
           {
-            onPress: () => {
-              setUserProcededOnWarnings(true);
-              setCanGoBack?.(true);
-              callback?.();
-            },
+            onPress: () => onAlertProceeded(callback),
             text: 'Proceed Anyway',
           },
           {
-            onPress: () => {
-              navigate(Routes.CUSTOM_GAS_SHEET, {
-                asset,
-                focusToInput: FOCUS_TO_MAX_BASE_FEE,
-                speeds: speeds ?? gasUtils.GasSpeedOrder,
-                type: 'custom_gas',
-              });
-              setTimeout(() => {
-                maxBaseFieldRef?.current?.focus();
-              }, 500);
-            },
+            onPress: () => openCustomOptions(FOCUS_TO_MAX_BASE_FEE),
             style: 'cancel',
             text: 'Edit Max Base Fee',
           },
@@ -609,7 +604,7 @@ export default function FeesPanel({
           : ALERT_TITLE_HIGHER_MAX_BASE_FEE_NEEDED,
       });
     },
-    [asset, maxBaseFeeWarning, maxBaseFieldRef, navigate, setCanGoBack, speeds]
+    [maxBaseFeeWarning, onAlertProceeded, openCustomOptions]
   );
 
   const alertMaxPriority = useCallback(
@@ -618,25 +613,11 @@ export default function FeesPanel({
       Alert({
         buttons: [
           {
-            onPress: () => {
-              setUserProcededOnWarnings(true);
-              setCanGoBack?.(true);
-              callback?.();
-            },
+            onPress: () => onAlertProceeded(callback),
             text: 'Proceed Anyway',
           },
           {
-            onPress: () => {
-              navigate(Routes.CUSTOM_GAS_SHEET, {
-                asset,
-                focusToInput: FOCUS_TO_MINER_TIP,
-                speeds: speeds ?? gasUtils.GasSpeedOrder,
-                type: 'custom_gas',
-              });
-              setTimeout(() => {
-                minerTipFieldRef?.current?.focus();
-              }, 500);
-            },
+            onPress: () => openCustomOptions(FOCUS_TO_MINER_TIP),
             style: 'cancel',
             text: 'Edit Miner Tip',
           },
@@ -649,14 +630,7 @@ export default function FeesPanel({
           : ALERT_TITLE_HIGHER_MINER_TIP_NEEDED,
       });
     },
-    [
-      asset,
-      maxPriorityFeeWarning,
-      minerTipFieldRef,
-      navigate,
-      setCanGoBack,
-      speeds,
-    ]
+    [maxPriorityFeeWarning, onAlertProceeded, openCustomOptions]
   );
 
   validateGasParams.current = callback => validateParams(callback);
@@ -715,6 +689,14 @@ export default function FeesPanel({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (focusTo === FOCUS_TO_MINER_TIP) {
+      minerTipFieldRef?.current?.focus();
+    } else {
+      maxBaseFieldRef?.current?.focus();
+    }
+  }, [focusTo, maxBaseFieldRef, minerTipFieldRef]);
 
   return (
     <Wrapper>

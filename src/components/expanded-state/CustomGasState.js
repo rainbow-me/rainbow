@@ -50,7 +50,9 @@ const FeesPanelTabswrapper = styled(Column)`
 export default function CustomGasState({ asset }) {
   const { network } = useAccountSettings();
   const { setParams } = useNavigation();
-  const { params: { longFormHeight, speeds } = {} } = useRoute();
+  const {
+    params: { longFormHeight, speeds, openCustomOptions } = {},
+  } = useRoute();
   const { colors } = useTheme();
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
@@ -113,9 +115,9 @@ export default function CustomGasState({ asset }) {
         <ExchangeHeader testID="custom-gas" />
         <FeesPanelWrapper>
           <FeesPanel
-            asset={asset}
             colorForAsset={colorForAsset}
             currentGasTrend={currentGasTrend}
+            openCustomOptions={openCustomOptions}
             selectedGasFee={selectedGasFee}
             setCanGoBack={setCanGoBack}
             speeds={speeds}
