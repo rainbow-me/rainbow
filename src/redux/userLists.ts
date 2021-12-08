@@ -160,7 +160,7 @@ export const userListsClearList = (listId: string) => (
   });
 
   // update the list
-  if (listIndex) {
+  if (listIndex !== null) {
     const newList = { ...allNewLists[listIndex] };
     newList.tokens = [];
     allNewLists[listIndex] = newList;
@@ -198,7 +198,7 @@ export const userListsUpdateList = (
     });
 
     // add or remove
-    if (listIndex) {
+    if (listIndex !== null) {
       const updatedListTokens = add
         ? uniq(concat(allNewLists[listIndex].tokens, assetAddress))
         : isArray(assetAddress)
