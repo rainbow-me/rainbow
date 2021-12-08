@@ -61,6 +61,9 @@ export function StickyHeader({
   const onLayout = useCallback(() => {
     // @ts-ignore
     const nativeScrollRef = scrollViewRef?.current?.getNativeScrollRef();
+    if (!nativeScrollRef) {
+      return;
+    }
     // @ts-ignore
     ref.current?.measureLayout?.(
       nativeScrollRef,

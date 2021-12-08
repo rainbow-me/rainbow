@@ -3,6 +3,7 @@ import { LayoutChangeEvent } from 'react-native';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
 import ExternalScrollViewWithRef from './ExternalScrollView';
+import RefreshControl from './RefreshControl';
 import rowRenderer from './RowRenderer';
 import { BaseCellType, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
@@ -48,6 +49,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       layoutProvider={layoutProvider}
       onLayout={onLayout}
       ref={ref as LegacyRef<RecyclerListViewRef>}
+      refreshControl={<RefreshControl />}
       renderAheadOffset={800}
       rowRenderer={rowRenderer}
     />
