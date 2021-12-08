@@ -3,7 +3,6 @@ import { defaultConfig } from './experimental';
 import { RainbowContext } from '@rainbow-me/helpers/RainbowContext';
 
 const useExperimentalFlag = (name: any) => {
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'IS_DEV'.
   if (IS_DEV) {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'config' does not exist on type '{}'.
     // eslint-disable-next-line react-hooks/rules-of-hooks
