@@ -1,8 +1,8 @@
 import { captureException } from '@sentry/react-native';
 import {
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   COVALENT_ANDROID_API_KEY,
-  // @ts-ignore
+  // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
   COVALENT_IOS_API_KEY,
 } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
@@ -18,6 +18,7 @@ export const getAssetsFromCovalent = async (
     const url = `https://api.covalenthq.com/v1/${chainId}/address/${accountAddress}/balances_v2/`;
 
     const params = {
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       'key': ios ? COVALENT_IOS_API_KEY : COVALENT_ANDROID_API_KEY,
       'nft': 'false',
       'quote-currency': currency,

@@ -41,7 +41,8 @@ export const accountLocalKeys = [
  * @param  {String}   [network]
  * @return {Object}
  */
-export const getSavings = (accountAddress, network) =>
+export const getSavings = (accountAddress: any, network: any) =>
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{}' is not assignable to paramet... Remove this comment to see the full error message
   getAccountLocal(SAVINGS, accountAddress, network, {}, savingsVersion);
 
 /**
@@ -50,7 +51,7 @@ export const getSavings = (accountAddress, network) =>
  * @param  {Array}    [savings]
  * @param  {String}   [network]
  */
-export const saveSavings = (savings, accountAddress, network) =>
+export const saveSavings = (savings: any, accountAddress: any, network: any) =>
   saveAccountLocal(SAVINGS, savings, accountAddress, network, savingsVersion);
 
 /**
@@ -59,11 +60,12 @@ export const saveSavings = (savings, accountAddress, network) =>
  * @param  {String}   [network]
  * @return {Boolean}
  */
-export const getAccountEmptyState = (accountAddress, network) =>
+export const getAccountEmptyState = (accountAddress: any, network: any) =>
   getAccountLocal(
     ACCOUNT_EMPTY,
     accountAddress,
     network,
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'false' is not assignable to para... Remove this comment to see the full error message
     false,
     accountEmptyVersion
   );
@@ -74,7 +76,11 @@ export const getAccountEmptyState = (accountAddress, network) =>
  * @param  {String}   [address]
  * @param  {String}   [network]
  */
-export const saveAccountEmptyState = (val, accountAddress, network) =>
+export const saveAccountEmptyState = (
+  val: any,
+  accountAddress: any,
+  network: any
+) =>
   saveAccountLocal(
     ACCOUNT_EMPTY,
     val,
@@ -89,7 +95,7 @@ export const saveAccountEmptyState = (val, accountAddress, network) =>
  * @param  {String}   [network]
  * @return {Object}
  */
-export const getAssets = (accountAddress, network) =>
+export const getAssets = (accountAddress: any, network: any) =>
   getAccountLocal(ASSETS, accountAddress, network, [], assetsVersion);
 
 /**
@@ -98,7 +104,7 @@ export const getAssets = (accountAddress, network) =>
  * @param  {String}   [address]
  * @param  {String}   [network]
  */
-export const saveAssets = (assets, accountAddress, network) =>
+export const saveAssets = (assets: any, accountAddress: any, network: any) =>
   saveAccountLocal(ASSETS, assets, accountAddress, network, assetsVersion);
 
 /**
@@ -107,7 +113,7 @@ export const saveAssets = (assets, accountAddress, network) =>
  * @param  {String}   [network]
  * @return {Object}
  */
-export const getAssetPricesFromUniswap = (accountAddress, network) =>
+export const getAssetPricesFromUniswap = (accountAddress: any, network: any) =>
   getAccountLocal(
     ASSET_PRICES_FROM_UNISWAP,
     accountAddress,
@@ -123,9 +129,9 @@ export const getAssetPricesFromUniswap = (accountAddress, network) =>
  * @param  {String}   [network]
  */
 export const saveAssetPricesFromUniswap = (
-  assetPrices,
-  accountAddress,
-  network
+  assetPrices: any,
+  accountAddress: any,
+  network: any
 ) =>
   saveAccountLocal(
     ASSET_PRICES_FROM_UNISWAP,
@@ -141,7 +147,7 @@ export const saveAssetPricesFromUniswap = (
  * @param  {String}   [network]
  * @return {Object}
  */
-export const getPurchaseTransactions = (accountAddress, network) =>
+export const getPurchaseTransactions = (accountAddress: any, network: any) =>
   getAccountLocal(
     PURCHASE_TRANSACTIONS,
     accountAddress,
@@ -157,9 +163,9 @@ export const getPurchaseTransactions = (accountAddress, network) =>
  * @param  {String}   [network]
  */
 export const savePurchaseTransactions = (
-  purchaseTransactions,
-  accountAddress,
-  network
+  purchaseTransactions: any,
+  accountAddress: any,
+  network: any
 ) =>
   saveAccountLocal(
     PURCHASE_TRANSACTIONS,
@@ -175,7 +181,7 @@ export const savePurchaseTransactions = (
  * @param  {String}   [network]
  * @return {Object}
  */
-export const getLocalTransactions = (accountAddress, network) =>
+export const getLocalTransactions = (accountAddress: any, network: any) =>
   getAccountLocal(
     TRANSACTIONS,
     accountAddress,
@@ -190,7 +196,11 @@ export const getLocalTransactions = (accountAddress, network) =>
  * @param  {Array}   [transactions]
  * @param  {String}   [network]
  */
-export const saveLocalTransactions = (transactions, accountAddress, network) =>
+export const saveLocalTransactions = (
+  transactions: any,
+  accountAddress: any,
+  network: any
+) =>
   saveAccountLocal(
     TRANSACTIONS,
     transactions,
@@ -205,7 +215,7 @@ export const saveLocalTransactions = (transactions, accountAddress, network) =>
  * @param  {String}   [network]
  * @return {Object}
  */
-export const getUniqueTokens = (accountAddress, network) =>
+export const getUniqueTokens = (accountAddress: any, network: any) =>
   getAccountLocal(
     UNIQUE_TOKENS,
     accountAddress,
@@ -220,7 +230,11 @@ export const getUniqueTokens = (accountAddress, network) =>
  * @param  {Array}    [uniqueTokens]
  * @param  {String}   [network]
  */
-export const saveUniqueTokens = (uniqueTokens, accountAddress, network) =>
+export const saveUniqueTokens = (
+  uniqueTokens: any,
+  accountAddress: any,
+  network: any
+) =>
   saveAccountLocal(
     UNIQUE_TOKENS,
     uniqueTokens,
@@ -235,7 +249,8 @@ export const saveUniqueTokens = (uniqueTokens, accountAddress, network) =>
  * @param  {String}   [network]
  * @return {Object}
  */
-export const getAccountInfo = (accountAddress, network) =>
+export const getAccountInfo = (accountAddress: any, network: any) =>
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{}' is not assignable to paramet... Remove this comment to see the full error message
   getAccountLocal(ACCOUNT_INFO, accountAddress, network, {});
 
 /**
@@ -244,8 +259,11 @@ export const getAccountInfo = (accountAddress, network) =>
  * @param  {Object}    [profile info]
  * @param  {String}   [network]
  */
-export const saveAccountInfo = (profileInfo, accountAddress, network) =>
-  saveAccountLocal(ACCOUNT_INFO, profileInfo, accountAddress, network);
+export const saveAccountInfo = (
+  profileInfo: any,
+  accountAddress: any,
+  network: any
+) => saveAccountLocal(ACCOUNT_INFO, profileInfo, accountAddress, network);
 
 /**
  * @desc get pinned coins
@@ -253,7 +271,8 @@ export const saveAccountInfo = (profileInfo, accountAddress, network) =>
  * @param  {String}   [network]
  * @return {Array}
  */
-export const getPinnedCoins = (accountAddress, network) =>
+export const getPinnedCoins = (accountAddress: any, network: any) =>
+  // @ts-expect-error ts-migrate(2322) FIXME: Type 'string' is not assignable to type 'never'.
   getAccountLocal(PINNED_COINS, accountAddress, network, ['eth']);
 
 /**
@@ -262,8 +281,11 @@ export const getPinnedCoins = (accountAddress, network) =>
  * @param  {String}   [address]
  * @param  {String}   [network]
  */
-export const savePinnedCoins = (pinnedCoins, accountAddress, network) =>
-  saveAccountLocal(PINNED_COINS, pinnedCoins, accountAddress, network);
+export const savePinnedCoins = (
+  pinnedCoins: any,
+  accountAddress: any,
+  network: any
+) => saveAccountLocal(PINNED_COINS, pinnedCoins, accountAddress, network);
 
 /**
  * @desc get hidden coins
@@ -271,7 +293,7 @@ export const savePinnedCoins = (pinnedCoins, accountAddress, network) =>
  * @param  {String}   [network]
  * @return {Array}
  */
-export const getHiddenCoins = (accountAddress, network) =>
+export const getHiddenCoins = (accountAddress: any, network: any) =>
   getAccountLocal(HIDDEN_COINS, accountAddress, network, []);
 
 /**
@@ -280,8 +302,11 @@ export const getHiddenCoins = (accountAddress, network) =>
  * @param  {String}   [address]
  * @param  {String}   [network]
  */
-export const saveHiddenCoins = (hiddenCoins, accountAddress, network) =>
-  saveAccountLocal(HIDDEN_COINS, hiddenCoins, accountAddress, network);
+export const saveHiddenCoins = (
+  hiddenCoins: any,
+  accountAddress: any,
+  network: any
+) => saveAccountLocal(HIDDEN_COINS, hiddenCoins, accountAddress, network);
 
 /**
  * @desc get showcase tokens
@@ -289,7 +314,7 @@ export const saveHiddenCoins = (hiddenCoins, accountAddress, network) =>
  * @param  {String}   [network]
  * @return {Afray}
  */
-export const getShowcaseTokens = (accountAddress, network) =>
+export const getShowcaseTokens = (accountAddress: any, network: any) =>
   getAccountLocal(SHOWCASE_TOKENS, accountAddress, network, []);
 
 /**
@@ -298,8 +323,11 @@ export const getShowcaseTokens = (accountAddress, network) =>
  * @param  {Array}    [Showcase tokens]
  * @param  {String}   [network]
  */
-export const saveShowcaseTokens = (showcaseTokens, accountAddress, network) =>
-  saveAccountLocal(SHOWCASE_TOKENS, showcaseTokens, accountAddress, network);
+export const saveShowcaseTokens = (
+  showcaseTokens: any,
+  accountAddress: any,
+  network: any
+) => saveAccountLocal(SHOWCASE_TOKENS, showcaseTokens, accountAddress, network);
 
 /**
  * @desc get web data enabled preference
@@ -307,7 +335,8 @@ export const saveShowcaseTokens = (showcaseTokens, accountAddress, network) =>
  * @param  {String}   [network]
  * @return {Array}
  */
-export const getWebDataEnabled = (accountAddress, network) =>
+export const getWebDataEnabled = (accountAddress: any, network: any) =>
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'null' is not assignable to param... Remove this comment to see the full error message
   getAccountLocal(WEB_DATA_ENABLED, accountAddress, network, null);
 
 /**
@@ -316,5 +345,8 @@ export const getWebDataEnabled = (accountAddress, network) =>
  * @param  {String}   [address]
  * @param  {String}   [network]
  */
-export const saveWebDataEnabled = (preference, accountAddress, network) =>
-  saveAccountLocal(WEB_DATA_ENABLED, preference, accountAddress, network);
+export const saveWebDataEnabled = (
+  preference: any,
+  accountAddress: any,
+  network: any
+) => saveAccountLocal(WEB_DATA_ENABLED, preference, accountAddress, network);

@@ -12,5 +12,6 @@ export const getTopMovers = async () => {
   };
 };
 
-export const saveTopGainers = gainers => saveGlobal(TOP_GAINERS, gainers);
-export const saveTopLosers = losers => saveGlobal(TOP_LOSERS, losers);
+export const saveTopGainers = (gainers: any) =>
+  saveGlobal(TOP_GAINERS, gainers);
+export const saveTopLosers = (losers: any) => saveGlobal(TOP_LOSERS, losers);
