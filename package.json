@@ -297,7 +297,7 @@
     "jest-circus": "26.6.3",
     "metro-plugin-anisotropic-transform": "rainbow-me/metro-plugin-anisotropic-transform#463b4ca9f5631f9c5e6028d22a450f6f0e54214f",
     "metro-react-native-babel-preset": "0.64.0",
-    "next": "12.0.1",
+    "next": "12.0.5",
     "node-vibrant": "3.2.1-alpha.1",
     "prettier": "2.2.1",
     "react-dom": "17.0.2",
