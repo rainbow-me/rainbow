@@ -1,6 +1,5 @@
 import React, { createElement, Fragment } from 'react';
 import { Share } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -17,24 +16,9 @@ import {
   useWebData,
 } from '@rainbow-me/hooks';
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
-import { padding, position } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 export const ListHeaderHeight = 50;
-
-const BackgroundGradient = styled(LinearGradient).attrs(
-  ({ theme: { colors } }) => ({
-    colors: [
-      colors.listHeaders.firstGradient,
-      colors.listHeaders.secondGradient,
-      colors.listHeaders.thirdGradient,
-    ],
-    end: { x: 0, y: 0 },
-    pointerEvents: 'none',
-    start: { x: 0, y: 0.5 },
-  })
-)`
-  ${position.cover};
-`;
 
 const ShareCollectiblesBPA = styled(ButtonPressAnimation)`
   background-color: ${({ theme: { colors } }) =>
@@ -54,10 +38,11 @@ const ShareCollectiblesButton = ({ onPress }) => (
   </ShareCollectiblesBPA>
 );
 
-const Content = styled(Row).attrs({
+const Content = styled(Row).attrs(({ theme: { colors } }) => ({
   align: 'center',
+  backgroundColor: colors.white,
   justify: 'space-between',
-})`
+}))`
   ${padding(5, 19)};
   height: ${ListHeaderHeight};
   width: 100%;
@@ -120,7 +105,6 @@ export default function ListHeader({
   } else {
     return (
       <Fragment>
-        <BackgroundGradient />
         <Content>
           {title && (
             <Row align="center">
