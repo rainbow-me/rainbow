@@ -96,3 +96,4 @@ patches/react-native-webview+11.2.3.patch
 
 # Ts-coverage
 coverage-ts
+.type-coverage/
