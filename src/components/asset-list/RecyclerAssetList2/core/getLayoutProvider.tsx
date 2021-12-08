@@ -18,6 +18,7 @@ const getStyleOverridesForIndex = (indices: number[]) => (index: number) => {
 };
 
 class BetterLayoutProvider extends LayoutProvider {
+  shouldRefreshWithAnchoring = false;
   private readonly indicesToOverride: number[];
   constructor(
     getLayoutTypeForIndex: (index: number) => string | number,
