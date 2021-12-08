@@ -34,7 +34,7 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 ios/main.jsbundle.map
-src/config/debug.js
+src/config/debug.ts
 
 # Android/IntelliJ
 #
