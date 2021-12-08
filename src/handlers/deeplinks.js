@@ -1,3 +1,4 @@
+import { toLower } from 'lodash';
 import qs from 'qs';
 import { Alert } from 'react-native';
 import URL from 'url-parse';
@@ -16,6 +17,7 @@ import {
   emitAssetRequest,
   emitChartsRequest,
 } from '@rainbow-me/redux/explorer';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 
@@ -45,10 +47,10 @@ export default async function handleDeeplink(url) {
           const { assets: allAssets, genericAssets } = store.getState().data;
           const asset =
             Object.values(genericAssets).find(
-              asset => address === asset.address.toLowerCase()
+              asset => address === toLower(asset.address)
             ) ||
             (address !== ETH_ADDRESS &&
-              allAssets.find(asset => address === asset.address.toLowerCase()));
+              allAssets.find(asset => address === toLower(asset.address)));
 
           const action = asset => {
             Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
