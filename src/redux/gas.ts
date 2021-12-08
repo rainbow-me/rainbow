@@ -35,7 +35,6 @@ import {
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasParamsFormat,
-  getFallbackGasPrices,
   gweiToWei,
   parseGasFeeParam,
   parseGasFees,
@@ -89,7 +88,6 @@ interface GasState {
 const GAS_UPDATE_DEFAULT_GAS_LIMIT = 'gas/GAS_UPDATE_DEFAULT_GAS_LIMIT';
 const GAS_PRICES_SUCCESS = 'gas/GAS_PRICES_SUCCESS';
 const GAS_FEES_SUCCESS = 'gas/GAS_FEES_SUCCESS';
-const GAS_PRICES_FAILURE = 'gas/GAS_PRICES_FAILURE';
 const GAS_PRICES_CUSTOM_UPDATE = 'gas/GAS_PRICES_CUSTOM_UPDATE';
 
 const GAS_PRICES_RESET = 'gas/GAS_PRICES_RESET';
@@ -341,20 +339,24 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
           } else if (network === Network.optimism) {
             adjustedGasFees = await getOptimismGasPrices();
           }
+
           const gasFeeParamsBySpeed = parseL2GasPrices(
             adjustedGasFees,
             network
           );
-          if (existingGasFees[CUSTOM] !== null) {
-            // Preserve custom values while updating prices
-            gasFeeParamsBySpeed[CUSTOM] = existingGasFees[CUSTOM];
+
+          if (gasFeeParamsBySpeed) {
+            if (existingGasFees[CUSTOM] !== null) {
+              // Preserve custom values while updating prices
+              gasFeeParamsBySpeed[CUSTOM] = existingGasFees[CUSTOM];
+            }
+            dispatch({
+              payload: {
+                gasFeeParamsBySpeed,
+              },
+              type: GAS_FEES_SUCCESS,
+            });
           }
-          dispatch({
-            payload: {
-              gasFeeParamsBySpeed,
-            },
-            type: GAS_FEES_SUCCESS,
-          });
         } else {
           try {
             const {
@@ -406,13 +408,8 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
         }
         fetchResolve(true);
       } catch (error) {
-        const fallbackGasPrices = getFallbackGasPrices();
         captureException(new Error('all gas estimates failed'));
         logger.sentry('gas estimates error', error);
-        dispatch({
-          payload: fallbackGasPrices,
-          type: GAS_PRICES_FAILURE,
-        });
         fetchReject(error);
       }
     });
@@ -578,11 +575,6 @@ export default (
         confirmationTimeByPriorityFee:
           action.payload.confirmationTimeByPriorityFee,
         currentBlockParams: action.payload.currentBlockParams,
-        gasFeeParamsBySpeed: action.payload.gasFeeParamsBySpeed,
-      };
-    case GAS_PRICES_FAILURE:
-      return {
-        ...state,
         gasFeeParamsBySpeed: action.payload.gasFeeParamsBySpeed,
       };
     case GAS_PRICES_CUSTOM_UPDATE:
