@@ -5,7 +5,6 @@ import {
   pushSelectedCoin as rawPushSelectedCoin,
   removeSelectedCoin as rawRemoveSelectedCoin,
   setHiddenCoins as rawSetHiddenCoins,
-  setIsCoinListEdited as rawSetIsCoinListEdited,
   setPinnedCoins as rawSetPinnedCoins,
 } from '../redux/editOptions';
 
@@ -13,17 +12,9 @@ export default function useCoinListEditOptions() {
   const dispatch = useDispatch();
 
   const editData = useSelector(
-    ({
-      editOptions: {
-        currentAction,
-        hiddenCoins,
-        isCoinListEdited,
-        pinnedCoins,
-      },
-    }) => ({
+    ({ editOptions: { currentAction, hiddenCoins, pinnedCoins } }) => ({
       currentAction,
       hiddenCoins,
-      isCoinListEdited,
       pinnedCoins,
     })
   );
@@ -48,11 +39,6 @@ export default function useCoinListEditOptions() {
     [dispatch]
   );
 
-  const setIsCoinListEdited = useCallback(
-    data => dispatch(rawSetIsCoinListEdited(data)),
-    [dispatch]
-  );
-
   const setPinnedCoins = useCallback(
     data => dispatch(rawSetPinnedCoins(data)),
     [dispatch]
@@ -63,7 +49,6 @@ export default function useCoinListEditOptions() {
     pushSelectedCoin,
     removeSelectedCoin,
     setHiddenCoins,
-    setIsCoinListEdited,
     setPinnedCoins,
     ...editData,
   };

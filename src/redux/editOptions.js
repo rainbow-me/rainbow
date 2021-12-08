@@ -39,22 +39,6 @@ export const coinListLoadState = () => async (dispatch, getState) => {
   }
 };
 
-export const setIsCoinListEdited = newIsCoinListEdited => (
-  dispatch,
-  getState
-) => {
-  const { currentAction, selectedCoins } = getState().editOptions;
-
-  dispatch({
-    payload: {
-      currentAction: !newIsCoinListEdited ? EditOptions.none : currentAction,
-      isCoinListEdited: newIsCoinListEdited,
-      selectedCoins: !newIsCoinListEdited ? [] : selectedCoins,
-    },
-    type: SET_IS_COIN_LIST_EDITED,
-  });
-};
-
 export const clearSelectedCoins = () => dispatch =>
   dispatch(updateCurrentAction([]));
 
@@ -223,7 +207,6 @@ export const setHiddenCoins = () => (dispatch, getState) => {
 const INITIAL_STATE = {
   currentAction: EditOptions.none,
   hiddenCoins: [],
-  isCoinListEdited: false,
   pinnedCoins: ['eth'],
   recentlyPinnedCount: 0,
   selectedCoins: [],
@@ -236,7 +219,6 @@ export default (state = INITIAL_STATE, action) =>
       draft.hiddenCoins = action.payload.hiddenCoins;
     } else if (action.type === SET_IS_COIN_LIST_EDITED) {
       draft.currentAction = action.payload.currentAction;
-      draft.isCoinListEdited = action.payload.isCoinListEdited;
       draft.selectedCoins = action.payload.selectedCoins;
     } else if (action.type === UPDATE_SELECTED_COIN) {
       draft.selectedCoins = action.payload.selectedCoins;
