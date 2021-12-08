@@ -28,7 +28,6 @@ const Content = styled(Column).attrs({
 `;
 
 const Footer = styled(Column).attrs({
-  align: 'center',
   justify: 'center',
 })`
   ${padding(0, 15, 21)};
@@ -138,7 +137,6 @@ export default function BackupManualStep() {
           <View marginTop={isSmallPhone ? -20 : 30}>
             <SheetActionButton
               color={colors.appleBlue}
-              fullWidth
               label={`􀁣 I’ve saved ${
                 type === WalletTypes.privateKey ? 'my key' : 'these words'
               }`}

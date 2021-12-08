@@ -32,6 +32,7 @@ import ErrorBoundary from './components/error-boundary/ErrorBoundary';
 import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
 import {
+  designSystemPlaygroundEnabled,
   reactNativeDisableYellowBox,
   showNetworkRequests,
   showNetworkResponses,
@@ -39,9 +40,11 @@ import {
 import { MainThemeProvider } from './context/ThemeContext';
 import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
+import { Playground } from './design-system/playground/Playground';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
+import { isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
@@ -49,11 +52,13 @@ import { loadAddress } from './model/wallet';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
 import { explorerInitL2 } from './redux/explorer';
+import { fetchOnchainBalances } from './redux/fallbackExplorer';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
+import { ethereumUtils } from './utils';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
@@ -249,12 +254,24 @@ class App extends Component {
   handleNavigatorRef = navigatorRef =>
     Navigation.setTopLevelNavigator(navigatorRef);
 
-  handleTransactionConfirmed = () => {
-    logger.log('Reloading all data from L2 explorers in 10!');
-    setTimeout(() => {
-      logger.log('Reloading all data from L2 explorers NOW!');
-      store.dispatch(explorerInitL2());
-    }, 10000);
+  handleTransactionConfirmed = tx => {
+    const network = ethereumUtils.getNetworkFromChainId(tx.chainId);
+    const isL2 = isL2Network(network);
+    const updateBalancesAfter = (timeout, isL2, network) => {
+      setTimeout(() => {
+        logger.log('Reloading balances for network', network);
+        if (isL2) {
+          store.dispatch(explorerInitL2(network));
+        } else {
+          store.dispatch(
+            fetchOnchainBalances({ keepPolling: false, withPrices: false })
+          );
+        }
+      }, timeout);
+    };
+    logger.log('reloading balances soon...');
+    updateBalancesAfter(2000, isL2, network);
+    updateBalancesAfter(isL2 ? 10000 : 5000, isL2, network);
   };
 
   render = () => (
@@ -293,4 +310,6 @@ const AppWithRedux = connect(
 
 const AppWithReduxStore = () => <AppWithRedux store={store} />;
 
-AppRegistry.registerComponent('Rainbow', () => AppWithReduxStore);
+AppRegistry.registerComponent('Rainbow', () =>
+  designSystemPlaygroundEnabled ? Playground : AppWithReduxStore
+);

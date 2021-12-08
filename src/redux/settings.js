@@ -1,18 +1,18 @@
-import { NativeCurrencyKeys } from '../entities/nativeCurrencyTypes';
+import analytics from '@segment/analytics-react-native';
+import { updateLanguage } from '../languages';
+import { NativeCurrencyKeys } from '@rainbow-me/entities';
 import {
   getNativeCurrency,
   getNetwork,
   saveLanguage,
   saveNativeCurrency,
   saveNetwork,
-} from '../handlers/localstorage/globalSettings';
-import { web3SetHttpProvider } from '../handlers/web3';
-import networkTypes from '../helpers/networkTypes';
-import { updateLanguage } from '../languages';
-
-import { ethereumUtils } from '../utils';
-import { dataResetState } from './data';
-import { explorerClearState, explorerInit } from './explorer';
+} from '@rainbow-me/handlers/localstorage/globalSettings';
+import { web3SetHttpProvider } from '@rainbow-me/handlers/web3';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { dataResetState } from '@rainbow-me/redux/data';
+import { explorerClearState, explorerInit } from '@rainbow-me/redux/explorer';
+import { ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants ------------------------------------------------------------- //
@@ -29,6 +29,7 @@ const SETTINGS_UPDATE_NETWORK_SUCCESS =
 export const settingsLoadState = () => async dispatch => {
   try {
     const nativeCurrency = await getNativeCurrency();
+    analytics.identify(null, { currency: nativeCurrency });
 
     dispatch({
       payload: nativeCurrency,
@@ -82,6 +83,7 @@ export const settingsChangeLanguage = language => async dispatch => {
       type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
     });
     saveLanguage(language);
+    analytics.identify(null, { language: language });
   } catch (error) {
     logger.log('Error changing language', error);
   }
@@ -97,6 +99,7 @@ export const settingsChangeNativeCurrency = nativeCurrency => async dispatch => 
     });
     dispatch(explorerInit());
     saveNativeCurrency(nativeCurrency);
+    analytics.identify(null, { currency: nativeCurrency });
   } catch (error) {
     logger.log('Error changing native currency', error);
   }

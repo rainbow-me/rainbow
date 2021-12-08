@@ -215,7 +215,7 @@ export default function ChartWrapper({
             <ChartPath
               fill="none"
               gestureEnabled={!fetchingCharts && !!throttledData}
-              hapticsEnabled
+              hapticsEnabled={ios}
               height={HEIGHT}
               hitSlop={30}
               longPressGestureHandlerProps={{
