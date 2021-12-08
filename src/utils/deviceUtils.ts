@@ -2,25 +2,28 @@ import { Dimensions, Platform } from 'react-native';
 
 const { height, width } = Dimensions.get('window');
 
-const deviceUtils = {};
+const deviceUtils = (function () {
+  const iPhone6Height = 667,
+    iphoneSEHeight = 568,
+    iPhoneXHeight = 812,
+    iPhoneXWidth = 375;
 
-deviceUtils.iPhoneXHeight = 812;
-deviceUtils.iPhoneXWidth = 375;
-deviceUtils.iPhone6Height = 667;
-deviceUtils.iphoneSEHeight = 568;
-
-deviceUtils.isNarrowPhone = width < deviceUtils.iPhoneXWidth;
-deviceUtils.isSmallPhone = height <= deviceUtils.iPhone6Height;
-deviceUtils.isLargePhone = width >= deviceUtils.iPhoneXWidth;
-
-deviceUtils.isTallPhone = height >= deviceUtils.iPhoneXHeight;
-deviceUtils.isTinyPhone = height <= deviceUtils.iphoneSEHeight;
-
-deviceUtils.dimensions = {
-  height,
-  width,
-};
-
-deviceUtils.isIOS14 = ios && parseFloat(Platform.Version) >= 14;
+  return {
+    dimensions: {
+      height,
+      width,
+    },
+    iPhone6Height,
+    iphoneSEHeight,
+    iPhoneXHeight,
+    iPhoneXWidth,
+    isIOS14: ios && parseFloat(Platform.Version as string) >= 14,
+    isLargePhone: width >= iPhoneXWidth,
+    isNarrowPhone: width < iPhoneXWidth,
+    isSmallPhone: height <= iPhone6Height,
+    isTallPhone: height >= iPhoneXHeight,
+    isTinyPhone: height <= iphoneSEHeight,
+  };
+})();
 
 export default deviceUtils;

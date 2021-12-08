@@ -59,10 +59,12 @@ import {
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
   DEFAULT_HD_PATH,
-  EthereumPrivateKey,
-  EthereumWalletSeed,
   identifyWalletType,
   WalletLibraryType,
+} from '@rainbow-me/model/wallet';
+import type {
+  EthereumPrivateKey,
+  EthereumWalletSeed,
 } from '@rainbow-me/model/wallet';
 import { Navigation } from '@rainbow-me/navigation';
 import { parseAssetsNative } from '@rainbow-me/parsers';
@@ -516,7 +518,9 @@ async function parseEthereumUrl(data: string) {
 
   if (!functionName) {
     // Send native asset
-    const nativeAssetAddress = getNativeAssetAddressForNetwork(network);
+    const nativeAssetAddress = getNativeAssetAddressForNetwork(
+      network as Network
+    );
     asset = getAsset(assets, toLower(nativeAssetAddress));
 
     // @ts-ignore
