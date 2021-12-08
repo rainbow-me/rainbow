@@ -164,13 +164,13 @@ export const userListsClearList = (listId: string) => (
     const newList = { ...allNewLists[listIndex] };
     newList.tokens = [];
     allNewLists[listIndex] = newList;
-  }
 
-  dispatch({
-    payload: allNewLists,
-    type: USER_LISTS_UPDATE_LISTS,
-  });
-  saveUserLists(allNewLists);
+    dispatch({
+      payload: allNewLists,
+      type: USER_LISTS_UPDATE_LISTS,
+    });
+    saveUserLists(allNewLists);
+  }
 };
 
 export const userListsUpdateList = (
@@ -212,13 +212,13 @@ export const userListsUpdateList = (
       const newList = { ...allNewLists[listIndex] };
       newList.tokens = updatedListTokens;
       allNewLists[listIndex] = newList;
-    }
 
-    dispatch({
-      payload: allNewLists,
-      type: USER_LISTS_UPDATE_LISTS,
-    });
-    saveUserLists(allNewLists);
+      dispatch({
+        payload: allNewLists,
+        type: USER_LISTS_UPDATE_LISTS,
+      });
+      saveUserLists(allNewLists);
+    }
   }
 };
 
