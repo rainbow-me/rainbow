@@ -1,7 +1,7 @@
-const PromiseAllWithFails = async (promises: Promise<any>[]) =>
+const PromiseAllWithFails = async promises =>
   Promise.all(
-    promises.map((promise: any) =>
-      promise?.catch ? promise.catch((error: any) => error) : promise
+    promises.map(promise =>
+      promise && promise.catch ? promise.catch(error => error) : promise
     )
   );
 

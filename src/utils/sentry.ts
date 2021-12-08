@@ -1,24 +1,21 @@
 import { addBreadcrumb } from '@sentry/react-native';
 
-const addInfoBreadcrumb = (message: any) =>
+const addInfoBreadcrumb = message =>
   addBreadcrumb({
-    // @ts-expect-error ts-migrate(2322) FIXME: Type '"info"' is not assignable to type 'Severity ... Remove this comment to see the full error message
     level: 'info',
     message,
   });
 
-const addDataBreadcrumb = (message: any, data: any) =>
+const addDataBreadcrumb = (message, data) =>
   addBreadcrumb({
     data,
-    // @ts-expect-error ts-migrate(2322) FIXME: Type '"info"' is not assignable to type 'Severity ... Remove this comment to see the full error message
     level: 'info',
     message,
   });
 
-const addNavBreadcrumb = (prevRoute: any, nextRoute: any, data: any) =>
+const addNavBreadcrumb = (prevRoute, nextRoute, data) =>
   addBreadcrumb({
     data,
-    // @ts-expect-error ts-migrate(2322) FIXME: Type '"info"' is not assignable to type 'Severity ... Remove this comment to see the full error message
     level: 'info',
     message: `From ${prevRoute} to ${nextRoute}`,
   });
