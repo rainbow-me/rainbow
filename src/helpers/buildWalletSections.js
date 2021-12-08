@@ -16,6 +16,7 @@ import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentRow } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
 import { withNavigation } from '../navigation/Navigation';
+import { getLowResUrl } from '../utils/getLowResUrl';
 import { compose, withHandlers } from '../utils/recompactAdapters';
 import {
   buildBriefCoinsList,
@@ -25,6 +26,7 @@ import {
 } from './assets';
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
+import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { ImgixImage } from '@rainbow-me/images';
 import { setIsCoinListEdited } from '@rainbow-me/redux/editOptions';
 import { setOpenSmallBalances } from '@rainbow-me/redux/openStateSettings';
@@ -389,12 +391,12 @@ const buildImagesToPreloadArray = (family, index, families) => {
       }
     }
 
-    const images = token.map(({ image_preview_url, uniqueId }) => {
-      if (!image_preview_url) return null;
+    const images = token.map(({ image_url, uniqueId }) => {
+      if (!image_url) return null;
       return {
         id: uniqueId,
         priority,
-        uri: image_preview_url,
+        uri: svgToPngIfNeeded(getLowResUrl(image_url)),
       };
     });
 
