@@ -7,6 +7,7 @@ import { useMemoOne } from 'use-memo-one';
 import { useRecyclerAssetListPosition } from './Contexts';
 import { StickyHeaderContext } from './StickyHeaders';
 
+const extraPadding = { paddingBottom: 120 };
 // @ts-ignore
 const ExternalScrollViewWithRef = React.forwardRef(function ExternalScrollView(
   props: ScrollViewDefaultProps,
@@ -39,6 +40,8 @@ const ExternalScrollViewWithRef = React.forwardRef(function ExternalScrollView(
   return (
     <RNAnimated.ScrollView
       {...(rest as ScrollViewProps)}
+      // @ts-ignore
+      contentContainerStyle={[extraPadding, rest.contentContainerStyle]}
       onScroll={event}
       ref={scrollViewRef}
     />
