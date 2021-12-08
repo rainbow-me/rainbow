@@ -28,11 +28,11 @@ import {
 } from '@rainbow-me/handlers/gasFees';
 import {
   getProviderForNetwork,
-  isEIP1559LegacyNetwork,
   isHardHat,
+  isL2Network,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
-import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasParamsFormat,
   getFallbackGasPrices,
@@ -40,7 +40,7 @@ import {
   parseGasFeeParam,
   parseGasFees,
   parseGasFeesBySpeed,
-  parseGasPrices,
+  parseL2GasPrices,
   parseLegacyGasFeesBySpeed,
   parseRainbowMeteorologyData,
   weiToGwei,
@@ -56,8 +56,18 @@ import { fromWei, greaterThanOrEqualTo, multiply } from '@rainbow-me/utilities';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const { CUSTOM, NORMAL, URGENT, GAS_PRICE_SOURCES } = gasUtils;
-const GAS_PRICE_INTERVAL = 5000; // 5 seconds
+const { CUSTOM, NORMAL, URGENT } = gasUtils;
+
+const getGasPricePollingInterval = (network: Network): number => {
+  switch (network) {
+    case Network.polygon:
+      return 2000;
+    case Network.arbitrum:
+      return 3000;
+    default:
+      return 5000;
+  }
+};
 
 let gasPricesHandle: NodeJS.Timeout | null = null;
 
@@ -90,13 +100,13 @@ const GAS_UPDATE_TRANSACTION_NETWORK = 'gas/GAS_UPDATE_TRANSACTION_NETWORK';
 const getNetworkNativeAsset = (assets: any[], network: Network) => {
   let nativeAssetAddress;
   switch (network) {
-    case networkTypes.polygon:
+    case Network.polygon:
       nativeAssetAddress = MATIC_POLYGON_ADDRESS;
       break;
-    case networkTypes.arbitrum:
+    case Network.arbitrum:
       nativeAssetAddress = ARBITRUM_ETH_ADDRESS;
       break;
-    case networkTypes.optimism:
+    case Network.optimism:
       nativeAssetAddress = OPTIMISM_ETH_ADDRESS;
       break;
     default:
@@ -189,8 +199,9 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
   const _gasLimit = gasLimit || defaultGasLimit;
+
   const nativeTokenPriceUnit =
-    txNetwork !== networkTypes.polygon
+    txNetwork !== Network.polygon
       ? ethereumUtils.getEthPriceUnit()
       : ethereumUtils.getMaticPriceUnit();
 
@@ -230,7 +241,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   });
 };
 
-export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
+export const gasPricesStartPolling = (network = Network.mainnet) => async (
   dispatch: AppDispatch,
   getState: AppGetState
 ) => {
@@ -255,7 +266,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   };
 
   const getArbitrumGasPrices = async () => {
-    const provider = await getProviderForNetwork(networkTypes.arbitrum);
+    const provider = await getProviderForNetwork(Network.arbitrum);
     const baseGasPrice = await provider.getGasPrice();
     const baseGasPriceGwei = weiToGwei(baseGasPrice.toString());
 
@@ -277,7 +288,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   };
 
   const getOptimismGasPrices = async () => {
-    const provider = await getProviderForNetwork(networkTypes.optimism);
+    const provider = await getProviderForNetwork(Network.optimism);
     const baseGasPrice = await provider.getGasPrice();
     const gasPriceGwei = Number(weiToGwei(baseGasPrice.toString()));
 
@@ -319,22 +330,21 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
           gasFeeParamsBySpeed: existingGasFees,
           customGasFeeModifiedByUser,
         } = getState().gas;
-        const isLegacy = isEIP1559LegacyNetwork(network);
+        const isL2 = isL2Network(network);
 
-        if (isLegacy) {
+        if (isL2) {
           let adjustedGasFees;
-          let source = GAS_PRICE_SOURCES.ETHERSCAN;
-          if (network === networkTypes.polygon) {
-            source = GAS_PRICE_SOURCES.POLYGON_GAS_STATION;
+          if (network === Network.polygon) {
             adjustedGasFees = await getPolygonGasPrices();
-          } else if (network === networkTypes.arbitrum) {
-            source = GAS_PRICE_SOURCES.ARBITRUM_NODE;
+          } else if (network === Network.arbitrum) {
             adjustedGasFees = await getArbitrumGasPrices();
-          } else if (network === networkTypes.optimism) {
-            source = GAS_PRICE_SOURCES.OPTIMISM_NODE;
+          } else if (network === Network.optimism) {
             adjustedGasFees = await getOptimismGasPrices();
           }
-          const gasFeeParamsBySpeed = parseGasPrices(adjustedGasFees, source);
+          const gasFeeParamsBySpeed = parseL2GasPrices(
+            adjustedGasFees,
+            network
+          );
           if (existingGasFees[CUSTOM] !== null) {
             // Preserve custom values while updating prices
             gasFeeParamsBySpeed[CUSTOM] = existingGasFees[CUSTOM];
@@ -358,7 +368,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
             // Set a really gas estimate to guarantee that we're gonna be over
             // the basefee at the time we fork mainnet during our hardhat tests
             let baseFee = baseFeePerGas;
-            if (network === networkTypes.mainnet && IS_TESTING === 'true') {
+            if (network === Network.mainnet && IS_TESTING === 'true') {
               const providerUrl = (
                 web3Provider ||
                 ({} as {
@@ -407,19 +417,20 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
       }
     });
 
-  const watchGasPrices = async (network: Network) => {
+  const watchGasPrices = async (network: Network, pollingInterval: number) => {
     try {
       await getGasPrices(network);
       // eslint-disable-next-line no-empty
     } catch (e) {
     } finally {
       gasPricesHandle = setTimeout(() => {
-        watchGasPrices(network);
-      }, GAS_PRICE_INTERVAL);
+        watchGasPrices(network, pollingInterval);
+      }, pollingInterval);
     }
   };
 
-  watchGasPrices(network);
+  const pollingInterval = getGasPricePollingInterval(network);
+  watchGasPrices(network, pollingInterval);
 };
 
 export const gasUpdateGasFeeOption = (
@@ -481,19 +492,19 @@ export const gasUpdateTxFee = (
   const _selectedGasFeeOption =
     overrideGasOption || selectedGasFee.option || NORMAL;
   const nativeTokenPriceUnit =
-    txNetwork !== networkTypes.polygon
+    txNetwork !== Network.polygon
       ? ethereumUtils.getEthPriceUnit()
       : ethereumUtils.getMaticPriceUnit();
 
   if (
     isEmpty(gasFeeParamsBySpeed) ||
-    (txNetwork === networkTypes.optimism && l1GasFeeOptimism === null)
+    (txNetwork === Network.optimism && l1GasFeeOptimism === null)
   )
     return;
 
-  const isLegacyNetwork = isEIP1559LegacyNetwork(txNetwork);
+  const isL2 = isL2Network(txNetwork);
 
-  const gasFeesBySpeed = isLegacyNetwork
+  const gasFeesBySpeed = isL2
     ? parseLegacyGasFeesBySpeed(
         gasFeeParamsBySpeed,
         _gasLimit,
