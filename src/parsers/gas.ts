@@ -8,6 +8,7 @@ import {
   GasFeeParamsBySpeed,
   GasFeesBySpeed,
   GasPricesAPIData,
+  LegacyGasFeeParams,
   LegacyGasFeeParamsBySpeed,
   LegacyGasFeesBySpeed,
   LegacySelectedGasFee,
@@ -27,6 +28,7 @@ import {
   divide,
   greaterThan,
   multiply,
+  toFixedDecimals,
 } from '@rainbow-me/utilities';
 
 type BigNumberish = number | string | BigNumber;
@@ -34,7 +36,6 @@ type BigNumberish = number | string | BigNumber;
 const { CUSTOM, FAST, GasSpeedOrder, NORMAL, URGENT } = gasUtils;
 
 const parseOtherL2GasPrices = (data: GasPricesAPIData) => ({
-  [CUSTOM]: null,
   [FAST]: defaultGasPriceFormat(FAST, data.avgWait, data.average),
   [NORMAL]: defaultGasPriceFormat(NORMAL, data.avgWait, data.average),
   [URGENT]: defaultGasPriceFormat(URGENT, data.fastWait, data.fast),
@@ -159,7 +160,6 @@ export const parseRainbowMeteorologyData = (
 const parseGasPricesPolygonGasStation = (data: GasPricesAPIData) => {
   const polygonGasPriceBumpFactor = 1.05;
   return {
-    [CUSTOM]: null,
     [FAST]: defaultGasPriceFormat(
       FAST,
       0.5,
@@ -183,7 +183,10 @@ const parseGasPricesPolygonGasStation = (data: GasPricesAPIData) => {
  * @param {Object} data
  * @param {String} network
  */
-export const parseL2GasPrices = (data: GasPricesAPIData, network: Network) => {
+export const parseL2GasPrices = (
+  data: GasPricesAPIData,
+  network: Network
+): LegacyGasFeeParamsBySpeed | null => {
   if (!data) return null;
   switch (network) {
     case Network.polygon:
@@ -199,17 +202,18 @@ export const defaultGasPriceFormat = (
   option: string,
   timeWait: Numberish,
   value: Numberish
-) => {
+): LegacyGasFeeParams => {
   const timeAmount = multiply(timeWait, timeUnits.ms.minute);
   const weiAmount = multiply(value, ethUnits.gwei);
   return {
     estimatedTime: {
-      amount: timeAmount,
+      amount: Number(timeAmount),
       display: getMinimalTimeUnitStringForMs(timeAmount),
     },
     gasPrice: {
-      amount: Math.round(Number(weiAmount)),
-      display: `${parseInt(value.toString(), 10)} Gwei`,
+      amount: weiAmount,
+      display: `${toFixedDecimals(value, 0)} Gwei`,
+      gwei: toFixedDecimals(value, 0),
     },
     option,
   };
