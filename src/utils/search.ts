@@ -2,8 +2,8 @@ import { toLower } from 'lodash';
 import { matchSorter } from 'match-sorter';
 
 export const filterList = (
-  list: any,
-  searchQuery: any,
+  list: any[],
+  searchQuery: string,
   keys = null,
   options = null
 ) =>
