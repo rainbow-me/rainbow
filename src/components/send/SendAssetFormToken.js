@@ -7,7 +7,7 @@ import { useDimensions } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { removeLeadingZeros } from '@rainbow-me/utils';
 
-const footerMargin = 30 + getSoftMenuBarHeight() / 2;
+const footerMargin = getSoftMenuBarHeight() / 2;
 const FooterContainer = styled(Column).attrs({
   justify: 'end',
   marginBottom: android ? footerMargin : 0,
