@@ -48,3 +48,4 @@ export {
 } from './formatters';
 export { default as watchingAlert } from './watchingAlert';
 export { default as withSpeed } from './withSpeed';
+export { memoFn } from './memoFn';

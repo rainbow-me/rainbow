@@ -45,9 +45,7 @@ const darkModeColors = {
   whiteLabel: '#FFFFFF',
 };
 
-const isHex = memoFn(
-  (color = '') => color.length >= 3 && color.charAt(0) === '#'
-);
+const isHex = (color = '') => color.length >= 3 && color.charAt(0) === '#';
 const isRGB = memoFn((color = '') => toLower(color).substring(0, 3) === 'rgb');
 
 const avatarBackgrounds = [
