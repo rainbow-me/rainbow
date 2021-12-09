@@ -581,7 +581,6 @@ export const gasUpdateTxFee = (
   } = getState().gas;
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
-  const _gasLimit = updatedGasLimit || gasLimit || defaultGasLimit;
 
   if (
     isEmpty(gasFeeParamsBySpeed) ||
@@ -589,13 +588,16 @@ export const gasUpdateTxFee = (
   ) {
     // if fee prices not ready, we need to store the gas limit for future calculations
     // // the rest is as the initial state value
-    dispatch({
-      payload: _gasLimit,
-      type: GAS_UPDATE_GAS_LIMIT,
-    });
+    if (updatedGasLimit) {
+      dispatch({
+        payload: updatedGasLimit,
+        type: GAS_UPDATE_GAS_LIMIT,
+      });
+    }
   } else {
     const _selectedGasFeeOption =
       overrideGasOption || selectedGasFee.option || NORMAL;
+    const _gasLimit = updatedGasLimit || gasLimit || defaultGasLimit;
 
     const {
       isSufficientGas,
