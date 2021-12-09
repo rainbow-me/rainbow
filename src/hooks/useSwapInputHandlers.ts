@@ -31,7 +31,7 @@ export default function useSwapInputHandlers() {
     } else {
       let amount =
         ethereumUtils.getAsset(assets, inputCurrencyAddress)?.balance?.amount ??
-        0;
+        '0';
       if (inputCurrencyAddress === ETH_ADDRESS) {
         const remaining = subtract(amount, MIN_ETH);
         amount = greaterThan(remaining, 0) ? remaining : '0';

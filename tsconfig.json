@@ -13,6 +13,7 @@
     "baseUrl": ".",
     "paths": {
       "@rainbow-me/apollo": ["./src/apollo"],
+      "@rainbow-me/apollo/*": ["./src/apollo/*"],
       "@rainbow-me/assets": ["./src/assets"],
       "@rainbow-me/config": ["./src/config"],
       "@rainbow-me/context": ["./src/context"],
@@ -25,6 +26,7 @@
       "@rainbow-me/hooks": ["src/hooks"],
       "@rainbow-me/images": ["src/components/images"],
       "@rainbow-me/model": ["src/model"],
+      "@rainbow-me/model/*": ["src/model/*"],
       "@rainbow-me/navigation": ["src/navigation"],
       "@rainbow-me/networkTypes": ["./src/helpers/networkTypes"],
       "@rainbow-me/parsers": ["src/parsers"],
@@ -44,7 +46,13 @@
     },
     "resolveJsonModule": true
   },
-  "globals": ["useTheme"],
+  "globals": [
+    "useTheme", 
+    "ios", 
+    "android", 
+    "__DEV__", 
+    "IS_DEV" 
+  ],
   "exclude": [
     "ios",
     "patches/reanimated",
