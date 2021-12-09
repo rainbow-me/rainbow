@@ -12,7 +12,7 @@
  * @param {Function} fn - pure function with at least single argument
  * @returns {Function} - same function with a cache
  */
-export function memoFn(fn) {
+export default function memoFn(fn) {
   const cache = {};
 
   return (...args) => {

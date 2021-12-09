@@ -154,7 +154,6 @@ export default forwardRef(function SlackSheet(
       <Container
         additionalTopPadding={additionalTopPadding}
         backgroundColor={bg}
-        borderRadius={borderRadius}
         contentHeight={contentHeight}
         deferredHeight={deferredHeight}
         deviceHeight={deviceHeight}

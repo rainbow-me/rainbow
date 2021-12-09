@@ -2,7 +2,7 @@ import chroma from 'chroma-js';
 import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import currentColors from '../context/currentColors';
-import { memoFn } from '../utils/memoFn';
+import { memoFn } from '../utils';
 
 const buildRgba = memoFn(
   (color, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`
