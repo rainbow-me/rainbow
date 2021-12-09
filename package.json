@@ -32,6 +32,8 @@
     "start": "react-native start",
     "start:clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf $TMPDIR/metro-* && rm -rf $TMPDIR/haste-map-* && react-native start -- --reset-cache",
     "test": "jest test.js",
+    "ts-coverage": "typescript-coverage-report",
+    "ts-migrate-folder": "./scripts/ts-migrate-folder.sh",
     "uninstall:android": "adb uninstall me.rainbow; true",
     "uninstall:ios": "echo 'Script not yet added.'",
     "update-env": "curl -H 'Authorization: token '$GITHUB_TOKEN -H 'Accept: application/vnd.github.v3.raw' -O  -L https://api.github.com/repos/rainbow-me/rainbow-env/contents/dotenv && rm -f .env && mv dotenv .env",
@@ -192,6 +194,7 @@
     "react-native-linear-gradient": "2.5.6",
     "react-native-mail": "4.1.0",
     "react-native-markdown-display": "7.0.0-alpha.2",
+    "react-native-minimizer": "brunobar79/react-native-minimizer#26ae6dce10d353de701cebc3a1ae126729bf87f0",
     "react-native-mmkv": "1.5.2",
     "react-native-os": "brunobar79/react-native-os#41a08e45260b8c1c53c77ad00e13ae954cb9337c",
     "react-native-palette-full": "1.2.0",
@@ -298,14 +301,16 @@
     "jest-circus": "26.6.3",
     "metro-plugin-anisotropic-transform": "rainbow-me/metro-plugin-anisotropic-transform#463b4ca9f5631f9c5e6028d22a450f6f0e54214f",
     "metro-react-native-babel-preset": "0.64.0",
-    "next": "12.0.1",
+    "next": "12.0.5",
     "node-vibrant": "3.2.1-alpha.1",
     "prettier": "2.2.1",
     "react-dom": "17.0.2",
     "react-test-renderer": "17.0.1",
     "rn-nodeify": "10.2.0",
     "schedule": "0.5.0",
-    "typescript": "4.4.4"
+    "ts-migrate": "0.1.26",
+    "typescript": "4.4.4",
+    "typescript-coverage-report": "0.6.1"
   },
   "resolutions": {
     "**/node-fetch": "2.6.1",
@@ -475,5 +480,22 @@
       "postinstall-postinstall": false,
       "core-js-pure": false
     }
+  },
+  "typeCoverage": {
+    "cache": true,
+    "atLeast": 99,
+    "ignoreFiles": [
+      "*.json",
+      "*.js",
+      "config/**/*.*",
+      "android/**/*.*",
+      "ios/**/*.*",
+      "e2e/**/*.*",
+      "rainbow-scripts/**/*.*",
+      "src/react-native-animated-charts/**/*.*",
+      "src/react-native-cool-modals/**/*.*",
+      "src/react-native-shadow-stack/**/*.*",
+      "src/react-native-yet-another-bottom-sheet/**/*.*"
+    ]
   }
 }

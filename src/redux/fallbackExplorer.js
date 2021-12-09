@@ -1,4 +1,5 @@
 import { Contract } from '@ethersproject/contracts';
+import { captureException } from '@sentry/react-native';
 import { get, toLower, uniqBy } from 'lodash';
 import isEqual from 'react-fast-compare';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
@@ -61,7 +62,8 @@ const getMainnetAssetsFromCovalent = async (
     const updatedAt = new Date(data.updated_at).getTime();
     const assets = data.items.map(item => {
       let contractAddress = item.contract_address;
-      if (toLower(contractAddress) === toLower(COVALENT_ETH_ADDRESS)) {
+      const isETH = toLower(contractAddress) === toLower(COVALENT_ETH_ADDRESS);
+      if (isETH) {
         contractAddress = ETH_ADDRESS;
       }
 
@@ -69,6 +71,7 @@ const getMainnetAssetsFromCovalent = async (
       let price = {
         changed_at: updatedAt,
         relative_change_24h: 0,
+        value: isETH ? item.quote_rate : 0,
       };
 
       // Overrides
@@ -277,11 +280,12 @@ const fetchAssetBalances = async (tokens, address, network) => {
     });
     return balances[address];
   } catch (e) {
-    logger.log(
+    logger.sentry(
       'Error fetching balances from balanceCheckerContract',
       network,
       e
     );
+    captureException(new Error('fallbackExplorer::balanceChecker failure'));
     return null;
   }
 };
@@ -312,7 +316,7 @@ export const fetchOnchainBalances = ({
     network === NetworkTypes.mainnet
       ? covalentMainnetAssets
         ? uniqBy(
-            [...mainnetAssets, ...covalentMainnetAssets],
+            [...covalentMainnetAssets, ...mainnetAssets],
             token => token.asset.asset_code
           )
         : mainnetAssets
@@ -407,7 +411,7 @@ export const fetchOnchainBalances = ({
 
   const newPayload = { assets: updatedAssets };
 
-  if (!keepPolling || !isEqual(lastUpdatePayload, newPayload)) {
+  if (balances && (!keepPolling || !isEqual(lastUpdatePayload, newPayload))) {
     dispatch(
       addressAssetsReceived(
         {
