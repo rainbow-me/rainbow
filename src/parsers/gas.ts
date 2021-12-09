@@ -35,6 +35,17 @@ type BigNumberish = number | string | BigNumber;
 
 const { CUSTOM, FAST, GasSpeedOrder, NORMAL, URGENT } = gasUtils;
 
+const getBaseFeeMultiplier = (speed: string) => {
+  switch (speed) {
+    case URGENT:
+      return 1.1;
+    case FAST:
+      return 1.05;
+    case NORMAL:
+    default:
+      return 1;
+  }
+};
 const parseOtherL2GasPrices = (data: GasPricesAPIData) => ({
   [FAST]: defaultGasPriceFormat(FAST, data.avgWait, data.average),
   [NORMAL]: defaultGasPriceFormat(NORMAL, data.avgWait, data.average),
@@ -127,6 +138,10 @@ export const parseRainbowMeteorologyData = (
   const parsedBaseFeeSuggestion = parseGasFeeParam(baseFeeSuggestion);
 
   Object.keys(maxPriorityFeeSuggestions).forEach(speed => {
+    const baseFeeMultiplier = getBaseFeeMultiplier(speed);
+    const parsedBaseFeeSuggestionForSpeed = parseGasFeeParam(
+      toFixedDecimals(multiply(baseFeeSuggestion, baseFeeMultiplier), 0)
+    );
     const maxPriorityFee =
       maxPriorityFeeSuggestions[speed as keyof MaxPriorityFeeSuggestions];
     // next version of the package will send only 2 decimals
@@ -140,7 +155,7 @@ export const parseRainbowMeteorologyData = (
         confirmationTimeByPriorityFee,
         baseFeeSuggestion
       ),
-      maxFeePerGas: parsedBaseFeeSuggestion,
+      maxFeePerGas: parsedBaseFeeSuggestionForSpeed,
       maxPriorityFeePerGas: parseGasFeeParam(cleanMaxPriorityFee),
       option: speed,
     };
