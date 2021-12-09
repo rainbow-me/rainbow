@@ -6,7 +6,9 @@ import { useRefreshAccountData } from '@rainbow-me/hooks';
 import { AppState } from '@rainbow-me/redux/store';
 import { logger } from '@rainbow-me/utils';
 
-export default function RefreshControlWrapped(props: RefreshControlProps) {
+export default function RefreshControlWrapped(
+  props: Partial<RefreshControlProps>
+) {
   const isLoadingAssets = useSelector(
     (state: AppState) => state.data.isLoadingAssets
   );

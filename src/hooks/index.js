@@ -20,7 +20,10 @@ export { default as useBlockPolling } from './useBlockPolling';
 export { default as useBooleanState } from './useBooleanState';
 export { default as useClipboard } from './useClipboard';
 export { default as useCoinListEdited } from './useCoinListEdited';
-export { default as useCoinListEditOptions } from './useCoinListEditOptions';
+export {
+  default as useCoinListEditOptions,
+  useCoinListFinishEditingOptions,
+} from './useCoinListEditOptions';
 export { default as useColorForAsset } from './useColorForAsset';
 export { default as useContacts } from './useContacts';
 export { default as useDimensions } from './useDimensions';

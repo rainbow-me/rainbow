@@ -28,7 +28,6 @@ import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
 import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { ImgixImage } from '@rainbow-me/images';
-import { setIsCoinListEdited } from '@rainbow-me/redux/editOptions';
 import { setOpenSmallBalances } from '@rainbow-me/redux/openStateSettings';
 import store from '@rainbow-me/redux/store';
 import Routes from '@rainbow-me/routes';
@@ -235,7 +234,6 @@ const coinEditContextMenu = (
             },
             onPressActionSheet: async index => {
               if (index === 1) {
-                store.dispatch(setIsCoinListEdited(!isCoinListEdited));
                 store.dispatch(setOpenSmallBalances(true));
                 LayoutAnimation.configureNext(
                   LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')

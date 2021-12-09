@@ -3,17 +3,20 @@ import { startCase } from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { ContextCircleButton } from '../../context-menu';
 import EditOptions from '@rainbow-me/helpers/editOptionTypes';
-import { useCoinListEditOptions } from '@rainbow-me/hooks';
+import {
+  useCoinListEditOptions,
+  useCoinListFinishEditingOptions,
+} from '@rainbow-me/hooks';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function ChartContextButton({ asset, color }) {
+  const { clearSelectedCoins, pushSelectedCoin } = useCoinListEditOptions();
+
   const {
-    clearSelectedCoins,
     currentAction,
-    pushSelectedCoin,
     setHiddenCoins,
     setPinnedCoins,
-  } = useCoinListEditOptions();
+  } = useCoinListFinishEditingOptions();
 
   useEffect(() => {
     // Ensure this expanded state's asset is always actively inside

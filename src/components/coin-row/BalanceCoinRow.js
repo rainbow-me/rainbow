@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { View } from 'react-primitives';
 import { connect } from 'react-redux';
@@ -17,10 +17,6 @@ import CoinRow from './CoinRow';
 import { useIsCoinListEditedSharedValue } from '@rainbow-me/helpers/SharedValuesContext';
 import { buildAssetUniqueIdentifier } from '@rainbow-me/helpers/assets';
 import { useNavigation } from '@rainbow-me/navigation';
-import {
-  pushSelectedCoin,
-  removeSelectedCoin,
-} from '@rainbow-me/redux/editOptions';
 import Routes from '@rainbow-me/routes';
 import { isNewValueForObjectPaths, isNewValueForPath } from '@rainbow-me/utils';
 
@@ -107,33 +103,16 @@ const BalanceCoinRow = ({
   containerStyles,
   isFirstCoinRow,
   item,
-  pushSelectedCoin,
-  recentlyPinnedCount,
-  removeSelectedCoin,
   ...props
 }) => {
-  const [toggle, setToggle] = useState(false);
-  const [previousPinned, setPreviousPinned] = useState(0);
+  const { toggleSelectedCoin } = useCoinListEditOptions();
   const isCoinListEdited = false;
   const isCoinListEditedSharedValue = useIsCoinListEditedSharedValue();
   const { navigate } = useNavigation();
 
-  useEffect(() => {
-    if (toggle && (recentlyPinnedCount > previousPinned || !isCoinListEdited)) {
-      setPreviousPinned(recentlyPinnedCount);
-      setToggle(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isCoinListEdited, recentlyPinnedCount]);
-
   const handleEditModePress = useCallback(() => {
-    if (toggle) {
-      removeSelectedCoin(item.uniqueId);
-    } else {
-      pushSelectedCoin(item.uniqueId);
-    }
-    setToggle(!toggle);
-  }, [item.uniqueId, pushSelectedCoin, removeSelectedCoin, setToggle, toggle]);
+    toggleSelectedCoin(item.uniqueId);
+  }, [item.uniqueId, toggleSelectedCoin]);
 
   const handlePress = useCallback(() => {
     if (isCoinListEdited) {
@@ -199,7 +178,7 @@ const BalanceCoinRow = ({
           isHidden={isHidden}
           isPinned={isPinned}
           onPress={handleEditModePress}
-          toggle={toggle}
+          uniqueId={item.uniqueId}
         />
       </Animated.View>
     </Row>
@@ -238,9 +217,5 @@ export default connect(
   }) => ({
     openSmallBalances,
     recentlyPinnedCount,
-  }),
-  {
-    pushSelectedCoin,
-    removeSelectedCoin,
-  }
+  })
 )(MemoizedBalanceCoinRow);

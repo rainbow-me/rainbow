@@ -12,6 +12,7 @@ import {
   useAccountSettings,
   useCoinListEdited,
   useCoinListEditOptions,
+  useCoinListFinishEditingOptions,
   useDimensions,
   useOpenSmallBalances,
 } from '@rainbow-me/hooks';
@@ -55,12 +56,13 @@ export default function CoinDivider({ balancesSum, isSticky = false }) {
   const [fetchedCharts, setFetchedCharts] = useState(false);
   const { width: deviceWidth } = useDimensions();
 
+  const { clearSelectedCoins } = useCoinListEditOptions();
+
   const {
-    clearSelectedCoins,
     currentAction,
     setHiddenCoins,
     setPinnedCoins,
-  } = useCoinListEditOptions();
+  } = useCoinListFinishEditingOptions();
 
   const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
 

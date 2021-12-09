@@ -21,6 +21,7 @@ import {
   uniqBy,
   values,
 } from 'lodash';
+import { MMKV } from 'react-native-mmkv';
 import { uniswapClient } from '../apollo/client';
 import {
   UNISWAP_24HOUR_PRICE_QUERY,
@@ -28,7 +29,6 @@ import {
 } from '../apollo/queries';
 /* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
-import { addCoinsToHiddenList } from './editOptions';
 import { decrementNonce, incrementNonce } from './nonceManager';
 // eslint-disable-next-line import/no-cycle
 import { uniqueTokensRefreshState } from './uniqueTokens';
@@ -68,6 +68,7 @@ import {
   parseNewTransaction,
   parseTransactions,
 } from '@rainbow-me/parsers';
+import { setHiddenCoins } from '@rainbow-me/redux/editOptions';
 import {
   coingeckoIdsFallback,
   DPI_ADDRESS,
@@ -84,6 +85,16 @@ import {
   TokensListenedCache,
 } from '@rainbow-me/utils';
 import logger from 'logger';
+
+const storage = new MMKV();
+
+function addHiddenCoins(coins, dispatch) {
+  const storageEntity = storage.getString('hidden-coins');
+  const list = storageEntity ? JSON.parse(storageEntity) : [];
+  const newList = [...list.filter(i => coins.includes(i)), ...coins];
+  dispatch(setHiddenCoins(newList));
+  storage.set('hidden-coins', JSON.stringify(newList));
+}
 
 const BACKUP_SHEET_DELAY_MS = 3000;
 
@@ -588,7 +599,7 @@ export const addressAssetsReceived = (
   const assetsWithScamURL = parsedAssets
     .filter(asset => isValidDomain(asset.name) && !asset.isVerified)
     .map(({ uniqueId }) => uniqueId);
-  dispatch(addCoinsToHiddenList(assetsWithScamURL));
+  addHiddenCoins(assetsWithScamURL, dispatch);
 
   // Hide coins with price = 0 that are currently not pinned
   if (isL2) {
@@ -597,7 +608,7 @@ export const addressAssetsReceived = (
         asset => asset.price?.value === 0 && asset.network === assetsNetwork
       )
       .map(({ uniqueId }) => uniqueId);
-    dispatch(addCoinsToHiddenList(assetsWithNoPrice));
+    addHiddenCoins(assetsWithNoPrice, dispatch);
   }
 };
 
