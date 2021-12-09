@@ -4,15 +4,18 @@ import { difference } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import { useDispatch } from 'react-redux';
+import useAccountSettings from './useAccountSettings';
 import actions from '@rainbow-me/helpers/editOptionTypes';
 import { setHiddenCoins as reduxSetHiddenCoins } from '@rainbow-me/redux/editOptions';
 
 const selectedItemsAtom = atom<string[]>([]);
 export default function useCoinListEditOptions() {
-  const setSelectedItems = useUpdateAtom(selectedItemsAtom);
-  const [hiddenCoins = []] = useMMKVObject<string[]>('hidden-coins');
+  const { accountAddress: address } = useAccountSettings();
 
-  const [pinnedCoins = []] = useMMKVObject<string[]>('pinned-coins');
+  const setSelectedItems = useUpdateAtom(selectedItemsAtom);
+  const [hiddenCoins = []] = useMMKVObject<string[]>('hidden-coins-' + address);
+
+  const [pinnedCoins = []] = useMMKVObject<string[]>('pinned-coins-' + address);
   const pushSelectedCoin = useCallback(
     (item: string) =>
       setSelectedItems(prev => [...prev.filter(i => i !== item), item]),
@@ -52,13 +55,15 @@ export default function useCoinListEditOptions() {
 }
 
 export function useCoinListFinishEditingOptions() {
+  const { accountAddress: address } = useAccountSettings();
+
   const [selectedItems, setSelectedItems] = useAtom(selectedItemsAtom);
   const [hiddenCoins = [], setHiddenCoinsArray] = useMMKVObject<string[]>(
-    'hidden-coins'
+    'hidden-coins-' + address
   );
 
   const [pinnedCoins = [], setPinnedCoinsArray] = useMMKVObject<string[]>(
-    'pinned-coins'
+    'pinned-coins-' + address
   );
 
   const currentAction = useMemo(() => {

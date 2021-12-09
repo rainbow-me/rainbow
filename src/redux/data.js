@@ -88,12 +88,12 @@ import logger from 'logger';
 
 const storage = new MMKV();
 
-function addHiddenCoins(coins, dispatch) {
-  const storageEntity = storage.getString('hidden-coins');
+function addHiddenCoins(coins, dispatch, address) {
+  const storageEntity = storage.getString('hidden-coins-' + address);
   const list = storageEntity ? JSON.parse(storageEntity) : [];
-  const newList = [...list.filter(i => coins.includes(i)), ...coins];
+  const newList = [...list.filter(i => !coins.includes(i)), ...coins];
   dispatch(setHiddenCoins(newList));
-  storage.set('hidden-coins', JSON.stringify(newList));
+  storage.set('hidden-coins-' + address, JSON.stringify(newList));
 }
 
 const BACKUP_SHEET_DELAY_MS = 3000;
@@ -599,7 +599,7 @@ export const addressAssetsReceived = (
   const assetsWithScamURL = parsedAssets
     .filter(asset => isValidDomain(asset.name) && !asset.isVerified)
     .map(({ uniqueId }) => uniqueId);
-  addHiddenCoins(assetsWithScamURL, dispatch);
+  addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
 
   // Hide coins with price = 0 that are currently not pinned
   if (isL2) {
@@ -608,7 +608,7 @@ export const addressAssetsReceived = (
         asset => asset.price?.value === 0 && asset.network === assetsNetwork
       )
       .map(({ uniqueId }) => uniqueId);
-    addHiddenCoins(assetsWithNoPrice, dispatch);
+    addHiddenCoins(assetsWithNoPrice, dispatch, accountAddress);
   }
 };
 
