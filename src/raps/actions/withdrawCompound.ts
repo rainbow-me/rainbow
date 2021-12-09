@@ -121,6 +121,9 @@ const withdrawCompound = async (
 
   logger.log(`[${actionName}] adding new txn`, newTransaction);
   // Disable the txn watcher because Compound can silently fail
+  // @ts-expect-error Since src/redux/data.js is not typed yet, `accountAddress`
+  // being a string conflicts with the inferred type of "null" for the second
+  // parameter.
   await dispatch(dataAddNewTransaction(newTransaction, accountAddress, true));
   return withdraw?.nonce;
 };
