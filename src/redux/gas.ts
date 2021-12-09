@@ -83,6 +83,7 @@ interface GasState {
   currentBlockParams: CurrentBlockParams;
   confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee;
   customGasFeeModifiedByUser: boolean;
+  l1GasFeeOptimism: BigNumber | null;
 }
 
 // -- Constants ------------------------------------------------------------- //
@@ -382,6 +383,10 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
           selectedGasFee,
           txNetwork,
           currentBlockParams,
+          isSufficientGas: lastIsSufficientGas,
+          selectedGasFee: lastSelectedGasFee,
+          gasFeesBySpeed: lastGasFeesBySpeed,
+          l1GasFeeOptimism,
         } = getState().gas;
         const { assets } = getState().data;
         const { nativeCurrency } = getState().settings;
@@ -406,27 +411,29 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
 
           const _selectedGasFeeOption = selectedGasFee.option || NORMAL;
           const _gasLimit = gasLimit || defaultGasLimit;
-
           const {
-            isSufficientGas,
-            selectedGasFee: updatedSelectedGasFee,
-            gasFeesBySpeed,
-          } = getUpdatedGasFeeParams(
-            assets,
-            currentBlockParams,
-            gasFeeParamsBySpeed,
-            _gasLimit,
-            nativeCurrency,
-            _selectedGasFeeOption,
-            txNetwork,
-            null
-          );
+            isSufficientGas: updatedIsSufficientGas = lastIsSufficientGas,
+            selectedGasFee: updatedSelectedGasFee = lastSelectedGasFee,
+            gasFeesBySpeed: updatedGasFeesBySpeed = lastGasFeesBySpeed,
+          } =
+            network === Network.optimism && l1GasFeeOptimism === null
+              ? {}
+              : getUpdatedGasFeeParams(
+                  assets,
+                  currentBlockParams,
+                  gasFeeParamsBySpeed,
+                  _gasLimit,
+                  nativeCurrency,
+                  _selectedGasFeeOption,
+                  txNetwork,
+                  l1GasFeeOptimism
+                );
 
           dispatch({
             payload: {
               gasFeeParamsBySpeed,
-              gasFeesBySpeed,
-              isSufficientGas: isSufficientGas,
+              gasFeesBySpeed: updatedGasFeesBySpeed,
+              isSufficientGas: updatedIsSufficientGas,
               selectedGasFee: updatedSelectedGasFee,
             },
             type: GAS_FEES_SUCCESS,
@@ -580,7 +587,6 @@ export const gasUpdateTxFee = (
   } = getState().gas;
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
-
   if (
     isEmpty(gasFeeParamsBySpeed) ||
     (txNetwork === Network.optimism && l1GasFeeOptimism === null)
@@ -611,6 +617,7 @@ export const gasUpdateTxFee = (
       gasFeesBySpeed,
       gasLimit: _gasLimit,
       isSufficientGas,
+      l1GasFeeOptimism,
       selectedGasFee: updatedSelectedGasFee,
     },
     type: GAS_UPDATE_TX_FEE,
@@ -634,6 +641,7 @@ const INITIAL_STATE: GasState = {
   gasFeesBySpeed: {},
   gasLimit: null,
   isSufficientGas: null,
+  l1GasFeeOptimism: null,
   selectedGasFee: {} as SelectedGasFee,
   txNetwork: null,
 };
@@ -678,6 +686,7 @@ export default (
         gasFeesBySpeed: action.payload.gasFeesBySpeed,
         gasLimit: action.payload.gasLimit,
         isSufficientGas: action.payload.isSufficientGas,
+        l1GasFeeOptimism: action.payload.l1GasFeeOptimism,
         selectedGasFee: action.payload.selectedGasFee,
       };
     case GAS_UPDATE_GAS_PRICE_OPTION:
