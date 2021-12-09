@@ -1,13 +1,16 @@
-import { useNavigation } from '@react-navigation/core';
-import { isEmpty, upperFirst } from 'lodash';
+import { useIsFocused, useNavigation } from '@react-navigation/core';
+import { useRoute } from '@react-navigation/native';
+import { upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import Animated, {
   Easing,
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
 import styled, { useTheme } from 'styled-components';
+import { Alert } from '../../../components/alerts';
 import { ButtonPressAnimation } from '../../animations';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
@@ -23,7 +26,12 @@ import {
   multiply,
   toFixedDecimals,
 } from '@rainbow-me/helpers/utilities';
-import { useGas, useTimeout } from '@rainbow-me/hooks';
+import {
+  useFeesPanelInputRefs,
+  useGas,
+  usePrevious,
+  useTimeout,
+} from '@rainbow-me/hooks';
 import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
@@ -95,15 +103,36 @@ const GAS_FEE_INCREMENT = 1;
 const MAX_BASE_FEE_RANGE = [1, 3];
 const MINER_TIP_RANGE = [1, 2];
 
+const LOWER_THAN_SUGGESTED = 'Lower than suggested';
+const HIGHER_THAN_NECESSARY = 'Higher than necessary';
+
+const ALERT_MESSAGE_HIGHER_MINER_TIP_NEEDED =
+  'Setting a higher miner tip is recommended to avoid issues.';
+const ALERT_MESSAGE_HIGHER_MAX_BASE_FEE_NEEDED =
+  'Setting a higher max base fee is recommended to avoid issues.';
+const ALERT_MESSAGE_LOWER =
+  'Double check that you entered the correct amount—you’re likely paying more than you need to!';
+const ALERT_TITLE_HIGHER_MAX_BASE_FEE_NEEDED =
+  'Low max base fee–transaction might get stuck!';
+const ALERT_TITLE_HIGHER_MINER_TIP_NEEDED =
+  'Low miner tip–transaction might get stuck!';
+const ALERT_TITLE_LOWER_MAX_BASE_FEE_NEEDED = 'High max base fee!';
+const ALERT_TITLE_LOWER_MINER_TIP_NEEDED = 'High miner tip!';
+
+const FOCUS_TO_MAX_BASE_FEE = 'focusToMaxBaseFee';
+const FOCUS_TO_MINER_TIP = 'focusToMinerTip';
+
 const warningsAnimationConfig = {
-  duration: 80,
+  duration: 30,
   easing: Easing.linear,
 };
 
 export default function FeesPanel({
   currentGasTrend,
   colorForAsset,
-  onCustomGasFocus,
+  setCanGoBack,
+  validateGasParams,
+  openCustomOptions,
 }) {
   const {
     selectedGasFee,
@@ -111,11 +140,25 @@ export default function FeesPanel({
     customGasFeeModifiedByUser,
     gasFeeParamsBySpeed,
     updateToCustomGasFee,
-    updateGasFeeOption,
   } = useGas();
 
   const { navigate, dangerouslyGetState } = useNavigation();
   const { colors } = useTheme();
+
+  const { params: { type, focusTo } = {} } = useRoute();
+
+  const isFocused = useIsFocused();
+  const prevIsFocused = usePrevious(isFocused);
+  const {
+    setLastFocusedInputHandle,
+    maxBaseFieldRef,
+    minerTipFieldRef,
+  } = useFeesPanelInputRefs();
+
+  // had to add this for actions happening on the gas speed button
+  if (prevIsFocused && !isFocused) {
+    Keyboard.dismiss();
+  }
 
   const [customFees, setCustomFees] = useState({
     customMaxBaseFee: gasFeeParamsBySpeed?.[CUSTOM]?.maxFeePerGas?.gwei,
@@ -130,6 +173,8 @@ export default function FeesPanel({
 
   const [maxBaseFeeWarning, setMaxBaseFeeWarning] = useState(null);
   const [maxBaseFeeError, setMaxBaseFeeError] = useState(null);
+
+  const [userProceededOnWarnings, setUserProcededOnWarnings] = useState(false);
 
   const { customMaxBaseFee, customMaxPriorityFee } = customFees;
   const trendType = 'currentBaseFee' + upperFirst(currentGasTrend);
@@ -274,37 +319,19 @@ export default function FeesPanel({
     [currentBaseFee]
   );
 
-  const handleOnInputFocus = useCallback(() => {
-    if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
-      const gasFeeParams = gasFeeParamsBySpeed[URGENT];
-      updateToCustomGasFee({
-        ...gasFeeParams,
-        option: CUSTOM,
-      });
-    } else {
-      updateGasFeeOption(CUSTOM);
-    }
-  }, [gasFeeParamsBySpeed, updateGasFeeOption, updateToCustomGasFee]);
+  const handleMaxBaseInputGweiPress = useCallback(
+    () => setLastFocusedInputHandle(maxBaseFieldRef),
+    [maxBaseFieldRef, setLastFocusedInputHandle]
+  );
 
-  const handleFeesGweiInputFocus = useCallback(() => {
-    onCustomGasFocus?.();
-    handleOnInputFocus();
-    const {
-      gasFeeParams: { maxFeePerGas, maxPriorityFeePerGas },
-    } = selectedGasFee;
-    setCustomFees({
-      customMaxBaseFee: toFixedDecimals(maxFeePerGas?.gwei || 0, 0),
-      customMaxPriorityFee: maxPriorityFeePerGas?.gwei || 0,
-    });
-  }, [onCustomGasFocus, handleOnInputFocus, selectedGasFee]);
-
-  const handleCustomPriorityFeeFocus = useCallback(() => {
-    handleOnInputFocus();
-    handleFeesGweiInputFocus();
-  }, [handleFeesGweiInputFocus, handleOnInputFocus]);
+  const handleMinerTipInputGweiPress = useCallback(
+    () => setLastFocusedInputHandle(minerTipFieldRef),
+    [minerTipFieldRef, setLastFocusedInputHandle]
+  );
 
   const updatePriorityFeePerGas = useCallback(
     priorityFeePerGas => {
+      setLastFocusedInputHandle(minerTipFieldRef);
       const maxPriorityFeePerGas =
         selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas;
 
@@ -330,11 +357,17 @@ export default function FeesPanel({
       };
       updateToCustomGasFee(newGasParams);
     },
-    [selectedGasFee.gasFeeParams, updateToCustomGasFee]
+    [
+      minerTipFieldRef,
+      selectedGasFee.gasFeeParams,
+      setLastFocusedInputHandle,
+      updateToCustomGasFee,
+    ]
   );
 
   const updateFeePerGas = useCallback(
     feePerGas => {
+      setLastFocusedInputHandle(maxBaseFieldRef);
       const maxFeePerGas =
         selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei ?? 0;
 
@@ -359,7 +392,12 @@ export default function FeesPanel({
       };
       updateToCustomGasFee(newGasParams);
     },
-    [selectedGasFee.gasFeeParams, updateToCustomGasFee]
+    [
+      maxBaseFieldRef,
+      selectedGasFee.gasFeeParams,
+      setLastFocusedInputHandle,
+      updateToCustomGasFee,
+    ]
   );
 
   const addMinerTip = useCallback(() => {
@@ -374,9 +412,9 @@ export default function FeesPanel({
     updateFeePerGas(GAS_FEE_INCREMENT);
   }, [updateFeePerGas]);
 
-  const substMaxFee = useCallback(() => updateFeePerGas(-GAS_FEE_INCREMENT), [
-    updateFeePerGas,
-  ]);
+  const substMaxFee = useCallback(() => {
+    updateFeePerGas(-GAS_FEE_INCREMENT);
+  }, [updateFeePerGas]);
 
   const onMaxBaseFeeChange = useCallback(
     ({ nativeEvent: { text } }) => {
@@ -438,6 +476,15 @@ export default function FeesPanel({
     [selectedOptionIsCustom]
   );
 
+  const onAlertProceeded = useCallback(
+    callback => {
+      setUserProcededOnWarnings(true);
+      setCanGoBack?.(true);
+      callback?.();
+    },
+    [setCanGoBack]
+  );
+
   useEffect(() => {
     const navigationRoutes = dangerouslyGetState().routes;
     const lastRouteName = navigationRoutes?.[navigationRoutes.length - 1]?.name;
@@ -459,25 +506,33 @@ export default function FeesPanel({
     dangerouslyGetState,
     navigate,
     trendType,
+    type,
   ]);
 
   useEffect(() => {
     stopBaseFeeTimeout();
     startBaseFeeTimeout(async () => {
-      // validate not zero
-      if (!maxBaseFee || isZero(maxBaseFee)) {
+      if (!maxBaseFee || isZero(maxBaseFee) || greaterThan(1, maxBaseFee)) {
         setMaxBaseFeeError('1 Gwei to avoid failure');
       } else {
         setMaxBaseFeeError(null);
       }
+      // there's an e2e modifying this panel so I needed values that aren't dependant on the network conditions
+      const maxBaseFeeToValidate = IS_TESTING === 'true' ? 100 : currentBaseFee;
       if (
-        greaterThan(multiply(MAX_BASE_FEE_RANGE[0], currentBaseFee), maxBaseFee)
+        greaterThan(
+          multiply(MAX_BASE_FEE_RANGE[0], maxBaseFeeToValidate),
+          maxBaseFee
+        )
       ) {
-        setMaxBaseFeeWarning('Lower than suggested');
+        setMaxBaseFeeWarning(LOWER_THAN_SUGGESTED);
       } else if (
-        greaterThan(maxBaseFee, multiply(MAX_BASE_FEE_RANGE[1], currentBaseFee))
+        greaterThan(
+          maxBaseFee,
+          multiply(MAX_BASE_FEE_RANGE[1], maxBaseFeeToValidate)
+        )
       ) {
-        setMaxBaseFeeWarning('Higher than necessary');
+        setMaxBaseFeeWarning(HIGHER_THAN_NECESSARY);
       } else {
         setMaxBaseFeeWarning(null);
       }
@@ -487,32 +542,37 @@ export default function FeesPanel({
   useEffect(() => {
     stopPriorityFeeTimeout();
     startPriorityFeeTimeout(() => {
-      // validate not zero
-      if (!maxPriorityFee || isZero(maxPriorityFee)) {
+      if (!maxPriorityFee) {
         setMaxPriorityFeeError('1 Gwei to avoid failure');
       } else {
         setMaxPriorityFeeError(null);
       }
+      // there's an e2e modifying this panel so I needed values that aren't dependant on the network conditions
       if (
         greaterThan(
           multiply(
             MINER_TIP_RANGE[0],
-            gasFeeParamsBySpeed?.[NORMAL]?.maxPriorityFeePerGas?.gwei
+            IS_TESTING === 'true'
+              ? 1
+              : gasFeeParamsBySpeed?.[NORMAL]?.maxPriorityFeePerGas?.gwei
           ),
           maxPriorityFee
         )
       ) {
-        setMaxPriorityFeeWarning('Lower than recommended');
+        setMaxPriorityFeeWarning(LOWER_THAN_SUGGESTED);
       } else if (
+        // there's an e2e modifying this panel so I needed values that aren't dependant on the network conditions
         greaterThan(
           maxPriorityFee,
           multiply(
             MINER_TIP_RANGE[1],
-            gasFeeParamsBySpeed?.[URGENT]?.maxPriorityFeePerGas?.gwei
+            IS_TESTING === 'true'
+              ? 1
+              : gasFeeParamsBySpeed?.[URGENT]?.maxPriorityFeePerGas?.gwei
           )
         )
       ) {
-        setMaxPriorityFeeWarning('Higher than necessary');
+        setMaxPriorityFeeWarning(HIGHER_THAN_NECESSARY);
       } else {
         setMaxPriorityFeeWarning(null);
       }
@@ -523,6 +583,123 @@ export default function FeesPanel({
     startPriorityFeeTimeout,
     stopPriorityFeeTimeout,
   ]);
+
+  const alertMaxBaseFee = useCallback(
+    callback => {
+      const highAlert = maxBaseFeeWarning === HIGHER_THAN_NECESSARY;
+      Alert({
+        buttons: [
+          {
+            onPress: () => onAlertProceeded(callback),
+            text: 'Proceed Anyway',
+          },
+          {
+            onPress: () => openCustomOptions(FOCUS_TO_MAX_BASE_FEE),
+            style: 'cancel',
+            text: 'Edit Max Base Fee',
+          },
+        ],
+        message: highAlert
+          ? ALERT_MESSAGE_LOWER
+          : ALERT_MESSAGE_HIGHER_MAX_BASE_FEE_NEEDED,
+        title: highAlert
+          ? ALERT_TITLE_LOWER_MAX_BASE_FEE_NEEDED
+          : ALERT_TITLE_HIGHER_MAX_BASE_FEE_NEEDED,
+      });
+    },
+    [maxBaseFeeWarning, onAlertProceeded, openCustomOptions]
+  );
+
+  const alertMaxPriority = useCallback(
+    callback => {
+      const highAlert = maxPriorityFeeWarning === HIGHER_THAN_NECESSARY;
+      Alert({
+        buttons: [
+          {
+            onPress: () => onAlertProceeded(callback),
+            text: 'Proceed Anyway',
+          },
+          {
+            onPress: () => openCustomOptions(FOCUS_TO_MINER_TIP),
+            style: 'cancel',
+            text: 'Edit Miner Tip',
+          },
+        ],
+        message: highAlert
+          ? ALERT_MESSAGE_LOWER
+          : ALERT_MESSAGE_HIGHER_MINER_TIP_NEEDED,
+        title: highAlert
+          ? ALERT_TITLE_LOWER_MINER_TIP_NEEDED
+          : ALERT_TITLE_HIGHER_MINER_TIP_NEEDED,
+      });
+    },
+    [maxPriorityFeeWarning, onAlertProceeded, openCustomOptions]
+  );
+
+  validateGasParams.current = callback => validateParams(callback);
+
+  const validateParams = useCallback(
+    callback => {
+      if (userProceededOnWarnings || !selectedOptionIsCustom) return;
+      const maxBaseValidated = !maxBaseFeeError && !maxBaseFeeWarning;
+      const maxPriorityValidated =
+        !maxPriorityFeeError && !maxPriorityFeeWarning;
+      if (!maxBaseValidated) {
+        alertMaxBaseFee(callback);
+      } else if (!maxPriorityValidated) {
+        alertMaxPriority(callback);
+      }
+    },
+    [
+      alertMaxBaseFee,
+      alertMaxPriority,
+      maxBaseFeeError,
+      maxBaseFeeWarning,
+      maxPriorityFeeError,
+      maxPriorityFeeWarning,
+      selectedOptionIsCustom,
+      userProceededOnWarnings,
+    ]
+  );
+
+  useEffect(() => {
+    const maxBaseValidated = !maxBaseFeeError && !maxBaseFeeWarning;
+    const maxPriorityValidated = !maxPriorityFeeError && !maxPriorityFeeWarning;
+    if (
+      !userProceededOnWarnings &&
+      selectedOptionIsCustom &&
+      (!maxBaseValidated || !maxPriorityValidated)
+    ) {
+      setCanGoBack(false);
+    } else {
+      setCanGoBack(true);
+    }
+  }, [
+    alertMaxBaseFee,
+    alertMaxPriority,
+    maxBaseFeeError,
+    maxBaseFeeWarning,
+    maxPriorityFeeError,
+    maxPriorityFeeWarning,
+    selectedOptionIsCustom,
+    setCanGoBack,
+    userProceededOnWarnings,
+  ]);
+
+  useEffect(() => {
+    return function validate() {
+      validateGasParams.current?.();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (focusTo === FOCUS_TO_MINER_TIP) {
+      minerTipFieldRef?.current?.focus();
+    } else {
+      maxBaseFieldRef?.current?.focus();
+    }
+  }, [focusTo, maxBaseFieldRef, minerTipFieldRef]);
 
   return (
     <Wrapper>
@@ -554,9 +731,10 @@ export default function FeesPanel({
         <PanelColumn>
           <FeesGweiInput
             buttonColor={colorForAsset}
+            inputRef={maxBaseFieldRef}
             minusAction={substMaxFee}
             onChange={onMaxBaseFeeChange}
-            onPress={handleFeesGweiInputFocus}
+            onPress={handleMaxBaseInputGweiPress}
             plusAction={addMaxFee}
             testID="max-base-fee-input"
             value={maxBaseFee}
@@ -578,9 +756,10 @@ export default function FeesPanel({
         <PanelColumn>
           <FeesGweiInput
             buttonColor={colorForAsset}
+            inputRef={minerTipFieldRef}
             minusAction={substMinerTip}
             onChange={onMinerTipChange}
-            onPress={handleCustomPriorityFeeFocus}
+            onPress={handleMinerTipInputGweiPress}
             plusAction={addMinerTip}
             testID="max-priority-fee-input"
             value={maxPriorityFee}
