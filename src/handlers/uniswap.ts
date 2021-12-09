@@ -119,7 +119,7 @@ export const estimateSwapGasLimit = async ({
           exchange.estimateGas[methodName],
           updatedMethodArgs
         )
-          .then((value: string) => value)
+          .then((value: string | null) => value ?? undefined)
           .catch((error: Error) => {
             logger.sentry(
               `Error estimating swap method ${methodName} with: ${error}`

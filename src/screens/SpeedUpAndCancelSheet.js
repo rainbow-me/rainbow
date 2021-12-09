@@ -28,7 +28,7 @@ import { Emoji, Text } from '../components/text';
 import { GasFeeTypes, TransactionStatusTypes } from '@rainbow-me/entities';
 import {
   getProviderForNetwork,
-  isEIP1559LegacyNetwork,
+  isL2Network,
   toHex,
 } from '@rainbow-me/handlers/web3';
 import { greaterThan } from '@rainbow-me/helpers/utilities';
@@ -328,7 +328,7 @@ export default function SpeedUpAndCancelSheet() {
           setData(hexData);
           setTo(tx.txTo);
           setGasLimit(hexGasLimit);
-          if (!isEIP1559LegacyNetwork(tx.network)) {
+          if (!isL2Network(tx.network)) {
             setTxType(GasFeeTypes.eip1559);
             const hexMaxPriorityFeePerGas = toHex(
               tx.maxPriorityFeePerGas.toString()
@@ -505,14 +505,13 @@ export default function SpeedUpAndCancelSheet() {
                     />
                   </Centered>
                   {type === CANCEL_TX && (
-                    <Column>
+                    <Column marginBottom={android && 15}>
                       <SheetActionButtonRow
                         ignorePaddingBottom
-                        ignorePaddingTop
+                        ignorePaddingTop={ios}
                       >
                         <SheetActionButton
                           color={colors.red}
-                          fullWidth
                           label="􀎽 Attempt Cancellation"
                           onPress={handleCancellation}
                           size="big"
@@ -522,7 +521,6 @@ export default function SpeedUpAndCancelSheet() {
                       <SheetActionButtonRow ignorePaddingBottom>
                         <SheetActionButton
                           color={colors.white}
-                          fullWidth
                           label="Close"
                           onPress={goBack}
                           size="big"
@@ -533,7 +531,10 @@ export default function SpeedUpAndCancelSheet() {
                     </Column>
                   )}
                   {type === SPEED_UP && (
-                    <SheetActionButtonRow ignorePaddingBottom ignorePaddingTop>
+                    <SheetActionButtonRow
+                      ignorePaddingBottom={ios}
+                      ignorePaddingTop={ios}
+                    >
                       <SheetActionButton
                         color={colors.white}
                         label="Cancel"

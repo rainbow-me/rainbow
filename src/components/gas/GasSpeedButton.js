@@ -11,7 +11,9 @@ import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedLabelPager } from '.';
 import { isL2Network } from '@rainbow-me/handlers/web3';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { add, toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useColorForAsset,
@@ -68,7 +70,7 @@ const ChainBadgeContainer = styled.View.attrs({
 `;
 
 const NativeCoinIconWrapper = styled(Column)`
-  ${margin(0, 5, 0, 0)};
+  ${margin(1.5, 5, 0, 0)};
 `;
 
 const Container = styled(Column).attrs({
@@ -118,6 +120,8 @@ const GasSpeedButton = ({
   showGasOptions = false,
   testID,
   theme = 'dark',
+  canGoBack = true,
+  validateGasParams,
 }) => {
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
@@ -136,9 +140,10 @@ const GasSpeedButton = ({
 
   const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
   const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
-  const [shouldOpenCustomGasSheet, setShouldOpenCustomGasSheet] = useState(
-    false
-  );
+  const [shouldOpenCustomGasSheet, setShouldOpenCustomGasSheet] = useState({
+    focusTo: null,
+    shouldOpen: false,
+  });
   const prevShouldOpenCustomGasSheet = usePrevious(shouldOpenCustomGasSheet);
 
   // Because of the animated number component
@@ -148,17 +153,29 @@ const GasSpeedButton = ({
   const price = useMemo(() => {
     const gasPrice =
       selectedGasFee?.gasFee?.estimatedFee?.native?.value?.display;
-    const price = (isNil(gasPrice) ? '0.00' : gasPrice)
+    if (isNil(gasPrice)) return null;
+    return gasPrice
       .replace(',', '') // In case gas price is > 1k!
       .replace(nativeCurrencySymbol, '')
       .trim();
-    return price;
   }, [nativeCurrencySymbol, selectedGasFee]);
 
   const isL2 = useMemo(() => isL2Network(currentNetwork), [currentNetwork]);
 
+  const gasIsNotReady = useMemo(
+    () =>
+      isNil(price) ||
+      isEmpty(gasFeeParamsBySpeed) ||
+      isEmpty(selectedGasFee?.gasFee) ||
+      isSufficientGas === null,
+    [gasFeeParamsBySpeed, isSufficientGas, price, selectedGasFee]
+  );
+
   const formatGasPrice = useCallback(
     animatedValue => {
+      if (animatedValue === null) {
+        return 0;
+      }
       // L2's are very cheap,
       // so let's default to the last 2 significant decimals
       if (isL2) {
@@ -179,54 +196,57 @@ const GasSpeedButton = ({
     [isL2, nativeCurrencySymbol, nativeCurrency]
   );
 
-  const gasIsNotReady = useMemo(
-    () =>
-      isEmpty(gasFeeParamsBySpeed) ||
-      isEmpty(selectedGasFee?.gasFee) ||
-      isSufficientGas === null,
-    [gasFeeParamsBySpeed, selectedGasFee, isSufficientGas]
-  );
+  const openCustomOptions = useCallback(focusTo => {
+    android && Keyboard.dismiss();
+    setShouldOpenCustomGasSheet({ focusTo, shouldOpen: true });
+  }, []);
 
   const openCustomGasSheet = useCallback(() => {
     if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
       asset,
+      focusTo: shouldOpenCustomGasSheet.focusTo,
+      openCustomOptions: focusTo => openCustomOptions(focusTo),
       speeds: speeds ?? GasSpeedOrder,
       type: 'custom_gas',
     });
-  }, [gasIsNotReady, navigate, asset, speeds]);
-
-  const openCustomOptions = useCallback(() => {
-    android && Keyboard.dismiss();
-    setShouldOpenCustomGasSheet(true);
-  }, [setShouldOpenCustomGasSheet]);
+  }, [
+    gasIsNotReady,
+    navigate,
+    asset,
+    shouldOpenCustomGasSheet.focusTo,
+    speeds,
+    openCustomOptions,
+  ]);
 
   const renderGasPriceText = useCallback(
-    animatedNumber => (
-      <Text
-        color={
-          theme === 'dark'
-            ? colors.whiteLabel
-            : colors.alpha(colors.blueGreyDark, 0.8)
-        }
-        letterSpacing="roundedTight"
-        lineHeight="normal"
-        size="lmedium"
-        weight="bold"
-      >
-        {gasIsNotReady ? 'Loading...' : animatedNumber}
-      </Text>
-    ),
-    [theme, colors, gasIsNotReady]
+    animatedNumber => {
+      const priceText = animatedNumber === 0 ? 'Loading...' : animatedNumber;
+      return (
+        <Text
+          color={
+            theme === 'dark'
+              ? colors.whiteLabel
+              : colors.alpha(colors.blueGreyDark, 0.8)
+          }
+          letterSpacing="roundedTight"
+          lineHeight="normal"
+          size="lmedium"
+          weight="heavy"
+        >
+          {priceText}
+        </Text>
+      );
+    },
+    [theme, colors]
   );
 
   const handlePressSpeedOption = useCallback(
     selectedSpeed => {
       if (selectedSpeed === CUSTOM) {
-        openCustomGasSheet();
-        Keyboard.dismiss();
+        setShouldOpenCustomGasSheet({ focusTo: null, shouldOpen: true });
         if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
-          const gasFeeParams = gasFeeParamsBySpeed[selectedGasFeeOption];
+          const gasFeeParams = gasFeeParamsBySpeed[URGENT];
           updateToCustomGasFee({
             ...gasFeeParams,
             option: CUSTOM,
@@ -236,13 +256,7 @@ const GasSpeedButton = ({
         updateGasFeeOption(selectedSpeed);
       }
     },
-    [
-      openCustomGasSheet,
-      gasFeeParamsBySpeed,
-      selectedGasFeeOption,
-      updateToCustomGasFee,
-      updateGasFeeOption,
-    ]
+    [gasFeeParamsBySpeed, updateToCustomGasFee, updateGasFeeOption]
   );
 
   const formatTransactionTime = useCallback(() => {
@@ -282,8 +296,10 @@ const GasSpeedButton = ({
 
   const openGasHelper = useCallback(() => {
     android && Keyboard.dismiss();
-    navigate(Routes.EXPLAIN_SHEET, { type: 'gas' });
-  }, [navigate]);
+    const network = currentNetwork ?? networkTypes.mainnet;
+    const networkName = networkInfo[network].name;
+    navigate(Routes.EXPLAIN_SHEET, { network: networkName, type: 'gas' });
+  }, [currentNetwork, navigate]);
 
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
@@ -310,41 +326,49 @@ const GasSpeedButton = ({
         return [NORMAL, FAST, URGENT];
       case networkTypes.optimism:
       case networkTypes.arbitrum:
-        return [FAST];
+        return [NORMAL];
       default:
         return GasSpeedOrder;
     }
   }, [currentNetwork, speeds]);
 
   const menuConfig = useMemo(() => {
-    const menuOptions = speedOptions.map(gasOption => ({
-      actionKey: gasOption,
-      actionTitle: upperFirst(gasOption),
-      icon: {
-        iconType: 'ASSET',
-        iconValue: GAS_ICONS[gasOption],
-      },
-    }));
+    const menuOptions = speedOptions.map(gasOption => {
+      const totalGwei = add(
+        gasFeeParamsBySpeed[gasOption]?.maxFeePerGas?.gwei,
+        gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
+      );
+      const gweiDisplay =
+        currentNetwork === networkTypes.polygon
+          ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
+          : `${toFixedDecimals(totalGwei, 0)} Gwei`;
+      return {
+        actionKey: gasOption,
+        actionTitle: upperFirst(gasOption),
+        discoverabilityTitle: gweiDisplay,
+        icon: {
+          iconType: 'ASSET',
+          iconValue: GAS_ICONS[gasOption],
+        },
+      };
+    });
     return {
       menuItems: menuOptions,
-      menuTitle: `Transaction Speed`,
+      menuTitle: '',
     };
-  }, [speedOptions]);
+  }, [currentNetwork, gasFeeParamsBySpeed, speedOptions]);
 
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
     speedOptions,
   ]);
 
-  const defaultSelectedGasFeeOption = useMemo(() => {
-    const fastByDefault =
-      currentNetwork === networkTypes.arbitrum ||
-      currentNetwork === networkTypes.optimism;
-    return fastByDefault ? FAST : NORMAL;
-  }, [currentNetwork]);
-
   const onDonePress = useCallback(() => {
-    goBack();
-  }, [goBack]);
+    if (canGoBack) {
+      goBack();
+    } else {
+      validateGasParams?.current?.(goBack);
+    }
+  }, [canGoBack, goBack, validateGasParams]);
 
   const onPressAndroid = useCallback(() => {
     if (gasIsNotReady) return;
@@ -356,7 +380,7 @@ const GasSpeedButton = ({
         cancelButtonIndex: androidContractActions.length,
         options: androidContractActions,
         showSeparators: true,
-        title: `Transaction Speed`,
+        title: '',
       },
       buttonIndex => {
         handlePressSpeedOption(lowerCase(androidContractActions[buttonIndex]));
@@ -375,7 +399,7 @@ const GasSpeedButton = ({
         }
         currentNetwork={currentNetwork}
         dropdownEnabled={gasOptionsAvailable}
-        label={selectedGasFeeOption ?? defaultSelectedGasFeeOption}
+        label={selectedGasFeeOption ?? NORMAL}
         showGasOptions={showGasOptions}
         showPager
         theme={theme}
@@ -400,7 +424,6 @@ const GasSpeedButton = ({
     colorForAsset,
     colors,
     currentNetwork,
-    defaultSelectedGasFeeOption,
     gasIsNotReady,
     gasOptionsAvailable,
     handlePressMenuItem,
@@ -416,28 +439,25 @@ const GasSpeedButton = ({
     const currentSpeedIndex = gasOptions?.indexOf(selectedGasFeeOption);
     // If the option isn't available anymore, we need to reset it
     if (currentSpeedIndex === -1) {
-      handlePressSpeedOption(defaultSelectedGasFeeOption);
+      handlePressSpeedOption(NORMAL);
     }
-  }, [
-    handlePressSpeedOption,
-    speeds,
-    selectedGasFeeOption,
-    isL2,
-    defaultSelectedGasFeeOption,
-  ]);
+  }, [handlePressSpeedOption, speeds, selectedGasFeeOption, isL2]);
 
   // had to do this hack because calling it directly from `onPress`
   // would make the expanded sheet come up with too much force
   // instead calling it from `useEffect` makes it appear smoothly
   useEffect(() => {
-    if (shouldOpenCustomGasSheet && !prevShouldOpenCustomGasSheet) {
+    if (
+      shouldOpenCustomGasSheet.shouldOpen &&
+      !prevShouldOpenCustomGasSheet.shouldOpen
+    ) {
       openCustomGasSheet();
-      setShouldOpenCustomGasSheet(false);
+      setShouldOpenCustomGasSheet({ focusTo: null, shouldOpen: false });
     }
   }, [
     openCustomGasSheet,
     prevShouldOpenCustomGasSheet,
-    shouldOpenCustomGasSheet,
+    shouldOpenCustomGasSheet.shouldOpen,
   ]);
 
   useEffect(() => {
@@ -454,6 +474,7 @@ const GasSpeedButton = ({
       <Row justify="space-between">
         <ButtonPressAnimation
           onPress={openGasHelper}
+          scaleTo={0.9}
           testID="estimated-fee-label"
         >
           <Row>
@@ -478,10 +499,6 @@ const GasSpeedButton = ({
               <TransactionTimeLabel
                 formatter={formatTransactionTime}
                 theme={theme}
-                value={{
-                  estimatedTimeValue,
-                  price,
-                }}
               />
             </Column>
           </Row>
@@ -493,15 +510,17 @@ const GasSpeedButton = ({
                   : colors.alpha(colors.blueGreyDark, 0.6)
               }
               size="smedium"
+              weight="bold"
             >
-              Estimated Fee{' '}
+              Estimated fee{' '}
               <Label
                 color={
                   theme === 'dark'
-                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
-                    : colors.alpha(colors.blueGreyDark, 0.4)
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.25)
+                    : colors.alpha(colors.blueGreyDark, 0.25)
                 }
                 size="smedium"
+                weight="bold"
               >
                 􀅵
               </Label>
@@ -521,6 +540,7 @@ const GasSpeedButton = ({
               <CustomGasButton
                 borderColor={colorForAsset}
                 onPress={onDonePress}
+                testID="gas-speed-done-button"
               >
                 <DoneCustomGas
                   color={
@@ -536,8 +556,8 @@ const GasSpeedButton = ({
               <CustomGasButton
                 borderColor={
                   theme === 'dark'
-                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.4)
-                    : colors.alpha(colors.blueGreyDark, 0.8)
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.15)
+                    : colors.alpha(colors.blueGreyDark, 0.15)
                 }
                 onPress={openCustomOptions}
                 testID="gas-speed-custom"

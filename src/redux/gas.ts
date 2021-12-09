@@ -28,19 +28,18 @@ import {
 } from '@rainbow-me/handlers/gasFees';
 import {
   getProviderForNetwork,
-  isEIP1559LegacyNetwork,
   isHardHat,
+  isL2Network,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
-import networkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   defaultGasParamsFormat,
-  getFallbackGasPrices,
   gweiToWei,
   parseGasFeeParam,
   parseGasFees,
   parseGasFeesBySpeed,
-  parseGasPrices,
+  parseL2GasPrices,
   parseLegacyGasFeesBySpeed,
   parseRainbowMeteorologyData,
   weiToGwei,
@@ -56,7 +55,18 @@ import { fromWei, greaterThanOrEqualTo, multiply } from '@rainbow-me/utilities';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const { CUSTOM, NORMAL, GAS_PRICE_SOURCES } = gasUtils;
+const { CUSTOM, NORMAL, URGENT } = gasUtils;
+
+const getGasPricePollingInterval = (network: Network): number => {
+  switch (network) {
+    case Network.polygon:
+      return 2000;
+    case Network.arbitrum:
+      return 3000;
+    default:
+      return 5000;
+  }
+};
 
 let gasPricesHandle: NodeJS.Timeout | null = null;
 
@@ -70,6 +80,7 @@ interface GasState {
   txNetwork: Network | null;
   currentBlockParams: CurrentBlockParams;
   confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee;
+  customGasFeeModifiedByUser: boolean;
 }
 
 // -- Constants ------------------------------------------------------------- //
@@ -77,8 +88,7 @@ interface GasState {
 const GAS_UPDATE_DEFAULT_GAS_LIMIT = 'gas/GAS_UPDATE_DEFAULT_GAS_LIMIT';
 const GAS_PRICES_SUCCESS = 'gas/GAS_PRICES_SUCCESS';
 const GAS_FEES_SUCCESS = 'gas/GAS_FEES_SUCCESS';
-const GAS_PRICES_FAILURE = 'gas/GAS_PRICES_FAILURE';
-const GAS_PRICES_CUSTOM_UPDATE_FAILURE = 'gas/GAS_PRICES_CUSTOM_UPDATE_FAILURE';
+const GAS_PRICES_CUSTOM_UPDATE = 'gas/GAS_PRICES_CUSTOM_UPDATE';
 
 const GAS_PRICES_RESET = 'gas/GAS_PRICES_RESET';
 const GAS_UPDATE_TX_FEE = 'gas/GAS_UPDATE_TX_FEE';
@@ -88,13 +98,13 @@ const GAS_UPDATE_TRANSACTION_NETWORK = 'gas/GAS_UPDATE_TRANSACTION_NETWORK';
 const getNetworkNativeAsset = (assets: any[], network: Network) => {
   let nativeAssetAddress;
   switch (network) {
-    case networkTypes.polygon:
+    case Network.polygon:
       nativeAssetAddress = MATIC_POLYGON_ADDRESS;
       break;
-    case networkTypes.arbitrum:
+    case Network.arbitrum:
       nativeAssetAddress = ARBITRUM_ETH_ADDRESS;
       break;
-    case networkTypes.optimism:
+    case Network.optimism:
       nativeAssetAddress = OPTIMISM_ETH_ADDRESS;
       break;
     default:
@@ -183,11 +193,13 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     currentBlockParams,
     confirmationTimeByPriorityFee,
   } = getState().gas;
+
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
   const _gasLimit = gasLimit || defaultGasLimit;
+
   const nativeTokenPriceUnit =
-    txNetwork !== networkTypes.polygon
+    txNetwork !== Network.polygon
       ? ethereumUtils.getEthPriceUnit()
       : ethereumUtils.getMaticPriceUnit();
 
@@ -218,15 +230,16 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   );
   dispatch({
     payload: {
+      customGasFeeModifiedByUser: true,
       gasFeeParamsBySpeed: newGasFeeParamsBySpeed,
       gasFeesBySpeed: newGasFeesBySpeed,
       selectedGasFee: newSelectedGasFee.selectedGasFee,
     },
-    type: GAS_PRICES_CUSTOM_UPDATE_FAILURE,
+    type: GAS_PRICES_CUSTOM_UPDATE,
   });
 };
 
-export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
+export const gasPricesStartPolling = (network = Network.mainnet) => async (
   dispatch: AppDispatch,
   getState: AppGetState
 ) => {
@@ -251,7 +264,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   };
 
   const getArbitrumGasPrices = async () => {
-    const provider = await getProviderForNetwork(networkTypes.arbitrum);
+    const provider = await getProviderForNetwork(Network.arbitrum);
     const baseGasPrice = await provider.getGasPrice();
     const baseGasPriceGwei = weiToGwei(baseGasPrice.toString());
 
@@ -273,7 +286,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   };
 
   const getOptimismGasPrices = async () => {
-    const provider = await getProviderForNetwork(networkTypes.optimism);
+    const provider = await getProviderForNetwork(Network.optimism);
     const baseGasPrice = await provider.getGasPrice();
     const gasPriceGwei = Number(weiToGwei(baseGasPrice.toString()));
 
@@ -311,32 +324,35 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
   const getGasPrices = (network: Network) =>
     new Promise(async (fetchResolve, fetchReject) => {
       try {
-        const { gasFeeParamsBySpeed: existingGasFees } = getState().gas;
-        const isLegacy = isEIP1559LegacyNetwork(network);
-        if (isLegacy) {
+        const {
+          gasFeeParamsBySpeed: existingGasFees,
+          customGasFeeModifiedByUser,
+        } = getState().gas;
+        const isL2 = isL2Network(network);
+
+        if (isL2) {
           let adjustedGasFees;
-          let source = GAS_PRICE_SOURCES.ETHERSCAN;
-          if (network === networkTypes.polygon) {
-            source = GAS_PRICE_SOURCES.POLYGON_GAS_STATION;
+          if (network === Network.polygon) {
             adjustedGasFees = await getPolygonGasPrices();
-          } else if (network === networkTypes.arbitrum) {
-            source = GAS_PRICE_SOURCES.ARBITRUM_NODE;
+          } else if (network === Network.arbitrum) {
             adjustedGasFees = await getArbitrumGasPrices();
-          } else if (network === networkTypes.optimism) {
-            source = GAS_PRICE_SOURCES.OPTIMISM_NODE;
+          } else if (network === Network.optimism) {
             adjustedGasFees = await getOptimismGasPrices();
           }
-          const gasFeeParamsBySpeed = parseGasPrices(adjustedGasFees, source);
-          if (existingGasFees[CUSTOM] !== null) {
-            // Preserve custom values while updating prices
-            gasFeeParamsBySpeed[CUSTOM] = existingGasFees[CUSTOM];
+
+          const gasFeeParamsBySpeed = parseL2GasPrices(
+            adjustedGasFees,
+            network
+          );
+
+          if (gasFeeParamsBySpeed) {
+            dispatch({
+              payload: {
+                gasFeeParamsBySpeed,
+              },
+              type: GAS_FEES_SUCCESS,
+            });
           }
-          dispatch({
-            payload: {
-              gasFeeParamsBySpeed,
-            },
-            type: GAS_FEES_SUCCESS,
-          });
         } else {
           try {
             const {
@@ -350,7 +366,7 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
             // Set a really gas estimate to guarantee that we're gonna be over
             // the basefee at the time we fork mainnet during our hardhat tests
             let baseFee = baseFeePerGas;
-            if (network === networkTypes.mainnet && IS_TESTING === 'true') {
+            if (network === Network.mainnet && IS_TESTING === 'true') {
               const providerUrl = (
                 web3Provider ||
                 ({} as {
@@ -362,15 +378,15 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
               }
             }
 
-            if (!isEmpty(existingGasFees[CUSTOM])) {
+            if (customGasFeeModifiedByUser) {
               // Preserve custom values while updating prices
               gasFeeParamsBySpeed[CUSTOM] = {
                 ...existingGasFees[CUSTOM],
                 baseFeePerGas: baseFee,
               };
-            } else if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
-              // set CUSTOM to NORMAL if not defined
-              // gasFeeParamsBySpeed[CUSTOM] = {} as GasFeeParamsBySpeed;
+            } else {
+              // set CUSTOM to URGENT if not defined
+              gasFeeParamsBySpeed[CUSTOM] = gasFeeParamsBySpeed[URGENT];
             }
             dispatch({
               payload: {
@@ -388,30 +404,26 @@ export const gasPricesStartPolling = (network = networkTypes.mainnet) => async (
         }
         fetchResolve(true);
       } catch (error) {
-        const fallbackGasPrices = getFallbackGasPrices();
         captureException(new Error('all gas estimates failed'));
         logger.sentry('gas estimates error', error);
-        dispatch({
-          payload: fallbackGasPrices,
-          type: GAS_PRICES_FAILURE,
-        });
         fetchReject(error);
       }
     });
 
-  const watchGasPrices = async (network: Network) => {
+  const watchGasPrices = async (network: Network, pollingInterval: number) => {
     try {
       await getGasPrices(network);
       // eslint-disable-next-line no-empty
     } catch (e) {
     } finally {
       gasPricesHandle = setTimeout(() => {
-        watchGasPrices(network);
-      }, 15000); // 15 secs
+        watchGasPrices(network, pollingInterval);
+      }, pollingInterval);
     }
   };
 
-  watchGasPrices(network);
+  const pollingInterval = getGasPricePollingInterval(network);
+  watchGasPrices(network, pollingInterval);
 };
 
 export const gasUpdateGasFeeOption = (
@@ -473,15 +485,19 @@ export const gasUpdateTxFee = (
   const _selectedGasFeeOption =
     overrideGasOption || selectedGasFee.option || NORMAL;
   const nativeTokenPriceUnit =
-    txNetwork !== networkTypes.polygon
+    txNetwork !== Network.polygon
       ? ethereumUtils.getEthPriceUnit()
       : ethereumUtils.getMaticPriceUnit();
 
-  if (isEmpty(gasFeeParamsBySpeed)) return;
+  if (
+    isEmpty(gasFeeParamsBySpeed) ||
+    (txNetwork === Network.optimism && l1GasFeeOptimism === null)
+  )
+    return;
 
-  const isLegacyNetwork = isEIP1559LegacyNetwork(txNetwork);
+  const isL2 = isL2Network(txNetwork);
 
-  const gasFeesBySpeed = isLegacyNetwork
+  const gasFeesBySpeed = isL2
     ? parseLegacyGasFeesBySpeed(
         gasFeeParamsBySpeed,
         _gasLimit,
@@ -524,6 +540,7 @@ export const gasPricesStopPolling = () => (dispatch: AppDispatch) => {
 const INITIAL_STATE: GasState = {
   confirmationTimeByPriorityFee: {} as ConfirmationTimeByPriorityFee,
   currentBlockParams: {} as CurrentBlockParams,
+  customGasFeeModifiedByUser: false,
   defaultGasLimit: ethUnits.basic_tx,
   gasFeeParamsBySpeed: {},
   gasFeesBySpeed: {},
@@ -556,14 +573,10 @@ export default (
         currentBlockParams: action.payload.currentBlockParams,
         gasFeeParamsBySpeed: action.payload.gasFeeParamsBySpeed,
       };
-    case GAS_PRICES_FAILURE:
+    case GAS_PRICES_CUSTOM_UPDATE:
       return {
         ...state,
-        gasFeeParamsBySpeed: action.payload.gasFeeParamsBySpeed,
-      };
-    case GAS_PRICES_CUSTOM_UPDATE_FAILURE:
-      return {
-        ...state,
+        customGasFeeModifiedByUser: action.payload.customGasFeeModifiedByUser,
         gasFeeParamsBySpeed: action.payload.gasFeeParamsBySpeed,
         gasFeesBySpeed: action.payload.gasFeesBySpeed,
         selectedGasFee: action.payload.selectedGasFee,

@@ -40,7 +40,6 @@ import {
   useColorForAsset,
   useContacts,
   useCurrentNonce,
-  useDimensions,
   useGas,
   useMagicAutofocus,
   useMaxInputBalance,
@@ -95,7 +94,6 @@ const KeyboardSizeView = styled(KeyboardArea)`
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
-  const { deviceWidth } = useDimensions();
   const { goBack, navigate, addListener } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
@@ -444,7 +442,7 @@ export default function SendSheet(props) {
         txData,
         currentProvider
       );
-      updateTxFee(updatedGasLimit, null, currentNetwork, l1GasFeeOptimism);
+      updateTxFee(updatedGasLimit, null, l1GasFeeOptimism);
     },
     [
       accountAddress,
@@ -492,7 +490,7 @@ export default function SendSheet(props) {
           if (network === networkTypes.optimism) {
             updateTxFeeForOptimism(updatedGasLimit);
           } else {
-            updateTxFee(updatedGasLimit, null, currentNetwork);
+            updateTxFee(updatedGasLimit, null);
           }
         }
         // eslint-disable-next-line no-empty
@@ -788,12 +786,12 @@ export default function SendSheet(props) {
           if (currentNetwork === networkTypes.optimism) {
             updateTxFeeForOptimism(gasLimit);
           } else {
-            updateTxFee(gasLimit, null, currentNetwork);
+            updateTxFee(gasLimit, null);
           }
         })
         .catch(e => {
           logger.sentry('Error getting optimism l1 fee', e);
-          updateTxFee(null, null, currentNetwork);
+          updateTxFee(null, null);
         });
     }
   }, [
@@ -859,11 +857,9 @@ export default function SendSheet(props) {
             assetAmount={amountDetails.assetAmount}
             buttonRenderer={
               <SheetActionButton
-                androidWidth={deviceWidth - 60}
                 color={colorForAsset}
                 disabled={buttonDisabled}
                 forceShadows
-                fullWidth
                 label={buttonLabel}
                 onPress={showConfirmationSheet}
                 scaleTo={buttonDisabled ? 1.025 : 0.9}

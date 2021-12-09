@@ -220,7 +220,6 @@ export default function AlreadyBackedUpView() {
         </Centered>
         <Column>
           <SheetActionButton
-            androidWidth={225}
             color={colors.white}
             label={`🗝 View ${isSecretPhrase ? 'secret phrase' : 'private key'}`}
             onPress={handleViewRecoveryPhrase}
