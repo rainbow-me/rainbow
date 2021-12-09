@@ -587,7 +587,7 @@ export const gasUpdateTxFee = (
     (txNetwork === Network.optimism && l1GasFeeOptimism === null)
   ) {
     // if fee prices not ready, we need to store the gas limit for future calculations
-    // // the rest is as the initial state value
+    // the rest is as the initial state value
     if (updatedGasLimit) {
       dispatch({
         payload: updatedGasLimit,
