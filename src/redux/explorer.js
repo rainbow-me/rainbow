@@ -24,7 +24,7 @@ import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import { getProviderForNetwork, isHardHat } from '@rainbow-me/handlers/web3';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import currencyTypes from '@rainbow-me/helpers/currencyTypes';
-import NetworkTypes from '@rainbow-me/helpers/networkTypes';
+import NetworkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   DPI_ADDRESS,
   ETH_ADDRESS,
@@ -163,6 +163,17 @@ const assetInfoRequest = (currency, order = 'desc') => [
       search_query: '#Token is:verified',
     },
     scope: ['info'],
+  },
+];
+
+const addressAssetsRequest = (address, currency) => [
+  'get',
+  {
+    payload: {
+      address,
+      currency: toLower(currency),
+    },
+    scope: ['assets'],
   },
 ];
 
@@ -439,16 +450,7 @@ export const explorerInitL2 = (network = null) => (dispatch, getState) => {
 const fetchAssetsFromRefraction = () => (_dispatch, getState) => {
   const { accountAddress, nativeCurrency } = getState().settings;
   const { addressSocket } = getState().explorer;
-  addressSocket.emit([
-    'get',
-    {
-      payload: {
-        address: accountAddress,
-        currency: toLower(nativeCurrency),
-      },
-      scope: ['assets'],
-    },
-  ]);
+  addressSocket.emit(...addressAssetsRequest(accountAddress, nativeCurrency));
 };
 
 const l2AddressAssetsReceived = (message, network) => (dispatch, getState) => {
@@ -536,7 +538,7 @@ const listenOnAddressMessages = socket => dispatch => {
         '😬 Cancelling fallback data provider listener. Zerion is good!'
       );
       dispatch(disableFallbackIfNeeded());
-      dispatch(explorerInitL2());
+      dispatch(explorerInitL2(Network.optimism));
       // Fetch balances onchain to override zerion's
       // which is likely behind
       dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
