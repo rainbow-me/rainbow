@@ -247,7 +247,7 @@ const GasSpeedButton = ({
   const handlePressSpeedOption = useCallback(
     selectedSpeed => {
       if (selectedSpeed === CUSTOM) {
-        openCustomGasSheet();
+        setShouldOpenCustomGasSheet({ focusTo: null, shouldOpen: true });
         if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
           const gasFeeParams = gasFeeParamsBySpeed[URGENT];
           updateToCustomGasFee({
@@ -259,12 +259,7 @@ const GasSpeedButton = ({
         updateGasFeeOption(selectedSpeed);
       }
     },
-    [
-      openCustomGasSheet,
-      gasFeeParamsBySpeed,
-      updateToCustomGasFee,
-      updateGasFeeOption,
-    ]
+    [gasFeeParamsBySpeed, updateToCustomGasFee, updateGasFeeOption]
   );
 
   const formatTransactionTime = useCallback(() => {
