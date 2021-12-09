@@ -88,6 +88,7 @@ interface GasState {
 // -- Constants ------------------------------------------------------------- //
 // const GAS_MULTIPLIER = 1.101;
 const GAS_UPDATE_DEFAULT_GAS_LIMIT = 'gas/GAS_UPDATE_DEFAULT_GAS_LIMIT';
+const GAS_UPDATE_GAS_LIMIT = 'gas/GAS_UPDATE_GAS_LIMIT';
 const GAS_PRICES_SUCCESS = 'gas/GAS_PRICES_SUCCESS';
 const GAS_FEES_SUCCESS = 'gas/GAS_FEES_SUCCESS';
 const GAS_PRICES_CUSTOM_UPDATE = 'gas/GAS_PRICES_CUSTOM_UPDATE';
@@ -587,15 +588,10 @@ export const gasUpdateTxFee = (
     (txNetwork === Network.optimism && l1GasFeeOptimism === null)
   ) {
     // if fee prices not ready, we need to store the gas limit for future calculations
-    // the rest is as the initial state value
+    // // the rest is as the initial state value
     dispatch({
-      payload: {
-        gasFeesBySpeed: {},
-        gasLimit: _gasLimit,
-        isSufficientGas: null,
-        selectedGasFee: {},
-      },
-      type: GAS_UPDATE_TX_FEE,
+      payload: _gasLimit,
+      type: GAS_UPDATE_GAS_LIMIT,
     });
   } else {
     const _selectedGasFeeOption =
@@ -658,6 +654,11 @@ export default (
       return {
         ...state,
         defaultGasLimit: action.payload,
+      };
+    case GAS_UPDATE_GAS_LIMIT:
+      return {
+        ...state,
+        gasLimit: action.payload,
       };
     case GAS_PRICES_SUCCESS:
       return {
