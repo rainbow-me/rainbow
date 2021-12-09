@@ -385,9 +385,13 @@ const hasPreviousTransactions = (
 
 const checkIfUrlIsAScam = async (url: string) => {
   try {
+    const { hostname } = new URL(url);
+    const exceptions = ['twitter.com'];
+    if (exceptions.includes(toLower(hostname))) {
+      return false;
+    }
     const request = await fetch('https://api.cryptoscamdb.org/v1/scams');
     const { result } = await request.json();
-    const { hostname } = new URL(url);
     const found = result.find(
       (s: any) => toLower(s.name) === toLower(hostname)
     );
