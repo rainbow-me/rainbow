@@ -40,6 +40,7 @@ import {
   useColorForAsset,
   useContacts,
   useCurrentNonce,
+  useEffectDebugger,
   useGas,
   useMagicAutofocus,
   useMaxInputBalance,
@@ -758,7 +759,7 @@ export default function SendSheet(props) {
     checkAddress(recipient);
   }, [checkAddress, recipient]);
 
-  useEffect(() => {
+  useEffectDebugger(() => {
     if (!currentProvider?._network?.chainId) return;
     const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
       currentProvider._network.chainId
@@ -768,8 +769,7 @@ export default function SendSheet(props) {
       assetNetwork === currentNetwork &&
       currentProviderNetwork === currentNetwork &&
       isValidAddress &&
-      !isEmpty(selected) &&
-      !isEmpty(gasFeeParamsBySpeed)
+      !isEmpty(selected)
     ) {
       estimateGasLimit(
         {
@@ -806,7 +806,6 @@ export default function SendSheet(props) {
     updateTxFee,
     updateTxFeeForOptimism,
     network,
-    gasFeeParamsBySpeed,
   ]);
 
   return (
