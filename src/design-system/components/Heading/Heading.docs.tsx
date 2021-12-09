@@ -1,10 +1,12 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import { ColorModeProvider } from '../../color/ColorMode';
 import { palettes } from '../../color/palettes';
-import { Docs } from '../../playground/Docs';
+import { Docs } from '../../docs/types';
+import source from '../../docs/utils/source.macro';
 import { Guide } from '../../playground/Guide';
+import { MockBadge } from '../../playground/MockBadge';
 import { Inline } from '../Inline/Inline';
 import { Stack } from '../Stack/Stack';
 import { Heading, HeadingProps } from './Heading';
@@ -15,107 +17,94 @@ const headingExamples: Required<Pick<HeadingProps, 'size' | 'weight'>>[] = [
   { size: '18px', weight: 'bold' },
 ];
 
-const MockBadge = ({ children }: { children: ReactNode }) => (
-  <View style={{ display: 'flex', flexDirection: 'row' }}>
-    <View
-      style={{
-        backgroundColor: 'rgba(255,0,0,0.2)',
-        borderRadius: 999,
-        display: 'flex',
-        justifyContent: 'center',
-        paddingHorizontal: 18,
-        paddingVertical: 6,
-      }}
-    >
-      {children}
-    </View>
-  </View>
-);
-
 const loremIpsum =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
 
 const docs: Docs = {
   name: 'Heading',
-  category: 'Content',
+  category: 'Typography',
   examples: [
     ...headingExamples.map(({ size, weight }) => ({
       name: `${size} (${weight})`,
-      Example: () => (
-        <>
-          <Stack space="10px">
-            <View>
-              <Guide />
-              <Heading size={size} weight={weight}>
-                {loremIpsum}
-              </Heading>
-              <Guide />
-              <Heading numberOfLines={1} size={size} weight={weight}>
-                Truncated text truncated text truncated text truncated text
-                truncated text truncated text
-              </Heading>
-              <Guide />
-            </View>
-            <Inline space="10px">
-              <MockBadge>
+      Example: () =>
+        source(
+          <>
+            <Stack space="10px">
+              <View>
+                <Guide />
                 <Heading size={size} weight={weight}>
-                  CENTERED
+                  {loremIpsum}
                 </Heading>
-              </MockBadge>
-              <MockBadge>
-                <Heading size={size} weight={weight}>
-                  Centered
+                <Guide />
+                <Heading numberOfLines={1} size={size} weight={weight}>
+                  Truncated text truncated text truncated text truncated text
+                  truncated text truncated text
                 </Heading>
-              </MockBadge>
-            </Inline>
-          </Stack>
-        </>
-      ),
+                <Guide />
+              </View>
+              <Inline space="10px">
+                <MockBadge>
+                  <Heading size={size} weight={weight}>
+                    CENTERED
+                  </Heading>
+                </MockBadge>
+                <MockBadge>
+                  <Heading size={size} weight={weight}>
+                    Centered
+                  </Heading>
+                </MockBadge>
+              </Inline>
+            </Stack>
+          </>
+        ),
     })),
     {
       name: 'With emoji',
-      Example: () => (
-        <>
-          <Guide />
-          <Heading containsEmoji>Heading with emoji 🌈</Heading>
-          <Guide />
-        </>
-      ),
+      Example: () =>
+        source(
+          <View>
+            <Guide />
+            <Heading containsEmoji>Heading with emoji 🌈</Heading>
+            <Guide />
+          </View>
+        ),
     },
     {
       name: 'With truncation',
-      Example: () => (
-        <>
-          <Guide />
-          <Heading numberOfLines={1}>
-            Truncated text truncated text truncated text truncated text
-            truncated text truncated text
-          </Heading>
-          <Guide />
-        </>
-      ),
+      Example: () =>
+        source(
+          <View>
+            <Guide />
+            <Heading numberOfLines={1}>
+              Truncated text truncated text truncated text truncated text
+              truncated text truncated text
+            </Heading>
+            <Guide />
+          </View>
+        ),
     },
     {
       name: 'With color',
-      Example: () => (
-        <View>
-          <View
-            style={{
-              backgroundColor: palettes.dark.backgroundColors.body.color,
-              padding: 24,
-            }}
-          >
-            <Stack space="24px">
-              <ColorModeProvider value="dark">
-                <Heading>Dark mode</Heading>
-              </ColorModeProvider>
-              <ColorModeProvider value="darkTinted">
-                <Heading>Dark tinted mode</Heading>
-              </ColorModeProvider>
-            </Stack>
+      Example: () =>
+        source(
+          <View>
+            <View
+              style={{
+                backgroundColor: palettes.dark.backgroundColors.body.color,
+                padding: 24,
+              }}
+            >
+              <Stack space="24px">
+                <ColorModeProvider value="dark">
+                  <Heading>Dark mode</Heading>
+                </ColorModeProvider>
+                <ColorModeProvider value="darkTinted">
+                  <Heading>Dark tinted mode</Heading>
+                </ColorModeProvider>
+              </Stack>
+            </View>
           </View>
-        </View>
-      ),
+        ),
     },
   ],
 };

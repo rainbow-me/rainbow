@@ -92,7 +92,10 @@ rainbow-scripts
 patches/react-native-webview+11.2.3.patch
 
 .eslintcache
+
+# design system docs
 .next
+out/
 
 # Ts-coverage
 coverage-ts

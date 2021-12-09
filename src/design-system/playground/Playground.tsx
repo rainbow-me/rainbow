@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useHideSplashScreen } from '../../hooks';
+import useHideSplashScreen from '../../hooks/useHideSplashScreen';
 import { Heading, Inline, Inset, Stack } from '../';
 import backgroundDocs from '../components/BackgroundProvider/BackgroundProvider.docs';
 import bleedDocs from '../components/Bleed/Bleed.docs';
@@ -20,7 +20,8 @@ import rowDocs from '../components/Row/Row.docs';
 import stackDocs from '../components/Stack/Stack.docs';
 import textDocs from '../components/Text/Text.docs';
 import textLinkDocs from '../components/TextLink/TextLink.docs';
-import { Docs } from './Docs';
+import { useSourceFromExample } from '../docs/hooks/useSourceFromExample';
+import { Docs, DocsExample } from '../docs/types';
 
 const allDocs = [
   backgroundDocs,
@@ -48,6 +49,11 @@ const styles = StyleSheet.create({
   },
 });
 
+const CodePreview = ({ Example }: { Example: DocsExample['Example'] }) => {
+  const { element } = useSourceFromExample({ Example });
+  return <>{element}</>;
+};
+
 const DocsRow = ({ name, category, examples }: Docs) => {
   const [open, setOpen] = useState(false);
 
@@ -64,22 +70,24 @@ const DocsRow = ({ name, category, examples }: Docs) => {
         </Inline>
       </TouchableOpacity>
       {open
-        ? examples.map(({ name, Example }, index) => (
-            <Stack key={index} space="12px">
-              <Heading size="18px" weight="bold">
-                {name}
-              </Heading>
-              <View
-                style={
-                  category === 'Layout' && name !== 'Box'
-                    ? styles.layoutContainer
-                    : undefined
-                }
-              >
-                <Example />
-              </View>
-            </Stack>
-          ))
+        ? examples?.map(({ name, Example }, index) =>
+            Example ? (
+              <Stack key={index} space="12px">
+                <Heading size="18px" weight="bold">
+                  {name}
+                </Heading>
+                <View
+                  style={
+                    category === 'Layout' && name !== 'Box'
+                      ? styles.layoutContainer
+                      : undefined
+                  }
+                >
+                  <CodePreview Example={Example} />
+                </View>
+              </Stack>
+            ) : null
+          )
         : null}
     </Stack>
   );

@@ -1,7 +1,7 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import { precomputeValues } from '@capsizecss/core';
 import { mapValues, pick } from 'lodash';
-import { PixelRatio } from 'react-native';
+import { PixelRatio, Platform } from 'react-native';
 import { ForegroundColor } from './../color/palettes';
 import { fontWeights } from './fontWeights';
 import { typeHierarchy } from './typeHierarchy';
@@ -68,7 +68,7 @@ export const headingWeights = pick(fonts.SFProRounded, ['heavy', 'bold']);
 export const textWeights = fonts.SFProRounded;
 
 // Sourced from https://seek-oss.github.io/capsize
-const fontMetrics = {
+export const fontMetrics = {
   capHeight: 1443,
   ascent: 1950,
   descent: -494,
@@ -101,6 +101,9 @@ const createTextSize = ({
 
   const marginCorrectionForPlatform = marginCorrection[ios ? 'ios' : 'android'];
 
+  if (Platform.OS === 'web') {
+    return styles;
+  }
   return {
     ...styles,
     marginTop: PixelRatio.roundToNearestPixel(
@@ -126,6 +129,8 @@ export const textColors = selectForegroundColors(
   'action',
   'primary',
   'secondary',
+  'secondary10',
+  'secondary20',
   'secondary30',
   'secondary40',
   'secondary50',
