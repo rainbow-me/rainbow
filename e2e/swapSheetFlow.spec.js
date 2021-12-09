@@ -357,7 +357,7 @@ describe('Swap Sheet Interaction Flow', () => {
     );
     await Helpers.tapByText('Edit Max Base Fee');
     await Helpers.clearField('max-base-fee-input');
-    await Helpers.typeText('max-base-fee-input', '100\n', false);
+    await Helpers.typeText('max-base-fee-input', '200\n', false);
   });
 
   it('Should display warning on high custom priority fee price', async () => {
@@ -373,12 +373,16 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfElementByTextToExist('High miner tip!');
     await Helpers.tapByText('Edit Miner Tip');
     await Helpers.waitAndTap('speed-pill-normal');
+    await Helpers.clearField('max-base-fee-input');
+    await Helpers.typeText('max-base-fee-input', '200\n', false);
     await Helpers.clearField('max-priority-fee-input');
     await Helpers.typeText('max-priority-fee-input', `2\n`, false);
     await Helpers.waitAndTap('speed-pill-normal');
   });
 
   it('Should display warning on low custom priority fee price', async () => {
+    await Helpers.clearField('max-base-fee-input');
+    await Helpers.typeText('max-base-fee-input', '200\n', false);
     await Helpers.clearField('max-priority-fee-input');
     await Helpers.typeText('max-priority-fee-input', '0.01\n', false);
     await Helpers.checkIfElementByTextToExist('Lower than suggested');
