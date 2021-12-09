@@ -792,7 +792,7 @@ export default function SendSheet(props) {
           }
         })
         .catch(e => {
-          logger.sentry('Error getting optimism l1 fee', e);
+          logger.sentry('Error calculating gas limit', e);
           updateTxFee(null, null);
         });
     }
