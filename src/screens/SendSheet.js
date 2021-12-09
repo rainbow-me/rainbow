@@ -40,7 +40,6 @@ import {
   useColorForAsset,
   useContacts,
   useCurrentNonce,
-  useEffectDebugger,
   useGas,
   useMagicAutofocus,
   useMaxInputBalance,
@@ -759,7 +758,7 @@ export default function SendSheet(props) {
     checkAddress(recipient);
   }, [checkAddress, recipient]);
 
-  useEffectDebugger(() => {
+  useEffect(() => {
     if (!currentProvider?._network?.chainId) return;
     const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
       currentProvider._network.chainId
