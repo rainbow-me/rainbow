@@ -196,13 +196,10 @@ const GasSpeedButton = ({
     [isL2, nativeCurrencySymbol, nativeCurrency]
   );
 
-  const openCustomOptions = useCallback(
-    focusTo => {
-      android && Keyboard.dismiss();
-      setShouldOpenCustomGasSheet({ focusTo, shouldOpen: true });
-    },
-    [setShouldOpenCustomGasSheet]
-  );
+  const openCustomOptions = useCallback(focusTo => {
+    android && Keyboard.dismiss();
+    setShouldOpenCustomGasSheet({ focusTo, shouldOpen: true });
+  }, []);
 
   const openCustomGasSheet = useCallback(() => {
     if (gasIsNotReady) return;
@@ -259,12 +256,7 @@ const GasSpeedButton = ({
         updateGasFeeOption(selectedSpeed);
       }
     },
-    [
-      gasFeeParamsBySpeed,
-      setShouldOpenCustomGasSheet,
-      updateToCustomGasFee,
-      updateGasFeeOption,
-    ]
+    [gasFeeParamsBySpeed, updateToCustomGasFee, updateGasFeeOption]
   );
 
   const formatTransactionTime = useCallback(() => {
@@ -465,7 +457,6 @@ const GasSpeedButton = ({
   }, [
     openCustomGasSheet,
     prevShouldOpenCustomGasSheet,
-    setShouldOpenCustomGasSheet,
     shouldOpenCustomGasSheet.shouldOpen,
   ]);
 
