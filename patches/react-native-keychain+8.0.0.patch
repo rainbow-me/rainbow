@@ -97,7 +97,7 @@ index 1e7021c..464f13c 100644
  {
    NSMutableDictionary *query = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
-index 6ca68cb..fd2bb6c 100644
+index 6ca68cb..72426ca 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
 @@ -17,6 +17,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -108,7 +108,19 @@ index 6ca68cb..fd2bb6c 100644
  import com.oblador.keychain.PrefsStorage.ResultSet;
  import com.oblador.keychain.cipherStorage.CipherStorage;
  import com.oblador.keychain.cipherStorage.CipherStorage.DecryptionResult;
-@@ -327,6 +328,36 @@ public class KeychainModule extends ReactContextBaseJavaModule {
+@@ -149,6 +150,11 @@ public class KeychainModule extends ReactContextBaseJavaModule {
+     }
+   }
+ 
++  @Override
++  public boolean canOverrideExistingModule() {
++    return true;
++  }
++
+   /** Allow initialization in chain. */
+   public static KeychainModule withWarming(@NonNull final ReactApplicationContext reactContext) {
+     final KeychainModule instance = new KeychainModule(reactContext);
+@@ -327,6 +333,36 @@ public class KeychainModule extends ReactContextBaseJavaModule {
      }
    }
  
