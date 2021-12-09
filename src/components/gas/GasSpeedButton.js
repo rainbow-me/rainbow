@@ -259,7 +259,12 @@ const GasSpeedButton = ({
         updateGasFeeOption(selectedSpeed);
       }
     },
-    [gasFeeParamsBySpeed, updateToCustomGasFee, updateGasFeeOption]
+    [
+      gasFeeParamsBySpeed,
+      setShouldOpenCustomGasSheet,
+      updateToCustomGasFee,
+      updateGasFeeOption,
+    ]
   );
 
   const formatTransactionTime = useCallback(() => {
@@ -460,7 +465,8 @@ const GasSpeedButton = ({
   }, [
     openCustomGasSheet,
     prevShouldOpenCustomGasSheet,
-    shouldOpenCustomGasSheet,
+    setShouldOpenCustomGasSheet,
+    shouldOpenCustomGasSheet.shouldOpen,
   ]);
 
   useEffect(() => {
