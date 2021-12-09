@@ -32,7 +32,7 @@ export const apiGetAccountUniqueTokens = async (network, address, page) => {
     });
     return parseAccountUniqueTokens(data);
   } catch (error) {
-    logger.log('Error getting unique tokens', error);
+    logger.sentry('Error getting unique tokens', error);
     throw error;
   }
 };
@@ -74,7 +74,7 @@ export const apiGetUniqueTokenFloorPrice = async (
 
     return parseFloat(tempFloorPrice) + ' ETH';
   } catch (error) {
-    logger.debug('FLOOR PRICE ERROR', error);
+    logger.sentry('FLOOR PRICE ERROR', error);
     throw error;
   }
 };
