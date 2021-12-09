@@ -3,7 +3,7 @@ import React from 'react';
 import SavingsListHeader from '../../savings/SavingsListHeader';
 import { useOpenSavings } from '@rainbow-me/hooks';
 
-export default function WrappedSavingsListHeader({ value }) {
+export default React.memo(function WrappedSavingsListHeader({ value }) {
   const { isSavingsOpen, toggleOpenSavings } = useOpenSavings();
   return (
     <SavingsListHeader
@@ -13,4 +13,4 @@ export default function WrappedSavingsListHeader({ value }) {
       showSumValue
     />
   );
-}
+});
