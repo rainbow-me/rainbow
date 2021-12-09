@@ -521,30 +521,41 @@ export default async function runMigrations() {
    * Migrates the public keychain items to the new setting
    */
   const v13 = async () => {
-    const keys = await loadAllKeysOnly();
-    const keysToMigrate = [
-      'analyticsUserIdentifier',
-      'rainbowAllWalletsKey',
-      'rainbowAddressKey',
-      'rainbowSelectedWalletKey',
-      'rainbowOldSeedPhraseMigratedKey',
-      'signingWallet',
-      'signingWalletAddress',
-    ];
-    // add existing signatures
-    // which look like'signature_0x...'
-    keys?.forEach(key => {
-      if (key.startsWith('signature_')) {
-        keysToMigrate.push(key);
-      }
-    });
+    try {
+      const keys = await loadAllKeysOnly();
+      const keysToMigrate = [
+        'analyticsUserIdentifier',
+        'rainbowAllWalletsKey',
+        'rainbowAddressKey',
+        'rainbowSelectedWalletKey',
+        'rainbowOldSeedPhraseMigratedKey',
+        'signingWallet',
+        'signingWalletAddress',
+      ];
+      // add existing signatures
+      // which look like'signature_0x...'
+      keys?.forEach(key => {
+        if (key.startsWith('signature_')) {
+          keysToMigrate.push(key);
+        }
+      });
 
-    for (const key of keysToMigrate) {
-      const value = await loadString(key);
-      if (typeof value === 'string') {
-        await saveString(key, value, publicAccessControlOptions);
-        logger.debug('key migrated', key);
+      for (const key of keysToMigrate) {
+        try {
+          const value = await loadString(key);
+          if (typeof value === 'string') {
+            await saveString(key, value, publicAccessControlOptions);
+            logger.debug('key migrated', key);
+          }
+        } catch (error) {
+          logger.sentry('Error migration 13 :: key ', key);
+          logger.sentry('reason', error);
+        }
       }
+    } catch (error) {
+      logger.sentry('Migration v13 failed: ', error);
+      const migrationError = new Error('Migration 13 failed');
+      captureException(migrationError);
     }
   };
 
