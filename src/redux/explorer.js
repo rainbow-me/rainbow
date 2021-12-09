@@ -24,7 +24,7 @@ import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import { getProviderForNetwork, isHardHat } from '@rainbow-me/handlers/web3';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import currencyTypes from '@rainbow-me/helpers/currencyTypes';
-import NetworkTypes, { Network } from '@rainbow-me/helpers/networkTypes';
+import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   DPI_ADDRESS,
   ETH_ADDRESS,
@@ -538,7 +538,7 @@ const listenOnAddressMessages = socket => dispatch => {
         '😬 Cancelling fallback data provider listener. Zerion is good!'
       );
       dispatch(disableFallbackIfNeeded());
-      dispatch(explorerInitL2(Network.optimism));
+      dispatch(explorerInitL2(NetworkTypes.optimism));
       // Fetch balances onchain to override zerion's
       // which is likely behind
       dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
