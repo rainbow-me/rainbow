@@ -473,7 +473,7 @@ PODS:
     - React
   - rn-fetch-blob (0.12.0):
     - React-Core
-  - RNAnalytics (1.4.3):
+  - RNAnalytics (1.5.0):
     - Analytics
     - React-Core
   - RNCAsyncStorage (1.12.1):
@@ -1023,7 +1023,7 @@ SPEC CHECKSUMS:
   ReactNativeDarkMode: 0178ffca3b10f6a7c9f49d6f9810232b328fa949
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
-  RNAnalytics: 43a09152058061b4096eb6cb806093e7b772b1e5
+  RNAnalytics: a6dc48511d5d99b1ecaaf7157d8b5c618d15337e
   RNCAsyncStorage: b03032fdbdb725bea0bd9e5ec5a7272865ae7398
   RNCClipboard: 48eaf27bea3de7c9a265529725434268d47a2ee9
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
