@@ -56,8 +56,8 @@ export default function FeesGweiInput({
   onBlur,
   buttonColor,
   testID,
+  inputRef,
 }) {
-  const inputRef = useRef(null);
   const longPressHandle = useRef(null);
   const [trigger, setTrigger] = useState(false);
   const [actionType, setActionType] = useState(null);

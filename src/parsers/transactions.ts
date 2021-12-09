@@ -89,6 +89,7 @@ export const parseTransactions = async (
     : dataFromLastTxHash(transactionData, existingWithoutL2);
 
   const newTransactionPromises = data.map(txn =>
+    // @ts-expect-error ts-migrate(100002) FIXME
     parseTransaction(txn, nativeCurrency, purchaseTransactionHashes, network)
   );
 
