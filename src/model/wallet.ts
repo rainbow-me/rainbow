@@ -19,7 +19,7 @@ import {
 import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
-import { ACCESSIBLE, getSupportedBiometryType } from 'react-native-keychain';
+import { getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
 import {
   addressKey,
