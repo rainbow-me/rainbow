@@ -1,5 +1,7 @@
 import React, { ReactNode, useCallback } from 'react';
-import { Linking, Text as NativeText, TextStyle } from 'react-native';
+import { Text as NativeText, TextStyle } from 'react-native';
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 
 const style: TextStyle = {
   textDecorationLine: 'underline',
@@ -15,11 +17,14 @@ export interface TextLinkProps {
  * block of text.
  */
 export function TextLink({ children, url }: TextLinkProps) {
+  const { navigate } = useNavigation();
+
+  const handleExternalLink = useCallback(() => {
+    navigate(Routes.EXTERNAL_LINK_WARNING_SHEET, { url });
+  }, [navigate, url]);
+
   return (
-    <NativeText
-      onPress={useCallback(() => Linking.openURL(url), [url])}
-      style={style}
-    >
+    <NativeText onPress={handleExternalLink} style={style}>
       {children}
     </NativeText>
   );

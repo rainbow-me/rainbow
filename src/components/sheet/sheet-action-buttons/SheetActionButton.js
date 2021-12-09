@@ -62,6 +62,7 @@ const SheetActionButton = ({
   size = null,
   testID = null,
   textColor: givenTextColor,
+  truncate = false,
   weight = 'semibold',
   ...props
 }) => {
@@ -137,6 +138,7 @@ const SheetActionButton = ({
             color={textColor}
             size={size === 'big' ? 'larger' : 'large'}
             weight={weight}
+            numberOfLines={truncate ? 1 : undefined}
           >
             {label}
           </Text>

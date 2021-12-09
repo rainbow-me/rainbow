@@ -1,3 +1,5 @@
+import { useNavigation } from '@rainbow-me/navigation';
+import Routes from '@rainbow-me/routes';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import styled from 'styled-components';
@@ -27,6 +29,7 @@ const Link = ({
   display,
   emoji,
   emojiName = 'compass',
+  external = false,
   color,
   transformOrigin = 'left',
   scaleTo = 1.1,
@@ -35,11 +38,16 @@ const Link = ({
 }) => {
   const handlePress = useCallback(() => Linking.openURL(url), [url]);
   const { colors } = useTheme();
+  const { navigate } = useNavigation();
+
+  const handleExternalLink = useCallback(() => {
+    navigate(Routes.EXTERNAL_LINK_WARNING_SHEET, { url });
+  }, [navigate, url]);
 
   return (
     <ButtonPressAnimation
       compensateForTransformOrigin
-      onPress={handlePress}
+      onPress={external ? handleExternalLink : handlePress}
       scaleTo={scaleTo}
       transformOrigin={transformOrigin}
     >

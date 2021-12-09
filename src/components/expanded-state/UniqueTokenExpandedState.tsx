@@ -455,7 +455,11 @@ const UniqueTokenExpandedState = ({
                               top="15px"
                             >
                               {/* @ts-expect-error JavaScript component */}
-                              <Link color={imageColor} url={familyLink} />
+                              <Link
+                                color={imageColor}
+                                external
+                                url={familyLink}
+                              />
                             </Bleed>
                           ) : null}
                         </Stack>
