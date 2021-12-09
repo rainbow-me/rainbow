@@ -768,8 +768,7 @@ export default function SendSheet(props) {
       assetNetwork === currentNetwork &&
       currentProviderNetwork === currentNetwork &&
       isValidAddress &&
-      !isEmpty(selected) &&
-      !isEmpty(gasFeeParamsBySpeed)
+      !isEmpty(selected)
     ) {
       estimateGasLimit(
         {
@@ -806,7 +805,6 @@ export default function SendSheet(props) {
     updateTxFee,
     updateTxFeeForOptimism,
     network,
-    gasFeeParamsBySpeed,
   ]);
 
   return (
