@@ -384,7 +384,7 @@ describe('Swap Sheet Interaction Flow', () => {
     await Helpers.checkIfElementByTextToExist('Lower than suggested');
   });
 
-  it('Should display alert on low custom priority fee price', async () => {
+  xit('Should display alert on low custom priority fee price', async () => {
     await Helpers.swipe('custom-gas-header', 'down', 'slow');
     await Helpers.checkIfElementByTextToExist(
       'Low miner tip–transaction might get stuck!'
