@@ -37,7 +37,7 @@ import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
 import LayoutItemAnimator from './LayoutItemAnimator';
 import { EthereumAddress } from '@rainbow-me/entities';
-import { usePrevious } from '@rainbow-me/hooks';
+import { useOpenFamilies, usePrevious } from '@rainbow-me/hooks';
 import { deviceUtils, logger } from '@rainbow-me/utils';
 
 const extractCollectiblesIdFromRow = (row: {
@@ -260,7 +260,6 @@ function RecyclerAssetList({
   colors,
   sections,
   openInvestmentCards,
-  openFamilyTabs,
   openSavings,
   openSmallBalances,
   paddingBottom = 0,
@@ -272,6 +271,7 @@ function RecyclerAssetList({
   disableRefreshControl,
   ...extras
 }: RecyclerAssetListProps): JSX.Element {
+  const { openFamilies: openFamilyTabs } = useOpenFamilies();
   const { ref, handleRef } = useRecyclerListViewRef();
   const stickyCoinDividerRef = React.useRef<View>() as React.RefObject<View>;
   const [globalDeviceDimensions, setGlobalDeviceDimensions] = useState<number>(

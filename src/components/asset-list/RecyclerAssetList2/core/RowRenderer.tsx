@@ -61,6 +61,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
           case CellType.SAVINGS_HEADER:
             return (
               <WrappedSavingsListHeader
+                // @ts-ignore
                 value={(data as SavingsHeaderExtraData).value}
               />
             );
@@ -71,6 +72,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
           case CellType.POOLS_HEADER:
             return (
               <WrappedPoolsListHeader
+                // @ts-ignore
                 value={(data as PoolsHeaderExtraData).value}
               />
             );

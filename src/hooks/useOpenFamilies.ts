@@ -4,7 +4,9 @@ import { useAccountSettings } from '@rainbow-me/hooks';
 
 export default function useOpenFamilies() {
   const { accountAddress: address } = useAccountSettings();
-  const [openFamilies, setOpenFamilies] = useMMKVObject('open-families-' + address);
+  const [openFamilies, setOpenFamilies] = useMMKVObject(
+    'open-families-' + address
+  );
 
   const updateOpenFamilies = useCallback(
     (value: Record<string, boolean>) =>
@@ -17,7 +19,7 @@ export default function useOpenFamilies() {
 
   const openFamiliesWithDefault = useMemo(
     () => ({
-      'Showcase-showcase': true,
+      Showcase: true,
       ...(openFamilies as Record<string, boolean>),
     }),
     [openFamilies]

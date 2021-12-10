@@ -88,13 +88,11 @@ export default function CoinDivider({ balancesSum, isSticky = false }) {
 
   const handlePressEdit = useCallback(() => {
     setIsCoinListEdited(prev => !prev);
+    clearSelectedCoins();
     LayoutAnimation.configureNext(
       LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
     );
-  }, [setIsCoinListEdited]);
-
-  // Clear CoinListEditOptions selection queue on unmount.
-  useEffect(() => () => clearSelectedCoins(), [clearSelectedCoins]);
+  }, [clearSelectedCoins, setIsCoinListEdited]);
 
   return (
     <Container deviceWidth={deviceWidth} isSticky={isSticky}>
