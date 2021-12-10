@@ -314,9 +314,10 @@ export default function FeesPanel({
     [colors, openGasHelper, selectedOptionIsCustom]
   );
 
-  const formattedBaseFee = useMemo(() => {
-    return `${toFixedDecimals(currentBaseFee, 0)} Gwei`;
-  }, [currentBaseFee]);
+  const formattedBaseFee = useMemo(
+    () => `${toFixedDecimals(currentBaseFee, 0)} Gwei`,
+    [currentBaseFee]
+  );
 
   const handleMaxBaseInputGweiPress = useCallback(
     () => setLastFocusedInputHandle(maxBaseFieldRef),
