@@ -528,6 +528,7 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
       // eslint-disable-next-line no-empty
     } catch (e) {
     } finally {
+      gasPricesHandle && clearTimeout(gasPricesHandle);
       gasPricesHandle = setTimeout(() => {
         watchGasPrices(network, pollingInterval);
       }, pollingInterval);
