@@ -9,9 +9,7 @@ import { uniqueTokensResetState } from '../redux/uniqueTokens';
 import { uniswapResetState } from '../redux/uniswap';
 import { uniswapLiquidityResetState } from '../redux/uniswapLiquidity';
 import { promiseUtils } from '../utils';
-import { arbitrumExplorerClearState } from '@rainbow-me/redux/arbitrumExplorer';
 import { optimismExplorerClearState } from '@rainbow-me/redux/optimismExplorer';
-import { polygonExplorerClearState } from '@rainbow-me/redux/polygonExplorer';
 
 export default function useResetAccountState() {
   const dispatch = useDispatch();
@@ -25,9 +23,7 @@ export default function useResetAccountState() {
     const p5 = dispatch(uniswapResetState());
     const p6 = dispatch(uniswapLiquidityResetState());
     const p7 = dispatch(addCashClearState());
-    const p8 = dispatch(arbitrumExplorerClearState());
-    const p9 = dispatch(polygonExplorerClearState());
-    const p10 = dispatch(optimismExplorerClearState());
+    const p8 = dispatch(optimismExplorerClearState());
     await promiseUtils.PromiseAllWithFails([
       p0,
       p1,
@@ -38,8 +34,6 @@ export default function useResetAccountState() {
       p6,
       p7,
       p8,
-      p9,
-      p10,
     ]);
   }, [dispatch]);
 

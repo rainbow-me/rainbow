@@ -587,9 +587,11 @@ export default function SendSheet(props) {
       // Don't allow sending funds directly to known ERC20 contracts on L2
       if (isL2) {
         const currentChainAssets = chainAssets[currentNetwork];
-        const found = currentChainAssets.find(
-          item => toLower(item.asset?.asset_code) === toLower(toAddress)
-        );
+        const found =
+          currentChainAssets &&
+          currentChainAssets.find(
+            item => toLower(item.asset?.asset_code) === toLower(toAddress)
+          );
         if (found) {
           return false;
         }
@@ -743,8 +745,7 @@ export default function SendSheet(props) {
       assetNetwork === currentNetwork &&
       currentProviderNetwork === currentNetwork &&
       isValidAddress &&
-      !isEmpty(selected) &&
-      !isEmpty(gasFeeParamsBySpeed)
+      !isEmpty(selected)
     ) {
       estimateGasLimit(
         {
@@ -765,7 +766,7 @@ export default function SendSheet(props) {
           }
         })
         .catch(e => {
-          logger.sentry('Error getting optimism l1 fee', e);
+          logger.sentry('Error calculating gas limit', e);
           updateTxFee(null, null);
         });
     }
@@ -781,7 +782,6 @@ export default function SendSheet(props) {
     updateTxFee,
     updateTxFeeForOptimism,
     network,
-    gasFeeParamsBySpeed,
   ]);
 
   return (
