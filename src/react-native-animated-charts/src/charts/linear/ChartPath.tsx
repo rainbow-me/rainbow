@@ -28,7 +28,7 @@ import {
   useWorkletValue,
 } from '../../helpers/requireOnWorklet';
 
-export const FIX_CLIPPED_PATH_MAGIC_NUMBER = 24;
+export const FIX_CLIPPED_PATH_MAGIC_NUMBER = 22;
 
 function ascending(a?: number, b?: number) {
   'worklet';
