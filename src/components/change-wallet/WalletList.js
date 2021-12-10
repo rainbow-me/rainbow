@@ -103,7 +103,6 @@ export default function WalletList({
 }) {
   const [rows, setRows] = useState([]);
   const [ready, setReady] = useState(false);
-  const [doneScrolling, setDoneScrolling] = useState(false);
   const scrollView = useRef(null);
   const skeletonTransitionRef = useRef();
   const { network } = useAccountSettings();
