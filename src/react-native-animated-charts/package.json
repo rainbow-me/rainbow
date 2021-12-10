@@ -12,8 +12,6 @@
   ],
   "license": "ISC",
   "dependencies": {
-    "@types/d3-scale": "^4.0.2",
-    "@types/d3-shape": "^3.0.2",
     "d3-scale": "^4.0.2",
     "d3-shape": "^3.0.1",
     "react-native-gesture-handler": "^1.7.0",
@@ -23,6 +21,8 @@
     "react-native-svg": "^12.1.0"
   },
   "devDependencies": {
+    "@types/d3-scale": "^4.0.2",
+    "@types/d3-shape": "^3.0.2",
     "@babel/core": "^7.11.4",
     "@babel/runtime": "^7.11.2"
   },
