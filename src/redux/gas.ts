@@ -552,32 +552,33 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
 export const gasUpdateGasFeeOption = (
   newGasPriceOption: string,
   assetsOverride?: any[]
-) => (dispatch: AppDispatch, getState: AppGetState) => {
-  const {
-    gasFeeParamsBySpeed,
-    gasFeesBySpeed,
-    txNetwork,
-    selectedGasFee: oldSelectedFee,
-  } = getState().gas;
-  if (oldSelectedFee.option === newGasPriceOption) return;
+) => (dispatch: AppDispatch, getState: AppGetState) =>
+  withRunExclusive(async () => {
+    const {
+      gasFeeParamsBySpeed,
+      gasFeesBySpeed,
+      txNetwork,
+      selectedGasFee: oldSelectedFee,
+    } = getState().gas;
+    if (oldSelectedFee.option === newGasPriceOption) return;
 
-  const { assets } = getState().data;
+    const { assets } = getState().data;
 
-  const gasPriceOption = newGasPriceOption || NORMAL;
-  if (isEmpty(gasFeeParamsBySpeed)) return;
-  const selectedGasFee = getSelectedGasFee(
-    assetsOverride || assets,
-    gasFeeParamsBySpeed,
-    gasFeesBySpeed,
-    gasPriceOption,
-    txNetwork
-  );
-  dispatch({
-    payload: selectedGasFee,
-    type: GAS_UPDATE_GAS_PRICE_OPTION,
+    const gasPriceOption = newGasPriceOption || NORMAL;
+    if (isEmpty(gasFeeParamsBySpeed)) return;
+    const selectedGasFee = getSelectedGasFee(
+      assetsOverride || assets,
+      gasFeeParamsBySpeed,
+      gasFeesBySpeed,
+      gasPriceOption,
+      txNetwork
+    );
+    dispatch({
+      payload: selectedGasFee,
+      type: GAS_UPDATE_GAS_PRICE_OPTION,
+    });
+    analytics.track('Updated Gas Price', { gasPriceOption: gasPriceOption });
   });
-  analytics.track('Updated Gas Price', { gasPriceOption: gasPriceOption });
-};
 
 export const gasUpdateDefaultGasLimit = (
   defaultGasLimit = ethUnits.basic_tx
