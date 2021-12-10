@@ -62,6 +62,7 @@ import { ethereumUtils } from './utils';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
+import { analyticsUserIdentifier } from './utils/keychainConstants';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
 
@@ -215,14 +216,14 @@ class App extends Component {
     // Comment the line below to debug analytics
     if (__DEV__) return false;
     const storedIdentifier = await keychain.loadString(
-      'analyticsUserIdentifier'
+      analyticsUserIdentifier
     );
 
     if (!storedIdentifier) {
       const identifier = await RNIOS11DeviceCheck.getToken()
         .then(deviceId => deviceId)
         .catch(() => nanoid());
-      await keychain.saveString('analyticsUserIdentifier', identifier);
+      await keychain.saveString(analyticsUserIdentifier, identifier);
       analytics.identify(identifier);
     }
 
