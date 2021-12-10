@@ -1,9 +1,11 @@
 import { difference } from 'lodash';
 import { useCallback, useMemo, useRef } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
+import { useDispatch } from 'react-redux';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import useAccountSettings from './useAccountSettings';
 import actions from '@rainbow-me/helpers/editOptionTypes';
+import { setHiddenCoins as reduxSetHiddenCoins } from '@rainbow-me/redux/editOptions';
 
 const selectedItemsAtom = atom<string[]>({
   default: [],
@@ -111,9 +113,11 @@ export function useCoinListFinishEditingOptions() {
     setSelectedItems([]);
   }, [setSelectedItems, setPinnedCoinsArray]);
 
+  const dispatch = useDispatch();
+
   const setHiddenCoins = useCallback(() => {
     setHiddenCoinsArray(hiddenCoins => {
-      return [
+      const newList = [
         ...hiddenCoins.filter(
           i => !selectedItemsNonReactive.current!.includes(i)
         ),
@@ -121,10 +125,12 @@ export function useCoinListFinishEditingOptions() {
           ? selectedItemsNonReactive.current!
           : []),
       ];
+      dispatch(reduxSetHiddenCoins(newList));
+      return newList;
     });
 
     setSelectedItems([]);
-  }, [setSelectedItems, setHiddenCoinsArray]);
+  }, [dispatch, setSelectedItems, setHiddenCoinsArray]);
 
   return {
     currentAction,

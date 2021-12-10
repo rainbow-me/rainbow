@@ -68,6 +68,7 @@ import {
   parseNewTransaction,
   parseTransactions,
 } from '@rainbow-me/parsers';
+import { setHiddenCoins } from '@rainbow-me/redux/editOptions';
 import {
   coingeckoIdsFallback,
   DPI_ADDRESS,
@@ -91,6 +92,7 @@ function addHiddenCoins(coins, dispatch, address) {
   const storageEntity = storage.getString('hidden-coins-' + address);
   const list = storageEntity ? JSON.parse(storageEntity) : [];
   const newList = [...list.filter(i => !coins.includes(i)), ...coins];
+  dispatch(setHiddenCoins(newList));
   storage.set('hidden-coins-' + address, JSON.stringify(newList));
 }
 
