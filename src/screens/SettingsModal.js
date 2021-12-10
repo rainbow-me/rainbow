@@ -12,11 +12,11 @@ import {
   NetworkSection,
   PrivacySection,
   SettingsSection,
+  UserDevSection,
 } from '../components/settings-menu';
 import SettingsBackupView from '../components/settings-menu/BackupSection/SettingsBackupView';
 import ShowSecretView from '../components/settings-menu/BackupSection/ShowSecretView';
 import WalletSelectionView from '../components/settings-menu/BackupSection/WalletSelectionView';
-import UserDevSection from '../components/settings-menu/UserDevSection';
 import { useTheme } from '../context/ThemeContext';
 import WalletTypes from '../helpers/walletTypes';
 import { settingsOptions } from '../navigation/config';
