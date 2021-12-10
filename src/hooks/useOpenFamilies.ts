@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
-import { useAccountSettings } from '@rainbow-me/hooks';
+import useAccountSettings from './useAccountSettings';
 
 export default function useOpenFamilies() {
   const { accountAddress: address } = useAccountSettings();
