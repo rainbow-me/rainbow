@@ -100,10 +100,19 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
   }
 
   const path = shape
-    .line()
-    .x((item: Point) => scaleX(item.x))
-    .y((item: Point) => scaleY(item.y))
-    .curve(getCurveType(data.curve!))(data.points) as string;
+    .line<Point>()
+    .x(item => scaleX(item.x))
+    .y(item => scaleY(item.y))
+    .curve(getCurveType(data.curve!))(data.points);
+
+  if (path === null) {
+    return {
+      path: '',
+      parsed: null,
+      points: [],
+      data: [],
+    };
+  }
 
   const parsed = parseSvg(path);
 

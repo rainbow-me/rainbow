@@ -3,7 +3,7 @@ import { Platform, View, ViewProps, ViewStyle } from 'react-native';
 import {
   LongPressGestureHandler,
   LongPressGestureHandlerGestureEvent,
-  LongPressGestureHandlerProps,
+  LongPressGestureHandlerProperties,
 } from 'react-native-gesture-handler';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
@@ -94,7 +94,7 @@ interface ChartPathProps extends PathProps {
   stroke?: string;
   gestureEnabled?: boolean;
   springConfig?: Animated.WithSpringConfig;
-  longPressGestureHandlerProps?: LongPressGestureHandlerProps;
+  longPressGestureHandlerProps?: LongPressGestureHandlerProperties;
   timingFeedbackConfig?: Animated.WithTimingConfig;
   timingAnimationConfig?: Animated.WithTimingConfig;
 }
@@ -233,7 +233,7 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
         positionX.value = values.x;
 
         const index = least(currentPath.points.length, i => {
-          if (typeof i === 'undefined') {
+          if (typeof i === 'undefined' || values.x === null) {
             return 0;
           }
 

@@ -16,12 +16,12 @@ interface ChartLineProps extends LineProps {
 
 function ChartLineFactory(orientation: 'horizontal' | 'vertical') {
   const isVertical = orientation == 'vertical';
-  return function ChartLine({
+  const ChartLine: React.FC<ChartLineProps> = ({
     color = '#000000',
     thickness = 2,
     length,
     ...props
-  }: ChartLineProps) {
+  }) => {
     const { positionX, dotScale, currentPath, height } = useChartData();
 
     const currentPositionVerticalLineStyle = useAnimatedStyle(
@@ -79,6 +79,8 @@ function ChartLineFactory(orientation: 'horizontal' | 'vertical') {
       </Animated.View>
     );
   };
+
+  return ChartLine;
 }
 
 export const CurrentPositionVerticalLine = withReanimatedFallback(

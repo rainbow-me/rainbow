@@ -6,7 +6,7 @@ function ChartFallback() {
   return <Text>Charts are not available without Reanimated 2</Text>;
 }
 
-export default function withReanimatedFallback<T extends React.ComponentType>(
+export default function withReanimatedFallback<T extends React.Compo>(
   ChartComponent: T,
   showText = false
 ): T {
