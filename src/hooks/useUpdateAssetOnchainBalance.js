@@ -23,7 +23,7 @@ export default function useUpdateAssetOnchainBalance() {
         network,
         provider
       );
-      if (balance?.amount !== assetToUpdate?.balance?.amount) {
+      if (balance && balance?.amount !== assetToUpdate?.balance?.amount) {
         // Now we need to update the asset
         // First in the state
         successCallback({ ...assetToUpdate, balance });

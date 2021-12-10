@@ -1,5 +1,5 @@
-import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
+import { captureException } from '@sentry/react-native';
 import { toLower } from 'lodash';
 import isEqual from 'react-fast-compare';
 // eslint-disable-next-line import/no-cycle
@@ -52,11 +52,12 @@ const fetchAssetBalances = async (tokens, address) => {
     });
     return balances[address];
   } catch (e) {
-    logger.log(
+    logger.sentry(
       'Error fetching balances from balanceCheckerContract',
       network,
       e
     );
+    captureException(new Error('fallbackExplorer::balanceChecker failure'));
     return null;
   }
 };
@@ -83,30 +84,30 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       return;
     }
 
-    const tokenAddresses = assets.map(
-      ({ asset: { asset_code } }) => asset_code
+    const tokenAddresses = assets.map(({ asset: { asset_code } }) =>
+      toLower(asset_code)
     );
 
     const balances = await fetchAssetBalances(
-      assets.map(({ asset: { asset_code } }) => asset_code),
+      tokenAddresses,
       accountAddress,
       network
     );
 
-    let total = BigNumber.from(0);
-
+    let updatedAssets = assets;
     if (balances) {
-      Object.keys(balances).forEach(key => {
-        for (let i = 0; i < assets.length; i++) {
-          if (assets[i].asset.asset_code.toLowerCase() === key.toLowerCase()) {
-            assets[i].quantity = balances[key];
-            break;
-          }
-        }
-        total = total.add(balances[key]);
+      updatedAssets = assets.map(assetAndQuantity => {
+        const assetCode = toLower(assetAndQuantity.asset.asset_code);
+        return {
+          asset: {
+            ...assetAndQuantity.asset,
+          },
+          quantity: balances?.[assetCode],
+        };
       });
     }
-    const assetsWithBalance = assets.filter(asset => asset.quantity > 0);
+
+    const assetsWithBalance = updatedAssets.filter(asset => asset.quantity > 0);
 
     if (assetsWithBalance.length) {
       dispatch(emitAssetRequest(tokenAddresses));
@@ -145,7 +146,7 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
 
       const newPayload = { assets: assetsWithBalance };
 
-      if (!isEqual(lastUpdatePayload, newPayload)) {
+      if (balances && !isEqual(lastUpdatePayload, newPayload)) {
         dispatch(
           addressAssetsReceived(
             {

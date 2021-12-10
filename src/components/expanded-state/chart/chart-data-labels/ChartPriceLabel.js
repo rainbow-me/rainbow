@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { Row } from '../../../layout';
 import ChartHeaderTitle from './ChartHeaderTitle';
 import { ChartYLabel } from '@rainbow-me/animated-charts';
-import { NativeCurrencyKeys } from '@rainbow-me/entities/nativeCurrencyTypes';
+import { NativeCurrencyKeys } from '@rainbow-me/entities';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
@@ -20,7 +20,7 @@ const Label = styled(ChartYLabel)`
   ${android &&
   `margin-top: -30;
      margin-bottom: -30;
-     width: 150px;
+     width: 160px;
      `}
 `;
 

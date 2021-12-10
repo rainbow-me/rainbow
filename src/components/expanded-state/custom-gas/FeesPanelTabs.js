@@ -1,0 +1,121 @@
+import { isEmpty, upperFirst } from 'lodash';
+import React from 'react';
+import { View } from 'react-native';
+import styled from 'styled-components';
+import { ButtonPressAnimation } from '../../animations';
+import EdgeFade from '../../discover-sheet/EdgeFade';
+import { Column, Row } from '../../layout';
+import { Text } from '../../text';
+import { useGas } from '@rainbow-me/hooks';
+import { margin, padding } from '@rainbow-me/styles';
+import { gasUtils } from '@rainbow-me/utils';
+
+const ANDROID_EXTRA_LINE_HEIGHT = 6;
+
+const { CUSTOM, URGENT, GasSpeedOrder } = gasUtils;
+
+const TabPillsContainer = styled(Row).attrs({
+  align: 'center',
+})`
+  justify-content: center;
+`;
+
+const TabPillWrapper = styled(View).attrs({})`
+  ${padding(3, 8)};
+  ${margin(0, 4, 0, 4)};
+  height: 30px;
+  border: ${({ isSelected, color, theme: { colors } }) =>
+    `2px solid ${
+      isSelected
+        ? color || colors.appleBlue
+        : colors.alpha(colors.blueGreyDark, 0.06)
+    }`};
+  border-radius: 15px;
+  line-height: 20px;
+`;
+
+const TabPillText = styled(Text).attrs({
+  align: 'center',
+  size: 'lmedium',
+  weight: 'heavy',
+})`
+  color: ${({ isSelected, theme: { colors }, color }) =>
+    `${
+      isSelected
+        ? color || colors.appleBlue
+        : colors.alpha(colors.blueGreyDark, 0.4)
+    }`};
+  ${margin(
+    android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
+    0,
+    android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
+    0
+  )}
+`;
+
+const TabPill = ({
+  label,
+  isSelected,
+  handleOnPressTabPill,
+  color,
+  testID,
+}) => {
+  const handleOnPress = () => {
+    handleOnPressTabPill(label);
+  };
+  return (
+    <ButtonPressAnimation onPress={handleOnPress} testID={testID}>
+      <TabPillWrapper color={color} isSelected={isSelected}>
+        <TabPillText
+          color={color}
+          isSelected={isSelected}
+          size="lmedium"
+          weight="bold"
+        >
+          {upperFirst(label)}
+        </TabPillText>
+      </TabPillWrapper>
+    </ButtonPressAnimation>
+  );
+};
+
+export default function FeesPanelTabs({
+  colorForAsset,
+  speeds = GasSpeedOrder,
+}) {
+  const {
+    updateGasFeeOption,
+    selectedGasFeeOption,
+    gasFeeParamsBySpeed,
+    updateToCustomGasFee,
+  } = useGas();
+
+  const handleOnPressTabPill = label => {
+    if (label === CUSTOM && isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
+      const gasFeeParams = gasFeeParamsBySpeed[URGENT];
+      updateToCustomGasFee({
+        ...gasFeeParams,
+        option: CUSTOM,
+      });
+    } else {
+      updateGasFeeOption(label);
+    }
+  };
+
+  return (
+    <TabPillsContainer>
+      {speeds.map(speed => (
+        <Column key={speed}>
+          <TabPill
+            color={colorForAsset}
+            handleOnPressTabPill={handleOnPressTabPill}
+            isSelected={selectedGasFeeOption === speed}
+            label={speed}
+            testID={`speed-pill-${speed}`}
+          />
+        </Column>
+      ))}
+      <EdgeFade />
+    </TabPillsContainer>
+  );
+}

@@ -1,5 +1,5 @@
-import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
+import { captureException } from '@sentry/react-native';
 import { get, toLower, uniqBy } from 'lodash';
 import isEqual from 'react-fast-compare';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
@@ -15,6 +15,7 @@ import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   balanceCheckerContractAbi,
   chainAssets,
+  COVALENT_ETH_ADDRESS,
   ETH_ADDRESS,
   ETH_COINGECKO_ID,
   migratedTokens,
@@ -36,7 +37,6 @@ const FALLBACK_EXPLORER_SET_LATEST_TX_BLOCK_NUMBER =
 
 const ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT =
   '0x0000000000000000000000000000000000000000';
-const COVALENT_ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 10000;
 const DISCOVER_NEW_ASSETS_FREQUENCY = 13000;
@@ -62,7 +62,8 @@ const getMainnetAssetsFromCovalent = async (
     const updatedAt = new Date(data.updated_at).getTime();
     const assets = data.items.map(item => {
       let contractAddress = item.contract_address;
-      if (toLower(contractAddress) === toLower(COVALENT_ETH_ADDRESS)) {
+      const isETH = toLower(contractAddress) === toLower(COVALENT_ETH_ADDRESS);
+      if (isETH) {
         contractAddress = ETH_ADDRESS;
       }
 
@@ -70,6 +71,7 @@ const getMainnetAssetsFromCovalent = async (
       let price = {
         changed_at: updatedAt,
         relative_change_24h: 0,
+        value: isETH ? item.quote_rate : 0,
       };
 
       // Overrides
@@ -98,7 +100,7 @@ const getMainnetAssetsFromCovalent = async (
           symbol: item.contract_ticker_symbol,
           type,
         },
-        quantity: Number(item.balance),
+        quantity: item.balance,
       };
     });
 
@@ -278,11 +280,12 @@ const fetchAssetBalances = async (tokens, address, network) => {
     });
     return balances[address];
   } catch (e) {
-    logger.log(
+    logger.sentry(
       'Error fetching balances from balanceCheckerContract',
       network,
       e
     );
+    captureException(new Error('fallbackExplorer::balanceChecker failure'));
     return null;
   }
 };
@@ -313,7 +316,7 @@ export const fetchOnchainBalances = ({
     network === NetworkTypes.mainnet
       ? covalentMainnetAssets
         ? uniqBy(
-            [...mainnetAssets, ...covalentMainnetAssets],
+            [...covalentMainnetAssets, ...mainnetAssets],
             token => token.asset.asset_code
           )
         : mainnetAssets
@@ -347,17 +350,51 @@ export const fetchOnchainBalances = ({
     return;
   }
 
+  const tokenAddresses = assets.map(({ asset: { asset_code } }) =>
+    asset_code === ETH_ADDRESS
+      ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+      : toLower(asset_code)
+  );
+
+  const balances = await fetchAssetBalances(
+    tokenAddresses,
+    accountAddress,
+    network
+  );
+
+  let updatedAssets = assets;
+  if (balances) {
+    updatedAssets = assets.map(assetAndQuantity => {
+      const assetCode = toLower(assetAndQuantity.asset.asset_code);
+      return {
+        asset: {
+          ...assetAndQuantity.asset,
+          asset_code:
+            assetCode === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+              ? ETH_ADDRESS
+              : assetCode,
+        },
+        quantity:
+          balances?.[
+            assetCode === ETH_ADDRESS
+              ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
+              : assetCode
+          ],
+      };
+    });
+  }
+
   if (withPrices) {
     const prices = await fetchAssetPricesWithCoingecko(
-      assets.map(({ asset: { coingecko_id } }) => coingecko_id),
+      updatedAssets.map(({ asset: { coingecko_id } }) => coingecko_id),
       formattedNativeCurrency
     );
 
     if (prices) {
       Object.keys(prices).forEach(key => {
-        for (let i = 0; i < assets.length; i++) {
-          if (toLower(assets[i].asset.coingecko_id) === toLower(key)) {
-            assets[i].asset.price = {
+        for (let i = 0; i < updatedAssets.length; i++) {
+          if (toLower(updatedAssets[i].asset.coingecko_id) === toLower(key)) {
+            updatedAssets[i].asset.price = {
               changed_at: prices[key].last_updated_at,
               relative_change_24h:
                 prices[key][`${formattedNativeCurrency}_24h_change`],
@@ -370,47 +407,11 @@ export const fetchOnchainBalances = ({
     }
   }
 
-  const tokenAddresses = assets.map(({ asset: { asset_code } }) =>
-    asset_code === ETH_ADDRESS
-      ? ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-      : asset_code
-  );
-
-  const balances = await fetchAssetBalances(
-    tokenAddresses,
-    accountAddress,
-    network
-  );
-
-  let total = BigNumber.from(0);
-
-  if (balances) {
-    Object.keys(balances).forEach(key => {
-      for (let i = 0; i < assets.length; i++) {
-        if (
-          assets[i].asset.asset_code.toLowerCase() === key.toLowerCase() ||
-          (assets[i].asset.asset_code === ETH_ADDRESS &&
-            key === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT)
-        ) {
-          assets[i].quantity = balances[key];
-          break;
-        }
-
-        if (
-          assets[i].asset.asset_code === ETHEREUM_ADDRESS_FOR_BALANCE_CONTRACT
-        ) {
-          assets[i].asset.asset_code = ETH_ADDRESS;
-        }
-      }
-      total = total.add(balances[key]);
-    });
-  }
-
   logger.log('😬 FallbackExplorer updating assets');
 
-  const newPayload = { assets };
+  const newPayload = { assets: updatedAssets };
 
-  if (!keepPolling || !isEqual(lastUpdatePayload, newPayload)) {
+  if (balances && (!keepPolling || !isEqual(lastUpdatePayload, newPayload))) {
     dispatch(
       addressAssetsReceived(
         {

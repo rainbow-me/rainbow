@@ -10,10 +10,26 @@ import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
 import { Emoji, GradientText, Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
+import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import { useDimensions } from '@rainbow-me/hooks';
-import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
+import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
+import { gasUtils } from '@rainbow-me/utils';
 
+const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
+
+const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
+  color: color || colors.appleBlue,
+  size: 'lmedium',
+  weight: 'heavy',
+  alignItems: 'center',
+  textAlign: 'center',
+}))`
+  ${padding(9.5, 15, android ? 6 : 9, 15)}
+  border-color: ${({ theme: { colors }, color }) => colors.alpha(color, 0.2)};
+  border-radius: ${android ? 24 : 20};
+  border-width: 2;
+`;
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   ${position.cover};
@@ -36,9 +52,29 @@ Double check the address, verify it with the recipient, or contact support first
 
 const FLOOR_PRICE_EXPLAINER = `A collection's floor price is the lowest asking price across all the items currently for sale in a collection.`;
 
-const GAS_EXPLAINER = `This is the "gas fee" used by the Ethereum blockchain to securely validate your transaction.
+const gasExplainer = network => `This is the "gas fee" used by the ${network} blockchain to securely validate your transaction.
 
 This fee varies depending on the complexity of your transaction and how busy the network is!`;
+
+const CURRENT_BASE_FEE_TITLE = `Current base fee`;
+
+const BASE_CURRENT_BASE_FEE_EXPLAINER = `The base fee is set by the Ethereum network and changes depending on how busy the network is.`;
+
+const CURRENT_BASE_FEE_EXPLAINER_STABLE = `\n\nNetwork traffic is stable right now. Have fun!`;
+
+const CURRENT_BASE_FEE_EXPLAINER_FALLING = `\n\nFees are dropping right now!`;
+
+const CURRENT_BASE_FEE_EXPLAINER_RISING = `\n\nFees are rising right now! It’s best to use a higher max base fee to avoid a stuck transaction.`;
+
+const CURRENT_BASE_FEE_EXPLAINER_SURGING = `\n\nFees are unusually high right now! Unless your transaction is urgent, it’s best to wait for fees to drop.`;
+
+const MAX_BASE_FEE_EXPLAINER = `This is the maximum base fee you’re willing to pay for this transaction.
+
+Setting a higher max base fee prevents your transaction from getting stuck if fees rise.`;
+
+const MINER_TIP_EXPLAINER = `The miner tip goes directly to the miner who confirms your transaction on the network.
+
+A higher tip makes your transaction more likely to be confirmed quickly.`;
 
 const VERIFIED_EXPLAINER = `Tokens with a verified badge mean they have appeared on at least 3 other outside token lists.
 
@@ -60,7 +96,7 @@ const BACKUP_EXPLAINER = `Don't forget this password! It is separate from your A
 
 You will need it in order to restore your wallet from the backup in the future.`;
 
-export const explainers = {
+export const explainers = network => ({
   floor_price: {
     emoji: '📊',
     extraHeight: -102,
@@ -70,8 +106,50 @@ export const explainers = {
   gas: {
     emoji: '⛽️',
     extraHeight: 2,
-    text: GAS_EXPLAINER,
-    title: 'Ethereum network fee',
+    text: gasExplainer(network),
+    title: `${network} network fee`,
+  },
+  currentBaseFeeStable: {
+    emoji: '🌞',
+    extraHeight: android ? 80 : 40,
+    text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_STABLE,
+    title: CURRENT_BASE_FEE_TITLE,
+  },
+  currentBaseFeeFalling: {
+    emoji: '🤑',
+    extraHeight: android ? 60 : 20,
+    text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_FALLING,
+    title: CURRENT_BASE_FEE_TITLE,
+  },
+  currentBaseFeeRising: {
+    emoji: '🥵',
+    extraHeight: android ? 100 : 50,
+    text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_RISING,
+    title: CURRENT_BASE_FEE_TITLE,
+  },
+  currentBaseFeeSurging: {
+    emoji: '🎢',
+    extraHeight: android ? 100 : 50,
+    text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_SURGING,
+    title: CURRENT_BASE_FEE_TITLE,
+  },
+  currentBaseFeeNotrend: {
+    emoji: '⛽',
+    extraHeight: android ? 0 : -40,
+    text: BASE_CURRENT_BASE_FEE_EXPLAINER,
+    title: CURRENT_BASE_FEE_TITLE,
+  },
+  maxBaseFee: {
+    emoji: '📈',
+    extraHeight: -40,
+    text: MAX_BASE_FEE_EXPLAINER,
+    title: 'Max base fee',
+  },
+  minerTip: {
+    emoji: '⛏',
+    extraHeight: -40,
+    text: MINER_TIP_EXPLAINER,
+    title: 'Miner tip',
   },
   sending_funds_to_contract: {
     emoji: '✋',
@@ -145,14 +223,34 @@ export const explainers = {
     text: BACKUP_EXPLAINER,
     title: 'Important',
   },
-};
+});
 
 const ExplainSheet = () => {
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
+  const { height: deviceHeight } = useDimensions();
   const insets = useSafeArea();
-  const { params: { type = 'gas', onClose } = {} } = useRoute();
+  const {
+    params: { type = 'gas', network = networkTypes.mainnet, onClose } = {},
+    params = {},
+  } = useRoute();
   const { colors } = useTheme();
   const { goBack } = useNavigation();
+  const renderBaseFeeIndicator = useMemo(() => {
+    if (!type.includes('currentBaseFee')) return null;
+    const { currentGasTrend, currentBaseFee } = params;
+    const { color, label } = GAS_TRENDS[currentGasTrend];
+    const baseFeeLabel = label ? `${label} •` : '';
+    return (
+      <Centered>
+        <GasTrendHeader align="center" color={color}>
+          {`${baseFeeLabel} ${toFixedDecimals(currentBaseFee, 0)} Gwei`}
+        </GasTrendHeader>
+      </Centered>
+    );
+  }, [params, type]);
+
+  const explainSheetConfig = useMemo(() => {
+    return explainers(network)[type];
+  }, [network, type]);
 
   const handleClose = useCallback(() => {
     goBack();
@@ -160,13 +258,14 @@ const ExplainSheet = () => {
   }, [onClose, goBack]);
 
   const handleReadMore = useCallback(() => {
-    Linking.openURL(explainers[type].readMoreLink);
-  }, [type]);
+    Linking.openURL(explainSheetConfig.readMoreLink);
+  }, [explainSheetConfig.readMoreLink]);
 
   const EmojiText = type === 'verified' ? Gradient : Emoji;
   const Title = type === 'verified' ? Gradient : SheetTitle;
 
-  const sheetHeight = ExplainSheetHeight + (explainers[type]?.extraHeight || 0);
+  const sheetHeight =
+    ExplainSheetHeight + (explainSheetConfig?.extraHeight || 0);
 
   return (
     <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
@@ -191,20 +290,24 @@ const ExplainSheet = () => {
               width: '100%',
             }}
           >
-            {explainers[type]?.logo ? (
-              <Centered>{explainers[type].logo}</Centered>
+            {explainSheetConfig?.logo ? (
+              <Centered>{explainSheetConfig.logo}</Centered>
             ) : (
               <EmojiText
                 align="center"
                 size="h1"
                 style={{ ...fontWithWidth(fonts.weight.bold) }}
               >
-                {explainers[type].emoji}
+                {explainSheetConfig.emoji}
               </EmojiText>
             )}
             <Title align="center" lineHeight="big" size="big" weight="heavy">
-              {explainers[type].title}
+              {explainSheetConfig.title}
             </Title>
+
+            {/** base fee explainer */}
+            {renderBaseFeeIndicator}
+
             <Text
               align="center"
               color={colors.alpha(colors.blueGreyDark, 0.6)}
@@ -217,12 +320,11 @@ const ExplainSheet = () => {
                 paddingHorizontal: 23,
               }}
             >
-              {explainers[type].text}
+              {explainSheetConfig.text}
             </Text>
-            {explainers[type].readMoreLink && (
+            {explainSheetConfig.readMoreLink && (
               <Column height={60}>
                 <SheetActionButton
-                  androidWidth={deviceWidth - 38}
                   color={colors.blueGreyDarkLight}
                   isTransparent
                   label="Read More"
@@ -234,7 +336,6 @@ const ExplainSheet = () => {
               </Column>
             )}
             <SheetActionButton
-              androidWidth={deviceWidth - 38}
               color={colors.alpha(colors.appleBlue, 0.04)}
               isTransparent
               label="Got it"

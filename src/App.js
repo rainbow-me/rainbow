@@ -32,6 +32,7 @@ import ErrorBoundary from './components/error-boundary/ErrorBoundary';
 import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
 import {
+  designSystemPlaygroundEnabled,
   reactNativeDisableYellowBox,
   showNetworkRequests,
   showNetworkResponses,
@@ -39,6 +40,7 @@ import {
 import { MainThemeProvider } from './context/ThemeContext';
 import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
+import { Playground } from './design-system/playground/Playground';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
@@ -166,7 +168,7 @@ class App extends Component {
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
-    rainbowTokenList.off('update', this.handleTokenListUpdate);
+    rainbowTokenList?.off?.('update', this.handleTokenListUpdate);
     this.onTokenRefreshListener?.();
     this.foregroundNotificationListener?.();
     this.backgroundNotificationListener?.();
@@ -253,23 +255,23 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   handleTransactionConfirmed = tx => {
-    logger.log('reloading explorer data in 10');
     const network = ethereumUtils.getNetworkFromChainId(tx.chainId);
     const isL2 = isL2Network(network);
-    setTimeout(
-      () => {
+    const updateBalancesAfter = (timeout, isL2, network) => {
+      setTimeout(() => {
+        logger.log('Reloading balances for network', network);
         if (isL2) {
-          logger.log('Reloading all data from L2 explorers!');
           store.dispatch(explorerInitL2(network));
         } else {
-          logger.log('fetching onchain balances NOW!');
           store.dispatch(
             fetchOnchainBalances({ keepPolling: false, withPrices: false })
           );
         }
-      },
-      isL2 ? 10000 : 5000
-    );
+      }, timeout);
+    };
+    logger.log('reloading balances soon...');
+    updateBalancesAfter(2000, isL2, network);
+    updateBalancesAfter(isL2 ? 10000 : 5000, isL2, network);
   };
 
   render = () => (
@@ -308,4 +310,6 @@ const AppWithRedux = connect(
 
 const AppWithReduxStore = () => <AppWithRedux store={store} />;
 
-AppRegistry.registerComponent('Rainbow', () => AppWithReduxStore);
+AppRegistry.registerComponent('Rainbow', () =>
+  designSystemPlaygroundEnabled ? Playground : AppWithReduxStore
+);
