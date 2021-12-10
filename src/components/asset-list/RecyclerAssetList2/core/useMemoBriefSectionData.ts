@@ -57,8 +57,7 @@ export default function useMemoBriefSectionData() {
 
         if (data.type === CellType.FAMILY_HEADER) {
           const name = (data as NFTFamilyExtraData).name;
-          const showcase = name === 'Showcase';
-          isGroupOpen = openFamilies[name + (showcase ? '-showcase' : '')];
+          isGroupOpen = openFamilies[name];
         }
 
         if (data.type === CellType.NFT) {
