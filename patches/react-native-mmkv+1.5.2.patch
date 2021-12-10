@@ -1,12 +1,34 @@
+diff --git a/node_modules/react-native-mmkv/lib/commonjs/hooks.js b/node_modules/react-native-mmkv/lib/commonjs/hooks.js
+index 562245a..3a3cca9 100644
+--- a/node_modules/react-native-mmkv/lib/commonjs/hooks.js
++++ b/node_modules/react-native-mmkv/lib/commonjs/hooks.js
+@@ -132,7 +132,16 @@ function useMMKVObject(key, instance) {
+     return JSON.parse(string);
+   }, [string]);
+   const setValue = (0, _react.useCallback)(v => {
+-    setString(JSON.stringify(v));
++    if (typeof v === 'function') {
++      setString(prev => {
++        if (prev === undefined) {
++          return JSON.stringify(v(undefined))
++        }
++        return JSON.stringify(v(JSON.parse(prev)))
++      });
++    } else {
++      setString(JSON.stringify(v));
++    }
+   }, [setString]);
+   return [value, setValue];
+ }
 diff --git a/node_modules/react-native-mmkv/lib/module/hooks.js b/node_modules/react-native-mmkv/lib/module/hooks.js
-index d65192e..afcaa15 100644
+index d65192e..605d024 100644
 --- a/node_modules/react-native-mmkv/lib/module/hooks.js
 +++ b/node_modules/react-native-mmkv/lib/module/hooks.js
 @@ -31,8 +31,12 @@ function createMMKVHook(getter) {
    return (key, instance) => {
      const mmkv = instance !== null && instance !== void 0 ? instance : getDefaultInstance();
      const [value, setValue] = useState(() => getter(mmkv, key));
-+    
++
 +    const valueNonReactive = useRef();
 +    valueNonReactive.current = value;
 +
@@ -25,3 +47,21 @@ index d65192e..afcaa15 100644
      useEffect(() => {
        const listener = mmkv.addOnValueChangedListener(changedKey => {
          if (changedKey === key) {
+@@ -117,7 +121,16 @@ export function useMMKVObject(key, instance) {
+     return JSON.parse(string);
+   }, [string]);
+   const setValue = useCallback(v => {
+-    setString(JSON.stringify(v));
++    if (typeof v === 'function') {
++      setString(prev => {
++        if (prev === undefined) {
++          return JSON.stringify(v(undefined))
++        }
++        return JSON.stringify(v(JSON.parse(prev)))
++      });
++    } else {
++      setString(JSON.stringify(v));
++    }
+   }, [setString]);
+   return [value, setValue];
+ }
