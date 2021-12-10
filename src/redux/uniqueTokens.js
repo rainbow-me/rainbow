@@ -121,7 +121,7 @@ export const fetchUniqueTokens = showcaseAddress => async (
       }
       if (shouldStopFetching) {
         const poaps = await fetchPoaps(accountAddress);
-        if (poaps) {
+        if (poaps.length > 0) {
           uniqueTokens = unionBy(uniqueTokens, poaps, 'uniqueId');
         }
 
