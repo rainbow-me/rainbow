@@ -27,6 +27,7 @@ const ViewDimensions: Record<CellType, Dim> = {
     width: deviceUtils.dimensions.width / 2 - 0.1,
   },
   [CellType.LOADING_ASSETS]: { height: 59 },
+  [CellType.SPACE_7PX]: { height: 7 },
   [CellType.SPACE_20PX]: { height: 20 },
 };
 

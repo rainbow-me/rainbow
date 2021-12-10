@@ -39,6 +39,9 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
     <CellDataProvider uid={uid}>
       {data => {
         switch (type) {
+          case CellType.SPACE_7PX:
+          case CellType.SPACE_20PX:
+            return null;
           case CellType.COIN_DIVIDER:
             return (
               <CoinDivider balancesSum={(data as CoinDividerExtraData).value} />
@@ -79,8 +82,6 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
             );
           case CellType.NFTS_HEADER:
             return <AssetListHeader title="Collectibles" />;
-          case CellType.SPACE_20PX:
-            return null;
           case CellType.FAMILY_HEADER: {
             const { name, image, total } = data as NFTFamilyExtraData;
             return (

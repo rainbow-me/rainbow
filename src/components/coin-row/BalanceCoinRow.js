@@ -27,7 +27,9 @@ const formatPercentageString = percentString =>
 
 const BalanceCoinRowCoinCheckButton = styled(CoinCheckButton).attrs({
   isAbsolute: true,
-})``;
+})({
+  top: 9,
+});
 
 const PercentageText = styled(BottomRowText).attrs({
   align: 'right',

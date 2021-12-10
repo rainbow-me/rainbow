@@ -200,6 +200,10 @@ const withBriefBalanceSavingsSection = savings => {
   const addresses = savings?.map(asset => asset.cToken.address);
   return [
     {
+      type: 'SPACE_7PX',
+      uid: 'savings-header-space-before',
+    },
+    {
       type: 'SAVINGS_HEADER',
       uid: 'savings-header',
       value: totalUnderlyingNativeValue,

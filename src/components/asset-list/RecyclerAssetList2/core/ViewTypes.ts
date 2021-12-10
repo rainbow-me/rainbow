@@ -14,6 +14,7 @@ export enum CellType {
   NFT = 'NFT',
   LOADING_ASSETS = 'LOADING_ASSETS',
   SPACE_20PX = 'SPACE_20PX',
+  SPACE_7PX = 'SPACE_7PX',
 }
 export type RecyclerListViewRef = RecyclerListView<
   RecyclerListViewProps,
