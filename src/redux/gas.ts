@@ -582,7 +582,7 @@ export const gasUpdateTxFee = (
   updatedGasLimit?: number,
   overrideGasOption?: string,
   l1GasFeeOptimism: BigNumber | null = null,
-  id?: string 
+  id?: string
 ) => (dispatch: AppDispatch, getState: AppGetState) => {
   const {
     defaultGasLimit,
@@ -602,7 +602,10 @@ export const gasUpdateTxFee = (
     // the rest is as the initial state value
     if (updatedGasLimit) {
       dispatch({
-        payload: updatedGasLimit,
+        payload: {
+          gasLimit: updatedGasLimit,
+          transactionUniqueId: id,
+        },
         type: GAS_UPDATE_GAS_LIMIT,
       });
     }
@@ -676,7 +679,8 @@ export default (
     case GAS_UPDATE_GAS_LIMIT:
       return {
         ...state,
-        gasLimit: action.payload,
+        gasLimit: action.payload.gasLimit,
+        transactionUniqueId: action.payload.transactionUniqueId,
       };
     case GAS_PRICES_SUCCESS:
       return {
