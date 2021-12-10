@@ -1,8 +1,10 @@
 import { useCallback } from 'react';
 import { useMMKVBoolean } from 'react-native-mmkv';
+import { useAccountSettings } from '@rainbow-me/hooks';
 
 export default function useOpenSavings() {
-  const [isSavingsOpen, setIsSavingsOpen] = useMMKVBoolean('savings-open');
+  const { accountAddress: address } = useAccountSettings();
+  const [isSavingsOpen, setIsSavingsOpen] = useMMKVBoolean('savings-open-' + address);
 
   const toggleOpenSavings = useCallback(() => setIsSavingsOpen(prev => !prev), [
     setIsSavingsOpen,

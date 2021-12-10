@@ -1,8 +1,10 @@
 import { useCallback, useMemo } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
+import { useAccountSettings } from '@rainbow-me/hooks';
 
 export default function useOpenFamilies() {
-  const [openFamilies, setOpenFamilies] = useMMKVObject('open-families');
+  const { accountAddress: address } = useAccountSettings();
+  const [openFamilies, setOpenFamilies] = useMMKVObject('open-families-' + address);
 
   const updateOpenFamilies = useCallback(
     (value: Record<string, boolean>) =>

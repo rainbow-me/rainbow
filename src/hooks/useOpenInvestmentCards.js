@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useMMKVBoolean } from 'react-native-mmkv';
 
-export default function useOpenSavings() {
+export default function useOpenInvestmentCards() {
   const [isInvestmentCardsOpen, setIsInvestmentCardsOpen] = useMMKVBoolean(
     'investments-open'
   );
