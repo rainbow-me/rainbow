@@ -51,12 +51,10 @@ export default async function handleDeeplink(url, initialRoute = null) {
             ) ||
             (address !== ETH_ADDRESS &&
               allAssets.find(asset => address === toLower(asset.address)));
-            
-          
-          
+
           // First go back to home to dismiss any open shit
           // and prevent a weird crash
-          if(initialRoute !== Routes.WELCOME_SCREEN){
+          if (initialRoute !== Routes.WELCOME_SCREEN) {
             Navigation.handleAction(Routes.WALLET_SCREEN);
           }
           setTimeout(() => {
@@ -68,7 +66,7 @@ export default async function handleDeeplink(url, initialRoute = null) {
                 type: 'token',
               });
             };
-  
+
             if (asset) {
               action(asset);
             } else {
@@ -76,7 +74,7 @@ export default async function handleDeeplink(url, initialRoute = null) {
               dispatch(emitChartsRequest(address));
               scheduleActionOnAssetReceived(address, action);
             }
-          }, 50);          
+          }, 50);
         }
         break;
       }
