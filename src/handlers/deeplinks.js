@@ -21,7 +21,7 @@ import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 
-export default async function handleDeeplink(url) {
+export default async function handleDeeplink(url, initialRoute = null) {
   if (!url) return;
   // We need to wait till the wallet is ready
   // to handle any deeplink
@@ -51,22 +51,32 @@ export default async function handleDeeplink(url) {
             ) ||
             (address !== ETH_ADDRESS &&
               allAssets.find(asset => address === toLower(asset.address)));
-
-          const action = asset => {
-            Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
-              asset,
-              fromDiscover: true,
-              longFormHeight: initialChartExpandedStateSheetHeight,
-              type: 'token',
-            });
-          };
-          if (asset) {
-            action(asset);
-          } else {
-            dispatch(emitAssetRequest(address));
-            dispatch(emitChartsRequest(address));
-            scheduleActionOnAssetReceived(address, action);
+            
+          
+          
+          // First go back to home to dismiss any open shit
+          // and prevent a weird crash
+          if(initialRoute !== Routes.WELCOME_SCREEN){
+            Navigation.handleAction(Routes.WALLET_SCREEN);
           }
+          setTimeout(() => {
+            const action = asset => {
+              Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
+                asset,
+                fromDiscover: true,
+                longFormHeight: initialChartExpandedStateSheetHeight,
+                type: 'token',
+              });
+            };
+  
+            if (asset) {
+              action(asset);
+            } else {
+              dispatch(emitAssetRequest(address));
+              dispatch(emitChartsRequest(address));
+              scheduleActionOnAssetReceived(address, action);
+            }
+          }, 50);          
         }
         break;
       }
