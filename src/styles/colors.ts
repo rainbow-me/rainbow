@@ -2,10 +2,11 @@ import chroma from 'chroma-js';
 import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import currentColors from '../context/currentColors';
-import { memoFn } from '../utils';
+import memoFn from '../utils/memoFn';
 
 const buildRgba = memoFn(
-  (color, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`
+  (color: string | number | chroma.Color, alpha = 1) =>
+    `rgba(${chroma(color).rgb()},${alpha})`
 );
 
 const darkModeColors = {
@@ -74,7 +75,7 @@ const avatarBackgrounds = [
   '#FFB35A',
 ];
 
-const getColorsByTheme = darkMode => {
+const getColorsByTheme = (darkMode: boolean) => {
   let base = {
     appleBlue: '#0E76FD', // '14, 118, 253'
     black: '#000000', // '0, 0, 0'
@@ -196,6 +197,7 @@ const getColorsByTheme = darkMode => {
     clearGrey: buildRgba(base.blueGreyDark, 0.06),
   };
 
+  // @ts-expect-error
   assetIcon.random = () => {
     const assetIconColors = Object.values(assetIcon);
     return assetIconColors[Math.floor(Math.random() * assetIconColors.length)];
@@ -209,29 +211,30 @@ const getColorsByTheme = darkMode => {
   };
 
   const isColorLight = memoFn(
-    targetColor => chroma(targetColor || base.white).luminance() > 0.5
+    (targetColor: any) => chroma(targetColor || base.white).luminance() > 0.5
   );
 
-  const getTextColorForBackground = (targetColor, textColors = {}) => {
+  const getTextColorForBackground = (targetColor: any, textColors = {}) => {
+    // @ts-expect-error
     const { dark = base.black, light = base.white } = textColors;
 
     return isColorLight(targetColor) ? dark : light;
   };
 
-  const getFallbackTextColor = bg =>
+  const getFallbackTextColor = (bg: any) =>
     colors.getTextColorForBackground(bg, {
       dark: colors.alpha(colors.blueGreyDark, 0.5),
       light: colors.whiteLabel,
     });
 
-  const isColorDark = memoFn(targetColor => {
+  const isColorDark = memoFn((targetColor: string | chroma.Color) => {
     return (
       chroma.contrast(targetColor, darkModeColors.white) < 1.5 ||
       chroma(targetColor || base.white).luminance() < 0.11
     );
   });
 
-  const brighten = memoFn(targetColor =>
+  const brighten = memoFn((targetColor: string | number | chroma.Color) =>
     chroma(targetColor).brighten(2).saturate(0.3).hex()
   );
 
@@ -307,6 +310,7 @@ const getColorForString = (colorString = '', providedThemeColors = colors) => {
   if (!colorString) return null;
 
   const isValidColorString = isHex(colorString) || isRGB(colorString);
+  // @ts-expect-error
   return isValidColorString ? colorString : providedThemeColors[colorString];
 };
 
@@ -315,7 +319,7 @@ export const lightModeThemeColors = getColorsByTheme(false);
 const colors = currentColors.themedColors || lightModeThemeColors;
 export const getRandomColor = () =>
   Math.floor(Math.random() * colors.avatarColor.length);
-
+// @ts-expect-error
 currentColors.themedColors = lightModeThemeColors;
 
 export default {

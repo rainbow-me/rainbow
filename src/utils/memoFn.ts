@@ -1,3 +1,5 @@
+import logger from './logger';
+
 // let cachedResult = 0;
 
 /**
@@ -22,8 +24,7 @@ export default function memoFn(fn: {
     // if no arguments used we just want the developer and run the function as is
     if (args.length === 0) {
       if (__DEV__) {
-        // eslint-disable-next-line no-console
-        console.warn(
+        logger.warn(
           `memoized function ${fn.name} was called with no arguments`
         );
       }
@@ -41,8 +42,7 @@ export default function memoFn(fn: {
         typeof arg !== 'string'
       ) {
         if (__DEV__) {
-          // eslint-disable-next-line no-console
-          console.warn(
+          logger.warn(
             `memoized function ${
               fn.name
             } was called with non-supported arguments: ${JSON.stringify(
@@ -60,7 +60,7 @@ export default function memoFn(fn: {
     // @ts-expect-error
     if (cache[key]) {
       // For debugging
-      // console.log('Used cached', key, cachedResult++);
+      // logger.debug('Used cached', key, cachedResult++);
       // return cached result
       // @ts-expect-error
       return cache[key];
