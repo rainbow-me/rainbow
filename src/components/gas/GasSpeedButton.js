@@ -173,7 +173,7 @@ const GasSpeedButton = ({
 
   const formatGasPrice = useCallback(
     animatedValue => {
-      if (animatedValue === null) {
+      if (animatedValue === null || isNaN(animatedValue)) {
         return 0;
       }
       // L2's are very cheap,
