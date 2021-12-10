@@ -291,23 +291,24 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
             asset={asset}
             imageColor={imageColor}
           />
-         { !isPoap && <SheetActionButtonRow
-            ignorePaddingTop
-            paddingBottom={24}
-            paddingHorizontal={16.5}
-          >
-            <SheetActionButton
-              color={imageColor}
-              label={
-                !external && !isReadOnlyWallet && isSendable
-                  ? '􀮶 OpenSea'
-                  : '􀮶 View on OpenSea'
-              }
-              nftShadows
-              onPress={handlePressOpensea}
-              textColor={textColor}
-              weight="heavy"
-            />
+          {!isPoap && (
+            <SheetActionButtonRow
+              ignorePaddingTop
+              paddingBottom={24}
+              paddingHorizontal={16.5}
+            >
+              <SheetActionButton
+                color={imageColor}
+                label={
+                  !external && !isReadOnlyWallet && isSendable
+                    ? '􀮶 OpenSea'
+                    : '􀮶 View on OpenSea'
+                }
+                nftShadows
+                onPress={handlePressOpensea}
+                textColor={textColor}
+                weight="heavy"
+              />
               {!external && !isReadOnlyWallet && isSendable ? (
                 <SendActionButton
                   asset={asset}
@@ -316,8 +317,9 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
                   textColor={textColor}
                 />
               ) : null}
-            </SheetActionButtonRow>}
-          
+            </SheetActionButtonRow>
+          )}
+
           {!isPoap && (
             <TokenInfoSection isNft>
               <TokenInfoRow>
