@@ -74,4 +74,9 @@ const CoinCheckButton = ({
   );
 };
 
-export default magicMemo(CoinCheckButton, ['toggle', 'uniqueId']);
+export default magicMemo(CoinCheckButton, [
+  'toggle',
+  'uniqueId',
+  'isHidden',
+  'isPinned',
+]);

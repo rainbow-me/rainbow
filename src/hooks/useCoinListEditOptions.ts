@@ -1,24 +1,29 @@
-import { atom, useAtom } from 'jotai';
-import { useUpdateAtom } from 'jotai/utils';
 import { difference } from 'lodash';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import { useDispatch } from 'react-redux';
+import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import useAccountSettings from './useAccountSettings';
 import actions from '@rainbow-me/helpers/editOptionTypes';
 import { setHiddenCoins as reduxSetHiddenCoins } from '@rainbow-me/redux/editOptions';
 
-const selectedItemsAtom = atom<string[]>([]);
+const selectedItemsAtom = atom<string[]>({
+  default: [],
+  key: 'selectedItemsAtom',
+});
+
 export default function useCoinListEditOptions() {
   const { accountAddress: address } = useAccountSettings();
 
-  const setSelectedItems = useUpdateAtom(selectedItemsAtom);
+  const setSelectedItems = useSetRecoilState(selectedItemsAtom);
   const [hiddenCoins = []] = useMMKVObject<string[]>('hidden-coins-' + address);
 
   const [pinnedCoins = []] = useMMKVObject<string[]>('pinned-coins-' + address);
   const pushSelectedCoin = useCallback(
     (item: string) =>
-      setSelectedItems(prev => [...prev.filter(i => i !== item), item]),
+      setSelectedItems(prev => {
+        return [...prev.filter(i => i !== item), item];
+      }),
     [setSelectedItems]
   );
 
@@ -57,7 +62,10 @@ export default function useCoinListEditOptions() {
 export function useCoinListFinishEditingOptions() {
   const { accountAddress: address } = useAccountSettings();
 
-  const [selectedItems, setSelectedItems] = useAtom(selectedItemsAtom);
+  const [selectedItems, setSelectedItems] = useRecoilState(selectedItemsAtom);
+  const selectedItemsNonReactive = useRef<string[]>();
+  selectedItemsNonReactive.current = selectedItems;
+
   const [hiddenCoins = [], setHiddenCoinsArray] = useMMKVObject<string[]>(
     'hidden-coins-' + address
   );
@@ -88,39 +96,41 @@ export function useCoinListFinishEditingOptions() {
     }
   }, [hiddenCoins, pinnedCoins, selectedItems]);
 
+  const currentActionNonReactive = useRef<actions>();
+  currentActionNonReactive.current = currentAction;
+
   const setPinnedCoins = useCallback(() => {
-    setPinnedCoinsArray([
-      ...pinnedCoins.filter(i => !selectedItems.includes(i)),
-      ...(currentAction === actions.standard ? selectedItems : []),
-    ]);
+    setPinnedCoinsArray((pinnedCoins: string[]) => {
+      return [
+        ...pinnedCoins.filter(
+          i => !selectedItemsNonReactive.current!.includes(i)
+        ),
+        ...(currentActionNonReactive.current === actions.standard
+          ? selectedItemsNonReactive.current!
+          : []),
+      ];
+    });
     setSelectedItems([]);
-  }, [
-    setSelectedItems,
-    currentAction,
-    pinnedCoins,
-    selectedItems,
-    setPinnedCoinsArray,
-  ]);
+  }, [setSelectedItems, setPinnedCoinsArray]);
 
   const dispatch = useDispatch();
 
   const setHiddenCoins = useCallback(() => {
-    const newList = [
-      ...hiddenCoins.filter(i => !selectedItems.includes(i)),
-      ...(currentAction === actions.standard ? selectedItems : []),
-    ];
-    setHiddenCoinsArray(newList);
-    dispatch(reduxSetHiddenCoins(newList));
+    setHiddenCoinsArray(hiddenCoins => {
+      const newList = [
+        ...hiddenCoins.filter(
+          i => !selectedItemsNonReactive.current!.includes(i)
+        ),
+        ...(currentActionNonReactive.current === actions.standard
+          ? selectedItemsNonReactive.current!
+          : []),
+      ];
+      dispatch(reduxSetHiddenCoins(newList));
+      return newList;
+    });
 
     setSelectedItems([]);
-  }, [
-    dispatch,
-    setSelectedItems,
-    currentAction,
-    hiddenCoins,
-    selectedItems,
-    setHiddenCoinsArray,
-  ]);
+  }, [dispatch, setSelectedItems, setHiddenCoinsArray]);
 
   return {
     currentAction,

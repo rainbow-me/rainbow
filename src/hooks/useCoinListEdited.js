@@ -1,9 +1,14 @@
-import { atom, useAtom } from 'jotai';
+import { atom, useRecoilState } from 'recoil';
 
-const isCoinListEditedAtom = atom(false);
+const isCoinListEditedAtom = atom({
+  default: false,
+  key: 'isCoinListEditedAtom',
+});
 
 export default function useCoinListEdited() {
-  const [isCoinListEdited, setIsCoinListEdited] = useAtom(isCoinListEditedAtom);
+  const [isCoinListEdited, setIsCoinListEdited] = useRecoilState(
+    isCoinListEditedAtom
+  );
 
   return {
     isCoinListEdited,

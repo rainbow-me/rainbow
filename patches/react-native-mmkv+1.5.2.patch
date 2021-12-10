@@ -65,3 +65,13 @@ index d65192e..605d024 100644
    }, [setString]);
    return [value, setValue];
  }
+diff --git a/node_modules/react-native-mmkv/lib/typescript/hooks.d.ts b/node_modules/react-native-mmkv/lib/typescript/hooks.d.ts
+index 3cdcda7..4ca0238 100644
+--- a/node_modules/react-native-mmkv/lib/typescript/hooks.d.ts
++++ b/node_modules/react-native-mmkv/lib/typescript/hooks.d.ts
+@@ -46,4 +46,4 @@ export declare const useMMKVBoolean: (key: string, instance?: MMKVInterface | un
+  * const [user, setUser] = useMMKVObject<User>("user")
+  * ```
+  */
+-export declare function useMMKVObject<T>(key: string, instance?: MMKVInterface): [value: T | undefined, setValue: (value: T) => void];
++export declare function useMMKVObject<T>(key: string, instance?: MMKVInterface): [value: T | undefined, setValue: (value: T | ((current: T) => T | undefined) | undefined) => void];
