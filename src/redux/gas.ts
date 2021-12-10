@@ -611,7 +611,6 @@ export const gasUpdateTxFee = (
 
     const {
       isSufficientGas,
-      l1GasFeeOptimism,
       selectedGasFee: updatedSelectedGasFee,
       gasFeesBySpeed,
     } = getUpdatedGasFeeParams(
@@ -630,6 +629,7 @@ export const gasUpdateTxFee = (
         gasFeesBySpeed,
         gasLimit: _gasLimit,
         isSufficientGas,
+        l1GasFeeOptimism,
         selectedGasFee: updatedSelectedGasFee,
       },
       type: GAS_UPDATE_TX_FEE,
