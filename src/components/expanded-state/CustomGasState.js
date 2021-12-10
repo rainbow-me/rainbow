@@ -1,5 +1,5 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
@@ -13,7 +13,6 @@ import { FeesPanel, FeesPanelTabs } from './custom-gas';
 import { getTrendKey } from '@rainbow-me/helpers/gas';
 import {
   useAccountSettings,
-  useBooleanState,
   useColorForAsset,
   useDimensions,
   useGas,
@@ -51,17 +50,21 @@ const FeesPanelTabswrapper = styled(Column)`
 export default function CustomGasState({ asset }) {
   const { network } = useAccountSettings();
   const { setParams } = useNavigation();
-  const { params: { longFormHeight, speeds } = {} } = useRoute();
+  const {
+    params: { longFormHeight, speeds, openCustomOptions } = {},
+  } = useRoute();
   const { colors } = useTheme();
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
-  const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const insets = useSafeArea();
   const [footerHeight, setFooterHeight] = useHeight(FOOTER_MIN_HEIGHT);
   const [contentHeight, setContentHeight] = useHeight(CONTENT_MIN_HEIGHT);
   const contentScroll = useSharedValue(0);
   const colorForAsset = useColorForAsset(asset || {}, null, false, true);
   const { selectedGasFee, currentBlockParams } = useGas();
+  const [canGoBack, setCanGoBack] = useState(true);
+
+  const validateGasParams = useRef(null);
   useAndroidDisableGesturesOnFocus();
 
   const keyboardOffset = keyboardHeight + insets.bottom + 10;
@@ -86,24 +89,16 @@ export default function CustomGasState({ asset }) {
   );
 
   useEffect(() => {
-    if (isKeyboardVisible) {
-      contentScroll.value = withSpring(
-        additionalScrollForKeyboard,
-        springConfig
-      );
-      setParams({ longFormHeight: sheetHeightWithKeyboard });
-    } else {
-      contentScroll.value = withSpring(0, springConfig);
-      setParams({ longFormHeight: sheetHeightWithoutKeyboard });
-    }
+    contentScroll.value = withSpring(additionalScrollForKeyboard, springConfig);
+    setParams({ longFormHeight: sheetHeightWithKeyboard });
   }, [
     additionalScrollForKeyboard,
     contentScroll,
-    isKeyboardVisible,
     sheetHeightWithKeyboard,
     sheetHeightWithoutKeyboard,
     setParams,
   ]);
+
   return (
     <SlackSheet
       additionalTopPadding
@@ -117,32 +112,32 @@ export default function CustomGasState({ asset }) {
       scrollEnabled={false}
     >
       <FloatingPanel onLayout={setContentHeight} radius={android ? 30 : 39}>
-        <ExchangeHeader />
+        <ExchangeHeader testID="custom-gas" />
         <FeesPanelWrapper>
           <FeesPanel
             colorForAsset={colorForAsset}
             currentGasTrend={currentGasTrend}
-            onCustomGasBlur={hideKeyboard}
-            onCustomGasFocus={showKeyboard}
+            openCustomOptions={openCustomOptions}
             selectedGasFee={selectedGasFee}
+            setCanGoBack={setCanGoBack}
+            speeds={speeds}
+            validateGasParams={validateGasParams}
           />
         </FeesPanelWrapper>
         <Divider color={colors.rowDividerExtraLight} inset={[0, 24, 0, 24]} />
         <FeesPanelTabswrapper>
-          <FeesPanelTabs
-            colorForAsset={colorForAsset}
-            onPressTabPill={hideKeyboard}
-            speeds={speeds}
-          />
+          <FeesPanelTabs colorForAsset={colorForAsset} speeds={speeds} />
         </FeesPanelTabswrapper>
       </FloatingPanel>
       <Column onLayout={setFooterHeight}>
         <GasSpeedButton
           asset={asset}
+          canGoBack={canGoBack}
           currentNetwork={network}
           showGasOptions
           testID="swap-details-gas"
           theme="dark"
+          validateGasParams={validateGasParams}
         />
       </Column>
     </SlackSheet>

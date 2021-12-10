@@ -99,11 +99,11 @@ patch-package
 echo "✅ All patches applied"
 
 # Create a debug file from the default if one does not exist.
-DEBUGFILE=src/config/debug.js
+DEBUGFILE=src/config/debug.ts
 
 if test -f "$DEBUGFILE"; then
     echo "$DEBUGFILE exists."
 else
     echo "$DEBUGFILE does not exist. You use default debug settings."
-    cp src/config/defaultDebug.js $DEBUGFILE
+    cp src/config/defaultDebug.ts $DEBUGFILE
 fi

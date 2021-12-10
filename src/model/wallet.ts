@@ -59,10 +59,10 @@ import logger from 'logger';
 
 const encryptor = new AesEncryptor();
 
-type EthereumPrivateKey = string;
+export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
 type EthereumSeed = string;
-type EthereumWalletSeed =
+export type EthereumWalletSeed =
   | EthereumAddress
   | EthereumPrivateKey
   | EthereumMnemonic
