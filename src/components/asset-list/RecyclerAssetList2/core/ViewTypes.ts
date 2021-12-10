@@ -25,7 +25,7 @@ export type BaseCellType = { type: CellType; uid: string; hidden?: boolean };
 
 export type SavingsHeaderExtraData = {
   type: CellType.SAVINGS_HEADER;
-  value: string;
+  value: number;
 };
 export type SavingExtraData = { type: CellType.SAVINGS; address: string };
 export type UniswapPoolExtraData = {
@@ -42,7 +42,7 @@ export type AssetsHeaderExtraData = {
 };
 export type PoolsHeaderExtraData = {
   type: CellType.POOLS_HEADER;
-  value: number;
+  value: string;
 };
 export type CoinExtraData = { type: CellType.COIN; uniqueId: string };
 export type NFTExtraData = {

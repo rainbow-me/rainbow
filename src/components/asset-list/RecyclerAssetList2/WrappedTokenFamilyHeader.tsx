@@ -2,7 +2,15 @@ import React, { useCallback } from 'react';
 import { TokenFamilyHeader } from '../../token-family';
 import { useOpenFamilies } from '@rainbow-me/hooks';
 
-export default function WrappedTokenFamilyHeader({ name, total, image }) {
+export default function WrappedTokenFamilyHeader({
+  name,
+  total,
+  image,
+}: {
+  name: string;
+  total?: number;
+  image?: string;
+}) {
   const { openFamilies, updateOpenFamilies } = useOpenFamilies();
   const isFamilyOpen = openFamilies[name];
 
@@ -15,6 +23,7 @@ export default function WrappedTokenFamilyHeader({ name, total, image }) {
   );
 
   return (
+    // @ts-ignore
     <TokenFamilyHeader
       childrenAmount={total}
       familyImage={image}

@@ -27,17 +27,17 @@ const Content = styled.View`
 
 const UniqueTokenCard = ({
   borderEnabled = true,
-  disabled,
+  disabled = false,
   enableHapticFeedback = true,
-  height,
+  height = undefined,
   item,
   onPress,
-  resizeMode,
+  resizeMode = undefined,
   scaleTo = 0.96,
-  shadow,
+  shadow = undefined,
   smallENSName = true,
-  style,
-  width,
+  style = undefined,
+  width = undefined,
   ...props
 }) => {
   const lowResUrl = getLowResUrl(item.image_url);

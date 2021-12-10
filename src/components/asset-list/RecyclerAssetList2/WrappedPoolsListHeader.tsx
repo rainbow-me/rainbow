@@ -3,7 +3,11 @@ import React from 'react';
 import SavingsListHeader from '../../savings/SavingsListHeader';
 import { useOpenInvestmentCards } from '@rainbow-me/hooks';
 
-export default React.memo(function WrappedPoolsListHeader({ value }) {
+export default React.memo(function WrappedPoolsListHeader({
+  value,
+}: {
+  value: string;
+}) {
   const {
     isInvestmentCardsOpen,
     toggleOpenInvestmentCards,
