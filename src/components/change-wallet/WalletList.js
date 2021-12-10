@@ -182,32 +182,6 @@ export default function WalletList({
     }
   }, [rows, ready]);
 
-  useEffect(() => {
-    // Detect if we need to autoscroll to the selected account
-    let selectedItemIndex = 0;
-    let distanceToScroll = 0;
-    const scrollThreshold = rowHeight * 2;
-    rows.some((item, index) => {
-      if (item.isSelected) {
-        selectedItemIndex = index;
-        return true;
-      }
-      distanceToScroll += item.height;
-      return false;
-    });
-
-    if (distanceToScroll > height - scrollThreshold && !doneScrolling) {
-      setTimeout(() => {
-        scrollView.current?.scrollToIndex({
-          animated: true,
-          index: selectedItemIndex,
-        });
-        setDoneScrolling(true);
-      }, 50);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready]);
-
   const renderItem = useCallback(
     ({ item }) => {
       switch (item.rowType) {
