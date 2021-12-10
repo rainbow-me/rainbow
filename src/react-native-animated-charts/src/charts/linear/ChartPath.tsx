@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Platform, View, ViewProps, ViewStyle } from 'react-native';
+import { Platform, View, ViewProps } from 'react-native';
 import {
   LongPressGestureHandler,
   LongPressGestureHandlerGestureEvent,
@@ -22,11 +22,11 @@ import Animated, {
 import * as redash from 'react-native-redash';
 import Svg, { Path, PathProps } from 'react-native-svg';
 import { PathData } from '../../helpers/ChartContext';
-import { useChartData } from '../../helpers/useChartData';
 import {
   requireOnWorklet,
   useWorkletValue,
 } from '../../helpers/requireOnWorklet';
+import { useChartData } from '../../helpers/useChartData';
 
 export const FIX_CLIPPED_PATH_MAGIC_NUMBER = 22;
 
@@ -209,7 +209,15 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
           progress.value = 1;
         }
       })();
-    }, [currentPath, previousPath]);
+      // you don't need to change timingAnimationConfig that often
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+      currentPath,
+      previousPath,
+      interpolatorWorklet,
+      progress,
+      setOriginData,
+    ]);
 
     useAnimatedReaction(
       () => ({ x: translationX.value, y: translationY.value }),
@@ -274,23 +282,6 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
 
     const onGestureEvent = useAnimatedGestureHandler<LongPressGestureHandlerGestureEvent>(
       {
-        onStart: event => {
-          // WARNING: the following code does not run on using iOS, but it does on Android.
-          // I use the same code from onActive
-          // platform is for safety
-          if (Platform.OS === 'android') {
-            state.value = event.state;
-            isActive.value = true;
-            pathOpacity.value = withTiming(
-              0,
-              timingFeedbackConfig || timingFeedbackDefaultConfig
-            );
-
-            if (hapticsEnabled) {
-              impactHeavy();
-            }
-          }
-        },
         onActive: event => {
           if (!isActive.value) {
             isActive.value = true;
@@ -309,10 +300,6 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
           translationX.value = positionXWithMargin(event.x, hitSlop, width);
           translationY.value = event.y;
         },
-        onFail: event => {
-          state.value = event.state;
-          resetGestureState();
-        },
         onCancel: event => {
           state.value = event.state;
           resetGestureState();
@@ -323,6 +310,27 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
 
           if (hapticsEnabled) {
             impactHeavy();
+          }
+        },
+        onFail: event => {
+          state.value = event.state;
+          resetGestureState();
+        },
+        onStart: event => {
+          // WARNING: the following code does not run on using iOS, but it does on Android.
+          // I use the same code from onActive
+          // platform is for safety
+          if (Platform.OS === 'android') {
+            state.value = event.state;
+            isActive.value = true;
+            pathOpacity.value = withTiming(
+              0,
+              timingFeedbackConfig || timingFeedbackDefaultConfig
+            );
+
+            if (hapticsEnabled) {
+              impactHeavy();
+            }
           }
         },
       },
@@ -336,7 +344,7 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
     }, []);
 
     return (
-      <View style={{ width, height }}>
+      <View style={{ height, width }}>
         <LongPressGestureHandler
           {...{ onGestureEvent }}
           enabled={gestureEnabled}
@@ -347,18 +355,18 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
         >
           <Animated.View>
             <Svg
-              viewBox={`0 0 ${width} ${height}`}
               style={{
-                width,
                 height: height + FIX_CLIPPED_PATH_MAGIC_NUMBER,
+                width,
               }}
+              viewBox={`0 0 ${width} ${height}`}
             >
               <AnimatedPath
-                // @ts-expect-error
-                style={pathAnimatedStyles}
                 animatedProps={animatedProps}
                 stroke={stroke}
                 strokeWidth={strokeWidth}
+                // @ts-expect-error
+                style={pathAnimatedStyles}
                 {...props}
               />
             </Svg>

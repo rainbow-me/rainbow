@@ -1,6 +1,6 @@
 import { scaleLinear } from 'd3-scale';
 import * as shape from 'd3-shape';
-import React, { useMemo, useEffect, useState, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import { parse as parseSvg } from 'react-native-redash';
@@ -10,8 +10,8 @@ import {
   CurveType,
   DataType,
   PathData,
-  Point,
   PathScales,
+  Point,
 } from '../../helpers/ChartContext';
 import { findYExtremes } from '../../helpers/extremesHelpers';
 
@@ -61,25 +61,25 @@ function getScales({ data, width, height, yRange }: CallbackType): PathScales {
     .range([height, 0]);
 
   return {
-    scaleY,
     scaleX,
+    scaleY,
   };
 }
 
 function createPath({ data, width, height, yRange }: CallbackType): PathData {
   const { scaleY, scaleX } = getScales({
     data,
-    width,
     height,
+    width,
     yRange,
   });
 
   if (!data.points.length) {
     return {
-      path: '',
-      parsed: null,
-      points: [],
       data: [],
+      parsed: null,
+      path: '',
+      points: [],
     };
   }
 
@@ -92,10 +92,10 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
   const smallestX = data.points[0];
   const greatestX = data.points[data.points.length - 1];
 
-  for (let i = 0; i < data.points.length; i++) {
+  for (let point of data.points) {
     points.push({
-      x: scaleX(data.points[i].x),
-      y: scaleY(data.points[i].y),
+      x: scaleX(point.x),
+      y: scaleY(point.y),
     });
   }
 
@@ -107,24 +107,24 @@ function createPath({ data, width, height, yRange }: CallbackType): PathData {
 
   if (path === null) {
     return {
-      path: '',
-      parsed: null,
-      points: [],
       data: [],
+      parsed: null,
+      path: '',
+      points: [],
     };
   }
 
   const parsed = parseSvg(path);
 
   return {
-    path,
-    parsed,
-    points,
     data: data.nativePoints || data.points,
-    smallestX,
-    smallestY,
     greatestX,
     greatestY,
+    parsed,
+    path,
+    points,
+    smallestX,
+    smallestY,
   };
 }
 
@@ -157,7 +157,7 @@ export const ChartPathProvider = React.memo<ChartPathProviderProps>(
     // used for memoization since useMemo with empty deps array
     // still can be re-run according to the docs
     const [initialPath] = useState<PathData | null>(() =>
-      data.points.length ? createPath({ data, width, height, yRange }) : null
+      data.points.length ? createPath({ data, height, width, yRange }) : null
     );
 
     const [paths, setPaths] = useState<[PathData | null, PathData | null]>(
@@ -175,31 +175,35 @@ export const ChartPathProvider = React.memo<ChartPathProviderProps>(
         setPaths(([_, curr]) => [
           curr,
           data.points.length
-            ? createPath({ data, width, height, yRange })
+            ? createPath({ data, height, width, yRange })
             : null,
         ]);
       } else {
         // componentDidMount hack
         initialized.current = true;
       }
-    }, [data.points, data.curve, width, height]);
+
+      // i don't want to react to data changes, because it can be object
+      // curve and points only mattery for us
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data.points, data.curve, width, height, yRange]);
 
     const value = useMemo(() => {
       const ctx = {
-        progress,
+        currentPath,
+        data,
         dotScale,
+        height,
+        isActive,
         originalX,
         originalY,
         pathOpacity,
-        state,
         positionX,
         positionY,
-        isActive,
-        data,
-        width,
-        height,
         previousPath,
-        currentPath,
+        progress,
+        state,
+        width,
       };
 
       if (currentPath) {
@@ -207,18 +211,35 @@ export const ChartPathProvider = React.memo<ChartPathProviderProps>(
 
         return {
           ...ctx,
-          smallestX,
-          smallestY,
           greatestX,
           greatestY,
+          smallestX,
+          smallestY,
         };
       }
 
       return ctx;
-    }, [data, currentPath, previousPath, width, height]);
+    }, [
+      data,
+      currentPath,
+      previousPath,
+      width,
+      height,
+      dotScale,
+      isActive,
+      state,
+      originalX,
+      originalY,
+      pathOpacity,
+      positionX,
+      positionY,
+      progress,
+    ]);
 
     return (
       <ChartContext.Provider value={value}>{children}</ChartContext.Provider>
     );
   }
 );
+
+ChartPathProvider.displayName = 'ChartPathProvider';

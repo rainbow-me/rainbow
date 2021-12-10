@@ -12,13 +12,15 @@
   ],
   "license": "ISC",
   "dependencies": {
-    "react-native-gesture-handler": "^1.7.0",
-    "react-native-reanimated": "^2.0.0-alpha.5",
-    "react-native-svg": "^12.1.0",
-    "react-native-haptic-feedback": "^1.10.0",
-    "react-native-redash": "^16.2.2",
+    "@types/d3-scale": "^4.0.2",
+    "@types/d3-shape": "^3.0.2",
     "d3-scale": "^4.0.2",
-    "d3-shape": "^3.0.1"
+    "d3-shape": "^3.0.1",
+    "react-native-gesture-handler": "^1.7.0",
+    "react-native-haptic-feedback": "^1.10.0",
+    "react-native-reanimated": "^2.0.0-alpha.5",
+    "react-native-redash": "^16.2.2",
+    "react-native-svg": "^12.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.11.4",

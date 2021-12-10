@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import Animated, {
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
-import { Svg, Line, LineProps } from 'react-native-svg';
+import { Line, LineProps, Svg } from 'react-native-svg';
 import { useChartData } from '../../helpers/useChartData';
 import withReanimatedFallback from '../../helpers/withReanimatedFallback';
 import { FIX_CLIPPED_PATH_MAGIC_NUMBER } from './ChartPath';
@@ -15,7 +15,7 @@ interface ChartLineProps extends LineProps {
 }
 
 function ChartLineFactory(orientation: 'horizontal' | 'vertical') {
-  const isVertical = orientation == 'vertical';
+  const isVertical = orientation === 'vertical';
   const ChartLine: React.FC<ChartLineProps> = ({
     color = '#000000',
     thickness = 2,
@@ -56,8 +56,8 @@ function ChartLineFactory(orientation: 'horizontal' | 'vertical') {
             height: isVertical
               ? length + FIX_CLIPPED_PATH_MAGIC_NUMBER
               : thickness,
-            position: 'absolute',
             left: 0,
+            position: 'absolute',
             top: 0,
             width: isVertical ? thickness : length,
             zIndex: -1,
@@ -67,11 +67,11 @@ function ChartLineFactory(orientation: 'horizontal' | 'vertical') {
         <Svg>
           <Line
             stroke={color}
-            strokeWidth={thickness}
             strokeDasharray={10}
+            strokeWidth={thickness}
             x1={0}
-            y1={0}
             x2={isVertical ? 0 : length}
+            y1={0}
             y2={isVertical ? length + FIX_CLIPPED_PATH_MAGIC_NUMBER : 0}
             {...props}
           />

@@ -1,3 +1,6 @@
+/* eslint-disable eslint-comments/no-unlimited-disable */
+/* eslint-disable */
+
 // This is minimized version of this library
 // https://github.com/pbeshai/d3-interpolate-path/
 
