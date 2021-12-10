@@ -13,8 +13,14 @@ import store from '../redux/store';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import colors, { getRandomColor } from '../styles/colors';
 import {
+  addressKey,
+  allWalletsKey,
+  analyticsUserIdentifier,
   oldSeedPhraseMigratedKey,
   seedPhraseKey,
+  selectedWalletKey,
+  signingWallet,
+  signingWalletAddress,
 } from '../utils/keychainConstants';
 import {
   hasKey,
@@ -524,13 +530,13 @@ export default async function runMigrations() {
     try {
       const keys = await loadAllKeysOnly();
       const keysToMigrate = [
-        'analyticsUserIdentifier',
-        'rainbowAllWalletsKey',
-        'rainbowAddressKey',
-        'rainbowSelectedWalletKey',
-        'rainbowOldSeedPhraseMigratedKey',
-        'signingWallet',
-        'signingWalletAddress',
+        analyticsUserIdentifier,
+        allWalletsKey,
+        addressKey,
+        selectedWalletKey,
+        oldSeedPhraseMigratedKey,
+        signingWallet,
+        signingWalletAddress,
       ];
       // add existing signatures
       // which look like'signature_0x...'
