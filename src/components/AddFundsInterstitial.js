@@ -207,6 +207,11 @@ const AddFundsInterstitial = ({ network }) => {
     [isDamaged, navigate, accountAddress]
   );
 
+  const addFundsToAccountAddress = useCallback(
+    () => onAddFromFaucet(accountAddress),
+    [accountAddress]
+  );
+
   const handlePressCopyAddress = useCallback(() => {
     if (isDamaged) {
       showWalletErrorAlert();
@@ -271,7 +276,7 @@ const AddFundsInterstitial = ({ network }) => {
             faucet
           </Title>
           <Row marginTop={30}>
-            <InterstitialButton onPress={onAddFromFaucet(accountAddress)}>
+            <InterstitialButton onPress={addFundsToAccountAddress}>
               <Text
                 align="center"
                 color={colors.alpha(colors.blueGreyDark, 0.6)}
