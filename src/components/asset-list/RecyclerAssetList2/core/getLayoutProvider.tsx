@@ -50,18 +50,16 @@ class BetterLayoutProvider extends LayoutProvider {
 }
 
 const getLayoutProvider = (briefSectionsData: BaseCellType[]) => {
-  const indicesToOverride = briefSectionsData
-    .map((val, index) => {
-      if (
-        val.type === CellType.ASSETS_HEADER ||
-        val.type === CellType.NFTS_HEADER
-      ) {
-        return { index };
-      }
-      return undefined;
-    })
-    .filter(Boolean)
-    .map(wrapped => wrapped?.index) as number[];
+  const indicesToOverride = [];
+  for (let i = 0; i < briefSectionsData.length; i++) {
+    const val = briefSectionsData[i];
+    if (
+      val.type === CellType.ASSETS_HEADER ||
+      val.type === CellType.NFTS_HEADER
+    ) {
+      indicesToOverride.push(i);
+    }
+  }
 
   return new BetterLayoutProvider(
     index => briefSectionsData[index].type,

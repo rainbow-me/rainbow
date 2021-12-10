@@ -210,30 +210,33 @@ export const buildBriefCoinsList = (
     includePlaceholder,
     emptyCollectibles
   );
-  const briefAssets = assets?.reduce((acc, asset) => {
-    if (asset.coinDivider) {
-      acc.push({
-        type: 'COIN_DIVIDER',
-        uid: 'coin-divider',
-        value: smallBalancesValue,
-      });
-    } else if (asset.smallBalancesContainer) {
-      for (let smallAsset of asset.assets) {
-        acc.push({
+  const briefAssets = [];
+  if (assets) {
+    for (let asset of assets) {
+      if (asset.coinDivider) {
+        briefAssets.push({
+          type: 'COIN_DIVIDER',
+          uid: 'coin-divider',
+          value: smallBalancesValue,
+        });
+      } else if (asset.smallBalancesContainer) {
+        for (let smallAsset of asset.assets) {
+          briefAssets.push({
+            type: 'COIN',
+            uid: 'coin-' + smallAsset.uniqueId,
+            uniqueId: smallAsset.uniqueId,
+          });
+        }
+      } else {
+        briefAssets.push({
           type: 'COIN',
-          uid: 'coin-' + smallAsset.uniqueId,
-          uniqueId: smallAsset.uniqueId,
+          uid: 'coin-' + asset.uniqueId,
+          uniqueId: asset.uniqueId,
         });
       }
-    } else {
-      acc.push({
-        type: 'COIN',
-        uid: 'coin-' + asset.uniqueId,
-        uniqueId: asset.uniqueId,
-      });
     }
-    return acc;
-  }, []);
+  }
+
   return { briefAssets, totalBalancesValue };
 };
 
