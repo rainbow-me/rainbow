@@ -77,6 +77,21 @@ const getGasPricePollingInterval = (network: Network): number => {
   }
 };
 
+const getDefaultGasLimit = (
+  network: Network,
+  defaultGasLimit: number
+): number => {
+  switch (network) {
+    case Network.arbitrum:
+      return ethUnits.arbitrum_basic_tx;
+    case Network.polygon:
+    case Network.optimism:
+    case Network.mainnet:
+    default:
+      return defaultGasLimit;
+  }
+};
+
 let gasPricesHandle: NodeJS.Timeout | null = null;
 
 interface GasState {
@@ -255,7 +270,7 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
 
   const { assets } = getState().data;
   const { nativeCurrency } = getState().settings;
-  const _gasLimit = gasLimit || defaultGasLimit;
+  const _gasLimit = gasLimit || getDefaultGasLimit(txNetwork, defaultGasLimit);
 
   const nativeTokenPriceUnit =
     txNetwork !== Network.polygon
@@ -421,7 +436,8 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
               if (!gasFeeParamsBySpeed) return;
 
               const _selectedGasFeeOption = selectedGasFee.option || NORMAL;
-              const _gasLimit = gasLimit || defaultGasLimit;
+              const _gasLimit =
+                gasLimit || getDefaultGasLimit(txNetwork, defaultGasLimit);
               const {
                 isSufficientGas: updatedIsSufficientGas,
                 selectedGasFee: updatedSelectedGasFee,
@@ -488,7 +504,9 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
                   gasFeeParamsBySpeed[CUSTOM] = gasFeeParamsBySpeed[URGENT];
                 }
                 const _selectedGasFeeOption = selectedGasFee.option || NORMAL;
-                const _gasLimit = gasLimit || defaultGasLimit;
+                const _gasLimit =
+                  gasLimit || getDefaultGasLimit(txNetwork, defaultGasLimit);
+
                 const {
                   isSufficientGas,
                   selectedGasFee: updatedSelectedGasFee,
@@ -622,7 +640,7 @@ export const gasUpdateTxFee = (
     } else {
       const _selectedGasFeeOption =
         overrideGasOption || selectedGasFee.option || NORMAL;
-      const _gasLimit = updatedGasLimit || gasLimit || defaultGasLimit;
+      const _gasLimit = updatedGasLimit || gasLimit || getDefaultGasLimit(txNetwork, defaultGasLimit);
 
       const {
         isSufficientGas,
