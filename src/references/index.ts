@@ -64,6 +64,7 @@ export const RAINBOW_PROFILES_BASE_URL = 'https://rainbow.me';
 
 export const ETH_COINGECKO_ID = 'ethereum';
 export const ETH_ADDRESS = 'eth';
+export const ETH_SYMBOL = 'ETH';
 export const ARBITRUM_ETH_ADDRESS =
   '0x0000000000000000000000000000000000000000';
 export const OPTIMISM_ETH_ADDRESS =

@@ -8,7 +8,7 @@ import ChainBadge from './coin-icon/ChainBadge';
 import { Column, Row } from './layout';
 import { Text } from './text';
 import { isL2Asset } from '@rainbow-me/handlers/assets';
-import { ETH_ADDRESS } from '@rainbow-me/references';
+import { ETH_ADDRESS, ETH_SYMBOL } from '@rainbow-me/references';
 import { padding, position } from '@rainbow-me/styles';
 
 const L2Disclaimer = ({
@@ -59,7 +59,7 @@ const L2Disclaimer = ({
                 size="small"
               />
             ) : (
-              <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_ADDRESS} />
+              <CoinIcon address={ETH_ADDRESS} size={20} symbol={ETH_SYMBOL} />
             )}
           </Column>
           <Column flex={1} justify="center" marginHorizontal={8}>
