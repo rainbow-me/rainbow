@@ -45,6 +45,7 @@ export default function useManageCloudBackups() {
                 .replace('backup_', '')
                 .replace('.json', '')
                 .replace('.icloud', '')
+                .replace('rainbow.me/wallet-backups/','')
             );
             const date = new Date(ts);
             const name = `Backup ${i + 1} - ${date.toLocaleDateString()}`;
