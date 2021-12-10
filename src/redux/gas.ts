@@ -11,6 +11,7 @@ import {
   ConfirmationTimeByPriorityFee,
   CurrentBlockParams,
   GasFee,
+  GasFeeParam,
   GasFeeParams,
   GasFeeParamsBySpeed,
   GasFeesBySpeed,
@@ -161,7 +162,7 @@ const getSelectedGasFee = (
 
 const getUpdatedGasFeeParams = (
   assets: any[],
-  currentBlockParams: CurrentBlockParams,
+  currentBaseFee: GasFeeParam,
   gasFeeParamsBySpeed: GasFeeParamsBySpeed | LegacyGasFeeParamsBySpeed,
   gasLimit: string,
   nativeCurrency: string,
@@ -186,7 +187,7 @@ const getUpdatedGasFeeParams = (
       )
     : parseGasFeesBySpeed(
         gasFeeParamsBySpeed as GasFeeParamsBySpeed,
-        currentBlockParams?.baseFeePerGas,
+        currentBaseFee,
         gasLimit,
         nativeTokenPriceUnit,
         nativeCurrency
@@ -383,10 +384,10 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
           gasLimit,
           selectedGasFee,
           txNetwork,
-          currentBlockParams,
           isSufficientGas: lastIsSufficientGas,
           selectedGasFee: lastSelectedGasFee,
           gasFeesBySpeed: lastGasFeesBySpeed,
+          currentBlockParams,
           l1GasFeeOptimism,
         } = getState().gas;
         const { assets } = getState().data;
@@ -420,7 +421,7 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
           } = dataIsReady
             ? getUpdatedGasFeeParams(
                 assets,
-                currentBlockParams,
+                currentBlockParams?.baseFeePerGas,
                 gasFeeParamsBySpeed,
                 _gasLimit,
                 nativeCurrency,
@@ -487,7 +488,7 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
               gasFeesBySpeed,
             } = getUpdatedGasFeeParams(
               assets,
-              currentBlockParams,
+              currentBaseFee,
               gasFeeParamsBySpeed,
               _gasLimit,
               nativeCurrency,
@@ -615,7 +616,7 @@ export const gasUpdateTxFee = (
       gasFeesBySpeed,
     } = getUpdatedGasFeeParams(
       assets,
-      currentBlockParams,
+      currentBlockParams?.baseFeePerGas,
       gasFeeParamsBySpeed,
       _gasLimit,
       nativeCurrency,
