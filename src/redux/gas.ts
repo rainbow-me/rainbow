@@ -631,6 +631,7 @@ export const gasUpdateTxFee = (
         gasFeesBySpeed,
         gasLimit: _gasLimit,
         isSufficientGas,
+        l1GasFeeOptimism,
         selectedGasFee: updatedSelectedGasFee,
         transactionUniqueId: id,
       },
