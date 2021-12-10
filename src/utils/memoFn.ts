@@ -12,10 +12,13 @@
  * @param {Function} fn - pure function with at least single argument
  * @returns {Function} - same function with a cache
  */
-export default function memoFn(fn) {
+export default function memoFn(fn: {
+  name: any;
+  apply: (arg0: null, arg1: any[]) => any;
+}) {
   const cache = {};
 
-  return (...args) => {
+  return (...args: any[]) => {
     // if no arguments used we just want the developer and run the function as is
     if (args.length === 0) {
       if (__DEV__) {
@@ -53,16 +56,18 @@ export default function memoFn(fn) {
       }
     }
 
-    const key = `key ${args.join(' , ')}`;
-
+    const key: any = `key ${args.join(' , ')}`;
+    // @ts-expect-error
     if (cache[key]) {
       // For debugging
       // console.log('Used cached', key, cachedResult++);
       // return cached result
+      // @ts-expect-error
       return cache[key];
     } else {
       const res = fn.apply(null, args);
       // store in cache for future usage
+      // @ts-expect-error
       cache[key] = res;
       return res;
     }
