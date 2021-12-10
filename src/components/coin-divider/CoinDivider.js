@@ -20,6 +20,7 @@ import { emitChartsRequest } from '@rainbow-me/redux/explorer';
 import { padding } from '@rainbow-me/styles';
 
 export const CoinDividerHeight = 30;
+export const CoinDividerContainerHeight = CoinDividerHeight + 11;
 
 const Container = styled(Row).attrs({
   align: 'center',
@@ -28,7 +29,7 @@ const Container = styled(Row).attrs({
   ${padding(5, 19, 6)};
   background-color: ${({ isSticky, theme: { colors } }) =>
     isSticky ? colors.white : colors.transparent};
-  height: ${CoinDividerHeight + 11};
+  height: ${CoinDividerContainerHeight};
   width: ${({ deviceWidth }) => deviceWidth};
 `;
 

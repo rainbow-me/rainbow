@@ -338,7 +338,10 @@ export const buildBriefUniqueTokenList = (
   const families2 = sortBy(Object.keys(grouped2), row =>
     row.replace(regex, '').toLowerCase()
   );
-  const result = [{ type: 'NFTS_HEADER', uid: 'nfts-header' }];
+  const result = [
+    { type: 'SPACE_20PX', uid: 'nfts-header-space-before' },
+    { type: 'NFTS_HEADER', uid: 'nfts-header' },
+  ];
   if (uniqueTokensInShowcase.length > 0) {
     result.push({ name: 'Showcase', type: 'FAMILY_HEADER', uid: 'showcase' });
     for (let token of uniqueTokensInShowcase) {
@@ -354,8 +357,15 @@ export const buildBriefUniqueTokenList = (
       uid: family,
     });
     const tokens = grouped2[family].map(({ uniqueId }) => uniqueId);
-    for (let token of tokens) {
-      result.push({ type: 'NFT', uid: token, uniqueId: token });
+    for (let index = 0; index < tokens.length; index++) {
+      const uniqueId = tokens[index];
+
+      result.push({
+        index,
+        type: 'NFT',
+        uid: uniqueId,
+        uniqueId,
+      });
     }
   }
   return result;

@@ -28,7 +28,7 @@ function CellDataProvider({
   children,
 }: {
   uid: string;
-  children: (data: object) => React.ReactElement;
+  children: (data: object) => React.ReactElement | null;
 }) {
   const data = useAdditionalRecyclerAssetListData(uid);
   return children(data);
@@ -79,6 +79,8 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
             );
           case CellType.NFTS_HEADER:
             return <AssetListHeader title="Collectibles" />;
+          case CellType.SPACE_20PX:
+            return null;
           case CellType.FAMILY_HEADER: {
             const { name, image, total } = data as NFTFamilyExtraData;
             return (
@@ -89,8 +91,16 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
               />
             );
           }
-          case CellType.NFT:
-            return <WrappedNFT uniqueId={(data as NFTExtraData).uniqueId} />;
+          case CellType.NFT: {
+            const { index, uniqueId } = data as NFTExtraData;
+
+            return (
+              <WrappedNFT
+                placement={index % 2 === 0 ? 'left' : 'right'}
+                uniqueId={uniqueId}
+              />
+            );
+          }
           case CellType.LOADING_ASSETS:
             return <AssetListItemSkeleton />;
         }

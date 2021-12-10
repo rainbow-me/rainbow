@@ -13,6 +13,7 @@ export enum CellType {
   FAMILY_HEADER = 'FAMILY_HEADER',
   NFT = 'NFT',
   LOADING_ASSETS = 'LOADING_ASSETS',
+  SPACE_20PX = 'SPACE_20PX',
 }
 export type RecyclerListViewRef = RecyclerListView<
   RecyclerListViewProps,
@@ -43,7 +44,11 @@ export type PoolsHeaderExtraData = {
   value: number;
 };
 export type CoinExtraData = { type: CellType.COIN; uniqueId: string };
-export type NFTExtraData = { type: CellType.NFT; uniqueId: string };
+export type NFTExtraData = {
+  type: CellType.NFT;
+  index: number;
+  uniqueId: string;
+};
 export type NFTFamilyExtraData = {
   type: CellType.FAMILY_HEADER;
   name: string;

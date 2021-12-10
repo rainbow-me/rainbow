@@ -1,11 +1,11 @@
 import React from 'react';
 import { UniqueTokenCard } from '../../unique-token';
-import { Inset } from '@rainbow-me/design-system';
+import { Box } from '@rainbow-me/design-system';
 import { useAsset, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
-export default function WrappedNFT({ uniqueId }) {
+export default function WrappedNFT({ uniqueId, placement }) {
   const asset = useAsset({ type: 'nft', uniqueId });
   const { isReadOnlyWallet } = useWallets();
   const { navigate } = useNavigation();
@@ -27,9 +27,20 @@ export default function WrappedNFT({ uniqueId }) {
     [isReadOnlyWallet, navigate]
   );
 
+  const placementProps =
+    placement === 'left'
+      ? {
+          alignItems: 'flex-start',
+          paddingLeft: '19px',
+        }
+      : {
+          alignItems: 'flex-end',
+          paddingRight: '19px',
+        };
+
   return (
-    <Inset space="15px">
+    <Box flexGrow={1} justifyContent="center" {...placementProps}>
       <UniqueTokenCard item={asset} onPress={handleItemPress} />
-    </Inset>
+    </Box>
   );
 }
