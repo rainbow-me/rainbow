@@ -227,6 +227,12 @@ export default function FeesPanel({
 
   const { maxFee, currentBaseFee, maxBaseFee, maxPriorityFee } = useMemo(() => {
     const maxFee = selectedGasFee?.gasFee?.maxFee?.native?.value?.display || 0;
+    console.log(
+      '😵‍😵‍😵‍ currentBlockParams?.baseFeePerGas?.gwei',
+      currentBlockParams?.baseFeePerGas?.gwei
+    );
+    console.log('😵‍😵‍😵‍ currentBlockParams', currentBlockParams);
+
     const currentBaseFee = currentBlockParams?.baseFeePerGas?.gwei || 0;
 
     let maxBaseFee;
@@ -314,10 +320,10 @@ export default function FeesPanel({
     [colors, openGasHelper, selectedOptionIsCustom]
   );
 
-  const formattedBaseFee = useMemo(
-    () => `${toFixedDecimals(currentBaseFee, 0)} Gwei`,
-    [currentBaseFee]
-  );
+  const formattedBaseFee = useMemo(() => {
+    console.log('----- currentBaseFee', currentBaseFee);
+    return `${toFixedDecimals(currentBaseFee, 0)} Gwei`;
+  }, [currentBaseFee]);
 
   const handleMaxBaseInputGweiPress = useCallback(
     () => setLastFocusedInputHandle(maxBaseFieldRef),
