@@ -27,6 +27,7 @@ import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider } from 'react-redux';
+import { RecoilRoot } from 'recoil';
 import PortalConsumer from './components/PortalConsumer';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
 import { FlexItem } from './components/layout';
@@ -282,19 +283,21 @@ class App extends Component {
           <Portal>
             <SafeAreaProvider>
               <Provider store={store}>
-                <SharedValuesProvider>
-                  <FlexItem>
-                    {this.state.initialRoute && (
-                      <InitialRouteContext.Provider
-                        value={this.state.initialRoute}
-                      >
-                        <RoutesComponent ref={this.handleNavigatorRef} />
-                        <PortalConsumer />
-                      </InitialRouteContext.Provider>
-                    )}
-                    <OfflineToast />
-                  </FlexItem>
-                </SharedValuesProvider>
+                <RecoilRoot>
+                  <SharedValuesProvider>
+                    <FlexItem>
+                      {this.state.initialRoute && (
+                        <InitialRouteContext.Provider
+                          value={this.state.initialRoute}
+                        >
+                          <RoutesComponent ref={this.handleNavigatorRef} />
+                          <PortalConsumer />
+                        </InitialRouteContext.Provider>
+                      )}
+                      <OfflineToast />
+                    </FlexItem>
+                  </SharedValuesProvider>
+                </RecoilRoot>
               </Provider>
             </SafeAreaProvider>
           </Portal>

@@ -7,7 +7,6 @@ import arbitrumExplorer from './arbitrumExplorer';
 import charts from './charts';
 import contacts from './contacts';
 import data from './data';
-import editOptions from './editOptions';
 import explorer from './explorer';
 import fallbackExplorer from './fallbackExplorer';
 import gas from './gas';
@@ -40,7 +39,6 @@ export default combineReducers({
   charts,
   contacts,
   data,
-  editOptions,
   explorer,
   fallbackExplorer,
   gas,
