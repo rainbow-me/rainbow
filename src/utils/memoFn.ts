@@ -1,4 +1,6 @@
-// let cachedResult = 0;
+// let cachedCalls = 0;
+
+import logger from './logger';
 
 /**
  * Memoization wrapper for common used PURE helper functions.
@@ -12,21 +14,25 @@
  * @param {Function} fn - pure function with at least single argument
  * @returns {Function} - same function with a cache
  */
-export default function memoFn(fn) {
-  const cache = {};
+export function memoFn<TArgs extends unknown[], TReturn extends unknown>(
+  fn: (...args: TArgs) => TReturn
+): typeof fn {
+  const cache = new Map<string, TReturn>();
 
-  return (...args) => {
+  // let cachedCall = 0;
+
+  return function memoized(this: ThisType<typeof fn>, ...args: TArgs): TReturn {
     // if no arguments used we just want the developer and run the function as is
     if (args.length === 0) {
       if (__DEV__) {
-        // eslint-disable-next-line no-console
-        console.warn(
+        logger.warn(
           `memoized function ${fn.name} was called with no arguments`
         );
       }
 
       // Call it anyway to not break stuff
-      return fn.apply(null, args);
+      // eslint-disable-next-line babel/no-invalid-this
+      return fn.apply(this, args);
     }
 
     // we check for arguments to be number/boolean/string
@@ -38,32 +44,35 @@ export default function memoFn(fn) {
         typeof arg !== 'string'
       ) {
         if (__DEV__) {
-          // eslint-disable-next-line no-console
-          console.warn(
+          logger.warn(
             `memoized function ${
               fn.name
             } was called with non-supported arguments: ${JSON.stringify(
               args
-            )}. Typeof of ${typeof arg}`
+            )}. Typeof of ${i + 1} argument is ${typeof arg}`
           );
         }
 
         // Call it anyway to not break stuff
-        return fn.apply(null, args);
+        // eslint-disable-next-line babel/no-invalid-this
+        return fn.apply(this, args);
       }
     }
 
     const key = `key ${args.join(' , ')}`;
 
-    if (cache[key]) {
+    if (cache.has(key)) {
       // For debugging
-      // console.log('Used cached', key, cachedResult++);
+      // logger.log(`Used cached ${cachedCall++} times result for function  ${fn.name} with arguments ${key});
+      // logger.log('Total cached', cachedCalls++);
       // return cached result
-      return cache[key];
+
+      return cache.get(key)!; // we did a check for that key already
     } else {
-      const res = fn.apply(null, args);
+      // eslint-disable-next-line babel/no-invalid-this
+      const res = fn.apply(this, args);
       // store in cache for future usage
-      cache[key] = res;
+      cache.set(key, res);
       return res;
     }
   };
