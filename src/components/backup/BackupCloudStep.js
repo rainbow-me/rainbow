@@ -253,16 +253,6 @@ export default function BackupCloudStep() {
     goBack();
   }, [goBack, isSettingsRoute, password]);
 
-  const showExplainerConfirmation = useCallback(async () => {
-    navigate(Routes.EXPLAIN_SHEET, { type: 'backup', onClose: () => {
-      InteractionManager.runAfterInteractions(() => {
-        setTimeout(() => {
-          onConfirmBackup();
-        }, 250);
-      });
-    }});
-  }, [navigate]);
-
   const onConfirmBackup = useCallback(async () => {
     analytics.track('Tapped "Confirm Backup"');
 
@@ -272,7 +262,20 @@ export default function BackupCloudStep() {
       password,
       walletId,
     });
-  }, [navigate, onError, onSuccess, password, walletCloudBackup, walletId]);
+  }, [onError, onSuccess, password, walletCloudBackup, walletId]);
+
+  const showExplainerConfirmation = useCallback(async () => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      onClose: () => {
+        InteractionManager.runAfterInteractions(() => {
+          setTimeout(() => {
+            onConfirmBackup();
+          }, 250);
+        });
+      },
+      type: 'backup',
+    });
+  }, [navigate, onConfirmBackup]);
 
   const onConfirmPasswordSubmit = useCallback(() => {
     validPassword && showExplainerConfirmation();
