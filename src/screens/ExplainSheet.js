@@ -219,7 +219,7 @@ export const explainers = network => ({
   },
   backup: {
     emoji: '🔐',
-    extraHeight: -50,
+    extraHeight: 20,
     text: BACKUP_EXPLAINER,
     title: 'Important',
   },
