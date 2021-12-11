@@ -1,5 +1,5 @@
-import { useChartData } from '@rainbow-me/animated-charts';
 import { useDerivedValue } from 'react-native-reanimated';
+import { useChartData } from '@rainbow-me/animated-charts';
 
 export function useRatio() {
   const { originalY, data } = useChartData();

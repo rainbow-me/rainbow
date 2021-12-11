@@ -26,7 +26,9 @@ module.exports = {
   extends: 'rainbow',
   settings: {
     'import/resolver': {
-      node: {
+      // eslint wants it to be `'node'` but prettier `node`
+      // prettier-ignore
+      'node': {
         extensions: [
           '.js',
           '.ios.js',
