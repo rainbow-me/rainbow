@@ -45,6 +45,7 @@ export const staticSignatureLRU = new LRUCache<string, string>(capacity);
 interface ImgOptions {
   w?: number;
   h?: number;
+  fm?: string;
 }
 
 const shouldSignUri = (
@@ -56,12 +57,15 @@ const shouldSignUri = (
     // will not exist if the .env hasn't been configured correctly.
     if (staticImgixClient) {
       // Attempt to sign the image.
-      let updatedOptions = {};
+      let updatedOptions: ImgOptions = {};
       if (options?.w && options?.h) {
         updatedOptions = {
           h: PixelRatio.getPixelSizeForLayoutSize(options.h),
           w: PixelRatio.getPixelSizeForLayoutSize(options.w),
         };
+      }
+      if (options?.fm) {
+        updatedOptions.fm = options.fm;
       }
       const signedExternalImageUri = staticImgixClient.buildURL(
         externalImageUri,
@@ -141,9 +145,9 @@ export const maybeSignSource = (source: Source, options?: {}): Source => {
   return source;
 };
 
-export const svgToLQPng = (url: string) => {
+export const imageToPng = (url: string, w: number) => {
   return staticImgixClient?.buildURL(url, {
     fm: 'png',
-    w: 200,
+    w: w,
   });
 };

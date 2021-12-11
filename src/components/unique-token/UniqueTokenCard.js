@@ -70,9 +70,9 @@ const UniqueTokenCard = ({
         <UniqueTokenImage
           backgroundColor={item.background || colors.lightestGrey}
           imageUrl={lowResUrl}
+          isCard
           item={item}
           resizeMode={resizeMode}
-          shouldRasterizeIOS
           size={width}
           small={smallENSName}
         />
