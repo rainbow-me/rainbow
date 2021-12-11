@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { concat, isEmpty, without } from 'lodash';
+import { concat, isEmpty, unionBy, without } from 'lodash';
 /* eslint-disable-next-line import/no-cycle */
 import { dataUpdateAssets } from './data';
 import {
@@ -12,7 +12,7 @@ import {
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '@rainbow-me/handlers/opensea-api';
-//import { fetchPoaps } from '@rainbow-me/handlers/poap';
+import { fetchPoaps } from '@rainbow-me/handlers/poap';
 
 import NetworkTypes from '@rainbow-me/networkTypes';
 import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
@@ -120,8 +120,10 @@ export const fetchUniqueTokens = showcaseAddress => async (
         });
       }
       if (shouldStopFetching) {
-        //const poaps = await fetchPoaps(accountAddress);
-        //uniqueTokens = concat(uniqueTokens, poaps);
+        const poaps = await fetchPoaps(accountAddress);
+        if (poaps.length > 0) {
+          uniqueTokens = unionBy(uniqueTokens, poaps, 'uniqueId');
+        }
 
         if (!shouldUpdateInBatches) {
           dispatch({
