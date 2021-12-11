@@ -3,7 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Keyboard } from 'react-native';
+import { InteractionManager, Keyboard } from 'react-native';
 import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
 import { isSamsungGalaxy } from '../../helpers/samsung';
@@ -253,9 +253,19 @@ export default function BackupCloudStep() {
     goBack();
   }, [goBack, isSettingsRoute, password]);
 
+  const showExplainerConfirmation = useCallback(async () => {
+    navigate(Routes.EXPLAIN_SHEET, { type: 'backup', onClose: () => {
+      InteractionManager.runAfterInteractions(() => {
+        setTimeout(() => {
+          onConfirmBackup();
+        }, 250);
+      });
+    }});
+  }, [navigate]);
+
   const onConfirmBackup = useCallback(async () => {
     analytics.track('Tapped "Confirm Backup"');
-    navigate(Routes.EXPLAIN_SHEET, { type: 'backup' });
+
     await walletCloudBackup({
       onError,
       onSuccess,
@@ -265,14 +275,14 @@ export default function BackupCloudStep() {
   }, [navigate, onError, onSuccess, password, walletCloudBackup, walletId]);
 
   const onConfirmPasswordSubmit = useCallback(() => {
-    validPassword && onConfirmBackup();
-  }, [onConfirmBackup, validPassword]);
+    validPassword && showExplainerConfirmation();
+  }, [showExplainerConfirmation, validPassword]);
 
   return (
     <BackupSheetKeyboardLayout
       footerButtonDisabled={!validPassword}
       footerButtonLabel={label}
-      onSubmit={onConfirmBackup}
+      onSubmit={showExplainerConfirmation}
     >
       <Masthead isTallPhone={isTallPhone} isTinyPhone={isTinyPhone}>
         {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
