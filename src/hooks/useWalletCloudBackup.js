@@ -57,10 +57,9 @@ export default function useWalletCloudBackup() {
         analytics.track('iCloud not enabled', {
           category: 'backup',
         });
-        Alert.alert(
+         Alert.alert(
           'iCloud Not Enabled',
-          `Looks like iCloud drive is not enabled on your device.
-          Do you want to see how to enable it?`,
+          `Looks like iCloud drive is not enabled on your device.\n\n Do you want to see how to enable it?`,
           [
             {
               onPress: () => {
@@ -82,9 +81,11 @@ export default function useWalletCloudBackup() {
             },
           ]
         );
+        console.log('iCloud not enabled');
         return;
       }
 
+      console.log('iCloud enabled');
       if (!password && !latestBackup) {
         // No password, No latest backup meaning
         // it's a first time backup so we need to show the password sheet
