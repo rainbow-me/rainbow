@@ -1,6 +1,6 @@
 import { CoinDividerContainerHeight } from '../../../coin-divider';
 import { CoinRowHeight, SavingsCoinRowHeight } from '../../../coin-row';
-import SavingsListHeader from '../../../savings/SavingsListHeader';
+import { SavingsListHeader } from '../../../savings';
 import { TokenFamilyHeaderHeight } from '../../../token-family';
 import { UniqueTokenRow } from '../../../unique-token';
 import { AssetListHeaderHeight } from '../../AssetListHeader';
