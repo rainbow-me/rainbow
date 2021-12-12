@@ -351,6 +351,8 @@ export const buildBriefUniqueTokenList = (
     for (let token of uniqueTokensInShowcase) {
       result.push({ type: 'NFT', uid: token, uniqueId: token });
     }
+
+    result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
   }
   for (let family of families2) {
     result.push({
