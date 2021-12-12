@@ -342,8 +342,9 @@ export const buildBriefUniqueTokenList = (
     row.replace(regex, '').toLowerCase()
   );
   const result = [
-    { type: 'SPACE_20PX', uid: 'nfts-header-space-before' },
+    { type: 'NFTS_HEADER_SPACE_BEFORE', uid: 'nfts-header-space-before' },
     { type: 'NFTS_HEADER', uid: 'nfts-header' },
+    { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
   ];
   if (uniqueTokensInShowcase.length > 0) {
     result.push({ name: 'Showcase', type: 'FAMILY_HEADER', uid: 'showcase' });
@@ -370,6 +371,8 @@ export const buildBriefUniqueTokenList = (
         uniqueId,
       });
     }
+
+    result.push({ type: 'NFT_SPACE_AFTER', uid: `${family}-space-after` });
   }
   return result;
 };

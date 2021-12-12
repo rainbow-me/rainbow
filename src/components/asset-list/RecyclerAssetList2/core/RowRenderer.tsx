@@ -39,8 +39,11 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
     <CellDataProvider uid={uid}>
       {data => {
         switch (type) {
-          case CellType.SPACE_7PX:
-          case CellType.SPACE_20PX:
+          case CellType.ASSETS_HEADER_SPACE_AFTER:
+          case CellType.NFT_SPACE_AFTER:
+          case CellType.NFTS_HEADER_SPACE_AFTER:
+          case CellType.NFTS_HEADER_SPACE_BEFORE:
+          case CellType.SAVINGS_HEADER_SPACE_BEFORE:
             return null;
           case CellType.COIN_DIVIDER:
             return (
