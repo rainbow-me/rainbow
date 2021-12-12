@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from '../animations';
 import CoinDividerButtonLabel from '../coin-divider/CoinDividerButtonLabel';
 import { ContextMenu } from '../context-menu';
 import { Column, Row } from '../layout';
-import SavingsListHeader from '../savings/SavingsListHeader';
+import { SavingsListHeader } from '../savings';
 import { H1 } from '../text';
 import {
   useAccountProfile,

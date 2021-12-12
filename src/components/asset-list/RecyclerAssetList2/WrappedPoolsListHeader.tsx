@@ -1,6 +1,6 @@
 import React from 'react';
 
-import SavingsListHeader from '../../savings/SavingsListHeader';
+import { SavingsListHeader } from '../../savings';
 import { useOpenInvestmentCards } from '@rainbow-me/hooks';
 
 export default React.memo(function WrappedPoolsListHeader({
