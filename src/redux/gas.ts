@@ -640,7 +640,10 @@ export const gasUpdateTxFee = (
     } else {
       const _selectedGasFeeOption =
         overrideGasOption || selectedGasFee.option || NORMAL;
-      const _gasLimit = updatedGasLimit || gasLimit || getDefaultGasLimit(txNetwork, defaultGasLimit);
+      const _gasLimit =
+        updatedGasLimit ||
+        gasLimit ||
+        getDefaultGasLimit(txNetwork, defaultGasLimit);
 
       const {
         isSufficientGas,
