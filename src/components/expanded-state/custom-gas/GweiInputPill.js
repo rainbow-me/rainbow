@@ -10,27 +10,33 @@ import { margin, padding } from '@rainbow-me/styles';
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
 const GweiPill = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
-  colors: colors.gradients.lighterGrey,
+  colors: colors.gradients.lightGreyTransparent,
   end: { x: 0.5, y: 1 },
   start: { x: 0, y: 0 },
 }))`
   border-radius: 15;
-  ${padding(10, 12)}
-  ${margin(0, 6)}
-  min-width: 105;
+  height: 40;
+  max-width: 130;
+  min-width: 108;
 `;
 
 const GweiNumberInput = styled(Input).attrs(({ theme: { colors }, value }) => ({
-  color: !value && colors.grey,
+  color: !value && colors.alpha(colors.blueGreyDark, 0.4),
   interval: 1,
-  letterSpacing: 'roundedTight',
+  keyboardAppearance: 'dark',
+  left: 22,
+  letterSpacing: 'rounded',
+  maxLength: 6,
+  paddingLeft: 28,
+  paddingRight: 72,
+  paddingVertical: 10.5,
   size: 'lmedium',
   steps: 1,
-  textAlign: 'center',
+  textAlign: 'left',
   timing: 'linear',
   weight: 'heavy',
 }))`
-  ${padding(0, 0, 0, 0)}
+  height: 100%;
   ${margin(
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0,
@@ -41,6 +47,7 @@ const GweiNumberInput = styled(Input).attrs(({ theme: { colors }, value }) => ({
 
 const GweiLabel = styled(Text).attrs(() => ({
   align: 'center',
+  pointerEvents: 'none',
   size: 'lmedium',
   weight: 'heavy',
 }))`
@@ -50,6 +57,8 @@ const GweiLabel = styled(Text).attrs(() => ({
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0
   )}
+  right: 50;
+  top: 10.5;
 `;
 
 function GweiInputPill(
@@ -60,8 +69,9 @@ function GweiInputPill(
   return (
     <ButtonPressAnimation onPress={onPress}>
       <GweiPill>
-        <Row alignSelf="center">
+        <Row alignSelf="center" marginHorizontal={-40}>
           <GweiNumberInput
+            contextMenuHidden
             keyboardType="numeric"
             onBlur={onBlur}
             onChange={onChange}
@@ -70,6 +80,8 @@ function GweiInputPill(
             placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.4)}
             ref={ref}
             selectionColor={color}
+            spellCheck={false}
+            style={{ color: colors.dark }}
             testID={testID}
             value={!!value && `${value}`}
           />
