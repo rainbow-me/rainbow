@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/core';
 import { compact, find, get, isEmpty, keys, map, toLower } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
-import { StatusBar } from 'react-native';
+import { InteractionManager, StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,7 +21,10 @@ import {
   useAccountEmptyState,
   useAccountSettings,
   useCoinListEdited,
+  useInitializeDiscoverData,
+  useInitializeProfileData,
   useInitializeWallet,
+  useLoadGlobalLateData,
   usePortfolios,
   useRefreshAccountData,
   useUserAccounts,
@@ -37,6 +40,7 @@ import {
 } from '@rainbow-me/redux/explorer';
 import { updatePositions } from '@rainbow-me/redux/usersPositions';
 import { position } from '@rainbow-me/styles';
+import logger from 'logger';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
@@ -67,6 +71,9 @@ export default function WalletScreen() {
   const { network } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
+  const loadGlobalLateData = useLoadGlobalLateData();
+  const initializeDiscoverData = useInitializeDiscoverData();
+  const initializeProfileData = useInitializeProfileData();
 
   const {
     isWalletEthZero,
@@ -151,6 +158,22 @@ export default function WalletScreen() {
       }
     }
   }, [assetsSocket, dispatch, fetchedCharts, initialized, sections]);
+
+  useEffect(() => {
+    if (initialized) {
+      InteractionManager.runAfterInteractions(() => {
+        logger.debug('WALLETSCREEN: loading deferred data');
+        loadGlobalLateData();
+        initializeDiscoverData();
+        initializeProfileData();
+      });
+    } 
+  }, [
+    loadGlobalLateData,
+    initializeDiscoverData,
+    initializeProfileData,
+    initialized,
+  ]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)

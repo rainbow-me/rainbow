@@ -2,27 +2,24 @@ import { captureException } from '@sentry/react-native';
 import { useCallback } from 'react';
 import { InteractionManager } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { userListsLoadState } from '../redux/userLists';
-import { topMoversLoadState } from '@rainbow-me/redux/topMovers';
+import { transactionSignaturesLoadState } from '@rainbow-me/redux/transactionSignatures';
 import logger from 'logger';
 
-export default function useInitializeDiscoverData() {
+export default function useInitializeProfileData() {
   const dispatch = useDispatch();
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
   );
 
-  const initializeDiscoverData = useCallback(async () => {
+  const initializeProfileData = useCallback(async () => {
     if (!walletReady) {
       logger.debug('🛑🛑🛑 DELAYING: Initializing discover data');
       return;
     }
-    logger.debug('Initializing discover data');
     try {
       InteractionManager.runAfterInteractions(() => {
-        // Other discover related actions should be triggered here
-        dispatch(userListsLoadState());
-        dispatch(topMoversLoadState());
+        // Other profile related actions should be triggered here
+        dispatch(transactionSignaturesLoadState());
       });
     } catch (error) {
       logger.sentry('Error initializing account data');
@@ -30,5 +27,5 @@ export default function useInitializeDiscoverData() {
     }
   }, [dispatch, walletReady]);
 
-  return initializeDiscoverData;
+  return initializeProfileData;
 }
