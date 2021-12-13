@@ -123,7 +123,7 @@ const AssetListHeader = ({
   }, [accountName, truncated]);
 
   return (
-    <StickyHeader name={title || 'Balances'}>
+    <StickyHeader name={title}>
       <ListHeader
         contextMenuOptions={contextMenuOptions}
         isCoinListEdited={isCoinListEdited}

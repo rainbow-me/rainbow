@@ -52,6 +52,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
           case CellType.ASSETS_HEADER:
             return (
               <AssetListHeader
+                title="Balances"
                 totalValue={(data as AssetsHeaderExtraData).value}
               />
             );
