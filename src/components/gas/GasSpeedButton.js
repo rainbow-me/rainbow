@@ -29,11 +29,12 @@ import { gasUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 const { GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST } = gasUtils;
 
 const CustomGasButton = styled(ButtonPressAnimation).attrs({
+  align: 'center',
   alignItems: 'center',
   hapticType: 'impactHeavy',
   height: 30,
   justifyContent: 'center',
-  scaleTo: 0.9,
+  scaleTo: 0.8,
 })`
   border-radius: 19;
   border: ${({ borderColor, color, theme: { colors } }) =>
@@ -42,6 +43,7 @@ const CustomGasButton = styled(ButtonPressAnimation).attrs({
 `;
 
 const Symbol = styled(Text).attrs({
+  align: 'center',
   alignItems: 'center',
   lineHeight: 'normal',
   size: 'lmedium',
@@ -51,22 +53,24 @@ const Symbol = styled(Text).attrs({
 `;
 
 const DoneCustomGas = styled(Text).attrs({
+  align: 'center',
   alignItems: 'center',
   justifyContent: 'center',
   lineHeight: 'normal',
   size: 'lmedium',
   weight: 'heavy',
 })`
-  ${padding(0, 0, 0, 0)}
-  ${margin(0, 10, 0, 10)}
+  ${padding(0)}
+  ${margin(0, 10)}
+  bottom: 0.5;
 `;
 
 const ChainBadgeContainer = styled.View.attrs({
   hapticType: 'impactHeavy',
   scaleTo: 0.9,
 })`
-  ${padding(0, 0)};
-  ${margin(0, 0, 0, 8)};
+  ${padding(0)};
+  ${margin(0)};
 `;
 
 const NativeCoinIconWrapper = styled(Column)`
@@ -78,7 +82,8 @@ const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
   justifyContent: 'center',
 })`
-  ${margin(android ? 8 : 19, 0)};
+  ${({ marginBottom }) =>
+    margin(android ? 8 : 18, 0, android ? 8 : marginBottom)};
   ${({ horizontalPadding }) => padding(0, horizontalPadding)};
   width: 100%;
 `;
@@ -114,8 +119,10 @@ const TransactionTimeLabel = ({ formatter, theme }) => {
 
 const GasSpeedButton = ({
   asset,
+  bottom = 0,
   currentNetwork,
-  horizontalPadding = 20,
+  horizontalPadding = 19,
+  marginBottom = 20,
   speeds = null,
   showGasOptions = false,
   testID,
@@ -229,7 +236,6 @@ const GasSpeedButton = ({
               ? colors.whiteLabel
               : colors.alpha(colors.blueGreyDark, 0.8)
           }
-          letterSpacing="roundedTight"
           lineHeight="normal"
           size="lmedium"
           weight="heavy"
@@ -276,7 +282,7 @@ const GasSpeedButton = ({
           timeSymbol = '<';
         }
 
-        return ` ${timeSymbol}${time} ${estimatedTimeUnit}`;
+        return `${timeSymbol}${time} ${estimatedTimeUnit}`;
       } else {
         return '';
       }
@@ -286,7 +292,7 @@ const GasSpeedButton = ({
       return '';
     }
 
-    return ` ${timeSymbol}${time} ${estimatedTimeUnit}`;
+    return `${timeSymbol}${time} ${estimatedTimeUnit}`;
   }, [
     estimatedTimeUnit,
     estimatedTimeValue,
@@ -470,7 +476,12 @@ const GasSpeedButton = ({
   }, [selectedGasFee, selectedGasFeeOption]);
 
   return (
-    <Container horizontalPadding={horizontalPadding} testID={testID}>
+    <Container
+      bottom={bottom}
+      horizontalPadding={horizontalPadding}
+      marginBottom={marginBottom}
+      testID={testID}
+    >
       <Row justify="space-between">
         <ButtonPressAnimation
           onPress={openGasHelper}
@@ -494,6 +505,11 @@ const GasSpeedButton = ({
                 timing="linear"
                 value={price}
               />
+            </Column>
+            <Column>
+              <Text letterSpacing="one" size="lmedium" weight="heavy">
+                {' '}
+              </Text>
             </Column>
             <Column>
               <TransactionTimeLabel
@@ -556,8 +572,8 @@ const GasSpeedButton = ({
               <CustomGasButton
                 borderColor={
                   theme === 'dark'
-                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.15)
-                    : colors.alpha(colors.blueGreyDark, 0.15)
+                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.12)
+                    : colors.alpha(colors.blueGreyDark, 0.06)
                 }
                 onPress={openCustomOptions}
                 testID="gas-speed-custom"
