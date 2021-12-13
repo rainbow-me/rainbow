@@ -1,9 +1,11 @@
 import { useCallback, useEffect } from 'react';
 import { useMMKVBoolean } from 'react-native-mmkv';
+import useAccountSettings from './useAccountSettings';
 
 export default function useOpenSmallBalances() {
+  const { accountAddress } = useAccountSettings();
   const [isSmallBalancesOpen, setIsSmallBalancesOpen] = useMMKVBoolean(
-    'small-balances-open'
+    'small-balances-open-' + accountAddress
   );
 
   const [stagger, setStagger] = useMMKVBoolean('small-balances-open-stagger');

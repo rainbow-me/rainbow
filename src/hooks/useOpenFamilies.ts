@@ -3,9 +3,9 @@ import { useMMKVObject } from 'react-native-mmkv';
 import useAccountSettings from './useAccountSettings';
 
 export default function useOpenFamilies() {
-  const { accountAddress: address } = useAccountSettings();
+  const { accountAddress } = useAccountSettings();
   const [openFamilies, setOpenFamilies] = useMMKVObject(
-    'open-families-' + address
+    'open-families-' + accountAddress
   );
 
   const updateOpenFamilies = useCallback(

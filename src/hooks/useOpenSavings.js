@@ -3,9 +3,9 @@ import { useMMKVBoolean } from 'react-native-mmkv';
 import useAccountSettings from './useAccountSettings';
 
 export default function useOpenSavings() {
-  const { accountAddress: address } = useAccountSettings();
+  const { accountAddress } = useAccountSettings();
   const [isSavingsOpen, setIsSavingsOpen] = useMMKVBoolean(
-    'savings-open-' + address
+    'savings-open-' + accountAddress
   );
 
   const toggleOpenSavings = useCallback(() => setIsSavingsOpen(prev => !prev), [
