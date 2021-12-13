@@ -24,7 +24,6 @@ const GweiNumberInput = styled(TextInputMask).attrs(
   ({ theme: { colors }, value }) => ({
     allowFontScaling: false,
     color: !value && colors.grey,
-    flex: 1,
     keyboardType: 'decimal-pad',
     letterSpacing: 'roundedTight',
     size: 'lmedium',
@@ -65,7 +64,7 @@ function GweiInputPill(
       <GweiPill>
         <GweiNumberInput
           keyboardType="numeric"
-          mask="[99999999999999999].[999999999999999999]"
+          mask="[9999].[999]"
           onBlur={onBlur}
           onChange={onChange}
           onFocus={onFocus}
