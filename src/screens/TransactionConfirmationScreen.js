@@ -12,14 +12,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  InteractionManager,
-  Vibration,
-} from 'react-native';
-
+import { ActivityIndicator, Alert, InteractionManager } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -338,7 +333,7 @@ export default function TransactionConfirmationScreen() {
 
   useEffect(() => {
     if (openAutomatically && !isEmulatorSync()) {
-      Vibration.vibrate();
+      ReactNativeHapticFeedback.trigger('notificationSuccess');
     }
     InteractionManager.runAfterInteractions(() => {
       if (network) {
