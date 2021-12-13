@@ -7,7 +7,7 @@ import { Row, RowWithMargins } from '../layout';
 import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
-import EditOptions from '@rainbow-me/helpers/editOptionTypes';
+import EditAction from '@rainbow-me/helpers/EditAction';
 import {
   useAccountSettings,
   useCoinListEdited,
@@ -107,18 +107,18 @@ export default function CoinDivider({ balancesSum, isSticky = false }) {
         </View>
         <CoinDividerButtonRow isCoinListEdited={isCoinListEdited}>
           <CoinDividerEditButton
-            isActive={currentAction !== EditOptions.none}
+            isActive={currentAction !== EditAction.none}
             isVisible={isCoinListEdited}
             onPress={setPinnedCoins}
             shouldReloadList
-            text={currentAction === EditOptions.unpin ? 'Unpin' : 'Pin'}
+            text={currentAction === EditAction.unpin ? 'Unpin' : 'Pin'}
           />
           <CoinDividerEditButton
-            isActive={currentAction !== EditOptions.none}
+            isActive={currentAction !== EditAction.none}
             isVisible={isCoinListEdited}
             onPress={setHiddenCoins}
             shouldReloadList
-            text={currentAction === EditOptions.unhide ? 'Unhide' : 'Hide'}
+            text={currentAction === EditAction.unhide ? 'Unhide' : 'Hide'}
           />
         </CoinDividerButtonRow>
       </Row>

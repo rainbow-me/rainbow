@@ -2,7 +2,7 @@ import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { ContextCircleButton } from '../../context-menu';
-import EditOptions from '@rainbow-me/helpers/editOptionTypes';
+import EditAction from '@rainbow-me/helpers/EditAction';
 import {
   useCoinListEditOptions,
   useCoinListFinishEditingOptions,
@@ -51,8 +51,8 @@ export default function ChartContextButton({ asset, color }) {
 
   const options = useMemo(
     () => [
-      `📌️ ${currentAction === EditOptions.unpin ? 'Unpin' : 'Pin'}`,
-      `🙈️ ${currentAction === EditOptions.unhide ? 'Unhide' : 'Hide'}`,
+      `📌️ ${currentAction === EditAction.unpin ? 'Unpin' : 'Pin'}`,
+      `🙈️ ${currentAction === EditAction.unhide ? 'Unhide' : 'Hide'}`,
       ...(asset?.isNativeAsset
         ? []
         : [

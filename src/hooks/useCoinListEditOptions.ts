@@ -4,7 +4,7 @@ import { useMMKVObject } from 'react-native-mmkv';
 import { useDispatch } from 'react-redux';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 import useAccountSettings from './useAccountSettings';
-import actions from '@rainbow-me/helpers/editOptionTypes';
+import EditAction from '@rainbow-me/helpers/EditAction';
 import { setHiddenCoins as reduxSetHiddenCoins } from '@rainbow-me/redux/editOptions';
 
 const selectedItemsAtom = atom<string[]>({
@@ -78,25 +78,25 @@ export function useCoinListFinishEditingOptions() {
     const newSelectedCoinsLength = selectedItems.length;
 
     if (newSelectedCoinsLength === 0) {
-      return actions.none;
+      return EditAction.none;
     } else if (
       newSelectedCoinsLength > 0 &&
       difference(hiddenCoins, selectedItems).length ===
         hiddenCoins.length - newSelectedCoinsLength
     ) {
-      return actions.unhide;
+      return EditAction.unhide;
     } else if (
       newSelectedCoinsLength > 0 &&
       difference(pinnedCoins, selectedItems).length ===
         pinnedCoins.length - newSelectedCoinsLength
     ) {
-      return actions.unpin;
+      return EditAction.unpin;
     } else {
-      return actions.standard;
+      return EditAction.standard;
     }
   }, [hiddenCoins, pinnedCoins, selectedItems]);
 
-  const currentActionNonReactive = useRef<actions>();
+  const currentActionNonReactive = useRef<keyof typeof EditAction>();
   currentActionNonReactive.current = currentAction;
 
   const setPinnedCoins = useCallback(() => {
@@ -105,7 +105,7 @@ export function useCoinListFinishEditingOptions() {
         ...pinnedCoins.filter(
           i => !selectedItemsNonReactive.current!.includes(i)
         ),
-        ...(currentActionNonReactive.current === actions.standard
+        ...(currentActionNonReactive.current === EditAction.standard
           ? selectedItemsNonReactive.current!
           : []),
       ];
@@ -121,7 +121,7 @@ export function useCoinListFinishEditingOptions() {
         ...hiddenCoins.filter(
           i => !selectedItemsNonReactive.current!.includes(i)
         ),
-        ...(currentActionNonReactive.current === actions.standard
+        ...(currentActionNonReactive.current === EditAction.standard
           ? selectedItemsNonReactive.current!
           : []),
       ];
