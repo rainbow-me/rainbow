@@ -99,8 +99,8 @@ const TopRow = ({ name, native, nativeCurrencySymbol }) => {
 };
 
 const BalanceCoinRow = ({
-  containerStyles,
-  isFirstCoinRow,
+  containerStyles = null,
+  isFirstCoinRow = false,
   item,
   ...props
 }) => {
