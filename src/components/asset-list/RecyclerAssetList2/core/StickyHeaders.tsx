@@ -39,7 +39,7 @@ export function StickyHeader({
   const { range, last } = interpolationsRanges[name] || {};
 
   const position = useRecyclerAssetListPosition();
-  const oldAnimatedStyle = useMemo(
+  const animatedStyle = useMemo(
     () => ({
       backgroundColor: 'white',
       transform: range
@@ -78,7 +78,7 @@ export function StickyHeader({
     return children;
   }
   return (
-    <RNAnimated.View onLayout={onLayout} ref={ref} style={oldAnimatedStyle}>
+    <RNAnimated.View onLayout={onLayout} ref={ref} style={animatedStyle}>
       {children}
     </RNAnimated.View>
   );
