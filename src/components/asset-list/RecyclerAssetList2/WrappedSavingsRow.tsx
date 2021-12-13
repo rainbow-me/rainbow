@@ -4,7 +4,11 @@ import useSavingsAccount from '../../../hooks/useSavingsAccount';
 import SavingsListRow from '../../savings/SavingsListRow';
 import { multiply } from '@rainbow-me/utilities';
 
-export default function WrappedSavingsRow({ address }: { address: string }) {
+export default React.memo(function WrappedSavingsRow({
+  address,
+}: {
+  address: string;
+}) {
   const { savings } = useSavingsAccount(true);
 
   const props = useMemo(() => {
@@ -33,4 +37,4 @@ export default function WrappedSavingsRow({ address }: { address: string }) {
   }, [address, savings]);
 
   return <SavingsListRow {...props} />;
-}
+});

@@ -24,7 +24,7 @@ const Context = React.createContext<
 
 export { Context as StickyHeaderContext };
 
-export function StickyHeader({
+function StickyHeaderInternal({
   name,
   children,
 }: {
@@ -127,3 +127,6 @@ export function StickyHeaderManager({ children }: { children: ReactElement }) {
   );
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }
+
+// @ts-ignore
+export const StickyHeader = React.memo(StickyHeaderInternal);

@@ -26,14 +26,13 @@ export default function useCoinListEditOptions() {
   const pushSelectedCoin = useCallback(
     (item: string) =>
       setSelectedItems(prev => {
-        return [...prev.filter(i => i !== item), item];
+        return prev.filter(i => i !== item).concat(item);
       }),
     [setSelectedItems]
   );
 
   const removeSelectedCoin = useCallback(
-    (item: string) =>
-      setSelectedItems(prev => [...prev.filter(i => i !== item)]),
+    (item: string) => setSelectedItems(prev => prev.filter(i => i !== item)),
     [setSelectedItems]
   );
 
@@ -41,9 +40,9 @@ export default function useCoinListEditOptions() {
     (item: string) =>
       setSelectedItems(prev => {
         if (prev.includes(item)) {
-          return [...prev.filter(i => i !== item)];
+          return prev.filter(i => i !== item);
         } else {
-          return [...prev, item];
+          return prev.concat(item);
         }
       }),
     [setSelectedItems]

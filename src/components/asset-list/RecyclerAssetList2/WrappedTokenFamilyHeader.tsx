@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { TokenFamilyHeader } from '../../token-family';
 import { useOpenFamilies } from '@rainbow-me/hooks';
 
-export default function WrappedTokenFamilyHeader({
+export default React.memo(function WrappedTokenFamilyHeader({
   name,
   total,
   image,
@@ -32,4 +32,4 @@ export default function WrappedTokenFamilyHeader({
       title={name}
     />
   );
-}
+});
