@@ -26,6 +26,7 @@ const GweiNumberInput = styled(TextInputMask).attrs(
     color: !value && colors.alpha(colors.blueGreyDark, 0.4),
     interval: 1,
     keyboardAppearance: 'dark',
+    keyboardType: 'decimal-pad',
     left: 22,
     letterSpacing: 'rounded',
     paddingLeft: 28,
@@ -74,8 +75,7 @@ function GweiInputPill(
         <Row alignSelf="center" marginHorizontal={-40}>
           <GweiNumberInput
             contextMenuHidden
-            keyboardType="decimal-pad"
-            mask="[9999].[999]"
+            mask="[9999]{.}[999]"
             onBlur={onBlur}
             onChange={onChange}
             onFocus={onFocus}
@@ -86,7 +86,7 @@ function GweiInputPill(
             spellCheck={false}
             style={{ color: colors.dark }}
             testID={testID}
-            value={!!value && `${value}`}
+            value={value}
           />
           <GweiLabel> Gwei</GweiLabel>
         </Row>
