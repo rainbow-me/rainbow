@@ -138,6 +138,7 @@ const GasSpeedButton = ({
     updateToCustomGasFee,
   } = useGas();
 
+  const [gasPriceReady, setGasPriceReady] = useState(false);
   const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
   const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
   const [shouldOpenCustomGasSheet, setShouldOpenCustomGasSheet] = useState({
@@ -176,6 +177,7 @@ const GasSpeedButton = ({
       if (animatedValue === null || isNaN(animatedValue)) {
         return 0;
       }
+      !gasPriceReady && setGasPriceReady(true);
       // L2's are very cheap,
       // so let's default to the last 2 significant decimals
       if (isL2) {
@@ -193,7 +195,7 @@ const GasSpeedButton = ({
         }`;
       }
     },
-    [isL2, nativeCurrencySymbol, nativeCurrency]
+    [gasPriceReady, isL2, nativeCurrencySymbol, nativeCurrency]
   );
 
   const openCustomOptions = useCallback(focusTo => {
@@ -260,6 +262,7 @@ const GasSpeedButton = ({
   );
 
   const formatTransactionTime = useCallback(() => {
+    if (!gasPriceReady) return '';
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
     let timeSymbol = '~';
 
@@ -291,6 +294,7 @@ const GasSpeedButton = ({
     estimatedTimeUnit,
     estimatedTimeValue,
     gasFeesBySpeed,
+    gasPriceReady,
     selectedGasFeeOption,
   ]);
 
