@@ -108,7 +108,6 @@ const BalanceCoinRow = ({
   ...props
 }) => {
   const { toggleSelectedCoin } = useCoinListEditOptions();
-  const isCoinListEdited = false;
   const isCoinListEditedSharedValue = useIsCoinListEditedSharedValue();
   const { navigate } = useNavigation();
 
@@ -117,7 +116,7 @@ const BalanceCoinRow = ({
   }, [item.uniqueId, toggleSelectedCoin]);
 
   const handlePress = useCallback(() => {
-    if (isCoinListEdited) {
+    if (isCoinListEditedSharedValue.value) {
       handleEditModePress();
     } else {
       navigate(Routes.EXPANDED_ASSET_SHEET, {
@@ -127,7 +126,7 @@ const BalanceCoinRow = ({
         type: 'token',
       });
     }
-  }, [navigate, handleEditModePress, isCoinListEdited, item]);
+  }, [navigate, handleEditModePress, item]);
 
   const paddingStyle = useAnimatedStyle(
     () => ({
