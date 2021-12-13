@@ -135,7 +135,6 @@ const GasSpeedButton = ({
     updateGasFeeOption,
     selectedGasFee,
     selectedGasFeeOption,
-    updateToCustomGasFee,
     currentBlockParams,
   } = useGas();
 
@@ -357,7 +356,12 @@ const GasSpeedButton = ({
       menuItems: menuOptions,
       menuTitle: '',
     };
-  }, [currentNetwork, gasFeeParamsBySpeed, speedOptions]);
+  }, [
+    currentBlockParams?.baseFeePerGas?.gwei,
+    currentNetwork,
+    gasFeeParamsBySpeed,
+    speedOptions,
+  ]);
 
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
     speedOptions,
