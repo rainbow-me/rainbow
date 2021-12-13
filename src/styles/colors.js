@@ -120,7 +120,7 @@ const getColorsByTheme = darkMode => {
     shadowGrey: '#6F6F6F', // '111, 111, 111'
     shimmer: '#EDEEF1', // '237, 238, 241'
     skeleton: '#F6F7F8', // '246, 247, 248'
-    stackBackground: '#0A0A0A', // '10, 10, 10'
+    stackBackground: '#000000', // '0, 0, 0'
     swapPurple: '#575CFF', // '87, 92, 255'
     transparent: 'transparent',
     trueBlack: '#000000', // '0, 0, 0'

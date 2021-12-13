@@ -195,7 +195,6 @@ export const restoreSheetConfig = {
 
     return buildCoolModalConfig({
       ...params,
-      backgroundColor: colors.themedColors.dark,
       longFormHeight: heightForStep,
     });
   },
