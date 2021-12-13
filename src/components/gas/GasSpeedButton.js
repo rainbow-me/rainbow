@@ -1,7 +1,7 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { isEmpty, isNaN, isNil, lowerCase, upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard } from 'react-native';
+import { InteractionManager, Keyboard } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
@@ -135,6 +135,7 @@ const GasSpeedButton = ({
     updateGasFeeOption,
     selectedGasFee,
     selectedGasFeeOption,
+    updateToCustomGasFee,
     currentBlockParams,
   } = useGas();
 
@@ -243,10 +244,11 @@ const GasSpeedButton = ({
 
   const handlePressSpeedOption = useCallback(
     selectedSpeed => {
-      if (selectedSpeed === CUSTOM) {
-        setShouldOpenCustomGasSheet({ focusTo: null, shouldOpen: true });
-      }
       updateGasFeeOption(selectedSpeed);
+      InteractionManager.runAfterInteractions(() => {
+        selectedSpeed === CUSTOM &&
+          setShouldOpenCustomGasSheet({ focusTo: null, shouldOpen: true });
+      });
     },
     [updateGasFeeOption]
   );
@@ -355,12 +357,7 @@ const GasSpeedButton = ({
       menuItems: menuOptions,
       menuTitle: '',
     };
-  }, [
-    currentBlockParams?.baseFeePerGas?.gwei,
-    currentNetwork,
-    gasFeeParamsBySpeed,
-    speedOptions,
-  ]);
+  }, [currentNetwork, gasFeeParamsBySpeed, speedOptions]);
 
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
     speedOptions,
