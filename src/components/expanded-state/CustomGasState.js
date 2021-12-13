@@ -20,12 +20,6 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import { margin } from '@rainbow-me/styles';
 
-const springConfig = {
-  damping: 500,
-  mass: 3,
-  stiffness: 1000,
-};
-
 const FOOTER_HEIGHT = 76;
 const CONTENT_HEIGHT = 310;
 
@@ -54,7 +48,6 @@ export default function CustomGasState({ asset }) {
   const { colors } = useTheme();
   const { height: deviceHeight } = useDimensions();
   const keyboardHeight = useKeyboardHeight();
-  const insets = useSafeArea();
   const colorForAsset = useColorForAsset(asset || {}, null, false, true);
   const { selectedGasFee, currentBlockParams } = useGas();
   const [canGoBack, setCanGoBack] = useState(true);
