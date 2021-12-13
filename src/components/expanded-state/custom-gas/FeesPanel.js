@@ -4,15 +4,10 @@ import { upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
 import styled, { useTheme } from 'styled-components';
 import { Alert } from '../../../components/alerts';
 import { ButtonPressAnimation } from '../../animations';
-import { Column, Row } from '../../layout';
+import { Column, ColumnWithMargins, Row } from '../../layout';
 import { Text } from '../../text';
 import FeesGweiInput from './FeesGweiInput';
 import {
@@ -52,7 +47,7 @@ const MiddlePanelRow = styled(PanelRow).attrs(() => ({}))`
 
 const PanelRowThin = styled(Row).attrs({
   justify: 'space-between',
-  marginBottom: 5,
+  paddingBottom: 5,
 })``;
 
 const PanelLabel = styled(Text).attrs({
@@ -60,33 +55,27 @@ const PanelLabel = styled(Text).attrs({
   size: 'lmedium',
   weight: 'heavy',
 })`
-  ${margin(0, 5, 0, 0)};
+  ${margin(0, 12, 0, 0)};
 `;
 
 const PanelWarning = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.yellowFavorite,
-  lineHeight: 'normal',
   size: 'smedium',
   weight: 'heavy',
-}))`
-  ${margin(-15, 0, 20, 0)};
-`;
+}))``;
 
 const PanelError = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.red,
-  lineHeight: 'normal',
   size: 'smedium',
   weight: 'heavy',
-}))`
-  ${margin(-15, 0, 20, 0)}
-`;
+}))``;
 
 const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   color: color || colors.appleBlue,
   size: 'smedium',
   weight: 'heavy',
 }))`
-  ${margin(0, 5, 0, 0)};
+  ${padding(0, 12, 0, 0)};
 `;
 
 const PanelColumn = styled(Column).attrs(() => ({
@@ -94,17 +83,23 @@ const PanelColumn = styled(Column).attrs(() => ({
 }))``;
 
 const Label = styled(Text).attrs(({ size }) => ({
+  lineHeight: 'normal',
   size: size || 'lmedium',
 }))`
   ${({ weight }) => fontWithWidth(weight || fonts.weight.semibold)}
 `;
 
-const GAS_FEE_INCREMENT = 1;
+const GAS_FEE_INCREMENT = 4;
 const MAX_BASE_FEE_RANGE = [1, 3];
 const MINER_TIP_RANGE = [1, 2];
 
-const LOWER_THAN_SUGGESTED = 'Lower than suggested';
-const HIGHER_THAN_NECESSARY = 'Higher than necessary';
+const WARNING_SEPARATOR = '·';
+const LOWER_THAN_SUGGESTED = 'Low ' + WARNING_SEPARATOR + ' may get stuck';
+const HIGHER_THAN_NECESSARY = 'High ' + WARNING_SEPARATOR + ' overpaying';
+
+const MAX_BASE_FEE_TOO_LOW_ERROR =
+  'Low ' + WARNING_SEPARATOR + ' likely to fail';
+const TIP_TOO_LOW_ERROR = 'Low ' + WARNING_SEPARATOR + ' likely to fail';
 
 const ALERT_MESSAGE_HIGHER_MINER_TIP_NEEDED =
   'Setting a higher miner tip is recommended to avoid issues.';
@@ -113,19 +108,14 @@ const ALERT_MESSAGE_HIGHER_MAX_BASE_FEE_NEEDED =
 const ALERT_MESSAGE_LOWER =
   'Double check that you entered the correct amount—you’re likely paying more than you need to!';
 const ALERT_TITLE_HIGHER_MAX_BASE_FEE_NEEDED =
-  'Low max base fee–transaction might get stuck!';
+  'Low max base fee–transaction may get stuck!';
 const ALERT_TITLE_HIGHER_MINER_TIP_NEEDED =
-  'Low miner tip–transaction might get stuck!';
+  'Low miner tip–transaction may get stuck!';
 const ALERT_TITLE_LOWER_MAX_BASE_FEE_NEEDED = 'High max base fee!';
 const ALERT_TITLE_LOWER_MINER_TIP_NEEDED = 'High miner tip!';
 
 const FOCUS_TO_MAX_BASE_FEE = 'focusToMaxBaseFee';
 const FOCUS_TO_MINER_TIP = 'focusToMinerTip';
-
-const warningsAnimationConfig = {
-  duration: 30,
-  easing: Easing.linear,
-};
 
 export default function FeesPanel({
   currentGasTrend,
@@ -206,25 +196,6 @@ export default function FeesPanel({
     [selectedGasFee?.option]
   );
 
-  const maxBaseWarningsStyle = useAnimatedStyle(() => {
-    const display =
-      selectedOptionIsCustom && (!!maxBaseFeeWarning || !!maxBaseFeeError);
-    const value = withTiming(display ? 28 : 0, warningsAnimationConfig);
-    return {
-      height: value,
-    };
-  }, [selectedOptionIsCustom, maxBaseFeeWarning, maxBaseFeeError]);
-
-  const maxPriorityWarningsStyle = useAnimatedStyle(() => {
-    const display =
-      selectedOptionIsCustom &&
-      (!!maxPriorityFeeWarning || !!maxPriorityFeeError);
-    const value = withTiming(display ? 28 : 0, warningsAnimationConfig);
-    return {
-      height: value,
-    };
-  }, [selectedOptionIsCustom, maxPriorityFeeWarning, maxPriorityFeeError]);
-
   const { maxFee, currentBaseFee, maxBaseFee, maxPriorityFee } = useMemo(() => {
     const maxFee = selectedGasFee?.gasFee?.maxFee?.native?.value?.display || 0;
     const currentBaseFee = currentBlockParams?.baseFeePerGas?.gwei || 0;
@@ -288,7 +259,7 @@ export default function FeesPanel({
         text = '􀅵';
       } else if (error) {
         color = colors.red;
-        text = '􀁟';
+        text = '􀇿';
       } else {
         color = colors.yellowFavorite;
         text = '􀇿';
@@ -300,7 +271,7 @@ export default function FeesPanel({
         <PanelColumn>
           <ButtonPressAnimation onPress={openHelper}>
             <Row>
-              <PanelLabel>
+              <PanelLabel error={error} warning={warning}>
                 {`${label} `}
                 <Label color={color} weight="bold">
                   {text}
@@ -468,12 +439,54 @@ export default function FeesPanel({
   const renderWarning = useCallback(
     (error, warning) => {
       if (!selectedOptionIsCustom) return;
+
+      const errorPrefix = error?.substr(0, error?.indexOf(WARNING_SEPARATOR));
+      let errorSuffix = error?.substr(
+        error?.indexOf(WARNING_SEPARATOR),
+        error?.length
+      );
+
+      const warningPrefix = warning?.substr(
+        0,
+        warning?.indexOf(WARNING_SEPARATOR)
+      );
+      const warningSuffix = warning?.substr(
+        warning?.indexOf(WARNING_SEPARATOR),
+        warning?.length
+      );
+
+      if (errorSuffix === WARNING_SEPARATOR + ' Enter an amount') {
+        errorSuffix = 'Enter an amount';
+      }
+
       return (
-        (error && <PanelError>{error}</PanelError>) ||
-        (warning && <PanelWarning>{warning}</PanelWarning>)
+        (error && (
+          <PanelError>
+            {errorPrefix}
+            <Text
+              color={colors.alpha(colors.blueGreyDark, 0.5)}
+              size="smedium"
+              weight="bold"
+            >
+              {errorSuffix}
+            </Text>
+          </PanelError>
+        )) ||
+        (warning && (
+          <PanelWarning>
+            {warningPrefix}
+            <Text
+              color={colors.alpha(colors.blueGreyDark, 0.5)}
+              size="smedium"
+              weight="bold"
+            >
+              {warningSuffix}
+            </Text>
+          </PanelWarning>
+        ))
       );
     },
-    [selectedOptionIsCustom]
+    [colors, selectedOptionIsCustom]
   );
 
   const onAlertProceeded = useCallback(
@@ -512,13 +525,18 @@ export default function FeesPanel({
   useEffect(() => {
     stopBaseFeeTimeout();
     startBaseFeeTimeout(async () => {
-      if (!maxBaseFee || isZero(maxBaseFee) || greaterThan(1, maxBaseFee)) {
-        setMaxBaseFeeError('1 Gwei to avoid failure');
+      // there's an e2e modifying this panel so I needed values that aren't dependent on the network conditions
+      const maxBaseFeeToValidate = IS_TESTING === 'true' ? 100 : currentBaseFee;
+
+      if (
+        !maxBaseFee ||
+        isZero(maxBaseFee) ||
+        greaterThan(multiply(0.05, maxBaseFeeToValidate), maxBaseFee)
+      ) {
+        setMaxBaseFeeError(MAX_BASE_FEE_TOO_LOW_ERROR);
       } else {
         setMaxBaseFeeError(null);
       }
-      // there's an e2e modifying this panel so I needed values that aren't dependant on the network conditions
-      const maxBaseFeeToValidate = IS_TESTING === 'true' ? 100 : currentBaseFee;
       if (
         greaterThan(
           multiply(MAX_BASE_FEE_RANGE[0], maxBaseFeeToValidate),
@@ -526,13 +544,6 @@ export default function FeesPanel({
         )
       ) {
         setMaxBaseFeeWarning(LOWER_THAN_SUGGESTED);
-      } else if (
-        greaterThan(
-          maxBaseFee,
-          multiply(MAX_BASE_FEE_RANGE[1], maxBaseFeeToValidate)
-        )
-      ) {
-        setMaxBaseFeeWarning(HIGHER_THAN_NECESSARY);
       } else {
         setMaxBaseFeeWarning(null);
       }
@@ -542,8 +553,12 @@ export default function FeesPanel({
   useEffect(() => {
     stopPriorityFeeTimeout();
     startPriorityFeeTimeout(() => {
-      if (!maxPriorityFee) {
-        setMaxPriorityFeeError('1 Gwei to avoid failure');
+      if (
+        !maxPriorityFee ||
+        isZero(maxPriorityFee) ||
+        greaterThan(1, maxPriorityFee)
+      ) {
+        setMaxPriorityFeeError(TIP_TOO_LOW_ERROR);
       } else {
         setMaxPriorityFeeError(null);
       }
@@ -705,7 +720,10 @@ export default function FeesPanel({
     <Wrapper>
       <PanelRowThin>
         <PanelColumn />
-        <ButtonPressAnimation onPress={() => openGasHelper(trendType)}>
+        <ButtonPressAnimation
+          onPress={() => openGasHelper(trendType)}
+          scaleTo={1}
+        >
           <PanelColumn>
             <GasTrendHeader color={GAS_TRENDS[currentGasTrend]?.color}>
               {GAS_TRENDS[currentGasTrend]?.label}
@@ -716,18 +734,26 @@ export default function FeesPanel({
 
       <PanelRow justify="space-between" marginBottom={18}>
         {renderRowLabel('Current base fee', trendType)}
-        <PanelColumn>
-          <PanelLabel>{formattedBaseFee}</PanelLabel>
-        </PanelColumn>
+        <ButtonPressAnimation
+          onPress={() => openGasHelper(trendType)}
+          scaleTo={1}
+        >
+          <PanelColumn>
+            <PanelLabel>{formattedBaseFee}</PanelLabel>
+          </PanelColumn>
+        </ButtonPressAnimation>
       </PanelRow>
 
       <MiddlePanelRow>
-        {renderRowLabel(
-          'Max base fee',
-          'maxBaseFee',
-          maxBaseFeeError,
-          maxBaseFeeWarning
-        )}
+        <ColumnWithMargins height={40} justify="center" margin={3}>
+          {renderRowLabel(
+            'Max base fee',
+            'maxBaseFee',
+            maxBaseFeeError,
+            maxBaseFeeWarning
+          )}
+          {renderWarning(maxBaseFeeError, maxBaseFeeWarning)}
+        </ColumnWithMargins>
         <PanelColumn>
           <FeesGweiInput
             buttonColor={colorForAsset}
@@ -742,17 +768,16 @@ export default function FeesPanel({
         </PanelColumn>
       </MiddlePanelRow>
 
-      <Animated.View style={maxBaseWarningsStyle}>
-        {renderWarning(maxBaseFeeError, maxBaseFeeWarning)}
-      </Animated.View>
-
       <MiddlePanelRow>
-        {renderRowLabel(
-          'Miner tip',
-          `minerTip`,
-          maxPriorityFeeError,
-          maxPriorityFeeWarning
-        )}
+        <ColumnWithMargins height={40} justify="center" margin={3}>
+          {renderRowLabel(
+            'Miner tip',
+            `minerTip`,
+            maxPriorityFeeError,
+            maxPriorityFeeWarning
+          )}
+          {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
+        </ColumnWithMargins>
         <PanelColumn>
           <FeesGweiInput
             buttonColor={colorForAsset}
@@ -766,11 +791,8 @@ export default function FeesPanel({
           />
         </PanelColumn>
       </MiddlePanelRow>
-      <Animated.View style={maxPriorityWarningsStyle}>
-        {renderWarning(maxPriorityFeeError, maxPriorityFeeWarning)}
-      </Animated.View>
 
-      <PanelRow marginTop={15}>
+      <PanelRow marginTop={18}>
         <PanelColumn>
           <PanelLabel>Max transaction fee</PanelLabel>
         </PanelColumn>
