@@ -19,7 +19,7 @@ const ChartLabelFactory = (fieldName: 'originalX' | 'originalY') => {
         text: format ? format(val.value) : val.value,
         value: format ? format(val.value) : val.value,
       }),
-      []
+      [chartData.data.points]
     );
 
     return (

@@ -151,7 +151,9 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
         }
 
         if (typeof index === 'undefined') {
-          index = path.data.length - 1;
+          originalX.value = '';
+          originalY.value = '';
+          return;
         }
 
         originalX.value = path.data[index].x.toString();
