@@ -1,7 +1,7 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { isEmpty, isNaN, isNil, lowerCase, upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard } from 'react-native';
+import { InteractionManager, Keyboard } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
@@ -135,7 +135,7 @@ const GasSpeedButton = ({
     updateGasFeeOption,
     selectedGasFee,
     selectedGasFeeOption,
-    updateToCustomGasFee,
+    currentBlockParams,
   } = useGas();
 
   const [gasPriceReady, setGasPriceReady] = useState(false);
@@ -245,20 +245,13 @@ const GasSpeedButton = ({
 
   const handlePressSpeedOption = useCallback(
     selectedSpeed => {
-      if (selectedSpeed === CUSTOM) {
-        setShouldOpenCustomGasSheet({ focusTo: null, shouldOpen: true });
-        if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
-          const gasFeeParams = gasFeeParamsBySpeed[URGENT];
-          updateToCustomGasFee({
-            ...gasFeeParams,
-            option: CUSTOM,
-          });
-        }
-      } else {
-        updateGasFeeOption(selectedSpeed);
-      }
+      updateGasFeeOption(selectedSpeed);
+      InteractionManager.runAfterInteractions(() => {
+        selectedSpeed === CUSTOM &&
+          setShouldOpenCustomGasSheet({ focusTo: null, shouldOpen: true });
+      });
     },
-    [gasFeeParamsBySpeed, updateToCustomGasFee, updateGasFeeOption]
+    [updateGasFeeOption]
   );
 
   const formatTransactionTime = useCallback(() => {
@@ -342,10 +335,17 @@ const GasSpeedButton = ({
         gasFeeParamsBySpeed[gasOption]?.maxFeePerGas?.gwei,
         gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
       );
+      const estimatedGwei = add(
+        currentBlockParams?.baseFeePerGas?.gwei,
+        gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
+      );
       const gweiDisplay =
         currentNetwork === networkTypes.polygon
           ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
-          : `${toFixedDecimals(totalGwei, 0)} Gwei`;
+          : `${toFixedDecimals(estimatedGwei, 0)} - ${toFixedDecimals(
+              totalGwei,
+              0
+            )} Gwei`;
       return {
         actionKey: gasOption,
         actionTitle: upperFirst(gasOption),
@@ -360,7 +360,12 @@ const GasSpeedButton = ({
       menuItems: menuOptions,
       menuTitle: '',
     };
-  }, [currentNetwork, gasFeeParamsBySpeed, speedOptions]);
+  }, [
+    currentBlockParams?.baseFeePerGas?.gwei,
+    currentNetwork,
+    gasFeeParamsBySpeed,
+    speedOptions,
+  ]);
 
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
     speedOptions,
