@@ -13,12 +13,16 @@ const selectedItemsAtom = atom<string[]>({
 });
 
 export default function useCoinListEditOptions() {
-  const { accountAddress: address } = useAccountSettings();
+  const { accountAddress } = useAccountSettings();
 
   const setSelectedItems = useSetRecoilState(selectedItemsAtom);
-  const [hiddenCoins = []] = useMMKVObject<string[]>('hidden-coins-' + address);
+  const [hiddenCoins = []] = useMMKVObject<string[]>(
+    'hidden-coins-' + accountAddress
+  );
 
-  const [pinnedCoins = []] = useMMKVObject<string[]>('pinned-coins-' + address);
+  const [pinnedCoins = []] = useMMKVObject<string[]>(
+    'pinned-coins-' + accountAddress
+  );
   const pushSelectedCoin = useCallback(
     (item: string) =>
       setSelectedItems(prev => {
