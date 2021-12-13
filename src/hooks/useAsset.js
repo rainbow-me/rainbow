@@ -5,7 +5,7 @@ import useAccountAssets from './useAccountAssets';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 import { AssetTypes } from '@rainbow-me/entities';
 import store from '@rainbow-me/redux/store';
-import { ETH_ICON_URL } from '@rainbow-me/references';
+import { ETH_ADDRESS, ETH_ICON_URL } from '@rainbow-me/references';
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 
 function getZeroEth() {
@@ -17,7 +17,7 @@ function getZeroEth() {
   const { relative_change_24h, value } = genericAssets?.eth?.price || {};
 
   return {
-    address: 'eth',
+    address: ETH_ADDRESS,
     balance: {
       amount: '0',
       display: '0 ETH',
@@ -46,7 +46,7 @@ function getZeroEth() {
     price: value,
     symbol: 'ETH',
     type: 'token',
-    uniqueId: 'eth',
+    uniqueId: ETH_ADDRESS,
   };
 }
 
