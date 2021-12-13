@@ -103,7 +103,6 @@ export default function WalletList({
 }) {
   const [rows, setRows] = useState([]);
   const [ready, setReady] = useState(false);
-  const [doneScrolling, setDoneScrolling] = useState(false);
   const scrollView = useRef(null);
   const skeletonTransitionRef = useRef();
   const { network } = useAccountSettings();
@@ -181,32 +180,6 @@ export default function WalletList({
       }, 50);
     }
   }, [rows, ready]);
-
-  useEffect(() => {
-    // Detect if we need to autoscroll to the selected account
-    let selectedItemIndex = 0;
-    let distanceToScroll = 0;
-    const scrollThreshold = rowHeight * 2;
-    rows.some((item, index) => {
-      if (item.isSelected) {
-        selectedItemIndex = index;
-        return true;
-      }
-      distanceToScroll += item.height;
-      return false;
-    });
-
-    if (distanceToScroll > height - scrollThreshold && !doneScrolling) {
-      setTimeout(() => {
-        scrollView.current?.scrollToIndex({
-          animated: true,
-          index: selectedItemIndex,
-        });
-        setDoneScrolling(true);
-      }, 50);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready]);
 
   const renderItem = useCallback(
     ({ item }) => {

@@ -34,8 +34,7 @@ export default function KeyboardFixedOpenLayout({
   const keyboardHeight = useKeyboardHeight();
   const ref = useRef();
 
-  const containerHeight =
-    screenHeight - (ios && keyboardHeight) - additionalPadding;
+  const containerHeight = screenHeight - keyboardHeight - additionalPadding;
   ios &&
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => ref.current.animateNextTransition(), [containerHeight]);

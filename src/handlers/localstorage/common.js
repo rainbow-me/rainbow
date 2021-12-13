@@ -69,11 +69,7 @@ export const removeLocal = (key = '') => {
   }
 };
 
-export const getGlobal = async (
-  key,
-  emptyState = [],
-  version = defaultVersion
-) => {
+export const getGlobal = async (key, emptyState, version = defaultVersion) => {
   const result = await getLocal(key, version);
   return result ? result.data : emptyState;
 };

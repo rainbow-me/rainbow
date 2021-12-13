@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
-import { findKey, isNumber, keys } from 'lodash';
+import { findKey, isNumber, keys, uniq } from 'lodash';
 import { removeLocal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import {
@@ -20,6 +20,14 @@ import store from '../redux/store';
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import colors, { getRandomColor } from '../styles/colors';
 import { hasKey } from './keychain';
+import { isL2Asset } from '@rainbow-me/handlers/assets';
+import {
+  getAssets,
+  getHiddenCoins,
+  getPinnedCoins,
+  saveHiddenCoins,
+  savePinnedCoins,
+} from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
   getContacts,
   saveContacts,
@@ -32,7 +40,7 @@ import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { returnStringFirstEmoji } from '@rainbow-me/helpers/emojiHandler';
 import { updateWebDataEnabled } from '@rainbow-me/redux/showcaseTokens';
 import { DefaultTokenLists } from '@rainbow-me/references';
-import { profileUtils } from '@rainbow-me/utils';
+import { ethereumUtils, profileUtils } from '@rainbow-me/utils';
 import { REVIEW_ASKED_KEY } from '@rainbow-me/utils/reviewAlert';
 import logger from 'logger';
 
@@ -432,6 +440,54 @@ export default async function runMigrations() {
   };
 
   migrations.push(v11);
+
+  /*
+   *************** Migration v12 ******************
+   * Migrates the hidden and pinned l2 assets to new format
+   */
+  const v12 = async () => {
+    const { network } = store.getState().settings;
+    const { wallets } = store.getState().wallets;
+    if (!wallets) return;
+    const walletKeys = Object.keys(wallets);
+    for (let i = 0; i < walletKeys.length; i++) {
+      const wallet = wallets[walletKeys[i]];
+      for (let x = 0; x < wallet.addresses.length; x++) {
+        const { address } = wallet.addresses[x];
+        const assets = await getAssets(address, network);
+        const hiddenCoins = await getHiddenCoins(address, network);
+        const pinnedCoins = await getPinnedCoins(address, network);
+        logger.log(JSON.stringify({ pinnedCoins }, null, 2));
+        logger.log(JSON.stringify({ hiddenCoins }, null, 2));
+
+        const pinnedCoinsMigrated = pinnedCoins.map(address => {
+          const asset = ethereumUtils.getAsset(assets, address);
+          if (asset?.type && isL2Asset(asset.type)) {
+            return `${asset.address}_${asset.network}`;
+          } else {
+            return address;
+          }
+        });
+
+        const hiddenCoinsMigrated = hiddenCoins.map(address => {
+          const asset = ethereumUtils.getAsset(assets, address);
+          if (asset?.type && isL2Asset(asset.type)) {
+            return `${asset.address}_${asset.network}`;
+          } else {
+            return address;
+          }
+        });
+
+        logger.log(JSON.stringify({ pinnedCoinsMigrated }, null, 2));
+        logger.log(JSON.stringify({ hiddenCoinsMigrated }, null, 2));
+
+        await savePinnedCoins(uniq(pinnedCoinsMigrated), address, network);
+        await saveHiddenCoins(uniq(hiddenCoinsMigrated), address, network);
+      }
+    }
+  };
+
+  migrations.push(v12);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`

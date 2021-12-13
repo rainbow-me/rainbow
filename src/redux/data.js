@@ -29,6 +29,7 @@ import {
 /* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
 import { addCoinsToHiddenList } from './editOptions';
+import { decrementNonce, incrementNonce } from './nonceManager';
 // eslint-disable-next-line import/no-cycle
 import { uniqueTokensRefreshState } from './uniqueTokens';
 /* eslint-disable-next-line import/no-cycle */
@@ -371,6 +372,24 @@ const checkForConfirmedSavingsActions = transactionsData => dispatch => {
   }
 };
 
+const checkForUpdatedNonce = transactionData => dispatch => {
+  const txSortedByDescendingNonce = transactionData.sort(
+    ({ nonce: n1 }, { nonce: n2 }) => n2 - n1
+  );
+  const [latestTx] = txSortedByDescendingNonce;
+  const { address_from, network, nonce } = latestTx;
+  dispatch(incrementNonce(address_from, nonce, network));
+};
+
+const checkForRemovedNonce = removedTransactions => dispatch => {
+  const txSortedByAscendingNonce = removedTransactions.sort(
+    ({ nonce: n1 }, { nonce: n2 }) => n1 - n2
+  );
+  const [lowestNonceTx] = txSortedByAscendingNonce;
+  const { address_from, network, nonce } = lowestNonceTx;
+  dispatch(decrementNonce(address_from, nonce, network));
+};
+
 export const portfolioReceived = message => async (dispatch, getState) => {
   if (message?.meta?.status !== 'ok') return;
   if (!message?.payload?.portfolio) return;
@@ -397,6 +416,7 @@ export const transactionsReceived = (message, appended = false) => async (
     if (appended) {
       dispatch(checkForConfirmedSavingsActions(transactionData));
     }
+    await dispatch(checkForUpdatedNonce(transactionData));
 
     const { accountAddress, nativeCurrency, network } = getState().settings;
     const { purchaseTransactions } = getState().addCash;
@@ -456,7 +476,7 @@ export const transactionsRemoved = message => async (dispatch, getState) =>
     const { transactions } = getState().data;
     const removeHashes = map(transactionData, txn => txn.hash);
     logger.log('[data] - remove txn hashes', removeHashes);
-    const updatedTransactions = filter(
+    const [updatedTransactions, removedTransactions] = partition(
       transactions,
       txn => !includes(removeHashes, ethereumUtils.getHash(txn))
     );
@@ -465,6 +485,7 @@ export const transactionsRemoved = message => async (dispatch, getState) =>
       payload: updatedTransactions,
       type: DATA_UPDATE_TRANSACTIONS,
     });
+    dispatch(checkForRemovedNonce(removedTransactions));
     saveLocalTransactions(updatedTransactions, accountAddress, network);
   });
 
@@ -510,8 +531,7 @@ export const addressAssetsReceived = (
   );
 
   const isL2 = assetsNetwork && isL2Network(assetsNetwork);
-
-  if (!isL2) {
+  if (!isL2 && !assetsNetwork) {
     dispatch(
       uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
     );
@@ -529,11 +549,8 @@ export const addressAssetsReceived = (
     const restOfTheAssets = existingAssets.filter(
       asset => asset.network !== assetsNetwork
     );
-
-    parsedAssets = uniqBy(
-      concat(parsedAssets, restOfTheAssets),
-      item => item.uniqueId
-    );
+    parsedAssets = concat(parsedAssets, restOfTheAssets);
+    parsedAssets = uniqBy(parsedAssets, item => item.uniqueId);
   } else {
     // We need to merge the response with all l2 assets
     // to prevent L2 assets temporarily dissapearing
@@ -570,14 +587,16 @@ export const addressAssetsReceived = (
   //Hide tokens with a url as their token name
   const assetsWithScamURL = parsedAssets
     .filter(asset => isValidDomain(asset.name) && !asset.isVerified)
-    .map(({ address }) => address);
+    .map(({ uniqueId }) => uniqueId);
   dispatch(addCoinsToHiddenList(assetsWithScamURL));
 
   // Hide coins with price = 0 that are currently not pinned
   if (isL2) {
     const assetsWithNoPrice = parsedAssets
-      .filter(asset => asset.price?.value === 0)
-      .map(({ address }) => address);
+      .filter(
+        asset => asset.price?.value === 0 && asset.network === assetsNetwork
+      )
+      .map(({ uniqueId }) => uniqueId);
     dispatch(addCoinsToHiddenList(assetsWithNoPrice));
   }
 };
@@ -770,6 +789,13 @@ export const dataAddNewTransaction = (
         type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
       });
       saveLocalTransactions(_transactions, accountAddress, network);
+      await dispatch(
+        incrementNonce(
+          parsedTransaction.from,
+          parsedTransaction.nonce,
+          parsedTransaction.network
+        )
+      );
       if (
         !disableTxnWatcher ||
         network !== networkTypes.mainnet ||
@@ -825,7 +851,6 @@ export const dataWatchPendingTransactions = (
       return true;
     }
     let txStatusesDidChange = false;
-
     const updatedPendingTransactions = await Promise.all(
       pending.map(async tx => {
         const updatedPending = { ...tx };
@@ -893,7 +918,6 @@ export const dataWatchPendingTransactions = (
         filteredPendingTransactions,
         remainingTransactions
       );
-
       dispatch(updatePurchases(updatedTransactions));
       const { accountAddress, network } = getState().settings;
       dispatch({

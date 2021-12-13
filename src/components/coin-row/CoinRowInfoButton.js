@@ -52,7 +52,7 @@ const Icon = styled(Text).attrs(({ theme: { colors } }) => ({
   weight: 'bold',
 }))`
   height: 100%;
-  line-height: 29px;
+  line-height: 30px;
   width: 100%;
   ${fontWithWidth(fonts.weight.bold)};
 `;
@@ -119,7 +119,7 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
           handleCopyContractAddress(item?.address);
         }
         if (idx === 1) {
-          ethereumUtils.openTokenEtherscanURL(item?.uniqueId, item?.type);
+          ethereumUtils.openTokenEtherscanURL(item?.address, item?.type);
         }
       }
     );
@@ -146,7 +146,7 @@ const CoinRowInfoButton = ({ item, onCopySwapDetailsText }) => {
       if (actionKey === CoinRowActionsEnum.copyAddress) {
         handleCopyContractAddress(item?.address);
       } else if (actionKey === CoinRowActionsEnum.blockExplorer) {
-        ethereumUtils.openTokenEtherscanURL(item?.uniqueId, item?.type);
+        ethereumUtils.openTokenEtherscanURL(item?.address, item?.type);
       }
     },
     [item, handleCopyContractAddress]
