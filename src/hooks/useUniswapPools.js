@@ -152,6 +152,10 @@ export const getPercentChange = (valueNow, value24HoursAgo) => {
 };
 
 export default function useUniswapPools(sortField, sortDirection, token) {
+  const walletReady = useSelector(
+    ({ appState: { walletReady } }) => walletReady
+  );
+  
   const dispatch = useDispatch();
 
   const [pairs, setPairs] = useState();
@@ -180,6 +184,7 @@ export default function useUniswapPools(sortField, sortDirection, token) {
     {
       onError: () => logger.log('🦄🦄🦄 error getting pairs data', error),
       refetchInterval: REFETCH_INTERVAL,
+      skip: !walletReady
     }
   );
 
