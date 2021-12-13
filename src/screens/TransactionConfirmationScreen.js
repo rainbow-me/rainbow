@@ -252,7 +252,7 @@ export default function TransactionConfirmationScreen() {
       );
       setNativeAsset(asset);
     };
-    getNativeAsset();
+    network && getNativeAsset();
   }, [accountInfo.address, allAssets, network]);
 
   const {
