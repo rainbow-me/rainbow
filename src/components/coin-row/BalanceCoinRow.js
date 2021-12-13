@@ -2,7 +2,6 @@ import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { View } from 'react-primitives';
-import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import useCoinListEditOptions from '../../hooks/useCoinListEditOptions';
@@ -15,10 +14,8 @@ import CoinCheckButton from './CoinCheckButton';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { useIsCoinListEditedSharedValue } from '@rainbow-me/helpers/SharedValuesContext';
-import { buildAssetUniqueIdentifier } from '@rainbow-me/helpers/assets';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { isNewValueForObjectPaths, isNewValueForPath } from '@rainbow-me/utils';
 
 const editTranslateOffset = 37;
 
@@ -186,37 +183,4 @@ const BalanceCoinRow = ({
   );
 };
 
-const arePropsEqual = (prev, next) => {
-  const itemIdentifier = buildAssetUniqueIdentifier(prev.item);
-  const nextItemIdentifier = buildAssetUniqueIdentifier(next.item);
-
-  const isNewItem = itemIdentifier === nextItemIdentifier;
-
-  const isNewRecentlyPinnedCount =
-    !isNewValueForPath(prev, next, 'recentlyPinnedCount') &&
-    (get(next, 'item.isPinned', true) || get(next, 'item.isHidden', true));
-
-  return (
-    isNewItem &&
-    isNewRecentlyPinnedCount &&
-    !isNewValueForObjectPaths(prev, next, [
-      'isCoinListEdited',
-      'isFirstCoinRow',
-      'item.isHidden',
-      'item.isPinned',
-      'openSmallBalances',
-    ])
-  );
-};
-
-const MemoizedBalanceCoinRow = React.memo(BalanceCoinRow, arePropsEqual);
-
-export default connect(
-  ({
-    editOptions: { recentlyPinnedCount },
-    openStateSettings: { openSmallBalances },
-  }) => ({
-    openSmallBalances,
-    recentlyPinnedCount,
-  })
-)(MemoizedBalanceCoinRow);
+export default React.memo(BalanceCoinRow);
