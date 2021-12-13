@@ -7,7 +7,7 @@ import { useMemoOne } from 'use-memo-one';
 import { useRecyclerAssetListPosition } from './Contexts';
 import { StickyHeaderContext } from './StickyHeaders';
 
-const extraPadding = { paddingBottom: 120 };
+const extraPadding = { paddingBottom: 144 };
 // @ts-ignore
 const ExternalScrollViewWithRef = React.forwardRef(function ExternalScrollView(
   props: ScrollViewDefaultProps,

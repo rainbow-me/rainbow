@@ -200,7 +200,7 @@ const withBriefBalanceSavingsSection = savings => {
   const addresses = savings?.map(asset => asset.cToken.address);
   return [
     {
-      type: 'SPACE_7PX',
+      type: 'SAVINGS_HEADER_SPACE_BEFORE',
       uid: 'savings-header-space-before',
     },
     {
@@ -358,10 +358,15 @@ const withBriefBalanceSection = (
     nativeCurrency
   );
 
-  const headerItem = { type: 'ASSETS_HEADER', value: totalValue };
-
   return [
-    headerItem,
+    {
+      type: 'ASSETS_HEADER',
+      value: totalValue,
+    },
+    {
+      type: 'ASSETS_HEADER_SPACE_AFTER',
+      uid: 'assets-header-space-after',
+    },
     ...(isLoadingAssets
       ? [{ type: 'LOADING_ASSETS', uid: 'loadings-asset' }]
       : briefAssets),

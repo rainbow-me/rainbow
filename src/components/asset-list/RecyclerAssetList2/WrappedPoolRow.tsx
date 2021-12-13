@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { UniswapInvestmentRow } from '../../investment-cards';
+import { Bleed } from '@rainbow-me/design-system';
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 
 export default React.memo(function WrappedPoolRow({
@@ -13,5 +14,11 @@ export default React.memo(function WrappedPoolRow({
     ({ address: uniswapAddress }) => uniswapAddress === address
   );
 
-  return <UniswapInvestmentRow assetType="uniswap" item={found} />;
+  return (
+    // This 'Bleed' element moves the rows visually closer to the header, but since they
+    // have a fixed height in the recycler list, it doesn't affect the overall list height.
+    <Bleed top="6px">
+      <UniswapInvestmentRow assetType="uniswap" item={found} />
+    </Bleed>
+  );
 });

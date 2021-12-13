@@ -60,7 +60,10 @@ export default function useMemoBriefSectionData() {
           isGroupOpen = openFamilies[name];
         }
 
-        if (data.type === CellType.NFT) {
+        if (
+          data.type === CellType.NFT ||
+          data.type === CellType.NFT_SPACE_AFTER
+        ) {
           return isGroupOpen;
         }
 

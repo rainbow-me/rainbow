@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { UniqueTokenCard } from '../../unique-token';
-import { Box } from '@rainbow-me/design-system';
+import { Box, BoxProps } from '@rainbow-me/design-system';
 import { useAsset, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -33,15 +33,15 @@ export default function WrappedNFT({
     [isReadOnlyWallet, navigate]
   );
 
-  const placementProps =
+  const placementProps: BoxProps =
     placement === 'left'
       ? {
-          alignItems: 'flex-start' as const,
-          paddingLeft: '19px' as const,
+          alignItems: 'flex-start',
+          paddingLeft: '19px',
         }
       : {
-          alignItems: 'flex-end' as const,
-          paddingRight: '19px' as const,
+          alignItems: 'flex-end',
+          paddingRight: '19px',
         };
 
   return (
