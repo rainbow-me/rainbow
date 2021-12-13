@@ -229,25 +229,17 @@ export default function FeesPanel({
     const maxFee = selectedGasFee?.gasFee?.maxFee?.native?.value?.display || 0;
     const currentBaseFee = currentBlockParams?.baseFeePerGas?.gwei || 0;
 
-    let maxBaseFee;
-    if (selectedOptionIsCustom) {
-      // block more than 2 decimals on gwei value
-      maxBaseFee = customMaxBaseFee;
-    } else {
-      maxBaseFee = toFixedDecimals(
-        selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei || 0,
-        0
-      );
-    }
+    const maxBaseFee = selectedOptionIsCustom
+      ? customMaxBaseFee
+      : toFixedDecimals(
+          selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei || 0,
+          0
+        );
 
-    let maxPriorityFee;
-    if (selectedOptionIsCustom) {
-      // block more than 2 decimals on gwei value
-      maxPriorityFee = customMaxPriorityFee;
-    } else {
-      maxPriorityFee =
-        selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei || 0;
-    }
+    const maxPriorityFee = selectedOptionIsCustom
+      ? customMaxPriorityFee
+      : selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei || 0;
+
     return { currentBaseFee, maxBaseFee, maxFee, maxPriorityFee };
   }, [
     selectedGasFee?.gasFee?.maxFee?.native?.value?.display,
