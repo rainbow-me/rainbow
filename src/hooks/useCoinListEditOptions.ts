@@ -64,18 +64,18 @@ export default function useCoinListEditOptions() {
 }
 
 export function useCoinListFinishEditingOptions() {
-  const { accountAddress: address } = useAccountSettings();
+  const { accountAddress } = useAccountSettings();
 
   const [selectedItems, setSelectedItems] = useRecoilState(selectedItemsAtom);
   const selectedItemsNonReactive = useRef<string[]>();
   selectedItemsNonReactive.current = selectedItems;
 
   const [hiddenCoins = [], setHiddenCoinsArray] = useMMKVObject<string[]>(
-    'hidden-coins-' + address
+    'hidden-coins-' + accountAddress
   );
 
   const [pinnedCoins = [], setPinnedCoinsArray] = useMMKVObject<string[]>(
-    'pinned-coins-' + address
+    'pinned-coins-' + accountAddress
   );
 
   const currentAction = useMemo(() => {
