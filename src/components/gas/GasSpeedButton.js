@@ -2,7 +2,7 @@ import AnimateNumber from '@bankify/react-native-animate-number';
 import { isEmpty, isNaN, isNil, lowerCase, upperFirst } from 'lodash';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard } from 'react-native';
+import { InteractionManager, Keyboard } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
@@ -143,9 +143,10 @@ const GasSpeedButton = ({
     updateGasFeeOption,
     selectedGasFee,
     selectedGasFeeOption,
-    updateToCustomGasFee,
+    currentBlockParams,
   } = useGas();
 
+  const [gasPriceReady, setGasPriceReady] = useState(false);
   const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
   const [estimatedTimeUnit, setEstimatedTimeUnit] = useState('min');
   const [shouldOpenCustomGasSheet, setShouldOpenCustomGasSheet] = useState({
@@ -184,6 +185,7 @@ const GasSpeedButton = ({
       if (animatedValue === null || isNaN(animatedValue)) {
         return 0;
       }
+      !gasPriceReady && setGasPriceReady(true);
       // L2's are very cheap,
       // so let's default to the last 2 significant decimals
       if (isL2) {
@@ -201,7 +203,7 @@ const GasSpeedButton = ({
         }`;
       }
     },
-    [isL2, nativeCurrencySymbol, nativeCurrency]
+    [gasPriceReady, isL2, nativeCurrencySymbol, nativeCurrency]
   );
 
   const openCustomOptions = useCallback(focusTo => {
@@ -250,23 +252,17 @@ const GasSpeedButton = ({
 
   const handlePressSpeedOption = useCallback(
     selectedSpeed => {
-      if (selectedSpeed === CUSTOM) {
-        setShouldOpenCustomGasSheet({ focusTo: null, shouldOpen: true });
-        if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
-          const gasFeeParams = gasFeeParamsBySpeed[URGENT];
-          updateToCustomGasFee({
-            ...gasFeeParams,
-            option: CUSTOM,
-          });
-        }
-      } else {
-        updateGasFeeOption(selectedSpeed);
-      }
+      updateGasFeeOption(selectedSpeed);
+      InteractionManager.runAfterInteractions(() => {
+        selectedSpeed === CUSTOM &&
+          setShouldOpenCustomGasSheet({ focusTo: null, shouldOpen: true });
+      });
     },
-    [gasFeeParamsBySpeed, updateToCustomGasFee, updateGasFeeOption]
+    [updateGasFeeOption]
   );
 
   const formatTransactionTime = useCallback(() => {
+    if (!gasPriceReady) return '';
     const time = parseFloat(estimatedTimeValue || 0).toFixed(0);
     let timeSymbol = '~';
 
@@ -298,6 +294,7 @@ const GasSpeedButton = ({
     estimatedTimeUnit,
     estimatedTimeValue,
     gasFeesBySpeed,
+    gasPriceReady,
     selectedGasFeeOption,
   ]);
 
@@ -345,12 +342,17 @@ const GasSpeedButton = ({
         gasFeeParamsBySpeed[gasOption]?.maxFeePerGas?.gwei,
         gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
       );
+      const estimatedGwei = add(
+        currentBlockParams?.baseFeePerGas?.gwei,
+        gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
+      );
       const gweiDisplay =
         currentNetwork === networkTypes.polygon
           ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
-          : gasOption === 'custom' && selectedGasFeeOption !== 'custom'
-          ? ''
-          : `${toFixedDecimals(totalGwei, 0)} Gwei`;
+          : `${toFixedDecimals(estimatedGwei, 0)} - ${toFixedDecimals(
+              totalGwei,
+              0
+            )} Gwei`;
       return {
         actionKey: gasOption,
         actionTitle: upperFirst(gasOption),
@@ -365,7 +367,12 @@ const GasSpeedButton = ({
       menuItems: menuOptions,
       menuTitle: '',
     };
-  }, [currentNetwork, gasFeeParamsBySpeed, selectedGasFeeOption, speedOptions]);
+  }, [
+    currentBlockParams?.baseFeePerGas?.gwei,
+    currentNetwork,
+    gasFeeParamsBySpeed,
+    speedOptions,
+  ]);
 
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
     speedOptions,
