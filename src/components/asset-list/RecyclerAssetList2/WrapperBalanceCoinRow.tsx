@@ -1,5 +1,6 @@
 import React from 'react';
 import { BalanceCoinRow } from '../../coin-row';
+import { AssetType } from '@rainbow-me/entities';
 import { useAsset } from '@rainbow-me/hooks';
 
 export default React.memo(function WrapperBalanceCoinRow({
@@ -8,7 +9,7 @@ export default React.memo(function WrapperBalanceCoinRow({
   uniqueId: string;
 }) {
   const token = useAsset({
-    type: 'token',
+    type: AssetType.token,
     uniqueId,
   });
 
