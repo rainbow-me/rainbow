@@ -124,6 +124,9 @@ export default function useInitializeWallet() {
           dispatch(uniswapPairsInit());
           dispatch(uniswapGetAllExchanges());
           dispatch(additionalDataCoingeckoIds);
+        } else {
+          // Lists depend on favorites, so we need to reload them
+          dispatch(userListsLoadState());
         }
 
         logger.sentry('💰 Wallet initialized');
