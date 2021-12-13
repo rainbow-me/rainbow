@@ -229,33 +229,17 @@ export default function FeesPanel({
     const maxFee = selectedGasFee?.gasFee?.maxFee?.native?.value?.display || 0;
     const currentBaseFee = currentBlockParams?.baseFeePerGas?.gwei || 0;
 
-    let maxBaseFee;
-    if (selectedOptionIsCustom) {
-      // block more than 2 decimals on gwei value
-      const decimals = Number(customMaxBaseFee) % 1;
-      maxBaseFee =
-        `${decimals}`.length > 4
-          ? toFixedDecimals(customMaxBaseFee, 0)
-          : customMaxBaseFee;
-    } else {
-      maxBaseFee = toFixedDecimals(
-        selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei || 0,
-        0
-      );
-    }
+    const maxBaseFee = selectedOptionIsCustom
+      ? customMaxBaseFee
+      : toFixedDecimals(
+          selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei || 0,
+          0
+        );
 
-    let maxPriorityFee;
-    if (selectedOptionIsCustom) {
-      // block more than 2 decimals on gwei value
-      const decimals = Number(customMaxPriorityFee) % 1;
-      maxPriorityFee =
-        `${decimals}`.length > 4
-          ? Number(parseFloat(customMaxPriorityFee).toFixed(2))
-          : customMaxPriorityFee;
-    } else {
-      maxPriorityFee =
-        selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei || 0;
-    }
+    const maxPriorityFee = selectedOptionIsCustom
+      ? customMaxPriorityFee
+      : selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei || 0;
+
     return { currentBaseFee, maxBaseFee, maxFee, maxPriorityFee };
   }, [
     selectedGasFee?.gasFee?.maxFee?.native?.value?.display,
@@ -418,8 +402,7 @@ export default function FeesPanel({
 
   const onMaxBaseFeeChange = useCallback(
     ({ nativeEvent: { text } }) => {
-      const maxFeePerGasGwei = toFixedDecimals(text || 0, 0);
-      const maxFeePerGas = parseGasFeeParam(gweiToWei(maxFeePerGasGwei));
+      const maxFeePerGas = parseGasFeeParam(gweiToWei(text));
 
       if (greaterThan(0, maxFeePerGas.amount)) return;
 
@@ -440,12 +423,7 @@ export default function FeesPanel({
 
   const onMinerTipChange = useCallback(
     ({ nativeEvent: { text } }) => {
-      const maxPriorityFeePerGasGwei =
-        Math.round(Number(text) * 100) / 100 || 0;
-
-      const maxPriorityFeePerGas = parseGasFeeParam(
-        gweiToWei(maxPriorityFeePerGasGwei)
-      );
+      const maxPriorityFeePerGas = parseGasFeeParam(gweiToWei(text));
 
       if (greaterThan(0, maxPriorityFeePerGas.amount)) return;
 
