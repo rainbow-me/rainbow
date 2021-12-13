@@ -174,7 +174,7 @@ const GasSpeedButton = ({
 
   const formatGasPrice = useCallback(
     animatedValue => {
-      if (gasIsNotReady || animatedValue === null || isNaN(animatedValue)) {
+      if (animatedValue === null || isNaN(animatedValue)) {
         return 0;
       }
       setGasPriceReady(true);
@@ -195,7 +195,7 @@ const GasSpeedButton = ({
         }`;
       }
     },
-    [gasIsNotReady, isL2, nativeCurrencySymbol, nativeCurrency]
+    [isL2, nativeCurrencySymbol, nativeCurrency]
   );
 
   const openCustomOptions = useCallback(focusTo => {
