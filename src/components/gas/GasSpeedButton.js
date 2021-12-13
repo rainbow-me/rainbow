@@ -1,5 +1,6 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
 import { isEmpty, isNaN, isNil, lowerCase, upperFirst } from 'lodash';
+import makeColorMoreChill from 'make-color-more-chill';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
@@ -133,7 +134,7 @@ const GasSpeedButton = ({
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
   const { nativeCurrencySymbol, nativeCurrency } = useAccountSettings();
-  const colorForAsset = useColorForAsset(asset || {}, null, false, true);
+  const rawColorForAsset = useColorForAsset(asset || {}, null, false, true);
 
   const {
     gasFeeParamsBySpeed,
@@ -347,6 +348,8 @@ const GasSpeedButton = ({
       const gweiDisplay =
         currentNetwork === networkTypes.polygon
           ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
+          : gasOption === 'custom' && selectedGasFeeOption !== 'custom'
+          ? ''
           : `${toFixedDecimals(totalGwei, 0)} Gwei`;
       return {
         actionKey: gasOption,
@@ -362,7 +365,7 @@ const GasSpeedButton = ({
       menuItems: menuOptions,
       menuTitle: '',
     };
-  }, [currentNetwork, gasFeeParamsBySpeed, speedOptions]);
+  }, [currentNetwork, gasFeeParamsBySpeed, selectedGasFeeOption, speedOptions]);
 
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
     speedOptions,
@@ -400,8 +403,11 @@ const GasSpeedButton = ({
       <GasSpeedLabelPager
         colorForAsset={
           gasOptionsAvailable
-            ? colorForAsset
-            : colors.alpha(colors.blueGreyDark, 0.4)
+            ? makeColorMoreChill(
+                rawColorForAsset || colors.appleBlue,
+                colors.shadowBlack
+              )
+            : colors.alpha(colors.blueGreyDark, 0.12)
         }
         currentNetwork={currentNetwork}
         dropdownEnabled={gasOptionsAvailable}
@@ -427,7 +433,6 @@ const GasSpeedButton = ({
       </ContextMenuButton>
     );
   }, [
-    colorForAsset,
     colors,
     currentNetwork,
     gasIsNotReady,
@@ -435,6 +440,7 @@ const GasSpeedButton = ({
     handlePressMenuItem,
     menuConfig,
     onPressAndroid,
+    rawColorForAsset,
     selectedGasFeeOption,
     showGasOptions,
     theme,
@@ -554,7 +560,10 @@ const GasSpeedButton = ({
               </ChainBadgeContainer>
             ) : showGasOptions ? (
               <CustomGasButton
-                borderColor={colorForAsset}
+                borderColor={makeColorMoreChill(
+                  rawColorForAsset || colors.appleBlue,
+                  colors.shadowBlack
+                )}
                 onPress={onDonePress}
                 testID="gas-speed-done-button"
               >
@@ -562,7 +571,10 @@ const GasSpeedButton = ({
                   color={
                     theme !== 'light'
                       ? colors.whiteLabel
-                      : colors.alpha(colors.blueGreyDark, 0.8)
+                      : makeColorMoreChill(
+                          rawColorForAsset || colors.appleBlue,
+                          colors.shadowBlack
+                        )
                   }
                 >
                   Done
