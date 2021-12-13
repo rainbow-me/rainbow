@@ -230,7 +230,7 @@ export default function ChartWrapper({
               strokeWidth={3.5}
               width={WIDTH}
             />
-            <Dot color={colors.alpha(color, 0.03)} size={100}>
+            <Dot color={colors.alpha(color, 0.03)} size={65}>
               <InnerDot color={color} />
             </Dot>
             <Overlay style={overlayStyle}>
