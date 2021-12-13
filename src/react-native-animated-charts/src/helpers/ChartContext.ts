@@ -2,14 +2,14 @@ import React from 'react';
 import Animated from 'react-native-reanimated';
 import * as redash from 'react-native-redash';
 
-export const enum CurveType {
-  basis = 'basis',
-  bump = 'bump',
-  linear = 'linear',
-  monotone = 'monotone',
-  natural = 'natural',
-  step = 'step',
-}
+export const CurveType = {
+  basis: 'basis',
+  bump: 'bump',
+  linear: 'linear',
+  monotone: 'monotone',
+  natural: 'natural',
+  step: 'step',
+} as const;
 
 export interface Point {
   x: number;
