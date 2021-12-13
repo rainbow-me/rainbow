@@ -99,6 +99,8 @@ export const customGasSheetConfig = {
     ...buildCoolModalConfig({
       ...params,
       backgroundOpacity: 1,
+      springDamping: 1,
+      transitionDuration: 0.25,
     }),
   }),
 };
