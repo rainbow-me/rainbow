@@ -21,7 +21,7 @@ export default function useShowcaseTokens() {
   const addShowcaseToken = useCallback(
     async asset => {
       dispatch(rawAddShowcaseToken(asset));
-      updateOpenFamilies({ 'Showcase-showcase': true });
+      updateOpenFamilies({ Showcase: true });
       !isReadOnlyWallet && updateWebShowcase([...showcaseTokens, asset]);
     },
     [
