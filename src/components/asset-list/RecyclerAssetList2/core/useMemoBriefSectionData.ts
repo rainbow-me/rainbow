@@ -95,9 +95,13 @@ export default function useMemoBriefSectionData() {
     stagger,
   ]);
   const memoizedResult = useDeepCompareMemo(() => result, [result]);
-  const additionalData = briefSectionsData.reduce((acc, data) => {
-    acc[data.uid] = data;
-    return acc;
-  }, {});
+  const additionalData = useDeepCompareMemo(
+    () =>
+      briefSectionsData.reduce((acc, data) => {
+        acc[data.uid] = data;
+        return acc;
+      }, {}),
+    [briefSectionsData]
+  );
   return { additionalData, memoizedResult };
 }
