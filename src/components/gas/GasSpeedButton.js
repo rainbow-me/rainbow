@@ -135,7 +135,6 @@ const GasSpeedButton = ({
     updateGasFeeOption,
     selectedGasFee,
     selectedGasFeeOption,
-    updateToCustomGasFee,
     currentBlockParams,
   } = useGas();
 
@@ -246,18 +245,10 @@ const GasSpeedButton = ({
     selectedSpeed => {
       if (selectedSpeed === CUSTOM) {
         setShouldOpenCustomGasSheet({ focusTo: null, shouldOpen: true });
-        if (isEmpty(gasFeeParamsBySpeed[CUSTOM])) {
-          const gasFeeParams = gasFeeParamsBySpeed[URGENT];
-          updateToCustomGasFee({
-            ...gasFeeParams,
-            option: CUSTOM,
-          });
-        }
-      } else {
-        updateGasFeeOption(selectedSpeed);
       }
+      updateGasFeeOption(selectedSpeed);
     },
-    [gasFeeParamsBySpeed, updateToCustomGasFee, updateGasFeeOption]
+    [updateGasFeeOption]
   );
 
   const formatTransactionTime = useCallback(() => {
@@ -364,7 +355,12 @@ const GasSpeedButton = ({
       menuItems: menuOptions,
       menuTitle: '',
     };
-  }, [currentNetwork, gasFeeParamsBySpeed, speedOptions]);
+  }, [
+    currentBlockParams?.baseFeePerGas?.gwei,
+    currentNetwork,
+    gasFeeParamsBySpeed,
+    speedOptions,
+  ]);
 
   const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
     speedOptions,
