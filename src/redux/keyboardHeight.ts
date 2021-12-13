@@ -1,16 +1,51 @@
 import produce from 'immer';
+import { Dispatch } from 'redux';
 import {
   getKeyboardHeight as loadKeyboardHeights,
   setKeyboardHeight as saveKeyboardHeight,
 } from '@rainbow-me/handlers/localstorage/globalSettings';
-import KeyboardTypes from '@rainbow-me/helpers/keyboardTypes';
+import { KeyboardType } from '@rainbow-me/helpers/keyboardTypes';
+import { AppGetState } from '@rainbow-me/redux/store';
 import { deviceUtils } from '@rainbow-me/utils';
 
 // -- Constants --------------------------------------- //
 const LOAD = 'keyboardHeight/LOAD';
 const SAVE = 'keyboardHeight/SAVE';
 
-function getDefaultKeyboardHeight() {
+// -- Interfaces --------------------------------------- //
+
+/**
+ * Represents the state of the `keyboardHeight` rducer.
+ */
+interface KeyboardHeightState {
+  keyboardHeight: {
+    [keyboardType in KeyboardType]?: number;
+  };
+}
+
+/**
+ * An action for the `keyboardHeight` reducer.
+ */
+type KeyboardHeightAction = KeyboardHeightLoadAction | KeyboardHeightSaveAction;
+
+interface KeyboardHeightLoadAction {
+  type: typeof LOAD;
+  payload: KeyboardHeightState['keyboardHeight'];
+}
+
+interface KeyboardHeightSaveAction {
+  type: typeof SAVE;
+  keyboardType: KeyboardType;
+  height: number;
+}
+
+interface SetKeyboardHeightFunctionParameter {
+  height: number;
+  keyboardType: KeyboardType;
+}
+
+// -- Actions --------------------------------------- //
+function getDefaultKeyboardHeight(): number {
   let keyboardHeight = 0;
   switch (deviceUtils.dimensions.height) {
     case 568:
@@ -37,13 +72,15 @@ function getDefaultKeyboardHeight() {
   return keyboardHeight;
 }
 
-const INITIAL_STATE = {
+const INITIAL_STATE: KeyboardHeightState = {
   keyboardHeight: {
-    [KeyboardTypes.default]: getDefaultKeyboardHeight(),
+    [KeyboardType.default]: getDefaultKeyboardHeight(),
   },
 };
 
-export const keyboardHeightsLoadState = () => async dispatch => {
+export const keyboardHeightsLoadState = () => async (
+  dispatch: Dispatch<KeyboardHeightLoadAction>
+) => {
   const cachedKeyboardHeights = await loadKeyboardHeights();
 
   dispatch({
@@ -57,8 +94,11 @@ export const keyboardHeightsLoadState = () => async dispatch => {
 
 export const setKeyboardHeight = ({
   height,
-  keyboardType = KeyboardTypes.default,
-}) => async (dispatch, getState) => {
+  keyboardType = KeyboardType.default,
+}: SetKeyboardHeightFunctionParameter) => async (
+  dispatch: Dispatch<KeyboardHeightSaveAction>,
+  getState: AppGetState
+) => {
   await dispatch({
     height,
     keyboardType,
@@ -73,7 +113,10 @@ export const setKeyboardHeight = ({
 };
 
 // -- Reducer ----------------------------------------- //
-export default (state = INITIAL_STATE, action) =>
+export default (
+  state: KeyboardHeightState = INITIAL_STATE,
+  action: KeyboardHeightAction
+) =>
   produce(state, draft => {
     switch (action.type) {
       case LOAD:

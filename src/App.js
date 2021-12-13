@@ -170,7 +170,7 @@ class App extends Component {
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
-    rainbowTokenList.off('update', this.handleTokenListUpdate);
+    rainbowTokenList?.off?.('update', this.handleTokenListUpdate);
     this.onTokenRefreshListener?.();
     this.foregroundNotificationListener?.();
     this.backgroundNotificationListener?.();

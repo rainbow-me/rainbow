@@ -50,6 +50,7 @@ const UniqueTokenImage = ({
   backgroundColor: givenBackgroundColor,
   imageUrl,
   item,
+  isCard = false,
   lowResUrl,
   resizeMode = ImgixImage.resizeMode.cover,
   small,
@@ -97,6 +98,7 @@ const UniqueTokenImage = ({
         ) : (
           <Fragment>
             <ImageTile
+              {...(isCard && { fm: 'png' })}
               onError={handleError}
               onLoad={onLoad}
               resizeMode={ImgixImage.resizeMode[resizeMode]}
@@ -105,6 +107,7 @@ const UniqueTokenImage = ({
             />
             {!loadedImg && lowResUrl && (
               <ImageTile
+                {...(isCard && { fm: 'png' })}
                 playing={false}
                 resizeMode={ImgixImage.resizeMode[resizeMode]}
                 source={{ uri: lowResUrl }}
