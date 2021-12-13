@@ -126,7 +126,7 @@ const BalanceCoinRow = ({
         type: 'token',
       });
     }
-  }, [navigate, handleEditModePress, item]);
+  }, [isCoinListEditedSharedValue, handleEditModePress, navigate, item]);
 
   const paddingStyle = useAnimatedStyle(
     () => ({
