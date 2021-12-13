@@ -9,13 +9,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Animated as RNAnimated, ScrollView } from 'react-native';
+import { Animated as RNAnimated } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { BaseScrollView } from 'recyclerlistview';
 import { useRecyclerAssetListPosition } from './Contexts';
 
 const Context = React.createContext<
   | {
-      scrollViewRef: MutableRefObject<ScrollView | undefined>;
+      scrollViewRef: MutableRefObject<BaseScrollView | undefined>;
       interpolationsRanges: Record<string, { range: number[]; last: boolean }>;
       setMeasures: (position: number, height: number, name: string) => void;
     }
@@ -114,7 +115,7 @@ export function StickyHeaderManager({ children }: { children: ReactElement }) {
 
     return rangesKeyed;
   }, [positions]);
-  const scrollViewRef = useRef();
+  const scrollViewRef = useRef<BaseScrollView>();
   const value = useMemo(
     () => ({
       interpolationsRanges,

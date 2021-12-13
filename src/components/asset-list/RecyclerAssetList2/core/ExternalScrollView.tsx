@@ -1,5 +1,9 @@
 import React, { useContext, useImperativeHandle } from 'react';
-import { Animated as RNAnimated, ScrollViewProps } from 'react-native';
+import {
+  Animated as RNAnimated,
+  ScrollViewProps,
+  ViewStyle,
+} from 'react-native';
 import BaseScrollView, {
   ScrollViewDefaultProps,
 } from 'recyclerlistview/dist/reactnative/core/scrollcomponent/BaseScrollView';
@@ -8,11 +12,13 @@ import { useRecyclerAssetListPosition } from './Contexts';
 import { StickyHeaderContext } from './StickyHeaders';
 
 const extraPadding = { paddingBottom: 144 };
-// @ts-ignore
-const ExternalScrollViewWithRef = React.forwardRef(function ExternalScrollView(
-  props: ScrollViewDefaultProps,
+const ExternalScrollViewWithRef = React.forwardRef<
+  BaseScrollView,
+  ScrollViewDefaultProps & { contentContainerStyle: ViewStyle }
+>(function ExternalScrollView(
+  props: ScrollViewDefaultProps & { contentContainerStyle: ViewStyle },
   ref
-): BaseScrollView {
+) {
   const y = useRecyclerAssetListPosition()!;
 
   const { onScroll, ...rest } = props;
@@ -35,12 +41,11 @@ const ExternalScrollViewWithRef = React.forwardRef(function ExternalScrollView(
     [onScroll, y]
   );
 
-  useImperativeHandle(ref, () => scrollViewRef.current);
-  // @ts-ignore
+  useImperativeHandle(ref, () => scrollViewRef.current!);
+
   return (
     <RNAnimated.ScrollView
       {...(rest as ScrollViewProps)}
-      // @ts-ignore
       contentContainerStyle={[extraPadding, rest.contentContainerStyle]}
       onScroll={event}
       ref={scrollViewRef}

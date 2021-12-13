@@ -6,7 +6,7 @@ import { useAsset } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
-export default function WrappedNFT({
+export default React.memo(function WrappedNFT({
   uniqueId,
   placement,
 }: {
@@ -48,4 +48,4 @@ export default function WrappedNFT({
       <UniqueTokenCard item={asset} onPress={handleItemPress} />
     </Box>
   );
-}
+});
