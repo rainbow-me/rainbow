@@ -1,6 +1,5 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import Divider from '../Divider';
 import { ExchangeHeader } from '../exchange';
