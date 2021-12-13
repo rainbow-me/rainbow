@@ -89,11 +89,12 @@ import logger from 'logger';
 const storage = new MMKV();
 
 function addHiddenCoins(coins, dispatch, address) {
-  const storageEntity = storage.getString('hidden-coins-' + address);
+  const storageKey = 'hidden-coins-' + address;
+  const storageEntity = storage.getString(storageKey);
   const list = storageEntity ? JSON.parse(storageEntity) : [];
   const newList = [...list.filter(i => !coins.includes(i)), ...coins];
   dispatch(setHiddenCoins(newList));
-  storage.set('hidden-coins-' + address, JSON.stringify(newList));
+  storage.set(storageKey, JSON.stringify(newList));
 }
 
 const BACKUP_SHEET_DELAY_MS = 3000;
