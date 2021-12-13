@@ -24,7 +24,6 @@ export default function useWalletSectionsData() {
   const { showcaseTokens } = useShowcaseTokens();
 
   const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
-  const currentAction = 'none'; // TODO remove this soon
 
   const { refetchSavings, savings, shouldRefetchSavings } = useSavingsAccount(
     true
@@ -34,7 +33,6 @@ export default function useWalletSectionsData() {
 
   const walletSections = useMemo(() => {
     const accountInfo = {
-      currentAction,
       hiddenCoins,
       isCoinListEdited,
       language,
@@ -61,7 +59,6 @@ export default function useWalletSectionsData() {
     };
   }, [
     accountData,
-    currentAction,
     hiddenCoins,
     isCoinListEdited,
     isWalletEthZero,

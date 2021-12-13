@@ -35,7 +35,6 @@ import Routes from '@rainbow-me/routes';
 const allAssetsSelector = state => state.allAssets;
 const allAssetsCountSelector = state => state.allAssetsCount;
 const assetsTotalSelector = state => state.assetsTotal;
-const currentActionSelector = state => state.currentAction;
 const hiddenCoinsSelector = state => state.hiddenCoins;
 const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
 const isCoinListEditedSelector = state => state.isCoinListEdited;
@@ -265,7 +264,6 @@ const withBalanceSection = (
   isCoinListEdited,
   pinnedCoins,
   hiddenCoins,
-  currentAction,
   uniswapTotal,
   collectibles
 ) => {
@@ -310,7 +308,6 @@ const withBalanceSection = (
       allAssets,
       balanceSectionData,
       isCoinListEdited,
-      currentAction,
       isLoadingAssets,
       allAssetsCount,
       totalValue,
@@ -494,7 +491,6 @@ const balanceSectionSelector = createSelector(
     isCoinListEditedSelector,
     pinnedCoinsSelector,
     hiddenCoinsSelector,
-    currentActionSelector,
     uniswapTotalSelector,
     uniqueTokensSelector,
   ],
