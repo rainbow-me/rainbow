@@ -22,6 +22,7 @@ import {
   usePrevious,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { gasUpdateToCustomGasFee } from '@rainbow-me/redux/gas';
 import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
@@ -254,11 +255,19 @@ const GasSpeedButton = ({
     selectedSpeed => {
       updateGasFeeOption(selectedSpeed);
       InteractionManager.runAfterInteractions(() => {
-        selectedSpeed === CUSTOM &&
+        if (selectedSpeed === CUSTOM) {
+          const gasFeeParams = isEmpty(gasFeeParamsBySpeed[CUSTOM])
+            ? gasFeeParamsBySpeed[URGENT]
+            : gasFeeParamsBySpeed[CUSTOM];
+          gasUpdateToCustomGasFee({
+            ...gasFeeParams,
+            option: CUSTOM,
+          });
           setShouldOpenCustomGasSheet({ focusTo: null, shouldOpen: true });
+        }
       });
     },
-    [updateGasFeeOption]
+    [gasFeeParamsBySpeed, updateGasFeeOption]
   );
 
   const formatTransactionTime = useCallback(() => {
