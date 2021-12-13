@@ -89,7 +89,7 @@ const Label = styled(Text).attrs(({ size }) => ({
   ${({ weight }) => fontWithWidth(weight || fonts.weight.semibold)}
 `;
 
-const GAS_FEE_INCREMENT = 4;
+const GAS_FEE_INCREMENT = 3;
 const MAX_BASE_FEE_RANGE = [1, 3];
 const MINER_TIP_RANGE = [1, 2];
 
@@ -531,7 +531,7 @@ export default function FeesPanel({
       if (
         !maxBaseFee ||
         isZero(maxBaseFee) ||
-        greaterThan(multiply(0.05, maxBaseFeeToValidate), maxBaseFee)
+        greaterThan(multiply(0.1, maxBaseFeeToValidate), maxBaseFee)
       ) {
         setMaxBaseFeeError(MAX_BASE_FEE_TOO_LOW_ERROR);
       } else {
