@@ -487,15 +487,6 @@ export default async function runMigrations() {
         logger.log(JSON.stringify({ pinnedCoinsMigrated }, null, 2));
         logger.log(JSON.stringify({ hiddenCoinsMigrated }, null, 2));
 
-        mmkv.set(
-          'pinned-coins-' + address,
-          JSON.stringify(pinnedCoinsMigrated)
-        );
-        mmkv.set(
-          'hidden-coins-' + address,
-          JSON.stringify(hiddenCoinsMigrated)
-        );
-
         await savePinnedCoins(uniq(pinnedCoinsMigrated), address, network);
         await saveHiddenCoins(uniq(hiddenCoinsMigrated), address, network);
       }
@@ -507,6 +498,7 @@ export default async function runMigrations() {
   /*
    *************** Migration v13 ******************
    * Migrates from local storage to mmkv
+   * for hidden coins, pinned coins, savings toggle, and open families
    */
   const v13 = async () => {
     const { network } = store.getState().settings;
