@@ -26,10 +26,10 @@ export default function useShowcaseTokens() {
     },
     [
       dispatch,
-      updateOpenFamilies,
       isReadOnlyWallet,
-      updateWebShowcase,
       showcaseTokens,
+      updateOpenFamilies,
+      updateWebShowcase,
     ]
   );
 
