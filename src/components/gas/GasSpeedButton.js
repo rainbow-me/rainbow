@@ -177,7 +177,7 @@ const GasSpeedButton = ({
       if (animatedValue === null || isNaN(animatedValue)) {
         return 0;
       }
-      setGasPriceReady(true);
+      !gasPriceReady && setGasPriceReady(true);
       // L2's are very cheap,
       // so let's default to the last 2 significant decimals
       if (isL2) {
@@ -195,7 +195,7 @@ const GasSpeedButton = ({
         }`;
       }
     },
-    [isL2, nativeCurrencySymbol, nativeCurrency]
+    [gasPriceReady, isL2, nativeCurrencySymbol, nativeCurrency]
   );
 
   const openCustomOptions = useCallback(focusTo => {
