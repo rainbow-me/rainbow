@@ -1,4 +1,4 @@
-import { MutableRefObject } from 'react';
+import { MutableRefObject, useMemo } from 'react';
 import { LayoutAnimation } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { BaseItemAnimator } from 'recyclerlistview';
@@ -89,5 +89,8 @@ export default function useLayoutItemAnimator(
     // @ts-ignore
     ListFooter.height -
     FloatingActionButtonSize / 2;
-  return new LayoutItemAnimator(paddingBottom, topMarginRef, ref);
+  return useMemo(
+    () => new LayoutItemAnimator(paddingBottom, topMarginRef, ref),
+    [paddingBottom, ref, topMarginRef]
+  );
 }
