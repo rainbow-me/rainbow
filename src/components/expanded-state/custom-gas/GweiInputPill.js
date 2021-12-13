@@ -17,7 +17,6 @@ const GweiPill = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   border-radius: 15;
   ${padding(10, 12)}
   ${margin(0, 6)}
-  min-width: 105;
 `;
 
 const GweiNumberInput = styled(TextInputMask).attrs(
@@ -31,14 +30,14 @@ const GweiNumberInput = styled(TextInputMask).attrs(
     weight: 'heavy',
   })
 )`
-  ${buildTextStyles}
-  ${padding(0, 0, 0, 0)}
+  ${buildTextStyles};
+  ${padding(0, 0, 0, 0)};
   ${margin(
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0,
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0
-  )}
+  )};
 `;
 
 const GweiLabel = styled(Text).attrs(() => ({
