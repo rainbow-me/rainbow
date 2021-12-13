@@ -98,6 +98,7 @@ export const customGasSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
+      backgroundOpacity: 1,
     }),
   }),
 };
