@@ -2,9 +2,10 @@ import React, { useContext } from 'react';
 import { Animated as RNAnimated } from 'react-native';
 
 import { useDeepCompareMemo } from 'use-deep-compare';
+import { CellTypes } from './ViewTypes';
 
 export const RecyclerAssetListContext = React.createContext<
-  Record<string, object>
+  Record<string, CellTypes>
 >({});
 
 export const RecyclerAssetListScrollPositionContext = React.createContext<
