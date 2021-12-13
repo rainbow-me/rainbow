@@ -8,7 +8,9 @@ export default function useOpenSmallBalances() {
     'small-balances-open-' + accountAddress
   );
 
-  const [stagger, setStagger] = useMMKVBoolean('small-balances-open-stagger');
+  const [stagger, setStagger] = useMMKVBoolean(
+    'small-balances-open-stagger-' + accountAddress
+  );
 
   useEffect(() => {
     if (stagger) {
