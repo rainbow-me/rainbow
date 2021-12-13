@@ -349,6 +349,7 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
       <View style={{ height, width }}>
         <LongPressGestureHandler
           {...{ onGestureEvent }}
+          onGestureEvent={onGestureEvent}
           enabled={gestureEnabled}
           maxDist={100000}
           minDurationMs={0}
