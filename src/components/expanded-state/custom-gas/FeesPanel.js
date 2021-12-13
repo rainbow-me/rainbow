@@ -544,6 +544,13 @@ export default function FeesPanel({
         )
       ) {
         setMaxBaseFeeWarning(LOWER_THAN_SUGGESTED);
+      } else if (
+        greaterThan(
+          maxBaseFee,
+          multiply(MAX_BASE_FEE_RANGE[1], maxBaseFeeToValidate)
+        )
+      ) {
+        setMaxBaseFeeWarning(HIGHER_THAN_NECESSARY);
       } else {
         setMaxBaseFeeWarning(null);
       }

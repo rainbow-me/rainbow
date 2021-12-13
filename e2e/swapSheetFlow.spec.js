@@ -336,7 +336,7 @@ describe('Swap Sheet Interaction Flow', () => {
   it('Should display alert on high custom base fee price', async () => {
     await Helpers.waitAndTap('speed-pill-custom');
     await Helpers.waitAndTap('gas-speed-done-button');
-    await Helpers.checkIfElementByTextToExist('High · overpaying');
+    await Helpers.checkIfElementByTextToExist('High max base fee!');
     await Helpers.tapByText('Edit Max Base Fee');
     await Helpers.waitAndTap('speed-pill-normal');
     await Helpers.clearField('max-base-fee-input');
