@@ -384,7 +384,7 @@ export default class SendAssetList extends React.Component {
     );
   };
 
-  shitcoinsRenderItem = () => {
+  shitcoinsRenderItem = item => {
     const { savings } = this.props;
     const { openShitcoins } = this.state;
     return (
@@ -394,7 +394,7 @@ export default class SendAssetList extends React.Component {
           isSmallBalancesOpen={openShitcoins}
           onPress={this.changeOpenShitcoins}
         />
-        {/*{openShitcoins && this.mapShitcoins(item.assets)}*/}
+        {openShitcoins && this.mapShitcoins(item.assets)}
         {savings && savings.length > 0 ? null : <SendAssetListDivider />}
       </View>
     );
