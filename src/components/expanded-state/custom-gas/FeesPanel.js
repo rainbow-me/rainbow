@@ -417,13 +417,15 @@ export default function FeesPanel({
   }, [updateFeePerGas]);
 
   const sanitizeNumber = useCallback(text => {
-    const saneNumber = /^\d+(\.\d+)?$/.test(text);
-    if (!saneNumber) {
-      let count = text.split('.').length - 1;
+    const saneNumberPoint = /^\d+(\.\d+)?$/.test(text);
+    const saneNumberComma = /^\d+(,\d+)?$/.test(text);
+    if (!saneNumberPoint || saneNumberComma) {
+      const separator = !saneNumberPoint ? '.' : ',';
+      let count = text.split(separator).length - 1;
       while (count > 1) {
-        const ind = text.lastIndexOf('.');
+        const ind = text.lastIndexOf(separator);
         text = text.substr(0, ind);
-        count = text.split('.').length - 1;
+        count = text.split(separator).length - 1;
       }
     }
     return text;
