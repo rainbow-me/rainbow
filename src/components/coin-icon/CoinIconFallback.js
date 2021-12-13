@@ -1,12 +1,15 @@
 import React, { useMemo } from 'react';
-import { FallbackIcon } from 'react-coin-icon';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
 import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
 import { ImageWithCachedMetadata } from '@rainbow-me/images';
 import { borders, fonts, position, shadow } from '@rainbow-me/styles';
-import { getUrlForTrustIconFallback, magicMemo } from '@rainbow-me/utils';
+import {
+  FallbackIcon,
+  getUrlForTrustIconFallback,
+  magicMemo,
+} from '@rainbow-me/utils';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,

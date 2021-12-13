@@ -1,10 +1,9 @@
 import React, { useMemo } from 'react';
-import { FallbackIcon } from 'react-coin-icon';
 import styled from 'styled-components';
-import { initials } from '../../utils';
 import { Emoji } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
 import { borders } from '@rainbow-me/styles';
+import { FallbackIcon, initials } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
 
 const shadowsFactory = colors => [[0, 3, android ? 5 : 9, colors.shadow, 0.1]];
