@@ -136,6 +136,7 @@ const GasSpeedButton = ({
     selectedGasFee,
     selectedGasFeeOption,
     updateToCustomGasFee,
+    currentBlockParams,
   } = useGas();
 
   const [estimatedTimeValue, setEstimatedTimeValue] = useState(0);
@@ -338,10 +339,17 @@ const GasSpeedButton = ({
         gasFeeParamsBySpeed[gasOption]?.maxFeePerGas?.gwei,
         gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
       );
+      const estimatedGwei = add(
+        currentBlockParams?.baseFeePerGas?.gwei,
+        gasFeeParamsBySpeed[gasOption]?.maxPriorityFeePerGas?.gwei
+      );
       const gweiDisplay =
         currentNetwork === networkTypes.polygon
           ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
-          : `${toFixedDecimals(totalGwei, 0)} Gwei`;
+          : `${toFixedDecimals(estimatedGwei, 0)} - ${toFixedDecimals(
+              totalGwei,
+              0
+            )} Gwei`;
       return {
         actionKey: gasOption,
         actionTitle: upperFirst(gasOption),
