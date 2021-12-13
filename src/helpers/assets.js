@@ -348,8 +348,9 @@ export const buildBriefUniqueTokenList = (
   ];
   if (uniqueTokensInShowcase.length > 0) {
     result.push({ name: 'Showcase', type: 'FAMILY_HEADER', uid: 'showcase' });
-    for (let token of uniqueTokensInShowcase) {
-      result.push({ type: 'NFT', uid: token, uniqueId: token });
+    for (let index = 0; index < uniqueTokensInShowcase.length; index++) {
+      const uniqueId = uniqueTokensInShowcase[index];
+      result.push({ index, type: 'NFT', uid: uniqueId, uniqueId });
     }
 
     result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
@@ -366,12 +367,7 @@ export const buildBriefUniqueTokenList = (
     for (let index = 0; index < tokens.length; index++) {
       const uniqueId = tokens[index];
 
-      result.push({
-        index,
-        type: 'NFT',
-        uid: uniqueId,
-        uniqueId,
-      });
+      result.push({ index, type: 'NFT', uid: uniqueId, uniqueId });
     }
 
     result.push({ type: 'NFT_SPACE_AFTER', uid: `${family}-space-after` });
