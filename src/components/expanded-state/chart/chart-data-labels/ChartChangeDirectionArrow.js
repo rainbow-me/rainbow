@@ -30,7 +30,7 @@ export default function ChartChangeDirectionArrow({ ratio }) {
           ? colors.red
           : colors.green,
     };
-  }, []);
+  }, [colors]);
 
   return (
     <Animated.View style={arrowWrapperStyle}>
