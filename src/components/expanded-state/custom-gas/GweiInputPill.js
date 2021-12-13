@@ -3,7 +3,6 @@ import LinearGradient from 'react-native-linear-gradient';
 import TextInputMask from 'react-native-text-input-mask';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../../animations';
-import { Row } from '../../layout';
 import { Text } from '../../text';
 import { buildTextStyles, margin, padding } from '@rainbow-me/styles';
 
@@ -12,6 +11,7 @@ const ANDROID_EXTRA_LINE_HEIGHT = 6;
 const GweiPill = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   colors: colors.gradients.lighterGrey,
   end: { x: 0.5, y: 1 },
+  flexDirection: 'row',
   start: { x: 0, y: 0 },
 }))`
   border-radius: 15;
@@ -24,11 +24,11 @@ const GweiNumberInput = styled(TextInputMask).attrs(
   ({ theme: { colors }, value }) => ({
     allowFontScaling: false,
     color: !value && colors.grey,
+    flex: 1,
     keyboardType: 'decimal-pad',
     letterSpacing: 'roundedTight',
     size: 'lmedium',
     textAlign: 'center',
-    timing: 'linear',
     weight: 'heavy',
   })
 )`
@@ -63,22 +63,20 @@ function GweiInputPill(
   return (
     <ButtonPressAnimation onPress={onPress}>
       <GweiPill>
-        <Row alignSelf="center">
-          <GweiNumberInput
-            keyboardType="numeric"
-            mask="[99999999999999999].[999999999999999999]"
-            onBlur={onBlur}
-            onChange={onChange}
-            onFocus={onFocus}
-            placeholder="0"
-            placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.4)}
-            ref={ref}
-            selectionColor={color}
-            testID={testID}
-            value={!!value && `${value}`}
-          />
-          <GweiLabel> Gwei</GweiLabel>
-        </Row>
+        <GweiNumberInput
+          keyboardType="numeric"
+          mask="[99999999999999999].[999999999999999999]"
+          onBlur={onBlur}
+          onChange={onChange}
+          onFocus={onFocus}
+          placeholder="0"
+          placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.4)}
+          ref={ref}
+          selectionColor={color}
+          testID={testID}
+          value={!!value && `${value}`}
+        />
+        <GweiLabel> Gwei</GweiLabel>
       </GweiPill>
     </ButtonPressAnimation>
   );
