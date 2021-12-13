@@ -1,11 +1,11 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
+import TextInputMask from 'react-native-text-input-mask';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../../animations';
-import { Input } from '../../inputs';
 import { Row } from '../../layout';
 import { Text } from '../../text';
-import { margin, padding } from '@rainbow-me/styles';
+import { buildTextStyles, margin, padding } from '@rainbow-me/styles';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
@@ -20,16 +20,19 @@ const GweiPill = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   min-width: 105;
 `;
 
-const GweiNumberInput = styled(Input).attrs(({ theme: { colors }, value }) => ({
-  color: !value && colors.grey,
-  interval: 1,
-  letterSpacing: 'roundedTight',
-  size: 'lmedium',
-  steps: 1,
-  textAlign: 'center',
-  timing: 'linear',
-  weight: 'heavy',
-}))`
+const GweiNumberInput = styled(TextInputMask).attrs(
+  ({ theme: { colors }, value }) => ({
+    allowFontScaling: false,
+    color: !value && colors.grey,
+    keyboardType: 'decimal-pad',
+    letterSpacing: 'roundedTight',
+    size: 'lmedium',
+    textAlign: 'center',
+    timing: 'linear',
+    weight: 'heavy',
+  })
+)`
+  ${buildTextStyles}
   ${padding(0, 0, 0, 0)}
   ${margin(
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
@@ -63,6 +66,7 @@ function GweiInputPill(
         <Row alignSelf="center">
           <GweiNumberInput
             keyboardType="numeric"
+            mask="[99999999999999999].[999999999999999999]"
             onBlur={onBlur}
             onChange={onChange}
             onFocus={onFocus}

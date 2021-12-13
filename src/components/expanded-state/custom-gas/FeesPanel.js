@@ -416,24 +416,8 @@ export default function FeesPanel({
     updateFeePerGas(-GAS_FEE_INCREMENT);
   }, [updateFeePerGas]);
 
-  const sanitizeNumber = useCallback(text => {
-    const saneNumberPoint = /^\d+(\.\d+)?$/.test(text);
-    const saneNumberComma = /^\d+(,\d+)?$/.test(text);
-    if (!saneNumberPoint || saneNumberComma) {
-      const separator = !saneNumberPoint ? '.' : ',';
-      let count = text.split(separator).length - 1;
-      while (count > 1) {
-        const ind = text.lastIndexOf(separator);
-        text = text.substr(0, ind);
-        count = text.split(separator).length - 1;
-      }
-    }
-    return text;
-  }, []);
-
   const onMaxBaseFeeChange = useCallback(
     ({ nativeEvent: { text } }) => {
-      text = sanitizeNumber(text);
       const maxFeePerGasGwei = toFixedDecimals(text || 0, 0);
       const maxFeePerGas = parseGasFeeParam(gweiToWei(maxFeePerGasGwei));
 
@@ -451,12 +435,11 @@ export default function FeesPanel({
       };
       updateToCustomGasFee(newGasParams);
     },
-    [sanitizeNumber, selectedGasFee.gasFeeParams, updateToCustomGasFee]
+    [selectedGasFee.gasFeeParams, updateToCustomGasFee]
   );
 
   const onMinerTipChange = useCallback(
     ({ nativeEvent: { text } }) => {
-      text = sanitizeNumber(text);
       const maxPriorityFeePerGasGwei =
         Math.round(Number(text) * 100) / 100 || 0;
 
