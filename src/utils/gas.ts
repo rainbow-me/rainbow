@@ -26,7 +26,7 @@ const GAS_TRENDS = {
   [FALLING]: { color: colors.green, label: '􀄱 Falling' },
   [NO_TREND]: { color: colors.appleBlue, label: '' },
   [RISING]: { color: colors.orange, label: '􀰾 Rising' },
-  [STABLE]: { color: colors.yellowOrange, label: '􀆮 Stable' },
+  [STABLE]: { color: colors.yellowFavorite, label: '􀆮 Stable' },
   [SURGING]: { color: colors.red, label: '􀇿 Surging' },
 };
 
