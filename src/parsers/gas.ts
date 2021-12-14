@@ -139,14 +139,19 @@ export const parseRainbowMeteorologyData = (
 
   Object.keys(maxPriorityFeeSuggestions).forEach(speed => {
     const baseFeeMultiplier = getBaseFeeMultiplier(speed);
-    const parsedBaseFeeSuggestionForSpeed = parseGasFeeParam(
-      toFixedDecimals(multiply(baseFeeSuggestion, baseFeeMultiplier), 0)
+    const speedMaxBaseFee = toFixedDecimals(
+      multiply(baseFeeSuggestion, baseFeeMultiplier),
+      0
     );
     const maxPriorityFee =
       maxPriorityFeeSuggestions[speed as keyof MaxPriorityFeeSuggestions];
     // next version of the package will send only 2 decimals
     const cleanMaxPriorityFee = gweiToWei(
       new BigNumber(weiToGwei(maxPriorityFee)).toFixed(2)
+    );
+    // clean max base fee to only parser int gwei
+    const cleanMaxBaseFee = gweiToWei(
+      new BigNumber(weiToGwei(speedMaxBaseFee)).toFixed(0)
     );
     parsedFees[speed] = {
       estimatedTime: parseGasDataConfirmationTime(
@@ -155,7 +160,7 @@ export const parseRainbowMeteorologyData = (
         confirmationTimeByPriorityFee,
         baseFeeSuggestion
       ),
-      maxFeePerGas: parsedBaseFeeSuggestionForSpeed,
+      maxFeePerGas: parseGasFeeParam(cleanMaxBaseFee),
       maxPriorityFeePerGas: parseGasFeeParam(cleanMaxPriorityFee),
       option: speed,
     };

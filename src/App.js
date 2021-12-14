@@ -60,6 +60,7 @@ import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
 import { ethereumUtils } from './utils';
+import { analyticsUserIdentifier } from './utils/keychainConstants';
 import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
@@ -216,15 +217,13 @@ class App extends Component {
   handleInitializeAnalytics = async () => {
     // Comment the line below to debug analytics
     if (__DEV__) return false;
-    const storedIdentifier = await keychain.loadString(
-      'analyticsUserIdentifier'
-    );
+    const storedIdentifier = await keychain.loadString(analyticsUserIdentifier);
 
     if (!storedIdentifier) {
       const identifier = await RNIOS11DeviceCheck.getToken()
         .then(deviceId => deviceId)
         .catch(() => nanoid());
-      await keychain.saveString('analyticsUserIdentifier', identifier);
+      await keychain.saveString(analyticsUserIdentifier, identifier);
       analytics.identify(identifier);
     }
 

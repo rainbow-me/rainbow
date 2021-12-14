@@ -9,7 +9,7 @@ import { imageToPng } from '@rainbow-me/handlers/imgix';
 
 export const parsePoaps = data => {
   const poaps = get(data, 'data', null);
-  return poaps.map(({ tokenId, event }) => {
+  return poaps.map(({ event }) => {
     return {
       animation_url: event.image_url,
       asset_contract: {
@@ -34,8 +34,8 @@ export const parsePoaps = data => {
       familyImage:
         'https://lh3.googleusercontent.com/FwLriCvKAMBBFHMxcjqvxjTlmROcDIabIFKRp87NS3u_QfSLxcNThgAzOJSbphgQqnyZ_v2fNgMZQkdCYHUliJwH-Q=s60',
       familyName: 'POAP',
-      id: tokenId,
-      image_url: imageToPng(event.image_url, 600),
+      id: event.id,
+      image_url: imageToPng(event.image_url, 300),
       isPoap: true,
       isSendable: false,
       lastPrice: null,
@@ -64,7 +64,7 @@ export const parsePoaps = data => {
         },
       ],
       type: AssetTypes.nft,
-      uniqueId: `0x22c1f6050e56d2876009903609a2cc3fef83b415_${tokenId}`,
+      uniqueId: `0x22c1f6050e56d2876009903609a2cc3fef83b415_${event.id}`,
     };
   });
 };

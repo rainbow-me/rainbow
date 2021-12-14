@@ -9,18 +9,34 @@ import {
   setMigrationVersion,
 } from '../handlers/localstorage/migrations';
 import WalletTypes from '../helpers/walletTypes';
-import {
-  DEFAULT_WALLET_NAME,
-  loadAddress,
-  oldSeedPhraseMigratedKey,
-  saveAddress,
-  seedPhraseKey,
-} from '../model/wallet';
 import store from '../redux/store';
 
 import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import colors, { getRandomColor } from '../styles/colors';
-import { hasKey } from './keychain';
+import {
+  addressKey,
+  allWalletsKey,
+  analyticsUserIdentifier,
+  oldSeedPhraseMigratedKey,
+  seedPhraseKey,
+  selectedWalletKey,
+  signingWallet,
+  signingWalletAddress,
+} from '../utils/keychainConstants';
+import {
+  hasKey,
+  loadAllKeysOnly,
+  loadString,
+  publicAccessControlOptions,
+  saveString,
+} from './keychain';
+import {
+  DEFAULT_WALLET_NAME,
+  loadAddress,
+  RainbowAccount,
+  RainbowWallet,
+  saveAddress,
+} from './wallet';
 import { isL2Asset } from '@rainbow-me/handlers/assets';
 import {
   getAssets,
@@ -245,6 +261,7 @@ export default async function runMigrations() {
         if (selected.id === incorrectDamagedWalletId) {
           logger.sentry('need to update the selected wallet');
           const updatedSelectedWallet =
+            // @ts-expect-error
             updatedWallets[incorrectDamagedWalletId];
           await store.dispatch(walletsSetSelected(updatedSelectedWallet));
           logger.sentry('selected wallet updated');
@@ -260,7 +277,7 @@ export default async function runMigrations() {
   const v6 = async () => {
     try {
       const userLists = await getUserLists();
-      const newLists = userLists.map(list => {
+      const newLists = userLists.map((list: { id: string }) => {
         if (list?.id !== 'dollars') {
           return list;
         }
@@ -281,9 +298,11 @@ export default async function runMigrations() {
     const { wallets } = store.getState().wallets;
     if (!wallets) return;
     const walletKeys = Object.keys(wallets);
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let i = 0; i < walletKeys.length; i++) {
       const wallet = wallets[walletKeys[i]];
       if (wallet.type !== WalletTypes.readOnly) {
+        // eslint-disable-next-line @typescript-eslint/prefer-for-of
         for (let x = 0; x < wallet.addresses.length; x++) {
           const { address } = wallet.addresses[x];
           logger.log('setting web profiles for address', address);
@@ -317,9 +336,10 @@ export default async function runMigrations() {
       if (!wallets) return;
       const walletKeys = Object.keys(wallets);
       let updatedWallets = { ...wallets };
+      // eslint-disable-next-line @typescript-eslint/prefer-for-of
       for (let i = 0; i < walletKeys.length; i++) {
         const wallet = wallets[walletKeys[i]];
-        const newAddresses = wallet.addresses.map(account => {
+        const newAddresses = wallet.addresses.map((account: RainbowAccount) => {
           const accountEmoji = returnStringFirstEmoji(account?.label);
           return {
             ...account,
@@ -353,8 +373,11 @@ export default async function runMigrations() {
       let updatedContacts = { ...contacts };
       if (!contacts) return;
       const contactKeys = Object.keys(contacts);
+      // eslint-disable-next-line @typescript-eslint/prefer-for-of
       for (let j = 0; j < contactKeys.length; j++) {
+        // @ts-expect-error
         const contact = contacts[contactKeys[j]];
+        // @ts-expect-error
         updatedContacts[contactKeys[j]] = {
           ...contact,
           color: isNumber(contact.color)
@@ -388,13 +411,26 @@ export default async function runMigrations() {
       let updatedContacts = { ...contacts };
       if (!contacts) return;
       const contactKeys = Object.keys(contacts);
+      // eslint-disable-next-line @typescript-eslint/prefer-for-of
       for (let j = 0; j < contactKeys.length; j++) {
+        // @ts-expect-error
         const contact = contacts[contactKeys[j]];
         let nickname = contact.nickname;
         if (!returnStringFirstEmoji(nickname)) {
           let address = null;
           try {
             address = await resolveNameOrAddress(contact.address);
+            if (address) {
+              const emoji = profileUtils.addressHashedEmoji(address);
+              const color = profileUtils.addressHashedColorIndex(address);
+              nickname = `${emoji} ${nickname}`;
+              // @ts-expect-error
+              updatedContacts[contactKeys[j]] = {
+                ...contact,
+                color,
+                nickname,
+              };
+            }
           } catch (error) {
             const migrationError = new Error(
               `Error during v10 migration contact address resolution for ${contact.address}`
@@ -402,14 +438,6 @@ export default async function runMigrations() {
             captureException(migrationError);
             continue;
           }
-          const emoji = profileUtils.addressHashedEmoji(address);
-          const color = profileUtils.addressHashedColorIndex(address);
-          nickname = `${emoji} ${nickname}`;
-          updatedContacts[contactKeys[j]] = {
-            ...contact,
-            color,
-            nickname,
-          };
         }
       }
       logger.log('update contacts to add emojis / colors');
@@ -452,8 +480,10 @@ export default async function runMigrations() {
     const { wallets } = store.getState().wallets;
     if (!wallets) return;
     const walletKeys = Object.keys(wallets);
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let i = 0; i < walletKeys.length; i++) {
       const wallet = wallets[walletKeys[i]];
+      // eslint-disable-next-line @typescript-eslint/prefer-for-of
       for (let x = 0; x < wallet.addresses.length; x++) {
         const { address } = wallet.addresses[x];
 
@@ -465,8 +495,10 @@ export default async function runMigrations() {
         logger.log(JSON.stringify({ hiddenCoins }, null, 2));
 
         const pinnedCoinsMigrated = pinnedCoins.map(address => {
+          // @ts-expect-error
           const asset = ethereumUtils.getAsset(assets, address);
           if (asset?.type && isL2Asset(asset.type)) {
+            // @ts-expect-error
             return `${asset.address}_${asset.network}`;
           } else {
             return address;
@@ -474,8 +506,10 @@ export default async function runMigrations() {
         });
 
         const hiddenCoinsMigrated = hiddenCoins.map(address => {
+          // @ts-expect-error
           const asset = ethereumUtils.getAsset(assets, address);
           if (asset?.type && isL2Asset(asset.type)) {
+            // @ts-expect-error
             return `${asset.address}_${asset.network}`;
           } else {
             return address;
@@ -495,18 +529,60 @@ export default async function runMigrations() {
 
   /*
    *************** Migration v13 ******************
+   * Migrates the public keychain items to the new setting
+   */
+  const v13 = async () => {
+    try {
+      const keys = await loadAllKeysOnly();
+      const keysToMigrate = [
+        analyticsUserIdentifier,
+        allWalletsKey,
+        addressKey,
+        selectedWalletKey,
+        oldSeedPhraseMigratedKey,
+        signingWallet,
+        signingWalletAddress,
+      ];
+      // add existing signatures
+      // which look like'signature_0x...'
+      keys?.forEach(key => {
+        if (key.startsWith('signature_')) {
+          keysToMigrate.push(key);
+        }
+      });
+
+      for (const key of keysToMigrate) {
+        try {
+          const value = await loadString(key);
+          if (typeof value === 'string') {
+            await saveString(key, value, publicAccessControlOptions);
+            logger.debug('key migrated', key);
+          }
+        } catch (error) {
+          logger.sentry('Error migration 13 :: key ', key);
+          logger.sentry('reason', error);
+        }
+      }
+    } catch (error) {
+      logger.sentry('Migration v13 failed: ', error);
+      const migrationError = new Error('Migration 13 failed');
+      captureException(migrationError);
+    }
+  };
+
+  migrations.push(v13);
+
+  /*
+   *************** Migration v14 ******************
    * Migrates from local storage to mmkv
    * for hidden coins, pinned coins, savings toggle, and open families
    */
-  const v13 = async () => {
+  const v14 = async () => {
     const { network } = store.getState().settings;
     const { wallets } = store.getState().wallets;
     if (!wallets) return;
-    const walletKeys = Object.keys(wallets);
-    for (let i = 0; i < walletKeys.length; i++) {
-      const wallet = wallets[walletKeys[i]];
-      for (let j = 0; j < wallet.addresses.length; j++) {
-        const { address } = wallet.addresses[j];
+    for (let wallet of Object.values(wallets)) {
+      for (let address of (wallet as RainbowWallet).addresses) {
         const hiddenCoins = await getHiddenCoins(address, network);
         const pinnedCoins = await getPinnedCoins(address, network);
 
@@ -516,7 +592,7 @@ export default async function runMigrations() {
     }
   };
 
-  migrations.push(v13);
+  migrations.push(v14);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
@@ -529,6 +605,7 @@ export default async function runMigrations() {
 
   for (let i = currentVersion; i < migrations.length; i++) {
     logger.sentry(`Migrations: Running migration v${i}`);
+    // @ts-expect-error
     await migrations[i].apply(null);
     logger.sentry(`Migrations: Migration ${i} completed succesfully`);
     await setMigrationVersion(i + 1);
