@@ -14,12 +14,12 @@ const EmojiForGasSpeedType = {
   [gasUtils.FAST]: {
     emoji: 'rocket',
     // 🚀️
-    top: android ? 0 : -0.5,
+    top: android ? 0 : -1.25,
   },
   [gasUtils.NORMAL]: {
     emoji: 'stopwatch',
     // ⏱️
-    top: android ? -2 : -1,
+    top: android ? -2 : -1.25,
   },
   [gasUtils.SLOW]: {
     emoji: 'snail',
@@ -34,8 +34,9 @@ const EmojiForGasSpeedType = {
 };
 
 const GasEmoji = styled(Emoji).attrs({
+  align: 'center',
   lineHeight: 'looserLoose',
-  size: 'lmedium',
+  size: 'smedium',
 })`
   ${({ top }) => margin(top, 0, 0, 0)}
 `;

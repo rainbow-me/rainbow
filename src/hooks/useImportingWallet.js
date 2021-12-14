@@ -85,9 +85,11 @@ export default function useImportingWallet() {
         forceColor,
         isNewProfile: true,
         onCloseModal: ({ color, name }) => {
-          if (color !== null) setColor(color);
-          if (name) setName(name);
-          handleSetImporting(true);
+          InteractionManager.runAfterInteractions(() => {
+            if (color !== null) setColor(color);
+            if (name) setName(name);
+            handleSetImporting(true);
+          });
         },
         profile: { name },
         type: 'wallet_profile',

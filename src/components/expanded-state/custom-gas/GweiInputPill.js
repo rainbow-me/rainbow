@@ -1,46 +1,55 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
+import TextInputMask from 'react-native-text-input-mask';
 import styled from 'styled-components';
+import { Row } from '../../../components/layout';
 import { ButtonPressAnimation } from '../../animations';
-import { Input } from '../../inputs';
-import { Row } from '../../layout';
 import { Text } from '../../text';
-import { margin, padding } from '@rainbow-me/styles';
+import { buildTextStyles, margin } from '@rainbow-me/styles';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
 const GweiPill = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
-  colors: colors.gradients.lighterGrey,
+  colors: colors.gradients.lightGreyTransparent,
   end: { x: 0.5, y: 1 },
   start: { x: 0, y: 0 },
 }))`
   border-radius: 15;
-  ${padding(10, 12)}
-  ${margin(0, 6)}
-  min-width: 105;
+  height: 40;
+  max-width: 130;
+  min-width: 108;
 `;
 
-const GweiNumberInput = styled(Input).attrs(({ theme: { colors }, value }) => ({
-  color: !value && colors.grey,
-  interval: 1,
-  letterSpacing: 'roundedTight',
-  size: 'lmedium',
-  steps: 1,
-  textAlign: 'center',
-  timing: 'linear',
-  weight: 'heavy',
-}))`
-  ${padding(0, 0, 0, 0)}
+const GweiNumberInput = styled(TextInputMask).attrs(
+  ({ theme: { colors }, value }) => ({
+    color: !value && colors.alpha(colors.blueGreyDark, 0.4),
+    interval: 1,
+    keyboardAppearance: 'dark',
+    keyboardType: 'decimal-pad',
+    left: 22,
+    letterSpacing: 'rounded',
+    paddingLeft: 28,
+    paddingRight: 72,
+    paddingVertical: 10.5,
+    size: 'lmedium',
+    textAlign: 'left',
+    timing: 'linear',
+    weight: 'heavy',
+  })
+)`
+  ${buildTextStyles};
+  height: 100%;
   ${margin(
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0,
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0
-  )}
+  )};
 `;
 
 const GweiLabel = styled(Text).attrs(() => ({
   align: 'center',
+  pointerEvents: 'none',
   size: 'lmedium',
   weight: 'heavy',
 }))`
@@ -50,6 +59,8 @@ const GweiLabel = styled(Text).attrs(() => ({
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0
   )}
+  right: 50;
+  top: 10.5;
 `;
 
 function GweiInputPill(
@@ -60,9 +71,10 @@ function GweiInputPill(
   return (
     <ButtonPressAnimation onPress={onPress}>
       <GweiPill>
-        <Row alignSelf="center">
+        <Row alignSelf="center" marginHorizontal={-40}>
           <GweiNumberInput
-            keyboardType="numeric"
+            contextMenuHidden
+            mask="[9999]{.}[999]"
             onBlur={onBlur}
             onChange={onChange}
             onFocus={onFocus}
@@ -70,8 +82,10 @@ function GweiInputPill(
             placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.4)}
             ref={ref}
             selectionColor={color}
+            spellCheck={false}
+            style={{ color: colors.dark }}
             testID={testID}
-            value={!!value && `${value}`}
+            value={value}
           />
           <GweiLabel> Gwei</GweiLabel>
         </Row>
