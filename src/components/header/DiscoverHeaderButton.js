@@ -43,7 +43,7 @@ const DiscoverButtonContent = styled(RowWithMargins).attrs({
 
 export default function DiscoverHeaderButton() {
   const { navigate } = useNavigation();
-  const { colors, isDarkMode } = useTheme();
+  const { colors } = useTheme();
 
   const onPress = useCallback(() => navigate(Routes.QR_SCANNER_SCREEN), [
     navigate,
