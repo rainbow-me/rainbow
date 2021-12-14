@@ -181,6 +181,8 @@ export const ChartPath = React.memo(
           setOriginData(currentPath);
         }
 
+        console.log('Effect');
+
         if (currentPath?.path === previousPath?.path) {
           return;
         }
@@ -188,8 +190,6 @@ export const ChartPath = React.memo(
         if (progress.value !== 0 && progress.value !== 1) {
           cancelAnimation(progress);
         }
-
-        progress.value = 0;
 
         // this stores an instance of d3-interpolate-path on worklet side
         // it means that we don't cross threads with that function
@@ -202,6 +202,8 @@ export const ChartPath = React.memo(
             currentPath.path
           );
 
+          progress.value = 0;
+
           progress.value = withDelay(
             Platform.OS === 'ios' ? 0 : 100,
             withTiming(1, timingAnimationConfig || timingAnimationDefaultConfig)
@@ -213,13 +215,7 @@ export const ChartPath = React.memo(
       })();
       // you don't need to change timingAnimationConfig that often
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-      currentPath,
-      previousPath,
-      interpolatorWorklet,
-      progress,
-      setOriginData,
-    ]);
+    }, [currentPath?.path, previousPath?.path]);
 
     useAnimatedReaction(
       () => ({ x: translationX.value, y: translationY.value }),
