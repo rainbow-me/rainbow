@@ -14,7 +14,11 @@ import { GasSpeedLabelPager } from '.';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
-import { add, toFixedDecimals } from '@rainbow-me/helpers/utilities';
+import {
+  add,
+  greaterThan,
+  toFixedDecimals,
+} from '@rainbow-me/helpers/utilities';
 import {
   useAccountSettings,
   useColorForAsset,
@@ -358,6 +362,8 @@ const GasSpeedButton = ({
       const gweiDisplay =
         currentNetwork === networkTypes.polygon
           ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
+          : greaterThan(estimatedGwei, totalGwei)
+          ? `${toFixedDecimals(totalGwei, 0)}`
           : `${toFixedDecimals(estimatedGwei, 0)} - ${toFixedDecimals(
               totalGwei,
               0
