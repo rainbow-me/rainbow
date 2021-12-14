@@ -1,4 +1,4 @@
-import { gasUtils } from '@rainbow-me/utils';
+import { gasUtils, memoFn } from '@rainbow-me/utils';
 
 const { GasTrends } = gasUtils;
 const { FALLING, NO_TREND, RISING, STABLE, SURGING } = GasTrends;
@@ -7,7 +7,7 @@ const PRIORITY_FEE_INCREMENT = 1;
 
 const PRIORITY_FEE_THRESHOLD = 0.15;
 
-export const getTrendKey = (trend: number) => {
+export const getTrendKey = memoFn((trend: number) => {
   if (trend === -1) {
     return FALLING;
   } else if (trend === 1) {
@@ -18,9 +18,9 @@ export const getTrendKey = (trend: number) => {
     return STABLE;
   }
   return NO_TREND;
-};
+});
 
-export const calculateMinerTipAddDifference = (maxPriorityFee: string) => {
+export const calculateMinerTipAddDifference = memoFn((maxPriorityFee: string) => {
   const diff =
     Math.round((Number(maxPriorityFee) % PRIORITY_FEE_INCREMENT) * 100) / 100;
   if (diff > PRIORITY_FEE_INCREMENT - PRIORITY_FEE_THRESHOLD) {
@@ -28,9 +28,9 @@ export const calculateMinerTipAddDifference = (maxPriorityFee: string) => {
   } else {
     return PRIORITY_FEE_INCREMENT - diff;
   }
-};
+});
 
-export const calculateMinerTipSubstDifference = (maxPriorityFee: string) => {
+export const calculateMinerTipSubstDifference = memoFn((maxPriorityFee: string) => {
   const diff =
     Math.round((Number(maxPriorityFee) % PRIORITY_FEE_INCREMENT) * 100) / 100;
   if (diff < PRIORITY_FEE_THRESHOLD) {
@@ -38,4 +38,4 @@ export const calculateMinerTipSubstDifference = (maxPriorityFee: string) => {
   } else {
     return diff || PRIORITY_FEE_INCREMENT;
   }
-};
+});

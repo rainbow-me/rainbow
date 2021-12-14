@@ -1,4 +1,5 @@
 import URL from 'url-parse';
+import { memoFn } from '@rainbow-me/utils';
 
 const buildAssetUrl = hostname =>
   `https://raw.githubusercontent.com/rainbow-me/rainbow/develop/src/assets/dappLogos/${hostname}.jpg`;
@@ -237,7 +238,7 @@ export const dappLogoOverride = url => {
   return DisplayDappNames[hostname]?.uri;
 };
 
-export const getDappHostname = url => {
+export const getDappHostname = memoFn(url => {
   const urlObject = new URL(url);
   let hostname;
   const subdomains = urlObject.hostname.split('.');
@@ -249,4 +250,4 @@ export const getDappHostname = url => {
     }`;
   }
   return hostname;
-};
+});
