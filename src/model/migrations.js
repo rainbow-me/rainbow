@@ -25,9 +25,7 @@ import { isL2Asset } from '@rainbow-me/handlers/assets';
 import {
   getAssets,
   getHiddenCoins,
-  getOpenFamilies,
   getPinnedCoins,
-  getSavingsToggle,
   saveHiddenCoins,
   savePinnedCoins,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
@@ -511,13 +509,9 @@ export default async function runMigrations() {
         const { address } = wallet.addresses[j];
         const hiddenCoins = await getHiddenCoins(address, network);
         const pinnedCoins = await getPinnedCoins(address, network);
-        const savingsToggle = await getSavingsToggle(address, network);
-        const openFamilies = await getOpenFamilies(address, network);
 
         mmkv.set('pinned-coins-' + address, JSON.stringify(pinnedCoins));
         mmkv.set('hidden-coins-' + address, JSON.stringify(hiddenCoins));
-        mmkv.set('savings-open-' + address, savingsToggle);
-        mmkv.set('open-families-' + address, JSON.stringify(openFamilies));
       }
     }
   };
