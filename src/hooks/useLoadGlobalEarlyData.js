@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { imageMetadataCacheLoadState } from '@rainbow-me/redux/imageMetadata';
 import { keyboardHeightsLoadState } from '@rainbow-me/redux/keyboardHeight';
 import { settingsLoadState } from '@rainbow-me/redux/settings';
+import { transactionSignaturesLoadState } from '@rainbow-me/redux/transactionSignatures';
 import { promiseUtils } from '@rainbow-me/utils';
 import logger from 'logger';
 
@@ -15,8 +16,9 @@ export default function useLoadGlobalEarlyData() {
     const p1 = dispatch(settingsLoadState());
     const p2 = dispatch(imageMetadataCacheLoadState());
     const p3 = dispatch(keyboardHeightsLoadState());
+    const p4 = dispatch(transactionSignaturesLoadState());
 
-    promises.push(p1, p2, p3);
+    promises.push(p1, p2, p3, p4);
 
     return promiseUtils.PromiseAllWithFails(promises);
   }, [dispatch]);

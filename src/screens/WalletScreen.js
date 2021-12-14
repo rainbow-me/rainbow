@@ -22,7 +22,6 @@ import {
   useAccountSettings,
   useCoinListEdited,
   useInitializeDiscoverData,
-  useInitializeProfileData,
   useInitializeWallet,
   useLoadGlobalLateData,
   usePortfolios,
@@ -72,7 +71,6 @@ export default function WalletScreen() {
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
-  const initializeProfileData = useInitializeProfileData();
 
   const {
     isWalletEthZero,
@@ -167,15 +165,9 @@ export default function WalletScreen() {
       InteractionManager.runAfterInteractions(() => {
         loadGlobalLateData();
         initializeDiscoverData();
-        initializeProfileData();
       });
     }
-  }, [
-    loadGlobalLateData,
-    initializeDiscoverData,
-    initializeProfileData,
-    initialized,
-  ]);
+  }, [loadGlobalLateData, initializeDiscoverData, initialized]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
