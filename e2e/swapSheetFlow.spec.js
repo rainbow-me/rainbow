@@ -382,6 +382,7 @@ describe('Swap Sheet Interaction Flow', () => {
   });
 
   it('Should display warning on low custom priority fee price', async () => {
+    await Helpers.delay(1000);
     await Helpers.clearField('max-base-fee-input');
     await Helpers.typeText('max-base-fee-input', '200\n', false);
     await Helpers.clearField('max-priority-fee-input');

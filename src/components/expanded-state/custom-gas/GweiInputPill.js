@@ -12,7 +12,6 @@ const ANDROID_EXTRA_LINE_HEIGHT = 6;
 const GweiPill = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   colors: colors.gradients.lightGreyTransparent,
   end: { x: 0.5, y: 1 },
-  flexDirection: 'row',
   start: { x: 0, y: 0 },
 }))`
   border-radius: 15;
