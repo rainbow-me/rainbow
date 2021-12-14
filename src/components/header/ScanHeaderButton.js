@@ -2,12 +2,12 @@ import React, { useCallback, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { useNavigation } from '../../navigation/Navigation';
+import { jumpToShort } from '../discover-sheet/DiscoverSheet';
 import Icon from '../icons/Icon';
 import { Row, RowWithMargins } from '../layout';
-import { Text } from '../text';
 import HeaderButton from './HeaderButton';
 import Routes from '@rainbow-me/routes';
-import { padding, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const ScanButtonShadowsFactory = colors => [
@@ -44,21 +44,17 @@ const ScanButtonContent = styled(RowWithMargins).attrs({
 
 export default function ScanHeaderButton() {
   const { navigate } = useNavigation();
-  const { colors, isDarkMode } = useTheme();
+  const { colors } = useTheme();
 
-  const onPress = useCallback(() => navigate(Routes.QR_SCANNER_SCREEN), [
-    navigate,
-  ]);
-
-  const onLongPress = useCallback(() => navigate(Routes.CONNECTED_DAPPS), [
-    navigate,
-  ]);
+  const onPress = useCallback(() => {
+    jumpToShort();
+    navigate(Routes.QR_SCANNER_SCREEN);
+  }, [navigate]);
 
   const shadows = useMemo(() => ScanButtonShadowsFactory(colors), [colors]);
 
   return (
     <HeaderButton
-      {...(__DEV__ ? { onLongPress } : {})}
       onPress={onPress}
       paddingLeft={10}
       scaleTo={0.9}
