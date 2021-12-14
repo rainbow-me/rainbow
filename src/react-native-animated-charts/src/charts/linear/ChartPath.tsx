@@ -110,7 +110,7 @@ function positionXWithMargin(x: number, margin: number, width: number) {
   }
 }
 
-export const ChartPath: React.FC<ChartPathProps> = React.memo(
+export const ChartPath = React.memo(
   ({
     hapticsEnabled,
     hitSlop = 0,
@@ -125,7 +125,7 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
     timingAnimationConfig,
     longPressGestureHandlerProps = {},
     ...props
-  }) => {
+  }: ChartPathProps) => {
     const {
       positionX,
       positionY,
@@ -349,10 +349,10 @@ export const ChartPath: React.FC<ChartPathProps> = React.memo(
       <View style={{ height, width }}>
         <LongPressGestureHandler
           {...{ onGestureEvent }}
-          onGestureEvent={onGestureEvent}
           enabled={gestureEnabled}
           maxDist={100000}
           minDurationMs={0}
+          onGestureEvent={onGestureEvent}
           shouldCancelWhenOutside={false}
           {...longPressGestureHandlerProps}
         >

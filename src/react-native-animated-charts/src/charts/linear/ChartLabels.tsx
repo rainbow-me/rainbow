@@ -10,7 +10,7 @@ interface ChartLabelProps extends TextInputProps {
 }
 
 const ChartLabelFactory = (fieldName: 'originalX' | 'originalY') => {
-  const ChartLabel: React.FC<ChartLabelProps> = ({ format, ...props }) => {
+  const ChartLabel = React.memo(({ format, ...props }: ChartLabelProps) => {
     const chartData = useChartData();
     const val = chartData[fieldName];
 
@@ -19,7 +19,7 @@ const ChartLabelFactory = (fieldName: 'originalX' | 'originalY') => {
         text: format ? format(val.value) : val.value,
         value: format ? format(val.value) : val.value,
       }),
-      [chartData.data.points]
+      [chartData.data]
     );
 
     return (
@@ -29,7 +29,9 @@ const ChartLabelFactory = (fieldName: 'originalX' | 'originalY') => {
         editable={false}
       />
     );
-  };
+  });
+
+  ChartLabel.displayName = 'ChartLabel';
 
   return ChartLabel;
 };

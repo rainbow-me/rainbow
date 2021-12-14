@@ -5,7 +5,6 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { useChartData } from '../../helpers/useChartData';
-import withReanimatedFallback from '../../helpers/withReanimatedFallback';
 import { FIX_CLIPPED_PATH_MAGIC_NUMBER } from './ChartPath';
 
 interface ChartDotProps extends ViewProps {
@@ -19,54 +18,53 @@ const springDefaultConfig = {
   stiffness: 600,
 };
 
-const ChartDot: React.FC<ChartDotProps> = ({
-  style,
-  size = 10,
-  springConfig,
-  ...props
-}) => {
-  const { isActive, positionX, positionY } = useChartData();
+const ChartDot = React.memo(
+  ({ style, size = 10, springConfig, ...props }: ChartDotProps) => {
+    const { isActive, positionX, positionY } = useChartData();
 
-  const animatedStyle = useAnimatedStyle(() => {
-    const translateX = positionX.value;
-    const translateY = positionY.value + FIX_CLIPPED_PATH_MAGIC_NUMBER / 2;
+    const animatedStyle = useAnimatedStyle(() => {
+      const translateX = positionX.value;
+      const translateY = positionY.value + FIX_CLIPPED_PATH_MAGIC_NUMBER / 2;
 
-    return {
-      opacity: withSpring(
-        isActive.value ? 1 : 0,
-        springConfig || springDefaultConfig
-      ),
-      transform: [
-        { translateX },
-        { translateY },
-        {
-          scale: withSpring(
-            isActive.value ? 1 : 0,
-            springConfig || springDefaultConfig
-          ),
-        },
-      ],
-    };
-  }, [size]);
+      return {
+        opacity: withSpring(
+          isActive.value ? 1 : 0,
+          springConfig || springDefaultConfig
+        ),
+        transform: [
+          { translateX },
+          { translateY },
+          {
+            scale: withSpring(
+              isActive.value ? 1 : 0,
+              springConfig || springDefaultConfig
+            ),
+          },
+        ],
+      };
+    }, [size]);
 
-  return (
-    <Animated.View
-      {...props}
-      pointerEvents="none"
-      style={[
-        {
-          borderRadius: size / 2,
-          height: size,
-          left: -size / 2,
-          position: 'absolute',
-          top: -size / 2,
-          width: size,
-        },
-        animatedStyle,
-        style,
-      ]}
-    />
-  );
-};
+    return (
+      <Animated.View
+        {...props}
+        pointerEvents="none"
+        style={[
+          {
+            borderRadius: size / 2,
+            height: size,
+            left: -size / 2,
+            position: 'absolute',
+            top: -size / 2,
+            width: size,
+          },
+          animatedStyle,
+          style,
+        ]}
+      />
+    );
+  }
+);
 
-export default withReanimatedFallback(ChartDot);
+ChartDot.displayName = 'ChartDot';
+
+export default ChartDot;
