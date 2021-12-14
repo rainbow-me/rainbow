@@ -13,7 +13,6 @@ export default function useInitializeProfileData() {
 
   const initializeProfileData = useCallback(async () => {
     if (!walletReady) {
-      logger.debug('🛑🛑🛑 DELAYING: Initializing discover data');
       return;
     }
     try {

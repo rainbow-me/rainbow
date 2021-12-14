@@ -40,7 +40,6 @@ import {
 } from '@rainbow-me/redux/explorer';
 import { updatePositions } from '@rainbow-me/redux/usersPositions';
 import { position } from '@rainbow-me/styles';
-import logger from 'logger';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
   endingOpacity: 0.4,
@@ -162,12 +161,11 @@ export default function WalletScreen() {
   useEffect(() => {
     if (initialized) {
       InteractionManager.runAfterInteractions(() => {
-        logger.debug('WALLETSCREEN: loading deferred data');
         loadGlobalLateData();
         initializeDiscoverData();
         initializeProfileData();
       });
-    } 
+    }
   }, [
     loadGlobalLateData,
     initializeDiscoverData,

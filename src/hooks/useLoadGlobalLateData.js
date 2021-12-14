@@ -22,10 +22,8 @@ export default function useLoadGlobalLateData() {
 
   const loadGlobalData = useCallback(async () => {
     if (!walletReady) {
-      logger.debug('🛑🛑🛑 DELAYING: Initializing wallet global late data');
       return false;
     }
-    logger.debug('Initializing wallet global late data');
     logger.sentry('Load wallet global late data');
     const promises = [];
     const p1 = dispatch(contactsLoadState());

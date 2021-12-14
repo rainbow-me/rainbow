@@ -14,10 +14,8 @@ export default function useInitializeDiscoverData() {
 
   const initializeDiscoverData = useCallback(async () => {
     if (!walletReady) {
-      logger.debug('🛑🛑🛑 DELAYING: Initializing discover data');
       return;
     }
-    logger.debug('Initializing discover data');
     try {
       InteractionManager.runAfterInteractions(() => {
         // Other discover related actions should be triggered here
