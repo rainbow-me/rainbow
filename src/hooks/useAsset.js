@@ -4,9 +4,12 @@ import { useSelector } from 'react-redux';
 import useAccountAssets from './useAccountAssets';
 import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 import { AssetTypes } from '@rainbow-me/entities';
+import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import store from '@rainbow-me/redux/store';
 import { ETH_ADDRESS, ETH_ICON_URL } from '@rainbow-me/references';
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
+
+const mainnetEthUniqueId = `${ETH_ADDRESS}_${NetworkTypes.mainnet}`;
 
 function getZeroEth() {
   const {
@@ -46,7 +49,7 @@ function getZeroEth() {
     price: value,
     symbol: 'ETH',
     type: 'token',
-    uniqueId: ETH_ADDRESS,
+    uniqueId: mainnetEthUniqueId,
   };
 }
 
@@ -81,7 +84,7 @@ export default function useAsset(asset) {
         matched = genericAssets?.[asset.mainnet_address || asset.address];
       }
 
-      if (!matched && asset.uniqueId === 'eth') {
+      if (!matched && asset.uniqueId === mainnetEthUniqueId) {
         return getZeroEth();
       }
     } else if (asset.type === AssetTypes.nft) {
