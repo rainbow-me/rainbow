@@ -518,7 +518,7 @@ const GasSpeedButton = ({
           scaleTo={0.9}
           testID="estimated-fee-label"
         >
-          <Row>
+          <Row style={{ top: android ? 8 : 0 }}>
             <NativeCoinIconWrapper>
               <CoinIcon
                 address={nativeFeeCurrency.address}
