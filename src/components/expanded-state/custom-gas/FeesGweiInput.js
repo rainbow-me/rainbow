@@ -38,6 +38,7 @@ const GweiStepButton = ({
     <StepButtonWrapper
       onLongPress={onLongPress}
       onLongPressEnded={onLongPressEnded}
+      onPress={onPress}
       onPressStart={onPress}
       shouldLongPressEndPress={shouldLongPressEndPress}
       useLateHaptic={false}
