@@ -6,7 +6,7 @@ import {
   resolveUnstoppableDomain,
   web3Provider,
 } from '@rainbow-me/handlers/web3';
-import { sanitizeSeedPhrase } from '@rainbow-me/utils';
+import { memoFn, sanitizeSeedPhrase } from '@rainbow-me/utils';
 
 // Currently supported Top Level Domains from Unstoppable Domains
 const supportedUnstoppableDomains = [
@@ -31,7 +31,7 @@ export const isValidEmail = email =>
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   );
 
-export const isENSAddressFormat = address => {
+export const isENSAddressFormat = memoFn(address => {
   const parts = address && address.split('.');
   if (
     !parts ||
@@ -44,9 +44,9 @@ export const isENSAddressFormat = address => {
     return false;
   }
   return true;
-};
+});
 
-export const isUnstoppableAddressFormat = address => {
+export const isUnstoppableAddressFormat = memoFn(address => {
   const parts = address && address.split('.');
   if (
     !parts ||
@@ -56,7 +56,7 @@ export const isUnstoppableAddressFormat = address => {
     return false;
   }
   return true;
-};
+});
 
 /**
  * @desc validate ethereum address, ENS, or Unstoppable name
@@ -84,9 +84,9 @@ export const checkIsValidAddressOrDomain = async address => {
  * @param  {String} ENS, or Unstoppable
  * @return {Boolean}
  */
-export const isValidDomainFormat = domain => {
+export const isValidDomainFormat = memoFn(domain => {
   return isUnstoppableAddressFormat(domain) || isENSAddressFormat(domain);
-};
+});
 /**
  * @desc validate seed phrase mnemonic
  * @param  {String} seed phrase mnemonic

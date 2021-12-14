@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import { memoFn } from '@rainbow-me/utils';
 
 const STABLECOINS = ['DAI', 'USDC', 'USDT'];
 const APPROX_BLOCK_TIME = 15;
@@ -20,18 +21,19 @@ const calculateEarningsInDays = (principal, supplyRate, days) => {
   return totalReturn - principal;
 };
 
-const calculateCompoundInterestInDays = (principal, apr, days) => {
+const calculateCompoundInterestInDays = memoFn((principal, apr, days) => {
   const periodicRate = apr / BLOCKS_PER_YEAR;
   const periods = (60 / APPROX_BLOCK_TIME) * 60 * 24 * days;
   return principal * Math.pow(1 + periodicRate, periods);
-};
+});
 
-const formatSavingsAmount = amount => {
+const formatSavingsAmount = memoFn(amount => {
   const amountBN = BigNumber(amount);
   return amountBN.toFixed(MAX_DECIMALS_TO_SHOW);
-};
+});
 
-const isSymbolStablecoin = symbol => STABLECOINS.indexOf(symbol) !== -1;
+const isSymbolStablecoin = memoFn(symbol => STABLECOINS.indexOf(symbol) !== -1);
+
 const isSymbolStablecoinWorklet = symbol => {
   'worklet';
   return STABLECOINS.indexOf(symbol) !== -1;
