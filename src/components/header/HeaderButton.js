@@ -9,7 +9,8 @@ const HeaderButton = styled(ButtonPressAnimation).attrs(
     scaleTo,
   })
 )`
-  ${padding(10, 19, 8)};
+  ${({ paddingLeft = 19, paddingRight = 19 }) =>
+    padding(10, paddingRight, 8, paddingLeft)}
 `;
 
 export default HeaderButton;

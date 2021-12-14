@@ -12,7 +12,7 @@ import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
 import { padding } from '@rainbow-me/styles';
 
 const Footer = styled(Column)`
-  ${({ isTallPhone }) => padding(0, 15, isTallPhone ? 30 : 15)};
+  ${({ isTallPhone }) => padding(20, 15, isTallPhone ? 30 : 15)};
   flex-shrink: 0;
   width: 100%;
 `;

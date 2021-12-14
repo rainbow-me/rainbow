@@ -1,6 +1,6 @@
 import { get } from 'lodash';
 import { AssetTypes } from '@rainbow-me/entities';
-
+import { imageToPng } from '@rainbow-me/handlers/imgix';
 /**
  * @desc parse poaps
  * @param  {Object}
@@ -9,8 +9,9 @@ import { AssetTypes } from '@rainbow-me/entities';
 
 export const parsePoaps = data => {
   const poaps = get(data, 'data', null);
-  return poaps.map(({ tokenId, event }) => {
+  return poaps.map(({ event }) => {
     return {
+      animation_url: event.image_url,
       asset_contract: {
         address: '0x22c1f6050e56d2876009903609a2cc3fef83b415',
         name: 'POAPs',
@@ -33,9 +34,9 @@ export const parsePoaps = data => {
       familyImage:
         'https://lh3.googleusercontent.com/FwLriCvKAMBBFHMxcjqvxjTlmROcDIabIFKRp87NS3u_QfSLxcNThgAzOJSbphgQqnyZ_v2fNgMZQkdCYHUliJwH-Q=s60',
       familyName: 'POAP',
-
-      id: tokenId,
-      image_url: event.image_url,
+      id: event.id,
+      image_url: imageToPng(event.image_url, 300),
+      isPoap: true,
       isSendable: false,
       lastPrice: null,
       name: event.name,
@@ -63,8 +64,7 @@ export const parsePoaps = data => {
         },
       ],
       type: AssetTypes.nft,
-      uniqueId:
-        event.name || `'0x22c1f6050e56d2876009903609a2cc3fef83b415'_${tokenId}`,
+      uniqueId: `0x22c1f6050e56d2876009903609a2cc3fef83b415_${event.id}`,
     };
   });
 };

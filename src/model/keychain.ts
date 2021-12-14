@@ -226,6 +226,10 @@ export async function wipeKeychain(): Promise<void> {
   }
 }
 
+export const publicAccessControlOptions = {
+  accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+};
+
 export async function getPrivateAccessControlOptions(): Promise<Options> {
   let res = {};
   try {

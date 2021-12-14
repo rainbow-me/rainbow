@@ -23,8 +23,8 @@ const getPermissionAndroid = async () => {
 
 function alertError(err) {
   Alert.alert(
-    'Save remote Image',
-    'Failed to save Image' + err.message ? `: ${err.message}` : '',
+    'Failed to save Image',
+    err.message ? `${err.message}` : '',
     [{ text: 'OK' }],
     { cancelable: false }
   );
