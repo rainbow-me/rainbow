@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import TextInputMask from 'react-native-text-input-mask';
 import styled from 'styled-components';
 import { Row } from '../../../components/layout';
 import { ButtonPressAnimation } from '../../animations';
 import { Text } from '../../text';
+import { delay } from '@rainbow-me/helpers/utilities';
 import { buildTextStyles, margin } from '@rainbow-me/styles';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
@@ -68,12 +69,25 @@ function GweiInputPill(
   ref
 ) {
   const { colors } = useTheme();
+  const [editable, setEditable] = useState(false);
+
+  useEffect(() => {
+    // this was added to make input editable manually to be able to show the cursor
+    // when input focus
+    const wait = async () => {
+      await delay(100);
+      setEditable(true);
+    };
+    wait();
+  }, []);
+
   return (
     <ButtonPressAnimation onPress={onPress}>
       <GweiPill>
         <Row alignSelf="center" marginHorizontal={-40}>
           <GweiNumberInput
             contextMenuHidden
+            editable={editable}
             mask="[9999]{.}[999]"
             onBlur={onBlur}
             onChange={onChange}
