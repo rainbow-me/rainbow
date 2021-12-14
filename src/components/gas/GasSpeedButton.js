@@ -363,7 +363,7 @@ const GasSpeedButton = ({
         currentNetwork === networkTypes.polygon
           ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
           : greaterThan(estimatedGwei, totalGwei)
-          ? `${toFixedDecimals(totalGwei, 0)}`
+          ? `${toFixedDecimals(totalGwei, 0)} Gwei`
           : `${toFixedDecimals(estimatedGwei, 0)} - ${toFixedDecimals(
               totalGwei,
               0
