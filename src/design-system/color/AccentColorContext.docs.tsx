@@ -17,11 +17,9 @@ const docs: DocsType = {
     <Docs.CodePreview
       Example={() =>
         source(
-          <>
-            <AccentColorProvider color="#ff0000">
-              <Text color="accent">Hi Mom!</Text>
-            </AccentColorProvider>
-          </>
+          <AccentColorProvider color="#ff0000">
+            <Text color="accent">Hi Mom!</Text>
+          </AccentColorProvider>
         )
       }
       disableActions
@@ -36,13 +34,11 @@ const docs: DocsType = {
     <Docs.CodePreview
       Example={() =>
         source(
-          <>
-            <AccentColorProvider color="#ff0000">
-              <Box background="accent" padding="19px">
-                <Text>This text will be inverted automatically.</Text>
-              </Box>
-            </AccentColorProvider>
-          </>
+          <AccentColorProvider color="#ff0000">
+            <Box background="accent" padding="19px">
+              <Text>This text will be inverted automatically.</Text>
+            </Box>
+          </AccentColorProvider>
         )
       }
       disableActions

@@ -20,7 +20,7 @@ export const DocsAccordion = ({
           marginLeft: '-32px',
           paddingVertical: '8px',
           position: 'sticky',
-          top: 0,
+          top: 'none',
           zIndex: 1,
         })}
         onClick={() => setOpen(open => !open)}

@@ -1,4 +1,6 @@
 export * from './Blockquote';
+export * from './Button';
+export * from './ButtonLink';
 export * from './Code';
 export * from './CodeBlock';
 export * from './Heading';

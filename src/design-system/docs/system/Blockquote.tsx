@@ -16,11 +16,11 @@ export const Blockquote = ({ children }: { children: ReactNode }) => (
     <div
       className={sprinkles({
         backgroundColor: 'action',
-        bottom: 0,
-        left: 0,
+        bottom: 'none',
+        left: 'none',
         paddingLeft: '4px',
         position: 'absolute',
-        top: 0,
+        top: 'none',
       })}
     />
   </div>

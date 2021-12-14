@@ -2,7 +2,10 @@ import lzString from 'lz-string';
 import React from 'react';
 
 import { useSourceFromExample } from '../../hooks/useSourceFromExample';
-import { CodeBlock, Inline, Stack, Text } from '../../system';
+import ChevronDownIcon from '../../icons/ChevronDownIcon';
+import ChevronUpIcon from '../../icons/ChevronUpIcon';
+import PlayIcon from '../../icons/PlayIcon';
+import { Button, ButtonLink, CodeBlock, Inline, Stack } from '../../system';
 import { sprinkles } from '../../system/sprinkles.css';
 import { Source } from '../../utils/source.macro';
 
@@ -52,9 +55,21 @@ export const CodePreview = ({
         <>
           {showCode && <CodeBlock code={displayCode} />}
           {!disableActions && (
-            <Inline alignHorizontal="right" space="24px">
+            <Inline space="24px">
+              {enableCodeSnippet && (
+                <Button
+                  color="action"
+                  iconBefore={
+                    showCode ? <ChevronUpIcon /> : <ChevronDownIcon />
+                  }
+                  onClick={() => setShowCode(showCode => !showCode)}
+                >
+                  {showCode ? 'Hide' : 'Show'} code
+                </Button>
+              )}
               {enablePlayroom && (
-                <a
+                <ButtonLink
+                  color="action"
                   href={`${
                     process.env.NODE_ENV === 'production'
                       ? // @ts-ignore
@@ -63,25 +78,10 @@ export const CodePreview = ({
                   }?code=${lzString.compressToEncodedURIComponent(
                     JSON.stringify({ code: playroomCode })
                   )}`}
-                  rel="noreferrer"
-                  style={{ textAlign: 'right' }}
-                  target="_blank"
+                  iconBefore={<PlayIcon />}
                 >
-                  <Text color="action" weight="bold">
-                    Playroom
-                  </Text>
-                </a>
-              )}
-              {enableCodeSnippet && (
-                <button
-                  onClick={() => setShowCode(showCode => !showCode)}
-                  style={{ textAlign: 'right' }}
-                  type="button"
-                >
-                  <Text color="action" weight="bold">
-                    {showCode ? 'Hide' : 'Show'} code
-                  </Text>
-                </button>
+                  Playroom
+                </ButtonLink>
               )}
             </Inline>
           )}
