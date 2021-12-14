@@ -2,14 +2,15 @@ import React, { useCallback, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { useNavigation } from '../../navigation/Navigation';
+import { jumpToShort } from '../discover-sheet/DiscoverSheet';
+import Icon from '../icons/Icon';
 import { Row, RowWithMargins } from '../layout';
-import { Text } from '../text';
 import HeaderButton from './HeaderButton';
 import Routes from '@rainbow-me/routes';
-import { padding, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
-const DiscoverButtonShadowsFactory = colors => [
+const ScanButtonShadowsFactory = colors => [
   [0, 7, 21, colors.shadow, 0.06],
   [0, 3.5, 10.5, colors.shadow, 0.04],
 ];
@@ -30,39 +31,34 @@ const BackgroundGradient = styled(LinearGradient).attrs(
   ${position.cover};
 `;
 
-const DiscoverButtonContent = styled(RowWithMargins).attrs({
+const ScanButtonContent = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 2,
 })`
   align-items: center;
   justify-content: center;
-  ${padding(2, 10, 7.5)};
   height: 34;
+  width: 34;
   z-index: 2;
 `;
 
-export default function DiscoverHeaderButton() {
+export default function ScanHeaderButton() {
   const { navigate } = useNavigation();
   const { colors } = useTheme();
 
-  const onPress = useCallback(() => navigate(Routes.QR_SCANNER_SCREEN), [
-    navigate,
-  ]);
+  const onPress = useCallback(() => {
+    jumpToShort();
+    navigate(Routes.QR_SCANNER_SCREEN);
+  }, [navigate]);
 
-  const onLongPress = useCallback(() => navigate(Routes.CONNECTED_DAPPS), [
-    navigate,
-  ]);
-
-  const shadows = useMemo(() => DiscoverButtonShadowsFactory(colors), [colors]);
+  const shadows = useMemo(() => ScanButtonShadowsFactory(colors), [colors]);
 
   return (
     <HeaderButton
-      {...(__DEV__ ? { onLongPress } : {})}
       onPress={onPress}
-      paddingLeft={0}
-      paddingRight={0}
+      paddingLeft={10}
       scaleTo={0.9}
-      testID="discover-button"
+      testID="scan-button"
       transformOrigin="right"
     >
       <Row>
@@ -73,23 +69,15 @@ export default function DiscoverHeaderButton() {
           shadows={shadows}
           {...(android && {
             height: 34,
-            width: 120,
+            width: 34,
           })}
         >
           <BackgroundFill />
           <BackgroundGradient />
         </ShadowStack>
-        <DiscoverButtonContent>
-          <Text
-            color={colors.dark}
-            letterSpacing="roundedMedium"
-            size="large"
-            weight="bold"
-            {...(android && { lineHeight: 32 })}
-          >
-            🪐 Discover
-          </Text>
-        </DiscoverButtonContent>
+        <ScanButtonContent>
+          <Icon color={colors.dark} name="scan" />
+        </ScanButtonContent>
       </Row>
     </HeaderButton>
   );

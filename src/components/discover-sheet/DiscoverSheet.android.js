@@ -41,6 +41,10 @@ const AndroidWrapper = styled.View.attrs({
   position: absolute;
 `;
 
+let jumpToShort;
+
+export { jumpToShort };
+
 const DiscoverSheet = (_, forwardedRef) => {
   const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
   const isFocused = useIsFocused();
@@ -70,6 +74,8 @@ const DiscoverSheet = (_, forwardedRef) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [deps]
   );
+
+  jumpToShort = value.jumpToShort;
 
   useImperativeHandle(forwardedRef, () => value);
 
