@@ -691,10 +691,13 @@ export default function FeesPanel({
 
   useEffect(() => {
     const focus = async () => {
-      await delay(500);
+      await delay(200);
+      // without this focus seems like it looses the context on the first `focus()`
+      // inside the async function
+      minerTipFieldRef?.current?.focus();
       if (focusTo === FOCUS_TO_MINER_TIP) {
         minerTipFieldRef?.current?.focus();
-      } else if (focusTo === FOCUS_TO_MAX_BASE_FEE) {
+      } else {
         maxBaseFieldRef?.current?.focus();
       }
     };
