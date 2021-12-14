@@ -260,7 +260,7 @@ const GasSpeedButton = ({
       InteractionManager.runAfterInteractions(() => {
         if (selectedSpeed === CUSTOM) {
           setShouldOpenCustomGasSheet({
-            focusTo: 'focusToMaxBaseFee',
+            focusTo: null,
             shouldOpen: true,
           });
         }
