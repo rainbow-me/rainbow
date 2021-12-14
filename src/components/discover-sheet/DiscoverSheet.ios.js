@@ -27,6 +27,9 @@ function useAreHeaderButtonVisible() {
   return [{ isSearchModeEnabled, setIsSearchModeEnabled }, isSearchModeEnabled];
 }
 
+let jumpToShort;
+export { jumpToShort };
+
 function DiscoverSheet(_, forwardedRef) {
   const isFocused = useIsFocused();
   const sheet = useRef();
@@ -66,6 +69,7 @@ function DiscoverSheet(_, forwardedRef) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [deps]
   );
+  jumpToShort = value.jumpToShort;
 
   useImperativeHandle(forwardedRef, () => value);
 
