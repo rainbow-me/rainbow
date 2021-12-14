@@ -13,8 +13,9 @@ import {
   DiscoverHeaderButton,
   Header,
   ProfileHeaderButton,
+  ScanHeaderButton,
 } from '../components/header';
-import { Page } from '../components/layout';
+import { Page, RowWithMargins } from '../components/layout';
 import { useEth } from '../utils/ethereumUtils';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
@@ -183,7 +184,10 @@ export default function WalletScreen() {
         <HeaderOpacityToggler isVisible={isCoinListEdited}>
           <Header justify="space-between">
             <ProfileHeaderButton />
-            <DiscoverHeaderButton />
+            <RowWithMargins margin={10}>
+              <DiscoverHeaderButton />
+              <ScanHeaderButton />
+            </RowWithMargins>
           </Header>
         </HeaderOpacityToggler>
         <AssetList
