@@ -59,8 +59,7 @@ export default function useWalletCloudBackup() {
         });
         Alert.alert(
           'iCloud Not Enabled',
-          `Looks like iCloud drive is not enabled on your device.
-          Do you want to see how to enable it?`,
+          `Looks like iCloud drive is not enabled on your device.\n\n Do you want to see how to enable it?`,
           [
             {
               onPress: () => {

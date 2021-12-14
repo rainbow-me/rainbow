@@ -880,6 +880,7 @@ export default function SendSheet(props) {
                 asset={selected}
                 currentNetwork={currentNetwork}
                 horizontalPadding={0}
+                marginBottom={17}
                 theme={isDarkMode ? 'dark' : 'light'}
               />
             }

@@ -3,7 +3,7 @@ import analytics from '@segment/analytics-react-native';
 import { captureMessage } from '@sentry/react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Keyboard } from 'react-native';
+import { InteractionManager, Keyboard } from 'react-native';
 import styled from 'styled-components';
 import zxcvbn from 'zxcvbn';
 import { isSamsungGalaxy } from '../../helpers/samsung';
@@ -87,6 +87,7 @@ export default function BackupCloudStep() {
   const [passwordFocused, setPasswordFocused] = useState(true);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const { navigate } = useNavigation();
 
   useEffect(() => {
     const keyboardDidShow = () => {
@@ -254,6 +255,7 @@ export default function BackupCloudStep() {
 
   const onConfirmBackup = useCallback(async () => {
     analytics.track('Tapped "Confirm Backup"');
+
     await walletCloudBackup({
       onError,
       onSuccess,
@@ -262,15 +264,28 @@ export default function BackupCloudStep() {
     });
   }, [onError, onSuccess, password, walletCloudBackup, walletId]);
 
+  const showExplainerConfirmation = useCallback(async () => {
+    navigate(Routes.EXPLAIN_SHEET, {
+      onClose: () => {
+        InteractionManager.runAfterInteractions(() => {
+          setTimeout(() => {
+            onConfirmBackup();
+          }, 250);
+        });
+      },
+      type: 'backup',
+    });
+  }, [navigate, onConfirmBackup]);
+
   const onConfirmPasswordSubmit = useCallback(() => {
-    validPassword && onConfirmBackup();
-  }, [onConfirmBackup, validPassword]);
+    validPassword && showExplainerConfirmation();
+  }, [showExplainerConfirmation, validPassword]);
 
   return (
     <BackupSheetKeyboardLayout
       footerButtonDisabled={!validPassword}
       footerButtonLabel={label}
-      onSubmit={onConfirmBackup}
+      onSubmit={showExplainerConfirmation}
     >
       <Masthead isTallPhone={isTallPhone} isTinyPhone={isTinyPhone}>
         {(isTinyPhone || samsungGalaxy) && isKeyboardOpen ? null : (
