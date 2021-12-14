@@ -16,6 +16,7 @@ import {
 } from '@rainbow-me/helpers/gas';
 import {
   add,
+  delay,
   greaterThan,
   isZero,
   multiply,
@@ -689,11 +690,15 @@ export default function FeesPanel({
   }, []);
 
   useEffect(() => {
-    if (focusTo === FOCUS_TO_MINER_TIP) {
-      minerTipFieldRef?.current?.focus();
-    } else {
-      maxBaseFieldRef?.current?.focus();
-    }
+    const focus = async () => {
+      await delay(500);
+      if (focusTo === FOCUS_TO_MINER_TIP) {
+        minerTipFieldRef?.current?.focus();
+      } else if (focusTo === FOCUS_TO_MAX_BASE_FEE) {
+        maxBaseFieldRef?.current?.focus();
+      }
+    };
+    focus();
   }, [focusTo, maxBaseFieldRef, minerTipFieldRef]);
 
   return (
