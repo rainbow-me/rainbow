@@ -144,6 +144,7 @@ export default function FeesPanel({
     setLastFocusedInputHandle,
     maxBaseFieldRef,
     minerTipFieldRef,
+    triggerFocus,
   } = useFeesPanelInputRefs();
 
   // had to add this for actions happening on the gas speed button
@@ -696,13 +697,20 @@ export default function FeesPanel({
       // inside the async function
       minerTipFieldRef?.current?.focus();
       if (focusTo === FOCUS_TO_MINER_TIP) {
-        minerTipFieldRef?.current?.focus();
+        setLastFocusedInputHandle(minerTipFieldRef);
       } else {
-        maxBaseFieldRef?.current?.focus();
+        setLastFocusedInputHandle(maxBaseFieldRef);
       }
+      triggerFocus();
     };
     focus();
-  }, [focusTo, maxBaseFieldRef, minerTipFieldRef]);
+  }, [
+    focusTo,
+    maxBaseFieldRef,
+    minerTipFieldRef,
+    setLastFocusedInputHandle,
+    triggerFocus,
+  ]);
 
   return (
     <Wrapper>
