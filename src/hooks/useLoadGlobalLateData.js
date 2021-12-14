@@ -5,7 +5,6 @@ import {
   getWalletBalances,
   WALLET_BALANCES_FROM_STORAGE,
 } from '@rainbow-me/handlers/localstorage/walletBalances';
-import { contactsLoadState } from '@rainbow-me/redux/contacts';
 import { nonceManagerLoadState } from '@rainbow-me/redux/nonceManager';
 import { promiseUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -26,10 +25,9 @@ export default function useLoadGlobalLateData() {
     }
     logger.sentry('Load wallet global late data');
     const promises = [];
-    const p1 = dispatch(contactsLoadState());
-    const p2 = loadWalletBalanceNamesToCache();
-    const p3 = dispatch(nonceManagerLoadState());
-    promises.push(p1, p2, p3);
+    const p1 = loadWalletBalanceNamesToCache();
+    const p2 = dispatch(nonceManagerLoadState());
+    promises.push(p1, p2);
 
     return promiseUtils.PromiseAllWithFails(promises);
   }, [dispatch, walletReady]);
