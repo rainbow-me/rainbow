@@ -174,6 +174,7 @@ const UniqueTokenExpandedState = ({
     currentPrice,
     description,
     familyName,
+    isPoap,
     isSendable,
     lastPrice,
     traits,
@@ -344,93 +345,99 @@ const UniqueTokenExpandedState = ({
                     </Row>
                     <UniqueTokenExpandedStateHeader asset={asset} />
                   </Stack>
-                  <Columns space="15px">
-                    <SheetActionButton
-                      color={imageColor}
-                      // @ts-expect-error JavaScript component
-                      label={hasSendButton ? '􀮶 OpenSea' : '􀮶 View on OpenSea'}
-                      nftShadows
-                      onPress={handlePressOpensea}
-                      textColor={textColor}
-                      weight="heavy"
-                    />
-                    {hasSendButton ? (
-                      <SendActionButton
-                        asset={asset}
+                  {!isPoap ? (
+                    <Columns space="15px">
+                      <SheetActionButton
                         color={imageColor}
+                        // @ts-expect-error JavaScript component
+                        label={
+                          hasSendButton ? '􀮶 OpenSea' : '􀮶 View on OpenSea'
+                        }
                         nftShadows
+                        onPress={handlePressOpensea}
                         textColor={textColor}
+                        weight="heavy"
                       />
-                    ) : null}
-                  </Columns>
+                      {hasSendButton ? (
+                        <SendActionButton
+                          asset={asset}
+                          color={imageColor}
+                          nftShadows
+                          textColor={textColor}
+                        />
+                      ) : null}
+                    </Columns>
+                  ) : null}
                   <Stack
                     separator={<Divider color="divider20" />}
                     space={sectionSpace}
                   >
-                    <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
-                      bottom={android ? '15px' : '6px'}
-                      top={android ? '10px' : '4px'}
-                    >
-                      <Columns space="19px">
-                        {/* @ts-expect-error JavaScript component */}
-                        <TokenInfoItem
-                          color={
-                            lastSalePrice === 'None' && !currentPrice
-                              ? colors.alpha(colors.whiteLabel, 0.5)
-                              : colors.whiteLabel
-                          }
-                          enableHapticFeedback={!!currentPrice}
-                          isNft
-                          onPress={toggleCurrentPriceDisplayCurrency}
-                          size="big"
-                          title={
-                            currentPrice ? '􀋢 For sale' : 'Last sale price'
-                          }
-                          weight={
-                            lastSalePrice === 'None' && !currentPrice
-                              ? 'bold'
-                              : 'heavy'
-                          }
-                        >
-                          {showCurrentPriceInEth ||
-                          nativeCurrency === 'ETH' ||
-                          !currentPrice
-                            ? currentPrice || lastSalePrice
-                            : convertAmountToNativeDisplay(
-                                parseFloat(currentPrice) * priceOfEth,
-                                nativeCurrency
-                              )}
-                        </TokenInfoItem>
-                        {/* @ts-expect-error JavaScript component */}
-                        <TokenInfoItem
-                          align="right"
-                          color={
-                            floorPrice === 'None'
-                              ? colors.alpha(colors.whiteLabel, 0.5)
-                              : colors.whiteLabel
-                          }
-                          enableHapticFeedback={floorPrice !== 'None'}
-                          isNft
-                          loading={!floorPrice}
-                          onInfoPress={handlePressCollectionFloor}
-                          onPress={toggleFloorDisplayCurrency}
-                          showInfoButton
-                          size="big"
-                          title="Floor price"
-                          weight={floorPrice === 'None' ? 'bold' : 'heavy'}
-                        >
-                          {showFloorInEth ||
-                          nativeCurrency === 'ETH' ||
-                          floorPrice === 'None' ||
-                          floorPrice === null
-                            ? floorPrice
-                            : convertAmountToNativeDisplay(
-                                parseFloat(floorPrice) * priceOfEth,
-                                nativeCurrency
-                              )}
-                        </TokenInfoItem>
-                      </Columns>
-                    </Bleed>
+                    {!isPoap ? (
+                      <Bleed // Manually crop surrounding space until TokenInfoItem uses design system components
+                        bottom={android ? '15px' : '6px'}
+                        top={android ? '10px' : '4px'}
+                      >
+                        <Columns space="19px">
+                          {/* @ts-expect-error JavaScript component */}
+                          <TokenInfoItem
+                            color={
+                              lastSalePrice === 'None' && !currentPrice
+                                ? colors.alpha(colors.whiteLabel, 0.5)
+                                : colors.whiteLabel
+                            }
+                            enableHapticFeedback={!!currentPrice}
+                            isNft
+                            onPress={toggleCurrentPriceDisplayCurrency}
+                            size="big"
+                            title={
+                              currentPrice ? '􀋢 For sale' : 'Last sale price'
+                            }
+                            weight={
+                              lastSalePrice === 'None' && !currentPrice
+                                ? 'bold'
+                                : 'heavy'
+                            }
+                          >
+                            {showCurrentPriceInEth ||
+                            nativeCurrency === 'ETH' ||
+                            !currentPrice
+                              ? currentPrice || lastSalePrice
+                              : convertAmountToNativeDisplay(
+                                  parseFloat(currentPrice) * priceOfEth,
+                                  nativeCurrency
+                                )}
+                          </TokenInfoItem>
+                          {/* @ts-expect-error JavaScript component */}
+                          <TokenInfoItem
+                            align="right"
+                            color={
+                              floorPrice === 'None'
+                                ? colors.alpha(colors.whiteLabel, 0.5)
+                                : colors.whiteLabel
+                            }
+                            enableHapticFeedback={floorPrice !== 'None'}
+                            isNft
+                            loading={!floorPrice}
+                            onInfoPress={handlePressCollectionFloor}
+                            onPress={toggleFloorDisplayCurrency}
+                            showInfoButton
+                            size="big"
+                            title="Floor price"
+                            weight={floorPrice === 'None' ? 'bold' : 'heavy'}
+                          >
+                            {showFloorInEth ||
+                            nativeCurrency === 'ETH' ||
+                            floorPrice === 'None' ||
+                            floorPrice === null
+                              ? floorPrice
+                              : convertAmountToNativeDisplay(
+                                  parseFloat(floorPrice) * priceOfEth,
+                                  nativeCurrency
+                                )}
+                          </TokenInfoItem>
+                        </Columns>
+                      </Bleed>
+                    ) : null}
                     {description ? (
                       <Section title="Description">
                         <Markdown>{description}</Markdown>
@@ -441,6 +448,7 @@ const UniqueTokenExpandedState = ({
                         <UniqueTokenAttributes
                           {...asset}
                           color={imageColor}
+                          disableMenu={isPoap}
                           slug={asset.collection.slug}
                         />
                       </Section>

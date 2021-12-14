@@ -12,7 +12,6 @@ const FooterContainer = styled(Column).attrs({
   justify: 'end',
   marginBottom: android ? footerMargin : 0,
 })`
-  padding-bottom: 5;
   width: 100%;
   z-index: 3;
 `;

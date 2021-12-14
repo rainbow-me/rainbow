@@ -6,6 +6,7 @@ import { Inline } from '@rainbow-me/design-system';
 
 interface AttributeItemProps {
   color: string;
+  disableMenu?: boolean;
   trait_type: string;
   slug: string;
   value: string;
@@ -13,6 +14,7 @@ interface AttributeItemProps {
 
 const renderAttributeItem = ({
   color,
+  disableMenu,
   trait_type: type,
   slug,
   value,
@@ -20,6 +22,7 @@ const renderAttributeItem = ({
   type && value ? (
     <Tag
       color={color}
+      disableMenu={disableMenu}
       key={`${type}${value}`}
       slug={slug}
       text={value}
@@ -29,6 +32,7 @@ const renderAttributeItem = ({
 
 interface UniqueTokenAttributesProps {
   color: string;
+  disableMenu?: boolean;
   slug: string;
   traits: {
     trait_type: string;
@@ -38,6 +42,7 @@ interface UniqueTokenAttributesProps {
 
 const UniqueTokenAttributes = ({
   color,
+  disableMenu,
   slug,
   traits,
 }: UniqueTokenAttributesProps) => {
@@ -48,6 +53,7 @@ const UniqueTokenAttributes = ({
   ) as typeof traits).map(trait => ({
     ...trait,
     color,
+    disableMenu,
     slug,
   }));
 

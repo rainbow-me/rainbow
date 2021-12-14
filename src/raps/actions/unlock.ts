@@ -180,6 +180,9 @@ const unlock = async (
     value: toHex(approval.value),
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
+  // @ts-expect-error Since src/redux/data.js is not typed yet, `accountAddress`
+  // being a string conflicts with the inferred type of "null" for the second
+  // parameter.
   await dispatch(dataAddNewTransaction(newTransaction, accountAddress));
   return approval?.nonce;
 };
