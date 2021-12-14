@@ -193,7 +193,7 @@ export default function DiscoverSheetHeader(props) {
         isWrapperVisible={isWrapperVisible}
         left={19}
         onPress={() => !isSearchModeEnabled && navigate(Routes.WALLET_SCREEN)}
-        translateX={5}
+        translateX={android ? 4 : 5}
       >
         <Icon
           color={colors.alpha(colors.blueGreyDark, 0.8)}
