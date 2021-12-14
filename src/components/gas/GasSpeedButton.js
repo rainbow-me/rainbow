@@ -362,9 +362,11 @@ const GasSpeedButton = ({
       const gweiDisplay =
         currentNetwork === networkTypes.polygon
           ? gasFeeParamsBySpeed[gasOption]?.gasPrice?.display
+          : gasOption === 'custom' && selectedGasFeeOption !== 'custom'
+          ? ''
           : greaterThan(estimatedGwei, totalGwei)
           ? `${toFixedDecimals(totalGwei, 0)} Gwei`
-          : `${toFixedDecimals(estimatedGwei, 0)} - ${toFixedDecimals(
+          : `${toFixedDecimals(estimatedGwei, 0)}–${toFixedDecimals(
               totalGwei,
               0
             )} Gwei`;
@@ -386,6 +388,7 @@ const GasSpeedButton = ({
     currentBlockParams?.baseFeePerGas?.gwei,
     currentNetwork,
     gasFeeParamsBySpeed,
+    selectedGasFeeOption,
     speedOptions,
   ]);
 
