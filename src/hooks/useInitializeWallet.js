@@ -21,7 +21,6 @@ import useResetAccountState from './useResetAccountState';
 import { runKeychainIntegrityChecks } from '@rainbow-me/handlers/walletReadyEvents';
 import { additionalDataCoingeckoIds } from '@rainbow-me/redux/additionalAssetsData';
 import { checkPendingTransactionsOnInitialize } from '@rainbow-me/redux/data';
-import { userListsLoadState } from '@rainbow-me/redux/userLists';
 import logger from 'logger';
 
 export default function useInitializeWallet() {
@@ -125,9 +124,6 @@ export default function useInitializeWallet() {
           dispatch(uniswapPairsInit());
           dispatch(uniswapGetAllExchanges());
           dispatch(additionalDataCoingeckoIds);
-        } else {
-          // Lists depend on favorites, so we need to reload them
-          dispatch(userListsLoadState());
         }
 
         logger.sentry('💰 Wallet initialized');
