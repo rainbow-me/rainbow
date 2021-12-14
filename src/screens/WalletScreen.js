@@ -108,11 +108,15 @@ export default function WalletScreen() {
   }, [dispatch, refetchSavings, shouldRefetchSavings]);
 
   useEffect(() => {
-    if (!initialized || (params?.emptyWallet && initialized)) {
-      // We run the migrations only once on app launch
-      initializeWallet(null, null, null, !params?.emptyWallet);
+    const initializeAndSetParams = async () => {
+      await initializeWallet(null, null, null, !params?.emptyWallet);
       setInitialized(true);
       setParams({ emptyWallet: false });
+    };
+
+    if (!initialized || (params?.emptyWallet && initialized)) {
+      // We run the migrations only once on app launch
+      initializeAndSetParams();
     }
   }, [initializeWallet, initialized, params, setParams]);
 
