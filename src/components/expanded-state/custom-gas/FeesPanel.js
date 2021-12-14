@@ -373,6 +373,7 @@ export default function FeesPanel({
 
   const onMaxBaseFeeChange = useCallback(
     ({ nativeEvent: { text } }) => {
+      text = text === '.' || text === ',' ? `0${text}` : text;
       const maxFeePerGas = parseGasFeeParam(gweiToWei(text || 0));
 
       if (greaterThan(0, maxFeePerGas.amount)) return;
@@ -394,6 +395,7 @@ export default function FeesPanel({
 
   const onMinerTipChange = useCallback(
     ({ nativeEvent: { text } }) => {
+      text = text === '.' || text === ',' ? `0${text}` : text;
       const maxPriorityFeePerGas = parseGasFeeParam(gweiToWei(text || 0));
 
       if (greaterThan(0, maxPriorityFeePerGas.amount)) return;
