@@ -19,16 +19,18 @@ const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
 
 const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
+  align: 'center',
+  alignItems: 'center',
   color: color || colors.appleBlue,
   size: 'lmedium',
   weight: 'heavy',
-  alignItems: 'center',
-  textAlign: 'center',
 }))`
-  ${padding(9.5, 15, android ? 6 : 9, 15)}
-  border-color: ${({ theme: { colors }, color }) => colors.alpha(color, 0.2)};
-  border-radius: ${android ? 24 : 20};
+  ${padding(8, 12)}
+  border-color: ${({ theme: { colors }, color }) => colors.alpha(color, 0.06)};
+  border-radius: 20;
   border-width: 2;
+  height: 40;
+  margin-bottom: 4;
 `;
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
@@ -111,25 +113,25 @@ export const explainers = network => ({
   },
   currentBaseFeeStable: {
     emoji: '🌞',
-    extraHeight: android ? 80 : 40,
+    extraHeight: android ? 80 : 28,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_STABLE,
     title: CURRENT_BASE_FEE_TITLE,
   },
   currentBaseFeeFalling: {
-    emoji: '🤑',
-    extraHeight: android ? 60 : 20,
+    emoji: '📉',
+    extraHeight: android ? 60 : 2,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_FALLING,
     title: CURRENT_BASE_FEE_TITLE,
   },
   currentBaseFeeRising: {
     emoji: '🥵',
-    extraHeight: android ? 100 : 50,
+    extraHeight: android ? 100 : 54,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_RISING,
     title: CURRENT_BASE_FEE_TITLE,
   },
   currentBaseFeeSurging: {
     emoji: '🎢',
-    extraHeight: android ? 100 : 50,
+    extraHeight: android ? 100 : 54,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_SURGING,
     title: CURRENT_BASE_FEE_TITLE,
   },
@@ -141,13 +143,13 @@ export const explainers = network => ({
   },
   maxBaseFee: {
     emoji: '📈',
-    extraHeight: -40,
+    extraHeight: -31,
     text: MAX_BASE_FEE_EXPLAINER,
     title: 'Max base fee',
   },
   minerTip: {
     emoji: '⛏',
-    extraHeight: -40,
+    extraHeight: -31,
     text: MINER_TIP_EXPLAINER,
     title: 'Miner tip',
   },
@@ -238,10 +240,10 @@ const ExplainSheet = () => {
     if (!type.includes('currentBaseFee')) return null;
     const { currentGasTrend, currentBaseFee } = params;
     const { color, label } = GAS_TRENDS[currentGasTrend];
-    const baseFeeLabel = label ? `${label} •` : '';
+    const baseFeeLabel = label ? `${label} ·` : '';
     return (
       <Centered>
-        <GasTrendHeader align="center" color={color}>
+        <GasTrendHeader color={color}>
           {`${baseFeeLabel} ${toFixedDecimals(currentBaseFee, 0)} Gwei`}
         </GasTrendHeader>
       </Centered>
@@ -296,7 +298,7 @@ const ExplainSheet = () => {
               <EmojiText
                 align="center"
                 size="h1"
-                style={{ ...fontWithWidth(fonts.weight.bold) }}
+                style={{ ...fontWithWidth(fonts.weight.bold), height: 47 }}
               >
                 {explainSheetConfig.emoji}
               </EmojiText>

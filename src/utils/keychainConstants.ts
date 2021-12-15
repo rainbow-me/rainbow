@@ -1,3 +1,4 @@
+export const analyticsUserIdentifier = 'analyticsUserIdentifier';
 export const seedPhraseKey = 'rainbowSeedPhrase';
 export const privateKeyKey = 'rainbowPrivateKey';
 export const addressKey = 'rainbowAddressKey';

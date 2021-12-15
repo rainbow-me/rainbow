@@ -8,7 +8,6 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { dismissingScreenListener } from '../../shim';
 import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import {
@@ -94,7 +93,7 @@ const KeyboardSizeView = styled(KeyboardArea)`
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
-  const { goBack, navigate, addListener } = useNavigation();
+  const { goBack, navigate } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const { allAssets } = useAccountAssets();
@@ -109,7 +108,6 @@ export default function SendSheet(props) {
     updateDefaultGasLimit,
     updateTxFee,
   } = useGas();
-  const isDismissing = useRef(false);
   const recipientFieldRef = useRef();
 
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
@@ -167,29 +165,6 @@ export default function SendSheet(props) {
   }, [currentNetwork]);
 
   const { triggerFocus } = useMagicAutofocus(recipientFieldRef);
-
-  useEffect(() => {
-    if (ios) {
-      return;
-    }
-    dismissingScreenListener.current = () => {
-      Keyboard.dismiss();
-      isDismissing.current = true;
-    };
-    const unsubscribe = addListener(
-      'transitionEnd',
-      ({ data: { closing } }) => {
-        if (!closing && isDismissing.current) {
-          isDismissing.current = false;
-          recipientFieldRef?.current?.focus();
-        }
-      }
-    );
-    return () => {
-      unsubscribe();
-      dismissingScreenListener.current = undefined;
-    };
-  }, [addListener]);
 
   const sendUpdateAssetAmount = useCallback(
     newAssetAmount => {
@@ -880,6 +855,7 @@ export default function SendSheet(props) {
                 asset={selected}
                 currentNetwork={currentNetwork}
                 horizontalPadding={0}
+                marginBottom={17}
                 theme={isDarkMode ? 'dark' : 'light'}
               />
             }

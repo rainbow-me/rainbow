@@ -13,8 +13,9 @@ import {
   DiscoverHeaderButton,
   Header,
   ProfileHeaderButton,
+  ScanHeaderButton,
 } from '../components/header';
-import { Page } from '../components/layout';
+import { Page, RowWithMargins } from '../components/layout';
 import { useEth } from '../utils/ethereumUtils';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
@@ -31,7 +32,6 @@ import {
   useWallets,
   useWalletSectionsData,
 } from '@rainbow-me/hooks';
-import { useCoinListEditedValue } from '@rainbow-me/hooks/useCoinListEdited';
 import { useNavigation } from '@rainbow-me/navigation';
 import { updateRefetchSavings } from '@rainbow-me/redux/data';
 import {
@@ -184,8 +184,6 @@ export default function WalletScreen() {
     [network]
   );
 
-  const isCoinListEditedValue = useCoinListEditedValue();
-
   const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);
 
   return (
@@ -193,7 +191,6 @@ export default function WalletScreen() {
       {ios && <StatusBar barStyle="dark-content" />}
       {/* Line below appears to be needed for having scrollViewTracker persistent while
       reattaching of react subviews */}
-      <Animated.View style={{ opacity: isCoinListEditedValue }} />
       <Animated.Code exec={scrollViewTracker} />
       <FabWrapper
         disabled={isAccountEmpty || !!params?.emptyWallet}
@@ -204,7 +201,10 @@ export default function WalletScreen() {
         <HeaderOpacityToggler isVisible={isCoinListEdited}>
           <Header justify="space-between">
             <ProfileHeaderButton />
-            <DiscoverHeaderButton />
+            <RowWithMargins margin={10}>
+              <DiscoverHeaderButton />
+              <ScanHeaderButton />
+            </RowWithMargins>
           </Header>
         </HeaderOpacityToggler>
         <AssetList

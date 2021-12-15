@@ -1,5 +1,6 @@
 import React, { createElement } from 'react';
 import styled from 'styled-components';
+import useCoinListEditOptions from '../../hooks/useCoinListEditOptions';
 import { CoinIcon, CoinIconGroup, CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { useAccountSettings } from '@rainbow-me/hooks';
@@ -36,8 +37,6 @@ export default function CoinRow({
   containerStyles,
   contentStyles,
   isFirstCoinRow,
-  isHidden,
-  isPinned,
   isPool,
   name,
   symbol,
@@ -47,7 +46,9 @@ export default function CoinRow({
   ...props
 }) {
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
-
+  const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
+  const isPinned = pinnedCoins.includes(props.uniqueId);
+  const isHidden = hiddenCoins.includes(props.uniqueId);
   return (
     <Container css={containerStyles}>
       {isPool ? (

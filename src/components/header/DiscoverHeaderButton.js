@@ -43,7 +43,7 @@ const DiscoverButtonContent = styled(RowWithMargins).attrs({
 
 export default function DiscoverHeaderButton() {
   const { navigate } = useNavigation();
-  const { colors, isDarkMode } = useTheme();
+  const { colors } = useTheme();
 
   const onPress = useCallback(() => navigate(Routes.QR_SCANNER_SCREEN), [
     navigate,
@@ -59,6 +59,8 @@ export default function DiscoverHeaderButton() {
     <HeaderButton
       {...(__DEV__ ? { onLongPress } : {})}
       onPress={onPress}
+      paddingLeft={0}
+      paddingRight={0}
       scaleTo={0.9}
       testID="discover-button"
       transformOrigin="right"
@@ -70,7 +72,7 @@ export default function DiscoverHeaderButton() {
           borderRadius={50}
           shadows={shadows}
           {...(android && {
-            height: 35,
+            height: 34,
             width: 120,
           })}
         >
@@ -79,7 +81,7 @@ export default function DiscoverHeaderButton() {
         </ShadowStack>
         <DiscoverButtonContent>
           <Text
-            color={colors.alpha(colors.blueGreyDark, isDarkMode ? 1 : 0.8)}
+            color={colors.dark}
             letterSpacing="roundedMedium"
             size="large"
             weight="bold"

@@ -1,10 +1,10 @@
 diff --git a/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m b/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
-index 98e45fe..01e9b76 100644
+index 1e7021c..464f13c 100644
 --- a/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
 +++ b/node_modules/react-native-keychain/RNKeychainManager/RNKeychainManager.m
-@@ -542,4 +542,91 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
+@@ -271,6 +271,93 @@ - (OSStatus)deleteCredentialsForServer:(NSString *)server
+   return SecItemDelete((__bridge CFDictionaryRef) query);
  }
- #endif
  
 +RCT_EXPORT_METHOD(getAllInternetCredentialsForServer:(NSDictionary *)options resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 +{
@@ -29,22 +29,22 @@ index 98e45fe..01e9b76 100644
 +  if (!found) {
 +    return resolve(@(NO));
 +  }
-+    
++
 +  NSMutableArray *results = [@[] mutableCopy];
-+    
++
 +
 +    for(int i=0; i< found.count; i++){
 +        NSDictionary *item  = found[i];
 +        NSString *server = (NSString *) [item objectForKey:(__bridge id)(kSecAttrServer)];
 +        NSString *username = (NSString *) [item objectForKey:(__bridge id)(kSecAttrAccount)];
 +        NSString *password = [[NSString alloc] initWithData:[item objectForKey:(__bridge id)(kSecValueData)] encoding:NSUTF8StringEncoding];
-+        
++
 +        [results addObject:@{@"username": username, @"password":password, @"server": server}];
 +  }
-+    
-+  
++
++
 +  CFRelease(foundTypeRef);
-+    
++
 +  return resolve(@{
 +    @"results": results
 +  });
@@ -58,7 +58,7 @@ index 98e45fe..01e9b76 100644
 +    (__bridge NSString *)kSecReturnAttributes: (__bridge id)kCFBooleanTrue,
 +    (__bridge NSString *)kSecMatchLimit: (__bridge NSString *)kSecMatchLimitAll
 +  };
-+    
++
 +  // Look up all the keys in the keychain
 +  NSArray *found = nil;
 +  CFTypeRef foundTypeRef = NULL;
@@ -73,19 +73,19 @@ index 98e45fe..01e9b76 100644
 +  if (!found) {
 +    return resolve(@(NO));
 +  }
-+    
++
 +  NSMutableArray *results = [@[] mutableCopy];
-+    
++
 +
 +  for(int i=0; i< found.count; i++){
 +      NSDictionary *item  = found[i];
 +      NSString *username = (NSString *) [item objectForKey:(__bridge id)(kSecAttrAccount)];
 +      [results addObject:username];
 +  }
-+    
-+  
++
++
 +  CFRelease(foundTypeRef);
-+    
++
 +  return resolve(@{
 +    @"results": results
 +  });
@@ -93,36 +93,41 @@ index 98e45fe..01e9b76 100644
 +}
 +
 +
- @end
+ -(NSArray<NSString*>*)getAllServicesForSecurityClasses:(NSArray *)secItemClasses
+ {
+   NSMutableDictionary *query = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
-index d4ded69..8503993 100644
+index 6ca68cb..72426ca 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/KeychainModule.java
-@@ -19,6 +19,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
- import com.facebook.react.bridge.ReactContextBaseJavaModule;
+@@ -17,6 +17,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
  import com.facebook.react.bridge.ReactMethod;
  import com.facebook.react.bridge.ReadableMap;
-+import com.facebook.react.bridge.WritableArray;
  import com.facebook.react.bridge.WritableMap;
++import com.facebook.react.bridge.WritableArray;
  import com.oblador.keychain.PrefsStorage.ResultSet;
  import com.oblador.keychain.cipherStorage.CipherStorage;
-@@ -37,6 +38,7 @@ import com.oblador.keychain.exceptions.KeyStoreAccessException;
+ import com.oblador.keychain.cipherStorage.CipherStorage.DecryptionResult;
+@@ -149,6 +150,11 @@ public class KeychainModule extends ReactContextBaseJavaModule {
+     }
+   }
  
- import java.util.HashMap;
- import java.util.Map;
-+import java.util.ArrayList;
- import java.util.concurrent.Executor;
- import java.util.concurrent.Executors;
- import java.util.concurrent.TimeUnit;
-@@ -572,6 +574,38 @@ public class KeychainModule extends ReactContextBaseJavaModule {
-     return promptInfo;
++  @Override
++  public boolean canOverrideExistingModule() {
++    return true;
++  }
++
+   /** Allow initialization in chain. */
+   public static KeychainModule withWarming(@NonNull final ReactApplicationContext reactContext) {
+     final KeychainModule instance = new KeychainModule(reactContext);
+@@ -327,6 +333,36 @@ public class KeychainModule extends ReactContextBaseJavaModule {
+     }
    }
  
 +  @ReactMethod
 +  public void getAllInternetCredentialsForServer(ReadableMap options, Promise promise) {
 +    try {
 +      WritableArray allCredentials = Arguments.createArray();
-+
 +      CipherStorage currentCipherStorage = getCipherStorageForCurrentAPILevel();
 +      ArrayList<Map> allResultsets = prefsStorage.getAllEncryptedEntries();
 +      for (Map data : allResultsets) {
@@ -130,7 +135,6 @@ index d4ded69..8503993 100644
 +        String service = (String)data.get("service");
 +        final String rules = getSecurityRulesOrDefault(options);
 +        final PromptInfo promptInfo = getPromptInfo(options);
-+
 +        final DecryptionResult decryptionResult = decryptCredentials(service, currentCipherStorage, resultSet, rules, promptInfo);
 +        WritableMap credentials = Arguments.createMap();
 +        credentials.putString("service", service);
@@ -150,135 +154,102 @@ index d4ded69..8503993 100644
 +    }
 +  }
 +
-   /**
-    * Extract credentials from current storage. In case if current storage is not matching
-    * results set then executed migration.
+   @ReactMethod
+   public void getAllGenericPasswordServices(@NonNull final Promise promise) {
+     try {
 diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorage.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorage.java
-index e5768c9..113cdcf 100644
+index b7ecd51..9bfa595 100644
 --- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorage.java
 +++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/PrefsStorage.java
-@@ -12,6 +12,10 @@ import com.oblador.keychain.KeychainModule.KnownCiphers;
+@@ -12,7 +12,10 @@ import com.oblador.keychain.KeychainModule.KnownCiphers;
  import com.oblador.keychain.cipherStorage.CipherStorage;
  import com.oblador.keychain.cipherStorage.CipherStorage.EncryptionResult;
  
 +import java.util.ArrayList;
 +import java.util.HashMap;
+ import java.util.HashSet;
 +import java.util.Map;
-+
- @SuppressWarnings({"unused", "WeakerAccess"})
- public class PrefsStorage {
-   public static final String KEYCHAIN_DATA = "RN_KEYCHAIN";
-@@ -34,6 +38,26 @@ public class PrefsStorage {
-     this.prefs = reactContext.getSharedPreferences(KEYCHAIN_DATA, Context.MODE_PRIVATE);
-   }
+ import java.util.Set;
  
+ @SuppressWarnings({"unused", "WeakerAccess"})
+@@ -154,4 +157,23 @@ public class PrefsStorage {
+ 
+     return null;
+   }
++
 +  public ArrayList<Map> getAllEncryptedEntries() {
 +    ArrayList<String> processedServices = new ArrayList<String>();
 +    ArrayList<Map> data  =  new ArrayList<Map>();
-+
 +    Map<String, ?> allItems = this.prefs.getAll();
 +    for (Map.Entry<String, ?> entry : allItems.entrySet()) {
-+      String key = entry.getKey();
-+      String serviceName = key.substring(0, key.length() - 2);
-+      if(!processedServices.contains(serviceName)) {
-+        ResultSet item = getEncryptedEntry(serviceName);
-+        HashMap<String, Object> map=new HashMap<String,Object>();
-+        map.put("resultSet", item);
-+        map.put("service", serviceName);
-+        data.add(map);
-+        processedServices.add(serviceName);
++        String key = entry.getKey();
++        String serviceName = key.substring(0, key.length() - 2);
++        if(!processedServices.contains(serviceName)) {
++            ResultSet item = getEncryptedEntry(serviceName);
++            HashMap<String, Object> map=new HashMap<String,Object>();
++            map.put("resultSet", item);
++            map.put("service", serviceName);
++            data.add(map);
++            processedServices.add(serviceName);
++          }
 +      }
-+    }
 +    return data;
-+  }
-+
-   @Nullable
-   public ResultSet getEncryptedEntry(@NonNull final String service) {
-     byte[] bytesForUsername = getBytesForUsername(service);
-diff --git a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.java b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.java
-index f718ba5..15236bf 100644
---- a/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.java
-+++ b/node_modules/react-native-keychain/android/src/main/java/com/oblador/keychain/cipherStorage/CipherStorageKeystoreRsaEcb.java
-@@ -225,7 +225,7 @@ public class CipherStorageKeystoreRsaEcb extends CipherStorageBase {
-       .setEncryptionPaddings(PADDING_PKCS1)
-       .setRandomizedEncryptionRequired(true)
-       .setUserAuthenticationRequired(true)
--      .setUserAuthenticationValidityDurationSeconds(1)
-+      .setUserAuthenticationValidityDurationSeconds(5)
-       .setKeySize(ENCRYPTION_KEY_SIZE);
-   }
- 
++   }
+ }
 diff --git a/node_modules/react-native-keychain/index.js b/node_modules/react-native-keychain/index.js
-index e81235e..2b3d825 100644
+index 75c0d5c..e99d235 100644
 --- a/node_modules/react-native-keychain/index.js
 +++ b/node_modules/react-native-keychain/index.js
-@@ -98,18 +98,26 @@ export type Options = {
- };
+@@ -108,6 +108,14 @@ export type Result = {|
+   +storage: string,
+ |};
  
- export type Result = {|
--  +service: string,
--  +storage: string,
-+  service: string,
-+  storage: string,
-+|};
-+
 +export type AllCredentials = {|
 +  results: UserCredentials[],
 +|};
 +
 +export type AllCredentialsKeys = {|
 +  results: string[],
- |};
- 
++|};
++
  export type UserCredentials = {|
--  +username: string,
--  +password: string,
-+  username: string,
-+  password: string,
-   ...Result,
- |};
- 
- export type SharedWebCredentials = {|
--  +server: string,
-+  server: string,
-   ...UserCredentials,
- |};
- 
-@@ -256,6 +264,32 @@ export function getInternetCredentials(
-   );
+   +username: string,
+   +password: string,
+@@ -201,6 +209,32 @@ export function getGenericPassword(
+   return RNKeychainManager.getGenericPasswordForOptions(options);
  }
  
 +/**
-+ * Fetches all the keychain entries for the app
-+ * @param {object} options Keychain options, iOS only
-+ * @return {Promise} Resolves to `[{ server, username, password }, ...]` when successful
-+ */
++* Fetches all the keychain entries for the app
++* @param {object} options Keychain options, iOS only
++* @return {Promise} Resolves to `[{ server, username, password }, ...]` when successful
++*/
 +export function getAllInternetCredentials(
-+  options?: Options
-+): Promise<false | AllCredentials> {
-+  return RNKeychainManager.getAllInternetCredentialsForServer(
-+    normalizeOptions(options)
-+  );
-+}
-+
-+/**
-+ * Fetches all the keychain entries for the app
-+ * @param {object} options Keychain options, iOS only
-+ * @return {Promise} Resolves to `[username]` when successful
-+ */
-+export function getAllInternetCredentialsKeys(
-+  options?: Options
-+): Promise<false | AllCredentialsKeys> {
-+  return RNKeychainManager.getAllInternetCredentialsKeys(
-+    normalizeOptions(options)
-+  );
-+}
++   options?: Options
++  ): Promise<false | AllCredentials> {
++   return RNKeychainManager.getAllInternetCredentialsForServer(
++     normalizeOptions(options)
++   );
++  }
++  
++  /**
++  * Fetches all the keychain entries for the app
++  * @param {object} options Keychain options, iOS only
++  * @return {Promise} Resolves to `[username]` when successful
++  */
++  export function getAllInternetCredentialsKeys(
++   options?: Options
++  ): Promise<false | AllCredentialsKeys> {
++   return RNKeychainManager.getAllInternetCredentialsKeys(
++     normalizeOptions(options)
++   );
++  }
 +
  /**
-  * Deletes all internet password keychain entries for `server`.
-  * @param {string} server URL to server.
+  * Deletes all generic password keychain entries for `service`.
+  * @param {object} options An Keychain options object.
 diff --git a/node_modules/react-native-keychain/typings/react-native-keychain.d.ts b/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
-index 210e5b1..8ecf2d1 100644
+index af2eb56..fd11459 100644
 --- a/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
 +++ b/node_modules/react-native-keychain/typings/react-native-keychain.d.ts
 @@ -9,6 +9,14 @@ declare module 'react-native-keychain' {
@@ -288,7 +259,7 @@ index 210e5b1..8ecf2d1 100644
 +  export interface AllCredentials {
 +    results: UserCredentials[];
 +  }
-+
++    
 +  export interface AllCredentialsKeys {
 +    results: string[];
 +  }
@@ -296,7 +267,7 @@ index 210e5b1..8ecf2d1 100644
    export interface SharedWebCredentials extends UserCredentials {
      server: string;
    }
-@@ -109,6 +117,10 @@ declare module 'react-native-keychain' {
+@@ -111,6 +119,10 @@ declare module 'react-native-keychain' {
      options?: Options
    ): Promise<false | SharedWebCredentials>;
  
