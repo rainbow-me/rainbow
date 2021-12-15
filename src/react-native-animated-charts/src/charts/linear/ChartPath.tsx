@@ -30,39 +30,29 @@ import { useChartData } from '../../helpers/useChartData';
 
 export const FIX_CLIPPED_PATH_MAGIC_NUMBER = 22;
 
-function ascending(a?: number, b?: number) {
+function least(length: number, compare: (value: number) => number) {
   'worklet';
 
-  return a == null || b == null
-    ? NaN
-    : a < b
-    ? -1
-    : a > b
-    ? 1
-    : a >= b
-    ? 0
-    : NaN;
-}
+  let bound1 = 0;
+  let bound2 = length - 1;
 
-function least(length: number, compare: typeof ascending = ascending) {
-  'worklet';
-
-  let min;
-  let defined = false;
-
-  let minValue;
-  for (let i = 0; i < length; i++) {
-    const value = compare(i);
-    if (
-      defined ? ascending(value, minValue) < 0 : ascending(value, value) === 0
-    ) {
-      min = i;
-      minValue = value;
-      defined = true;
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    let pivot = Math.round(bound1 + (bound2 - bound1) / 2);
+    if (pivot === bound1) {
+      return bound1;
+    }
+    if (pivot === bound2) {
+      return bound2;
+    }
+    if (compare(pivot - 1) - compare(pivot) > 0) {
+      // decreasing, dip on the right side decreasing, dip on the right side
+      bound1 = pivot;
+    } else {
+      // non-increasing or dip, dip on the left side or in pivot non-increasing or dip, dip on the left side or in pivot
+      bound2 = pivot;
     }
   }
-
-  return min;
 }
 
 function impactHeavy() {
@@ -217,7 +207,7 @@ export const ChartPath = React.memo(
 
     useAnimatedReaction(
       () => ({ x: translationX.value, y: translationY.value }),
-      (values) => {
+      values => {
         if (
           !currentPath ||
           !currentPath.parsed ||
@@ -238,12 +228,12 @@ export const ChartPath = React.memo(
 
         // refer to this article for more defails about this code
         // https://observablehq.com/@d3/multi-line-chart
-        const index = least(currentPath.points.length, (i) => {
+        const index = least(currentPath.points.length, i => {
           if (typeof i === 'undefined' || values.x === null) {
             return 0;
           }
 
-          return Math.hypot(currentPath.points[i].x - Math.floor(values.x));
+          return Math.abs(currentPath.points[i].x - Math.floor(values.x));
         });
 
         setOriginData(currentPath, index);
@@ -278,63 +268,62 @@ export const ChartPath = React.memo(
       return props;
     }, [currentPath]);
 
-    const onGestureEvent =
-      useAnimatedGestureHandler<LongPressGestureHandlerGestureEvent>(
-        {
-          onActive: (event) => {
-            if (!isActive.value) {
-              isActive.value = true;
+    const onGestureEvent = useAnimatedGestureHandler<LongPressGestureHandlerGestureEvent>(
+      {
+        onActive: event => {
+          if (!isActive.value) {
+            isActive.value = true;
 
-              pathOpacity.value = withTiming(
-                0,
-                timingFeedbackConfig || timingFeedbackDefaultConfig
-              );
-
-              if (hapticsEnabled) {
-                impactHeavy();
-              }
-            }
-
-            state.value = event.state;
-            translationX.value = positionXWithMargin(event.x, hitSlop, width);
-            translationY.value = event.y;
-          },
-          onCancel: (event) => {
-            state.value = event.state;
-            resetGestureState();
-          },
-          onEnd: (event) => {
-            state.value = event.state;
-            resetGestureState();
+            pathOpacity.value = withTiming(
+              0,
+              timingFeedbackConfig || timingFeedbackDefaultConfig
+            );
 
             if (hapticsEnabled) {
               impactHeavy();
             }
-          },
-          onFail: (event) => {
-            state.value = event.state;
-            resetGestureState();
-          },
-          onStart: (event) => {
-            // WARNING: the following code does not run on using iOS, but it does on Android.
-            // I use the same code from onActive
-            // platform is for safety
-            if (Platform.OS === 'android') {
-              state.value = event.state;
-              isActive.value = true;
-              pathOpacity.value = withTiming(
-                0,
-                timingFeedbackConfig || timingFeedbackDefaultConfig
-              );
+          }
 
-              if (hapticsEnabled) {
-                impactHeavy();
-              }
-            }
-          },
+          state.value = event.state;
+          translationX.value = positionXWithMargin(event.x, hitSlop, width);
+          translationY.value = event.y;
         },
-        [width, height, hapticsEnabled, hitSlop, timingFeedbackConfig]
-      );
+        onCancel: event => {
+          state.value = event.state;
+          resetGestureState();
+        },
+        onEnd: event => {
+          state.value = event.state;
+          resetGestureState();
+
+          if (hapticsEnabled) {
+            impactHeavy();
+          }
+        },
+        onFail: event => {
+          state.value = event.state;
+          resetGestureState();
+        },
+        onStart: event => {
+          // WARNING: the following code does not run on using iOS, but it does on Android.
+          // I use the same code from onActive
+          // platform is for safety
+          if (Platform.OS === 'android') {
+            state.value = event.state;
+            isActive.value = true;
+            pathOpacity.value = withTiming(
+              0,
+              timingFeedbackConfig || timingFeedbackDefaultConfig
+            );
+
+            if (hapticsEnabled) {
+              impactHeavy();
+            }
+          }
+        },
+      },
+      [width, height, hapticsEnabled, hitSlop, timingFeedbackConfig]
+    );
 
     const pathAnimatedStyles = useAnimatedStyle(() => ({
       opacity: pathOpacity.value * (1 - selectedOpacity) + selectedOpacity,
