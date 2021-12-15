@@ -550,22 +550,6 @@ export const removeWalletConnector = peerId => (dispatch, getState) => {
   });
 };
 
-export const walletConnectUpdateSessions = () => (dispatch, getState) => {
-  const { accountAddress, chainId } = getState().settings;
-  const { walletConnectors } = getState().walletconnect;
-
-  Object.keys(walletConnectors).forEach(key => {
-    const connector = walletConnectors[key];
-    const newSessionData = {
-      accounts: [accountAddress],
-      chainId,
-    };
-    connector.updateSession(newSessionData);
-
-    saveWalletConnectSession(connector.peerId, connector.session);
-  });
-};
-
 export const walletConnectUpdateSessionConnectorByDappUrl = (
   dappUrl,
   accountAddress,
