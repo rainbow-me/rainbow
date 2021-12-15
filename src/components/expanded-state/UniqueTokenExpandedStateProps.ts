@@ -35,6 +35,6 @@ interface UniqueTokenExpandedStateAsset {
     value: string;
   }[];
   external_link: string;
-  uniqueId: number;
+  uniqueId: string;
   urlSuffixForAsset: string;
 }

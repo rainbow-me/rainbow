@@ -1,5 +1,5 @@
 export interface UniqueAsset {
   familyName: string;
-  uniqueId: number;
+  uniqueId: string;
   name: string;
 }
