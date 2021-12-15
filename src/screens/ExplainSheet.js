@@ -25,7 +25,7 @@ const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   size: 'lmedium',
   weight: 'heavy',
 }))`
-  ${padding(8, 12)}
+  ${padding(android ? 5 : 8, 12)}
   border-color: ${({ theme: { colors }, color }) => colors.alpha(color, 0.06)};
   border-radius: 20;
   border-width: 2;
@@ -113,19 +113,19 @@ export const explainers = network => ({
   },
   currentBaseFeeStable: {
     emoji: '🌞',
-    extraHeight: android ? 80 : 28,
+    extraHeight: android ? 40 : 28,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_STABLE,
     title: CURRENT_BASE_FEE_TITLE,
   },
   currentBaseFeeFalling: {
     emoji: '📉',
-    extraHeight: android ? 60 : 2,
+    extraHeight: android ? 20 : 2,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_FALLING,
     title: CURRENT_BASE_FEE_TITLE,
   },
   currentBaseFeeRising: {
     emoji: '🥵',
-    extraHeight: android ? 100 : 54,
+    extraHeight: android ? 60 : 54,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER + CURRENT_BASE_FEE_EXPLAINER_RISING,
     title: CURRENT_BASE_FEE_TITLE,
   },
@@ -137,7 +137,7 @@ export const explainers = network => ({
   },
   currentBaseFeeNotrend: {
     emoji: '⛽',
-    extraHeight: android ? 0 : -40,
+    extraHeight: android ? -20 : -40,
     text: BASE_CURRENT_BASE_FEE_EXPLAINER,
     title: CURRENT_BASE_FEE_TITLE,
   },
@@ -298,7 +298,10 @@ const ExplainSheet = () => {
               <EmojiText
                 align="center"
                 size="h1"
-                style={{ ...fontWithWidth(fonts.weight.bold), height: 47 }}
+                style={{
+                  ...fontWithWidth(fonts.weight.bold),
+                  height: android ? 60 : 47,
+                }}
               >
                 {explainSheetConfig.emoji}
               </EmojiText>

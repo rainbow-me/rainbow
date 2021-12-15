@@ -115,6 +115,8 @@
     "cloudinary": "1.27.1",
     "console-browserify": "1.2.0",
     "constants-browserify": "1.0.0",
+    "d3-scale": "4.0.2",
+    "d3-shape": "3.0.1",
     "date-fns": "2.16.1",
     "delay": "4.4.0",
     "dns.js": "1.0.1",
@@ -254,6 +256,8 @@
     "zxcvbn": "4.4.2"
   },
   "devDependencies": {
+    "@types/d3-scale": "4.0.2",
+    "@types/d3-shape": "3.0.2",
     "@babel/core": "7.14.2",
     "@babel/parser": "7.12.14",
     "@babel/plugin-transform-react-inline-elements": "7.12.1",
