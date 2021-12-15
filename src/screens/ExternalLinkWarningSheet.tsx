@@ -39,44 +39,42 @@ const ExternalLinkWarningSheet = () => {
     Linking.openURL(url);
   }, [onClose, goBack, url]);
 
-  const EmojiText = Emoji;
-  const Title = SheetTitle;
-
-  const sheetHeight = ExternalLinkWarningSheetHeight;
-
   return (
-    <Container deviceHeight={deviceHeight} height={sheetHeight} insets={insets}>
+    <Container
+      deviceHeight={deviceHeight}
+      height={ExternalLinkWarningSheetHeight}
+      insets={insets}
+    >
       {ios && <StatusBar barStyle="light-content" />}
 
       {/* @ts-expect-error JavaScript component */}
       <SlackSheet
         additionalTopPadding={android}
-        contentHeight={sheetHeight}
+        contentHeight={ExternalLinkWarningSheetHeight}
         scrollEnabled={false}
       >
         <Centered
           direction="column"
-          height={sheetHeight}
-          testID="add-token-sheet"
+          height={ExternalLinkWarningSheetHeight}
           width="100%"
         >
           <ColumnWithMargins
             margin={15}
             style={{
-              height: sheetHeight,
+              height: ExternalLinkWarningSheetHeight,
               padding: 19,
               width: '100%',
             }}
           >
             {/* @ts-expect-error JavaScript component */}
-            <EmojiText
+            <Emoji
               align="center"
               size="h1"
               style={{ ...fontWithWidth(fonts.weight.bold) }}
             >
               🧭
-            </EmojiText>
-            <Title
+            </Emoji>
+            <SheetTitle
               align="center"
               lineHeight="big"
               numberOfLines={1}
@@ -84,7 +82,7 @@ const ExternalLinkWarningSheet = () => {
               weight="heavy"
             >
               Visit external link?
-            </Title>
+            </SheetTitle>
 
             <Text
               align="center"
