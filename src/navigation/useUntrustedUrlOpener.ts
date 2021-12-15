@@ -5,7 +5,7 @@ import { useNavigation } from './Navigation';
 import Routes from './routesNames';
 
 // External link warnings will be skipped for these domains
-const trustedLinkDomains = [
+const trustedDomains = [
   'discord.com',
   'discord.gg',
   'etherscan.io',
@@ -18,17 +18,17 @@ const trustedLinkDomains = [
   'zora.co',
 ];
 
-export default function useUntrustedLinkHandler(): (url: string) => void {
+export default function useUntrustedUrlOpener(): (url: string) => void {
   const { navigate } = useNavigation();
+
   return useCallback(
     (url: string) => {
-      const { hostname: linkHostname } = new URL(url);
+      const { hostname } = new URL(url);
 
       if (
-        trustedLinkDomains.some(
-          trustedLinkDomain =>
-            linkHostname === trustedLinkDomain ||
-            linkHostname.endsWith(`.${trustedLinkDomain}`)
+        trustedDomains.some(
+          trustedDomain =>
+            hostname === trustedDomain || hostname.endsWith(`.${trustedDomain}`)
         )
       ) {
         Linking.openURL(url);

@@ -5,4 +5,4 @@ export {
 export { default as Navigation, useNavigation } from './Navigation';
 export { default as SpringConfig } from './SpringConfig';
 export { default as useStatusBarManaging } from './useStatusBarManaging';
-export { default as useUntrustedLinkHandler } from './useUntrustedLinkHandler';
+export { default as useUntrustedUrlOpener } from './useUntrustedUrlOpener';

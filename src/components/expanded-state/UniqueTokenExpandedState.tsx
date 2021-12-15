@@ -61,7 +61,7 @@ import {
   useShowcaseTokens,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { useNavigation, useUntrustedLinkHandler } from '@rainbow-me/navigation';
+import { useNavigation, useUntrustedUrlOpener } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
@@ -152,12 +152,12 @@ const Markdown = ({
 }: {
   children: MarkdownTextProps['children'];
 }) => {
-  const untrustedLinkHandler = useUntrustedLinkHandler();
+  const openUntrustedUrl = useUntrustedUrlOpener();
 
   return (
     <MarkdownText
       color={textColor}
-      handleLinkPress={untrustedLinkHandler}
+      handleLinkPress={openUntrustedUrl}
       listSpace={listSpace}
       paragraphSpace={paragraphSpace}
       size={textSize}
