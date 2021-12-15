@@ -16,8 +16,8 @@ const ChartLabelFactory = (fieldName: 'originalX' | 'originalY') => {
 
     const textProps = useAnimatedProps(
       () => ({
-        text: format ? format(val.value) : val.value,
-        value: format ? format(val.value) : val.value,
+        text: format?.(val.value) ?? val.value,
+        value: format?.(val.value) ?? val.value,
       }),
       [chartData.data]
     );

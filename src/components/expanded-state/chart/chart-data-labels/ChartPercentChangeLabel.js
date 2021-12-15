@@ -43,26 +43,25 @@ export default function ChartPercentChangeLabel({
   const { originalY, data } = useChartData();
   const { colors } = useTheme();
 
-  const defaultValue =
-    !data?.points || data?.points.length === 0
-      ? ''
-      : (() => {
-          const value = overrideValue
-            ? latestChange
-            : ((data?.points?.[data.points.length - 1]?.y ?? 0) /
-                data?.points?.[0]?.y) *
-                100 -
-              100;
-          if (isNaN(value)) {
-            return '';
-          }
-          return (
-            (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
-            ' ' +
-            formatNumber(Math.abs(value).toFixed(2)) +
-            '%'
-          );
-        })();
+  const defaultValue = !data?.points?.length
+    ? ''
+    : (() => {
+        const value = overrideValue
+          ? latestChange
+          : ((data?.points?.[data.points.length - 1]?.y ?? 0) /
+              data?.points?.[0]?.y) *
+              100 -
+            100;
+        if (isNaN(value)) {
+          return '';
+        }
+        return (
+          (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
+          ' ' +
+          formatNumber(Math.abs(value).toFixed(2)) +
+          '%'
+        );
+      })();
 
   const textProps = useAnimatedStyle(() => {
     const firstValue = data?.points?.[0]?.y;

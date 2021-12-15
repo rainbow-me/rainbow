@@ -77,6 +77,7 @@ export default function ChartExpandedStateHeader({
 
   const priceSharedValue = useSharedValue('');
 
+  // TODO (terry): Try to use useImmediateEffect here
   useEffect(() => {
     if (isNoPriceData) {
       priceSharedValue.value = '';

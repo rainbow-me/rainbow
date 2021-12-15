@@ -217,7 +217,7 @@ export const ChartPath = React.memo(
 
     useAnimatedReaction(
       () => ({ x: translationX.value, y: translationY.value }),
-      values => {
+      (values) => {
         if (
           !currentPath ||
           !currentPath.parsed ||
@@ -236,7 +236,9 @@ export const ChartPath = React.memo(
 
         positionX.value = values.x;
 
-        const index = least(currentPath.points.length, i => {
+        // refer to this article for more defails about this code
+        // https://observablehq.com/@d3/multi-line-chart
+        const index = least(currentPath.points.length, (i) => {
           if (typeof i === 'undefined' || values.x === null) {
             return 0;
           }
@@ -276,66 +278,67 @@ export const ChartPath = React.memo(
       return props;
     }, [currentPath]);
 
-    const onGestureEvent = useAnimatedGestureHandler<LongPressGestureHandlerGestureEvent>(
-      {
-        onActive: event => {
-          if (!isActive.value) {
-            isActive.value = true;
+    const onGestureEvent =
+      useAnimatedGestureHandler<LongPressGestureHandlerGestureEvent>(
+        {
+          onActive: (event) => {
+            if (!isActive.value) {
+              isActive.value = true;
 
-            pathOpacity.value = withTiming(
-              0,
-              timingFeedbackConfig || timingFeedbackDefaultConfig
-            );
+              pathOpacity.value = withTiming(
+                0,
+                timingFeedbackConfig || timingFeedbackDefaultConfig
+              );
 
-            if (hapticsEnabled) {
-              impactHeavy();
+              if (hapticsEnabled) {
+                impactHeavy();
+              }
             }
-          }
 
-          state.value = event.state;
-          translationX.value = positionXWithMargin(event.x, hitSlop, width);
-          translationY.value = event.y;
-        },
-        onCancel: event => {
-          state.value = event.state;
-          resetGestureState();
-        },
-        onEnd: event => {
-          state.value = event.state;
-          resetGestureState();
-
-          if (hapticsEnabled) {
-            impactHeavy();
-          }
-        },
-        onFail: event => {
-          state.value = event.state;
-          resetGestureState();
-        },
-        onStart: event => {
-          // WARNING: the following code does not run on using iOS, but it does on Android.
-          // I use the same code from onActive
-          // platform is for safety
-          if (Platform.OS === 'android') {
             state.value = event.state;
-            isActive.value = true;
-            pathOpacity.value = withTiming(
-              0,
-              timingFeedbackConfig || timingFeedbackDefaultConfig
-            );
+            translationX.value = positionXWithMargin(event.x, hitSlop, width);
+            translationY.value = event.y;
+          },
+          onCancel: (event) => {
+            state.value = event.state;
+            resetGestureState();
+          },
+          onEnd: (event) => {
+            state.value = event.state;
+            resetGestureState();
 
             if (hapticsEnabled) {
               impactHeavy();
             }
-          }
+          },
+          onFail: (event) => {
+            state.value = event.state;
+            resetGestureState();
+          },
+          onStart: (event) => {
+            // WARNING: the following code does not run on using iOS, but it does on Android.
+            // I use the same code from onActive
+            // platform is for safety
+            if (Platform.OS === 'android') {
+              state.value = event.state;
+              isActive.value = true;
+              pathOpacity.value = withTiming(
+                0,
+                timingFeedbackConfig || timingFeedbackDefaultConfig
+              );
+
+              if (hapticsEnabled) {
+                impactHeavy();
+              }
+            }
+          },
         },
-      },
-      [width, height, hapticsEnabled, hitSlop, timingFeedbackConfig]
-    );
+        [width, height, hapticsEnabled, hitSlop, timingFeedbackConfig]
+      );
 
     const pathAnimatedStyles = useAnimatedStyle(() => ({
-        opacity: pathOpacity.value * (1 - selectedOpacity) + selectedOpacity,
-    }))
+      opacity: pathOpacity.value * (1 - selectedOpacity) + selectedOpacity,
+    }));
 
     return (
       <View style={{ height, width }}>
