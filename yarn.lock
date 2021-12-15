@@ -5326,6 +5326,16 @@ ajv@^8.0.1:
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
 
+ajv@^8.6.3:
+  version "8.8.2"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.8.2.tgz#01b4fef2007a28bf75f0b7fc009f62679de4abbb"
+  integrity sha512-x9VuX+R/jcFj1DHo/fCp99esgGDWiHENrKxaCENuCxpoMCmAt/COCGVDwA7kleEpEzJjDnvh3yGoOuLu0Dtllw==
+  dependencies:
+    fast-deep-equal "^3.1.1"
+    json-schema-traverse "^1.0.0"
+    require-from-string "^2.0.2"
+    uri-js "^4.2.2"
+
 animated@^0.2.2:
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/animated/-/animated-0.2.2.tgz#04af7846ad0b9b8d1f0472cc53d82b8efeb4a751"
@@ -8574,11 +8584,12 @@ detective-typescript@^7.0.0:
     node-source-walk "^4.2.0"
     typescript "^3.9.7"
 
-detox@19.0.0:
-  version "19.0.0"
-  resolved "https://registry.yarnpkg.com/detox/-/detox-19.0.0.tgz#3ac43f3843062f359ed1808e4c675095a50f32e7"
-  integrity sha512-lHV0aEYKBSIKmTxrE68AbDBWg02jyhPdNSxsg7OS2x/EBNpzt21AaEvkZMabPwcp90zwNmomQLML+HNbVGhtmQ==
+detox@19.3.1:
+  version "19.3.1"
+  resolved "https://registry.yarnpkg.com/detox/-/detox-19.3.1.tgz#6848f977199f2c2767b313255a388fccdac23abe"
+  integrity sha512-Geg3l/Uetk4xrfRWUiGMrtiT+tKmmrsLwdXeagdTV01j6NnqmAUm3xDLLW3jEO7TKe7/ZOO846gZbMjAAZWiEw==
   dependencies:
+    ajv "^8.6.3"
     bunyan "^1.8.12"
     bunyan-debug-stream "^1.1.0"
     chalk "^2.4.2"
@@ -19825,7 +19836,7 @@ use-debounce@5.2.0:
   resolved "https://registry.yarnpkg.com/use-debounce/-/use-debounce-5.2.0.tgz#3cb63f5c46f40092c570356e441dbc016ffb2f8b"
   integrity sha512-lW4tbPsTnvPKYqOYXp5xZ7SP7No/ARLqqQqoyRKuSzP0HxR9arhSAhznXUZFoNPWDRij8fog+N6sYbjb8c3kzw==
 
-use-deep-compare@^1.1.0:
+use-deep-compare@1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/use-deep-compare/-/use-deep-compare-1.1.0.tgz#85580dde751f68400bf6ef7e043c7f986595cef8"
   integrity sha512-6yY3zmKNCJ1jjIivfZMZMReZjr8e6iC6Uqtp701jvWJ6ejC/usXD+JjmslZDPJQgX8P4B1Oi5XSLHkOLeYSJsA==
