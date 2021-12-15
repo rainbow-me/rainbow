@@ -25,20 +25,18 @@ const ChartDot = React.memo(
     const animatedStyle = useAnimatedStyle(() => {
       const translateX = positionX.value;
       const translateY = positionY.value + FIX_CLIPPED_PATH_MAGIC_NUMBER / 2;
+      const animation = withSpring(
+        isActive.value ? 1 : 0,
+        springConfig || springDefaultConfig
+      );
 
       return {
-        opacity: withSpring(
-          isActive.value ? 1 : 0,
-          springConfig || springDefaultConfig
-        ),
+        opacity: animation,
         transform: [
           { translateX },
           { translateY },
           {
-            scale: withSpring(
-              isActive.value ? 1 : 0,
-              springConfig || springDefaultConfig
-            ),
+            scale: animation,
           },
         ],
       };

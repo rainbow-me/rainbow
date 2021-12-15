@@ -343,7 +343,6 @@ export const ChartPath = React.memo(
     return (
       <View style={{ height, width }}>
         <LongPressGestureHandler
-          {...{ onGestureEvent }}
           enabled={gestureEnabled}
           maxDist={100000}
           minDurationMs={0}
