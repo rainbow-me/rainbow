@@ -63,6 +63,7 @@ import { analyticsUserIdentifier } from './utils/keychainConstants';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
+import networkTypes from './helpers/networkTypes';
 
 const WALLETCONNECT_SYNC_DELAY = 500;
 
@@ -254,7 +255,7 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   handleTransactionConfirmed = tx => {
-    const network = ethereumUtils.getNetworkFromChainId(tx.chainId);
+    const network = tx.network || Network.mainnet;
     const isL2 = isL2Network(network);
     const updateBalancesAfter = (timeout, isL2, network) => {
       setTimeout(() => {
