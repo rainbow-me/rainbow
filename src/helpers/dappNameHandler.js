@@ -185,6 +185,10 @@ const DisplayDappNames = Object.freeze({
     name: 'TokenSets',
     uri: buildAssetUrl('tokensets.com'),
   },
+  'twitter.com': {
+    name: 'Twitter',
+    uri: buildAssetUrl('twitter.com'),
+  },
   'umaproject.org': {
     name: 'UMA',
     uri: null,

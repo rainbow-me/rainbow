@@ -24,7 +24,6 @@ import {
   AllRainbowWallets,
   allWalletsVersion,
   createWallet,
-  publicAccessControlOptions,
   RainbowWallet,
 } from './wallet';
 
@@ -227,7 +226,7 @@ async function restoreCurrentBackupIntoKeychain(
     await Promise.all(
       Object.keys(backedUpData).map(async key => {
         const value = backedUpData[key];
-        let accessControl: Options = publicAccessControlOptions;
+        let accessControl: Options = keychain.publicAccessControlOptions;
         if (endsWith(key, seedPhraseKey) || endsWith(key, privateKeyKey)) {
           accessControl = privateAccessControlOptions;
         }

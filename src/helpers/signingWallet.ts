@@ -3,8 +3,12 @@ import { generateMnemonic } from 'bip39';
 import { default as LibWallet } from 'ethereumjs-wallet';
 // @ts-ignore
 import { RAINBOW_MASTER_KEY } from 'react-native-dotenv';
-import { loadString, saveString } from '../model/keychain';
-import { loadWallet, publicAccessControlOptions } from '../model/wallet';
+import {
+  loadString,
+  publicAccessControlOptions,
+  saveString,
+} from '../model/keychain';
+import { loadWallet } from '../model/wallet';
 import {
   signingWalletAddress,
   signingWallet as signingWalletKeychain,
