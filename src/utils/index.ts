@@ -38,6 +38,7 @@ export { default as showActionSheetWithOptions } from './actionsheet';
 export { default as simplifyChartData } from './simplifyChartData';
 export { default as statusBar } from './statusBar';
 export { filterList } from './search';
+export { memoFn } from './memoFn';
 export {
   getFirstGrapheme,
   initials,
