@@ -5,6 +5,7 @@ import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { CoinIconIndicator, CoinIconSize } from '../coin-icon';
 import { Icon } from '../icons';
 import { Row } from '../layout';
+import { useCoinListFinishEditingOptions } from '@rainbow-me/hooks';
 import { borders, padding, position, shadow } from '@rainbow-me/styles';
 
 const Container = styled.View`
@@ -43,9 +44,13 @@ const CoinCheckButton = ({
   isHidden,
   isPinned,
   onPress,
-  toggle,
+  toggle: givenToggle,
+  uniqueId,
   ...props
 }) => {
+  const { selectedItems } = useCoinListFinishEditingOptions();
+  const toggle = givenToggle || selectedItems.includes(uniqueId);
+
   return (
     <Container {...props} isAbsolute={isAbsolute}>
       <Content
@@ -69,4 +74,9 @@ const CoinCheckButton = ({
   );
 };
 
-export default magicMemo(CoinCheckButton, 'toggle');
+export default magicMemo(CoinCheckButton, [
+  'toggle',
+  'uniqueId',
+  'isHidden',
+  'isPinned',
+]);

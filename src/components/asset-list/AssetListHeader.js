@@ -9,6 +9,7 @@ import { Icon } from '../icons';
 import { Centered, Row } from '../layout';
 import { ListHeader, ListHeaderHeight } from '../list';
 import { H1, TruncatedText } from '../text';
+import { StickyHeader } from './RecyclerAssetList2/core/StickyHeaders';
 import { useTheme } from '@rainbow-me/context';
 import { useAccountProfile, useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -83,7 +84,6 @@ const WalletSelectButton = ({
 const AssetListHeader = ({
   contextMenuOptions,
   isCoinListEdited,
-  isSticky,
   title,
   totalValue,
   ...props
@@ -123,29 +123,30 @@ const AssetListHeader = ({
   }, [accountName, truncated]);
 
   return (
-    <ListHeader
-      contextMenuOptions={contextMenuOptions}
-      isCoinListEdited={isCoinListEdited}
-      isSticky={isSticky}
-      title={title}
-      totalValue={totalValue}
-      {...props}
-    >
-      {!title && (
-        <WalletSelectButton
-          deviceWidth={deviceWidth}
-          onChangeWallet={onChangeWallet}
-          textWidth={textWidth}
-          totalValue={totalValue}
-          truncatedAccountName={truncatedAccountName}
-        />
-      )}
-      {totalValue ? (
-        <H1 align="right" letterSpacing="roundedTight" weight="semibold">
-          {totalValue}
-        </H1>
-      ) : null}
-    </ListHeader>
+    <StickyHeader name={title}>
+      <ListHeader
+        contextMenuOptions={contextMenuOptions}
+        isCoinListEdited={isCoinListEdited}
+        title={title}
+        totalValue={totalValue}
+        {...props}
+      >
+        {!title && (
+          <WalletSelectButton
+            deviceWidth={deviceWidth}
+            onChangeWallet={onChangeWallet}
+            textWidth={textWidth}
+            totalValue={totalValue}
+            truncatedAccountName={truncatedAccountName}
+          />
+        )}
+        {totalValue ? (
+          <H1 align="right" letterSpacing="roundedTight" weight="semibold">
+            {totalValue}
+          </H1>
+        ) : null}
+      </ListHeader>
+    </StickyHeader>
   );
 };
 
