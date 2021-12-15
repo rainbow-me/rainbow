@@ -321,7 +321,7 @@ export const MarkdownText = memo(function MarkdownText({
         </MarkdownStackItem>
       ),
     };
-  }, [spaceProps, size, color, heading1Color, heading2Color]);
+  }, [spaceProps, size, color, handleLinkPress, heading1Color, heading2Color]);
 
   return (
     <MarkdownStack {...spaceProps}>
