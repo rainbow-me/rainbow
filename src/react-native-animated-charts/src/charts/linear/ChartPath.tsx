@@ -19,7 +19,7 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
-import * as redash from 'react-native-redash';
+import { getYForX } from 'react-native-redash';
 import Svg, { Path, PathProps } from 'react-native-svg';
 import { PathData } from '../../helpers/ChartContext';
 import {
@@ -181,8 +181,6 @@ export const ChartPath = React.memo(
           setOriginData(currentPath);
         }
 
-        console.log('Effect');
-
         if (currentPath?.path === previousPath?.path) {
           return;
         }
@@ -230,7 +228,7 @@ export const ChartPath = React.memo(
           return;
         }
 
-        const yForX = redash.getYForX(currentPath.parsed, Math.floor(values.x));
+        const yForX = getYForX(currentPath.parsed, Math.floor(values.x));
 
         if (yForX !== null) {
           positionY.value = yForX;

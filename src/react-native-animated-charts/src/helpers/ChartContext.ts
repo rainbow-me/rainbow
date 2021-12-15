@@ -1,6 +1,6 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import * as redash from 'react-native-redash';
+import { Path } from 'react-native-redash';
 
 export const CurveType = {
   basis: 'basis',
@@ -20,7 +20,7 @@ export interface DataType {
   yRange: [number, number];
   points: Point[];
   nativePoints?: Point[];
-  curve?: CurveType;
+  curve?: keyof typeof CurveType;
 }
 
 export type CallbackType = {
@@ -32,7 +32,7 @@ export type CallbackType = {
 
 export interface PathData {
   path: string;
-  parsed: null | redash.Path;
+  parsed: null | Path;
   points: Point[];
   data: Point[];
   smallestX?: Point;

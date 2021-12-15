@@ -25,7 +25,7 @@ interface ChartPathProviderProps {
   yRange?: [number, number];
 }
 
-function getCurveType(curveType: CurveType) {
+function getCurveType(curveType: keyof typeof CurveType) {
   switch (curveType) {
     case CurveType.basis:
       return shape.curveBasis;
