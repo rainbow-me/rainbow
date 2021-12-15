@@ -54,11 +54,11 @@ export function Inline({
           ? alignHorizontalToFlexAlign[alignHorizontal]
           : undefined
       }
-      marginBottom={verticalSpace ? negateSpace(verticalSpace) : undefined}
-      marginLeft={horizontalSpace ? negateSpace(horizontalSpace) : undefined}
+      marginRight={horizontalSpace ? negateSpace(horizontalSpace) : undefined}
+      marginTop={verticalSpace ? negateSpace(verticalSpace) : undefined}
     >
       {Children.map(flattenChildren(children), child => (
-        <Box paddingBottom={verticalSpace} paddingLeft={horizontalSpace}>
+        <Box paddingRight={horizontalSpace} paddingTop={verticalSpace}>
           {child}
         </Box>
       ))}
