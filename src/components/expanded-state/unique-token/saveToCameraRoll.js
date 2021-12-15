@@ -43,7 +43,7 @@ function getFilename(url) {
 async function downloadImageAndroid(url) {
   const granted = await getPermissionAndroid();
   if (!granted) {
-    alertError({ message: 'Access to photo library was denied'});
+    alertError({ message: 'Access to photo library was denied' });
     return;
   }
   let { filename, ext } = getFilename(url);
