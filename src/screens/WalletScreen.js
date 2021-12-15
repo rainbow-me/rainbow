@@ -71,7 +71,9 @@ export default function WalletScreen() {
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
-
+  const walletReady = useSelector(
+    ({ appState: { walletReady } }) => walletReady
+  );
   const {
     isWalletEthZero,
     refetchSavings,
@@ -161,13 +163,11 @@ export default function WalletScreen() {
   }, [assetsSocket, dispatch, fetchedCharts, initialized, sections]);
 
   useEffect(() => {
-    if (initialized) {
-      InteractionManager.runAfterInteractions(() => {
-        loadGlobalLateData();
-        initializeDiscoverData();
-      });
+    if (walletReady && assetsSocket) {
+      loadGlobalLateData();
+      initializeDiscoverData();
     }
-  }, [loadGlobalLateData, initializeDiscoverData, initialized]);
+  }, [loadGlobalLateData, initializeDiscoverData, walletReady]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
