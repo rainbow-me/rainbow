@@ -1,0 +1,3449 @@
+diff --git a/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js b/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js
+index 2574361..cb818b0 100644
+--- a/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js
++++ b/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js
+@@ -176,6 +176,7 @@ function updateErrorWithErrorData(
+ let NativeModules: {[moduleName: string]: $FlowFixMe, ...} = {};
+ if (global.nativeModuleProxy) {
+   NativeModules = global.nativeModuleProxy;
++  global.nativeModuleProxy = null;  
+ } else if (!global.nativeExtensions) {
+   const bridgeConfig = global.__fbBatchedBridgeConfig;
+   invariant(
+diff --git a/node_modules/react-native/React/CoreModules/RCTAlertManager.mm b/node_modules/react-native/React/CoreModules/RCTAlertManager.mm
+index e0f450e..ec60f93 100644
+--- a/node_modules/react-native/React/CoreModules/RCTAlertManager.mm
++++ b/node_modules/react-native/React/CoreModules/RCTAlertManager.mm
+@@ -100,9 +100,31 @@ - (void)invalidate
+     }
+   }
+ 
+-  RCTAlertController *alertController = [RCTAlertController alertControllerWithTitle:title
+-                                                                             message:nil
+-                                                                      preferredStyle:UIAlertControllerStyleAlert];
++
++  UIViewController *presentingController = RCTPresentedViewController();
++  if (presentingController == nil) {
++    RCTLogError(@"Tried to display alert view but there is no application window. args: %@", @{
++      @"title" : args.title() ?: [NSNull null],
++      @"message" : args.message() ?: [NSNull null],
++      @"buttons" : RCTConvertOptionalVecToArray(
++          args.buttons(),
++          ^id(id<NSObject> element) {
++            return element;
++          })
++          ?: [NSNull null],
++      @"type" : args.type() ?: [NSNull null],
++      @"defaultValue" : args.defaultValue() ?: [NSNull null],
++      @"cancelButtonKey" : args.cancelButtonKey() ?: [NSNull null],
++      @"destructiveButtonKey" : args.destructiveButtonKey() ?: [NSNull null],
++      @"keyboardType" : args.keyboardType() ?: [NSNull null],
++     });
++    return;
++  }
++
++  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
++                                                                                message:nil
++                                                                         preferredStyle:UIAlertControllerStyleAlert];
++   
+   switch (type) {
+     case RCTAlertViewStylePlainTextInput: {
+       [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+@@ -151,7 +173,7 @@ - (void)invalidate
+     } else if ([buttonKey isEqualToString:destructiveButtonKey]) {
+       buttonStyle = UIAlertActionStyleDestructive;
+     }
+-    __weak RCTAlertController *weakAlertController = alertController;
++    __weak UIAlertController *weakAlertController = alertController;
+     [alertController
+         addAction:[UIAlertAction
+                       actionWithTitle:buttonTitle
+@@ -161,7 +183,7 @@ - (void)invalidate
+                                   case RCTAlertViewStylePlainTextInput:
+                                   case RCTAlertViewStyleSecureTextInput:
+                                     callback(@[ buttonKey, [weakAlertController.textFields.firstObject text] ]);
+-                                    [weakAlertController hide];
++                                  //  [weakAlertController hide];
+                                     break;
+                                   case RCTAlertViewStyleLoginAndPasswordInput: {
+                                     NSDictionary<NSString *, NSString *> *loginCredentials = @{
+@@ -169,12 +191,12 @@ - (void)invalidate
+                                       @"password" : [weakAlertController.textFields.lastObject text]
+                                     };
+                                     callback(@[ buttonKey, loginCredentials ]);
+-                                    [weakAlertController hide];
++                                    //[weakAlertController hide];
+                                     break;
+                                   }
+                                   case RCTAlertViewStyleDefault:
+                                     callback(@[ buttonKey ]);
+-                                    [weakAlertController hide];
++                                   // [weakAlertController hide];
+                                     break;
+                                 }
+                               }]];
+@@ -186,7 +208,7 @@ - (void)invalidate
+   [_alertControllers addObject:alertController];
+ 
+   dispatch_async(dispatch_get_main_queue(), ^{
+-    [alertController show:YES completion:nil];
++    [presentingController presentViewController:alertController animated:YES completion:nil];
+   });
+ }
+ 
+diff --git a/node_modules/react-native/React/Views/RCTView.m b/node_modules/react-native/React/Views/RCTView.m
+index c4b9a25..11a4800 100644
+--- a/node_modules/react-native/React/Views/RCTView.m
++++ b/node_modules/react-native/React/Views/RCTView.m
+@@ -809,6 +809,11 @@ - (void)displayLayer:(CALayer *)layer
+     layer.backgroundColor = backgroundColor;
+     layer.contents = nil;
+     layer.needsDisplayOnBoundsChange = NO;
++    if (@available(iOS 13.0, *)) {
++      if (layer.cornerRadius < MIN(self.bounds.size.height, self.bounds.size.width) / 2) {
++        layer.cornerCurve = kCACornerCurveContinuous;
++      }
++    }
+     layer.mask = nil;
+     return;
+   }
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ComponentDescriptors.h b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ComponentDescriptors.h
+new file mode 100644
+index 0000000..aa2cc67
+--- /dev/null
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ComponentDescriptors.h
+@@ -0,0 +1,32 @@
++
++/**
++ * Copyright (c) Facebook, Inc. and its affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @generated by codegen project: GenerateComponentDescriptorH.js
++ */
++
++#pragma once
++
++#include <react/renderer/components/rncore/ShadowNodes.h>
++#include <react/renderer/core/ConcreteComponentDescriptor.h>
++
++namespace facebook {
++namespace react {
++
++using ActivityIndicatorViewComponentDescriptor = ConcreteComponentDescriptor<ActivityIndicatorViewShadowNode>;
++using DatePickerComponentDescriptor = ConcreteComponentDescriptor<DatePickerShadowNode>;
++using AndroidDrawerLayoutComponentDescriptor = ConcreteComponentDescriptor<AndroidDrawerLayoutShadowNode>;
++using RCTMaskedViewComponentDescriptor = ConcreteComponentDescriptor<RCTMaskedViewShadowNode>;
++using RCTProgressViewComponentDescriptor = ConcreteComponentDescriptor<RCTProgressViewShadowNode>;
++using AndroidSwipeRefreshLayoutComponentDescriptor = ConcreteComponentDescriptor<AndroidSwipeRefreshLayoutShadowNode>;
++using PullToRefreshViewComponentDescriptor = ConcreteComponentDescriptor<PullToRefreshViewShadowNode>;
++using AndroidHorizontalScrollContentViewComponentDescriptor = ConcreteComponentDescriptor<AndroidHorizontalScrollContentViewShadowNode>;
++using RCTSegmentedControlComponentDescriptor = ConcreteComponentDescriptor<RCTSegmentedControlShadowNode>;
++using SwitchComponentDescriptor = ConcreteComponentDescriptor<SwitchShadowNode>;
++using UnimplementedNativeViewComponentDescriptor = ConcreteComponentDescriptor<UnimplementedNativeViewShadowNode>;
++
++} // namespace react
++} // namespace facebook
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ComponentDescriptors.h.bak b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ComponentDescriptors.h.bak
+new file mode 100644
+index 0000000..670e3c7
+--- /dev/null
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ComponentDescriptors.h.bak
+@@ -0,0 +1,32 @@
++
++/**
++ * Copyright (c) Facebook, Inc. and its affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @generated by codegen project: GenerateComponentDescriptorH.js
++ */
++
++#pragma once
++
++#include <react/renderer/components/FBReactNativeSpec/ShadowNodes.h>
++#include <react/renderer/core/ConcreteComponentDescriptor.h>
++
++namespace facebook {
++namespace react {
++
++using ActivityIndicatorViewComponentDescriptor = ConcreteComponentDescriptor<ActivityIndicatorViewShadowNode>;
++using DatePickerComponentDescriptor = ConcreteComponentDescriptor<DatePickerShadowNode>;
++using AndroidDrawerLayoutComponentDescriptor = ConcreteComponentDescriptor<AndroidDrawerLayoutShadowNode>;
++using RCTMaskedViewComponentDescriptor = ConcreteComponentDescriptor<RCTMaskedViewShadowNode>;
++using RCTProgressViewComponentDescriptor = ConcreteComponentDescriptor<RCTProgressViewShadowNode>;
++using AndroidSwipeRefreshLayoutComponentDescriptor = ConcreteComponentDescriptor<AndroidSwipeRefreshLayoutShadowNode>;
++using PullToRefreshViewComponentDescriptor = ConcreteComponentDescriptor<PullToRefreshViewShadowNode>;
++using AndroidHorizontalScrollContentViewComponentDescriptor = ConcreteComponentDescriptor<AndroidHorizontalScrollContentViewShadowNode>;
++using RCTSegmentedControlComponentDescriptor = ConcreteComponentDescriptor<RCTSegmentedControlShadowNode>;
++using SwitchComponentDescriptor = ConcreteComponentDescriptor<SwitchShadowNode>;
++using UnimplementedNativeViewComponentDescriptor = ConcreteComponentDescriptor<UnimplementedNativeViewShadowNode>;
++
++} // namespace react
++} // namespace facebook
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/rncore/EventEmitters.cpp b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/EventEmitters.cpp
+new file mode 100644
+index 0000000..b5ea483
+--- /dev/null
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/EventEmitters.cpp
+@@ -0,0 +1,149 @@
++
++/**
++ * Copyright (c) Facebook, Inc. and its affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @generated by codegen project: GenerateEventEmitterCpp.js
++ */
++
++#include <react/renderer/components/rncore/EventEmitters.h>
++
++namespace facebook {
++namespace react {
++
++
++void DatePickerEventEmitter::onChange(OnChange event) const {
++  dispatchEvent("change", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "timestamp", event.timestamp);
++    return payload;
++  });
++}
++void AndroidDrawerLayoutEventEmitter::onDrawerSlide(OnDrawerSlide event) const {
++  dispatchEvent("drawerSlide", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "offset", event.offset);
++    return payload;
++  });
++}
++void AndroidDrawerLayoutEventEmitter::onDrawerStateChanged(OnDrawerStateChanged event) const {
++  dispatchEvent("drawerStateChanged", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "drawerState", event.drawerState);
++    return payload;
++  });
++}
++void AndroidDrawerLayoutEventEmitter::onDrawerOpen(OnDrawerOpen event) const {
++  dispatchEvent("drawerOpen", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    
++    return payload;
++  });
++}
++void AndroidDrawerLayoutEventEmitter::onDrawerClose(OnDrawerClose event) const {
++  dispatchEvent("drawerClose", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    
++    return payload;
++  });
++}
++
++
++
++void AndroidSwipeRefreshLayoutEventEmitter::onRefresh(OnRefresh event) const {
++  dispatchEvent("refresh", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    
++    return payload;
++  });
++}
++void PullToRefreshViewEventEmitter::onRefresh(OnRefresh event) const {
++  dispatchEvent("refresh", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    
++    return payload;
++  });
++}
++
++
++void RCTSegmentedControlEventEmitter::onChange(OnChange event) const {
++  dispatchEvent("change", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "value", event.value);
++payload.setProperty(runtime, "selectedSegmentIndex", event.selectedSegmentIndex);
++    return payload;
++  });
++}
++void SliderEventEmitter::onChange(OnChange event) const {
++  dispatchEvent("change", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "value", event.value);
++payload.setProperty(runtime, "fromUser", event.fromUser);
++    return payload;
++  });
++}
++void SliderEventEmitter::onValueChange(OnValueChange event) const {
++  dispatchEvent("valueChange", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "value", event.value);
++payload.setProperty(runtime, "fromUser", event.fromUser);
++    return payload;
++  });
++}
++void SliderEventEmitter::onSlidingComplete(OnSlidingComplete event) const {
++  dispatchEvent("slidingComplete", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "value", event.value);
++payload.setProperty(runtime, "fromUser", event.fromUser);
++    return payload;
++  });
++}
++void AndroidSwitchEventEmitter::onChange(OnChange event) const {
++  dispatchEvent("change", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "value", event.value);
++    return payload;
++  });
++}
++void SwitchEventEmitter::onChange(OnChange event) const {
++  dispatchEvent("change", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "value", event.value);
++    return payload;
++  });
++}
++
++
++void ModalHostViewEventEmitter::onRequestClose(OnRequestClose event) const {
++  dispatchEvent("requestClose", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    
++    return payload;
++  });
++}
++void ModalHostViewEventEmitter::onShow(OnShow event) const {
++  dispatchEvent("show", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    
++    return payload;
++  });
++}
++void ModalHostViewEventEmitter::onDismiss(OnDismiss event) const {
++  dispatchEvent("dismiss", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    
++    return payload;
++  });
++}
++void ModalHostViewEventEmitter::onOrientationChange(OnOrientationChange event) const {
++  dispatchEvent("orientationChange", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "orientation", toString(event.orientation));
++    return payload;
++  });
++}
++
++} // namespace react
++} // namespace facebook
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/rncore/EventEmitters.cpp.bak b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/EventEmitters.cpp.bak
+new file mode 100644
+index 0000000..ee7153b
+--- /dev/null
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/EventEmitters.cpp.bak
+@@ -0,0 +1,149 @@
++
++/**
++ * Copyright (c) Facebook, Inc. and its affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @generated by codegen project: GenerateEventEmitterCpp.js
++ */
++
++#include <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
++
++namespace facebook {
++namespace react {
++
++
++void DatePickerEventEmitter::onChange(OnChange event) const {
++  dispatchEvent("change", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "timestamp", event.timestamp);
++    return payload;
++  });
++}
++void AndroidDrawerLayoutEventEmitter::onDrawerSlide(OnDrawerSlide event) const {
++  dispatchEvent("drawerSlide", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "offset", event.offset);
++    return payload;
++  });
++}
++void AndroidDrawerLayoutEventEmitter::onDrawerStateChanged(OnDrawerStateChanged event) const {
++  dispatchEvent("drawerStateChanged", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "drawerState", event.drawerState);
++    return payload;
++  });
++}
++void AndroidDrawerLayoutEventEmitter::onDrawerOpen(OnDrawerOpen event) const {
++  dispatchEvent("drawerOpen", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    
++    return payload;
++  });
++}
++void AndroidDrawerLayoutEventEmitter::onDrawerClose(OnDrawerClose event) const {
++  dispatchEvent("drawerClose", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    
++    return payload;
++  });
++}
++
++
++
++void AndroidSwipeRefreshLayoutEventEmitter::onRefresh(OnRefresh event) const {
++  dispatchEvent("refresh", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    
++    return payload;
++  });
++}
++void PullToRefreshViewEventEmitter::onRefresh(OnRefresh event) const {
++  dispatchEvent("refresh", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    
++    return payload;
++  });
++}
++
++
++void RCTSegmentedControlEventEmitter::onChange(OnChange event) const {
++  dispatchEvent("change", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "value", event.value);
++payload.setProperty(runtime, "selectedSegmentIndex", event.selectedSegmentIndex);
++    return payload;
++  });
++}
++void SliderEventEmitter::onChange(OnChange event) const {
++  dispatchEvent("change", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "value", event.value);
++payload.setProperty(runtime, "fromUser", event.fromUser);
++    return payload;
++  });
++}
++void SliderEventEmitter::onValueChange(OnValueChange event) const {
++  dispatchEvent("valueChange", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "value", event.value);
++payload.setProperty(runtime, "fromUser", event.fromUser);
++    return payload;
++  });
++}
++void SliderEventEmitter::onSlidingComplete(OnSlidingComplete event) const {
++  dispatchEvent("slidingComplete", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "value", event.value);
++payload.setProperty(runtime, "fromUser", event.fromUser);
++    return payload;
++  });
++}
++void AndroidSwitchEventEmitter::onChange(OnChange event) const {
++  dispatchEvent("change", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "value", event.value);
++    return payload;
++  });
++}
++void SwitchEventEmitter::onChange(OnChange event) const {
++  dispatchEvent("change", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "value", event.value);
++    return payload;
++  });
++}
++
++
++void ModalHostViewEventEmitter::onRequestClose(OnRequestClose event) const {
++  dispatchEvent("requestClose", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    
++    return payload;
++  });
++}
++void ModalHostViewEventEmitter::onShow(OnShow event) const {
++  dispatchEvent("show", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    
++    return payload;
++  });
++}
++void ModalHostViewEventEmitter::onDismiss(OnDismiss event) const {
++  dispatchEvent("dismiss", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    
++    return payload;
++  });
++}
++void ModalHostViewEventEmitter::onOrientationChange(OnOrientationChange event) const {
++  dispatchEvent("orientationChange", [event=std::move(event)](jsi::Runtime &runtime) {
++    auto payload = jsi::Object(runtime);
++    payload.setProperty(runtime, "orientation", toString(event.orientation));
++    return payload;
++  });
++}
++
++} // namespace react
++} // namespace facebook
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/rncore/EventEmitters.h b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/EventEmitters.h
+new file mode 100644
+index 0000000..e925cf9
+--- /dev/null
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/EventEmitters.h
+@@ -0,0 +1,237 @@
++
++/**
++ * Copyright (c) Facebook, Inc. and its affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @generated by codegen project: GenerateEventEmitterH.js
++ */
++#pragma once
++
++#include <react/renderer/components/view/ViewEventEmitter.h>
++
++namespace facebook {
++namespace react {
++
++class ActivityIndicatorViewEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  
++
++  
++};
++class DatePickerEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  struct OnChange {
++      Float timestamp;
++    };
++
++  void onChange(OnChange value) const;
++};
++class AndroidDrawerLayoutEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  struct OnDrawerSlide {
++      Float offset;
++    };
++
++  struct OnDrawerStateChanged {
++      int drawerState;
++    };
++
++  struct OnDrawerOpen {
++      
++    };
++
++  struct OnDrawerClose {
++      
++    };
++
++  void onDrawerSlide(OnDrawerSlide value) const;
++
++  void onDrawerStateChanged(OnDrawerStateChanged value) const;
++
++  void onDrawerOpen(OnDrawerOpen value) const;
++
++  void onDrawerClose(OnDrawerClose value) const;
++};
++class RCTMaskedViewEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  
++
++  
++};
++class AndroidProgressBarEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  
++
++  
++};
++class RCTProgressViewEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  
++
++  
++};
++class AndroidSwipeRefreshLayoutEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  struct OnRefresh {
++      
++    };
++
++  void onRefresh(OnRefresh value) const;
++};
++class PullToRefreshViewEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  struct OnRefresh {
++      
++    };
++
++  void onRefresh(OnRefresh value) const;
++};
++class SafeAreaViewEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  
++
++  
++};
++class AndroidHorizontalScrollContentViewEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  
++
++  
++};
++class RCTSegmentedControlEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  struct OnChange {
++      int value;
++    int selectedSegmentIndex;
++    };
++
++  void onChange(OnChange value) const;
++};
++class SliderEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  struct OnChange {
++      double value;
++    bool fromUser;
++    };
++
++  struct OnValueChange {
++      double value;
++    bool fromUser;
++    };
++
++  struct OnSlidingComplete {
++      double value;
++    bool fromUser;
++    };
++
++  void onChange(OnChange value) const;
++
++  void onValueChange(OnValueChange value) const;
++
++  void onSlidingComplete(OnSlidingComplete value) const;
++};
++class AndroidSwitchEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  struct OnChange {
++      bool value;
++    };
++
++  void onChange(OnChange value) const;
++};
++class SwitchEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  struct OnChange {
++      bool value;
++    };
++
++  void onChange(OnChange value) const;
++};
++class InputAccessoryEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  
++
++  
++};
++class UnimplementedNativeViewEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  
++
++  
++};
++class ModalHostViewEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  struct OnRequestClose {
++      
++    };
++
++  struct OnShow {
++      
++    };
++
++  struct OnDismiss {
++      
++    };
++
++  enum class OnOrientationChangeOrientation {
++    Portrait,
++    Landscape
++  };
++
++  static char const *toString(const OnOrientationChangeOrientation value) {
++    switch (value) {
++      case OnOrientationChangeOrientation::Portrait: return "portrait";
++      case OnOrientationChangeOrientation::Landscape: return "landscape";
++    }
++  }
++
++  struct OnOrientationChange {
++      OnOrientationChangeOrientation orientation;
++    };
++
++  void onRequestClose(OnRequestClose value) const;
++
++  void onShow(OnShow value) const;
++
++  void onDismiss(OnDismiss value) const;
++
++  void onOrientationChange(OnOrientationChange value) const;
++};
++
++} // namespace react
++} // namespace facebook
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/rncore/EventEmitters.h.bak b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/EventEmitters.h.bak
+new file mode 100644
+index 0000000..e925cf9
+--- /dev/null
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/EventEmitters.h.bak
+@@ -0,0 +1,237 @@
++
++/**
++ * Copyright (c) Facebook, Inc. and its affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @generated by codegen project: GenerateEventEmitterH.js
++ */
++#pragma once
++
++#include <react/renderer/components/view/ViewEventEmitter.h>
++
++namespace facebook {
++namespace react {
++
++class ActivityIndicatorViewEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  
++
++  
++};
++class DatePickerEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  struct OnChange {
++      Float timestamp;
++    };
++
++  void onChange(OnChange value) const;
++};
++class AndroidDrawerLayoutEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  struct OnDrawerSlide {
++      Float offset;
++    };
++
++  struct OnDrawerStateChanged {
++      int drawerState;
++    };
++
++  struct OnDrawerOpen {
++      
++    };
++
++  struct OnDrawerClose {
++      
++    };
++
++  void onDrawerSlide(OnDrawerSlide value) const;
++
++  void onDrawerStateChanged(OnDrawerStateChanged value) const;
++
++  void onDrawerOpen(OnDrawerOpen value) const;
++
++  void onDrawerClose(OnDrawerClose value) const;
++};
++class RCTMaskedViewEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  
++
++  
++};
++class AndroidProgressBarEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  
++
++  
++};
++class RCTProgressViewEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  
++
++  
++};
++class AndroidSwipeRefreshLayoutEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  struct OnRefresh {
++      
++    };
++
++  void onRefresh(OnRefresh value) const;
++};
++class PullToRefreshViewEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  struct OnRefresh {
++      
++    };
++
++  void onRefresh(OnRefresh value) const;
++};
++class SafeAreaViewEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  
++
++  
++};
++class AndroidHorizontalScrollContentViewEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  
++
++  
++};
++class RCTSegmentedControlEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  struct OnChange {
++      int value;
++    int selectedSegmentIndex;
++    };
++
++  void onChange(OnChange value) const;
++};
++class SliderEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  struct OnChange {
++      double value;
++    bool fromUser;
++    };
++
++  struct OnValueChange {
++      double value;
++    bool fromUser;
++    };
++
++  struct OnSlidingComplete {
++      double value;
++    bool fromUser;
++    };
++
++  void onChange(OnChange value) const;
++
++  void onValueChange(OnValueChange value) const;
++
++  void onSlidingComplete(OnSlidingComplete value) const;
++};
++class AndroidSwitchEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  struct OnChange {
++      bool value;
++    };
++
++  void onChange(OnChange value) const;
++};
++class SwitchEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  struct OnChange {
++      bool value;
++    };
++
++  void onChange(OnChange value) const;
++};
++class InputAccessoryEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  
++
++  
++};
++class UnimplementedNativeViewEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  
++
++  
++};
++class ModalHostViewEventEmitter : public ViewEventEmitter {
++ public:
++  using ViewEventEmitter::ViewEventEmitter;
++
++  struct OnRequestClose {
++      
++    };
++
++  struct OnShow {
++      
++    };
++
++  struct OnDismiss {
++      
++    };
++
++  enum class OnOrientationChangeOrientation {
++    Portrait,
++    Landscape
++  };
++
++  static char const *toString(const OnOrientationChangeOrientation value) {
++    switch (value) {
++      case OnOrientationChangeOrientation::Portrait: return "portrait";
++      case OnOrientationChangeOrientation::Landscape: return "landscape";
++    }
++  }
++
++  struct OnOrientationChange {
++      OnOrientationChangeOrientation orientation;
++    };
++
++  void onRequestClose(OnRequestClose value) const;
++
++  void onShow(OnShow value) const;
++
++  void onDismiss(OnDismiss value) const;
++
++  void onOrientationChange(OnOrientationChange value) const;
++};
++
++} // namespace react
++} // namespace facebook
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/rncore/Props.cpp b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/Props.cpp
+new file mode 100644
+index 0000000..808d4ce
+--- /dev/null
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/Props.cpp
+@@ -0,0 +1,200 @@
++
++/**
++ * Copyright (c) Facebook, Inc. and its affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @generated by codegen project: GeneratePropsCpp.js
++ */
++
++#include <react/renderer/components/rncore/Props.h>
++#include <react/renderer/components/image/conversions.h>
++#include <react/renderer/core/propsConversions.h>
++
++namespace facebook {
++namespace react {
++
++ActivityIndicatorViewProps::ActivityIndicatorViewProps(
++    const ActivityIndicatorViewProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    hidesWhenStopped(convertRawProp(rawProps, "hidesWhenStopped", sourceProps.hidesWhenStopped, {false})),
++    animating(convertRawProp(rawProps, "animating", sourceProps.animating, {false})),
++    color(convertRawProp(rawProps, "color", sourceProps.color, {})),
++    size(convertRawProp(rawProps, "size", sourceProps.size, {ActivityIndicatorViewSize::Small}))
++      {}
++DatePickerProps::DatePickerProps(
++    const DatePickerProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    date(convertRawProp(rawProps, "date", sourceProps.date, {0.0})),
++    initialDate(convertRawProp(rawProps, "initialDate", sourceProps.initialDate, {0.0})),
++    locale(convertRawProp(rawProps, "locale", sourceProps.locale, {})),
++    maximumDate(convertRawProp(rawProps, "maximumDate", sourceProps.maximumDate, {0.0})),
++    minimumDate(convertRawProp(rawProps, "minimumDate", sourceProps.minimumDate, {0.0})),
++    minuteInterval(convertRawProp(rawProps, "minuteInterval", sourceProps.minuteInterval, {DatePickerMinuteInterval::MinuteInterval1})),
++    mode(convertRawProp(rawProps, "mode", sourceProps.mode, {DatePickerMode::Date})),
++    timeZoneOffsetInMinutes(convertRawProp(rawProps, "timeZoneOffsetInMinutes", sourceProps.timeZoneOffsetInMinutes, {0.0})),
++    pickerStyle(convertRawProp(rawProps, "pickerStyle", sourceProps.pickerStyle, {DatePickerPickerStyle::Spinner}))
++      {}
++AndroidDrawerLayoutProps::AndroidDrawerLayoutProps(
++    const AndroidDrawerLayoutProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    keyboardDismissMode(convertRawProp(rawProps, "keyboardDismissMode", sourceProps.keyboardDismissMode, {AndroidDrawerLayoutKeyboardDismissMode::None})),
++    drawerBackgroundColor(convertRawProp(rawProps, "drawerBackgroundColor", sourceProps.drawerBackgroundColor, {})),
++    drawerPosition(convertRawProp(rawProps, "drawerPosition", sourceProps.drawerPosition, {AndroidDrawerLayoutDrawerPosition::Left})),
++    drawerWidth(convertRawProp(rawProps, "drawerWidth", sourceProps.drawerWidth, {})),
++    drawerLockMode(convertRawProp(rawProps, "drawerLockMode", sourceProps.drawerLockMode, {AndroidDrawerLayoutDrawerLockMode::Unlocked})),
++    statusBarBackgroundColor(convertRawProp(rawProps, "statusBarBackgroundColor", sourceProps.statusBarBackgroundColor, {}))
++      {}
++RCTMaskedViewProps::RCTMaskedViewProps(
++    const RCTMaskedViewProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps)
++
++    
++      {}
++AndroidProgressBarProps::AndroidProgressBarProps(
++    const AndroidProgressBarProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    styleAttr(convertRawProp(rawProps, "styleAttr", sourceProps.styleAttr, {})),
++    typeAttr(convertRawProp(rawProps, "typeAttr", sourceProps.typeAttr, {})),
++    indeterminate(convertRawProp(rawProps, "indeterminate", sourceProps.indeterminate, {false})),
++    progress(convertRawProp(rawProps, "progress", sourceProps.progress, {0.0})),
++    animating(convertRawProp(rawProps, "animating", sourceProps.animating, {true})),
++    color(convertRawProp(rawProps, "color", sourceProps.color, {})),
++    testID(convertRawProp(rawProps, "testID", sourceProps.testID, {""}))
++      {}
++RCTProgressViewProps::RCTProgressViewProps(
++    const RCTProgressViewProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    progressViewStyle(convertRawProp(rawProps, "progressViewStyle", sourceProps.progressViewStyle, {RCTProgressViewProgressViewStyle::Default})),
++    progress(convertRawProp(rawProps, "progress", sourceProps.progress, {0.0})),
++    progressTintColor(convertRawProp(rawProps, "progressTintColor", sourceProps.progressTintColor, {})),
++    trackTintColor(convertRawProp(rawProps, "trackTintColor", sourceProps.trackTintColor, {})),
++    progressImage(convertRawProp(rawProps, "progressImage", sourceProps.progressImage, {})),
++    trackImage(convertRawProp(rawProps, "trackImage", sourceProps.trackImage, {}))
++      {}
++AndroidSwipeRefreshLayoutProps::AndroidSwipeRefreshLayoutProps(
++    const AndroidSwipeRefreshLayoutProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    enabled(convertRawProp(rawProps, "enabled", sourceProps.enabled, {true})),
++    colors(convertRawProp(rawProps, "colors", sourceProps.colors, {})),
++    progressBackgroundColor(convertRawProp(rawProps, "progressBackgroundColor", sourceProps.progressBackgroundColor, {})),
++    size(convertRawProp(rawProps, "size", sourceProps.size, {AndroidSwipeRefreshLayoutSize::Default})),
++    progressViewOffset(convertRawProp(rawProps, "progressViewOffset", sourceProps.progressViewOffset, {0.0})),
++    refreshing(convertRawProp(rawProps, "refreshing", sourceProps.refreshing, {false}))
++      {}
++PullToRefreshViewProps::PullToRefreshViewProps(
++    const PullToRefreshViewProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    tintColor(convertRawProp(rawProps, "tintColor", sourceProps.tintColor, {})),
++    titleColor(convertRawProp(rawProps, "titleColor", sourceProps.titleColor, {})),
++    title(convertRawProp(rawProps, "title", sourceProps.title, {})),
++    progressViewOffset(convertRawProp(rawProps, "progressViewOffset", sourceProps.progressViewOffset, {0.0})),
++    refreshing(convertRawProp(rawProps, "refreshing", sourceProps.refreshing, {false}))
++      {}
++SafeAreaViewProps::SafeAreaViewProps(
++    const SafeAreaViewProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    emulateUnlessSupported(convertRawProp(rawProps, "emulateUnlessSupported", sourceProps.emulateUnlessSupported, {false}))
++      {}
++AndroidHorizontalScrollContentViewProps::AndroidHorizontalScrollContentViewProps(
++    const AndroidHorizontalScrollContentViewProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps)
++
++    
++      {}
++RCTSegmentedControlProps::RCTSegmentedControlProps(
++    const RCTSegmentedControlProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    values(convertRawProp(rawProps, "values", sourceProps.values, {})),
++    selectedIndex(convertRawProp(rawProps, "selectedIndex", sourceProps.selectedIndex, {0})),
++    enabled(convertRawProp(rawProps, "enabled", sourceProps.enabled, {true})),
++    tintColor(convertRawProp(rawProps, "tintColor", sourceProps.tintColor, {})),
++    textColor(convertRawProp(rawProps, "textColor", sourceProps.textColor, {})),
++    backgroundColor(convertRawProp(rawProps, "backgroundColor", sourceProps.backgroundColor, {})),
++    momentary(convertRawProp(rawProps, "momentary", sourceProps.momentary, {false}))
++      {}
++SliderProps::SliderProps(
++    const SliderProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    disabled(convertRawProp(rawProps, "disabled", sourceProps.disabled, {false})),
++    enabled(convertRawProp(rawProps, "enabled", sourceProps.enabled, {true})),
++    maximumTrackImage(convertRawProp(rawProps, "maximumTrackImage", sourceProps.maximumTrackImage, {})),
++    maximumTrackTintColor(convertRawProp(rawProps, "maximumTrackTintColor", sourceProps.maximumTrackTintColor, {})),
++    maximumValue(convertRawProp(rawProps, "maximumValue", sourceProps.maximumValue, {1.0})),
++    minimumTrackImage(convertRawProp(rawProps, "minimumTrackImage", sourceProps.minimumTrackImage, {})),
++    minimumTrackTintColor(convertRawProp(rawProps, "minimumTrackTintColor", sourceProps.minimumTrackTintColor, {})),
++    minimumValue(convertRawProp(rawProps, "minimumValue", sourceProps.minimumValue, {0.0})),
++    step(convertRawProp(rawProps, "step", sourceProps.step, {0.0})),
++    testID(convertRawProp(rawProps, "testID", sourceProps.testID, {""})),
++    thumbImage(convertRawProp(rawProps, "thumbImage", sourceProps.thumbImage, {})),
++    thumbTintColor(convertRawProp(rawProps, "thumbTintColor", sourceProps.thumbTintColor, {})),
++    trackImage(convertRawProp(rawProps, "trackImage", sourceProps.trackImage, {})),
++    value(convertRawProp(rawProps, "value", sourceProps.value, {0.0}))
++      {}
++AndroidSwitchProps::AndroidSwitchProps(
++    const AndroidSwitchProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    disabled(convertRawProp(rawProps, "disabled", sourceProps.disabled, {false})),
++    enabled(convertRawProp(rawProps, "enabled", sourceProps.enabled, {true})),
++    thumbColor(convertRawProp(rawProps, "thumbColor", sourceProps.thumbColor, {})),
++    trackColorForFalse(convertRawProp(rawProps, "trackColorForFalse", sourceProps.trackColorForFalse, {})),
++    trackColorForTrue(convertRawProp(rawProps, "trackColorForTrue", sourceProps.trackColorForTrue, {})),
++    value(convertRawProp(rawProps, "value", sourceProps.value, {false})),
++    on(convertRawProp(rawProps, "on", sourceProps.on, {false})),
++    thumbTintColor(convertRawProp(rawProps, "thumbTintColor", sourceProps.thumbTintColor, {})),
++    trackTintColor(convertRawProp(rawProps, "trackTintColor", sourceProps.trackTintColor, {}))
++      {}
++SwitchProps::SwitchProps(
++    const SwitchProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    disabled(convertRawProp(rawProps, "disabled", sourceProps.disabled, {false})),
++    value(convertRawProp(rawProps, "value", sourceProps.value, {false})),
++    tintColor(convertRawProp(rawProps, "tintColor", sourceProps.tintColor, {})),
++    onTintColor(convertRawProp(rawProps, "onTintColor", sourceProps.onTintColor, {})),
++    thumbTintColor(convertRawProp(rawProps, "thumbTintColor", sourceProps.thumbTintColor, {})),
++    thumbColor(convertRawProp(rawProps, "thumbColor", sourceProps.thumbColor, {})),
++    trackColorForFalse(convertRawProp(rawProps, "trackColorForFalse", sourceProps.trackColorForFalse, {})),
++    trackColorForTrue(convertRawProp(rawProps, "trackColorForTrue", sourceProps.trackColorForTrue, {}))
++      {}
++InputAccessoryProps::InputAccessoryProps(
++    const InputAccessoryProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    backgroundColor(convertRawProp(rawProps, "backgroundColor", sourceProps.backgroundColor, {}))
++      {}
++UnimplementedNativeViewProps::UnimplementedNativeViewProps(
++    const UnimplementedNativeViewProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    name(convertRawProp(rawProps, "name", sourceProps.name, {""}))
++      {}
++ModalHostViewProps::ModalHostViewProps(
++    const ModalHostViewProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    animationType(convertRawProp(rawProps, "animationType", sourceProps.animationType, {ModalHostViewAnimationType::None})),
++    presentationStyle(convertRawProp(rawProps, "presentationStyle", sourceProps.presentationStyle, {ModalHostViewPresentationStyle::FullScreen})),
++    transparent(convertRawProp(rawProps, "transparent", sourceProps.transparent, {false})),
++    statusBarTranslucent(convertRawProp(rawProps, "statusBarTranslucent", sourceProps.statusBarTranslucent, {false})),
++    hardwareAccelerated(convertRawProp(rawProps, "hardwareAccelerated", sourceProps.hardwareAccelerated, {false})),
++    visible(convertRawProp(rawProps, "visible", sourceProps.visible, {false})),
++    animated(convertRawProp(rawProps, "animated", sourceProps.animated, {false})),
++    supportedOrientations(convertRawProp(rawProps, "supportedOrientations", sourceProps.supportedOrientations, {static_cast<ModalHostViewSupportedOrientationsMask>(ModalHostViewSupportedOrientations::Portrait)})),
++    identifier(convertRawProp(rawProps, "identifier", sourceProps.identifier, {0}))
++      {}
++
++} // namespace react
++} // namespace facebook
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/rncore/Props.cpp.bak b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/Props.cpp.bak
+new file mode 100644
+index 0000000..fce88f7
+--- /dev/null
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/Props.cpp.bak
+@@ -0,0 +1,200 @@
++
++/**
++ * Copyright (c) Facebook, Inc. and its affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @generated by codegen project: GeneratePropsCpp.js
++ */
++
++#include <react/renderer/components/FBReactNativeSpec/Props.h>
++#include <react/renderer/components/image/conversions.h>
++#include <react/renderer/core/propsConversions.h>
++
++namespace facebook {
++namespace react {
++
++ActivityIndicatorViewProps::ActivityIndicatorViewProps(
++    const ActivityIndicatorViewProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    hidesWhenStopped(convertRawProp(rawProps, "hidesWhenStopped", sourceProps.hidesWhenStopped, {false})),
++    animating(convertRawProp(rawProps, "animating", sourceProps.animating, {false})),
++    color(convertRawProp(rawProps, "color", sourceProps.color, {})),
++    size(convertRawProp(rawProps, "size", sourceProps.size, {ActivityIndicatorViewSize::Small}))
++      {}
++DatePickerProps::DatePickerProps(
++    const DatePickerProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    date(convertRawProp(rawProps, "date", sourceProps.date, {0.0})),
++    initialDate(convertRawProp(rawProps, "initialDate", sourceProps.initialDate, {0.0})),
++    locale(convertRawProp(rawProps, "locale", sourceProps.locale, {})),
++    maximumDate(convertRawProp(rawProps, "maximumDate", sourceProps.maximumDate, {0.0})),
++    minimumDate(convertRawProp(rawProps, "minimumDate", sourceProps.minimumDate, {0.0})),
++    minuteInterval(convertRawProp(rawProps, "minuteInterval", sourceProps.minuteInterval, {DatePickerMinuteInterval::MinuteInterval1})),
++    mode(convertRawProp(rawProps, "mode", sourceProps.mode, {DatePickerMode::Date})),
++    timeZoneOffsetInMinutes(convertRawProp(rawProps, "timeZoneOffsetInMinutes", sourceProps.timeZoneOffsetInMinutes, {0.0})),
++    pickerStyle(convertRawProp(rawProps, "pickerStyle", sourceProps.pickerStyle, {DatePickerPickerStyle::Spinner}))
++      {}
++AndroidDrawerLayoutProps::AndroidDrawerLayoutProps(
++    const AndroidDrawerLayoutProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    keyboardDismissMode(convertRawProp(rawProps, "keyboardDismissMode", sourceProps.keyboardDismissMode, {AndroidDrawerLayoutKeyboardDismissMode::None})),
++    drawerBackgroundColor(convertRawProp(rawProps, "drawerBackgroundColor", sourceProps.drawerBackgroundColor, {})),
++    drawerPosition(convertRawProp(rawProps, "drawerPosition", sourceProps.drawerPosition, {AndroidDrawerLayoutDrawerPosition::Left})),
++    drawerWidth(convertRawProp(rawProps, "drawerWidth", sourceProps.drawerWidth, {})),
++    drawerLockMode(convertRawProp(rawProps, "drawerLockMode", sourceProps.drawerLockMode, {AndroidDrawerLayoutDrawerLockMode::Unlocked})),
++    statusBarBackgroundColor(convertRawProp(rawProps, "statusBarBackgroundColor", sourceProps.statusBarBackgroundColor, {}))
++      {}
++RCTMaskedViewProps::RCTMaskedViewProps(
++    const RCTMaskedViewProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps)
++
++    
++      {}
++AndroidProgressBarProps::AndroidProgressBarProps(
++    const AndroidProgressBarProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    styleAttr(convertRawProp(rawProps, "styleAttr", sourceProps.styleAttr, {})),
++    typeAttr(convertRawProp(rawProps, "typeAttr", sourceProps.typeAttr, {})),
++    indeterminate(convertRawProp(rawProps, "indeterminate", sourceProps.indeterminate, {false})),
++    progress(convertRawProp(rawProps, "progress", sourceProps.progress, {0.0})),
++    animating(convertRawProp(rawProps, "animating", sourceProps.animating, {true})),
++    color(convertRawProp(rawProps, "color", sourceProps.color, {})),
++    testID(convertRawProp(rawProps, "testID", sourceProps.testID, {""}))
++      {}
++RCTProgressViewProps::RCTProgressViewProps(
++    const RCTProgressViewProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    progressViewStyle(convertRawProp(rawProps, "progressViewStyle", sourceProps.progressViewStyle, {RCTProgressViewProgressViewStyle::Default})),
++    progress(convertRawProp(rawProps, "progress", sourceProps.progress, {0.0})),
++    progressTintColor(convertRawProp(rawProps, "progressTintColor", sourceProps.progressTintColor, {})),
++    trackTintColor(convertRawProp(rawProps, "trackTintColor", sourceProps.trackTintColor, {})),
++    progressImage(convertRawProp(rawProps, "progressImage", sourceProps.progressImage, {})),
++    trackImage(convertRawProp(rawProps, "trackImage", sourceProps.trackImage, {}))
++      {}
++AndroidSwipeRefreshLayoutProps::AndroidSwipeRefreshLayoutProps(
++    const AndroidSwipeRefreshLayoutProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    enabled(convertRawProp(rawProps, "enabled", sourceProps.enabled, {true})),
++    colors(convertRawProp(rawProps, "colors", sourceProps.colors, {})),
++    progressBackgroundColor(convertRawProp(rawProps, "progressBackgroundColor", sourceProps.progressBackgroundColor, {})),
++    size(convertRawProp(rawProps, "size", sourceProps.size, {AndroidSwipeRefreshLayoutSize::Default})),
++    progressViewOffset(convertRawProp(rawProps, "progressViewOffset", sourceProps.progressViewOffset, {0.0})),
++    refreshing(convertRawProp(rawProps, "refreshing", sourceProps.refreshing, {false}))
++      {}
++PullToRefreshViewProps::PullToRefreshViewProps(
++    const PullToRefreshViewProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    tintColor(convertRawProp(rawProps, "tintColor", sourceProps.tintColor, {})),
++    titleColor(convertRawProp(rawProps, "titleColor", sourceProps.titleColor, {})),
++    title(convertRawProp(rawProps, "title", sourceProps.title, {})),
++    progressViewOffset(convertRawProp(rawProps, "progressViewOffset", sourceProps.progressViewOffset, {0.0})),
++    refreshing(convertRawProp(rawProps, "refreshing", sourceProps.refreshing, {false}))
++      {}
++SafeAreaViewProps::SafeAreaViewProps(
++    const SafeAreaViewProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    emulateUnlessSupported(convertRawProp(rawProps, "emulateUnlessSupported", sourceProps.emulateUnlessSupported, {false}))
++      {}
++AndroidHorizontalScrollContentViewProps::AndroidHorizontalScrollContentViewProps(
++    const AndroidHorizontalScrollContentViewProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps)
++
++    
++      {}
++RCTSegmentedControlProps::RCTSegmentedControlProps(
++    const RCTSegmentedControlProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    values(convertRawProp(rawProps, "values", sourceProps.values, {})),
++    selectedIndex(convertRawProp(rawProps, "selectedIndex", sourceProps.selectedIndex, {0})),
++    enabled(convertRawProp(rawProps, "enabled", sourceProps.enabled, {true})),
++    tintColor(convertRawProp(rawProps, "tintColor", sourceProps.tintColor, {})),
++    textColor(convertRawProp(rawProps, "textColor", sourceProps.textColor, {})),
++    backgroundColor(convertRawProp(rawProps, "backgroundColor", sourceProps.backgroundColor, {})),
++    momentary(convertRawProp(rawProps, "momentary", sourceProps.momentary, {false}))
++      {}
++SliderProps::SliderProps(
++    const SliderProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    disabled(convertRawProp(rawProps, "disabled", sourceProps.disabled, {false})),
++    enabled(convertRawProp(rawProps, "enabled", sourceProps.enabled, {true})),
++    maximumTrackImage(convertRawProp(rawProps, "maximumTrackImage", sourceProps.maximumTrackImage, {})),
++    maximumTrackTintColor(convertRawProp(rawProps, "maximumTrackTintColor", sourceProps.maximumTrackTintColor, {})),
++    maximumValue(convertRawProp(rawProps, "maximumValue", sourceProps.maximumValue, {1.0})),
++    minimumTrackImage(convertRawProp(rawProps, "minimumTrackImage", sourceProps.minimumTrackImage, {})),
++    minimumTrackTintColor(convertRawProp(rawProps, "minimumTrackTintColor", sourceProps.minimumTrackTintColor, {})),
++    minimumValue(convertRawProp(rawProps, "minimumValue", sourceProps.minimumValue, {0.0})),
++    step(convertRawProp(rawProps, "step", sourceProps.step, {0.0})),
++    testID(convertRawProp(rawProps, "testID", sourceProps.testID, {""})),
++    thumbImage(convertRawProp(rawProps, "thumbImage", sourceProps.thumbImage, {})),
++    thumbTintColor(convertRawProp(rawProps, "thumbTintColor", sourceProps.thumbTintColor, {})),
++    trackImage(convertRawProp(rawProps, "trackImage", sourceProps.trackImage, {})),
++    value(convertRawProp(rawProps, "value", sourceProps.value, {0.0}))
++      {}
++AndroidSwitchProps::AndroidSwitchProps(
++    const AndroidSwitchProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    disabled(convertRawProp(rawProps, "disabled", sourceProps.disabled, {false})),
++    enabled(convertRawProp(rawProps, "enabled", sourceProps.enabled, {true})),
++    thumbColor(convertRawProp(rawProps, "thumbColor", sourceProps.thumbColor, {})),
++    trackColorForFalse(convertRawProp(rawProps, "trackColorForFalse", sourceProps.trackColorForFalse, {})),
++    trackColorForTrue(convertRawProp(rawProps, "trackColorForTrue", sourceProps.trackColorForTrue, {})),
++    value(convertRawProp(rawProps, "value", sourceProps.value, {false})),
++    on(convertRawProp(rawProps, "on", sourceProps.on, {false})),
++    thumbTintColor(convertRawProp(rawProps, "thumbTintColor", sourceProps.thumbTintColor, {})),
++    trackTintColor(convertRawProp(rawProps, "trackTintColor", sourceProps.trackTintColor, {}))
++      {}
++SwitchProps::SwitchProps(
++    const SwitchProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    disabled(convertRawProp(rawProps, "disabled", sourceProps.disabled, {false})),
++    value(convertRawProp(rawProps, "value", sourceProps.value, {false})),
++    tintColor(convertRawProp(rawProps, "tintColor", sourceProps.tintColor, {})),
++    onTintColor(convertRawProp(rawProps, "onTintColor", sourceProps.onTintColor, {})),
++    thumbTintColor(convertRawProp(rawProps, "thumbTintColor", sourceProps.thumbTintColor, {})),
++    thumbColor(convertRawProp(rawProps, "thumbColor", sourceProps.thumbColor, {})),
++    trackColorForFalse(convertRawProp(rawProps, "trackColorForFalse", sourceProps.trackColorForFalse, {})),
++    trackColorForTrue(convertRawProp(rawProps, "trackColorForTrue", sourceProps.trackColorForTrue, {}))
++      {}
++InputAccessoryProps::InputAccessoryProps(
++    const InputAccessoryProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    backgroundColor(convertRawProp(rawProps, "backgroundColor", sourceProps.backgroundColor, {}))
++      {}
++UnimplementedNativeViewProps::UnimplementedNativeViewProps(
++    const UnimplementedNativeViewProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    name(convertRawProp(rawProps, "name", sourceProps.name, {""}))
++      {}
++ModalHostViewProps::ModalHostViewProps(
++    const ModalHostViewProps &sourceProps,
++    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
++
++    animationType(convertRawProp(rawProps, "animationType", sourceProps.animationType, {ModalHostViewAnimationType::None})),
++    presentationStyle(convertRawProp(rawProps, "presentationStyle", sourceProps.presentationStyle, {ModalHostViewPresentationStyle::FullScreen})),
++    transparent(convertRawProp(rawProps, "transparent", sourceProps.transparent, {false})),
++    statusBarTranslucent(convertRawProp(rawProps, "statusBarTranslucent", sourceProps.statusBarTranslucent, {false})),
++    hardwareAccelerated(convertRawProp(rawProps, "hardwareAccelerated", sourceProps.hardwareAccelerated, {false})),
++    visible(convertRawProp(rawProps, "visible", sourceProps.visible, {false})),
++    animated(convertRawProp(rawProps, "animated", sourceProps.animated, {false})),
++    supportedOrientations(convertRawProp(rawProps, "supportedOrientations", sourceProps.supportedOrientations, {static_cast<ModalHostViewSupportedOrientationsMask>(ModalHostViewSupportedOrientations::Portrait)})),
++    identifier(convertRawProp(rawProps, "identifier", sourceProps.identifier, {0}))
++      {}
++
++} // namespace react
++} // namespace facebook
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/rncore/Props.h b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/Props.h
+new file mode 100644
+index 0000000..feac387
+--- /dev/null
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/Props.h
+@@ -0,0 +1,575 @@
++
++/**
++ * Copyright (c) Facebook, Inc. and its affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @generated by codegen project: GeneratePropsH.js
++ */
++#pragma once
++
++#include <cinttypes>
++#include <react/renderer/components/view/ViewProps.h>
++#include <react/renderer/graphics/Color.h>
++#include <react/renderer/imagemanager/primitives.h>
++#include <vector>
++
++namespace facebook {
++namespace react {
++
++enum class ActivityIndicatorViewSize { Small, Large };
++
++static inline void fromRawValue(const RawValue &value, ActivityIndicatorViewSize &result) {
++  auto string = (std::string)value;
++  if (string == "small") { result = ActivityIndicatorViewSize::Small; return; }
++  if (string == "large") { result = ActivityIndicatorViewSize::Large; return; }
++  abort();
++}
++
++static inline std::string toString(const ActivityIndicatorViewSize &value) {
++  switch (value) {
++    case ActivityIndicatorViewSize::Small: return "small";
++    case ActivityIndicatorViewSize::Large: return "large";
++  }
++}
++
++class ActivityIndicatorViewProps final : public ViewProps {
++ public:
++  ActivityIndicatorViewProps() = default;
++  ActivityIndicatorViewProps(const ActivityIndicatorViewProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  bool hidesWhenStopped{false};
++  bool animating{false};
++  SharedColor color{};
++  ActivityIndicatorViewSize size{ActivityIndicatorViewSize::Small};
++};
++
++enum class DatePickerMinuteInterval { MinuteInterval1 = 1, MinuteInterval2 = 2, MinuteInterval3 = 3, MinuteInterval4 = 4, MinuteInterval5 = 5, MinuteInterval6 = 6, MinuteInterval10 = 10, MinuteInterval12 = 12, MinuteInterval15 = 15, MinuteInterval20 = 20, MinuteInterval30 = 30 };
++
++static inline void fromRawValue(const RawValue &value, DatePickerMinuteInterval &result) {
++  assert(value.hasType<int>());
++  auto integerValue = (int)value;
++  switch (integerValue) {
++    case 1:
++      result = DatePickerMinuteInterval::MinuteInterval1;
++      return;
++    case 2:
++      result = DatePickerMinuteInterval::MinuteInterval2;
++      return;
++    case 3:
++      result = DatePickerMinuteInterval::MinuteInterval3;
++      return;
++    case 4:
++      result = DatePickerMinuteInterval::MinuteInterval4;
++      return;
++    case 5:
++      result = DatePickerMinuteInterval::MinuteInterval5;
++      return;
++    case 6:
++      result = DatePickerMinuteInterval::MinuteInterval6;
++      return;
++    case 10:
++      result = DatePickerMinuteInterval::MinuteInterval10;
++      return;
++    case 12:
++      result = DatePickerMinuteInterval::MinuteInterval12;
++      return;
++    case 15:
++      result = DatePickerMinuteInterval::MinuteInterval15;
++      return;
++    case 20:
++      result = DatePickerMinuteInterval::MinuteInterval20;
++      return;
++    case 30:
++      result = DatePickerMinuteInterval::MinuteInterval30;
++      return;
++  }
++  abort();
++}
++
++static inline std::string toString(const DatePickerMinuteInterval &value) {
++  switch (value) {
++    case DatePickerMinuteInterval::MinuteInterval1: return "1";
++    case DatePickerMinuteInterval::MinuteInterval2: return "2";
++    case DatePickerMinuteInterval::MinuteInterval3: return "3";
++    case DatePickerMinuteInterval::MinuteInterval4: return "4";
++    case DatePickerMinuteInterval::MinuteInterval5: return "5";
++    case DatePickerMinuteInterval::MinuteInterval6: return "6";
++    case DatePickerMinuteInterval::MinuteInterval10: return "10";
++    case DatePickerMinuteInterval::MinuteInterval12: return "12";
++    case DatePickerMinuteInterval::MinuteInterval15: return "15";
++    case DatePickerMinuteInterval::MinuteInterval20: return "20";
++    case DatePickerMinuteInterval::MinuteInterval30: return "30";
++  }
++}
++enum class DatePickerMode { Date, Time, Datetime };
++
++static inline void fromRawValue(const RawValue &value, DatePickerMode &result) {
++  auto string = (std::string)value;
++  if (string == "date") { result = DatePickerMode::Date; return; }
++  if (string == "time") { result = DatePickerMode::Time; return; }
++  if (string == "datetime") { result = DatePickerMode::Datetime; return; }
++  abort();
++}
++
++static inline std::string toString(const DatePickerMode &value) {
++  switch (value) {
++    case DatePickerMode::Date: return "date";
++    case DatePickerMode::Time: return "time";
++    case DatePickerMode::Datetime: return "datetime";
++  }
++}
++enum class DatePickerPickerStyle { Compact, Spinner, Inline };
++
++static inline void fromRawValue(const RawValue &value, DatePickerPickerStyle &result) {
++  auto string = (std::string)value;
++  if (string == "compact") { result = DatePickerPickerStyle::Compact; return; }
++  if (string == "spinner") { result = DatePickerPickerStyle::Spinner; return; }
++  if (string == "inline") { result = DatePickerPickerStyle::Inline; return; }
++  abort();
++}
++
++static inline std::string toString(const DatePickerPickerStyle &value) {
++  switch (value) {
++    case DatePickerPickerStyle::Compact: return "compact";
++    case DatePickerPickerStyle::Spinner: return "spinner";
++    case DatePickerPickerStyle::Inline: return "inline";
++  }
++}
++
++class DatePickerProps final : public ViewProps {
++ public:
++  DatePickerProps() = default;
++  DatePickerProps(const DatePickerProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  Float date{0.0};
++  Float initialDate{0.0};
++  std::string locale{};
++  Float maximumDate{0.0};
++  Float minimumDate{0.0};
++  DatePickerMinuteInterval minuteInterval{DatePickerMinuteInterval::MinuteInterval1};
++  DatePickerMode mode{DatePickerMode::Date};
++  Float timeZoneOffsetInMinutes{0.0};
++  DatePickerPickerStyle pickerStyle{DatePickerPickerStyle::Spinner};
++};
++
++enum class AndroidDrawerLayoutKeyboardDismissMode { None, OnDrag };
++
++static inline void fromRawValue(const RawValue &value, AndroidDrawerLayoutKeyboardDismissMode &result) {
++  auto string = (std::string)value;
++  if (string == "none") { result = AndroidDrawerLayoutKeyboardDismissMode::None; return; }
++  if (string == "on-drag") { result = AndroidDrawerLayoutKeyboardDismissMode::OnDrag; return; }
++  abort();
++}
++
++static inline std::string toString(const AndroidDrawerLayoutKeyboardDismissMode &value) {
++  switch (value) {
++    case AndroidDrawerLayoutKeyboardDismissMode::None: return "none";
++    case AndroidDrawerLayoutKeyboardDismissMode::OnDrag: return "on-drag";
++  }
++}
++enum class AndroidDrawerLayoutDrawerPosition { Left, Right };
++
++static inline void fromRawValue(const RawValue &value, AndroidDrawerLayoutDrawerPosition &result) {
++  auto string = (std::string)value;
++  if (string == "left") { result = AndroidDrawerLayoutDrawerPosition::Left; return; }
++  if (string == "right") { result = AndroidDrawerLayoutDrawerPosition::Right; return; }
++  abort();
++}
++
++static inline std::string toString(const AndroidDrawerLayoutDrawerPosition &value) {
++  switch (value) {
++    case AndroidDrawerLayoutDrawerPosition::Left: return "left";
++    case AndroidDrawerLayoutDrawerPosition::Right: return "right";
++  }
++}
++enum class AndroidDrawerLayoutDrawerLockMode { Unlocked, LockedClosed, LockedOpen };
++
++static inline void fromRawValue(const RawValue &value, AndroidDrawerLayoutDrawerLockMode &result) {
++  auto string = (std::string)value;
++  if (string == "unlocked") { result = AndroidDrawerLayoutDrawerLockMode::Unlocked; return; }
++  if (string == "locked-closed") { result = AndroidDrawerLayoutDrawerLockMode::LockedClosed; return; }
++  if (string == "locked-open") { result = AndroidDrawerLayoutDrawerLockMode::LockedOpen; return; }
++  abort();
++}
++
++static inline std::string toString(const AndroidDrawerLayoutDrawerLockMode &value) {
++  switch (value) {
++    case AndroidDrawerLayoutDrawerLockMode::Unlocked: return "unlocked";
++    case AndroidDrawerLayoutDrawerLockMode::LockedClosed: return "locked-closed";
++    case AndroidDrawerLayoutDrawerLockMode::LockedOpen: return "locked-open";
++  }
++}
++
++class AndroidDrawerLayoutProps final : public ViewProps {
++ public:
++  AndroidDrawerLayoutProps() = default;
++  AndroidDrawerLayoutProps(const AndroidDrawerLayoutProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  AndroidDrawerLayoutKeyboardDismissMode keyboardDismissMode{AndroidDrawerLayoutKeyboardDismissMode::None};
++  SharedColor drawerBackgroundColor{};
++  AndroidDrawerLayoutDrawerPosition drawerPosition{AndroidDrawerLayoutDrawerPosition::Left};
++  Float drawerWidth{};
++  AndroidDrawerLayoutDrawerLockMode drawerLockMode{AndroidDrawerLayoutDrawerLockMode::Unlocked};
++  SharedColor statusBarBackgroundColor{};
++};
++
++class RCTMaskedViewProps final : public ViewProps {
++ public:
++  RCTMaskedViewProps() = default;
++  RCTMaskedViewProps(const RCTMaskedViewProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  
++};
++
++class AndroidProgressBarProps final : public ViewProps {
++ public:
++  AndroidProgressBarProps() = default;
++  AndroidProgressBarProps(const AndroidProgressBarProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  std::string styleAttr{};
++  std::string typeAttr{};
++  bool indeterminate{false};
++  double progress{0.0};
++  bool animating{true};
++  SharedColor color{};
++  std::string testID{""};
++};
++
++enum class RCTProgressViewProgressViewStyle { Default, Bar };
++
++static inline void fromRawValue(const RawValue &value, RCTProgressViewProgressViewStyle &result) {
++  auto string = (std::string)value;
++  if (string == "default") { result = RCTProgressViewProgressViewStyle::Default; return; }
++  if (string == "bar") { result = RCTProgressViewProgressViewStyle::Bar; return; }
++  abort();
++}
++
++static inline std::string toString(const RCTProgressViewProgressViewStyle &value) {
++  switch (value) {
++    case RCTProgressViewProgressViewStyle::Default: return "default";
++    case RCTProgressViewProgressViewStyle::Bar: return "bar";
++  }
++}
++
++class RCTProgressViewProps final : public ViewProps {
++ public:
++  RCTProgressViewProps() = default;
++  RCTProgressViewProps(const RCTProgressViewProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  RCTProgressViewProgressViewStyle progressViewStyle{RCTProgressViewProgressViewStyle::Default};
++  Float progress{0.0};
++  SharedColor progressTintColor{};
++  SharedColor trackTintColor{};
++  ImageSource progressImage{};
++  ImageSource trackImage{};
++};
++
++enum class AndroidSwipeRefreshLayoutSize { Default, Large };
++
++static inline void fromRawValue(const RawValue &value, AndroidSwipeRefreshLayoutSize &result) {
++  auto string = (std::string)value;
++  if (string == "default") { result = AndroidSwipeRefreshLayoutSize::Default; return; }
++  if (string == "large") { result = AndroidSwipeRefreshLayoutSize::Large; return; }
++  abort();
++}
++
++static inline std::string toString(const AndroidSwipeRefreshLayoutSize &value) {
++  switch (value) {
++    case AndroidSwipeRefreshLayoutSize::Default: return "default";
++    case AndroidSwipeRefreshLayoutSize::Large: return "large";
++  }
++}
++
++class AndroidSwipeRefreshLayoutProps final : public ViewProps {
++ public:
++  AndroidSwipeRefreshLayoutProps() = default;
++  AndroidSwipeRefreshLayoutProps(const AndroidSwipeRefreshLayoutProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  bool enabled{true};
++  std::vector<SharedColor> colors{};
++  SharedColor progressBackgroundColor{};
++  AndroidSwipeRefreshLayoutSize size{AndroidSwipeRefreshLayoutSize::Default};
++  Float progressViewOffset{0.0};
++  bool refreshing{false};
++};
++
++class PullToRefreshViewProps final : public ViewProps {
++ public:
++  PullToRefreshViewProps() = default;
++  PullToRefreshViewProps(const PullToRefreshViewProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  SharedColor tintColor{};
++  SharedColor titleColor{};
++  std::string title{};
++  Float progressViewOffset{0.0};
++  bool refreshing{false};
++};
++
++class SafeAreaViewProps final : public ViewProps {
++ public:
++  SafeAreaViewProps() = default;
++  SafeAreaViewProps(const SafeAreaViewProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  bool emulateUnlessSupported{false};
++};
++
++class AndroidHorizontalScrollContentViewProps final : public ViewProps {
++ public:
++  AndroidHorizontalScrollContentViewProps() = default;
++  AndroidHorizontalScrollContentViewProps(const AndroidHorizontalScrollContentViewProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  
++};
++
++class RCTSegmentedControlProps final : public ViewProps {
++ public:
++  RCTSegmentedControlProps() = default;
++  RCTSegmentedControlProps(const RCTSegmentedControlProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  std::vector<std::string> values{};
++  int selectedIndex{0};
++  bool enabled{true};
++  SharedColor tintColor{};
++  SharedColor textColor{};
++  SharedColor backgroundColor{};
++  bool momentary{false};
++};
++
++class SliderProps final : public ViewProps {
++ public:
++  SliderProps() = default;
++  SliderProps(const SliderProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  bool disabled{false};
++  bool enabled{true};
++  ImageSource maximumTrackImage{};
++  SharedColor maximumTrackTintColor{};
++  double maximumValue{1.0};
++  ImageSource minimumTrackImage{};
++  SharedColor minimumTrackTintColor{};
++  double minimumValue{0.0};
++  double step{0.0};
++  std::string testID{""};
++  ImageSource thumbImage{};
++  SharedColor thumbTintColor{};
++  ImageSource trackImage{};
++  double value{0.0};
++};
++
++class AndroidSwitchProps final : public ViewProps {
++ public:
++  AndroidSwitchProps() = default;
++  AndroidSwitchProps(const AndroidSwitchProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  bool disabled{false};
++  bool enabled{true};
++  SharedColor thumbColor{};
++  SharedColor trackColorForFalse{};
++  SharedColor trackColorForTrue{};
++  bool value{false};
++  bool on{false};
++  SharedColor thumbTintColor{};
++  SharedColor trackTintColor{};
++};
++
++class SwitchProps final : public ViewProps {
++ public:
++  SwitchProps() = default;
++  SwitchProps(const SwitchProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  bool disabled{false};
++  bool value{false};
++  SharedColor tintColor{};
++  SharedColor onTintColor{};
++  SharedColor thumbTintColor{};
++  SharedColor thumbColor{};
++  SharedColor trackColorForFalse{};
++  SharedColor trackColorForTrue{};
++};
++
++class InputAccessoryProps final : public ViewProps {
++ public:
++  InputAccessoryProps() = default;
++  InputAccessoryProps(const InputAccessoryProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  SharedColor backgroundColor{};
++};
++
++class UnimplementedNativeViewProps final : public ViewProps {
++ public:
++  UnimplementedNativeViewProps() = default;
++  UnimplementedNativeViewProps(const UnimplementedNativeViewProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  std::string name{""};
++};
++
++enum class ModalHostViewAnimationType { None, Slide, Fade };
++
++static inline void fromRawValue(const RawValue &value, ModalHostViewAnimationType &result) {
++  auto string = (std::string)value;
++  if (string == "none") { result = ModalHostViewAnimationType::None; return; }
++  if (string == "slide") { result = ModalHostViewAnimationType::Slide; return; }
++  if (string == "fade") { result = ModalHostViewAnimationType::Fade; return; }
++  abort();
++}
++
++static inline std::string toString(const ModalHostViewAnimationType &value) {
++  switch (value) {
++    case ModalHostViewAnimationType::None: return "none";
++    case ModalHostViewAnimationType::Slide: return "slide";
++    case ModalHostViewAnimationType::Fade: return "fade";
++  }
++}
++enum class ModalHostViewPresentationStyle { FullScreen, PageSheet, FormSheet, OverFullScreen };
++
++static inline void fromRawValue(const RawValue &value, ModalHostViewPresentationStyle &result) {
++  auto string = (std::string)value;
++  if (string == "fullScreen") { result = ModalHostViewPresentationStyle::FullScreen; return; }
++  if (string == "pageSheet") { result = ModalHostViewPresentationStyle::PageSheet; return; }
++  if (string == "formSheet") { result = ModalHostViewPresentationStyle::FormSheet; return; }
++  if (string == "overFullScreen") { result = ModalHostViewPresentationStyle::OverFullScreen; return; }
++  abort();
++}
++
++static inline std::string toString(const ModalHostViewPresentationStyle &value) {
++  switch (value) {
++    case ModalHostViewPresentationStyle::FullScreen: return "fullScreen";
++    case ModalHostViewPresentationStyle::PageSheet: return "pageSheet";
++    case ModalHostViewPresentationStyle::FormSheet: return "formSheet";
++    case ModalHostViewPresentationStyle::OverFullScreen: return "overFullScreen";
++  }
++}
++using ModalHostViewSupportedOrientationsMask = uint32_t;
++
++enum class ModalHostViewSupportedOrientations: ModalHostViewSupportedOrientationsMask {
++  Portrait = 1 << 0,
++  PortraitUpsideDown = 1 << 1,
++  Landscape = 1 << 2,
++  LandscapeLeft = 1 << 3,
++  LandscapeRight = 1 << 4
++};
++
++constexpr bool operator&(
++  ModalHostViewSupportedOrientationsMask const lhs,
++  enum ModalHostViewSupportedOrientations const rhs) {
++  return lhs & static_cast<ModalHostViewSupportedOrientationsMask>(rhs);
++}
++
++constexpr ModalHostViewSupportedOrientationsMask operator|(
++  ModalHostViewSupportedOrientationsMask const lhs,
++  enum ModalHostViewSupportedOrientations const rhs) {
++  return lhs | static_cast<ModalHostViewSupportedOrientationsMask>(rhs);
++}
++
++constexpr void operator|=(
++  ModalHostViewSupportedOrientationsMask &lhs,
++  enum ModalHostViewSupportedOrientations const rhs) {
++  lhs = lhs | static_cast<ModalHostViewSupportedOrientationsMask>(rhs);
++}
++
++static inline void fromRawValue(const RawValue &value, ModalHostViewSupportedOrientationsMask &result) {
++  auto items = std::vector<std::string>{value};
++  for (const auto &item : items) {
++    if (item == "portrait") {
++      result |= ModalHostViewSupportedOrientations::Portrait;
++      continue;
++    }
++    if (item == "portrait-upside-down") {
++      result |= ModalHostViewSupportedOrientations::PortraitUpsideDown;
++      continue;
++    }
++    if (item == "landscape") {
++      result |= ModalHostViewSupportedOrientations::Landscape;
++      continue;
++    }
++    if (item == "landscape-left") {
++      result |= ModalHostViewSupportedOrientations::LandscapeLeft;
++      continue;
++    }
++    if (item == "landscape-right") {
++      result |= ModalHostViewSupportedOrientations::LandscapeRight;
++      continue;
++    }
++    abort();
++  }
++}
++
++static inline std::string toString(const ModalHostViewSupportedOrientationsMask &value) {
++    auto result = std::string{};
++    auto separator = std::string{", "};
++
++    if (value & ModalHostViewSupportedOrientations::Portrait) {
++      result += "portrait" + separator;
++    }
++    if (value & ModalHostViewSupportedOrientations::PortraitUpsideDown) {
++      result += "portrait-upside-down" + separator;
++    }
++    if (value & ModalHostViewSupportedOrientations::Landscape) {
++      result += "landscape" + separator;
++    }
++    if (value & ModalHostViewSupportedOrientations::LandscapeLeft) {
++      result += "landscape-left" + separator;
++    }
++    if (value & ModalHostViewSupportedOrientations::LandscapeRight) {
++      result += "landscape-right" + separator;
++    }
++    if (!result.empty()) {
++      result.erase(result.length() - separator.length());
++    }
++    return result;
++}
++
++class ModalHostViewProps final : public ViewProps {
++ public:
++  ModalHostViewProps() = default;
++  ModalHostViewProps(const ModalHostViewProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  ModalHostViewAnimationType animationType{ModalHostViewAnimationType::None};
++  ModalHostViewPresentationStyle presentationStyle{ModalHostViewPresentationStyle::FullScreen};
++  bool transparent{false};
++  bool statusBarTranslucent{false};
++  bool hardwareAccelerated{false};
++  bool visible{false};
++  bool animated{false};
++  ModalHostViewSupportedOrientationsMask supportedOrientations{static_cast<ModalHostViewSupportedOrientationsMask>(ModalHostViewSupportedOrientations::Portrait)};
++  int identifier{0};
++};
++
++} // namespace react
++} // namespace facebook
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/rncore/Props.h.bak b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/Props.h.bak
+new file mode 100644
+index 0000000..feac387
+--- /dev/null
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/Props.h.bak
+@@ -0,0 +1,575 @@
++
++/**
++ * Copyright (c) Facebook, Inc. and its affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @generated by codegen project: GeneratePropsH.js
++ */
++#pragma once
++
++#include <cinttypes>
++#include <react/renderer/components/view/ViewProps.h>
++#include <react/renderer/graphics/Color.h>
++#include <react/renderer/imagemanager/primitives.h>
++#include <vector>
++
++namespace facebook {
++namespace react {
++
++enum class ActivityIndicatorViewSize { Small, Large };
++
++static inline void fromRawValue(const RawValue &value, ActivityIndicatorViewSize &result) {
++  auto string = (std::string)value;
++  if (string == "small") { result = ActivityIndicatorViewSize::Small; return; }
++  if (string == "large") { result = ActivityIndicatorViewSize::Large; return; }
++  abort();
++}
++
++static inline std::string toString(const ActivityIndicatorViewSize &value) {
++  switch (value) {
++    case ActivityIndicatorViewSize::Small: return "small";
++    case ActivityIndicatorViewSize::Large: return "large";
++  }
++}
++
++class ActivityIndicatorViewProps final : public ViewProps {
++ public:
++  ActivityIndicatorViewProps() = default;
++  ActivityIndicatorViewProps(const ActivityIndicatorViewProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  bool hidesWhenStopped{false};
++  bool animating{false};
++  SharedColor color{};
++  ActivityIndicatorViewSize size{ActivityIndicatorViewSize::Small};
++};
++
++enum class DatePickerMinuteInterval { MinuteInterval1 = 1, MinuteInterval2 = 2, MinuteInterval3 = 3, MinuteInterval4 = 4, MinuteInterval5 = 5, MinuteInterval6 = 6, MinuteInterval10 = 10, MinuteInterval12 = 12, MinuteInterval15 = 15, MinuteInterval20 = 20, MinuteInterval30 = 30 };
++
++static inline void fromRawValue(const RawValue &value, DatePickerMinuteInterval &result) {
++  assert(value.hasType<int>());
++  auto integerValue = (int)value;
++  switch (integerValue) {
++    case 1:
++      result = DatePickerMinuteInterval::MinuteInterval1;
++      return;
++    case 2:
++      result = DatePickerMinuteInterval::MinuteInterval2;
++      return;
++    case 3:
++      result = DatePickerMinuteInterval::MinuteInterval3;
++      return;
++    case 4:
++      result = DatePickerMinuteInterval::MinuteInterval4;
++      return;
++    case 5:
++      result = DatePickerMinuteInterval::MinuteInterval5;
++      return;
++    case 6:
++      result = DatePickerMinuteInterval::MinuteInterval6;
++      return;
++    case 10:
++      result = DatePickerMinuteInterval::MinuteInterval10;
++      return;
++    case 12:
++      result = DatePickerMinuteInterval::MinuteInterval12;
++      return;
++    case 15:
++      result = DatePickerMinuteInterval::MinuteInterval15;
++      return;
++    case 20:
++      result = DatePickerMinuteInterval::MinuteInterval20;
++      return;
++    case 30:
++      result = DatePickerMinuteInterval::MinuteInterval30;
++      return;
++  }
++  abort();
++}
++
++static inline std::string toString(const DatePickerMinuteInterval &value) {
++  switch (value) {
++    case DatePickerMinuteInterval::MinuteInterval1: return "1";
++    case DatePickerMinuteInterval::MinuteInterval2: return "2";
++    case DatePickerMinuteInterval::MinuteInterval3: return "3";
++    case DatePickerMinuteInterval::MinuteInterval4: return "4";
++    case DatePickerMinuteInterval::MinuteInterval5: return "5";
++    case DatePickerMinuteInterval::MinuteInterval6: return "6";
++    case DatePickerMinuteInterval::MinuteInterval10: return "10";
++    case DatePickerMinuteInterval::MinuteInterval12: return "12";
++    case DatePickerMinuteInterval::MinuteInterval15: return "15";
++    case DatePickerMinuteInterval::MinuteInterval20: return "20";
++    case DatePickerMinuteInterval::MinuteInterval30: return "30";
++  }
++}
++enum class DatePickerMode { Date, Time, Datetime };
++
++static inline void fromRawValue(const RawValue &value, DatePickerMode &result) {
++  auto string = (std::string)value;
++  if (string == "date") { result = DatePickerMode::Date; return; }
++  if (string == "time") { result = DatePickerMode::Time; return; }
++  if (string == "datetime") { result = DatePickerMode::Datetime; return; }
++  abort();
++}
++
++static inline std::string toString(const DatePickerMode &value) {
++  switch (value) {
++    case DatePickerMode::Date: return "date";
++    case DatePickerMode::Time: return "time";
++    case DatePickerMode::Datetime: return "datetime";
++  }
++}
++enum class DatePickerPickerStyle { Compact, Spinner, Inline };
++
++static inline void fromRawValue(const RawValue &value, DatePickerPickerStyle &result) {
++  auto string = (std::string)value;
++  if (string == "compact") { result = DatePickerPickerStyle::Compact; return; }
++  if (string == "spinner") { result = DatePickerPickerStyle::Spinner; return; }
++  if (string == "inline") { result = DatePickerPickerStyle::Inline; return; }
++  abort();
++}
++
++static inline std::string toString(const DatePickerPickerStyle &value) {
++  switch (value) {
++    case DatePickerPickerStyle::Compact: return "compact";
++    case DatePickerPickerStyle::Spinner: return "spinner";
++    case DatePickerPickerStyle::Inline: return "inline";
++  }
++}
++
++class DatePickerProps final : public ViewProps {
++ public:
++  DatePickerProps() = default;
++  DatePickerProps(const DatePickerProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  Float date{0.0};
++  Float initialDate{0.0};
++  std::string locale{};
++  Float maximumDate{0.0};
++  Float minimumDate{0.0};
++  DatePickerMinuteInterval minuteInterval{DatePickerMinuteInterval::MinuteInterval1};
++  DatePickerMode mode{DatePickerMode::Date};
++  Float timeZoneOffsetInMinutes{0.0};
++  DatePickerPickerStyle pickerStyle{DatePickerPickerStyle::Spinner};
++};
++
++enum class AndroidDrawerLayoutKeyboardDismissMode { None, OnDrag };
++
++static inline void fromRawValue(const RawValue &value, AndroidDrawerLayoutKeyboardDismissMode &result) {
++  auto string = (std::string)value;
++  if (string == "none") { result = AndroidDrawerLayoutKeyboardDismissMode::None; return; }
++  if (string == "on-drag") { result = AndroidDrawerLayoutKeyboardDismissMode::OnDrag; return; }
++  abort();
++}
++
++static inline std::string toString(const AndroidDrawerLayoutKeyboardDismissMode &value) {
++  switch (value) {
++    case AndroidDrawerLayoutKeyboardDismissMode::None: return "none";
++    case AndroidDrawerLayoutKeyboardDismissMode::OnDrag: return "on-drag";
++  }
++}
++enum class AndroidDrawerLayoutDrawerPosition { Left, Right };
++
++static inline void fromRawValue(const RawValue &value, AndroidDrawerLayoutDrawerPosition &result) {
++  auto string = (std::string)value;
++  if (string == "left") { result = AndroidDrawerLayoutDrawerPosition::Left; return; }
++  if (string == "right") { result = AndroidDrawerLayoutDrawerPosition::Right; return; }
++  abort();
++}
++
++static inline std::string toString(const AndroidDrawerLayoutDrawerPosition &value) {
++  switch (value) {
++    case AndroidDrawerLayoutDrawerPosition::Left: return "left";
++    case AndroidDrawerLayoutDrawerPosition::Right: return "right";
++  }
++}
++enum class AndroidDrawerLayoutDrawerLockMode { Unlocked, LockedClosed, LockedOpen };
++
++static inline void fromRawValue(const RawValue &value, AndroidDrawerLayoutDrawerLockMode &result) {
++  auto string = (std::string)value;
++  if (string == "unlocked") { result = AndroidDrawerLayoutDrawerLockMode::Unlocked; return; }
++  if (string == "locked-closed") { result = AndroidDrawerLayoutDrawerLockMode::LockedClosed; return; }
++  if (string == "locked-open") { result = AndroidDrawerLayoutDrawerLockMode::LockedOpen; return; }
++  abort();
++}
++
++static inline std::string toString(const AndroidDrawerLayoutDrawerLockMode &value) {
++  switch (value) {
++    case AndroidDrawerLayoutDrawerLockMode::Unlocked: return "unlocked";
++    case AndroidDrawerLayoutDrawerLockMode::LockedClosed: return "locked-closed";
++    case AndroidDrawerLayoutDrawerLockMode::LockedOpen: return "locked-open";
++  }
++}
++
++class AndroidDrawerLayoutProps final : public ViewProps {
++ public:
++  AndroidDrawerLayoutProps() = default;
++  AndroidDrawerLayoutProps(const AndroidDrawerLayoutProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  AndroidDrawerLayoutKeyboardDismissMode keyboardDismissMode{AndroidDrawerLayoutKeyboardDismissMode::None};
++  SharedColor drawerBackgroundColor{};
++  AndroidDrawerLayoutDrawerPosition drawerPosition{AndroidDrawerLayoutDrawerPosition::Left};
++  Float drawerWidth{};
++  AndroidDrawerLayoutDrawerLockMode drawerLockMode{AndroidDrawerLayoutDrawerLockMode::Unlocked};
++  SharedColor statusBarBackgroundColor{};
++};
++
++class RCTMaskedViewProps final : public ViewProps {
++ public:
++  RCTMaskedViewProps() = default;
++  RCTMaskedViewProps(const RCTMaskedViewProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  
++};
++
++class AndroidProgressBarProps final : public ViewProps {
++ public:
++  AndroidProgressBarProps() = default;
++  AndroidProgressBarProps(const AndroidProgressBarProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  std::string styleAttr{};
++  std::string typeAttr{};
++  bool indeterminate{false};
++  double progress{0.0};
++  bool animating{true};
++  SharedColor color{};
++  std::string testID{""};
++};
++
++enum class RCTProgressViewProgressViewStyle { Default, Bar };
++
++static inline void fromRawValue(const RawValue &value, RCTProgressViewProgressViewStyle &result) {
++  auto string = (std::string)value;
++  if (string == "default") { result = RCTProgressViewProgressViewStyle::Default; return; }
++  if (string == "bar") { result = RCTProgressViewProgressViewStyle::Bar; return; }
++  abort();
++}
++
++static inline std::string toString(const RCTProgressViewProgressViewStyle &value) {
++  switch (value) {
++    case RCTProgressViewProgressViewStyle::Default: return "default";
++    case RCTProgressViewProgressViewStyle::Bar: return "bar";
++  }
++}
++
++class RCTProgressViewProps final : public ViewProps {
++ public:
++  RCTProgressViewProps() = default;
++  RCTProgressViewProps(const RCTProgressViewProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  RCTProgressViewProgressViewStyle progressViewStyle{RCTProgressViewProgressViewStyle::Default};
++  Float progress{0.0};
++  SharedColor progressTintColor{};
++  SharedColor trackTintColor{};
++  ImageSource progressImage{};
++  ImageSource trackImage{};
++};
++
++enum class AndroidSwipeRefreshLayoutSize { Default, Large };
++
++static inline void fromRawValue(const RawValue &value, AndroidSwipeRefreshLayoutSize &result) {
++  auto string = (std::string)value;
++  if (string == "default") { result = AndroidSwipeRefreshLayoutSize::Default; return; }
++  if (string == "large") { result = AndroidSwipeRefreshLayoutSize::Large; return; }
++  abort();
++}
++
++static inline std::string toString(const AndroidSwipeRefreshLayoutSize &value) {
++  switch (value) {
++    case AndroidSwipeRefreshLayoutSize::Default: return "default";
++    case AndroidSwipeRefreshLayoutSize::Large: return "large";
++  }
++}
++
++class AndroidSwipeRefreshLayoutProps final : public ViewProps {
++ public:
++  AndroidSwipeRefreshLayoutProps() = default;
++  AndroidSwipeRefreshLayoutProps(const AndroidSwipeRefreshLayoutProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  bool enabled{true};
++  std::vector<SharedColor> colors{};
++  SharedColor progressBackgroundColor{};
++  AndroidSwipeRefreshLayoutSize size{AndroidSwipeRefreshLayoutSize::Default};
++  Float progressViewOffset{0.0};
++  bool refreshing{false};
++};
++
++class PullToRefreshViewProps final : public ViewProps {
++ public:
++  PullToRefreshViewProps() = default;
++  PullToRefreshViewProps(const PullToRefreshViewProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  SharedColor tintColor{};
++  SharedColor titleColor{};
++  std::string title{};
++  Float progressViewOffset{0.0};
++  bool refreshing{false};
++};
++
++class SafeAreaViewProps final : public ViewProps {
++ public:
++  SafeAreaViewProps() = default;
++  SafeAreaViewProps(const SafeAreaViewProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  bool emulateUnlessSupported{false};
++};
++
++class AndroidHorizontalScrollContentViewProps final : public ViewProps {
++ public:
++  AndroidHorizontalScrollContentViewProps() = default;
++  AndroidHorizontalScrollContentViewProps(const AndroidHorizontalScrollContentViewProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  
++};
++
++class RCTSegmentedControlProps final : public ViewProps {
++ public:
++  RCTSegmentedControlProps() = default;
++  RCTSegmentedControlProps(const RCTSegmentedControlProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  std::vector<std::string> values{};
++  int selectedIndex{0};
++  bool enabled{true};
++  SharedColor tintColor{};
++  SharedColor textColor{};
++  SharedColor backgroundColor{};
++  bool momentary{false};
++};
++
++class SliderProps final : public ViewProps {
++ public:
++  SliderProps() = default;
++  SliderProps(const SliderProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  bool disabled{false};
++  bool enabled{true};
++  ImageSource maximumTrackImage{};
++  SharedColor maximumTrackTintColor{};
++  double maximumValue{1.0};
++  ImageSource minimumTrackImage{};
++  SharedColor minimumTrackTintColor{};
++  double minimumValue{0.0};
++  double step{0.0};
++  std::string testID{""};
++  ImageSource thumbImage{};
++  SharedColor thumbTintColor{};
++  ImageSource trackImage{};
++  double value{0.0};
++};
++
++class AndroidSwitchProps final : public ViewProps {
++ public:
++  AndroidSwitchProps() = default;
++  AndroidSwitchProps(const AndroidSwitchProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  bool disabled{false};
++  bool enabled{true};
++  SharedColor thumbColor{};
++  SharedColor trackColorForFalse{};
++  SharedColor trackColorForTrue{};
++  bool value{false};
++  bool on{false};
++  SharedColor thumbTintColor{};
++  SharedColor trackTintColor{};
++};
++
++class SwitchProps final : public ViewProps {
++ public:
++  SwitchProps() = default;
++  SwitchProps(const SwitchProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  bool disabled{false};
++  bool value{false};
++  SharedColor tintColor{};
++  SharedColor onTintColor{};
++  SharedColor thumbTintColor{};
++  SharedColor thumbColor{};
++  SharedColor trackColorForFalse{};
++  SharedColor trackColorForTrue{};
++};
++
++class InputAccessoryProps final : public ViewProps {
++ public:
++  InputAccessoryProps() = default;
++  InputAccessoryProps(const InputAccessoryProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  SharedColor backgroundColor{};
++};
++
++class UnimplementedNativeViewProps final : public ViewProps {
++ public:
++  UnimplementedNativeViewProps() = default;
++  UnimplementedNativeViewProps(const UnimplementedNativeViewProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  std::string name{""};
++};
++
++enum class ModalHostViewAnimationType { None, Slide, Fade };
++
++static inline void fromRawValue(const RawValue &value, ModalHostViewAnimationType &result) {
++  auto string = (std::string)value;
++  if (string == "none") { result = ModalHostViewAnimationType::None; return; }
++  if (string == "slide") { result = ModalHostViewAnimationType::Slide; return; }
++  if (string == "fade") { result = ModalHostViewAnimationType::Fade; return; }
++  abort();
++}
++
++static inline std::string toString(const ModalHostViewAnimationType &value) {
++  switch (value) {
++    case ModalHostViewAnimationType::None: return "none";
++    case ModalHostViewAnimationType::Slide: return "slide";
++    case ModalHostViewAnimationType::Fade: return "fade";
++  }
++}
++enum class ModalHostViewPresentationStyle { FullScreen, PageSheet, FormSheet, OverFullScreen };
++
++static inline void fromRawValue(const RawValue &value, ModalHostViewPresentationStyle &result) {
++  auto string = (std::string)value;
++  if (string == "fullScreen") { result = ModalHostViewPresentationStyle::FullScreen; return; }
++  if (string == "pageSheet") { result = ModalHostViewPresentationStyle::PageSheet; return; }
++  if (string == "formSheet") { result = ModalHostViewPresentationStyle::FormSheet; return; }
++  if (string == "overFullScreen") { result = ModalHostViewPresentationStyle::OverFullScreen; return; }
++  abort();
++}
++
++static inline std::string toString(const ModalHostViewPresentationStyle &value) {
++  switch (value) {
++    case ModalHostViewPresentationStyle::FullScreen: return "fullScreen";
++    case ModalHostViewPresentationStyle::PageSheet: return "pageSheet";
++    case ModalHostViewPresentationStyle::FormSheet: return "formSheet";
++    case ModalHostViewPresentationStyle::OverFullScreen: return "overFullScreen";
++  }
++}
++using ModalHostViewSupportedOrientationsMask = uint32_t;
++
++enum class ModalHostViewSupportedOrientations: ModalHostViewSupportedOrientationsMask {
++  Portrait = 1 << 0,
++  PortraitUpsideDown = 1 << 1,
++  Landscape = 1 << 2,
++  LandscapeLeft = 1 << 3,
++  LandscapeRight = 1 << 4
++};
++
++constexpr bool operator&(
++  ModalHostViewSupportedOrientationsMask const lhs,
++  enum ModalHostViewSupportedOrientations const rhs) {
++  return lhs & static_cast<ModalHostViewSupportedOrientationsMask>(rhs);
++}
++
++constexpr ModalHostViewSupportedOrientationsMask operator|(
++  ModalHostViewSupportedOrientationsMask const lhs,
++  enum ModalHostViewSupportedOrientations const rhs) {
++  return lhs | static_cast<ModalHostViewSupportedOrientationsMask>(rhs);
++}
++
++constexpr void operator|=(
++  ModalHostViewSupportedOrientationsMask &lhs,
++  enum ModalHostViewSupportedOrientations const rhs) {
++  lhs = lhs | static_cast<ModalHostViewSupportedOrientationsMask>(rhs);
++}
++
++static inline void fromRawValue(const RawValue &value, ModalHostViewSupportedOrientationsMask &result) {
++  auto items = std::vector<std::string>{value};
++  for (const auto &item : items) {
++    if (item == "portrait") {
++      result |= ModalHostViewSupportedOrientations::Portrait;
++      continue;
++    }
++    if (item == "portrait-upside-down") {
++      result |= ModalHostViewSupportedOrientations::PortraitUpsideDown;
++      continue;
++    }
++    if (item == "landscape") {
++      result |= ModalHostViewSupportedOrientations::Landscape;
++      continue;
++    }
++    if (item == "landscape-left") {
++      result |= ModalHostViewSupportedOrientations::LandscapeLeft;
++      continue;
++    }
++    if (item == "landscape-right") {
++      result |= ModalHostViewSupportedOrientations::LandscapeRight;
++      continue;
++    }
++    abort();
++  }
++}
++
++static inline std::string toString(const ModalHostViewSupportedOrientationsMask &value) {
++    auto result = std::string{};
++    auto separator = std::string{", "};
++
++    if (value & ModalHostViewSupportedOrientations::Portrait) {
++      result += "portrait" + separator;
++    }
++    if (value & ModalHostViewSupportedOrientations::PortraitUpsideDown) {
++      result += "portrait-upside-down" + separator;
++    }
++    if (value & ModalHostViewSupportedOrientations::Landscape) {
++      result += "landscape" + separator;
++    }
++    if (value & ModalHostViewSupportedOrientations::LandscapeLeft) {
++      result += "landscape-left" + separator;
++    }
++    if (value & ModalHostViewSupportedOrientations::LandscapeRight) {
++      result += "landscape-right" + separator;
++    }
++    if (!result.empty()) {
++      result.erase(result.length() - separator.length());
++    }
++    return result;
++}
++
++class ModalHostViewProps final : public ViewProps {
++ public:
++  ModalHostViewProps() = default;
++  ModalHostViewProps(const ModalHostViewProps &sourceProps, const RawProps &rawProps);
++
++#pragma mark - Props
++
++  ModalHostViewAnimationType animationType{ModalHostViewAnimationType::None};
++  ModalHostViewPresentationStyle presentationStyle{ModalHostViewPresentationStyle::FullScreen};
++  bool transparent{false};
++  bool statusBarTranslucent{false};
++  bool hardwareAccelerated{false};
++  bool visible{false};
++  bool animated{false};
++  ModalHostViewSupportedOrientationsMask supportedOrientations{static_cast<ModalHostViewSupportedOrientationsMask>(ModalHostViewSupportedOrientations::Portrait)};
++  int identifier{0};
++};
++
++} // namespace react
++} // namespace facebook
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/rncore/RCTComponentViewHelpers.h b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/RCTComponentViewHelpers.h
+new file mode 100644
+index 0000000..be95fd5
+--- /dev/null
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/RCTComponentViewHelpers.h
+@@ -0,0 +1,273 @@
++/**
++* Copyright (c) Facebook, Inc. and its affiliates.
++*
++* This source code is licensed under the MIT license found in the
++* LICENSE file in the root directory of this source tree.
++*
++* @generated by codegen project: GenerateComponentHObjCpp.js
++*/
++
++#import <Foundation/Foundation.h>
++#import <React/RCTDefines.h>
++#import <React/RCTLog.h>
++
++NS_ASSUME_NONNULL_BEGIN
++
++@protocol RCTActivityIndicatorViewViewProtocol <NSObject>
++
++@end
++
++@protocol RCTDatePickerViewProtocol <NSObject>
++- (void)setNativeDate:(float)date;
++@end
++
++RCT_EXTERN inline void RCTDatePickerHandleCommand(
++  id<RCTDatePickerViewProtocol> componentView,
++  NSString const *commandName,
++  NSArray const *args)
++{
++  if ([commandName isEqualToString:@"setNativeDate"]) {
++#if RCT_DEBUG
++  if ([args count] != 1) {
++    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"DatePicker", commandName, (int)[args count], 1);
++    return;
++  }
++#endif
++
++  NSObject *arg0 = args[0];
++#if RCT_DEBUG
++  if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @"float", @"DatePicker", commandName, @"1st")) {
++    return;
++  }
++#endif
++  float date = [(NSNumber *)arg0 floatValue];
++
++  [componentView setNativeDate:date];
++  return;
++}
++
++#if RCT_DEBUG
++  RCTLogError(@"%@ received command %@, which is not a supported command.", @"DatePicker", commandName);
++#endif
++}
++
++@protocol RCTAndroidDrawerLayoutViewProtocol <NSObject>
++- (void)openDrawer;
++- (void)closeDrawer;
++@end
++
++RCT_EXTERN inline void RCTAndroidDrawerLayoutHandleCommand(
++  id<RCTAndroidDrawerLayoutViewProtocol> componentView,
++  NSString const *commandName,
++  NSArray const *args)
++{
++  if ([commandName isEqualToString:@"openDrawer"]) {
++#if RCT_DEBUG
++  if ([args count] != 0) {
++    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"AndroidDrawerLayout", commandName, (int)[args count], 0);
++    return;
++  }
++#endif
++
++  
++
++  [componentView openDrawer];
++  return;
++}
++
++if ([commandName isEqualToString:@"closeDrawer"]) {
++#if RCT_DEBUG
++  if ([args count] != 0) {
++    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"AndroidDrawerLayout", commandName, (int)[args count], 0);
++    return;
++  }
++#endif
++
++  
++
++  [componentView closeDrawer];
++  return;
++}
++
++#if RCT_DEBUG
++  RCTLogError(@"%@ received command %@, which is not a supported command.", @"AndroidDrawerLayout", commandName);
++#endif
++}
++
++@protocol RCTRCTMaskedViewViewProtocol <NSObject>
++
++@end
++
++@protocol RCTAndroidProgressBarViewProtocol <NSObject>
++
++@end
++
++@protocol RCTRCTProgressViewViewProtocol <NSObject>
++
++@end
++
++@protocol RCTAndroidSwipeRefreshLayoutViewProtocol <NSObject>
++- (void)setNativeRefreshing:(BOOL)value;
++@end
++
++RCT_EXTERN inline void RCTAndroidSwipeRefreshLayoutHandleCommand(
++  id<RCTAndroidSwipeRefreshLayoutViewProtocol> componentView,
++  NSString const *commandName,
++  NSArray const *args)
++{
++  if ([commandName isEqualToString:@"setNativeRefreshing"]) {
++#if RCT_DEBUG
++  if ([args count] != 1) {
++    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"AndroidSwipeRefreshLayout", commandName, (int)[args count], 1);
++    return;
++  }
++#endif
++
++  NSObject *arg0 = args[0];
++#if RCT_DEBUG
++  if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @"boolean", @"AndroidSwipeRefreshLayout", commandName, @"1st")) {
++    return;
++  }
++#endif
++  BOOL value = [(NSNumber *)arg0 boolValue];
++
++  [componentView setNativeRefreshing:value];
++  return;
++}
++
++#if RCT_DEBUG
++  RCTLogError(@"%@ received command %@, which is not a supported command.", @"AndroidSwipeRefreshLayout", commandName);
++#endif
++}
++
++@protocol RCTPullToRefreshViewViewProtocol <NSObject>
++- (void)setNativeRefreshing:(BOOL)refreshing;
++@end
++
++RCT_EXTERN inline void RCTPullToRefreshViewHandleCommand(
++  id<RCTPullToRefreshViewViewProtocol> componentView,
++  NSString const *commandName,
++  NSArray const *args)
++{
++  if ([commandName isEqualToString:@"setNativeRefreshing"]) {
++#if RCT_DEBUG
++  if ([args count] != 1) {
++    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"PullToRefreshView", commandName, (int)[args count], 1);
++    return;
++  }
++#endif
++
++  NSObject *arg0 = args[0];
++#if RCT_DEBUG
++  if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @"boolean", @"PullToRefreshView", commandName, @"1st")) {
++    return;
++  }
++#endif
++  BOOL refreshing = [(NSNumber *)arg0 boolValue];
++
++  [componentView setNativeRefreshing:refreshing];
++  return;
++}
++
++#if RCT_DEBUG
++  RCTLogError(@"%@ received command %@, which is not a supported command.", @"PullToRefreshView", commandName);
++#endif
++}
++
++@protocol RCTSafeAreaViewViewProtocol <NSObject>
++
++@end
++
++@protocol RCTAndroidHorizontalScrollContentViewViewProtocol <NSObject>
++
++@end
++
++@protocol RCTRCTSegmentedControlViewProtocol <NSObject>
++
++@end
++
++@protocol RCTSliderViewProtocol <NSObject>
++
++@end
++
++@protocol RCTAndroidSwitchViewProtocol <NSObject>
++- (void)setNativeValue:(BOOL)value;
++@end
++
++RCT_EXTERN inline void RCTAndroidSwitchHandleCommand(
++  id<RCTAndroidSwitchViewProtocol> componentView,
++  NSString const *commandName,
++  NSArray const *args)
++{
++  if ([commandName isEqualToString:@"setNativeValue"]) {
++#if RCT_DEBUG
++  if ([args count] != 1) {
++    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"AndroidSwitch", commandName, (int)[args count], 1);
++    return;
++  }
++#endif
++
++  NSObject *arg0 = args[0];
++#if RCT_DEBUG
++  if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @"boolean", @"AndroidSwitch", commandName, @"1st")) {
++    return;
++  }
++#endif
++  BOOL value = [(NSNumber *)arg0 boolValue];
++
++  [componentView setNativeValue:value];
++  return;
++}
++
++#if RCT_DEBUG
++  RCTLogError(@"%@ received command %@, which is not a supported command.", @"AndroidSwitch", commandName);
++#endif
++}
++
++@protocol RCTSwitchViewProtocol <NSObject>
++- (void)setValue:(BOOL)value;
++@end
++
++RCT_EXTERN inline void RCTSwitchHandleCommand(
++  id<RCTSwitchViewProtocol> componentView,
++  NSString const *commandName,
++  NSArray const *args)
++{
++  if ([commandName isEqualToString:@"setValue"]) {
++#if RCT_DEBUG
++  if ([args count] != 1) {
++    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"Switch", commandName, (int)[args count], 1);
++    return;
++  }
++#endif
++
++  NSObject *arg0 = args[0];
++#if RCT_DEBUG
++  if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @"boolean", @"Switch", commandName, @"1st")) {
++    return;
++  }
++#endif
++  BOOL value = [(NSNumber *)arg0 boolValue];
++
++  [componentView setValue:value];
++  return;
++}
++
++#if RCT_DEBUG
++  RCTLogError(@"%@ received command %@, which is not a supported command.", @"Switch", commandName);
++#endif
++}
++
++@protocol RCTInputAccessoryViewProtocol <NSObject>
++
++@end
++
++@protocol RCTUnimplementedNativeViewViewProtocol <NSObject>
++
++@end
++
++@protocol RCTModalHostViewViewProtocol <NSObject>
++
++@end
++
++NS_ASSUME_NONNULL_END
+\ No newline at end of file
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/rncore/RCTComponentViewHelpers.h.bak b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/RCTComponentViewHelpers.h.bak
+new file mode 100644
+index 0000000..be95fd5
+--- /dev/null
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/RCTComponentViewHelpers.h.bak
+@@ -0,0 +1,273 @@
++/**
++* Copyright (c) Facebook, Inc. and its affiliates.
++*
++* This source code is licensed under the MIT license found in the
++* LICENSE file in the root directory of this source tree.
++*
++* @generated by codegen project: GenerateComponentHObjCpp.js
++*/
++
++#import <Foundation/Foundation.h>
++#import <React/RCTDefines.h>
++#import <React/RCTLog.h>
++
++NS_ASSUME_NONNULL_BEGIN
++
++@protocol RCTActivityIndicatorViewViewProtocol <NSObject>
++
++@end
++
++@protocol RCTDatePickerViewProtocol <NSObject>
++- (void)setNativeDate:(float)date;
++@end
++
++RCT_EXTERN inline void RCTDatePickerHandleCommand(
++  id<RCTDatePickerViewProtocol> componentView,
++  NSString const *commandName,
++  NSArray const *args)
++{
++  if ([commandName isEqualToString:@"setNativeDate"]) {
++#if RCT_DEBUG
++  if ([args count] != 1) {
++    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"DatePicker", commandName, (int)[args count], 1);
++    return;
++  }
++#endif
++
++  NSObject *arg0 = args[0];
++#if RCT_DEBUG
++  if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @"float", @"DatePicker", commandName, @"1st")) {
++    return;
++  }
++#endif
++  float date = [(NSNumber *)arg0 floatValue];
++
++  [componentView setNativeDate:date];
++  return;
++}
++
++#if RCT_DEBUG
++  RCTLogError(@"%@ received command %@, which is not a supported command.", @"DatePicker", commandName);
++#endif
++}
++
++@protocol RCTAndroidDrawerLayoutViewProtocol <NSObject>
++- (void)openDrawer;
++- (void)closeDrawer;
++@end
++
++RCT_EXTERN inline void RCTAndroidDrawerLayoutHandleCommand(
++  id<RCTAndroidDrawerLayoutViewProtocol> componentView,
++  NSString const *commandName,
++  NSArray const *args)
++{
++  if ([commandName isEqualToString:@"openDrawer"]) {
++#if RCT_DEBUG
++  if ([args count] != 0) {
++    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"AndroidDrawerLayout", commandName, (int)[args count], 0);
++    return;
++  }
++#endif
++
++  
++
++  [componentView openDrawer];
++  return;
++}
++
++if ([commandName isEqualToString:@"closeDrawer"]) {
++#if RCT_DEBUG
++  if ([args count] != 0) {
++    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"AndroidDrawerLayout", commandName, (int)[args count], 0);
++    return;
++  }
++#endif
++
++  
++
++  [componentView closeDrawer];
++  return;
++}
++
++#if RCT_DEBUG
++  RCTLogError(@"%@ received command %@, which is not a supported command.", @"AndroidDrawerLayout", commandName);
++#endif
++}
++
++@protocol RCTRCTMaskedViewViewProtocol <NSObject>
++
++@end
++
++@protocol RCTAndroidProgressBarViewProtocol <NSObject>
++
++@end
++
++@protocol RCTRCTProgressViewViewProtocol <NSObject>
++
++@end
++
++@protocol RCTAndroidSwipeRefreshLayoutViewProtocol <NSObject>
++- (void)setNativeRefreshing:(BOOL)value;
++@end
++
++RCT_EXTERN inline void RCTAndroidSwipeRefreshLayoutHandleCommand(
++  id<RCTAndroidSwipeRefreshLayoutViewProtocol> componentView,
++  NSString const *commandName,
++  NSArray const *args)
++{
++  if ([commandName isEqualToString:@"setNativeRefreshing"]) {
++#if RCT_DEBUG
++  if ([args count] != 1) {
++    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"AndroidSwipeRefreshLayout", commandName, (int)[args count], 1);
++    return;
++  }
++#endif
++
++  NSObject *arg0 = args[0];
++#if RCT_DEBUG
++  if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @"boolean", @"AndroidSwipeRefreshLayout", commandName, @"1st")) {
++    return;
++  }
++#endif
++  BOOL value = [(NSNumber *)arg0 boolValue];
++
++  [componentView setNativeRefreshing:value];
++  return;
++}
++
++#if RCT_DEBUG
++  RCTLogError(@"%@ received command %@, which is not a supported command.", @"AndroidSwipeRefreshLayout", commandName);
++#endif
++}
++
++@protocol RCTPullToRefreshViewViewProtocol <NSObject>
++- (void)setNativeRefreshing:(BOOL)refreshing;
++@end
++
++RCT_EXTERN inline void RCTPullToRefreshViewHandleCommand(
++  id<RCTPullToRefreshViewViewProtocol> componentView,
++  NSString const *commandName,
++  NSArray const *args)
++{
++  if ([commandName isEqualToString:@"setNativeRefreshing"]) {
++#if RCT_DEBUG
++  if ([args count] != 1) {
++    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"PullToRefreshView", commandName, (int)[args count], 1);
++    return;
++  }
++#endif
++
++  NSObject *arg0 = args[0];
++#if RCT_DEBUG
++  if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @"boolean", @"PullToRefreshView", commandName, @"1st")) {
++    return;
++  }
++#endif
++  BOOL refreshing = [(NSNumber *)arg0 boolValue];
++
++  [componentView setNativeRefreshing:refreshing];
++  return;
++}
++
++#if RCT_DEBUG
++  RCTLogError(@"%@ received command %@, which is not a supported command.", @"PullToRefreshView", commandName);
++#endif
++}
++
++@protocol RCTSafeAreaViewViewProtocol <NSObject>
++
++@end
++
++@protocol RCTAndroidHorizontalScrollContentViewViewProtocol <NSObject>
++
++@end
++
++@protocol RCTRCTSegmentedControlViewProtocol <NSObject>
++
++@end
++
++@protocol RCTSliderViewProtocol <NSObject>
++
++@end
++
++@protocol RCTAndroidSwitchViewProtocol <NSObject>
++- (void)setNativeValue:(BOOL)value;
++@end
++
++RCT_EXTERN inline void RCTAndroidSwitchHandleCommand(
++  id<RCTAndroidSwitchViewProtocol> componentView,
++  NSString const *commandName,
++  NSArray const *args)
++{
++  if ([commandName isEqualToString:@"setNativeValue"]) {
++#if RCT_DEBUG
++  if ([args count] != 1) {
++    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"AndroidSwitch", commandName, (int)[args count], 1);
++    return;
++  }
++#endif
++
++  NSObject *arg0 = args[0];
++#if RCT_DEBUG
++  if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @"boolean", @"AndroidSwitch", commandName, @"1st")) {
++    return;
++  }
++#endif
++  BOOL value = [(NSNumber *)arg0 boolValue];
++
++  [componentView setNativeValue:value];
++  return;
++}
++
++#if RCT_DEBUG
++  RCTLogError(@"%@ received command %@, which is not a supported command.", @"AndroidSwitch", commandName);
++#endif
++}
++
++@protocol RCTSwitchViewProtocol <NSObject>
++- (void)setValue:(BOOL)value;
++@end
++
++RCT_EXTERN inline void RCTSwitchHandleCommand(
++  id<RCTSwitchViewProtocol> componentView,
++  NSString const *commandName,
++  NSArray const *args)
++{
++  if ([commandName isEqualToString:@"setValue"]) {
++#if RCT_DEBUG
++  if ([args count] != 1) {
++    RCTLogError(@"%@ command %@ received %d arguments, expected %d.", @"Switch", commandName, (int)[args count], 1);
++    return;
++  }
++#endif
++
++  NSObject *arg0 = args[0];
++#if RCT_DEBUG
++  if (!RCTValidateTypeOfViewCommandArgument(arg0, [NSNumber class], @"boolean", @"Switch", commandName, @"1st")) {
++    return;
++  }
++#endif
++  BOOL value = [(NSNumber *)arg0 boolValue];
++
++  [componentView setValue:value];
++  return;
++}
++
++#if RCT_DEBUG
++  RCTLogError(@"%@ received command %@, which is not a supported command.", @"Switch", commandName);
++#endif
++}
++
++@protocol RCTInputAccessoryViewProtocol <NSObject>
++
++@end
++
++@protocol RCTUnimplementedNativeViewViewProtocol <NSObject>
++
++@end
++
++@protocol RCTModalHostViewViewProtocol <NSObject>
++
++@end
++
++NS_ASSUME_NONNULL_END
+\ No newline at end of file
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ShadowNodes.cpp b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ShadowNodes.cpp
+new file mode 100644
+index 0000000..7255b0b
+--- /dev/null
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ShadowNodes.cpp
+@@ -0,0 +1,29 @@
++
++/**
++ * Copyright (c) Facebook, Inc. and its affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @generated by codegen project: GenerateShadowNodeCpp.js
++ */
++
++#include <react/renderer/components/rncore/ShadowNodes.h>
++
++namespace facebook {
++namespace react {
++
++extern const char ActivityIndicatorViewComponentName[] = "ActivityIndicatorView";
++extern const char DatePickerComponentName[] = "DatePicker";
++extern const char AndroidDrawerLayoutComponentName[] = "AndroidDrawerLayout";
++extern const char RCTMaskedViewComponentName[] = "RCTMaskedView";
++extern const char RCTProgressViewComponentName[] = "RCTProgressView";
++extern const char AndroidSwipeRefreshLayoutComponentName[] = "AndroidSwipeRefreshLayout";
++extern const char PullToRefreshViewComponentName[] = "PullToRefreshView";
++extern const char AndroidHorizontalScrollContentViewComponentName[] = "AndroidHorizontalScrollContentView";
++extern const char RCTSegmentedControlComponentName[] = "RCTSegmentedControl";
++extern const char SwitchComponentName[] = "Switch";
++extern const char UnimplementedNativeViewComponentName[] = "UnimplementedNativeView";
++
++} // namespace react
++} // namespace facebook
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ShadowNodes.cpp.bak b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ShadowNodes.cpp.bak
+new file mode 100644
+index 0000000..c544296
+--- /dev/null
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ShadowNodes.cpp.bak
+@@ -0,0 +1,29 @@
++
++/**
++ * Copyright (c) Facebook, Inc. and its affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @generated by codegen project: GenerateShadowNodeCpp.js
++ */
++
++#include <react/renderer/components/FBReactNativeSpec/ShadowNodes.h>
++
++namespace facebook {
++namespace react {
++
++extern const char ActivityIndicatorViewComponentName[] = "ActivityIndicatorView";
++extern const char DatePickerComponentName[] = "DatePicker";
++extern const char AndroidDrawerLayoutComponentName[] = "AndroidDrawerLayout";
++extern const char RCTMaskedViewComponentName[] = "RCTMaskedView";
++extern const char RCTProgressViewComponentName[] = "RCTProgressView";
++extern const char AndroidSwipeRefreshLayoutComponentName[] = "AndroidSwipeRefreshLayout";
++extern const char PullToRefreshViewComponentName[] = "PullToRefreshView";
++extern const char AndroidHorizontalScrollContentViewComponentName[] = "AndroidHorizontalScrollContentView";
++extern const char RCTSegmentedControlComponentName[] = "RCTSegmentedControl";
++extern const char SwitchComponentName[] = "Switch";
++extern const char UnimplementedNativeViewComponentName[] = "UnimplementedNativeView";
++
++} // namespace react
++} // namespace facebook
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ShadowNodes.h b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ShadowNodes.h
+new file mode 100644
+index 0000000..37278a6
+--- /dev/null
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ShadowNodes.h
+@@ -0,0 +1,126 @@
++
++/**
++ * Copyright (c) Facebook, Inc. and its affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @generated by codegen project: GenerateShadowNodeH.js
++ */
++
++#pragma once
++
++#include <react/renderer/components/rncore/EventEmitters.h>
++#include <react/renderer/components/rncore/Props.h>
++#include <react/renderer/components/view/ConcreteViewShadowNode.h>
++
++namespace facebook {
++namespace react {
++
++extern const char ActivityIndicatorViewComponentName[];
++
++/*
++ * `ShadowNode` for <ActivityIndicatorView> component.
++ */
++using ActivityIndicatorViewShadowNode = ConcreteViewShadowNode<
++    ActivityIndicatorViewComponentName,
++    ActivityIndicatorViewProps>;
++
++extern const char DatePickerComponentName[];
++
++/*
++ * `ShadowNode` for <DatePicker> component.
++ */
++using DatePickerShadowNode = ConcreteViewShadowNode<
++    DatePickerComponentName,
++    DatePickerProps,
++DatePickerEventEmitter>;
++
++extern const char AndroidDrawerLayoutComponentName[];
++
++/*
++ * `ShadowNode` for <AndroidDrawerLayout> component.
++ */
++using AndroidDrawerLayoutShadowNode = ConcreteViewShadowNode<
++    AndroidDrawerLayoutComponentName,
++    AndroidDrawerLayoutProps,
++AndroidDrawerLayoutEventEmitter>;
++
++extern const char RCTMaskedViewComponentName[];
++
++/*
++ * `ShadowNode` for <RCTMaskedView> component.
++ */
++using RCTMaskedViewShadowNode = ConcreteViewShadowNode<
++    RCTMaskedViewComponentName,
++    RCTMaskedViewProps>;
++
++extern const char RCTProgressViewComponentName[];
++
++/*
++ * `ShadowNode` for <RCTProgressView> component.
++ */
++using RCTProgressViewShadowNode = ConcreteViewShadowNode<
++    RCTProgressViewComponentName,
++    RCTProgressViewProps>;
++
++extern const char AndroidSwipeRefreshLayoutComponentName[];
++
++/*
++ * `ShadowNode` for <AndroidSwipeRefreshLayout> component.
++ */
++using AndroidSwipeRefreshLayoutShadowNode = ConcreteViewShadowNode<
++    AndroidSwipeRefreshLayoutComponentName,
++    AndroidSwipeRefreshLayoutProps,
++AndroidSwipeRefreshLayoutEventEmitter>;
++
++extern const char PullToRefreshViewComponentName[];
++
++/*
++ * `ShadowNode` for <PullToRefreshView> component.
++ */
++using PullToRefreshViewShadowNode = ConcreteViewShadowNode<
++    PullToRefreshViewComponentName,
++    PullToRefreshViewProps,
++PullToRefreshViewEventEmitter>;
++
++extern const char AndroidHorizontalScrollContentViewComponentName[];
++
++/*
++ * `ShadowNode` for <AndroidHorizontalScrollContentView> component.
++ */
++using AndroidHorizontalScrollContentViewShadowNode = ConcreteViewShadowNode<
++    AndroidHorizontalScrollContentViewComponentName,
++    AndroidHorizontalScrollContentViewProps>;
++
++extern const char RCTSegmentedControlComponentName[];
++
++/*
++ * `ShadowNode` for <RCTSegmentedControl> component.
++ */
++using RCTSegmentedControlShadowNode = ConcreteViewShadowNode<
++    RCTSegmentedControlComponentName,
++    RCTSegmentedControlProps,
++RCTSegmentedControlEventEmitter>;
++
++extern const char SwitchComponentName[];
++
++/*
++ * `ShadowNode` for <Switch> component.
++ */
++using SwitchShadowNode = ConcreteViewShadowNode<
++    SwitchComponentName,
++    SwitchProps,
++SwitchEventEmitter>;
++
++extern const char UnimplementedNativeViewComponentName[];
++
++/*
++ * `ShadowNode` for <UnimplementedNativeView> component.
++ */
++using UnimplementedNativeViewShadowNode = ConcreteViewShadowNode<
++    UnimplementedNativeViewComponentName,
++    UnimplementedNativeViewProps>;
++
++} // namespace react
++} // namespace facebook
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ShadowNodes.h.bak b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ShadowNodes.h.bak
+new file mode 100644
+index 0000000..402f10a
+--- /dev/null
++++ b/node_modules/react-native/ReactCommon/react/renderer/components/rncore/ShadowNodes.h.bak
+@@ -0,0 +1,126 @@
++
++/**
++ * Copyright (c) Facebook, Inc. and its affiliates.
++ *
++ * This source code is licensed under the MIT license found in the
++ * LICENSE file in the root directory of this source tree.
++ *
++ * @generated by codegen project: GenerateShadowNodeH.js
++ */
++
++#pragma once
++
++#include <react/renderer/components/FBReactNativeSpec/EventEmitters.h>
++#include <react/renderer/components/FBReactNativeSpec/Props.h>
++#include <react/renderer/components/view/ConcreteViewShadowNode.h>
++
++namespace facebook {
++namespace react {
++
++extern const char ActivityIndicatorViewComponentName[];
++
++/*
++ * `ShadowNode` for <ActivityIndicatorView> component.
++ */
++using ActivityIndicatorViewShadowNode = ConcreteViewShadowNode<
++    ActivityIndicatorViewComponentName,
++    ActivityIndicatorViewProps>;
++
++extern const char DatePickerComponentName[];
++
++/*
++ * `ShadowNode` for <DatePicker> component.
++ */
++using DatePickerShadowNode = ConcreteViewShadowNode<
++    DatePickerComponentName,
++    DatePickerProps,
++DatePickerEventEmitter>;
++
++extern const char AndroidDrawerLayoutComponentName[];
++
++/*
++ * `ShadowNode` for <AndroidDrawerLayout> component.
++ */
++using AndroidDrawerLayoutShadowNode = ConcreteViewShadowNode<
++    AndroidDrawerLayoutComponentName,
++    AndroidDrawerLayoutProps,
++AndroidDrawerLayoutEventEmitter>;
++
++extern const char RCTMaskedViewComponentName[];
++
++/*
++ * `ShadowNode` for <RCTMaskedView> component.
++ */
++using RCTMaskedViewShadowNode = ConcreteViewShadowNode<
++    RCTMaskedViewComponentName,
++    RCTMaskedViewProps>;
++
++extern const char RCTProgressViewComponentName[];
++
++/*
++ * `ShadowNode` for <RCTProgressView> component.
++ */
++using RCTProgressViewShadowNode = ConcreteViewShadowNode<
++    RCTProgressViewComponentName,
++    RCTProgressViewProps>;
++
++extern const char AndroidSwipeRefreshLayoutComponentName[];
++
++/*
++ * `ShadowNode` for <AndroidSwipeRefreshLayout> component.
++ */
++using AndroidSwipeRefreshLayoutShadowNode = ConcreteViewShadowNode<
++    AndroidSwipeRefreshLayoutComponentName,
++    AndroidSwipeRefreshLayoutProps,
++AndroidSwipeRefreshLayoutEventEmitter>;
++
++extern const char PullToRefreshViewComponentName[];
++
++/*
++ * `ShadowNode` for <PullToRefreshView> component.
++ */
++using PullToRefreshViewShadowNode = ConcreteViewShadowNode<
++    PullToRefreshViewComponentName,
++    PullToRefreshViewProps,
++PullToRefreshViewEventEmitter>;
++
++extern const char AndroidHorizontalScrollContentViewComponentName[];
++
++/*
++ * `ShadowNode` for <AndroidHorizontalScrollContentView> component.
++ */
++using AndroidHorizontalScrollContentViewShadowNode = ConcreteViewShadowNode<
++    AndroidHorizontalScrollContentViewComponentName,
++    AndroidHorizontalScrollContentViewProps>;
++
++extern const char RCTSegmentedControlComponentName[];
++
++/*
++ * `ShadowNode` for <RCTSegmentedControl> component.
++ */
++using RCTSegmentedControlShadowNode = ConcreteViewShadowNode<
++    RCTSegmentedControlComponentName,
++    RCTSegmentedControlProps,
++RCTSegmentedControlEventEmitter>;
++
++extern const char SwitchComponentName[];
++
++/*
++ * `ShadowNode` for <Switch> component.
++ */
++using SwitchShadowNode = ConcreteViewShadowNode<
++    SwitchComponentName,
++    SwitchProps,
++SwitchEventEmitter>;
++
++extern const char UnimplementedNativeViewComponentName[];
++
++/*
++ * `ShadowNode` for <UnimplementedNativeView> component.
++ */
++using UnimplementedNativeViewShadowNode = ConcreteViewShadowNode<
++    UnimplementedNativeViewComponentName,
++    UnimplementedNativeViewProps>;
++
++} // namespace react
++} // namespace facebook
