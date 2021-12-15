@@ -38,7 +38,7 @@ const GweiStepButton = ({
     <StepButtonWrapper
       onLongPress={onLongPress}
       onLongPressEnded={onLongPressEnded}
-      onPressStart={onPress}
+      onPress={onPress}
       shouldLongPressEndPress={shouldLongPressEndPress}
       useLateHaptic={false}
     >
@@ -91,14 +91,16 @@ export default function FeesGweiInput({
   }, [onLongPressLoop]);
 
   const onPlusLongPress = useCallback(() => {
+    onPlusPress();
     setActionType(PLUS_ACTION_TYPE);
     onLongPress();
-  }, [onLongPress]);
+  }, [onLongPress, onPlusPress]);
 
   const onMinusLongPress = useCallback(() => {
+    onMinusPress();
     setActionType(MINUS_ACTION_TYPE);
     onLongPress();
-  }, [onLongPress]);
+  }, [onLongPress, onMinusPress]);
 
   const onInputPress = useCallback(() => {
     inputRef?.current?.focus();
