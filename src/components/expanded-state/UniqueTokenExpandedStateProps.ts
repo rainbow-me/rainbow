@@ -25,7 +25,7 @@ interface UniqueTokenExpandedStateAsset {
   familyImage: string;
   id: string;
   image_url: string;
-  isPoap: boolean;
+  isPoap?: boolean;
   isSendable: boolean;
   lastPrice?: string;
   name: string;
@@ -35,6 +35,6 @@ interface UniqueTokenExpandedStateAsset {
     value: string;
   }[];
   external_link: string;
-  uniqueId: string;
+  uniqueId: number;
   urlSuffixForAsset: string;
 }
