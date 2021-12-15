@@ -15,6 +15,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import styled from 'styled-components';
+import URL from 'url-parse';
 import useWallets from '../../hooks/useWallets';
 import { lightModeThemeColors } from '../../styles/colors';
 import Link from '../Link';
@@ -43,6 +44,7 @@ import {
   Heading,
   Inset,
   MarkdownText,
+  MarkdownTextProps,
   Row,
   Space,
   Stack,
@@ -146,16 +148,57 @@ const Section = ({
   </Stack>
 );
 
-const Markdown = ({ children }: { children: string }) => (
-  <MarkdownText
-    color={textColor}
-    listSpace={listSpace}
-    paragraphSpace={paragraphSpace}
-    size={textSize}
-  >
-    {children}
-  </MarkdownText>
-);
+// External link warnings will be skipped for these common domains
+const trustedLinkDomains = [
+  'discord.com',
+  'discord.gg',
+  'etherscan.io',
+  'foundation.app',
+  'instagram.com',
+  'opensea.io',
+  'rainbow.me',
+  'rarible.com',
+  'twitter.com',
+  'zora.co',
+];
+
+const Markdown = ({
+  children,
+}: {
+  children: MarkdownTextProps['children'];
+}) => {
+  const { navigate } = useNavigation();
+  const handleLinkPress = useCallback(
+    (url: string) => {
+      const { hostname: linkHostname } = new URL(url);
+
+      if (
+        trustedLinkDomains.some(
+          trustedLinkDomain =>
+            linkHostname === trustedLinkDomain ||
+            linkHostname.endsWith(`.${trustedLinkDomain}`)
+        )
+      ) {
+        Linking.openURL(url);
+      } else {
+        navigate(Routes.EXTERNAL_LINK_WARNING_SHEET, { url });
+      }
+    },
+    [navigate]
+  );
+
+  return (
+    <MarkdownText
+      color={textColor}
+      handleLinkPress={handleLinkPress}
+      listSpace={listSpace}
+      paragraphSpace={paragraphSpace}
+      size={textSize}
+    >
+      {children}
+    </MarkdownText>
+  );
+};
 
 const UniqueTokenExpandedState = ({
   asset,

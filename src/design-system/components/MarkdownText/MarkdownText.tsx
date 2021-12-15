@@ -123,6 +123,7 @@ export type MarkdownTextProps = {
   heading2Color?: TextProps['color'];
   paragraphSpace: Space;
   listSpace: Space;
+  handleLinkPress?: (url: string) => void;
 };
 
 /**
@@ -131,12 +132,13 @@ export type MarkdownTextProps = {
  */
 export const MarkdownText = memo(function MarkdownText({
   children,
-  paragraphSpace = defaultProps.paragraphSpace,
-  listSpace = defaultProps.listSpace,
-  size = defaultProps.size,
   color,
+  handleLinkPress,
   heading1Color: heading1ColorProp,
   heading2Color: heading2ColorProp,
+  listSpace = defaultProps.listSpace,
+  paragraphSpace = defaultProps.paragraphSpace,
+  size = defaultProps.size,
 }: MarkdownTextProps) {
   const heading1Color = heading1ColorProp ?? color;
   const heading2Color = heading2ColorProp ?? heading1ColorProp ?? color;
@@ -242,7 +244,11 @@ export const MarkdownText = memo(function MarkdownText({
       ),
       hr: () => null, // Not currently supported
       link: ({ key, attributes }, children) => (
-        <TextLink key={key} url={attributes.href}>
+        <TextLink
+          handleLinkPress={handleLinkPress}
+          key={key}
+          url={attributes.href}
+        >
           {children}
         </TextLink>
       ),
