@@ -2,8 +2,7 @@ import { useCallback } from 'react';
 import { Linking } from 'react-native';
 import URL from 'url-parse';
 import { useNavigation } from './Navigation';
-// @ts-expect-error
-import Routes from './Routes';
+import Routes from './routesNames';
 
 // External link warnings will be skipped for these domains
 const trustedLinkDomains = [
