@@ -20,7 +20,7 @@ const Label = styled(ChartYLabel)`
   ${android &&
   `margin-top: -30;
      margin-bottom: -30;
-     width: 160px;
+     width: 240px;
      `}
 `;
 
