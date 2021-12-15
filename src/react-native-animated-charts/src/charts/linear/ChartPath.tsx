@@ -333,11 +333,9 @@ export const ChartPath = React.memo(
       [width, height, hapticsEnabled, hitSlop, timingFeedbackConfig]
     );
 
-    const pathAnimatedStyles = useAnimatedStyle(() => {
-      return {
+    const pathAnimatedStyles = useAnimatedStyle(() => ({
         opacity: pathOpacity.value * (1 - selectedOpacity) + selectedOpacity,
-      };
-    }, []);
+    }))
 
     return (
       <View style={{ height, width }}>
