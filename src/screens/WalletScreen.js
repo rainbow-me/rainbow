@@ -167,7 +167,7 @@ export default function WalletScreen() {
       loadGlobalLateData();
       initializeDiscoverData();
     }
-  }, [loadGlobalLateData, initializeDiscoverData, walletReady]);
+  }, [assetsSocket, initializeDiscoverData, loadGlobalLateData, walletReady]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
