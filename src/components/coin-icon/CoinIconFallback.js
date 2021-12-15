@@ -2,12 +2,14 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
+import EthIcon from '@rainbow-me/assets/eth-icon.png';
 import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
 import { ImageWithCachedMetadata } from '@rainbow-me/images';
 import { borders, fonts, position, shadow } from '@rainbow-me/styles';
 import {
   FallbackIcon,
   getUrlForTrustIconFallback,
+  isETH,
   magicMemo,
 } from '@rainbow-me/utils';
 
@@ -77,6 +79,9 @@ const CoinIconFallback = fallbackProps => {
     address,
   ]);
 
+  const eth = isETH(address);
+  const url = eth ? EthIcon : imageUrl;
+
   return (
     <Centered height={height} width={width}>
       {!showImage && (
@@ -91,7 +96,7 @@ const CoinIconFallback = fallbackProps => {
       <FallbackImageElement
         {...fallbackProps}
         color={fallbackIconColor}
-        imageUrl={imageUrl}
+        imageUrl={url}
         onError={hideFallbackImage}
         onLoad={showFallbackImage}
         showImage={showImage}
