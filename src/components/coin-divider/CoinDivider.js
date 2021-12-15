@@ -7,11 +7,12 @@ import { Row, RowWithMargins } from '../layout';
 import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 import CoinDividerEditButton from './CoinDividerEditButton';
 import CoinDividerOpenButton from './CoinDividerOpenButton';
-import EditOptions from '@rainbow-me/helpers/editOptionTypes';
+import EditAction from '@rainbow-me/helpers/EditAction';
 import {
   useAccountSettings,
   useCoinListEdited,
   useCoinListEditOptions,
+  useCoinListFinishEditingOptions,
   useDimensions,
   useOpenSmallBalances,
 } from '@rainbow-me/hooks';
@@ -19,6 +20,7 @@ import { emitChartsRequest } from '@rainbow-me/redux/explorer';
 import { padding } from '@rainbow-me/styles';
 
 export const CoinDividerHeight = 30;
+export const CoinDividerContainerHeight = CoinDividerHeight + 11;
 
 const Container = styled(Row).attrs({
   align: 'center',
@@ -27,7 +29,7 @@ const Container = styled(Row).attrs({
   ${padding(5, 19, 6)};
   background-color: ${({ isSticky, theme: { colors } }) =>
     isSticky ? colors.white : colors.transparent};
-  height: ${CoinDividerHeight + 11};
+  height: ${CoinDividerContainerHeight};
   width: ${({ deviceWidth }) => deviceWidth};
 `;
 
@@ -47,7 +49,7 @@ const EditButtonWrapper = styled(Row).attrs({
   right: 0;
 `;
 
-export default function CoinDivider({ balancesSum, isSticky, onEndEdit }) {
+export default function CoinDivider({ balancesSum, isSticky = false }) {
   const { nativeCurrency } = useAccountSettings();
   const dispatch = useDispatch();
   const assets = useSelector(({ data: { assets } }) => assets);
@@ -55,15 +57,15 @@ export default function CoinDivider({ balancesSum, isSticky, onEndEdit }) {
   const [fetchedCharts, setFetchedCharts] = useState(false);
   const { width: deviceWidth } = useDimensions();
 
+  const { clearSelectedCoins } = useCoinListEditOptions();
+
   const {
-    clearSelectedCoins,
     currentAction,
     setHiddenCoins,
-    setIsCoinListEdited,
     setPinnedCoins,
-  } = useCoinListEditOptions();
+  } = useCoinListFinishEditingOptions();
 
-  const { isCoinListEdited } = useCoinListEdited();
+  const { isCoinListEdited, setIsCoinListEdited } = useCoinListEdited();
 
   const {
     isSmallBalancesOpen,
@@ -85,17 +87,12 @@ export default function CoinDivider({ balancesSum, isSticky, onEndEdit }) {
   ]);
 
   const handlePressEdit = useCallback(() => {
-    if (isCoinListEdited && onEndEdit) {
-      onEndEdit();
-    }
-    setIsCoinListEdited(!isCoinListEdited);
+    setIsCoinListEdited(prev => !prev);
+    clearSelectedCoins();
     LayoutAnimation.configureNext(
       LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
     );
-  }, [isCoinListEdited, onEndEdit, setIsCoinListEdited]);
-
-  // Clear CoinListEditOptions selection queue on unmount.
-  useEffect(() => () => clearSelectedCoins(), [clearSelectedCoins]);
+  }, [clearSelectedCoins, setIsCoinListEdited]);
 
   return (
     <Container deviceWidth={deviceWidth} isSticky={isSticky}>
@@ -110,18 +107,18 @@ export default function CoinDivider({ balancesSum, isSticky, onEndEdit }) {
         </View>
         <CoinDividerButtonRow isCoinListEdited={isCoinListEdited}>
           <CoinDividerEditButton
-            isActive={currentAction !== EditOptions.none}
+            isActive={currentAction !== EditAction.none}
             isVisible={isCoinListEdited}
             onPress={setPinnedCoins}
             shouldReloadList
-            text={currentAction === EditOptions.unpin ? 'Unpin' : 'Pin'}
+            text={currentAction === EditAction.unpin ? 'Unpin' : 'Pin'}
           />
           <CoinDividerEditButton
-            isActive={currentAction !== EditOptions.none}
+            isActive={currentAction !== EditAction.none}
             isVisible={isCoinListEdited}
             onPress={setHiddenCoins}
             shouldReloadList
-            text={currentAction === EditOptions.unhide ? 'Unhide' : 'Hide'}
+            text={currentAction === EditAction.unhide ? 'Unhide' : 'Hide'}
           />
         </CoinDividerButtonRow>
       </Row>

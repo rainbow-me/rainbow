@@ -110,7 +110,7 @@ const Tag = ({ color, disableMenu, slug, text, title, ...props }) => {
         }
       }
     );
-  }, []);
+  }, [slug, text, title]);
 
   return (
     <ContextMenuButton

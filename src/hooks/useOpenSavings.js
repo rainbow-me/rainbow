@@ -1,18 +1,16 @@
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setOpenSavings } from '../redux/openStateSettings';
+import { useMMKVBoolean } from 'react-native-mmkv';
+import useAccountSettings from './useAccountSettings';
 
 export default function useOpenSavings() {
-  const dispatch = useDispatch();
-
-  const isSavingsOpen = useSelector(
-    ({ openStateSettings: { openSavings } }) => openSavings
+  const { accountAddress } = useAccountSettings();
+  const [isSavingsOpen, setIsSavingsOpen] = useMMKVBoolean(
+    'savings-open-' + accountAddress
   );
 
-  const toggleOpenSavings = useCallback(
-    () => dispatch(setOpenSavings(!isSavingsOpen)),
-    [dispatch, isSavingsOpen]
-  );
+  const toggleOpenSavings = useCallback(() => setIsSavingsOpen(prev => !prev), [
+    setIsSavingsOpen,
+  ]);
 
   return {
     isSavingsOpen,

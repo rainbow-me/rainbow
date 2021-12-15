@@ -20,7 +20,7 @@ import {
   SendSavingsCoinRow,
 } from '../coin-row';
 import { Centered } from '../layout';
-import SavingsListHeader from '../savings/SavingsListHeader';
+import { SavingsListHeader } from '../savings';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { ImgixImage } from '@rainbow-me/images';
 

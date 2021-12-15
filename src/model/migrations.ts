@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
 import { findKey, isNumber, keys, uniq } from 'lodash';
+import { MMKV } from 'react-native-mmkv';
 import { removeLocal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import {
@@ -33,6 +34,7 @@ import {
   DEFAULT_WALLET_NAME,
   loadAddress,
   RainbowAccount,
+  RainbowWallet,
   saveAddress,
 } from './wallet';
 import { isL2Asset } from '@rainbow-me/handlers/assets';
@@ -63,6 +65,7 @@ export default async function runMigrations() {
   // get current version
   const currentVersion = Number(await getMigrationVersion());
   const migrations = [];
+  const mmkv = new MMKV();
 
   /*
    *************** Migration v0 ******************
@@ -483,9 +486,11 @@ export default async function runMigrations() {
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
       for (let x = 0; x < wallet.addresses.length; x++) {
         const { address } = wallet.addresses[x];
+
         const assets = await getAssets(address, network);
         const hiddenCoins = await getHiddenCoins(address, network);
         const pinnedCoins = await getPinnedCoins(address, network);
+
         logger.log(JSON.stringify({ pinnedCoins }, null, 2));
         logger.log(JSON.stringify({ hiddenCoins }, null, 2));
 
@@ -566,6 +571,28 @@ export default async function runMigrations() {
   };
 
   migrations.push(v13);
+
+  /*
+   *************** Migration v14 ******************
+   * Migrates from local storage to mmkv
+   * for hidden coins, pinned coins, savings toggle, and open families
+   */
+  const v14 = async () => {
+    const { network } = store.getState().settings;
+    const { wallets } = store.getState().wallets;
+    if (!wallets) return;
+    for (let wallet of Object.values(wallets)) {
+      for (let address of (wallet as RainbowWallet).addresses) {
+        const hiddenCoins = await getHiddenCoins(address, network);
+        const pinnedCoins = await getPinnedCoins(address, network);
+
+        mmkv.set('pinned-coins-' + address, JSON.stringify(pinnedCoins));
+        mmkv.set('hidden-coins-' + address, JSON.stringify(hiddenCoins));
+      }
+    }
+  };
+
+  migrations.push(v14);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
