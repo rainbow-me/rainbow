@@ -15,7 +15,6 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import styled from 'styled-components';
-import URL from 'url-parse';
 import useWallets from '../../hooks/useWallets';
 import { lightModeThemeColors } from '../../styles/colors';
 import Link from '../Link';
@@ -62,7 +61,7 @@ import {
   useShowcaseTokens,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { useNavigation } from '@rainbow-me/navigation';
+import { useNavigation, useUntrustedLinkHandler } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
@@ -148,49 +147,17 @@ const Section = ({
   </Stack>
 );
 
-// External link warnings will be skipped for these common domains
-const trustedLinkDomains = [
-  'discord.com',
-  'discord.gg',
-  'etherscan.io',
-  'foundation.app',
-  'instagram.com',
-  'opensea.io',
-  'rainbow.me',
-  'rarible.com',
-  'twitter.com',
-  'zora.co',
-];
-
 const Markdown = ({
   children,
 }: {
   children: MarkdownTextProps['children'];
 }) => {
-  const { navigate } = useNavigation();
-  const handleLinkPress = useCallback(
-    (url: string) => {
-      const { hostname: linkHostname } = new URL(url);
-
-      if (
-        trustedLinkDomains.some(
-          trustedLinkDomain =>
-            linkHostname === trustedLinkDomain ||
-            linkHostname.endsWith(`.${trustedLinkDomain}`)
-        )
-      ) {
-        Linking.openURL(url);
-      } else {
-        navigate(Routes.EXTERNAL_LINK_WARNING_SHEET, { url });
-      }
-    },
-    [navigate]
-  );
+  const untrustedLinkHandler = useUntrustedLinkHandler();
 
   return (
     <MarkdownText
       color={textColor}
-      handleLinkPress={handleLinkPress}
+      handleLinkPress={untrustedLinkHandler}
       listSpace={listSpace}
       paragraphSpace={paragraphSpace}
       size={textSize}
