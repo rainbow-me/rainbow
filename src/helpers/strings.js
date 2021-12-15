@@ -1,4 +1,4 @@
-import { memoFn } from '@rainbow-me/utils';
+import { memoFn } from '../utils/memoFn';
 /**
  * @desc subtracts two numbers
  * @param  {String}   str

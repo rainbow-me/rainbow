@@ -1,5 +1,5 @@
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
-import { memoFn } from '@rainbow-me/utils';
+import { memoFn } from '../utils/memoFn';
 
 export const bigNumberFormat = memoFn((num, nativeCurrency, skipDecimals) => {
   let ret;

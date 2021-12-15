@@ -1,4 +1,5 @@
-import { gasUtils, memoFn } from '@rainbow-me/utils';
+import { gasUtils } from '@rainbow-me/utils';
+import { memoFn } from '../utils/memoFn';
 
 const { GasTrends } = gasUtils;
 const { FALLING, NO_TREND, RISING, STABLE, SURGING } = GasTrends;
