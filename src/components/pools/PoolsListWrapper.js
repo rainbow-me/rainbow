@@ -2,7 +2,7 @@ import { map } from 'lodash';
 import React, { Fragment } from 'react';
 import { OpacityToggler } from '../animations';
 import { UniswapInvestmentRow } from '../investment-cards';
-import SavingsListHeader from '../savings/SavingsListHeader';
+import { SavingsListHeader } from '../savings';
 import { useOpenInvestmentCards } from '@rainbow-me/hooks';
 
 const renderInvestmentsListRow = item => (

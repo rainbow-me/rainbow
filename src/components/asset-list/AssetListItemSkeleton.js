@@ -21,8 +21,10 @@ const { block, cond, set, startClock, stopClock } = Animated;
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
+export const AssetListItemSkeletonHeight = CoinRowHeight;
+
 const Container = styled.View`
-  height: ${CoinRowHeight};
+  height: ${AssetListItemSkeletonHeight};
   opacity: ${({ descendingOpacity, index }) =>
     1 - 0.2 * (descendingOpacity ? index : 0)};
   width: 100%;
