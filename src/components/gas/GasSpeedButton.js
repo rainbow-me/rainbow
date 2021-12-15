@@ -87,8 +87,7 @@ const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
   justifyContent: 'center',
 })`
-  ${({ marginBottom }) =>
-    margin(android ? 8 : 18, 0, android ? 8 : marginBottom)};
+  ${({ marginBottom }) => margin(18, 0, marginBottom)};
   ${({ horizontalPadding }) => padding(0, horizontalPadding)};
   width: 100%;
 `;
@@ -515,7 +514,7 @@ const GasSpeedButton = ({
           scaleTo={0.9}
           testID="estimated-fee-label"
         >
-          <Row>
+          <Row style={{ top: android ? 8 : 0 }}>
             <NativeCoinIconWrapper>
               <CoinIcon
                 address={nativeFeeCurrency.address}

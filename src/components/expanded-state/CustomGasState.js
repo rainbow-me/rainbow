@@ -1,5 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import styled from 'styled-components';
 import Divider from '../Divider';
 import { ExchangeHeader } from '../exchange';
@@ -56,7 +57,9 @@ export default function CustomGasState({ asset }) {
   useAndroidDisableGesturesOnFocus();
 
   const sheetHeightWithoutKeyboard =
-    CONTENT_HEIGHT + FOOTER_HEIGHT + (android ? 10 : 0);
+    CONTENT_HEIGHT +
+    FOOTER_HEIGHT +
+    (android ? 40 + getSoftMenuBarHeight() : 0);
 
   const sheetHeightWithKeyboard =
     sheetHeightWithoutKeyboard +

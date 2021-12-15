@@ -741,7 +741,11 @@ export default function FeesPanel({
       </PanelRow>
 
       <MiddlePanelRow>
-        <ColumnWithMargins height={40} justify="center" margin={3}>
+        <ColumnWithMargins
+          height={40}
+          justify="center"
+          margin={android ? -4 : 3}
+        >
           {renderRowLabel(
             'Max base fee',
             'maxBaseFee',
@@ -765,7 +769,11 @@ export default function FeesPanel({
       </MiddlePanelRow>
 
       <MiddlePanelRow>
-        <ColumnWithMargins height={40} justify="center" margin={3}>
+        <ColumnWithMargins
+          height={40}
+          justify="center"
+          margin={android ? -4 : 3}
+        >
           {renderRowLabel(
             'Miner tip',
             `minerTip`,
