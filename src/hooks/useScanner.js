@@ -4,7 +4,6 @@ import lang from 'i18n-js';
 import qs from 'qs';
 import { useCallback, useEffect, useState } from 'react';
 import { InteractionManager } from 'react-native';
-import { PERMISSIONS, request } from 'react-native-permissions';
 import URL from 'url-parse';
 import { Alert } from '../components/alerts';
 import { checkPushNotificationPermissions } from '../model/firebase';
@@ -19,7 +18,6 @@ import { addressUtils, ethereumUtils, haptics } from '@rainbow-me/utils';
 import logger from 'logger';
 
 function useScannerState(enabled) {
-  const [isCameraAuthorized, setIsCameraAuthorized] = useState(true);
   const [isScanningEnabled, setIsScanningEnabled] = useState(enabled);
   const wasEnabled = usePrevious(enabled);
 
@@ -40,34 +38,14 @@ function useScannerState(enabled) {
   }, [enabled]);
 
   useEffect(() => {
-    if (enabled && !wasEnabled && ios) {
-      request(PERMISSIONS.IOS.CAMERA)
-        .then(permission => {
-          const result = permission === 'granted';
-          if (isCameraAuthorized !== result) {
-            setIsCameraAuthorized(result);
-          }
-        })
-        .catch(e => {
-          logger.log('ERROR REQUESTING CAM PERMISSION', e);
-        });
-
-      if (!isScanningEnabled) {
-        enableScanning();
-      }
+    if (enabled && !wasEnabled && !isScanningEnabled) {
+      enableScanning();
     }
-  }, [
-    enabled,
-    enableScanning,
-    isCameraAuthorized,
-    isScanningEnabled,
-    wasEnabled,
-  ]);
+  }, [enabled, enableScanning, isScanningEnabled, wasEnabled]);
 
   return {
     disableScanning,
     enableScanning,
-    isCameraAuthorized,
     isScanningEnabled,
   };
 }
