@@ -353,6 +353,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
                 accounts: [accountAddress],
                 chainId: numericChainId,
               });
+              dispatch(setWalletConnector(walletConnector));
               saveWalletConnectSession(
                 walletConnector.peerId,
                 walletConnector.session
