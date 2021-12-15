@@ -470,8 +470,9 @@ const GasSpeedButton = ({
     const gasOptions = speeds || GasSpeedOrder;
     const currentSpeedIndex = gasOptions?.indexOf(selectedGasFeeOption);
     // If the option isn't available anymore, we need to reset it
+    // take the first speed or normal by default
     if (currentSpeedIndex === -1) {
-      handlePressSpeedOption(NORMAL);
+      handlePressSpeedOption(gasOptions?.[0] || NORMAL);
     }
   }, [handlePressSpeedOption, speeds, selectedGasFeeOption, isL2]);
 
