@@ -1,4 +1,5 @@
 import { globalStyle } from '@vanilla-extract/css';
+import { colorModeVars } from '../system/colorModes.css';
 
 globalStyle('*', {
   boxSizing: 'border-box',
@@ -6,8 +7,8 @@ globalStyle('*', {
 });
 
 globalStyle('html, body', {
-  backgroundColor: '#e9f2ff',
-  color: 'rgb(60, 66, 66)',
+  backgroundColor: colorModeVars.backgroundColors.body,
+  color: colorModeVars.textColors.primary,
   fontFamily:
     "'SFRounded', ui-rounded, 'SF Pro Rounded', system-ui, 'Helvetica Neue', Arial, Helvetica, sans-serif",
   margin: 0,

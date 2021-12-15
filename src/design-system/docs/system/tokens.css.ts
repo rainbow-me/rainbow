@@ -1,7 +1,9 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
-import merge from 'lodash/merge';
-import { palettes } from '../../color/palettes';
-import { typeHierarchy as appTypeHierarchy } from '../../typography/typeHierarchy';
+import {
+  foregroundColors,
+  backgroundColors as rootBackgroundColors,
+} from '../../color/palettes';
+import { typeHierarchy } from './typography.css';
 
 export const space = {
   none: '0', // eslint-disable-line prettier/prettier
@@ -37,44 +39,41 @@ export const negativeSpace = {
 export type NegativeSpace = keyof typeof negativeSpace;
 
 export const textColors = {
-  white: 'white',
-  action: palettes.light.foregroundColors.action,
-  actionShade: '#024397',
-  primary: palettes.light.foregroundColors.primary,
-  secondary: palettes.light.foregroundColors.secondary60,
+  action: foregroundColors.action,
+  actionShade: {
+    light: '#024397',
+    dark: (foregroundColors.primary as any).dark,
+  },
+  primary: foregroundColors.primary,
+  secondary: foregroundColors.secondary60,
 };
 
 export type TextColor = keyof typeof textColors;
 
 export const backgroundColors = {
-  docs: '#e9f2ff',
-  primaryTint: '#d6dfea',
-  actionTint: '#c7e0ff',
-  action: palettes.light.backgroundColors.action.color,
-  bodyDark: palettes.dark.backgroundColors.body.color,
+  bodyTint: { light: 'rgba(0, 0, 0, 0.05)', dark: 'rgba(255, 255, 255, 0.05)' },
+  body: {
+    light: '#e9f2ff',
+    dark: (rootBackgroundColors.body as any).dark.color,
+  },
+  actionTint: { light: '#c7e0ff', dark: '#162544' },
+  action: (rootBackgroundColors.action as any).color,
 };
 
-export const fontWeight = {
-  regular: 400,
-  medium: 500,
-  semibold: 600,
-  bold: 700,
-  heavy: 800,
+export const fontSizes = [
+  ...Object.keys(typeHierarchy.heading),
+  ...Object.keys(typeHierarchy.text),
+] as (keyof typeof typeHierarchy.heading | keyof typeof typeHierarchy.text)[];
+
+export const fontWeights = {
+  regular: '400',
+  medium: '500',
+  semibold: '600',
+  bold: '700',
+  heavy: '800',
 } as const;
 
-export type FontWeight = keyof typeof fontWeight;
-
-const docsTypeHierarchy = {
-  heading: {
-    '32px': {
-      fontSize: 32,
-      letterSpacing: 0.6,
-      lineHeight: 36,
-    },
-  },
-} as const;
-
-export const typeHierarchy = merge(appTypeHierarchy, docsTypeHierarchy);
+export type FontWeight = keyof typeof fontWeights;
 
 export const radii = {
   '4px': '4px',

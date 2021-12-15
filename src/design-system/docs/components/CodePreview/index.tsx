@@ -33,20 +33,20 @@ export const CodePreview = ({
     <Stack space="16px">
       <div
         className={sprinkles({
+          backgroundColor: 'bodyTint',
           borderRadius: '16px',
           padding: '24px',
         })}
-        style={{
-          backgroundColor: 'rgba(0, 0, 0, 0.05)',
-        }}
       >
         <div
           className={sprinkles({
             borderRadius: '16px',
+            ...(showFrame
+              ? {
+                  backgroundColor: 'body',
+                }
+              : {}),
           })}
-          style={
-            showFrame ? { backgroundColor: 'rgba(255, 255, 255, 0.5)' } : {}
-          }
         >
           {element}
         </div>

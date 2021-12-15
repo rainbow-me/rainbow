@@ -16,7 +16,7 @@ export const DocsAccordion = ({
     <Stack space="16px">
       <button
         className={sprinkles({
-          backgroundColor: 'docs',
+          backgroundColor: 'body',
           marginLeft: '-32px',
           paddingVertical: '8px',
           position: 'sticky',

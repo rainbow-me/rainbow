@@ -1,9 +1,13 @@
 import '../styles/fonts.css';
-import '../styles/globals.css';
+import '../system/globals.css';
 import '../shims';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import React from 'react';
+
+import { ColorModeProvider as NativeColorModeProvider } from '../../color/ColorMode';
+import { ColorModeProvider, ColorModeToggle } from '../system/ColorMode';
+import { sprinkles } from '../system/sprinkles.css';
 
 function App({ Component, pageProps }: AppProps) {
   return (
@@ -12,7 +16,16 @@ function App({ Component, pageProps }: AppProps) {
         <title>Rainbow Design System Cheat Sheet</title>
         <link href="/favicon.ico" rel="icon" />
       </Head>
-      <Component {...pageProps} />
+      <ColorModeProvider>
+        {colorMode => (
+          <NativeColorModeProvider value={colorMode}>
+            <div className={sprinkles({ visibility: { collapsed: 'hidden' } })}>
+              <ColorModeToggle />
+            </div>
+            <Component {...pageProps} />
+          </NativeColorModeProvider>
+        )}
+      </ColorModeProvider>
     </>
   );
 }

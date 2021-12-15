@@ -1,14 +1,8 @@
 import { createSprinkles, defineProperties } from '@vanilla-extract/sprinkles';
 
-import {
-  backgroundColors,
-  fontWeight,
-  negativeSpace,
-  radii,
-  space,
-  textColors,
-  typeHierarchy,
-} from './tokens.css';
+import { colorModeVars, dark } from './colorModes.css';
+import { fontWeights, negativeSpace, radii, space } from './tokens.css';
+import { typeHierarchy } from './typography.css';
 
 const properties = defineProperties({
   properties: {
@@ -17,16 +11,13 @@ const properties = defineProperties({
       center: 'center',
       top: 'flex-start',
     },
-    backgroundColor: backgroundColors,
     borderBottomLeftRadius: radii,
     borderBottomRightRadius: radii,
-    borderColor: textColors,
     borderStyle: ['solid'],
     borderTopLeftRadius: radii,
     borderTopRightRadius: radii,
     borderWidth: ['1px'],
     bottom: space,
-    color: textColors,
     display: ['flex'],
     flexBasis: [0] as const,
     flexDirection: ['row', 'column'],
@@ -35,8 +26,11 @@ const properties = defineProperties({
     fontSize: [
       ...Object.keys(typeHierarchy.heading),
       ...Object.keys(typeHierarchy.text),
-    ],
-    fontWeight,
+    ] as (
+      | keyof typeof typeHierarchy.heading
+      | keyof typeof typeHierarchy.text
+    )[],
+    fontWeight: fontWeights,
     gap: space,
     height: ['100%'],
     justifyContent: {
@@ -53,7 +47,7 @@ const properties = defineProperties({
     paddingLeft: space,
     paddingRight: space,
     paddingTop: space,
-    position: ['absolute', 'relative', 'sticky'],
+    position: ['absolute', 'relative', 'sticky', 'fixed'],
     right: space,
     top: space,
     width: ['100%'],
@@ -86,4 +80,33 @@ const pseudoProperties = defineProperties({
   },
 });
 
-export const sprinkles = createSprinkles(properties, pseudoProperties);
+const colorModeProperties = defineProperties({
+  conditions: {
+    darkMode: { selector: `.${dark} &` },
+    lightMode: {},
+  },
+  defaultCondition: 'lightMode',
+  properties: {
+    backgroundColor: colorModeVars.backgroundColors,
+    borderColor: colorModeVars.textColors,
+    color: colorModeVars.textColors,
+  },
+});
+
+const responsiveProperties = defineProperties({
+  conditions: {
+    collapsed: { '@media': 'screen and (max-width: 840px)' },
+    default: {},
+  },
+  defaultCondition: 'default',
+  properties: {
+    visibility: ['visible', 'hidden'],
+  },
+});
+
+export const sprinkles = createSprinkles(
+  properties,
+  colorModeProperties,
+  pseudoProperties,
+  responsiveProperties
+);
