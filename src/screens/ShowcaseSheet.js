@@ -5,12 +5,12 @@ import styled from 'styled-components';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { AssetList } from '../components/asset-list';
 import { ShowcaseContext } from '../components/showcase/ShowcaseHeader';
+import { CollectibleTokenFamily } from '../components/token-family';
 import { PREFS_ENDPOINT } from '../model/preferences';
 import { rainbowFetch } from '../rainbow-fetch';
 import { ModalContext } from '../react-native-cool-modals/NativeStackView';
 import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { buildUniqueTokenList } from '@rainbow-me/helpers/assets';
-import { tokenFamilyItem } from '@rainbow-me/helpers/buildWalletSections';
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { fetchUniqueTokens } from '@rainbow-me/redux/uniqueTokens';
 
@@ -38,6 +38,10 @@ const LoadingWrapper = styled.View`
   justify-content: center;
   width: 100%;
 `;
+
+const tokenFamilyItem = item => (
+  <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />
+);
 
 export default function ShowcaseScreen() {
   const { params: { address: addressOrDomain } = {} } = useRoute();
