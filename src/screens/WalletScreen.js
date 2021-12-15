@@ -23,7 +23,6 @@ import {
   useAccountSettings,
   useCoinListEdited,
   useInitializeDiscoverData,
-  useInitializeProfileData,
   useInitializeWallet,
   useLoadGlobalLateData,
   usePortfolios,
@@ -72,7 +71,6 @@ export default function WalletScreen() {
   const { portfolios, trackPortfolios } = usePortfolios();
   const loadGlobalLateData = useLoadGlobalLateData();
   const initializeDiscoverData = useInitializeDiscoverData();
-  const initializeProfileData = useInitializeProfileData();
 
   const {
     isWalletEthZero,
@@ -108,11 +106,15 @@ export default function WalletScreen() {
   }, [dispatch, refetchSavings, shouldRefetchSavings]);
 
   useEffect(() => {
-    if (!initialized || (params?.emptyWallet && initialized)) {
-      // We run the migrations only once on app launch
-      initializeWallet(null, null, null, !params?.emptyWallet);
+    const initializeAndSetParams = async () => {
+      await initializeWallet(null, null, null, !params?.emptyWallet);
       setInitialized(true);
       setParams({ emptyWallet: false });
+    };
+
+    if (!initialized || (params?.emptyWallet && initialized)) {
+      // We run the migrations only once on app launch
+      initializeAndSetParams();
     }
   }, [initializeWallet, initialized, params, setParams]);
 
@@ -163,15 +165,9 @@ export default function WalletScreen() {
       InteractionManager.runAfterInteractions(() => {
         loadGlobalLateData();
         initializeDiscoverData();
-        initializeProfileData();
       });
     }
-  }, [
-    loadGlobalLateData,
-    initializeDiscoverData,
-    initializeProfileData,
-    initialized,
-  ]);
+  }, [loadGlobalLateData, initializeDiscoverData, initialized]);
 
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
