@@ -1,6 +1,5 @@
 package com.swmansion.gesturehandler.react;
 import android.content.Context;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.animation.Animation;
 import android.view.animation.Interpolator;
