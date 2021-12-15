@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Image } from 'react-native';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
@@ -42,6 +43,7 @@ function WrappedFallbackImage({
   shadowOpacity,
   showImage,
   size,
+  eth,
   ...props
 }) {
   const { colors } = useTheme();
@@ -55,6 +57,8 @@ function WrappedFallbackImage({
       style={{ overflow: 'hidden' }}
     >
       <FallbackImage
+        as={eth && Image}
+        source={EthIcon}
         {...props}
         overlayColor={color || colors.dark}
         shadowOpacity={shadowOpacity}
@@ -80,7 +84,6 @@ const CoinIconFallback = fallbackProps => {
   ]);
 
   const eth = isETH(address);
-  const url = eth ? EthIcon : imageUrl;
 
   return (
     <Centered height={height} width={width}>
@@ -96,7 +99,8 @@ const CoinIconFallback = fallbackProps => {
       <FallbackImageElement
         {...fallbackProps}
         color={fallbackIconColor}
-        imageUrl={url}
+        eth={eth}
+        imageUrl={imageUrl}
         onError={hideFallbackImage}
         onLoad={showFallbackImage}
         showImage={showImage}
