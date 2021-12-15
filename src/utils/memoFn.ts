@@ -59,7 +59,7 @@ export function memoFn<TArgs extends unknown[], TReturn extends unknown>(
       }
     }
 
-    const key = `key ${args.join(' , ')}`;
+    const key = `key ${args.join(' ~ ')}`;
 
     if (cache.has(key)) {
       // For debugging
