@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { memoFn } from '@rainbow-me/utils';
+import { memoFn } from '../utils/memoFn';
 
 const STABLECOINS = ['DAI', 'USDC', 'USDT'];
 const APPROX_BLOCK_TIME = 15;
