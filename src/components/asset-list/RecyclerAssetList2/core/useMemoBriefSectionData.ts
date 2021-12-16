@@ -44,7 +44,8 @@ export default function useMemoBriefSectionData() {
 
         if (
           data.type === CellType.COIN &&
-          hiddenCoins.includes((data as CoinExtraData).uniqueId)
+          hiddenCoins.includes((data as CoinExtraData).uniqueId) &&
+          !isCoinListEdited
         ) {
           return false;
         }
