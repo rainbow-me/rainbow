@@ -1,5 +1,10 @@
 import { useDeepCompareMemo } from 'use-deep-compare';
-import { CellType, CoinExtraData, NFTFamilyExtraData } from './ViewTypes';
+import {
+  BaseCellSuccinctType,
+  CellType,
+  CoinExtraData,
+  NFTFamilyExtraData,
+} from './ViewTypes';
 import {
   useCoinListEdited,
   useCoinListEditOptions,
@@ -22,6 +27,7 @@ export default function useMemoBriefSectionData() {
   const result = useDeepCompareMemo(() => {
     let afterDivider = false;
     let isGroupOpen = true;
+    let isAnySmallBalance = false;
     const stickyHeaders = [];
     let index = 0;
     // load firstly 12, then the rest after 1 sec
@@ -34,6 +40,15 @@ export default function useMemoBriefSectionData() {
         ) {
           stickyHeaders.push(index);
         }
+
+        if (
+          data.type === CellType.COIN &&
+          afterDivider &&
+          !hiddenCoins.includes(data.uid)
+        ) {
+          isAnySmallBalance = true;
+        }
+
         if (
           data.type === CellType.COIN &&
           !isSmallBalancesOpen &&
@@ -94,7 +109,37 @@ export default function useMemoBriefSectionData() {
       })
       .map(({ uid, type }) => ({ type, uid }));
 
-    return briefSectionsDataFiltered;
+    const {
+      result: briefSectionsDataFilteredSorted,
+    } = briefSectionsDataFiltered.reduce(
+      (acc, curr) => {
+        if (curr.type !== CellType.COIN) {
+          if (acc.hiddenCoins.length !== 0 || acc.notHiddenCoins.length !== 0) {
+            acc.result = acc.result
+              .concat(acc.notHiddenCoins)
+              .concat(acc.hiddenCoins);
+            acc.hiddenCoins = [];
+            acc.notHiddenCoins = [];
+          }
+          if (curr.type !== CellType.COIN_DIVIDER || isAnySmallBalance) {
+            acc.result.push(curr);
+          }
+        } else {
+          if (hiddenCoins.includes(curr.uid)) {
+            acc.hiddenCoins.push(curr);
+          } else {
+            acc.notHiddenCoins.push(curr);
+          }
+        }
+        return acc;
+      },
+      { hiddenCoins: [], notHiddenCoins: [], result: [] } as {
+        result: BaseCellSuccinctType[];
+        hiddenCoins: BaseCellSuccinctType[];
+        notHiddenCoins: BaseCellSuccinctType[];
+      }
+    );
+    return briefSectionsDataFilteredSorted;
   }, [
     briefSectionsData,
     isSmallBalancesOpen,
