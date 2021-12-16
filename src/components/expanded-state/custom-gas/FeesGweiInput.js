@@ -11,7 +11,7 @@ import { usePrevious } from '@rainbow-me/hooks';
 const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';
 const LONG_PRESS_DELAY_THRESHOLD = 69;
-const MIN_LONG_PRESS_DELAY_THRESHOLD = 100;
+const MIN_LONG_PRESS_DELAY_THRESHOLD = 160;
 
 const Wrapper = styled(Row)``;
 
@@ -93,16 +93,14 @@ export default function FeesGweiInput({
   }, [onLongPressLoop]);
 
   const onPlusLongPress = useCallback(() => {
-    onPlusPress();
     setActionType(PLUS_ACTION_TYPE);
     onLongPress();
-  }, [onLongPress, onPlusPress]);
+  }, [onLongPress]);
 
   const onMinusLongPress = useCallback(() => {
-    onMinusPress();
     setActionType(MINUS_ACTION_TYPE);
     onLongPress();
-  }, [onLongPress, onMinusPress]);
+  }, [onLongPress]);
 
   const onInputPress = useCallback(() => {
     inputRef?.current?.focus();
