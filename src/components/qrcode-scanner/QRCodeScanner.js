@@ -91,7 +91,7 @@ export default function QRCodeScanner({
   return (
     <Container>
       <CameraWrapper>
-        {cameraEnabled && isEmulator && <EmulatorCameraFallback />}
+        {__DEV__ && cameraEnabled && isEmulator && <EmulatorCameraFallback />}
         {(cameraEnabled || android) && !isEmulator && (
           <Camera
             captureAudio={false}
