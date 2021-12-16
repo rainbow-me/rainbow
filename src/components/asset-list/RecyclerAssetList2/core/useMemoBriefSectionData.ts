@@ -1,7 +1,8 @@
 import { useDeepCompareMemo } from 'use-deep-compare';
-import { CellType, NFTFamilyExtraData } from './ViewTypes';
+import { CellType, CoinExtraData, NFTFamilyExtraData } from './ViewTypes';
 import {
   useCoinListEdited,
+  useCoinListEditOptions,
   useOpenFamilies,
   useOpenInvestmentCards,
   useOpenSavings,
@@ -15,6 +16,7 @@ export default function useMemoBriefSectionData() {
   const { isSavingsOpen } = useOpenSavings();
   const { isInvestmentCardsOpen } = useOpenInvestmentCards();
   const { isCoinListEdited } = useCoinListEdited();
+  const { hiddenCoins } = useCoinListEditOptions();
   const { openFamilies } = useOpenFamilies();
 
   const result = useDeepCompareMemo(() => {
@@ -36,6 +38,13 @@ export default function useMemoBriefSectionData() {
           data.type === CellType.COIN &&
           !isSmallBalancesOpen &&
           afterDivider
+        ) {
+          return false;
+        }
+
+        if (
+          data.type === CellType.COIN &&
+          hiddenCoins.includes((data as CoinExtraData).uniqueId)
         ) {
           return false;
         }
