@@ -73,14 +73,16 @@ export default function QRCodeScanner({
     isEnabledByFocus && cameraEnabledByBottomSheetPosition;
 
   const cameraEnabled =
-    cameraState !== CameraState.Scanning && shouldInitializeCamera;
+    cameraState === CameraState.Scanning && shouldInitializeCamera;
 
-  const { onScan } = useScanner(cameraEnabled);
+  const hideCamera = useCallback(() => {
+    dsRef.current?.jumpToLong();
+  }, [dsRef]);
+
+  const { onScan } = useScanner(cameraEnabled, hideCamera);
 
   // handle back button press on android
-  useHardwareBack(() => {
-    dsRef.current?.jumpToLong();
-  }, !shouldInitializeCamera);
+  useHardwareBack(hideCamera, !shouldInitializeCamera);
 
   const onCrossMagicBorder = useCallback(
     below => {
