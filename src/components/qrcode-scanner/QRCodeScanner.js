@@ -9,7 +9,7 @@ import ConnectedDapps from './ConnectedDapps';
 import QRCodeScannerCrosshair from './QRCodeScannerCrosshair';
 import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
 import SimulatorFakeCameraImageSource from '@rainbow-me/assets/simulator-fake-camera-image.jpg';
-import { useAsyncEffect, useScanner } from '@rainbow-me/hooks';
+import { useAsyncEffect, useHardwareBack, useScanner } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
@@ -76,6 +76,11 @@ export default function QRCodeScanner({
     cameraState !== CameraState.Scanning && shouldInitializeCamera;
 
   const { onScan } = useScanner(cameraEnabled);
+
+  // handle back button press on android
+  useHardwareBack(() => {
+    dsRef.current?.jumpToLong();
+  }, !shouldInitializeCamera);
 
   const onCrossMagicBorder = useCallback(
     below => {
