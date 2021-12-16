@@ -462,7 +462,7 @@ export default function SendSheet(props) {
         );
 
         if (!lessThan(updatedGasLimit, gasLimit)) {
-          if (network === networkTypes.optimism) {
+          if (currentNetwork === networkTypes.optimism) {
             updateTxFeeForOptimism(updatedGasLimit);
           } else {
             updateTxFee(updatedGasLimit, null);
