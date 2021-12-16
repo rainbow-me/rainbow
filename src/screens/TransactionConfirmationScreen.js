@@ -77,8 +77,8 @@ import {
   signTypedDataMessage,
 } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
-import { WC_VERSION_2 } from '@rainbow-me/redux/requests';
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
+import { WC_VERSION_2 } from '@rainbow-me/redux/requests';
 import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
@@ -409,7 +409,8 @@ export default function TransactionConfirmationScreen() {
         dispatch(removeRequest(requestId));
       }
       analytics.track(
-        `Rejected WalletConnect ${method === SEND_TRANSACTION ? 'transaction' : 'signature'
+        `Rejected WalletConnect ${
+          method === SEND_TRANSACTION ? 'transaction' : 'signature'
         } request`
       );
     } catch (error) {
@@ -700,7 +701,7 @@ export default function TransactionConfirmationScreen() {
         const error = new Error(`WC Tx failure - ${formattedDappUrl}`);
         captureException(error);
         // eslint-disable-next-line no-empty
-      } catch (e) { }
+      } catch (e) {}
 
       await onCancel(error);
     }
@@ -950,8 +951,8 @@ export default function TransactionConfirmationScreen() {
     (isMessageRequest
       ? MessageSheetHeight
       : (amount && amount !== '0.00') || !isBalanceEnough
-        ? TallSheetHeight
-        : ShortSheetHeight) * (android ? 1.5 : 1);
+      ? TallSheetHeight
+      : ShortSheetHeight) * (android ? 1.5 : 1);
 
   let marginTop = android ? deviceHeight - sheetHeight + 275 : null;
 

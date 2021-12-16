@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import URL from 'url-parse';
-import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 import { memoFn } from '../utils/memoFn';
+import { maybeSignUri } from '@rainbow-me/handlers/imgix';
 
 const buildAssetUrl = hostname =>
   `https://raw.githubusercontent.com/rainbow-me/rainbow/develop/src/assets/dappLogos/${hostname}.jpg`;
@@ -251,8 +251,9 @@ export const getDappHostname = memoFn(url => {
   if (subdomains.length === 2) {
     hostname = urlObject.hostname;
   } else {
-    hostname = `${subdomains[subdomains.length - 2]}.${subdomains[subdomains.length - 1]
-      }`;
+    hostname = `${subdomains[subdomains.length - 2]}.${
+      subdomains[subdomains.length - 1]
+    }`;
   }
   return hostname;
 });

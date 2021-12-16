@@ -168,7 +168,7 @@ export const walletConnectInit = async () => {
         } catch (error) {
           logger.log('Exception during wc session.proposal');
           analytics.track('Exception on wc session.proposal', {
-            error,
+            error: String(error),
             version: WC_VERSION_2,
           });
           await client.reject({
@@ -312,7 +312,7 @@ export const walletConnectInit = async () => {
         } catch (error) {
           logger.log('Exception during wc session.request');
           analytics.track('Exception on wc session.request', {
-            error,
+            error: String(error),
             version: WC_VERSION_2,
           });
           await client.respond({

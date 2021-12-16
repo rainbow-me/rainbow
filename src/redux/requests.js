@@ -29,7 +29,7 @@ export const requestsLoadState = () => async (dispatch, getState) => {
     const _requests = requests || {};
     dispatch({ payload: _requests, type: REQUESTS_UPDATE_REQUESTS_TO_APPROVE });
     // eslint-disable-next-line no-empty
-  } catch (error) { }
+  } catch (error) {}
 };
 
 export const addRequestToApprove = (
