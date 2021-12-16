@@ -49,13 +49,17 @@ class BetterLayoutProvider extends LayoutProvider {
   }
 }
 
-const getLayoutProvider = (briefSectionsData: BaseCellType[]) => {
+const getLayoutProvider = (
+  briefSectionsData: BaseCellType[],
+  isCoinListEdited: boolean
+) => {
   const indicesToOverride = [];
   for (let i = 0; i < briefSectionsData.length; i++) {
     const val = briefSectionsData[i];
     if (
       val.type === CellType.ASSETS_HEADER ||
-      val.type === CellType.NFTS_HEADER
+      val.type === CellType.NFTS_HEADER ||
+      (val.type === CellType.COIN_DIVIDER && isCoinListEdited)
     ) {
       indicesToOverride.push(i);
     }
