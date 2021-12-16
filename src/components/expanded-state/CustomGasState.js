@@ -19,6 +19,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { margin } from '@rainbow-me/styles';
+import { deviceUtils } from '@rainbow-me/utils';
 
 const FOOTER_HEIGHT = 76;
 const CONTENT_HEIGHT = 310;
@@ -60,7 +61,10 @@ export default function CustomGasState({ asset }) {
     FOOTER_HEIGHT +
     (android ? 40 + getSoftMenuBarHeight() : 0);
 
-  const sheetHeightWithKeyboard = sheetHeightWithoutKeyboard + keyboardHeight;
+  const sheetHeightWithKeyboard =
+    sheetHeightWithoutKeyboard +
+    keyboardHeight +
+    (deviceUtils.isSmallPhone ? 30 : 0);
 
   const currentGasTrend = useMemo(
     () => getTrendKey(currentBlockParams?.trend),

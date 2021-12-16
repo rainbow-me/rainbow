@@ -74,6 +74,7 @@ function GweiInputPill(
   ref
 ) {
   const { colors } = useTheme();
+
   return (
     <ButtonPressAnimation onPress={onPress}>
       <GweiPill>
