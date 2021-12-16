@@ -608,7 +608,7 @@ export default function SendSheet(props) {
     let label = 'Enter an Amount';
 
     let nativeToken = 'ETH';
-    if (network === networkTypes.polygon) {
+    if (currentNetwork === networkTypes.polygon) {
       nativeToken = 'MATIC';
     }
     if (
@@ -635,7 +635,7 @@ export default function SendSheet(props) {
     amountDetails.isSufficientBalance,
     gasFeeParamsBySpeed,
     isSufficientGas,
-    network,
+    currentNetwork,
     selectedGasFee,
   ]);
 
