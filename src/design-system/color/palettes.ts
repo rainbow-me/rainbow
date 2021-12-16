@@ -3,6 +3,7 @@ import { mapValues } from 'lodash';
 export const colors = {
   appleBlue: '#0E76FD',
   black: '#000000',
+  blackTint: '#12131a',
   grey: 'rgb(60, 66, 66)',
   grey10: 'rgba(60, 66, 66, 0.1)',
   grey20: 'rgba(60, 66, 66, 0.2)',
@@ -67,7 +68,7 @@ export const backgroundColors: Record<
   },
   body: {
     dark: {
-      color: '#12131a',
+      color: colors.blackTint,
       mode: 'dark',
     },
     light: {

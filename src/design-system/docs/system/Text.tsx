@@ -2,7 +2,7 @@ import classnames from 'classnames';
 import React, { ReactNode } from 'react';
 
 import { sprinkles } from './sprinkles.css';
-import { FontWeight, TextColor } from './tokens.css';
+import { FontWeight, ForegroundColor } from './tokens.css';
 import { letterSpacings, sizes, TextSizes } from './typography.css';
 
 export const Text = ({
@@ -12,7 +12,7 @@ export const Text = ({
   weight = 'regular',
 }: {
   children: ReactNode;
-  color?: TextColor;
+  color?: ForegroundColor;
   size?: TextSizes;
   weight?: FontWeight;
 }) => (

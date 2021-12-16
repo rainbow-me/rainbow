@@ -1,15 +1,15 @@
 import { createTheme } from '@vanilla-extract/css';
 
-import { backgroundColors, textColors } from './tokens.css';
+import { backgroundColors, foregroundColors } from './tokens.css';
 
 export const [light, colorModeVars] = createTheme({
   backgroundColors: pickColorModeValues(backgroundColors, 'light'),
-  textColors: pickColorModeValues(textColors, 'light'),
+  foregroundColors: pickColorModeValues(foregroundColors, 'light'),
 });
 
 export const dark = createTheme(colorModeVars, {
   backgroundColors: pickColorModeValues(backgroundColors, 'dark'),
-  textColors: pickColorModeValues(textColors, 'dark'),
+  foregroundColors: pickColorModeValues(foregroundColors, 'dark'),
 });
 
 ////////////////////////////////////////////////////////////////////

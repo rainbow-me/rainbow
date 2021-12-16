@@ -2,7 +2,7 @@ import classnames from 'classnames';
 import React, { ReactNode } from 'react';
 
 import { sprinkles } from './sprinkles.css';
-import { FontWeight, TextColor } from './tokens.css';
+import { FontWeight, ForegroundColor } from './tokens.css';
 import { HeadingSizes, letterSpacings, sizes } from './typography.css';
 
 type Levels = '1' | '2' | '3' | '4';
@@ -15,7 +15,7 @@ export const Heading = ({
   weight = 'heavy',
 }: {
   children: ReactNode;
-  color?: TextColor;
+  color?: ForegroundColor;
   level?: Levels;
   size?: HeadingSizes;
   weight?: FontWeight;

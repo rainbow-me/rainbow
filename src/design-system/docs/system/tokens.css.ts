@@ -1,7 +1,8 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import {
-  foregroundColors,
   backgroundColors as rootBackgroundColors,
+  colors as rootColors,
+  foregroundColors as rootForegroundColors,
 } from '../../color/palettes';
 import { typeHierarchy } from './typography.css';
 
@@ -38,26 +39,35 @@ export const negativeSpace = {
 
 export type NegativeSpace = keyof typeof negativeSpace;
 
-export const textColors = {
-  action: foregroundColors.action,
+export const colors = {
+  ...rootColors,
+  skyTint: 'rgb(233, 242, 255)',
+  appleBlueTint: '#c7e0ff',
+  appleBlueDark: '#024397',
+  appleBlueShade: '#162544',
+  white05: 'rgba(0, 0, 0, 0.05)',
+  black05: 'rgba(255, 255, 255, 0.05)',
+} as const;
+
+export const foregroundColors = {
+  ...rootForegroundColors,
   actionShade: {
-    light: '#024397',
-    dark: (foregroundColors.primary as any).dark,
+    light: colors.appleBlueDark,
+    dark: colors.sky,
   },
-  primary: foregroundColors.primary,
-  secondary: foregroundColors.secondary60,
 };
 
-export type TextColor = keyof typeof textColors;
+export type ForegroundColor = keyof typeof foregroundColors;
 
 export const backgroundColors = {
-  bodyTint: { light: 'rgba(0, 0, 0, 0.05)', dark: 'rgba(255, 255, 255, 0.05)' },
+  ...rootBackgroundColors,
+  bodyTint: { light: colors.white05, dark: colors.black05 },
   body: {
-    light: '#e9f2ff',
-    dark: (rootBackgroundColors.body as any).dark.color,
+    light: colors.skyTint,
+    dark: colors.blackTint,
   },
-  actionTint: { light: '#c7e0ff', dark: '#162544' },
-  action: (rootBackgroundColors.action as any).color,
+  actionTint: { light: colors.appleBlueTint, dark: colors.appleBlueShade },
+  action: colors.appleBlue,
 };
 
 export const fontSizes = [

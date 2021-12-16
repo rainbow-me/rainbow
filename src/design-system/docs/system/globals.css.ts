@@ -8,7 +8,7 @@ globalStyle('*', {
 
 globalStyle('html, body', {
   backgroundColor: colorModeVars.backgroundColors.body,
-  color: colorModeVars.textColors.primary,
+  color: colorModeVars.foregroundColors.primary,
   fontFamily:
     "'SFRounded', ui-rounded, 'SF Pro Rounded', system-ui, 'Helvetica Neue', Arial, Helvetica, sans-serif",
   margin: 0,

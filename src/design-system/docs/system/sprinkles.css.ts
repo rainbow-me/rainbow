@@ -88,8 +88,8 @@ const colorModeProperties = defineProperties({
   defaultCondition: 'lightMode',
   properties: {
     backgroundColor: colorModeVars.backgroundColors,
-    borderColor: colorModeVars.textColors,
-    color: colorModeVars.textColors,
+    borderColor: colorModeVars.foregroundColors,
+    color: colorModeVars.foregroundColors,
   },
 });
 

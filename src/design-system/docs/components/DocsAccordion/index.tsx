@@ -84,7 +84,7 @@ const ExamplePreview = ({
 }: DocsExample) => {
   return (
     <Stack space="24px">
-      <Heading color="secondary" weight="bold">
+      <Heading color="secondary60" weight="bold">
         {name}
       </Heading>
       {description && (
