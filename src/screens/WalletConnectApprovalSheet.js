@@ -337,7 +337,7 @@ export default function WalletConnectApprovalSheet() {
                   {type === WalletConnectApprovalSheetType.connect
                     ? `wants to connect to your wallet`
                     : `wants to connect to the ${ethereumUtils.getNetworkNameFromChainId(
-                        chainId
+                        Number(chainId)
                       )} network`}
                 </Text>
               </Row>
@@ -429,7 +429,9 @@ export default function WalletConnectApprovalSheet() {
                         network={
                           type === WalletConnectApprovalSheetType.connect
                             ? approvalNetworkInfo.value
-                            : ethereumUtils.getNetworkFromChainId(chainId)
+                            : ethereumUtils.getNetworkFromChainId(
+                                Number(chainId)
+                              )
                         }
                       />
                     </Centered>
@@ -440,7 +442,9 @@ export default function WalletConnectApprovalSheet() {
                     >
                       {type === WalletConnectApprovalSheetType.connect
                         ? approvalNetworkInfo.name
-                        : ethereumUtils.getNetworkNameFromChainId(chainId)}
+                        : ethereumUtils.getNetworkNameFromChainId(
+                            Number(chainId)
+                          )}
                     </LabelText>
                     {type === WalletConnectApprovalSheetType.connect &&
                       menuItems.length > 1 && (
