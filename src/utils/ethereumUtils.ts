@@ -45,6 +45,7 @@ import {
   toHex,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -288,7 +289,8 @@ const getNetworkFromChainId = (chainId: number): Network => {
  */
 const getNetworkNameFromChainId = (chainId: number): string | undefined => {
   const networkData = find(chains, ['chain_id', chainId]);
-  return networkData?.name;
+  const networkName = networkInfo[networkData?.network ?? Network.mainnet].name;
+  return networkName;
 };
 
 /**

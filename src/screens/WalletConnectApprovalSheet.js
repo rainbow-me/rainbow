@@ -425,14 +425,22 @@ export default function WalletConnectApprovalSheet() {
                 <ButtonPressAnimation>
                   <Row marginTop={android ? -10 : 0}>
                     <Centered marginRight={5}>
-                      <ChainLogo network={approvalNetworkInfo.value} />
+                      <ChainLogo
+                        network={
+                          type === WalletConnectApprovalSheetType.connect
+                            ? approvalNetworkInfo.value
+                            : ethereumUtils.getNetworkFromChainId(chainId)
+                        }
+                      />
                     </Centered>
                     <LabelText
                       align="right"
                       color={colors.dark}
                       numberOfLines={1}
                     >
-                      {approvalNetworkInfo.name}
+                      {type === WalletConnectApprovalSheetType.connect
+                        ? approvalNetworkInfo.name
+                        : ethereumUtils.getNetworkNameFromChainId(chainId)}
                     </LabelText>
                     {type === WalletConnectApprovalSheetType.connect &&
                       menuItems.length > 1 && (
