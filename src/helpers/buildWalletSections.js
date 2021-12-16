@@ -338,10 +338,16 @@ const withBriefBalanceSection = (
     !collectibles.length
   );
 
+  const savingsTotalValue = find(
+    savingsSection,
+    item => item.uid === 'savings-header'
+  );
+
   const totalBalanceWithSavingsValue = add(
     totalBalancesValue,
-    get(savingsSection, 'totalValue', 0)
+    savingsTotalValue?.value ?? 0
   );
+
   const totalBalanceWithAllSectionValues = add(
     totalBalanceWithSavingsValue,
     uniswapTotal
@@ -503,7 +509,7 @@ const briefBalanceSectionSelector = createSelector(
     pinnedCoinsSelector,
     hiddenCoinsSelector,
     uniqueTokensSelector,
-    balanceSavingsSectionSelector,
+    briefBalanceSavingsSectionSelector,
     uniswapTotalSelector,
   ],
   withBriefBalanceSection
