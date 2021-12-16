@@ -57,7 +57,7 @@ function WrappedFallbackImage({
       style={{ overflow: 'hidden' }}
     >
       <FallbackImage
-        as={eth && Image}
+        as={eth ? Image : undefined}
         source={EthIcon}
         {...props}
         overlayColor={color || colors.dark}
