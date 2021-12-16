@@ -62,7 +62,7 @@ const useInterpolationRange = () => {
   const position = useRecyclerAssetListPosition();
   const ref = useRef();
 
-  const { scrollViewRef } = useContext(StickyHeaderContext);
+  const { scrollViewRef } = useContext(StickyHeaderContext) || {};
   const [range, setRanges] = useState([0, 0]);
   const onLayout = useCallback(() => {
     const nativeScrollRef = scrollViewRef?.current?.getNativeScrollRef();
@@ -83,12 +83,15 @@ const useInterpolationRange = () => {
     style: {
       transform: [
         {
-          translateY: position.interpolate({
-            extrapolateLeft: 'clamp',
-            extrapolateRight: 'extend',
-            inputRange: range,
-            outputRange: range.map(r => (isCoinListEdited ? r - range[0] : 0)),
-          }),
+          translateY:
+            position?.interpolate({
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'extend',
+              inputRange: range,
+              outputRange: range.map(r =>
+                isCoinListEdited ? r - range[0] : 0
+              ),
+            }) ?? 0,
         },
       ],
     },
