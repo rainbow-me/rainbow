@@ -116,7 +116,6 @@ export default function SendSheet(props) {
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
-  const getNextNonce = useCurrentNonce(accountAddress, network);
 
   const savings = useSendSavingsAccount();
   const fetchData = useRefreshAccountData();
@@ -130,6 +129,8 @@ export default function SendSheet(props) {
   const [currentNetwork, setCurrentNetwork] = useState();
   const prevNetwork = usePrevious(currentNetwork);
   const [currentInput, setCurrentInput] = useState('');
+
+  const getNextNonce = useCurrentNonce(accountAddress, currentNetwork);
 
   const { params } = useRoute();
   const assetOverride = params?.asset;
@@ -491,7 +492,7 @@ export default function SendSheet(props) {
         );
 
         if (!lessThan(updatedGasLimit, gasLimit)) {
-          if (network === networkTypes.optimism) {
+          if (currentNetwork === networkTypes.optimism) {
             updateTxFeeForOptimism(updatedGasLimit);
           } else {
             updateTxFee(updatedGasLimit, null);
@@ -637,7 +638,7 @@ export default function SendSheet(props) {
     let label = 'Enter an Amount';
 
     let nativeToken = 'ETH';
-    if (network === networkTypes.polygon) {
+    if (currentNetwork === networkTypes.polygon) {
       nativeToken = 'MATIC';
     }
     if (
@@ -664,7 +665,7 @@ export default function SendSheet(props) {
     amountDetails.isSufficientBalance,
     gasFeeParamsBySpeed,
     isSufficientGas,
-    network,
+    currentNetwork,
     selectedGasFee,
   ]);
 
