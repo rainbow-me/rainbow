@@ -14,7 +14,9 @@ import {
   Column,
   Columns,
   Heading,
+  Inset,
   Row,
+  Space,
   Stack,
   Text,
 } from '@rainbow-me/design-system';
@@ -363,6 +365,9 @@ const UniqueTokenExpandedStateHeader = ({
     setClipboard,
   ]);
 
+  const overflowMenuHitSlop: Space = '15px';
+  const familyNameHitSlop: Space = '19px';
+
   return (
     <Stack space="15px">
       <Columns space="24px">
@@ -370,55 +375,67 @@ const UniqueTokenExpandedStateHeader = ({
           {buildUniqueTokenName(asset)}
         </Heading>
         <Column width="content">
-          <ContextMenuButton
-            activeOpacity={1}
-            menuConfig={assetMenuConfig}
-            {...(android ? { onPress: onPressAndroidAsset } : {})}
-            isMenuPrimaryAction
-            onPressMenuItem={handlePressAssetMenuItem}
-            useActionSheetFallback={false}
-            wrapNativeComponent
-          >
-            <ButtonPressAnimation scaleTo={0.75}>
-              <Text color="accent" size="23px" weight="heavy">
-                􀍡
-              </Text>
-            </ButtonPressAnimation>
-          </ContextMenuButton>
+          <Bleed space={overflowMenuHitSlop}>
+            <ContextMenuButton
+              activeOpacity={1}
+              menuConfig={assetMenuConfig}
+              {...(android ? { onPress: onPressAndroidAsset } : {})}
+              isMenuPrimaryAction
+              onPressMenuItem={handlePressAssetMenuItem}
+              useActionSheetFallback={false}
+              wrapNativeComponent
+            >
+              <ButtonPressAnimation scaleTo={0.75}>
+                <Inset space={overflowMenuHitSlop}>
+                  <Text color="accent" size="23px" weight="heavy">
+                    􀍡
+                  </Text>
+                </Inset>
+              </ButtonPressAnimation>
+            </ContextMenuButton>
+          </Bleed>
         </Column>
       </Columns>
       <Row>
-        <ContextMenuButton
-          activeOpacity={0}
-          menuConfig={familyMenuConfig}
-          {...(android ? { onPress: onPressAndroidFamily } : {})}
-          isMenuPrimaryAction
-          onPressMenuItem={handlePressFamilyMenuItem}
-          useActionSheetFallback={false}
-          wrapNativeComponent={false}
-        >
-          <ButtonPressAnimation scaleTo={0.88}>
-            <Row alignVertical="center" space="6px">
-              {asset.familyImage ? (
-                <Bleed vertical="6px">
-                  <FamilyImageWrapper>
-                    <FamilyImage source={{ uri: asset.familyImage }} />
-                  </FamilyImageWrapper>
-                </Bleed>
-              ) : null}
-              <Row space="4px">
-                <View style={{ maxWidth: deviceWidth - paddingHorizontal * 6 }}>
-                  <Text color="secondary50" numberOfLines={1} weight="bold">
-                    {asset.familyName}
-                  </Text>
-                </View>
-                <Text color="secondary50" weight="bold">
-                  􀆊
-                </Text>
-              </Row>
-            </Row>
-          </ButtonPressAnimation>
-        </ContextMenuButton>
+        <Bleed space={familyNameHitSlop}>
+          <ContextMenuButton
+            activeOpacity={0}
+            menuConfig={familyMenuConfig}
+            {...(android ? { onPress: onPressAndroidFamily } : {})}
+            isMenuPrimaryAction
+            onPressMenuItem={handlePressFamilyMenuItem}
+            useActionSheetFallback={false}
+            wrapNativeComponent={false}
+          >
+            <ButtonPressAnimation scaleTo={0.88}>
+              <Inset space={familyNameHitSlop}>
+                <Row alignVertical="center" space="6px">
+                  {asset.familyImage ? (
+                    <Bleed vertical="6px">
+                      <FamilyImageWrapper>
+                        <FamilyImage source={{ uri: asset.familyImage }} />
+                      </FamilyImageWrapper>
+                    </Bleed>
+                  ) : null}
+                  <Row space="4px">
+                    <View
+                      style={{
+                        maxWidth: deviceWidth - paddingHorizontal * 6,
+                      }}
+                    >
+                      <Text color="secondary50" numberOfLines={1} weight="bold">
+                        {asset.familyName}
+                      </Text>
+                    </View>
+                    <Text color="secondary50" weight="bold">
+                      􀆊
+                    </Text>
+                  </Row>
+                </Row>
+              </Inset>
+            </ButtonPressAnimation>
+          </ContextMenuButton>
+        </Bleed>
       </Row>
     </Stack>
   );

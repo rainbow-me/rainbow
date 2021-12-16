@@ -15,6 +15,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import styled from 'styled-components';
+import URL from 'url-parse';
 import useWallets from '../../hooks/useWallets';
 import { lightModeThemeColors } from '../../styles/colors';
 import Link from '../Link';
@@ -113,12 +114,12 @@ const TextButton = ({
   children: ReactNode;
   align?: TextProps['align'];
 }) => {
-  const hitArea: Space = '12px';
+  const hitSlop: Space = '19px';
 
   return (
-    <Bleed vertical={hitArea}>
+    <Bleed space={hitSlop}>
       <ButtonPressAnimation onPress={onPress} scaleTo={0.88}>
-        <Inset vertical={hitArea}>
+        <Inset space={hitSlop}>
           <Text align={align} color="accent" size="16px" weight="heavy">
             {children}
           </Text>
@@ -284,6 +285,12 @@ const UniqueTokenExpandedState = ({
   const yPosition = useSharedValue(0);
 
   const hasSendButton = !external && !isReadOnlyWallet && isSendable;
+
+  const familyLinkDisplay = useMemo(
+    () =>
+      familyLink ? new URL(familyLink).hostname.replace(/^www\./, '') : null,
+    [familyLink]
+  );
 
   return (
     <Fragment>
@@ -473,7 +480,11 @@ const UniqueTokenExpandedState = ({
                               top="15px"
                             >
                               {/* @ts-expect-error JavaScript component */}
-                              <Link color={imageColor} url={familyLink} />
+                              <Link
+                                color={imageColor}
+                                display={familyLinkDisplay}
+                                url={familyLink}
+                              />
                             </Bleed>
                           ) : null}
                         </Stack>
