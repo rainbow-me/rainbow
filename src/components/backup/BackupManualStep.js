@@ -23,11 +23,11 @@ const Content = styled(Column).attrs({
 })`
   flex-grow: 1;
   flex-shrink: 0;
-  padding-top: ${({ isTallPhone }) => (android ? 30 : isTallPhone ? 45 : 25)};
+  padding-top: ${({ isTallPhone, isSmallPhone }) =>
+    android ? 30 : isTallPhone ? 45 : isSmallPhone ? 10 : 25};
 `;
 
 const Footer = styled(Column).attrs({
-  align: 'center',
   justify: 'center',
 })`
   ${padding(0, 15, 21)};
@@ -72,7 +72,7 @@ const MastheadTitleRow = styled(Row).attrs({
 `;
 
 export default function BackupManualStep() {
-  const { isTallPhone } = useDimensions();
+  const { isTallPhone, isSmallPhone } = useDimensions();
   const { goBack } = useNavigation();
   const { selectedWallet } = useWallets();
   const { onManuallyBackupWalletId } = useWalletManualBackup();
@@ -121,18 +121,22 @@ export default function BackupManualStep() {
             : `Write them down or save them in your password manager.`}
         </MastheadDescription>
       </Masthead>
-      <Content isTallPhone={isTallPhone} paddingHorizontal={30}>
+      <Content
+        isSmallPhone={isSmallPhone}
+        isTallPhone={isTallPhone}
+        paddingHorizontal={30}
+      >
         <SecretDisplaySection
+          isSmallPhone={isSmallPhone}
           onSecretLoaded={setSecretLoaded}
           onWalletTypeIdentified={setType}
         />
       </Content>
       <Footer>
         {secretLoaded && (
-          <View marginTop={30}>
+          <View marginTop={isSmallPhone ? -20 : 30}>
             <SheetActionButton
               color={colors.appleBlue}
-              fullWidth
               label={`􀁣 I’ve saved ${
                 type === WalletTypes.privateKey ? 'my key' : 'these words'
               }`}

@@ -1,14 +1,31 @@
 // @flow
-
 import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { WebView } from 'react-native-webview';
+import styled from 'styled-components';
+import { ImgixImage } from '@rainbow-me/images';
+import { position } from '@rainbow-me/styles';
 import logger from 'logger';
 
-const getHTML = (svgContent, style) => `
+const ImageTile = styled(ImgixImage)`
+  align-items: center;
+  justify-content: center;
+`;
+
+const getHTML = (svgContent, style) =>
+  `
 <html data-key="key-${style.height}-${style.width}">
   <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no"> 
+  <script>
+    function overLoadFunctions() {
+      window.alert = () => false;
+      window.prompt = () => false;
+      window.confirm  = () => false;
+    }
+    overLoadFunctions();
+    window.onload = overLoadFunctions();
+  </script>
   <style>
       html, body {
         margin: 0;
@@ -31,13 +48,13 @@ const getHTML = (svgContent, style) => `
   <body>
     ${svgContent}
   </body>
-</html>
-`;
+</html>`.replace(
+    '<svg',
+    `<svg onload="window.ReactNativeWebView.postMessage('loaded');"`
+  );
 
 const styles = {
   backgroundColor: 'transparent',
-  height: 100,
-  width: 200,
 };
 
 class SvgImage extends Component {
@@ -72,12 +89,28 @@ class SvgImage extends Component {
         try {
           const res = await fetch(uri);
           const text = await res.text();
-          this.mounted && this.setState({ fetchingUrl: uri, svgContent: text });
+          if (text.toLowerCase().indexOf('<svg') !== -1) {
+            this.mounted &&
+              this.setState({ fetchingUrl: uri, svgContent: text });
+          } else {
+            logger.log('invalid svg', { text, uri });
+            this.mounted && props.onError && props.onError('invalid svg');
+          }
         } catch (err) {
           logger.log('error loading remote svg image', err);
+          this.mounted &&
+            props.onError &&
+            props.onError('error loading remote svg image');
         }
       }
       this.mounted && props.onLoadEnd && props.onLoadEnd();
+    }
+  };
+
+  onLoad = e => {
+    if (e?.nativeEvent?.data === 'loaded') {
+      this.setState({ loaded: true });
+      setTimeout(() => this.setState({ trulyLoaded: true }), 1000);
     }
   };
   render() {
@@ -108,18 +141,41 @@ class SvgImage extends Component {
         html = getHTML(patchedSvgContent, flattenedStyle);
       }
 
+      const isSVGAnimated = html?.indexOf('<animate') !== -1;
+
       return (
         <View style={[props.style, props.containerStyle]}>
-          <WebView
-            originWhitelist={['*']}
-            pointerEvents="none"
-            scalesPageToFit
-            scrollEnabled={false}
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
-            source={{ html }}
-            style={[styles, props.style]}
-          />
+          {!this.state.trulyLoaded && props.lowResFallbackUri && (
+            <ImageTile
+              resizeMode={ImgixImage.resizeMode.cover}
+              source={{ uri: props.lowResFallbackUri }}
+              style={position.coverAsObject}
+            />
+          )}
+          {!this.state.trulyLoaded && props.fallbackUri && (
+            <ImageTile
+              resizeMode={ImgixImage.resizeMode.cover}
+              source={{ uri: props.fallbackUri }}
+              style={position.coverAsObject}
+            />
+          )}
+          {(!props.fallbackIfNonAnimated || isSVGAnimated) && (
+            <WebView
+              onMessage={this.onLoad}
+              originWhitelist={['*']}
+              pointerEvents="none"
+              scalesPageToFit
+              scrollEnabled={false}
+              showsHorizontalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
+              source={{ html }}
+              style={[
+                styles,
+                props.style,
+                { display: this.state.loaded || android ? 'flex' : 'none' },
+              ]}
+            />
+          )}
         </View>
       );
     } else {

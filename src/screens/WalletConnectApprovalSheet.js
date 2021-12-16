@@ -134,11 +134,11 @@ export default function WalletConnectApprovalSheet() {
             {
               onPress: () => setScam(true),
               style: 'cancel',
-              text: 'Ignore this request',
+              text: 'Ignore This Request',
             },
           ],
           message:
-            'We found this website in a list of malicious crypto scams.\n\n We recommend you to ignore this request and stop using this website immediately',
+            'We found this website in a list of malicious crypto scams.\n\n We recommend that you ignore this request and stop using this website immediately',
           title: ' 🚨 Heads up! 🚨',
         });
       }

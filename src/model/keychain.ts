@@ -70,7 +70,7 @@ export async function loadString(
       return credentials.password;
     }
     logger.sentry(`Keychain: string does not exist for key: ${key}`);
-  } catch (err) {
+  } catch (err: any) {
     if (err.toString() === 'Error: User canceled the operation.') {
       return -1;
     }
@@ -225,6 +225,10 @@ export async function wipeKeychain(): Promise<void> {
     captureException(e);
   }
 }
+
+export const publicAccessControlOptions = {
+  accessible: ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+};
 
 export async function getPrivateAccessControlOptions(): Promise<Options> {
   let res = {};

@@ -1,6 +1,7 @@
 import { get } from 'lodash';
 import URL from 'url-parse';
 import { maybeSignUri } from '@rainbow-me/handlers/imgix';
+import { memoFn } from '../utils/memoFn';
 
 const buildAssetUrl = hostname =>
   `https://raw.githubusercontent.com/rainbow-me/rainbow/develop/src/assets/dappLogos/${hostname}.jpg`;
@@ -186,6 +187,10 @@ const DisplayDappNames = Object.freeze({
     name: 'TokenSets',
     uri: buildAssetUrl('tokensets.com'),
   },
+  'twitter.com': {
+    name: 'Twitter',
+    uri: buildAssetUrl('twitter.com'),
+  },
   'umaproject.org': {
     name: 'UMA',
     uri: null,
@@ -196,7 +201,7 @@ const DisplayDappNames = Object.freeze({
   },
   'uniswap.org': {
     name: 'Uniswap',
-    uri: buildAssetUrl('uniswap.org'),
+    uri: null,
   },
   'walletconnect.org': {
     name: 'WalletConnect',
@@ -239,19 +244,18 @@ export const dappLogoOverride = url => {
   return DisplayDappNames[hostname]?.uri;
 };
 
-export const getDappHostname = url => {
+export const getDappHostname = memoFn(url => {
   const urlObject = new URL(url);
   let hostname;
   const subdomains = urlObject.hostname.split('.');
   if (subdomains.length === 2) {
     hostname = urlObject.hostname;
   } else {
-    hostname = `${subdomains[subdomains.length - 2]}.${
-      subdomains[subdomains.length - 1]
-    }`;
+    hostname = `${subdomains[subdomains.length - 2]}.${subdomains[subdomains.length - 1]
+      }`;
   }
   return hostname;
-};
+});
 
 export const getDappMetadata = peerMeta => {
   const unsafeImageUrl =

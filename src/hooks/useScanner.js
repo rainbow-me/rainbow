@@ -110,13 +110,14 @@ export default function useScanner(enabled) {
   );
 
   const handleScanRainbowProfile = useCallback(
-    url => {
+    async url => {
       haptics.notificationSuccess();
       analytics.track('Scanned Rainbow profile url');
 
       const urlObj = new URL(url);
       const addressOrENS = urlObj.pathname?.split('/')?.[1] || '';
-      if (checkIsValidAddressOrDomain(addressOrENS)) {
+      const isValid = await checkIsValidAddressOrDomain(addressOrENS);
+      if (isValid) {
         // First navigate to wallet screen
         navigate(Routes.WALLET_SCREEN);
 

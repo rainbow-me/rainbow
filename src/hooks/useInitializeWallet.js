@@ -15,22 +15,20 @@ import { walletsLoadState } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
 import useInitializeAccountData from './useInitializeAccountData';
-import useInitializeDiscoverData from './useInitializeDiscoverData';
 import useLoadAccountData from './useLoadAccountData';
-import useLoadGlobalData from './useLoadGlobalData';
+import useLoadGlobalEarlyData from './useLoadGlobalEarlyData';
 import useResetAccountState from './useResetAccountState';
 import { runKeychainIntegrityChecks } from '@rainbow-me/handlers/walletReadyEvents';
 import { additionalDataCoingeckoIds } from '@rainbow-me/redux/additionalAssetsData';
+import { checkPendingTransactionsOnInitialize } from '@rainbow-me/redux/data';
 import logger from 'logger';
 
 export default function useInitializeWallet() {
   const dispatch = useDispatch();
   const resetAccountState = useResetAccountState();
   const loadAccountData = useLoadAccountData();
-  const loadGlobalData = useLoadGlobalData();
+  const loadGlobalEarlyData = useLoadGlobalEarlyData();
   const initializeAccountData = useInitializeAccountData();
-  const initializeDiscoverData = useInitializeDiscoverData();
-
   const { network } = useAccountSettings();
   const hideSplashScreen = useHideSplashScreen();
 
@@ -63,7 +61,6 @@ export default function useInitializeWallet() {
 
         // Load the network first
         await dispatch(settingsLoadNetwork());
-        logger.sentry('done loading network');
 
         const { isNew, walletAddress } = await walletInit(
           seedPhrase,
@@ -102,7 +99,7 @@ export default function useInitializeWallet() {
         }
 
         if (!(isNew || isImporting)) {
-          await loadGlobalData();
+          await loadGlobalEarlyData();
           logger.sentry('loaded global data...');
         }
 
@@ -119,19 +116,17 @@ export default function useInitializeWallet() {
         logger.sentry('Hide splash screen');
         initializeAccountData();
 
-        if (!isImporting) {
-          dispatch(appStateUpdate({ walletReady: true }));
-        }
+        dispatch(appStateUpdate({ walletReady: true }));
 
         if (!switching) {
           dispatch(uniswapPairsInit());
           dispatch(uniswapGetAllExchanges());
-          initializeDiscoverData();
           dispatch(additionalDataCoingeckoIds);
         }
 
         logger.sentry('💰 Wallet initialized');
 
+        dispatch(checkPendingTransactionsOnInitialize(walletAddress));
         return walletAddress;
       } catch (error) {
         logger.sentry('Error while initializing wallet');
@@ -150,9 +145,8 @@ export default function useInitializeWallet() {
       dispatch,
       hideSplashScreen,
       initializeAccountData,
-      initializeDiscoverData,
       loadAccountData,
-      loadGlobalData,
+      loadGlobalEarlyData,
       network,
       resetAccountState,
     ]

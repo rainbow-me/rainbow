@@ -12,14 +12,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  InteractionManager,
-  Vibration,
-} from 'react-native';
-
+import { ActivityIndicator, Alert, InteractionManager } from 'react-native';
 import { isEmulatorSync } from 'react-native-device-info';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -65,7 +60,7 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
   useAccountAssets,
   useAccountSettings,
-  useBooleanState,
+  useCurrentNonce,
   useDimensions,
   useGas,
   useKeyboardHeight,
@@ -83,6 +78,7 @@ import {
 } from '@rainbow-me/model/wallet';
 import { useNavigation } from '@rainbow-me/navigation';
 import { WC_VERSION_2 } from '@rainbow-me/redux/requests';
+import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
@@ -138,12 +134,6 @@ const Container = styled(Column)`
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent(Centered);
 
-const GasSpeedButtonContainer = styled(Column).attrs({
-  justify: 'start',
-})`
-  margin-bottom: 19px;
-`;
-
 const WalletLabel = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.5),
   letterSpacing: 'roundedMedium',
@@ -171,7 +161,6 @@ export default function TransactionConfirmationScreen() {
   const [provider, setProvider] = useState();
   const [network, setNetwork] = useState();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
-  const [isKeyboardVisible, showKeyboard, hideKeyboard] = useBooleanState();
   const [methodName, setMethodName] = useState(null);
   const calculatingGasLimit = useRef(false);
   const [isBalanceEnough, setIsBalanceEnough] = useState(true);
@@ -181,6 +170,7 @@ export default function TransactionConfirmationScreen() {
   const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
   const balances = useWalletBalances(wallets);
   const { accountAddress, nativeCurrency } = useAccountSettings();
+  const getNextNonce = useCurrentNonce(accountAddress, network);
   const keyboardHeight = useKeyboardHeight();
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
@@ -256,34 +246,41 @@ export default function TransactionConfirmationScreen() {
       );
       setNativeAsset(asset);
     };
-    getNativeAsset();
+    network && getNativeAsset();
   }, [accountInfo.address, allAssets, network]);
 
   const {
     gasLimit,
-    gasPrices,
     isSufficientGas,
-    startPollingGasPrices,
-    stopPollingGasPrices,
-    updateGasPriceOption,
+    startPollingGasFees,
+    stopPollingGasFees,
+    updateGasFeeOption,
     updateTxFee,
-    selectedGasPrice,
-    selectedGasPriceOption,
+    selectedGasFee,
+    selectedGasFeeOption,
+    gasFeeParamsBySpeed,
   } = useGas();
 
   useEffect(() => {
-    const { txFee } = selectedGasPrice;
-    if (!txFee || !nativeAsset || !network || isSufficientGasChecked) return;
-    updateGasPriceOption(selectedGasPriceOption, network, [nativeAsset]);
+    if (
+      isEmpty(selectedGasFee?.gasFee) ||
+      isEmpty(gasFeeParamsBySpeed) ||
+      !nativeAsset ||
+      !network ||
+      isSufficientGasChecked
+    )
+      return;
+    updateGasFeeOption(selectedGasFeeOption, [nativeAsset]);
     setIsSufficientGasChecked(true);
   }, [
     isSufficientGas,
     isSufficientGasChecked,
     nativeAsset,
     network,
-    selectedGasPrice,
-    selectedGasPriceOption,
-    updateGasPriceOption,
+    selectedGasFee,
+    selectedGasFeeOption,
+    updateGasFeeOption,
+    gasFeeParamsBySpeed,
   ]);
 
   const request = useMemo(() => {
@@ -341,12 +338,12 @@ export default function TransactionConfirmationScreen() {
 
   useEffect(() => {
     if (openAutomatically && !isEmulatorSync()) {
-      Vibration.vibrate();
+      ReactNativeHapticFeedback.trigger('notificationSuccess');
     }
     InteractionManager.runAfterInteractions(() => {
       if (network) {
         if (!isMessageRequest) {
-          startPollingGasPrices(network);
+          startPollingGasFees(network);
           fetchMethodName(params[0].data);
         } else {
           setMethodName(lang.t('wallet.message_signing.request'));
@@ -362,14 +359,14 @@ export default function TransactionConfirmationScreen() {
     network,
     openAutomatically,
     params,
-    startPollingGasPrices,
+    startPollingGasFees,
   ]);
 
   const closeScreen = useCallback(
     canceled => {
       goBack();
       if (!isMessageRequest) {
-        stopPollingGasPrices();
+        stopPollingGasFees();
       }
       if (pendingRedirect || isWalletConnectV2Request) {
         InteractionManager.runAfterInteractions(() => {
@@ -388,7 +385,7 @@ export default function TransactionConfirmationScreen() {
       goBack,
       isMessageRequest,
       pendingRedirect,
-      stopPollingGasPrices,
+      stopPollingGasFees,
       method,
       dappScheme,
       dispatch,
@@ -412,8 +409,7 @@ export default function TransactionConfirmationScreen() {
         dispatch(removeRequest(requestId));
       }
       analytics.track(
-        `Rejected WalletConnect ${
-          method === SEND_TRANSACTION ? 'transaction' : 'signature'
+        `Rejected WalletConnect ${method === SEND_TRANSACTION ? 'transaction' : 'signature'
         } request`
       );
     } catch (error) {
@@ -464,14 +460,24 @@ export default function TransactionConfirmationScreen() {
       }
     } catch (error) {
       logger.log('error estimating gas', error);
+    } finally {
+      logger.log('Setting gas limit to', convertHexToString(gas));
+
+      if (network === networkTypes.optimism) {
+        const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
+          txPayload,
+          provider
+        );
+        updateTxFee(gas, null, l1GasFeeOptimism);
+      } else {
+        updateTxFee(gas, null);
+      }
     }
-    logger.log('Setting gas limit to', convertHexToString(gas));
-    updateTxFee(gas, null, network);
   }, [network, params, provider, updateTxFee]);
 
   useEffect(() => {
     if (
-      !isEmpty(gasPrices) &&
+      !isEmpty(gasFeeParamsBySpeed) &&
       !calculatingGasLimit.current &&
       !isMessageRequest &&
       provider
@@ -483,7 +489,7 @@ export default function TransactionConfirmationScreen() {
   }, [
     calculateGasLimit,
     gasLimit,
-    gasPrices,
+    gasFeeParamsBySpeed,
     isMessageRequest,
     method,
     params,
@@ -518,13 +524,13 @@ export default function TransactionConfirmationScreen() {
       return;
     }
 
-    const { txFee } = selectedGasPrice;
-    if (!txFee) {
+    const { gasFee } = selectedGasFee;
+    if (!gasFee.estimatedFee) {
       setIsBalanceEnough(false);
       return;
     }
     // Get the TX fee Amount
-    const txFeeAmount = fromWei(txFee?.value?.amount ?? 0);
+    const txFeeAmount = fromWei(gasFee?.maxFee?.value?.amount ?? 0);
 
     // Get the ETH balance
     const balanceAmount = walletBalance.amount ?? 0;
@@ -544,20 +550,16 @@ export default function TransactionConfirmationScreen() {
     isMessageRequest,
     isSufficientGas,
     method,
+    network,
     params,
-    selectedGasPrice,
+    selectedGasFee,
     walletBalance.amount,
   ]);
 
   const handleConfirmTransaction = useCallback(async () => {
     const sendInsteadOfSign = method === SEND_TRANSACTION;
     const txPayload = params?.[0];
-    let { gas, gasLimit: gasLimitFromPayload, gasPrice } = txPayload;
-
-    const rawGasPrice = selectedGasPrice?.value?.amount;
-    if (rawGasPrice) {
-      gasPrice = toHex(rawGasPrice);
-    }
+    let { gas, gasLimit: gasLimitFromPayload } = txPayload;
 
     try {
       logger.log('⛽ gas suggested by dapp', {
@@ -589,16 +591,23 @@ export default function TransactionConfirmationScreen() {
     } catch (error) {
       logger.log('⛽ error estimating gas', error);
     }
-
+    // clean gas prices / fees sent from the dapp
+    const cleanTxPayload = omit(txPayload, [
+      'gasPrice',
+      'maxFeePerGas',
+      'maxPriorityFeePerGas',
+    ]);
+    const gasParams = parseGasParamsForTransaction(selectedGasFee);
     const calculatedGasLimit = gas || gasLimitFromPayload || gasLimit;
+    const nonce = await getNextNonce();
     let txPayloadUpdated = {
-      ...txPayload,
-      gasPrice,
+      ...cleanTxPayload,
+      ...gasParams,
+      nonce,
     };
     if (calculatedGasLimit) {
       txPayloadUpdated.gasLimit = calculatedGasLimit;
     }
-
     txPayloadUpdated = omit(txPayloadUpdated, ['from', 'gas']);
     let response = null;
 
@@ -638,13 +647,15 @@ export default function TransactionConfirmationScreen() {
           amount: displayDetails?.request?.value ?? 0,
           asset: nativeAsset || displayDetails?.request?.asset,
           dappName,
+          data: result.data,
           from: displayDetails?.request?.from,
           gasLimit,
-          gasPrice,
           hash: result.hash,
           network,
           nonce: result.nonce,
           to: displayDetails?.request?.to,
+          value: result.value.toString(),
+          ...gasParams,
         };
         if (toLower(accountAddress) === toLower(txDetails.from)) {
           dispatch(dataAddNewTransaction(txDetails, null, false, provider));
@@ -689,16 +700,16 @@ export default function TransactionConfirmationScreen() {
         const error = new Error(`WC Tx failure - ${formattedDappUrl}`);
         captureException(error);
         // eslint-disable-next-line no-empty
-      } catch (e) {}
+      } catch (e) { }
 
       await onCancel(error);
     }
   }, [
     method,
     params,
-    selectedGasPrice?.value?.amount,
-    gasLimit,
+    selectedGasFee,
     network,
+    gasLimit,
     provider,
     accountInfo.address,
     callback,
@@ -709,6 +720,7 @@ export default function TransactionConfirmationScreen() {
     displayDetails?.request?.asset,
     displayDetails?.request?.from,
     displayDetails?.request?.to,
+    getNextNonce,
     nativeAsset,
     dappName,
     accountAddress,
@@ -814,17 +826,16 @@ export default function TransactionConfirmationScreen() {
     const isMessage = isMessageRequest;
     // If we don't know about gas prices yet
     // set the button state to "loading"
-    if (!isMessage && !isBalanceEnough && isSufficientGas === undefined) {
+    if (!isMessage && !isBalanceEnough && isSufficientGas === null) {
       ready = false;
     }
     return !isMessage &&
       isBalanceEnough === false &&
-      isSufficientGas !== undefined ? (
+      isSufficientGas !== null ? (
       <Column marginBottom={24} marginTop={19}>
         <SheetActionButton
           color={colors.transparent}
           disabled
-          fullWidth
           label={`${nativeAsset?.symbol} balance too low`}
           onPress={onCancel}
           size="big"
@@ -911,17 +922,9 @@ export default function TransactionConfirmationScreen() {
   }));
 
   useEffect(() => {
-    if (isKeyboardVisible) {
-      offset.value = withSpring(
-        -keyboardHeight + safeAreaInsetValues.bottom,
-        springConfig
-      );
-      sheetOpacity.value = withSpring(android ? 0.8 : 0.3, springConfig);
-    } else {
-      offset.value = withSpring(0, springConfig);
-      sheetOpacity.value = withSpring(1, springConfig);
-    }
-  }, [isKeyboardVisible, keyboardHeight, offset, sheetOpacity]);
+    offset.value = withSpring(0, springConfig);
+    sheetOpacity.value = withSpring(1, springConfig);
+  }, [keyboardHeight, offset, sheetOpacity]);
 
   const amount = request?.value ?? '0.00';
 
@@ -941,21 +944,16 @@ export default function TransactionConfirmationScreen() {
     (method === SIGN_TYPED_DATA ? 630 : android ? 595 : 580) +
     safeAreaInsetValues.bottom;
 
-  const balanceTooLow =
-    isBalanceEnough === false && isSufficientGas !== undefined;
+  const balanceTooLow = isBalanceEnough === false && isSufficientGas !== null;
 
   let sheetHeight =
     (isMessageRequest
       ? MessageSheetHeight
       : (amount && amount !== '0.00') || !isBalanceEnough
-      ? TallSheetHeight
-      : ShortSheetHeight) * (android ? 1.5 : 1);
+        ? TallSheetHeight
+        : ShortSheetHeight) * (android ? 1.5 : 1);
 
-  let marginTop = android
-    ? method === SIGN_TYPED_DATA
-      ? deviceHeight - sheetHeight + 275
-      : deviceHeight - sheetHeight + (isMessageRequest ? 265 : 210)
-    : null;
+  let marginTop = android ? deviceHeight - sheetHeight + 275 : null;
 
   if (isTransactionDisplayType(method) && !request?.asset) {
     marginTop += 50;
@@ -970,14 +968,13 @@ export default function TransactionConfirmationScreen() {
   }
 
   useEffect(() => {
-    if (ready) return;
     if (
       request?.asset &&
       walletBalance &&
       network &&
       provider &&
       nativeAsset &&
-      selectedGasPrice?.txFee
+      !isEmpty(selectedGasFee)
     ) {
       setReady(true);
     }
@@ -987,7 +984,7 @@ export default function TransactionConfirmationScreen() {
     provider,
     ready,
     request?.asset,
-    selectedGasPrice?.txFee,
+    selectedGasFee,
     walletBalance,
   ]);
 
@@ -999,7 +996,7 @@ export default function TransactionConfirmationScreen() {
   return (
     <SheetKeyboardAnimation
       as={AnimatedContainer}
-      isKeyboardVisible={isKeyboardVisible}
+      isKeyboardVisible={false}
       translateY={offset}
     >
       <SlackSheet
@@ -1020,7 +1017,7 @@ export default function TransactionConfirmationScreen() {
                 ? safeAreaInsetValues.bottom + (android ? 20 : 0)
                 : 0
             }
-            paddingTop={android && isTransactionDisplayType(method) ? 84 : 24}
+            paddingTop={24}
             style={[
               animatedSheetStyles,
               android && isMessageRequest
@@ -1041,7 +1038,7 @@ export default function TransactionConfirmationScreen() {
                   imageUrl={imageUrl || ''}
                   network={network}
                 />
-                <Row marginBottom={5}>
+                <Row marginBottom={android ? -6 : 5}>
                   <Text
                     align="center"
                     color={colors.alpha(colors.blueGreyDark, 0.8)}
@@ -1067,7 +1064,10 @@ export default function TransactionConfirmationScreen() {
                     )
                   }
                 </Row>
-                <Centered marginBottom={24} paddingHorizontal={24}>
+                <Centered
+                  marginBottom={android ? 10 : 24}
+                  paddingHorizontal={24}
+                >
                   <Text
                     align="center"
                     color={methodName ? 'dark' : 'white'}
@@ -1078,13 +1078,13 @@ export default function TransactionConfirmationScreen() {
                     {methodName || 'Placeholder'}
                   </Text>
                 </Centered>
-                {(!isKeyboardVisible || ios) && (
+                {ios && (
                   <Divider color={colors.rowDividerLight} inset={[0, 143.5]} />
                 )}
                 {renderTransactionSection()}
                 {isL2 && !isMessageRequest && (
-                  <Column marginTop={0} width="100%">
-                    <Row height={19} />
+                  <Column margin={android ? 24 : 0} width="100%">
+                    <Row height={android ? 0 : 19} />
                     <L2Disclaimer
                       assetType={network}
                       colors={colors}
@@ -1129,7 +1129,7 @@ export default function TransactionConfirmationScreen() {
                       letterSpacing="roundedTight"
                     >
                       {isBalanceEnough === false &&
-                        isSufficientGas !== undefined &&
+                        isSufficientGas !== null &&
                         '􀇿 '}
                       {walletBalance?.display}
                     </WalletText>
@@ -1139,20 +1139,7 @@ export default function TransactionConfirmationScreen() {
             )}
           </AnimatedSheet>
           {!isMessageRequest && (
-            <GasSpeedButtonContainer>
-              <GasSpeedButton
-                currentNetwork={network}
-                onCustomGasBlur={hideKeyboard}
-                onCustomGasFocus={showKeyboard}
-                options={
-                  network === networkTypes.optimism ||
-                  network === networkTypes.arbitrum
-                    ? ['normal']
-                    : undefined
-                }
-                type="transaction"
-              />
-            </GasSpeedButtonContainer>
+            <GasSpeedButton currentNetwork={network} theme="dark" />
           )}
         </Column>
       </SlackSheet>

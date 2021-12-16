@@ -1,9 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { TextInput } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { RowWithMargins } from '../../../layout';
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
@@ -46,46 +43,38 @@ export default function ChartPercentChangeLabel({
   const { originalY, data } = useChartData();
   const { colors } = useTheme();
 
-  const firstValue = useSharedValue(data?.points?.[0]?.y);
-  const lastValue = useSharedValue(data?.points?.[data.points.length - 1]?.y);
-
-  const defaultValue =
-    data?.points.length === 0
-      ? ''
-      : (() => {
-          const value = overrideValue
-            ? latestChange
-            : ((data?.points?.[data.points.length - 1]?.y ?? 0) /
-                data?.points?.[0]?.y) *
-                100 -
-              100;
-          if (isNaN(value)) {
-            return '';
-          }
-          return (
-            (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
-            ' ' +
-            formatNumber(Math.abs(value).toFixed(2)) +
-            '%'
-          );
-        })();
-
-  useEffect(() => {
-    firstValue.value = data?.points?.[0]?.y || 0;
-    lastValue.value = data?.points?.[data.points.length - 1]?.y;
-  }, [data, firstValue, lastValue, latestChange, overrideValue]);
+  const defaultValue = !data?.points?.length
+    ? ''
+    : (() => {
+        const value = overrideValue
+          ? latestChange
+          : ((data?.points?.[data.points.length - 1]?.y ?? 0) /
+              data?.points?.[0]?.y) *
+              100 -
+            100;
+        if (isNaN(value)) {
+          return '';
+        }
+        return (
+          (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
+          ' ' +
+          formatNumber(Math.abs(value).toFixed(2)) +
+          '%'
+        );
+      })();
 
   const textProps = useAnimatedStyle(() => {
+    const firstValue = data?.points?.[0]?.y;
+    const lastValue = data?.points?.[data.points.length - 1]?.y;
+
     return {
       text:
-        firstValue.value === Number(firstValue.value) && firstValue.value
+        firstValue === Number(firstValue) && firstValue
           ? (() => {
               const value =
-                originalY?.value === lastValue?.value || !originalY?.value
+                originalY?.value === lastValue || !originalY?.value
                   ? latestChange
-                  : ((originalY.value || lastValue.value) / firstValue.value) *
-                      100 -
-                    100;
+                  : ((originalY.value || lastValue) / firstValue) * 100 - 100;
 
               return (
                 (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
@@ -96,7 +85,7 @@ export default function ChartPercentChangeLabel({
             })()
           : '',
     };
-  });
+  }, [data]);
 
   const ratio = useRatio();
 
@@ -113,7 +102,7 @@ export default function ChartPercentChangeLabel({
 
   return (
     <RowWithMargins align="center" margin={4}>
-      {android ? <ChartChangeDirectionArrow /> : null}
+      {android ? <ChartChangeDirectionArrow ratio={ratio} /> : null}
       <PercentLabel
         alignSelf="flex-end"
         animatedProps={textProps}

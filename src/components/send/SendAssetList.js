@@ -20,7 +20,7 @@ import {
   SendSavingsCoinRow,
 } from '../coin-row';
 import { Centered } from '../layout';
-import SavingsListHeader from '../savings/SavingsListHeader';
+import { SavingsListHeader } from '../savings';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { ImgixImage } from '@rainbow-me/images';
 
@@ -71,6 +71,7 @@ export default class SendAssetList extends React.Component {
       pinnedCoins,
       hiddenCoins
     );
+
     let smallBalances = [];
     let shitcoins = [];
 
@@ -310,6 +311,7 @@ export default class SendAssetList extends React.Component {
   balancesRenderItem = item => (
     <SendCoinRow
       {...item}
+      key={item.uniqueId}
       onPress={() => this.props.onSelectAsset(item)}
       rowHeight={rowHeight}
       testID="send-asset"

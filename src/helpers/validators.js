@@ -1,4 +1,6 @@
 import { isValidAddress } from 'ethereumjs-util';
+import { parseDomain, ParseResultType } from 'parse-domain';
+import { memoFn } from '../utils/memoFn';
 import {
   isHexStringIgnorePrefix,
   isValidMnemonic,
@@ -30,19 +32,22 @@ export const isValidEmail = email =>
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   );
 
-export const isENSAddressFormat = address => {
+export const isENSAddressFormat = memoFn(address => {
   const parts = address && address.split('.');
   if (
     !parts ||
     parts.length === 1 ||
+    (parseDomain(parts[parts.length - 1].toLowerCase()).type ===
+      ParseResultType.NotListed &&
+      parts[parts.length - 1].toLowerCase() !== 'eth') ||
     supportedUnstoppableDomains.includes(parts[parts.length - 1].toLowerCase())
   ) {
     return false;
   }
   return true;
-};
+});
 
-export const isUnstoppableAddressFormat = address => {
+export const isUnstoppableAddressFormat = memoFn(address => {
   const parts = address && address.split('.');
   if (
     !parts ||
@@ -52,7 +57,7 @@ export const isUnstoppableAddressFormat = address => {
     return false;
   }
   return true;
-};
+});
 
 /**
  * @desc validate ethereum address, ENS, or Unstoppable name
@@ -75,6 +80,14 @@ export const checkIsValidAddressOrDomain = async address => {
   return isValidAddress(address);
 };
 
+/**
+ * @desc validate ENS or Unstoppable format
+ * @param  {String} ENS, or Unstoppable
+ * @return {Boolean}
+ */
+export const isValidDomainFormat = memoFn(domain => {
+  return isUnstoppableAddressFormat(domain) || isENSAddressFormat(domain);
+});
 /**
  * @desc validate seed phrase mnemonic
  * @param  {String} seed phrase mnemonic

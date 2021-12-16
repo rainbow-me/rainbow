@@ -12,9 +12,112 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.42](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.42)
+### Added
+* EIP-1559 support
+
+## [1.5.40](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.40)
+
+### Changed
+* Fix Speed up and cancel sheet bug
+
+## [1.5.39](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.39)
+
+### Changed
+* Full fix for deeplink send bug
+
+## [1.5.37](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.37)
+
+### Added
+* Design System
+
+### Changed
+* Fixed Deeplink Send Bug
+
+## [1.5.36](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.36)
+
+### Added
+* Nonce Tracking
+* Onchain Balance Updates
+* Cloudinary SVG improvements
+
+### Changed
+* Optimism V2
+* Updated Add Cash & Search Analytics
+* Fixed Unstoppable Domain Resolution
+
+## [1.5.35](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.35)
+
+### Changed
+* RN 66
+* NFT V2 Expanded States
+* Fix Back Up Sheet Height
+
+## [1.5.34](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.34)
+
+### Changed
+* Lowered Exporer Transaction Limit
+* Polygon Contract Name handling
+* Revert Uniswap fetchng by Volume
+* Use StaticJsonRpcProvider
+
+## [1.5.33](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.33)
+
+### Changed
+* NFT family name filtering
+* Temp disable poaps
+
+## [1.5.31](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.31)
+
+### Added
+* Discover Analytics
+* Dynamic Token List
+* Remote Config
+* Poap Support
+
+### Changed
+* Fix camera permissions deeplink
+
+## [1.5.30](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.30)
+
+### Changed
+* NFT Count analytics
+
+## [1.5.29](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.29)
+
+### Changed
+* Separate out L2 explorer init
+
+## [1.5.28](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.28)
+
+### Changed
+* Changed source of token list
+* ENS & Unstoppable validation fixes
+
+## [1.5.27](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.27)
+
+### Added
+* Handle dropped transactions
+
+### Changed
+* Switched polygon gas api 
+* Autoscrolling & RLV jumping fixes
+
+## [1.5.26](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.26)
+
+### Added
+* Hide scam tokens
+* Support for .com style ENS domains and new Unstoppable TLDs
+
+### Changed
+* WC data safety check
+* Locked deps
+* Reanimated & Camera dimming refactorß
+* Search improvements, Fetch by volume
+* Savings native token fixes
+* Improved NFT family sorting
+
 ## [1.5.25](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.25)
-
-
 
 ### Changed
 * Improved App Error Boundary Reporting

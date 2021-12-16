@@ -12,8 +12,8 @@ import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import {
   runOnJS,
   useAnimatedReaction,
-  useAnimatedScrollHandler,
   useSharedValue,
+  useWorkletCallback,
 } from 'react-native-reanimated';
 import styled from 'styled-components';
 import DiscoverSheetContent from './DiscoverSheetContent';
@@ -41,6 +41,10 @@ const AndroidWrapper = styled.View.attrs({
   position: absolute;
 `;
 
+let jumpToShort;
+
+export { jumpToShort };
+
 const DiscoverSheet = (_, forwardedRef) => {
   const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
   const isFocused = useIsFocused();
@@ -55,14 +59,14 @@ const DiscoverSheet = (_, forwardedRef) => {
       addOnCrossMagicBorderListener(listener) {
         listeners.current.push(listener);
         return () =>
-          listeners.current.splice(listeners.current.indexOf(listener), 1);
+          listeners.current.splice(listeners.current?.indexOf(listener), 1);
       },
       jumpToLong() {
-        bottomSheetModalRef.current.expand();
+        bottomSheetModalRef.current?.expand();
       },
       jumpToShort() {
         sheet.current.scrollTo({ animated: false, x: 0, y: 0 });
-        bottomSheetModalRef.current.collapse();
+        bottomSheetModalRef.current?.collapse();
       },
       onFabSearch,
       ...headerButtonsHandlers,
@@ -71,10 +75,12 @@ const DiscoverSheet = (_, forwardedRef) => {
     [deps]
   );
 
+  jumpToShort = value.jumpToShort;
+
   useImperativeHandle(forwardedRef, () => value);
 
   const yPosition = useSharedValue(0);
-  const scrollHandler = useAnimatedScrollHandler(event => {
+  const scrollHandler = useWorkletCallback(event => {
     yPosition.value = event.contentOffset.y;
   });
 

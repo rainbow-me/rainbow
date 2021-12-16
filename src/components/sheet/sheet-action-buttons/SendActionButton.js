@@ -33,7 +33,7 @@ export default function SendActionButton({
       label="􀈠 Send"
       onPress={handlePress}
       testID="send"
-      weight="bold"
+      weight="heavy"
     />
   );
 }

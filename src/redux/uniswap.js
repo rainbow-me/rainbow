@@ -10,9 +10,8 @@ import {
 } from '@rainbow-me/handlers/uniswap';
 import networkTypes from '@rainbow-me/networkTypes';
 import {
-  CURATED_UNISWAP_TOKENS,
   DefaultUniswapFavorites,
-  RAINBOW_TOKEN_LIST,
+  rainbowTokenList,
   SOCKS_ADDRESS,
 } from '@rainbow-me/references';
 import { greaterThanOrEqualTo, multiply } from '@rainbow-me/utilities';
@@ -55,7 +54,7 @@ export const uniswapGetAllExchanges = () => async (dispatch, getState) => {
 const parseTokens = tokens => {
   let parsedTokens = {};
   tokens.forEach(token => {
-    const tokenAddress = toLower(token.id);
+    const tokenAddress = toLower(token?.id);
     const metadata = getTokenMetadata(tokenAddress);
     if (token.totalLiquidity === '0' || token.derivedETH === '0') return;
 
@@ -109,7 +108,7 @@ export const uniswapPairsInit = () => (dispatch, getState) => {
   const { network } = getState().settings;
   const pairs =
     network === networkTypes.mainnet
-      ? CURATED_UNISWAP_TOKENS
+      ? rainbowTokenList.CURATED_TOKENS
       : getTestnetUniswapPairs(network);
   dispatch({
     payload: pairs,
@@ -141,12 +140,16 @@ export const uniswapUpdateFavorites = (assetAddress, add = true) => (
 
 // -- Reducer --------------------------------------------------------------- //
 export const INITIAL_UNISWAP_STATE = {
-  allTokens: RAINBOW_TOKEN_LIST,
+  get allTokens() {
+    return rainbowTokenList.RAINBOW_TOKEN_LIST;
+  },
   favorites: DefaultUniswapFavorites['mainnet'],
   fetchingUniswap: false,
   loadingAllTokens: true,
   loadingUniswap: false,
-  pairs: CURATED_UNISWAP_TOKENS,
+  get pairs() {
+    return rainbowTokenList.CURATED_TOKENS;
+  },
 };
 
 export default (state = INITIAL_UNISWAP_STATE, action) =>

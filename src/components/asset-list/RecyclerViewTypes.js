@@ -90,11 +90,13 @@ export const ViewTypes = {
 
   COIN_SMALL_BALANCES: {
     calculateHeight: ({ isOpen, smallBalancesLength, isCoinListEdited }) =>
-      isOpen
-        ? smallBalancesLength * CoinRowHeight +
-          openSmallBalancesAdditionalHeight +
-          (isCoinListEdited ? editModeAdditionalHeight : 0)
-        : closedSmallBalancesAdditionalHeight,
+      smallBalancesLength > 0
+        ? isOpen
+          ? smallBalancesLength * CoinRowHeight +
+            openSmallBalancesAdditionalHeight +
+            (isCoinListEdited ? editModeAdditionalHeight : 0)
+          : closedSmallBalancesAdditionalHeight
+        : 0,
     index: 3,
     renderComponent: ({ data }) => {
       const { item = {}, renderItem } = data;
@@ -163,7 +165,6 @@ export const ViewTypes = {
       const firstRowExtraTopPadding = isFirst ? firstUniqueTokenMarginTop : 0;
       const heightOfRows = amountOfRows * UniqueTokenRow.cardSize;
       const heightOfRowMargins = UniqueTokenRow.cardMargin * (amountOfRows - 1);
-
       const height =
         SectionHeaderHeight +
         firstRowExtraTopPadding +

@@ -1,60 +1,57 @@
-import React from 'react';
+import { toLower } from 'lodash';
+import React, { useMemo } from 'react';
 import { ActivityIndicator, PixelRatio, StyleSheet, View } from 'react-native';
 import styled from 'styled-components';
+import { ENS_NFT_CONTRACT_ADDRESS } from '../../../references';
 import { magicMemo } from '../../../utils';
+import { getLowResUrl } from '../../../utils/getLowResUrl';
 import { SimpleModelView } from '../../3d';
 import { AudioPlayer } from '../../audio';
-import { Centered } from '../../layout';
 import { UniqueTokenImage } from '../../unique-token';
 import { SimpleVideo } from '../../video';
+import { ZoomableWrapper } from './ZoomableWrapper';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   useDimensions,
-  useImageMetadata,
+  usePersistentAspectRatio,
   useUniqueToken,
 } from '@rainbow-me/hooks';
-import { margin, padding, position } from '@rainbow-me/styles';
+import { position } from '@rainbow-me/styles';
 
-const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
 const pixelRatio = PixelRatio.get();
 
-const Container = styled(Centered)`
-  ${({ horizontalPadding }) => padding(0, horizontalPadding)};
-  height: ${({ height }) => height};
-  ${android ? `margin-bottom: 10;` : ``}
-`;
-
-const ImageWrapper = styled(Centered)`
-  ${({ isImageHuge, horizontalPadding }) =>
-    margin(isImageHuge ? horizontalPadding : 0, 0)};
-  ${position.size('100%')};
-  border-radius: ${({ borderRadius }) => borderRadius || 10};
-  overflow: hidden;
-`;
+const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
+const MAX_IMAGE_SCALE = 4;
 
 const ModelView = styled(SimpleModelView)`
   ${position.size('100%')};
 `;
 
 const LoadingWrapper = styled(View)`
-  position: absolute;
-  width: 100%;
+  align-items: flex-end;
   height: 100%;
+  justify-content: flex-end;
   padding-bottom: 10;
   padding-right: 10;
-  align-items: flex-end;
-  justify-content: flex-end;
+  position: absolute;
 `;
 
-const UniqueTokenExpandedStateImage = ({
+const UniqueTokenExpandedStateContent = ({
+  animationProgress,
   asset,
   borderRadius,
-  height,
-  horizontalPadding = 19,
-  resizeMode = 'contain',
+  horizontalPadding = 24,
+  imageColor,
+  resizeMode = 'cover',
+  textColor,
+  disablePreview,
+  yPosition,
 }) => {
   const { width: deviceWidth } = useDimensions();
 
+  const maxImageWidth = deviceWidth - horizontalPadding * 2;
+  const isENS =
+    toLower(asset.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
   const isSVG = isSupportedUriExtension(asset.image_url, ['.svg']);
   const imageUrl = isSVG
     ? asset.image_preview_url
@@ -62,83 +59,78 @@ const UniqueTokenExpandedStateImage = ({
       asset.image_original_url ||
       asset.image_preview_url ||
       asset.image_thumbnail_url;
-  const { dimensions: imageDimensions } = useImageMetadata(imageUrl);
-  const size = Math.ceil((deviceWidth * pixelRatio) / 100) * 100;
+  const size = deviceWidth * pixelRatio;
   const url = useMemo(() => {
     if (asset.image_url?.startsWith?.(GOOGLE_USER_CONTENT_URL) && size > 0) {
-      return `${asset.image_url}=w${size}`;
+      return `${asset.image_url}=w${size * MAX_IMAGE_SCALE}`;
     }
+    if (asset.isPoap) return asset.animation_url;
     return asset.image_url;
-  }, [asset.image_url, size]);
+  }, [asset.animation_url, asset.image_url, asset.isPoap, size]);
 
-  const lowResUrl = useMemo(() => {
-    if (asset.image_url?.startsWith?.(GOOGLE_USER_CONTENT_URL) && size > 0) {
-      return `${asset.image_url}=w${12}`;
-    }
-    return null;
-  }, [asset.image_url, size]);
-
-  const maxImageWidth = deviceWidth - horizontalPadding * 2;
-  const maxImageHeight = maxImageWidth * 1.5;
-
-  const heightForDeviceSize =
-    (maxImageWidth * imageDimensions.height) / imageDimensions.width;
-
-  const containerHeight =
-    heightForDeviceSize > maxImageHeight ? maxImageWidth : heightForDeviceSize;
-
+  const lowResUrl = isENS ? url : getLowResUrl(asset.image_url);
   const { supports3d, supportsVideo, supportsAudio } = useUniqueToken(asset);
 
-  // When rendering a 3D/Video assets, we'll default to rendering a loading icon.
+  const supportsAnythingExceptImage =
+    supports3d || supportsVideo || supportsAudio;
+  const aspectRatio = usePersistentAspectRatio(asset.image_url);
+  const aspectRatioWithFallback =
+    supports3d || supportsAudio ? 0.88 : aspectRatio.result || 1;
+
+  // default to showing a loading spinner for 3D/video assets
   const [loading, setLoading] = React.useState(supports3d || supportsVideo);
 
   return (
-    <Container
-      height={height || containerHeight}
+    <ZoomableWrapper
+      animationProgress={animationProgress}
+      aspectRatio={aspectRatioWithFallback}
+      borderRadius={borderRadius}
+      disableAnimations={disablePreview || supportsAnythingExceptImage}
       horizontalPadding={horizontalPadding}
+      isENS={isENS}
+      yDisplacement={yPosition}
     >
-      <ImageWrapper
-        borderRadius={borderRadius}
-        horizontalPadding={horizontalPadding}
-        isImageHuge={heightForDeviceSize > maxImageHeight}
-      >
-        <View style={StyleSheet.absoluteFill}>
-          {supportsVideo ? (
-            <SimpleVideo
-              loading={loading}
-              posterUri={imageUrl}
-              setLoading={setLoading}
-              style={StyleSheet.absoluteFill}
-              uri={asset.animation_url || imageUrl}
-            />
-          ) : supports3d ? (
-            <ModelView
-              fallbackUri={imageUrl}
-              loading={loading}
-              setLoading={setLoading}
-              uri={asset.animation_url || imageUrl}
-            />
-          ) : supportsAudio ? (
-            <AudioPlayer uri={asset.animation_url || imageUrl} />
-          ) : (
-            <UniqueTokenImage
-              backgroundColor={asset.background}
-              imageUrl={url}
-              item={asset}
-              lowResUrl={lowResUrl}
-              resizeMode={resizeMode}
-              size={maxImageWidth}
-            />
-          )}
-          {!!loading && (
-            <LoadingWrapper>
-              <ActivityIndicator />
-            </LoadingWrapper>
-          )}
-        </View>
-      </ImageWrapper>
-    </Container>
+      <View style={StyleSheet.absoluteFill}>
+        {supportsVideo ? (
+          <SimpleVideo
+            loading={loading}
+            posterUri={imageUrl}
+            setLoading={setLoading}
+            style={StyleSheet.absoluteFill}
+            uri={asset.animation_url || imageUrl}
+          />
+        ) : supports3d ? (
+          <ModelView
+            fallbackUri={imageUrl}
+            loading={loading}
+            setLoading={setLoading}
+            uri={asset.animation_url || imageUrl}
+          />
+        ) : supportsAudio ? (
+          <AudioPlayer
+            fontColor={textColor}
+            imageColor={imageColor}
+            uri={asset.animation_url || imageUrl}
+          />
+        ) : (
+          <UniqueTokenImage
+            backgroundColor={asset.background}
+            imageUrl={isSVG ? asset.image_url : url}
+            item={asset}
+            lowResUrl={lowResUrl}
+            resizeMode={resizeMode}
+            size={maxImageWidth}
+            transformSvgs={false}
+          />
+        )}
+        {!!loading && (
+          <LoadingWrapper>
+            <ActivityIndicator />
+          </LoadingWrapper>
+        )}
+      </View>
+    </ZoomableWrapper>
   );
 };
 
-export default magicMemo(UniqueTokenExpandedStateImage, 'asset.uniqueId');
+export default magicMemo(UniqueTokenExpandedStateContent, 'asset.uniqueId');

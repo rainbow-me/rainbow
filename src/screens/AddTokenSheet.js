@@ -84,12 +84,12 @@ export default function AddTokenSheet() {
   const isTokenInList = useCallback(
     listId => {
       if (listId === 'favorites') {
-        return !!favorites.find(
+        return !!favorites?.find(
           address => toLower(address) === toLower(item.address)
         );
       } else {
-        const list = lists.find(list => list.id === listId);
-        return !!list.tokens.find(
+        const list = lists?.find(list => list?.id === listId);
+        return !!list?.tokens?.find(
           token => toLower(token) === toLower(item.address)
         );
       }
@@ -142,24 +142,24 @@ export default function AddTokenSheet() {
 
           <Column align="center" marginBottom={8}>
             {DefaultTokenLists[network]
-              .filter(list => WRITEABLE_LISTS.indexOf(list.id) !== -1)
+              .filter(list => WRITEABLE_LISTS.indexOf(list?.id) !== -1)
               .map(list => {
-                const alreadyAdded = isTokenInList(list.id);
+                const alreadyAdded = isTokenInList(list?.id);
                 const handleAdd = () => {
                   if (alreadyAdded) return;
-                  updateList(item.address, list.id, !alreadyAdded);
+                  updateList(item.address, list?.id, !alreadyAdded);
                   haptics.notificationSuccess();
                 };
                 const handleRemove = () => {
-                  updateList(item.address, list.id, false);
+                  updateList(item.address, list?.id, false);
                   haptics.notificationSuccess();
                 };
                 return (
-                  <Row align="center" key={`list-${list.id}`}>
+                  <Row align="center" key={`list-${list?.id}`}>
                     <ListButton
                       alreadyAdded={alreadyAdded}
                       onPress={alreadyAdded ? handleRemove : handleAdd}
-                      testID={`add-to-${list.id}`}
+                      testID={`add-to-${list?.id}`}
                     >
                       <Row>
                         <ListEmoji name={list.emoji} />
@@ -179,7 +179,7 @@ export default function AddTokenSheet() {
                     {alreadyAdded && (
                       <RemoveButton
                         onPress={handleRemove}
-                        testID={`remove-from-${list.id}`}
+                        testID={`remove-from-${list?.id}`}
                       >
                         <RemoveButtonContent>􀈔 Remove</RemoveButtonContent>
                       </RemoveButton>
@@ -192,7 +192,6 @@ export default function AddTokenSheet() {
           <SheetActionButtonRow>
             <SheetActionButton
               color={colors.white}
-              fullWidth
               label="Cancel"
               onPress={goBack}
               size="big"

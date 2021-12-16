@@ -12,7 +12,7 @@ const LabelText = styled(Text).attrs(({ shareButton, theme: { colors } }) => ({
   weight: shareButton ? 'heavy' : 'bold',
 }))`
   position: absolute;
-  top: ${android ? -15 : -16};
+  top: ${android ? -15 : -15.5};
   ${({ shareButton }) => shareButton && `width:  100%;`};
 `;
 

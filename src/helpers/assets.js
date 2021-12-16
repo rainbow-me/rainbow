@@ -183,7 +183,61 @@ export const buildCoinsList = (
     });
   }
 
-  return { addedEth, assets: allAssets, totalBalancesValue };
+  return {
+    addedEth,
+    assets: allAssets,
+    smallBalancesValue,
+    totalBalancesValue,
+  };
+};
+
+// TODO make it better
+export const buildBriefCoinsList = (
+  assetsOriginal,
+  nativeCurrency,
+  isCoinListEdited,
+  pinnedCoins,
+  hiddenCoins,
+  includePlaceholder = false,
+  emptyCollectibles
+) => {
+  const { assets, smallBalancesValue, totalBalancesValue } = buildCoinsList(
+    assetsOriginal,
+    nativeCurrency,
+    isCoinListEdited,
+    pinnedCoins,
+    hiddenCoins,
+    includePlaceholder,
+    emptyCollectibles
+  );
+  const briefAssets = [];
+  if (assets) {
+    for (let asset of assets) {
+      if (asset.coinDivider) {
+        briefAssets.push({
+          type: 'COIN_DIVIDER',
+          uid: 'coin-divider',
+          value: smallBalancesValue,
+        });
+      } else if (asset.smallBalancesContainer) {
+        for (let smallAsset of asset.assets) {
+          briefAssets.push({
+            type: 'COIN',
+            uid: 'coin-' + smallAsset.uniqueId,
+            uniqueId: smallAsset.uniqueId,
+          });
+        }
+      } else {
+        briefAssets.push({
+          type: 'COIN',
+          uid: 'coin-' + asset.uniqueId,
+          uniqueId: asset.uniqueId,
+        });
+      }
+    }
+  }
+
+  return { briefAssets, totalBalancesValue };
 };
 
 export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
@@ -212,7 +266,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
       }
     }
     let tokens = compact(tokensRow);
-    tokens = chunk(tokens, tokens.length > 25 ? 4 : 25);
+    tokens = chunk(tokens, 50);
     // eslint-disable-next-line no-loop-func
     tokens.forEach((tokenChunk, index) => {
       const id = tokensRow[0]
@@ -266,6 +320,59 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
     row.tokens[0][0].rowNumber = i;
   });
   return rows;
+};
+
+const regex = RegExp(/\s*(the)\s/, 'i');
+
+export const buildBriefUniqueTokenList = (
+  uniqueTokens,
+  selectedShowcaseTokens
+) => {
+  const uniqueTokensNotInShowcase = uniqueTokens.filter(
+    ({ uniqueId }) => !selectedShowcaseTokens.includes(uniqueId)
+  );
+  const uniqueTokensInShowcase = uniqueTokens
+    .filter(({ uniqueId }) => selectedShowcaseTokens.includes(uniqueId))
+    .map(({ uniqueId }) => uniqueId);
+  const grouped2 = groupBy(
+    uniqueTokensNotInShowcase,
+    token => token.familyName
+  );
+  const families2 = sortBy(Object.keys(grouped2), row =>
+    row.replace(regex, '').toLowerCase()
+  );
+  const result = [
+    { type: 'NFTS_HEADER_SPACE_BEFORE', uid: 'nfts-header-space-before' },
+    { type: 'NFTS_HEADER', uid: 'nfts-header' },
+    { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
+  ];
+  if (uniqueTokensInShowcase.length > 0) {
+    result.push({ name: 'Showcase', type: 'FAMILY_HEADER', uid: 'showcase' });
+    for (let index = 0; index < uniqueTokensInShowcase.length; index++) {
+      const uniqueId = uniqueTokensInShowcase[index];
+      result.push({ index, type: 'NFT', uid: uniqueId, uniqueId });
+    }
+
+    result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
+  }
+  for (let family of families2) {
+    result.push({
+      image: grouped2[family][0].familyImage,
+      name: family,
+      total: grouped2[family].length,
+      type: 'FAMILY_HEADER',
+      uid: family,
+    });
+    const tokens = grouped2[family].map(({ uniqueId }) => uniqueId);
+    for (let index = 0; index < tokens.length; index++) {
+      const uniqueId = tokens[index];
+
+      result.push({ index, type: 'NFT', uid: uniqueId, uniqueId });
+    }
+
+    result.push({ type: 'NFT_SPACE_AFTER', uid: `${family}-space-after` });
+  }
+  return result;
 };
 
 export const buildUniqueTokenName = ({ collection, id, name }) =>

@@ -1,8 +1,6 @@
 import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
-import { DATA_API_KEY, DATA_ORIGIN } from 'react-native-dotenv';
 import io from 'socket.io-client';
-// eslint-disable-next-line import/no-cycle
-import { arbitrumExplorerInit } from './arbitrumExplorer';
+import config from '../model/config';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
 /* eslint-disable-next-line import/no-cycle */
 import {
@@ -17,13 +15,13 @@ import {
 import {
   fallbackExplorerClearState,
   fallbackExplorerInit,
+  fetchOnchainBalances,
 } from './fallbackExplorer';
 // eslint-disable-next-line import/no-cycle
 import { optimismExplorerInit } from './optimismExplorer';
-// eslint-disable-next-line import/no-cycle
-import { polygonExplorerInit } from './polygonExplorer';
 import { updateTopMovers } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
+import { getProviderForNetwork, isHardHat } from '@rainbow-me/handlers/web3';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import currencyTypes from '@rainbow-me/helpers/currencyTypes';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
@@ -32,7 +30,7 @@ import {
   ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
 } from '@rainbow-me/references';
-import { TokensListenedCache } from '@rainbow-me/utils';
+import { ethereumUtils, TokensListenedCache } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -44,7 +42,7 @@ const EXPLORER_SET_FALLBACK_HANDLER = 'explorer/EXPLORER_SET_FALLBACK_HANDLER';
 
 let assetInfoHandle = null;
 
-const TRANSACTIONS_LIMIT = 1000;
+const TRANSACTIONS_LIMIT = 250;
 const ZERION_ASSETS_TIMEOUT = 15000; // 15 seconds
 const ASSET_INFO_TIMEOUT = 10 * 60 * 1000; // 10 minutes
 
@@ -53,6 +51,8 @@ const messages = {
     APPENDED: 'appended address assets',
     CHANGED: 'changed address assets',
     RECEIVED: 'received address assets',
+    RECEIVED_ARBITRUM: 'received address arbitrum-assets',
+    RECEIVED_POLYGON: 'received address polygon-assets',
     REMOVED: 'removed address assets',
   },
   ADDRESS_PORTFOLIO: {
@@ -84,10 +84,10 @@ const messages = {
 
 // -- Actions ---------------------------------------- //
 const createSocket = endpoint =>
-  io(`wss://api-v4.zerion.io/${endpoint}`, {
-    extraHeaders: { origin: DATA_ORIGIN },
+  io(`${config.data_endpoint}/${endpoint}`, {
+    extraHeaders: { origin: config.data_origin },
     query: {
-      api_token: `${DATA_API_KEY}`,
+      api_token: config.data_api_key,
     },
     transports: ['websocket'],
   });
@@ -163,6 +163,17 @@ const assetInfoRequest = (currency, order = 'desc') => [
       search_query: '#Token is:verified',
     },
     scope: ['info'],
+  },
+];
+
+const addressAssetsRequest = (address, currency) => [
+  'get',
+  {
+    payload: {
+      address,
+      currency: toLower(currency),
+    },
+    scope: ['assets'],
   },
 ];
 
@@ -265,7 +276,13 @@ export const explorerInit = () => async (dispatch, getState) => {
 
   // Fallback to the testnet data provider
   // if we're not on mainnnet
-  if (network !== NetworkTypes.mainnet || forceFallbackProvider) {
+  const provider = await getProviderForNetwork(network);
+  const providerUrl = provider?.connection?.url;
+  if (
+    isHardHat(providerUrl) ||
+    network !== NetworkTypes.mainnet ||
+    forceFallbackProvider
+  ) {
     return dispatch(fallbackExplorerInit());
   }
 
@@ -410,7 +427,69 @@ const listenOnAssetMessages = socket => dispatch => {
   });
 };
 
-const listenOnAddressMessages = socket => (dispatch, getState) => {
+export const explorerInitL2 = (network = null) => (dispatch, getState) => {
+  if (getState().settings.network === NetworkTypes.mainnet) {
+    switch (network) {
+      case NetworkTypes.arbitrum:
+      case NetworkTypes.polygon:
+        // Fetch all assets from refraction
+        dispatch(fetchAssetsFromRefraction());
+        break;
+      case NetworkTypes.optimism:
+        // Start watching optimism assets
+        dispatch(optimismExplorerInit());
+        break;
+      default:
+        // Start watching all L2 assets
+        dispatch(fetchAssetsFromRefraction());
+        dispatch(optimismExplorerInit());
+    }
+  }
+};
+
+const fetchAssetsFromRefraction = () => (_dispatch, getState) => {
+  const { accountAddress, nativeCurrency } = getState().settings;
+  const { addressSocket } = getState().explorer;
+  addressSocket.emit(...addressAssetsRequest(accountAddress, nativeCurrency));
+};
+
+const l2AddressAssetsReceived = (message, network) => (dispatch, getState) => {
+  const { assets: allAssets, genericAssets } = getState().data;
+
+  const newAssets = message?.payload?.assets?.map(asset => {
+    const mainnetAddress = toLower(asset?.asset?.mainnet_address);
+    const fallbackAsset =
+      mainnetAddress &&
+      (ethereumUtils.getAsset(allAssets, mainnetAddress) ||
+        genericAssets[mainnetAddress]);
+
+    if (fallbackAsset) {
+      return {
+        ...asset,
+        asset: {
+          ...asset?.asset,
+          price: {
+            ...asset?.asset?.price,
+            ...fallbackAsset.price,
+          },
+        },
+      };
+    }
+    return asset;
+  });
+
+  const updatedMessage = {
+    ...message,
+    payload: {
+      ...message?.payload,
+      assets: newAssets,
+    },
+  };
+
+  dispatch(addressAssetsReceived(updatedMessage, false, false, false, network));
+};
+
+const listenOnAddressMessages = socket => dispatch => {
   socket.on(messages.ADDRESS_PORTFOLIO.RECEIVED, message => {
     dispatch(portfolioReceived(message));
   });
@@ -423,16 +502,33 @@ const listenOnAddressMessages = socket => (dispatch, getState) => {
   socket.on(messages.ADDRESS_TRANSACTIONS.APPENDED, message => {
     logger.log('txns appended', message?.payload?.transactions);
     dispatch(transactionsReceived(message, true));
+    // Fetch balances onchain to override zerion's
+    // which is likely behind
+    dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.CHANGED, message => {
     logger.log('txns changed', message?.payload?.transactions);
     dispatch(transactionsReceived(message, true));
+    // Fetch balances onchain to override zerion's
+    // which is likely behind
+    dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
   socket.on(messages.ADDRESS_TRANSACTIONS.REMOVED, message => {
     logger.log('txns removed', message?.payload?.transactions);
     dispatch(transactionsRemoved(message));
+    // Fetch balances onchain to override zerion's
+    // which is likely behind
+    dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
+  });
+
+  socket.on(messages.ADDRESS_ASSETS.RECEIVED_ARBITRUM, message => {
+    dispatch(l2AddressAssetsReceived(message, NetworkTypes.arbitrum));
+  });
+
+  socket.on(messages.ADDRESS_ASSETS.RECEIVED_POLYGON, message => {
+    dispatch(l2AddressAssetsReceived(message, NetworkTypes.polygon));
   });
 
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
@@ -442,30 +538,35 @@ const listenOnAddressMessages = socket => (dispatch, getState) => {
         '😬 Cancelling fallback data provider listener. Zerion is good!'
       );
       dispatch(disableFallbackIfNeeded());
-      if (getState().settings.network === NetworkTypes.mainnet) {
-        // Start watching arbitrum assets
-        dispatch(arbitrumExplorerInit());
-        // Start watching optimism assets
-        dispatch(optimismExplorerInit());
-        // Start watching polygon assets
-        dispatch(polygonExplorerInit());
-      }
+      dispatch(explorerInitL2(NetworkTypes.optimism));
+      // Fetch balances onchain to override zerion's
+      // which is likely behind
+      dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
     }
   });
 
   socket.on(messages.ADDRESS_ASSETS.APPENDED, message => {
     dispatch(addressAssetsReceived(message, true));
     dispatch(disableFallbackIfNeeded());
+    // Fetch balances onchain to override zerion's
+    // which is likely behind
+    dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
   socket.on(messages.ADDRESS_ASSETS.CHANGED, message => {
     dispatch(addressAssetsReceived(message, false, true));
     dispatch(disableFallbackIfNeeded());
+    // Fetch balances onchain to override zerion's
+    // which is likely behind
+    dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
   socket.on(messages.ADDRESS_ASSETS.REMOVED, message => {
     dispatch(addressAssetsReceived(message, false, false, true));
     dispatch(disableFallbackIfNeeded());
+    // Fetch balances onchain to override zerion's
+    // which is likely behind
+    dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 };
 

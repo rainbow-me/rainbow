@@ -93,7 +93,6 @@ describe('Send Sheet Interaction Flow', () => {
   });
 
   it('Should do nothing on typing jibberish send address', async () => {
-    await Helpers.checkIfVisible('send-asset-form-field');
     await Helpers.typeText('send-asset-form-field', 'gvuabefhiwdnomks', false);
     await Helpers.checkIfNotVisible('send-asset-ETH');
   });
@@ -110,14 +109,27 @@ describe('Send Sheet Interaction Flow', () => {
     await Helpers.checkIfVisible('send-asset-list');
   });
 
-  it('Should show show Contact Button & Asset List on valid ENS address', async () => {
+  it('Should show show Contact Button & Asset List on valid ENS & Unstoppable addresses', async () => {
     await Helpers.clearField('send-asset-form-field');
     await Helpers.checkIfVisible('send-asset-form-field');
-    await Helpers.typeText('send-asset-form-field', 'poopcoin.eth\n', false);
+    await Helpers.typeText(
+      'send-asset-form-field',
+      'neverselling.wallet\n',
+      false
+    );
+    await Helpers.checkIfVisible('add-contact-button');
+    await Helpers.checkIfVisible('send-asset-list');
+    await Helpers.clearField('send-asset-form-field');
+    await Helpers.typeText(
+      'send-asset-form-field',
+      'rainbowwallet.eth\n',
+      false
+    );
     await Helpers.checkIfVisible('add-contact-button');
     await Helpers.checkIfVisible('send-asset-list');
   });
 
+  /*
   it('Should display Asset Form after tapping on savings asset', async () => {
     await Helpers.checkIfVisible('send-savings-cDAI');
     await Helpers.waitAndTap('send-savings-cDAI');
@@ -127,7 +139,7 @@ describe('Send Sheet Interaction Flow', () => {
   it('Should go back to Asset List after tapping on savings asset', async () => {
     await Helpers.waitAndTap('send-asset-form-cDAI');
     await Helpers.checkIfVisible('send-asset-list');
-  });
+  });*/
 
   it('Should display Asset Form after tapping on asset', async () => {
     await Helpers.checkIfVisible('send-asset-DAI');

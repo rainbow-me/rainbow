@@ -195,7 +195,7 @@ const ItemRow = ({ data }) => {
 };
 
 const WalletDiagnosticsSheet = () => {
-  const { height: deviceHeight, width: deviceWidth } = useDimensions();
+  const { height: deviceHeight } = useDimensions();
   const { colors } = useTheme();
   const { navigate, goBack } = useNavigation();
   const [keys, setKeys] = useState();
@@ -364,7 +364,6 @@ const WalletDiagnosticsSheet = () => {
               Wallet secrets
             </Text>
             <SheetActionButton
-              androidWidth={deviceWidth - 40}
               color={colors.alpha(colors.green, 0.06)}
               isTransparent
               label="Authenticate with PIN"
@@ -423,7 +422,6 @@ const WalletDiagnosticsSheet = () => {
 
         {keys && (
           <SheetActionButton
-            androidWidth={deviceWidth - 40}
             color={colors.alpha(colors.appleBlue, 0.06)}
             isTransparent
             label="Got it"

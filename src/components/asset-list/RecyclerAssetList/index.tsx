@@ -18,7 +18,6 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { connect } from 'react-redux';
 import {
   DataProvider,
   LayoutProvider,
@@ -31,14 +30,20 @@ import {
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
 import styled from 'styled-components';
 import { withThemeContext } from '../../../context/ThemeContext';
-import { CoinDivider } from '../../coin-divider';
+import { CoinDivider, CoinDividerHeight } from '../../coin-divider';
 import { CoinRowHeight } from '../../coin-row';
 import AssetListHeader, { AssetListHeaderHeight } from '../AssetListHeader';
 import { firstCoinRowMarginTop, ViewTypes } from '../RecyclerViewTypes';
-
 import LayoutItemAnimator from './LayoutItemAnimator';
 import { EthereumAddress } from '@rainbow-me/entities';
-import { usePrevious } from '@rainbow-me/hooks';
+import {
+  useCoinListEdited,
+  useOpenFamilies,
+  useOpenInvestmentCards,
+  useOpenSavings,
+  useOpenSmallBalances,
+  usePrevious,
+} from '@rainbow-me/hooks';
 import { deviceUtils, logger } from '@rainbow-me/utils';
 
 const extractCollectiblesIdFromRow = (row: {
@@ -57,7 +62,7 @@ const extractCollectiblesIdFromRow = (row: {
             asset_contract: { address: EthereumAddress };
             id: string;
           }) => {
-            tokenAddresses += `${individualToken?.asset_contract?.address}|${individualToken.id}||`;
+            tokenAddresses += `${individualToken?.asset_contract?.address}|${individualToken?.id}||`;
           }
         );
       }
@@ -201,29 +206,6 @@ export type RecyclerAssetListSection = {
   readonly type: string;
 };
 
-// TODO: This should be global.
-export type RecyclerAssetListReduxProps = {
-  readonly editOptions: {
-    readonly isCoinListEdited: boolean;
-  };
-  readonly openSavings: boolean;
-  readonly openSmallBalances: boolean;
-  readonly openStateSettings: {
-    readonly openFamilyTabs: {
-      readonly [key: string]: boolean;
-    };
-    readonly openInvestmentCards: {
-      readonly [key: string]: boolean;
-    };
-    readonly openSavings: {
-      readonly [key: string]: boolean;
-    };
-    readonly openSmallBalances: {
-      readonly [key: string]: boolean;
-    };
-  };
-};
-
 const NoStickyContainer = ({
   children,
 }: {
@@ -231,9 +213,7 @@ const NoStickyContainer = ({
 }): JSX.Element => children;
 
 export type RecyclerAssetListProps = {
-  readonly isCoinListEdited: boolean;
   readonly fetchData: () => Promise<unknown>;
-  readonly setIsBlockingUpdate: (isBlockingUpdate: boolean) => void;
   // TODO: This needs to be migrated into a global type.
   readonly colors: {
     readonly alpha: (color: string, alpha: number) => string;
@@ -241,41 +221,34 @@ export type RecyclerAssetListProps = {
   };
   readonly sections: readonly RecyclerAssetListSection[];
   readonly paddingBottom?: number;
-  readonly isBlockingUpdate: boolean;
   readonly hideHeader: boolean;
   readonly renderAheadOffset?: number;
-  readonly openInvestmentCards: boolean;
-  readonly openFamilyTabs: {
-    readonly [key: string]: boolean;
-  };
-  readonly openSavings: boolean;
-  readonly openFamilies?: boolean;
   readonly showcase?: boolean;
   readonly disableStickyHeaders?: boolean;
   readonly disableAutoScrolling?: boolean;
   readonly disableRefreshControl?: boolean;
-  readonly openSmallBalances: boolean;
 };
 
 function RecyclerAssetList({
-  isCoinListEdited,
   fetchData,
   colors,
   sections,
-  openInvestmentCards,
-  openFamilyTabs,
-  openSavings,
-  openSmallBalances,
   paddingBottom = 0,
   hideHeader,
   renderAheadOffset = deviceUtils.dimensions.height,
-  setIsBlockingUpdate,
   showcase,
   disableStickyHeaders,
   disableAutoScrolling,
   disableRefreshControl,
   ...extras
 }: RecyclerAssetListProps): JSX.Element {
+  const { isCoinListEdited } = useCoinListEdited();
+  const {
+    isInvestmentCardsOpen: openInvestmentCards,
+  } = useOpenInvestmentCards();
+  const { isSavingsOpen: openSavings } = useOpenSavings();
+  const { isSmallBalancesOpen: openSmallBalances } = useOpenSmallBalances();
+  const { openFamilies: openFamilyTabs } = useOpenFamilies();
   const { ref, handleRef } = useRecyclerListViewRef();
   const stickyCoinDividerRef = React.useRef<View>() as React.RefObject<View>;
   const [globalDeviceDimensions, setGlobalDeviceDimensions] = useState<number>(
@@ -384,15 +357,13 @@ function RecyclerAssetList({
     }
     try {
       setIsRefreshing(true);
-      setIsBlockingUpdate(true);
       await fetchData();
     } catch (e) {
       logger.error(e);
     } finally {
-      setTimeout(() => setIsBlockingUpdate(false), 200);
       setIsRefreshing(false);
     }
-  }, [isRefreshing, fetchData, setIsBlockingUpdate]);
+  }, [isRefreshing, setIsRefreshing, fetchData]);
   const onLayout = useCallback(
     ({ nativeEvent }: LayoutChangeEvent) => {
       // set globalDeviceDimensions
@@ -613,7 +584,6 @@ function RecyclerAssetList({
             visibleDuringCoinEdit: ViewTypes.COIN_ROW.visibleDuringCoinEdit,
           };
         }
-
         if (collectiblesIndex > -1) {
           if (index > sectionsIndices[collectiblesIndex]) {
             const familyIndex = items[index].familySectionIndex;
@@ -673,6 +643,7 @@ function RecyclerAssetList({
     sectionsIndices,
     showcase,
   ]);
+  layoutProvider.shouldRefreshWithAnchoring = false;
 
   const scrollViewProps = useMemo(
     (): Partial<ScrollViewProps> =>
@@ -697,14 +668,6 @@ function RecyclerAssetList({
     return isEqualDataProvider.cloneWithRows(items);
   }, [items]);
 
-  const scrollToOffset = useCallback(
-    (offsetY: number, animated: boolean = false) =>
-      requestAnimationFrame(
-        () => !disableAutoScrolling && ref?.scrollToOffset(0, offsetY, animated)
-      ),
-    [disableAutoScrolling, ref]
-  );
-
   const lastSections = usePrevious(sections) || sections;
   const lastOpenFamilyTabs = usePrevious(openFamilyTabs) || openFamilyTabs;
   const lastIsCoinListEdited =
@@ -717,117 +680,91 @@ function RecyclerAssetList({
   useEffect(() => {
     let collectibles: RecyclerAssetListSection = {} as RecyclerAssetListSection;
     let prevCollectibles: RecyclerAssetListSection = {} as RecyclerAssetListSection;
+    let balances: RecyclerAssetListSection = {} as RecyclerAssetListSection;
+    let smallBalances: any = {};
+    let savings: any = {};
+    let pools: RecyclerAssetListSection = {} as RecyclerAssetListSection;
 
-    sections.forEach(section => {
-      if (section.collectibles) {
-        collectibles = section;
-      }
-    });
-
-    lastSections.forEach(section => {
-      if (section.collectibles) {
-        prevCollectibles = section;
-      }
-    });
-
-    const bottomHorizonOfScreen =
-      (ref?.getCurrentScrollOffset() || 0) + globalDeviceDimensions;
-
-    // Auto-scroll to opened family logic 👇
-    if (openFamilyTabs !== lastOpenFamilyTabs && collectibles.data) {
-      let i = 0;
-      while (i < collectibles.data.length) {
-        if (
-          openFamilyTabs[
-            collectibles.data[i].familyName + (showcase ? '-showcase' : '')
-          ] === true &&
-          !lastOpenFamilyTabs[
-            collectibles.data[i].familyName + (showcase ? '-showcase' : '')
-          ]
-        ) {
-          const safeIndex = i;
-          const safeCollectibles = collectibles;
-          const familyIndex = findIndex(
-            dataProvider.getAllData(),
-            function (data) {
-              return (
-                data.item?.familyName ===
-                safeCollectibles.data[safeIndex].familyName
-              );
-            }
-          );
-
-          const focusedFamilyItem = dataProvider.getAllData()[familyIndex].item;
-          const focusedFamilyHeight = ViewTypes.UNIQUE_TOKEN_ROW.calculateHeight(
-            {
-              amountOfRows: Math.ceil(
-                Number(focusedFamilyItem.childrenAmount) / 2
-              ),
-              isFirst: false,
-              isHeader: true,
-              isOpen: true,
-            }
-          );
-
-          const layout = ref?.getLayout(familyIndex);
-          if (layout) {
-            const startOfDesiredComponent = layout.y - AssetListHeaderHeight;
-            if (focusedFamilyHeight < globalDeviceDimensions) {
-              const endOfDesiredComponent =
-                startOfDesiredComponent +
-                focusedFamilyHeight +
-                AssetListHeaderHeight;
-              if (endOfDesiredComponent > bottomHorizonOfScreen) {
-                scrollToOffset(
-                  endOfDesiredComponent - globalDeviceDimensions,
-                  true
-                );
-              }
-            } else {
-              scrollToOffset(startOfDesiredComponent, true);
-            }
-          }
-          break;
+    if (sections) {
+      sections.forEach(section => {
+        if (section?.collectibles) {
+          collectibles = section;
         }
-        i++;
-      }
-    }
-
-    // Auto-scroll to end of the list if something was closed/disappeared 👇
-    if (
-      ref &&
-      ref.getContentDimension().height <
-        bottomHorizonOfScreen +
-          ViewTypes.FOOTER.calculateHeight({
-            paddingBottom: paddingBottom || 0,
-          }) &&
-      ref.getCurrentScrollOffset() > 0 &&
-      (!isCoinListEdited || (!lastIsCoinListEdited && isCoinListEdited))
-    ) {
-      requestAnimationFrame(() => ref?.scrollToEnd(true));
-    }
-
-    // Auto-scroll to showcase family if something was added/removed 👇
-    if (
-      collectibles.data &&
-      prevCollectibles.data &&
-      collectibles.data[0]?.familyName === 'Showcase' &&
-      (collectibles.data[0]?.childrenAmount !==
-        prevCollectibles.data[0]?.childrenAmount ||
-        prevCollectibles.data[0]?.familyName !== 'Showcase')
-    ) {
-      const familyIndex = findIndex(dataProvider.getAllData(), function (data) {
-        return data.item?.familyName === 'Showcase';
+        if (section?.balances) {
+          balances = section;
+        }
+        if (section?.pools) {
+          pools = section;
+        }
       });
 
-      const layout = ref?.getLayout(familyIndex);
-      if (layout) {
-        const { y: startOfDesiredComponent } = layout;
-        scrollToOffset(startOfDesiredComponent - AssetListHeaderHeight, true);
+      let balancesRows = [];
+      let coinDividerHeight = 0;
+
+      balances?.data?.forEach(element => {
+        if (element?.smallBalancesContainer) {
+          smallBalances = element;
+        } else if (element?.savingsContainer) {
+          savings = element;
+        } else if (element?.coinDivider) {
+          coinDividerHeight = CoinDividerHeight;
+        } else {
+          balancesRows.push(element);
+        }
+      });
+      const balancesHeight = balancesRows.length * CoinRowHeight;
+      //-3 for pixel perfection
+      const smallBalancesHeight =
+        ViewTypes.COIN_SMALL_BALANCES.calculateHeight({
+          isCoinListEdited: isCoinListEdited,
+          isOpen: openSmallBalances,
+          smallBalancesLength: smallBalances?.assets?.length || 0,
+        }) +
+        coinDividerHeight -
+        3;
+
+      const savingsHeight = ViewTypes.COIN_SAVINGS.calculateHeight({
+        amountOfRows: savings?.assets?.length || 0,
+        isLast: false,
+        isOpen: openSavings,
+      });
+
+      const poolsHeight = ViewTypes.POOLS.calculateHeight({
+        amountOfRows: pools?.data?.length || 0,
+        isLast: !!pools.data,
+        isOpen: openInvestmentCards,
+      });
+
+      const colleciblesStartHeight =
+        balancesHeight + smallBalancesHeight + savingsHeight + poolsHeight;
+
+      lastSections.forEach(section => {
+        if (section.collectibles) {
+          prevCollectibles = section;
+        }
+      });
+
+      // Auto-scroll to showcase family if something was added/removed 👇
+      if (
+        collectibles.data &&
+        prevCollectibles.data &&
+        collectibles.data[0]?.familyName === 'Showcase' &&
+        (collectibles.data[0]?.childrenAmount >
+          prevCollectibles.data[0]?.childrenAmount ||
+          prevCollectibles.data[0]?.familyName !== 'Showcase')
+      ) {
+        const showcaseHeight = colleciblesStartHeight + AssetListHeaderHeight;
+        setTimeout(
+          () =>
+            !disableAutoScrolling &&
+            ref?.scrollToOffset(0, showcaseHeight, true),
+          100
+        );
       }
     }
   }, [
     ref,
+    disableAutoScrolling,
     globalDeviceDimensions,
     dataProvider,
     lastIsCoinListEdited,
@@ -836,8 +773,10 @@ function RecyclerAssetList({
     sections,
     isCoinListEdited,
     openFamilyTabs,
+    openInvestmentCards,
+    openSavings,
+    openSmallBalances,
     paddingBottom,
-    scrollToOffset,
     showcase,
   ]);
 
@@ -888,30 +827,10 @@ function RecyclerAssetList({
           },
         ]}
       >
-        <CoinDivider balancesSum={0} isSticky onEndEdit={() => null} />
+        <CoinDivider balancesSum={0} isSticky />
       </View>
     </StyledContainer>
   );
 }
 
-export default connect(
-  ({
-    editOptions: { isCoinListEdited },
-    openStateSettings: {
-      openFamilyTabs,
-      openInvestmentCards,
-      openSavings,
-      openSmallBalances,
-    },
-  }: RecyclerAssetListReduxProps) => ({
-    isCoinListEdited,
-    openFamilyTabs,
-    openInvestmentCards,
-    openSavings,
-    openSmallBalances,
-  })
-)(
-  withThemeContext(
-    React.memo(RecyclerAssetList, (_, curr) => curr.isBlockingUpdate)
-  )
-);
+export default withThemeContext(RecyclerAssetList);

@@ -13,22 +13,24 @@ import {
   DiscoverHeaderButton,
   Header,
   ProfileHeaderButton,
+  ScanHeaderButton,
 } from '../components/header';
-import { Page } from '../components/layout';
+import { Page, RowWithMargins } from '../components/layout';
 import { useEth } from '../utils/ethereumUtils';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountEmptyState,
   useAccountSettings,
   useCoinListEdited,
+  useInitializeDiscoverData,
   useInitializeWallet,
+  useLoadGlobalLateData,
   usePortfolios,
   useRefreshAccountData,
   useUserAccounts,
   useWallets,
   useWalletSectionsData,
 } from '@rainbow-me/hooks';
-import { useCoinListEditedValue } from '@rainbow-me/hooks/useCoinListEdited';
 import { useNavigation } from '@rainbow-me/navigation';
 import { updateRefetchSavings } from '@rainbow-me/redux/data';
 import {
@@ -67,7 +69,11 @@ export default function WalletScreen() {
   const { network } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
-
+  const loadGlobalLateData = useLoadGlobalLateData();
+  const initializeDiscoverData = useInitializeDiscoverData();
+  const walletReady = useSelector(
+    ({ appState: { walletReady } }) => walletReady
+  );
   const {
     isWalletEthZero,
     refetchSavings,
@@ -102,11 +108,15 @@ export default function WalletScreen() {
   }, [dispatch, refetchSavings, shouldRefetchSavings]);
 
   useEffect(() => {
-    if (!initialized || (params?.emptyWallet && initialized)) {
-      // We run the migrations only once on app launch
-      initializeWallet(null, null, null, !params?.emptyWallet);
+    const initializeAndSetParams = async () => {
+      await initializeWallet(null, null, null, !params?.emptyWallet);
       setInitialized(true);
       setParams({ emptyWallet: false });
+    };
+
+    if (!initialized || (params?.emptyWallet && initialized)) {
+      // We run the migrations only once on app launch
+      initializeAndSetParams();
     }
   }, [initializeWallet, initialized, params, setParams]);
 
@@ -152,6 +162,13 @@ export default function WalletScreen() {
     }
   }, [assetsSocket, dispatch, fetchedCharts, initialized, sections]);
 
+  useEffect(() => {
+    if (walletReady && assetsSocket) {
+      loadGlobalLateData();
+      initializeDiscoverData();
+    }
+  }, [assetsSocket, initializeDiscoverData, loadGlobalLateData, walletReady]);
+
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
   const fabs = useMemo(
@@ -163,8 +180,6 @@ export default function WalletScreen() {
     [network]
   );
 
-  const isCoinListEditedValue = useCoinListEditedValue();
-
   const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);
 
   return (
@@ -172,7 +187,6 @@ export default function WalletScreen() {
       {ios && <StatusBar barStyle="dark-content" />}
       {/* Line below appears to be needed for having scrollViewTracker persistent while
       reattaching of react subviews */}
-      <Animated.View style={{ opacity: isCoinListEditedValue }} />
       <Animated.Code exec={scrollViewTracker} />
       <FabWrapper
         disabled={isAccountEmpty || !!params?.emptyWallet}
@@ -183,11 +197,13 @@ export default function WalletScreen() {
         <HeaderOpacityToggler isVisible={isCoinListEdited}>
           <Header justify="space-between">
             <ProfileHeaderButton />
-            <DiscoverHeaderButton />
+            <RowWithMargins margin={10}>
+              <DiscoverHeaderButton />
+              <ScanHeaderButton />
+            </RowWithMargins>
           </Header>
         </HeaderOpacityToggler>
         <AssetList
-          disableAutoScrolling
           disableRefreshControl={isLoadingAssets}
           fetchData={refreshAccountData}
           isEmpty={isAccountEmpty || !!params?.emptyWallet}

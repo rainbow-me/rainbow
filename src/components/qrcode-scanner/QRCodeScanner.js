@@ -91,7 +91,7 @@ export default function QRCodeScanner({
   return (
     <Container>
       <CameraWrapper>
-        {cameraEnabled && isEmulator && <EmulatorCameraFallback />}
+        {__DEV__ && cameraEnabled && isEmulator && <EmulatorCameraFallback />}
         {(cameraEnabled || android) && !isEmulator && (
           <Camera
             captureAudio={false}
@@ -113,7 +113,10 @@ export default function QRCodeScanner({
       ) : (
         <Fragment>
           <QRCodeScannerNeedsAuthorization />
-          <ContentOverlay contentPositionTop={contentPositionTop + 350}>
+          <ContentOverlay
+            contentPositionTop={contentPositionTop + 350}
+            pointerEvents="box-none"
+          >
             <ConnectedDapps />
           </ContentOverlay>
         </Fragment>

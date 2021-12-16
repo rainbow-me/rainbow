@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment version="4352" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -66,9 +66,9 @@
                             </accessibility>
                             <fontDescription key="fontDescription" name="SFRounded-Bold" family="SF Pro Rounded" pointSize="20"/>
                             <color key="tintColor" red="0.054901960780000002" green="0.46274509800000002" blue="0.99215686270000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <inset key="contentEdgeInsets" minX="0.0" minY="4" maxX="13" maxY="0.0"/>
-                            <inset key="titleEdgeInsets" minX="0.5" minY="0.0" maxX="0.0" maxY="8"/>
-                            <inset key="imageEdgeInsets" minX="4" minY="0.0" maxX="0.0" maxY="1"/>
+                            <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="13" maxY="0.0"/>
+                            <inset key="titleEdgeInsets" minX="0.5" minY="0.0" maxX="0.0" maxY="2"/>
+                            <inset key="imageEdgeInsets" minX="4" minY="4.5" maxX="0.0" maxY="0.0"/>
                             <state key="normal" title="Add Cash" image="addCashIcon">
                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </state>
@@ -141,17 +141,17 @@
                     </accessibility>
                 </view>
                 <view contentMode="scaleToFill" horizontalHuggingPriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="5Zx-ay-mQu" userLabel="Account Name View">
-                    <rect key="frame" x="75.666666666666671" y="78" width="223.66666666666663" height="31"/>
+                    <rect key="frame" x="72.666666666666671" y="78" width="229.66666666666663" height="31"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Initializing..." textAlignment="justified" lineBreakMode="tailTruncation" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LxS-BQ-P6T">
-                            <rect key="frame" x="30" y="0.3333333333333286" width="136" height="31"/>
+                            <rect key="frame" x="30" y="0.3333333333333286" width="142" height="31"/>
                             <fontDescription key="fontDescription" name="SFRounded-Bold" family="SF Pro Rounded" pointSize="26"/>
                             <color key="textColor" red="0.14509803921568626" green="0.16078431372549018" blue="0.1803921568627451" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                             <size key="shadowOffset" width="0.0" height="0.0"/>
                         </label>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="caret-down" translatesAutoresizingMaskIntoConstraints="NO" id="L5x-F9-gnk">
-                            <rect key="frame" x="172.66666666666669" y="12" width="21" height="9"/>
+                            <rect key="frame" x="178.66666666666669" y="12" width="21" height="9"/>
                             <color key="tintColor" systemColor="systemGreenColor"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="21" id="3pf-vr-r8f"/>
@@ -159,7 +159,7 @@
                             </constraints>
                         </imageView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0BU-ID-e0s">
-                            <rect key="frame" x="0.0" y="0.0" width="223.66666666666666" height="31"/>
+                            <rect key="frame" x="0.0" y="0.0" width="229.66666666666666" height="31"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <fontDescription key="fontDescription" name="SFRounded-Semibold" family="SF Pro Rounded" pointSize="16"/>
                             <color key="tintColor" red="0.054901960780000002" green="0.46274509800000002" blue="0.99215686270000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

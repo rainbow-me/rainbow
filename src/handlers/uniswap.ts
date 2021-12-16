@@ -1,6 +1,6 @@
-import { Provider } from '@ethersproject/abstract-provider';
 import { Signer } from '@ethersproject/abstract-signer';
 import { Contract } from '@ethersproject/contracts';
+import { Provider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
 import {
@@ -105,7 +105,7 @@ export const estimateSwapGasLimit = async ({
       chainId,
       inputCurrency,
       outputCurrency,
-      providerOrSigner: web3Provider,
+      providerOrSigner: web3Provider!,
       slippage,
       tradeDetails,
     });
@@ -115,10 +115,11 @@ export const estimateSwapGasLimit = async ({
       methodNames.map((methodName: string) =>
         estimateGasWithPadding(
           params,
+          // @ts-ignore
           exchange.estimateGas[methodName],
           updatedMethodArgs
         )
-          .then((value: string) => value)
+          .then((value: string | null) => value ?? undefined)
           .catch((error: Error) => {
             logger.sentry(
               `Error estimating swap method ${methodName} with: ${error}`
@@ -366,7 +367,8 @@ export const executeSwap = async ({
   accountAddress,
   chainId,
   gasLimit,
-  gasPrice,
+  maxFeePerGas,
+  maxPriorityFeePerGas,
   inputCurrency,
   nonce,
   outputCurrency,
@@ -378,7 +380,8 @@ export const executeSwap = async ({
   accountAddress: string;
   chainId: ChainId;
   gasLimit: string | number;
-  gasPrice: string;
+  maxFeePerGas: string;
+  maxPriorityFeePerGas: string;
   inputCurrency: Asset;
   nonce?: number;
   outputCurrency: Asset;
@@ -401,7 +404,8 @@ export const executeSwap = async ({
 
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
-    gasPrice: toHex(gasPrice) || undefined,
+    maxFeePerGas: toHex(maxFeePerGas) || undefined,
+    maxPriorityFeePerGas: toHex(maxPriorityFeePerGas) || undefined,
     nonce: nonce ? toHex(nonce) : undefined,
     ...(value ? { value } : {}),
   };
@@ -412,20 +416,19 @@ export const getAllTokens = async () => {
   const { dispatch } = store;
   try {
     let dataEnd = false;
-    //setting an extremely safe upper limit for token volume
-    let lastUSDVolume = '1000000000000';
+    let lastId = '';
 
     while (!dataEnd) {
       let result = await uniswapClient.query({
         query: UNISWAP_ALL_TOKENS,
         variables: {
           first: UniswapPageSize,
-          lastUSDVolume,
+          lastId,
         },
       });
       const resultTokens = result?.data?.tokens || [];
       const lastItem = resultTokens[resultTokens.length - 1];
-      lastUSDVolume = lastItem?.tradeVolumeUSD ?? '';
+      lastId = lastItem?.id ?? '';
       dispatch(uniswapUpdateTokens(resultTokens));
       if (resultTokens.length < UniswapPageSize) {
         dispatch(uniswapLoadedAllTokens());

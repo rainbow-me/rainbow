@@ -49,6 +49,7 @@ const NativePriceText = styled(TruncatedText).attrs({
 const TruncatedAmountText = styled(AmountText).attrs({
   as: TruncatedText,
 })`
+  ${android && 'height: 26.7;'}
   flex-grow: 0;
   flex-shrink: 1;
 `;

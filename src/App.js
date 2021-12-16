@@ -8,6 +8,7 @@ import React, { Component } from 'react';
 import {
   AppRegistry,
   AppState,
+  InteractionManager,
   Linking,
   LogBox,
   NativeModules,
@@ -26,11 +27,13 @@ import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider } from 'react-redux';
+import { RecoilRoot } from 'recoil';
 import PortalConsumer from './components/PortalConsumer';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
 import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
 import {
+  designSystemPlaygroundEnabled,
   reactNativeDisableYellowBox,
   showNetworkRequests,
   showNetworkResponses,
@@ -38,9 +41,11 @@ import {
 import { MainThemeProvider } from './context/ThemeContext';
 import { InitialRouteContext } from './context/initialRoute';
 import monitorNetwork from './debugging/network';
+import { Playground } from './design-system/playground/Playground';
 import appEvents from './handlers/appEvents';
 import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
+import { isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
@@ -48,10 +53,16 @@ import { loadAddress } from './model/wallet';
 import { walletConnectInit } from './model/walletConnect';
 import { Navigation } from './navigation';
 import RoutesComponent from './navigation/Routes';
-import { explorerInit } from './redux/explorer';
+import { explorerInitL2 } from './redux/explorer';
+import { fetchOnchainBalances } from './redux/fallbackExplorer';
 import { requestsForTopic } from './redux/requests';
 import store from './redux/store';
+import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
+import { rainbowTokenList } from './references';
+import { ethereumUtils } from './utils';
+import { analyticsUserIdentifier } from './utils/keychainConstants';
+import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
@@ -90,11 +101,15 @@ class App extends Component {
       logger.sentry(`Test flight usage - ${isTestFlight}`);
     }
     this.identifyFlow();
+    InteractionManager.runAfterInteractions(() => {
+      rainbowTokenList.update();
+    });
     AppState.addEventListener('change', this.handleAppStateChange);
 
     // Wallet connect v2
     walletConnectInit();
 
+    rainbowTokenList.on('update', this.handleTokenListUpdate);
     appEvents.on('transactionConfirmed', this.handleTransactionConfirmed);
     await this.handleInitializeAnalytics();
     saveFCMToken();
@@ -161,6 +176,7 @@ class App extends Component {
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this.handleAppStateChange);
+    rainbowTokenList?.off?.('update', this.handleTokenListUpdate);
     this.onTokenRefreshListener?.();
     this.foregroundNotificationListener?.();
     this.backgroundNotificationListener?.();
@@ -175,6 +191,10 @@ class App extends Component {
       this.setState({ initialRoute: Routes.WELCOME_SCREEN });
     }
   };
+
+  async handleTokenListUpdate() {
+    store.dispatch(uniswapPairsInit());
+  }
 
   onRemoteNotification = notification => {
     const topic = get(notification, 'data.topic');
@@ -202,15 +222,13 @@ class App extends Component {
   handleInitializeAnalytics = async () => {
     // Comment the line below to debug analytics
     if (__DEV__) return false;
-    const storedIdentifier = await keychain.loadString(
-      'analyticsUserIdentifier'
-    );
+    const storedIdentifier = await keychain.loadString(analyticsUserIdentifier);
 
     if (!storedIdentifier) {
       const identifier = await RNIOS11DeviceCheck.getToken()
         .then(deviceId => deviceId)
         .catch(() => nanoid());
-      await keychain.saveString('analyticsUserIdentifier', identifier);
+      await keychain.saveString(analyticsUserIdentifier, identifier);
       analytics.identify(identifier);
     }
 
@@ -227,6 +245,9 @@ class App extends Component {
     // Restore WC connectors when going from BG => FG
     if (this.state.appState === 'background' && nextAppState === 'active') {
       store.dispatch(walletConnectLoadState());
+      InteractionManager.runAfterInteractions(() => {
+        rainbowTokenList.update();
+      });
     }
     this.setState({ appState: nextAppState });
 
@@ -239,12 +260,24 @@ class App extends Component {
   handleNavigatorRef = navigatorRef =>
     Navigation.setTopLevelNavigator(navigatorRef);
 
-  handleTransactionConfirmed = () => {
-    logger.log('Reloading all data from zerion in 10!');
-    setTimeout(() => {
-      logger.log('Reloading all data from zerion NOW!');
-      store.dispatch(explorerInit());
-    }, 10000);
+  handleTransactionConfirmed = tx => {
+    const network = ethereumUtils.getNetworkFromChainId(tx.chainId);
+    const isL2 = isL2Network(network);
+    const updateBalancesAfter = (timeout, isL2, network) => {
+      setTimeout(() => {
+        logger.log('Reloading balances for network', network);
+        if (isL2) {
+          store.dispatch(explorerInitL2(network));
+        } else {
+          store.dispatch(
+            fetchOnchainBalances({ keepPolling: false, withPrices: false })
+          );
+        }
+      }, timeout);
+    };
+    logger.log('reloading balances soon...');
+    updateBalancesAfter(2000, isL2, network);
+    updateBalancesAfter(isL2 ? 10000 : 5000, isL2, network);
   };
 
   render = () => (
@@ -254,17 +287,21 @@ class App extends Component {
           <Portal>
             <SafeAreaProvider>
               <Provider store={store}>
-                <FlexItem>
-                  {this.state.initialRoute && (
-                    <InitialRouteContext.Provider
-                      value={this.state.initialRoute}
-                    >
-                      <RoutesComponent ref={this.handleNavigatorRef} />
-                      <PortalConsumer />
-                    </InitialRouteContext.Provider>
-                  )}
-                  <OfflineToast />
-                </FlexItem>
+                <RecoilRoot>
+                  <SharedValuesProvider>
+                    <FlexItem>
+                      {this.state.initialRoute && (
+                        <InitialRouteContext.Provider
+                          value={this.state.initialRoute}
+                        >
+                          <RoutesComponent ref={this.handleNavigatorRef} />
+                          <PortalConsumer />
+                        </InitialRouteContext.Provider>
+                      )}
+                      <OfflineToast />
+                    </FlexItem>
+                  </SharedValuesProvider>
+                </RecoilRoot>
               </Provider>
             </SafeAreaProvider>
           </Portal>
@@ -283,4 +320,6 @@ const AppWithRedux = connect(
 
 const AppWithReduxStore = () => <AppWithRedux store={store} />;
 
-AppRegistry.registerComponent('Rainbow', () => AppWithReduxStore);
+AppRegistry.registerComponent('Rainbow', () =>
+  designSystemPlaygroundEnabled ? Playground : AppWithReduxStore
+);

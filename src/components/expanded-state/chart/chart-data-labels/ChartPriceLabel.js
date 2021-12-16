@@ -1,10 +1,12 @@
 import { get } from 'lodash';
 import React from 'react';
 import { PixelRatio, Text } from 'react-native';
+import { useWorkletCallback } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { Row } from '../../../layout';
 import ChartHeaderTitle from './ChartHeaderTitle';
 import { ChartYLabel } from '@rainbow-me/animated-charts';
+import { NativeCurrencyKeys } from '@rainbow-me/entities';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
@@ -19,7 +21,6 @@ const Label = styled(ChartYLabel)`
   ${android &&
   `margin-top: -30;
      margin-bottom: -30;
-     width: 150px;
      `}
 `;
 
@@ -54,7 +55,7 @@ export function formatNative(value, priceSharedValue, nativeSelected) {
       : 2;
 
   let res = `${Number(value).toFixed(decimals).toLocaleString('en-US', {
-    currency: 'USD',
+    currency: NativeCurrencyKeys.USD,
   })}`;
   res =
     nativeSelected?.alignment === 'left'
@@ -74,6 +75,19 @@ export default function ChartPriceLabel({
 }) {
   const { nativeCurrency } = useAccountSettings();
   const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
+
+  const format = useWorkletCallback(
+    value => {
+      'worklet';
+      const formatted = formatNative(value, priceSharedValue, nativeSelected);
+      if (android) {
+        return formatted.replace(/[^\d.,-]/g, '');
+      }
+      return formatted;
+    },
+    [nativeSelected]
+  );
+
   return isNoPriceData ? (
     <ChartHeaderTitle>{defaultValue}</ChartHeaderTitle>
   ) : (
@@ -87,20 +101,7 @@ export default function ChartPriceLabel({
           {nativeSelected?.symbol}
         </AndroidCurrencySymbolLabel>
       )}
-      <Label
-        format={value => {
-          'worklet';
-          const formatted = formatNative(
-            value,
-            priceSharedValue,
-            nativeSelected
-          );
-          if (android) {
-            return formatted.replace(/[^\d.,-]/g, '');
-          }
-          return formatted;
-        }}
-      />
+      <Label format={format} />
     </ChartPriceRow>
   );
 }

@@ -5,7 +5,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Animated, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+  Animated,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+  ViewStyle,
+} from 'react-native';
 // @ts-ignore
 import Video from 'react-native-video';
 import convertToProxyURL from 'react-native-video-cache';
@@ -62,13 +68,14 @@ export default function SimpleVideo({
     }),
     [uri]
   );
+  const [controlsEnabled, setControlsEnabled] = useState(false);
   const [opacity] = useState<Animated.Value>(
     () => new Animated.Value(loading ? 1 : 0)
   );
 
   useEffect(() => {
     Animated.timing(opacity, {
-      duration: 1000,
+      duration: 225,
       toValue: loading ? 1 : 0,
       useNativeDriver: true,
     }).start();
@@ -86,22 +93,26 @@ export default function SimpleVideo({
     };
   }, [ref]);
   return (
-    <View style={[styles.flex, StyleSheet.flatten(style)]}>
-      <StyledBackground />
-      <StyledVideo
-        controls
-        onLoad={() => setLoading(false)}
-        ref={ref}
-        repeat
-        resizeMode="cover"
-        source={source}
-      />
-      <StyledPosterContainer
-        pointerEvents={loading ? 'auto' : 'none'}
-        style={{ opacity }}
-      >
-        <StyledImgixImage source={{ uri: posterUri }} />
-      </StyledPosterContainer>
-    </View>
+    <TouchableWithoutFeedback
+      onPress={() => !controlsEnabled && setControlsEnabled(true)}
+    >
+      <View style={[styles.flex, StyleSheet.flatten(style)]}>
+        <StyledBackground />
+        <StyledVideo
+          controls={controlsEnabled}
+          onLoad={() => setLoading(false)}
+          ref={ref}
+          repeat
+          resizeMode="cover"
+          source={source}
+        />
+        <StyledPosterContainer
+          pointerEvents={loading ? 'auto' : 'none'}
+          style={{ opacity }}
+        >
+          <StyledImgixImage source={{ uri: posterUri }} />
+        </StyledPosterContainer>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }

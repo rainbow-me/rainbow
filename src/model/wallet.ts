@@ -1,18 +1,16 @@
 import { TransactionRequest } from '@ethersproject/abstract-provider';
-import {
-  arrayify,
-  BytesLike,
-  Hexable,
-  joinSignature,
-} from '@ethersproject/bytes';
+import { arrayify, BytesLike, Hexable } from '@ethersproject/bytes';
 import { HDNode } from '@ethersproject/hdnode';
 import { Provider } from '@ethersproject/providers';
-import { SigningKey } from '@ethersproject/signing-key';
 import { Transaction } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
+import {
+  signTypedData,
+  SignTypedDataVersion,
+  TypedMessage,
+} from '@metamask/eth-sig-util';
 import { captureException, captureMessage } from '@sentry/react-native';
 import { generateMnemonic } from 'bip39';
-import { signTypedData_v4, signTypedDataLegacy } from 'eth-sig-util';
 import { isValidAddress, toBuffer, toChecksumAddress } from 'ethereumjs-util';
 import {
   hdkey as EthereumHDKey,
@@ -21,7 +19,7 @@ import {
 import lang from 'i18n-js';
 import { find, findKey, forEach, get, isEmpty } from 'lodash';
 import { Alert } from 'react-native';
-import { ACCESSIBLE, getSupportedBiometryType } from 'react-native-keychain';
+import { getSupportedBiometryType } from 'react-native-keychain';
 import { lightModeThemeColors } from '../styles/colors';
 import {
   addressKey,
@@ -61,10 +59,10 @@ import logger from 'logger';
 
 const encryptor = new AesEncryptor();
 
-type EthereumPrivateKey = string;
+export type EthereumPrivateKey = string;
 type EthereumMnemonic = string;
 type EthereumSeed = string;
-type EthereumWalletSeed =
+export type EthereumWalletSeed =
   | EthereumAddress
   | EthereumPrivateKey
   | EthereumMnemonic
@@ -186,9 +184,6 @@ export const DEFAULT_HD_PATH = `m/44'/60'/0'/0`;
 export const DEFAULT_WALLET_NAME = 'My Wallet';
 
 const authenticationPrompt = lang.t('wallet.authenticate.please');
-export const publicAccessControlOptions = {
-  accessible: ACCESSIBLE.ALWAYS_THIS_DEVICE_ONLY,
-};
 
 export const walletInit = async (
   seedPhrase = null,
@@ -234,6 +229,7 @@ export const loadWallet = async (
     return null;
   }
   if (privateKey) {
+    // @ts-ignore
     return new Wallet(privateKey, provider || web3Provider);
   }
   if (ios && showErrorIfNotLoaded) {
@@ -324,9 +320,8 @@ export const signMessage = async (
       existingWallet || (await loadWallet(undefined, true, provider));
     try {
       if (!wallet) return null;
-      const signingKey = new SigningKey(wallet.privateKey);
-      const sigParams = await signingKey.signDigest(arrayify(message));
-      return { result: joinSignature(sigParams) };
+      const result = await wallet.signMessage(arrayify(message));
+      return { result };
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
       logger.sentry('Error', error);
@@ -357,8 +352,8 @@ export const signPersonalMessage = async (
     try {
       if (!wallet) return null;
       const result = await wallet.signMessage(
-        typeof message === 'string' && isHexString(message)
-          ? arrayify(message)
+        typeof message === 'string' && isHexString(addHexPrefix(message))
+          ? arrayify(addHexPrefix(message))
           : message
       );
       return { result };
@@ -414,18 +409,13 @@ export const signTypedDataMessage = async (
         version = 'v4';
       }
 
-      switch (version) {
-        case 'v4':
-          return {
-            result: signTypedData_v4(pkeyBuffer, {
-              data: parsedData,
-            }),
-          };
-        default:
-          return {
-            result: signTypedDataLegacy(pkeyBuffer, { data: parsedData }),
-          };
-      }
+      return {
+        result: signTypedData({
+          data: parsedData as TypedMessage<TypedDataTypes>,
+          privateKey: pkeyBuffer,
+          version: version.toUpperCase() as SignTypedDataVersion,
+        }),
+      };
     } catch (error) {
       Alert.alert(lang.t('wallet.transaction.alert.failed_sign_message'));
       logger.sentry('Error', error);
@@ -508,7 +498,7 @@ const loadPrivateKey = async (
 
 export const saveAddress = async (
   address: EthereumAddress,
-  accessControlOptions = publicAccessControlOptions
+  accessControlOptions = keychain.publicAccessControlOptions
 ): Promise<void> => {
   return keychain.saveString(addressKey, address, accessControlOptions);
 };
@@ -975,7 +965,7 @@ export const setSelectedWallet = async (
   return keychain.saveObject(
     selectedWalletKey,
     val,
-    publicAccessControlOptions
+    keychain.publicAccessControlOptions
   );
 };
 
@@ -999,7 +989,11 @@ export const saveAllWallets = async (wallets: AllRainbowWallets) => {
     wallets,
   };
 
-  await keychain.saveObject(allWalletsKey, val, publicAccessControlOptions);
+  await keychain.saveObject(
+    allWalletsKey,
+    val,
+    keychain.publicAccessControlOptions
+  );
 };
 
 export const getAllWallets = async (): Promise<null | AllRainbowWalletsData> => {
@@ -1115,7 +1109,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
       await keychain.saveString(
         oldSeedPhraseMigratedKey,
         'true',
-        publicAccessControlOptions
+        keychain.publicAccessControlOptions
       );
       logger.sentry(
         'Saved the migration flag to prevent this flow in the future'
@@ -1191,7 +1185,7 @@ const migrateSecrets = async (): Promise<MigratedSecretsResult | null> => {
     await keychain.saveString(
       oldSeedPhraseMigratedKey,
       'true',
-      publicAccessControlOptions
+      keychain.publicAccessControlOptions
     );
     logger.sentry('saved migrated key');
     return {

@@ -24,13 +24,12 @@ import {
   addressHashedColorIndex,
   addressHashedEmoji,
 } from '../utils/profileUtils';
-import { isL2Network } from '@rainbow-me/handlers/web3';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
-import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
+import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import {
   useAccountSettings,
   useAccountTransactions,
@@ -180,7 +179,16 @@ export default function SendConfirmationSheet() {
   }, []);
 
   const {
-    params: { asset, amountDetails, callback, isNft, network, to, toAddress },
+    params: {
+      amountDetails,
+      asset,
+      callback,
+      isL2,
+      isNft,
+      network,
+      to,
+      toAddress,
+    },
   } = useRoute();
 
   const [
@@ -266,10 +274,6 @@ export default function SendConfirmationSheet() {
     color = colors.appleBlue;
   }
 
-  const isL2 = useMemo(() => {
-    return isL2Network(network);
-  }, [network]);
-
   const shouldShowChecks =
     isL2 &&
     !isSendingToUserAccount &&
@@ -314,7 +318,7 @@ export default function SendConfirmationSheet() {
 
   const avatarName =
     removeFirstEmojiFromString(existingAccount?.label || contact?.nickname) ||
-    (isENSAddressFormat(to)
+    (isValidDomainFormat(to)
       ? to
       : walletNames?.[to]
       ? walletNames[to]

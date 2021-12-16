@@ -1,6 +1,7 @@
+import { memoFn } from '../utils/memoFn';
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 
-export const bigNumberFormat = (num, nativeCurrency, skipDecimals) => {
+export const bigNumberFormat = memoFn((num, nativeCurrency, skipDecimals) => {
   let ret;
   if (num > 1000000000) {
     ret = `${convertAmountToNativeDisplay(
@@ -23,4 +24,4 @@ export const bigNumberFormat = (num, nativeCurrency, skipDecimals) => {
   }
 
   return ret;
-};
+});

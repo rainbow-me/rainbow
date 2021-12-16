@@ -49,6 +49,10 @@ export async function typeTextAndHideKeyboard(elementId, text) {
   await typeText(elementId, text + '\n');
 }
 
+export async function hideKeyboard(elementId, text) {
+  await typeText(elementId, text + '\n');
+}
+
 export async function clearField(elementId) {
   return element(by.id(elementId)).replaceText('');
 }
@@ -148,7 +152,8 @@ export function checkIfElementHasString(elementID, text) {
   return expect(element(by.id(elementID).and(by.text(text)))).toExist();
 }
 
-export function relaunchApp() {
+export async function relaunchApp() {
+  await device.terminateApp('me.rainbow');
   return device.launchApp({ newInstance: true });
 }
 
