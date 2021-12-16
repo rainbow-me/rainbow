@@ -63,14 +63,8 @@ export default function useAsset(asset) {
 
     let matched = null;
     if (asset.type === AssetTypes.token) {
-      matched = find(
-        allAssets,
-        matchesProperty('address', asset.mainnet_address || asset.address)
-      );
+      matched = find(allAssets, matchesProperty('uniqueId', asset.uniqueId));
 
-      if (!matched) {
-        matched = find(allAssets, matchesProperty('uniqueId', asset.uniqueId));
-      }
       if (!matched) {
         matched = genericAssets?.[asset.mainnet_address || asset.address];
       }
