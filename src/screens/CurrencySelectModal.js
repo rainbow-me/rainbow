@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { map, toLower } from 'lodash';
+import { toLower } from 'lodash';
 import { matchSorter } from 'match-sorter';
 import React, {
   Fragment,
@@ -32,6 +32,7 @@ import {
   useTimeout,
   useUniswapAssets,
   useUniswapAssetsInWallet,
+  useUniswapSearch,
 } from '@rainbow-me/hooks';
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
@@ -87,101 +88,97 @@ export default function CurrencySelectModal() {
   const searchQueryExists = useMemo(() => searchQuery.length > 0, [
     searchQuery,
   ]);
-
+  const [currencyList, setCurrencyList] = useState();
   const { colors } = useTheme();
   const {
     curatedNotFavorited,
     favorites,
-    globalHighLiquidityAssets,
-    globalLowLiquidityAssets,
-    globalVerifiedAssets,
     loadingAllTokens,
     updateFavorites,
   } = useUniswapAssets();
+  const searchUniswapCurrencyList = useUniswapSearch();
   const uniswapAssetsInWallet = useUniswapAssetsInWallet();
 
-  const currencyList = useMemo(() => {
-    let filteredList = [];
-    if (type === CurrencySelectionTypes.input) {
-      filteredList = headerlessSection(uniswapAssetsInWallet);
-      if (searchQueryForSearch) {
-        filteredList = searchCurrencyList(
-          uniswapAssetsInWallet,
-          searchQueryForSearch
-        );
-        filteredList = headerlessSection(filteredList);
+  const filterCurrencyList = useCallback(
+    async query => {
+      let filteredList = [];
+      if (type === CurrencySelectionTypes.input) {
+        if (query) {
+          filteredList = headerlessSection(
+            searchCurrencyList(uniswapAssetsInWallet, query)
+          );
+        } else {
+          filteredList = headerlessSection(uniswapAssetsInWallet);
+        }
+      } else if (type === CurrencySelectionTypes.output) {
+        if (query) {
+          const filteredFavorite = searchCurrencyList(favorites, query);
+
+          const filteredVerified = await searchUniswapCurrencyList(
+            'verifiedAssets',
+            query
+          );
+          const filteredHighUnverified = await searchUniswapCurrencyList(
+            'highLiquidityAssets',
+            query
+          );
+          const filteredLow = await searchUniswapCurrencyList(
+            'lowLiquidityAssets',
+            query
+          );
+
+          filteredFavorite.length &&
+            filteredList.push({
+              color: colors.yellowFavorite,
+              data: filteredFavorite,
+              title: TokenSectionTypes.favoriteTokenSection,
+            });
+          filteredVerified.length &&
+            filteredList.push({
+              data: filteredVerified,
+              title: TokenSectionTypes.verifiedTokenSection,
+              useGradientText: IS_TESTING === 'true' ? false : true,
+            });
+
+          filteredHighUnverified.length &&
+            filteredList.push({
+              data: filteredHighUnverified,
+              title: TokenSectionTypes.unverifiedTokenSection,
+            });
+
+          filteredLow.length &&
+            filteredList.push({
+              data: filteredLow,
+              title: TokenSectionTypes.lowLiquidityTokenSection,
+            });
+        } else {
+          filteredList = [
+            {
+              color: colors.yellowFavorite,
+              data: favorites,
+              title: TokenSectionTypes.favoriteTokenSection,
+            },
+            {
+              data: curatedNotFavorited,
+              title: TokenSectionTypes.verifiedTokenSection,
+              useGradientText: IS_TESTING === 'true' ? false : true,
+            },
+          ];
+        }
       }
-    } else if (type === CurrencySelectionTypes.output) {
-      if (searchQueryForSearch) {
-        const [
-          filteredFavorite,
-          filteredVerified,
-          filteredHighUnverified,
-          filteredLow,
-        ] = map(
-          [
-            favorites,
-            globalVerifiedAssets,
-            globalHighLiquidityAssets,
-            globalLowLiquidityAssets,
-          ],
-          section => searchCurrencyList(section, searchQueryForSearch)
-        );
 
-        filteredList = [];
-        filteredFavorite.length &&
-          filteredList.push({
-            color: colors.yellowFavorite,
-            data: filteredFavorite,
-            title: TokenSectionTypes.favoriteTokenSection,
-          });
-
-        filteredVerified.length &&
-          filteredList.push({
-            data: filteredVerified,
-            title: TokenSectionTypes.verifiedTokenSection,
-            useGradientText: IS_TESTING === 'true' ? false : true,
-          });
-
-        filteredHighUnverified.length &&
-          filteredList.push({
-            data: filteredHighUnverified,
-            title: TokenSectionTypes.unverifiedTokenSection,
-          });
-
-        filteredLow.length &&
-          filteredList.push({
-            data: filteredLow,
-            title: TokenSectionTypes.lowLiquidityTokenSection,
-          });
-      } else {
-        filteredList = [
-          {
-            color: colors.yellowFavorite,
-            data: favorites,
-            title: TokenSectionTypes.favoriteTokenSection,
-          },
-          {
-            data: curatedNotFavorited,
-            title: TokenSectionTypes.verifiedTokenSection,
-            useGradientText: IS_TESTING === 'true' ? false : true,
-          },
-        ];
-      }
-    }
-    setIsSearching(false);
-    return filteredList;
-  }, [
-    colors,
-    curatedNotFavorited,
-    favorites,
-    globalVerifiedAssets,
-    globalHighLiquidityAssets,
-    globalLowLiquidityAssets,
-    searchQueryForSearch,
-    type,
-    uniswapAssetsInWallet,
-  ]);
+      setCurrencyList(filteredList);
+      setIsSearching(false);
+    },
+    [
+      colors,
+      curatedNotFavorited,
+      favorites,
+      searchUniswapCurrencyList,
+      type,
+      uniswapAssetsInWallet,
+    ]
+  );
 
   const [startQueryDebounce, stopQueryDebounce] = useTimeout();
   useEffect(() => {
@@ -190,9 +187,11 @@ export default function CurrencySelectModal() {
       () => {
         setIsSearching(true);
         setSearchQueryForSearch(searchQuery);
+        filterCurrencyList(searchQuery);
       },
       searchQuery === '' ? 1 : 250
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, startQueryDebounce, stopQueryDebounce]);
 
   const handleFavoriteAsset = useCallback(

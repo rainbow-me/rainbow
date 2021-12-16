@@ -26,6 +26,7 @@ import {
   useAccountAssets,
   useTimeout,
   useUniswapAssets,
+  useUniswapSearch,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
@@ -56,11 +57,9 @@ export default function DiscoverSearch() {
   const {
     curatedNotFavorited,
     favorites,
-    globalHighLiquidityAssets,
-    globalLowLiquidityAssets,
-    globalVerifiedAssets,
     loadingAllTokens,
   } = useUniswapAssets();
+  const searchUniswapCurrencyList = useUniswapSearch();
   const {
     isFetchingEns,
     setIsSearching,
@@ -121,27 +120,24 @@ export default function DiscoverSearch() {
     [handleActionAsset, handlePress]
   );
 
-  const searchInFilteredLow = useCallback(
-    searchQueryForSearch => {
-      setTimeout(() => {
-        const filteredLow = searchCurrencyList(
-          globalLowLiquidityAssets,
-          searchQueryForSearch
-        );
-        let lowCurrencyList = [];
-        if (filteredLow.length) {
-          lowCurrencyList = [
-            {
-              data: filteredLow,
-              title: tokenSectionTypes.lowLiquidityTokenSection,
-            },
-          ];
-        }
-        setLowCurrencyList(lowCurrencyList);
-      }, 0);
-    },
-    [globalLowLiquidityAssets]
-  );
+  const searchInFilteredLow = useCallback(searchQueryForSearch => {
+    setTimeout(async () => {
+      const filteredLow = await searchUniswapCurrencyList(
+        'lowLiquidityAssets',
+        searchQueryForSearch
+      );
+      let lowCurrencyList = [];
+      if (filteredLow.length) {
+        lowCurrencyList = [
+          {
+            data: filteredLow,
+            title: tokenSectionTypes.lowLiquidityTokenSection,
+          },
+        ];
+      }
+      setLowCurrencyList(lowCurrencyList);
+    }, 0);
+  }, []);
 
   const addEnsResults = useCallback(ensResults => {
     let ensSearchResults = [];
@@ -159,22 +155,18 @@ export default function DiscoverSearch() {
   }, []);
 
   const filterCurrencyList = useCallback(
-    searchQueryForSearch => {
+    async query => {
       let filteredList = [];
-      if (searchQueryForSearch) {
-        const filteredFavorite = searchCurrencyList(
-          favorites,
-          searchQueryForSearch
+      if (query) {
+        const filteredFavorite = searchCurrencyList(favorites, query);
+        const filteredVerified = await searchUniswapCurrencyList(
+          'verifiedAssets',
+          query
         );
-        const filteredVerified = searchCurrencyList(
-          globalVerifiedAssets,
-          searchQueryForSearch
+        const filteredHighUnverified = await searchUniswapCurrencyList(
+          'highLiquidityAssets',
+          query
         );
-        const filteredHighUnverified = searchCurrencyList(
-          globalHighLiquidityAssets,
-          searchQueryForSearch
-        );
-
         filteredList = [];
         filteredFavorite.length &&
           filteredList.push({
@@ -195,7 +187,7 @@ export default function DiscoverSearch() {
             data: filteredHighUnverified,
             title: tokenSectionTypes.unverifiedTokenSection,
           });
-        searchInFilteredLow(searchQueryForSearch);
+        searchInFilteredLow(query);
       } else {
         filteredList = [
           {
@@ -216,11 +208,10 @@ export default function DiscoverSearch() {
     [
       setIsSearching,
       favorites,
-      globalVerifiedAssets,
-      globalHighLiquidityAssets,
       colors.yellowFavorite,
       curatedNotFavorited,
       searchInFilteredLow,
+      searchUniswapCurrencyList,
     ]
   );
 
