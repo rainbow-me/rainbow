@@ -16,13 +16,14 @@ import {
   ScanHeaderButton,
 } from '../components/header';
 import { Page, RowWithMargins } from '../components/layout';
-import { useEth } from '../utils/ethereumUtils';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountEmptyState,
   useAccountSettings,
   useCoinListEdited,
+  useInitializeDiscoverData,
   useInitializeWallet,
+  useLoadGlobalLateData,
   usePortfolios,
   useRefreshAccountData,
   useUserAccounts,
@@ -35,7 +36,6 @@ import {
   emitChartsRequest,
   emitPortfolioRequest,
 } from '@rainbow-me/redux/explorer';
-import { updatePositions } from '@rainbow-me/redux/usersPositions';
 import { position } from '@rainbow-me/styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
@@ -67,7 +67,11 @@ export default function WalletScreen() {
   const { network } = useAccountSettings();
   const { userAccounts } = useUserAccounts();
   const { portfolios, trackPortfolios } = usePortfolios();
-
+  const loadGlobalLateData = useLoadGlobalLateData();
+  const initializeDiscoverData = useInitializeDiscoverData();
+  const walletReady = useSelector(
+    ({ appState: { walletReady } }) => walletReady
+  );
   const {
     isWalletEthZero,
     refetchSavings,
@@ -75,14 +79,7 @@ export default function WalletScreen() {
     shouldRefetchSavings,
   } = useWalletSectionsData();
 
-  const eth = useEth();
-  const numberOfPools = sections.find(({ pools }) => pools)?.data.length ?? 0;
-
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    eth?.price?.value && dispatch(updatePositions());
-  }, [dispatch, eth?.price?.value, numberOfPools]);
 
   const { addressSocket, assetsSocket } = useSelector(
     ({ explorer: { addressSocket, assetsSocket } }) => ({
@@ -102,11 +99,15 @@ export default function WalletScreen() {
   }, [dispatch, refetchSavings, shouldRefetchSavings]);
 
   useEffect(() => {
-    if (!initialized || (params?.emptyWallet && initialized)) {
-      // We run the migrations only once on app launch
-      initializeWallet(null, null, null, !params?.emptyWallet);
+    const initializeAndSetParams = async () => {
+      await initializeWallet(null, null, null, !params?.emptyWallet);
       setInitialized(true);
       setParams({ emptyWallet: false });
+    };
+
+    if (!initialized || (params?.emptyWallet && initialized)) {
+      // We run the migrations only once on app launch
+      initializeAndSetParams();
     }
   }, [initializeWallet, initialized, params, setParams]);
 
@@ -152,6 +153,13 @@ export default function WalletScreen() {
     }
   }, [assetsSocket, dispatch, fetchedCharts, initialized, sections]);
 
+  useEffect(() => {
+    if (walletReady && assetsSocket) {
+      loadGlobalLateData();
+      initializeDiscoverData();
+    }
+  }, [assetsSocket, initializeDiscoverData, loadGlobalLateData, walletReady]);
+
   // Show the exchange fab only for supported networks
   // (mainnet & rinkeby)
   const fabs = useMemo(
@@ -193,7 +201,6 @@ export default function WalletScreen() {
           isWalletEthZero={isWalletEthZero}
           network={network}
           scrollViewTracker={scrollViewTracker}
-          sections={sections}
         />
       </FabWrapper>
     </WalletPage>

@@ -1,11 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { MiniButton } from '../buttons';
@@ -57,16 +50,13 @@ const BubbleField = (
     value: valueProp,
     ...props
   },
-  forwardedRef
+  ref
 ) => {
   const { isSmallPhone, isTinyPhone } = useDimensions();
 
   const [isFocused, setIsFocused] = useState(autoFocus);
   const [value, setValue] = useState(valueProp);
   const [wasButtonPressed, setWasButtonPressed] = useState(false);
-
-  const ref = useRef();
-  useImperativeHandle(forwardedRef, () => ref.current);
 
   const formattedValue = useMemo(() => format(String(value || '')), [
     format,
@@ -118,16 +108,12 @@ const BubbleField = (
       setValue(valueProp);
       setWasButtonPressed(false);
     }
-  }, [forwardedRef, value, valueProp, wasButtonPressed]);
+  }, [ref, value, valueProp, wasButtonPressed]);
 
   const { colors, isDarkMode } = useTheme();
 
   return (
-    <Column
-      flex={1}
-      pointerEvents={android || isFocused ? 'auto' : 'none'}
-      {...props}
-    >
+    <Column flex={1} {...props}>
       <Row align="center" justify="space-between">
         <BubbleInput
           autoFocus={autoFocus}

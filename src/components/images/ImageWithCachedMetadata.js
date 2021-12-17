@@ -8,10 +8,7 @@ const ImageWithCachedMetadata = (
 ) => {
   const { onCacheImageMetadata } = useImageMetadata(imageUrl);
 
-  const source = useMemo(
-    () => (typeof imageUrl === 'number' ? imageUrl : { cache, uri: imageUrl }),
-    [cache, imageUrl]
-  );
+  const source = useMemo(() => ({ cache, uri: imageUrl }), [cache, imageUrl]);
 
   const handleLoad = useCallback(
     event => {

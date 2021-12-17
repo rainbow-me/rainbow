@@ -2,7 +2,6 @@ import { find, matchesProperty } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import useAccountAssets from './useAccountAssets';
-import useUniswapAssetsInWallet from './useUniswapAssetsInWallet';
 import { AssetTypes } from '@rainbow-me/entities';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import store from '@rainbow-me/redux/store';
@@ -58,28 +57,14 @@ export default function useAsset(asset) {
   const genericAssets = useSelector(
     ({ data: { genericAssets } }) => genericAssets
   );
-  const uniswapAssetsInWallet = useUniswapAssetsInWallet();
 
   return useMemo(() => {
     if (!asset) return null;
 
     let matched = null;
     if (asset.type === AssetTypes.token) {
-      const uniswapAsset = find(
-        uniswapAssetsInWallet,
-        matchesProperty('address', asset.mainnet_address || asset.address)
-      );
+      matched = find(allAssets, matchesProperty('uniqueId', asset.uniqueId));
 
-      matched = uniswapAsset
-        ? uniswapAsset
-        : find(
-            allAssets,
-            matchesProperty('address', asset.mainnet_address || asset.address)
-          );
-
-      if (!matched) {
-        matched = find(allAssets, matchesProperty('uniqueId', asset.uniqueId));
-      }
       if (!matched) {
         matched = genericAssets?.[asset.mainnet_address || asset.address];
       }
@@ -92,5 +77,5 @@ export default function useAsset(asset) {
     }
 
     return matched || asset;
-  }, [allAssets, asset, collectibles, genericAssets, uniswapAssetsInWallet]);
+  }, [allAssets, asset, collectibles, genericAssets]);
 }
