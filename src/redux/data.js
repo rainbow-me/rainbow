@@ -97,7 +97,7 @@ function addHiddenCoins(coins, dispatch, address) {
   storage.set(storageKey, JSON.stringify(newList));
 }
 
-const BACKUP_SHEET_DELAY_MS = 3000;
+const BACKUP_SHEET_DELAY_MS = android ? 10000 : 3000;
 
 let pendingTransactionsHandle = null;
 let genericAssetsHandle = null;

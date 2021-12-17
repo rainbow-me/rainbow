@@ -192,15 +192,12 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
   }, [accountAddress, accountENS, asset]);
 
   const toggleCurrentPriceDisplayCurrency = useCallback(
-    () =>
-      showCurrentPriceInEth
-        ? setShowCurrentPriceInEth(false)
-        : setShowCurrentPriceInEth(true),
+    () => setShowCurrentPriceInEth(!showCurrentPriceInEth),
     [showCurrentPriceInEth, setShowCurrentPriceInEth]
   );
 
   const toggleFloorDisplayCurrency = useCallback(
-    () => (showFloorInEth ? setShowFloorInEth(false) : setShowFloorInEth(true)),
+    () => setShowFloorInEth(!showFloorInEth),
     [showFloorInEth, setShowFloorInEth]
   );
 
