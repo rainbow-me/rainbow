@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
-import { concat, isEmpty, unionBy, without } from 'lodash';
+import { concat, isEmpty, without } from 'lodash';
 /* eslint-disable-next-line import/no-cycle */
 import { dataUpdateAssets } from './data';
 import {
@@ -122,7 +122,7 @@ export const fetchUniqueTokens = showcaseAddress => async (
       if (shouldStopFetching) {
         const poaps = await fetchPoaps(accountAddress);
         if (poaps.length > 0) {
-          uniqueTokens = unionBy(uniqueTokens, poaps, 'uniqueId');
+          uniqueTokens = concat(uniqueTokens, poaps);
         }
 
         if (!shouldUpdateInBatches) {
