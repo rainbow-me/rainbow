@@ -1,7 +1,7 @@
 import { find, matchesProperty } from 'lodash';
-import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useDeepCompareMemo } from 'use-deep-compare';
 import useAccountAssets from './useAccountAssets';
+import useDebounceSelector from './useDebounceSelector';
 import { AssetTypes } from '@rainbow-me/entities';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
 import store from '@rainbow-me/redux/store';
@@ -54,11 +54,11 @@ function getZeroEth() {
 
 export default function useAsset(asset) {
   const { allAssets, collectibles } = useAccountAssets();
-  const genericAssets = useSelector(
+  const genericAssets = useDebounceSelector(
     ({ data: { genericAssets } }) => genericAssets
   );
 
-  return useMemo(() => {
+  return useDeepCompareMemo(() => {
     if (!asset) return null;
 
     let matched = null;
