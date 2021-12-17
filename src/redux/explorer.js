@@ -454,13 +454,13 @@ const fetchAssetsFromRefraction = () => (_dispatch, getState) => {
 };
 
 const l2AddressAssetsReceived = (message, network) => (dispatch, getState) => {
-  const { assets: allAssets, genericAssets } = getState().data;
+  const { genericAssets } = getState().data;
 
   const newAssets = message?.payload?.assets?.map(asset => {
     const mainnetAddress = toLower(asset?.asset?.mainnet_address);
     const fallbackAsset =
       mainnetAddress &&
-      (ethereumUtils.getAsset(allAssets, mainnetAddress) ||
+      (ethereumUtils.getAccountAsset(mainnetAddress) ||
         genericAssets[mainnetAddress]);
 
     if (fallbackAsset) {
