@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import React, { Fragment, useCallback } from 'react';
+import React, { Fragment, useCallback, useMemo } from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { View } from 'react-primitives';
 import styled from 'styled-components';
@@ -155,8 +155,13 @@ const BalanceCoinRow = ({
   );
 
   const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
-  const isPinned = pinnedCoins.includes(item.uniqueId);
-  const isHidden = hiddenCoins.includes(item.uniqueId);
+  const isPinned = useMemo(() => {
+    return pinnedCoins.includes(item.uniqueId);
+  }, [pinnedCoins, item.uniqueId]);
+
+  const isHidden = useMemo(() => {
+    return hiddenCoins.includes(item.uniqueId);
+  }, [hiddenCoins, item.uniqueId]);
 
   return (
     <Row flex={1}>
