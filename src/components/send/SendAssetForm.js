@@ -60,6 +60,9 @@ export default function SendAssetForm({
   nativeCurrency,
   onChangeAssetAmount,
   onChangeNativeAmount,
+  setLastFocusedInputHandle,
+  nativeCurrencyInputRef,
+  assetInputRef,
   onResetAssetSelection,
   selected,
   sendMaxBalance,
@@ -80,12 +83,14 @@ export default function SendAssetForm({
     : SendCoinRow;
 
   const onFocusAssetInput = useCallback(() => {
+    setLastFocusedInputHandle(assetInputRef);
     setShowNativeValue(false);
-  }, []);
+  }, [assetInputRef, setLastFocusedInputHandle]);
 
   const onFocusNativeInput = useCallback(() => {
+    setLastFocusedInputHandle(nativeCurrencyInputRef);
     setShowNativeValue(true);
-  }, []);
+  }, [nativeCurrencyInputRef, setLastFocusedInputHandle]);
 
   const { colors } = useTheme();
 
@@ -147,10 +152,12 @@ export default function SendAssetForm({
             <SendAssetFormToken
               {...props}
               assetAmount={assetAmount}
+              assetInputRef={assetInputRef}
               buttonRenderer={buttonRenderer}
               colorForAsset={colorForAsset}
               nativeAmount={nativeAmount}
               nativeCurrency={nativeCurrency}
+              nativeCurrencyInputRef={nativeCurrencyInputRef}
               onChangeAssetAmount={onChangeAssetAmount}
               onChangeNativeAmount={onChangeNativeAmount}
               onFocusAssetInput={onFocusAssetInput}
