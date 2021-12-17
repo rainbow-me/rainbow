@@ -25,10 +25,22 @@ export default function useMemoBriefSectionData() {
     const stickyHeaders = [];
     let index = 0;
     let isAnyAssetBelowDivider = false;
+    let afterCoins = false;
     // load firstly 12, then the rest after 1 sec
     let numberOfSmallBalancesAllowed = stagger ? 12 : briefSectionsData.length;
     const briefSectionsDataFiltered = briefSectionsData
-      .filter(data => {
+      .filter((data, arrIndex, arr) => {
+        if (
+          arr[arrIndex - 1]?.type === CellType.COIN &&
+          data.type !== CellType.COIN_DIVIDER &&
+          data.type !== CellType.COIN
+        ) {
+          afterCoins = true;
+        }
+        if (afterCoins && isCoinListEdited) {
+          return false;
+        }
+
         if (
           data.type === CellType.ASSETS_HEADER ||
           data.type === CellType.NFTS_HEADER
