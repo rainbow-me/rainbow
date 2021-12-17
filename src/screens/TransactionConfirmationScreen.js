@@ -273,7 +273,7 @@ export default function TransactionConfirmationScreen() {
       isSufficientGasChecked
     )
       return;
-    updateGasFeeOption(selectedGasFeeOption, [nativeAsset]);
+    updateGasFeeOption(selectedGasFeeOption);
     setIsSufficientGasChecked(true);
   }, [
     isSufficientGas,
