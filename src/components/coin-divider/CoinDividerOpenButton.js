@@ -1,27 +1,21 @@
 import React from 'react';
-import { View } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+
 import styled from 'styled-components';
 import Caret from '../../assets/family-dropdown-arrow.png';
-import { useTheme } from '../../context/ThemeContext';
-import {
-  ButtonPressAnimation,
-  OpacityToggler,
-  RotationArrow,
-  RoundButtonCapSize,
-  RoundButtonSizeToggler,
-} from '../animations';
-import { Row } from '../layout';
-import CoinDividerButtonLabel from './CoinDividerButtonLabel';
+import { ButtonPressAnimation, RoundButtonCapSize } from '../animations';
+import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const closedWidth = 52.5;
-
-const CaretContainer = styled.View`
-  opacity: 0.6;
-  padding-bottom: 1;
-`;
+const openWidth = 80;
 
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,
@@ -31,77 +25,71 @@ const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   width: 8;
 `;
 
-const ContainerButton = styled(ButtonPressAnimation).attrs(
-  ({ isSmallBalancesOpen, isSendSheet }) => ({
-    scaleTo: 0.9,
-    wrapperStyle: {
-      marginLeft: isSendSheet && android ? 16 : 0,
-      width: isSmallBalancesOpen ? 80 - (android ? 4 : 0) : closedWidth - 4,
-    },
-  })
-)`
-  width: ${({ isSmallBalancesOpen }) =>
-    isSmallBalancesOpen ? 80 : closedWidth};
-`;
-
-const Content = styled(Row).attrs({
+const Content = styled(Animated.View).attrs({
   align: 'center',
+  flex: 'row',
   justify: 'space-between',
 })`
+  background-color: ${({ theme: { colors } }) => colors.blueGreyDarkLight};
   ${padding(0, 10)};
   border-radius: ${RoundButtonCapSize / 2};
   height: ${({ height }) => height};
-  width: ${closedWidth};
 `;
+
+const LabelText = styled(Text).attrs(({ shareButton, theme: { colors } }) => ({
+  color: colors.alpha(colors.blueGreyDark, 0.6),
+  letterSpacing: 'roundedTight',
+  lineHeight: 30,
+  size: 'lmedium',
+  weight: shareButton ? 'heavy' : 'bold',
+}))``;
 
 const CoinDividerOpenButton = ({
   coinDividerHeight,
   isSmallBalancesOpen,
-  isVisible,
   onPress,
-  isSendSheet,
-  ...props
 }) => {
-  const { colors, isDarkMode } = useTheme();
+  const isSmallBalancesOpenValue = useSharedValue(0);
+
+  isSmallBalancesOpenValue.value = isSmallBalancesOpen;
+  const animation = useDerivedValue(
+    () =>
+      withTiming(isSmallBalancesOpen ? 1 : 0, {
+        friction: 20,
+        tension: 200,
+      }),
+    [isSmallBalancesOpen]
+  );
+
+  const style = useAnimatedStyle(() => {
+    return {
+      height: 20,
+      marginLeft: 4,
+      marginTop: 7,
+      opacity: 0.6,
+      transform: [
+        { translateX: animation.value * 7 },
+        { translateY: animation.value * -2 },
+        { rotate: animation.value * -90 + 'deg' },
+      ],
+    };
+  });
+
+  const wrapperStyle = useAnimatedStyle(() => ({
+    width: closedWidth + animation.value * (openWidth - closedWidth),
+  }));
+
   return (
-    <ContainerButton
-      {...props}
-      isSendSheet={isSendSheet}
-      isSmallBalancesOpen={isSmallBalancesOpen}
-      onPress={onPress}
-      radiusAndroid={RoundButtonCapSize / 2}
-    >
-      <OpacityToggler isVisible={isVisible}>
-        <Content height={coinDividerHeight}>
-          <RoundButtonSizeToggler
-            color={colors.blueGreyDarkLight}
-            endingWidth={28}
-            isDarkMode={isDarkMode}
-            isOpen={isSmallBalancesOpen}
-            startingWidth={3}
-          />
-          <View>
-            <CoinDividerButtonLabel
-              isVisible={isSmallBalancesOpen}
-              label="All"
-            />
-            <CoinDividerButtonLabel
-              isVisible={!isSmallBalancesOpen}
-              label="Less"
-            />
-          </View>
-          <CaretContainer>
-            <RotationArrow
-              endingOffset={20}
-              endingPosition={-90}
-              isOpen={isSmallBalancesOpen}
-            >
-              <CaretIcon />
-            </RotationArrow>
-          </CaretContainer>
-        </Content>
-      </OpacityToggler>
-    </ContainerButton>
+    <Content height={coinDividerHeight} style={wrapperStyle}>
+      <ButtonPressAnimation onPress={onPress} style={{ flexDirection: 'row' }}>
+        <LabelText color="secondary30" weight="bold">
+          {isSmallBalancesOpen ? 'Less' : 'All'}
+        </LabelText>
+        <Animated.View style={style}>
+          <CaretIcon />
+        </Animated.View>
+      </ButtonPressAnimation>
+    </Content>
   );
 };
 
