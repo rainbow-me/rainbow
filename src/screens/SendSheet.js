@@ -144,7 +144,6 @@ export default function SendSheet(props) {
   const { colors, isDarkMode } = useTheme();
 
   const {
-    lastFocusedInputHandle,
     nativeCurrencyInputRef,
     setLastFocusedInputHandle,
     assetInputRef,
@@ -386,17 +385,12 @@ export default function SendSheet(props) {
   const onChangeAssetAmount = useCallback(
     newAssetAmount => {
       if (isString(newAssetAmount)) {
-        setLastFocusedInputHandle(assetInputRef);
         sendUpdateAssetAmount(newAssetAmount);
         analytics.track('Changed token input in Send flow');
       }
     },
-    [sendUpdateAssetAmount, setLastFocusedInputHandle, assetInputRef]
+    [sendUpdateAssetAmount]
   );
-
-  const handleCustomGasBlur = useCallback(() => {
-    lastFocusedInputHandle?.current?.focus();
-  }, [lastFocusedInputHandle]);
 
   useEffect(() => {
     const resolveAddressIfNeeded = async () => {
@@ -657,7 +651,8 @@ export default function SendSheet(props) {
       toAddress = await resolveNameOrAddress(recipient);
     }
     const validRecipient = await validateRecipient(toAddress);
-
+    assetInputRef?.current?.blur();
+    nativeCurrencyInputRef?.current?.blur();
     if (!validRecipient) {
       navigate(Routes.EXPLAIN_SHEET, {
         onClose: () => {
@@ -672,7 +667,6 @@ export default function SendSheet(props) {
       });
       return;
     }
-
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
       amountDetails: amountDetails,
       asset: selected,
@@ -685,10 +679,12 @@ export default function SendSheet(props) {
     });
   }, [
     amountDetails,
+    assetInputRef,
     buttonDisabled,
     currentNetwork,
     isL2,
     isNft,
+    nativeCurrencyInputRef,
     navigate,
     recipient,
     selected,
@@ -868,7 +864,6 @@ export default function SendSheet(props) {
                 currentNetwork={currentNetwork}
                 horizontalPadding={0}
                 marginBottom={17}
-                onCustomGasBlur={handleCustomGasBlur}
                 theme={isDarkMode ? 'dark' : 'light'}
               />
             }
