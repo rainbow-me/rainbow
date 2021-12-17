@@ -93,7 +93,6 @@ export default function CurrencySelectModal() {
   const {
     curatedNotFavorited,
     favorites,
-    loadingAllTokens,
     updateFavorites,
   } = useUniswapAssets();
   const searchUniswapCurrencyList = useUniswapSearch();

@@ -1,86 +1,49 @@
-import { filter, includes, map, partition, toLower, values } from 'lodash';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
 import { AppState } from '../redux/store';
 import { uniswapUpdateFavorites } from '../redux/uniswap';
 import { RainbowToken } from '@rainbow-me/entities';
+import { getUniswapV2Tokens } from '@rainbow-me/handlers/dispersion';
+import logger from 'logger';
 
-const uniswapLoadingAllTokensSelector = (state: AppState) =>
-  state.uniswap.loadingAllTokens;
 const uniswapCuratedTokensSelector = (state: AppState) => state.uniswap.pairs;
 const uniswapFavoritesSelector = (state: AppState): string[] =>
   state.uniswap.favorites;
-const uniswapAllTokensSelector = (state: AppState) => state.uniswap.allTokens;
 
 const appendFavoriteKey = (asset: RainbowToken) => ({
   ...asset,
   favorite: true,
 });
 
-const withUniswapAssets = (
-  loadingAllTokens: boolean,
-  curatedUniswapAssets: Record<string, RainbowToken>,
-  globalAssets: Record<string, RainbowToken>,
-  favorites: string[]
-): {
-  curatedNotFavorited: RainbowToken[];
-  favorites: RainbowToken[];
-  globalHighLiquidityAssets: RainbowToken[];
-  globalLowLiquidityAssets: RainbowToken[];
-  globalVerifiedAssets: RainbowToken[];
-  loadingAllTokens: boolean;
-} => {
-  const sorted = values(globalAssets).sort((a, b) =>
-    a.name > b.name ? 1 : -1
-  );
-
-  const [favorited, notFavorited] = partition(sorted, ({ address }) =>
-    includes(map(favorites, toLower), toLower(address))
-  );
-
-  const [globalVerifiedAssets, unverifiedAssets] = partition(
-    notFavorited,
-    'isVerified'
-  );
-
-  const [globalHighLiquidityAssets, globalLowLiquidityAssets] = partition(
-    unverifiedAssets,
-    'highLiquidity'
-  );
-
-  const curatedNotFavorited = filter(globalVerifiedAssets, 'isRainbowCurated');
-
-  return {
-    curatedNotFavorited,
-    favorites: map(favorited, appendFavoriteKey),
-    globalHighLiquidityAssets,
-    globalLowLiquidityAssets,
-    globalVerifiedAssets,
-    loadingAllTokens,
-  };
-};
-
-const withUniswapAssetsSelector = createSelector(
-  [
-    uniswapLoadingAllTokensSelector,
-    uniswapCuratedTokensSelector,
-    uniswapAllTokensSelector,
-    uniswapFavoritesSelector,
-  ],
-  withUniswapAssets
-);
-
 export default function useUniswapAssets() {
   const dispatch = useDispatch();
-  const uniswapAssets = useSelector(withUniswapAssetsSelector);
+  const curatedAssets = useSelector(uniswapCuratedTokensSelector);
+  const favoriteAddresses = useSelector(uniswapFavoritesSelector);
+  const curatedNotFavorited = Object.values(curatedAssets).filter(
+    ({ address }) => !favoriteAddresses.includes(address)
+  );
+  const [favorites, setFavorites] = useState<RainbowToken[]>([]);
+  const getUniswapFavorites = useCallback(async () => {
+    const uniswapFavorites = await getUniswapV2Tokens(
+      favoriteAddresses.map(a => a.toLowerCase())
+    );
+    setFavorites(uniswapFavorites);
+  }, [favoriteAddresses]);
   const updateFavorites = useCallback(
     (...data) => dispatch(uniswapUpdateFavorites(...data)),
     [dispatch]
   );
 
+  useEffect(() => {
+    getUniswapFavorites();
+  }, [getUniswapFavorites]);
+
+  logger.debug('FAVORITES: ', favorites);
+  // logger.debug('CURATED: ', curatedNotFavorited);
+
   return {
+    curatedNotFavorited,
+    favorites: favorites.map(appendFavoriteKey),
     updateFavorites,
-    ...uniswapAssets,
   };
 }

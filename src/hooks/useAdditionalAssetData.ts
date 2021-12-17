@@ -1,7 +1,8 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useNativeCurrencyToUSD from './useNativeCurrencyToUSD';
 import { useAccountSettings } from './index';
+import { getUniswapV2Tokens } from '@rainbow-me/handlers/dispersion';
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
 import {
   additionalAssetsDataAddCoingecko,
@@ -52,11 +53,13 @@ export default function useAdditionalAssetData(
       uniswapData[address?.toLowerCase()]
   );
 
-  const allTokens = useSelector((state: AppState) => state.uniswap.allTokens);
-  const uniswapToken =
-    allTokens[address?.toLowerCase() === 'eth' ? WETH_ADDRESS : address];
-
-  const totalLiquidity = uniswapToken?.totalLiquidity;
+  const [totalLiquidity, setTotalLiqudity] = useState<number | undefined>();
+  const getTotalLiquidity = useCallback(async () => {
+    const id = address?.toLowerCase() === 'eth' ? WETH_ADDRESS : address;
+    const uniswapData = await getUniswapV2Tokens([id]);
+    const token = uniswapData?.[0];
+    setTotalLiqudity(token?.totalLiquidity);
+  }, [address]);
   const dispatch = useDispatch();
 
   const { nativeCurrency } = useAccountSettings();
@@ -81,6 +84,10 @@ export default function useAdditionalAssetData(
     !uniswapData &&
       dispatch(additionalAssetsDataAddUniswap(address?.toLowerCase()));
   }, [coingeckoId, address, coingeckoData, dispatch, uniswapData]);
+
+  useEffect(() => {
+    getTotalLiquidity();
+  }, [getTotalLiquidity]);
 
   const newData = {
     description: coingeckoData?.description,

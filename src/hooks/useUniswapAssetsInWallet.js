@@ -1,24 +1,34 @@
-import { filter } from 'lodash';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { createSelector } from 'reselect';
+import { getUniswapV2Tokens } from '@rainbow-me/handlers/dispersion';
 import { sortAssetsByNativeAmountSelector } from '@rainbow-me/helpers/assetSelectors';
 import NetworkTypes from '@rainbow-me/networkTypes';
 
-const uniswapAllTokensSelector = state => state.uniswap.allTokens;
 const networkSelector = state => state.settings.network;
 
-const withUniswapAssetsInWallet = (network, assetData, uniswapAllPairs) => {
-  const { allAssets } = assetData;
-  return network === NetworkTypes.mainnet
-    ? filter(allAssets, ({ address }) => uniswapAllPairs[address])
-    : allAssets;
+const useUniswapAssetsInWallet = () => {
+  const [uniswapAssets, setUniswapAssets] = useState([]);
+  const network = useSelector(networkSelector);
+  const isMainnet = network === NetworkTypes.mainnet;
+  const { allAssets } = useSelector(sortAssetsByNativeAmountSelector);
+  const getUniswapAssets = useCallback(async () => {
+    let uniswapAssets;
+    if (isMainnet) {
+      const uniswapData = await getUniswapV2Tokens(
+        allAssets.map(({ address }) => address)
+      );
+      const tokens = uniswapData?.data?.tokens;
+      uniswapAssets = tokens || [];
+    } else {
+      uniswapAssets = allAssets;
+    }
+    setUniswapAssets(uniswapAssets);
+  }, [allAssets, isMainnet]);
+  useEffect(() => {
+    getUniswapAssets();
+  }, [getUniswapAssets]);
+
+  return uniswapAssets;
 };
 
-const withUniswapAssetsInWalletSelector = createSelector(
-  [networkSelector, sortAssetsByNativeAmountSelector, uniswapAllTokensSelector],
-  withUniswapAssetsInWallet
-);
-
-export default function useUniswapAssetsInWallet() {
-  return useSelector(withUniswapAssetsInWalletSelector);
-}
+export default useUniswapAssetsInWallet;

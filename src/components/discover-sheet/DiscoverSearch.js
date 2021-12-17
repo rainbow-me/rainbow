@@ -31,6 +31,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { filterList } from '@rainbow-me/utils';
+import logger from 'logger';
 
 export const SearchContainer = styled(Row)`
   height: 100%;
@@ -54,11 +55,7 @@ export default function DiscoverSearch() {
   const { navigate } = useNavigation();
   const { allAssets } = useAccountAssets();
   const dispatch = useDispatch();
-  const {
-    curatedNotFavorited,
-    favorites,
-    loadingAllTokens,
-  } = useUniswapAssets();
+  const { curatedNotFavorited, favorites } = useUniswapAssets();
   const searchUniswapCurrencyList = useUniswapSearch();
   const {
     isFetchingEns,
@@ -120,24 +117,27 @@ export default function DiscoverSearch() {
     [handleActionAsset, handlePress]
   );
 
-  const searchInFilteredLow = useCallback(searchQueryForSearch => {
-    setTimeout(async () => {
-      const filteredLow = await searchUniswapCurrencyList(
-        'lowLiquidityAssets',
-        searchQueryForSearch
-      );
-      let lowCurrencyList = [];
-      if (filteredLow.length) {
-        lowCurrencyList = [
-          {
-            data: filteredLow,
-            title: tokenSectionTypes.lowLiquidityTokenSection,
-          },
-        ];
-      }
-      setLowCurrencyList(lowCurrencyList);
-    }, 0);
-  }, []);
+  const searchInFilteredLow = useCallback(
+    searchQueryForSearch => {
+      setTimeout(async () => {
+        const filteredLow = await searchUniswapCurrencyList(
+          'lowLiquidityAssets',
+          searchQueryForSearch
+        );
+        let lowCurrencyList = [];
+        if (filteredLow.length) {
+          lowCurrencyList = [
+            {
+              data: filteredLow,
+              title: tokenSectionTypes.lowLiquidityTokenSection,
+            },
+          ];
+        }
+        setLowCurrencyList(lowCurrencyList);
+      }, 0);
+    },
+    [searchUniswapCurrencyList]
+  );
 
   const addEnsResults = useCallback(ensResults => {
     let ensSearchResults = [];
@@ -189,6 +189,8 @@ export default function DiscoverSearch() {
           });
         searchInFilteredLow(query);
       } else {
+        logger.debug('FAVORITES IN FILTERED LIST: ', favorites);
+        logger.debug('CURATED IN FILTERED LIST: ', favorites);
         filteredList = [
           {
             color: colors.yellowFavorite,
@@ -247,7 +249,7 @@ export default function DiscoverSearch() {
           itemProps={itemProps}
           keyboardDismissMode="on-drag"
           listItems={currencyList}
-          loading={loadingAllTokens || isFetchingEns}
+          loading={isFetchingEns}
           query={searchQueryForSearch}
           ref={currencySelectionListRef}
           showList

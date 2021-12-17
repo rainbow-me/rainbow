@@ -12,7 +12,7 @@ type TokenListId =
 type UniswapAssetKey = keyof RainbowToken;
 
 const tokenSearchApi = new RainbowFetchClient({
-  baseURL: 'http://127.0.0.1:8787',
+  baseURL: 'https://token-search.rainbow.me',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
