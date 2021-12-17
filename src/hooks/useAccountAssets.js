@@ -1,10 +1,11 @@
+import React, { useContext } from 'react';
+import { useSelector } from 'react-redux';
 import { useDeepCompareMemo } from 'use-deep-compare';
-import useDebounceSelector from './useDebounceSelector';
 import { sortAssetsByNativeAmountSelector } from '@rainbow-me/helpers/assetSelectors';
 
-export default function useAccountAssets() {
-  const assets = useDebounceSelector(sortAssetsByNativeAmountSelector);
-  const collectibles = useDebounceSelector(
+function useAccountAssetsMaster() {
+  const assets = useSelector(sortAssetsByNativeAmountSelector);
+  const collectibles = useSelector(
     ({ uniqueTokens: { uniqueTokens } }) => uniqueTokens
   );
 
@@ -15,4 +16,15 @@ export default function useAccountAssets() {
     }),
     [assets, collectibles]
   );
+}
+
+const Context = React.createContext();
+
+export function AccountAssetManager({ children }) {
+  const value = useAccountAssetsMaster();
+  return <Context.Provider value={value}>{children}</Context.Provider>;
+}
+
+export default function useAccountAssets() {
+  return useContext(Context);
 }
