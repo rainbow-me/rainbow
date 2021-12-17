@@ -23,6 +23,8 @@ const fallbackTextStyles = {
 };
 
 const FallbackImage = styled(ImageWithCachedMetadata)`
+  height: ${({ size }) => size};
+  width: ${({ size }) => size};
   ${position.cover};
   ${({
     shadowColor: color,
