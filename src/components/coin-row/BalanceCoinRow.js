@@ -14,6 +14,7 @@ import CoinCheckButton from './CoinCheckButton';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { useIsCoinListEditedSharedValue } from '@rainbow-me/helpers/SharedValuesContext';
+import { buildAssetUniqueIdentifier } from '@rainbow-me/helpers/assets';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
@@ -96,6 +97,13 @@ const TopRow = ({ name, native, nativeCurrencySymbol }) => {
       </PriceContainer>
     </TopRowContainer>
   );
+};
+
+const arePropsEqual = (prev, next) => {
+  const itemIdentifier = buildAssetUniqueIdentifier(prev.item);
+  const nextItemIdentifier = buildAssetUniqueIdentifier(next.item);
+  const isSameItem = itemIdentifier === nextItemIdentifier;
+  return isSameItem;
 };
 
 const BalanceCoinRow = ({
@@ -183,4 +191,4 @@ const BalanceCoinRow = ({
   );
 };
 
-export default React.memo(BalanceCoinRow);
+export default React.memo(BalanceCoinRow, arePropsEqual);
