@@ -14,14 +14,7 @@ import {
 } from 'ethereumjs-util';
 import { hdkey } from 'ethereumjs-wallet';
 import { Contract } from 'ethers';
-import {
-  find,
-  isEmpty,
-  isString,
-  matchesProperty,
-  replace,
-  toLower,
-} from 'lodash';
+import { find, isEmpty, isString, replace, toLower } from 'lodash';
 import {
   Alert,
   InteractionManager,
@@ -114,17 +107,14 @@ const getNativeAssetForNetwork = async (
   const nativeAssetAddress = getNativeAssetAddressForNetwork(network);
   const { accountAddress } = store.getState().settings;
   let differentWallet = toLower(address) !== toLower(accountAddress);
-  const { assets } = store.getState().data;
   let nativeAsset =
-    (!differentWallet && getAsset(assets, toLower(nativeAssetAddress))) ||
-    undefined;
+    (!differentWallet && getAccountAsset(nativeAssetAddress)) || undefined;
 
   // If the asset is on a different wallet, or not available in this wallet
   if (differentWallet || !nativeAsset) {
-    const { genericAssets } = store.getState().data;
     const mainnetAddress =
       network === Network.polygon ? MATIC_MAINNET_ADDRESS : ETH_ADDRESS;
-    nativeAsset = genericAssets[mainnetAddress];
+    nativeAsset = store.getState().data?.genericAssets?.[mainnetAddress];
 
     const provider = await getProviderForNetwork(network);
     if (nativeAsset) {
@@ -151,15 +141,31 @@ const getNativeAssetForNetwork = async (
   return nativeAsset;
 };
 
+// TODO JIN - original function finds by address not uniqueId
+// TODO JIN - need to update the usage
 const getAsset = (
-  assets: ParsedAddressAsset[],
-  address: EthereumAddress = ETH_ADDRESS
-) => find(assets, matchesProperty('address', toLower(address)));
+  accountAssets: Record<string, ParsedAddressAsset>,
+  uniqueId: EthereumAddress = ETH_ADDRESS
+) => {
+  const loweredUniqueId = toLower(uniqueId);
+  return accountAssets[loweredUniqueId];
+};
+
+// TODO JIN - this needs to update usage to use uniqueId
+const getAccountAsset = (
+  uniqueId: EthereumAddress = ETH_ADDRESS
+): ParsedAddressAsset | undefined => {
+  const loweredUniqueId = toLower(uniqueId);
+  const accountAsset = store.getState().data?.accountAssetsData?.[
+    loweredUniqueId
+  ];
+  return accountAsset;
+};
 
 const getAssetPrice = (address: EthereumAddress = ETH_ADDRESS): number => {
-  const { assets, genericAssets } = store.getState().data;
-  const genericPrice = genericAssets[address]?.price?.value;
-  return genericPrice || getAsset(assets, address)?.price?.value || 0;
+  const genericAsset = store.getState().data?.genericAssets?.[address];
+  const genericPrice = genericAsset?.price?.value;
+  return genericPrice || getAccountAsset(address)?.price?.value || 0;
 };
 
 export const useEth = (): ParsedAddressAsset => {
@@ -195,11 +201,8 @@ const getBalanceAmount = (
   selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
   selected: ParsedAddressAsset
 ) => {
-  const { assets } = store.getState().data;
-  let amount =
-    selected?.balance?.amount ??
-    getAsset(assets, selected?.address)?.balance?.amount ??
-    0;
+  const accountAsset = getAccountAsset(selected?.uniqueId);
+  let amount = selected?.balance?.amount ?? accountAsset?.balance?.amount ?? 0;
 
   if (selected?.isNativeAsset) {
     if (!isEmpty(selectedGasFee)) {
@@ -237,10 +240,8 @@ const formatGenericAsset = (
   };
 };
 
-export const checkWalletEthZero = (assets: ParsedAddressAsset) => {
-  // @ts-ignore
-  const ethAsset = find(assets, asset => asset.address === ETH_ADDRESS);
-  // @ts-ignore
+export const checkWalletEthZero = () => {
+  const ethAsset = getAccountAsset();
   let amount = ethAsset?.balance?.amount ?? 0;
   return isZero(amount);
 };
@@ -518,12 +519,11 @@ async function parseEthereumUrl(data: string) {
   while (store.getState().data.isLoadingAssets) {
     await delay(300);
   }
-  const { assets } = store.getState().data;
 
   if (!functionName) {
     // Send native asset
     const nativeAssetAddress = getNativeAssetAddressForNetwork(network);
-    asset = getAsset(assets, toLower(nativeAssetAddress));
+    asset = getAccountAsset(nativeAssetAddress);
 
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
@@ -537,7 +537,7 @@ async function parseEthereumUrl(data: string) {
     nativeAmount = ethUrl.parameters?.value && fromWei(ethUrl.parameters.value);
   } else if (functionName === 'transfer') {
     // Send ERC-20
-    asset = getAsset(assets, toLower(ethUrl.target_address));
+    asset = getAccountAsset(ethUrl.target_address);
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
       Alert.alert(
@@ -624,6 +624,7 @@ export default {
   deriveAccountFromPrivateKey,
   deriveAccountFromWalletInput,
   formatGenericAsset,
+  getAccountAsset,
   getAsset,
   getAssetPrice,
   getBalanceAmount,
