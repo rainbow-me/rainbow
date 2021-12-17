@@ -1,5 +1,5 @@
 import analytics from '@segment/analytics-react-native';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
@@ -49,22 +49,25 @@ const Wrapper = styled(android ? Row : ButtonPressAnimation).attrs({
   width: ${({ width }) => (android ? width - 38 : '100%')};
 `;
 
-export default function SendAssetFormField({
-  autoFocus,
-  colorForAsset,
-  format,
-  label,
-  labelMaxLength = 6,
-  mask,
-  maxLabelColor,
-  onChange,
-  onFocus,
-  onPressButton,
-  placeholder,
-  value,
-  testID,
-  ...props
-}) {
+const SendAssetFormField = (
+  {
+    autoFocus,
+    colorForAsset,
+    format,
+    label,
+    labelMaxLength = 6,
+    mask,
+    maxLabelColor,
+    onChange,
+    onFocus,
+    onPressButton,
+    placeholder,
+    value,
+    testID,
+    ...props
+  },
+  ref
+) => {
   const { isTinyPhone, isSmallPhone, width } = useDimensions();
   const { colors } = useTheme();
   const handlePressMax = useCallback(
@@ -74,13 +77,12 @@ export default function SendAssetFormField({
     },
     [onPressButton]
   );
-  const bubbleField = useRef();
 
   return (
     <Wrapper
       isSmallPhone={android || isSmallPhone}
       isTinyPhone={isTinyPhone}
-      onPress={() => !android && bubbleField.current.focus()}
+      onPress={() => !android && ref?.current.focus()}
       width={width}
     >
       <GradientBackground
@@ -108,7 +110,7 @@ export default function SendAssetFormField({
           onFocus={onFocus}
           onPressButton={handlePressMax}
           placeholder={placeholder}
-          ref={bubbleField}
+          ref={ref}
           testID={testID}
           value={value}
         />
@@ -135,4 +137,6 @@ export default function SendAssetFormField({
       </RowWithMargins>
     </Wrapper>
   );
-}
+};
+
+export default React.forwardRef(SendAssetFormField);
