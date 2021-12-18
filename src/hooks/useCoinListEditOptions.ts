@@ -105,7 +105,7 @@ export function useCoinListFinishEditingOptions() {
   const setPinnedCoins = useCallback(() => {
     setPinnedCoinsArray((pinnedCoins: string[]) => {
       return [
-        ...pinnedCoins.filter(
+        ...(pinnedCoins ?? []).filter(
           i => !selectedItemsNonReactive.current!.includes(i)
         ),
         ...(currentActionNonReactive.current === EditAction.standard
@@ -121,7 +121,7 @@ export function useCoinListFinishEditingOptions() {
   const setHiddenCoins = useCallback(() => {
     setHiddenCoinsArray(hiddenCoins => {
       const newList = [
-        ...hiddenCoins.filter(
+        ...(hiddenCoins ?? []).filter(
           i => !selectedItemsNonReactive.current!.includes(i)
         ),
         ...(currentActionNonReactive.current === EditAction.standard
