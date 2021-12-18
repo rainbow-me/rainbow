@@ -1,3 +1,4 @@
+import { filter, toLower } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getUniswapV2Tokens } from '@rainbow-me/handlers/dispersion';
@@ -17,18 +18,22 @@ const useUniswapAssetsInWallet = () => {
       const uniswapData = await getUniswapV2Tokens(
         allAssets.map(({ address }) => address)
       );
-      const tokens = uniswapData?.data?.tokens;
-      uniswapAssets = tokens || [];
+      uniswapAssets = uniswapData || [];
     } else {
       uniswapAssets = allAssets;
     }
     setUniswapAssets(uniswapAssets);
   }, [allAssets, isMainnet]);
+  const getIsUniswapAsset = asset => {
+    return uniswapAssets.find(
+      ({ address }) => address === toLower(asset.address)
+    );
+  };
   useEffect(() => {
     getUniswapAssets();
   }, [getUniswapAssets]);
 
-  return uniswapAssets;
+  return filter(allAssets, getIsUniswapAsset);
 };
 
 export default useUniswapAssetsInWallet;

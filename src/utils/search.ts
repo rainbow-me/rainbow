@@ -1,13 +1,12 @@
-import { matchSorter } from 'match-sorter';
+import { KeyOption, matchSorter, MatchSorterOptions } from 'match-sorter';
 
-export const filterList = (
-  list: any[],
+export const filterList = <T extends unknown>(
+  list: T[],
   searchQuery: string,
-  keys = null,
-  options = null
+  keys: KeyOption<T>[],
+  options?: MatchSorterOptions<T>
 ) =>
   matchSorter(list, searchQuery, {
     keys,
-    // @ts-expect-error ts-migrate(2698) FIXME: Spread types may only be created from object types... Remove this comment to see the full error message
     ...options,
   });
