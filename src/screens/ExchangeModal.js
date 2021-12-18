@@ -17,7 +17,6 @@ import {
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
 import {
@@ -56,6 +55,7 @@ import { multicallClearState } from '@rainbow-me/redux/multicall';
 import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
@@ -68,19 +68,22 @@ const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
 
 const InnerWrapper = styled(Centered).attrs({
   direction: 'column',
-})`
-  ${ios
-    ? position.sizeAsObject('100%')
-    : `
-    height: 500;
-    top: 0;
-  `};
-  backgroundcolor: ${({ theme: { colors } }) => colors.transparent};
-`;
+})(
+  ios
+    ? {
+        ...position.sizeAsObject('100%'),
+        backgroundColor: ({ theme: { colors } }) => colors.transparent,
+      }
+    : {
+        backgroundColor: ({ theme: { colors } }) => colors.transparent,
+        height: 500,
+        top: 0,
+      }
+);
 
-const Spacer = styled.View`
-  height: 20;
-`;
+const Spacer = styled.View({
+  height: 20,
+});
 
 const getInputHeaderTitle = (type, defaultInputAsset) => {
   switch (type) {

@@ -1,6 +1,6 @@
 import React, { Children, cloneElement } from 'react';
-import styled from 'styled-components';
 import { FlexItem, Row } from '../layout';
+import styled from '@rainbow-me/styled';
 import { padding } from '@rainbow-me/styles';
 
 const space = 9.5;
@@ -8,10 +8,10 @@ const space = 9.5;
 const Container = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
-})`
-  ...padding.object(0, space)};
+})({
+  ...padding.object(0, space),
   width: '100%',
-`;
+});
 
 function renderChild(child, index) {
   if (!child) return null;

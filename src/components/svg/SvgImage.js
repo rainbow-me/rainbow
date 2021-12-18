@@ -2,16 +2,17 @@
 import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { WebView } from 'react-native-webview';
-import styled from 'styled-components';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 import logger from 'logger';
 
-const ImageTile = styled(ImgixImage)`
+const ImageTile = styled(ImgixImage)({
   alignItems: 'center',
-  justifycontent: 'center';
-`;
+  justifyContent: 'center',
+});
 
+// TODO terry I messed up with some styles here
 const getHTML = (svgContent, style) =>
   `
 <html data-key="key-${style.height}-${style.width}">

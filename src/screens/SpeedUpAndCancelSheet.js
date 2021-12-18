@@ -12,7 +12,6 @@ import React, {
 import { ActivityIndicator, Alert } from 'react-native';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import Divider from '../components/Divider';
 import Spinner from '../components/Spinner';
 import { GasSpeedButton } from '../components/gas';
@@ -39,6 +38,7 @@ import { getTitle } from '@rainbow-me/parsers';
 import { dataUpdateTransaction } from '@rainbow-me/redux/data';
 import { updateGasFeeForSpeed } from '@rainbow-me/redux/gas';
 import { ethUnits } from '@rainbow-me/references';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 import { gasUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -53,38 +53,41 @@ const springConfig = {
 
 const Container = styled(Centered).attrs({
   direction: 'column',
-})`
-  ...position.coverAsObject,
-  ${({ deviceHeight, height }) =>
-    height ? `height: ${height + deviceHeight}` : null};
-`;
+})(({ deviceHeight, height }) =>
+  height
+    ? {
+        height: height + deviceHeight,
+        ...position.coverAsObject,
+      }
+    : position.coverAsObject
+);
 
-const CenteredSheet = styled(Centered)`
-  border-top-left-radius: 39;
-  border-top-right-radius: 39;
-`;
+const CenteredSheet = styled(Centered)({
+  borderTopLeftRadius: 39,
+  borderTopRightRadius: 39,
+});
 
-const ExtendedSheetBackground = styled.View`
-  backgroundColor: ${({ theme: { colors } }) => colors.white};
-  height: 1000;
+const ExtendedSheetBackground = styled.View({
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  bottom: -800,
+  height: 1000,
   position: 'absolute',
-  bottom: -800;
   width: '100%',
-`;
+});
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
     color: colors.alpha(colors.blueGreyDark, 0.3),
     size: 'large',
   })
-)``;
+)({});
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedSheet = Animated.createAnimatedComponent(CenteredSheet);
 
 const GasSpeedButtonContainer = styled(Row).attrs({
   justify: 'center',
-})``;
+})({});
 
 const CANCEL_TX = 'cancel';
 const SPEED_UP = 'speed_up';

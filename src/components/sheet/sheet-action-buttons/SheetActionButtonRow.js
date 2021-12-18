@@ -1,23 +1,29 @@
 import React, { Children } from 'react';
-import styled from 'styled-components';
 import { FlexItem, Row } from '../../layout';
+import styled from '@rainbow-me/styled';
 import { padding } from '@rainbow-me/styles';
 
 const Container = styled(Row).attrs({
   justify: 'space-around',
-})`
-  ${({ ignorePaddingBottom, ignorePaddingTop, paddingHorizontal }) =>
-    padding(
+})(
+  ({
+    ignorePaddingBottom,
+    paddingBottom,
+    ignorePaddingTop,
+    paddingHorizontal,
+  }) => ({
+    ...padding(
       ignorePaddingTop ? 0 : 19,
       paddingHorizontal || 11.5,
       ignorePaddingBottom ? 0 : 24
-    )};
-  ${({ paddingBottom }) =>
-    paddingBottom ? `padding-bottom: ${paddingBottom};` : ``}
-  width: '100%',
-  zIndex: 2;
-  elevation: -1;
-`;
+    ),
+
+    ...(paddingBottom ? { paddingBottom: paddingBottom } : {}),
+    elevation: -1,
+    width: '100%',
+    zIndex: 2,
+  })
+);
 
 function renderButton(child) {
   if (!child) return null;

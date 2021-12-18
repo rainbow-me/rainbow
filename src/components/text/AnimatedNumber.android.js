@@ -1,11 +1,12 @@
 import React, { useCallback } from 'react';
-import styled from 'styled-components';
 import Text from './Text';
+import styled from '@rainbow-me/styled';
 import { buildTextStyles } from '@rainbow-me/styles';
 
-const TextWithStyles = styled(Text)`
-  ${buildTextStyles};
-`;
+const TextWithStyles = styled(Text)({
+  // TODO terry
+  // ${buildTextStyles};
+});
 
 const AnimatedNumberWithTextStyles = ({
   formatter,

@@ -4,7 +4,6 @@ import { capitalize, get, toLower } from 'lodash';
 import React, { Fragment, useCallback, useEffect } from 'react';
 import { Keyboard, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components';
 import ContactRowInfoButton from '../components/ContactRowInfoButton';
 import Divider from '../components/Divider';
 import L2Disclaimer from '../components/L2Disclaimer';
@@ -41,32 +40,32 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 import logger from 'logger';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
-})`
-  ...position.coverAsObject,
-  ${({ deviceHeight, height }) =>
-    height ? `height: ${height + deviceHeight}` : null};
-`;
+})(({ deviceHeight, height }) =>
+  height
+    ? { height: height + deviceHeight, ...position.coverAsObject }
+    : position.coverAsObject
+);
 
-const CheckboxContainer = styled(Row)`
-  height: 20;
-  width: 20;
-`;
+const CheckboxContainer = styled(Row)({
+  height: 20,
+  width: 20,
+});
 
-const CheckboxBorder = styled.View`
-  ${({ checked, color }) => checked && `backgroundColor: ${color}`};
-  borderRadius: 7;
-  border-color: ${({ checked, theme: { colors } }) =>
-    colors.alpha(colors.blueGreyDark, checked ? 0 : 0.15)};
-  border-width: 2;
-  height: 20;
+const CheckboxBorder = styled.View(({ checked, color, theme: { colors } }) => ({
+  ...(checked ? { backgroundColor: color } : {}),
+  borderColor: colors.alpha(colors.blueGreyDark, checked ? 0 : 0.15),
+  borderRadius: 7,
+  borderWidth: 2,
+  height: 20,
   position: 'absolute',
-  width: 20;
-`;
+  width: 20,
+}));
 
 const CheckboxLabelText = styled(Text).attrs({
   direction: 'column',
@@ -74,9 +73,9 @@ const CheckboxLabelText = styled(Text).attrs({
   lineHeight: 'looserLoose',
   size: 'lmedium',
   weight: 'bold',
-})`
-  flex-shrink: 1;
-`;
+})({
+  flexShrink: 1,
+});
 
 const Checkmark = styled(Text).attrs(({ checked, theme: { colors } }) => ({
   align: 'center',
@@ -84,15 +83,15 @@ const Checkmark = styled(Text).attrs(({ checked, theme: { colors } }) => ({
   lineHeight: 'normal',
   size: 'smaller',
   weight: 'bold',
-}))`
-  width: '100%';
-`;
+}))({
+  width: '100%',
+});
 
 const SendButtonWrapper = styled(Column).attrs({
   align: 'center',
-})`
-  height: 56;
-`;
+})({
+  height: 56,
+});
 
 export const SendConfirmationSheetHeight = android ? 651 : 540;
 

@@ -1,11 +1,11 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components';
 import { CoinIcon } from '../../coin-icon';
 import { Centered, Column, RowWithMargins } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import TransactionSheet from '../TransactionSheet';
 import { formatFixedDecimals } from '@rainbow-me/helpers/utilities';
+import styled from '@rainbow-me/styled';
 import { padding } from '@rainbow-me/styles';
 
 const Amount = styled(TruncatedText).attrs(({ theme: { colors } }) => ({
@@ -14,19 +14,20 @@ const Amount = styled(TruncatedText).attrs(({ theme: { colors } }) => ({
   size: 'larger',
   uppercase: true,
   weight: 'bold',
-}))``;
+}))({});
 
 const AmountRow = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   colors: colors.gradients.lighterGrey,
   end: { x: 0, y: 0.5 },
   start: { x: 1, y: 0.5 },
-}))`
-  ...padding.object(android ? 1 : 7, 12, android ? 2 : 9, 11)};
-  borderradius: 40;
-  margin: auto;
-  marginbottom: 17;
+}))({
+  ...padding.object(android ? 1 : 7, 12, android ? 2 : 9, 11),
+  borderRadius: 40,
+  // TODO terry not sure about it
+  // margin: 'auto',
+  marginBottom: 17,
   overflow: 'hidden',
-`;
+});
 
 const NativeAmount = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -34,10 +35,10 @@ const NativeAmount = styled(Text).attrs(({ theme: { colors } }) => ({
   letterSpacing: 'zero',
   size: 'headline',
   weight: 'heavy',
-}))`
-  marginbottom: ${android ? -10 : 10};
-  marginTop ${android ? 0 : 19};
-`;
+}))({
+  marginBottom: android ? -10 : 10,
+  marginTop: android ? 0 : 19,
+});
 
 export default function TransactionConfirmationSection({
   address,

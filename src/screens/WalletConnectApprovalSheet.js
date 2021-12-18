@@ -9,7 +9,6 @@ import React, {
 } from 'react';
 import { ActivityIndicator, InteractionManager } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import styled from 'styled-components';
 import ChainLogo from '../components/ChainLogo';
 import Divider from '../components/Divider';
 import Spinner from '../components/Spinner';
@@ -40,6 +39,7 @@ import {
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
@@ -47,7 +47,7 @@ const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
     color: colors.alpha(colors.blueGreyDark, 0.3),
     size: android ? 40 : 'large',
   })
-)``;
+)({});
 
 const DappLogo = styled(RequestVendorLogoIcon).attrs(
   ({ theme: { colors } }) => ({
@@ -56,35 +56,35 @@ const DappLogo = styled(RequestVendorLogoIcon).attrs(
     showLargeShadow: true,
     size: 60,
   })
-)`
-  marginbottom: 24;
-`;
+)({
+  marginBottom: 24,
+});
 
 const NetworkLabelText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.6),
   letterSpacing: 'roundedMedium',
   size: 'smedium',
   weight: 'semibold',
-}))`
-  marginbottom: 4;
-`;
+}))({
+  marginBottom: 4,
+});
 
 const LabelText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.dark,
   size: 'large',
   weight: 'heavy',
-}))``;
+}))({});
 
-const AvatarWrapper = styled(Column)`
-  marginright: 5;
-  margintop: 1;
-`;
+const AvatarWrapper = styled(Column)({
+  marginRight: 5,
+  marginTop: 1,
+});
 
 const SwitchText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.dark,
   size: 'large',
   weight: 'heavy',
-}))``;
+}))({});
 
 export default function WalletConnectApprovalSheet() {
   const { colors } = useTheme();

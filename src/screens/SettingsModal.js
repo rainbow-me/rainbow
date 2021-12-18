@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Animated, InteractionManager, View } from 'react-native';
-import styled from 'styled-components';
 import { Modal } from '../components/modal';
 import ModalHeaderButton from '../components/modal/ModalHeaderButton';
 import {
@@ -21,6 +20,7 @@ import WalletTypes from '../helpers/walletTypes';
 import { settingsOptions } from '../navigation/config';
 import { useDimensions, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import styled from '@rainbow-me/styled';
 
 function cardStyleInterpolator({
   current,
@@ -94,10 +94,10 @@ const SettingsPages = {
   },
 };
 
-const Container = styled.View`
-  flex: 1;
-  overflow: 'hidden';
-`;
+const Container = styled.View({
+  flex: 1,
+  overflow: 'hidden',
+});
 
 const Stack = createStackNavigator();
 

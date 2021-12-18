@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 import { ViewPropTypes } from 'react-native';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 import { buildTextStyles } from '@rainbow-me/styles';
 
-const Text = styled.Text.attrs({ allowFontScaling: false })`
-  ${buildTextStyles};
-`;
+const Text = styled.Text.attrs({ allowFontScaling: false })({
+  // TODO terry
+  // ${buildTextStyles};
+});
 
 Text.propTypes = {
   align: PropTypes.oneOf(['auto', 'center', 'left', 'justify', 'right']),

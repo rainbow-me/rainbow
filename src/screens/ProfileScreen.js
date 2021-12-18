@@ -1,7 +1,6 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
-import styled from 'styled-components';
 import { ActivityList } from '../components/activity-list';
 import { BackButton, Header, HeaderButton } from '../components/header';
 import { Icon } from '../components/icons';
@@ -19,14 +18,15 @@ import {
   useRequests,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 
-const ProfileScreenPage = styled(Page)`
-  ${position.size('100%')};
-  flex: 1;
-`;
+const ProfileScreenPage = styled(Page)({
+  ...position.sizeAsObject('100%'),
+  flex: 1,
+});
 
 export default function ProfileScreen({ navigation }) {
   const { colors } = useTheme();

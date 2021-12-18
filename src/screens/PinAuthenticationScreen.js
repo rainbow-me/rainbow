@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert } from 'react-native';
-import styled from 'styled-components';
 import RainbowLogo from '../assets/rainbows/light.png';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { Numpad, PinValue } from '../components/numpad';
@@ -16,15 +15,16 @@ import { useNavigation } from '../navigation/Navigation';
 import { useDimensions, useShakeAnimation } from '@rainbow-me/hooks';
 import { useBlockBackButton } from '@rainbow-me/hooks/useBlockBackButton';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled';
 import { padding } from '@rainbow-me/styles';
 import { haptics } from '@rainbow-me/utils';
 
 const Logo = styled(ImgixImage).attrs({
   source: RainbowLogo,
-})`
-  width: 80;
-  height: 80;
-`;
+})({
+  height: 80,
+  width: 80,
+});
 
 const MAX_ATTEMPTS = 10;
 const TIMELOCK_INTERVAL_MINUTES = 5;

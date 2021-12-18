@@ -9,7 +9,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'styled-components';
 import Spinner from '../../assets/chartSpinner.png';
 import { nativeStackConfig } from '../../navigation/nativeStackConfig';
 import { ChartExpandedStateHeader } from '../expanded-state/chart';
@@ -20,6 +19,7 @@ import { ChartDot, ChartPath, useChartData } from '@rainbow-me/animated-charts';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 
 export const { width: WIDTH } = Dimensions.get('window');
@@ -65,23 +65,22 @@ const InnerDot = styled.View({
   width: 10,
 });
 
-const Dot = styled(ChartDot)`
+const Dot = styled(ChartDot)({
   alignItems: 'center',
-  backgroundColor: ${({ color }) => color};
-  justifycontent: 'center';
-`;
+  backgroundColor: ({ color }) => color,
+  justifyContent: 'center',
+});
 
 const HEIGHT = 146.5;
 
 const Overlay = styled(Animated.View).attrs({
   pointerEvents: 'none',
-})`
+})({
   ...position.coverAsObject,
   alignItems: 'center',
-  backgroundColor: ${({ theme: { colors } }) =>
-    colors.alpha(colors.white, 0.9)};
-  justifycontent: 'center';
-`;
+  backgroundColor: ({ theme: { colors } }) => colors.alpha(colors.white, 0.9),
+  justifyContent: 'center',
+});
 
 const rotationConfig = {
   duration: 500,

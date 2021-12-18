@@ -28,6 +28,7 @@ import {
   RecyclerListViewState,
 } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
+import styled from 'styled-components';
 import { withThemeContext } from '../../../context/ThemeContext';
 import { CoinDivider, CoinDividerHeight } from '../../coin-divider';
 import { CoinRowHeight } from '../../coin-row';
@@ -43,7 +44,6 @@ import {
   useOpenSmallBalances,
   usePrevious,
 } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
 import { deviceUtils, logger } from '@rainbow-me/utils';
 
 const extractCollectiblesIdFromRow = (row: {

@@ -28,27 +28,21 @@ export type SimpleVideoProps = {
   readonly setLoading: (isLoading: boolean) => void;
 };
 
-const absoluteFill = `
-  position: absolute;
-  ${position.size('100%')}
-`;
+const absoluteFill = {
+  position: 'absolute',
+  ...position.sizeAsObject('100%'),
+};
 
-const StyledBackground = styled(View)`
-  ${absoluteFill}
-  background-color: ${({ theme: { colors } }) => colors.white};
-`;
+const StyledBackground = styled(View)({
+  ...absoluteFill,
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+});
 
-const StyledVideo = styled(Video)`
-  ${absoluteFill}
-`;
+const StyledVideo = styled(Video)(absoluteFill);
 
-const StyledPosterContainer = styled(Animated.View)`
-  ${absoluteFill}
-`;
+const StyledPosterContainer = styled(Animated.View)(absoluteFill);
 
-const StyledImgixImage = styled(ImgixImage)`
-  ${position.size('100%')}
-`;
+const StyledImgixImage = styled(ImgixImage)(position.sizeAsObject('100%'));
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
