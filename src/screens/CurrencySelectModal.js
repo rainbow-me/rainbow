@@ -325,10 +325,10 @@ export default function CurrencySelectModal() {
               onChangeText={setSearchQuery}
               ref={searchInputRef}
               searchQuery={searchQuery}
-              {...(ios && {
+              {...(ios ? {
                 onFocus: handleFocus,
                 ref: searchInputRef,
-              })}
+              } : {})}
               testID="currency-select-search"
             />
             {type === null || type === undefined ? null : (
