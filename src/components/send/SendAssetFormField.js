@@ -25,7 +25,7 @@ const GradientBackground = styled(RadialGradient).attrs(
 )`
   height: ${({ width }) => width - 38};
   left: 0;
-  position: absolute;
+  position: 'absolute',
   top: ${({ isSmallPhone, isTinyPhone, width }) =>
     -((width - 38 - (isTinyPhone ? 40 : isSmallPhone ? 46 : 59)) / 2)};
   transform: scaleY(0.175074184);
@@ -35,10 +35,10 @@ const GradientBackground = styled(RadialGradient).attrs(
 const Wrapper = styled(android ? Row : ButtonPressAnimation).attrs({
   scaleTo: 1.05,
 })`
-  border-radius: 29.5;
+  borderRadius: 29.5;
   height: ${({ isSmallPhone, isTinyPhone }) =>
     isTinyPhone ? 40 : isSmallPhone ? 46 : 59};
-  overflow: hidden;
+  overflow: 'hidden',
   padding-bottom: ${({ isSmallPhone, isTinyPhone }) =>
     isTinyPhone ? 7 : isSmallPhone ? 8 : 11};
   padding-horizontal: ${({ isSmallPhone, isTinyPhone }) =>

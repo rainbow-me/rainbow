@@ -17,7 +17,7 @@ const KeyboardRow = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
 })`
-  width: 100%;
+  width: '100%';
 `;
 
 const KeyboardButton = ({ children, ...props }) => {

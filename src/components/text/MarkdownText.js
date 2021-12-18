@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Text from './Text';
 
 const Paragraph = styled(Text)`
-  margin-bottom: 19;
+  marginbottom: 19;
 `;
 
 export default function MarkdownText({ children, ...props }) {

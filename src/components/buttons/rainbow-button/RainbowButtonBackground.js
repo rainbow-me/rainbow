@@ -2,10 +2,10 @@ import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
 import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
-import styled from 'styled-components';
 import { useTheme } from '../../../context/ThemeContext';
 import { darkModeThemeColors } from '../../../styles/colors';
 import RainbowButtonTypes from './RainbowButtonTypes';
+import styled from '@rainbow-me/styled';
 import { margin } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
@@ -43,18 +43,20 @@ const RainbowButtonGradient = styled(RadialGradient).attrs(
     stops:
       type === RainbowButtonTypes.addCash ? [0, 0.544872, 1] : [0, 0.774321, 1],
   })
-)`
-  position: absolute;
-  transform: scaleY(0.7884615385);
-`;
+)({
+  position: 'absolute',
+  transform: [{ scaleY: 0.7884615385 }],
+});
 
-const InnerButton = styled(View)`
-  ${({ strokeWidth }) => margin(strokeWidth)}
-  background-color: ${({ theme: { colors } }) => colors.dark};
-  border-radius: ${({ strokeWidth, height }) => height / 2 - strokeWidth};
-  height: ${({ strokeWidth, height }) => height - strokeWidth * 2};
-  width: ${({ strokeWidth, width }) => width - strokeWidth * 2};
-`;
+const InnerButton = styled(View)(
+  ({ strokeWidth, height, width, theme: { colors } }) => ({
+    ...margin.object(strokeWidth),
+    backgroundColor: colors.dark,
+    borderRadius: height / 2 - strokeWidth,
+    height: height - strokeWidth * 2,
+    width: width - strokeWidth * 2,
+  })
+);
 
 const InnerGradient = styled(RainbowButtonGradient).attrs(
   ({ disabled, type, gradientColors }) => ({
@@ -64,11 +66,11 @@ const InnerGradient = styled(RainbowButtonGradient).attrs(
       ? gradientColors.inner.addCash
       : gradientColors.inner.default,
   })
-)`
-  height: ${({ width }) => width};
-  top: ${({ height, width }) => -(width - height) / 2};
-  width: ${({ width }) => width};
-`;
+)(({ width, height }) => ({
+  height: width,
+  top: -(width - height) / 2,
+  width: width,
+}));
 
 const OuterGradient = styled(RainbowButtonGradient).attrs(
   ({ disabled, type, gradientColors }) => ({
@@ -78,20 +80,20 @@ const OuterGradient = styled(RainbowButtonGradient).attrs(
       ? gradientColors.outer.addCash
       : gradientColors.outer.default,
   })
-)`
-  height: ${({ width }) => width * 2};
-  left: ${({ width }) => -width / 2};
-  top: ${({ height, width }) => -(width - height / 2)};
-  width: ${({ width }) => width * 2};
-`;
+)(({ width, height }) => ({
+  height: width * 2,
+  left: -width / 2,
+  top: -(width - height / 2),
+  width: width * 2,
+}));
 
 const WrapperView = android
-  ? styled.View`
-      overflow: hidden;
-      position: absolute;
-      height: ${({ height }) => height};
-      width: ${({ width }) => width};
-    `
+  ? styled.View({
+      height: ({ height }) => height,
+      overflow: 'hidden',
+      position: 'absolute',
+      width: ({ width }) => width,
+    })
   : ({ children }) => children;
 
 const RainbowButtonBackground = ({

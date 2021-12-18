@@ -7,7 +7,6 @@ import React, {
   useState,
 } from 'react';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { RequestCoinIcon } from '../coin-icon';
@@ -18,6 +17,7 @@ import CoinRow from './CoinRow';
 import { useNavigation } from '@rainbow-me/navigation';
 import { removeRequest } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 
 const getPercentageOfTimeElapsed = (startDate, endDate) => {
   const originalDifference = differenceInMinutes(endDate, startDate);
@@ -29,9 +29,9 @@ const getPercentageOfTimeElapsed = (startDate, endDate) => {
 const ClockEmoji = styled(Emoji).attrs({
   name: 'clock4',
   size: 'tiny',
-})`
-  margin-top: 1.75;
-`;
+})({
+  marginTop: 1.75,
+});
 
 const BottomRow = ({ dappName, expirationColor }) => (
   <CoinName color={expirationColor} weight="semibold">

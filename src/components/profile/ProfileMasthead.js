@@ -37,7 +37,7 @@ const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
 })`
   height: 0;
   left: 0;
-  position: absolute;
+  position: 'absolute',
   top: 0;
   width: 130;
 `;
@@ -51,8 +51,8 @@ const AccountName = styled(TruncatedText).attrs({
   weight: 'bold',
 })`
   height: ${android ? '38' : '33'};
-  margin-top: ${android ? '-10' : '-1'};
-  margin-bottom: ${android ? '10' : '1'};
+  marginTop ${android ? '-10' : '-1'};
+  marginbottom: ${android ? '10' : '1'};
   max-width: ${({ deviceWidth }) => deviceWidth - dropdownArrowWidth - 60};
   padding-right: 6;
 `;
@@ -62,12 +62,12 @@ const AddCashButton = styled(RainbowButton).attrs({
   skipTopMargin: true,
   type: 'addCash',
 })`
-  margin-top: 16;
+  margintop: 16;
 `;
 
 const DropdownArrow = styled(Centered)`
   height: 9;
-  margin-top: 11;
+  marginTop: 11,
   width: ${dropdownArrowWidth};
 `;
 
@@ -76,8 +76,8 @@ const ProfileMastheadDivider = styled(Divider).attrs(
     color: colors.rowDividerLight,
   })
 )`
-  bottom: 0;
-  position: absolute;
+  bottom: 0,
+  position: 'absolute';
 `;
 
 export default function ProfileMasthead({

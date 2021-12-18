@@ -7,7 +7,7 @@ import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 
 const Dim = styled(Animated.View)`
   flex: 1;
-  width: 100%;
+  width: '100%';
 `;
 
 export default function CameraDimmer({ children, cameraVisible }) {

@@ -25,12 +25,12 @@ const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   size: 'lmedium',
   weight: 'heavy',
 }))`
-  ${padding(android ? 5 : 8, 12)}
+  ...padding.object(android ? 5 : 8, 12)}
   border-color: ${({ theme: { colors }, color }) => colors.alpha(color, 0.06)};
-  border-radius: 20;
+  borderradius: 20;
   border-width: 2;
   height: 40;
-  margin-bottom: 4;
+  marginbottom: 4,
 `;
 
 const Container = styled(Centered).attrs({ direction: 'column' })`

@@ -12,7 +12,7 @@ const BackArrow = styled(Icon).attrs(({ theme: { colors } }) => ({
   name: 'caret',
 }))`
   height: 16;
-  margin-top: ${android ? 6 : 0};
+  marginTop ${android ? 6 : 0};
 `;
 
 const Container = styled(Row).attrs(({ side }) => ({
@@ -20,11 +20,11 @@ const Container = styled(Row).attrs(({ side }) => ({
   justify: side === 'left' ? 'start' : 'end',
 }))`
   ${({ side }) => (side === 'left' ? 'left: 0;' : 'right: 0;')}
-  background-color: ${({ theme: { colors } }) => colors.transparent};
-  bottom: 0;
+  backgroundColor: ${({ theme: { colors } }) => colors.transparent};
+  bottom: 0,
   padding-left: ${({ side }) => (side === 'left' ? 15 : 48)};
   padding-right: ${({ side }) => (side === 'left' ? 48 : 15)};
-  z-index: 2;
+  zindex: 2;
 `;
 
 const Text = styled(UnstyledText).attrs(({ theme: { colors } }) => ({

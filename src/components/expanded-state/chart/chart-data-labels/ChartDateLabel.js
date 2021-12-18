@@ -1,19 +1,19 @@
 import React from 'react';
 import { View } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { useRatio } from './useRatio';
 import { ChartXLabel } from '@rainbow-me/animated-charts';
+import styled from '@rainbow-me/styled';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
-const Label = styled(ChartXLabel)`
-  ${fontWithWidth(fonts.weight.semibold)};
-  font-size: ${fonts.size.larger};
-  font-variant: tabular-nums;
-  letter-spacing: ${fonts.letterSpacing.roundedMedium};
-  text-align: right;
-  ${android && `margin-vertical: -20px`}
-`;
+const Label = styled(ChartXLabel)({
+  ...fontWithWidth(fonts.weight.semibold),
+  fontSize: fonts.size.larger,
+  fontVariant: 'tabular-nums',
+  letterSpacing: fonts.letterSpacing.roundedMedium,
+  textAlign: 'right',
+  ...(android ? { marginVertical: 20 } : {}),
+});
 
 const MONTHS = [
   'Jan',

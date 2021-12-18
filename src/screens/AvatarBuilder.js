@@ -21,29 +21,29 @@ const AvatarBuilderTopPoint =
   HeaderHeightWithStatusBar + AvatarCircleHeight + AvatarCircleMarginTop;
 
 const Container = styled(Column)`
-  background-color: ${({ theme: { colors } }) => colors.transparent};
+  backgroundcolor: ${({ theme: { colors } }) => colors.transparent};
 `;
 
 const SheetContainer = styled(Column)`
-  background-color: ${({ theme: { colors } }) => colors.white};
-  border-radius: 20px;
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
+  borderRadius: 20,
   height: ${({ deviceHeight }) =>
-    deviceHeight ? Math.floor((deviceHeight / 13) ** 1.5) : 420}px;
-  overflow: hidden;
-  width: 100%;
+    deviceHeight ? Math.floor((deviceHeight / 13) ** 1.5) : 420},
+  overflow: 'hidden',
+  width: '100%',
 `;
 
 const ScrollableColorPicker = styled.ScrollView`
   overflow: visible;
-  margin: 0px 10px;
+  margin: 0px 10;
 `;
 
 const SelectedColorRing = styled(Animated.View)`
   height: 38;
   width: 38;
-  border-radius: 20;
+  borderRadius: 20;
   border-width: 3;
-  position: absolute;
+  position: 'absolute',
   align-self: center;
   left: 1;
   border-color: ${({ selectedColor }) => selectedColor};

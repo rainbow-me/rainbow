@@ -57,7 +57,7 @@ const DappLogo = styled(RequestVendorLogoIcon).attrs(
     size: 60,
   })
 )`
-  margin-bottom: 24;
+  marginbottom: 24;
 `;
 
 const NetworkLabelText = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -66,7 +66,7 @@ const NetworkLabelText = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'smedium',
   weight: 'semibold',
 }))`
-  margin-bottom: 4;
+  marginbottom: 4;
 `;
 
 const LabelText = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -76,8 +76,8 @@ const LabelText = styled(Text).attrs(({ theme: { colors } }) => ({
 }))``;
 
 const AvatarWrapper = styled(Column)`
-  margin-right: 5;
-  margin-top: 1;
+  marginright: 5;
+  margintop: 1;
 `;
 
 const SwitchText = styled(Text).attrs(({ theme: { colors } }) => ({

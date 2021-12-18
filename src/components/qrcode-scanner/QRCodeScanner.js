@@ -25,7 +25,7 @@ const Camera = styled(RNCamera)`
 
 const CameraWrapper = styled(Centered)`
   ${position.size('100%')};
-  background-color: ${({ theme: { colors } }) =>
+  backgroundcolor: ${({ theme: { colors } }) =>
     colors.trueBlack || colors.black};
 `;
 
@@ -33,7 +33,7 @@ const Container = styled(Centered).attrs({
   direction: 'column',
 })`
   ${position.cover};
-  background-color: ${({ theme: { colors } }) => colors.black};
+  backgroundcolor: ${({ theme: { colors } }) => colors.black};
 `;
 
 const ContentOverlay = styled(Centered)`

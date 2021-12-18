@@ -19,8 +19,8 @@ const transition = (
 );
 
 const Container = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.white};
-  overflow: hidden;
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
+  overflow: 'hidden',
   padding-top: ${({ isFirst }) => (isFirst ? TokenFamilyWrapPaddingTop : 0)};
 `;
 

@@ -29,9 +29,9 @@ const AddressInputContainer = styled(Row).attrs({ align: 'center' })`
       : isSmallPhone
       ? padding(11, 19, 15)
       : padding(18, 19, 19)};
-  background-color: ${({ theme: { colors } }) => colors.white};
-  overflow: hidden;
-  width: 100%;
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
+  overflow: 'hidden',
+  width: '100%',
 `;
 
 const AddressFieldLabel = styled(Label).attrs({
@@ -39,7 +39,7 @@ const AddressFieldLabel = styled(Label).attrs({
   weight: 'bold',
 })`
   color: ${({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.6)};
-  margin-right: 4;
+  marginright: 4;
   opacity: 1;
 `;
 
@@ -48,14 +48,14 @@ const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
     color: colors.alpha(colors.blueGreyDark, 0.3),
   })
 )`
-  margin-right: 2;
+  marginright: 2;
 `;
 
 const SendSheetTitle = styled(SheetTitle).attrs({
   weight: 'heavy',
 })`
-  margin-bottom: ${android ? -10 : 0};
-  margin-top: ${android ? 10 : 17};
+  marginbottom: ${android ? -10 : 0};
+  marginTop ${android ? 10 : 17};
 `;
 
 const defaultContactItem = {

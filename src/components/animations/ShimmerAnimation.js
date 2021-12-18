@@ -7,7 +7,7 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 
 const timingConfig = {
@@ -19,9 +19,7 @@ const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 const ColorGradient = styled(AnimatedLinearGradient).attrs({
   end: { x: 0, y: 0.5 },
   start: { x: 1, y: 0.5 },
-})`
-  ${position.cover};
-`;
+})(position.coverAsObject);
 
 export default function ShimmerAnimation({
   color,

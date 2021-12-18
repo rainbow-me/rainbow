@@ -10,9 +10,9 @@ export const FabWrapperItemMargin = 15;
 
 const FabWrapperRow = styled(RowWithMargins).attrs({ margin: 13 })`
   bottom: ${({ isEditMode }) => (isEditMode ? -60 : FabWrapperBottomPosition)};
-  position: absolute;
+  position: 'absolute',
   right: ${FabWrapperItemMargin};
-  z-index: 2;
+  zIndex: 2;
 `;
 
 export default function FabWrapper({

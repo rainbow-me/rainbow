@@ -59,13 +59,13 @@ const EditButton = styled(ButtonPressAnimation).attrs(({ editMode }) => ({
 }))`
   ${ios
     ? `
-    position: absolute;
-    right: 20px;
-    top: -11px;`
+    position: 'absolute',
+    right: 20,
+    top: -11,`
     : `
     position: relative;
-    right: 20px;
-    top: 6px;
+    right: 20,
+    top: 6,
     elevation: 10;
   `}
 `;
@@ -79,14 +79,14 @@ const EditButtonLabel = styled(Text).attrs(
     weight: editMode ? 'bold' : 'semibold',
   })
 )`
-  height: 40px;
+  height: 40;
 `;
 const Whitespace = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.white};
-  bottom: -400px;
-  height: 400px;
-  position: absolute;
-  width: 100%;
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
+  bottom: -400,
+  height: 400,
+  position: 'absolute',
+  width: '100%',
 `;
 
 const getWalletRowCount = wallets => {

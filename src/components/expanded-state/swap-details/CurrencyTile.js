@@ -22,10 +22,10 @@ const AmountText = styled(Text).attrs(({ theme: { colors } }) => ({
 const Container = styled(Centered).attrs({
   direction: 'column',
 })`
-  border-radius: 30;
+  borderradius: 30;
   flex: 1;
   height: ${CurrencyTileHeight};
-  overflow: hidden;
+  overflow: 'hidden';
 `;
 
 const Gradient = styled(RadialGradient).attrs(
@@ -43,7 +43,7 @@ const NativePriceText = styled(TruncatedText).attrs({
   size: 'lmedium',
   weight: 'heavy',
 })`
-  ${fontWithWidth(fonts.weight.heavy)};
+  ...fontWithWidth(fonts.weight.heavy),
 `;
 
 const TruncatedAmountText = styled(AmountText).attrs({

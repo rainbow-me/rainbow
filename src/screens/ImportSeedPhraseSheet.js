@@ -37,9 +37,9 @@ const Container = styled.View`
     : isNativeStackAvailable
     ? 0
     : sheetVerticalOffset};
-  ${android ? `margin-top: ${sheetVerticalOffset};` : ''}
+  ${android ? `marginTop: ${sheetVerticalOffset};` : ''}
   ${android
-    ? `background-color: ${({ theme: { colors } }) => colors.transparent};`
+    ? `backgroundColor: ${({ theme: { colors } }) => colors.transparent};`
     : ''}
 `;
 
@@ -50,20 +50,20 @@ const Footer = styled(Row).attrs({
   bottom: ${android ? 15 : 0};
   position: ${android ? 'absolute' : 'relative'};
   right: 0;
-  width: 100%;
-  ${android
-    ? `top: ${({ isSmallPhone }) =>
-        isSmallPhone ? sheetBottomPadding * 2 : 0};`
-    : ``}
-  ${android ? 'margin-right: 18;' : ''}
+  width: '100%',
+    ${android
+        ? `top: ${({ isSmallPhone }) =>
+            isSmallPhone ? sheetBottomPadding * 2 : 0};`
+        : ``}
+      ${android ? 'marginRight: 18;' : ''};
 `;
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs({
   color: 'white',
   size: 15,
 })`
-  margin-right: 5;
-  margin-top: ${android ? 0 : 2};
+  marginRight: 5;
+  marginTop ${android ? 0 : 2};
 `;
 
 const FooterButton = styled(MiniButton).attrs({
@@ -71,7 +71,7 @@ const FooterButton = styled(MiniButton).attrs({
 })``;
 
 const KeyboardSizeView = styled(KeyboardArea)`
-  background-color: ${({ theme: { colors } }) => colors.white};
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
 `;
 
 const SecretTextArea = styled(Input).attrs({
@@ -90,13 +90,13 @@ const SecretTextArea = styled(Input).attrs({
   spellCheck: false,
   weight: 'semibold',
 })`
-  margin-bottom: ${android ? 55 : 0};
+  marginbottom: ${android ? 55 : 0};
   min-height: ${android ? 100 : 50};
-  width: 100%;
+  width: '100%';
 `;
 
 const SecretTextAreaContainer = styled(Centered)`
-  ${padding(0, 42)};
+  ...padding.object(0, 42)};
   flex: 1;
 `;
 
@@ -105,9 +105,9 @@ const Sheet = styled(Column).attrs({
   flex: 1,
 })`
   ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
-  ${padding(0, 15, sheetBottomPadding)};
-  background-color: ${({ theme: { colors } }) => colors.white};
-  z-index: 1;
+  ...padding.object(0, 15, sheetBottomPadding)};
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
+  zIndex: 1;
 `;
 
 export default function ImportSeedPhraseSheet() {

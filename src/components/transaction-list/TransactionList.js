@@ -37,7 +37,7 @@ const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
 const Container = styled.View`
   flex: 1;
-  margin-top: 0;
+  margintop: 0;
 `;
 
 const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
@@ -50,7 +50,7 @@ const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
 })`
   height: 0;
   left: ${({ tapTarget }) => tapTarget[0] - 24};
-  position: absolute;
+  position: 'absolute',
   top: ${({ tapTarget }) => tapTarget[1] - tapTarget[3]};
   width: ${({ tapTarget }) => tapTarget[2]};
 `;

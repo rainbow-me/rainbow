@@ -51,7 +51,7 @@ const {
 } = Reanimated;
 
 const ButtonContainer = styled(Reanimated.View)`
-  border-radius: ${({ height }) => height / 2};
+  borderradius: ${({ height }) => height / 2};
 `;
 
 const ButtonContent = styled(RowWithMargins).attrs({
@@ -59,8 +59,8 @@ const ButtonContent = styled(RowWithMargins).attrs({
   margin: 4,
 })`
   align-self: center;
-  height: 100%;
-  padding-bottom: 4;
+  height: '100%',
+  padding-bottom: 4,
 `;
 
 const ButtonLabel = styled(Text).attrs(
@@ -76,27 +76,27 @@ const ButtonEmoji = styled(Emoji).attrs({
   align: 'center',
   size: 16.25,
 })`
-  padding-bottom: 1.5px;
+  padding-bottom: 1.5;
 `;
 
 const DarkShadow = styled(Reanimated.View)`
   ${({ theme: { colors } }) => shadow.build(0, 10, 30, colors.dark, 1)};
-  background-color: ${({ theme: { colors } }) => colors.white};
-  border-radius: 30;
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
+  borderRadius: 30;
   height: 60;
   left: -3;
   opacity: 0.2;
-  position: absolute;
+  position: 'absolute',
   top: -3;
   width: 236;
 `;
 
 const Shadow = styled(Reanimated.View)`
   ${({ theme: { colors } }) => shadow.build(0, 10, 30, colors.dark, 0.4)};
-  border-radius: 30;
+  borderRadius: 30;
   height: 60;
   left: -3;
-  position: absolute;
+  position: 'absolute',
   top: -3;
   width: 236;
 `;
@@ -133,21 +133,21 @@ const RainbowButton = ({
 
 const Container = styled.View`
   ${StyleSheet.absoluteFillObject};
-  align-items: center;
-  background-color: ${({ theme: { colors } }) => colors.white};
-  justify-content: center;
+  alignItems: 'center',
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
+  justifycontent: 'center';
 `;
 
 const ContentWrapper = styled(Animated.View)`
-  align-items: center;
+  alignItems: 'center',
   height: 192;
-  justify-content: space-between;
-  margin-bottom: 20;
-  z-index: 10;
+  justifyContent: 'space-between',
+  marginBottom: 20;
+  zIndex: 10;
 `;
 
 const ButtonWrapper = styled(Animated.View)`
-  width: 100%;
+  width: '100%';
 `;
 
 const INITIAL_SIZE = 375;
@@ -267,7 +267,7 @@ const traversedRainbows = rainbows.map(
 
 const RainbowImage = styled(ImgixImage)`
   height: ${INITIAL_SIZE};
-  position: absolute;
+  position: 'absolute',
   width: ${INITIAL_SIZE};
 `;
 

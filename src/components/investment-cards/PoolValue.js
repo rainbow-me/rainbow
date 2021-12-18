@@ -7,7 +7,7 @@ import { useAccountSettings } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 
 const PoolValueWrapper = styled(Row)`
-  border-radius: ${({ simple }) => (simple ? 0 : 15)};
+  borderradius: ${({ simple }) => (simple ? 0 : 15)};
   ${({ simple }) => (simple ? undefined : 'height: 30')};
   ${({ simple }) => (simple ? undefined : padding(2, 9, 0))};
 `;
@@ -19,7 +19,7 @@ const PoolValueText = styled(Text).attrs(({ simple, size }) => ({
   size: size || 'lmedium',
   weight: simple ? 'semibold' : 'bold',
 }))`
-  ${android && 'line-height: 28px; height: 30px;'}
+  ${android && 'lineHeight: 28, height: 30,'}
 `;
 
 export const PoolValue = ({ type, value, simple, ...props }) => {

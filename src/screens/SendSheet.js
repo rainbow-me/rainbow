@@ -69,10 +69,10 @@ const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);
 
 const Container = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.transparent};
+  backgroundcolor: ${({ theme: { colors } }) => colors.transparent};
   flex: 1;
   padding-top: ${isNativeStackAvailable ? 0 : statusBarHeight};
-  width: 100%;
+  width: '100%';
 `;
 
 const SheetContainer = styled(Column).attrs({
@@ -80,14 +80,14 @@ const SheetContainer = styled(Column).attrs({
   flex: 1,
 })`
   ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
-  background-color: ${({ theme: { colors } }) => colors.white};
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
   height: ${isNativeStackAvailable || android ? sheetHeight : '100%'};
-  width: 100%;
+  width: '100%';
 `;
 
 const KeyboardSizeView = styled(KeyboardArea)`
-  width: 100%;
-  background-color: ${({ showAssetForm, theme: { colors } }) =>
+  width: '100%',
+  backgroundColor: ${({ showAssetForm, theme: { colors } }) =>
     showAssetForm ? colors.lighterGrey : colors.white};
 `;
 

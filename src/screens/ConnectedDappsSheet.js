@@ -18,7 +18,7 @@ const ScrollableItems = styled.ScrollView`
 `;
 
 const SheetTitleWithPadding = styled(SheetTitle)`
-  margin-top: 18;
+  marginTop: 18,
   padding-bottom: 16;
 `;
 

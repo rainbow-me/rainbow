@@ -123,7 +123,7 @@ const Container = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
 })`
-  ${padding(21, paddingHorizontal, paddingHorizontal)};
+  ...padding.object(21, paddingHorizontal, paddingHorizontal)};
 `;
 
 const FamilyName = styled(TruncatedText).attrs(({ theme: { colors } }) => ({
@@ -136,17 +136,17 @@ const FamilyName = styled(TruncatedText).attrs(({ theme: { colors } }) => ({
 
 const FamilyImageWrapper = styled.View`
   height: 20;
-  margin-right: 7;
+  marginRight: 7;
   shadow-color: ${({ theme: { colors } }) => colors.shadowBlack};
-  shadow-offset: 0 3px;
+  shadow-offset: 0 3,
   shadow-opacity: 0.15;
-  shadow-radius: 4.5px;
+  shadow-radius: 4.5,
   width: 20;
 `;
 
 const FamilyImage = styled(ImgixImage)`
   ${position.cover};
-  border-radius: 10;
+  borderradius: 10;
 `;
 
 const HeadingColumn = styled(ColumnWithMargins).attrs({
@@ -154,7 +154,7 @@ const HeadingColumn = styled(ColumnWithMargins).attrs({
   justify: 'start',
   margin: 6,
 })`
-  width: 100%;
+  width: '100%';
 `;
 
 const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {

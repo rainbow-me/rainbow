@@ -21,16 +21,16 @@ const AddressInput = styled(Input).attrs({
 })`
   ${android && 'height: 56;'}
   flex-grow: 1;
-  margin-top: 1;
-  z-index: 1;
+  marginTop: 1,
+  zindex: 1;
 `;
 
 const Placeholder = styled(Row)`
   margin-left: ${android ? 4 : 0};
-  margin-top: ${android ? 11 : 0};
-  position: absolute;
+  marginTop ${android ? 11 : 0};
+  position: 'absolute',
   top: 0;
-  z-index: 1;
+  zIndex: 1;
 `;
 
 const PlaceholderText = styled(Label).attrs({

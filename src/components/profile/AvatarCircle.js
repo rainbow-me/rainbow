@@ -13,7 +13,7 @@ const AvatarCircleSize = 65;
 
 const AvatarCircleView = styled(Flex)`
   ${position.size(AvatarCircleSize)};
-  margin-bottom: 16px;
+  marginbottom: 16,
   justify-content: ${ios ? 'flex-start' : 'center'};
   align-items: ${ios ? 'flex-start' : 'center'};
 `;

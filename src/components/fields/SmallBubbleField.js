@@ -30,9 +30,9 @@ const BubbleInput = styled(ExchangeInput).attrs(
 )`
     ${({ isTinyPhone }) =>
       android ? (isTinyPhone ? 'height: 40' : 'height: 46;') : ''}}
-    ${android ? 'padding-bottom: 0;' : ''}
+    ${android ? 'padding-bottom: 0,' : ''}
     ${android ? 'padding-top: 0;' : ''}
-    margin-right: 10;
+    marginRight: 10;
   `;
 
 const defaultFormatter = string => string;

@@ -24,19 +24,19 @@ const Container = styled(RowWithMargins).attrs({
   margin: 5,
   self: 'center',
 })`
-  ${padding(9, 10, 11, 10)};
-  ${position.centered};
+  ...padding.object(9, 10, 11, 10)};
+  ...position.centeredAsObject};
   ${({ theme: { colors } }) => shadow.build(0, 6, 10, colors.shadow, 0.14)};
-  background-color: ${({ color }) => color};
-  border-radius: 20;
+  backgroundcolor: ${({ color }) => color};
+  borderRadius: 20;
   bottom: ${({ insets }) => (insets.bottom || 40) + 3};
   max-width: ${({ deviceWidth }) => deviceWidth - 38};
-  position: absolute;
-  z-index: 100;
+  position: 'absolute',
+  zIndex: 100;
 `;
 
 const ToastsWrapper = styled.View`
-  position: absolute;
+  position: 'absolute',
   bottom: ${({ insets }) => (insets.bottom || 40) + 3};
 `;
 

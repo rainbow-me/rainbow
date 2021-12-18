@@ -22,7 +22,7 @@ const DarkModeShadow = [[0, 10, 30, darkModeThemeColors.shadow, 1]];
 
 const Content = styled(Centered)`
   ${position.cover};
-  background-color: ${({ backgroundColor }) => backgroundColor};
+  backgroundcolor: ${({ backgroundColor }) => backgroundColor};
 `;
 
 const Wrapper = android ? ScaleButtonZoomableAndroid : ButtonPressAnimation;

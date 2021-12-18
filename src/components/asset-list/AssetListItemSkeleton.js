@@ -9,12 +9,12 @@ import Animated, {
   timing,
   Value,
 } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { withThemeContext } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { interpolate } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
+import styled from '@rainbow-me/styled';
 import { padding, position } from '@rainbow-me/styles';
 
 const { block, cond, set, startClock, stopClock } = Animated;
@@ -23,18 +23,18 @@ const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 export const AssetListItemSkeletonHeight = CoinRowHeight;
 
-const Container = styled.View`
-  height: ${AssetListItemSkeletonHeight};
-  opacity: ${({ descendingOpacity, index }) =>
-    1 - 0.2 * (descendingOpacity ? index : 0)};
-  width: 100%;
-`;
+const Container = styled.View({
+  height: AssetListItemSkeletonHeight,
+  opacity: ({ descendingOpacity, index }) =>
+    1 - 0.2 * (descendingOpacity ? index : 0),
+  width: '100%',
+});
 
-const FakeAvatar = styled.View`
-  ${position.size(40)};
-  background-color: ${({ theme: { colors } }) => colors.skeleton};
-  border-radius: 20;
-`;
+const FakeAvatar = styled.View({
+  ...position.sizeAsObject(40),
+  backgroundColor: ({ theme: { colors } }) => colors.skeleton,
+  borderRadius: 20,
+});
 
 const FakeRow = styled(Row).attrs({
   align: 'flex-end',
@@ -43,29 +43,28 @@ const FakeRow = styled(Row).attrs({
   justify: 'space-between',
   paddingBottom: 5,
   paddingTop: 5,
-})(Row);
+})({});
 
-const FakeText = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.skeleton};
-  border-radius: 5;
-  height: 10;
-`;
+const FakeText = styled.View({
+  backgroundColor: ({ theme: { colors } }) => colors.skeleton,
+  borderRadius: 5,
+  height: 10,
+});
 
 const Wrapper = styled(RowWithMargins).attrs({
   align: 'flex-end',
   justify: 'space-between',
   margin: 10,
-})`
-  ${({ ignorePaddingHorizontal }) =>
-    padding(
-      9,
-      ignorePaddingHorizontal ? 0 : 19,
-      10,
-      ignorePaddingHorizontal ? 0 : 19
-    )};
-  ${position.size('100%')};
-  background-color: ${({ theme: { colors } }) => colors.transparent};
-`;
+})(({ ignorePaddingHorizontal, theme: { colors } }) => ({
+  ...padding.object(
+    9,
+    ignorePaddingHorizontal ? 0 : 19,
+    10,
+    ignorePaddingHorizontal ? 0 : 19
+  ),
+  ...position.sizeAsObject('100%'),
+  backgroundColor: colors.transparent,
+}));
 
 class AssetListItemSkeleton extends PureComponent {
   static propTypes = {

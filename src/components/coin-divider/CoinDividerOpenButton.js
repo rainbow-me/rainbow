@@ -6,11 +6,11 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import styled from 'styled-components';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { ButtonPressAnimation, RoundButtonCapSize } from '../animations';
 import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
@@ -20,21 +20,21 @@ const openWidth = 80;
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,
   tintColor: colors.blueGreyDark,
-}))`
-  height: 18;
-  width: 8;
-`;
+}))({
+  height: 18,
+  width: 8,
+});
 
 const Content = styled(Animated.View).attrs({
   align: 'center',
   flex: 'row',
   justify: 'space-between',
-})`
-  background-color: ${({ theme: { colors } }) => colors.blueGreyDarkLight};
-  ${padding(0, 10)};
-  border-radius: ${RoundButtonCapSize / 2};
-  height: ${({ height }) => height};
-`;
+})({
+  backgroundColor: ({ theme: { colors } }) => colors.blueGreyDarkLight,
+  ...padding.object(0, 10),
+  borderRadius: RoundButtonCapSize / 2,
+  height: ({ height }) => height,
+});
 
 const LabelText = styled(Text).attrs(({ shareButton, theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.6),
@@ -42,7 +42,7 @@ const LabelText = styled(Text).attrs(({ shareButton, theme: { colors } }) => ({
   lineHeight: 30,
   size: 'lmedium',
   weight: shareButton ? 'heavy' : 'bold',
-}))``;
+}))({});
 
 const CoinDividerOpenButton = ({
   coinDividerHeight,

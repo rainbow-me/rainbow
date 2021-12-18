@@ -12,8 +12,8 @@ const FooterContainer = styled(Column).attrs({
   justify: 'end',
   marginBottom: android ? footerMargin : 0,
 })`
-  width: 100%;
-  z-index: 3;
+  width: '100%',
+  zIndex: 3;
 `;
 
 const FormContainer = styled(Column).attrs({
@@ -23,13 +23,13 @@ const FormContainer = styled(Column).attrs({
   flex: 1;
   min-height: ${({ isSmallPhone, isTinyPhone }) =>
     isTinyPhone ? 104 : android || isSmallPhone ? 134 : 167};
-  width: 100%;
+  width: '100%';
 `;
 
 const Spacer = styled.View`
   height: ${({ isSmallPhone, isTinyPhone }) =>
     isTinyPhone ? 8 : isSmallPhone ? 12 : 15};
-  width: 100%;
+  width: '100%';
 `;
 
 export default function SendAssetFormToken({

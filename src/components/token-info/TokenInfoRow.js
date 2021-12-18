@@ -9,8 +9,8 @@ const Container = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
 })`
-  ${padding(0, space)};
-  width: 100%;
+  ...padding.object(0, space)};
+  width: '100%',
 `;
 
 function renderChild(child, index) {

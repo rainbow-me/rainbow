@@ -1,5 +1,5 @@
-import styled from 'styled-components';
 import { TruncatedText } from '../text';
+import styled from '@rainbow-me/styled';
 
 const CoinName = styled(TruncatedText).attrs(
   ({ color, size, theme: { colors } }) => ({
@@ -8,8 +8,8 @@ const CoinName = styled(TruncatedText).attrs(
     lineHeight: android ? 'normalTight' : 'normal',
     size: size || 'lmedium',
   })
-)`
-  padding-right: ${({ paddingRight = 19 }) => paddingRight};
-`;
+)({
+  paddingRight: ({ paddingRight = 19 }) => paddingRight,
+});
 
 export default CoinName;

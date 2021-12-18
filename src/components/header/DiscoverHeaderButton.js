@@ -16,7 +16,7 @@ const DiscoverButtonShadowsFactory = colors => [
 
 const BackgroundFill = styled.View`
   ${position.cover};
-  background-color: ${({ theme: { colors } }) => colors.white};
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
   opacity: 0.5;
 `;
 
@@ -34,11 +34,10 @@ const DiscoverButtonContent = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 2,
 })`
-  align-items: center;
-  justify-content: center;
-  ${padding(2, 10, 7.5)};
+  alignItems: 'center',
+  justifycontent: 'center', ...padding.object(2, 10, 7.5)};
   height: 34;
-  z-index: 2;
+  zIndex: 2;
 `;
 
 export default function DiscoverHeaderButton() {

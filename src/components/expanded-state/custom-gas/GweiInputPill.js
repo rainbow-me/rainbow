@@ -14,7 +14,7 @@ const GweiPill = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   end: { x: 0.5, y: 1 },
   start: { x: 0, y: 0 },
 }))`
-  border-radius: 15;
+  borderradius: 15;
   height: 40;
   ${ios ? 'height: 40;' : padding(10, 12)}
   max-width: 130;

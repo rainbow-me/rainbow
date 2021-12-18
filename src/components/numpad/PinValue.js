@@ -6,9 +6,9 @@ import { Column, Flex } from '../../components/layout';
 const FilledValue = styled(Column)`
   width: 20;
   height: 20;
-  border-radius: 20;
+  borderradius: 20;
   margin-left: 10;
-  margin-right: 10;
+  marginright: 10;
 `;
 
 const EmptyValue = styled(Column)`
@@ -16,9 +16,9 @@ const EmptyValue = styled(Column)`
   width: 20;
   height: 20;
   border-color: ${({ theme: { colors } }) => colors.appleBlue};
-  border-radius: 20;
+  borderradius: 20;
   margin-left: 10;
-  margin-right: 10;
+  marginright: 10;
 `;
 
 const PinValue = ({ translateX, value, ...props }) => {

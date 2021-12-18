@@ -16,7 +16,7 @@ const EmptyCurrencySelectionList = styled(EmptyAssetList).attrs({
   pointerEvents: 'none',
 })`
   ${position.cover};
-  background-color: ${({ theme: { colors } }) => colors.white};
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
 `;
 
 const NoCurrencyResults = styled(NoResults)`

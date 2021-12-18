@@ -61,7 +61,7 @@ const CheckmarkIcon = styled(Icon).attrs({
 
 const Container = styled(Column).attrs({})`
   ${position.cover};
-  background-color: ${({ backgroundColor }) => backgroundColor};
+  backgroundcolor: ${({ backgroundColor }) => backgroundColor};
 `;
 
 const scrollContainerStyle = { flex: 1 };
@@ -73,8 +73,8 @@ const ScrollContainer = styled(ScrollView).attrs({
 const SettingIcon = styled(Image)`
   ${position.size(60)};
   margin-left: -16;
-  margin-right: -11;
-  margin-top: 8;
+  marginright: -11;
+  margintop: 8;
 `;
 
 const VersionStampContainer = styled(Column).attrs({
@@ -92,7 +92,7 @@ const WarningIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   box-shadow: 0px 4px 6px
     ${({ theme: { colors, isDarkMode } }) =>
       isDarkMode ? colors.shadow : colors.alpha(colors.orangeLight, 0.4)};
-  margin-top: 1;
+  margintop: 1;
 `;
 
 function capitalizeFirstLetter(string) {

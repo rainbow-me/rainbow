@@ -26,10 +26,10 @@ const Container = styled(Row)`
   ${margin(0, 15, 8)};
   ${({ isSearchModeEnabled }) =>
     isSearchModeEnabled ? padding(0, 37, 0, 12) : padding(0)};
-  background-color: ${({ theme: { colors } }) => colors.transparent};
-  border-radius: ${ExchangeSearchHeight / 2};
+  backgroundcolor: ${({ theme: { colors } }) => colors.transparent};
+  borderradius: ${ExchangeSearchHeight / 2};
   height: ${ExchangeSearchHeight};
-  overflow: hidden;
+  overflow: 'hidden';
 `;
 
 const BackgroundGradient = styled(RadialGradient).attrs(
@@ -39,7 +39,7 @@ const BackgroundGradient = styled(RadialGradient).attrs(
   })
 )`
   height: ${ExchangeSearchWidth};
-  position: absolute;
+  position: 'absolute',
   top: ${-(ExchangeSearchWidth - ExchangeSearchHeight) / 2};
   transform: scaleY(${ExchangeSearchHeight / ExchangeSearchWidth});
   width: ${ExchangeSearchWidth};
@@ -52,7 +52,7 @@ const SearchIcon = styled(Text).attrs(({ theme: { colors } }) => ({
 }))``;
 
 const SearchIconWrapper = styled(Animated.View)`
-  margin-top: ${android ? '5' : '8'};
+  marginTop ${android ? '5' : '8'};
 `;
 
 const SearchInput = styled(Input).attrs(
@@ -73,15 +73,17 @@ const SearchInput = styled(Input).attrs(
     weight: 'semibold',
   })
 )`
-  ${android
-    ? `margin-top: -6;
-  margin-bottom: -10;`
-    : ''}
+  ${
+    android
+      ? `marginTop: -6;
+  marginBottom: -10;`
+      : ''
+  }
   flex: 1;
   text-align: ${({ isSearchModeEnabled }) =>
     isSearchModeEnabled ? 'left' : 'center'};
   height: ${ios ? 38 : 56};
-  margin-bottom: 1;
+  marginbottom: 1,
   margin-left: ${({ isSearchModeEnabled }) => (isSearchModeEnabled ? 3 : 0)};
 `;
 
@@ -97,7 +99,7 @@ const SearchSpinner = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
 const SearchSpinnerWrapper = styled(Animated.View)`
   height: 20;
   left: 12;
-  position: absolute;
+  position: 'absolute',
   top: 9.5;
   width: 20;
 `;

@@ -61,7 +61,7 @@ const buildTextStyles = css`
   }}
 
   /* Font Size */
-  font-size: ${({ size = 'medium' }) =>
+  fontSize:  ${({ size = 'medium' }) =>
     typeof size === 'number' ? size : get(fonts, `size[${size}]`, size)};
 
   /* Font Weight */
@@ -74,7 +74,7 @@ const buildTextStyles = css`
   ${({ letterSpacing = 'rounded' }) =>
     isNil(letterSpacing)
       ? ''
-      : `letter-spacing: ${get(
+      : `letterSpacing: ${get(
           fonts,
           `letterSpacing[${letterSpacing}]`,
           letterSpacing
@@ -84,7 +84,7 @@ const buildTextStyles = css`
   ${({ isEmoji, lineHeight }) =>
     isNil(lineHeight) || (isEmoji && android)
       ? ''
-      : `line-height: ${get(fonts, `lineHeight[${lineHeight}]`, lineHeight)};`}
+      : `lineHeight: ${get(fonts, `lineHeight[${lineHeight}]`, lineHeight)};`}
 
   /* Opacity */
   ${({ opacity }) => (isNil(opacity) ? '' : `opacity: ${opacity};`)}

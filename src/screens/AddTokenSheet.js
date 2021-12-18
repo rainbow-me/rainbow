@@ -35,9 +35,8 @@ const Container = styled(Centered).attrs({
 `;
 
 const RemoveButton = styled(ButtonPressAnimation)`
-  background-color: ${({ theme: { colors } }) =>
-    colors.alpha(colors.red, 0.06)};
-  border-radius: 15;
+  backgroundcolor: ${({ theme: { colors } }) => colors.alpha(colors.red, 0.06)};
+  borderradius: 15;
   height: 30;
   padding-left: 6;
   padding-right: 10;
@@ -52,7 +51,7 @@ const RemoveButtonContent = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'lmedium',
   weight: 'bold',
 }))`
-  ${android && 'margin-top: -5px'}
+  ${android && 'marginTop: -5px'}
 `;
 
 const ListButton = styled(ButtonPressAnimation)`
@@ -63,8 +62,8 @@ const ListButton = styled(ButtonPressAnimation)`
 const ListEmoji = styled(Emoji).attrs({
   size: 'large',
 })`
-  margin-top: ${android ? 4 : 1};
-  margin-right: 6;
+  marginTop ${android ? 4 : 1};
+  marginRight: 6;
 `;
 
 const WRITEABLE_LISTS = ['watchlist', 'favorites'];

@@ -8,7 +8,7 @@ import { padding } from '@rainbow-me/styles';
 
 const Container = styled(Centered)`
   padding-top: 49;
-  width: 100%;
+  width: '100%';
 `;
 
 const TimespanItemLabel = styled(Text).attrs(
@@ -20,13 +20,13 @@ const TimespanItemLabel = styled(Text).attrs(
     weight: 'bold',
   })
 )`
-  ${padding(0, 9)};
+  ...padding.object(0, 9)};
 `;
 
 const TimespanItemRow = styled(Row).attrs({
   justify: 'space-around',
 })`
-  ${padding(0, 30)};
+  ...padding.object(0, 30)};
 `;
 
 const TimespanItem = ({ color, isSelected, item, ...props }) => (

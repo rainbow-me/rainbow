@@ -20,18 +20,18 @@ import { abbreviations, profileUtils } from '@rainbow-me/utils';
 export const ShowcaseContext = createContext();
 
 const HeaderWrapper = styled.View`
-  width: 100%;
+  width: '100%',
   padding-top: 40;
-  justify-content: center;
-  align-items: center;
+  justifyContent: 'center',
+  alignItems: 'center',
   height: ${({ height }) => height};
 `;
 
 const Footer = styled(ColumnWithMargins).attrs({
   margin: 19,
 })`
-  ${padding(19, 0, 21)};
-  width: 100%;
+  ...padding.object(19, 0, 21)};
+  width: '100%',
 `;
 
 const Spacer = styled.View`
@@ -51,7 +51,7 @@ const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   size: 'large',
   weight: 'heavy',
 }))`
-  width: 100%;
+  width: '100%';
 `;
 
 const ENSAddress = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -61,7 +61,7 @@ const ENSAddress = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'larger',
   weight: 'heavy',
 }))`
-  width: 100%;
+  width: '100%';
 `;
 
 const avatarColor = profileUtils.emojiColorIndexes.map(

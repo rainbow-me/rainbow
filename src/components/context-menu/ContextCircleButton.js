@@ -1,18 +1,18 @@
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import styled from 'styled-components';
 import { Text } from '../text';
 import ContextMenu from './ContextMenu';
+import styled from '@rainbow-me/styled';
 import { borders, position } from '@rainbow-me/styles';
 
 const CircleButton = styled(RadialGradient).attrs(({ theme: { colors } }) => ({
   center: [0, 20],
   colors: colors.gradients.lightestGrey,
-}))`
-  ${borders.buildCircle(40)};
-  ${position.centered};
-  overflow: hidden;
-`;
+}))({
+  ...borders.buildCircleAsObject(40),
+  ...position.centeredAsObject,
+  overflow: 'hidden',
+});
 
 const ContextIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -20,11 +20,11 @@ const ContextIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   letterSpacing: 'zero',
   size: 'larger',
   weight: 'bold',
-}))`
-  height: 100%;
-  line-height: 39px;
-  width: 100%;
-`;
+}))({
+  height: '100%',
+  lineHeight: 39,
+  width: '100%',
+});
 
 export default function ContextCircleButton(props) {
   return (

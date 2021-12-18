@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
 import Animated, { useSharedValue } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { useCallbackOne } from 'use-memo-one';
 import { CoinIcon, CoinIconGroup } from '../../coin-icon';
 import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
@@ -14,6 +13,7 @@ import {
 } from './chart-data-labels';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useBooleanState } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 import { padding } from '@rainbow-me/styles';
 
 const { call, cond, onChange, useCode } = Animated;
@@ -23,9 +23,9 @@ const noPriceData = 'No price data';
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
   marginTop: android ? -10 : 0,
-})`
-  ${({ showChart }) => padding(0, 19, showChart ? (android ? 15 : 30) : 0)};
-`;
+})(({ showChart }) => ({
+  ...padding.object(0, 19, showChart ? (android ? 15 : 30) : 0),
+}));
 
 function useTabularNumsWhileScrubbing(isScrubbing) {
   const [tabularNums, enable, disable] = useBooleanState();

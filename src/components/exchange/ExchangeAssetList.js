@@ -26,7 +26,7 @@ import { abbreviations, deviceUtils, magicMemo } from '@rainbow-me/utils';
 const deviceWidth = deviceUtils.dimensions.width;
 
 const Header = styled.View`
-  ${padding(11, 0, 2.5, 19)};
+  ...padding.object(11, 0, 2.5, 19)};
   position: relative;
 `;
 
@@ -38,8 +38,8 @@ const HeaderBackground = styled(LinearGradient).attrs(
     start: { x: 0.5, y: 0 },
   })
 )`
-  height: 40px;
-  position: absolute;
+  height: 40,
+  position: 'absolute',
   width: ${deviceWidth};
 `;
 
@@ -87,8 +87,8 @@ function useSwapDetailsClipboardState() {
 }
 
 const Spacer = styled.View`
-  height: 35px;
-  width: 100%;
+  height: 35,
+  width: '100%',
 `;
 
 const ExchangeAssetSectionList = styled(SectionList).attrs({
@@ -104,7 +104,7 @@ const ExchangeAssetSectionList = styled(SectionList).attrs({
   scrollIndicatorInsets,
   windowSize: 41,
 })`
-  height: 100%;
+  height: '100%';
 `;
 
 const ExchangeAssetList = (

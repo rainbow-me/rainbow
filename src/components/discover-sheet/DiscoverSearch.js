@@ -32,7 +32,7 @@ import Routes from '@rainbow-me/routes';
 import { filterList } from '@rainbow-me/utils';
 
 export const SearchContainer = styled(Row)`
-  height: 100%;
+  height: '100%';
 `;
 
 const searchCurrencyList = (searchList = [], query) => {

@@ -75,7 +75,7 @@ const InnerWrapper = styled(Centered).attrs({
     height: 500;
     top: 0;
   `};
-  background-color: ${({ theme: { colors } }) => colors.transparent};
+  backgroundcolor: ${({ theme: { colors } }) => colors.transparent};
 `;
 
 const Spacer = styled.View`

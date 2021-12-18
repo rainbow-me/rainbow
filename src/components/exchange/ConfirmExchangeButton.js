@@ -29,8 +29,8 @@ const ConfirmButton = styled(HoldToAuthorizeButton).attrs({
 `;
 
 const Container = styled(Centered)`
-  ${padding(5, paddingHorizontal, 0)};
-  width: 100%;
+  ...padding.object(5, paddingHorizontal, 0)};
+  width: '100%',
 `;
 
 export default function ConfirmExchangeButton({

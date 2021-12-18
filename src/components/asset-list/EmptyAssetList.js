@@ -1,17 +1,15 @@
 import { times } from 'lodash';
 import React, { useMemo } from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components';
 import AddFundsInterstitial from '../AddFundsInterstitial';
 import { FabWrapperBottomPosition } from '../fab';
 import { Centered, Column } from '../layout';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 import AssetListItemSkeleton from './AssetListItemSkeleton';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 
-const Container = styled(Column)`
-  ${position.size('100%')};
-`;
+const Container = styled(Column)(position.sizeAsObject('100%'));
 
 const EmptyAssetList = ({
   descendingOpacity,

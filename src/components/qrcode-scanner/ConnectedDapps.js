@@ -10,27 +10,27 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
 const LabelText = styled(Text)`
-  margin-top: ${android ? 0 : -3};
-  line-height: 46;
+  marginTop ${android ? 0 : -3};
+  lineheight: 46;
 `;
 
 const Overlay = styled(Centered)`
-  align-items: center;
+  alignItems: 'center',
   height: 100;
-  justify-content: center;
+  justifyContent: 'center',
   top: 30;
-  width: 100%;
+  width: '100%',
 `;
 
 const OverlayBlur = styled(BlurView).attrs(({ isDarkMode }) => ({
   blurAmount: 100,
   blurType: isDarkMode ? 'light' : android ? 'dark' : 'ultraThinMaterialDark',
 }))`
-  border-radius: 23;
+  borderradius: 23;
   height: 46;
   padding-horizontal: 15;
-  z-index: 1;
-  justify-content: center;
+  zindex: 1;
+  justifycontent: 'center';
 `;
 
 function ConnectedDapps() {

@@ -28,7 +28,6 @@ import {
   RecyclerListViewState,
 } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import styled from 'styled-components';
 import { withThemeContext } from '../../../context/ThemeContext';
 import { CoinDivider, CoinDividerHeight } from '../../coin-divider';
 import { CoinRowHeight } from '../../coin-row';
@@ -44,6 +43,7 @@ import {
   useOpenSmallBalances,
   usePrevious,
 } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 import { deviceUtils, logger } from '@rainbow-me/utils';
 
 const extractCollectiblesIdFromRow = (row: {
@@ -153,19 +153,19 @@ const isEqualDataProvider = new DataProvider((r1, r2) => {
   }
 });
 
-const StyledRecyclerListView = styled(RecyclerListView)`
-  background-color: ${({ theme: { colors } }) => colors.white};
-  display: flex;
-  flex: 1;
-  min-height: 1;
-`;
+const StyledRecyclerListView = styled(RecyclerListView)({
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  display: 'flex',
+  flex: 1,
+  minHeight: 1,
+});
 
-const StyledContainer = styled(View)`
-  display: flex;
-  flex: 1;
-  background-color: ${({ theme: { colors } }) => colors.white};
-  overflow: hidden;
-`;
+const StyledContainer = styled(View)({
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  display: 'flex',
+  flex: 1,
+  overflow: 'hidden',
+});
 
 type RecyclerListViewRef = RecyclerListView<
   RecyclerListViewProps,

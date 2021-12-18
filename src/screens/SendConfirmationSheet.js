@@ -58,13 +58,13 @@ const CheckboxContainer = styled(Row)`
 `;
 
 const CheckboxBorder = styled.View`
-  ${({ checked, color }) => checked && `background-color: ${color}`};
-  border-radius: 7;
+  ${({ checked, color }) => checked && `backgroundColor: ${color}`};
+  borderRadius: 7;
   border-color: ${({ checked, theme: { colors } }) =>
     colors.alpha(colors.blueGreyDark, checked ? 0 : 0.15)};
   border-width: 2;
   height: 20;
-  position: absolute;
+  position: 'absolute',
   width: 20;
 `;
 
@@ -85,7 +85,7 @@ const Checkmark = styled(Text).attrs(({ checked, theme: { colors } }) => ({
   size: 'smaller',
   weight: 'bold',
 }))`
-  width: 100%;
+  width: '100%';
 `;
 
 const SendButtonWrapper = styled(Column).attrs({

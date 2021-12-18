@@ -14,8 +14,8 @@ const Container = styled(Row).attrs({
     )};
   ${({ paddingBottom }) =>
     paddingBottom ? `padding-bottom: ${paddingBottom};` : ``}
-  width: 100%;
-  z-index: 2;
+  width: '100%',
+  zIndex: 2;
   elevation: -1;
 `;
 

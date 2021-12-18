@@ -19,9 +19,9 @@ const Container = styled.View`
 `;
 
 const Content = styled.View`
-  border-radius: ${UniqueTokenCardBorderRadius};
+  borderRadius: ${UniqueTokenCardBorderRadius};
   height: ${({ height }) => height || CardSize};
-  overflow: hidden;
+  overflow: 'hidden',
   width: ${({ width }) => width || CardSize};
 `;
 

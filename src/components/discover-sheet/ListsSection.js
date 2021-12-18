@@ -51,24 +51,23 @@ const fetchTrendingAddresses = async coingeckoIds => {
 const ListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
 })`
-  margin-right: 16px;
-  ${({ selected, theme: { colors } }) =>
-    selected
-      ? `
-        background-color: ${colors.alpha(colors.blueGreyDark, 0.06)};
-        border-radius: 12px;
-        height: 30px;
-        padding-horizontal: 8px;
-        padding-top: ${ios ? 6.5 : 4.5}px;
+  marginright: 16,
+    ${({ selected, theme: { colors } }) =>
+      selected
+        ? `
+        backgroundColor: ${colors.alpha(colors.blueGreyDark, 0.06)};
+        borderRadius: 12,
+        height: 30,
+        padding-horizontal: 8,
+        padding-top: ${ios ? 6.5 : 4.5},
       `
-      : `
-        padding-top: ${ios ? 6.5 : 4.5}px;
-      `}
+        : `
+        padding-top: ${ios ? 6.5 : 4.5},
+      `};
 `;
 
 const ListName = styled(Text)`
-  margin-left: 3px;
-  margin-top: ${ios ? -4.5 : 0}px;
+  margin-left: 3, marginTop ${ios ? -4.5 : 0};
 `;
 
 // Update trending lists every 5 minutes

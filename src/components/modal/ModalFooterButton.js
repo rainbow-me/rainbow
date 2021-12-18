@@ -8,7 +8,7 @@ import { position } from '@rainbow-me/styles';
 
 const ButtonIcon = styled(Icon)`
   ${position.maxSize('100%')};
-  margin-right: 9;
+  marginright: 9;
 `;
 
 const Container = styled(Centered)`

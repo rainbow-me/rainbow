@@ -17,16 +17,16 @@ import ShadowStack from 'react-native-shadow-stack';
 
 const Header = styled.View`
   flex-direction: row;
-  justify-content: space-between;
+  justifyContent: 'space-between',
   margin-vertical: 12;
-  position: absolute;
+  position: 'absolute',
   top: -12;
-  width: 100%;
-  z-index: 10;
+  width: '100%',
+  zIndex: 10;
 `;
 
 const ChildWrapperView = styled.View`
-  position: absolute;
+  position: 'absolute';
 `;
 
 export const FloatingActionButtonShadow = colors => [
@@ -38,7 +38,7 @@ const BackgroundFill = styled(Centered).attrs({
   ...borders.buildCircleAsObject(43),
 })`
   ${position.cover};
-  background-color: ${({ theme: { colors, isDarkMode } }) =>
+  backgroundcolor: ${({ theme: { colors, isDarkMode } }) =>
     isDarkMode ? colors.darkModeDark : colors.blueGreyDark};
   left: 8;
   top: 8;

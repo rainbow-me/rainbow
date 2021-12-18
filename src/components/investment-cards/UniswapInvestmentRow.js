@@ -40,8 +40,8 @@ const TopRowContainer = ios
 const PriceContainer = ios
   ? View
   : styled(View)`
-      margin-top: -3;
-      margin-bottom: 3;
+      marginTop -3;
+      marginbottom: 3,
     `;
 
 const BottomRow = ({ price, type, uniBalance }) => {

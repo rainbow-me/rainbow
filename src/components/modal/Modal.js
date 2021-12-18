@@ -15,19 +15,19 @@ const Container = styled(Centered).attrs(({ fixedToTop }) => ({
   ${({ containerPadding }) => padding(containerPadding)};
   ${position.size('100%')};
   shadow-color: ${({ shadowColor }) => shadowColor};
-  shadow-offset: 0px 10px;
+  shadow-offset: 0px 10,
   shadow-opacity: 0.5;
   shadow-radius: 25;
 `;
 
 const Content = styled(Column).attrs({ shrink: 0 })`
-  border-radius: ${({ radius }) => radius};
+  borderRadius: ${({ radius }) => radius};
   height: ${({ height }) => height};
-  margin-top: ${({ fixedToTop }) => (fixedToTop ? 91 : 0)};
-  overflow: hidden;
+  marginTop ${({ fixedToTop }) => (fixedToTop ? 91 : 0)};
+  overflow: 'hidden',
   padding-top: ${({ fullScreenOnAndroid }) =>
     fullScreenOnAndroid && android ? getStatusBarHeight() : 0};
-  width: 100%;
+  width: '100%',
 `;
 
 export default function Modal({

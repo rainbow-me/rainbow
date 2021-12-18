@@ -9,10 +9,10 @@ import { reserveWyreOrder } from '../handlers/wyre';
 import { useAccountSettings } from '@rainbow-me/hooks';
 
 const Container = styled(FlexItem)`
-  background-color: ${({ theme: { colors } }) => colors.white};
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
 `;
 const StyledWebView = styled(WebView)`
-  background-color: ${({ theme: { colors } }) => colors.white};
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
 `;
 export default function WyreWebview() {
   const { params } = useRoute();

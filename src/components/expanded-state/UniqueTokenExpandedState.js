@@ -75,20 +75,20 @@ const BackgroundImage = styled.View`
 const BlurWrapper = styled.View.attrs({
   shouldRasterizeIOS: true,
 })`
-  background-color: ${({ theme: { colors } }) => colors.trueBlack};
+  backgroundcolor: ${({ theme: { colors } }) => colors.trueBlack};
   height: ${({ height }) => height};
   left: 0;
-  overflow: hidden;
-  position: absolute;
+  overflow: 'hidden',
+  position: 'absolute',
   width: ${({ width }) => width};
   ${android && 'border-top-left-radius: 30; border-top-right-radius: 30;'}
 `;
 
 const SheetDivider = styled(Row)`
   align-self: center;
-  background-color: ${({ theme: { colors } }) =>
+  backgroundcolor: ${({ theme: { colors } }) =>
     colors.alpha(colors.whiteLabel, 0.01)};
-  border-radius: 1;
+  borderradius: 1;
   height: 2;
   width: ${({ deviceWidth }) => deviceWidth - 48};
 `;

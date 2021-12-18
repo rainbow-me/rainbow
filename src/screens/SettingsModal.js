@@ -96,7 +96,7 @@ const SettingsPages = {
 
 const Container = styled.View`
   flex: 1;
-  overflow: hidden;
+  overflow: 'hidden';
 `;
 
 const Stack = createStackNavigator();

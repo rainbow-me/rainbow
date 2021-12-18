@@ -8,8 +8,8 @@ import { position } from '@rainbow-me/styles';
 import logger from 'logger';
 
 const ImageTile = styled(ImgixImage)`
-  align-items: center;
-  justify-content: center;
+  alignItems: 'center',
+  justifycontent: 'center';
 `;
 
 const getHTML = (svgContent, style) =>
@@ -30,18 +30,18 @@ const getHTML = (svgContent, style) =>
       html, body {
         margin: 0;
         padding: 0;
-        height: 100%;
-        width: 100%;
-        overflow: hidden;
-        background-color: transparent;
+        height: '100%',
+        width: '100%',
+        overflow: 'hidden',
+        backgroundColor: transparent;
       }
       svg {
         position: fixed;
         top: 0;
         left: 0;
-        height: 100%;
-        width: 100%;
-        overflow: hidden;
+        height: '100%',
+        width: '100%',
+        overflow: 'hidden',
       }
     </style>
   </head>

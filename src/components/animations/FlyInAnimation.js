@@ -1,13 +1,13 @@
 import React from 'react';
 import Animated, { EasingNode } from 'react-native-reanimated';
 import { useTimingTransition } from 'react-native-redash/src/v1';
-import styled from 'styled-components';
 import { interpolate } from './procs';
+import styled from '@rainbow-me/styled';
 
-const AnimatedContainer = styled(Animated.View)`
-  flex: 1;
-  width: 100%;
-`;
+const AnimatedContainer = styled(Animated.View)({
+  flex: 1,
+  width: '100%',
+});
 
 export default function FlyInAnimation({
   distance = 30,

@@ -6,10 +6,10 @@ import ExchangeField from './ExchangeField';
 const paddingTop = android ? 15 : 32;
 
 const Container = styled(Row).attrs({ align: 'center' })`
-  overflow: hidden;
+  overflow: 'hidden',
   padding-bottom: 21;
   padding-top: ${paddingTop};
-  width: 100%;
+  width: '100%',
 `;
 
 export default function ExchangeOutputField({

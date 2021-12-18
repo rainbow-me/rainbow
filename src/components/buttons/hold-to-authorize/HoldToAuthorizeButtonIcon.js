@@ -1,19 +1,19 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { interpolate, ScaleInAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import { Centered } from '../../layout';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 
 const { cond, divide, greaterThan } = Animated;
 
-const Container = styled(Centered)`
-  ${position.size(31)};
-  left: 15;
-  position: absolute;
-`;
+const Container = styled(Centered)({
+  ...position.sizeAsObject(31),
+  left: 15,
+  position: 'absolute',
+});
 
 export default function HoldToAuthorizeButtonIcon({ animatedValue }) {
   const { colors } = useTheme();

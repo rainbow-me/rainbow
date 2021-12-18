@@ -4,9 +4,9 @@ import styled from 'styled-components';
 const ListFooterHeight = 27;
 
 const Spacer = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.transparent};
+  backgroundcolor: ${({ theme: { colors } }) => colors.transparent};
   height: ${({ height }) => height || ListFooterHeight};
-  width: 100%;
+  width: '100%';
 `;
 
 const neverRerender = () => true;

@@ -14,7 +14,7 @@ const ExchangeFieldPadding = android ? 15 : 19;
 
 const CoinIconSkeleton = styled.View`
   ${borders.buildCircle(CoinIconSize)};
-  background-color: ${({ theme: { colors } }) =>
+  backgroundcolor: ${({ theme: { colors } }) =>
     colors.alpha(colors.blueGreyDark, 0.1)};
 `;
 
@@ -22,7 +22,7 @@ const Container = styled(Row).attrs({
   align: 'center',
   justify: 'flex-end',
 })`
-  width: 100%;
+  width: '100%',
   padding-right: ${ExchangeFieldPadding};
 `;
 

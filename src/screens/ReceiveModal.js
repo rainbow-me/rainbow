@@ -27,7 +27,7 @@ const AddressText = styled(TruncatedAddress).attrs(({ theme: { colors } }) => ({
   size: 'large',
   weight: 'semibold',
 }))`
-  width: 100%;
+  width: '100%';
 `;
 
 const Container = styled(Centered).attrs({
@@ -40,15 +40,15 @@ const Container = styled(Centered).attrs({
 const Handle = styled(SheetHandle).attrs(({ theme: { colors } }) => ({
   color: colors.whiteLabel,
 }))`
-  margin-bottom: 19;
+  marginbottom: 19;
 `;
 
 const QRWrapper = styled(Column).attrs({ align: 'center' })`
-  ${padding(24)};
+  ...padding.object(24)};
   ${({ theme: { colors } }) =>
     shadow.build(0, 10, 50, colors.shadowBlack, 0.6)};
-  background-color: ${({ theme: { colors } }) => colors.whiteLabel};
-  border-radius: 39;
+  backgroundcolor: ${({ theme: { colors } }) => colors.whiteLabel};
+  borderradius: 39;
 `;
 
 const NameText = styled(Text).attrs(({ theme: { colors } }) => ({

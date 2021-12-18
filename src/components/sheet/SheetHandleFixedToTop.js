@@ -13,12 +13,12 @@ export const SheetHandleFixedToTopHeight =
 const Container = styled(Centered).attrs({
   pointerEvents: 'none',
 })`
-  ${padding(paddingTop, 0, paddingBottom)};
+  ...padding.object(paddingTop, 0, paddingBottom)};
   left: 0;
-  position: absolute;
+  position: 'absolute',
   right: 0;
   top: 0;
-  z-index: 9;
+  zIndex: 9;
 `;
 
 export default function SheetHandleFixedToTop({ showBlur }) {

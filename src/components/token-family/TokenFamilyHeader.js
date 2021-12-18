@@ -20,9 +20,9 @@ const Content = styled(Row).attrs({
   justify: 'space-between',
 })`
   ${({ isCoinRow }) => padding(0, isCoinRow ? 19 : 19)};
-  background-color: ${({ theme: { colors } }) => colors.white};
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
   height: ${TokenFamilyHeaderHeight};
-  width: 100%;
+  width: '100%';
 `;
 
 const ChildrenAmountText = styled(Text).attrs({
@@ -30,7 +30,7 @@ const ChildrenAmountText = styled(Text).attrs({
   letterSpacing: 'roundedTight',
   size: 'large',
 })`
-  margin-bottom: 1;
+  marginbottom: 1;
 `;
 
 const TitleText = styled(TruncatedText).attrs({
@@ -41,7 +41,7 @@ const TitleText = styled(TruncatedText).attrs({
   weight: 'heavy',
 })`
   flex: 1;
-  margin-bottom: 1;
+  marginbottom: 1,
   padding-left: ${({ isShowcase }) => (isShowcase ? 1 : 10)};
   padding-right: 9;
 `;

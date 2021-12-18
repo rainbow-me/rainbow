@@ -1,6 +1,6 @@
 import React, { createElement } from 'react';
-import styled from 'styled-components';
 import useCoinListEditOptions from '../../hooks/useCoinListEditOptions';
+import styled from '../../styled-thing';
 import { CoinIcon, CoinIconGroup, CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { useAccountSettings } from '@rainbow-me/hooks';
@@ -15,17 +15,17 @@ const Container = styled(Row).attrs({
   align: 'center',
   grow: 0,
   shrink: 1,
-})`
-  ${padding(CoinRowPaddingTop, 19, CoinRowPaddingBottom)};
-  width: 100%;
-`;
+})({
+  ...padding.object(CoinRowPaddingTop, 19, CoinRowPaddingBottom),
+  width: '100%',
+});
 
-const Content = styled(Column).attrs({ justify: 'space-between' })`
-  flex: 1;
-  height: ${CoinIconSize};
-  margin-left: 10;
-  opacity: ${({ isHidden }) => (isHidden ? 0.4 : 1)};
-`;
+const Content = styled(Column).attrs({ justify: 'space-between' })({
+  flex: 1,
+  height: CoinIconSize,
+  marginLeft: 10,
+  opacity: ({ isHidden }) => (isHidden ? 0.4 : 1),
+});
 
 export default function CoinRow({
   address,

@@ -25,8 +25,8 @@ const GestureBlocker = styled.View.attrs({
   pointerEvents: 'none',
 })`
   ${position.size('100%')};
-  background-color: ${({ theme: { colors } }) => colors.transparent};
-  position: absolute;
+  backgroundcolor: ${({ theme: { colors } }) => colors.transparent};
+  position: 'absolute';
 `;
 
 function useStateCallback(initialState) {

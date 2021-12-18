@@ -1,8 +1,8 @@
 import React from 'react';
-import styled from 'styled-components';
 import { magicMemo } from '../../utils';
 import { OpacityToggler } from '../animations';
 import { Text } from '../text';
+import styled from '@rainbow-me/styled';
 
 const LabelText = styled(Text).attrs(({ shareButton, theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.6),
@@ -10,11 +10,11 @@ const LabelText = styled(Text).attrs(({ shareButton, theme: { colors } }) => ({
   lineHeight: 30,
   size: 'lmedium',
   weight: shareButton ? 'heavy' : 'bold',
-}))`
-  position: absolute;
-  top: ${android ? -15 : -15.5};
-  ${({ shareButton }) => shareButton && `width:  100%;`};
-`;
+}))(({ shareButton }) => ({
+  position: 'absolute',
+  ...(shareButton ? { width: '100%' } : {}),
+  top: android ? -15 : -15.5,
+}));
 
 const CoinDividerButtonLabel = ({ align, isVisible, label, shareButton }) => (
   <OpacityToggler isVisible={isVisible}>

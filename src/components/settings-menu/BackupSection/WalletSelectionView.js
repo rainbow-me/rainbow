@@ -24,7 +24,7 @@ const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   tintColor: colors.alpha(colors.blueGreyDark, 0.6),
 }))`
   height: 18;
-  margin-top: 15;
+  marginTop: 15,
   width: 8;
 `;
 
@@ -46,8 +46,8 @@ const CheckmarkIcon = styled(Icon).attrs({
   name: 'checkmarkCircled',
 })`
   align-self: center;
-  margin-bottom: 1px;
-  margin-right: 7px;
+  marginbottom: 1,
+  marginRight: 7,
 `;
 
 const GreenCheck = styled(CheckmarkIcon).attrs(({ theme: { colors } }) => ({
@@ -74,13 +74,13 @@ const WarningIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   box-shadow: 0px 4px 6px
     ${({ theme: { colors, isDarkMode } }) =>
       colors.alpha(isDarkMode ? colors.shadow : colors.orangeLight, 0.4)};
-  margin-right: 7px;
+  marginright: 7;
 `;
 
 const Footer = styled(Centered)`
   flex: 1;
   align-items: flex-end;
-  ${padding(19, 15, 30)};
+  ...padding.object(19, 15, 30)};
 `;
 
 const WalletSelectionView = () => {

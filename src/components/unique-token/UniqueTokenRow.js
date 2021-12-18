@@ -15,9 +15,9 @@ import Routes from '@rainbow-me/routes';
 import { padding, position } from '@rainbow-me/styles';
 
 const Container = styled(Row).attrs({ align: 'center' })`
-  ${padding(0, UniqueTokenRowPadding)};
-  margin-bottom: ${UniqueTokenCardMargin};
-  width: 100%;
+  ...padding.object(0, UniqueTokenRowPadding)};
+  marginbottom: ${UniqueTokenCardMargin};
+  width: '100%',
 `;
 
 const UniqueTokenCardItem = styled(UniqueTokenCard).attrs({

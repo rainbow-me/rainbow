@@ -11,7 +11,7 @@ const Container = styled(RowWithMargins).attrs({
   justify: 'start',
   margin: 6,
 })`
-  background-color: ${({ theme: { colors } }) => colors.transparent};
+  backgroundcolor: ${({ theme: { colors } }) => colors.transparent};
   height: 34;
   padding-bottom: 2;
 `;
@@ -20,7 +20,7 @@ const ProfileActionIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
 }))`
   ${({ iconSize }) => position.size(iconSize)};
-  margin-top: 0.5;
+  marginTop 0.5;
 `;
 
 const ProfileAction = ({ icon, iconSize = 16, onPress, text, ...props }) => (

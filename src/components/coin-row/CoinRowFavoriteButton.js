@@ -13,15 +13,17 @@ import { magicMemo } from '@rainbow-me/utils';
 
 const FavoriteButtonPadding = 19;
 
-const FavoriteButton = styled(Centered)`
-  ${padding(0, FavoriteButtonPadding)};
-  bottom: 0;
+const FavoriteButton = styled(Centered)({
+  ...padding.object(0, FavoriteButtonPadding),
+  bottom: 0,
   flex: 0;
   height: ${CoinRowHeight};
-  position: absolute;
+  position: 'absolute',
   right: 0;
   top: 0;
-  width: 68px;
+  width: 68;
+
+})`
 `;
 
 const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
@@ -35,10 +37,10 @@ const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
       : colors.gradients.lightestGrey,
   })
 )`
-  border-radius: 15px;
-  height: 30px;
-  overflow: hidden;
-  width: 30px;
+  borderRadius: 15,
+  height: 30,
+  overflow: 'hidden',
+  width: 30,
 `;
 
 const StarIcon = styled(Text).attrs(({ isFavorited, theme: { colors } }) => ({
@@ -50,9 +52,9 @@ const StarIcon = styled(Text).attrs(({ isFavorited, theme: { colors } }) => ({
   size: 'smaller',
   weight: 'heavy',
 }))`
-  height: 100%;
-  line-height: 29px;
-  width: 100%;
+  height: '100%',
+  lineHeight: 29,
+  width: '100%',
 `;
 
 const CoinRowFavoriteButton = ({ isFavorited, onPress }) => {

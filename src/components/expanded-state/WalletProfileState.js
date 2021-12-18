@@ -34,7 +34,7 @@ const WalletProfileAddressText = styled(TruncatedAddress).attrs(
   })
 )`
   ${margin(android ? 0 : 6, 0, android ? 0 : 5)};
-  width: 100%;
+  width: '100%';
 `;
 
 const Spacer = styled.View`
@@ -42,11 +42,11 @@ const Spacer = styled.View`
 `;
 
 const WalletProfileButton = styled(ButtonPressAnimation)`
-  ${padding(15, 0, 19)};
-  ${position.centered};
+  ...padding.object(15, 0, 19)};
+  ...position.centeredAsObject};
   flex-direction: row;
   height: 58;
-  width: 100%;
+  width: '100%',
 `;
 
 const WalletProfileButtonText = styled(Text).attrs({
@@ -55,7 +55,7 @@ const WalletProfileButtonText = styled(Text).attrs({
 })``;
 
 const ProfileImage = styled(ImageAvatar)`
-  margin-bottom: 15;
+  marginbottom: 15;
 `;
 
 const WalletProfileDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
@@ -66,8 +66,8 @@ const WalletProfileDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
 const WalletProfileModal = styled(ProfileModal).attrs({
   dividerRenderer: WalletProfileDivider,
 })`
-  ${padding(24, 19, 0)};
-  width: 100%;
+  ...padding.object(24, 19, 0)};
+  width: '100%',
 `;
 
 export default function WalletProfileState({

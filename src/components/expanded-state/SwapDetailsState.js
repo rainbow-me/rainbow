@@ -45,17 +45,17 @@ const Footer = styled(Column).attrs({
   justify: 'end',
   shrink: 0,
 })`
-  ${padding(6, 0, 0)};
+  ...padding.object(6, 0, 0)};
 `;
 
 const Header = styled(Column).attrs({
   justify: 'start',
 })`
   left: 0;
-  position: absolute;
+  position: 'absolute',
   right: 0;
   top: -2;
-  width: 100%;
+  width: '100%',
 `;
 
 const FOOTER_MIN_HEIGHT = 143;

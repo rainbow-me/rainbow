@@ -13,14 +13,14 @@ const defaultImageDimensions = { height: 512, width: 512 };
 const ButtonWrapper = styled(Column).attrs({
   margin: 0,
 })`
-  ${padding(0, 19, 15)};
-  margin-bottom: 21;
-  width: 100%;
-  z-index: 3;
+  ...padding.object(0, 19, 15)};
+  marginBottom: 21;
+  width: '100%',
+  zIndex: 3;
 `;
 
 const Footer = styled(Column).attrs({ justify: 'end' })`
-  width: 100%;
+  width: '100%';
 `;
 
 const NFTWrapper = styled(Column).attrs({
@@ -28,7 +28,7 @@ const NFTWrapper = styled(Column).attrs({
   flex: 1,
   justify: 'center',
 })`
-  width: 100%;
+  width: '100%';
 `;
 
 const Gradient = styled(LinearGradient).attrs(
@@ -40,7 +40,7 @@ const Gradient = styled(LinearGradient).attrs(
   })
 )`
   ${position.cover};
-  overflow: hidden;
+  overflow: 'hidden';
 `;
 
 const GradientToggler = styled(OpacityToggler).attrs({

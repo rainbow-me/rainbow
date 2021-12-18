@@ -7,8 +7,8 @@ import ExchangeNativeField from './ExchangeNativeField';
 
 const Container = styled(ColumnWithMargins).attrs({ margin: 5 })`
   padding-top: 6;
-  width: 100%;
-  z-index: 1;
+  width: '100%',
+  zIndex: 1;
 `;
 
 const NativeFieldRow = styled(Row).attrs({

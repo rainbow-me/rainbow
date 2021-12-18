@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import styled from '../../styled-thing';
 import { buildFlexStyles } from '@rainbow-me/styles';
 
 const flexPropTypes = {
@@ -24,14 +24,14 @@ const flexPropTypes = {
   wrap: PropTypes.bool,
 };
 
+const keys = Object.keys(flexPropTypes);
+
 const Flex = styled.View.withConfig({
   // We need to prevent the buildFlexStyles-related props from being
   // passed to the root element because our namespace collides with some native props
   shouldForwardProp: (prop, defaultValidatorFn) =>
-    !Object.keys(flexPropTypes).includes(prop) && defaultValidatorFn(prop),
-})`
-  ${buildFlexStyles};
-`;
+    !keys.includes(prop) && defaultValidatorFn(prop),
+})(buildFlexStyles.object);
 
 Flex.displayName = 'Flex';
 

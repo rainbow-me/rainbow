@@ -10,7 +10,7 @@ const ExchangeDetailsButtonLabel = styled(Text).attrs({
   weight: 'heavy',
   ...(android && { lineHeight: 21 }),
 })`
-  ${padding(9)};
+  ...padding.object(9)};
 `;
 
 export default function ExchangeDetailsButton({

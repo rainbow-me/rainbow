@@ -20,7 +20,7 @@ const GradientBackground = styled(RadialGradient).attrs(({ width }) => {
   };
 })`
   height: ${({ width }) => Math.round(width * HeightMultiple)};
-  width: 100%;
+  width: '100%';
 `;
 
 const TextMask = styled(Animated.View)`

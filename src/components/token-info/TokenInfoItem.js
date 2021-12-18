@@ -12,19 +12,19 @@ import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 const Container = styled.View``;
 
 const VerticalDivider = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.rowDividerExtraLight};
-  border-radius: 1;
+  backgroundcolor: ${({ theme: { colors } }) => colors.rowDividerExtraLight};
+  borderradius: 1;
   height: 40;
-  margin-top: 2;
+  marginTop: 2,
   width: 2;
 `;
 
 const WrapperView = styled.View`
   align-self: ${({ align }) => (align === 'left' ? 'flex-start' : 'flex-end')};
-  border-radius: 12;
+  borderRadius: 12;
   height: 24;
-  margin-top: -17;
-  overflow: hidden;
+  marginTop -17;
+  overflow: 'hidden',
   padding-top: 12;
   width: 50;
 `;

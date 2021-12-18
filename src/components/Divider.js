@@ -1,7 +1,7 @@
 import { constant, isNil, isNumber, times } from 'lodash';
 import React from 'react';
-import styled from 'styled-components';
 import { magicMemo } from '../utils';
+import styled from '@rainbow-me/styled';
 import { borders, position } from '@rainbow-me/styles';
 
 export const DividerSize = 2;
@@ -27,6 +27,13 @@ const horizontalBorderLineStyles = inset => `
   right: ${inset[1]};
 `;
 
+horizontalBorderLineStyles.object = inset => ({
+  ...(inset[3] ? borders.buildRadiusAsObject('left', 2) : {}),
+  ...(inset[1] ? borders.buildRadiusAsObject('right', 2) : {}),
+  left: inset[3],
+  right: inset[1],
+});
+
 const verticalBorderLineStyles = inset => `
   ${inset[2] ? borders.buildRadius('bottom', 2) : ''}
   ${inset[0] ? borders.buildRadius('top', 2) : ''}
@@ -34,24 +41,31 @@ const verticalBorderLineStyles = inset => `
   top: ${inset[0]};
 `;
 
-const BorderLine = styled.View`
-  ${position.cover};
-  background-color: ${({ color }) => color};
-  ${({ horizontal, inset }) => {
-    const insetFromProps = buildInsetFromProps(inset);
-    return horizontal
-      ? horizontalBorderLineStyles(insetFromProps)
-      : verticalBorderLineStyles(insetFromProps);
-  }}
-`;
+verticalBorderLineStyles.object = inset => ({
+  ...(inset[2] ? borders.buildRadiusAsObject('bottom', 2) : {}),
+  ...(inset[0] ? borders.buildRadiusAsObject('top', 2) : {}),
+  bottom: inset[2],
+  top: inset[0],
+});
 
-const Container = styled.View`
-  background-color: ${({ backgroundColor, theme: { colors } }) =>
-    backgroundColor || colors.white};
-  flex-shrink: 0;
-  height: ${({ horizontal, size }) => (horizontal ? size : '100%')};
-  width: ${({ horizontal, size }) => (horizontal ? '100%' : size)};
-`;
+const BorderLine = styled.View(({ color, horizontal, inset }) => {
+  const insetFromProps = buildInsetFromProps(inset);
+  return {
+    ...position.coverAsObject,
+    backgroundColor: color,
+    ...(horizontal
+      ? horizontalBorderLineStyles.object(insetFromProps)
+      : verticalBorderLineStyles.object(insetFromProps)),
+  };
+});
+
+const Container = styled.View({
+  backgroundColor: ({ backgroundColor, theme: { colors } }) =>
+    backgroundColor || colors.white,
+  flexShrink: 0,
+  height: ({ horizontal, size }) => (horizontal ? size : '100%'),
+  width: ({ horizontal, size }) => (horizontal ? '100%' : size),
+});
 
 const Divider = ({
   backgroundColor,

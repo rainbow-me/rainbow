@@ -17,26 +17,26 @@ const { CUSTOM, URGENT, GasSpeedOrder } = gasUtils;
 const TabPillsContainer = styled(Row).attrs({
   align: 'center',
 })`
-  justify-content: center;
+  justifycontent: 'center';
 `;
 
 const TabPillWrapper = styled(View).attrs({})`
-  ${padding(5, 10)};
+  ...padding.object(5, 10)};
   ${margin(0, 5, 0, 5)};
-  height: 30px;
-  background-color: ${({ isSelected, color, theme: { colors } }) =>
+  height: 30,
+  backgroundcolor: ${({ isSelected, color, theme: { colors } }) =>
     isSelected
       ? color || colors.appleBlue
       : colors.alpha(color || colors.appleBlue, 0.06)};
-  border-radius: 15px;
-  line-height: 20px;
+  borderRadius: 15,
+  lineHeight: 20,
   shadow-color: ${({ color, isSelected, theme: { colors, isDarkMode } }) =>
     isSelected
       ? isDarkMode
         ? colors.shadowBlack
         : color || colors.appleBlue
       : colors.transparent};
-  shadow-offset: 0px 4px;
+  shadow-offset: 0px 4,
   shadow-opacity: 0.3;
   shadow-radius: 6;
 `;

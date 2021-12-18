@@ -19,7 +19,7 @@ const BackgroundGradient = styled(LinearGradient).attrs(
   })
 )`
   ${position.cover};
-  border-radius: ${CardBorderRadius};
+  borderradius: ${CardBorderRadius};
 `;
 
 const CardShadow = styled(ShadowStack).attrs(
@@ -37,10 +37,10 @@ const CardShadow = styled(ShadowStack).attrs(
 `;
 
 const Content = styled(Centered)`
-  ${padding(19, 30, 24)};
-  border-radius: 25;
-  overflow: hidden;
-  z-index: 1;
+  ...padding.object(19, 30, 24)};
+  borderRadius: 25;
+  overflow: 'hidden',
+  zIndex: 1;
 `;
 
 const GridItem = styled(Row).attrs({

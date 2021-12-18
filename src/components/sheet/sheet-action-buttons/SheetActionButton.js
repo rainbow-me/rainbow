@@ -11,7 +11,7 @@ import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const addChartsStyling = isCharts =>
-  isCharts ? 'position: absolute; width: 100%;' : '';
+  isCharts ? 'position: 'absolute', width: '100%',' : '';
 
 const Button = styled(Centered)`
   height: ${({ size }) => (size === 'big' ? 56 : 46)};
@@ -25,7 +25,7 @@ const Content = styled(RowWithMargins).attrs({
   height: ${({ size }) => (size === 'big' ? 56 : 46)};
   padding-bottom: ${({ label }) => (label && containsEmoji(label) ? 4 : 2)};
   padding-horizontal: 19;
-  z-index: 1;
+  zIndex: 1;
 `;
 
 const neverRerender = () => true;

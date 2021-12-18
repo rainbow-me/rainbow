@@ -30,8 +30,8 @@ const getFallbackTextColor = (bg, darkMode, colors) =>
   );
 
 const ImageTile = styled(ImgixImage)`
-  align-items: center;
-  justify-content: center;
+  alignItems: 'center',
+  justifycontent: 'center';
 `;
 
 const ENSText = styled(Text).attrs(
@@ -41,9 +41,9 @@ const ENSText = styled(Text).attrs(
     size: small ? 'smedium' : isTinyPhone ? 'large' : 'bigger',
   })
 )`
-  padding: 8px;
+  padding: 8,
   text-align: center;
-  ${fontWithWidth(fonts.weight.heavy)};
+  ...fontWithWidth(fonts.weight.heavy),
 `;
 
 const UniqueTokenImage = ({

@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from '../../styled-thing';
 import LayoutWithMargins from './LayoutWithMargins';
 
 const ColumnWithMargins = styled(LayoutWithMargins).attrs(
@@ -7,6 +7,6 @@ const ColumnWithMargins = styled(LayoutWithMargins).attrs(
     margin,
     marginKey: 'marginBottom',
   })
-)``;
+)({});
 
 export default ColumnWithMargins;

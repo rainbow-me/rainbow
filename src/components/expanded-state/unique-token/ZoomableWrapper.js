@@ -38,21 +38,21 @@ const exitConfig = {
 const GestureBlocker = styled(View)`
   height: ${({ height }) => height};
   left: ${({ containerWidth, width }) => -(width - containerWidth) / 2};
-  position: absolute;
+  position: 'absolute',
   top: -85;
   width: ${({ width }) => width};
 `;
 const Container = styled(Animated.View)`
   align-self: center;
   shadow-color: ${({ theme: { colors } }) => colors.shadowBlack};
-  shadow-offset: 0 20px;
+  shadow-offset: 0 20,
   shadow-opacity: 0.4;
-  shadow-radius: 30px;
+  shadow-radius: 30,
 `;
 const ImageWrapper = styled(Animated.View)`
   ${position.size('100%')};
   flex-direction: row;
-  overflow: hidden;
+  overflow: 'hidden';
 `;
 const ZoomContainer = styled(Animated.View)`
   height: ${({ height }) => height};

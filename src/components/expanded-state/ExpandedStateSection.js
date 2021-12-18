@@ -7,7 +7,7 @@ import { padding } from '@rainbow-me/styles';
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
 })`
-  ${padding(android ? 19 : 36, 19, 24)};
+  ...padding.object(android ? 19 : 36, 19, 24)};
   ${({ isNft }) => padding(android ? 19 : 36, isNft ? 24 : 19, 24)};
   padding-top: ${({ isL2, isNft }) => (isL2 || isNft ? 24 : android ? 19 : 36)};
 `;

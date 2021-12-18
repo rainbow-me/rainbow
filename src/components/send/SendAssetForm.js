@@ -36,7 +36,7 @@ const AssetRowGradient = styled(LinearGradient).attrs(
 
 const Container = styled(Column)`
   ${position.size('100%')};
-  background-color: ${({ theme: { colors } }) => colors.white};
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
   flex: 1;
 `;
 
@@ -46,11 +46,11 @@ const FormContainer = styled(Column).attrs({
 })`
   ${({ isNft }) => (isNft ? padding(0) : padding(0, 19))};
   flex: 1;
-  width: 100%;
+  width: '100%';
 `;
 
 const KeyboardSizeView = styled(KeyboardArea)`
-  background-color: ${({ theme: { colors } }) => colors.lighterGrey};
+  backgroundcolor: ${({ theme: { colors } }) => colors.lighterGrey};
 `;
 
 export default function SendAssetForm({

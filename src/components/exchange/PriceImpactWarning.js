@@ -9,8 +9,8 @@ import { padding, position } from '@rainbow-me/styles';
 const Content = styled(Centered).attrs({
   shrink: 0,
 })`
-  ${padding(android ? 14 : 19)};
-  width: 100%;
+  ...padding.object(android ? 14 : 19)};
+  width: '100%',
 `;
 
 const Label = styled(Text).attrs(

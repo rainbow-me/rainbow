@@ -21,16 +21,16 @@ const timingConfig = {
 
 const Container = styled(Centered)`
   height: 60;
-  width: 100%;
+  width: '100%';
 `;
 
 const ExchangeDetailsButtonRow = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
 })`
-  ${padding(10)};
+  ...padding.object(10)};
   ${position.cover};
-  width: 100%;
+  width: '100%',
 `;
 
 const AnimatedExchangeDetailsButtonRow = Animated.createAnimatedComponent(

@@ -14,7 +14,7 @@ const TrophyEmoji = styled(Emoji).attrs({
   size: 'medium',
 })`
   height: 22;
-  margin-right: 4.5;
+  marginright: 4.5;
   text-align-vertical: center;
 `;
 

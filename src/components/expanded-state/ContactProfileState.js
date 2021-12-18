@@ -32,7 +32,7 @@ const AddressAbbreviation = styled(TruncatedAddress).attrs(
 )`
   ${margin(9, 0, 5)};
   opacity: 0.6;
-  width: 100%;
+  width: '100%';
 `;
 
 const ENSAbbreviation = styled(TruncatedENS).attrs(({ theme: { colors } }) => ({
@@ -44,7 +44,7 @@ const ENSAbbreviation = styled(TruncatedENS).attrs(({ theme: { colors } }) => ({
 }))`
   ${margin(9, 0, 5)};
   opacity: 0.6;
-  width: 100%;
+  width: '100%';
 `;
 
 const Spacer = styled.View`
@@ -73,7 +73,7 @@ const SubmitButtonLabel = styled(Text).attrs(({ value }) => ({
   size: 'lmedium',
   weight: 'bold',
 }))`
-  margin-bottom: 1.5;
+  marginbottom: 1.5;
 `;
 
 const ContactProfileState = ({ address, color: colorProp, contact }) => {

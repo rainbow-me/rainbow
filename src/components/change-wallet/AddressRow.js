@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
@@ -15,6 +14,7 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
+import styled from '@rainbow-me/styled';
 import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
 import { deviceUtils, profileUtils } from '@rainbow-me/utils';
 
@@ -76,20 +76,20 @@ const gradientProps = {
   style: sx.gradient,
 };
 
-const StyledTruncatedText = styled(TruncatedText)`
-  ${sx.accountLabel}
-  ${fontWithWidth(sx.accountLabel.fontWeight)}
-`;
+const StyledTruncatedText = styled(TruncatedText)({
+  ...sx.accountLabel,
+  ...fontWithWidth(sx.accountLabel.fontWeight),
+});
 
-const StyledBottomRowText = styled(BottomRowText)`
-  ${sx.bottomRowText}
-  ${fontWithWidth(sx.bottomRowText.fontWeight)}
-`;
+const StyledBottomRowText = styled(BottomRowText)({
+  ...sx.bottomRowText,
+  ...fontWithWidth(sx.bottomRowText.fontWeight),
+});
 
-const ReadOnlyText = styled(Text)`
-  ${sx.readOnlyText}
-  ${fontWithWidth(sx.readOnlyText.fontWeight)}
-`;
+const ReadOnlyText = styled(Text)({
+  ...sx.readOnlyText,
+  ...fontWithWidth(sx.readOnlyText.fontWeight),
+});
 
 const OptionsIcon = ({ onPress }) => {
   const { colors } = useTheme();

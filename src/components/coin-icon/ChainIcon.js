@@ -1,6 +1,5 @@
 import React from 'react';
 import FastImage from 'react-native-fast-image';
-import styled from 'styled-components';
 import ArbitrumBadge from '../../assets/badges/arbitrumBadge.png';
 import ArbitrumBadgeDark from '../../assets/badges/arbitrumBadgeDark.png';
 import OptimismBadge from '../../assets/badges/optimismBadge.png';
@@ -9,6 +8,7 @@ import PolygonBadge from '../../assets/badges/polygonBadge.png';
 import PolygonBadgeDark from '../../assets/badges/polygonBadgeDark.png';
 import { Centered } from '../layout';
 import { AssetType } from '@rainbow-me/entities';
+import styled from '@rainbow-me/styled';
 
 const sizeConfigs = {
   large: {
@@ -22,17 +22,18 @@ const sizeConfigs = {
   },
 };
 
-const Container = styled(Centered)`
-  border-radius: ${({ iconSize }) => iconSize / 2};
-  height: ${({ iconSize }) => iconSize / 2};
-  width: ${({ iconSize }) => iconSize / 2};
-  overflow: visible;
-`;
-const Icon = styled(FastImage)`
-  height: ${({ iconSize }) => iconSize};
-  width: ${({ iconSize }) => iconSize};
-  top: 4;
-`;
+const Container = styled(Centered)(({ iconSize }) => ({
+  borderRadius: iconSize / 2,
+  height: iconSize / 2,
+  overflow: 'visible',
+  width: iconSize / 2,
+}));
+
+const Icon = styled(FastImage)(({ iconSize }) => ({
+  height: iconSize,
+  top: 4,
+  width: iconSize,
+}));
 
 export default function ChainIcon({ assetType, size = 'small' }) {
   const { isDarkMode } = useTheme();

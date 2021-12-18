@@ -20,13 +20,13 @@ const BackupButton = styled(RainbowButton).attrs({
   type: 'small',
   width: ios ? 221 : 270,
 })`
-  margin-bottom: 19;
+  marginbottom: 19;
 `;
 
 const Content = styled(Centered).attrs({
   direction: 'column',
 })`
-  ${padding(0, 19, 42)};
+  ...padding.object(0, 19, 42)};
   flex: 1;
 `;
 
@@ -36,7 +36,7 @@ const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   lineHeight: 'loosest',
   size: 'large',
 }))`
-  margin-bottom: 42;
+  marginbottom: 42;
   padding-horizontal: 23;
 `;
 
@@ -46,7 +46,7 @@ const Subtitle = styled(Text).attrs(({ theme: { colors } }) => ({
   size: fonts.size.smedium,
   weight: fonts.weight.medium,
 }))`
-  margin-top: -10;
+  marginTop -10;
 `;
 
 const Title = styled(Text).attrs({
@@ -54,7 +54,7 @@ const Title = styled(Text).attrs({
   size: 'larger',
   weight: 'bold',
 })`
-  margin-bottom: 8;
+  marginbottom: 8,
   padding-horizontal: 11;
 `;
 

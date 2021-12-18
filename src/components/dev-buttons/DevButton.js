@@ -15,22 +15,22 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 
 const Button = styled(ButtonPressAnimation)`
-  border-radius: 35;
+  borderRadius: 35;
   width: 70;
   height: 70;
-  justify-content: center;
-  align-items: center;
-  background-color: ${({ color }) => color};
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor: ${({ color }) => color};
   shadow-opacity: 0.2;
   shadow-radius: 6;
 `;
 
 const Wrapper = styled(Animated.View)`
   elevation: 5;
-  border-radius: 35;
+  borderradius: 35;
   width: 70;
   height: 70;
-  position: absolute;
+  position: 'absolute';
 `;
 
 export default function DevButton({

@@ -11,7 +11,7 @@ const TextChunk = styled(TextInput).attrs({
   ${fontWithWidth(fonts.weight.bold)};
   color: ${({ theme: { colors } }) => colors.dark};
   font-variant: tabular-nums;
-  font-size: ${parseFloat(fonts.size.lmedium)};
+  fontsize: ${parseFloat(fonts.size.lmedium)};
   text-align: left;
   height: 46;
 `;
@@ -20,7 +20,7 @@ const Row = styled.View`
   flex-direction: row;
   height: 35;
   left: 45;
-  position: absolute;
+  position: 'absolute';
 `;
 
 function formatSavingsAmount(val) {

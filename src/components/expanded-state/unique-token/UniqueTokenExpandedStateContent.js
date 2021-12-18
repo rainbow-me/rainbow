@@ -1,7 +1,6 @@
 import { toLower } from 'lodash';
 import React, { useMemo } from 'react';
 import { ActivityIndicator, PixelRatio, StyleSheet, View } from 'react-native';
-import styled from 'styled-components';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../../../references';
 import { magicMemo } from '../../../utils';
 import { getLowResUrl } from '../../../utils/getLowResUrl';
@@ -16,6 +15,7 @@ import {
   usePersistentAspectRatio,
   useUniqueToken,
 } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 
 const pixelRatio = PixelRatio.get();
@@ -23,18 +23,16 @@ const pixelRatio = PixelRatio.get();
 const GOOGLE_USER_CONTENT_URL = 'https://lh3.googleusercontent.com/';
 const MAX_IMAGE_SCALE = 4;
 
-const ModelView = styled(SimpleModelView)`
-  ${position.size('100%')};
-`;
+const ModelView = styled(SimpleModelView)(position.sizeAsObject('100%'));
 
-const LoadingWrapper = styled(View)`
-  align-items: flex-end;
-  height: 100%;
-  justify-content: flex-end;
-  padding-bottom: 10;
-  padding-right: 10;
-  position: absolute;
-`;
+const LoadingWrapper = styled(View)({
+  alignItems: 'flex-end',
+  height: '100%',
+  justifyContent: 'flex-end',
+  paddingBottom: 10,
+  paddingRight: 10,
+  position: 'absolute',
+});
 
 const UniqueTokenExpandedStateContent = ({
   animationProgress,

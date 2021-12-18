@@ -12,7 +12,7 @@ import { padding } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
 
 const Panel = styled(FloatingPanels)`
-  margin-bottom: ${({ deviceDimensions: { isTallPhone } }) =>
+  marginbottom: ${({ deviceDimensions: { isTallPhone } }) =>
     (isTallPhone ? 90 : 45) + (isNativeStackAvailable ? 10 : 0)};
   max-width: ${({ deviceDimensions: { width } }) => Math.min(270, width - 100)};
 `;
@@ -21,7 +21,7 @@ const FooterText = styled(Text).attrs({
   align: 'center',
   size: 'smedium',
 })`
-  margin-top: 12;
+  margintop: 12;
 `;
 
 const TitleText = styled(Text).attrs({
@@ -29,7 +29,7 @@ const TitleText = styled(Text).attrs({
   size: 'large',
   weight: 'bold',
 })`
-  margin-bottom: 10;
+  marginbottom: 10;
 `;
 
 const countries = values(wyreSupportedCountries).map(c =>

@@ -43,7 +43,7 @@ const PanelRow = styled(Row).attrs({
 
 // GweiInputPill has a vertical padding of 10
 const MiddlePanelRow = styled(PanelRow).attrs(() => ({}))`
-  ${padding(8, 0)}
+  ...padding.object(8, 0)}
 `;
 
 const PanelRowThin = styled(Row).attrs({
@@ -76,7 +76,7 @@ const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   size: 'smedium',
   weight: 'heavy',
 }))`
-  ${padding(0, 12, 0, 0)};
+  ...padding.object(0, 12, 0, 0)};
 `;
 
 const PanelColumn = styled(Column).attrs(() => ({

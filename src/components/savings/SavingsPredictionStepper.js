@@ -19,7 +19,7 @@ const CrystalBallEmoji = styled(Emoji).attrs({
   name: 'crystal_ball',
   size: 'medium',
 })`
-  margin-bottom: 0.5;
+  marginbottom: 0.5;
 `;
 
 const PredictionNumber = styled(AnimatedNumber).attrs(
@@ -35,10 +35,10 @@ const PredictionNumber = styled(AnimatedNumber).attrs(
 
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 const steps = {
-  'Monthly': {
+  Monthly: {
     days: 30,
   },
-  'Yearly': {
+  Yearly: {
     days: 365,
   },
   '5-Year': {

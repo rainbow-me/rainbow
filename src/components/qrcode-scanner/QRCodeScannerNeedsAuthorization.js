@@ -11,8 +11,8 @@ import { margin, padding, position } from '@rainbow-me/styles';
 const Button = styled(ButtonPressAnimation).attrs({
   scaleTo: 1.1,
 })`
-  ${padding(20)};
-  margin-top: 22;
+  ...padding.object(20)};
+  marginTop: 22,
 `;
 
 const ButtonLabel = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -25,9 +25,9 @@ const ButtonLabel = styled(Text).attrs(({ theme: { colors } }) => ({
 const Container = styled(Centered).attrs({
   direction: 'column',
 })`
-  ${padding(20, 50, 60, 50)};
+  ...padding.object(20, 50, 60, 50)};
   ${position.cover};
-  background-color: ${({ theme: { colors } }) => colors.trueBlack};
+  backgroundcolor: ${({ theme: { colors } }) => colors.trueBlack};
 `;
 
 const QRIcon = styled(Icon).attrs(({ theme: { colors } }) => ({

@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from '../../styled-thing';
 import { TruncatedText } from '../text';
 
 const BottomRowText = styled(TruncatedText).attrs(
@@ -7,5 +7,5 @@ const BottomRowText = styled(TruncatedText).attrs(
     color: color ?? colors.alpha(colors.blueGreyDark, 0.5),
     size: 'smedium',
   })
-)``;
+)({});
 export default BottomRowText;

@@ -10,13 +10,13 @@ import { position } from '@rainbow-me/styles';
 const Button = styled(Centered).attrs({
   scaleTo: 0.8,
 })`
-  ${({ size }) => position.size(size)};
+  ${({ size }) => ...position.sizeAsObject(size)};
 `;
 
 const Container = styled.View`
-  bottom: 0;
+  bottom: 0,
   flex: 0;
-  position: absolute;
+  position: 'absolute',
   right: 0;
   top: 0;
 `;
@@ -28,7 +28,7 @@ const TextIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'large',
   weight: 'bold',
 }))`
-  margin-bottom: 0.5px;
+  marginbottom: 0.5,
 `;
 
 const duration = 100;

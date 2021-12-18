@@ -29,7 +29,7 @@ const NativeAmountBubble = styled(LinearGradient).attrs(
     start: { x: 0, y: 0 },
   })
 )`
-  border-radius: 15;
+  borderradius: 15;
   height: 30;
 `;
 

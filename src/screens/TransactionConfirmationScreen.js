@@ -122,7 +122,7 @@ const DappLogo = styled(RequestVendorLogoIcon).attrs(
     size: 50,
   })
 )`
-  margin-bottom: 14;
+  marginbottom: 14;
 `;
 
 const Container = styled(Column)`
@@ -138,7 +138,7 @@ const WalletLabel = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'smedium',
   weight: 'semibold',
 }))`
-  margin-bottom: 3;
+  marginbottom: 3;
 `;
 
 const WalletText = styled(Text).attrs(

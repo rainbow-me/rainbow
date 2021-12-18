@@ -34,8 +34,8 @@ const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'lmedium',
   weight: 'semibold',
 }))`
-  margin-bottom: 42;
-  margin-top: 5;
+  marginbottom: 42;
+  marginTop: 5,
   padding-horizontal: 3;
 `;
 
@@ -45,7 +45,7 @@ const AuthenticationText = styled(Text).attrs({
   size: 'large',
   weight: 'normal',
 })`
-  ${padding(0, 60)};
+  ...padding.object(0, 60)};
 `;
 
 const CopyButtonIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
@@ -53,7 +53,7 @@ const CopyButtonIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   name: 'copy',
 }))`
   ${position.size(16)};
-  margin-top: 0.5;
+  marginTop 0.5;
 `;
 
 const CopyButtonRow = styled(RowWithMargins).attrs({
@@ -61,7 +61,7 @@ const CopyButtonRow = styled(RowWithMargins).attrs({
   justify: 'start',
   margin: 6,
 })`
-  background-color: ${({ theme: { colors } }) => colors.transparent};
+  backgroundcolor: ${({ theme: { colors } }) => colors.transparent};
   height: 34;
 `;
 
@@ -76,7 +76,7 @@ const CopyButtonText = styled(Text).attrs(({ theme: { colors } }) => ({
 const ToggleSecretButton = styled(Button)`
   ${margin(0, 20)};
   ${({ theme: { colors } }) => shadow.build(0, 5, 15, colors.purple, 0.3)}
-  background-color: ${({ theme: { colors } }) => colors.appleBlue};
+  backgroundColor: ${({ theme: { colors } }) => colors.appleBlue};
 `;
 
 const LoadingSpinner = android ? Spinner : ActivityIndicator;

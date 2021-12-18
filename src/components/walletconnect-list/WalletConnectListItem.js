@@ -42,7 +42,7 @@ const LabelText = styled(Text).attrs(() => ({
   size: 'lmedium',
   weight: 'heavy',
 }))`
-  margin-bottom: 1;
+  marginbottom: 1;
 `;
 
 const networksAvailable = networksMenuItems();
@@ -54,12 +54,12 @@ if (networksAvailable.length > 1) {
 }
 
 const AvatarWrapper = styled(Column)`
-  margin-right: 5;
+  marginright: 5;
 `;
 
 const SessionRow = styled(Row)`
-  align-items: center;
-  justify-content: space-between;
+  alignItems: 'center',
+  justifycontent: 'space-between';
 `;
 
 export default function WalletConnectListItem({

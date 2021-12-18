@@ -19,8 +19,8 @@ const FieldAccessoryBadgeWrapper = styled(ShadowStack).attrs(
     ],
   })
 )`
-  margin-bottom: 12;
-  position: absolute;
+  marginbottom: 12;
+  position: 'absolute',
   right: 12;
   top: 12;
 `;
@@ -30,7 +30,7 @@ const StyledTouchable = styled(TouchableWithoutFeedback)`
   ${android ? 'padding-right: 30;' : ''}
   ${android ? 'padding-top: 30;' : ''}
   ${android ? 'padding-bottom: 30;' : ''}
-  ${android ? 'margin-top: -30;' : ''}
+  ${android ? 'marginTop: -30;' : ''}
 `;
 
 const PasswordInput = styled(Input).attrs(({ theme: { colors } }) => ({
@@ -44,8 +44,8 @@ const PasswordInput = styled(Input).attrs(({ theme: { colors } }) => ({
   type: 'password',
   weight: 'semibold',
 }))`
-  ${padding(0, 40, 2.5, 19)};
-  height: 100%;
+  ...padding.object(0, 40, 2.5, 19)};
+  height: '100%',
 `;
 
 const ShadowContainer = styled(ShadowStack).attrs(

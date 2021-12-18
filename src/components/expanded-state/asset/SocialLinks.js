@@ -21,9 +21,9 @@ const CommunityLink = styled(Link).attrs({
   scaleTo: 0.925,
   weight: 'heavy',
 })`
-  background-color: ${({ color, theme: { colors } }) =>
+  backgroundcolor: ${({ color, theme: { colors } }) =>
     colors.alpha(color, 0.1)};
-  border-radius: 20;
+  borderradius: 20;
   height: 40;
   margin-horizontal: 6;
   padding-bottom: ${ios ? 11.5 : 5};

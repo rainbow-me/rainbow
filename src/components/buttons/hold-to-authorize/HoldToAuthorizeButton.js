@@ -7,7 +7,6 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import Animated, { Easing, timing, Value } from 'react-native-reanimated';
-import styled from 'styled-components';
 import Spinner from '../../Spinner';
 import { ShimmerAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
@@ -16,6 +15,7 @@ import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
 import { useTheme } from '@rainbow-me/context';
 import { BiometryTypes } from '@rainbow-me/helpers';
 import { useBiometryType, useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 import { padding, position } from '@rainbow-me/styles';
 import { haptics } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';
@@ -50,15 +50,14 @@ const longPressProgressDurationMs = 500; // 👸 christian approves
 
 const Content = styled(Centered).attrs({
   grow: 0,
-})`
-  ${position.cover};
-  ${({ smallButton, tinyButton }) =>
-    padding(smallButton || tinyButton ? 0 : 15)};
-  border-radius: ${({ height }) => height};
-  height: ${({ height }) => height};
-  overflow: hidden;
-  width: 100%;
-`;
+})(({ smallButton, height, tinyButton }) => ({
+  ...position.coverAsObject,
+  borderRadius: height,
+  height: height,
+  overflow: 'hidden',
+  width: '100%',
+  ...padding.object(smallButton || tinyButton ? 0 : 15),
+}));
 
 const Label = styled(BiometricButtonContent).attrs(
   ({ smallButton, theme: { colors }, tinyButton }) => ({
@@ -66,19 +65,19 @@ const Label = styled(BiometricButtonContent).attrs(
     size: smallButton || tinyButton ? 'large' : 'larger',
     weight: 'heavy',
   })
-)`
-  bottom: 2;
-`;
+)({
+  bottom: 2,
+});
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({
     color: colors.whiteLabel,
     size: 31,
   })
-)`
-  left: 15;
-  position: absolute;
-`;
+)({
+  left: 15,
+  position: 'absolute',
+});
 
 const animate = (value, { duration = buttonScaleDurationMs, toValue }) =>
   timing(value, {

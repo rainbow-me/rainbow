@@ -1,3 +1,9 @@
 import buildLayoutStyles from './buildLayoutStyles';
 
-export default (...options) => buildLayoutStyles(options, 'margin', true);
+export default function margin(...options) {
+  return buildLayoutStyles(options, 'margin', true);
+}
+
+margin.object = (...options) => {
+  return buildLayoutStyles.object(options, 'margin');
+};

@@ -1,19 +1,19 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
+import styled from '@rainbow-me/styled';
 
 const verticalOffset = (deviceUtils.dimensions.height - 420) / 3;
 
-const Container = styled(Column)`
-  align-self: center;
-  margin-top: ${verticalOffset};
-  width: 200;
-`;
+const Container = styled(Column)({
+  alignSelf: 'center',
+  marginTop: verticalOffset,
+  width: 200,
+});
 
 const ActivityListEmptyState = ({ children, emoji, label }) => {
   const { colors } = useTheme();

@@ -9,7 +9,7 @@ const Container = styled(ColumnWithMargins).attrs({
   marginLeft: 5,
   marginRight: 5,
 })`
-  ${padding(0, 19)};
+  ...padding.object(0, 19)};
 `;
 
 const TransactionRow = ({ children, title, ...props }) => (

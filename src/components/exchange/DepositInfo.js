@@ -27,8 +27,8 @@ const Container = styled(RowWithMargins).attrs({
   centered: true,
   margin: 5,
 })`
-  ${padding(android ? 6 : 10, 10, 2)};
-  width: 100%;
+  ...padding.object(android ? 6 : 10, 10, 2)};
+  width: '100%',
 `;
 
 export default function DepositInfo({

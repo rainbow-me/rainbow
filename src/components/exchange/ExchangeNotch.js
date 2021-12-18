@@ -18,9 +18,9 @@ const Container = styled(Row).attrs({
   pointerEvents: 'none',
 })`
   height: ${notchHeight};
-  position: absolute;
+  position: 'absolute',
   top: 132;
-  width: 100%;
+  width: '100%',
 `;
 
 const NotchMiddle = styled(FastImage).attrs(({ isDarkMode }) => ({

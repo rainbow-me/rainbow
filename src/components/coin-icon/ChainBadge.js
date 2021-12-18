@@ -1,6 +1,5 @@
 import React from 'react';
 import FastImage from 'react-native-fast-image';
-import styled from 'styled-components';
 import ArbitrumBadge from '../../assets/badges/arbitrumBadge.png';
 import ArbitrumBadgeDark from '../../assets/badges/arbitrumBadgeDark.png';
 import ArbitrumBadgeLarge from '../../assets/badges/arbitrumBadgeLarge.png';
@@ -15,6 +14,7 @@ import PolygonBadgeLarge from '../../assets/badges/polygonBadgeLarge.png';
 import PolygonBadgeLargeDark from '../../assets/badges/polygonBadgeLargeDark.png';
 import { Centered } from '../layout';
 import { AssetType } from '@rainbow-me/entities';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 
 const sizeConfigs = {
@@ -36,24 +36,24 @@ const sizeConfigs = {
   },
 };
 
-const ChainIcon = styled(FastImage)`
-  height: ${({ containerSize }) => containerSize};
-  top: ${({ iconSize }) => iconSize / 5};
-  width: ${({ containerSize }) => containerSize};
-`;
+const ChainIcon = styled(FastImage)({
+  height: ({ containerSize }) => containerSize,
+  top: ({ iconSize }) => iconSize / 5,
+  width: ({ containerSize }) => containerSize,
+});
 
-const IndicatorIconContainer = styled(Centered)`
-  bottom: ${({ badgeYPosition, position }) =>
-    position === 'relative' ? 0 : badgeYPosition};
-  left: ${({ badgeXPosition, position }) =>
-    position === 'relative' ? 0 : badgeXPosition};
-  ${({ iconSize }) => position.size(iconSize)};
-  margin-bottom: ${({ marginBottom }) => marginBottom};
-  overflow: visible;
-  position: ${({ position }) => position || 'absolute'};
-  z-index: 10;
-  elevation: 10;
-`;
+const IndicatorIconContainer = styled(Centered)(
+  ({ marginBottom, iconSize, badgeXPosition, badgeYPosition, position }) => ({
+    bottom: position === 'relative' ? 0 : badgeYPosition,
+    left: position === 'relative' ? 0 : badgeXPosition,
+    ...position.sizeAsObject(iconSize),
+    elevation: 10,
+    marginBottom: marginBottom,
+    overflow: 'visible',
+    position: position || 'absolute',
+    zIndex: 10,
+  })
+);
 
 export default function ChainBadge({
   assetType,

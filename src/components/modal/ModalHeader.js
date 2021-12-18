@@ -14,14 +14,14 @@ const Container = styled(Row).attrs({
   shrink: 0,
 })`
   ${borders.buildRadius('top', 20)};
-  background-color: ${({ backgroundColor }) => backgroundColor};
+  backgroundcolor: ${({ backgroundColor }) => backgroundColor};
   height: ${ModalHeaderHeight};
-  width: 100%;
+  width: '100%';
 `;
 
 const TitleContainer = styled(Centered)`
   ${position.cover};
-  z-index: 0;
+  zindex: 0;
 `;
 
 export default function ModalHeader({

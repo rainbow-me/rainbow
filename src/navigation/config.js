@@ -285,8 +285,8 @@ const BackArrow = styled(Icon).attrs({
   name: 'caret',
 })`
   margin-left: 15;
-  margin-right: 5;
-  margin-top: ${android ? 2 : 0.5};
+  marginRight: 5;
+  marginTop ${android ? 2 : 0.5};
 `;
 const BackImage = () => <BackArrow />;
 

@@ -9,10 +9,10 @@ const ToastPositionContainer = styled(Column).attrs({
   bottom: ${({ bottom = 0 }) => bottom - ToastPositionContainerHeight};
   height: ${ToastPositionContainerHeight};
   left: 0;
-  position: absolute;
+  position: 'absolute',
   right: 0;
-  width: 100%;
-  z-index: 9;
+  width: '100%',
+  zIndex: 9;
 `;
 
 export default ToastPositionContainer;

@@ -7,13 +7,13 @@ import { useColorForAsset } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ButtonPressAnimation)`
-  margin-right: 4;
+  marginright: 4;
 `;
 
 const MaxButtonContent = styled(Row).attrs({
   align: 'center',
 })`
-  ${padding(0, 19)};
+  ...padding.object(0, 19)};
   height: 32;
 `;
 
@@ -22,7 +22,7 @@ const MaxButtonLabel = styled(Text).attrs({
   size: 'lmedium',
   weight: 'bold',
 })`
-  margin-top: 3;
+  margintop: 3;
 `;
 
 export default function ExchangeMaxButton({

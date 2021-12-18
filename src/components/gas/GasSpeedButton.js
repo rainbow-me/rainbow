@@ -41,10 +41,10 @@ const CustomGasButton = styled(ButtonPressAnimation).attrs({
   justifyContent: 'center',
   scaleTo: 0.8,
 })`
-  border-radius: 19;
+  borderradius: 19;
   border: ${({ borderColor, color, theme: { colors } }) =>
     `2px solid ${borderColor || color || colors.appleBlue}`};
-  ${padding(android ? 2 : 3, 0)}
+  ...padding.object(android ? 2 : 3, 0)}
 `;
 
 const Symbol = styled(Text).attrs({
@@ -54,7 +54,7 @@ const Symbol = styled(Text).attrs({
   size: 'lmedium',
   weight: 'heavy',
 })`
-  ${padding(android ? 1 : 0, 6, 0, 7)};
+  ...padding.object(android ? 1 : 0, 6, 0, 7)};
 `;
 
 const DoneCustomGas = styled(Text).attrs({
@@ -65,7 +65,7 @@ const DoneCustomGas = styled(Text).attrs({
   size: 'lmedium',
   weight: 'heavy',
 })`
-  ${padding(0)}
+  ...padding.object(0)}
   ${margin(0, 10)}
   bottom: 0.5;
 `;
@@ -74,7 +74,7 @@ const ChainBadgeContainer = styled.View.attrs({
   hapticType: 'impactHeavy',
   scaleTo: 0.9,
 })`
-  ${padding(0)};
+  ...padding.object(0)};
   ${margin(0)};
 `;
 
@@ -89,7 +89,7 @@ const Container = styled(Column).attrs({
 })`
   ${({ marginBottom }) => margin(18, 0, marginBottom)};
   ${({ horizontalPadding }) => padding(0, horizontalPadding)};
-  width: 100%;
+  width: '100%';
 `;
 
 const Label = styled(Text).attrs(({ size }) => ({

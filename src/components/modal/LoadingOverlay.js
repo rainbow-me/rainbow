@@ -15,16 +15,16 @@ const Container = styled(Centered).attrs({
   self: android ? 'center' : undefined,
 })`
   ${position.size('100%')};
-  position: absolute;
-  z-index: 999;
+  position: 'absolute',
+  zIndex: 999;
 `;
 
 const Overlay = styled(Centered)`
-  ${padding(19, 19, 22)};
-  background-color: ${({ theme: { colors } }) =>
+  ...padding.object(19, 19, 22)};
+  backgroundcolor: ${({ theme: { colors } }) =>
     colors.alpha(colors.blueGreyDark, 0.15)};
-  border-radius: ${20};
-  overflow: hidden;
+  borderradius: ${20};
+  overflow: 'hidden',
 `;
 
 const OverlayBlur = styled(BlurView).attrs(({ isDarkMode }) => ({
@@ -32,7 +32,7 @@ const OverlayBlur = styled(BlurView).attrs(({ isDarkMode }) => ({
   blurType: isDarkMode ? 'dark' : 'light',
 }))`
   ${position.cover};
-  z-index: 1;
+  zindex: 1;
 `;
 
 const Title = styled(Text).attrs(({ theme: { colors } }) => ({

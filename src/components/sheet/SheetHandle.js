@@ -11,13 +11,13 @@ const defaultColor = (colors, showBlur) =>
     : colors.alpha(colors.blueGreyDark30, showBlur ? 0.7 : 1.0);
 
 const Handle = styled.View`
-  background-color: ${({ color, theme: { colors }, showBlur }) =>
+  backgroundcolor: ${({ color, theme: { colors }, showBlur }) =>
     color || defaultColor(colors, showBlur)};
-  border-radius: 3;
+  borderRadius: 3;
   height: ${HandleHeight};
-  overflow: hidden;
+  overflow: 'hidden',
   width: 36;
-  z-index: 9;
+  zIndex: 9;
 `;
 
 export default function SheetHandle({ showBlur, ...props }) {

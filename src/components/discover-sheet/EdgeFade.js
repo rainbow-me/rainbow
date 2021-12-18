@@ -37,10 +37,10 @@ const LeftFade = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   pointerEvents: 'none',
   start: { x: 0, y: 0.5 },
 }))`
-  height: 100%;
+  height: '100%',
   left: 0;
-  position: absolute;
-  width: 19px;
+  position: 'absolute',
+  width: 19,
 `;
 
 const RightFade = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
@@ -78,10 +78,10 @@ const RightFade = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   pointerEvents: 'none',
   start: { x: 1, y: 0.5 },
 }))`
-  height: 100%;
-  position: absolute;
+  height: '100%',
+  position: 'absolute',
   right: 0;
-  width: 19px;
+  width: 19,
 `;
 
 export default function EdgeFade() {

@@ -67,11 +67,11 @@ const APYWrapper = styled.View`
 
 const UnderlyingAssetsWrapper = styled.View`
   margin-horizontal: 19;
-  margin-top: 12;
+  margintop: 12;
 `;
 
 const CarouselWrapper = styled.View`
-  margin-top: 6;
+  margintop: 6;
 `;
 
 const Carousel = styled.ScrollView.attrs({

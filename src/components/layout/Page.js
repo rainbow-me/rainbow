@@ -6,7 +6,7 @@ import { position } from '@rainbow-me/styles';
 
 const PageElement = styled.View`
   ${position.size('100%')};
-  background-color: ${({ color }) => color};
+  backgroundcolor: ${({ color }) => color};
   padding-bottom: ${({ bottomInset }) => bottomInset};
   padding-top: ${({ topInset }) => topInset};
 `;

@@ -1,8 +1,8 @@
 import React from 'react';
-import styled from 'styled-components';
 import { Text } from '../text';
 import { BiometryTypes } from '@rainbow-me/helpers';
 import { useBiometryType } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 import { fonts } from '@rainbow-me/styles';
 
 const { Face, FaceID, Fingerprint, none, passcode, TouchID } = BiometryTypes;
@@ -20,7 +20,7 @@ const Label = styled(Text).attrs(
     size,
     weight,
   })
-)``;
+)({});
 
 function useBiometryIconString(showIcon) {
   const biometryType = useBiometryType();

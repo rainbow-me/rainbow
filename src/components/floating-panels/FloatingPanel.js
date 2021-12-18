@@ -17,12 +17,12 @@ const FloatingPanelShadow = colors =>
 const Container = styled(Column)`
   ${({ hideShadow, theme: { colors } }) =>
     hideShadow ? '' : FloatingPanelShadow(colors)};
-  background-color: ${({ color }) => color};
-  border-radius: ${({ radius }) => radius};
+  backgroundcolor: ${({ color }) => color};
+  borderradius: ${({ radius }) => radius};
   min-height: ${({ minHeight }) => minHeight || 0};
   opacity: 1;
   overflow: ${({ overflow }) => overflow};
-  z-index: 1;
+  zindex: 1;
 `;
 
 const FloatingPanel = ({

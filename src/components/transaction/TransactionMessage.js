@@ -17,12 +17,12 @@ const Container = styled(Row)`
   min-height: ${({ minHeight }) => minHeight};
 `;
 const MessageWrapper = styled(ScrollView)`
-  ${padding(12, 15)}
+  ...padding.object(12, 15)}
   border-color: ${({ theme: { colors } }) =>
     colors.alpha(colors.blueGreyDark, 0.08)};
-  border-radius: 20;
+  borderradius: 20;
   border-width: 1;
-  margin-bottom: 14;
+  marginbottom: 14;
   min-width: ${deviceWidth - horizontalPadding * 2};
 `;
 

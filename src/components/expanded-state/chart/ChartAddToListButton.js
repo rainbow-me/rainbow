@@ -14,10 +14,10 @@ import { magicMemo } from '@rainbow-me/utils';
 const AddToListButtonPadding = 19;
 
 const AddToListButton = styled(Centered)`
-  ${padding(0, AddToListButtonPadding)};
-  height: 40px;
-  width: 40px;
-  margin-right: 10px;
+  ...padding.object(0, AddToListButtonPadding)};
+  height: 40,
+  width: 40,
+  marginRight: 10,
 `;
 
 const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
@@ -26,10 +26,10 @@ const Circle = styled(IS_TESTING === 'true' ? View : RadialGradient).attrs(
     colors: colors.gradients.lightestGrey,
   })
 )`
-  border-radius: 20px;
-  height: 40px;
-  overflow: hidden;
-  width: 40px;
+  borderRadius: 20,
+  height: 40,
+  overflow: 'hidden',
+  width: 40,
 `;
 
 const PlusIcon = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -39,9 +39,9 @@ const PlusIcon = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'large',
   weight: 'bold',
 }))`
-  height: 100%;
-  line-height: 39px;
-  width: 100%;
+  height: '100%',
+  lineHeight: 39,
+  width: '100%',
 `;
 
 const ChartAddToListButton = ({ asset }) => {

@@ -13,10 +13,10 @@ function trim(val) {
 }
 
 const Label = styled(Text)`
-  font-size: ${fonts.size.smedium};
+  fontsize: ${fonts.size.smedium};
   font-weight: ${fonts.weight.bold};
-  letter-spacing: ${fonts.letterSpacing.roundedTighter};
-  position: absolute;
+  letterspacing: ${fonts.letterSpacing.roundedTighter};
+  position: 'absolute',
   text-align: center;
 `;
 

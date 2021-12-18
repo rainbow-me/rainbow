@@ -17,7 +17,7 @@ const ScanButtonShadowsFactory = colors => [
 
 const BackgroundFill = styled.View`
   ${position.cover};
-  background-color: ${({ theme: { colors } }) => colors.white};
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
   opacity: 0.5;
 `;
 
@@ -35,11 +35,11 @@ const ScanButtonContent = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 2,
 })`
-  align-items: center;
-  justify-content: center;
+  alignItems: 'center',
+  justifyContent: 'center',
   height: 34;
   width: 34;
-  z-index: 2;
+  zIndex: 2;
 `;
 
 export default function ScanHeaderButton() {

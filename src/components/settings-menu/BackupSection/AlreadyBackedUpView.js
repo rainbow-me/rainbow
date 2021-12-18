@@ -32,9 +32,9 @@ const CheckmarkIconContainer = styled(View)`
   ${({ color, isDarkMode, theme: { colors } }) =>
     shadow.build(0, 4, 6, isDarkMode ? colors.shadow : color, 0.4)};
   ${position.size(50)};
-  background-color: ${({ color }) => color};
-  border-radius: 25;
-  margin-bottom: 19;
+  backgroundcolor: ${({ color }) => color};
+  borderradius: 25;
+  marginbottom: 19;
   padding-top: ${ios ? 13 : 7};
 `;
 
@@ -54,7 +54,7 @@ const CheckmarkIcon = ({ color, isDarkMode }) => (
 const Content = styled(Centered).attrs({
   direction: 'column',
 })`
-  ${padding(0, 19, 30)};
+  ...padding.object(0, 19, 30)};
   flex: 1;
 `;
 
@@ -64,12 +64,12 @@ const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   lineHeight: 'loosest',
   size: 'large',
 }))`
-  margin-bottom: 42;
+  marginbottom: 42;
   padding-horizontal: 23;
 `;
 
 const Footer = styled(Centered)`
-  ${padding(0, 15, 42)};
+  ...padding.object(0, 15, 42)};
 `;
 
 const Subtitle = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -78,7 +78,7 @@ const Subtitle = styled(Text).attrs(({ theme: { colors } }) => ({
   size: fonts.size.smedium,
   weight: fonts.weight.medium,
 }))`
-  margin-top: -10;
+  marginTop -10;
 `;
 
 const Title = styled(Text).attrs({
@@ -86,7 +86,7 @@ const Title = styled(Text).attrs({
   size: 'larger',
   weight: 'bold',
 })`
-  margin-bottom: 8;
+  marginbottom: 8,
   padding-horizontal: 11;
 `;
 

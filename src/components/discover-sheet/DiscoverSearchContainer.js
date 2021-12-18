@@ -20,7 +20,7 @@ import DiscoverSheetContext from './DiscoverSheetContext';
 import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 
 const CancelButton = styled(ButtonPressAnimation)`
-  margin-top: 27;
+  margintop: 27;
 `;
 
 const CancelText = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -30,9 +30,9 @@ const CancelText = styled(Text).attrs(({ theme: { colors } }) => ({
   size: 'large',
   weight: 'semibold',
 }))`
-  ${ios ? '' : 'margin-top: -5;'}
+  ${ios ? '' : 'marginTop: -5;'}
   margin-left: -3;
-  margin-right: 15;
+  marginright: 15;
 `;
 
 const sendQueryAnalytics = query => {

@@ -65,11 +65,11 @@ const CenteredSheet = styled(Centered)`
 `;
 
 const ExtendedSheetBackground = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.white};
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
   height: 1000;
-  position: absolute;
+  position: 'absolute',
   bottom: -800;
-  width: 100%;
+  width: '100%',
 `;
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(

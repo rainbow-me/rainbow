@@ -34,6 +34,7 @@ const { RNThemeModule } = NativeModules;
 
 export const MainThemeProvider = props => {
   const [colorScheme, setColorScheme] = useState();
+
   // looks like one works on Android and another one on iOS. good.
   const isSystemDarkModeIOS = useDarkMode();
   const isSystemDarkModeAndroid = useColorScheme() === 'dark';
@@ -120,6 +121,10 @@ export const MainThemeProvider = props => {
     }),
     [colorScheme, colorSchemeSystemAdjusted, isSystemDarkMode]
   );
+
+  if (!colorScheme) {
+    return null;
+  }
 
   return (
     <ThemeProvider theme={currentTheme}>

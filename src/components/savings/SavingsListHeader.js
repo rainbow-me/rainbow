@@ -20,12 +20,12 @@ const SumValueText = styled(Text).attrs({
   align: 'right',
   size: 'large',
 })`
-  margin-bottom: 1;
+  marginbottom: 1,
   color: ${({ theme: { colors } }) => colors.dark};
 `;
 
 const ListHeaderEmoji = styled(Emoji).attrs({ size: 'medium' })`
-  margin-bottom: 3.5;
+  marginbottom: 3.5;
 `;
 
 const SavingsListHeader = ({

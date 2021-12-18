@@ -18,8 +18,8 @@ import { parseAssetsNative } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 
 const BottomRowContainer = styled(Row)`
-  margin-bottom: 10;
-  margin-top: -7.75;
+  marginbottom: 10;
+  marginTop -7.75;
 `;
 
 const TopRowContainer = styled(Row).attrs({

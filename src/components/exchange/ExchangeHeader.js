@@ -9,7 +9,7 @@ const Container = styled(ColumnWithMargins).attrs({
   align: 'center',
   margin: 6,
 })`
-  ${padding(6, 0)};
+  ...padding.object(6, 0)};
 `;
 
 export default function ExchangeHeader({ testID, title }) {

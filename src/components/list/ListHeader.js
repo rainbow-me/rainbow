@@ -21,13 +21,13 @@ import { padding } from '@rainbow-me/styles';
 export const ListHeaderHeight = 50;
 
 const ShareCollectiblesBPA = styled(ButtonPressAnimation)`
-  background-color: ${({ theme: { colors } }) =>
+  backgroundColor: ${({ theme: { colors } }) =>
     colors.alpha(colors.blueGreyDark, 0.06)};
-  border-radius: 15;
+  borderRadius: 15;
   height: 30;
-  justify-content: center;
+  justifyContent: 'center',
   max-width: 90;
-  padding-bottom: 5;
+  padding-bottom: 5,
   padding-top: 5;
   width: 90;
 `;
@@ -43,13 +43,13 @@ const Content = styled(Row).attrs(({ theme: { colors } }) => ({
   backgroundColor: colors.white,
   justify: 'space-between',
 }))`
-  ${padding(5, 19)};
+  ...padding.object(5, 19)};
   height: ${ListHeaderHeight};
-  width: 100%;
+  width: '100%',
 `;
 
 const StickyBackgroundBlocker = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.white};
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
   height: ${({ isEditMode }) => (isEditMode ? ListHeaderHeight : 0)};
   top: ${({ isEditMode }) => (isEditMode ? -40 : 0)};
   width: ${({ deviceDimensions }) => deviceDimensions.width};

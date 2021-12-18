@@ -7,7 +7,7 @@ const TokenInfoSection = styled(ColumnWithMargins).attrs({
 })`
   ${({ isNft }) =>
     ios && padding(isNft ? 0 : 24, isNft ? 5 : 0, isNft ? 24 : 5)};
-  width: 100%;
+  width: '100%';
 `;
 
 export default TokenInfoSection;

@@ -14,8 +14,8 @@ const Container = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 7,
 })`
-  ${padding(containerPaddingTop, 24, 0)};
-  width: 100%;
+  ...padding.object(containerPaddingTop, 24, 0)};
+  width: '100%',
 `;
 
 export default function SwapDetailsMasthead({

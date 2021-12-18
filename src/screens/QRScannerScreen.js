@@ -19,24 +19,24 @@ import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 
 const Background = styled.View`
-  background-color: black;
-  height: 100%;
-  position: absolute;
-  width: 100%;
+  backgroundcolor: black;
+  height: '100%',
+  position: 'absolute',
+  width: '100%',
 `;
 
 const ScannerContainer = styled(Centered).attrs({
   direction: 'column',
 })`
   ${position.size('100%')};
-  overflow: hidden;
+  overflow: 'hidden';
 `;
 
 const ScannerHeader = styled(Header).attrs({
   justify: 'space-between',
   testID: 'scanner-header',
 })`
-  position: absolute;
+  position: 'absolute',
   top: 0;
 `;
 

@@ -1,19 +1,19 @@
 import React, { useCallback, useState } from 'react';
 import { Pressable } from 'react-native';
-import styled from 'styled-components';
 import { Text } from './text';
 import { useAppVersion, useTimeout } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 
 const DEBUG_TAP_COUNT = 15;
 
-const StyledButton = styled(Pressable)`
-  padding-top: 10;
-  padding-bottom: 10;
-  padding-horizontal: 40;
-  margin-bottom: -10;
-`;
+const StyledButton = styled(Pressable)({
+  marginBottom: -10,
+  paddingBottom: 10,
+  paddingHorizontal: 40,
+  paddingTop: 10,
+});
 
 const StampText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -21,7 +21,7 @@ const StampText = styled(Text).attrs(({ theme: { colors } }) => ({
   lineHeight: 'normal',
   size: 'smedium',
   weight: 'bold',
-}))``;
+}))({});
 
 export default function AppVersionStamp() {
   const appVersion = useAppVersion();

@@ -14,8 +14,8 @@ const SpeedButton = styled(ButtonPressAnimation).attrs({
 })`
   border: ${({ color, theme: { colors } }) =>
     `2px solid ${color || colors.appleBlue}`};
-  ${padding(2.5, 4, android ? 2.5 : 3.5, 5)};
-  border-radius: 19;
+  ...padding.object(2.5, 4, android ? 2.5 : 3.5, 5)};
+  borderradius: 19;
 `;
 
 const Symbol = styled(Text).attrs({
@@ -33,7 +33,7 @@ const GasSpeedLabel = styled(Text).attrs({
   size: 'lmedium',
   weight: 'heavy',
 })`
-  ${padding(0, 3)};
+  ...padding.object(0, 3)};
 `;
 
 const GasSpeedLabelPager = ({

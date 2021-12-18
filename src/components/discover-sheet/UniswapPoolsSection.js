@@ -56,30 +56,29 @@ const PoolEmoji = styled(Text).attrs({
   size: 'large',
   weight: 'heavy',
 })`
-  margin-top: ${android ? 0 : -4};
+  marginTop ${android ? 0 : -4};
 `;
 
 const PoolListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
 })`
-  margin-right: 16px;
-  ${({ selected, theme: { colors }, titleColor }) =>
-    selected
-      ? `
-        background-color: ${colors.alpha(titleColor, 0.06)};
-        border-radius: 12px;
-        height: 30px;
-        padding-horizontal: 8px;
-        padding-top: ${ios ? 6.5 : 4.5}px;
+  marginright: 16,
+    ${({ selected, theme: { colors }, titleColor }) =>
+      selected
+        ? `
+        backgroundColor: ${colors.alpha(titleColor, 0.06)};
+        borderRadius: 12,
+        height: 30,
+        padding-horizontal: 8,
+        padding-top: ${ios ? 6.5 : 4.5},
       `
-      : `
-        padding-top: ${ios ? 6.5 : 4.5}px;
-      `}
+        : `
+        padding-top: ${ios ? 6.5 : 4.5},
+      `};
 `;
 
 const ListName = styled(Text)`
-  margin-left: 3px;
-  margin-top: ${ios ? -4.5 : 0}px;
+  margin-left: 3, marginTop ${ios ? -4.5 : 0};
 `;
 
 const listData = [

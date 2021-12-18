@@ -7,10 +7,10 @@ import { buildTextStyles } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const AndroidMaskWrapper = styled.View`
-  background-color: ${({ theme: { colors } }) => colors.white};
-  bottom: 0;
+  backgroundcolor: ${({ theme: { colors } }) => colors.white};
+  bottom: 0,
   left: 68.7;
-  position: absolute;
+  position: 'absolute',
   right: 0;
   top: 11.5;
 `;

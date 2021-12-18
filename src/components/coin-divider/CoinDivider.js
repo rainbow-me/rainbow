@@ -8,7 +8,6 @@ import React, {
 } from 'react';
 import { Animated, LayoutAnimation, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
 import { useRecyclerAssetListPosition } from '../asset-list/RecyclerAssetList2/core/Contexts';
 import { StickyHeaderContext } from '../asset-list/RecyclerAssetList2/core/StickyHeaders';
 import { Row, RowWithMargins } from '../layout';
@@ -25,6 +24,7 @@ import {
   useOpenSmallBalances,
 } from '@rainbow-me/hooks';
 import { emitChartsRequest } from '@rainbow-me/redux/explorer';
+import styled from '@rainbow-me/styled';
 import { padding } from '@rainbow-me/styles';
 
 export const CoinDividerHeight = 30;
@@ -33,29 +33,29 @@ export const CoinDividerContainerHeight = CoinDividerHeight + 11;
 const Container = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
-})`
-  ${padding(5, 19, 6)};
-  background-color: ${({ isSticky, theme: { colors } }) =>
-    isSticky ? colors.white : colors.transparent};
-  height: ${CoinDividerContainerHeight};
-  width: ${({ deviceWidth }) => deviceWidth};
-`;
+})({
+  ...padding.object(5, 19, 6),
+  backgroundColor: ({ isSticky, theme: { colors } }) =>
+    isSticky ? colors.white : colors.transparent,
+  height: CoinDividerContainerHeight,
+  width: ({ deviceWidth }) => deviceWidth,
+});
 
 const CoinDividerButtonRow = styled(RowWithMargins).attrs(
   ({ isCoinListEdited }) => ({
     margin: 10,
     pointerEvents: isCoinListEdited ? 'auto' : 'none',
   })
-)`
-  position: absolute;
-`;
+)({
+  position: 'absolute',
+});
 
 const EditButtonWrapper = styled(Row).attrs({
   align: 'end',
-})`
-  position: absolute;
-  right: 0;
-`;
+})({
+  position: 'absolute',
+  right: 0,
+});
 
 const useInterpolationRange = () => {
   const { isCoinListEdited } = useCoinListEdited();

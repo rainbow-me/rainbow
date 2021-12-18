@@ -27,7 +27,7 @@ import { position } from '@rainbow-me/styles';
 
 const AndroidBackground = styled.View`
   ${position.cover};
-  background-color: ${({ backgroundColor }) => backgroundColor};
+  backgroundcolor: ${({ backgroundColor }) => backgroundColor};
 `;
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
@@ -40,11 +40,11 @@ const Container = styled(Centered).attrs({ direction: 'column' })`
             : 0
         };`};
   ${android && 'border-top-left-radius: 30; border-top-right-radius: 30;'}
-  background-color: ${({ backgroundColor }) => backgroundColor};
-  bottom: 0;
+  backgroundColor: ${({ backgroundColor }) => backgroundColor};
+  bottom: 0,
   left: 0;
-  overflow: hidden;
-  position: absolute;
+  overflow: 'hidden',
+  position: 'absolute',
   right: 0;
 `;
 
@@ -56,24 +56,24 @@ const Content = styled(Animated.ScrollView).attrs(
     scrollEventThrottle: 16,
   })
 )`
-  background-color: ${({ backgroundColor }) => backgroundColor};
+  backgroundcolor: ${({ backgroundColor }) => backgroundColor};
   ${({ contentHeight, deviceHeight }) =>
     contentHeight ? `height: ${deviceHeight + contentHeight}` : null};
   padding-top: ${({ removeTopPadding }) =>
     removeTopPadding ? 0 : SheetHandleFixedToTopHeight};
-  width: 100%;
+  width: '100%';
 `;
 
 const ContentWrapper = styled.View`
   ${position.size('100%')};
-  background-color: ${({ backgroundColor }) => backgroundColor};
+  backgroundcolor: ${({ backgroundColor }) => backgroundColor};
 `;
 
 const Whitespace = styled.View`
-  background-color: ${({ backgroundColor }) => backgroundColor};
+  backgroundcolor: ${({ backgroundColor }) => backgroundColor};
   flex: 1;
   height: ${({ deviceHeight }) => deviceHeight};
-  z-index: -1;
+  zindex: -1;
 `;
 
 export default forwardRef(function SlackSheet(

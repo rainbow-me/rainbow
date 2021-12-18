@@ -10,9 +10,9 @@ import { position } from '@rainbow-me/styles';
 const CrossHairAspectRatio = 230 / 375;
 
 const Container = styled(Centered)`
-  ${({ size }) => position.size(size)};
-  margin-bottom: 1;
-  z-index: 1;
+  ${({ size }) => ...position.sizeAsObject(size)};
+  marginbottom: 1,
+  zIndex: 1;
 `;
 
 const Crosshair = styled(Icon).attrs({

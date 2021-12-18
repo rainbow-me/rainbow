@@ -1,26 +1,26 @@
 import React from 'react';
 import { TextInput } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { RowWithMargins } from '../../../layout';
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
 import { useRatio } from './useRatio';
 import { useChartData } from '@rainbow-me/animated-charts';
+import styled from '@rainbow-me/styled';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 Animated.addWhitelistedNativeProps({ color: true });
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
-const PercentLabel = styled(AnimatedTextInput)`
-  ${fontWithWidth(fonts.weight.bold)};
-  background-color: ${({ theme: { colors } }) => colors.transparent};
-  font-size: ${fonts.size.big};
-  font-variant: tabular-nums;
-  letter-spacing: ${fonts.letterSpacing.roundedTightest};
-  text-align: right;
-  ${android && `margin-vertical: -19px;`}
-`;
+const PercentLabel = styled(AnimatedTextInput)({
+  ...fontWithWidth(fonts.weight.bold),
+  backgroundColor: ({ theme: { colors } }) => colors.transparent,
+  fontSize: fonts.size.big,
+  fontVariant: 'tabular-nums',
+  letterSpacing: fonts.letterSpacing.roundedTightest,
+  textAlign: 'right',
+  ...(android ? { marginVertical: -19 } : {}),
+});
 
 function formatNumber(num) {
   'worklet';

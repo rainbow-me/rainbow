@@ -5,16 +5,16 @@ import buildLayoutStyles from './buildLayoutStyles';
 const position = {};
 
 position.cover = `
-  bottom: 0;
+  bottom: 0,
   left: 0;
-  position: absolute;
+  position: 'absolute',
   right: 0;
   top: 0;
 `;
 
 position.centered = `
-  align-items: center;
-  justify-content: center;
+  alignItems: 'center',
+  justifyContent: 'center',
 `;
 
 position.centeredAsObject = {

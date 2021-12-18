@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components';
 import { abbreviations, magicMemo, measureText } from '../../utils';
 import { DividerSize } from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -14,6 +13,7 @@ import { useTheme } from '@rainbow-me/context';
 import { useAccountProfile, useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 import { fonts, position } from '@rainbow-me/styles';
 
 export const AssetListHeaderHeight = ListHeaderHeight + DividerSize;
@@ -27,21 +27,21 @@ const AccountName = styled(TruncatedText).attrs({
   size: 'big',
   truncationLength: 4,
   weight: 'heavy',
-})`
-  height: ${android ? '35' : '30'};
-  margin-top: 2;
-  margin-bottom: ${android ? '8' : '0'};
-  max-width: ${({ deviceWidth, totalValueLength }) =>
-    deviceWidth - dropdownArrowWidth - 32 - totalValueLength * 15};
-  padding-right: 6;
-`;
+})({
+  height: android ? 35 : 30,
+  marginBottom: android ? 8 : 0,
+  marginTop: 2,
+  maxWidth: ({ deviceWidth, totalValueLength }) =>
+    deviceWidth - dropdownArrowWidth - 32 - totalValueLength * 15,
+  paddingRight: 6,
+});
 
-const DropdownArrow = styled(Centered)`
-  border-radius: 15;
-  height: ${dropdownArrowWidth};
-  margin-top: ${android ? '9' : '2'};
-  width: ${dropdownArrowWidth};
-`;
+const DropdownArrow = styled(Centered)({
+  borderRadius: 15,
+  height: dropdownArrowWidth,
+  marginTop: android ? '9' : '2',
+  width: dropdownArrowWidth,
+});
 
 const WalletSelectButton = ({
   truncatedAccountName,

@@ -36,9 +36,9 @@ const snapPoints = [
 const AndroidWrapper = styled.View.attrs({
   pointerEvents: 'box-none',
 })`
-  width: 100%;
+  width: '100%',
   height: ${deviceUtils.dimensions.height};
-  position: absolute;
+  position: 'absolute',
 `;
 
 let jumpToShort;
