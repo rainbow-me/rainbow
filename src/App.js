@@ -47,6 +47,7 @@ import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
 import { isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
+import { AccountAssetManager } from './hooks/useAccountAssets';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
@@ -283,19 +284,21 @@ class App extends Component {
             <SafeAreaProvider>
               <Provider store={store}>
                 <RecoilRoot>
-                  <SharedValuesProvider>
-                    <FlexItem>
-                      {this.state.initialRoute && (
-                        <InitialRouteContext.Provider
-                          value={this.state.initialRoute}
-                        >
-                          <RoutesComponent ref={this.handleNavigatorRef} />
-                          <PortalConsumer />
-                        </InitialRouteContext.Provider>
-                      )}
-                      <OfflineToast />
-                    </FlexItem>
-                  </SharedValuesProvider>
+                  <AccountAssetManager>
+                    <SharedValuesProvider>
+                      <FlexItem>
+                        {this.state.initialRoute && (
+                          <InitialRouteContext.Provider
+                            value={this.state.initialRoute}
+                          >
+                            <RoutesComponent ref={this.handleNavigatorRef} />
+                            <PortalConsumer />
+                          </InitialRouteContext.Provider>
+                        )}
+                        <OfflineToast />
+                      </FlexItem>
+                    </SharedValuesProvider>
+                  </AccountAssetManager>
                 </RecoilRoot>
               </Provider>
             </SafeAreaProvider>
