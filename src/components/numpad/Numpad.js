@@ -1,24 +1,24 @@
 import React, { useCallback } from 'react';
-import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { useTheme } from '@rainbow-me/context';
 import { useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 
-const KeyboardButtonContent = styled(Centered)`
-  height: ${({ height }) => height};
-  transform: scale(0.5);
-  width: 80;
-`;
+const KeyboardButtonContent = styled(Centered)({
+  height: ({ height }) => height,
+  transform: [{ scale: 0.5 }],
+  width: 80,
+});
 
 const KeyboardRow = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
-})`
-  width: '100%';
-`;
+})({
+  width: '100%',
+});
 
 const KeyboardButton = ({ children, ...props }) => {
   const { isTinyPhone } = useDimensions();

@@ -1,17 +1,17 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
+import styled from '@rainbow-me/styled';
 import { padding, position } from '@rainbow-me/styles';
 
 const Content = styled(Centered).attrs({
   shrink: 0,
-})`
-  ...padding.object(android ? 14 : 19)};
+})({
+  ...padding.object(android ? 14 : 19),
   width: '100%',
-`;
+});
 
 const Label = styled(Text).attrs(
   ({

@@ -12,7 +12,7 @@ import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 const Container = styled.View``;
 
 const VerticalDivider = styled.View`
-  backgroundcolor: ${({ theme: { colors } }) => colors.rowDividerExtraLight};
+  backgroundColor: ${({ theme: { colors } }) => colors.rowDividerExtraLight};
   borderradius: 1;
   height: 40;
   marginTop: 2,

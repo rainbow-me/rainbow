@@ -1,35 +1,35 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components';
 import { OpacityToggler } from '../animations';
 import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token';
 import { Column } from '../layout';
 import { useDimensions, useImageMetadata } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 import { padding, position } from '@rainbow-me/styles';
 
 const defaultImageDimensions = { height: 512, width: 512 };
 
 const ButtonWrapper = styled(Column).attrs({
   margin: 0,
-})`
-  ...padding.object(0, 19, 15)};
-  marginBottom: 21;
+})({
+  ...padding.object(0, 19, 15),
+  marginBottom: 21,
   width: '100%',
-  zIndex: 3;
-`;
+  zIndex: 3,
+});
 
-const Footer = styled(Column).attrs({ justify: 'end' })`
-  width: '100%';
-`;
+const Footer = styled(Column).attrs({ justify: 'end' })({
+  width: '100%',
+});
 
 const NFTWrapper = styled(Column).attrs({
   align: 'center',
   flex: 1,
   justify: 'center',
-})`
-  width: '100%';
-`;
+})({
+  width: '100%',
+});
 
 const Gradient = styled(LinearGradient).attrs(
   ({ isTallPhone, theme: { colors } }) => ({
@@ -38,16 +38,14 @@ const Gradient = styled(LinearGradient).attrs(
     pointerEvents: 'none',
     start: { x: 0.5, y: 0 },
   })
-)`
-  ${position.cover};
-  overflow: 'hidden';
-`;
+)({
+  ...position.coverAsObject,
+  overflow: 'hidden',
+});
 
 const GradientToggler = styled(OpacityToggler).attrs({
   tension: 500,
-})`
-  ${position.cover};
-`;
+})(position.coverAsObject);
 
 export default function SendAssetFormCollectible({
   asset,

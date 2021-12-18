@@ -3,7 +3,6 @@ import { toLower } from 'lodash';
 import React, { Fragment, useEffect, useMemo } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import { UniBalanceHeightDifference } from '../../hooks/charts/useChartThrottledPoints';
 import deviceUtils from '../../utils/deviceUtils';
 import EdgeFade from '../discover-sheet/EdgeFade';
@@ -38,12 +37,12 @@ import {
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 
 import { ETH_ADDRESS } from '@rainbow-me/references';
+import styled from '@rainbow-me/styled';
 import { magicMemo, safeAreaInsetValues } from '@rainbow-me/utils';
 
-const Spacer = styled.View`
-  height: ${safeAreaInsetValues.bottom + 20};
-`;
-
+const Spacer = styled.View({
+  height: safeAreaInsetValues.bottom + 20,
+});
 export const underlyingAssetsHeight = 70;
 const heightWithoutChart = 452 + (android ? 20 - getSoftMenuBarHeight() : 0);
 const heightWithChart = heightWithoutChart + 293;
@@ -59,33 +58,33 @@ const formatTokenAddress = address => {
   return toChecksumAddress(address);
 };
 
-const APYWrapper = styled.View`
-  flex: 1;
-  height: 23;
-  padding-top: 3;
-`;
+const APYWrapper = styled.View({
+  flex: 1,
+  height: 23,
+  paddingTop: 3,
+});
 
-const UnderlyingAssetsWrapper = styled.View`
-  margin-horizontal: 19;
-  margintop: 12;
-`;
+const UnderlyingAssetsWrapper = styled.View({
+  marginHorizontal: 19,
+  marginTop: 12,
+});
 
-const CarouselWrapper = styled.View`
-  margintop: 6;
-`;
+const CarouselWrapper = styled.View({
+  marginTop: 6,
+});
 
 const Carousel = styled.ScrollView.attrs({
   contentContainerStyle: { paddingHorizontal: 7 },
   horizontal: true,
   showsHorizontalScrollIndicator: false,
-})``;
+})({});
 
 const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.7),
   letterSpacing: 'roundedTighter',
-}))`
-  margin-horizontal: 12;
-`;
+}))({
+  marginHorizontal: 12,
+});
 
 const LiquidityPoolExpandedState = () => {
   const { params } = useRoute();

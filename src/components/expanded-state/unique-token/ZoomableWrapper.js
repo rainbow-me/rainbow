@@ -15,10 +15,10 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'styled-components';
 import useReactiveSharedValue from '../../../react-native-animated-charts/src/helpers/useReactiveSharedValue';
 import { ButtonPressAnimation } from '../../animations';
 import { useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 
 const adjustConfig = {
@@ -35,25 +35,29 @@ const exitConfig = {
   mass: 2,
   stiffness: 800,
 };
-const GestureBlocker = styled(View)`
-  height: ${({ height }) => height};
-  left: ${({ containerWidth, width }) => -(width - containerWidth) / 2};
+const GestureBlocker = styled(View)({
+  height: ({ height }) => height,
+  left: ({ containerWidth, width }) => -(width - containerWidth) / 2,
   position: 'absolute',
-  top: -85;
-  width: ${({ width }) => width};
-`;
-const Container = styled(Animated.View)`
-  align-self: center;
-  shadow-color: ${({ theme: { colors } }) => colors.shadowBlack};
-  shadow-offset: 0 20,
-  shadow-opacity: 0.4;
-  shadow-radius: 30,
-`;
-const ImageWrapper = styled(Animated.View)`
-  ${position.size('100%')};
-  flex-direction: row;
-  overflow: 'hidden';
-`;
+  top: -85,
+  width: ({ width }) => width,
+});
+
+const Container = styled(Animated.View)({
+  alignSelf: 'center',
+  shadowColor: ({ theme: { colors } }) => colors.shadowBlack,
+  // TODO terry
+  // shadow-offset: 0 20,
+  shadowOpacity: 0.4,
+  shadowRadius: 30,
+});
+
+const ImageWrapper = styled(Animated.View)({
+  ...position.sizeAsObject('100%'),
+  flexDirection: 'row',
+  overflow: 'hidden',
+});
+
 const ZoomContainer = styled(Animated.View)`
   height: ${({ height }) => height};
   width: ${({ width }) => width};

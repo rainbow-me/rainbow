@@ -33,40 +33,41 @@ const ChartTimespans = [
   //ChartTypes.max, todo restore after receiving proper data from zerion
 ];
 
-const ChartContainer = styled.View`
-  margin-vertical: ${({ showChart }) => (showChart ? '17px' : '0px')};
-`;
+const ChartContainer = styled.View({
+  marginVertical: ({ showChart }) => (showChart ? '17px' : '0px'),
+});
 
 const ChartSpinner = styled(ImgixImage).attrs(({ color }) => ({
   resizeMode: ImgixImage.resizeMode.contain,
   source: Spinner,
   tintColor: color,
-}))`
-  height: 28;
-  width: 28;
-`;
+}))({
+  height: 28,
+  width: 28,
+});
 
-const Container = styled(Column)`
-  padding-bottom: 30,
-  padding-top: ${ios ? 0 : 20},
+const Container = styled(Column)({
+  paddingBottom: 30,
+  paddingTop: ios ? 0 : 20,
   width: '100%',
-`;
+});
 
-const InnerDot = styled.View`
-  height: 10,
+const InnerDot = styled.View({
+  backgroundColor: ({ color }) => color,
   borderRadius: 5,
-  backgroundcolor: ${({ color }) => color};
-  shadow-color: ${({ color, theme: { colors, isDarkMode } }) =>
-    isDarkMode ? colors.shadow : color};
-  shadow-offset: 0 3,
-  shadow-opacity: 0.6;
-  shadow-radius: 4.5,
+  height: 10,
+  shadowColor: ({ color, theme: { colors, isDarkMode } }) =>
+    isDarkMode ? colors.shadow : color,
+  // TODO terry
+  // shadowOffset: 0 3,
+  shadowOpacity: 0.6,
+  shadowRadius: 4.5,
   width: 10,
-`;
+});
 
 const Dot = styled(ChartDot)`
   alignItems: 'center',
-  backgroundcolor: ${({ color }) => color};
+  backgroundColor: ${({ color }) => color};
   justifycontent: 'center';
 `;
 
@@ -75,9 +76,9 @@ const HEIGHT = 146.5;
 const Overlay = styled(Animated.View).attrs({
   pointerEvents: 'none',
 })`
-  ${position.cover};
+  ...position.coverAsObject,
   alignItems: 'center',
-  backgroundcolor: ${({ theme: { colors } }) =>
+  backgroundColor: ${({ theme: { colors } }) =>
     colors.alpha(colors.white, 0.9)};
   justifycontent: 'center';
 `;

@@ -1,7 +1,7 @@
 import MaskedView from '@react-native-community/masked-view';
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Easing, StyleSheet } from 'react-native';
+import { Animated, Easing } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import Reanimated, {
   Clock,
@@ -11,7 +11,6 @@ import Reanimated, {
 } from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
-import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import RainbowGreyNeon from '../assets/rainbows/greyneon.png';
 import RainbowLight from '../assets/rainbows/light.png';
@@ -34,7 +33,8 @@ import { useHideSplashScreen } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { shadow } from '@rainbow-me/styles';
+import styled from '@rainbow-me/styled';
+import { position, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
 
 const {
@@ -50,18 +50,18 @@ const {
   startClock,
 } = Reanimated;
 
-const ButtonContainer = styled(Reanimated.View)`
-  borderradius: ${({ height }) => height / 2};
-`;
+const ButtonContainer = styled(Reanimated.View)({
+  borderRadius: ({ height }) => height / 2,
+});
 
 const ButtonContent = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 4,
-})`
-  align-self: center;
+})({
+  alignSelf: 'center',
   height: '100%',
-  padding-bottom: 4,
-`;
+  paddingBottom: 4,
+});
 
 const ButtonLabel = styled(Text).attrs(
   ({ textColor: color, theme: { colors } }) => ({
@@ -70,36 +70,36 @@ const ButtonLabel = styled(Text).attrs(
     size: 'larger',
     weight: 'bold',
   })
-)``;
+)({});
 
 const ButtonEmoji = styled(Emoji).attrs({
   align: 'center',
   size: 16.25,
-})`
-  padding-bottom: 1.5;
-`;
+})({
+  paddingBottom: 1.5,
+});
 
-const DarkShadow = styled(Reanimated.View)`
-  ${({ theme: { colors } }) => shadow.build(0, 10, 30, colors.dark, 1)};
-  backgroundcolor: ${({ theme: { colors } }) => colors.white};
-  borderRadius: 30;
-  height: 60;
-  left: -3;
-  opacity: 0.2;
+const DarkShadow = styled(Reanimated.View)(({ theme: { colors } }) => ({
+  ...shadow.buildAsObject(0, 10, 30, colors.dark, 1),
+  backgroundColor: colors.white,
+  borderRadius: 30,
+  height: 60,
+  left: -3,
+  opacity: 0.2,
   position: 'absolute',
-  top: -3;
-  width: 236;
-`;
+  top: -3,
+  width: 236,
+}));
 
-const Shadow = styled(Reanimated.View)`
-  ${({ theme: { colors } }) => shadow.build(0, 10, 30, colors.dark, 0.4)};
-  borderRadius: 30;
-  height: 60;
-  left: -3;
+const Shadow = styled(Reanimated.View)(({ theme: { colors } }) => ({
+  ...shadow.buildAsObject(0, 10, 30, colors.dark, 0.4),
+  borderRadius: 30,
+  height: 60,
+  left: -3,
   position: 'absolute',
-  top: -3;
-  width: 236;
-`;
+  top: -3,
+  width: 236,
+}));
 
 const RainbowButton = ({
   darkShadowStyle,
@@ -131,24 +131,24 @@ const RainbowButton = ({
   );
 };
 
-const Container = styled.View`
-  ${StyleSheet.absoluteFillObject};
+const Container = styled.View({
+  ...position.coverAsObject,
   alignItems: 'center',
-  backgroundcolor: ${({ theme: { colors } }) => colors.white};
-  justifycontent: 'center';
-`;
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  justifyContent: 'center',
+});
 
-const ContentWrapper = styled(Animated.View)`
+const ContentWrapper = styled(Animated.View)({
   alignItems: 'center',
-  height: 192;
+  height: 192,
   justifyContent: 'space-between',
-  marginBottom: 20;
-  zIndex: 10;
-`;
+  marginBottom: 20,
+  zIndex: 10,
+});
 
-const ButtonWrapper = styled(Animated.View)`
-  width: '100%';
-`;
+const ButtonWrapper = styled(Animated.View)({
+  width: '100%',
+});
 
 const INITIAL_SIZE = 375;
 

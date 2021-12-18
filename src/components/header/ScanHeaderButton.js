@@ -1,12 +1,12 @@
 import React, { useCallback, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components';
 import { useNavigation } from '../../navigation/Navigation';
 import { jumpToShort } from '../discover-sheet/DiscoverSheet';
 import Icon from '../icons/Icon';
 import { Row, RowWithMargins } from '../layout';
 import HeaderButton from './HeaderButton';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -15,11 +15,11 @@ const ScanButtonShadowsFactory = colors => [
   [0, 3.5, 10.5, colors.shadow, 0.04],
 ];
 
-const BackgroundFill = styled.View`
-  ${position.cover};
-  backgroundcolor: ${({ theme: { colors } }) => colors.white};
-  opacity: 0.5;
-`;
+const BackgroundFill = styled.View({
+  ...position.coverAsObject,
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  opacity: 0.5,
+});
 
 const BackgroundGradient = styled(LinearGradient).attrs(
   ({ theme: { colors } }) => ({
@@ -27,20 +27,20 @@ const BackgroundGradient = styled(LinearGradient).attrs(
     end: { x: 0.5, y: 1 },
     start: { x: 0.5, y: 0 },
   })
-)`
-  ${position.cover};
-`;
+)({
+  ...position.coverAsObject,
+});
 
 const ScanButtonContent = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 2,
-})`
+})({
   alignItems: 'center',
+  height: 34,
   justifyContent: 'center',
-  height: 34;
-  width: 34;
-  zIndex: 2;
-`;
+  width: 34,
+  zIndex: 2,
+});
 
 export default function ScanHeaderButton() {
   const { navigate } = useNavigation();

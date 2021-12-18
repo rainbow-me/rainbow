@@ -43,7 +43,7 @@ const TitleText = styled(TruncatedText).attrs({
   flex: 1;
   marginbottom: 1,
   padding-left: ${({ isShowcase }) => (isShowcase ? 1 : 10)};
-  padding-right: 9;
+  paddingRight: 9;
 `;
 
 const TokenFamilyHeader = ({

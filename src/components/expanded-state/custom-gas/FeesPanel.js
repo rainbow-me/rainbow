@@ -4,7 +4,6 @@ import { upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
-import styled, { useTheme } from 'styled-components';
 import { Alert } from '../../../components/alerts';
 import { ButtonPressAnimation } from '../../animations';
 import { Column, ColumnWithMargins, Row } from '../../layout';
@@ -30,6 +29,7 @@ import {
 } from '@rainbow-me/hooks';
 import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
+import styled, { useTheme } from '@rainbow-me/styled';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
@@ -39,56 +39,54 @@ const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;
 const PanelRow = styled(Row).attrs({
   alignItems: 'center',
   justify: 'space-between',
-})``;
+})({});
 
 // GweiInputPill has a vertical padding of 10
-const MiddlePanelRow = styled(PanelRow).attrs(() => ({}))`
-  ...padding.object(8, 0)}
-`;
+const MiddlePanelRow = styled(PanelRow).attrs(() => ({}))({
+  ...padding.object(8, 0),
+});
 
 const PanelRowThin = styled(Row).attrs({
   justify: 'space-between',
   paddingBottom: 5,
-})``;
+})({});
 
 const PanelLabel = styled(Text).attrs({
   lineHeight: 'normal',
   size: 'lmedium',
   weight: 'heavy',
-})`
-  ${margin(0, 12, 0, 0)};
-`;
+})({
+  ...margin.object(0, 12, 0, 0),
+});
 
 const PanelWarning = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.yellowFavorite,
   size: 'smedium',
   weight: 'heavy',
-}))``;
+}))({});
 
 const PanelError = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.red,
   size: 'smedium',
   weight: 'heavy',
-}))``;
+}))({});
 
 const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   color: color || colors.appleBlue,
   size: 'smedium',
   weight: 'heavy',
-}))`
-  ...padding.object(0, 12, 0, 0)};
-`;
+}))({
+  ...padding.object(0, 12, 0, 0),
+});
 
 const PanelColumn = styled(Column).attrs(() => ({
   justify: 'center',
-}))``;
+}))({});
 
 const Label = styled(Text).attrs(({ size }) => ({
   lineHeight: 'normal',
   size: size || 'lmedium',
-}))`
-  ${({ weight }) => fontWithWidth(weight || fonts.weight.semibold)}
-`;
+}))(({ weight }) => fontWithWidth(weight || fonts.weight.semibold));
 
 const GAS_FEE_INCREMENT = 3;
 const MAX_BASE_FEE_RANGE = [1, 3];

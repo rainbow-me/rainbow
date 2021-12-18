@@ -3,7 +3,6 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash/src/v1';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import ColorCircle from '../components/avatar-builder/ColorCircle';
 import EmojiSelector from '../components/avatar-builder/EmojiSelector';
@@ -14,40 +13,42 @@ import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { deviceUtils } from '../utils';
 import { useDimensions, useWallets, useWebData } from '@rainbow-me/hooks';
 import useAccountSettings from '@rainbow-me/hooks/useAccountSettings';
+import styled from '@rainbow-me/styled';
 
 const AvatarCircleHeight = 65;
 const AvatarCircleMarginTop = 2;
 const AvatarBuilderTopPoint =
   HeaderHeightWithStatusBar + AvatarCircleHeight + AvatarCircleMarginTop;
 
-const Container = styled(Column)`
-  backgroundcolor: ${({ theme: { colors } }) => colors.transparent};
-`;
+const Container = styled(Column)({
+  backgroundColor: ({ theme: { colors } }) => colors.transparent,
+});
 
-const SheetContainer = styled(Column)`
-  backgroundcolor: ${({ theme: { colors } }) => colors.white};
+const SheetContainer = styled(Column)({
+  backgroundColor: ({ theme: { colors } }) => colors.white,
   borderRadius: 20,
-  height: ${({ deviceHeight }) =>
-    deviceHeight ? Math.floor((deviceHeight / 13) ** 1.5) : 420},
+  height: ({ deviceHeight }) =>
+    deviceHeight ? Math.floor((deviceHeight / 13) ** 1.5) : 420,
   overflow: 'hidden',
   width: '100%',
-`;
+});
 
-const ScrollableColorPicker = styled.ScrollView`
-  overflow: visible;
-  margin: 0px 10;
-`;
+const ScrollableColorPicker = styled.ScrollView({
+  marginHorizontal: 10,
+  marginVertical: 0,
+  overflow: 'visible',
+});
 
-const SelectedColorRing = styled(Animated.View)`
-  height: 38;
-  width: 38;
-  borderRadius: 20;
-  border-width: 3;
+const SelectedColorRing = styled(Animated.View)({
+  alignSelf: 'center',
+  borderColor: ({ selectedColor }) => selectedColor,
+  borderRadius: 20,
+  borderWidth: 3,
+  height: 38,
+  left: 1,
   position: 'absolute',
-  align-self: center;
-  left: 1;
-  border-color: ${({ selectedColor }) => selectedColor};
-`;
+  width: 38,
+});
 
 const springTo = (node, toValue) =>
   Animated.spring(node, {

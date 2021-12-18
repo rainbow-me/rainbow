@@ -1,40 +1,38 @@
 import { upperFirst } from 'lodash';
 import React from 'react';
-import styled from 'styled-components';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedEmoji } from '.';
+import styled from '@rainbow-me/styled';
 import { margin, padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const SpeedButton = styled(ButtonPressAnimation).attrs({
   hapticType: 'impactHeavy',
   height: 30,
-})`
-  border: ${({ color, theme: { colors } }) =>
-    `2px solid ${color || colors.appleBlue}`};
-  ...padding.object(2.5, 4, android ? 2.5 : 3.5, 5)};
-  borderradius: 19;
-`;
+})({
+  ...padding.object(2.5, 4, android ? 2.5 : 3.5, 5),
+  borderCOlor: ({ color, theme: { colors } }) => color || colors.appleBlue,
+  borderRadius: 19,
+  borderWidth: 2,
+});
 
 const Symbol = styled(Text).attrs({
   align: 'center',
   lineHeight: 'normal',
   size: android ? 'bmedium' : 'lmedium',
   weight: 'heavy',
-})`
-  ${margin(0)};
-`;
+})(margin.object(0));
 
 const GasSpeedLabel = styled(Text).attrs({
   align: 'center',
   lineHeight: 'normal',
   size: 'lmedium',
   weight: 'heavy',
-})`
-  ...padding.object(0, 3)};
-`;
+})({
+  ...padding.object(0, 3),
+});
 
 const GasSpeedLabelPager = ({
   label,

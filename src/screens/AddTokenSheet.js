@@ -4,7 +4,6 @@ import React, { useCallback } from 'react';
 import { StatusBar } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components';
 import Divider from '../components/Divider';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { ButtonPressAnimation } from '../components/animations';
@@ -23,48 +22,46 @@ import {
   useUserLists,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 import { haptics } from '@rainbow-me/utils';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
-})`
-  ${position.cover};
-  ${({ deviceHeight, height }) =>
-    height ? `height: ${height + deviceHeight}` : null};
-`;
+})(({ deviceHeight, height }) => ({
+  ...position.coverAsObject,
+  ...(height ? { height: height + deviceHeight } : {}),
+}));
 
-const RemoveButton = styled(ButtonPressAnimation)`
-  backgroundcolor: ${({ theme: { colors } }) => colors.alpha(colors.red, 0.06)};
-  borderradius: 15;
-  height: 30;
-  padding-left: 6;
-  padding-right: 10;
-  padding-top: 5;
-  margin-left: 8;
-  top: ${android ? 0 : 2};
-`;
+const RemoveButton = styled(ButtonPressAnimation)({
+  backgroundColor: ({ theme: { colors } }) => colors.alpha(colors.red, 0.06),
+  borderRadius: 15,
+  height: 30,
+  marginLeft: 8,
+  paddingLeft: 6,
+  paddingRight: 10,
+  paddingTop: 5,
+  top: android ? 0 : 2,
+});
 
 const RemoveButtonContent = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.red,
   letterSpacing: 'roundedTight',
   size: 'lmedium',
   weight: 'bold',
-}))`
-  ${android && 'marginTop: -5px'}
-`;
+}))(android ? { marginTop: -5 } : {});
 
-const ListButton = styled(ButtonPressAnimation)`
-  padding-bottom: 15;
-  padding-top: 15;
-`;
+const ListButton = styled(ButtonPressAnimation)({
+  paddingBottom: 15,
+  paddingTop: 15,
+});
 
 const ListEmoji = styled(Emoji).attrs({
   size: 'large',
-})`
-  marginTop ${android ? 4 : 1};
-  marginRight: 6;
-`;
+})({
+  marginRight: 6,
+  marginTop: android ? 4 : 1,
+});
 
 const WRITEABLE_LISTS = ['watchlist', 'favorites'];
 

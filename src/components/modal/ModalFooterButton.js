@@ -1,28 +1,26 @@
 import React from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import styled from 'styled-components';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { Text } from '../text';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 
-const ButtonIcon = styled(Icon)`
-  ${position.maxSize('100%')};
-  marginright: 9;
-`;
+const ButtonIcon = styled(Icon)({
+  ...position.maxSizeAsObject('100%'),
+  marginRight: 9,
+});
 
-const Container = styled(Centered)`
-  flex: 1;
-  height: 56;
-  padding-bottom: 7;
-`;
+const Container = styled(Centered)({
+  flex: 1,
+  height: 56,
+  paddingBottom: 7,
+});
 
 const IconContainer = styled(Centered).attrs({
   grow: 0,
   shrink: 0,
-})`
-  ${position.size(18)};
-`;
+})(position.sizeAsObject(18));
 
 const ModalFooterButton = ({ icon, label, onPress }) => {
   const { colors } = useTheme();

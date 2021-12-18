@@ -1,7 +1,6 @@
 import { times } from 'lodash';
 import React, { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
-import styled from 'styled-components';
 import { SORT_DIRECTION } from '../../hooks/useUniswapPools';
 import { ButtonPressAnimation } from '../animations';
 import { AssetListItemSkeleton } from '../asset-list';
@@ -11,6 +10,7 @@ import { Text } from '../text';
 import EdgeFade from './EdgeFade';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useAccountSettings, useUniswapPools } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 
 const INITIAL_PAGE_AMOUNT = 15;
 
@@ -55,31 +55,32 @@ const ErrorMessage = ({ colors, children }) => (
 const PoolEmoji = styled(Text).attrs({
   size: 'large',
   weight: 'heavy',
-})`
-  marginTop ${android ? 0 : -4};
-`;
+})({
+  marginTop: android ? 0 : -4,
+});
 
 const PoolListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
-})`
-  marginright: 16,
-    ${({ selected, theme: { colors }, titleColor }) =>
-      selected
-        ? `
-        backgroundColor: ${colors.alpha(titleColor, 0.06)};
+})(({ selected, theme: { colors }, titleColor }) =>
+  selected
+    ? {
+        backgroundColor: colors.alpha(titleColor, 0.06),
         borderRadius: 12,
         height: 30,
-        padding-horizontal: 8,
-        padding-top: ${ios ? 6.5 : 4.5},
-      `
-        : `
-        padding-top: ${ios ? 6.5 : 4.5},
-      `};
-`;
+        marginRight: 16,
+        paddingHorizontal: 8,
+        paddingTop: ios ? 6.5 : 4.5,
+      }
+    : {
+        marginRight: 16,
+        paddingTop: ios ? 6.5 : 4.5,
+      }
+);
 
-const ListName = styled(Text)`
-  margin-left: 3, marginTop ${ios ? -4.5 : 0};
-`;
+const ListName = styled(Text)({
+  marginLeft: 3,
+  marginTop: ios ? -4.5 : 0,
+});
 
 const listData = [
   {

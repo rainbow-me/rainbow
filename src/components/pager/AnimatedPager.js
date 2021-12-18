@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Children, Component } from 'react';
 import { Animated, Easing } from 'react-native';
-import styled from 'styled-components';
 import { deviceUtils } from '../../utils';
 import AnimatedPagerItem from './AnimatedPagerItem';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 
 const buildPagerAnimation = toValue => ({
@@ -14,10 +14,10 @@ const buildPagerAnimation = toValue => ({
   useNativeDriver: true,
 });
 
-const Container = styled.View`
-  ${position.cover};
-  overflow: 'hidden';
-`;
+const Container = styled.View({
+  ...position.coverAsObject,
+  overflow: 'hidden',
+});
 
 export default class AnimatedPager extends Component {
   static propTypes = {

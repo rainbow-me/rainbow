@@ -1,27 +1,27 @@
 import React, { useEffect, useRef } from 'react';
 import { findNodeHandle, NativeModules, TextInput } from 'react-native';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { isSymbolStablecoin } from '../../helpers/savings';
+import styled from '@rainbow-me/styled';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const TextChunk = styled(TextInput).attrs({
   editable: false,
-})`
-  ${fontWithWidth(fonts.weight.bold)};
-  color: ${({ theme: { colors } }) => colors.dark};
-  font-variant: tabular-nums;
-  fontsize: ${parseFloat(fonts.size.lmedium)};
-  text-align: left;
-  height: 46;
-`;
+})({
+  color: ({ theme: { colors } }) => colors.dark,
+  fontSize: parseFloat(fonts.size.lmedium),
+  fontVariant: 'tabular-nums',
+  height: 46,
+  textAlign: 'left',
+  ...fontWithWidth(fonts.weight.bold),
+});
 
-const Row = styled.View`
-  flex-direction: row;
-  height: 35;
-  left: 45;
-  position: 'absolute';
-`;
+const Row = styled.View({
+  flexDirection: 'row',
+  height: 35,
+  left: 45,
+  position: 'absolute',
+});
 
 function formatSavingsAmount(val) {
   return val.toFixed(10);

@@ -1,7 +1,7 @@
 import React from 'react';
-import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
+import styled from '@rainbow-me/styled';
 import { lightModeThemeColors, padding } from '@rainbow-me/styles';
 
 const ExchangeDetailsButtonLabel = styled(Text).attrs({
@@ -9,9 +9,9 @@ const ExchangeDetailsButtonLabel = styled(Text).attrs({
   size: 'large',
   weight: 'heavy',
   ...(android && { lineHeight: 21 }),
-})`
-  ...padding.object(9)};
-`;
+})({
+  ...padding.object(9),
+});
 
 export default function ExchangeDetailsButton({
   children,

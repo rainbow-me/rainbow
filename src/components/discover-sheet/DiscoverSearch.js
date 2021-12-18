@@ -11,7 +11,6 @@ import React, {
 import { InteractionManager, View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import { addHexPrefix } from '../../handlers/web3';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
 import tokenSectionTypes from '../../helpers/tokenSectionTypes';
@@ -29,11 +28,12 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 import { filterList } from '@rainbow-me/utils';
 
-export const SearchContainer = styled(Row)`
-  height: '100%';
-`;
+export const SearchContainer = styled(Row)({
+  height: '100%',
+});
 
 const searchCurrencyList = (searchList = [], query) => {
   const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);

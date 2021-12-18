@@ -1,6 +1,5 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useRef, useState } from 'react';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
 import Divider from '../Divider';
@@ -20,6 +19,7 @@ import {
 import { useAccountProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 import { margin, padding, position } from '@rainbow-me/styles';
 import { profileUtils } from '@rainbow-me/utils';
 
@@ -32,43 +32,44 @@ const WalletProfileAddressText = styled(TruncatedAddress).attrs(
     truncationLength: 4,
     weight: 'bold',
   })
-)`
-  ${margin(android ? 0 : 6, 0, android ? 0 : 5)};
-  width: '100%';
-`;
-
-const Spacer = styled.View`
-  height: 19;
-`;
-
-const WalletProfileButton = styled(ButtonPressAnimation)`
-  ...padding.object(15, 0, 19)};
-  ...position.centeredAsObject};
-  flex-direction: row;
-  height: 58;
+)({
+  ...margin.object(android ? 0 : 6, 0, android ? 0 : 5),
   width: '100%',
-`;
+});
+
+const Spacer = styled.View({
+  height: 19,
+});
+
+const WalletProfileButton = styled(ButtonPressAnimation)({
+  ...padding.object(15, 0, 19),
+  ...position.centeredAsObject,
+  flexDirection: 'row',
+  height: 58,
+  width: '100%',
+});
 
 const WalletProfileButtonText = styled(Text).attrs({
   align: 'center',
   size: 'larger',
-})``;
+})({});
 
-const ProfileImage = styled(ImageAvatar)`
-  marginbottom: 15;
-`;
+const ProfileImage = styled(ImageAvatar)({
+  marginBottom: 15,
+});
 
 const WalletProfileDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
   borderRadius: 1,
   color: colors.rowDividerLight,
   inset: false,
-}))``;
+}))({});
+
 const WalletProfileModal = styled(ProfileModal).attrs({
   dividerRenderer: WalletProfileDivider,
-})`
-  ...padding.object(24, 19, 0)};
+})({
+  ...padding.object(24, 19, 0),
   width: '100%',
-`;
+});
 
 export default function WalletProfileState({
   actionType,

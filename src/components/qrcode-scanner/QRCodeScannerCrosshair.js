@@ -1,25 +1,23 @@
 import React from 'react';
 import { useIsEmulator } from 'react-native-device-info';
-import styled from 'styled-components';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 
 const CrossHairAspectRatio = 230 / 375;
 
-const Container = styled(Centered)`
-  ${({ size }) => ...position.sizeAsObject(size)};
-  marginbottom: 1,
-  zIndex: 1;
-`;
+const Container = styled(Centered)(({ size }) => ({
+  ...position.sizeAsObject(size),
+  marginBottom: 1,
+  zIndex: 1,
+}));
 
 const Crosshair = styled(Icon).attrs({
   name: 'crosshair',
-})`
-  ${position.cover};
-`;
+})(position.coverAsObject);
 
 export default function QRCodeScannerCrosshair() {
   const { width: deviceWidth } = useDimensions();

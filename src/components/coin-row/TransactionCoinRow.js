@@ -1,6 +1,5 @@
 import { compact, get, startCase, toLower } from 'lodash';
 import React, { useCallback } from 'react';
-import { css } from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
@@ -27,9 +26,9 @@ import {
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
 
-const containerStyles = css`
-  padding-left: 19;
-`;
+const containerStyles = {
+  paddingLeft: 19,
+};
 
 const BottomRow = ({ description, native, status, type }) => {
   const { colors } = useTheme();

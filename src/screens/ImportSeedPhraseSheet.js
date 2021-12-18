@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { StatusBar } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
-import styled from 'styled-components';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Spinner from '../components/Spinner';
 import { MiniButton } from '../components/buttons';
@@ -25,54 +24,55 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
+import styled from '@rainbow-me/styled';
 import { borders, padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const sheetBottomPadding = 19;
 
-const Container = styled.View`
-  flex: 1;
-  padding-top: ${android
-    ? 0
-    : isNativeStackAvailable
-    ? 0
-    : sheetVerticalOffset};
-  ${android ? `marginTop: ${sheetVerticalOffset};` : ''}
-  ${android
-    ? `backgroundColor: ${({ theme: { colors } }) => colors.transparent};`
-    : ''}
-`;
+const Container = styled.View({
+  flex: 1,
+  paddingTop: android ? 0 : isNativeStackAvailable ? 0 : sheetVerticalOffset,
+
+  ...(android
+    ? {
+        backgroundColor: ({ theme: { colors } }) => colors.transparent,
+        marginTop: sheetVerticalOffset,
+      }
+    : {}),
+});
 
 const Footer = styled(Row).attrs({
   align: 'start',
   justify: 'end',
-})`
-  bottom: ${android ? 15 : 0};
-  position: ${android ? 'absolute' : 'relative'};
-  right: 0;
+})({
+  bottom: android ? 15 : 0,
+  position: android ? 'absolute' : 'relative',
+  right: 0,
   width: '100%',
-    ${android
-        ? `top: ${({ isSmallPhone }) =>
-            isSmallPhone ? sheetBottomPadding * 2 : 0};`
-        : ``}
-      ${android ? 'marginRight: 18;' : ''};
-`;
+  ...(android
+    ? {
+        marginRight: 18,
+        top: ({ isSmallPhone }) => (isSmallPhone ? sheetBottomPadding * 2 : 0),
+      }
+    : {}),
+});
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs({
   color: 'white',
   size: 15,
-})`
-  marginRight: 5;
-  marginTop ${android ? 0 : 2};
-`;
+})({
+  marginRight: 5,
+  marginTop: android ? 0 : 2,
+});
 
 const FooterButton = styled(MiniButton).attrs({
   testID: 'import-sheet-button',
-})``;
+})({});
 
-const KeyboardSizeView = styled(KeyboardArea)`
-  backgroundcolor: ${({ theme: { colors } }) => colors.white};
-`;
+const KeyboardSizeView = styled(KeyboardArea)({
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+});
 
 const SecretTextArea = styled(Input).attrs({
   align: 'center',
@@ -89,26 +89,26 @@ const SecretTextArea = styled(Input).attrs({
   size: 'large',
   spellCheck: false,
   weight: 'semibold',
-})`
-  marginbottom: ${android ? 55 : 0};
-  min-height: ${android ? 100 : 50};
-  width: '100%';
-`;
+})({
+  marginBottom: android ? 55 : 0,
+  minHeight: android ? 100 : 50,
+  width: '100%',
+});
 
-const SecretTextAreaContainer = styled(Centered)`
-  ...padding.object(0, 42)};
-  flex: 1;
-`;
+const SecretTextAreaContainer = styled(Centered)({
+  ...padding.object(0, 42),
+  flex: 1,
+});
 
 const Sheet = styled(Column).attrs({
   align: 'center',
   flex: 1,
-})`
-  ${borders.buildRadius('top', isNativeStackAvailable ? 0 : 16)};
-  ...padding.object(0, 15, sheetBottomPadding)};
-  backgroundcolor: ${({ theme: { colors } }) => colors.white};
-  zIndex: 1;
-`;
+})({
+  ...borders.buildRadiusAsObject('top', isNativeStackAvailable ? 0 : 16),
+  ...padding.object(0, 15, sheetBottomPadding),
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  zIndex: 1,
+});
 
 export default function ImportSeedPhraseSheet() {
   const { isSmallPhone } = useDimensions();

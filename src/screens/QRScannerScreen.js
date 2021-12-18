@@ -19,7 +19,7 @@ import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 
 const Background = styled.View`
-  backgroundcolor: black;
+  backgroundColor: black;
   height: '100%',
   position: 'absolute',
   width: '100%',

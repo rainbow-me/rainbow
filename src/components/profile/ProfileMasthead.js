@@ -1,7 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useRef } from 'react';
-import styled from 'styled-components';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RainbowButton } from '../buttons';
@@ -23,6 +22,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 import { abbreviations } from '@rainbow-me/utils';
 
 const dropdownArrowWidth = 21;
@@ -49,36 +49,36 @@ const AccountName = styled(TruncatedText).attrs({
   size: 'bigger',
   truncationLength: 4,
   weight: 'bold',
-})`
-  height: ${android ? '38' : '33'};
-  marginTop ${android ? '-10' : '-1'};
-  marginbottom: ${android ? '10' : '1'};
-  max-width: ${({ deviceWidth }) => deviceWidth - dropdownArrowWidth - 60};
-  padding-right: 6;
-`;
+})({
+  height: android ? 38 : 33,
+  marginBottom: android ? 10 : 1,
+  marginTop: android ? -10 : -1,
+  maxWidth: ({ deviceWidth }) => deviceWidth - dropdownArrowWidth - 60,
+  paddingRight: 6,
+});
 
 const AddCashButton = styled(RainbowButton).attrs({
   overflowMargin: 30,
   skipTopMargin: true,
   type: 'addCash',
-})`
-  margintop: 16;
-`;
+})({
+  marginTop: 16,
+});
 
-const DropdownArrow = styled(Centered)`
-  height: 9;
+const DropdownArrow = styled(Centered)({
+  height: 9,
   marginTop: 11,
-  width: ${dropdownArrowWidth};
-`;
+  width: dropdownArrowWidth,
+});
 
 const ProfileMastheadDivider = styled(Divider).attrs(
   ({ theme: { colors } }) => ({
     color: colors.rowDividerLight,
   })
-)`
+)({
   bottom: 0,
-  position: 'absolute';
-`;
+  position: 'absolute',
+});
 
 export default function ProfileMasthead({
   addCashAvailable,

@@ -4,7 +4,6 @@ import { pick, startCase, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
 import useExperimentalFlag, {
@@ -27,6 +26,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { removeRequest } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 import {
   abbreviations,
   ethereumUtils,
@@ -35,10 +35,10 @@ import {
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 
-const Container = styled.View`
-  flex: 1;
-  margintop: 0;
-`;
+const Container = styled.View({
+  flex: 1,
+  marginTop: 0,
+});
 
 const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
   distance: 250,
@@ -47,13 +47,13 @@ const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
   scaleTo: 0,
   size: 50,
   wiggleFactor: 0,
-})`
-  height: 0;
-  left: ${({ tapTarget }) => tapTarget[0] - 24};
+})({
+  height: 0,
+  left: ({ tapTarget }) => tapTarget[0] - 24,
   position: 'absolute',
-  top: ${({ tapTarget }) => tapTarget[1] - tapTarget[3]};
-  width: ${({ tapTarget }) => tapTarget[2]};
-`;
+  top: ({ tapTarget }) => tapTarget[1] - tapTarget[3],
+  width: ({ tapTarget }) => tapTarget[2],
+});
 
 export default function TransactionList({
   addCashAvailable,

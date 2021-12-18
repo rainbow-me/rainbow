@@ -2,7 +2,6 @@ import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import styled from 'styled-components';
 import URL from 'url-parse';
 import { buildUniqueTokenName } from '../../../helpers/assets';
 import { ButtonPressAnimation } from '../../animations';
@@ -17,6 +16,7 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
+import styled from '@rainbow-me/styled';
 import { padding, position } from '@rainbow-me/styles';
 import {
   buildRainbowUrl,
@@ -122,40 +122,41 @@ const paddingHorizontal = 24;
 const Container = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
-})`
-  ...padding.object(21, paddingHorizontal, paddingHorizontal)};
-`;
+})({
+  ...padding.object(21, paddingHorizontal, paddingHorizontal),
+});
 
 const FamilyName = styled(TruncatedText).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.whiteLabel, 0.5),
   size: 'lmedium',
   weight: 'bold',
-}))`
-  max-width: ${({ deviceWidth }) => deviceWidth - paddingHorizontal * 6};
-`;
+}))({
+  maxWidth: ({ deviceWidth }) => deviceWidth - paddingHorizontal * 6,
+});
 
-const FamilyImageWrapper = styled.View`
-  height: 20;
-  marginRight: 7;
-  shadow-color: ${({ theme: { colors } }) => colors.shadowBlack};
-  shadow-offset: 0 3,
-  shadow-opacity: 0.15;
-  shadow-radius: 4.5,
-  width: 20;
-`;
+const FamilyImageWrapper = styled.View({
+  height: 20,
+  marginRight: 7,
+  shadowColor: ({ theme: { colors } }) => colors.shadowBlack,
+  // TODO terry
+  // shadow-offset: 0 3,
+  shadowOpacity: 0.15,
+  shadowRadius: 4.5,
+  width: 20,
+});
 
-const FamilyImage = styled(ImgixImage)`
-  ${position.cover};
-  borderradius: 10;
-`;
+const FamilyImage = styled(ImgixImage)({
+  ...position.coverAsObject,
+  borderRadius: 10,
+});
 
 const HeadingColumn = styled(ColumnWithMargins).attrs({
   align: 'start',
   justify: 'start',
   margin: 6,
-})`
-  width: '100%';
-`;
+})({
+  width: '100%',
+});
 
 const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
   const { accountAddress, accountENS } = useAccountProfile();

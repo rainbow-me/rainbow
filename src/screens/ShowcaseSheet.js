@@ -25,7 +25,7 @@ async function fetchShowcaseForAddress(address) {
 }
 
 const Wrapper = styled.View`
-  backgroundcolor: ${({ theme: { colors } }) => colors.white};
+  backgroundColor: ${({ theme: { colors } }) => colors.white};
   border-top-left-radius: 15;
   border-top-right-radius: 15;
   height: '100%',

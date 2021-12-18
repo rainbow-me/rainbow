@@ -4,7 +4,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useValue } from 'react-native-redash/src/v1';
-import styled from 'styled-components';
 import { useMemoOne } from 'use-memo-one';
 import { FlexItem } from '../components/layout';
 import CurrencySelectModal from '../screens/CurrencySelectModal';
@@ -16,6 +15,7 @@ import { exchangeTabNavigatorConfig, stackNavigationConfig } from './config';
 import { exchangeModalPreset, expandedPreset } from './effects';
 import Routes from './routesNames';
 import { useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 
 const Stack = createStackNavigator();
@@ -23,11 +23,11 @@ const Tabs = createMaterialTopTabNavigator();
 
 const GestureBlocker = styled.View.attrs({
   pointerEvents: 'none',
-})`
-  ${position.size('100%')};
-  backgroundcolor: ${({ theme: { colors } }) => colors.transparent};
-  position: 'absolute';
-`;
+})({
+  ...position.sizeAsObject('100%'),
+  backgroundColor: ({ theme: { colors } }) => colors.transparent,
+  position: 'absolute',
+});
 
 function useStateCallback(initialState) {
   const [state, setState] = useState(initialState);

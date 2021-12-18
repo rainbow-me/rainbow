@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { MiniButton } from '../buttons';
 import { ExchangeInput } from '../exchange';
 import { Column, Row } from '../layout';
 import { useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 
 const BubbleInput = styled(ExchangeInput).attrs(
   ({ isSmallPhone, isTinyPhone, theme: { isDarkMode } }) => ({
@@ -21,13 +21,11 @@ const BubbleInput = styled(ExchangeInput).attrs(
     size: isTinyPhone ? 'big' : isSmallPhone ? 'bigger' : 'h3',
     weight: 'semibold',
   })
-)`
-  ${({ isTinyPhone }) =>
-    android ? (isTinyPhone ? 'height: 40' : 'height: 46;') : ''}}
-  ${android ? 'padding-bottom: 0,' : ''}
-  ${android ? 'padding-top: 0;' : ''}
-  marginRight: 10;
-`;
+)(({ isTinyPhone }) => ({
+  ...(android ? (isTinyPhone ? { height: 40 } : { height: 46 }) : {}),
+  ...(android ? { paddingBottom: 0, paddingTop: 0 } : {}),
+  marginRight: 10,
+}));
 
 const defaultFormatter = string => string;
 

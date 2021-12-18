@@ -9,7 +9,6 @@ import React, {
 } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
 import { emitAssetRequest, emitChartsRequest } from '../../redux/explorer';
 import { DefaultTokenLists } from '../../references';
 import { ButtonPressAnimation } from '../animations';
@@ -27,6 +26,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const COINGECKO_TRENDING_ENDPOINT =
@@ -50,25 +50,27 @@ const fetchTrendingAddresses = async coingeckoIds => {
 
 const ListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
-})`
-  marginright: 16,
-    ${({ selected, theme: { colors } }) =>
-      selected
-        ? `
-        backgroundColor: ${colors.alpha(colors.blueGreyDark, 0.06)};
+})(({ selected, theme: { colors } }) =>
+  selected
+    ? {
+        backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
         borderRadius: 12,
         height: 30,
-        padding-horizontal: 8,
-        padding-top: ${ios ? 6.5 : 4.5},
-      `
-        : `
-        padding-top: ${ios ? 6.5 : 4.5},
-      `};
-`;
+        marginRight: 16,
+        paddingHorizontal: 8,
+        paddingTop: ios ? 6.5 : 4.5,
+      }
+    : {
+        marginRight: 16,
 
-const ListName = styled(Text)`
-  margin-left: 3, marginTop ${ios ? -4.5 : 0};
-`;
+        paddingTop: ios ? 6.5 : 4.5,
+      }
+);
+
+const ListName = styled(Text)({
+  marginLeft: 3,
+  marginTop: ios ? -4.5 : 0,
+});
 
 // Update trending lists every 5 minutes
 const TRENDING_LIST_UPDATE_INTERVAL = 5 * 60 * 1000;

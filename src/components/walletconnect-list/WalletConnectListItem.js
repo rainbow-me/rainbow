@@ -1,6 +1,5 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useMemo } from 'react';
-import styled from 'styled-components';
 import ChainLogo from '../ChainLogo';
 import NetworkPill from '../NetworkPill';
 import { RequestVendorLogoIcon } from '../coin-icon';
@@ -29,6 +28,7 @@ import {
 } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
@@ -41,9 +41,9 @@ const LabelText = styled(Text).attrs(() => ({
   align: 'center',
   size: 'lmedium',
   weight: 'heavy',
-}))`
-  marginbottom: 1;
-`;
+}))({
+  marginBottom: 1,
+});
 
 const networksAvailable = networksMenuItems();
 
@@ -53,14 +53,14 @@ if (networksAvailable.length > 1) {
   androidContextMenuActions.splice(0, 0, 'Switch Network');
 }
 
-const AvatarWrapper = styled(Column)`
-  marginright: 5;
-`;
+const AvatarWrapper = styled(Column)({
+  marginRight: 5,
+});
 
-const SessionRow = styled(Row)`
+const SessionRow = styled(Row)({
   alignItems: 'center',
-  justifycontent: 'space-between';
-`;
+  justifyContent: 'space-between',
+});
 
 export default function WalletConnectListItem({
   account,

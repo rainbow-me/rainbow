@@ -1,7 +1,7 @@
 import { has } from 'lodash';
 import React from 'react';
-import styled from 'styled-components';
 import { Emoji } from '../text';
+import styled from '@rainbow-me/styled';
 import { margin } from '@rainbow-me/styles';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
@@ -37,9 +37,7 @@ const GasEmoji = styled(Emoji).attrs({
   align: 'center',
   lineHeight: 'looserLoose',
   size: 'smedium',
-})`
-  ${({ top }) => margin(top, 0, 0, 0)}
-`;
+})(({ top }) => margin.object(top, 0, 0, 0));
 
 const GasSpeedEmoji = ({ label }) => {
   const gasSpeed = has(EmojiForGasSpeedType, label)

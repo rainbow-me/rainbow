@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo } from 'react';
 import { Share } from 'react-native';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, InnerBorder } from '../layout';
 import { Text } from '../text';
+import styled from '@rainbow-me/styled';
 import ShadowStack from 'react-native-shadow-stack';
 
 const Label = styled(Text).attrs(({ theme: { colors } }) => ({
@@ -13,9 +13,9 @@ const Label = styled(Text).attrs(({ theme: { colors } }) => ({
   lineHeight: 'looser',
   size: 'larger',
   weight: 'heavy',
-}))`
-  bottom: 2;
-`;
+}))({
+  bottom: 2,
+});
 
 export default function ShareButton({ accountAddress, ...props }) {
   const handlePress = useCallback(() => {

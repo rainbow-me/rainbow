@@ -1,24 +1,24 @@
 import { get } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
-import styled from 'styled-components';
 import { formatNative } from '../expanded-state/chart/chart-data-labels/ChartPriceLabel';
 import { Text } from '../text';
 import { useChartData } from '@rainbow-me/animated-charts';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
+import styled from '@rainbow-me/styled';
 import { fonts } from '@rainbow-me/styles';
 
 function trim(val) {
   return Math.min(Math.max(val, 0.05), 0.95);
 }
 
-const Label = styled(Text)`
-  fontsize: ${fonts.size.smedium};
-  font-weight: ${fonts.weight.bold};
-  letterspacing: ${fonts.letterSpacing.roundedTighter};
+const Label = styled(Text)({
+  fontSize: fonts.size.smedium,
+  fontWeight: fonts.weight.bold,
+  letterspacing: fonts.letterSpacing.roundedTighter,
   position: 'absolute',
-  text-align: center;
-`;
+  textAlign: 'center',
+});
 
 const CenteredLabel = ({ position, style, width, ...props }) => {
   const [componentWidth, setWidth] = useState(0);

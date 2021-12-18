@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
 import { Centered } from '../layout';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled';
 import { borders } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -45,10 +45,10 @@ const sizeConfigs = colors => ({
   },
 });
 
-const Avatar = styled(ImgixImage)`
-  height: ${({ dimensions }) => dimensions};
-  width: ${({ dimensions }) => dimensions};
-`;
+const Avatar = styled(ImgixImage)(({ dimensions }) => ({
+  height: dimensions,
+  width: dimensions,
+}));
 
 const ImageAvatar = ({ image, size = 'medium', ...props }) => {
   const { colors } = useTheme();

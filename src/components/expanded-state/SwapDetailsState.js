@@ -1,7 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { ConfirmExchangeButton } from '../exchange';
 import { GasSpeedButton } from '../gas';
 import { Column } from '../layout';
@@ -26,6 +25,7 @@ import {
   useSwapDerivedOutputs,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import styled from '@rainbow-me/styled';
 import { padding, position } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 
@@ -35,28 +35,28 @@ const springConfig = {
   stiffness: 1000,
 };
 
-const AnimatedContainer = styled(Animated.View)`
-  ${position.size('100%')};
-`;
+const AnimatedContainer = styled(Animated.View)({
+  ...position.sizeAsObject('100%'),
+});
 
 const Footer = styled(Column).attrs({
   align: 'end',
   grow: 1,
   justify: 'end',
   shrink: 0,
-})`
-  ...padding.object(6, 0, 0)};
-`;
+})({
+  ...padding.object(6, 0, 0),
+});
 
 const Header = styled(Column).attrs({
   justify: 'start',
-})`
-  left: 0;
+})({
+  left: 0,
   position: 'absolute',
-  right: 0;
-  top: -2;
+  right: 0,
+  top: -2,
   width: '100%',
-`;
+});
 
 const FOOTER_MIN_HEIGHT = 143;
 const FOOTER_CONTENT_MIN_HEIGHT = 241;

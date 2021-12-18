@@ -19,7 +19,7 @@ const transition = (
 );
 
 const Container = styled.View`
-  backgroundcolor: ${({ theme: { colors } }) => colors.white};
+  backgroundColor: ${({ theme: { colors } }) => colors.white};
   overflow: 'hidden',
   padding-top: ${({ isFirst }) => (isFirst ? TokenFamilyWrapPaddingTop : 0)};
 `;

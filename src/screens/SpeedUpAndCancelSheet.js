@@ -54,7 +54,7 @@ const springConfig = {
 const Container = styled(Centered).attrs({
   direction: 'column',
 })`
-  ${position.cover};
+  ...position.coverAsObject,
   ${({ deviceHeight, height }) =>
     height ? `height: ${height + deviceHeight}` : null};
 `;
@@ -65,7 +65,7 @@ const CenteredSheet = styled(Centered)`
 `;
 
 const ExtendedSheetBackground = styled.View`
-  backgroundcolor: ${({ theme: { colors } }) => colors.white};
+  backgroundColor: ${({ theme: { colors } }) => colors.white};
   height: 1000;
   position: 'absolute',
   bottom: -800;

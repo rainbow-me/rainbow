@@ -1,7 +1,7 @@
 import React from 'react';
-import styled from 'styled-components';
 import { Centered } from '../layout';
 import SheetHandle, { HandleHeight } from './SheetHandle';
+import styled from '@rainbow-me/styled';
 import { padding } from '@rainbow-me/styles';
 
 const paddingBottom = 6;
@@ -12,14 +12,14 @@ export const SheetHandleFixedToTopHeight =
 
 const Container = styled(Centered).attrs({
   pointerEvents: 'none',
-})`
-  ...padding.object(paddingTop, 0, paddingBottom)};
-  left: 0;
+})({
+  ...padding.object(paddingTop, 0, paddingBottom),
+  left: 0,
   position: 'absolute',
-  right: 0;
-  top: 0;
-  zIndex: 9;
-`;
+  right: 0,
+  top: 0,
+  zIndex: 9,
+});
 
 export default function SheetHandleFixedToTop({ showBlur }) {
   return (

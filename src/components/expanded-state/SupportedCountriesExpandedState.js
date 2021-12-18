@@ -1,6 +1,5 @@
 import { values } from 'lodash';
 import React from 'react';
-import styled from 'styled-components';
 import { FloatingEmojisTapper } from '../floating-emojis';
 import { AssetPanel, FloatingPanels } from '../floating-panels';
 import { Centered } from '../layout';
@@ -8,29 +7,31 @@ import { Text } from '../text';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import { useDimensions } from '@rainbow-me/hooks';
 import { wyreSupportedCountries } from '@rainbow-me/references';
+import styled from '@rainbow-me/styled';
 import { padding } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
 
-const Panel = styled(FloatingPanels)`
-  marginbottom: ${({ deviceDimensions: { isTallPhone } }) =>
-    (isTallPhone ? 90 : 45) + (isNativeStackAvailable ? 10 : 0)};
-  max-width: ${({ deviceDimensions: { width } }) => Math.min(270, width - 100)};
-`;
+const Panel = styled(FloatingPanels)(
+  ({ deviceDimensions: { isTallPhone, width } }) => ({
+    marginBottom: (isTallPhone ? 90 : 45) + (isNativeStackAvailable ? 10 : 0),
+    maxWidth: Math.min(270, width - 100),
+  })
+);
 
 const FooterText = styled(Text).attrs({
   align: 'center',
   size: 'smedium',
-})`
-  margintop: 12;
-`;
+})({
+  marginTop: 12,
+});
 
 const TitleText = styled(Text).attrs({
   align: 'center',
   size: 'large',
   weight: 'bold',
-})`
-  marginbottom: 10;
-`;
+})({
+  marginBottom: 10,
+});
 
 const countries = values(wyreSupportedCountries).map(c =>
   c.name === 'United States'

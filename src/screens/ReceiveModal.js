@@ -47,7 +47,7 @@ const QRWrapper = styled(Column).attrs({ align: 'center' })`
   ...padding.object(24)};
   ${({ theme: { colors } }) =>
     shadow.build(0, 10, 50, colors.shadowBlack, 0.6)};
-  backgroundcolor: ${({ theme: { colors } }) => colors.whiteLabel};
+  backgroundColor: ${({ theme: { colors } }) => colors.whiteLabel};
   borderradius: 39;
 `;
 

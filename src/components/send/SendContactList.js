@@ -5,7 +5,6 @@ import { SectionList } from 'react-native';
 import * as DeviceInfo from 'react-native-device-info';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components';
 import { FlyInAnimation } from '../animations';
 import { ContactRow, SwipeableContactRow } from '../contacts';
 import { SheetHandleFixedToTopHeight } from '../sheet';
@@ -15,12 +14,13 @@ import SendEmptyState from './SendEmptyState';
 import { useAccountSettings, useKeyboardHeight } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 import { filterList } from '@rainbow-me/utils';
 
-const KeyboardArea = styled.View`
-  height: ${({ insets, keyboardHeight }) =>
-    DeviceInfo.hasNotch() ? keyboardHeight : keyboardHeight - insets.top};
-`;
+const KeyboardArea = styled.View({
+  height: ({ insets, keyboardHeight }) =>
+    DeviceInfo.hasNotch() ? keyboardHeight : keyboardHeight - insets.top,
+});
 
 const rowHeight = 59;
 const getItemLayout = (data, index) => ({
@@ -34,11 +34,12 @@ const keyExtractor = item => `SendContactList-${item.address}`;
 const SectionTitle = styled(Text).attrs({
   size: 'lmedium',
   weight: 'heavy',
-})`
-  color: ${({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.6)};
-  margin-left: 19;
-  marginTop ${android ? 6 : 12};
-`;
+})({
+  color: ({ theme: { colors } }) => colors.alpha(colors.blueGreyDark, 0.6),
+  marginLeft: 19,
+  marginTop: android ? 6 : 12,
+});
+
 const SectionWrapper = styled(LinearGradient).attrs(
   ({ theme: { colors } }) => ({
     colors: [colors.white, colors.alpha(colors.white, 0)],
@@ -46,9 +47,10 @@ const SectionWrapper = styled(LinearGradient).attrs(
     locations: [0.55, 1],
     start: { x: 0.5, y: 0 },
   })
-)`
-  height: 40;
-`;
+)({
+  height: 40,
+});
+
 const SendContactFlatList = styled(SectionList).attrs({
   alwaysBounceVertical: true,
   contentContainerStyle,
@@ -58,9 +60,9 @@ const SendContactFlatList = styled(SectionList).attrs({
   keyboardShouldPersistTaps: 'always',
   keyExtractor,
   marginTop: 0,
-})`
-  flex: 1;
-`;
+})({
+  flex: 1,
+});
 
 export default function SendContactList({
   contacts,

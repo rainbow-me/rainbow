@@ -47,7 +47,7 @@ import logger from 'logger';
 const Container = styled(Centered).attrs({
   direction: 'column',
 })`
-  ${position.cover};
+  ...position.coverAsObject,
   ${({ deviceHeight, height }) =>
     height ? `height: ${height + deviceHeight}` : null};
 `;

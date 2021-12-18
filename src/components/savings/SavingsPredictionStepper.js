@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { AnimatedNumber, Emoji, Text } from '../text';
@@ -12,15 +11,16 @@ import {
   handleSignificantDecimals,
 } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useStepper } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const CrystalBallEmoji = styled(Emoji).attrs({
   name: 'crystal_ball',
   size: 'medium',
-})`
-  marginbottom: 0.5;
-`;
+})({
+  marginBottom: 0.5,
+});
 
 const PredictionNumber = styled(AnimatedNumber).attrs(
   ({ theme: { colors } }) => ({
@@ -29,9 +29,9 @@ const PredictionNumber = styled(AnimatedNumber).attrs(
     size: 'lmedium',
     weight: 'semibold',
   })
-)`
-  flex-grow: 1;
-`;
+)({
+  flexGrow: 1,
+});
 
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 const steps = {

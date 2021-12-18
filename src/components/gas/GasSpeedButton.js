@@ -4,7 +4,6 @@ import makeColorMoreChill from 'make-color-more-chill';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import styled from 'styled-components';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { ChainBadge, CoinIcon } from '../coin-icon';
@@ -28,6 +27,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
@@ -40,12 +40,13 @@ const CustomGasButton = styled(ButtonPressAnimation).attrs({
   height: 30,
   justifyContent: 'center',
   scaleTo: 0.8,
-})`
-  borderradius: 19;
-  border: ${({ borderColor, color, theme: { colors } }) =>
-    `2px solid ${borderColor || color || colors.appleBlue}`};
-  ...padding.object(android ? 2 : 3, 0)}
-`;
+})({
+  borderColor: ({ borderColor, color, theme: { colors } }) =>
+    borderColor || color || colors.appleBlue,
+  borderRadius: 19,
+  borderWidth: 2,
+  ...padding.object(android ? 2 : 3, 0),
+});
 
 const Symbol = styled(Text).attrs({
   align: 'center',
@@ -53,9 +54,9 @@ const Symbol = styled(Text).attrs({
   lineHeight: 'normal',
   size: 'lmedium',
   weight: 'heavy',
-})`
-  ...padding.object(android ? 1 : 0, 6, 0, 7)};
-`;
+})({
+  ...padding.object(android ? 1 : 0, 6, 0, 7),
+});
 
 const DoneCustomGas = styled(Text).attrs({
   align: 'center',
@@ -64,44 +65,40 @@ const DoneCustomGas = styled(Text).attrs({
   lineHeight: 'normal',
   size: 'lmedium',
   weight: 'heavy',
-})`
-  ...padding.object(0)}
-  ${margin(0, 10)}
-  bottom: 0.5;
-`;
+})({
+  ...padding.object(0),
+  ...margin.object(0, 10),
+  bottom: 0.5,
+});
 
 const ChainBadgeContainer = styled.View.attrs({
   hapticType: 'impactHeavy',
   scaleTo: 0.9,
-})`
-  ...padding.object(0)};
-  ${margin(0)};
-`;
+})({
+  ...padding.object(0),
+  ...margin.object(0),
+});
 
-const NativeCoinIconWrapper = styled(Column)`
-  ${margin(1.5, 5, 0, 0)};
-`;
+const NativeCoinIconWrapper = styled(Column)(margin.object(1.5, 5, 0, 0));
 
 const Container = styled(Column).attrs({
   alignItems: 'center',
   hapticType: 'impactHeavy',
   justifyContent: 'center',
-})`
-  ${({ marginBottom }) => margin(18, 0, marginBottom)};
-  ${({ horizontalPadding }) => padding(0, horizontalPadding)};
-  width: '100%';
-`;
+})(({ marginBottom, horizontalPadding }) => ({
+  ...margin.object(18, 0, marginBottom),
+  ...padding.object(0, horizontalPadding),
+  width: '100%',
+}));
 
 const Label = styled(Text).attrs(({ size }) => ({
   lineHeight: 'normal',
   size: size || 'lmedium',
-}))`
-  ${({ weight }) => fontWithWidth(weight || fonts.weight.semibold)}
-`;
+}))(({ weight }) => fontWithWidth(weight || fonts.weight.semibold));
 
 const GasSpeedPagerCentered = styled(Centered).attrs(() => ({
   marginRight: 8,
-}))``;
+}))({});
 
 const TransactionTimeLabel = ({ formatter, theme }) => {
   const { colors } = useTheme();

@@ -6,11 +6,11 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'styled-components';
 import { Centered, Row } from '../layout';
 import ExchangeDetailsButton from './ExchangeDetailsButton';
 import PriceImpactWarning from './PriceImpactWarning';
 import { usePrevious, useSwapCurrencies } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 import { padding, position } from '@rainbow-me/styles';
 
 const defaultPriceImpactScale = 1.15;
@@ -19,19 +19,19 @@ const timingConfig = {
   easing: Easing.bezier(0.76, 0, 0.24, 1),
 };
 
-const Container = styled(Centered)`
-  height: 60;
-  width: '100%';
-`;
+const Container = styled(Centered)({
+  height: 60,
+  width: '100%',
+});
 
 const ExchangeDetailsButtonRow = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
-})`
-  ...padding.object(10)};
-  ${position.cover};
+})({
+  ...padding.object(10),
+  ...position.coverAsObject,
   width: '100%',
-`;
+});
 
 const AnimatedExchangeDetailsButtonRow = Animated.createAnimatedComponent(
   ExchangeDetailsButtonRow

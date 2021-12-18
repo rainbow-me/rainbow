@@ -1,8 +1,8 @@
 import React from 'react';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import styled from 'styled-components';
 import { Row } from '../layout';
 import { useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 
 const StatusBarHeight = getStatusBarHeight(true);
 export const HeaderHeight = 44;
@@ -10,12 +10,12 @@ export const HeaderHeightWithStatusBar = HeaderHeight + StatusBarHeight;
 
 const Container = styled(Row).attrs(({ align = 'end' }) => ({
   align,
-}))`
-  height: ${HeaderHeightWithStatusBar};
-  padding-top: ${StatusBarHeight};
-  width: ${({ width }) => width};
-  zindex: 1;
-`;
+}))({
+  height: HeaderHeightWithStatusBar,
+  paddingTop: StatusBarHeight,
+  width: ({ width }) => width,
+  zIndex: 1,
+});
 
 export default function Header(props) {
   const { width: deviceWidth } = useDimensions();

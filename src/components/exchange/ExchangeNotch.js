@@ -1,6 +1,5 @@
 import React from 'react';
 import FastImage from 'react-native-fast-image';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { Row } from '../layout';
 import ExchangeNotchLeft from '@rainbow-me/assets/exchangeNotchLeft.png';
@@ -10,31 +9,32 @@ import ExchangeNotchMiddleDark from '@rainbow-me/assets/exchangeNotchMiddleDark.
 import ExchangeNotchRight from '@rainbow-me/assets/exchangeNotchRight.png';
 import ExchangeNotchRightDark from '@rainbow-me/assets/exchangeNotchRightDark.png';
 import { useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 
 const notchHeight = 48;
 const notchSideWidth = 78;
 
 const Container = styled(Row).attrs({
   pointerEvents: 'none',
-})`
-  height: ${notchHeight};
+})({
+  height: notchHeight,
   position: 'absolute',
-  top: 132;
+  top: 132,
   width: '100%',
-`;
+});
 
 const NotchMiddle = styled(FastImage).attrs(({ isDarkMode }) => ({
   resizeMode: FastImage.resizeMode.stretch,
   source: isDarkMode ? ExchangeNotchMiddleDark : ExchangeNotchMiddle,
-}))`
-  height: ${notchHeight};
-  width: ${({ deviceWidth }) => deviceWidth - notchSideWidth * 2};
-`;
+}))({
+  height: notchHeight,
+  width: ({ deviceWidth }) => deviceWidth - notchSideWidth * 2,
+});
 
-const NotchSide = styled(FastImage)`
-  height: ${notchHeight};
-  width: ${notchSideWidth};
-`;
+const NotchSide = styled(FastImage)({
+  height: notchHeight,
+  width: notchSideWidth,
+});
 
 export default function ExchangeNotch() {
   const { width: deviceWidth } = useDimensions();

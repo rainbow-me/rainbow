@@ -82,7 +82,7 @@ const EditButtonLabel = styled(Text).attrs(
   height: 40;
 `;
 const Whitespace = styled.View`
-  backgroundcolor: ${({ theme: { colors } }) => colors.white};
+  backgroundColor: ${({ theme: { colors } }) => colors.white};
   bottom: -400,
   height: 400,
   position: 'absolute',

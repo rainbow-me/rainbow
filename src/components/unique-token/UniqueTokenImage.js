@@ -1,6 +1,5 @@
 import { toLower } from 'lodash';
 import React, { Fragment, useCallback, useState } from 'react';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../../references';
@@ -14,6 +13,7 @@ import {
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({
@@ -29,10 +29,10 @@ const getFallbackTextColor = (bg, darkMode, colors) =>
     FallbackTextColorVariants(darkMode, colors)
   );
 
-const ImageTile = styled(ImgixImage)`
+const ImageTile = styled(ImgixImage)({
   alignItems: 'center',
-  justifycontent: 'center';
-`;
+  justifyContent: 'center',
+});
 
 const ENSText = styled(Text).attrs(
   ({ isTinyPhone, small, theme: { colors } }) => ({
@@ -40,11 +40,11 @@ const ENSText = styled(Text).attrs(
     letterSpacing: 'roundedMedium',
     size: small ? 'smedium' : isTinyPhone ? 'large' : 'bigger',
   })
-)`
+)({
   padding: 8,
-  text-align: center;
+  textAlign: 'center',
   ...fontWithWidth(fonts.weight.heavy),
-`;
+});
 
 const UniqueTokenImage = ({
   backgroundColor: givenBackgroundColor,

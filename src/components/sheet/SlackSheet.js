@@ -15,7 +15,6 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
 import SheetHandleFixedToTop, {
@@ -23,30 +22,39 @@ import SheetHandleFixedToTop, {
 } from './SheetHandleFixedToTop';
 import { useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 
-const AndroidBackground = styled.View`
-  ${position.cover};
-  backgroundcolor: ${({ backgroundColor }) => backgroundColor};
-`;
+const AndroidBackground = styled.View({
+  ...position.coverAsObject,
+  backgroundColor: ({ backgroundColor }) => backgroundColor,
+});
 
-const Container = styled(Centered).attrs({ direction: 'column' })`
-  ${({ additionalTopPadding, contentHeight, deferredHeight, deviceHeight }) =>
-    deferredHeight || ios
-      ? ''
-      : `top: ${
-          contentHeight && additionalTopPadding
-            ? deviceHeight - contentHeight
-            : 0
-        };`};
-  ${android && 'border-top-left-radius: 30; border-top-right-radius: 30;'}
-  backgroundColor: ${({ backgroundColor }) => backgroundColor};
-  bottom: 0,
-  left: 0;
-  overflow: 'hidden',
-  position: 'absolute',
-  right: 0;
-`;
+const Container = styled(Centered).attrs({ direction: 'column' })(
+  ({
+    backgroundColor,
+    additionalTopPadding,
+    contentHeight,
+    deferredHeight,
+    deviceHeight,
+  }) => ({
+    ...(deferredHeight || ios
+      ? {}
+      : {
+          top:
+            contentHeight && additionalTopPadding
+              ? deviceHeight - contentHeight
+              : 0,
+        }),
+    ...(android ? { borderTopLeftRadius: 30, borderTopRightRadius: 30 } : {}),
+    backgroundColor: backgroundColor,
+    bottom: 0,
+    left: 0,
+    overflow: 'hidden',
+    position: 'absolute',
+    right: 0,
+  })
+);
 
 const Content = styled(Animated.ScrollView).attrs(
   ({ limitScrollViewContent }) => ({
@@ -55,26 +63,24 @@ const Content = styled(Animated.ScrollView).attrs(
     keyboardShouldPersistTaps: 'always',
     scrollEventThrottle: 16,
   })
-)`
-  backgroundcolor: ${({ backgroundColor }) => backgroundColor};
-  ${({ contentHeight, deviceHeight }) =>
-    contentHeight ? `height: ${deviceHeight + contentHeight}` : null};
-  padding-top: ${({ removeTopPadding }) =>
-    removeTopPadding ? 0 : SheetHandleFixedToTopHeight};
-  width: '100%';
-`;
+)(({ contentHeight, deviceHeight, backgroundColor, removeTopPadding }) => ({
+  backgroundColor: backgroundColor,
+  ...(contentHeight ? { height: deviceHeight + contentHeight } : {}),
+  paddingTop: removeTopPadding ? 0 : SheetHandleFixedToTopHeight,
+  width: '100%',
+}));
 
-const ContentWrapper = styled.View`
-  ${position.size('100%')};
-  backgroundcolor: ${({ backgroundColor }) => backgroundColor};
-`;
+const ContentWrapper = styled.View({
+  ...position.sizeAsObject('100%'),
+  backgroundColor: ({ backgroundColor }) => backgroundColor,
+});
 
-const Whitespace = styled.View`
-  backgroundcolor: ${({ backgroundColor }) => backgroundColor};
-  flex: 1;
-  height: ${({ deviceHeight }) => deviceHeight};
-  zindex: -1;
-`;
+const Whitespace = styled.View({
+  backgroundColor: ({ backgroundColor }) => backgroundColor,
+  flex: 1,
+  height: ({ deviceHeight }) => deviceHeight,
+  zIndex: -1,
+});
 
 export default forwardRef(function SlackSheet(
   {

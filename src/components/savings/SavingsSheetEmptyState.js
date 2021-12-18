@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo } from 'react';
-import styled from 'styled-components';
 import { calculateAPY } from '../../helpers/savings';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
@@ -10,6 +9,7 @@ import { Br, GradientText, Text } from '../text';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import { DAI_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';
 
@@ -17,16 +17,16 @@ const APYHeadingText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.dark,
   size: 'big',
   weight: 'bold',
-}))``;
+}))({});
 
 const BodyText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
   color: colors.blueGreyDark50,
   lineHeight: 'looser',
   size: 'large',
-}))`
-  padding-bottom: 30;
-`;
+}))({
+  paddingBottom: 30,
+});
 
 const GradientAPYHeadingText = styled(GradientText).attrs({
   align: 'center',
@@ -35,7 +35,7 @@ const GradientAPYHeadingText = styled(GradientText).attrs({
   renderer: APYHeadingText,
   start: { x: 0, y: 0 },
   steps: [0, 1],
-})``;
+})({});
 
 const SavingsSheetEmptyState = ({
   isReadOnlyWallet,

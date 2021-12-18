@@ -2,7 +2,6 @@ import { concat } from 'lodash';
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import styled, { css } from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { deviceUtils, magicMemo } from '../../utils';
@@ -12,15 +11,16 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import { useColorForAsset } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 import { padding } from '@rainbow-me/styles';
 
 const isSmallPhone = android || deviceUtils.dimensions.height <= 667;
 const isTinyPhone = deviceUtils.dimensions.height <= 568;
 const selectedHeight = isTinyPhone ? 50 : android || isSmallPhone ? 64 : 70;
 
-const containerStyles = `
-  padding-top: ${android ? 9 : 19};
-`;
+const containerStyles = {
+  paddingTop: android ? 9 : 19,
+};
 
 const NativeAmountBubble = styled(LinearGradient).attrs(
   ({ theme: { colors } }) => ({
@@ -28,10 +28,10 @@ const NativeAmountBubble = styled(LinearGradient).attrs(
     end: { x: 0.5, y: 1 },
     start: { x: 0, y: 0 },
   })
-)`
-  borderradius: 15;
-  height: 30;
-`;
+)({
+  borderRadius: 15,
+  height: 30,
+});
 
 const NativeAmountBubbleText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -39,9 +39,7 @@ const NativeAmountBubbleText = styled(Text).attrs(({ theme: { colors } }) => ({
   letterSpacing: 'roundedTight',
   size: 'lmedium',
   weight: 'bold',
-}))`
-  ${android ? padding(0, 10) : padding(4.5, 10, 6.5)};
-`;
+}))(android ? padding.object(0, 10) : padding.object(4.5, 10, 6.5));
 
 const BottomRow = ({
   balance,
@@ -127,14 +125,14 @@ const SendCoinRow = magicMemo(
       return isL2Network(item?.type);
     }, [item?.type]);
 
-    const containerSelectedStyles = css`
-      ${isTinyPhone
-        ? padding(10, 0, 0)
+    const containerSelectedStyles = {
+      height: selectedHeight,
+      ...(isTinyPhone
+        ? padding.object(10, 0, 0)
         : isSmallPhone
-        ? padding(12, 12, 12, isL2 ? 17 : 12)
-        : padding(15, 15, 15, isL2 ? 19 : 15)};
-      height: ${selectedHeight};
-    `;
+        ? padding.object(12, 12, 12, isL2 ? 17 : 12)
+        : padding.object(15, 15, 15, isL2 ? 19 : 15)),
+    };
 
     return (
       <Wrapper height={rowHeight} onPress={onPress} scaleTo={0.96}>

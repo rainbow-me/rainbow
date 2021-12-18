@@ -1,19 +1,20 @@
 import React, { useCallback } from 'react';
-import styled from 'styled-components';
 import Icon from '../icons/Icon';
 import { ListItem } from '../list';
+import styled from '@rainbow-me/styled';
 
 const CheckmarkIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
   name: 'checkmarkCircled',
-}))`
-  box-shadow: 0px 4px 6px
-    ${({ theme: { colors, isDarkMode } }) =>
-      colors.alpha(isDarkMode ? colors.shadow : colors.appleBlue, 0.4)};
-  marginbottom: 1,
+}))({
+  // TODO terru
+  // box-shadow: 0px 4px 6px
+  // ${({ theme: { colors, isDarkMode } }) =>
+  // colors.alpha(isDarkMode ? colors.shadow : colors.appleBlue, 0.4)};
+  marginBottom: 1,
   position: 'absolute',
-  right: 0;
-`;
+  right: 0,
+});
 
 const RadioListItem = ({ disabled, selected, ...props }) => {
   const onPress = useCallback(() => {

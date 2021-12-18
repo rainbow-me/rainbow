@@ -1,11 +1,11 @@
 import { times } from 'lodash';
 import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components';
 import CopyTooltip from '../copy-tooltip';
 import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
+import styled from '@rainbow-me/styled';
 import { fonts, padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -17,10 +17,10 @@ const BackgroundGradient = styled(LinearGradient).attrs(
     end: { x: 0.5, y: 1 },
     start: { x: 0.5, y: 0 },
   })
-)`
-  ${position.cover};
-  borderradius: ${CardBorderRadius};
-`;
+)({
+  ...position.coverAsObject,
+  borderRadius: CardBorderRadius,
+});
 
 const CardShadow = styled(ShadowStack).attrs(
   ({ theme: { colors, isDarkMode } }) => ({
@@ -32,28 +32,28 @@ const CardShadow = styled(ShadowStack).attrs(
       [0, 5, 15, colors.shadow, 0.04],
     ],
   })
-)`
-  elevation: 15;
-`;
+)({
+  elevation: 15,
+});
 
-const Content = styled(Centered)`
-  ...padding.object(19, 30, 24)};
-  borderRadius: 25;
+const Content = styled(Centered)({
+  ...padding.object(19, 30, 24),
+  borderRadius: 25,
   overflow: 'hidden',
-  zIndex: 1;
-`;
+  zIndex: 1,
+});
 
 const GridItem = styled(Row).attrs({
   align: 'center',
-})`
-  height: ${fonts.lineHeight.looser};
-`;
+})({
+  height: fonts.lineHeight.looser,
+});
 
 const GridText = styled(Text).attrs(({ weight = 'semibold' }) => ({
   lineHeight: 'looser',
   size: 'lmedium',
   weight,
-}))``;
+}))({});
 
 function SeedWordGrid({ seed }) {
   const columns = useMemo(() => {

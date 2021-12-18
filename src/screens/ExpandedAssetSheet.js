@@ -34,7 +34,7 @@ const Container = styled(Centered).attrs({
   flex: 1,
   justifyContent: 'flex-end',
 })`
-  ${position.cover};
+  ...position.coverAsObject,
   ${({ deviceHeight, height }) =>
     height ? `height: ${height + deviceHeight}` : null};
 `;

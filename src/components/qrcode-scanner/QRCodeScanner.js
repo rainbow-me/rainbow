@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import { RNCamera } from 'react-native-camera';
 import { useIsEmulator } from 'react-native-device-info';
-import styled from 'styled-components';
 import { Centered } from '../layout';
 import { ErrorText } from '../text';
 import ConnectedDapps from './ConnectedDapps';
@@ -16,39 +15,39 @@ import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
 import SimulatorFakeCameraImageSource from '@rainbow-me/assets/simulator-fake-camera-image.jpg';
 import { useBooleanState, useScanner } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 
-const Camera = styled(RNCamera)`
-  ${position.cover};
-  ${position.size('100%')};
-`;
+const Camera = styled(RNCamera)({
+  ...position.sizeAsObject('100%'),
+  ...position.coverAsObject,
+});
 
-const CameraWrapper = styled(Centered)`
-  ${position.size('100%')};
-  backgroundcolor: ${({ theme: { colors } }) =>
-    colors.trueBlack || colors.black};
-`;
+const CameraWrapper = styled(Centered)({
+  ...position.sizeAsObject('100%'),
+  backgroundColor: ({ theme: { colors } }) => colors.trueBlack || colors.black,
+});
 
 const Container = styled(Centered).attrs({
   direction: 'column',
-})`
-  ${position.cover};
-  backgroundcolor: ${({ theme: { colors } }) => colors.black};
-`;
+})({
+  ...position.coverAsObject,
+  backgroundColor: ({ theme: { colors } }) => colors.black,
+});
 
-const ContentOverlay = styled(Centered)`
-  ${position.cover};
-  bottom: 230;
-  flex-direction: column;
-  top: ${({ contentPositionTop }) => contentPositionTop || 0};
-`;
+const ContentOverlay = styled(Centered)({
+  ...position.coverAsObject,
+  bottom: 230,
+  flexDirection: 'column',
+  top: ({ contentPositionTop }) => contentPositionTop || 0,
+});
 
 const EmulatorCameraFallback = styled(ImgixImage).attrs({
   source: SimulatorFakeCameraImageSource,
-})`
-  ${position.cover};
-  ${position.size('100%')};
-`;
+})({
+  ...position.coverAsObject,
+  ...position.sizeAsObject('100%'),
+});
 
 export default function QRCodeScanner({
   contentPositionTop,

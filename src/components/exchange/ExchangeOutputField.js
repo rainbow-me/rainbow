@@ -1,16 +1,16 @@
 import React from 'react';
-import styled from 'styled-components';
 import { Row } from '../layout';
 import ExchangeField from './ExchangeField';
+import styled from '@rainbow-me/styled';
 
 const paddingTop = android ? 15 : 32;
 
-const Container = styled(Row).attrs({ align: 'center' })`
+const Container = styled(Row).attrs({ align: 'center' })({
   overflow: 'hidden',
-  padding-bottom: 21;
-  padding-top: ${paddingTop};
+  paddingBottom: 21,
+  paddingTop,
   width: '100%',
-`;
+});
 
 export default function ExchangeOutputField({
   onFocus,

@@ -1,13 +1,13 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 
 const ListFooterHeight = 27;
 
-const Spacer = styled.View`
-  backgroundcolor: ${({ theme: { colors } }) => colors.transparent};
-  height: ${({ height }) => height || ListFooterHeight};
-  width: '100%';
-`;
+const Spacer = styled.View({
+  backgroundColor: ({ theme: { colors } }) => colors.transparent,
+  height: ({ height }) => height || ListFooterHeight,
+  width: '100%',
+});
 
 const neverRerender = () => true;
 const ListFooter = React.memo(Spacer, neverRerender);

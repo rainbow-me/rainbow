@@ -7,7 +7,6 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 
-import styled from 'styled-components';
 import { buildCoinsList } from '../../helpers/assets';
 import networkTypes from '../../helpers/networkTypes';
 import { deviceUtils } from '../../utils';
@@ -23,6 +22,7 @@ import { Centered } from '../layout';
 import { SavingsListHeader } from '../savings';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled';
 
 const dividerMargin = 5;
 const dividerHeight = DividerSize + dividerMargin * 4;
@@ -33,13 +33,13 @@ const smallBalancesHeader = 42;
 
 const SendAssetListCoinDividerOpenButton = styled(CoinDividerOpenButton).attrs({
   coinDividerHeight: 34,
-})`
-  margin-left: ${android ? 0 : 19};
-`;
+})({
+  marginLeft: android ? 0 : 19,
+});
 
-const SendAssetRecyclerListView = styled(RecyclerListView)`
-  min-height: 1;
-`;
+const SendAssetRecyclerListView = styled(RecyclerListView)({
+  minHeight: 1,
+});
 
 const SendAssetListDivider = () => {
   const { colors } = useTheme();

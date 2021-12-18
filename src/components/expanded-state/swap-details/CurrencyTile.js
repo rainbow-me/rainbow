@@ -1,12 +1,12 @@
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
 import { CoinIcon } from '../../coin-icon';
 import { Centered, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import { useAccountSettings, useColorForAsset } from '@rainbow-me/hooks';
 import { SwapModalField } from '@rainbow-me/redux/swap';
+import styled from '@rainbow-me/styled';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 import { convertAmountAndPriceToNativeDisplay } from '@rainbow-me/utilities';
 
@@ -17,16 +17,16 @@ const AmountText = styled(Text).attrs(({ theme: { colors } }) => ({
   letterSpacing: 'roundedTight',
   size: 'smedium',
   weight: 'semibold',
-}))``;
+}))({});
 
 const Container = styled(Centered).attrs({
   direction: 'column',
-})`
-  borderradius: 30;
-  flex: 1;
-  height: ${CurrencyTileHeight};
-  overflow: 'hidden';
-`;
+})({
+  borderRadius: 30,
+  flex: 1,
+  height: CurrencyTileHeight,
+  overflow: 'hidden',
+});
 
 const Gradient = styled(RadialGradient).attrs(
   ({ theme: { colors }, color, type }) => ({
@@ -34,25 +34,26 @@ const Gradient = styled(RadialGradient).attrs(
       type === 'input' ? [0, 0] : [CurrencyTileHeight, CurrencyTileHeight],
     colors: [colors.alpha(color, 0.04), colors.alpha(color, 0)],
   })
-)`
-  ${position.cover};
-`;
+)({
+  ...position.coverAsObject,
+});
 
 const NativePriceText = styled(TruncatedText).attrs({
   letterSpacing: 'roundedTight',
   size: 'lmedium',
   weight: 'heavy',
-})`
+})({
   ...fontWithWidth(fonts.weight.heavy),
-`;
+});
 
 const TruncatedAmountText = styled(AmountText).attrs({
   as: TruncatedText,
-})`
-  ${android && 'height: 26.7;'}
-  flex-grow: 0;
-  flex-shrink: 1;
-`;
+})({
+  flexGrow: 0,
+  flexShrink: 1,
+
+  ...(android ? { height: 26.7 } : {}),
+});
 
 export default function CurrencyTile({
   amount,

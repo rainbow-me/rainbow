@@ -3,7 +3,6 @@ import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import { Linking, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from 'styled-components';
 import { ChainBadge } from '../components/coin-icon';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
 import { SheetActionButton, SheetTitle, SlackSheet } from '../components/sheet';
@@ -12,6 +11,7 @@ import { useNavigation } from '../navigation/Navigation';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import { useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
@@ -24,27 +24,28 @@ const GasTrendHeader = styled(Text).attrs(({ theme: { colors }, color }) => ({
   color: color || colors.appleBlue,
   size: 'lmedium',
   weight: 'heavy',
-}))`
-  ...padding.object(android ? 5 : 8, 12)}
-  border-color: ${({ theme: { colors }, color }) => colors.alpha(color, 0.06)};
-  borderradius: 20;
-  border-width: 2;
-  height: 40;
-  marginbottom: 4,
-`;
+}))({
+  ...padding.object(android ? 5 : 8, 12),
+  borderColor: ({ theme: { colors }, color }) => colors.alpha(color, 0.06),
+  borderRadius: 20,
+  borderWidth: 2,
+  height: 40,
+  marginBottom: 4,
+});
 
-const Container = styled(Centered).attrs({ direction: 'column' })`
-  ${position.cover};
-  ${({ deviceHeight, height }) =>
-    height ? `height: ${height + deviceHeight}` : null};
-`;
+const Container = styled(Centered).attrs({ direction: 'column' })(
+  ({ deviceHeight, height }) => ({
+    ...position.coverAsObject,
+    ...(height ? { height: height + deviceHeight } : {}),
+  })
+);
 
 const Gradient = styled(GradientText).attrs({
   colors: ['#6AA2E3', '#FF54BB', '#FFA230'],
   letterSpacing: 'roundedMedium',
   steps: [0, 0.5, 1],
   weight: 'heavy',
-})``;
+})({});
 
 const SENDING_FUNDS_TO_CONTRACT = `The address you entered is for a smart contract. 
 

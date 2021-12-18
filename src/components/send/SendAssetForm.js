@@ -1,7 +1,6 @@
 import React, { Fragment, useMemo } from 'react';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { SendCoinRow } from '../coin-row';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
@@ -16,6 +15,7 @@ import {
   useDimensions,
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled';
 import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -30,28 +30,26 @@ const AssetRowGradient = styled(LinearGradient).attrs(
     end: { x: 0.5, y: 1 },
     start: { x: 0.5, y: 0 },
   })
-)`
-  ${position.cover};
-`;
+)(position.coverAsObject);
 
-const Container = styled(Column)`
-  ${position.size('100%')};
-  backgroundcolor: ${({ theme: { colors } }) => colors.white};
-  flex: 1;
-`;
+const Container = styled(Column)({
+  ...position.sizeAsObject('100%'),
+  backgroundColor: ({ theme: { colors } }) => colors.white,
+  flex: 1,
+});
 
 const FormContainer = styled(Column).attrs({
   align: 'end',
   justify: 'space-between',
-})`
-  ${({ isNft }) => (isNft ? padding(0) : padding(0, 19))};
-  flex: 1;
-  width: '100%';
-`;
+})(({ isNft }) => ({
+  ...(isNft ? padding.object(0) : padding.object(0, 19)),
+  flex: 1,
+  width: '100%',
+}));
 
-const KeyboardSizeView = styled(KeyboardArea)`
-  backgroundcolor: ${({ theme: { colors } }) => colors.lighterGrey};
-`;
+const KeyboardSizeView = styled(KeyboardArea)({
+  backgroundColor: ({ theme: { colors } }) => colors.lighterGrey,
+});
 
 export default function SendAssetForm({
   assetAmount,

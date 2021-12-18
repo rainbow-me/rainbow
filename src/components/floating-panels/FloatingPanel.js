@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from 'styled-components';
 import { Column } from '../layout';
+import styled from '@rainbow-me/styled';
 import { shadow } from '@rainbow-me/styles';
 
 const FloatingPanelBorderRadius = 18;
@@ -12,18 +12,20 @@ export const FloatingPanelPadding = {
 };
 
 const FloatingPanelShadow = colors =>
-  shadow.build(0, 10, 50, colors.shadow, 0.6);
+  shadow.buildAsObject(0, 10, 50, colors.shadow, 0.6);
 
-const Container = styled(Column)`
-  ${({ hideShadow, theme: { colors } }) =>
-    hideShadow ? '' : FloatingPanelShadow(colors)};
-  backgroundcolor: ${({ color }) => color};
-  borderradius: ${({ radius }) => radius};
-  min-height: ${({ minHeight }) => minHeight || 0};
-  opacity: 1;
-  overflow: ${({ overflow }) => overflow};
-  zindex: 1;
-`;
+const Container = styled(Column)(
+  ({ hideShadow, color, theme: { colors }, radius, minHeight, overflow }) => ({
+    ...(hideShadow ? {} : FloatingPanelShadow(colors)),
+
+    backgroundColor: color,
+    borderRadius: radius,
+    minHeight: minHeight || 0,
+    opacity: 1,
+    overflow: overflow,
+    zIndex: 1,
+  })
+);
 
 const FloatingPanel = ({
   color,

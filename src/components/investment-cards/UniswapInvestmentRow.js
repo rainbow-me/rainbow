@@ -1,6 +1,5 @@
 import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
-import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { convertAmountToPercentageDisplay } from '../../helpers/utilities';
 import { ButtonPressAnimation } from '../animations';
@@ -10,20 +9,21 @@ import CoinName from '../coin-row/CoinName';
 import { FlexItem, Row } from '../layout';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 
 const formatPercentageString = percentString =>
   percentString ? percentString.toString().split('-').join('- ') : '-';
 
 const PercentageText = styled(BottomRowText).attrs({
   align: 'right',
-})`
-  color: ${({ isPositive, theme: { colors } }) =>
-    isPositive ? colors.green : colors.alpha(colors.blueGreyDark, 0.5)};
-`;
+})({
+  color: ({ isPositive, theme: { colors } }) =>
+    isPositive ? colors.green : colors.alpha(colors.blueGreyDark, 0.5),
+});
 
-const Content = styled(ButtonPressAnimation)`
-  top: 0;
-`;
+const Content = styled(ButtonPressAnimation)({
+  top: 0,
+});
 
 const BottomRowContainer = ios
   ? Fragment
@@ -35,14 +35,14 @@ const TopRowContainer = ios
       align: 'flex-start',
       justify: 'flex-start',
       marginTop: 0,
-    })``;
+    })({});
 
 const PriceContainer = ios
   ? View
-  : styled(View)`
-      marginTop -3;
-      marginbottom: 3,
-    `;
+  : styled(View)({
+      marginBottom: 3,
+      marginTop: -3,
+    });
 
 const BottomRow = ({ price, type, uniBalance }) => {
   const relativeChange = price?.relative_change_24h;

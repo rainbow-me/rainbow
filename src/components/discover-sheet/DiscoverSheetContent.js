@@ -1,11 +1,11 @@
 import React, { useRef, useState } from 'react';
 import { View } from 'react-native';
-import styled from 'styled-components';
 import { ColumnWithMargins, FlexItem } from '../layout';
 import { Text } from '../text';
 import DiscoverHome from './DiscoverHome';
 import DiscoverSearch from './DiscoverSearch';
 import DiscoverSearchContainer from './DiscoverSearchContainer';
+import styled from '@rainbow-me/styled';
 
 const HeaderTitle = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -14,11 +14,11 @@ const HeaderTitle = styled(Text).attrs(({ theme: { colors } }) => ({
   lineHeight: 'loose',
   size: 'large',
   weight: 'heavy',
-}))``;
+}))({});
 
-const Spacer = styled.View`
-  height: 16;
-`;
+const Spacer = styled.View({
+  height: 16,
+});
 
 function Switcher({ showSearch, children }) {
   return (
