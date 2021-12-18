@@ -71,19 +71,6 @@ export const UNISWAP_PRICES_QUERY = gql`
   }
 `;
 
-export const UNISWAP_ALL_TOKENS = gql`
-  query tokens($first: Int!, $lastId: String!) {
-    tokens(first: $first, where: { id_gt: $lastId }) {
-      id
-      derivedETH
-      name
-      symbol
-      decimals
-      totalLiquidity
-    }
-  }
-`;
-
 const TokenFields = `
   fragment TokenFields on Token {
     tradeVolumeUSD

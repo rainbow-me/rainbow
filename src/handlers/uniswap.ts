@@ -13,14 +13,10 @@ import {
   WETH,
 } from '@uniswap/sdk';
 import { get, mapKeys, mapValues, toLower } from 'lodash';
-import { uniswapClient } from '../apollo/client';
-import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
 import { loadWallet } from '../model/wallet';
 import { estimateGasWithPadding, toHex, web3Provider } from './web3';
 import { Asset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/networkTypes';
-import store from '@rainbow-me/redux/store';
-import { uniswapUpdateTokens } from '@rainbow-me/redux/uniswap';
 import {
   ETH_ADDRESS,
   ethUnits,
@@ -43,8 +39,6 @@ enum SwapType {
   TOKENS_FOR_EXACT_ETH,
   ETH_FOR_EXACT_TOKENS,
 }
-
-const UniswapPageSize = 1000;
 
 // 20 minutes, denominated in seconds
 const DEFAULT_DEADLINE_FROM_NOW = 60 * 20;
