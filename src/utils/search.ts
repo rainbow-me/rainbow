@@ -3,7 +3,7 @@ import { KeyOption, matchSorter, MatchSorterOptions } from 'match-sorter';
 export const filterList = <T extends unknown>(
   list: T[],
   searchQuery: string,
-  keys: KeyOption<T>[],
+  keys?: KeyOption<T>[],
   options?: MatchSorterOptions<T>
 ) =>
   matchSorter(list, searchQuery, {

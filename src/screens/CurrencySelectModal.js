@@ -1,6 +1,5 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { addHexPrefix } from '@walletconnect/utils';
 import { toLower } from 'lodash';
 import { matchSorter } from 'match-sorter';
 import React, {
@@ -23,6 +22,7 @@ import {
 import { Column, KeyboardFixedOpenLayout } from '../components/layout';
 import { Modal } from '../components/modal';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
+import { addHexPrefix } from '@rainbow-me/handlers/web3';
 import { CurrencySelectionTypes } from '@rainbow-me/helpers';
 import {
   useInteraction,
@@ -103,12 +103,10 @@ export default function CurrencySelectModal() {
       return headerlessSection(uniswapAssetsInWallet);
     }
   };
-  const getCurrencyList = () => {
-    return type === CurrencySelectionTypes.input
+  const currencyList =
+    type === CurrencySelectionTypes.input
       ? getWalletCurrencyList()
       : uniswapCurrencyList;
-  };
-  const currencyList = getCurrencyList();
 
   const [startQueryDebounce, stopQueryDebounce] = useTimeout();
   useEffect(() => {
