@@ -5,7 +5,7 @@ import { Icon } from '../icons';
 import { Input } from '../inputs';
 import { cloudBackupPasswordMinLength } from '@rainbow-me/handlers/cloudBackup';
 import { useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 

@@ -24,7 +24,7 @@ import {
   useOpenSmallBalances,
 } from '@rainbow-me/hooks';
 import { emitChartsRequest } from '@rainbow-me/redux/explorer';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 export const CoinDividerHeight = 30;

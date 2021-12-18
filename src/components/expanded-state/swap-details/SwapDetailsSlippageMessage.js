@@ -2,7 +2,7 @@ import React from 'react';
 import Divider from '../../Divider';
 import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
 import { Emoji, Text } from '../../text';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ColumnWithMargins).attrs({

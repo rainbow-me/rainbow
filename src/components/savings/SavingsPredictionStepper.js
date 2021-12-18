@@ -11,7 +11,7 @@ import {
   handleSignificantDecimals,
 } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useStepper } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 

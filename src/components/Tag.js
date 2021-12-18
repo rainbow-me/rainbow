@@ -7,7 +7,7 @@ import { magicMemo, showActionSheetWithOptions } from '../utils';
 import { ButtonPressAnimation } from './animations';
 import { Centered, Column } from './layout';
 import { Text as TextElement } from './text';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const PropertyActionsEnum = {

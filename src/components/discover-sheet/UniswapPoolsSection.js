@@ -10,7 +10,7 @@ import { Text } from '../text';
 import EdgeFade from './EdgeFade';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useAccountSettings, useUniswapPools } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 
 const INITIAL_PAGE_AMOUNT = 15;
 

@@ -5,7 +5,7 @@ import { Centered, Column, Row } from '../layout';
 import { Text } from '../text';
 import { useTheme } from '@rainbow-me/context';
 import { useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 
 const KeyboardButtonContent = styled(Centered)({
   height: ({ height }) => height,

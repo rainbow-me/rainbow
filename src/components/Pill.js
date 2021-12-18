@@ -2,7 +2,7 @@ import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { useTheme } from '../context/ThemeContext';
 import { TruncatedText } from './text';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const Gradient = styled(RadialGradient).attrs(

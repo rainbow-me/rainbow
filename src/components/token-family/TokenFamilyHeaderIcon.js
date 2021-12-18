@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Emoji } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { borders } from '@rainbow-me/styles';
 import { FallbackIcon, initials } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';

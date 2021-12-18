@@ -14,7 +14,7 @@ import { deviceUtils } from '../../utils';
 import { interpolate } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding, position } from '@rainbow-me/styles';
 
 const { block, cond, set, startClock, stopClock } = Animated;

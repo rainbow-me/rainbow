@@ -3,7 +3,7 @@ import Animated from 'react-native-reanimated';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding, position } from '@rainbow-me/styles';
 
 const Content = styled(Centered).attrs({

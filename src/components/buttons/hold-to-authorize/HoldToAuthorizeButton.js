@@ -15,7 +15,7 @@ import HoldToAuthorizeButtonIcon from './HoldToAuthorizeButtonIcon';
 import { useTheme } from '@rainbow-me/context';
 import { BiometryTypes } from '@rainbow-me/helpers';
 import { useBiometryType, useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import { haptics } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';

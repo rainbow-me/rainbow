@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import styled from 'styled-components';
 import { isHexString } from '../../handlers/web3';
 import { checkIsValidAddressOrDomain } from '../../helpers/validators';
 import { Input } from '../inputs';
 import { Row } from '../layout';
 import { Label } from '../text';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
 import { abbreviations, addressUtils } from '@rainbow-me/utils';
 
 const AddressInput = styled(Input).attrs({

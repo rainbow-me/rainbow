@@ -20,7 +20,7 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 

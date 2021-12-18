@@ -20,7 +20,7 @@ import { useDimensions, usePrevious, useTimeout } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { ETH_ADDRESS, getWyreErrorOverride } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 
 const OrderIdText = styled(Text).attrs({

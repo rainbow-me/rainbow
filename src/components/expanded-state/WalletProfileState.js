@@ -19,7 +19,7 @@ import {
 import { useAccountProfile } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { margin, padding, position } from '@rainbow-me/styles';
 import { profileUtils } from '@rainbow-me/utils';
 

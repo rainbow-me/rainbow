@@ -14,7 +14,7 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
 import { deviceUtils, profileUtils } from '@rainbow-me/utils';
 

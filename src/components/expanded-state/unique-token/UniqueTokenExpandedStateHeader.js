@@ -16,7 +16,7 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import {
   buildRainbowUrl,

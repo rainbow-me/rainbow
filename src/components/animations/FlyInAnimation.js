@@ -2,7 +2,7 @@ import React from 'react';
 import Animated, { EasingNode } from 'react-native-reanimated';
 import { useTimingTransition } from 'react-native-redash/src/v1';
 import { interpolate } from './procs';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 
 const AnimatedContainer = styled(Animated.View)({
   flex: 1,

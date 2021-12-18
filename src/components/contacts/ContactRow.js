@@ -15,7 +15,7 @@ import {
   isValidDomainFormat,
 } from '@rainbow-me/helpers/validators';
 import { useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { margin } from '@rainbow-me/styles';
 
 const ContactAddress = styled(TruncatedAddress).attrs(

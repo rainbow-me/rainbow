@@ -8,7 +8,7 @@ import SwapDetailsRow, {
 } from './SwapDetailsRow';
 import SwapDetailsUniswapRow from './SwapDetailsUniswapRow';
 import { useSwapAdjustedAmounts, useSwapCurrencies } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 import { isETH } from '@rainbow-me/utils';
 

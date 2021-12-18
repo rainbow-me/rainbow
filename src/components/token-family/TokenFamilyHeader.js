@@ -7,7 +7,7 @@ import { Emoji, Text, TruncatedText } from '../text';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
 import { useTheme } from '@rainbow-me/context';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);

@@ -18,7 +18,7 @@ import ActivityListHeader from './ActivityListHeader';
 import LoadingState from './LoadingState';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 import { buildTransactionUniqueIdentifier } from '@rainbow-me/helpers/transactions';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import {
   deviceUtils,
   isNewValueForPath,

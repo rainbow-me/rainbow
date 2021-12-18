@@ -3,7 +3,7 @@ import { safeAreaInsetValues } from '../../utils';
 import { FlexItem, RowWithMargins } from '../layout';
 import ExchangeFab from './ExchangeFab';
 import SendFab from './SendFab';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 
 export const FabWrapperBottomPosition = 21 + safeAreaInsetValues.bottom;
 export const FabWrapperItemMargin = 15;

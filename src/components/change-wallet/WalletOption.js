@@ -1,9 +1,9 @@
 import React from 'react';
+import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { Row } from '../layout';
 import { Text } from '../text';
-import styled from '@rainbow-me/styled';
 import { padding } from '@rainbow-me/styles';
 
 const Container = styled(Row).attrs({

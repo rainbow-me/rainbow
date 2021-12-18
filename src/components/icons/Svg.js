@@ -1,5 +1,5 @@
 import SvgPrimitive from 'react-native-svg';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { calcDirectionToDegrees } from '@rainbow-me/styles';
 
 const Svg = styled(SvgPrimitive).withConfig({

@@ -14,7 +14,7 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const Content = styled(Column).attrs({

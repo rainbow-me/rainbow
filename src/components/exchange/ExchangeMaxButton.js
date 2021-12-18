@@ -3,7 +3,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { useColorForAsset } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ButtonPressAnimation)({

@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { findNodeHandle, NativeModules, TextInput } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { isSymbolStablecoin } from '../../helpers/savings';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const TextChunk = styled(TextInput).attrs({

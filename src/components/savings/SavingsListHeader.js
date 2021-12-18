@@ -9,7 +9,7 @@ import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
 

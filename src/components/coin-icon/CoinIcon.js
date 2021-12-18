@@ -7,7 +7,7 @@ import ChainBadge from './ChainBadge';
 import CoinIconFallback from './CoinIconFallback';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import {
   getTokenMetadata,
   isETH,

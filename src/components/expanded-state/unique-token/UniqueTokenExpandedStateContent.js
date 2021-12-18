@@ -15,7 +15,7 @@ import {
   usePersistentAspectRatio,
   useUniqueToken,
 } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 
 const pixelRatio = PixelRatio.get();

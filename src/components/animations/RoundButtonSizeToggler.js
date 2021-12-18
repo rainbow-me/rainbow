@@ -4,7 +4,7 @@ import { bin, useSpringTransition } from 'react-native-redash/src/v1';
 import { useMemoOne } from 'use-memo-one';
 import { useTheme } from '../../context/ThemeContext';
 import { Row } from '../layout';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { borders, position } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 

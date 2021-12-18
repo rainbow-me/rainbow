@@ -20,7 +20,7 @@ import DiscoverSheetContext from './DiscoverSheetContext';
 import DiscoverSheetHeader from './DiscoverSheetHeader';
 import CustomBackground from './androidCustomComponents/customBackground';
 import CustomHandle from './androidCustomComponents/customHandle';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { deviceUtils } from '@rainbow-me/utils';
 
 function useAreHeaderButtonVisible() {

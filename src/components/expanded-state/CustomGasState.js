@@ -17,7 +17,7 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { margin } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 

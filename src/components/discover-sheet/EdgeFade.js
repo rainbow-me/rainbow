@@ -1,6 +1,6 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 
 const LeftFade = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   colors: [

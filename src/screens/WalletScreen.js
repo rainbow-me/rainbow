@@ -35,7 +35,7 @@ import {
   emitChartsRequest,
   emitPortfolioRequest,
 } from '@rainbow-me/redux/explorer';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({

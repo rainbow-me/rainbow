@@ -14,7 +14,7 @@ import SendEmptyState from './SendEmptyState';
 import { useAccountSettings, useKeyboardHeight } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { filterList } from '@rainbow-me/utils';
 
 const KeyboardArea = styled.View({

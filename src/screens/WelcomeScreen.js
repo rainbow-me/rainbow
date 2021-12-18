@@ -33,7 +33,7 @@ import { useHideSplashScreen } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { position, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
 

@@ -16,7 +16,7 @@ import { Text } from '../text';
 import SecretDisplayCard from './SecretDisplayCard';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { margin, padding, position, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
 

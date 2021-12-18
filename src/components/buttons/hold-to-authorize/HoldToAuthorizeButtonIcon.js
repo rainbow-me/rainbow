@@ -4,7 +4,7 @@ import { useMemoOne } from 'use-memo-one';
 import { interpolate, ScaleInAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import { Centered } from '../../layout';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 
 const { cond, divide, greaterThan } = Animated;

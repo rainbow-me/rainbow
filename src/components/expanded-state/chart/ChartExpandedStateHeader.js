@@ -13,7 +13,7 @@ import {
 } from './chart-data-labels';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useBooleanState } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const { call, cond, onChange, useCode } = Animated;

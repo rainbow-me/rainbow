@@ -17,7 +17,7 @@ import {
 } from '@rainbow-me/helpers/emojiHandler';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import { useAccountSettings, useContacts } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { margin, padding } from '@rainbow-me/styles';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs(

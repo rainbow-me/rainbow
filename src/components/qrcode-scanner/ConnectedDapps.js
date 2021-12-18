@@ -7,7 +7,7 @@ import { Text } from '../text';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 
 const LabelText = styled(Text)({
   lineHeight: 46,

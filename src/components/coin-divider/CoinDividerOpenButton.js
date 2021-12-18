@@ -10,7 +10,7 @@ import Caret from '../../assets/family-dropdown-arrow.png';
 import { ButtonPressAnimation, RoundButtonCapSize } from '../animations';
 import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 

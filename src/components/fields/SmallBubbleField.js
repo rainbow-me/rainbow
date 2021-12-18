@@ -6,12 +6,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { ExchangeInput } from '../exchange';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import { useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
 const BubbleInput = styled(ExchangeInput).attrs(
   ({ isSmallPhone, isTinyPhone, theme: { isDarkMode } }) => ({
     disableTabularNums: true,

@@ -4,7 +4,7 @@ import { Button } from '../buttons';
 import { Icon } from '../icons';
 import { Row } from '../layout';
 import { Text as UnstyledText } from '../text';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 
 const BackArrow = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,

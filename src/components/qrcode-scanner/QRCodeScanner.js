@@ -15,7 +15,7 @@ import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
 import SimulatorFakeCameraImageSource from '@rainbow-me/assets/simulator-fake-camera-image.jpg';
 import { useBooleanState, useScanner } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 
 const Camera = styled(RNCamera)({

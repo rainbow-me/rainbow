@@ -1,5 +1,5 @@
+import styled from 'styled-components';
 import { TruncatedText } from '../text';
-import styled from '@rainbow-me/styled';
 
 const TokenInfoValue = styled(TruncatedText).attrs(
   ({ color, isNft, theme: { colors }, size, weight = 'semibold' }) => ({

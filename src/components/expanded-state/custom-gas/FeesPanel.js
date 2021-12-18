@@ -29,7 +29,7 @@ import {
 } from '@rainbow-me/hooks';
 import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
-import styled, { useTheme } from '@rainbow-me/styled';
+import styled, { useTheme } from 'styled-components';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 

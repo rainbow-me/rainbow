@@ -2,7 +2,7 @@ import React from 'react';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { OpacityToggler } from '../animations';
 import { Text } from '../text';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 
 const Container = styled(OpacityToggler)({

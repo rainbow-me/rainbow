@@ -9,7 +9,7 @@ import {
 } from '../components/expanded-state';
 import { Centered } from '../components/layout';
 import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding, position } from '@rainbow-me/styles';
 
 const ModalTypes = {

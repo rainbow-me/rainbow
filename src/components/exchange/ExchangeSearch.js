@@ -15,7 +15,7 @@ import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { margin, padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 

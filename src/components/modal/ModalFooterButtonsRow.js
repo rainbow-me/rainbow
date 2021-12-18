@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Children, Fragment } from 'react';
 import Divider from '../Divider';
 import { Row } from '../layout';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 
 const Container = styled(Row)({
   borderTopColor: ({ theme: { colors } }) => colors.rowDivider,

@@ -6,7 +6,7 @@ import { ButtonPressAnimation } from './animations';
 import { Icon } from './icons';
 import { RowWithMargins } from './layout';
 import { Text } from './text';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 
 const formatURLForDisplay = url => {
   const pretty = url.split('://')[1].replace('www.', '');

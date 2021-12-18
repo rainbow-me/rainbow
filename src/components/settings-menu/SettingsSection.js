@@ -33,7 +33,7 @@ import {
   useSendFeedback,
   useWallets,
 } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 import {
   AppleReviewAddress,

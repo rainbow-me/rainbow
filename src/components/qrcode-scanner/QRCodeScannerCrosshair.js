@@ -4,7 +4,7 @@ import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 
 const CrossHairAspectRatio = 230 / 375;

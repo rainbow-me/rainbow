@@ -47,7 +47,7 @@ import {
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 import {

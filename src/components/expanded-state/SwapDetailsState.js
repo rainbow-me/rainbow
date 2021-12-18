@@ -25,7 +25,7 @@ import {
   useSwapDerivedOutputs,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useTheme } from '../../context/ThemeContext';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 
 const PageElement = styled.View({

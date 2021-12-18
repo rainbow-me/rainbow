@@ -8,7 +8,7 @@ import PolygonBadge from '../../assets/badges/polygonBadge.png';
 import PolygonBadgeDark from '../../assets/badges/polygonBadgeDark.png';
 import { Centered } from '../layout';
 import { AssetType } from '@rainbow-me/entities';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 
 const sizeConfigs = {
   large: {

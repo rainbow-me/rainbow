@@ -11,7 +11,7 @@ import { useNavigation } from '../navigation/Navigation';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import { useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 

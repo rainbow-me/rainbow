@@ -5,7 +5,7 @@ import { Text } from '../text';
 import { useChartData } from '@rainbow-me/animated-charts';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { fonts } from '@rainbow-me/styles';
 
 function trim(val) {

@@ -8,7 +8,7 @@ import {
 import Animated from 'react-native-reanimated';
 import { useMemoOne } from 'use-memo-one';
 import { useDimensions } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 
 const { call, cond, event, eq } = Animated;
 const NOOP = () => null;

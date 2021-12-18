@@ -7,7 +7,7 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { useAccountSettings } from '@rainbow-me/hooks';
-import styled, { css } from '@rainbow-me/styled';
+import styled, { css } from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils, magicMemo } from '@rainbow-me/utils';
 

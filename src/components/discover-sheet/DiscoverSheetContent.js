@@ -5,7 +5,7 @@ import { Text } from '../text';
 import DiscoverHome from './DiscoverHome';
 import DiscoverSearch from './DiscoverSearch';
 import DiscoverSearchContainer from './DiscoverSearchContainer';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 
 const HeaderTitle = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',

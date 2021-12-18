@@ -7,7 +7,7 @@ import { Text } from '../text';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import { useDimensions } from '@rainbow-me/hooks';
 import { wyreSupportedCountries } from '@rainbow-me/references';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
 

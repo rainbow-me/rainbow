@@ -10,7 +10,7 @@ import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import RecyclerActivityList from './RecyclerActivityList';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 
 const getItemLayout = (data, index) => ({
   index,

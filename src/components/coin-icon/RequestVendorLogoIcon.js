@@ -7,7 +7,7 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinIconSize } from './CoinIcon';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 

@@ -7,7 +7,7 @@ import TokenInfoHeading from './TokenInfoHeading';
 import TokenInfoValue from './TokenInfoValue';
 import { useTheme } from '@rainbow-me/context';
 import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 
 const Container = styled.View({});
 

@@ -9,7 +9,7 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
 import { useClipboard } from '@rainbow-me/hooks';
-import styled from '@rainbow-me/styled';
+import styled from 'styled-components';
 import { fonts, fontWithWidth, padding } from '@rainbow-me/styles';
 import {
   abbreviations,
