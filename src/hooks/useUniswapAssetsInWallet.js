@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { getUniswapV2Tokens } from '@rainbow-me/handlers/dispersion';
 import { sortAssetsByNativeAmountSelector } from '@rainbow-me/helpers/assetSelectors';
 import NetworkTypes from '@rainbow-me/networkTypes';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 
 const networkSelector = state => state.settings.network;
 
@@ -25,8 +26,9 @@ const useUniswapAssetsInWallet = () => {
     setUniswapAssets(uniswapAssets);
   }, [allAssets, isMainnet]);
   const getIsUniswapAsset = asset => {
-    return uniswapAssets.find(
-      ({ address }) => address === toLower(asset.address)
+    return (
+      uniswapAssets.find(({ address }) => address === toLower(asset.address)) ||
+      asset.address === ETH_ADDRESS
     );
   };
   useEffect(() => {
