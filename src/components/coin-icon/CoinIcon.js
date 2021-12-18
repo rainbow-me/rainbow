@@ -1,13 +1,13 @@
 import { isNil } from 'lodash';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
+import styled from '@rainbow-me/styled';
 import ContractInteraction from '../../assets/contractInteraction.png';
 import { useTheme } from '../../context/ThemeContext';
 import ChainBadge from './ChainBadge';
 import CoinIconFallback from './CoinIconFallback';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from 'styled-components';
 import {
   getTokenMetadata,
   isETH,

@@ -19,7 +19,7 @@ import {
   useTimeout,
   useWyreApplePay,
 } from '@rainbow-me/hooks';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 import { borders } from '@rainbow-me/styles';
 
 const deviceHeight = deviceUtils.dimensions.height;

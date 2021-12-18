@@ -15,7 +15,7 @@ import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useManageCloudBackups, useWallets } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 import { fonts, padding } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 
@@ -57,8 +57,7 @@ const GreenCheck = styled(CheckmarkIcon).attrs(({ theme: { colors } }) => ({
   // box-shadow: 0px 4px 6px
   //   ${({ theme: { colors, isDarkMode } }) =>
   //     colors.alpha(isDarkMode ? colors.shadow : colors.green, 0.4)};
-})`
-`;
+});
 
 const GreyCheck = styled(CheckmarkIcon).attrs(({ theme: { colors } }) => ({
   color: colors.blueGreyDark50,

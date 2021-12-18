@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { SectionList } from 'react-native';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import networkTypes from '../../helpers/networkTypes';
 import ActivityIndicator from '../ActivityIndicator';
@@ -10,7 +11,6 @@ import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import RecyclerActivityList from './RecyclerActivityList';
-import styled from 'styled-components';
 
 const getItemLayout = (data, index) => ({
   index,

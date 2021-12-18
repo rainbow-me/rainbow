@@ -5,6 +5,7 @@ import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
+import styled from '@rainbow-me/styled';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
 import { ExchangeFab, FabWrapper, SendFab } from '../components/fab';
@@ -35,7 +36,6 @@ import {
   emitChartsRequest,
   emitPortfolioRequest,
 } from '@rainbow-me/redux/explorer';
-import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({

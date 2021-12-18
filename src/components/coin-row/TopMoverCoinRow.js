@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { fonts } from '../../styles';
 import { magicMemo, measureText } from '../../utils';
@@ -9,7 +10,6 @@ import { CoinIcon } from '../coin-icon';
 import { Centered, ColumnWithMargins, RowWithMargins } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
-import styled from 'styled-components';
 
 const TopMoverCoinIconSize = 36;
 const TopMoverCoinRowMargin = 8;

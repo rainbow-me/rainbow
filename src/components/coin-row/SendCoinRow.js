@@ -2,6 +2,7 @@ import { concat } from 'lodash';
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { buildAssetUniqueIdentifier } from '../../helpers/assets';
 import { deviceUtils, magicMemo } from '../../utils';
@@ -11,7 +12,6 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import { useColorForAsset } from '@rainbow-me/hooks';
-import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const isSmallPhone = android || deviceUtils.dimensions.height <= 667;

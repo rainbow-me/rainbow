@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { Alert, Keyboard, SectionList } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import styled from '@rainbow-me/styled';
 import { ButtonPressAnimation } from '../../components/animations';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
 import { ContactRow } from '../contacts';
@@ -19,7 +20,6 @@ import { TokenSectionTypes } from '@rainbow-me/helpers';
 import { usePrevious } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 import { abbreviations, deviceUtils, magicMemo } from '@rainbow-me/utils';
 

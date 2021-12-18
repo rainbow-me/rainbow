@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import styled from '@rainbow-me/styled';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { FloatingEmojis } from '../floating-emojis';
@@ -11,7 +12,6 @@ import CoinRowAddButton from './CoinRowAddButton';
 import CoinRowFavoriteButton from './CoinRowFavoriteButton';
 import CoinRowInfoButton from './CoinRowInfoButton';
 import { useDimensions } from '@rainbow-me/hooks';
-import styled from 'styled-components';
 import { haptics, neverRerender } from '@rainbow-me/utils';
 
 const CoinRowPaddingTop = 9.5;

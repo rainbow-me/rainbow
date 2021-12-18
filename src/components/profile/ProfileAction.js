@@ -1,9 +1,9 @@
 import React from 'react';
+import styled from '@rainbow-me/styled';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
-import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 
 const Container = styled(RowWithMargins).attrs({

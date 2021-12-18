@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
+import styled from '@rainbow-me/styled';
 import { abbreviations, magicMemo, measureText } from '../../utils';
 import { DividerSize } from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -13,7 +14,6 @@ import { useTheme } from '@rainbow-me/context';
 import { useAccountProfile, useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 import { fonts, position } from '@rainbow-me/styles';
 
 export const AssetListHeaderHeight = ListHeaderHeight + DividerSize;

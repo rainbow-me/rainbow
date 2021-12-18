@@ -5,6 +5,7 @@ import { SectionList } from 'react-native';
 import * as DeviceInfo from 'react-native-device-info';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSafeArea } from 'react-native-safe-area-context';
+import styled from '@rainbow-me/styled';
 import { FlyInAnimation } from '../animations';
 import { ContactRow, SwipeableContactRow } from '../contacts';
 import { SheetHandleFixedToTopHeight } from '../sheet';
@@ -14,7 +15,6 @@ import SendEmptyState from './SendEmptyState';
 import { useAccountSettings, useKeyboardHeight } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 import { filterList } from '@rainbow-me/utils';
 
 const KeyboardArea = styled.View({

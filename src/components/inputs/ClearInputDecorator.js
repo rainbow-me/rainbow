@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';

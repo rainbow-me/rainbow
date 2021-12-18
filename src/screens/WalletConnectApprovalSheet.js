@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { ActivityIndicator, InteractionManager } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
+import styled from '@rainbow-me/styled';
 import ChainLogo from '../components/ChainLogo';
 import Divider from '../components/Divider';
 import Spinner from '../components/Spinner';
@@ -39,7 +40,6 @@ import {
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(

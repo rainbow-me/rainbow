@@ -1,9 +1,9 @@
 import React from 'react';
 import { BorderlessButton } from 'react-native-gesture-handler';
+import styled from '@rainbow-me/styled';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 
 const ButtonIcon = styled(Icon)({

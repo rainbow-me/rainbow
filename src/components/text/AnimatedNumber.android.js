@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
+import styled from '@rainbow-me/styled';
 import Text from './Text';
-import styled from 'styled-components';
 import { buildTextStyles } from '@rainbow-me/styles';
 
 const TextWithStyles = styled(Text)({

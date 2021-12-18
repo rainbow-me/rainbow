@@ -1,5 +1,5 @@
 import { isNil } from 'lodash';
-import { css } from 'styled-components';
+import { css } from '@rainbow-me/styled';
 
 export default function buildLayoutStyles(values, type, shouldReturnCss) {
   // Replicating the CSS API, if no second value parameter is given

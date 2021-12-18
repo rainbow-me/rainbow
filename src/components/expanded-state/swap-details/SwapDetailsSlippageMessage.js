@@ -1,8 +1,8 @@
 import React from 'react';
+import styled from '@rainbow-me/styled';
 import Divider from '../../Divider';
 import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
 import { Emoji, Text } from '../../text';
-import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ColumnWithMargins).attrs({

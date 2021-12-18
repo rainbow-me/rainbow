@@ -1,5 +1,6 @@
 import React, { createElement, Fragment } from 'react';
 import { Share } from 'react-native';
+import styled from '@rainbow-me/styled';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import CoinDividerButtonLabel from '../coin-divider/CoinDividerButtonLabel';
@@ -15,7 +16,6 @@ import {
   useWebData,
 } from '@rainbow-me/hooks';
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
-import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 export const ListHeaderHeight = 50;

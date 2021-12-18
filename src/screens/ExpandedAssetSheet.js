@@ -15,7 +15,7 @@ import { Centered } from '../components/layout';
 import { useTheme } from '@rainbow-me/context';
 import { useAsset, useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 
 const ScreenTypes = {

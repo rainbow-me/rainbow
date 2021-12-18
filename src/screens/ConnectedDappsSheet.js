@@ -8,7 +8,7 @@ import WalletConnectListItem, {
 } from '../components/walletconnect-list/WalletConnectListItem';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 
 const MAX_VISIBLE_DAPPS = 7;
 

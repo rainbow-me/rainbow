@@ -2,6 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import { upperFirst } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import styled from '@rainbow-me/styled';
 import {
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
@@ -16,7 +17,6 @@ import { Text } from '../text';
 import SecretDisplayCard from './SecretDisplayCard';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
-import styled from 'styled-components';
 import { margin, padding, position, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
 

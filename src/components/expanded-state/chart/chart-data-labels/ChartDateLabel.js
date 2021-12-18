@@ -1,9 +1,9 @@
 import React from 'react';
 import { View } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
+import styled from '@rainbow-me/styled';
 import { useRatio } from './useRatio';
 import { ChartXLabel } from '@rainbow-me/animated-charts';
-import styled from 'styled-components';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const Label = styled(ChartXLabel)({

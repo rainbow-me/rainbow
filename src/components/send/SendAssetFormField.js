@@ -1,13 +1,13 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { BubbleField } from '../fields';
 import { Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { useDimensions } from '@rainbow-me/hooks';
-import styled from 'styled-components';
 
 const GradientBackground = styled(RadialGradient).attrs(
   ({ colorForAsset, theme: { colors }, width }) => {

@@ -1,5 +1,5 @@
 import { isUndefined } from 'lodash';
-import styled from '../../styled-thing';
+import styled from '@rainbow-me/styled';
 
 const FlexItem = styled.View(({ flex, grow, shrink }) => {
   const props = {

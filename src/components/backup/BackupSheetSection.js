@@ -1,5 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useEffect } from 'react';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import Divider from '../Divider';
 import { RainbowButton } from '../buttons';
@@ -9,7 +10,6 @@ import { Text } from '../text';
 import BackupIcon from '@rainbow-me/assets/backupIcon.png';
 import BackupIconDark from '@rainbow-me/assets/backupIconDark.png';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const Footer = styled(ColumnWithMargins).attrs({

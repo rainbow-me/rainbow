@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, InteractionManager, Keyboard } from 'react-native';
 import { useDispatch } from 'react-redux';
+import styled from '@rainbow-me/styled';
 import { isSamsungGalaxy } from '../../helpers/samsung';
 import {
   fetchBackupPassword,
@@ -33,7 +34,6 @@ import {
   walletsSetSelected,
 } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 import { margin, padding } from '@rainbow-me/styles';
 import logger from 'logger';
 

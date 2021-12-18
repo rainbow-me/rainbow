@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import styled from '@rainbow-me/styled';
 import { Column } from '../layout';
-import styled from 'styled-components';
 import { shadow } from '@rainbow-me/styles';
 
 const FloatingPanelBorderRadius = 18;

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 import { isHexString } from '../../handlers/web3';
 import { checkIsValidAddressOrDomain } from '../../helpers/validators';
 import { Input } from '../inputs';

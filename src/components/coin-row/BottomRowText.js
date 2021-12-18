@@ -1,4 +1,4 @@
-import styled from '../../styled-thing';
+import styled from '@rainbow-me/styled';
 import { TruncatedText } from '../text';
 
 const BottomRowText = styled(TruncatedText).attrs(

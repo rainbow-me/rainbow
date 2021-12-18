@@ -1,5 +1,5 @@
+import styled from '@rainbow-me/styled';
 import LayoutWithMargins from './LayoutWithMargins';
-import styled from 'styled-components';
 
 const RowWithMargins = styled(LayoutWithMargins).attrs(
   ({ direction = 'row', margin = 19 }) => ({

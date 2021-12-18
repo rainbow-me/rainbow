@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { ColumnWithMargins } from '../layout';
 import { Smallcaps } from '../text';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ColumnWithMargins).attrs({

@@ -1,5 +1,6 @@
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
+import styled, { css } from '@rainbow-me/styled';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { Centered, FlexItem, Row } from '../layout';
@@ -7,7 +8,6 @@ import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { useAccountSettings } from '@rainbow-me/hooks';
-import styled, { css } from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils, magicMemo } from '@rainbow-me/utils';
 

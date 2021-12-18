@@ -1,12 +1,12 @@
 import React, { useCallback } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
+import styled from '@rainbow-me/styled';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon, CoinIconSize } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { useColorForAsset } from '@rainbow-me/hooks';
-import styled from 'styled-components';
 import { borders } from '@rainbow-me/styles';
 
 const ExchangeFieldHeight = android ? 64 : 38;

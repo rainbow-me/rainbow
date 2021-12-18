@@ -4,7 +4,6 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { View } from 'react-primitives';
 import { useTheme } from '../../context/ThemeContext';
 import useCoinListEditOptions from '../../hooks/useCoinListEditOptions';
-import styled from '../../styled-thing';
 import { ButtonPressAnimation } from '../animations';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
 import { FlexItem, Row } from '../layout';
@@ -17,6 +16,7 @@ import { useIsCoinListEditedSharedValue } from '@rainbow-me/helpers/SharedValues
 import { buildAssetUniqueIdentifier } from '@rainbow-me/helpers/assets';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled';
 
 const editTranslateOffset = 37;
 

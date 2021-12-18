@@ -9,6 +9,7 @@ import React, {
 import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSelector } from 'react-redux';
+import styled from '@rainbow-me/styled';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
 import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
@@ -48,7 +49,6 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
 const defaultCarouselHeight = 60;

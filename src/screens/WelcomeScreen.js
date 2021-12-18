@@ -11,6 +11,7 @@ import Reanimated, {
 } from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
+import styled from '@rainbow-me/styled';
 import { useMemoOne } from 'use-memo-one';
 import RainbowGreyNeon from '../assets/rainbows/greyneon.png';
 import RainbowLight from '../assets/rainbows/light.png';
@@ -33,7 +34,6 @@ import { useHideSplashScreen } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 import { position, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
 

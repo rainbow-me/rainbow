@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText } from '../coin-row';
@@ -14,7 +15,6 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
-import styled from 'styled-components';
 import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
 import { deviceUtils, profileUtils } from '@rainbow-me/utils';
 

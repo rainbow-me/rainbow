@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import RNExitApp from 'react-native-exit-app';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 import { Centered } from '../layout';
 import { SheetActionButton } from '../sheet';
 import Text from '../text/Text';

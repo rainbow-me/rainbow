@@ -1,11 +1,11 @@
 import React from 'react';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { CoinIcon } from '../coin-icon';
 import { JellySelector, JellySelectorShadowIndicator } from '../jelly-selector';
 import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { ETH_ADDRESS } from '@rainbow-me/references';
-import styled from 'styled-components';
 import { getTokenMetadata } from '@rainbow-me/utils';
 
 const CurrencyItemHeight = 40;

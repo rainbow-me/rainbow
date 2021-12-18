@@ -1,6 +1,6 @@
 import { PropTypes } from 'prop-types';
+import styled from '@rainbow-me/styled';
 import Divider from '../Divider';
-import styled from 'styled-components';
 import { neverRerender } from '@rainbow-me/utils';
 
 const ListItemDivider = styled(Divider).attrs(

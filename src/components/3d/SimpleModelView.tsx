@@ -7,7 +7,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 import { ImgixImage } from '@rainbow-me/images';
 import { padding, position } from '@rainbow-me/styles';
 

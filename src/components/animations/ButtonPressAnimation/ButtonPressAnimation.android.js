@@ -11,9 +11,9 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import styled from '@rainbow-me/styled';
 import { normalizeTransformOrigin } from './NativeButton';
 import { useLongPressEvents } from '@rainbow-me/hooks';
-import styled from 'styled-components';
 
 const ZoomableRawButton = requireNativeComponent('RNZoomableButton');
 

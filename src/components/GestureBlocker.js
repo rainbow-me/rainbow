@@ -6,9 +6,9 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
+import styled from '@rainbow-me/styled';
 import { useMemoOne } from 'use-memo-one';
 import { useDimensions } from '@rainbow-me/hooks';
-import styled from 'styled-components';
 
 const { call, cond, event, eq } = Animated;
 const NOOP = () => null;

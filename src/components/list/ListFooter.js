@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 
 const ListFooterHeight = 27;
 

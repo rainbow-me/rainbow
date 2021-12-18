@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import ImageAvatar from '../contacts/ImageAvatar';
 import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
 import { useAccountProfile } from '@rainbow-me/hooks';
-import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 

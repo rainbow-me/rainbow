@@ -4,6 +4,7 @@ import { Image, Linking, NativeModules, ScrollView, Share } from 'react-native';
 // import { REVIEW_ANDROID } from '../../config/experimental';
 // import useExperimentalFlag from '../../config/experimentalHooks';
 // import { supportedLanguages } from '../../languages';
+import styled from '@rainbow-me/styled';
 import { THEMES, useTheme } from '../../context/ThemeContext';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
@@ -33,7 +34,6 @@ import {
   useSendFeedback,
   useWallets,
 } from '@rainbow-me/hooks';
-import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 import {
   AppleReviewAddress,

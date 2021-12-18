@@ -2,6 +2,7 @@ import { isHexString } from '@ethersproject/bytes';
 import { get, isEmpty, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
@@ -16,7 +17,6 @@ import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { removeFirstEmojiFromString } from '@rainbow-me/helpers/emojiHandler';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 import { profileUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 

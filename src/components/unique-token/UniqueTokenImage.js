@@ -1,5 +1,6 @@
 import { toLower } from 'lodash';
 import React, { Fragment, useCallback, useState } from 'react';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../../references';
@@ -13,7 +14,6 @@ import {
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from 'styled-components';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({

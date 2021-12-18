@@ -3,6 +3,7 @@ import { captureMessage } from '@sentry/react-native';
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { Linking } from 'react-native';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../context/ThemeContext';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
@@ -20,7 +21,6 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 

@@ -4,6 +4,7 @@ import { pick, startCase, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
+import styled from '@rainbow-me/styled';
 import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
 import useExperimentalFlag, {
@@ -26,7 +27,6 @@ import {
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { removeRequest } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 import {
   abbreviations,
   ethereumUtils,

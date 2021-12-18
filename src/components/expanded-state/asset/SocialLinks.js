@@ -1,8 +1,8 @@
 import { startCase } from 'lodash';
 import React from 'react';
+import styled from '@rainbow-me/styled';
 import Link from '../../Link';
 import EdgeFade from '../../discover-sheet/EdgeFade';
-import styled from 'styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const TWITTER_URL = 'https://twitter.com/';

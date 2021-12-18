@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Animated, { SpringUtils } from 'react-native-reanimated';
 import { useSpringTransition } from 'react-native-redash/src/v1';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 import { magicMemo } from '../../utils';
 import { interpolate } from '../animations';
 import { Centered } from '../layout';

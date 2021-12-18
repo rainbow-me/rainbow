@@ -1,8 +1,8 @@
 import React from 'react';
+import styled from '@rainbow-me/styled';
 import { ColumnWithMargins } from '../layout';
 import { SheetHandle } from '../sheet';
 import { Text } from '../text';
-import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ColumnWithMargins).attrs({

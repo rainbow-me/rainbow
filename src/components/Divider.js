@@ -1,6 +1,6 @@
 import { constant, isNil, isNumber, times } from 'lodash';
 import React from 'react';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 import { magicMemo } from '../utils';
 import { borders, position } from '@rainbow-me/styles';
 

@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
+import styled from '@rainbow-me/styled';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { Text } from '../text';
-import styled from 'styled-components';
 import { margin, padding, position } from '@rainbow-me/styles';
 
 const Button = styled(ButtonPressAnimation).attrs({

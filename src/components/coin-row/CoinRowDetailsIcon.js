@@ -1,8 +1,8 @@
 import React from 'react';
+import styled from '@rainbow-me/styled';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
-import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const AddButtonPadding = 19;

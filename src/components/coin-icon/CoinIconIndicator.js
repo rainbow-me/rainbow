@@ -1,9 +1,9 @@
 import React from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import styled from '@rainbow-me/styled';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { useIsCoinListEditedSharedValue } from '@rainbow-me/helpers/SharedValuesContext';
-import styled from 'styled-components';
 import { borders, shadow } from '@rainbow-me/styles';
 
 const IndicatorIcon = styled(Icon).attrs(({ isPinned, theme: { colors } }) => ({

@@ -1,12 +1,12 @@
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { useSelector } from 'react-redux';
+import styled from '@rainbow-me/styled';
 import { CoinIcon } from '../../coin-icon';
 import { Centered, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedText } from '../../text';
 import { useAccountSettings, useColorForAsset } from '@rainbow-me/hooks';
 import { SwapModalField } from '@rainbow-me/redux/swap';
-import styled from 'styled-components';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 import { convertAmountAndPriceToNativeDisplay } from '@rainbow-me/utilities';
 

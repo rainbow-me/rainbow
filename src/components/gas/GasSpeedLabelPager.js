@@ -1,10 +1,10 @@
 import { upperFirst } from 'lodash';
 import React from 'react';
+import styled from '@rainbow-me/styled';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedEmoji } from '.';
-import styled from 'styled-components';
 import { margin, padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 

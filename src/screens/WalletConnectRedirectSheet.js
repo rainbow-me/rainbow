@@ -5,7 +5,7 @@ import { Sheet } from '../components/sheet';
 import { Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { useAppState } from '@rainbow-me/hooks';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 
 const BodyText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',

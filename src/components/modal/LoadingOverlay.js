@@ -1,12 +1,12 @@
 import { BlurView } from '@react-native-community/blur';
 import React from 'react';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import ActivityIndicator from '../ActivityIndicator';
 import Spinner from '../Spinner';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
-import styled from 'styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
 

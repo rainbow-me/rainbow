@@ -1,6 +1,6 @@
 import React, { createElement } from 'react';
+import styled from '@rainbow-me/styled';
 import useCoinListEditOptions from '../../hooks/useCoinListEditOptions';
-import styled from '../../styled-thing';
 import { CoinIcon, CoinIconGroup, CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { useAccountSettings } from '@rainbow-me/hooks';

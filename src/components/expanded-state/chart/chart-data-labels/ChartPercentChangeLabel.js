@@ -1,11 +1,11 @@
 import React from 'react';
 import { TextInput } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import styled from '@rainbow-me/styled';
 import { RowWithMargins } from '../../../layout';
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
 import { useRatio } from './useRatio';
 import { useChartData } from '@rainbow-me/animated-charts';
-import styled from 'styled-components';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 Animated.addWhitelistedNativeProps({ color: true });

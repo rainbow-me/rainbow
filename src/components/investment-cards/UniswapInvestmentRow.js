@@ -1,5 +1,6 @@
 import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { convertAmountToPercentageDisplay } from '../../helpers/utilities';
 import { ButtonPressAnimation } from '../animations';
@@ -9,7 +10,6 @@ import CoinName from '../coin-row/CoinName';
 import { FlexItem, Row } from '../layout';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 
 const formatPercentageString = percentString =>
   percentString ? percentString.toString().split('-').join('- ') : '-';

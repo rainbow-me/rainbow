@@ -1,6 +1,7 @@
 import React, { Fragment, useMemo } from 'react';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import LinearGradient from 'react-native-linear-gradient';
+import styled from '@rainbow-me/styled';
 import { ButtonPressAnimation } from '../animations';
 import { SendCoinRow } from '../coin-row';
 import CollectiblesSendRow from '../coin-row/CollectiblesSendRow';
@@ -15,7 +16,6 @@ import {
   useDimensions,
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
-import styled from 'styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 

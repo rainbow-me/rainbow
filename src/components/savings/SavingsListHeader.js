@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Animated, Easing } from 'react-native';
+import styled from '@rainbow-me/styled';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { useTheme } from '../../context/ThemeContext';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
@@ -9,7 +10,6 @@ import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from 'styled-components';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
 

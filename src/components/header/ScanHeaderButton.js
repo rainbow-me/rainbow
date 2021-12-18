@@ -1,12 +1,12 @@
 import React, { useCallback, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
+import styled from '@rainbow-me/styled';
 import { useNavigation } from '../../navigation/Navigation';
 import { jumpToShort } from '../discover-sheet/DiscoverSheet';
 import Icon from '../icons/Icon';
 import { Row, RowWithMargins } from '../layout';
 import HeaderButton from './HeaderButton';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 

@@ -7,6 +7,7 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 
+import styled from '@rainbow-me/styled';
 import { buildCoinsList } from '../../helpers/assets';
 import networkTypes from '../../helpers/networkTypes';
 import { deviceUtils } from '../../utils';
@@ -22,7 +23,6 @@ import { Centered } from '../layout';
 import { SavingsListHeader } from '../savings';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from 'styled-components';
 
 const dividerMargin = 5;
 const dividerHeight = DividerSize + dividerMargin * 4;

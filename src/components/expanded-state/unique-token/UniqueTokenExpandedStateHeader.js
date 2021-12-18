@@ -2,6 +2,7 @@ import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
+import styled from '@rainbow-me/styled';
 import URL from 'url-parse';
 import { buildUniqueTokenName } from '../../../helpers/assets';
 import { ButtonPressAnimation } from '../../animations';
@@ -16,7 +17,6 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
-import styled from 'styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import {
   buildRainbowUrl,

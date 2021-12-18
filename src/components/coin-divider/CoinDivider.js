@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { Animated, LayoutAnimation, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import styled from '@rainbow-me/styled';
 import { useRecyclerAssetListPosition } from '../asset-list/RecyclerAssetList2/core/Contexts';
 import { StickyHeaderContext } from '../asset-list/RecyclerAssetList2/core/StickyHeaders';
 import { Row, RowWithMargins } from '../layout';
@@ -24,7 +25,6 @@ import {
   useOpenSmallBalances,
 } from '@rainbow-me/hooks';
 import { emitChartsRequest } from '@rainbow-me/redux/explorer';
-import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 export const CoinDividerHeight = 30;

@@ -1,10 +1,10 @@
 import React from 'react';
 import { useIsEmulator } from 'react-native-device-info';
+import styled from '@rainbow-me/styled';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { useDimensions } from '@rainbow-me/hooks';
-import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 
 const CrossHairAspectRatio = 230 / 375;

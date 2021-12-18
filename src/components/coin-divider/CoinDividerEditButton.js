@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
 import { LayoutAnimation } from 'react-native';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { Row } from '../layout';
 import { Text } from '../text';
-import styled from 'styled-components';
 import { padding, shadow } from '@rainbow-me/styles';
 
 const ButtonContent = styled(Row).attrs({

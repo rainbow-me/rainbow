@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import TextInputMask from 'react-native-text-input-mask';
 import { Text } from '../text';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 import { buildTextStyles } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
@@ -23,8 +23,7 @@ const Input = styled(TextInputMask).attrs({
   // TODO terry
   // ${buildTextStyles};
   ...(android ? { fontWeight: 'normal' } : {}),
-})`
-`;
+});
 
 const ExchangeInput = (
   {

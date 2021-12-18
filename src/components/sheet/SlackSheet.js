@@ -15,6 +15,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
 import SheetHandleFixedToTop, {
@@ -22,7 +23,6 @@ import SheetHandleFixedToTop, {
 } from './SheetHandleFixedToTop';
 import { useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 
 const AndroidBackground = styled.View({

@@ -9,12 +9,12 @@ import Animated, {
   timing,
   Value,
 } from 'react-native-reanimated';
+import styled from '@rainbow-me/styled';
 import { withThemeContext } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { interpolate } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
-import styled from 'styled-components';
 import { padding, position } from '@rainbow-me/styles';
 
 const { block, cond, set, startClock, stopClock } = Animated;

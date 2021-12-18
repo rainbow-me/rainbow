@@ -1,8 +1,8 @@
 import React, { Fragment, useCallback, useEffect, useRef } from 'react';
+import styled from '@rainbow-me/styled';
 import { Input } from '../../inputs';
 import { PlaceholderText } from '../../text';
 import { useMagicAutofocus } from '@rainbow-me/hooks';
-import styled from 'styled-components';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const NameInput = styled(Input).attrs({

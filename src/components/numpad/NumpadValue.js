@@ -2,9 +2,9 @@ import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import Animated from 'react-native-reanimated';
+import styled from '@rainbow-me/styled';
 import { Text } from '../text';
 import { useDimensions } from '@rainbow-me/hooks';
-import styled from 'styled-components';
 
 const FontSizeMultiple = 0.24;
 const HeightMultiple = 0.288;

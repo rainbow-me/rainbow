@@ -1,11 +1,11 @@
 import { get } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
+import styled from '@rainbow-me/styled';
 import { formatNative } from '../expanded-state/chart/chart-data-labels/ChartPriceLabel';
 import { Text } from '../text';
 import { useChartData } from '@rainbow-me/animated-charts';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
-import styled from 'styled-components';
 import { fonts } from '@rainbow-me/styles';
 
 function trim(val) {

@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { initials } from '../../utils';
 import ChainBadge from '../coin-icon/ChainBadge';
@@ -7,7 +8,6 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinIconSize } from './CoinIcon';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 

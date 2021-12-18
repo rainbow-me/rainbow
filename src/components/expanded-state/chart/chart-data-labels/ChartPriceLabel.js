@@ -2,13 +2,13 @@ import { get } from 'lodash';
 import React from 'react';
 import { PixelRatio, Text } from 'react-native';
 import { useWorkletCallback } from 'react-native-reanimated';
+import styled from '@rainbow-me/styled';
 import { Row } from '../../../layout';
 import ChartHeaderTitle from './ChartHeaderTitle';
 import { ChartYLabel } from '@rainbow-me/animated-charts';
 import { NativeCurrencyKeys } from '@rainbow-me/entities';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
-import styled from 'styled-components';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const ChartPriceRow = styled(Row)``;

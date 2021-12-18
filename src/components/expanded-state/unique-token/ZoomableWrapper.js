@@ -15,10 +15,10 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import styled from '@rainbow-me/styled';
 import useReactiveSharedValue from '../../../react-native-animated-charts/src/helpers/useReactiveSharedValue';
 import { ButtonPressAnimation } from '../../animations';
 import { useDimensions } from '@rainbow-me/hooks';
-import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 
 const adjustConfig = {

@@ -35,7 +35,7 @@ import {
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 import { filterList } from '@rainbow-me/utils';
 

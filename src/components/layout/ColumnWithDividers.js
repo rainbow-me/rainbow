@@ -1,4 +1,4 @@
-import styled from '../../styled-thing';
+import styled from '@rainbow-me/styled';
 import LayoutWithDividers from './LayoutWithDividers';
 
 const ColumnWithDividers = styled(LayoutWithDividers).attrs({

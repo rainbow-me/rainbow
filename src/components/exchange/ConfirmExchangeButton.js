@@ -1,6 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useMemo } from 'react';
+import styled from '@rainbow-me/styled';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Centered } from '../layout';
@@ -15,7 +16,6 @@ import {
 } from '@rainbow-me/hooks';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 import { lightModeThemeColors, padding } from '@rainbow-me/styles';
 
 const paddingHorizontal = 19;

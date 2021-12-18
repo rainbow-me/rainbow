@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
 import { Transition, Transitioning } from 'react-native-reanimated';
+import styled from '@rainbow-me/styled';
 import networkTypes from '../../helpers/networkTypes';
 import WalletTypes from '../../helpers/walletTypes';
 import { address } from '../../utils/abbreviations';
@@ -17,7 +18,6 @@ import { Column } from '../layout';
 import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
 import { useAccountSettings } from '@rainbow-me/hooks';
-import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 
 const listTopPadding = 7.5;

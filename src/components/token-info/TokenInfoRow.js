@@ -1,6 +1,6 @@
 import React, { Children, cloneElement } from 'react';
+import styled from '@rainbow-me/styled';
 import { FlexItem, Row } from '../layout';
-import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const space = 9.5;

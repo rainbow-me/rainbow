@@ -1,8 +1,8 @@
 import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import styled from '@rainbow-me/styled';
 import { Icon } from '../../../icons';
-import styled from 'styled-components';
 
 const AnimatedMaskedView = Animated.createAnimatedComponent(MaskedView);
 

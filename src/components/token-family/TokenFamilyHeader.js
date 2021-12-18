@@ -1,5 +1,6 @@
 import React from 'react';
 import { Animated, Easing } from 'react-native';
+import styled from '@rainbow-me/styled';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
@@ -7,7 +8,6 @@ import { Emoji, Text, TruncatedText } from '../text';
 import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
 import { useTheme } from '@rainbow-me/context';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);

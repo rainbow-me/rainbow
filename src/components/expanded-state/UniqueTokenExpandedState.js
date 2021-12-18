@@ -13,6 +13,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
+import styled from '@rainbow-me/styled';
 import useWallets from '../../hooks/useWallets';
 import { lightModeThemeColors } from '../../styles/colors';
 import Link from '../Link';
@@ -47,7 +48,6 @@ import {
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 import { position } from '@rainbow-me/styles';
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 import {

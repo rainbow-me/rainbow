@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
+import styled from '@rainbow-me/styled';
 import { calculateAPY } from '../../helpers/savings';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';
@@ -9,7 +10,6 @@ import { Br, GradientText, Text } from '../text';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import { DAI_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';
 

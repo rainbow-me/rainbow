@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
+import styled from '@rainbow-me/styled';
 import {
   SavingsSheetEmptyHeight,
   SavingsSheetHeight,
@@ -22,7 +23,6 @@ import {
 import { useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 import ShadowStack from 'react-native-shadow-stack';

@@ -1,9 +1,9 @@
 import React from 'react';
+import styled from '@rainbow-me/styled';
 import { Icon } from '../../icons';
 import { RowWithMargins } from '../../layout';
 import CurrencyTile, { CurrencyTileHeight } from './CurrencyTile';
 import { useSwapCurrencies } from '@rainbow-me/hooks';
-import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const containerPaddingTop = 34;

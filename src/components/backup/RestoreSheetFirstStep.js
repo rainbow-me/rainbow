@@ -1,6 +1,7 @@
 import { forEach } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { cloudPlatform } from '../../utils/platform';
 import Divider from '../Divider';
@@ -10,7 +11,6 @@ import { Column, Row, RowWithMargins } from '../layout';
 import { GradientText, Text } from '../text';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import { useNavigation } from '@rainbow-me/navigation';
-import styled from 'styled-components';
 import { deviceUtils } from '@rainbow-me/utils';
 
 const deviceWidth = deviceUtils.dimensions.width;

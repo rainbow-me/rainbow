@@ -4,6 +4,7 @@ import makeColorMoreChill from 'make-color-more-chill';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
+import styled from '@rainbow-me/styled';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { ChainBadge, CoinIcon } from '../coin-icon';
@@ -27,7 +28,6 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 

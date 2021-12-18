@@ -2,6 +2,7 @@ import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { Column, Row } from '../layout';
 import { SecretDisplaySection } from '../secret-display';
@@ -14,7 +15,6 @@ import {
   useWallets,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const Content = styled(Column).attrs({

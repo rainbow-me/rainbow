@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
+import styled from '@rainbow-me/styled';
 import { useNavigation } from '../../navigation/Navigation';
 import Icon from '../icons/Icon';
 import { Row } from '../layout';
 import Text from '../text/Text';
 import HeaderButton from './HeaderButton';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const Container = styled(Row).attrs({ align: 'center' })({

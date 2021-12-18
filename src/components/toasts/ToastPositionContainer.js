@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 import { Column } from '../layout';
 
 const ToastPositionContainerHeight = 40;

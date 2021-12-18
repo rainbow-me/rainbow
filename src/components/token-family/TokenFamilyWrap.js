@@ -1,11 +1,11 @@
 import { times } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
+import styled from '@rainbow-me/styled';
 import TokenFamilyHeader, {
   TokenFamilyHeaderAnimationDuration,
 } from './TokenFamilyHeader';
 import { useTimeout } from '@rainbow-me/hooks';
-import styled from 'styled-components';
 
 export const TokenFamilyWrapPaddingTop = 6;
 

@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import styled from '@rainbow-me/styled';
 import { emitAssetRequest, emitChartsRequest } from '../../redux/explorer';
 import { DefaultTokenLists } from '../../references';
 import { ButtonPressAnimation } from '../animations';
@@ -26,7 +27,6 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from 'styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const COINGECKO_TRENDING_ENDPOINT =

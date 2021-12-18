@@ -2,13 +2,13 @@ import React, { Fragment } from 'react';
 import Animated from 'react-native-reanimated';
 import { useSpringTransition } from 'react-native-redash/src/v1';
 import { useSafeArea } from 'react-native-safe-area-context';
+import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { interpolate } from '../animations';
 import { Icon } from '../icons';
 import { RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import { useDimensions } from '@rainbow-me/hooks';
-import styled from 'styled-components';
 import { padding, position, shadow } from '@rainbow-me/styles';
 
 const springConfig = {

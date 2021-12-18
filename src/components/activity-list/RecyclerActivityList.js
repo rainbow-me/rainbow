@@ -6,6 +6,7 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
+import styled from '@rainbow-me/styled';
 import {
   ContractInteractionCoinRow,
   RequestCoinRow,
@@ -18,7 +19,6 @@ import ActivityListHeader from './ActivityListHeader';
 import LoadingState from './LoadingState';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 import { buildTransactionUniqueIdentifier } from '@rainbow-me/helpers/transactions';
-import styled from 'styled-components';
 import {
   deviceUtils,
   isNewValueForPath,

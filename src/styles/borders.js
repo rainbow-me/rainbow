@@ -1,5 +1,5 @@
 import { upperFirst } from 'lodash';
-import { css } from 'styled-components';
+import { css } from '@rainbow-me/styled';
 import colors from './colors';
 import position from './position';
 

@@ -5,13 +5,13 @@ import {
   useSpringTransition,
   useTimingTransition,
 } from 'react-native-redash/src/v1';
+import styled from '@rainbow-me/styled';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { CoinIcon } from '../coin-icon';
 import { Centered, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import PriceImpactWarning from './PriceImpactWarning';
-import styled from 'styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const springConfig = {

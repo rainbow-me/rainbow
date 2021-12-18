@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from '../../styled-thing';
+import styled from '@rainbow-me/styled';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
 import { CoinIconIndicator, CoinIconSize } from '../coin-icon';

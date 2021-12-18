@@ -7,7 +7,7 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 
 const timingConfig = {

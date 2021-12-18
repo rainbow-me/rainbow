@@ -1,6 +1,7 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
+import styled from '@rainbow-me/styled';
 import { ConfirmExchangeButton } from '../exchange';
 import { GasSpeedButton } from '../gas';
 import { Column } from '../layout';
@@ -25,7 +26,6 @@ import {
   useSwapDerivedOutputs,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import styled from 'styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 

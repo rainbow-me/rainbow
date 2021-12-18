@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from '@rainbow-me/styled';
 import { TruncatedText } from '../text';
 
 const TokenInfoValue = styled(TruncatedText).attrs(
