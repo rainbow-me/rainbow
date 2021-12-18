@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { ColumnWithMargins } from '../layout';
 import { Text } from '../text';
 import { padding } from '@rainbow-me/styles';

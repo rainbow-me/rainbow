@@ -1,7 +1,7 @@
 import { times } from 'lodash';
 import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import CopyTooltip from '../copy-tooltip';
 import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Text } from '../text';

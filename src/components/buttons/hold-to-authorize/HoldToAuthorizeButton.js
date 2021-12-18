@@ -7,7 +7,7 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import Animated, { Easing, timing, Value } from 'react-native-reanimated';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import Spinner from '../../Spinner';
 import { ShimmerAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';

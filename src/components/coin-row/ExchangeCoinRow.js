@@ -1,5 +1,5 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { useCallback, useState } from 'react';
-import styled from '@rainbow-me/styled';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { FloatingEmojis } from '../floating-emojis';

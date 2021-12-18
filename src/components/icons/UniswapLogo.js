@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import UniswapLogoImage from '../../assets/uniswap-logo.png';
 import ImgixImage from '../images/ImgixImage';
 import { Centered } from '../layout';

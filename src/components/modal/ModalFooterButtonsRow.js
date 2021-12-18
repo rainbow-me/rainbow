@@ -1,6 +1,6 @@
+import styled from '@terrysahaidak/style-thing';
 import PropTypes from 'prop-types';
 import React, { Children, Fragment } from 'react';
-import styled from '@rainbow-me/styled';
 import Divider from '../Divider';
 import { Row } from '../layout';
 

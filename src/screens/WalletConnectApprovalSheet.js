@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { ActivityIndicator, InteractionManager } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import ChainLogo from '../components/ChainLogo';
 import Divider from '../components/Divider';
 import Spinner from '../components/Spinner';

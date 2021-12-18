@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { getLowResUrl } from '../../utils/getLowResUrl';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';

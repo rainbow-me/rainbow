@@ -1,7 +1,7 @@
 import { isNil } from 'lodash';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import ContractInteraction from '../../assets/contractInteraction.png';
 import { useTheme } from '../../context/ThemeContext';
 import ChainBadge from './ChainBadge';

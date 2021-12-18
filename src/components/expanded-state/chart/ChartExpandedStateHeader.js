@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import Animated, { useSharedValue } from 'react-native-reanimated';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { useCallbackOne } from 'use-memo-one';
 import { CoinIcon, CoinIconGroup } from '../../coin-icon';
 import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';

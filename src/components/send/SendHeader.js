@@ -1,8 +1,8 @@
 import { isHexString } from '@ethersproject/bytes';
+import styled from '@terrysahaidak/style-thing';
 import { get, isEmpty, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';
-import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';

@@ -1,0 +1,43 @@
+diff --git a/node_modules/@terrysahaidak/style-thing/index.js b/node_modules/@terrysahaidak/style-thing/index.js
+index 9215226..f71aab4 100644
+--- a/node_modules/@terrysahaidak/style-thing/index.js
++++ b/node_modules/@terrysahaidak/style-thing/index.js
+@@ -1,10 +1,20 @@
+ import React from 'react';
+-import styledComponent, { css, useTheme } from 'styled-components';
++import styledComponent, { css } from 'styled-components';
++
++const ThemeContext = React.createContext();
++
++function useTheme() {
++  return React.useContext(ThemeContext);
++}
++
++export function StyleThingThemeProvider({ value, children }) {
++  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
++}
+ 
+ // eslint-disable-next-line import/no-commonjs
+ const reactNative = require('react-native');
+ 
+-function getProps(props, attrs, theme, config) {
++function getProps(props, attrs, theme = {}, config) {
+   const propsWithTheme = { ...props, theme };
+   let propsToUse = {};
+ 
+@@ -63,13 +73,8 @@ function getStyles(styles, props) {
+   }
+ }
+ 
+-ex/**
+- *
+- *
+- * @param {*} props
+- * @returns
+- */
+-function attrs(props) {
++export default function styled(Component) {
++  function attrs(props) {
+     StyledComponentFactory.attrs = props;
+     return StyledComponentFactory;
+   }

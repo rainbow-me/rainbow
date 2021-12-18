@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import { lightModeThemeColors, padding } from '@rainbow-me/styles';

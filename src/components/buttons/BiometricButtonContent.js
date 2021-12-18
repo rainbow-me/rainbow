@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { Text } from '../text';
 import { BiometryTypes } from '@rainbow-me/helpers';
 import { useBiometryType } from '@rainbow-me/hooks';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useIsEmulator } from 'react-native-device-info';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { Text } from '../text';

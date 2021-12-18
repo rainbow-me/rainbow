@@ -1,8 +1,8 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import styled from '@terrysahaidak/style-thing';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
-import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { Column, Row } from '../layout';
 import { SecretDisplaySection } from '../secret-display';

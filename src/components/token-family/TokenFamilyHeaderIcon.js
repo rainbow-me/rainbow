@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { Emoji } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
 import { borders } from '@rainbow-me/styles';

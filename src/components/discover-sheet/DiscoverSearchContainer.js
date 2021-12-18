@@ -11,7 +11,7 @@ import React, {
   useState,
 } from 'react';
 import { useSelector } from 'react-redux';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { ButtonPressAnimation } from '../animations';
 import { ExchangeSearch } from '../exchange';
 import { Column, Row } from '../layout';

@@ -1,7 +1,7 @@
 import { times } from 'lodash';
 import React, { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { SORT_DIRECTION } from '../../hooks/useUniswapPools';
 import { ButtonPressAnimation } from '../animations';
 import { AssetListItemSkeleton } from '../asset-list';

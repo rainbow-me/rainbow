@@ -1,4 +1,4 @@
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { TruncatedText } from '../../../text';
 
 const ChartHeaderTitle = styled(TruncatedText).attrs({

@@ -5,7 +5,7 @@ import {
   useSpringTransition,
   useTimingTransition,
 } from 'react-native-redash/src/v1';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { CoinIcon } from '../coin-icon';

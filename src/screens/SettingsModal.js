@@ -20,7 +20,7 @@ import WalletTypes from '../helpers/walletTypes';
 import { settingsOptions } from '../navigation/config';
 import { useDimensions, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 
 function cardStyleInterpolator({
   current,

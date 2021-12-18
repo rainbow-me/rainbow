@@ -1,7 +1,7 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import Divider from '../Divider';
 import { ExchangeHeader } from '../exchange';
 import { FloatingPanel } from '../floating-panels';

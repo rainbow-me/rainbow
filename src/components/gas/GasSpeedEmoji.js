@@ -1,6 +1,6 @@
 import { has } from 'lodash';
 import React from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { Emoji } from '../text';
 import { margin } from '@rainbow-me/styles';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';

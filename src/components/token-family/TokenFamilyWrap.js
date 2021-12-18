@@ -1,7 +1,7 @@
 import { times } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import TokenFamilyHeader, {
   TokenFamilyHeaderAnimationDuration,
 } from './TokenFamilyHeader';

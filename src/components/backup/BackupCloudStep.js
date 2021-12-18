@@ -1,10 +1,10 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureMessage } from '@sentry/react-native';
+import styled from '@terrysahaidak/style-thing';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
-import styled from '@rainbow-me/styled';
 import zxcvbn from 'zxcvbn';
 import { isSamsungGalaxy } from '../../helpers/samsung';
 import { saveBackupPassword } from '../../model/backup';

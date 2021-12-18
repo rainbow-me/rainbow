@@ -1,7 +1,7 @@
+import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { ButtonPressAnimation } from '../animations';

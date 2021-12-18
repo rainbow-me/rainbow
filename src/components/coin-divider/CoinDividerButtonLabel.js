@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { magicMemo } from '../../utils';
 import { OpacityToggler } from '../animations';
 import { Text } from '../text';

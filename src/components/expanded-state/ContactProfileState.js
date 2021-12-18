@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import { abbreviations, magicMemo, profileUtils } from '../../utils';

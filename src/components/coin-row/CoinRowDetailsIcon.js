@@ -1,5 +1,5 @@
+import styled from '@terrysahaidak/style-thing';
 import React from 'react';
-import styled from '@rainbow-me/styled';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';

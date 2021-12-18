@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useRef } from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { Input } from '../../inputs';
 import { PlaceholderText } from '../../text';
 import { useMagicAutofocus } from '@rainbow-me/hooks';

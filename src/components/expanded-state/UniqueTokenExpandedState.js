@@ -13,7 +13,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import useWallets from '../../hooks/useWallets';
 import { lightModeThemeColors } from '../../styles/colors';
 import Link from '../Link';

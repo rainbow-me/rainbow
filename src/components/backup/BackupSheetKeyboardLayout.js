@@ -1,8 +1,8 @@
 import { useRoute } from '@react-navigation/native';
+import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
-import styled from '@rainbow-me/styled';
 import { RainbowButton } from '../buttons';
 import { Column } from '../layout';
 import { SheetHandleFixedToTopHeight } from '../sheet';

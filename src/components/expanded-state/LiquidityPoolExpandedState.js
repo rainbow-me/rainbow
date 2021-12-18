@@ -3,7 +3,7 @@ import { toLower } from 'lodash';
 import React, { Fragment, useEffect, useMemo } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useDispatch } from 'react-redux';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { UniBalanceHeightDifference } from '../../hooks/charts/useChartThrottledPoints';
 import deviceUtils from '../../utils/deviceUtils';
 import EdgeFade from '../discover-sheet/EdgeFade';

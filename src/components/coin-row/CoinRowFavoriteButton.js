@@ -1,9 +1,9 @@
+import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { BaseButton } from 'react-native-gesture-handler';
 import RadialGradient from 'react-native-radial-gradient';
-import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
 import { Text } from '../text';

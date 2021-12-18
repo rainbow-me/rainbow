@@ -15,7 +15,7 @@ import { useNavigation } from '../navigation/Navigation';
 import { useDimensions, useShakeAnimation } from '@rainbow-me/hooks';
 import { useBlockBackButton } from '@rainbow-me/hooks/useBlockBackButton';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { padding } from '@rainbow-me/styles';
 import { haptics } from '@rainbow-me/utils';
 

@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import styled from '@terrysahaidak/style-thing';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
@@ -15,7 +16,6 @@ import { ClearInputDecorator, Input } from '../inputs';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled';
 import { margin, padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 

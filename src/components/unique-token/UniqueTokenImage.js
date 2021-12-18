@@ -1,6 +1,6 @@
 import { toLower } from 'lodash';
 import React, { Fragment, useCallback, useState } from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../context/ThemeContext';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../../references';

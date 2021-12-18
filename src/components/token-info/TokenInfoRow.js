@@ -1,5 +1,5 @@
 import React, { Children, cloneElement } from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { FlexItem, Row } from '../layout';
 import { padding } from '@rainbow-me/styles';
 

@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useRef, useState } from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../context/ThemeContext';
 import { getRandomColor } from '../../styles/colors';
 import Divider from '../Divider';

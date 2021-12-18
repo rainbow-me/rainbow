@@ -1,4 +1,4 @@
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { Text } from '../text';
 
 const BalanceText = styled(Text).attrs(({ color, theme: { colors } }) => ({

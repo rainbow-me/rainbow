@@ -1,5 +1,5 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { useCallback } from 'react';
-import styled from '@rainbow-me/styled';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize, RequestVendorLogoIcon } from '../coin-icon';
 import CoinName from './CoinName';

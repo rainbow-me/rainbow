@@ -1,6 +1,6 @@
 import React from 'react';
 import FastImage from 'react-native-fast-image';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import ArbitrumBadge from '../../assets/badges/arbitrumBadge.png';
 import ArbitrumBadgeDark from '../../assets/badges/arbitrumBadgeDark.png';
 import OptimismBadge from '../../assets/badges/optimismBadge.png';

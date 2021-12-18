@@ -1,6 +1,6 @@
+import styled, { css } from '@terrysahaidak/style-thing';
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
-import styled, { css } from '@rainbow-me/styled';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize } from '../coin-icon';
 import { Centered, FlexItem, Row } from '../layout';

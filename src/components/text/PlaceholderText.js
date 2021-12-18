@@ -1,5 +1,5 @@
 import React, { useImperativeHandle, useState } from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import Text from './Text';
 
 const Placeholder = styled(Text).attrs(({ theme: { colors } }) => ({

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { useNavigation } from '../../navigation/Navigation';
 import { magicMemo } from '../../utils';
 import { Row } from '../layout';

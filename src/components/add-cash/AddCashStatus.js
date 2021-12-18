@@ -3,7 +3,7 @@ import LottieView from 'lottie-react-native';
 import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import jumpingDaiAnimation from '../../assets/lottie/jumping-dai.json';
 import jumpingEthAnimation from '../../assets/lottie/jumping-eth.json';
 import { CoinIcon } from '../coin-icon';

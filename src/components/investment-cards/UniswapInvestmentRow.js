@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../context/ThemeContext';
 import { convertAmountToPercentageDisplay } from '../../helpers/utilities';
 import { ButtonPressAnimation } from '../animations';

@@ -4,7 +4,7 @@ import { Image, Linking, NativeModules, ScrollView, Share } from 'react-native';
 // import { REVIEW_ANDROID } from '../../config/experimental';
 // import useExperimentalFlag from '../../config/experimentalHooks';
 // import { supportedLanguages } from '../../languages';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { THEMES, useTheme } from '../../context/ThemeContext';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';

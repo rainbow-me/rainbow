@@ -1,5 +1,5 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { useCallback } from 'react';
-import styled from '@rainbow-me/styled';
 import { useNavigation } from '../../navigation/Navigation';
 import Icon from '../icons/Icon';
 import { Row } from '../layout';

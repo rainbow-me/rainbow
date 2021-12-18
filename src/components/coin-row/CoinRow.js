@@ -1,5 +1,5 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { createElement } from 'react';
-import styled from '@rainbow-me/styled';
 import useCoinListEditOptions from '../../hooks/useCoinListEditOptions';
 import { CoinIcon, CoinIconGroup, CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';

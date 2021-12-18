@@ -1,6 +1,6 @@
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { Text } from '../text';
 import ContextMenu from './ContextMenu';
 import { borders, position } from '@rainbow-me/styles';

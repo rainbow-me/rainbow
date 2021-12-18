@@ -22,7 +22,7 @@ import {
   useUserLists,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { position } from '@rainbow-me/styles';
 import { haptics } from '@rainbow-me/utils';
 

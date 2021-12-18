@@ -38,7 +38,7 @@ import { getTitle } from '@rainbow-me/parsers';
 import { dataUpdateTransaction } from '@rainbow-me/redux/data';
 import { updateGasFeeForSpeed } from '@rainbow-me/redux/gas';
 import { ethUnits } from '@rainbow-me/references';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { position } from '@rainbow-me/styles';
 import { gasUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 import logger from 'logger';

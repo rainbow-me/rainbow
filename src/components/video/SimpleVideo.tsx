@@ -15,7 +15,7 @@ import {
 // @ts-ignore
 import Video from 'react-native-video';
 import convertToProxyURL from 'react-native-video-cache';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { ImgixImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
 import logger from 'logger';

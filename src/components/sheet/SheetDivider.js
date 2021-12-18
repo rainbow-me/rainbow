@@ -1,4 +1,4 @@
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { neverRerender } from '../../utils';
 import Divider from '../Divider';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { useMemoOne } from 'use-memo-one';
 import { interpolate, ScaleInAnimation } from '../../animations';
 import { Icon } from '../../icons';

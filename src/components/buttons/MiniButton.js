@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../context/ThemeContext';
 import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';

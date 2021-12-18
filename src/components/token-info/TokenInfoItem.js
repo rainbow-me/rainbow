@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { ButtonPressAnimation, ShimmerAnimation } from '../animations';
 import { ColumnWithMargins, RowWithMargins } from '../layout';
 import TokenInfoBalanceValue from './TokenInfoBalanceValue';

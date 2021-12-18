@@ -4,7 +4,7 @@ import makeColorMoreChill from 'make-color-more-chill';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { ChainBadge, CoinIcon } from '../coin-icon';

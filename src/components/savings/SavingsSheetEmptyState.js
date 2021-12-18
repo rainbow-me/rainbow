@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { calculateAPY } from '../../helpers/savings';
 import { useNavigation } from '../../navigation/Navigation';
 import Divider from '../Divider';

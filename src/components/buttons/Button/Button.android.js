@@ -1,7 +1,7 @@
 import { isArray, isString } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';

@@ -1,6 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useMemo } from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import ChainLogo from '../ChainLogo';
 import NetworkPill from '../NetworkPill';
 import { RequestVendorLogoIcon } from '../coin-icon';

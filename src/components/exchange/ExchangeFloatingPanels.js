@@ -1,4 +1,4 @@
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { FloatingPanels } from '../floating-panels';
 
 const ExchangeFloatingPanels = styled(FloatingPanels).attrs({

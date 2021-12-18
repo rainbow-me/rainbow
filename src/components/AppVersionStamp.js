@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { Pressable } from 'react-native';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { Text } from './text';
 import { useAppVersion, useTimeout } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';

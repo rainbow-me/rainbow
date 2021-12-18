@@ -1,3 +1,4 @@
+import styled from '@terrysahaidak/style-thing';
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
@@ -16,7 +17,6 @@ import { useIsCoinListEditedSharedValue } from '@rainbow-me/helpers/SharedValues
 import { buildAssetUniqueIdentifier } from '@rainbow-me/helpers/assets';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled';
 
 const editTranslateOffset = 37;
 

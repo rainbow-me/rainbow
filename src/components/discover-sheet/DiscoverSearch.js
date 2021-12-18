@@ -11,7 +11,7 @@ import React, {
 import { InteractionManager, View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { useDispatch } from 'react-redux';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { addHexPrefix } from '../../handlers/web3';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
 import tokenSectionTypes from '../../helpers/tokenSectionTypes';

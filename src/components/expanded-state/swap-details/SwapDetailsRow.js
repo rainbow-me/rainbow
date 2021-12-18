@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { Centered } from '../../layout';
 import { Nbsp, Text, TruncatedText } from '../../text';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';

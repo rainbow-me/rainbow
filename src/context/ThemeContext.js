@@ -1,3 +1,4 @@
+import { StyleThingThemeProvider } from '@terrysahaidak/style-thing';
 import React, {
   createContext,
   useContext,
@@ -127,13 +128,15 @@ export const MainThemeProvider = props => {
   }
 
   return (
-    <ThemeProvider theme={currentTheme}>
-      <ThemeContext.Provider value={currentTheme}>
-        <ColorModeProvider value={currentTheme.isDarkMode ? 'dark' : 'light'}>
-          {props.children}
-        </ColorModeProvider>
-      </ThemeContext.Provider>
-    </ThemeProvider>
+    <StyleThingThemeProvider value={currentTheme}>
+      <ThemeProvider theme={currentTheme}>
+        <ThemeContext.Provider value={currentTheme}>
+          <ColorModeProvider value={currentTheme.isDarkMode ? 'dark' : 'light'}>
+            {props.children}
+          </ColorModeProvider>
+        </ThemeContext.Provider>
+      </ThemeProvider>
+    </StyleThingThemeProvider>
   );
 };
 

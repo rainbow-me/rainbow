@@ -1,3 +1,4 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { useCallback } from 'react';
 import { ScrollView } from 'react-native';
 import { useTheme } from '../../../context/ThemeContext';
@@ -15,7 +16,6 @@ import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useManageCloudBackups, useWallets } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@rainbow-me/styled';
 import { fonts, padding } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
 

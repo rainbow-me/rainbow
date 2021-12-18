@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { CoinIcon } from '../coin-icon';
 import { RowWithMargins } from '../layout';
 import TokenInfoValue from './TokenInfoValue';

@@ -1,10 +1,10 @@
+import styled from '@terrysahaidak/style-thing';
 import { startCase } from 'lodash';
 import React from 'react';
 import { View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import RadialGradient from 'react-native-radial-gradient';
-import styled from '@rainbow-me/styled';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';

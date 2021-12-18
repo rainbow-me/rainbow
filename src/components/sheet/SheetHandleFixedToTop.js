@@ -1,5 +1,5 @@
+import styled from '@terrysahaidak/style-thing';
 import React from 'react';
-import styled from '@rainbow-me/styled';
 import { Centered } from '../layout';
 import SheetHandle, { HandleHeight } from './SheetHandle';
 import { padding } from '@rainbow-me/styles';

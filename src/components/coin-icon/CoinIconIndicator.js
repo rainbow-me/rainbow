@@ -1,6 +1,6 @@
 import React from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { useIsCoinListEditedSharedValue } from '@rainbow-me/helpers/SharedValuesContext';

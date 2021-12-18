@@ -1,7 +1,7 @@
+import styled from '@terrysahaidak/style-thing';
 import PropTypes from 'prop-types';
 import React, { Children, Component } from 'react';
 import { Animated, Easing } from 'react-native';
-import styled from '@rainbow-me/styled';
 import { deviceUtils } from '../../utils';
 import AnimatedPagerItem from './AnimatedPagerItem';
 import { position } from '@rainbow-me/styles';

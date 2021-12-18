@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,

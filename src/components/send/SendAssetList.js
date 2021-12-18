@@ -1,3 +1,4 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { Fragment } from 'react';
 import { LayoutAnimation } from 'react-native';
 import { View } from 'react-primitives';
@@ -7,7 +8,6 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 
-import styled from '@rainbow-me/styled';
 import { buildCoinsList } from '../../helpers/assets';
 import networkTypes from '../../helpers/networkTypes';
 import { deviceUtils } from '../../utils';

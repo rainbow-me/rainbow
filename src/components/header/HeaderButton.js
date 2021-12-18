@@ -1,4 +1,4 @@
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { ButtonPressAnimation } from '../animations';
 import { padding } from '@rainbow-me/styles';
 

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { abbreviations, magicMemo, measureText } from '../../utils';
 import { DividerSize } from '../Divider';
 import { ButtonPressAnimation } from '../animations';

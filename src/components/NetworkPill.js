@@ -1,6 +1,6 @@
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { Centered, RowWithMargins } from '../components/layout';
 import { position } from '@rainbow-me/styles';
 

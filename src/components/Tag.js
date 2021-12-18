@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Linking } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { magicMemo, showActionSheetWithOptions } from '../utils';
 import { ButtonPressAnimation } from './animations';
 import { Centered, Column } from './layout';

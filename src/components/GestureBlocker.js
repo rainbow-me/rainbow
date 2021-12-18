@@ -1,3 +1,4 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import {
@@ -6,7 +7,6 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
-import styled from '@rainbow-me/styled';
 import { useMemoOne } from 'use-memo-one';
 import { useDimensions } from '@rainbow-me/hooks';
 

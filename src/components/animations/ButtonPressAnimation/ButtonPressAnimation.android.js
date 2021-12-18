@@ -1,3 +1,4 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { createContext, useCallback, useContext, useMemo } from 'react';
 import { processColor, requireNativeComponent, View } from 'react-native';
 import { createNativeWrapper } from 'react-native-gesture-handler';
@@ -11,7 +12,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import styled from '@rainbow-me/styled';
 import { normalizeTransformOrigin } from './NativeButton';
 import { useLongPressEvents } from '@rainbow-me/hooks';
 

@@ -11,7 +11,7 @@ import Reanimated, {
 } from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { useMemoOne } from 'use-memo-one';
 import RainbowGreyNeon from '../assets/rainbows/greyneon.png';
 import RainbowLight from '../assets/rainbows/light.png';

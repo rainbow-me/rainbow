@@ -1,4 +1,4 @@
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import Flex from './Flex';
 
 const Centered = styled(Flex).attrs({

@@ -1,5 +1,5 @@
+import styled from '@terrysahaidak/style-thing';
 import { PropTypes } from 'prop-types';
-import styled from '@rainbow-me/styled';
 import Divider from '../Divider';
 import { neverRerender } from '@rainbow-me/utils';
 

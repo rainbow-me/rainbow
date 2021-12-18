@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { AnimatedNumber, Emoji, Text } from '../text';

@@ -1,6 +1,6 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { useEffect, useMemo, useState } from 'react';
 import { SectionList } from 'react-native';
-import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import networkTypes from '../../helpers/networkTypes';
 import ActivityIndicator from '../ActivityIndicator';

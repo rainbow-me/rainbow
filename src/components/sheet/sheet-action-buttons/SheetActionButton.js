@@ -1,6 +1,6 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from '@rainbow-me/styled';
 import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Icon } from '../../icons';

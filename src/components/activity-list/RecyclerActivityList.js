@@ -6,7 +6,7 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import {
   ContractInteractionCoinRow,
   RequestCoinRow,

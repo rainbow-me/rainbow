@@ -3,7 +3,7 @@ import { toUpper } from 'lodash';
 import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import { useSelector } from 'react-redux';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { useRemoveNextToLast } from '../../navigation/useRemoveNextToLast';
 import { ButtonPressAnimation } from '../animations';
 import { BottomRowText, CoinRow } from '../coin-row';

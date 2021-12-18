@@ -1,5 +1,6 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
+import styled from '@terrysahaidak/style-thing';
 import React, {
   forwardRef,
   Fragment,
@@ -15,7 +16,6 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
 import SheetHandleFixedToTop, {

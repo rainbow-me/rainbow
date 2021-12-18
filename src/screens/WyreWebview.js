@@ -2,7 +2,7 @@ import { useRoute } from '@react-navigation/core';
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { WebView } from 'react-native-webview';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import Spinner from '../components/Spinner';
 import { Centered, FlexItem } from '../components/layout';
 import { reserveWyreOrder } from '../handlers/wyre';

@@ -1,5 +1,5 @@
+import styled from '@terrysahaidak/style-thing';
 import React from 'react';
-import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered, Row } from '../layout';
 import { TruncatedText } from '../text';

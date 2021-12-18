@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextInput } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { RowWithMargins } from '../../../layout';
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
 import { useRatio } from './useRatio';

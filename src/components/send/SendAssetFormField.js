@@ -1,7 +1,7 @@
 import analytics from '@segment/analytics-react-native';
+import styled from '@terrysahaidak/style-thing';
 import React, { useCallback } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { BubbleField } from '../fields';

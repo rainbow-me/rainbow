@@ -1,6 +1,6 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { useCallback, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from '@rainbow-me/styled';
 import { useNavigation } from '../../navigation/Navigation';
 import { jumpToShort } from '../discover-sheet/DiscoverSheet';
 import Icon from '../icons/Icon';

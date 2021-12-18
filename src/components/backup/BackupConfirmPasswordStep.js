@@ -1,9 +1,9 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import styled from '@terrysahaidak/style-thing';
 import lang from 'i18n-js';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
-import styled from '@rainbow-me/styled';
 import { isSamsungGalaxy } from '../../helpers/samsung';
 import { saveBackupPassword } from '../../model/backup';
 import { cloudPlatform } from '../../utils/platform';

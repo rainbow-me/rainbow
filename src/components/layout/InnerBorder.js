@@ -1,4 +1,4 @@
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { position } from '@rainbow-me/styles';
 
 const InnerBorder = styled.View.withConfig({

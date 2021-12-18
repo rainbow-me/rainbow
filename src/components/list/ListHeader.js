@@ -1,6 +1,6 @@
 import React, { createElement, Fragment } from 'react';
 import { Share } from 'react-native';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import CoinDividerButtonLabel from '../coin-divider/CoinDividerButtonLabel';

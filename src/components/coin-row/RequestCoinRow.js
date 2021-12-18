@@ -1,3 +1,4 @@
+import styled from '@terrysahaidak/style-thing';
 import { addHours, differenceInMinutes, isPast } from 'date-fns';
 import React, {
   useCallback,
@@ -7,7 +8,6 @@ import React, {
   useState,
 } from 'react';
 import { useDispatch } from 'react-redux';
-import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { RequestCoinIcon } from '../coin-icon';

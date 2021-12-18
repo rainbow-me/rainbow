@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Animated, Easing } from 'react-native';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { useTheme } from '../../context/ThemeContext';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';

@@ -1,5 +1,5 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { createContext, useCallback, useContext, useMemo } from 'react';
-import styled from '@rainbow-me/styled';
 import { ColumnWithMargins } from '../layout';
 import AvatarCircle from '../profile/AvatarCircle';
 import SheetHandle from '../sheet/SheetHandle';

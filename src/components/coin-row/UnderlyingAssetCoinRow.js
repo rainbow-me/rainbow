@@ -1,5 +1,5 @@
+import styled from '@terrysahaidak/style-thing';
 import React from 'react';
-import styled from '@rainbow-me/styled';
 import { magicMemo } from '../../utils';
 import { CoinIcon } from '../coin-icon';
 import { Centered, Row } from '../layout';

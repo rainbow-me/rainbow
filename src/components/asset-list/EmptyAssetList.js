@@ -1,7 +1,7 @@
 import { times } from 'lodash';
 import React, { useMemo } from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import AddFundsInterstitial from '../AddFundsInterstitial';
 import { FabWrapperBottomPosition } from '../fab';
 import { Centered, Column } from '../layout';

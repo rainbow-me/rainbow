@@ -1,7 +1,7 @@
+import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
-import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';

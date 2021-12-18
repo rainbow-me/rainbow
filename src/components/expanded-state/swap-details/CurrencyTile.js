@@ -1,7 +1,7 @@
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { useSelector } from 'react-redux';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { CoinIcon } from '../../coin-icon';
 import { Centered, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedText } from '../../text';

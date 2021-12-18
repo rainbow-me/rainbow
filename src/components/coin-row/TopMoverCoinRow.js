@@ -1,7 +1,7 @@
 import analytics from '@segment/analytics-react-native';
+import styled from '@terrysahaidak/style-thing';
 import React, { useCallback } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import styled from '@rainbow-me/styled';
 import { useTheme } from '../../context/ThemeContext';
 import { fonts } from '../../styles';
 import { magicMemo, measureText } from '../../utils';

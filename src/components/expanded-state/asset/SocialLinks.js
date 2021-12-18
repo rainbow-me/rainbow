@@ -1,6 +1,6 @@
 import { startCase } from 'lodash';
 import React from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import Link from '../../Link';
 import EdgeFade from '../../discover-sheet/EdgeFade';
 import { ethereumUtils } from '@rainbow-me/utils';

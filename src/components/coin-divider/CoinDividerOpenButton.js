@@ -6,7 +6,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { ButtonPressAnimation, RoundButtonCapSize } from '../animations';
 import { Text } from '../text';

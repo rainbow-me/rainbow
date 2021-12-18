@@ -1,7 +1,7 @@
 import { isEmpty, upperFirst } from 'lodash';
 import React from 'react';
 import { View } from 'react-native';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { ButtonPressAnimation } from '../../animations';
 import EdgeFade from '../../discover-sheet/EdgeFade';
 import { Column, Row } from '../../layout';

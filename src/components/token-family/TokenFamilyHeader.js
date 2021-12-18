@@ -1,6 +1,6 @@
 import React from 'react';
 import { Animated, Easing } from 'react-native';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';

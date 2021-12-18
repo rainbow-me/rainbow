@@ -2,7 +2,7 @@ import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import URL from 'url-parse';
 import { buildUniqueTokenName } from '../../../helpers/assets';
 import { ButtonPressAnimation } from '../../animations';

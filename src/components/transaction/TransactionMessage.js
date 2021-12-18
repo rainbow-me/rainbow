@@ -5,7 +5,7 @@ import { PERSONAL_SIGN, SIGN_TYPED_DATA } from '../../utils/signingMethods';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { isHexString } from '@rainbow-me/handlers/web3';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 

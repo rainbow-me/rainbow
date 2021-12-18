@@ -1,6 +1,6 @@
 import React from 'react';
 import Markdown from 'react-native-markdown-display';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import Text from './Text';
 
 const Paragraph = styled(Text)({

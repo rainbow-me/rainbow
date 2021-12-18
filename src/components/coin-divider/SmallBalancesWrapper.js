@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { OpacityToggler } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import { useFrameDelayedValue, useOpenSmallBalances } from '@rainbow-me/hooks';

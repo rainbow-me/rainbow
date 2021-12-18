@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { Alert, Keyboard, SectionList } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { ButtonPressAnimation } from '../../components/animations';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
 import { ContactRow } from '../contacts';

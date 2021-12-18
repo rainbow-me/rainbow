@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { Share } from 'react-native';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, InnerBorder } from '../layout';

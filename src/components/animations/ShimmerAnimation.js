@@ -1,3 +1,4 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { useEffect, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
@@ -7,7 +8,6 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import styled from '@rainbow-me/styled';
 import { position } from '@rainbow-me/styles';
 
 const timingConfig = {

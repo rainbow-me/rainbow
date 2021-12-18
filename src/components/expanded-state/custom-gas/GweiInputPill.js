@@ -1,7 +1,7 @@
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import TextInputMask from 'react-native-text-input-mask';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { Row } from '../../../components/layout';
 import { ButtonPressAnimation } from '../../animations';
 import { Text } from '../../text';

@@ -1,7 +1,7 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { ConfirmExchangeButton } from '../exchange';
 import { GasSpeedButton } from '../gas';
 import { Column } from '../layout';

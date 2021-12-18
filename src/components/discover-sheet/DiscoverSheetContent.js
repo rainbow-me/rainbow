@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { View } from 'react-native';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { ColumnWithMargins, FlexItem } from '../layout';
 import { Text } from '../text';
 import DiscoverHome from './DiscoverHome';

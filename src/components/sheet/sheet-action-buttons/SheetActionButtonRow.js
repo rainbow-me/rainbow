@@ -1,5 +1,5 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { Children } from 'react';
-import styled from '@rainbow-me/styled';
 import { FlexItem, Row } from '../../layout';
 import { padding } from '@rainbow-me/styles';
 

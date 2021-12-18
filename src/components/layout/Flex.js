@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { buildFlexStyles } from '@rainbow-me/styles';
 
 const flexPropTypes = {

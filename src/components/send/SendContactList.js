@@ -1,3 +1,4 @@
+import styled from '@terrysahaidak/style-thing';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { sortBy, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
@@ -5,7 +6,6 @@ import { SectionList } from 'react-native';
 import * as DeviceInfo from 'react-native-device-info';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from '@rainbow-me/styled';
 import { FlyInAnimation } from '../animations';
 import { ContactRow, SwipeableContactRow } from '../contacts';
 import { SheetHandleFixedToTopHeight } from '../sheet';

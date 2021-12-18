@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../context/ThemeContext';
 import { position } from '@rainbow-me/styles';
 

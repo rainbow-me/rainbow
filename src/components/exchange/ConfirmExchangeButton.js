@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useMemo } from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { darkModeThemeColors } from '../../styles/colors';
 import { HoldToAuthorizeButton } from '../buttons';
 import { Centered } from '../layout';

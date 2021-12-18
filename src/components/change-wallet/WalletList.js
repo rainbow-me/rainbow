@@ -1,3 +1,4 @@
+import styled from '@terrysahaidak/style-thing';
 import { get, isEmpty } from 'lodash';
 import React, {
   Fragment,
@@ -8,7 +9,6 @@ import React, {
 } from 'react';
 import { FlatList } from 'react-native-gesture-handler';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from '@rainbow-me/styled';
 import networkTypes from '../../helpers/networkTypes';
 import WalletTypes from '../../helpers/walletTypes';
 import { address } from '../../utils/abbreviations';

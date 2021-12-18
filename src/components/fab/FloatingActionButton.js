@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../context/ThemeContext';
 import { darkModeThemeColors } from '../../styles/colors';
 import { magicMemo } from '../../utils';

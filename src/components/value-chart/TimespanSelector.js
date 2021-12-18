@@ -1,5 +1,5 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { useMemo } from 'react';
-import styled from '@rainbow-me/styled';
 import { JellySelector } from '../jelly-selector';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';

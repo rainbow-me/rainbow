@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { findNodeHandle, NativeModules, TextInput } from 'react-native';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../context/ThemeContext';
 import { isSymbolStablecoin } from '../../helpers/savings';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';

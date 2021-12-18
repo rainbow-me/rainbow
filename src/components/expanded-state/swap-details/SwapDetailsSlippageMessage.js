@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import Divider from '../../Divider';
 import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
 import { Emoji, Text } from '../../text';

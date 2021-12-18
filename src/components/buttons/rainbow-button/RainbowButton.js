@@ -1,6 +1,6 @@
 import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import AddCashIconSource from '../../../assets/addCashIcon.png';
 import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';

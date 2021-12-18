@@ -1,6 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { BackButton } from '../header';
 import { Centered } from '../layout';
 import { TruncatedText } from '../text';

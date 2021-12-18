@@ -28,7 +28,7 @@ import {
   RecyclerListViewState,
 } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import { withThemeContext } from '../../../context/ThemeContext';
 import { CoinDivider, CoinDividerHeight } from '../../coin-divider';
 import { CoinRowHeight } from '../../coin-row';

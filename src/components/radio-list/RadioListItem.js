@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import styled from '@rainbow-me/styled';
+import styled from '@terrysahaidak/style-thing';
 import Icon from '../icons/Icon';
 import { ListItem } from '../list';
 
