@@ -8,7 +8,6 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { dismissingScreenListener } from '../../shim';
 import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import {
@@ -41,12 +40,12 @@ import {
   useContacts,
   useCurrentNonce,
   useGas,
-  useMagicAutofocus,
   useMaxInputBalance,
   usePrevious,
   useRefreshAccountData,
   useSendableUniqueTokens,
   useSendSavingsAccount,
+  useSendSheetInputRefs,
   useTransactionConfirmation,
   useUpdateAssetOnchainBalance,
   useUserAccounts,
@@ -94,7 +93,7 @@ const KeyboardSizeView = styled(KeyboardArea)`
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
-  const { goBack, navigate, addListener } = useNavigation();
+  const { goBack, navigate } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
   const { allAssets } = useAccountAssets();
@@ -109,14 +108,12 @@ export default function SendSheet(props) {
     updateDefaultGasLimit,
     updateTxFee,
   } = useGas();
-  const isDismissing = useRef(false);
   const recipientFieldRef = useRef();
 
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
-  const getNextNonce = useCurrentNonce(accountAddress, network);
 
   const savings = useSendSavingsAccount();
   const fetchData = useRefreshAccountData();
@@ -131,6 +128,8 @@ export default function SendSheet(props) {
   const prevNetwork = usePrevious(currentNetwork);
   const [currentInput, setCurrentInput] = useState('');
 
+  const getNextNonce = useCurrentNonce(accountAddress, currentNetwork);
+
   const { params } = useRoute();
   const assetOverride = params?.asset;
   const prevAssetOverride = usePrevious(assetOverride);
@@ -144,6 +143,12 @@ export default function SendSheet(props) {
   const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
   const [currentProvider, setCurrentProvider] = useState();
   const { colors, isDarkMode } = useTheme();
+
+  const {
+    nativeCurrencyInputRef,
+    setLastFocusedInputHandle,
+    assetInputRef,
+  } = useSendSheetInputRefs();
 
   const showEmptyState = !isValidAddress;
   const showAssetList = isValidAddress && isEmpty(selected);
@@ -165,31 +170,6 @@ export default function SendSheet(props) {
   const isL2 = useMemo(() => {
     return isL2Network(currentNetwork);
   }, [currentNetwork]);
-
-  const { triggerFocus } = useMagicAutofocus(recipientFieldRef);
-
-  useEffect(() => {
-    if (ios) {
-      return;
-    }
-    dismissingScreenListener.current = () => {
-      Keyboard.dismiss();
-      isDismissing.current = true;
-    };
-    const unsubscribe = addListener(
-      'transitionEnd',
-      ({ data: { closing } }) => {
-        if (!closing && isDismissing.current) {
-          isDismissing.current = false;
-          recipientFieldRef?.current?.focus();
-        }
-      }
-    );
-    return () => {
-      unsubscribe();
-      dismissingScreenListener.current = undefined;
-    };
-  }, [addListener]);
 
   const sendUpdateAssetAmount = useCallback(
     newAssetAmount => {
@@ -395,7 +375,7 @@ export default function SendSheet(props) {
       });
       analytics.track('Changed native currency input in Send flow');
     },
-    [maxInputBalance, selected]
+    [maxInputBalance, selected.decimals, selected?.price?.value]
   );
 
   const sendMaxBalance = useCallback(async () => {
@@ -487,7 +467,7 @@ export default function SendSheet(props) {
         );
 
         if (!lessThan(updatedGasLimit, gasLimit)) {
-          if (network === networkTypes.optimism) {
+          if (currentNetwork === networkTypes.optimism) {
             updateTxFeeForOptimism(updatedGasLimit);
           } else {
             updateTxFee(updatedGasLimit, null);
@@ -633,7 +613,7 @@ export default function SendSheet(props) {
     let label = 'Enter an Amount';
 
     let nativeToken = 'ETH';
-    if (network === networkTypes.polygon) {
+    if (currentNetwork === networkTypes.polygon) {
       nativeToken = 'MATIC';
     }
     if (
@@ -660,7 +640,7 @@ export default function SendSheet(props) {
     amountDetails.isSufficientBalance,
     gasFeeParamsBySpeed,
     isSufficientGas,
-    network,
+    currentNetwork,
     selectedGasFee,
   ]);
 
@@ -672,7 +652,8 @@ export default function SendSheet(props) {
       toAddress = await resolveNameOrAddress(recipient);
     }
     const validRecipient = await validateRecipient(toAddress);
-
+    assetInputRef?.current?.blur();
+    nativeCurrencyInputRef?.current?.blur();
     if (!validRecipient) {
       navigate(Routes.EXPLAIN_SHEET, {
         onClose: () => {
@@ -687,7 +668,6 @@ export default function SendSheet(props) {
       });
       return;
     }
-
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
       amountDetails: amountDetails,
       asset: selected,
@@ -700,10 +680,12 @@ export default function SendSheet(props) {
     });
   }, [
     amountDetails,
+    assetInputRef,
     buttonDisabled,
     currentNetwork,
     isL2,
     isNft,
+    nativeCurrencyInputRef,
     navigate,
     recipient,
     selected,
@@ -819,7 +801,6 @@ export default function SendSheet(props) {
           isValidAddress={isValidAddress}
           onChangeAddressInput={onChangeInput}
           onPressPaste={setRecipient}
-          onRefocusInput={triggerFocus}
           recipient={recipient}
           recipientFieldRef={recipientFieldRef}
           removeContact={onRemoveContact}
@@ -855,6 +836,7 @@ export default function SendSheet(props) {
           <SendAssetForm
             {...props}
             assetAmount={amountDetails.assetAmount}
+            assetInputRef={assetInputRef}
             buttonRenderer={
               <SheetActionButton
                 color={colorForAsset}
@@ -870,16 +852,19 @@ export default function SendSheet(props) {
             }
             nativeAmount={amountDetails.nativeAmount}
             nativeCurrency={nativeCurrency}
+            nativeCurrencyInputRef={nativeCurrencyInputRef}
             onChangeAssetAmount={onChangeAssetAmount}
             onChangeNativeAmount={onChangeNativeAmount}
             onResetAssetSelection={onResetAssetSelection}
             selected={selected}
             sendMaxBalance={sendMaxBalance}
+            setLastFocusedInputHandle={setLastFocusedInputHandle}
             txSpeedRenderer={
               <GasSpeedButton
                 asset={selected}
                 currentNetwork={currentNetwork}
                 horizontalPadding={0}
+                marginBottom={17}
                 theme={isDarkMode ? 'dark' : 'light'}
               />
             }

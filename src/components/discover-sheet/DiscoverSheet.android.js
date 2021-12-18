@@ -12,8 +12,8 @@ import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import {
   runOnJS,
   useAnimatedReaction,
-  useAnimatedScrollHandler,
   useSharedValue,
+  useWorkletCallback,
 } from 'react-native-reanimated';
 import styled from 'styled-components';
 import DiscoverSheetContent from './DiscoverSheetContent';
@@ -40,6 +40,10 @@ const AndroidWrapper = styled.View.attrs({
   height: ${deviceUtils.dimensions.height};
   position: absolute;
 `;
+
+let jumpToShort;
+
+export { jumpToShort };
 
 const DiscoverSheet = (_, forwardedRef) => {
   const [headerButtonsHandlers, deps] = useAreHeaderButtonVisible();
@@ -71,10 +75,12 @@ const DiscoverSheet = (_, forwardedRef) => {
     [deps]
   );
 
+  jumpToShort = value.jumpToShort;
+
   useImperativeHandle(forwardedRef, () => value);
 
   const yPosition = useSharedValue(0);
-  const scrollHandler = useAnimatedScrollHandler(event => {
+  const scrollHandler = useWorkletCallback(event => {
     yPosition.value = event.contentOffset.y;
   });
 
@@ -122,7 +128,7 @@ const DiscoverSheet = (_, forwardedRef) => {
         >
           <DiscoverSheetHeader yPosition={yPosition} />
           <BottomSheetScrollView
-            onScroll={scrollHandler}
+            onScrollWorklet={scrollHandler}
             ref={sheet}
             removeClippedSubviews
           >

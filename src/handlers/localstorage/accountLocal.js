@@ -12,11 +12,8 @@ const ACCOUNT_INFO = 'accountInfo';
 const ACCOUNT_EMPTY = 'accountEmpty';
 const ASSET_PRICES_FROM_UNISWAP = 'assetPricesFromUniswap';
 const ASSETS = 'assets';
-const OPEN_FAMILIES = 'openFamilies';
-const OPEN_INVESTMENT_CARDS = 'openInvestmentCards';
 const PURCHASE_TRANSACTIONS = 'purchaseTransactions';
 const SAVINGS = 'savings';
-const SAVINGS_TOGGLE = 'savingsToggle';
 const SHOWCASE_TOKENS = 'showcaseTokens';
 const TRANSACTIONS = 'transactions';
 const UNIQUE_TOKENS = 'uniquetokens';
@@ -28,11 +25,8 @@ export const accountLocalKeys = [
   ACCOUNT_INFO,
   ASSET_PRICES_FROM_UNISWAP,
   ASSETS,
-  OPEN_FAMILIES,
-  OPEN_INVESTMENT_CARDS,
   PURCHASE_TRANSACTIONS,
   SAVINGS,
-  SAVINGS_TOGGLE,
   SHOWCASE_TOKENS,
   TRANSACTIONS,
   UNIQUE_TOKENS,
@@ -234,69 +228,6 @@ export const saveUniqueTokens = (uniqueTokens, accountAddress, network) =>
     network,
     uniqueTokensVersion
   );
-
-/**
- * @desc get open savings
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getSavingsToggle = (accountAddress, network) =>
-  getAccountLocal(SAVINGS_TOGGLE, accountAddress, network, false);
-
-/**
- * @desc save small balance toggle
- * @param  {String}   [address]
- * @param  {Boolean}    [small balance toggle]
- * @param  {String}   [network]
- */
-export const saveSavingsToggle = (isOpen, accountAddress, network) =>
-  saveAccountLocal(SAVINGS_TOGGLE, isOpen, accountAddress, network);
-
-/**
- * @desc get open investment cards
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getOpenInvestmentCards = (accountAddress, network) =>
-  getAccountLocal(OPEN_INVESTMENT_CARDS, accountAddress, network, {});
-
-/**
- * @desc save open investment cards
- * @param  {String}   [address]
- * @param  {Object}    [open investment cards]
- * @param  {String}   [network]
- */
-export const saveOpenInvestmentCards = (
-  openInvestmentCards,
-  accountAddress,
-  network
-) =>
-  saveAccountLocal(
-    OPEN_INVESTMENT_CARDS,
-    openInvestmentCards,
-    accountAddress,
-    network
-  );
-
-/**
- * @desc get open families
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Object}
- */
-export const getOpenFamilies = (accountAddress, network) =>
-  getAccountLocal(OPEN_FAMILIES, accountAddress, network, {});
-
-/**
- * @desc save open families
- * @param  {String}   [address]
- * @param  {Object}    [open families]
- * @param  {String}   [network]
- */
-export const saveOpenFamilies = (openFamilies, accountAddress, network) =>
-  saveAccountLocal(OPEN_FAMILIES, openFamilies, accountAddress, network);
 
 /**
  * @desc get profile info
