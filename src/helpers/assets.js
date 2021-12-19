@@ -57,7 +57,6 @@ const addEthPlaceholder = (
       icon_url: ETH_ICON_URL,
       isCoin: true,
       isPinned: pinnedCoins.includes('eth'),
-      isPlaceholder: true,
       isSmall: false,
       name: 'Ethereum',
       native: {

@@ -25,7 +25,6 @@ function getZeroEth() {
     decimals: 18,
     icon_url: ETH_ICON_URL,
     isCoin: true,
-    isPlaceholder: true,
     isSmall: false,
     name: 'Ethereum',
     native: {
