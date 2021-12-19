@@ -6,7 +6,6 @@ import { ButtonPressAnimation } from '../../animations';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import TokenHistoryEdgeFade from './TokenHistoryEdgeFade';
-import TokenHistoryLoader from './TokenHistoryLoader';
 import { useTheme } from '@rainbow-me/context/ThemeContext';
 import { apiGetNftSemiFungibility, apiGetNftTransactionHistory, processRawEvents } from '@rainbow-me/handlers/opensea-api';
 import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
@@ -45,7 +44,6 @@ const TokenHistory = ({ contractAndToken, color }) => {
   const [tokenHistoryShort, setTokenHistoryShort] = useState(false);
   const [contractAddress, setContractAddress] = useState('');
   const [tokenID, setTokenID] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
   const { colors } = useTheme();
   const { accountAddress } = useAccountProfile();
   const { network } = useAccountSettings();
@@ -80,10 +78,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
         setTokenHistoryShort(true);
       }
     }
-    //delete this?
-    setIsLoading(false);
     fetch();
-    setIsLoading(false);
   }, [accountAddress, contractAddress, networkPrefix, tokenID]);
 
   const handlePress = useCallback(
@@ -213,8 +208,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
 
   return (
     <>
-      {isLoading && <TokenHistoryLoader />}
-      {!isLoading && (tokenHistoryShort ? renderTwoOrLessDataItems() : renderFlatList())}
+      {tokenHistoryShort ? renderTwoOrLessDataItems() : renderFlatList()}
     </>
   );
 };
