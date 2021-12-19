@@ -14,7 +14,7 @@ import { useAccountProfile, useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
-import { EventTypes } from '@rainbow-me/utils/tokenHistoryUtils';
+import { EventTypes } from '../../../utils/tokenHistoryUtils';
 
 const filteredTransactionTypes = new Set([
   EventTypes.ENS.type,
@@ -69,13 +69,8 @@ const TokenHistory = ({ contractAndToken, color }) => {
       console.log("hi");
       console.log(results);
       console.log("Bye2");
-      const filteredResults = results.filter((transaction) => {
-        console.log(transaction.event_type);
-        return filteredTransactionTypes.has(transaction.event_type);
-      });
-      console.log(filteredResults);
-      setTokenHistory(filteredResults);
-      if (filteredResults.length <= 2) {
+      setTokenHistory(results);
+      if (results.length <= 2) {
         setTokenHistoryShort(true);
       }
     }
@@ -101,30 +96,30 @@ const TokenHistory = ({ contractAndToken, color }) => {
     let isClickable = false;
     let label, icon, suffix;
 
-    switch (item?.event_type) {
+    switch (item?.eventType) {
       case EventTypes.ENS.type:
         label = EventTypes.ENS.label;
         icon = EventTypes.ENS.icon;
         break;
 
       case EventTypes.MINT.type:
-        suffix = `${item.to_account}`;
+        suffix = `${item.toAccount}`;
         isClickable =
-          accountAddress.toLowerCase() !== item.to_account_eth_address;
+          accountAddress.toLowerCase() !== item.toAccountEthAddress;
         label = EventTypes.MINT.label;
         icon = EventTypes.MINT.icon;
         break;
 
       case EventTypes.SALE.type:
-        suffix = `${item.sale_amount} ${item.payment_token}`;
+        suffix = `${item.saleAmount} ${item.paymentToken}`;
         label = EventTypes.SALE.label;
         icon = EventTypes.SALE.icon;
         break;
 
       case EventTypes.TRANSFER.type:
-        suffix = `${item.to_account}`;
+        suffix = `${item.toAccount}`;
         isClickable =
-          accountAddress.toLowerCase() !== item.to_account_eth_address;
+          accountAddress.toLowerCase() !== item.toAccountEthAddress;
         label = EventTypes.TRANSFER.label;
         icon = EventTypes.TRANSFER.icon;
         break;
@@ -154,7 +149,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
     suffixIcon,
   }) => {
     const date = getHumanReadableDateWithoutOn(
-      new Date(item.created_date).getTime() / 1000
+      new Date(item.createdDate).getTime() / 1000
     );
 
     return (
@@ -170,7 +165,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
           <ButtonPressAnimation
             disabled={!isClickable}
             hapticType="selection"
-            onPress={() => handlePress(item.to_account_eth_address)}
+            onPress={() => handlePress(item.toAccountEthAddress)}
             scaleTo={0.92}
           >
             <Row>

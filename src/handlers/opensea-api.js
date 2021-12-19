@@ -14,7 +14,7 @@ import { web3Provider } from './web3';
 import { abbreviations } from '@rainbow-me/utils';
 import { formatAssetForDisplay } from '@rainbow-me/helpers';
 import logger from 'logger';
-import { EventTypes, PaymentTokens } from '@rainbow-me/utils/tokenHistoryUtils';
+import { EventTypes, PaymentTokens } from '../utils/tokenHistoryUtils';
 
 const reverseRecordContract = new Contract(
   REVERSE_RECORDS_MAINNET_ADDRESS,
@@ -122,26 +122,24 @@ export const apiGetTokenHistory = async (
     const semiFungible =
       fungData?.data?.asset_events[0]?.asset?.asset_contract
         ?.asset_contract_type === 'semi-fungible';
-    console.log("zooty");
-    const allEvents = await fetchAllTokenHistoryEvents({
+
+    const rawEvents = await fetchTokenHistoryEvents({
       accountAddress,
       contractAddress,
       networkPrefix,
       semiFungible,
       tokenID,
     });
-    console.log("jimbo");
-    const result = await filterAndMapData(contractAddress, allEvents);
-    console.log(result);
-    console.log("gumby");
-    return result;
+
+    const events = await createTransactionEvents(contractAddress, rawEvents);
+    return events;
   } catch (error) {
     logger.debug('TOKEN HISTORY LOOP ERROR:', error);
     throw error;
   }
 };
 
-const fetchAllTokenHistoryEvents = async ({
+const fetchTokenHistoryEvents = async ({
   networkPrefix,
   semiFungible,
   accountAddress,
@@ -152,12 +150,9 @@ const fetchAllTokenHistoryEvents = async ({
   let array = [];
   let nextPage = true;
   while (nextPage) {
-    console.log(nextPage);
     const urlPage = semiFungible
       ? `https://${networkPrefix}api.opensea.io/api/v1/events?account_address=${accountAddress}&asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=300`
       : `https://${networkPrefix}api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=300`;
-    console.log("zorble");
-    console.log(urlPage);
     let currentPage = await rainbowFetch(urlPage, {
       headers: {
         'Accept': 'application/json',
@@ -166,12 +161,11 @@ const fetchAllTokenHistoryEvents = async ({
       method: 'get',
       timeout: 10000, // 10 secs
     });
-    console.log("yup");
     array = array.concat(currentPage?.data?.asset_events || []);
     offset = array.length + 1;
     nextPage = currentPage?.data?.asset_events?.length === 300;
   }
-  console.log(array);
+
   return array.filter(
     ({ event_type }) =>
       event_type === EventTypes.TRANSFER.type ||
@@ -179,94 +173,67 @@ const fetchAllTokenHistoryEvents = async ({
   );
 };
 
-const filterAndMapData = async (contractAddress, array) => {
+const createTransactionEvents = async (contractAddress, rawEvents) => {
   let addressArray = new Array();
-  const events = await array
-    .map(function (uniqueEvent) {
-      let event_type = uniqueEvent.event_type;
-      let created_date = uniqueEvent.created_date;
-      let to_account_eth_address = uniqueEvent.to_account?.address;
-      let sale_amount, payment_token, to_account;
-      console.log("zap");
-      console.log(ENS_NFT_CONTRACT_ADDRESS);
-      switch (event_type) {
+  const events = await rawEvents
+    .map(function (event) {
+      let eventType = event.event_type;
+      let createdDate = event.created_date;
+      let toAccountEthAddress = event.to_account?.address;
+      let saleAmount, paymentToken, toAccount;
+
+      switch (eventType) {
         case EventTypes.TRANSFER.type:
-          if (uniqueEvent.from_account?.address === emptyAddress) {
-            event_type = contractAddress === ENS_NFT_CONTRACT_ADDRESS ? EventTypes.ENS.type : EventTypes.MINT.type;
+          if (event.from_account?.address === emptyAddress) {
+            eventType = contractAddress === ENS_NFT_CONTRACT_ADDRESS ? EventTypes.ENS.type : EventTypes.MINT.type;
           }
           break;
 
         case EventTypes.SALE.type:
-          console.log("hiiiiiiiii");
-          console.log(PaymentTokens);
-          console.log(PaymentTokens.WETH);
-          console.log(EventTypes);
-          payment_token =
-            uniqueEvent.payment_token?.symbol === PaymentTokens.WETH
+          paymentToken =
+            event.payment_token?.symbol === PaymentTokens.WETH
               ? PaymentTokens.ETH
-              : uniqueEvent.payment_token?.symbol;
-
-          // eslint-disable-next-line no-case-declarations
-          const zz = uniqueEvent.total_price.split('.');
-          // eslint-disable-next-line no-case-declarations
-          const temp_sale_amount = formatAssetForDisplay({
-            amount: zz[0],
-            token: payment_token,
+              : event.payment_token?.symbol;
+              
+          const exactSaleAmount = formatAssetForDisplay({
+            amount: parseInt(event.total_price),
+            token: paymentToken,
           });
 
-          sale_amount = handleSignificantDecimals(temp_sale_amount, 5);
-          console.log("zoot");
-          console.log(sale_amount);
+          saleAmount = handleSignificantDecimals(exactSaleAmount, 5);
           break;
       }
 
-      if (to_account_eth_address) {
-        addressArray.push(to_account_eth_address);
+      if (toAccountEthAddress) {
+        addressArray.push(toAccountEthAddress);
       }
 
       return {
-        created_date,
-        event_type,
-        payment_token,
-        sale_amount,
-        to_account_eth_address,
-        to_account
+        createdDate,
+        eventType,
+        paymentToken,
+        saleAmount,
+        toAccountEthAddress,
+        toAccount
       };
     });
-  console.log("xyz");
-  console.log(addressArray);
-  let allNames = await reverseRecordContract.getNames(addressArray);
 
-  const ensMap = allNames.reduce(function(tempMap, ens, index) {
+  let ensArray = await reverseRecordContract.getNames(addressArray);
+
+  const ensMap = ensArray.reduce(function(tempMap, ens, index) {
     tempMap[addressArray[index]] = ens;
     return tempMap;
   }, {})
 
-  console.log(ensMap);
-
-  let index = 0;
-  console.log("okok");
-  console.log(allNames);
-  events.map((uniqueEvent) => {
-    console.log(uniqueEvent);
-    if (uniqueEvent.to_account_eth_address) {
-      if (ensMap[uniqueEvent.to_account_eth_address] !== '') {
-        const abbrevENS = abbreviations.formatAddressForDisplay(ensMap[uniqueEvent.to_account_eth_address]);
-        console.log("a");
-        console.log(allNames[index]);
-        console.log(abbrevENS);
-        uniqueEvent.to_account = abbrevENS;
-      }
-      else {
-        const abbrevAddress = abbreviations.address(uniqueEvent.to_account_eth_address, 2);
-        console.log("b");
-        console.log(abbrevAddress);
-        uniqueEvent.to_account = abbrevAddress;
-      }
-      index += 1;
+  events.map((event) => {
+    const address = event.toAccountEthAddress;
+    if (address) {
+      const ens = ensMap[address];
+      event.toAccount = ens
+        ? abbreviations.formatAddressForDisplay(ens)
+        : abbreviations.address(address, 2);
     }
   });
-  console.log("brookie");
-
+  
   return events;
 };
