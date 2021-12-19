@@ -29,9 +29,15 @@ function svgToPng(url, big = false) {
     sign_url: true,
     transformation: [{ fetch_format: 'png' }],
     type: 'fetch',
-    width: big
-      ? deviceUtils.dimensions.width * pixelRatio
-      : (deviceUtils.dimensions.width / 2) * pixelRatio,
+    width:
+      Math.round(
+        Math.min(
+          2000,
+          big
+            ? deviceUtils.dimensions.width * pixelRatio
+            : (deviceUtils.dimensions.width / 2) * pixelRatio
+        ) / 50
+      ) * 50,
   });
   const cloudinaryUrl = cloudinaryImg.split("'")[1];
   return cloudinaryUrl;

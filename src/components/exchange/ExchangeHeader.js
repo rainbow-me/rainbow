@@ -16,9 +16,11 @@ export default function ExchangeHeader({ testID, title }) {
   return (
     <Container testID={`${testID}-header`}>
       <SheetHandle />
-      <Text align="center" lineHeight="loose" size="large" weight="heavy">
-        {title}
-      </Text>
+      {title && (
+        <Text align="center" lineHeight="loose" size="large" weight="heavy">
+          {title}
+        </Text>
+      )}
     </Container>
   );
 }

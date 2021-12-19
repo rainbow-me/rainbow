@@ -1,80 +1,80 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { upperFirst } from 'lodash';
+import React from 'react';
 import styled from 'styled-components';
-import { darkModeThemeColors, lightModeThemeColors } from '../../styles/colors';
+import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Row } from '../layout';
-import GasSpeedLabelPagerItem, {
-  GasSpeedLabelPagerItemHeight,
-} from './GasSpeedLabelPagerItem';
-import { gasUtils, magicMemo } from '@rainbow-me/utils';
+import { Text } from '../text';
+import { GasSpeedEmoji } from '.';
+import { margin, padding } from '@rainbow-me/styles';
+import { magicMemo } from '@rainbow-me/utils';
 
-const speedColorsFactory = colors => ({
-  dark: [
-    colors.whiteLabel,
-    colors.whiteLabel,
-    colors.whiteLabel,
-    colors.appleBlue,
-  ],
-  light: [
-    colors.alpha(colors.blueGreyDark, 0.8),
-    colors.alpha(colors.blueGreyDark, 0.8),
-    colors.alpha(colors.blueGreyDark, 0.8),
-    colors.appleBlue,
-  ],
-});
+const SpeedButton = styled(ButtonPressAnimation).attrs({
+  hapticType: 'impactHeavy',
+  height: 30,
+})`
+  border: ${({ color, theme: { colors } }) =>
+    `2px solid ${color || colors.appleBlue}`};
+  ${padding(2.5, 4, android ? 2.5 : 3.5, 5)};
+  border-radius: 19;
+`;
 
-const PagerItem = styled(Row)`
-  border-radius: 2px;
-  height: 3px;
-  margin-left: ${({ selected }) => (selected ? '2' : '2.5')}px;
-  margin-right: ${({ selected }) => (selected ? '0' : '0.5')}px;
-  ${android ? `margin-top: -3px;` : ``}
-  width: ${({ selected }) => (selected ? '4' : '3')}px;
+const Symbol = styled(Text).attrs({
+  align: 'center',
+  lineHeight: 'normal',
+  size: android ? 'bmedium' : 'lmedium',
+  weight: 'heavy',
+})`
+  ${margin(0)};
+`;
+
+const GasSpeedLabel = styled(Text).attrs({
+  align: 'center',
+  lineHeight: 'normal',
+  size: 'lmedium',
+  weight: 'heavy',
+})`
+  ${padding(0, 3)};
 `;
 
 const GasSpeedLabelPager = ({
   label,
   theme,
-  showPager = true,
-  options = null,
+  onPress,
+  colorForAsset,
+  dropdownEnabled,
 }) => {
-  const [touched, setTouched] = useState(false);
-  useEffect(() => setTouched(true), [label]);
-  const { colors, isDarkMode } = useTheme();
-  const speedColors = useMemo(() => speedColorsFactory(colors), [colors]);
+  const { colors } = useTheme();
 
   return (
-    <Row align="center" height={GasSpeedLabelPagerItemHeight} justify="end">
-      {showPager && (!options || options?.length > 1) && (
-        <Row self="start">
-          {(options || gasUtils.GasSpeedOrder).map((speed, i) => (
-            <PagerItem
-              backgroundColor={
-                speed === label
-                  ? label === 'custom'
-                    ? colors.appleBlue
-                    : speedColors[theme][i]
-                  : theme === 'dark' || isDarkMode
-                  ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.3)
-                  : colors.alpha(lightModeThemeColors.blueGreyDark, 0.3)
-              }
-              key={`pager-${speed}-${i}`}
-              selected={speed === label}
-            />
-          ))}
-        </Row>
-      )}
-      <Row height={GasSpeedLabelPagerItemHeight}>
-        {gasUtils.GasSpeedOrder.map(speed => (
-          <GasSpeedLabelPagerItem
-            key={speed}
-            label={speed}
-            selected={speed === label}
-            shouldAnimate={touched}
-            theme={theme}
-          />
-        ))}
+    <SpeedButton
+      color={colorForAsset}
+      disabled={!dropdownEnabled}
+      onPress={onPress}
+    >
+      <Row>
+        <GasSpeedEmoji label={label} />
+        <GasSpeedLabel
+          color={
+            theme === 'dark'
+              ? colors.whiteLabel
+              : colors.alpha(colors.blueGreyDark, 0.8)
+          }
+        >
+          {upperFirst(label)}
+        </GasSpeedLabel>
+        {dropdownEnabled && (
+          <Symbol
+            color={
+              theme !== 'light'
+                ? colors.whiteLabel
+                : colors.alpha(colors.blueGreyDark, 0.8)
+            }
+          >
+            􀁰
+          </Symbol>
+        )}
       </Row>
-    </Row>
+    </SpeedButton>
   );
 };
 

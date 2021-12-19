@@ -1,3 +1,15 @@
+diff --git a/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js b/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js
+index 2574361..9bf6b03 100644
+--- a/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js
++++ b/node_modules/react-native/Libraries/BatchedBridge/NativeModules.js
+@@ -176,6 +176,7 @@ function updateErrorWithErrorData(
+ let NativeModules: {[moduleName: string]: $FlowFixMe, ...} = {};
+ if (global.nativeModuleProxy) {
+   NativeModules = global.nativeModuleProxy;
++  global.nativeModuleProxy = null;
+ } else if (!global.nativeExtensions) {
+   const bridgeConfig = global.__fbBatchedBridgeConfig;
+   invariant(
 diff --git a/node_modules/react-native/React/CoreModules/RCTAlertManager.mm b/node_modules/react-native/React/CoreModules/RCTAlertManager.mm
 index e0f450e..ec60f93 100644
 --- a/node_modules/react-native/React/CoreModules/RCTAlertManager.mm

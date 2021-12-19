@@ -78,7 +78,8 @@ export default function ConfirmExchangeButton({
     [colors, isDarkMode]
   );
 
-  const colorForAsset = useColorForAsset(asset, undefined, true);
+  const colorForAsset = useColorForAsset(asset, undefined, true, true);
+
   const { buttonColor, shadowsForAsset } = useMemo(() => {
     const color =
       asset.address === ETH_ADDRESS

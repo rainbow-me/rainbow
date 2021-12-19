@@ -2,8 +2,11 @@ import chroma from 'chroma-js';
 import { toLower } from 'lodash';
 import PropTypes from 'prop-types';
 import currentColors from '../context/currentColors';
+import { memoFn } from '../utils/memoFn';
 
-const buildRgba = (color, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`;
+const buildRgba = memoFn(
+  (color, alpha = 1) => `rgba(${chroma(color).rgb()},${alpha})`
+);
 
 const darkModeColors = {
   appleBlue: '#0E76FD',
@@ -43,7 +46,7 @@ const darkModeColors = {
 };
 
 const isHex = (color = '') => color.length >= 3 && color.charAt(0) === '#';
-const isRGB = (color = '') => toLower(color).substring(0, 3) === 'rgb';
+const isRGB = memoFn((color = '') => toLower(color).substring(0, 3) === 'rgb');
 
 const avatarBackgrounds = [
   '#FC5C54',
@@ -120,7 +123,7 @@ const getColorsByTheme = darkMode => {
     shadowGrey: '#6F6F6F', // '111, 111, 111'
     shimmer: '#EDEEF1', // '237, 238, 241'
     skeleton: '#F6F7F8', // '246, 247, 248'
-    stackBackground: '#0A0A0A', // '10, 10, 10'
+    stackBackground: '#000000', // '0, 0, 0'
     swapPurple: '#575CFF', // '87, 92, 255'
     transparent: 'transparent',
     trueBlack: '#000000', // '0, 0, 0'
@@ -167,6 +170,10 @@ const getColorsByTheme = darkMode => {
     lightestGrey: ['#FFFFFF', '#F2F4F7'],
     lightestGreyReverse: ['#F2F4F7', '#FFFFFF'],
     lightGrey: [buildRgba('#ECF1F5', 0.5), buildRgba('#DFE4EB', 0.5)],
+    lightGreyTransparent: [
+      buildRgba(base.blueGreyDark, 0.02),
+      buildRgba(base.blueGreyDark, 0.06),
+    ],
     lightGreyWhite: [buildRgba('#F0F2F5', 0.5), buildRgba('#FFFFFF', 0.5)],
     offWhite: [base.white, base.offWhite],
     rainbow: ['#FFB114', '#FF54BB', '#7EA4DE'],
@@ -205,8 +212,9 @@ const getColorsByTheme = darkMode => {
     walletconnect: '#4099FF', // '64, 153, 255'
   };
 
-  const isColorLight = targetColor =>
-    chroma(targetColor || base.white).luminance() > 0.5;
+  const isColorLight = memoFn(
+    targetColor => chroma(targetColor || base.white).luminance() > 0.5
+  );
 
   const getTextColorForBackground = (targetColor, textColors = {}) => {
     const { dark = base.black, light = base.white } = textColors;
@@ -220,15 +228,16 @@ const getColorsByTheme = darkMode => {
       light: colors.whiteLabel,
     });
 
-  const isColorDark = targetColor => {
+  const isColorDark = memoFn(targetColor => {
     return (
       chroma.contrast(targetColor, darkModeColors.white) < 1.5 ||
       chroma(targetColor || base.white).luminance() < 0.11
     );
-  };
+  });
 
-  const brighten = targetColor =>
-    chroma(targetColor).brighten(2).saturate(0.3).hex();
+  const brighten = memoFn(targetColor =>
+    chroma(targetColor).brighten(2).saturate(0.3).hex()
+  );
 
   const transparent = {
     appleBlueTransparent: buildRgba(base.appleBlue, 0.2), // '50, 50, 93'
@@ -250,6 +259,10 @@ const getColorsByTheme = darkMode => {
         buildRgba('#1F222A', 0.8),
       ],
       lightGrey: ['#1F222A', buildRgba('#1F222A', 0.8)],
+      lightGreyTransparent: [
+        buildRgba(base.blueGreyDark, 0.06),
+        buildRgba(base.blueGreyDark, 0.025),
+      ],
       lightGreyWhite: [buildRgba('#F0F2F5', 0.05), buildRgba('#FFFFFF', 0.01)],
       offWhite: ['#1F222A', '#1F222A'],
       rainbow: ['#FFB114', '#FF54BB', '#7EA4DE'],

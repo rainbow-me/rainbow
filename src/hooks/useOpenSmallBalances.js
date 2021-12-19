@@ -1,21 +1,42 @@
-import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setOpenSmallBalances } from '../redux/openStateSettings';
+import { useCallback, useEffect } from 'react';
+import { atom, useRecoilState } from 'recoil';
+
+const areOpenSmallBalancesAtom = atom({
+  default: false,
+  key: 'areOpenSmallBalances',
+});
+
+const areOpenSmallBalancesStaggerAtom = atom({
+  default: false,
+  key: 'areOpenSmallBalancesStagger',
+});
 
 export default function useOpenSmallBalances() {
-  const dispatch = useDispatch();
-
-  const isSmallBalancesOpen = useSelector(
-    ({ openStateSettings: { openSmallBalances } }) => openSmallBalances
+  const [isSmallBalancesOpen, setIsSmallBalancesOpen] = useRecoilState(
+    areOpenSmallBalancesAtom
   );
 
-  const toggleOpenSmallBalances = useCallback(
-    () => dispatch(setOpenSmallBalances(!isSmallBalancesOpen)),
-    [dispatch, isSmallBalancesOpen]
-  );
+  const [stagger, setStagger] = useRecoilState(areOpenSmallBalancesStaggerAtom);
+
+  useEffect(() => {
+    if (stagger) {
+      setTimeout(() => setStagger(false), 700);
+    }
+  }, [setStagger, stagger]);
+
+  const toggleOpenSmallBalances = useCallback(() => {
+    if (!isSmallBalancesOpen) {
+      setStagger(true);
+    }
+    setIsSmallBalancesOpen(prev => {
+      return !prev;
+    });
+  }, [isSmallBalancesOpen, setIsSmallBalancesOpen, setStagger]);
 
   return {
     isSmallBalancesOpen,
+    setIsSmallBalancesOpen,
+    stagger,
     toggleOpenSmallBalances,
   };
 }

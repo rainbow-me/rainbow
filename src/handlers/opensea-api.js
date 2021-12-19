@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/react-native';
 import { OPENSEA_API_KEY, OPENSEA_RINKEBY_API_KEY } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
 import NetworkTypes from '@rainbow-me/networkTypes';
@@ -50,7 +51,8 @@ export const apiGetAccountUniqueTokens = async (network, address, page) => {
     });
     return parseAccountUniqueTokens(data);
   } catch (error) {
-    logger.log('Error getting unique tokens', error);
+    logger.sentry('Error getting unique tokens', error);
+    captureException(new Error('Opensea: Error getting unique tokens'));
     throw error;
   }
 };
@@ -92,7 +94,8 @@ export const apiGetUniqueTokenFloorPrice = async (
 
     return parseFloat(tempFloorPrice) + ' ETH';
   } catch (error) {
-    logger.debug('FLOOR PRICE ERROR', error);
+    logger.sentry('Error getting NFT floor price', error);
+    captureException(new Error('Opensea: Error getting NFT floor price'));
     throw error;
   }
 };

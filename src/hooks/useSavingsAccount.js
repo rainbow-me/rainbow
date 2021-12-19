@@ -98,9 +98,6 @@ const getUnderlyingPrice = token => {
 export default function useSavingsAccount(includeDefaultDai) {
   const [result, setResult] = useState({});
   const [backupSavings, setBackupSavings] = useState(null);
-  const genericAssets = useSelector(
-    ({ data: { genericAssets } }) => genericAssets
-  );
 
   const dispatch = useDispatch();
   const { accountAddress, network } = useAccountSettings();
@@ -217,7 +214,7 @@ export default function useSavingsAccount(includeDefaultDai) {
       savings = concat(orderedAccountTokens, getUnderlyingPrice(daiMarketData));
     }
     return savings;
-  }, [genericAssets, includeDefaultDai, result]);
+  }, [includeDefaultDai, result]);
 
   return {
     refetchSavings,

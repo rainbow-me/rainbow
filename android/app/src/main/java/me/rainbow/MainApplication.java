@@ -12,6 +12,8 @@ import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
+import com.oblador.keychain.KeychainModuleBuilder;
+import com.oblador.keychain.KeychainPackage;
 import com.reactnativemmkv.MmkvModule;
 import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 import java.lang.reflect.InvocationTargetException;
@@ -55,7 +57,9 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new RNTextAnimatorPackage());
           packages.add(new RNZoomableButtonPackage());
           packages.add(new InternalPackage());
-          return packages;
+          packages.add(new KeychainPackage(new KeychainModuleBuilder().withoutWarmUp()));
+
+            return packages;
         }
 
         @Override
