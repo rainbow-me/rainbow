@@ -44,10 +44,6 @@ const LabelText = styled(Text).attrs(({ theme: { colors } }) => ({
   weight: 'bold',
 }))``;
 
-const buttonPressAnimationStyle = {
-  flexDirection: 'row',
-};
-
 const CoinDividerOpenButton = ({
   coinDividerHeight,
   isSmallBalancesOpen,
@@ -84,7 +80,7 @@ const CoinDividerOpenButton = ({
   }));
 
   return (
-    <ButtonPressAnimation onPress={onPress} style={buttonPressAnimationStyle}>
+    <ButtonPressAnimation onPress={onPress}>
       <Content height={coinDividerHeight} style={wrapperStyle}>
         <LabelText>{isSmallBalancesOpen ? 'Less' : 'All'}</LabelText>
         <Animated.View style={style}>
