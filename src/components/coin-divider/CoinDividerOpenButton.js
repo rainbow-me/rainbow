@@ -36,12 +36,12 @@ const Content = styled(Animated.View).attrs({
   height: ${({ height }) => height};
 `;
 
-const LabelText = styled(Text).attrs(({ shareButton, theme: { colors } }) => ({
+const LabelText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.6),
   letterSpacing: 'roundedTight',
   lineHeight: 30,
   size: 'lmedium',
-  weight: shareButton ? 'heavy' : 'bold',
+  weight: 'bold',
 }))``;
 
 const buttonPressAnimationStyle = {
@@ -86,9 +86,7 @@ const CoinDividerOpenButton = ({
   return (
     <ButtonPressAnimation onPress={onPress} style={buttonPressAnimationStyle}>
       <Content height={coinDividerHeight} style={wrapperStyle}>
-        <LabelText color="secondary30" weight="bold">
-          {isSmallBalancesOpen ? 'Less' : 'All'}
-        </LabelText>
+        <LabelText>{isSmallBalancesOpen ? 'Less' : 'All'}</LabelText>
         <Animated.View style={style}>
           <CaretIcon />
         </Animated.View>
