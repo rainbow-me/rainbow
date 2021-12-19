@@ -18,12 +18,11 @@ const AndroidMaskWrapper = styled.View({
 const Input = styled(TextInputMask).attrs({
   allowFontScaling: false,
   keyboardType: 'decimal-pad',
-})({
+})(props => ({
   flex: 1,
-  // TODO terry
-  // ${buildTextStyles};
+  ...buildTextStyles.object(props),
   ...(android ? { fontWeight: 'normal' } : {}),
-});
+}));
 
 const ExchangeInput = (
   {

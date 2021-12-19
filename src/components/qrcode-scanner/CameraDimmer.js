@@ -1,7 +1,7 @@
+import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
-import styled from '@terrysahaidak/style-thing';
 import { usePagerPosition } from '../../navigation/ScrollPositionContext';
 import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 

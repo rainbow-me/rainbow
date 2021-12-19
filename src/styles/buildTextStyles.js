@@ -1,5 +1,5 @@
-import { get, isNil } from 'lodash';
 import { css } from '@terrysahaidak/style-thing';
+import { get, isNil } from 'lodash';
 import colors from './colors';
 import fonts from './fonts';
 
@@ -98,5 +98,84 @@ const buildTextStyles = css`
   /* Uppercase */
   ${({ uppercase }) => (uppercase ? 'text-transform: uppercase;' : '')}
 `;
+
+buildTextStyles.object = ({
+  color,
+  theme,
+  size,
+  isEmoji,
+  family,
+  mono,
+  weight,
+  letterSpacing,
+  lineHeight,
+  opacity,
+  align,
+  tabularNums,
+  uppercase,
+}) => {
+  const styles = {
+    color: colors.get(color, theme.colors) || theme.colors.dark,
+  };
+
+  // function is used because of default argument values
+  (({ isEmoji, family = 'SFProRounded', mono, weight }) => {
+    if (isEmoji) {
+      return;
+    }
+
+    styles.fontFamily = familyFontWithAndroidWidth(weight, family, mono);
+  })({ family, isEmoji, mono, weight });
+
+  // function is used because of default argument values
+  (({ size = 'medium' }) => {
+    styles.fontSize =
+      typeof size === 'number' ? size : get(fonts, `size[${size}]`, size);
+  })({
+    size,
+  });
+
+  // function is used because of default argument values
+  (({ isEmoji, weight = 'regular' }) => {
+    if (isEmoji) {
+      return;
+    }
+
+    styles.fontWeight = get(fonts, `weight[${weight}]`, weight);
+  })({ isEmoji, weight });
+
+  // function is used because of default argument values
+  (({ letterSpacing = 'rounded' }) => {
+    if (!isNil(letterSpacing)) {
+      styles.letterSpacing = get(
+        fonts,
+        `letterSpacing[${letterSpacing}]`,
+        letterSpacing
+      );
+    }
+  })({ letterSpacing });
+
+  if (!isNil(lineHeight) || !(isEmoji && android)) {
+    styles.lineHeight = get(fonts, `lineHeight[${lineHeight}]`, lineHeight);
+  }
+
+  if (!isNil(opacity)) {
+    styles.opacity = opacity;
+  }
+
+  if (tabularNums) {
+    styles.fontVariant = 'tabular-nums';
+  }
+
+  if (!isNil(align)) {
+    styles.textAlign = align;
+  }
+
+  if (uppercase) {
+    styles.textTransform = 'uppercase';
+  }
+
+  return styles;
+};
 
 export default buildTextStyles;

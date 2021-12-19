@@ -1,7 +1,7 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from '@terrysahaidak/style-thing';
 import { abbreviations, magicMemo, measureText } from '../../utils';
 import { DividerSize } from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -39,7 +39,7 @@ const AccountName = styled(TruncatedText).attrs({
 const DropdownArrow = styled(Centered)({
   borderRadius: 15,
   height: dropdownArrowWidth,
-  marginTop: android ? '9' : '2',
+  marginTop: android ? 9 : 2,
   width: dropdownArrowWidth,
 });
 

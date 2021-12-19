@@ -1,7 +1,7 @@
+import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import TextInputMask from 'react-native-text-input-mask';
-import styled from '@terrysahaidak/style-thing';
 import { Row } from '../../../components/layout';
 import { ButtonPressAnimation } from '../../animations';
 import { Text } from '../../text';
@@ -41,9 +41,8 @@ const GweiNumberInput = styled(TextInputMask).attrs(
       paddingVertical: 10.5,
     }),
   })
-)({
-  // TODO terru
-  // ${buildTextStyles};
+)(props => ({
+  ...buildTextStyles.object(props),
   ...(android ? padding.object(0, 0, 0, 0) : {}),
   ...margin.object(
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
@@ -51,7 +50,7 @@ const GweiNumberInput = styled(TextInputMask).attrs(
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0
   ),
-});
+}));
 
 const GweiLabel = styled(Text).attrs(() => ({
   align: 'center',
