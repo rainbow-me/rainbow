@@ -68,7 +68,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
       );
       console.log("hi");
       console.log(results);
-      console.log("Bye");
+      console.log("Bye2");
       const filteredResults = results.filter((transaction) => {
         console.log(transaction.event_type);
         return filteredTransactionTypes.has(transaction.event_type);

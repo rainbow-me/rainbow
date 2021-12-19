@@ -132,6 +132,7 @@ export const apiGetTokenHistory = async (
     });
     console.log("jimbo");
     const result = await filterAndMapData(contractAddress, allEvents);
+    console.log(result);
     console.log("gumby");
     return result;
   } catch (error) {
@@ -170,6 +171,7 @@ const fetchAllTokenHistoryEvents = async ({
     offset = array.length + 1;
     nextPage = currentPage?.data?.asset_events?.length === 300;
   }
+  console.log(array);
   return array.filter(
     ({ event_type }) =>
       event_type === EventTypes.TRANSFER.type ||
@@ -221,37 +223,47 @@ const filterAndMapData = async (contractAddress, array) => {
       if (to_account_eth_address) {
         addressArray.push(to_account_eth_address);
       }
+
       return {
         created_date,
         event_type,
         payment_token,
         sale_amount,
-        to_account,
-        to_account_eth_address
+        to_account_eth_address,
+        to_account
       };
     });
   console.log("xyz");
   console.log(addressArray);
   let allNames = await reverseRecordContract.getNames(addressArray);
+
+  const ensMap = allNames.reduce(function(tempMap, ens, index) {
+    tempMap[addressArray[index]] = ens;
+    return tempMap;
+  }, {})
+
+  console.log(ensMap);
+
   let index = 0;
   console.log("okok");
   console.log(allNames);
   events.map((uniqueEvent) => {
+    console.log(uniqueEvent);
     if (uniqueEvent.to_account_eth_address) {
-      if (allNames[index] !== '') {
-        const abbrevENS = abbreviations.formatAddressForDisplay(allNames[index]);
+      if (ensMap[uniqueEvent.to_account_eth_address] !== '') {
+        const abbrevENS = abbreviations.formatAddressForDisplay(ensMap[uniqueEvent.to_account_eth_address]);
         console.log("a");
         console.log(allNames[index]);
         console.log(abbrevENS);
         uniqueEvent.to_account = abbrevENS;
-        index += 1;
       }
       else {
-        const abbrevAddress = abbreviations.address(uniqueEvent.to_account, 2);
+        const abbrevAddress = abbreviations.address(uniqueEvent.to_account_eth_address, 2);
         console.log("b");
         console.log(abbrevAddress);
         uniqueEvent.to_account = abbrevAddress;
       }
+      index += 1;
     }
   });
   console.log("brookie");
