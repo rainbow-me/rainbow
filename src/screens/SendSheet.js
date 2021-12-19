@@ -544,7 +544,6 @@ export default function SendSheet(props) {
     getNextNonce,
     isSufficientGas,
     isValidAddress,
-    network,
     selected,
     selectedGasFee,
     toAddress,
