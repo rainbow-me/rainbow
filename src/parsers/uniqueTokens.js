@@ -1,4 +1,14 @@
-import { filter, find, get, isNil, map, pick, uniq } from 'lodash';
+import {
+  filter,
+  find,
+  get,
+  isEmpty,
+  isNil,
+  map,
+  pick,
+  pickBy,
+  uniq,
+} from 'lodash';
 import { AssetTypes } from '@rainbow-me/entities';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 
@@ -94,15 +104,14 @@ export const parseAccountUniqueTokens = data => {
 export const getFamilies = uniqueTokens =>
   uniq(map(uniqueTokens, u => get(u, 'asset_contract.address', '')));
 
-export const dedupeUniqueTokens = (assets, uniqueTokens) => {
+export const dedupeUniqueTokens = (newAssets, uniqueTokens) => {
   const uniqueTokenFamilies = getFamilies(uniqueTokens);
-  let updatedAssets = assets;
-  if (assets.length) {
-    updatedAssets = filter(updatedAssets, asset => {
+  let updatedAssets = newAssets;
+  if (!isEmpty(newAssets)) {
+    updatedAssets = pickBy(updatedAssets, newAsset => {
       const matchingElement = find(
         uniqueTokenFamilies,
-        uniqueTokenFamily =>
-          uniqueTokenFamily === get(asset, 'asset.asset_code')
+        uniqueTokenFamily => uniqueTokenFamily === newAsset?.asset?.asset_code
       );
       return !matchingElement;
     });
@@ -110,6 +119,7 @@ export const dedupeUniqueTokens = (assets, uniqueTokens) => {
   return updatedAssets;
 };
 
+// TODO JIN
 export const dedupeAssetsWithFamilies = (assets, families) =>
   filter(
     assets,

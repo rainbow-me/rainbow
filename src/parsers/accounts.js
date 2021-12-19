@@ -1,4 +1,4 @@
-import { get, isNil, map, toUpper } from 'lodash';
+import { get, isNil, map, mapValues, toUpper } from 'lodash';
 import { dedupeUniqueTokens } from './uniqueTokens';
 import { AssetTypes } from '@rainbow-me/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
@@ -19,7 +19,7 @@ import { getTokenMetadata, isLowerCaseMatch } from '@rainbow-me/utils';
  */
 export const parseAccountAssets = (data, uniqueTokens) => {
   const dedupedAssets = dedupeUniqueTokens(data, uniqueTokens);
-  return dedupedAssets.map(assetData => {
+  return mapValues(dedupedAssets, assetData => {
     const asset = parseAsset(assetData.asset);
     return {
       ...asset,
