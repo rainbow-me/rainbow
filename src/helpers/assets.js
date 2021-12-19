@@ -2,7 +2,6 @@ import {
   chunk,
   compact,
   concat,
-  find,
   forEach,
   get,
   groupBy,
@@ -18,6 +17,7 @@ import {
   ETH_ICON_URL,
   supportedNativeCurrencies,
 } from '@rainbow-me/references';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const COINS_TO_SHOW = 5;
 
@@ -36,7 +36,7 @@ const addEthPlaceholder = (
   nativeCurrency,
   emptyCollectibles
 ) => {
-  const hasEth = !!find(assets, asset => asset.address === 'eth');
+  const hasEth = !!ethereumUtils.getAccountAsset();
 
   const { genericAssets } = store.getState().data;
   if (
