@@ -44,6 +44,10 @@ const LabelText = styled(Text).attrs(({ shareButton, theme: { colors } }) => ({
   weight: shareButton ? 'heavy' : 'bold',
 }))``;
 
+const buttonPressAnimationStyle = {
+  flexDirection: 'row',
+};
+
 const CoinDividerOpenButton = ({
   coinDividerHeight,
   isSmallBalancesOpen,
@@ -80,16 +84,16 @@ const CoinDividerOpenButton = ({
   }));
 
   return (
-    <Content height={coinDividerHeight} style={wrapperStyle}>
-      <ButtonPressAnimation onPress={onPress} style={{ flexDirection: 'row' }}>
+    <ButtonPressAnimation onPress={onPress} style={buttonPressAnimationStyle}>
+      <Content height={coinDividerHeight} style={wrapperStyle}>
         <LabelText color="secondary30" weight="bold">
           {isSmallBalancesOpen ? 'Less' : 'All'}
         </LabelText>
         <Animated.View style={style}>
           <CaretIcon />
         </Animated.View>
-      </ButtonPressAnimation>
-    </Content>
+      </Content>
+    </ButtonPressAnimation>
   );
 };
 
