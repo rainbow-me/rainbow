@@ -7,14 +7,24 @@ import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import TokenHistoryEdgeFade from './TokenHistoryEdgeFade';
 import { useTheme } from '@rainbow-me/context/ThemeContext';
-import { apiGetNftSemiFungibility, apiGetNftTransactionHistory, processRawEvents } from '@rainbow-me/handlers/opensea-api';
+import { apiGetNftSemiFungibility, apiGetNftTransactionHistory } from '@rainbow-me/handlers/opensea-api';
 import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
+import { formatAssetForDisplay } from '@rainbow-me/helpers';
 import { useAccountProfile, useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import { abbreviations } from '@rainbow-me/utils';
+import { handleSignificantDecimals } from '@rainbow-me/utilities';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
-import { EventTypes } from '../../../utils/tokenHistoryUtils';
+import { EventTypes, PaymentTokens } from '@rainbow-me/utils/tokenHistoryUtils';
 import NetworkTypes from '@rainbow-me/networkTypes';
+import { web3Provider } from '@rainbow-me/handlers/web3';
+import { Contract } from '@ethersproject/contracts';
+import {
+  ENS_NFT_CONTRACT_ADDRESS,
+  REVERSE_RECORDS_MAINNET_ADDRESS,
+  reverseRecordsABI,
+} from '@rainbow-me/references';
 
 const filteredTransactionTypes = new Set([
   EventTypes.ENS.type,
@@ -53,12 +63,10 @@ const TokenHistory = ({ contractAndToken, color }) => {
 
   useEffect(() => {
     const tokenInfoArray = contractAndToken.split('/');
+
     setContractAddress(tokenInfoArray[0]);
     setTokenID(tokenInfoArray[1]);
-  });
 
-  //Query opensea using the contract address + tokenID
-  useEffect(() => {
     async function fetch() {
       const semiFungible = await apiGetNftSemiFungibility(
         networkPrefix,
@@ -80,6 +88,82 @@ const TokenHistory = ({ contractAndToken, color }) => {
     }
     fetch();
   }, [accountAddress, contractAddress, networkPrefix, tokenID]);
+
+  const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
+
+  const reverseRecordContract = new Contract(
+    REVERSE_RECORDS_MAINNET_ADDRESS,
+    reverseRecordsABI,
+    web3Provider
+  );
+
+  const processRawEvents = async (contractAddress, rawEvents) => {
+    console.log("hiiiiiiii");
+    let addressArray = new Array();
+    const events = await rawEvents
+      .map(function (event) {
+        let eventType = event.event_type;
+        let createdDate = event.created_date;
+        let toAccountEthAddress = event.to_account?.address;
+        let saleAmount, paymentToken, toAccount;
+  
+        switch (eventType) {
+          case EventTypes.TRANSFER.type:
+            if (event.from_account?.address === EMPTY_ADDRESS) {
+              eventType = contractAddress === ENS_NFT_CONTRACT_ADDRESS ? EventTypes.ENS.type : EventTypes.MINT.type;
+            }
+            break;
+  
+          case EventTypes.SALE.type:
+            paymentToken =
+              event.payment_token?.symbol === PaymentTokens.WETH
+                ? PaymentTokens.ETH
+                : event.payment_token?.symbol;
+                
+            const exactSaleAmount = formatAssetForDisplay({
+              amount: parseInt(event.total_price).toString(),
+              token: paymentToken,
+            });
+  
+            saleAmount = handleSignificantDecimals(exactSaleAmount, 5);
+            break;
+        }
+  
+        if (toAccountEthAddress) {
+          addressArray.push(toAccountEthAddress);
+        }
+  
+        return {
+          createdDate,
+          eventType,
+          paymentToken,
+          saleAmount,
+          toAccountEthAddress,
+          toAccount
+        };
+      });
+  
+    let ensArray = await reverseRecordContract.getNames(addressArray);
+  
+    const ensMap = ensArray.reduce(function(tempMap, ens, index) {
+      tempMap[addressArray[index]] = ens;
+      return tempMap;
+    }, {});
+  
+    events.map((event) => {
+      const address = event.toAccountEthAddress;
+      if (address) {
+        const ens = ensMap[address];
+        event.toAccount = ens
+          ? abbreviations.formatAddressForDisplay(ens)
+          : abbreviations.address(address, 2);
+      }
+    });
+  
+    events.sort((event1, event2) => event2.createdDate.localeCompare(event1.createdDate));
+    
+    return events;
+  };  
 
   const handlePress = useCallback(
     address => {

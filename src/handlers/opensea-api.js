@@ -14,7 +14,7 @@ import { web3Provider } from './web3';
 import { abbreviations } from '@rainbow-me/utils';
 import { formatAssetForDisplay } from '@rainbow-me/helpers';
 import logger from 'logger';
-import { EventTypes, PaymentTokens } from '../utils/tokenHistoryUtils';
+import { EventTypes, PaymentTokens } from '@rainbow-me/utils/tokenHistoryUtils';
 
 const reverseRecordContract = new Contract(
   REVERSE_RECORDS_MAINNET_ADDRESS,
@@ -129,7 +129,6 @@ export const apiGetNftTransactionHistory = async (
   contractAddress,
   tokenID
 ) => {
-  console.log("nooooooo");
   let offset = 0;
   let array = [];
   let nextPage = true;
@@ -206,7 +205,7 @@ export const processRawEvents = async (contractAddress, rawEvents) => {
   const ensMap = ensArray.reduce(function(tempMap, ens, index) {
     tempMap[addressArray[index]] = ens;
     return tempMap;
-  }, {})
+  }, {});
 
   events.map((event) => {
     const address = event.toAccountEthAddress;
