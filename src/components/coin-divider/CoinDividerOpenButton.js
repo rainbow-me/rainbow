@@ -27,7 +27,7 @@ const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
 
 const Content = styled(Animated.View).attrs({
   align: 'center',
-  flex: 'row',
+  flexDirection: 'row',
   justify: 'space-between',
 })`
   background-color: ${({ theme: { colors } }) => colors.blueGreyDarkLight};
