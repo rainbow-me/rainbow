@@ -1,8 +1,8 @@
 diff --git a/node_modules/@terrysahaidak/style-thing/index.js b/node_modules/@terrysahaidak/style-thing/index.js
-index 9215226..f71aab4 100644
+index 9215226..420ad47 100644
 --- a/node_modules/@terrysahaidak/style-thing/index.js
 +++ b/node_modules/@terrysahaidak/style-thing/index.js
-@@ -1,10 +1,20 @@
+@@ -1,26 +1,37 @@
  import React from 'react';
 -import styledComponent, { css, useTheme } from 'styled-components';
 +import styledComponent, { css } from 'styled-components';
@@ -21,11 +21,35 @@ index 9215226..f71aab4 100644
  const reactNative = require('react-native');
  
 -function getProps(props, attrs, theme, config) {
-+function getProps(props, attrs, theme = {}, config) {
-   const propsWithTheme = { ...props, theme };
-   let propsToUse = {};
+-  const propsWithTheme = { ...props, theme };
+-  let propsToUse = {};
+-
++function filterProps(props, config) {
+   if (typeof config?.shouldForwardProp === 'function') {
+-    const keys = Object.keys(propsWithTheme);
++    const forwardedProps = {};
++    const keys = Object.keys(props);
+     for (let i = 0; i < keys.length; i++) {
+       const key = keys[i];
  
-@@ -63,13 +73,8 @@ function getStyles(styles, props) {
+-      if (config?.shouldForwardProp(key, () => true)) {
+-        propsToUse[key] = propsWithTheme[key];
++      if (config?.shouldForwardProp(key, () => {})) {
++        forwardedProps[key] = props[key];
+       }
+     }
+   } else {
+-    propsToUse = propsWithTheme;
++    return props;
+   }
++}
+ 
++function getProps(props, attrs) {
++  let propsToUse = props;
+   // .attrs((props) => ({}))
+   if (typeof attrs === 'function') {
+     attrs = attrs(propsToUse);
+@@ -63,14 +74,9 @@ function getStyles(styles, props) {
    }
  }
  
@@ -36,8 +60,53 @@ index 9215226..f71aab4 100644
 - * @returns
 - */
 -function attrs(props) {
+-    StyledComponentFactory.attrs = props;
 +export default function styled(Component) {
 +  function attrs(props) {
-     StyledComponentFactory.attrs = props;
++    StyledComponentFactory.__attrs = props;
      return StyledComponentFactory;
    }
+ 
+@@ -98,17 +104,28 @@ function attrs(props) {
+     // }
+ 
+     function StyledComponent({ style, ...props }, ref) {
+-      const theme = useTheme();
++      const theme = useTheme() ?? {};
++
++      const propsWithTheme = {...props, theme};
++
++      let attrs = (StyledComponentFactory.__attrs ?? {})
++      
++      if (typeof Component.__attrs === 'object') {
++        attrs = {
++          ...Component.__attrs,
++          ...attrs,
++        };
++      }
+ 
+       const propsToUse = getProps(
+-        props,
+-        StyledComponentFactory.attrs,
+-        theme,
+-        StyledComponentFactory.__config
++        propsWithTheme,
++        attrs,
+       );
+ 
+       const { staticStyles, generatedStyles } = getStyles(styles, propsToUse);
+ 
++      const forwardedProps = filterProps(propsToUse, Component.__config);
++
+       return (
+         <Component
+           ref={ref}
+@@ -122,6 +139,8 @@ function attrs(props) {
+ 
+     memoized.displayName = `StyledThing${Component.name}`;
+ 
++    memoized.__attrs = StyledComponentFactory.__attrs;
++
+     return memoized;
+   }
+ 
