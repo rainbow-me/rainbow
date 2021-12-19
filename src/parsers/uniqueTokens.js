@@ -1,14 +1,4 @@
-import {
-  filter,
-  find,
-  get,
-  isEmpty,
-  isNil,
-  map,
-  pick,
-  pickBy,
-  uniq,
-} from 'lodash';
+import { find, get, isEmpty, isNil, map, pick, pickBy, uniq } from 'lodash';
 import { AssetTypes } from '@rainbow-me/entities';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 
@@ -119,9 +109,8 @@ export const dedupeUniqueTokens = (newAssets, uniqueTokens) => {
   return updatedAssets;
 };
 
-// TODO JIN
-export const dedupeAssetsWithFamilies = (assets, families) =>
-  filter(
-    assets,
-    asset => !find(families, family => family === get(asset, 'address'))
+export const dedupeAssetsWithFamilies = (accountAssets, families) =>
+  pickBy(
+    accountAssets,
+    asset => !find(families, family => family === asset?.address)
   );
