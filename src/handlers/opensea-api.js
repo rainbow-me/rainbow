@@ -100,52 +100,36 @@ export const apiGetUniqueTokenFloorPrice = async (
   }
 };
 
-export const apiGetTokenHistory = async (
-  network,
+export const apiGetNftSemiFungibility = async (
+  networkPrefix,
   contractAddress,
-  tokenID,
-  accountAddress
+  tokenID
 ) => {
-  try {
-    const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
-    const checkFungibility = `https://${networkPrefix}api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=1`;
+  const checkFungibility = `https://${networkPrefix}api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=1`;
 
-    const fungData = await rainbowFetch(checkFungibility, {
-      headers: {
-        'Accept': 'application/json',
-        'X-Api-Key': OPENSEA_API_KEY,
-      },
-      method: 'get',
-      timeout: 10000, // 10 secs
-    });
+  const fungData = await rainbowFetch(checkFungibility, {
+    headers: {
+      'Accept': 'application/json',
+      'X-Api-Key': OPENSEA_API_KEY,
+    },
+    method: 'get',
+    timeout: 10000, // 10 secs
+  });
 
-    const semiFungible =
-      fungData?.data?.asset_events[0]?.asset?.asset_contract
-        ?.asset_contract_type === 'semi-fungible';
-
-    const rawEvents = await fetchTokenHistoryEvents({
-      accountAddress,
-      contractAddress,
-      networkPrefix,
-      semiFungible,
-      tokenID,
-    });
-
-    const events = await createTransactionEvents(contractAddress, rawEvents);
-    return events;
-  } catch (error) {
-    logger.debug('TOKEN HISTORY LOOP ERROR:', error);
-    throw error;
-  }
+  const semiFungible =
+    fungData?.data?.asset_events[0]?.asset?.asset_contract
+      ?.asset_contract_type === 'semi-fungible';
+  return semiFungible;
 };
 
-const fetchTokenHistoryEvents = async ({
+export const apiGetNftTransactionHistory = async (
   networkPrefix,
   semiFungible,
   accountAddress,
   contractAddress,
-  tokenID,
-}) => {
+  tokenID
+) => {
+  console.log("nooooooo");
   let offset = 0;
   let array = [];
   let nextPage = true;
@@ -165,7 +149,6 @@ const fetchTokenHistoryEvents = async ({
     offset = array.length + 1;
     nextPage = currentPage?.data?.asset_events?.length === 300;
   }
-
   return array.filter(
     ({ event_type }) =>
       event_type === EventTypes.TRANSFER.type ||
@@ -173,7 +156,7 @@ const fetchTokenHistoryEvents = async ({
   );
 };
 
-const createTransactionEvents = async (contractAddress, rawEvents) => {
+export const processRawEvents = async (contractAddress, rawEvents) => {
   let addressArray = new Array();
   const events = await rawEvents
     .map(function (event) {
@@ -196,7 +179,7 @@ const createTransactionEvents = async (contractAddress, rawEvents) => {
               : event.payment_token?.symbol;
               
           const exactSaleAmount = formatAssetForDisplay({
-            amount: parseInt(event.total_price),
+            amount: parseInt(event.total_price).toString(),
             token: paymentToken,
           });
 

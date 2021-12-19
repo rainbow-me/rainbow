@@ -293,99 +293,98 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
             imageColor={imageColor}
           />
           {!isPoap && (
-            <SheetActionButtonRow
-              ignorePaddingTop
-              paddingBottom={24}
-              paddingHorizontal={16.5}
-            >
-              <SheetActionButton
-                color={imageColor}
-                label={
-                  !external && !isReadOnlyWallet && isSendable
-                    ? '􀮶 OpenSea'
-                    : '􀮶 View on OpenSea'
-                }
-                nftShadows
-                onPress={handlePressOpensea}
-                textColor={textColor}
-                weight="heavy"
-              />
-              {!external && !isReadOnlyWallet && isSendable ? (
-                <SendActionButton
-                  asset={asset}
+            <>
+              <SheetActionButtonRow
+                ignorePaddingTop
+                paddingBottom={24}
+                paddingHorizontal={16.5}
+              >
+                <SheetActionButton
                   color={imageColor}
+                  label={
+                    !external && !isReadOnlyWallet && isSendable
+                      ? '􀮶 OpenSea'
+                      : '􀮶 View on OpenSea'
+                  }
                   nftShadows
+                  onPress={handlePressOpensea}
                   textColor={textColor}
+                  weight="heavy"
                 />
-              ) : null}
-            </SheetActionButtonRow>
-          )}
-
-          {!isPoap && (
-            <TokenInfoSection isNft>
-              <TokenInfoRow>
-                <TokenInfoItem
-                  color={
-                    lastSalePrice === 'None' && !currentPrice
-                      ? colors.alpha(colors.whiteLabel, 0.5)
-                      : colors.whiteLabel
-                  }
-                  enableHapticFeedback={!!currentPrice}
-                  isNft
-                  onPress={toggleCurrentPriceDisplayCurrency}
-                  size="big"
-                  title={currentPrice ? '􀋢 For sale' : 'Last sale price'}
-                  weight={
-                    lastSalePrice === 'None' && !currentPrice ? 'bold' : 'heavy'
-                  }
-                >
-                  {showCurrentPriceInEth ||
-                  nativeCurrency === supportedNativeCurrencies.ETH.currency ||
-                  !currentPrice
-                    ? currentPrice || lastSalePrice
-                    : convertAmountToNativeDisplay(
-                        parseFloat(currentPrice) * priceOfEth,
-                        nativeCurrency
-                      )}
-                </TokenInfoItem>
-                <TokenInfoItem
-                  align="right"
-                  color={
+                {!external && !isReadOnlyWallet && isSendable ? (
+                  <SendActionButton
+                    asset={asset}
+                    color={imageColor}
+                    nftShadows
+                    textColor={textColor}
+                  />
+                ) : null}
+              </SheetActionButtonRow>
+              <TokenInfoSection isNft>
+                <TokenInfoRow>
+                  <TokenInfoItem
+                    color={
+                      lastSalePrice === 'None' && !currentPrice
+                        ? colors.alpha(colors.whiteLabel, 0.5)
+                        : colors.whiteLabel
+                    }
+                    enableHapticFeedback={!!currentPrice}
+                    isNft
+                    onPress={toggleCurrentPriceDisplayCurrency}
+                    size="big"
+                    title={currentPrice ? '􀋢 For sale' : 'Last sale price'}
+                    weight={
+                      lastSalePrice === 'None' && !currentPrice ? 'bold' : 'heavy'
+                    }
+                  >
+                    {showCurrentPriceInEth ||
+                    nativeCurrency === supportedNativeCurrencies.ETH.currency ||
+                    !currentPrice
+                      ? currentPrice || lastSalePrice
+                      : convertAmountToNativeDisplay(
+                          parseFloat(currentPrice) * priceOfEth,
+                          nativeCurrency
+                        )}
+                  </TokenInfoItem>
+                  <TokenInfoItem
+                    align="right"
+                    color={
+                      floorPrice === 'None'
+                        ? colors.alpha(colors.whiteLabel, 0.5)
+                        : colors.whiteLabel
+                    }
+                    enableHapticFeedback={floorPrice !== 'None'}
+                    isNft
+                    loading={!floorPrice}
+                    onInfoPress={handlePressCollectionFloor}
+                    onPress={toggleFloorDisplayCurrency}
+                    showInfoButton
+                    size="big"
+                    title="Floor price"
+                    weight={floorPrice === 'None' ? 'bold' : 'heavy'}
+                  >
+                    {showFloorInEth ||
+                    nativeCurrency === supportedNativeCurrencies.ETH.currency ||
                     floorPrice === 'None'
-                      ? colors.alpha(colors.whiteLabel, 0.5)
-                      : colors.whiteLabel
-                  }
-                  enableHapticFeedback={floorPrice !== 'None'}
-                  isNft
-                  loading={!floorPrice}
-                  onInfoPress={handlePressCollectionFloor}
-                  onPress={toggleFloorDisplayCurrency}
-                  showInfoButton
-                  size="big"
-                  title="Floor price"
-                  weight={floorPrice === 'None' ? 'bold' : 'heavy'}
-                >
-                  {showFloorInEth ||
-                  nativeCurrency === supportedNativeCurrencies.ETH.currency ||
-                  floorPrice === 'None'
-                    ? floorPrice
-                    : convertAmountToNativeDisplay(
-                        parseFloat(floorPrice) * priceOfEth,
-                        nativeCurrency
-                      )}
-                </TokenInfoItem>
-              </TokenInfoRow>
-            </TokenInfoSection>
-          )}  
-          <Fragment>
-            <SheetDivider deviceWidth={deviceWidth} />
-            <NftExpandedStateSection isTokenHistory={true} title="History">
-              <TokenHistory 
-               contractAndToken={urlSuffixForAsset}
-               color={imageColor}
-              />
-            </NftExpandedStateSection>
-          </Fragment>
+                      ? floorPrice
+                      : convertAmountToNativeDisplay(
+                          parseFloat(floorPrice) * priceOfEth,
+                          nativeCurrency
+                        )}
+                  </TokenInfoItem>
+                </TokenInfoRow>
+              </TokenInfoSection>
+              <Fragment>
+                <SheetDivider deviceWidth={deviceWidth} />
+                <NftExpandedStateSection isTokenHistory={true} title="History">
+                  <TokenHistory 
+                  contractAndToken={urlSuffixForAsset}
+                  color={imageColor}
+                  />
+                </NftExpandedStateSection>
+              </Fragment>
+            </>
+          )}
           <Column>
             {!!description && (
               <Fragment>

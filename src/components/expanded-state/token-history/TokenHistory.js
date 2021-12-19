@@ -8,13 +8,14 @@ import { Text } from '../../text';
 import TokenHistoryEdgeFade from './TokenHistoryEdgeFade';
 import TokenHistoryLoader from './TokenHistoryLoader';
 import { useTheme } from '@rainbow-me/context/ThemeContext';
-import { apiGetTokenHistory } from '@rainbow-me/handlers/opensea-api';
+import { apiGetNftSemiFungibility, apiGetNftTransactionHistory, processRawEvents } from '@rainbow-me/handlers/opensea-api';
 import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
 import { useAccountProfile, useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { EventTypes } from '../../../utils/tokenHistoryUtils';
+import NetworkTypes from '@rainbow-me/networkTypes';
 
 const filteredTransactionTypes = new Set([
   EventTypes.ENS.type,
@@ -50,6 +51,8 @@ const TokenHistory = ({ contractAndToken, color }) => {
   const { network } = useAccountSettings();
   const { navigate } = useNavigation();
 
+  const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
+
   useEffect(() => {
     const tokenInfoArray = contractAndToken.split('/');
     setContractAddress(tokenInfoArray[0]);
@@ -58,27 +61,30 @@ const TokenHistory = ({ contractAndToken, color }) => {
 
   //Query opensea using the contract address + tokenID
   useEffect(() => {
-    console.log("hi456");
     async function fetch() {
-      const results = await apiGetTokenHistory(
-        network,
+      const semiFungible = await apiGetNftSemiFungibility(
+        networkPrefix,
         contractAddress,
-        tokenID,
-        accountAddress
+        tokenID
       );
-      console.log("hi");
-      console.log(results);
-      console.log("Bye2");
-      setTokenHistory(results);
-      if (results.length <= 2) {
+      const rawEvents = await apiGetNftTransactionHistory(
+        networkPrefix,
+        semiFungible,
+        accountAddress,
+        contractAddress,
+        tokenID
+      );
+      const txHistory = await processRawEvents(contractAddress, rawEvents);
+      setTokenHistory(txHistory);
+      if (txHistory.length <= 2) {
         setTokenHistoryShort(true);
       }
     }
-    console.log("hi789");
-    setIsLoading(true);
+    //delete this?
+    setIsLoading(false);
     fetch();
     setIsLoading(false);
-  }, [accountAddress, contractAddress, network, tokenID]);
+  }, [accountAddress, contractAddress, networkPrefix, tokenID]);
 
   const handlePress = useCallback(
     address => {
@@ -90,7 +96,6 @@ const TokenHistory = ({ contractAndToken, color }) => {
   );
 
   const renderItem = ({ item, index }) => {
-    console.log("nina");
     let isFirst = index === 0;
     let suffixIcon = `􀆊`;
     let isClickable = false;
@@ -127,7 +132,6 @@ const TokenHistory = ({ contractAndToken, color }) => {
       default:
         break;
     }
-    console.log(index);
     return renderHistoryDescription({
       icon,
       isClickable,
@@ -193,7 +197,6 @@ const TokenHistory = ({ contractAndToken, color }) => {
   };
 
   const renderFlatList = () => {
-    console.log("paris");
     return (
       <MaskedView maskElement={<TokenHistoryEdgeFade />}>
         <FlatList
