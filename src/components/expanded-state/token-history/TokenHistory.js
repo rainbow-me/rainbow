@@ -73,6 +73,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
         contractAddress,
         tokenID
       );
+      console.log("jeff");
       const rawEvents = await apiGetNftTransactionHistory(
         networkPrefix,
         semiFungible,
@@ -80,6 +81,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
         contractAddress,
         tokenID
       );
+      console.log("jmol");
       const txHistory = await processRawEvents(contractAddress, rawEvents);
       setTokenHistory(txHistory);
       if (txHistory.length <= 2) {
@@ -101,7 +103,10 @@ const TokenHistory = ({ contractAndToken, color }) => {
     console.log("hiiiiiiii");
     let addressArray = new Array();
     const events = await rawEvents
-      .map(function (event) {
+      .filter(({ event_type }) =>
+          event_type === EventTypes.TRANSFER.type ||
+          event_type === EventTypes.SALE.type
+      ).map((event) => {
         let eventType = event.event_type;
         let createdDate = event.created_date;
         let toAccountEthAddress = event.to_account?.address;
