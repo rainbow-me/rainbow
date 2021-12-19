@@ -354,6 +354,20 @@ export const dataResetState = () => (dispatch, getState) => {
   dispatch({ type: DATA_CLEAR_STATE });
 };
 
+export const dataUpdateAsset = assetData => (dispatch, getState) => {
+  const { accountAddress, network } = getState().settings;
+  const { accountAssetsData } = getState().data;
+  const updatedAssetsData = {
+    ...accountAssetsData,
+    [assetData.uniqueId]: assetData,
+  };
+  dispatch({
+    payload: updatedAssetsData,
+    type: DATA_UPDATE_ACCOUNT_ASSETS_DATA,
+  });
+  saveAccountAssetsData(updatedAssetsData, accountAddress, network);
+};
+
 export const dataUpdateAssets = assetsData => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
   if (!isEmpty(assetsData)) {
