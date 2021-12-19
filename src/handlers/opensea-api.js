@@ -234,6 +234,8 @@ const createTransactionEvents = async (contractAddress, rawEvents) => {
         : abbreviations.address(address, 2);
     }
   });
+
+  events.sort((event1, event2) => event2.createdDate.localeCompare(event1.createdDate));
   
   return events;
 };
