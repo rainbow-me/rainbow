@@ -64,7 +64,7 @@ const fetchAssetBalances = async (tokens, address) => {
 
 export const optimismExplorerInit = () => async (dispatch, getState) => {
   if (networkInfo[networkTypes.optimism]?.disabled) return;
-  const { assets: allAssets, genericAssets } = getState().data;
+  const { genericAssets } = getState().data;
   const { accountAddress, nativeCurrency } = getState().settings;
   const formattedNativeCurrency = toLower(nativeCurrency);
 
@@ -124,9 +124,8 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
               toLower(assetsWithBalance[i].asset.coingecko_id) === toLower(key)
             ) {
               const asset =
-                ethereumUtils.getAsset(
-                  allAssets,
-                  toLower(assetsWithBalance[i].asset.mainnet_address)
+                ethereumUtils.getAccountAsset(
+                  assetsWithBalance[i].asset.mainnet_address
                 ) ||
                 genericAssets[
                   toLower(assetsWithBalance[i].asset.mainnet_address)

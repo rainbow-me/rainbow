@@ -3,7 +3,6 @@ import { isEmpty } from 'lodash';
 import { useCallback, useEffect, useLayoutEffect, useMemo } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
-import useAccountAssets from './useAccountAssets';
 import useAccountSettings from './useAccountSettings';
 import { delayNext } from './useMagicAutofocus';
 import useSwapCurrencies from './useSwapCurrencies';
@@ -39,7 +38,6 @@ export default function useSwapCurrencyHandlers({
   type,
 }) {
   const dispatch = useDispatch();
-  const { allAssets } = useAccountAssets();
   const { chainId } = useAccountSettings();
   const { navigate, setParams, dangerouslyGetParent } = useNavigation();
   const {
@@ -55,15 +53,14 @@ export default function useSwapCurrencyHandlers({
     }
     if (type === ExchangeModalTypes.deposit) {
       // if the deposit asset exists in wallet, then set it as default input
-      let defaultInputItemInWallet = ethereumUtils.getAsset(
-        allAssets,
+      let defaultInputItemInWallet = ethereumUtils.getAccountAsset(
         defaultInputAsset?.address
       );
       let defaultOutputItem = null;
 
       // if it does not exist, then set it as output
       if (!defaultInputItemInWallet) {
-        defaultInputItemInWallet = ethereumUtils.getAsset(allAssets);
+        defaultInputItemInWallet = ethereumUtils.getAccountAsset();
         defaultOutputItem = defaultInputAsset;
       }
       dispatch(updateSwapDepositCurrency(defaultInputAsset));
@@ -75,7 +72,7 @@ export default function useSwapCurrencyHandlers({
     if (type === ExchangeModalTypes.swap) {
       return {
         defaultInputItemInWallet:
-          defaultInputAsset ?? ethereumUtils.getAsset(allAssets),
+          defaultInputAsset ?? ethereumUtils.getAccountAsset(),
         defaultOutputItem: defaultOutputAsset ?? null,
       };
     }
