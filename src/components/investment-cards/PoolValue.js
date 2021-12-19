@@ -1,5 +1,5 @@
-import React from 'react';
 import styled from '@terrysahaidak/style-thing';
+import React from 'react';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
@@ -14,8 +14,7 @@ const PoolValueWrapper = styled(Row)(({ simple }) => ({
         ...padding.object(2, 9, 9),
       }
     : {}),
-}))`
-`;
+}));
 
 const PoolValueText = styled(Text).attrs(({ simple, size }) => ({
   align: simple ? 'left' : 'center',

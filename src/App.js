@@ -13,6 +13,7 @@ import {
   LogBox,
   NativeModules,
   StatusBar,
+  View,
 } from 'react-native';
 import branch from 'react-native-branch';
 import {
@@ -286,7 +287,7 @@ class App extends Component {
                 <RecoilRoot>
                   <AccountAssetManager>
                     <SharedValuesProvider>
-                      <FlexItem>
+                      <View style={{ flex: 1 }}>
                         {this.state.initialRoute && (
                           <InitialRouteContext.Provider
                             value={this.state.initialRoute}
@@ -296,7 +297,7 @@ class App extends Component {
                           </InitialRouteContext.Provider>
                         )}
                         <OfflineToast />
-                      </FlexItem>
+                      </View>
                     </SharedValuesProvider>
                   </AccountAssetManager>
                 </RecoilRoot>
