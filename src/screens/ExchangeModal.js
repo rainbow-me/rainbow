@@ -14,6 +14,7 @@ import {
   Keyboard,
   NativeModules,
 } from 'react-native';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
@@ -64,18 +65,13 @@ const FloatingPanels = ios
   ? AnimatedExchangeFloatingPanels
   : ExchangeFloatingPanels;
 
-const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
+const Wrapper = KeyboardFixedOpenLayout;
 
 const InnerWrapper = styled(Centered).attrs({
+  backgroundColor: 'yellow',
   direction: 'column',
 })`
-  ${ios
-    ? position.sizeAsObject('100%')
-    : `
-    height: 500;
-    top: 0;
-  `};
-  background-color: ${({ theme: { colors } }) => colors.transparent};
+  ${position.sizeAsObject('100%')};
 `;
 
 const Spacer = styled.View`
@@ -604,7 +600,7 @@ export default function ExchangeModal({
         </FloatingPanels>
         <GasSpeedButton
           asset={outputCurrency}
-          bottom={insets.bottom - 7}
+          bottom={ios ? insets.bottom - 7 : 20}
           currentNetwork={network}
           dontBlur
           onCustomGasBlur={handleCustomGasBlur}

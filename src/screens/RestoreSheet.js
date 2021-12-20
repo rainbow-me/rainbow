@@ -93,9 +93,9 @@ export default function RestoreSheet() {
   }, [goBack, navigate]);
 
   const wrapperHeight =
-    deviceHeight + longFormHeight + (android ? getSoftMenuBarHeight() / 2 : 0);
+    deviceHeight + longFormHeight;
   return (
-    <Column height={wrapperHeight}>
+    <Column height={wrapperHeight} style={{backgroundColor: 'yellow'}}>
       <StatusBar barStyle="light-content" />
       <SlackSheet
         contentHeight={longFormHeight}

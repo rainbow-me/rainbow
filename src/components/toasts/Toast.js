@@ -29,7 +29,7 @@ const Container = styled(RowWithMargins).attrs({
   ${({ theme: { colors } }) => shadow.build(0, 6, 10, colors.shadow, 0.14)};
   background-color: ${({ color }) => color};
   border-radius: 20;
-  bottom: ${({ insets }) => (insets.bottom || 40) + 3};
+  bottom: ${({ insets }) => (insets.bottom || 0) + 3};
   max-width: ${({ deviceWidth }) => deviceWidth - 38};
   position: absolute;
   z-index: 100;
@@ -59,6 +59,7 @@ export default function Toast({
   const { colors, isDarkMode } = useTheme();
   const { width: deviceWidth } = useDimensions();
   const insets = useSafeArea();
+  console.log('insets', insets);
 
   const animation = useSpringTransition(isVisible, springConfig);
 

@@ -172,7 +172,7 @@ export default forwardRef(function SlackSheet(
           {renderHeader?.(yPosition)}
           <Content
             {...(isInsideBottomSheet && { as: BottomSheetScrollView })}
-            backgroundColor={bg}
+            backgroundColor={'red'}
             contentContainerStyle={scrollEnabled && contentContainerStyle}
             contentHeight={contentHeight}
             deviceHeight={deviceHeight}
@@ -187,7 +187,7 @@ export default forwardRef(function SlackSheet(
           >
             {children}
             {!scrollEnabled && (
-              <Whitespace backgroundColor={bg} deviceHeight={deviceHeight} />
+              <Whitespace backgroundColor={'green'} deviceHeight={deviceHeight} />
             )}
           </Content>
         </ContentWrapper>

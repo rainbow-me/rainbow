@@ -17,6 +17,8 @@ const deviceWidth = deviceUtils.dimensions.width;
 
 const Container = styled(Column)`
   margin-top: -8;
+  margin-bottom: 40;
+  background-color: ${({ theme }) => theme.colors.red};
 `;
 
 const CaretIcon = styled(Icon).attrs({

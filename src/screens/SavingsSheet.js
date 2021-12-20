@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { StatusBar } from 'react-native';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import Divider from '../components/Divider';
@@ -36,9 +35,7 @@ import { position } from '@rainbow-me/styles';
 import { watchingAlert } from '@rainbow-me/utils';
 
 export const SavingsSheetEmptyHeight = 313;
-export const SavingsSheetHeight = android
-  ? 424 - getSoftMenuBarHeight() / 2
-  : 352;
+export const SavingsSheetHeight = android ? 450 : 352;
 
 const Container = styled(Centered).attrs({ direction: 'column' })`
   ${position.cover};

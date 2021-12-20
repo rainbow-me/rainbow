@@ -215,7 +215,7 @@ export function ExchangeNavigatorFactory(SwapModal = SwapModalScreen) {
     );
 
     return (
-      <FlexItem>
+      <FlexItem style={{ backgroundColor: 'blue' }}>
         <Tabs.Navigator
           pager={renderPager}
           position={tabTransitionPosition}

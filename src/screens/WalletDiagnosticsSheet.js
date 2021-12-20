@@ -341,7 +341,7 @@ const WalletDiagnosticsSheet = () => {
       <ColumnWithMargins
         margin={15}
         style={{
-          paddingBottom: ios ? 60 : 40 + getSoftMenuBarHeight(),
+          paddingBottom: 60,
           paddingHorizontal: 19,
           paddingTop: 19,
           width: '100%',

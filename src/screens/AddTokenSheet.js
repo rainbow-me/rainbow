@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/native';
 import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { StatusBar } from 'react-native';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSafeArea } from 'react-native-safe-area-context';
 import styled from 'styled-components';
 import Divider from '../components/Divider';
@@ -69,7 +68,7 @@ const ListEmoji = styled(Emoji).attrs({
 
 const WRITEABLE_LISTS = ['watchlist', 'favorites'];
 
-export const sheetHeight = android ? 490 - getSoftMenuBarHeight() : 394;
+export const sheetHeight = android ? 490 : 394;
 
 export default function AddTokenSheet() {
   const { goBack } = useNavigation();

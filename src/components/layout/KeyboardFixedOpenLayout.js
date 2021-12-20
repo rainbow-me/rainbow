@@ -8,9 +8,10 @@ import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
 
 const Container = styled(Transitioning.View)`
+  background-color: green;
   height: ${({ height }) => height};
   left: 0;
-  position: ${android ? 'relative' : 'absolute'};
+  position: absolute;
   right: 0;
   top: 0;
 `;

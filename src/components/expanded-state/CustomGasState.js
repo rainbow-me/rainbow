@@ -56,15 +56,12 @@ export default function CustomGasState({ asset }) {
   const validateGasParams = useRef(null);
   useAndroidDisableGesturesOnFocus();
 
-  const sheetHeightWithoutKeyboard =
-    CONTENT_HEIGHT +
-    FOOTER_HEIGHT +
-    (android ? 40 + getSoftMenuBarHeight() : 0);
+  const sheetHeightWithoutKeyboard = CONTENT_HEIGHT;
 
   const sheetHeightWithKeyboard =
     sheetHeightWithoutKeyboard +
-    keyboardHeight +
-    (deviceUtils.isSmallPhone ? 30 : 0);
+    + keyboardHeight +
+    (deviceUtils.isSmallPhone ? 0 : 0);
 
   const currentGasTrend = useMemo(
     () => getTrendKey(currentBlockParams?.trend),
@@ -78,7 +75,7 @@ export default function CustomGasState({ asset }) {
   return (
     <SlackSheet
       additionalTopPadding
-      backgroundColor={android ? colors.shadowBlack : colors.transparent}
+      backgroundColor={android ? colors.red : colors.transparent}
       borderBottomRadius={0}
       contentHeight={longFormHeight}
       deviceHeight={deviceHeight}

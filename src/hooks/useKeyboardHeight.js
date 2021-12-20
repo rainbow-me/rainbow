@@ -18,7 +18,7 @@ export default function useKeyboardHeight(options = {}) {
 
   const handleKeyboardDidShow = useCallback(
     event => {
-      const newHeight = Math.floor(event.endCoordinates.height);
+      const newHeight = event.endCoordinates.height;
 
       if (!heightForKeyboardType || newHeight !== heightForKeyboardType) {
         dispatch(

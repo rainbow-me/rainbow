@@ -425,10 +425,10 @@ export const settingsPreset = ({ route }) => ({
 });
 
 export const exchangeModalPreset = {
-  cardStyle: { backgroundColor: 'transparent' },
+  cardStyle: { backgroundColor: 'red' },
   cardStyleInterpolator: () => ({
     overlayStyle: {
-      backgroundColor: 'transparent',
+      backgroundColor: 'yellow',
     },
   }),
   gestureEnabled: true,

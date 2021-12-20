@@ -4,6 +4,7 @@ import { captureException } from '@sentry/react-native';
 import BigNumber from 'bignumber.js';
 import lang from 'i18n-js';
 import { isEmpty, isNil, omit, toLower } from 'lodash';
+
 import React, {
   Fragment,
   useCallback,
@@ -29,6 +30,7 @@ import Spinner from '../components/Spinner';
 import { RequestVendorLogoIcon } from '../components/coin-icon';
 import { ContactAvatar } from '../components/contacts';
 import ImageAvatar from '../components/contacts/ImageAvatar';
+import { FloatingPanel } from '../components/floating-panels';
 import { GasSpeedButton } from '../components/gas';
 import { Centered, Column, Row, RowWithMargins } from '../components/layout';
 import {
@@ -39,6 +41,7 @@ import {
   SlackSheet,
 } from '../components/sheet';
 import { Text } from '../components/text';
+
 import {
   DefaultTransactionConfirmationSection,
   MessageSigningSection,
@@ -79,7 +82,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
 import Routes from '@rainbow-me/routes';
-import { padding } from '@rainbow-me/styles';
+import { padding, position } from '@rainbow-me/styles';
 import {
   convertAmountToNativeDisplay,
   convertHexToString,
@@ -139,6 +142,20 @@ const WalletLabel = styled(Text).attrs(({ theme: { colors } }) => ({
   weight: 'semibold',
 }))`
   margin-bottom: 3;
+`;
+
+const Container2 = styled(Centered).attrs({
+  alignItems: 'flex-end',
+  bottom: 0,
+  direction: 'column',
+  flex: 1,
+  justifyContent: 'flex-end',
+})`
+  ${position.cover};
+  ${({ deviceHeight, height }) =>
+    height ? `height: ${height + deviceHeight}` : null};
+   ${({ deviceHeight, height }) =>
+    height ? `top: ${deviceHeight - height}` : null};
 `;
 
 const WalletText = styled(Text).attrs(
@@ -940,16 +957,10 @@ export default function TransactionConfirmationScreen() {
       ? MessageSheetHeight
       : (amount && amount !== '0.00') || !isBalanceEnough
       ? TallSheetHeight
-      : ShortSheetHeight) * (android ? 1.5 : 1);
-
-  let marginTop = android ? deviceHeight - sheetHeight + 275 : null;
+      : ShortSheetHeight) * 1;
 
   if (isTransactionDisplayType(method) && !request?.asset) {
-    marginTop += 50;
-  }
-
-  if (isAndroidApprovalRequest) {
-    sheetHeight += 140;
+    // += 50;
   }
 
   if (isTransactionDisplayType(method) && !isL2) {
@@ -983,15 +994,11 @@ export default function TransactionConfirmationScreen() {
     (isTransactionDisplayType(method) ? (isL2 ? 84 : 72) : 0);
 
   return (
-    <SheetKeyboardAnimation
-      as={AnimatedContainer}
-      isKeyboardVisible={false}
-      translateY={offset}
-    >
+    <Container2 deviceHeight={deviceHeight} height={sheetHeight}>
       <SlackSheet
-        backgroundColor={colors.transparent}
+        additionalTopPadding
+        backgroundColor={colors.yellow}
         borderRadius={0}
-        height={sheetHeight}
         hideHandle
         scrollEnabled={false}
       >
@@ -1000,7 +1007,6 @@ export default function TransactionConfirmationScreen() {
             backgroundColor={colors.white}
             borderRadius={39}
             direction="column"
-            marginTop={marginTop}
             paddingBottom={
               isMessageRequest
                 ? safeAreaInsetValues.bottom + (android ? 20 : 0)
@@ -1132,6 +1138,6 @@ export default function TransactionConfirmationScreen() {
           )}
         </Column>
       </SlackSheet>
-    </SheetKeyboardAnimation>
+    </Container2>
   );
 }

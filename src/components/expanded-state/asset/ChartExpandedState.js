@@ -7,7 +7,6 @@ import React, {
   useState,
 } from 'react';
 import { LayoutAnimation, View } from 'react-native';
-import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
@@ -52,8 +51,7 @@ import Routes from '@rainbow-me/routes';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 
 const defaultCarouselHeight = 60;
-const baseHeight =
-  386 + (android && 20 - getSoftMenuBarHeight()) - defaultCarouselHeight;
+const baseHeight = 386 - defaultCarouselHeight;
 const heightWithoutChart = baseHeight + (android && 30);
 const heightWithChart = baseHeight + 292;
 
@@ -127,7 +125,7 @@ function CarouselWrapper({
 }
 
 const Spacer = styled.View`
-  height: ${safeAreaInsetValues.bottom + 20 + getSoftMenuBarHeight()};
+  height: ${safeAreaInsetValues.bottom};
 `;
 
 // truncate after the first paragraph or 4th dot

@@ -13,7 +13,7 @@ const OfflineToast = () => {
   return (
     <Toast
       icon="offline"
-      isVisible={!isConnected && isMainnet}
+      isVisible={true}
       text="Offline"
     />
   );

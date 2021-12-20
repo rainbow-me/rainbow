@@ -196,14 +196,9 @@ export default function BackupSheet() {
     step,
   ]);
 
-  let sheetHeight =
-    android && !nativeScreen
-      ? AndroidHeight
-      : longFormHeight + getSoftMenuBarHeight();
+  let sheetHeight = android && !nativeScreen ? AndroidHeight : longFormHeight;
   let wrapperHeight =
-    deviceHeight +
-    (android && !nativeScreen ? AndroidHeight : longFormHeight) +
-    getSoftMenuBarHeight();
+    deviceHeight + (android && !nativeScreen ? AndroidHeight : longFormHeight);
   let additionalTopPadding = android && !nativeScreen;
 
   //If the sheet is full screen we should handle the sheet heights and padding differently
