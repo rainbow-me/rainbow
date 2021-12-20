@@ -65,7 +65,7 @@ const sortAssetsByNativeAmount = (
     noValue = EMPTY_ARRAY,
   } = groupAssetsByMarketValue(assetsNativePrices);
 
-  const sortedAssets = sortList(
+  const sortedAssetsNoShitcoins = sortList(
     hasValue,
     'native.balance.amount',
     'desc',
@@ -73,14 +73,14 @@ const sortAssetsByNativeAmount = (
     toNumber
   );
   const sortedShitcoins = sortList(noValue, 'name', 'asc');
-  const allAssets = sortedAssets.concat(sortedShitcoins);
+  const sortedAssets = sortedAssetsNoShitcoins.concat(sortedShitcoins);
 
   return {
-    allAssets,
-    allAssetsCount: allAssets.length,
     assetsTotal: total,
-    isBalancesSectionEmpty: isEmpty(allAssets),
+    isBalancesSectionEmpty: isEmpty(sortedAssets),
     isLoadingAssets,
+    sortedAssets,
+    sortedAssetsCount: sortedAssets.length,
   };
 };
 

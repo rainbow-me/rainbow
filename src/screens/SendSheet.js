@@ -96,7 +96,7 @@ export default function SendSheet(props) {
   const { goBack, navigate } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
-  const { allAssets } = useAccountAssets();
+  const { sortedAssets } = useAccountAssets();
   const {
     gasFeeParamsBySpeed,
     gasLimit,
@@ -820,7 +820,6 @@ export default function SendSheet(props) {
         )}
         {showAssetList && (
           <SendAssetList
-            allAssets={allAssets}
             fetchData={fetchData}
             hiddenCoins={hiddenCoins}
             nativeCurrency={nativeCurrency}
@@ -828,6 +827,7 @@ export default function SendSheet(props) {
             onSelectAsset={sendUpdateSelected}
             pinnedCoins={pinnedCoins}
             savings={savings}
+            sortedAssets={sortedAssets}
             uniqueTokens={sendableUniqueTokens}
           />
         )}

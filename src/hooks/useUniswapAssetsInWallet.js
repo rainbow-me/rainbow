@@ -11,19 +11,19 @@ const useUniswapAssetsInWallet = () => {
   const [uniswapAssets, setUniswapAssets] = useState([]);
   const network = useSelector(networkSelector);
   const isMainnet = network === NetworkTypes.mainnet;
-  const { allAssets } = useSelector(sortAssetsByNativeAmountSelector);
+  const { sortedAssets } = useSelector(sortAssetsByNativeAmountSelector);
   const getUniswapAssets = useCallback(async () => {
     let uniswapAssets;
     if (isMainnet) {
       const uniswapData = await getUniswapV2Tokens(
-        allAssets.map(({ address }) => address)
+        sortedAssets.map(({ address }) => address)
       );
       uniswapAssets = uniswapData || [];
     } else {
-      uniswapAssets = allAssets;
+      uniswapAssets = sortedAssets;
     }
     setUniswapAssets(uniswapAssets);
-  }, [allAssets, isMainnet]);
+  }, [sortedAssets, isMainnet]);
   const getIsUniswapAsset = asset => {
     return (
       uniswapAssets.find(
@@ -35,7 +35,7 @@ const useUniswapAssetsInWallet = () => {
     getUniswapAssets();
   }, [getUniswapAssets]);
 
-  return allAssets.filter(getIsUniswapAsset);
+  return sortedAssets.filter(getIsUniswapAsset);
 };
 
 export default useUniswapAssetsInWallet;
