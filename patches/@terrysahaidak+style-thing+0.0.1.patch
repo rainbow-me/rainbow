@@ -1,8 +1,8 @@
 diff --git a/node_modules/@terrysahaidak/style-thing/index.js b/node_modules/@terrysahaidak/style-thing/index.js
-index 9215226..420ad47 100644
+index 9215226..8cf5986 100644
 --- a/node_modules/@terrysahaidak/style-thing/index.js
 +++ b/node_modules/@terrysahaidak/style-thing/index.js
-@@ -1,26 +1,37 @@
+@@ -1,127 +1,135 @@
  import React from 'react';
 -import styledComponent, { css, useTheme } from 'styled-components';
 +import styledComponent, { css } from 'styled-components';
@@ -24,9 +24,10 @@ index 9215226..420ad47 100644
 -  const propsWithTheme = { ...props, theme };
 -  let propsToUse = {};
 -
-+function filterProps(props, config) {
-   if (typeof config?.shouldForwardProp === 'function') {
+-  if (typeof config?.shouldForwardProp === 'function') {
 -    const keys = Object.keys(propsWithTheme);
++function filterProps(props, shouldForwardProp) {
++  if (shouldForwardProp === 'function') {
 +    const forwardedProps = {};
 +    const keys = Object.keys(props);
      for (let i = 0; i < keys.length; i++) {
@@ -34,22 +35,81 @@ index 9215226..420ad47 100644
  
 -      if (config?.shouldForwardProp(key, () => true)) {
 -        propsToUse[key] = propsWithTheme[key];
-+      if (config?.shouldForwardProp(key, () => {})) {
++      if (shouldForwardProp(key, () => true)) {
 +        forwardedProps[key] = props[key];
        }
      }
++    return forwardedProps;
    } else {
 -    propsToUse = propsWithTheme;
 +    return props;
    }
 +}
  
-+function getProps(props, attrs) {
-+  let propsToUse = props;
-   // .attrs((props) => ({}))
-   if (typeof attrs === 'function') {
-     attrs = attrs(propsToUse);
-@@ -63,14 +74,9 @@ function getStyles(styles, props) {
+-  // .attrs((props) => ({}))
+-  if (typeof attrs === 'function') {
+-    attrs = attrs(propsToUse);
+-  }
++function useResolvedAttrs(theme = {}, props, attrs = []) {
++  // NOTE: can't memoize this
++  // returns [context, resolvedAttrs]
++  // where resolvedAttrs is only the things injected by the attrs themselves
++  const context = { ...props, theme };
++  const resolvedAttrs = {};
++
++  for (let i = 0; i < attrs.length; i++) {
++    const attrDef = attrs[i];
++    let resolvedAttrDef = typeof attrDef === 'function' ? attrDef(context) : attrDef;
++    let key;
+ 
+-  // .attrs({})
+-  if (typeof attrs === 'object') {
+-    propsToUse = { ...propsToUse, ...attrs };
++    for (key in resolvedAttrDef) {
++      context[key] = resolvedAttrs[key] = resolvedAttrDef[key];
++    }
+   }
+ 
+-  return propsToUse;
++  return [context, resolvedAttrs];
+ }
+ 
+-function getStyles(styles, props) {
+-  // (props) => style
+-  if (typeof styles === 'function') {
+-    return {
+-      generatedStyles: styles(props),
+-    };
+-  } else {
+-    const generatedStyles = {};
+-    const staticStyles = {};
+-
+-    const keys = Object.keys(styles);
++function processWithProps(obj, props, result = { ...props }) {
++  if (typeof obj === 'function') {
++    return Object.assign(result, obj(props));
++  } else if (typeof obj === 'object') {
++    const keys = Object.keys(obj);
+     for (let i = 0; i < keys.length; i++) {
+       const key = keys[i];
+-      const item = styles[key];
++      const item = obj[key];
+ 
+-      if (typeof item === 'function') {
+-        generatedStyles[key] = item(props);
+-      } else {
+-        staticStyles[key] = item;
+-      }
++      result[key] = typeof item === 'function' ? item(props) : item;
+     }
+ 
+-    return {
+-      generatedStyles,
+-      staticStyles,
+-    };
++    return result;
++  } else {
++    return result;
    }
  }
  
@@ -60,52 +120,92 @@ index 9215226..420ad47 100644
 - * @returns
 - */
 -function attrs(props) {
--    StyledComponentFactory.attrs = props;
 +export default function styled(Component) {
 +  function attrs(props) {
-+    StyledComponentFactory.__attrs = props;
+     StyledComponentFactory.attrs = props;
      return StyledComponentFactory;
    }
  
-@@ -98,17 +104,28 @@ function attrs(props) {
-     // }
+   function withConfig(config) {
+-    StyledComponentFactory.__config = config;
++    if (config?.shouldForwardProp) {
++      StyledComponentFactory.shouldForwardProp = config.shouldForwardProp;
++    }
++
+     return StyledComponentFactory;
+   }
  
-     function StyledComponent({ style, ...props }, ref) {
--      const theme = useTheme();
+-  function StyledComponentFactory(...args) {
+-    // console.log(args);
+-    const [styles, ...rest] = args;
++  let memoized;
+ 
+-    // if (Array.isArray(styles)) {
+-    //   let instance = styledComponent(Component);
++  function StyledComponentFactory(styles) {
++    // to me tomorrow
++    // it's better to use styled components code here directly
++    // check for its composition logic
++    // maybe it will fix the whole thing
+ 
+-    //   if (StyledComponentFactory.__config) {
+-    //     instance = instance.withConfig(StyledComponentFactory.__config);
+-    //   }
+ 
+-    //   if (StyledComponentFactory.__attrs) {
+-    //     instance = instance.attrs(StyledComponentFactory.__attrs);
+-    //   }
++    function StyledComponent({ style, ...props }, ref) {
 +      const theme = useTheme() ?? {};
-+
-+      const propsWithTheme = {...props, theme};
-+
-+      let attrs = (StyledComponentFactory.__attrs ?? {})
-+      
-+      if (typeof Component.__attrs === 'object') {
-+        attrs = {
-+          ...Component.__attrs,
-+          ...attrs,
-+        };
-+      }
  
-       const propsToUse = getProps(
+-    //   return instance(styles.concat(rest));
+-    // }
++      const [context, attributes] = useResolvedAttrs(theme, props, memoized.attrs);
+ 
+-    function StyledComponent({ style, ...props }, ref) {
+-      const theme = useTheme();
++      const generatedStyles = processWithProps(styles, context, {});
+ 
+-      const propsToUse = getProps(
 -        props,
 -        StyledComponentFactory.attrs,
 -        theme,
 -        StyledComponentFactory.__config
-+        propsWithTheme,
-+        attrs,
-       );
+-      );
++      const computedProps = { ...props, ...attributes };
  
-       const { staticStyles, generatedStyles } = getStyles(styles, propsToUse);
+-      const { staticStyles, generatedStyles } = getStyles(styles, propsToUse);
++      const forwardedProps = filterProps(computedProps, memoized.shouldForwardProp);
  
-+      const forwardedProps = filterProps(propsToUse, Component.__config);
-+
        return (
          <Component
++          {...forwardedProps}
            ref={ref}
-@@ -122,6 +139,8 @@ function attrs(props) {
+-          {...propsToUse}
+-          style={[staticStyles, generatedStyles, style]}
++          style={[generatedStyles, style]}
+         />
+       );
+     }
+ 
+-    const memoized = React.memo(React.forwardRef(StyledComponent));
++    memoized = React.memo(React.forwardRef(StyledComponent));
  
      memoized.displayName = `StyledThing${Component.name}`;
  
-+    memoized.__attrs = StyledComponentFactory.__attrs;
++    if (StyledComponentFactory.attrs) {
++      memoized.attrs = Array.isArray(Component.attrs) 
++        ? Component.attrs.concat(StyledComponentFactory.attrs) 
++        : [StyledComponentFactory.attrs];
++    } else {
++      memoized.attrs = Component.attrs;
++    }
++
++    if (StyledComponentFactory.shouldForwardProp) {
++      memoized.shouldForwardProp = StyledComponentFactory.shouldForwardProp;
++    } else {
++      memoized.shouldForwardProp = Component.shouldForwardProp;
++    }
 +
      return memoized;
    }
