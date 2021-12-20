@@ -36,11 +36,11 @@ const PredictionNumber = styled(AnimatedNumber).attrs(
 
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 const steps = {
-  Monthly: {
+  'Monthly': {
     label: lang.t('savings.earnings.monthly'),
     days: 30,
   },
-  Yearly: {
+  'Yearly': {
     label: lang.t('savings.earnings.yearly'),
     days: 365,
   },

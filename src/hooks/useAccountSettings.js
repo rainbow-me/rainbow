@@ -2,11 +2,11 @@ import lang from 'i18n-js';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
+import { updateLanguageLocale } from '../languages';
 import {
   settingsChangeLanguage as changeLanguage,
   settingsChangeNativeCurrency as changeNativeCurrency,
 } from '../redux/settings';
-import { updateLanguageLocale } from '../languages';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 const languageSelector = state => state.settings.language;
