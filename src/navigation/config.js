@@ -10,6 +10,8 @@ import colors from '../context/currentColors';
 import { explainers, ExplainSheetHeight } from '../screens/ExplainSheet';
 import { SendConfirmationSheetHeight } from '../screens/SendConfirmationSheet';
 import { onWillPop } from './Navigation';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
+import networkTypes from '@rainbow-me/helpers/networkTypes';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { fonts } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
@@ -19,9 +21,17 @@ export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 const buildCoolModalConfig = params => ({
   allowsDragToDismiss: true,
   allowsTapToDismiss: true,
+  backgroundColor: params.backgroundColor || colors.themedColors.shadowBlack,
   backgroundOpacity: params.backgroundOpacity || 0.7,
   blocksBackgroundTouches: true,
-  cornerRadius: params.cornerRadius || 39,
+  cornerRadius:
+    params.cornerRadius === 'device'
+      ? android
+        ? 30
+        : 0.666 // 0.666 gets the screen corner radius internally
+      : params.cornerRadius === 0
+      ? 0
+      : params.cornerRadius || 39,
   customStack: true,
   disableShortFormAfterTransitionToLongForm:
     params.disableShortFormAfterTransitionToLongForm ||
@@ -35,9 +45,12 @@ const buildCoolModalConfig = params => ({
   onAppear: params.onAppear || null,
   scrollEnabled: params.scrollEnabled,
   single: params.single,
+  springDamping: params.springDamping || 0.8,
   startFromShortForm:
     params.startFromShortForm || params?.type === 'token' || false,
-  topOffset: params.topOffset || sharedCoolModalTopOffset,
+  topOffset:
+    params.topOffset === 0 ? 0 : params.topOffset || sharedCoolModalTopOffset,
+  transitionDuration: params.transitionDuration || 0.35,
 });
 
 const backupSheetSizes = {
@@ -81,6 +94,17 @@ export const backupSheetConfig = {
   },
 };
 
+export const customGasSheetConfig = {
+  options: ({ route: { params = {} } }) => ({
+    ...buildCoolModalConfig({
+      ...params,
+      backgroundOpacity: 1,
+      springDamping: 1,
+      transitionDuration: 0.25,
+    }),
+  }),
+};
+
 export const addTokenSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
@@ -109,14 +133,15 @@ export const sendConfirmationSheetConfig = {
 };
 
 export const explainSheetConfig = {
-  options: ({ route: { params = {} } }) => {
+  options: ({
+    route: { params = { network: networkInfo[networkTypes.mainnet].name } },
+  }) => {
+    const explainerConfig = explainers(params.network)[params?.type];
     return buildCoolModalConfig({
       ...params,
       longFormHeight:
         ExplainSheetHeight +
-        (explainers[params?.type]?.extraHeight
-          ? explainers[params?.type]?.extraHeight
-          : 0),
+        (explainerConfig?.extraHeight ? explainerConfig?.extraHeight : 0),
     });
   },
 };
@@ -172,7 +197,6 @@ export const restoreSheetConfig = {
 
     return buildCoolModalConfig({
       ...params,
-      backgroundColor: colors.themedColors.dark,
       longFormHeight: heightForStep,
     });
   },

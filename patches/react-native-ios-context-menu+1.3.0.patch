@@ -1,5 +1,45 @@
+diff --git a/node_modules/react-native-ios-context-menu/ios/src_library/React Native/RCTContextMenu/RCTMenuActionItem.swift b/node_modules/react-native-ios-context-menu/ios/src_library/React Native/RCTContextMenu/RCTMenuActionItem.swift
+index 35ad66b..86d54b4 100644
+--- a/node_modules/react-native-ios-context-menu/ios/src_library/React Native/RCTContextMenu/RCTMenuActionItem.swift	
++++ b/node_modules/react-native-ios-context-menu/ios/src_library/React Native/RCTContextMenu/RCTMenuActionItem.swift	
+@@ -127,14 +127,26 @@ extension RCTMenuActionItem {
+     print("RCTMenuActionItem, makeUIAction...");
+     #endif
+ 
+-    return UIAction(
+-      title     : self.actionTitle,
+-      image     : self.icon.image ,
+-      identifier: self.identifier ,
+-      discoverabilityTitle: self.discoverabilityTitle,
+-      attributes: self.UIMenuElementAttributes,
+-      state     : self.UIMenuElementState,
+-      handler   : { handler(self.dictionary, $0) }
+-    );
++    if #available(iOS 15.0, *) {
++      return UIAction(
++        title     : self.actionTitle,
++        subtitle  : self.discoverabilityTitle,
++        image     : self.icon.image,
++        identifier: self.identifier,
++        attributes: self.UIMenuElementAttributes,
++        state     : self.UIMenuElementState,
++        handler   : { handler(self.dictionary, $0) }
++      )
++    } else {
++      return UIAction(
++        title     : self.actionTitle,
++        image     : self.icon.image,
++        identifier: self.identifier,
++        discoverabilityTitle  : self.discoverabilityTitle,
++        attributes: self.UIMenuElementAttributes,
++        state     : self.UIMenuElementState,
++        handler   : { handler(self.dictionary, $0) }
++      )
++    };
+   };
+ };
 diff --git a/node_modules/react-native-ios-context-menu/src/ContextMenuButton.ios.js b/node_modules/react-native-ios-context-menu/src/ContextMenuButton.ios.js
-index f972d19..c5257f2 100644
+index f972d19..ed2a9c2 100644
 --- a/node_modules/react-native-ios-context-menu/src/ContextMenuButton.ios.js
 +++ b/node_modules/react-native-ios-context-menu/src/ContextMenuButton.ios.js
 @@ -1,6 +1,7 @@
@@ -17,13 +57,13 @@ index f972d19..c5257f2 100644
    render(){
 -    const { useActionSheetFallback } = this.props;
 +    const { useActionSheetFallback, isMenuPrimaryAction } = this.props;
-     const useContextMenu =
+     const useContextMenu = 
        (isContextMenuViewSupported && !useActionSheetFallback);
  
 @@ -201,7 +202,9 @@ export class ContextMenuButton extends React.PureComponent {
-       useContextMenu? this._renderContextMenuView() :
+       useContextMenu? this._renderContextMenuView() : 
        useActionSheetFallback? (
-         <TouchableOpacity
+         <TouchableOpacity 
 -          onLongPress={this._handleOnLongPress}
 +          {...({
 +            [isMenuPrimaryAction ? 'onPress' : 'onLongPress']:this._handleOnLongPress

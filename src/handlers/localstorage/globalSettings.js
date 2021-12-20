@@ -1,4 +1,5 @@
 import { getGlobal, saveGlobal } from './common';
+import { NativeCurrencyKeys } from '@rainbow-me/entities';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 
 export const IMAGE_METADATA = 'imageMetadata';
@@ -39,7 +40,8 @@ export const getKeyboardHeight = () => getGlobal(KEYBOARD_HEIGHT, null);
 
 export const setKeyboardHeight = height => saveGlobal(KEYBOARD_HEIGHT, height);
 
-export const getNativeCurrency = () => getGlobal(NATIVE_CURRENCY, 'USD');
+export const getNativeCurrency = () =>
+  getGlobal(NATIVE_CURRENCY, NativeCurrencyKeys.USD);
 
 export const saveNativeCurrency = nativeCurrency =>
   saveGlobal(NATIVE_CURRENCY, nativeCurrency);

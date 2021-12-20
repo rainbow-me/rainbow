@@ -1,6 +1,8 @@
 import { mapKeys, mapValues } from 'lodash';
 import { savingsAssets } from './compound';
+import { default as DefaultTokenListsSource } from './default-token-lists.json';
 import { Asset, SavingsAsset } from '@rainbow-me/entities';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as balanceCheckerContractAbiOVM } from './balances-checker-abi-ovm.json';
@@ -9,7 +11,7 @@ export { default as arbitrumTokenMapping } from './arbitrum-token-mapping.json';
 export { default as chainAssets } from './chain-assets.json';
 export { default as coingeckoIdsFallback } from './coingecko/ids.json';
 export { compoundCERC20ABI, compoundCETHABI } from './compound';
-export { default as DefaultTokenLists } from './default-token-lists.json';
+export { DefaultTokenListsSource as DefaultTokenLists };
 export {
   defiSdkAdapterRegistryABI,
   DEFI_SDK_ADAPTER_REGISTRY_ADDRESS,
@@ -20,7 +22,9 @@ export {
 } from './signatureRegistry';
 export { default as emojis } from './emojis.json';
 export { default as erc20ABI } from './erc20-abi.json';
+export { default as optimismGasOracleAbi } from './optimism-gas-oracle-abi.json';
 export { default as ethUnits } from './ethereum-units.json';
+export { default as timeUnits } from './time-units.json';
 export { DPI_ADDRESS } from './indexes';
 
 export { default as migratedTokens } from './migratedTokens.json';
@@ -44,6 +48,9 @@ export {
   WYRE_SUPPORTED_COUNTRIES_ISO,
 } from './wyre';
 
+export const OVM_GAS_PRICE_ORACLE =
+  '0x420000000000000000000000000000000000000F';
+
 // Block Explorers
 export const ARBITRUM_BLOCK_EXPLORER_URL = 'arbiscan.io';
 export const POLYGON_BLOCK_EXPLORER_URL = 'polygonscan.com';
@@ -63,11 +70,14 @@ export const ETH_ADDRESS = 'eth';
 export const ARBITRUM_ETH_ADDRESS =
   '0x0000000000000000000000000000000000000000';
 export const OPTIMISM_ETH_ADDRESS =
-  '0x4200000000000000000000000000000000000006';
+  '0x0000000000000000000000000000000000000000';
 export const MATIC_MAINNET_ADDRESS =
   '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0';
 export const MATIC_POLYGON_ADDRESS =
   '0x0000000000000000000000000000000000001010';
+export const COVALENT_ETH_ADDRESS =
+  '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+
 export const WETH_ADDRESS = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 export const CDAI_CONTRACT = '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643';
 export const SAI_ADDRESS = '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359';
@@ -122,6 +132,18 @@ export const AddCashCurrencyInfo = {
     },
   },
 };
+
+/**
+ * A `Record` representation of the default token lists. This is useful
+ * for instances where a `Network` must be used as a key for the token lists,
+ * but the particular network does not actually exist in the data. In that
+ * case, we can cast the token lists to `TokenListsExtendedRecord` to get
+ * undefined as the value, instead of a TypeScript compilation error.
+ */
+export type TokenListsExtendedRecord = Record<
+  Network,
+  typeof DefaultTokenListsSource[keyof typeof DefaultTokenListsSource]
+>;
 
 export const DefaultUniswapFavorites = {
   mainnet: [ETH_ADDRESS, DAI_ADDRESS, WBTC_ADDRESS, SOCKS_ADDRESS],

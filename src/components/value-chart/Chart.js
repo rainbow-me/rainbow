@@ -105,6 +105,10 @@ function useShowLoadingState(isFetching) {
   return isShow;
 }
 
+const longPressGestureHandlerProps = {
+  minDurationMs: 60,
+};
+
 export default function ChartWrapper({
   chartType,
   color,
@@ -215,12 +219,10 @@ export default function ChartWrapper({
             <ChartPath
               fill="none"
               gestureEnabled={!fetchingCharts && !!throttledData}
-              hapticsEnabled
+              hapticsEnabled={ios}
               height={HEIGHT}
               hitSlop={30}
-              longPressGestureHandlerProps={{
-                minDurationMs: 60,
-              }}
+              longPressGestureHandlerProps={longPressGestureHandlerProps}
               selectedStrokeWidth={3}
               stroke={color}
               strokeLinecap="round"

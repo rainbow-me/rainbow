@@ -3,7 +3,6 @@ import { combineReducers } from 'redux';
 import addCash from './addCash';
 import additionalAssetsData from './additionalAssetsData';
 import appState from './appState';
-import arbitrumExplorer from './arbitrumExplorer';
 import charts from './charts';
 import contacts from './contacts';
 import data from './data';
@@ -14,9 +13,8 @@ import gas from './gas';
 import imageMetadata from './imageMetadata';
 import keyboardHeight from './keyboardHeight';
 import multicall from './multicall';
-import openStateSettings from './openStateSettings';
+import nonceManager from './nonceManager';
 import optimismExplorer from './optimismExplorer';
-import polygonExplorer from './polygonExplorer';
 import requests from './requests';
 import settings from './settings';
 import showcaseTokens from './showcaseTokens';
@@ -35,7 +33,6 @@ export default combineReducers({
   addCash,
   additionalAssetsData,
   appState,
-  arbitrumExplorer,
   charts,
   contacts,
   data,
@@ -46,9 +43,8 @@ export default combineReducers({
   imageMetadata,
   keyboardHeight,
   multicall,
-  openStateSettings,
+  nonceManager,
   optimismExplorer,
-  polygonExplorer,
   requests,
   settings,
   showcaseTokens,

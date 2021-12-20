@@ -23,12 +23,11 @@ const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => {
         <Text
           align="center"
           color={colors.green}
-          letterSpacing="roundedTight"
           lineHeight="loose"
           size="large"
-          weight="semibold"
+          weight="bold"
         >
-          􀁍 {lifetimeAccruedInterest}
+          Earned {lifetimeAccruedInterest}
         </Text>
       </RowWithMargins>
     </Centered>

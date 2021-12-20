@@ -59,7 +59,7 @@ const CenteredLabel = ({ position, style, width, ...props }) => {
   );
 };
 
-export default function Labels({ color, width }) {
+const Labels = React.memo(function Labels({ color, width }) {
   const { nativeCurrency } = useAccountSettings();
   const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
   const { greatestX, greatestY, smallestX, smallestY } = useChartData();
@@ -82,7 +82,7 @@ export default function Labels({ color, width }) {
           color={colors.alpha(color, 0.8)}
           position={positionMin}
           style={{
-            bottom: -20,
+            bottom: -40,
           }}
           width={width}
         >
@@ -103,4 +103,6 @@ export default function Labels({ color, width }) {
       ) : null}
     </>
   );
-}
+});
+
+export default Labels;

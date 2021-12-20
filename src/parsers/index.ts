@@ -7,14 +7,20 @@ export {
   parseAssetsNative,
 } from './accounts';
 export {
-  getFallbackGasPrices,
-  parseGasPrices,
+  parseL2GasPrices,
+  parseGasFeesBySpeed,
   defaultGasPriceFormat,
-  parseTxFees,
+  parseLegacyGasFeesBySpeed,
   gweiToWei,
   weiToGwei,
+  parseGasParamsForTransaction,
+  parseGasFeeParam,
+  parseGasFees,
+  defaultGasParamsFormat,
+  parseRainbowMeteorologyData,
 } from './gas';
 export { parseNewTransaction } from './newTransaction';
+export { parsePoaps } from './poap';
 export { getRequestDisplayDetails } from './requests';
 export {
   parseTransactions,

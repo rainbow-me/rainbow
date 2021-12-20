@@ -25,7 +25,7 @@ const Title = styled(Text).attrs({
   size: 'lmedium',
   weight: 'bold',
 })`
-  padding-top: 20;
+  padding-top: ${isSmallPhone => (isSmallPhone ? 0 : 20)};
 `;
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -82,6 +82,7 @@ const ToggleSecretButton = styled(Button)`
 const LoadingSpinner = android ? Spinner : ActivityIndicator;
 
 export default function SecretDisplaySection({
+  isSmallPhone,
   onSecretLoaded,
   onWalletTypeIdentified,
 }) {
@@ -147,7 +148,9 @@ export default function SecretDisplaySection({
                 <SecretDisplayCard seed={seed} type={type} />
               </Column>
               <Column>
-                <Title>👆For your eyes only 👆</Title>
+                <Title isSmallPhone={isSmallPhone}>
+                  👆For your eyes only 👆
+                </Title>
                 <DescriptionText>
                   Anyone who has these words can access your entire wallet!
                 </DescriptionText>

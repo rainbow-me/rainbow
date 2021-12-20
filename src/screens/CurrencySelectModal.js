@@ -78,7 +78,7 @@ export default function CurrencySelectModal() {
   const scrollPosition = usePagerPosition();
 
   const searchInputRef = useRef();
-  const { handleFocus } = useMagicAutofocus(searchInputRef, undefined, true);
+  const { handleFocus } = useMagicAutofocus(searchInputRef);
 
   const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
@@ -227,6 +227,7 @@ export default function CurrencySelectModal() {
       }
       delayNext();
       dangerouslyGetState().index = 1;
+      setSearchQuery('');
       navigate(Routes.MAIN_EXCHANGE_SCREEN);
     },
     [
@@ -270,7 +271,6 @@ export default function CurrencySelectModal() {
     // on page blur
     if (!isFocused && prevIsFocused) {
       handleApplyFavoritesQueue();
-      setSearchQuery('');
       restoreFocusOnSwapModal?.();
     }
   }, [
@@ -315,14 +315,22 @@ export default function CurrencySelectModal() {
           {isFocusedAndroid && <StatusBar barStyle="dark-content" />}
           <GestureBlocker type="top" />
           <Column flex={1}>
-            <CurrencySelectModalHeader testID="currency-select-header" />
+            <CurrencySelectModalHeader
+              setSearchQuery={setSearchQuery}
+              testID="currency-select-header"
+            />
             <ExchangeSearch
               isFetching={loadingAllTokens}
               isSearching={isSearching}
               onChangeText={setSearchQuery}
-              onFocus={handleFocus}
               ref={searchInputRef}
               searchQuery={searchQuery}
+              {...(ios
+                ? {
+                    onFocus: handleFocus,
+                    ref: searchInputRef,
+                  }
+                : {})}
               testID="currency-select-search"
             />
             {type === null || type === undefined ? null : (

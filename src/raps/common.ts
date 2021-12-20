@@ -43,6 +43,7 @@ export interface UnlockActionParameters {
 
 export interface SwapActionParameters {
   inputAmount: string;
+  nonce: number;
   outputAmount: string;
   tradeDetails: Trade;
 }
@@ -162,7 +163,7 @@ const executeAction = async (
       baseNonce
     );
     return { baseNonce: nonce, errorMessage: null };
-  } catch (error) {
+  } catch (error: any) {
     logger.sentry('[3 INNER] error running action, code:', error?.code);
     captureException(error);
     analytics.track('Rap failed', {
@@ -203,7 +204,8 @@ export const executeRap = async (
       wallet,
       rap,
       0,
-      rapName
+      rapName,
+      swapParameters.nonce
     );
     if (baseNonce) {
       for (let index = 1; index < actions.length; index++) {

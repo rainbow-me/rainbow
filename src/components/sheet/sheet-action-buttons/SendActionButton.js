@@ -34,7 +34,7 @@ export default function SendActionButton({
       label={`􀈠 ${lang.t('button.send')}`}
       onPress={handlePress}
       testID="send"
-      weight="bold"
+      weight="heavy"
     />
   );
 }

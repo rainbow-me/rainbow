@@ -11,7 +11,7 @@ export default function SwapActionButton({
   label,
   requireVerification,
   verified,
-  weight = 'bold',
+  weight = 'heavy',
   ...props
 }) {
   const { colors } = useTheme();

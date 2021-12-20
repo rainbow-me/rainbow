@@ -1,13 +1,12 @@
 import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Animated, { EasingNode } from 'react-native-reanimated';
-import { toRad, useTimingTransition } from 'react-native-redash/src/v1';
+import { Animated, Easing } from 'react-native';
 import styled from 'styled-components';
 import CaretImageSource from '../../assets/family-dropdown-arrow.png';
 import { useTheme } from '../../context/ThemeContext';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
-import { ButtonPressAnimation, interpolate } from '../animations';
+import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { Emoji, Text, TruncatedText } from '../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
@@ -41,10 +40,47 @@ const SavingsListHeader = ({
   const { nativeCurrency } = useAccountSettings();
   const { colors } = useTheme();
 
-  const animation = useTimingTransition(isOpen, {
-    duration: TokenFamilyHeaderAnimationDuration,
-    easing: EasingNode.bezier(0.25, 0.1, 0.25, 1),
-  });
+  const toValue = Number(!!isOpen);
+
+  const [animation] = useState(() => new Animated.Value(toValue));
+
+  useEffect(() => {
+    Animated.timing(animation, {
+      duration: TokenFamilyHeaderAnimationDuration,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+      toValue,
+      useNativeDriver: true,
+    }).start();
+  }, [toValue, animation]);
+
+  const imageAnimatedStyles = useMemo(
+    () => ({
+      height: 18,
+      marginBottom: 1,
+      right: 5,
+      transform: [
+        {
+          rotate: animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: ['0deg', '90deg'],
+          }),
+        },
+      ],
+      width: 8,
+    }),
+    [animation]
+  );
+
+  const sumNumberAnimatedStyles = useMemo(
+    () => ({
+      opacity: animation.interpolate({
+        inputRange: [0, 1],
+        outputRange: [1, 0],
+      }),
+    }),
+    [animation]
+  );
+
   return (
     <ButtonPressAnimation
       key={`${emoji}_${isOpen}`}
@@ -73,14 +109,7 @@ const SavingsListHeader = ({
         </RowWithMargins>
         <RowWithMargins align="center" margin={13}>
           {showSumValue && (
-            <Animated.View
-              style={{
-                opacity: interpolate(animation, {
-                  inputRange: [0, 1],
-                  outputRange: [1, 0],
-                }),
-              }}
-            >
+            <Animated.View style={sumNumberAnimatedStyles}>
               <SumValueText>
                 {Number(savingsSumValue) || Number(savingsSumValue) === 0
                   ? convertAmountToNativeDisplay(
@@ -94,22 +123,7 @@ const SavingsListHeader = ({
           <AnimatedImgixImage
             resizeMode={ImgixImage.resizeMode.contain}
             source={CaretImageSource}
-            style={{
-              height: 18,
-              marginBottom: 1,
-              right: 5,
-              transform: [
-                {
-                  rotate: toRad(
-                    interpolate(animation, {
-                      inputRange: [0, 1],
-                      outputRange: [0, 90],
-                    })
-                  ),
-                },
-              ],
-              width: 8,
-            }}
+            style={imageAnimatedStyles}
             tintColor={colors.dark}
           />
         </RowWithMargins>

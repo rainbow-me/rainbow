@@ -184,14 +184,14 @@ const SavingsSheet = () => {
                 label={`􀁏 ${lang.t('savings.withdraw')}`}
                 onPress={onWithdraw}
                 radiusAndroid={24}
-                weight="bold"
+                weight="heavy"
               />
               <SheetActionButton
                 color={colors.swapPurple}
                 label={`􀁍 ${lang.t('savings.deposit')}`}
                 onPress={onDeposit}
                 radiusAndroid={24}
-                weight="bold"
+                weight="heavy"
               />
             </SheetActionButtonRow>
             <Divider color={colors.rowDividerLight} zIndex={0} />

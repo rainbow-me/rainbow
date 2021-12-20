@@ -11,7 +11,8 @@ import {
 export default function useColorForAsset(
   asset = {},
   fallbackColor,
-  forceLightMode = false
+  forceLightMode = false,
+  forceETHColor = false
 ) {
   const { isDarkMode: isDarkModeTheme, colors } = useTheme();
   const { address, color, mainnet_address } = asset;
@@ -25,13 +26,15 @@ export default function useColorForAsset(
   const isDarkMode = forceLightMode || isDarkModeTheme;
 
   const colorDerivedFromAddress = useMemo(() => {
-    let color = isETH(address)
+    const color = isETH(address)
       ? isDarkMode
-        ? colors.brighten(lightModeThemeColors.dark)
+        ? forceETHColor
+          ? colors.appleBlue
+          : colors.brighten(lightModeThemeColors.dark)
         : colors.dark
       : pseudoRandomArrayItemFromString(address, colors.avatarBackgrounds);
     return color;
-  }, [address, colors, isDarkMode]);
+  }, [address, colors, forceETHColor, isDarkMode]);
 
   return useMemo(() => {
     let color2Return;

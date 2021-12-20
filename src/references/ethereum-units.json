@@ -6,6 +6,8 @@
   "basic_swap_require_approval": 350000,
   "basic_tx": 21000,
   "basic_withdrawal": 550000,
+  "basic_transfer": 50000,
+  "arbitrum_basic_tx": 735000,
   "noether": 0,
   "wei": 1,
   "kwei": 1000,

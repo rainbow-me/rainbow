@@ -190,7 +190,7 @@
       "back_up": {
         "alerts": {
           "cloud_not_enabled": {
-            "description": "Looks like iCloud drive is not enabled on your device. Do you want to see how to enable it? :)",
+            "description": "Looks like iCloud drive is not enabled on your device.\n\n Do you want to see how to enable it? :)",
             "label": "iCloud not enabled :)",
             "no_thanks": "No thanks :)",
             "show_me": "Yes, Show me :)"
@@ -344,6 +344,7 @@
         "slow": "Lent"
       },
       "label": "Swap",
+      "loading": "Loading...",
       "max": "Max",
       "modal_types": {
         "confirm": "Confirme dans",

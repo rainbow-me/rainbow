@@ -215,8 +215,9 @@ export default function BackupSheet() {
 
   //If the sheet is full screen we should handle the sheet heights and padding differently
   if (
-    (android && step === WalletBackupStepTypes.cloud) ||
-    step === WalletBackupStepTypes.manual
+    android &&
+    (step === WalletBackupStepTypes.cloud ||
+      step === WalletBackupStepTypes.manual)
   ) {
     sheetHeight = deviceHeight - 40;
     additionalTopPadding = true;

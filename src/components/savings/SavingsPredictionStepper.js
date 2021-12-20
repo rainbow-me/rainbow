@@ -36,11 +36,11 @@ const PredictionNumber = styled(AnimatedNumber).attrs(
 
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 const steps = {
-  'Monthly': {
+  Monthly: {
     label: lang.t('savings.earnings.monthly'),
     days: 30,
   },
-  'Yearly': {
+  Yearly: {
     label: lang.t('savings.earnings.yearly'),
     days: 365,
   },
@@ -98,9 +98,9 @@ const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
       <Row align="center" css={padding(15, 19, 19)}>
         <RowWithMargins align="center" margin={5}>
           <CrystalBallEmoji />
-          <Text color={colors.dark} size="lmedium">
+          <Text color={colors.dark} size="lmedium" weight="medium">
             {`${lang.t('savings.earnings.est')} ${
-              Object.values(steps)[step].label
+              Object.keys(steps)[step]
             } ${lang.t('savings.earnings.label')}`}
           </Text>
         </RowWithMargins>
