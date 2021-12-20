@@ -328,6 +328,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
             <L2Explainer
               assetType={AssetTypes.polygon}
               colors={colors}
+              hideDivider
               onPress={handleL2ExplainerPress}
               symbol="NFT"
             />
