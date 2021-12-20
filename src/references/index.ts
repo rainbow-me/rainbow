@@ -30,6 +30,8 @@ export { DPI_ADDRESS } from './indexes';
 export { default as migratedTokens } from './migratedTokens.json';
 export { default as supportedNativeCurrencies } from './native-currencies.json';
 export { default as shitcoins } from './shitcoins.json';
+export { default as polygonAllowList } from './polygon-allowlist.json';
+
 export { default as smartContractMethods } from './smartcontract-methods.json';
 export {
   PAIR_GET_RESERVES_CALL_DATA,
