@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.5.42](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.42)
+### Added
+* EIP-1559 support
+
 ## [1.5.40](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.40)
 
 ### Changed

@@ -9,17 +9,17 @@ const EmojiForGasSpeedType = {
   [gasUtils.URGENT]: {
     emoji: 'police_car_light',
     // 🚨
-    top: android ? 0 : -0.5,
+    top: android ? -2 : -0.5,
   },
   [gasUtils.FAST]: {
     emoji: 'rocket',
     // 🚀️
-    top: android ? 0 : -0.5,
+    top: android ? -1.25 : -1.25,
   },
   [gasUtils.NORMAL]: {
     emoji: 'stopwatch',
     // ⏱️
-    top: android ? -2 : -1,
+    top: -1.25,
   },
   [gasUtils.SLOW]: {
     emoji: 'snail',
@@ -29,13 +29,14 @@ const EmojiForGasSpeedType = {
   [gasUtils.CUSTOM]: {
     emoji: 'gear',
     // ⚙️
-    top: android ? -2 : -0.5,
+    top: android ? -0.5 : -0.5,
   },
 };
 
 const GasEmoji = styled(Emoji).attrs({
+  align: 'center',
   lineHeight: 'looserLoose',
-  size: 'lmedium',
+  size: 'smedium',
 })`
   ${({ top }) => margin(top, 0, 0, 0)}
 `;

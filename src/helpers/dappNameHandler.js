@@ -1,4 +1,5 @@
 import URL from 'url-parse';
+import { memoFn } from '../utils/memoFn';
 
 const buildAssetUrl = hostname =>
   `https://raw.githubusercontent.com/rainbow-me/rainbow/develop/src/assets/dappLogos/${hostname}.jpg`;
@@ -184,6 +185,10 @@ const DisplayDappNames = Object.freeze({
     name: 'TokenSets',
     uri: buildAssetUrl('tokensets.com'),
   },
+  'twitter.com': {
+    name: 'Twitter',
+    uri: buildAssetUrl('twitter.com'),
+  },
   'umaproject.org': {
     name: 'UMA',
     uri: null,
@@ -237,7 +242,7 @@ export const dappLogoOverride = url => {
   return DisplayDappNames[hostname]?.uri;
 };
 
-export const getDappHostname = url => {
+export const getDappHostname = memoFn(url => {
   const urlObject = new URL(url);
   let hostname;
   const subdomains = urlObject.hostname.split('.');
@@ -249,4 +254,4 @@ export const getDappHostname = url => {
     }`;
   }
   return hostname;
-};
+});

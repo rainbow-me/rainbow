@@ -15,8 +15,8 @@ const DELAY_THRESHOLD = 69;
 const Wrapper = styled(Row)``;
 
 const StepButtonWrapper = styled(ButtonPressAnimation).attrs(() => ({
-  marginHorizontal: -3,
-  paddingHorizontal: 3,
+  paddingHorizontal: 7,
+  scaleTo: 0.75,
 }))``;
 
 const StepButton = styled(Text).attrs(({ theme: { colors }, color }) => ({
@@ -56,8 +56,8 @@ export default function FeesGweiInput({
   onBlur,
   buttonColor,
   testID,
+  inputRef,
 }) {
-  const inputRef = useRef(null);
   const longPressHandle = useRef(null);
   const [trigger, setTrigger] = useState(false);
   const [actionType, setActionType] = useState(null);

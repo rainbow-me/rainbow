@@ -7,7 +7,7 @@ import { lightModeThemeColors, padding } from '@rainbow-me/styles';
 const ExchangeDetailsButtonLabel = styled(Text).attrs({
   color: lightModeThemeColors.white,
   size: 'large',
-  weight: 'bold',
+  weight: 'heavy',
   ...(android && { lineHeight: 21 }),
 })`
   ${padding(9)};

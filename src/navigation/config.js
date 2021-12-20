@@ -98,6 +98,9 @@ export const customGasSheetConfig = {
   options: ({ route: { params = {} } }) => ({
     ...buildCoolModalConfig({
       ...params,
+      backgroundOpacity: 1,
+      springDamping: 1,
+      transitionDuration: 0.25,
     }),
   }),
 };
@@ -194,7 +197,6 @@ export const restoreSheetConfig = {
 
     return buildCoolModalConfig({
       ...params,
-      backgroundColor: colors.themedColors.dark,
       longFormHeight: heightForStep,
     });
   },

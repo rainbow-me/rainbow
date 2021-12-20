@@ -9,7 +9,6 @@ import { disableCharts } from '../../config/debug';
 import { DEFAULT_CHART_TYPE } from '../../redux/charts';
 import { emitChartsRequest } from '../../redux/explorer';
 import { daysFromTheFirstTx } from '../../utils/ethereumUtils';
-import useAsset from '../useAsset';
 import { useNavigation } from '@rainbow-me/navigation';
 
 const formatChartData = chart => {
@@ -44,7 +43,7 @@ export default function useChartData(asset, secondStore) {
   const {
     params: { chartType = DEFAULT_CHART_TYPE },
   } = useRoute();
-  const { address, price: priceObject } = useAsset(asset);
+  const { address, price: priceObject } = asset;
 
   const { value: price } = priceObject || {};
 

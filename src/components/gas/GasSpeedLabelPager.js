@@ -14,24 +14,26 @@ const SpeedButton = styled(ButtonPressAnimation).attrs({
 })`
   border: ${({ color, theme: { colors } }) =>
     `2px solid ${color || colors.appleBlue}`};
-  ${padding(2.5, 4, android ? 2.5 : 3.5, 6)};
+  ${padding(2.5, 4, android ? 2.5 : 3.5, 5)};
   border-radius: 19;
 `;
 
 const Symbol = styled(Text).attrs({
+  align: 'center',
   lineHeight: 'normal',
   size: android ? 'bmedium' : 'lmedium',
   weight: 'heavy',
 })`
-  ${margin(0, 0)};
+  ${margin(0)};
 `;
 
 const GasSpeedLabel = styled(Text).attrs({
+  align: 'center',
   lineHeight: 'normal',
   size: 'lmedium',
   weight: 'heavy',
 })`
-  ${padding(android ? 0 : -1, 4, 0, 4)};
+  ${padding(0, 3)};
 `;
 
 const GasSpeedLabelPager = ({

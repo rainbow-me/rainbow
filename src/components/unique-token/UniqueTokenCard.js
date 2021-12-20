@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
-import { magicMemo } from '../../utils';
 import { getLowResUrl } from '../../utils/getLowResUrl';
 import { ButtonPressAnimation } from '../animations';
 import ChainBadge from '../coin-icon/ChainBadge';
 import { InnerBorder } from '../layout';
+import { CardSize } from './CardSize';
 import UniqueTokenImage from './UniqueTokenImage';
 import { AssetType } from '@rainbow-me/entities';
 import {
@@ -22,24 +22,24 @@ const Container = styled.View`
 
 const Content = styled.View`
   border-radius: ${UniqueTokenCardBorderRadius};
-  height: ${({ height }) => height};
+  height: ${({ height }) => height || CardSize};
   overflow: hidden;
-  width: ${({ width }) => width};
+  width: ${({ width }) => width || CardSize};
 `;
 
 const UniqueTokenCard = ({
   borderEnabled = true,
-  disabled,
+  disabled = false,
   enableHapticFeedback = true,
-  height,
+  height = undefined,
   item,
   onPress,
-  resizeMode,
+  resizeMode = undefined,
   scaleTo = 0.96,
-  shadow,
+  shadow = undefined,
   smallENSName = true,
-  style,
-  width,
+  style = undefined,
+  width = undefined,
   ...props
 }) => {
   const lowResUrl = getLowResUrl(item.image_url);
@@ -72,9 +72,9 @@ const UniqueTokenCard = ({
         <UniqueTokenImage
           backgroundColor={item.background || colors.lightestGrey}
           imageUrl={lowResUrl}
+          isCard
           item={item}
           resizeMode={resizeMode}
-          shouldRasterizeIOS
           size={width}
           small={smallENSName}
         />
@@ -98,9 +98,4 @@ const UniqueTokenCard = ({
   );
 };
 
-export default magicMemo(UniqueTokenCard, [
-  'height',
-  'item.uniqueId',
-  'style',
-  'width',
-]);
+export default UniqueTokenCard;

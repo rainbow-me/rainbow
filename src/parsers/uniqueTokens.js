@@ -91,7 +91,7 @@ export const parseAccountUniqueTokens = (data, network) => {
         urlSuffixForAsset: `${get(asset_contract, 'address')}/${token_id}`,
       })
     )
-    .filter(token => !!token.familyName);
+    .filter(token => !!token.familyName && token.familyName !== 'POAP');
 };
 
 export const getFamilies = uniqueTokens =>
