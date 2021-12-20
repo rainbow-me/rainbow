@@ -211,7 +211,7 @@
       "web3_unknown_network": "Unknown network, please switch to another one"
     },
     "modal": {
-      "approve_tx": "Approve transaction on {{walletType}}",
+      "approve_tx": "Approve transaction on %{walletType}",
       "back_up": {
         "alerts": {
           "cloud_not_enabled": {
@@ -246,14 +246,14 @@
           "title": "Would you like to back up?"
         }
       },
-      "confirm_tx": "Confirm transaction from {{walletName}}",
+      "confirm_tx": "Confirm transaction from %{walletName}",
       "default_wallet": " Wallet",
       "deposit_dropdown_label": "Exchange my",
       "deposit_input_label": "Pay",
-      "donate_title": "Send from {{walletName}} to Balance Manager",
+      "donate_title": "Send from %{walletName} to Balance Manager",
       "exchange_fee": "Exchange Fee",
       "exchange_max": "Exchange max",
-      "exchange_title": "Exchange from {{walletName}}",
+      "exchange_title": "Exchange from %{walletName}",
       "gas_average": "Average",
       "gas_fast": "Fast",
       "gas_fee": "Fee",
@@ -267,9 +267,9 @@
       "invalid_address": "Invalid Address",
       "new": "New",
       "previous_short": "Prev.",
-      "receive_title": "Receive to {{walletName}}",
+      "receive_title": "Receive to %{walletName}",
       "send_max": "Send max",
-      "send_title": "Send from {{walletName}}",
+      "send_title": "Send from %{walletName}",
       "tx_confirm_amount": "Amount",
       "tx_confirm_fee": "Transaction Fee",
       "tx_confirm_recipient": "Recipient",

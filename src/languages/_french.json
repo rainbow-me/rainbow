@@ -186,7 +186,7 @@
       "web3_unknown_network": "Réseau inconnu, veuillez basculer vers un autre"
     },
     "modal": {
-      "approve_tx": "Permettre une transaction de {{walletType}}",
+      "approve_tx": "Permettre une transaction de %{walletType}",
       "back_up": {
         "alerts": {
           "cloud_not_enabled": {
@@ -221,14 +221,14 @@
           "title": "Would you like to back up? :)"
         }
       },
-      "confirm_tx": "Confirmer une transaction de {{walletName}}",
+      "confirm_tx": "Confirmer une transaction de %{walletName}",
       "default_wallet": "Wallet",
       "deposit_dropdown_label": "Échanger mes",
       "deposit_input_label": "Payer",
-      "donate_title": "Envoyer de {{walletName}} au Balance Manager",
+      "donate_title": "Envoyer de %{walletName} au Balance Manager",
       "exchange_fee": "Frais d’échange",
       "exchange_max": "Échanger la valeur max",
-      "exchange_title": "Échanger de {{walletName}}",
+      "exchange_title": "Échanger de %{walletName}",
       "gas_average": "Moyen",
       "gas_fast": "Vite",
       "gas_fee": "Frais",
@@ -242,9 +242,9 @@
       "invalid_address": "Adresse non valide",
       "new": "New",
       "previous_short": "Préc.",
-      "receive_title": "Recevoir à {{walletName}}",
+      "receive_title": "Recevoir à %{walletName}",
       "send_max": "Envoyer la valeur max",
-      "send_title": "Envoyer de {{walletName}}",
+      "send_title": "Envoyer de %{walletName}",
       "tx_confirm_amount": "Quantité",
       "tx_confirm_fee": "Frais de transaction",
       "tx_confirm_recipient": "Bénéficiaire",
