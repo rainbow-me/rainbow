@@ -31,6 +31,7 @@ export {
 } from './transactions';
 export {
   parseAccountUniqueTokens,
+  parseAccountUniqueTokensPolygon,
   getFamilies,
   dedupeUniqueTokens,
   dedupeAssetsWithFamilies,
