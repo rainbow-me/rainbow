@@ -85,15 +85,15 @@ const UniqueTokenCard = ({
             width={0.5}
           />
         )}
-        {item.network === AssetType.polygon && (
-          <ChainBadge
-            assetType={AssetType.polygon}
-            badgeXPosition={-6}
-            badgeYPosition={-10}
-            size="large"
-          />
-        )}
       </Content>
+      {item.network === AssetType.polygon && (
+        <ChainBadge
+          assetType={AssetType.polygon}
+          badgeXPosition={-10}
+          badgeYPosition={-5}
+          size="large"
+        />
+      )}
     </Container>
   );
 };
