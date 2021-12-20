@@ -95,7 +95,7 @@ const getTotal = assets =>
   );
 
 export const buildCoinsList = (
-  assetsOriginal,
+  sortedAssets,
   nativeCurrency,
   isCoinListEdited,
   pinnedCoins,
@@ -109,7 +109,7 @@ export const buildCoinsList = (
     hiddenAssets = [];
 
   const { addedEth, assets } = addEthPlaceholder(
-    assetsOriginal,
+    sortedAssets,
     includePlaceholder,
     pinnedCoins,
     nativeCurrency,
@@ -192,7 +192,7 @@ export const buildCoinsList = (
 
 // TODO make it better
 export const buildBriefCoinsList = (
-  assetsOriginal,
+  sortedAssets,
   nativeCurrency,
   isCoinListEdited,
   pinnedCoins,
@@ -201,7 +201,7 @@ export const buildBriefCoinsList = (
   emptyCollectibles
 ) => {
   const { assets, smallBalancesValue, totalBalancesValue } = buildCoinsList(
-    assetsOriginal,
+    sortedAssets,
     nativeCurrency,
     isCoinListEdited,
     pinnedCoins,
