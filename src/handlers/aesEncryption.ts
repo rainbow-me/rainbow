@@ -4,6 +4,7 @@ const AesEncryption = NativeModules.Aes;
 export default class AesEncryptor {
   generateSalt(byteCount = 32) {
     const view = new Uint8Array(byteCount);
+    // @ts-ignore
     global.crypto.getRandomValues(view);
     // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     const b64encoded = btoa(String.fromCharCode.apply(null, view));
@@ -11,7 +12,6 @@ export default class AesEncryptor {
   }
 
   generateKey = (password: any, salt: any) =>
-    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     android
       ? AesEncryption.pbkdf2(password, salt, 5000, 256)
       : AesEncryption.pbkdf2(password, salt);

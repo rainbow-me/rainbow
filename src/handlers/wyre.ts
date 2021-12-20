@@ -284,7 +284,7 @@ export const getOrderId = async (
     const orderId = get(response, 'data.id', null);
 
     return { orderId };
-  } catch (error) {
+  } catch (error: any) {
     if (error && error.type === RAINBOW_FETCH_ERROR) {
       const { responseBody } = error;
 

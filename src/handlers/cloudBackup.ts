@@ -24,13 +24,11 @@ export const CLOUD_BACKUP_ERRORS = {
 };
 
 export function logoutFromGoogleDrive() {
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   android && RNCloudFs.logout();
 }
 
 // This is used for dev purposes only!
 export async function deleteAllBackups() {
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   if (android) {
     await RNCloudFs.loginIfNeeded();
   }
@@ -46,7 +44,6 @@ export async function deleteAllBackups() {
 }
 
 export async function fetchAllBackups() {
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   if (android) {
     await RNCloudFs.loginIfNeeded();
   }
@@ -76,7 +73,6 @@ export async function encryptAndSaveDataToCloud(
     const mimeType = 'application/json';
     // Only available to our app
     const scope = 'hidden';
-    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
     if (android) {
       await RNCloudFs.loginIfNeeded();
     }
@@ -88,7 +84,6 @@ export async function encryptAndSaveDataToCloud(
     });
     // Now we need to verify the file has been stored in the cloud
     const exists = await RNCloudFs.fileExists(
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
       ios
         ? {
             scope,
@@ -125,7 +120,6 @@ function getGoogleDriveDocument(id: any) {
 }
 
 export function syncCloud() {
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
   if (ios) {
     return RNCloudFs.syncCloud();
   }
@@ -133,7 +127,6 @@ export function syncCloud() {
 }
 
 export async function getDataFromCloud(backupPassword: any, filename = null) {
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
   if (android) {
     await RNCloudFs.loginIfNeeded();
   }
@@ -152,7 +145,6 @@ export async function getDataFromCloud(backupPassword: any, filename = null) {
 
   let document;
   if (filename) {
-    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
     if (ios) {
       // .icloud are files that were not yet synced
       document = backups.files.find(
@@ -175,7 +167,6 @@ export async function getDataFromCloud(backupPassword: any, filename = null) {
     const sortedBackups = sortBy(backups.files, 'lastModified').reverse();
     document = sortedBackups[0];
   }
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
   const encryptedData = ios
     ? await getICloudDocument(filename)
     : await getGoogleDriveDocument(document.id);
@@ -226,7 +217,6 @@ export function isCloudBackupPasswordValid(password: any) {
 }
 
 export function isCloudBackupAvailable() {
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'ios'.
   if (ios) {
     return RNCloudFs.isAvailable();
   }

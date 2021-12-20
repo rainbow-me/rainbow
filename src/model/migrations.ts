@@ -375,9 +375,7 @@ export default async function runMigrations() {
       const contactKeys = Object.keys(contacts);
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
       for (let j = 0; j < contactKeys.length; j++) {
-        // @ts-expect-error
         const contact = contacts[contactKeys[j]];
-        // @ts-expect-error
         updatedContacts[contactKeys[j]] = {
           ...contact,
           color: isNumber(contact.color)
@@ -413,7 +411,6 @@ export default async function runMigrations() {
       const contactKeys = Object.keys(contacts);
       // eslint-disable-next-line @typescript-eslint/prefer-for-of
       for (let j = 0; j < contactKeys.length; j++) {
-        // @ts-expect-error
         const contact = contacts[contactKeys[j]];
         let nickname = contact.nickname;
         if (!returnStringFirstEmoji(nickname)) {
@@ -424,7 +421,6 @@ export default async function runMigrations() {
               const emoji = profileUtils.addressHashedEmoji(address);
               const color = profileUtils.addressHashedColorIndex(address);
               nickname = `${emoji} ${nickname}`;
-              // @ts-expect-error
               updatedContacts[contactKeys[j]] = {
                 ...contact,
                 color,
@@ -494,8 +490,7 @@ export default async function runMigrations() {
         logger.log(JSON.stringify({ pinnedCoins }, null, 2));
         logger.log(JSON.stringify({ hiddenCoins }, null, 2));
 
-        const pinnedCoinsMigrated = pinnedCoins.map(address => {
-          // @ts-expect-error
+        const pinnedCoinsMigrated = pinnedCoins.map((address: string) => {
           const asset = ethereumUtils.getAsset(assets, address);
           if (asset?.type && isL2Asset(asset.type)) {
             // @ts-expect-error
@@ -505,8 +500,7 @@ export default async function runMigrations() {
           }
         });
 
-        const hiddenCoinsMigrated = hiddenCoins.map(address => {
-          // @ts-expect-error
+        const hiddenCoinsMigrated = hiddenCoins.map((address: string) => {
           const asset = ethereumUtils.getAsset(assets, address);
           if (asset?.type && isL2Asset(asset.type)) {
             // @ts-expect-error
