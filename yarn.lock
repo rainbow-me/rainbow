@@ -4626,10 +4626,10 @@
   version "1.6.6"
   resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.6.6.tgz#8d644e2a390e494e40424c60272e91b4820bf0d4"
 
-"@walletconnect/types@^2.0.0-beta.19", "@walletconnect/types@npm:@walletconnect/types@2.0.0-beta.19", "@walletconnectv2/types@npm:@walletconnect/types@2.0.0-beta.19":
-  version "2.0.0-beta.19"
-  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.0.0-beta.19.tgz#ae0a596dfe164b9cf779fd37d049b4882b600d60"
-  integrity sha512-DvKr6nEPPkrulf7XNGppOhBoul7Ve3UrHqwX9bbe8zHgPpLDQKW3Z+fEW4YTnROe+Qd8V/F9oZtsa7hXOE84kQ==
+"@walletconnect/types@^2.0.0-beta.21", "@walletconnect/types@npm:@walletconnect/types@2.0.0-beta.21", "@walletconnectv2/types@npm:@walletconnect/types@2.0.0-beta.21":
+  version "2.0.0-beta.21"
+  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.0.0-beta.21.tgz#2674dda4292f2077855701d07385dcf108f1385b"
+  integrity sha512-QX72PZlU7Am3v1UyoyaWu0IsJQbk8wfNFssGYoDWf/PDZspOIh8Hq6HsToNeuXHMM6dxgOY3CMMpdJjDZPKf6Q==
   dependencies:
     "@walletconnect/jsonrpc-types" "^1.0.0"
     keyvaluestorage "^0.7.1"
@@ -4648,17 +4648,17 @@
     js-sha3 "0.8.0"
     query-string "6.13.5"
 
-"@walletconnect/utils@^2.0.0-beta.19", "@walletconnect/utils@npm:@walletconnect/utils@2.0.0-beta.19", "@walletconnectv2/utils@npm:@walletconnect/utils@2.0.0-beta.19":
-  version "2.0.0-beta.19"
-  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-2.0.0-beta.19.tgz#6561886451903f20cf871ce4c62ca98ac23f4665"
-  integrity sha512-n+PzwwOZ9ATof1zONm4Apn67T/N5fENNK5P3IMFoetBOsg29Pe1VXH7YbFMsV26bDOdcxUIuEi85zT47CCBoMg==
+"@walletconnect/utils@^2.0.0-beta.21", "@walletconnect/utils@npm:@walletconnect/utils@2.0.0-beta.21", "@walletconnectv2/utils@npm:@walletconnect/utils@2.0.0-beta.21":
+  version "2.0.0-beta.21"
+  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-2.0.0-beta.21.tgz#139510bd41563819e2e7ae7b0c4761bd7df70a1f"
+  integrity sha512-wqUN3oYvQtVn5Rx1S7ORD/aS7xZaf2zOb++Ul1uM24uBgSXeG+TwubybLMmlK9Zun2eIQBOPoDC7EvqmrHI9Iw==
   dependencies:
     "@walletconnect/ecies-25519" "^1.0.1"
     "@walletconnect/encoding" "^1.0.0"
     "@walletconnect/jsonrpc-utils" "^1.0.0"
     "@walletconnect/logger" "^1.0.0"
     "@walletconnect/safe-json" "^1.0.0"
-    "@walletconnect/types" "^2.0.0-beta.19"
+    "@walletconnect/types" "^2.0.0-beta.21"
     "@walletconnect/window-getters" "^1.0.0"
     "@walletconnect/window-metadata" "^1.0.0"
     lodash.union "^4.6.0"
@@ -4674,10 +4674,10 @@
   dependencies:
     "@walletconnect/window-getters" "^1.0.0"
 
-"@walletconnectv2/client@npm:@walletconnect/client@2.0.0-beta.19":
-  version "2.0.0-beta.19"
-  resolved "https://registry.yarnpkg.com/@walletconnect/client/-/client-2.0.0-beta.19.tgz#606018803a7afe40660c41994a6e1da965982505"
-  integrity sha512-I36xcxakrDKV/Z8vflqJJOUit/I0QRnv+YvgYu0Z4F3rUCi+HKnF9hAbmhJPzZmspZekXMP5OFCjgHiU2gAC2Q==
+"@walletconnectv2/client@npm:@walletconnect/client@2.0.0-beta.21":
+  version "2.0.0-beta.21"
+  resolved "https://registry.yarnpkg.com/@walletconnect/client/-/client-2.0.0-beta.21.tgz#dacd24655550215ab257b8b28dac9feebf7378ec"
+  integrity sha512-JBGFXk7xDQIb5NT8G0pHInIGpM0Rf/ExQVtolK/FBxoQSRlXe2Owth+s/AYuLBYDIM1wspinVQEqHwaLNiFMYw==
   dependencies:
     "@walletconnect/encoding" "^1.0.0"
     "@walletconnect/jsonrpc-provider" "^1.0.0"
@@ -4686,11 +4686,9 @@
     "@walletconnect/logger" "^1.0.0"
     "@walletconnect/relay-api" "^1.0.0"
     "@walletconnect/safe-json" "^1.0.0"
-    "@walletconnect/types" "^2.0.0-beta.19"
-    "@walletconnect/utils" "^2.0.0-beta.19"
-    keyvaluestorage "^0.7.1"
-    pino "^6.7.0"
-    pino-pretty "^4.3.0"
+    "@walletconnect/types" "^2.0.0-beta.21"
+    "@walletconnect/utils" "^2.0.0-beta.21"
+    ws "^8.3.0"
 
 "@wry/context@^0.5.2":
   version "0.5.4"
@@ -18504,6 +18502,11 @@ ws@^7.4.6, ws@^7.5.1:
   version "7.5.5"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.5.tgz#8b4bc4af518cfabd0473ae4f99144287b33eb881"
   integrity sha512-BAkMFcAzl8as1G/hArkxOxq3G7pjUqQ3gzYbLL0/5zNkph70e+lCoxBGnm6AW1+/aiNeV4fnKqZ8m4GZewmH2w==
+
+ws@^8.3.0:
+  version "8.3.0"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.3.0.tgz#7185e252c8973a60d57170175ff55fdbd116070d"
+  integrity sha512-Gs5EZtpqZzLvmIM59w4igITU57lrtYVFneaa434VROv4thzJyV6UjIL3D42lslWlI+D4KzLYnxSwtfuiO79sNw==
 
 ws@~6.1.0:
   version "6.1.4"
