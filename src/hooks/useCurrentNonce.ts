@@ -8,13 +8,15 @@ import logger from 'logger';
 
 export default function useCurrentNonce(
   accountAddress: EthereumAddress,
-  network: Network
+  network?: Network
 ) {
   const nonceInState = useSelector((state: AppState) => {
+    if (!network) return undefined;
     return state.nonceManager[accountAddress.toLowerCase()]?.[network]?.nonce;
   });
   const getNextNonce = useCallback(async () => {
     try {
+      if (!network) return undefined;
       const provider = await getProviderForNetwork(network);
       const transactionCount = await provider.getTransactionCount(
         accountAddress,
@@ -38,7 +40,7 @@ export default function useCurrentNonce(
       return nextNonce;
     } catch (e) {
       logger.log('Error determining next nonce: ', e);
-      return null;
+      return undefined;
     }
   }, [accountAddress, network, nonceInState]);
 

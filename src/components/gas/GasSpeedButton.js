@@ -26,7 +26,6 @@ import {
   usePrevious,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { gasUpdateToCustomGasFee } from '@rainbow-me/redux/gas';
 import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
@@ -88,8 +87,7 @@ const Container = styled(Column).attrs({
   hapticType: 'impactHeavy',
   justifyContent: 'center',
 })`
-  ${({ marginBottom }) =>
-    margin(android ? 8 : 18, 0, android ? 8 : marginBottom)};
+  ${({ marginBottom }) => margin(18, 0, marginBottom)};
   ${({ horizontalPadding }) => padding(0, horizontalPadding)};
   width: 100%;
 `;
@@ -260,18 +258,14 @@ const GasSpeedButton = ({
       updateGasFeeOption(selectedSpeed);
       InteractionManager.runAfterInteractions(() => {
         if (selectedSpeed === CUSTOM) {
-          const gasFeeParams = isEmpty(gasFeeParamsBySpeed[CUSTOM])
-            ? gasFeeParamsBySpeed[URGENT]
-            : gasFeeParamsBySpeed[CUSTOM];
-          gasUpdateToCustomGasFee({
-            ...gasFeeParams,
-            option: CUSTOM,
+          setShouldOpenCustomGasSheet({
+            focusTo: null,
+            shouldOpen: true,
           });
-          setShouldOpenCustomGasSheet({ focusTo: null, shouldOpen: true });
         }
       });
     },
-    [gasFeeParamsBySpeed, updateGasFeeOption]
+    [updateGasFeeOption]
   );
 
   const formatTransactionTime = useCallback(() => {
@@ -475,8 +469,9 @@ const GasSpeedButton = ({
     const gasOptions = speeds || GasSpeedOrder;
     const currentSpeedIndex = gasOptions?.indexOf(selectedGasFeeOption);
     // If the option isn't available anymore, we need to reset it
+    // take the first speed or normal by default
     if (currentSpeedIndex === -1) {
-      handlePressSpeedOption(NORMAL);
+      handlePressSpeedOption(gasOptions?.[0] || NORMAL);
     }
   }, [handlePressSpeedOption, speeds, selectedGasFeeOption, isL2]);
 
@@ -519,7 +514,7 @@ const GasSpeedButton = ({
           scaleTo={0.9}
           testID="estimated-fee-label"
         >
-          <Row>
+          <Row style={{ top: android ? 8 : 0 }}>
             <NativeCoinIconWrapper>
               <CoinIcon
                 address={nativeFeeCurrency.address}

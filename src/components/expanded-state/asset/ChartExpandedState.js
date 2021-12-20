@@ -10,7 +10,6 @@ import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import useAdditionalAssetData from '../../../hooks/useAdditionalAssetData';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
 import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
@@ -41,6 +40,7 @@ import { isL2Network } from '@rainbow-me/handlers/web3';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
 import {
   useAccountSettings,
+  useAdditionalAssetData,
   useChartThrottledPoints,
   useDelayedValueWithLayoutAnimation,
   useDimensions,

@@ -1,5 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
+import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import styled from 'styled-components';
 import Divider from '../Divider';
 import { ExchangeHeader } from '../exchange';
@@ -18,6 +19,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { margin } from '@rainbow-me/styles';
+import { deviceUtils } from '@rainbow-me/utils';
 
 const FOOTER_HEIGHT = 76;
 const CONTENT_HEIGHT = 310;
@@ -55,10 +57,14 @@ export default function CustomGasState({ asset }) {
   useAndroidDisableGesturesOnFocus();
 
   const sheetHeightWithoutKeyboard =
-    CONTENT_HEIGHT + FOOTER_HEIGHT + (android ? 10 : 0);
+    CONTENT_HEIGHT +
+    FOOTER_HEIGHT +
+    (android ? 40 + getSoftMenuBarHeight() : 0);
 
   const sheetHeightWithKeyboard =
-    sheetHeightWithoutKeyboard + keyboardHeight + (android ? 0 : 0);
+    sheetHeightWithoutKeyboard +
+    keyboardHeight +
+    (deviceUtils.isSmallPhone ? 30 : 0);
 
   const currentGasTrend = useMemo(
     () => getTrendKey(currentBlockParams?.trend),

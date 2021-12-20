@@ -7,7 +7,7 @@ import { useDimensions } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { removeLeadingZeros } from '@rainbow-me/utils';
 
-const footerMargin = 30 + getSoftMenuBarHeight() / 2;
+const footerMargin = getSoftMenuBarHeight() / 2;
 const FooterContainer = styled(Column).attrs({
   justify: 'end',
   marginBottom: android ? footerMargin : 0,
@@ -34,10 +34,12 @@ const Spacer = styled.View`
 
 export default function SendAssetFormToken({
   assetAmount,
+  assetInputRef,
   buttonRenderer,
   colorForAsset,
   nativeAmount,
   nativeCurrency,
+  nativeCurrencyInputRef,
   onChangeAssetAmount,
   onChangeNativeAmount,
   onFocusAssetInput,
@@ -70,6 +72,7 @@ export default function SendAssetFormToken({
           onFocus={onFocusAssetInput}
           onPressButton={sendMaxBalance}
           placeholder="0"
+          ref={assetInputRef}
           testID="selected-asset-field"
           value={assetAmount}
         />
@@ -84,6 +87,7 @@ export default function SendAssetFormToken({
           onFocus={onFocusNativeInput}
           onPressButton={sendMaxBalance}
           placeholder={nativePlaceholder}
+          ref={nativeCurrencyInputRef}
           testID="selected-asset-quantity-field"
           value={nativeAmount}
         />

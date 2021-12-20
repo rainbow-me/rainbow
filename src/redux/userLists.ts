@@ -104,24 +104,19 @@ export const userListsLoadState = () => async (
     const userLists: UserList[] = await getUserLists();
     const lists = userLists?.length ? userLists : defaultLists;
     let allAddresses: string[] = [];
-    lists.forEach(list => {
+    lists.forEach((list: { tokens: any }) => {
       allAddresses = [...allAddresses, ...list.tokens];
     });
-
     dispatch({
       payload: lists,
       type: USER_LISTS_LOAD_SUCCESS,
     });
     const selectedUserList = (await getSelectedUserList()) || FAVORITES_LIST_ID;
     dispatch(userListsSetSelectedList(selectedUserList, false));
-
-    // Wait until the socket is ready
-    setTimeout(() => {
-      dispatch(emitAssetRequest(allAddresses));
-      dispatch({
-        type: USER_LISTS_READY,
-      });
-    }, 3000);
+    dispatch(emitAssetRequest(allAddresses));
+    dispatch({
+      type: USER_LISTS_READY,
+    });
   } catch (error) {
     dispatch({ type: USER_LISTS_LOAD_FAILURE });
   }

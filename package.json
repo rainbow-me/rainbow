@@ -1,6 +1,6 @@
 {
   "name": "Rainbow",
-  "version": "1.5.41-1",
+  "version": "1.6.0-1",
   "private": true,
   "scripts": {
     "setup": "yarn install && yarn allow-scripts && yarn postinstall",
@@ -115,6 +115,8 @@
     "cloudinary": "1.27.1",
     "console-browserify": "1.2.0",
     "constants-browserify": "1.0.0",
+    "d3-scale": "4.0.2",
+    "d3-shape": "3.0.1",
     "date-fns": "2.16.1",
     "delay": "4.4.0",
     "dns.js": "1.0.1",
@@ -229,7 +231,8 @@
     "react-style-proptype": "3.2.2",
     "readable-stream": "1.1.14",
     "reanimated-bottom-sheet": "1.0.0-alpha.22",
-    "recyclerlistview": "3.0.0",
+    "recoil": "0.5.2",
+    "recyclerlistview": "3.0.5",
     "redux": "4.0.5",
     "redux-thunk": "2.3.0",
     "reselect": "4.0.0",
@@ -245,12 +248,15 @@
     "url": "0.10.3",
     "url-parse": "1.5.3",
     "use-debounce": "5.2.0",
+    "use-deep-compare": "1.1.0",
     "use-memo-one": "1.1.1",
     "util": "0.10.4",
     "vm-browserify": "0.0.4",
     "zxcvbn": "4.4.2"
   },
   "devDependencies": {
+    "@types/d3-scale": "4.0.2",
+    "@types/d3-shape": "3.0.2",
     "@babel/core": "7.14.2",
     "@babel/parser": "7.12.14",
     "@babel/plugin-transform-react-inline-elements": "7.12.1",

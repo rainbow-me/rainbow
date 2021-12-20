@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { Row } from '../../../components/layout';
 import { ButtonPressAnimation } from '../../animations';
 import { Text } from '../../text';
-import { buildTextStyles, margin } from '@rainbow-me/styles';
+import { buildTextStyles, margin, padding } from '@rainbow-me/styles';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 
@@ -16,8 +16,10 @@ const GweiPill = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
 }))`
   border-radius: 15;
   height: 40;
+  ${ios ? 'height: 40;' : padding(10, 12)}
   max-width: 130;
   min-width: 108;
+  ${android && 'margin-horizontal: 5;'}
 `;
 
 const GweiNumberInput = styled(TextInputMask).attrs(
@@ -26,19 +28,22 @@ const GweiNumberInput = styled(TextInputMask).attrs(
     interval: 1,
     keyboardAppearance: 'dark',
     keyboardType: 'decimal-pad',
-    left: 22,
     letterSpacing: 'rounded',
-    paddingLeft: 28,
-    paddingRight: 72,
-    paddingVertical: 10.5,
     size: 'lmedium',
     textAlign: 'left',
     timing: 'linear',
     weight: 'heavy',
+    ...(ios && {
+      height: '100%',
+      left: 22,
+      paddingLeft: 28,
+      paddingRight: 72,
+      paddingVertical: 10.5,
+    }),
   })
 )`
   ${buildTextStyles};
-  height: 100%;
+  ${android && padding(0, 0, 0, 0)}
   ${margin(
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0,
@@ -59,8 +64,9 @@ const GweiLabel = styled(Text).attrs(() => ({
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
     0
   )}
-  right: 50;
-  top: 10.5;
+  ${ios &&
+  `right: 50;
+  top: 10.5;`}
 `;
 
 function GweiInputPill(
@@ -68,6 +74,7 @@ function GweiInputPill(
   ref
 ) {
   const { colors } = useTheme();
+
   return (
     <ButtonPressAnimation onPress={onPress}>
       <GweiPill>

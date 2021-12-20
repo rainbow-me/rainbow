@@ -16,6 +16,7 @@ import {
 } from '@rainbow-me/helpers/gas';
 import {
   add,
+  delay,
   greaterThan,
   isZero,
   multiply,
@@ -143,6 +144,7 @@ export default function FeesPanel({
     setLastFocusedInputHandle,
     maxBaseFieldRef,
     minerTipFieldRef,
+    triggerFocus,
   } = useFeesPanelInputRefs();
 
   // had to add this for actions happening on the gas speed button
@@ -373,6 +375,7 @@ export default function FeesPanel({
 
   const onMaxBaseFeeChange = useCallback(
     ({ nativeEvent: { text } }) => {
+      text = text === '.' || text === ',' ? `0${text}` : text;
       const maxFeePerGas = parseGasFeeParam(gweiToWei(text || 0));
 
       if (greaterThan(0, maxFeePerGas.amount)) return;
@@ -394,6 +397,7 @@ export default function FeesPanel({
 
   const onMinerTipChange = useCallback(
     ({ nativeEvent: { text } }) => {
+      text = text === '.' || text === ',' ? `0${text}` : text;
       const maxPriorityFeePerGas = parseGasFeeParam(gweiToWei(text || 0));
 
       if (greaterThan(0, maxPriorityFeePerGas.amount)) return;
@@ -687,12 +691,26 @@ export default function FeesPanel({
   }, []);
 
   useEffect(() => {
-    if (focusTo === FOCUS_TO_MINER_TIP) {
+    const focus = async () => {
+      await delay(200);
+      // without this focus seems like it looses the context on the first `focus()`
+      // inside the async function
       minerTipFieldRef?.current?.focus();
-    } else {
-      maxBaseFieldRef?.current?.focus();
-    }
-  }, [focusTo, maxBaseFieldRef, minerTipFieldRef]);
+      if (focusTo === FOCUS_TO_MINER_TIP) {
+        setLastFocusedInputHandle(minerTipFieldRef);
+      } else {
+        setLastFocusedInputHandle(maxBaseFieldRef);
+      }
+      triggerFocus();
+    };
+    focus();
+  }, [
+    focusTo,
+    maxBaseFieldRef,
+    minerTipFieldRef,
+    setLastFocusedInputHandle,
+    triggerFocus,
+  ]);
 
   return (
     <Wrapper>
@@ -723,7 +741,11 @@ export default function FeesPanel({
       </PanelRow>
 
       <MiddlePanelRow>
-        <ColumnWithMargins height={40} justify="center" margin={3}>
+        <ColumnWithMargins
+          height={40}
+          justify="center"
+          margin={android ? -4 : 3}
+        >
           {renderRowLabel(
             'Max base fee',
             'maxBaseFee',
@@ -747,7 +769,11 @@ export default function FeesPanel({
       </MiddlePanelRow>
 
       <MiddlePanelRow>
-        <ColumnWithMargins height={40} justify="center" margin={3}>
+        <ColumnWithMargins
+          height={40}
+          justify="center"
+          margin={android ? -4 : 3}
+        >
           {renderRowLabel(
             'Miner tip',
             `minerTip`,

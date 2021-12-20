@@ -1,6 +1,7 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
 import WalletConnect from '@walletconnect/client';
+import { parseWalletConnectUri } from '@walletconnect/utils';
 import lang from 'i18n-js';
 import {
   clone,
@@ -151,6 +152,20 @@ export const walletConnectOnSessionRequest = (uri, callback) => async (
   try {
     const { clientMeta, push } = await getNativeOptions();
     try {
+      // Don't initiate a new session if we have already established one using this walletconnect URI
+      const allSessions = await getAllValidWalletConnectSessions();
+      const wcUri = parseWalletConnectUri(uri);
+      const alreadyConnected = Object.values(allSessions).some(session => {
+        return (
+          session.handshakeTopic === wcUri.handshakeTopic &&
+          session.key === wcUri.key
+        );
+      });
+
+      if (alreadyConnected) {
+        return;
+      }
+
       walletConnector = new WalletConnect({ clientMeta, uri }, push);
       let meta = null;
       let navigated = false;
