@@ -89,11 +89,7 @@ const CoinDividerOpenButton = ({ isSmallBalancesOpen, onPress }) => {
 
   return (
     <View width={isSmallBalancesOpen ? 116 : 90.5}>
-      <ButtonPressAnimation
-        backgroundColor={colors.alpha(colors.red, 0.2)}
-        onPress={onPress}
-        scaleTo={0.8}
-      >
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.8}>
         <View paddingHorizontal={19} paddingVertical={5}>
           <Content style={wrapperStyle}>
             <LabelText style={allLabelStyle}>All</LabelText>
