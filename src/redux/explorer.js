@@ -1,4 +1,4 @@
-import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
+import { concat, isEmpty, isNil, keyBy, keys, toLower } from 'lodash';
 import io from 'socket.io-client';
 import config from '../model/config';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
@@ -478,11 +478,16 @@ const l2AddressAssetsReceived = (message, network) => (dispatch, getState) => {
     return asset;
   });
 
+  // temporary until backend supports sending back map for L2 data
+  const newAssetsMap = keyBy(
+    newAssets,
+    asset => `${asset.asset.asset_code}_${asset.asset.network}`
+  );
   const updatedMessage = {
     ...message,
     payload: {
       ...message?.payload,
-      assets: newAssets,
+      assets: newAssetsMap,
     },
   };
 
