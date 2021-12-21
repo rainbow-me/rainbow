@@ -109,18 +109,18 @@ export default function ConfirmExchangeButton({
     label = 'Hold to Withdraw';
   }
 
-  if (!isSufficientBalance) {
+  if (!doneLoadingReserves) {
+    label = 'Fetching Details...';
+  } else if (!isSufficientBalance) {
     label = 'Insufficient Funds';
   } else if (!isSufficientLiquidity) {
     label = 'Insufficient Liquidity';
-  } else if (!isSufficientGas) {
+  } else if (isSufficientGas != null && !isSufficientGas) {
     label = 'Insufficient ETH';
   } else if (isHighPriceImpact) {
     label = isSwapDetailsRoute ? 'Swap Anyway' : '􀕹 View Details';
   } else if (disabled) {
     label = 'Enter an Amount';
-  } else if (!doneLoadingReserves) {
-    label = 'Fetching Details...';
   }
 
   const isDisabled =
