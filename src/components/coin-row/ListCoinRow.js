@@ -22,7 +22,7 @@ const PercentageText = styled(BottomRowText).attrs({
 
 const BottomRowContainer = ios
   ? Fragment
-  : styled(Row).attrs({ marginBottom: 10, marginTop: ios ? -10 : 0 })``;
+  : styled(Row).attrs({ marginBottom: 10, marginTop: ios ? -10 : 0 })({});
 
 const BottomRow = ({ native }) => {
   const percentChange = get(native, 'change');

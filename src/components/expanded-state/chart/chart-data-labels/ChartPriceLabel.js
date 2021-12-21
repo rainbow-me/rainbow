@@ -11,7 +11,7 @@ import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
-const ChartPriceRow = styled(Row)``;
+const ChartPriceRow = styled(Row)({});
 
 const Label = styled(ChartYLabel)({
   color: ({ theme: { colors } }) => colors.dark,

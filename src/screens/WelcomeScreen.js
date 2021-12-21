@@ -1,5 +1,6 @@
 import MaskedView from '@react-native-community/masked-view';
 import analytics from '@segment/analytics-react-native';
+import styled from '@terrysahaidak/style-thing';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Easing } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -11,7 +12,6 @@ import Reanimated, {
 } from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
-import styled from '@terrysahaidak/style-thing';
 import { useMemoOne } from 'use-memo-one';
 import RainbowGreyNeon from '../assets/rainbows/greyneon.png';
 import RainbowLight from '../assets/rainbows/light.png';
@@ -265,19 +265,19 @@ const traversedRainbows = rainbows.map(
   }
 );
 
-const RainbowImage = styled(ImgixImage)`
-  height: ${INITIAL_SIZE};
+const RainbowImage = styled(ImgixImage)({
+  height: INITIAL_SIZE,
   position: 'absolute',
-  width: ${INITIAL_SIZE};
-`;
+  width: INITIAL_SIZE,
+});
 
 const RAINBOW_TEXT_HEIGHT = 32;
 const RAINBOW_TEXT_WIDTH = 125;
 
-const RainbowTextMask = styled(Reanimated.View)`
-  height: ${RAINBOW_TEXT_HEIGHT};
-  width: ${RAINBOW_TEXT_WIDTH};
-`;
+const RainbowTextMask = styled(Reanimated.View)({
+  height: RAINBOW_TEXT_HEIGHT,
+  width: RAINBOW_TEXT_WIDTH,
+});
 
 function runTiming(value) {
   const clock = new Clock();

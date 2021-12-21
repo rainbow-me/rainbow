@@ -1,3 +1,4 @@
+import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { StatusBar, StyleSheet, View } from 'react-native';
 import {
@@ -15,7 +16,6 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import styled from '@terrysahaidak/style-thing';
 import useReactiveSharedValue from '../../../react-native-animated-charts/src/helpers/useReactiveSharedValue';
 import { ButtonPressAnimation } from '../../animations';
 import { useDimensions } from '@rainbow-me/hooks';
@@ -58,10 +58,10 @@ const ImageWrapper = styled(Animated.View)({
   overflow: 'hidden',
 });
 
-const ZoomContainer = styled(Animated.View)`
-  height: ${({ height }) => height};
-  width: ${({ width }) => width};
-`;
+const ZoomContainer = styled(Animated.View)(({ width, height }) => ({
+  height,
+  width,
+}));
 
 const MAX_IMAGE_SCALE = 4;
 const MIN_IMAGE_SCALE = 1;

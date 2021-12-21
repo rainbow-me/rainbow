@@ -1,7 +1,7 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
-import React, { useCallback, useRef } from 'react';
 import styled from '@terrysahaidak/style-thing';
+import React, { useCallback, useRef } from 'react';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import { RainbowButton } from '../buttons';
@@ -34,13 +34,13 @@ const FloatingEmojisRegion = styled(FloatingEmojis).attrs({
   scaleTo: 0,
   size: 50,
   wiggleFactor: 0,
-})`
-  height: 0;
-  left: 0;
+})({
+  height: 0,
+  left: 0,
   position: 'absolute',
-  top: 0;
-  width: 130;
-`;
+  top: 0,
+  width: 130,
+});
 
 const AccountName = styled(TruncatedText).attrs({
   align: 'left',

@@ -33,7 +33,7 @@ import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
 
-const Wrapper = styled(KeyboardAvoidingView)``;
+const Wrapper = styled(KeyboardAvoidingView)({});
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;
 
 const PanelRow = styled(Row).attrs({

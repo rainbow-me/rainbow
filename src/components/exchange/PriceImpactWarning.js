@@ -24,7 +24,7 @@ const Label = styled(Text).attrs(
     size: 'large',
     weight: 'bold',
   })
-)``;
+)({});
 
 export default function PriceImpactWarning({
   onPress,

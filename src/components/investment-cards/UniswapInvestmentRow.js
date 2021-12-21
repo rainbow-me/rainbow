@@ -1,6 +1,6 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
-import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../context/ThemeContext';
 import { convertAmountToPercentageDisplay } from '../../helpers/utilities';
 import { ButtonPressAnimation } from '../animations';
@@ -27,7 +27,7 @@ const Content = styled(ButtonPressAnimation)({
 
 const BottomRowContainer = ios
   ? Fragment
-  : styled(Row).attrs({ marginBottom: 10, marginTop: -10 })``;
+  : styled(Row).attrs({ marginBottom: 10, marginTop: -10 })({});
 
 const TopRowContainer = ios
   ? Fragment

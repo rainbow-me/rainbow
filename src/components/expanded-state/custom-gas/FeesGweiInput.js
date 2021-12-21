@@ -12,7 +12,7 @@ const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';
 const DELAY_THRESHOLD = 69;
 
-const Wrapper = styled(Row)``;
+const Wrapper = styled(Row)({});
 
 const StepButtonWrapper = styled(ButtonPressAnimation).attrs(() => ({
   paddingHorizontal: 7,
