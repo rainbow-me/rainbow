@@ -82,33 +82,34 @@ import logger from 'logger';
 
 const { RNBip39 } = NativeModules;
 
-const getNativeAssetAddressForNetwork = (network: Network): EthereumAddress => {
-  let nativeAssetAddress;
+const getNetworkNativeAsset = (
+  network: Network
+): ParsedAddressAsset | undefined => {
+  let nativeAssetUniqueId;
   switch (network) {
     case Network.arbitrum:
-      nativeAssetAddress = ARBITRUM_ETH_ADDRESS;
+      nativeAssetUniqueId = `${ARBITRUM_ETH_ADDRESS}_${network}`;
       break;
     case Network.optimism:
-      nativeAssetAddress = OPTIMISM_ETH_ADDRESS;
+      nativeAssetUniqueId = `${OPTIMISM_ETH_ADDRESS}_${network}`;
       break;
     case Network.polygon:
-      nativeAssetAddress = MATIC_POLYGON_ADDRESS;
+      nativeAssetUniqueId = `${MATIC_POLYGON_ADDRESS}_${network}`;
       break;
     default:
-      nativeAssetAddress = ETH_ADDRESS;
+      nativeAssetUniqueId = ETH_ADDRESS;
   }
-  return nativeAssetAddress;
+  return getAccountAsset(nativeAssetUniqueId);
 };
 
 const getNativeAssetForNetwork = async (
   network: Network,
   address: EthereumAddress
 ): Promise<ParsedAddressAsset | undefined> => {
-  const nativeAssetAddress = getNativeAssetAddressForNetwork(network);
+  const networkNativeAsset = getNetworkNativeAsset(network);
   const { accountAddress } = store.getState().settings;
   let differentWallet = toLower(address) !== toLower(accountAddress);
-  let nativeAsset =
-    (!differentWallet && getAccountAsset(nativeAssetAddress)) || undefined;
+  let nativeAsset = (!differentWallet && networkNativeAsset) || undefined;
 
   // If the asset is on a different wallet, or not available in this wallet
   if (differentWallet || !nativeAsset) {
@@ -141,8 +142,6 @@ const getNativeAssetForNetwork = async (
   return nativeAsset;
 };
 
-// TODO JIN - original function finds by address not uniqueId
-// TODO JIN - need to update the usage
 const getAsset = (
   accountAssets: Record<string, ParsedAddressAsset>,
   uniqueId: EthereumAddress = ETH_ADDRESS
@@ -151,7 +150,6 @@ const getAsset = (
   return accountAssets[loweredUniqueId];
 };
 
-// TODO JIN - this needs to update usage to use uniqueId
 const getAccountAsset = (
   uniqueId: EthereumAddress = ETH_ADDRESS
 ): ParsedAddressAsset | undefined => {
@@ -522,8 +520,7 @@ async function parseEthereumUrl(data: string) {
 
   if (!functionName) {
     // Send native asset
-    const nativeAssetAddress = getNativeAssetAddressForNetwork(network);
-    asset = getAccountAsset(nativeAssetAddress);
+    asset = getNetworkNativeAsset(network);
 
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
@@ -537,7 +534,8 @@ async function parseEthereumUrl(data: string) {
     nativeAmount = ethUrl.parameters?.value && fromWei(ethUrl.parameters.value);
   } else if (functionName === 'transfer') {
     // Send ERC-20
-    asset = getAccountAsset(ethUrl.target_address);
+    const targetUniqueId = getUniqueId(ethUrl.target_address, network);
+    asset = getAccountAsset(targetUniqueId);
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
       Alert.alert(
@@ -572,6 +570,9 @@ async function parseEthereumUrl(data: string) {
     }
   });
 }
+
+const getUniqueId = (address: EthereumAddress, network: Network) =>
+  network === Network.mainnet ? address : `${address}_${network}`;
 
 const calculateL1FeeOptimism = async (
   tx: RainbowTransaction,
@@ -638,7 +639,9 @@ export default {
   getNativeAssetForNetwork,
   getNetworkFromChainId,
   getNetworkNameFromChainId,
+  getNetworkNativeAsset,
   getPriceOfNativeAssetForNetwork,
+  getUniqueId,
   hasPreviousTransactions,
   isEthAddress,
   openAddressInBlockExplorer,

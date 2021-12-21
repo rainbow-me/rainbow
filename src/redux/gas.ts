@@ -48,13 +48,7 @@ import {
   parseRainbowMeteorologyData,
   weiToGwei,
 } from '@rainbow-me/parsers';
-import {
-  ARBITRUM_ETH_ADDRESS,
-  ETH_ADDRESS,
-  ethUnits,
-  MATIC_POLYGON_ADDRESS,
-  OPTIMISM_ETH_ADDRESS,
-} from '@rainbow-me/references';
+import { ethUnits } from '@rainbow-me/references';
 import { fromWei, greaterThanOrEqualTo, multiply } from '@rainbow-me/utilities';
 import { ethereumUtils, gasUtils } from '@rainbow-me/utils';
 import logger from 'logger';
@@ -121,33 +115,13 @@ const GAS_UPDATE_TX_FEE = 'gas/GAS_UPDATE_TX_FEE';
 const GAS_UPDATE_GAS_PRICE_OPTION = 'gas/GAS_UPDATE_GAS_PRICE_OPTION';
 const GAS_UPDATE_TRANSACTION_NETWORK = 'gas/GAS_UPDATE_TRANSACTION_NETWORK';
 
-const getNetworkNativeAsset = (network: Network) => {
-  let nativeAssetAddress;
-  switch (network) {
-    case Network.polygon:
-      nativeAssetAddress = MATIC_POLYGON_ADDRESS;
-      break;
-    case Network.arbitrum:
-      nativeAssetAddress = ARBITRUM_ETH_ADDRESS;
-      break;
-    case Network.optimism:
-      nativeAssetAddress = OPTIMISM_ETH_ADDRESS;
-      break;
-    default:
-      nativeAssetAddress = ETH_ADDRESS;
-  }
-  // TODO JIN - need to consider uniqueId vs address
-  const nativeAsset = ethereumUtils.getAccountAsset(nativeAssetAddress);
-  return nativeAsset;
-};
-
 const checkIsSufficientGas = (
   txFee: LegacyGasFee | GasFee,
   network: Network
 ) => {
   const txFeeValue =
     (txFee as GasFee)?.maxFee || (txFee as LegacyGasFee)?.estimatedFee;
-  const nativeAsset = getNetworkNativeAsset(network);
+  const nativeAsset = ethereumUtils.getNetworkNativeAsset(network);
   const balanceAmount = nativeAsset?.balance?.amount || 0;
   const txFeeAmount = fromWei(txFeeValue?.value?.amount || 0);
   const isSufficientGas = greaterThanOrEqualTo(balanceAmount, txFeeAmount);
