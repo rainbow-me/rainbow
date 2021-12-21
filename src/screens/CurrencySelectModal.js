@@ -78,7 +78,7 @@ export default function CurrencySelectModal() {
   const scrollPosition = usePagerPosition();
 
   const searchInputRef = useRef();
-  const { handleFocus } = useMagicAutofocus(searchInputRef);
+  const { handleFocus } = useMagicAutofocus(searchInputRef, undefined, true);
 
   const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
@@ -323,14 +323,9 @@ export default function CurrencySelectModal() {
               isFetching={loadingAllTokens}
               isSearching={isSearching}
               onChangeText={setSearchQuery}
+              onFocus={handleFocus}
               ref={searchInputRef}
               searchQuery={searchQuery}
-              {...(ios
-                ? {
-                    onFocus: handleFocus,
-                    ref: searchInputRef,
-                  }
-                : {})}
               testID="currency-select-search"
             />
             {type === null || type === undefined ? null : (
