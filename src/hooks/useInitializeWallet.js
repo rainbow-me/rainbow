@@ -153,6 +153,7 @@ export default function useInitializeWallet() {
       loadGlobalEarlyData,
       network,
       resetAccountState,
+      setIsSmallBalancesOpen,
     ]
   );
 

@@ -77,6 +77,7 @@ const BubbleField = (
       setWasButtonPressed(true);
       onPressButton?.(event);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [onPressButton]
   );
 
