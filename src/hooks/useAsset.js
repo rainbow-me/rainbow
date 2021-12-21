@@ -2,6 +2,7 @@ import { find, matchesProperty } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import useAccountAsset from './useAccountAsset';
+import useGenericAsset from './useGenericAsset';
 import { AssetTypes } from '@rainbow-me/entities';
 
 // To fetch an asset from account assets,
@@ -9,16 +10,11 @@ import { AssetTypes } from '@rainbow-me/entities';
 export default function useAsset(asset) {
   const accountAsset = useAccountAsset(asset.uniqueId);
 
-  // TODO JIN - selector memoization
   const uniqueTokens = useSelector(
     ({ uniqueTokens: { uniqueTokens } }) => uniqueTokens
   );
 
-  // TODO JIN - selector memoization
-  const genericAsset = useSelector(
-    ({ data: { genericAssets } }) =>
-      genericAssets?.[asset.mainnet_address || asset.address]
-  );
+  const genericAsset = useGenericAsset(asset.mainnet_address || asset.address);
 
   return useMemo(() => {
     if (!asset) return null;
