@@ -1,7 +1,7 @@
+import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
 import { useSelector } from 'react-redux';
-import styled from '@terrysahaidak/style-thing';
 import { CoinIcon } from '../../coin-icon';
 import { Centered, ColumnWithMargins, Row } from '../../layout';
 import { Text, TruncatedText } from '../../text';
@@ -46,9 +46,7 @@ const NativePriceText = styled(TruncatedText).attrs({
   ...fontWithWidth(fonts.weight.heavy),
 });
 
-const TruncatedAmountText = styled(AmountText).attrs({
-  as: TruncatedText,
-})({
+const TruncatedAmountText = styled(AmountText)({
   flexGrow: 0,
   flexShrink: 1,
 
@@ -95,7 +93,7 @@ export default function CurrencyTile({
             )}
           </NativePriceText>
           <Row align="center">
-            <TruncatedAmountText>
+            <TruncatedAmountText as={TruncatedText}>
               {`${isOther ? '~' : ''}${amountDisplay}`}
             </TruncatedAmountText>
             <AmountText>{` ${symbol}`}</AmountText>

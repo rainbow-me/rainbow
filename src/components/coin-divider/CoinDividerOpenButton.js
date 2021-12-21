@@ -1,3 +1,4 @@
+import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import Animated, {
   useAnimatedStyle,
@@ -6,9 +7,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import styled from '@terrysahaidak/style-thing';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { ButtonPressAnimation, RoundButtonCapSize } from '../animations';
+import { Flex } from '../layout';
 import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
 import { padding } from '@rainbow-me/styles';
@@ -25,9 +26,9 @@ const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   width: 8,
 });
 
-const Content = styled(Animated.View).attrs({
+const Content = styled(Flex).attrs({
   align: 'center',
-  flex: 'row',
+  direction: 'row',
   justify: 'space-between',
 })({
   backgroundColor: ({ theme: { colors } }) => colors.blueGreyDarkLight,
@@ -80,7 +81,7 @@ const CoinDividerOpenButton = ({
   }));
 
   return (
-    <Content height={coinDividerHeight} style={wrapperStyle}>
+    <Content as={Animated.View} height={coinDividerHeight} style={wrapperStyle}>
       <ButtonPressAnimation onPress={onPress} style={{ flexDirection: 'row' }}>
         <LabelText color="secondary30" weight="bold">
           {isSmallBalancesOpen ? 'Less' : 'All'}

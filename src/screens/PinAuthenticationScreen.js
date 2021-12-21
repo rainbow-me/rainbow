@@ -198,7 +198,7 @@ const PinAuthenticationScreen = () => {
       <Centered flex={1}>
         <ColumnWithMargins
           align="center"
-          css={padding(0, 24, isNarrowPhone ? 12 : 24)}
+          css={padding.object(0, 24, isNarrowPhone ? 12 : 24)}
           height="25%"
           justify="center"
           margin={isSmallPhone ? 0 : 28}

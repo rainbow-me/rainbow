@@ -1,5 +1,5 @@
-import React, { Fragment } from 'react';
 import styled from '@terrysahaidak/style-thing';
+import React, { Fragment } from 'react';
 import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
@@ -103,7 +103,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
       onPress={handlePress}
     >
       <RowWithMargins
-        css={margin(6, 19, 13)}
+        css={margin.object(6, 19, 13)}
         height={40}
         margin={10}
         testID={`${testID}-contact-row-${

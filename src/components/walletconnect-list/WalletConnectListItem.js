@@ -205,7 +205,12 @@ export default function WalletConnectListItem({
       <Row align="center" height={WalletConnectListItemHeight}>
         <Row
           align="center"
-          css={padding(ContainerPadding, 0, ContainerPadding, ContainerPadding)}
+          css={padding.object(
+            ContainerPadding,
+            0,
+            ContainerPadding,
+            ContainerPadding
+          )}
           flex={1}
         >
           <RequestVendorLogoIcon
@@ -214,7 +219,11 @@ export default function WalletConnectListItem({
             imageUrl={overrideLogo || dappIcon}
             size={VendorLogoIconSize}
           />
-          <ColumnWithMargins css={padding(0, 19, 0, 12)} flex={1} margin={5}>
+          <ColumnWithMargins
+            css={padding.object(0, 19, 0, 12)}
+            flex={1}
+            margin={5}
+          >
             <Row width="70%">
               <TruncatedText size="lmedium" weight="heavy">
                 {overrideName || dappName || 'Unknown Application'}{' '}

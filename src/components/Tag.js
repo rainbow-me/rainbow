@@ -1,9 +1,9 @@
+import styled from '@terrysahaidak/style-thing';
 import { upperCase, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Linking } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import styled from '@terrysahaidak/style-thing';
 import { magicMemo, showActionSheetWithOptions } from '../utils';
 import { ButtonPressAnimation } from './animations';
 import { Centered, Column } from './layout';
@@ -38,7 +38,7 @@ const OuterBorder = styled(Centered)({
     color || colors.alpha(colors.whiteLabel, 0.15),
   borderRadius: TagBorderRadius,
   borderWidth: 2,
-  flex: 'none',
+  // flex: 0,
   overflow: 'hidden',
   zIndex: 2,
 });

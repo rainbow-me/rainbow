@@ -30,7 +30,7 @@ const RightAction = ({ onPress, progress, text, x }) => {
     >
       <ButtonPressAnimation onPress={onPress} scaleTo={0.9}>
         <ImgixImage
-          css={margin(0, 10, android ? 0 : 3, 10)}
+          css={margin.object(0, 10, android ? 0 : 3, 10)}
           source={isEdit ? EditIcon : DeleteIcon}
           style={position.sizeAsObject(35)}
         />

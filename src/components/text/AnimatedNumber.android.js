@@ -29,7 +29,7 @@ const AnimatedNumberWithTextStyles = ({
       {...props}
       style={[
         {
-          fontVariant: disableTabularNums ? undefined : ['tabular-nums'],
+          fontVariant: disableTabularNums ? undefined : 'tabular-nums',
           textAlign,
         },
         style,

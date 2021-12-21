@@ -17,7 +17,7 @@ const ActionSheetProps = [
 ];
 
 const ContextButton = props => (
-  <Centered css={padding(12, 8)} {...props}>
+  <Centered css={padding.object(12, 8)} {...props}>
     <Icon name="threeDots" />
   </Centered>
 );

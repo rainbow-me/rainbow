@@ -7,7 +7,7 @@ import { padding } from '@rainbow-me/styles';
 const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => {
   const { colors } = useTheme();
   return (
-    <Centered css={padding(17, 0, 8)} direction="column">
+    <Centered css={padding.object(17, 0, 8)} direction="column">
       <Text
         color={colors.alpha(colors.blueGreyDark, 0.5)}
         letterSpacing="uppercase"

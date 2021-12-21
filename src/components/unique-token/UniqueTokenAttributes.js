@@ -10,7 +10,7 @@ const AttributeItem = ({ color, trait_type: type, slug, value, disableMenu }) =>
   type && value ? (
     <Tag
       color={color}
-      css={margin(7, 10, 3, 0)}
+      css={margin.object(7, 10, 3, 0)}
       disableMenu={disableMenu}
       key={`${type}${value}`}
       slug={slug}

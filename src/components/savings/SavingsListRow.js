@@ -158,7 +158,7 @@ const SavingsListRow = ({
           <SavingsListRowGradient colors={colors} />
           <Row
             align="center"
-            css={padding(9, 10, 10, 11)}
+            css={padding.object(9, 10, 10, 11)}
             justify="space-between"
             onPress={onButtonPress}
             scaleTo={0.96}

@@ -72,8 +72,11 @@ const ListCoinRow = ({ item, onPress }) => {
       <CoinRow
         {...formattedItem}
         bottomRowRender={BottomRow}
-        containerStyles={css(
-          padding(CoinRowPaddingTop, 38, CoinRowPaddingBottom, 15)
+        containerStyles={padding.object(
+          CoinRowPaddingTop,
+          38,
+          CoinRowPaddingBottom,
+          15
         )}
         showBalance={false}
         topRowRender={TopRow}

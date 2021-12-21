@@ -37,7 +37,7 @@ const OverlayBlur = styled(BlurView).attrs(({ isDarkMode }) => ({
 
 const Title = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.blueGreyDark,
-  lineHeight: ios ? 'none' : '24px',
+  lineHeight: ios ? 'none' : 24,
   size: 'large',
   weight: 'semibold',
 }))({

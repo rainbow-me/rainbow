@@ -1,6 +1,6 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { useCallback, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
-import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigation } from '../../navigation/Navigation';
 import { abbreviations, magicMemo, profileUtils } from '../../utils';
@@ -134,7 +134,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
 
   return (
     <ProfileModal onPressBackdrop={handleAddContact}>
-      <Centered css={padding(24, 25)} direction="column">
+      <Centered css={padding.object(24, 25)} direction="column">
         <ProfileAvatarButton
           changeAvatar={handleChangeAvatar}
           color={color}
@@ -191,7 +191,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
         >
           <Centered
             backgroundColor={colors.white}
-            css={padding(8, 9)}
+            css={padding.object(8, 9)}
             testID="contact-profile-cancel-button"
           >
             <Text

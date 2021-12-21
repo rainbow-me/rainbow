@@ -45,7 +45,7 @@ const ListItem = ({
     >
       <Row
         align="center"
-        css={padding(0, 18, 2, 19)}
+        css={padding.object(0, 18, 2, 19)}
         height={ListItemHeight}
         justify="space-between"
         {...props}

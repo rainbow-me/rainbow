@@ -1,3 +1,4 @@
+import styled from '@terrysahaidak/style-thing';
 import { find } from 'lodash';
 import React, {
   useCallback,
@@ -9,7 +10,6 @@ import React, {
 import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useSelector } from 'react-redux';
-import styled from '@terrysahaidak/style-thing';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
 import L2Disclaimer from '../../L2Disclaimer';
 import { ButtonPressAnimation } from '../../animations';
@@ -356,11 +356,11 @@ export default function ChartExpandedState({ asset }) {
         </TokenInfoSection>
       )}
       {needsEth ? (
-        <SheetActionButtonRow paddingBottom={isL2 && 19}>
+        <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
           <BuyActionButton color={color} />
         </SheetActionButtonRow>
       ) : (
-        <SheetActionButtonRow paddingBottom={isL2 && 19}>
+        <SheetActionButtonRow paddingBottom={isL2 ? 19 : undefined}>
           {showSwapButton && (
             <SwapActionButton color={color} inputType={AssetInputTypes.in} />
           )}

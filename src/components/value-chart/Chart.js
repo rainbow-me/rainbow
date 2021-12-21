@@ -34,7 +34,7 @@ const ChartTimespans = [
 ];
 
 const ChartContainer = styled.View({
-  marginVertical: ({ showChart }) => (showChart ? '17px' : '0px'),
+  marginVertical: ({ showChart }) => (showChart ? 17 : 0),
 });
 
 const ChartSpinner = styled(ImgixImage).attrs(({ color }) => ({
