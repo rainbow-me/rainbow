@@ -41,6 +41,10 @@ export default function useMemoBriefSectionData() {
           return false;
         }
 
+        if (data.type === CellType.NFTS_HEADER && !arr[arrIndex + 2]) {
+          return false;
+        }
+
         if (data.type === CellType.NFTS_HEADER && !arr[arrIndex + 1]) {
           return false;
         }
