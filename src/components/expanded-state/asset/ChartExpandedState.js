@@ -304,15 +304,14 @@ export default function ChartExpandedState({ asset }) {
 
   const MoreButton = useCallback(() => {
     return (
-      <CoinDividerOpenButton
-        coinDividerHeight={CoinDividerHeight}
-        isActive
-        isSendSheet
-        isSmallBalancesOpen={delayedMorePoolsVisible}
-        marginLeft={19}
-        marginTop={5}
-        onPress={() => setMorePoolsVisible(prev => !prev)}
-      />
+      <View marginTop={-10}>
+        <CoinDividerOpenButton
+          coinDividerHeight={CoinDividerHeight}
+          isActive
+          isSmallBalancesOpen={delayedMorePoolsVisible}
+          onPress={() => setMorePoolsVisible(prev => !prev)}
+        />
+      </View>
     );
   }, [delayedMorePoolsVisible]);
 
