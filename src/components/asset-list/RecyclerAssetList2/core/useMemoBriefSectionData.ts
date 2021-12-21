@@ -41,7 +41,8 @@ export default function useMemoBriefSectionData() {
           return false;
         }
 
-        if (data.type === CellType.NFTS_HEADER && !arr[arrIndex + 1]) {
+        // removes NFTS_HEADER if wallet doesn't have NFTs
+        if (data.type === CellType.NFTS_HEADER && !arr[arrIndex + 2]) {
           return false;
         }
 
