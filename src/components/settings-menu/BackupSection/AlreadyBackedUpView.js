@@ -1,8 +1,8 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import styled from '@terrysahaidak/style-thing';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
-import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../../context/ThemeContext';
 import { cloudPlatform } from '../../../utils/platform';
 import { DelayedAlert } from '../../alerts';
@@ -31,7 +31,7 @@ const WalletBackupStatus = {
 const CheckmarkIconContainer = styled(View)(
   ({ color, isDarkMode, theme: { colors } }) => ({
     ...shadow.buildAsObject(0, 4, 6, isDarkMode ? colors.shadow : color, 0.4),
-    ...position.size(50),
+    ...position.sizeAsObject(50),
     backgroundColor: color,
     borderTadius: 25,
     marginBottom: 19,

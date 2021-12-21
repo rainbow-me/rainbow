@@ -1,4 +1,5 @@
 import MaskedView from '@react-native-community/masked-view';
+import styled from '@terrysahaidak/style-thing';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { View } from 'react-native';
@@ -9,7 +10,6 @@ import Animated, {
   timing,
   Value,
 } from 'react-native-reanimated';
-import styled from '@terrysahaidak/style-thing';
 import { withThemeContext } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { interpolate } from '../animations';
@@ -130,7 +130,10 @@ class AssetListItemSkeleton extends PureComponent {
     });
 
     return (
-      <View backgroundColor={gradientColors[0]} css={position.size('100%')}>
+      <View
+        backgroundColor={gradientColors[0]}
+        css={position.sizeAsObject('100%')}
+      >
         <AnimatedLinearGradient
           {...position.sizeAsObject('100%')}
           colors={gradientColors}

@@ -1,6 +1,6 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { useMemo } from 'react';
 import { Image } from 'react-native';
-import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
 import EthIcon from '@rainbow-me/assets/eth-icon.png';
@@ -35,7 +35,7 @@ const FallbackImage = styled(ImageWithCachedMetadata)(
     height: size,
     width: size,
     ...position.coverAsObject,
-    ...shadow.build(x, y, radius * 2, color, showImage ? opacity : 0),
+    ...shadow.buildAsObject(x, y, radius * 2, color, showImage ? opacity : 0),
     backgroundColor: showImage ? colors.white : colors.transparent,
     borderRadius: size / 2,
     overflow: 'visible',

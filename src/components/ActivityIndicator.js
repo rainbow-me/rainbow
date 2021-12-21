@@ -5,9 +5,9 @@ import { useTheme } from '../context/ThemeContext';
 import { Centered } from './layout';
 import { position } from '@rainbow-me/styles';
 
-const Container = styled(Centered)`
-  ${({ size }) => position.size(Number(size))};
-`;
+const Container = styled(Centered)(({ size }) =>
+  position.sizeAsObject(Number(size))
+);
 
 export default function ActivityIndicator({
   color,

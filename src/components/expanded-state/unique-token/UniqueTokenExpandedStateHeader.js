@@ -1,8 +1,8 @@
+import styled from '@terrysahaidak/style-thing';
 import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
-import styled from '@terrysahaidak/style-thing';
 import URL from 'url-parse';
 import { buildUniqueTokenName } from '../../../helpers/assets';
 import { ButtonPressAnimation } from '../../animations';
@@ -419,7 +419,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
                 <FamilyImageWrapper>
                   <FamilyImage
                     source={{ uri: asset?.familyImage }}
-                    style={position.cover}
+                    style={position.coverAsObject}
                   />
                 </FamilyImageWrapper>
               ) : null}

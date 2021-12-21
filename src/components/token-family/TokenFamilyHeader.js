@@ -19,7 +19,7 @@ const Content = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
 })(({ isCoinRow, theme: { colors } }) => ({
-  ...padding(0, isCoinRow ? 19 : 19),
+  ...padding.object(0, isCoinRow ? 19 : 19),
   backgroundColor: colors.white,
   height: TokenFamilyHeaderHeight,
   width: '100%',

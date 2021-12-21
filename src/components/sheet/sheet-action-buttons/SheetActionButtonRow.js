@@ -12,7 +12,7 @@ const Container = styled(Row).attrs({
     ignorePaddingTop,
     paddingHorizontal,
   }) => ({
-    ...padding(
+    ...padding.object(
       ignorePaddingTop ? 0 : 19,
       paddingHorizontal || 11.5,
       ignorePaddingBottom ? 0 : 24
