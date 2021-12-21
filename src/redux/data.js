@@ -738,12 +738,12 @@ export const assetPricesReceived = (message, fromFallback = false) => (
   if (!fromFallback) {
     disableGenericAssetsFallbackIfNeeded();
   }
-  const assets = message?.payload?.prices ?? {};
+  const newAssetPrices = message?.payload?.prices ?? {};
   const { nativeCurrency } = getState().settings;
 
   if (toLower(nativeCurrency) === message?.meta?.currency) {
-    if (isEmpty(assets)) return;
-    const parsedAssets = mapValues(assets, asset => parseAsset(asset));
+    if (isEmpty(newAssetPrices)) return;
+    const parsedAssets = mapValues(newAssetPrices, asset => parseAsset(asset));
     const { genericAssets } = getState().data;
 
     const updatedAssets = {
@@ -756,8 +756,8 @@ export const assetPricesReceived = (message, fromFallback = false) => (
       type: DATA_UPDATE_GENERIC_ASSETS,
     });
   }
-  if (message?.meta?.currency === 'usd' && assets[ETH_ADDRESS]) {
-    const value = assets[ETH_ADDRESS]?.price?.value;
+  if (message?.meta?.currency === 'usd' && newAssetPrices[ETH_ADDRESS]) {
+    const value = newAssetPrices[ETH_ADDRESS]?.price?.value;
     dispatch({
       payload: value,
       type: DATA_UPDATE_ETH_USD,
