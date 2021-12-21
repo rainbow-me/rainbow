@@ -1054,8 +1054,6 @@ export const updateRefetchSavings = fetch => dispatch =>
 const INITIAL_STATE = {
   accountAssetsData: {}, // for account-specific assets
   assetPricesFromUniswap: {},
-  // TODO JIN: remove below
-  assets: [], // for account-specific assets
   ethUSDCharts: null,
   ethUSDPrice: null,
   genericAssets: {},
