@@ -6,7 +6,6 @@ import { profileUtils } from '@rainbow-me/utils';
 export const fetchSuggestions = async (
   recipient: any,
   setSuggestions: any,
-  // eslint-disable-next-line no-unused-vars
   setIsFetching = (_unused: any) => {}
 ) => {
   if (recipient.length > 2) {

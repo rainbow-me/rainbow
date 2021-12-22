@@ -7,11 +7,7 @@ const REQUESTS = 'requests';
 export const walletConnectAccountLocalKeys = [REQUESTS];
 
 const isRequestStillValid = (request: any) => {
-  if (
-    request &&
-    request.displayDetails &&
-    request.displayDetails.timestampInMs
-  ) {
+  if (request?.displayDetails?.timestampInMs) {
     const createdAt = request.displayDetails.timestampInMs;
     return differenceInMinutes(Date.now(), createdAt) < 60;
   }
@@ -57,6 +53,7 @@ export const removeLocalRequest = async (
 ) => {
   const requests = await getLocalRequests(address, network);
   const updatedRequests = { ...requests };
+  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
   delete updatedRequests[requestId];
   await saveLocalRequests(updatedRequests, address, network);
 };
