@@ -48,6 +48,7 @@ const searchCurrencyList = async (
 const useUniswapCurrencyList = (searchQuery: string) => {
   const searching = searchQuery !== '';
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
   const [curatedAssets, setCuratedAssets] = useState<RT[]>([]);
   const [favoriteAssets, setFavoriteAssets] = useState<RT[]>([]);
   const [highLiquidityAssets, setHighLiquidityAssets] = useState<RT[]>([]);
@@ -104,11 +105,16 @@ const useUniswapCurrencyList = (searchQuery: string) => {
   const search = () => {
     const categories: UniswapCurrencyListType[] = [
       'favoriteAssets',
-      'lowLiquidityAssets',
       'highLiquidityAssets',
       'verifiedAssets',
     ];
+    setLoading(true);
     forEach(categories, assetType => getResultsForAssetType(assetType));
+  };
+
+  const slowSearch = async () => {
+    await getResultsForAssetType('lowLiquidityAssets');
+    setLoading(false);
   };
 
   const clearSearch = () => {
@@ -121,6 +127,7 @@ const useUniswapCurrencyList = (searchQuery: string) => {
   useEffect(() => {
     if (searching) {
       search();
+      slowSearch();
     } else {
       clearSearch();
     }
@@ -184,7 +191,7 @@ const useUniswapCurrencyList = (searchQuery: string) => {
 
   return {
     uniswapCurrencyList: currencyList,
-    uniswapCurrencyListLoading: currencyList.length === 0,
+    uniswapCurrencyListLoading: loading,
     updateFavorites,
   };
 };

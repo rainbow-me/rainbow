@@ -126,6 +126,12 @@ export default function DiscoverSearch() {
   }, [searchQuery, setIsSearching, startQueryDebounce, stopQueryDebounce]);
 
   useEffect(() => {
+    if (!uniswapCurrencyListLoading && !isFetchingEns) {
+      setIsSearching(false);
+    }
+  }, [isFetchingEns, setIsSearching, uniswapCurrencyListLoading]);
+
+  useEffect(() => {
     currencySelectionListRef.current?.scrollToLocation({
       animated: false,
       itemIndex: 0,
