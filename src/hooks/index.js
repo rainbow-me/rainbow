@@ -25,6 +25,7 @@ export {
   default as useCoinListEditOptions,
   useCoinListFinishEditingOptions,
 } from './useCoinListEditOptions';
+export { default as useCollectible } from './useCollectible';
 export { default as useColorForAsset } from './useColorForAsset';
 export { default as useContacts } from './useContacts';
 export { default as useDimensions } from './useDimensions';
