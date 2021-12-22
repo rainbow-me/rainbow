@@ -44,7 +44,6 @@ export async function rainbowFetch(
   const responseBody = await getBody(response);
 
   if (response.ok) {
-    console.log("zooooot");
     const { headers, status } = response;
     return { data: responseBody, headers, status };
   } else {

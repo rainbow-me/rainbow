@@ -11,8 +11,6 @@ import {
 } from 'react-native-dotenv';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import { deviceUtils } from '@rainbow-me/utils';
-console.log("hi");
-console.log(cloudName);
 cloudinaryConfig({
   api_key: apiKey,
   api_secret: apiSecret,

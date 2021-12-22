@@ -378,7 +378,6 @@ export const convertAmountToNativeDisplay = (
   if (nativeSelected.alignment === 'left') {
     return `${nativeSelected.symbol}${display}`;
   }
-  console.log("rogue");
   return `${display} ${nativeSelected.symbol}`;
 };
 

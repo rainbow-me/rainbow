@@ -73,7 +73,6 @@ const TokenHistory = ({ contractAndToken, color }) => {
         contractAddress,
         tokenID
       );
-      console.log("jeff");
 
       const [rawTransferEvents, rawSaleEvents] = await Promise.all(
         [
@@ -95,10 +94,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
           )
         ]
       );
-      console.log(rawTransferEvents);
-      console.log(rawSaleEvents);
       const rawEvents = rawTransferEvents.concat(rawSaleEvents);
-      console.log("jmol");
       const txHistory = await processRawEvents(contractAddress, rawEvents);
       setTokenHistory(txHistory);
       if (txHistory.length <= 2) {
@@ -118,7 +114,6 @@ const TokenHistory = ({ contractAndToken, color }) => {
 
   const processRawEvents = async (contractAddress, rawEvents) => {
     rawEvents.sort((event1, event2) => event2.created_date.localeCompare(event1.created_date));
-    console.log("hiiiiiiii");
     let addressArray = new Array();
     let sales = [];
     const events = await rawEvents
@@ -130,11 +125,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
         switch (eventType) {
           case EventTypes.TRANSFER.type:
             toAccountEthAddress = event.to_account?.address;
-            console.log("bobobobob");
-            console.log(toAccountEthAddress);
             if (event.from_account?.address === EMPTY_ADDRESS) {
-              console.log("check123");
-              console.log(toAccountEthAddress);
               eventType = contractAddress === ENS_NFT_CONTRACT_ADDRESS ? EventTypes.ENS.type : EventTypes.MINT.type;
             }
             break;
@@ -178,16 +169,12 @@ const TokenHistory = ({ contractAndToken, color }) => {
     });
   
     let ensArray = await reverseRecordContract.getNames(addressArray);
-    // let ensArray = ["a.eth"]
-    console.log("ens");
-    console.log(addressArray);
-    console.log(ensArray);
   
     const ensMap = ensArray.reduce(function(tempMap, ens, index) {
       tempMap[addressArray[index]] = ens;
       return tempMap;
     }, {});
-    console.log("check?");
+
     events.map((event) => {
       const address = event.toAccountEthAddress;
       if (address) {
@@ -197,8 +184,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
           : abbreviations.address(address, 2);
       }
     });
-    console.log("events");
-    console.log(events);
+
     return events;
   };  
 
