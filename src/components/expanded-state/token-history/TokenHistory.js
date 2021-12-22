@@ -178,7 +178,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
     });
   
     let ensArray = await reverseRecordContract.getNames(addressArray);
-    // let ensArray = ["hfdjalfhjdkalfjdkgdsjfkhjhfdjalfhjdkalfjdkgdsjfkhj.eth"]
+    // let ensArray = ["a.eth"]
     console.log("ens");
     console.log(addressArray);
     console.log(ensArray);
@@ -193,7 +193,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
       if (address) {
         const ens = ensMap[address];
         event.toAccount = ens
-          ? abbreviations.formatAddressForDisplay(ens)
+          ? abbreviations.abbreviateEnsForDisplay(ens)
           : abbreviations.address(address, 2);
       }
     });
@@ -270,10 +270,12 @@ const TokenHistory = ({ contractAndToken, color }) => {
 
     return (
       <Column>
-        <Row style={{height: 10, marginBottom: 6, marginTop: 4}}>
-          <View style={{width: 10, height: 10, borderRadius: 10 / 2, backgroundColor: color}} />
-          {!isFirst && <Timeline color={color} />}
-        </Row>
+        {tokenHistory.length > 1 &&
+          <Row style={{height: 10, marginBottom: 6, marginTop: 4}}>
+            <View style={{width: 10, height: 10, borderRadius: 10 / 2, backgroundColor: color}} />
+            {!isFirst && <Timeline color={color} />}
+          </Row>
+        }  
         <Column style={{ paddingRight: 24 }}>
           <Row style={{ marginBottom: 3 }}>
             <AccentText color={color}>{date}</AccentText>
@@ -298,17 +300,34 @@ const TokenHistory = ({ contractAndToken, color }) => {
     );
   };
 
+  const renderTwoOrLessDataItems = () => {
+    return (
+      <Row style={{ marginLeft: 24 }}>
+        {tokenHistory.length == 2 && renderItem({ index: 1, item: tokenHistory[1] })}
+        {renderItem({ index: 0, item: tokenHistory[0] })}
+      </Row>
+    );
+  };
+
+  const renderFlatList = () => {
+    return (
+      <MaskedView maskElement={<TokenHistoryEdgeFade />}>
+        <FlatList
+          ListFooterComponent={<View style={{ paddingLeft: 24 }} />}
+          data={tokenHistory}
+          horizontal
+          inverted
+          renderItem={({ item, index }) => renderItem({ index, item })}
+          showsHorizontalScrollIndicator={false}
+        />
+      </MaskedView>
+    );
+  };
+
   return (
-    <MaskedView maskElement={<TokenHistoryEdgeFade />}>
-      <FlatList
-        ListFooterComponent={<View style={{ paddingLeft: 24 }} />}
-        data={tokenHistory}
-        horizontal
-        inverted
-        renderItem={({ item, index }) => renderItem({ index, item })}
-        showsHorizontalScrollIndicator={false}
-      />
-    </MaskedView>
+    <>
+      {tokenHistoryShort ? renderTwoOrLessDataItems() : renderFlatList()}
+    </>
   );
 };
 
