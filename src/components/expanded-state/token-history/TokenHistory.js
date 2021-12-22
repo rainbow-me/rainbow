@@ -94,8 +94,10 @@ const TokenHistory = ({ contractAndToken, color }) => {
           )
         ]
       );
+
       const rawEvents = rawTransferEvents.concat(rawSaleEvents);
       const txHistory = await processRawEvents(contractAddress, rawEvents);
+      
       setTokenHistory(txHistory);
       if (txHistory.length <= 2) {
         setTokenHistoryShort(true);
@@ -160,8 +162,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
         };
       });
 
-    // events.reverse();
-
+    // swap the order of every sale/transfer tx pair so sale is displayed before transfer
     sales.forEach((saleIndex) => {
       if (events.length != saleIndex + 1) {
         [events[saleIndex], events[saleIndex + 1]] = [events[saleIndex + 1], events[saleIndex]];

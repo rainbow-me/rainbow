@@ -91,7 +91,7 @@ export const apiGetNftSemiFungibility = async (
   try {
     const checkFungibility = `https://${networkPrefix}api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=1`;
 
-    const fungData = await rainbowFetch(checkFungibility, {
+    const fungibility = await rainbowFetch(checkFungibility, {
       headers: {
         'Accept': 'application/json',
         'X-Api-Key': OPENSEA_API_KEY,
@@ -101,7 +101,7 @@ export const apiGetNftSemiFungibility = async (
     });
 
     const semiFungible =
-      fungData?.data?.asset_events[0]?.asset?.asset_contract
+      fungibility?.data?.asset_events[0]?.asset?.asset_contract
         ?.asset_contract_type === 'semi-fungible';
     return semiFungible;
   } catch (error) {
