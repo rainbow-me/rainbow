@@ -11,7 +11,7 @@ import { usePrevious } from '@rainbow-me/hooks';
 const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';
 const LONG_PRESS_DELAY_THRESHOLD = 69;
-const MIN_LONG_PRESS_DELAY_THRESHOLD = 160;
+const MIN_LONG_PRESS_DELAY_THRESHOLD = 200;
 
 const Wrapper = styled(Row)``;
 
