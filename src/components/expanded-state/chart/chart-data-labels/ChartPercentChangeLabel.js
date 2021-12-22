@@ -1,7 +1,10 @@
+import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { TextInput } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import styled from '@terrysahaidak/style-thing';
+import Animated, {
+  useAnimatedProps,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 import { RowWithMargins } from '../../../layout';
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
 import { useRatio } from './useRatio';
@@ -63,7 +66,7 @@ export default function ChartPercentChangeLabel({
         );
       })();
 
-  const textProps = useAnimatedStyle(() => {
+  const textProps = useAnimatedProps(() => {
     const firstValue = data?.points?.[0]?.y;
     const lastValue = data?.points?.[data.points.length - 1]?.y;
 

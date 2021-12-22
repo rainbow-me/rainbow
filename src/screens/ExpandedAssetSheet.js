@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/native';
+import styled from '@terrysahaidak/style-thing';
 import React, { createElement } from 'react';
 import { StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -15,7 +16,6 @@ import { Centered } from '../components/layout';
 import { useTheme } from '@rainbow-me/context';
 import { useAsset, useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@terrysahaidak/style-thing';
 import { position } from '@rainbow-me/styles';
 
 const ScreenTypes = {
@@ -60,6 +60,7 @@ export default function ExpandedAssetSheet(props) {
         <StatusBar barStyle="light-content" />
       )}
       {ios && <TouchableBackdrop onPress={goBack} />}
+
       {createElement(ScreenTypes[params.type], {
         asset: selectedAsset,
         ...params,

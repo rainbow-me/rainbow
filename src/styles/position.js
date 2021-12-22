@@ -1,3 +1,4 @@
+import { memoFn } from '@rainbow-me/utils/memoFn';
 import { upperFirst } from 'lodash';
 import { StyleSheet } from 'react-native';
 import buildLayoutStyles from './buildLayoutStyles';
@@ -33,10 +34,10 @@ position.size = (size, prefix = '') => `
   ${prefix}${buildSizeKey(prefix, 'width')}: ${size};
 `;
 
-position.sizeAsObject = (size, prefix = '') => ({
+position.sizeAsObject = memoFn((size, prefix = '') => ({
   [`${prefix}${buildSizeKey(prefix, 'height')}`]: size,
   [`${prefix}${buildSizeKey(prefix, 'width')}`]: size,
-});
+}));
 
 position.maxSize = size => position.size(size, 'max');
 position.minSize = size => position.size(size, 'min');

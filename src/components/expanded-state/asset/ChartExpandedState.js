@@ -69,7 +69,7 @@ const Carousel = styled.ScrollView.attrs({
   showsHorizontalScrollIndicator: false,
 })({});
 
-const AdditionalContentWrapper = styled.View``;
+const AdditionalContentWrapper = styled.View({});
 
 const CarouselItem = styled(TokenInfoItem).attrs(({ theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.7),
@@ -387,7 +387,9 @@ export default function ChartExpandedState({ asset }) {
         />
       )}
 
-      {!isL2 && (
+      {/*
+        TODO: Terry
+        {!isL2 && (
         <CarouselWrapper
           isAnyItemLoading={
             totalVolumeLoading || totalLiquidityLoading || marketCapLoading
@@ -423,6 +425,7 @@ export default function ChartExpandedState({ asset }) {
           <EdgeFade />
         </CarouselWrapper>
       )}
+        */}
       <AdditionalContentWrapper
         onLayout={({
           nativeEvent: {

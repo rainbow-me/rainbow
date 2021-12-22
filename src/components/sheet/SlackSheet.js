@@ -56,14 +56,12 @@ const Container = styled(Centered).attrs({ direction: 'column' })(
   })
 );
 
-const Content = styled(Animated.ScrollView).attrs(
-  ({ limitScrollViewContent }) => ({
-    contentContainerStyle: limitScrollViewContent ? { height: '100%' } : {},
-    directionalLockEnabled: true,
-    keyboardShouldPersistTaps: 'always',
-    scrollEventThrottle: 16,
-  })
-)(({ contentHeight, deviceHeight, backgroundColor, removeTopPadding }) => ({
+const Content = styled.ScrollView.attrs(({ limitScrollViewContent }) => ({
+  contentContainerStyle: limitScrollViewContent ? { height: '100%' } : {},
+  directionalLockEnabled: true,
+  keyboardShouldPersistTaps: 'always',
+  scrollEventThrottle: 16,
+}))(({ contentHeight, deviceHeight, backgroundColor, removeTopPadding }) => ({
   backgroundColor: backgroundColor,
   ...(contentHeight ? { height: deviceHeight + contentHeight } : {}),
   paddingTop: removeTopPadding ? 0 : SheetHandleFixedToTopHeight,
@@ -177,7 +175,9 @@ export default forwardRef(function SlackSheet(
         <ContentWrapper backgroundColor={bg}>
           {renderHeader?.(yPosition)}
           <Content
-            {...(isInsideBottomSheet && { as: BottomSheetScrollView })}
+            as={
+              isInsideBottomSheet ? BottomSheetScrollView : Animated.ScrollView
+            }
             backgroundColor={bg}
             contentContainerStyle={scrollEnabled && contentContainerStyle}
             contentHeight={contentHeight}

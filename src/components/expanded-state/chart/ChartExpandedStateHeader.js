@@ -1,6 +1,6 @@
+import styled from '@terrysahaidak/style-thing';
 import React, { useEffect, useMemo } from 'react';
 import Animated, { useSharedValue } from 'react-native-reanimated';
-import styled from '@terrysahaidak/style-thing';
 import { useCallbackOne } from 'use-memo-one';
 import { CoinIcon, CoinIconGroup } from '../../coin-icon';
 import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
@@ -66,7 +66,8 @@ export default function ChartExpandedStateHeader({
     return isPool ? asset.tokens : [asset];
   }, [asset, isPool]);
   const { nativeCurrency } = useAccountSettings();
-  const tabularNums = useTabularNumsWhileScrubbing(isScrubbing);
+  // TODO: Terry
+  // const tabularNums = useTabularNumsWhileScrubbing(isScrubbing);
 
   const isNoPriceData = latestPrice === noPriceData;
 
@@ -122,10 +123,10 @@ export default function ChartExpandedStateHeader({
             defaultValue={isNoPriceData ? title : price}
             isNoPriceData={isNoPriceData}
             isPool={isPool}
-            isScrubbing={isScrubbing}
+            // isScrubbing={isScrubbing}
             priceRef={priceRef}
             priceSharedValue={priceSharedValue}
-            tabularNums={tabularNums}
+            // tabularNums={tabularNums}
           />
           {showPriceChange && (
             <ChartPercentChangeLabel
@@ -134,10 +135,10 @@ export default function ChartExpandedStateHeader({
               color={
                 isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
               }
-              isScrubbing={isScrubbing}
+              // isScrubbing={isScrubbing}
               latestChange={latestChange}
               overrideValue={overrideValue}
-              tabularNums={tabularNums}
+              // tabularNums={tabularNums}
             />
           )}
         </RowWithMargins>

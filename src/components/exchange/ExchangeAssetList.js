@@ -1,4 +1,5 @@
 import { useIsFocused } from '@react-navigation/native';
+import styled from '@terrysahaidak/style-thing';
 import React, {
   forwardRef,
   Fragment,
@@ -9,7 +10,6 @@ import React, {
 } from 'react';
 import { Alert, Keyboard, SectionList } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from '@terrysahaidak/style-thing';
 import { ButtonPressAnimation } from '../../components/animations';
 import { CoinRowHeight, ExchangeCoinRow } from '../coin-row';
 import { ContactRow } from '../contacts';
@@ -58,7 +58,7 @@ const HeaderTitleGradient = styled(GradientText).attrs({
   weight: 'heavy',
 })({});
 
-const HeaderTitleWrapper = styled.View``;
+const HeaderTitleWrapper = styled.View({});
 
 const contentContainerStyle = { paddingBottom: 9.5 };
 const keyExtractor = ({ uniqueId }) => `ExchangeAssetList-${uniqueId}`;

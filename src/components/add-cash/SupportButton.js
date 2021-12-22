@@ -13,7 +13,7 @@ const SupportButton = ({ label, onPress, ...props }) => {
       <Centered
         backgroundColor={colors.alpha(colors.blueGreyDark, 0.06)}
         borderRadius={15}
-        style={padding.object(5, 10, 6)}
+        css={padding.object(5, 10, 6)}
         {...props}
       >
         <Text
