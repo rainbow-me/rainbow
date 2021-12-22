@@ -2,6 +2,8 @@ import { isNil } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
+import useAccountSettings from './useAccountSettings';
+import { parseAssetNative } from '@rainbow-me/parsers';
 
 const accountAssetsDataSelector = state => state.data.accountAssetsData;
 const assetPricesFromUniswapSelector = state =>
@@ -45,7 +47,12 @@ const makeAccountAssetSelector = () =>
 // this is meant to be used for assets under balances
 // NFTs are not included in this hook
 export default function useAccountAsset(uniqueId) {
+  const { nativeCurrency } = useAccountSettings();
   const selectAccountAsset = useMemo(makeAccountAssetSelector, []);
   const asset = useSelector(state => selectAccountAsset(state, uniqueId));
-  return asset;
+  const assetWithPrice = useMemo(
+    () => parseAssetNative(asset, nativeCurrency),
+    [asset, nativeCurrency]
+  );
+  return assetWithPrice;
 }

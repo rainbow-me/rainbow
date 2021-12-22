@@ -61,7 +61,7 @@ import {
   WalletLibraryType,
 } from '@rainbow-me/model/wallet';
 import { Navigation } from '@rainbow-me/navigation';
-import { parseAssetsNative } from '@rainbow-me/parsers';
+import { parseAssetNative } from '@rainbow-me/parsers';
 import store from '@rainbow-me/redux/store';
 import {
   ARBITRUM_BLOCK_EXPLORER_URL,
@@ -556,7 +556,7 @@ async function parseEthereumUrl(data: string) {
     return;
   }
 
-  const assetWithPrice = parseAssetsNative([asset], nativeCurrency)[0];
+  const assetWithPrice = parseAssetNative(asset, nativeCurrency);
 
   InteractionManager.runAfterInteractions(() => {
     const params = { address, asset: assetWithPrice, nativeAmount };
