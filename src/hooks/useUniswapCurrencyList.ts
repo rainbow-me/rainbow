@@ -1,6 +1,6 @@
 import { filter, forEach, map, toLower, values } from 'lodash';
 import { rankings } from 'match-sorter';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import { useQuery } from 'react-query';
@@ -10,6 +10,7 @@ import { AppState } from '../redux/store';
 import { uniswapUpdateFavorites } from '../redux/uniswap';
 import {
   RainbowToken as RT,
+  // @ts-ignore
   TokenSearchTokenListId,
 } from '@rainbow-me/entities';
 import { getUniswapV2Tokens } from '@rainbow-me/handlers/dispersion';
@@ -39,6 +40,7 @@ const searchCurrencyList = async (
     const threshold = isAddress ? 'CASE_SENSITIVE_EQUAL' : 'CONTAINS';
     return await tokenSearch(searchList, formattedQuery, keys, threshold);
   } else {
+    // @ts-ignore
     return filterList(searchList, formattedQuery, keys, {
       threshold: isAddress ? rankings.CASE_SENSITIVE_EQUAL : rankings.CONTAINS,
     });
@@ -67,40 +69,46 @@ const useUniswapCurrencyList = (searchQuery: string) => {
     }
   );
 
-  const getCurated = () => {
+  const getCurated = useCallback(() => {
     return filter(
       values(curatedMap),
       ({ address }) =>
         !map(favoriteAddresses, toLower).includes(toLower(address))
     );
-  };
-  const getFavorites = async () => {
+  }, [curatedMap, favoriteAddresses]);
+
+  const getFavorites = useCallback(async () => {
     return searching
       ? await searchCurrencyList(unfilteredFavorites, searchQuery)
       : unfilteredFavorites;
-  };
+  }, [searchQuery, searching, unfilteredFavorites]);
 
-  const getResultsForAssetType = async (assetType: UniswapCurrencyListType) => {
-    switch (assetType) {
-      case 'verifiedAssets':
-        setVerifiedAssets(await searchCurrencyList(assetType, searchQuery));
-        break;
-      case 'highLiquidityAssets':
-        setHighLiquidityAssets(
-          await searchCurrencyList(assetType, searchQuery)
-        );
-        break;
-      case 'lowLiquidityAssets':
-        setLowLiquidityAssets(await searchCurrencyList(assetType, searchQuery));
-        break;
-      case 'favoriteAssets':
-        setFavoriteAssets((await getFavorites()) || []);
-        break;
-      case 'curatedAssets':
-        setCuratedAssets(getCurated());
-        break;
-    }
-  };
+  const getResultsForAssetType = useCallback(
+    async (assetType: UniswapCurrencyListType) => {
+      switch (assetType) {
+        case 'verifiedAssets':
+          setVerifiedAssets(await searchCurrencyList(assetType, searchQuery));
+          break;
+        case 'highLiquidityAssets':
+          setHighLiquidityAssets(
+            await searchCurrencyList(assetType, searchQuery)
+          );
+          break;
+        case 'lowLiquidityAssets':
+          setLowLiquidityAssets(
+            await searchCurrencyList(assetType, searchQuery)
+          );
+          break;
+        case 'favoriteAssets':
+          setFavoriteAssets((await getFavorites()) || []);
+          break;
+        case 'curatedAssets':
+          setCuratedAssets(getCurated());
+          break;
+      }
+    },
+    [getCurated, getFavorites, searchQuery]
+  );
 
   const search = () => {
     const categories: UniswapCurrencyListType[] = [
@@ -112,17 +120,17 @@ const useUniswapCurrencyList = (searchQuery: string) => {
     forEach(categories, assetType => getResultsForAssetType(assetType));
   };
 
-  const slowSearch = async () => {
+  const slowSearch = useCallback(async () => {
     await getResultsForAssetType('lowLiquidityAssets');
     setLoading(false);
-  };
+  }, [getResultsForAssetType]);
 
-  const clearSearch = () => {
+  const clearSearch = useCallback(() => {
     getResultsForAssetType('curatedAssets');
     setLowLiquidityAssets([]);
     setHighLiquidityAssets([]);
     setVerifiedAssets([]);
-  };
+  }, [getResultsForAssetType]);
 
   useEffect(() => {
     if (searching) {
@@ -135,7 +143,8 @@ const useUniswapCurrencyList = (searchQuery: string) => {
   }, [searchQuery]);
 
   const { colors } = useTheme();
-  const getCurrencyList = () => {
+
+  const currencyList = useMemo(() => {
     const list = [];
     if (searching) {
       if (favoriteAssets.length) {
@@ -181,13 +190,21 @@ const useUniswapCurrencyList = (searchQuery: string) => {
       }
     }
     return list;
-  };
+  }, [
+    colors.yellowFavorite,
+    curatedAssets,
+    favoriteAssets,
+    highLiquidityAssets,
+    lowLiquidityAssets,
+    searching,
+    unfilteredFavorites,
+    verifiedAssets,
+  ]);
 
   const updateFavorites = useCallback(
     (...data) => dispatch(uniswapUpdateFavorites(...data)),
     [dispatch]
   );
-  const currencyList = getCurrencyList();
 
   return {
     uniswapCurrencyList: currencyList,
