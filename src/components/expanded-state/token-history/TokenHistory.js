@@ -117,23 +117,30 @@ const TokenHistory = ({ contractAndToken, color }) => {
   );
 
   const processRawEvents = async (contractAddress, rawEvents) => {
+    rawEvents.sort((event1, event2) => event2.created_date.localeCompare(event1.created_date));
     console.log("hiiiiiiii");
     let addressArray = new Array();
+    let sales = [];
     const events = await rawEvents
-      .map((event) => {
+      .map((event, index) => {
         let eventType = event.event_type;
         let createdDate = event.created_date;
-        let toAccountEthAddress = event.to_account?.address;
-        let saleAmount, paymentToken, toAccount;
+        let saleAmount, paymentToken, toAccount, toAccountEthAddress;
   
         switch (eventType) {
           case EventTypes.TRANSFER.type:
+            toAccountEthAddress = event.to_account?.address;
+            console.log("bobobobob");
+            console.log(toAccountEthAddress);
             if (event.from_account?.address === EMPTY_ADDRESS) {
+              console.log("check123");
+              console.log(toAccountEthAddress);
               eventType = contractAddress === ENS_NFT_CONTRACT_ADDRESS ? EventTypes.ENS.type : EventTypes.MINT.type;
             }
             break;
   
           case EventTypes.SALE.type:
+            sales.push(index);
             paymentToken =
               event.payment_token?.symbol === PaymentTokens.WETH
                 ? PaymentTokens.ETH
@@ -161,14 +168,26 @@ const TokenHistory = ({ contractAndToken, color }) => {
           toAccount
         };
       });
+
+    // events.reverse();
+
+    sales.forEach((saleIndex) => {
+      if (events.length != saleIndex + 1) {
+        [events[saleIndex], events[saleIndex + 1]] = [events[saleIndex + 1], events[saleIndex]];
+      }
+    });
   
     let ensArray = await reverseRecordContract.getNames(addressArray);
+    // let ensArray = ["hfdjalfhjdkalfjdkgdsjfkhjhfdjalfhjdkalfjdkgdsjfkhj.eth"]
+    console.log("ens");
+    console.log(addressArray);
+    console.log(ensArray);
   
     const ensMap = ensArray.reduce(function(tempMap, ens, index) {
       tempMap[addressArray[index]] = ens;
       return tempMap;
     }, {});
-  
+    console.log("check?");
     events.map((event) => {
       const address = event.toAccountEthAddress;
       if (address) {
@@ -178,8 +197,6 @@ const TokenHistory = ({ contractAndToken, color }) => {
           : abbreviations.address(address, 2);
       }
     });
-  
-    events.sort((event1, event2) => event2.createdDate.localeCompare(event1.createdDate));
     console.log("events");
     console.log(events);
     return events;
@@ -202,29 +219,26 @@ const TokenHistory = ({ contractAndToken, color }) => {
 
     switch (item?.eventType) {
       case EventTypes.ENS.type:
-        label = EventTypes.ENS.label;
+        label = 'Registered';
         icon = EventTypes.ENS.icon;
         break;
 
       case EventTypes.MINT.type:
-        suffix = `${item.toAccount}`;
         isClickable =
           accountAddress.toLowerCase() !== item.toAccountEthAddress;
-        label = EventTypes.MINT.label;
+        label = `Minted by ${item.toAccount}`;
         icon = EventTypes.MINT.icon;
         break;
 
       case EventTypes.SALE.type:
-        suffix = `${item.saleAmount} ${item.paymentToken}`;
-        label = EventTypes.SALE.label;
+        label = `Sold for ${item.saleAmount} ${item.paymentToken}`;
         icon = EventTypes.SALE.icon;
         break;
 
       case EventTypes.TRANSFER.type:
-        suffix = `${item.toAccount}`;
         isClickable =
           accountAddress.toLowerCase() !== item.toAccountEthAddress;
-        label = EventTypes.TRANSFER.label;
+        label = `Sent to ${item.toAccount}`;
         icon = EventTypes.TRANSFER.icon;
         break;
 
@@ -248,7 +262,6 @@ const TokenHistory = ({ contractAndToken, color }) => {
     isFirst,
     item,
     label,
-    suffix,
     suffixIcon,
   }) => {
     const date = getHumanReadableDateWithoutOn(
@@ -276,7 +289,6 @@ const TokenHistory = ({ contractAndToken, color }) => {
               <AccentText color={colors.whiteLabel}>
                 {' '}
                 {label}
-                {suffix}
                 {isClickable && suffixIcon}
               </AccentText>
             </Row>
@@ -286,34 +298,17 @@ const TokenHistory = ({ contractAndToken, color }) => {
     );
   };
 
-  const renderTwoOrLessDataItems = () => {
-    return (
-      <Row style={{ marginLeft: 24 }}>
-        {tokenHistory.length == 2 && renderItem({ index: 1, item: tokenHistory[1] })}
-        {renderItem({ index: 0, item: tokenHistory[0] })}
-      </Row>
-    );
-  };
-
-  const renderFlatList = () => {
-    return (
-      <MaskedView maskElement={<TokenHistoryEdgeFade />}>
-        <FlatList
-          ListFooterComponent={<View style={{ paddingLeft: 24 }} />}
-          data={tokenHistory}
-          horizontal
-          inverted
-          renderItem={({ item, index }) => renderItem({ index, item })}
-          showsHorizontalScrollIndicator={false}
-        />
-      </MaskedView>
-    );
-  };
-
   return (
-    <>
-      {tokenHistoryShort ? renderTwoOrLessDataItems() : renderFlatList()}
-    </>
+    <MaskedView maskElement={<TokenHistoryEdgeFade />}>
+      <FlatList
+        ListFooterComponent={<View style={{ paddingLeft: 24 }} />}
+        data={tokenHistory}
+        horizontal
+        inverted
+        renderItem={({ item, index }) => renderItem({ index, item })}
+        showsHorizontalScrollIndicator={false}
+      />
+    </MaskedView>
   );
 };
 
