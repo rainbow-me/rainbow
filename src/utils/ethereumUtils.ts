@@ -34,9 +34,11 @@ import { useSelector } from 'react-redux';
 import URL from 'url-parse';
 import {
   EthereumAddress,
+  GasFee,
   LegacySelectedGasFee,
   ParsedAddressAsset,
   RainbowTransaction,
+  SelectedGasFee,
 } from '@rainbow-me/entities';
 import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
 import {
@@ -45,6 +47,7 @@ import {
   toHex,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -189,7 +192,7 @@ const getEthPriceUnit = () => getAssetPrice();
 const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
 
 const getBalanceAmount = (
-  selectedGasFee: LegacySelectedGasFee,
+  selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
   selected: ParsedAddressAsset
 ) => {
   const { assets } = store.getState().data;
@@ -200,7 +203,9 @@ const getBalanceAmount = (
 
   if (selected?.isNativeAsset) {
     if (!isEmpty(selectedGasFee)) {
-      const txFeeRaw = selectedGasFee?.gasFee?.estimatedFee?.value.amount;
+      const gasFee = selectedGasFee?.gasFee as GasFee;
+      const txFeeRaw =
+        gasFee?.maxFee?.value.amount || gasFee?.estimatedFee?.value.amount;
       const txFeeAmount = fromWei(txFeeRaw);
       const remaining = subtract(amount, txFeeAmount);
       amount = greaterThan(remaining, 0) ? remaining : '0';
@@ -288,7 +293,8 @@ const getNetworkFromChainId = (chainId: number): Network => {
  */
 const getNetworkNameFromChainId = (chainId: number): string | undefined => {
   const networkData = find(chains, ['chain_id', chainId]);
-  return networkData?.name;
+  const networkName = networkInfo[networkData?.network ?? Network.mainnet].name;
+  return networkName;
 };
 
 /**

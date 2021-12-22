@@ -31,12 +31,6 @@ const familyHeaderHeight = 49;
 const rowHeight = 59;
 const smallBalancesHeader = 42;
 
-const SendAssetListCoinDividerOpenButton = styled(CoinDividerOpenButton).attrs({
-  coinDividerHeight: 34,
-})`
-  margin-left: ${android ? 0 : 19};
-`;
-
 const SendAssetRecyclerListView = styled(RecyclerListView)`
   min-height: 1;
 `;
@@ -388,13 +382,18 @@ export default class SendAssetList extends React.Component {
     const { savings } = this.props;
     const { openShitcoins } = this.state;
     return (
-      <View marginTop={dividerMargin}>
-        <SendAssetListCoinDividerOpenButton
-          isSendSheet
-          isSmallBalancesOpen={openShitcoins}
-          onPress={this.changeOpenShitcoins}
-        />
-        {openShitcoins && this.mapShitcoins(item.assets)}
+      <View>
+        <View marginTop={android ? 0 : 5}>
+          <CoinDividerOpenButton
+            isSmallBalancesOpen={openShitcoins}
+            onPress={this.changeOpenShitcoins}
+          />
+        </View>
+        {openShitcoins && (
+          <View marginTop={android ? 1 : -4}>
+            {this.mapShitcoins(item.assets)}
+          </View>
+        )}
         {savings && savings.length > 0 ? null : <SendAssetListDivider />}
       </View>
     );
