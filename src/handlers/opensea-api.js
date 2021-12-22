@@ -6,6 +6,7 @@ import { parseAccountUniqueTokens } from '@rainbow-me/parsers';
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
 import logger from 'logger';
 
+
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
 export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;
 
@@ -87,38 +88,10 @@ export const apiGetNftSemiFungibility = async (
   contractAddress,
   tokenID
 ) => {
-  const checkFungibility = `https://${networkPrefix}api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=1`;
+  try {
+    const checkFungibility = `https://${networkPrefix}api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=1`;
 
-  const fungData = await rainbowFetch(checkFungibility, {
-    headers: {
-      'Accept': 'application/json',
-      'X-Api-Key': OPENSEA_API_KEY,
-    },
-    method: 'get',
-    timeout: 10000, // 10 secs
-  });
-
-  const semiFungible =
-    fungData?.data?.asset_events[0]?.asset?.asset_contract
-      ?.asset_contract_type === 'semi-fungible';
-  return semiFungible;
-};
-
-export const apiGetNftTransactionHistory = async (
-  networkPrefix,
-  semiFungible,
-  accountAddress,
-  contractAddress,
-  tokenID
-) => {
-  let offset = 0;
-  let array = [];
-  let nextPage = true;
-  while (nextPage) {
-    const urlPage = semiFungible
-      ? `https://${networkPrefix}api.opensea.io/api/v1/events?account_address=${accountAddress}&asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=300`
-      : `https://${networkPrefix}api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=${offset}&limit=300`;
-    let currentPage = await rainbowFetch(urlPage, {
+    const fungData = await rainbowFetch(checkFungibility, {
       headers: {
         'Accept': 'application/json',
         'X-Api-Key': OPENSEA_API_KEY,
@@ -126,9 +99,60 @@ export const apiGetNftTransactionHistory = async (
       method: 'get',
       timeout: 10000, // 10 secs
     });
-    array = array.concat(currentPage?.data?.asset_events || []);
-    offset = array.length + 1;
-    nextPage = currentPage?.data?.asset_events?.length === 300;
+    console.log("fungibility");
+    console.log(fungData);
+
+    const semiFungible =
+      fungData?.data?.asset_events[0]?.asset?.asset_contract
+        ?.asset_contract_type === 'semi-fungible';
+    console.log("brooke");
+    console.log(semiFungible);
+    console.log("byeeee");
+    return semiFungible;
+  } catch (error) {
+    logger.sentry('Error getting NFT fungibility', error);
+    captureException(new Error('Opensea: Error getting NFT fungibility'));
+    throw error;
   }
-  return array
+};
+
+export const apiGetNftTransactionHistoryForEventType = async (
+  networkPrefix,
+  semiFungible,
+  accountAddress,
+  contractAddress,
+  tokenID,
+  eventType
+) => {
+  try {
+    let offset = 0;
+    let array = [];
+    let nextPage = true;
+    while (nextPage) {
+      const requestUrl = semiFungible
+        ? `https://${networkPrefix}api.opensea.io/api/v1/events?account_address=${accountAddress}&asset_contract_address=${contractAddress}&token_id=${tokenID}&event_type=${eventType}&only_opensea=false&offset=${offset}&limit=300`
+        : `https://${networkPrefix}api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&event_type=${eventType}&only_opensea=false&offset=${offset}&limit=300`;
+      
+      console.log(requestUrl);
+      let currentPage = await rainbowFetch(requestUrl, {
+        headers: {
+          'Accept': 'application/json',
+          'X-Api-Key': OPENSEA_API_KEY,
+        },
+        method: 'get',
+        timeout: 10000, // 10 secs
+      });
+      array = array.concat(currentPage?.data?.asset_events || []);
+      offset = array.length + 1;
+      nextPage = currentPage?.data?.asset_events?.length === 300;
+    }
+    console.log("hiiiiiii");
+    console.log(eventType);
+    console.log(array);
+    return array
+  } catch (error) {
+    logger.sentry('Error getting NFT transaction history', error);
+    captureException(new Error('Opensea: Error getting NFT transaction history'));
+    throw error;
+  }
 };

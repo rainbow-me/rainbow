@@ -7,7 +7,7 @@ import { Column, Row } from '../../layout';
 import { Text } from '../../text';
 import TokenHistoryEdgeFade from './TokenHistoryEdgeFade';
 import { useTheme } from '@rainbow-me/context/ThemeContext';
-import { apiGetNftSemiFungibility, apiGetNftTransactionHistory } from '@rainbow-me/handlers/opensea-api';
+import { apiGetNftSemiFungibility, apiGetNftTransactionHistoryForEventType } from '@rainbow-me/handlers/opensea-api';
 import { getHumanReadableDateWithoutOn } from '@rainbow-me/helpers/transactions';
 import { formatAssetForDisplay } from '@rainbow-me/helpers';
 import { useAccountProfile, useAccountSettings } from '@rainbow-me/hooks';
@@ -74,13 +74,30 @@ const TokenHistory = ({ contractAndToken, color }) => {
         tokenID
       );
       console.log("jeff");
-      const rawEvents = await apiGetNftTransactionHistory(
-        networkPrefix,
-        semiFungible,
-        accountAddress,
-        contractAddress,
-        tokenID
+
+      const [rawTransferEvents, rawSaleEvents] = await Promise.all(
+        [
+          apiGetNftTransactionHistoryForEventType(
+            networkPrefix,
+            semiFungible,
+            accountAddress,
+            contractAddress,
+            tokenID,
+            EventTypes.TRANSFER.type
+          ),
+          apiGetNftTransactionHistoryForEventType(
+            networkPrefix,
+            semiFungible,
+            accountAddress,
+            contractAddress,
+            tokenID,
+            EventTypes.SALE.type
+          )
+        ]
       );
+      console.log(rawTransferEvents);
+      console.log(rawSaleEvents);
+      const rawEvents = rawTransferEvents.concat(rawSaleEvents);
       console.log("jmol");
       const txHistory = await processRawEvents(contractAddress, rawEvents);
       setTokenHistory(txHistory);
@@ -103,10 +120,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
     console.log("hiiiiiiii");
     let addressArray = new Array();
     const events = await rawEvents
-      .filter(({ event_type }) =>
-          event_type === EventTypes.TRANSFER.type ||
-          event_type === EventTypes.SALE.type
-      ).map((event) => {
+      .map((event) => {
         let eventType = event.event_type;
         let createdDate = event.created_date;
         let toAccountEthAddress = event.to_account?.address;
@@ -166,7 +180,8 @@ const TokenHistory = ({ contractAndToken, color }) => {
     });
   
     events.sort((event1, event2) => event2.createdDate.localeCompare(event1.createdDate));
-    
+    console.log("events");
+    console.log(events);
     return events;
   };  
 
