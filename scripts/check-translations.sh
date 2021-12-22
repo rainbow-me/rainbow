@@ -1,22 +1,21 @@
-#!/bin/bash
-
-# This script finds `lang.t` translation IDs that are missing in language
+# This script finds `lang.t` or similar translation IDs that are missing in language
 # resources. Note, this script currently **does not** support interpolated
 # translations such as `lang.t(`my.\${variable}.based.${path}`).
 #
-# The script can be run with `sh ./scripts/check-translations.sh` or similar
-# from the top-level project directory.
+# The script can be run with
+# `sh ./scripts/check-translations.sh ./src './src/languages/*.json' lang.t`
+# or similar from the top-level project directory.
 
-### Constants ###
-
-# The function to search for.
-FUNCTION="lang.t"
+### Arguments ###
 
 # The directory to search in for function calls.
-DIRECTORY="src"
+DIRECTORY=$1
 
 # The glob of resource files.
-RESOURCES=./src/languages/*.json
+RESOURCES=$2
+
+# The function to search for.
+FUNCTION=$3
 
 ### Execution ###
 
