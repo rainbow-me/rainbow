@@ -9,7 +9,7 @@ import { fonts, fontWithWidth } from '@rainbow-me/styles';
 const Label = styled(ChartXLabel)({
   ...fontWithWidth(fonts.weight.semibold),
   fontSize: fonts.size.larger,
-  fontVariant: 'tabular-nums',
+  fontVariant: ['tabular-nums'],
   letterSpacing: fonts.letterSpacing.roundedMedium,
   textAlign: 'right',
   ...(android ? { marginVertical: 20 } : {}),

@@ -164,7 +164,7 @@ buildTextStyles.object = ({
   }
 
   if (tabularNums) {
-    styles.fontVariant = 'tabular-nums';
+    styles.fontVariant = ['tabular-nums'];
   }
 
   if (!isNil(align)) {

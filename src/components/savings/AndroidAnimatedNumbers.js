@@ -10,7 +10,7 @@ const TextChunk = styled(TextInput).attrs({
 })({
   color: ({ theme: { colors } }) => colors.dark,
   fontSize: parseFloat(fonts.size.lmedium),
-  fontVariant: 'tabular-nums',
+  fontVariant: ['tabular-nums'],
   height: 46,
   textAlign: 'left',
   ...fontWithWidth(fonts.weight.bold),
