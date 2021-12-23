@@ -6,7 +6,10 @@ import { Reason, SessionTypes } from '@walletconnectv2/types';
 import lang from 'i18n-js';
 import { clone } from 'lodash';
 import { Alert, InteractionManager, Linking } from 'react-native';
-import { WALLET_CONNECT_PROJECT_ID } from 'react-native-dotenv';
+import {
+  // @ts-ignore
+  WALLET_CONNECT_PROJECT_ID,
+} from 'react-native-dotenv';
 import { enableActionsOnReadOnlyWallet } from '../config/debug';
 import { isSigningMethod } from '../utils/signingMethods';
 import { sendRpcCall } from '@rainbow-me/handlers/web3';
