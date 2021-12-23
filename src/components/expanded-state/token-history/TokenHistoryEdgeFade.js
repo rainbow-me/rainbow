@@ -42,7 +42,7 @@ const LeftFade = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   height: 100%;
   left: 0;
   position: absolute;
-  width: 24px;
+  width: 19px;
 `;
 
 const RightFade = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
@@ -83,12 +83,12 @@ const RightFade = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   height: 100%;
   position: absolute;
   right: 0;
-  width: 24px;
+  width: 19px;
 `;
 
 const CenterView = styled(View)`
-  margin-left: 24;
-  width: ${({ width }) => width - 48};
+  margin-left: 19;
+  width: ${({ width }) => width - 38};
   height: 100%;
   background-color: ${({ colors }) => colors.black};
 `;

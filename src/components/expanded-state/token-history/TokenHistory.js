@@ -31,12 +31,13 @@ import { EventTypes, PaymentTokens } from '@rainbow-me/utils/tokenHistoryUtils';
 const Timeline = styled(View)`
   height: 3;
   background-color: ${({ color }) => color};
-  opacity: 0.2;
+  opacity: 0.3;
   border-radius: 1.5;
   position: absolute;
   top: 3.5;
-  left: 16;
-  right: 6;
+  width: 90%;
+  padding-left: 100;
+  margin-right: 10;
 `;
 
 const AccentText = styled(Text).attrs({
@@ -181,6 +182,8 @@ const TokenHistory = ({ contract, token, color }) => {
       }
     });
 
+    events.reverse();
+
     return events;
   };
 
@@ -194,7 +197,6 @@ const TokenHistory = ({ contract, token, color }) => {
   );
 
   const renderItem = ({ item, index }) => {
-    let isFirst = index === 0;
     let suffixIcon = `􀆊`;
     let isClickable = false;
     let label, icon, suffix;
@@ -228,10 +230,9 @@ const TokenHistory = ({ contract, token, color }) => {
     return renderHistoryDescription({
       icon,
       isClickable,
-      isFirst,
+      index,
       item,
       label,
-      suffix,
       suffixIcon,
     });
   };
@@ -239,38 +240,39 @@ const TokenHistory = ({ contract, token, color }) => {
   const renderHistoryDescription = ({
     icon,
     isClickable,
-    isFirst,
+    index,
     item,
     label,
     suffixIcon,
   }) => {
+    let isLast = index === tokenHistory.length - 1;
+
     const date = getHumanReadableDateWithoutOn(
       new Date(item.createdDate).getTime() / 1000
     );
 
     return (
-      <Column>
+      <Column style={!isLast ? { marginRight: 19 } : {}}>
         {tokenHistory.length > 1 && (
           <Row
             style={{
               height: 10,
               marginBottom: 6,
               marginTop: 4,
-              paddingRight: 19,
             }}
           >
             <View
               style={{
                 backgroundColor: color,
-                borderRadius: 10 / 2,
+                borderRadius: 5,
                 height: 10,
                 width: 10,
               }}
             />
-            {!isFirst && <Timeline color={color} />}
+            {!isLast && <Timeline color={color} />}
           </Row>
         )}
-        <Column style={{ paddingRight: 19 }}>
+        <Column>
           <Row style={{ marginBottom: 3 }}>
             <AccentText color={color}>{date}</AccentText>
           </Row>
@@ -296,10 +298,9 @@ const TokenHistory = ({ contract, token, color }) => {
   return (
     <MaskedView maskElement={<TokenHistoryEdgeFade />}>
       <FlatList
-        ListFooterComponent={<View style={{ paddingLeft: 19 }} />}
+        contentContainerStyle={{paddingLeft: 19, paddingRight: 19}}
         data={tokenHistory}
         horizontal
-        inverted
         renderItem={({ item, index }) => renderItem({ index, item })}
         showsHorizontalScrollIndicator={false}
       />
