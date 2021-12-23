@@ -31,6 +31,7 @@ import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { TokenInfoItem, TokenInfoRow, TokenInfoSection } from '../token-info';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
 import ExpandedStateSection from './ExpandedStateSection';
+import TokenHistory from './token-history/TokenHistory';
 import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
@@ -47,17 +48,19 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
+import { supportedNativeCurrencies } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
-import { convertAmountToNativeDisplay, handleSignificantDecimals } from '@rainbow-me/utilities';
+import {
+  convertAmountToNativeDisplay,
+  handleSignificantDecimals,
+} from '@rainbow-me/utilities';
 import {
   buildRainbowUrl,
   ethereumUtils,
   magicMemo,
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
-import TokenHistory from './token-history/TokenHistory';
-import { supportedNativeCurrencies } from '@rainbow-me/references';
 
 const NftExpandedStateSection = styled(ExpandedStateSection).attrs({
   isNft: true,
@@ -149,7 +152,10 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
 
   const priceOfEth = ethereumUtils.getEthPriceUnit();
   const lastSalePrice = lastPrice
-    ? `${handleSignificantDecimals(parseFloat(lastPrice), supportedNativeCurrencies.ETH.decimals)} ${supportedNativeCurrencies.ETH.currency}`
+    ? `${handleSignificantDecimals(
+        parseFloat(lastPrice),
+        supportedNativeCurrencies.ETH.decimals
+      )} ${supportedNativeCurrencies.ETH.currency}`
     : 'None';
 
   const textColor = useMemo(() => {
@@ -208,7 +214,9 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
 
-  const [contractAddress, tokenID] = !isPoap ? urlSuffixForAsset.split('/') : [null, null];
+  const [contractAddress, tokenID] = !isPoap
+    ? urlSuffixForAsset.split('/')
+    : [null, null];
 
   return (
     <Fragment>
@@ -340,7 +348,9 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
                     size="big"
                     title={currentPrice ? '􀋢 For sale' : 'Last sale price'}
                     weight={
-                      lastSalePrice === 'None' && !currentPrice ? 'bold' : 'heavy'
+                      lastSalePrice === 'None' && !currentPrice
+                        ? 'bold'
+                        : 'heavy'
                     }
                   >
                     {showCurrentPriceInEth ||
@@ -382,11 +392,11 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
               </TokenInfoSection>
               <Fragment>
                 <SheetDivider deviceWidth={deviceWidth} />
-                <NftExpandedStateSection isTokenHistory={true} title="History">
-                  <TokenHistory 
+                <NftExpandedStateSection isTokenHistory title="History">
+                  <TokenHistory
+                    color={imageColor}
                     contract={contractAddress}
                     token={tokenID}
-                    color={imageColor}
                   />
                 </NftExpandedStateSection>
               </Fragment>

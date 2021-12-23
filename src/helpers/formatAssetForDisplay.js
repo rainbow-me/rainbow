@@ -1,7 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { formatUnits } from '@ethersproject/units';
 import { PaymentTokens } from '@rainbow-me/utils/tokenHistoryUtils';
-import logger from 'logger';
 
 export default function formatAssetForDisplay({ amount, token }) {
   let price = 0;

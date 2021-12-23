@@ -6,7 +6,6 @@ import { parseAccountUniqueTokens } from '@rainbow-me/parsers';
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
 import logger from 'logger';
 
-
 export const UNIQUE_TOKENS_LIMIT_PER_PAGE = 50;
 export const UNIQUE_TOKENS_LIMIT_TOTAL = 2000;
 
@@ -140,10 +139,12 @@ export const apiGetNftTransactionHistoryForEventType = async (
       offset = array.length + 1;
       nextPage = currentPage?.data?.asset_events?.length === 300;
     }
-    return array
+    return array;
   } catch (error) {
     logger.sentry('Error getting NFT transaction history', error);
-    captureException(new Error('Opensea: Error getting NFT transaction history'));
+    captureException(
+      new Error('Opensea: Error getting NFT transaction history')
+    );
     throw error;
   }
 };

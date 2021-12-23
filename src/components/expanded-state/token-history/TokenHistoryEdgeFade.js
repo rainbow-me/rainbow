@@ -1,8 +1,8 @@
 import React from 'react';
+import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components';
 import { useDimensions } from '@rainbow-me/hooks';
-import { View } from "react-native";
 
 const LeftFade = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
   colors: [
@@ -90,17 +90,16 @@ const CenterView = styled(View)`
   margin-left: 24;
   width: ${({ width }) => width - 48};
   height: 100%;
-  background-color: ${({ colors }) => colors.black}; 
+  background-color: ${({ colors }) => colors.black};
 `;
-
 
 export default function TokenHistoryEdgeFade() {
   const { width } = useDimensions();
   const { colors } = useTheme();
   return (
-    <View style={{backgroundColor: 'transparent'}}>
+    <View style={{ backgroundColor: 'transparent' }}>
       <LeftFade />
-      <CenterView width={width} colors={colors} />
+      <CenterView colors={colors} width={width} />
       <RightFade />
     </View>
   );

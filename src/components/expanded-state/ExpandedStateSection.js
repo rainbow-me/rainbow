@@ -9,8 +9,10 @@ const Container = styled(ColumnWithMargins).attrs({
 })`
   ${padding(android ? 19 : 36, 19, 24)};
   ${({ isNft }) => padding(android ? 19 : 36, isNft ? 24 : 19, 24)};
-  ${({ isTokenHistory }) => padding(android ? 19 : 36, isTokenHistory ? 0 : 19, 24)};
-  padding-top: ${({ isL2, isNft, isTokenHistory }) => isL2 || isNft || isTokenHistory ? 24 : android ? 19 : 36};
+  ${({ isTokenHistory }) =>
+    padding(android ? 19 : 36, isTokenHistory ? 0 : 19, 24)};
+  padding-top: ${({ isL2, isNft, isTokenHistory }) =>
+    isL2 || isNft || isTokenHistory ? 24 : android ? 19 : 36};
 `;
 
 export default function ExpandedStateSection({
