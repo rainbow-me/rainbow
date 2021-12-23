@@ -1,4 +1,6 @@
-const cache: Record<string, string> = {};
+import { RainbowToken } from '@rainbow-me/entities';
+
+const cache: Record<string, RainbowToken[]> = {};
 
 const UniswapAssetsCache = {
   cache,

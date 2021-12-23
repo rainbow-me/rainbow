@@ -1,4 +1,3 @@
-import { filter, toLower } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { getUniswapV2Tokens } from '@rainbow-me/handlers/dispersion';
@@ -27,15 +26,16 @@ const useUniswapAssetsInWallet = () => {
   }, [allAssets, isMainnet]);
   const getIsUniswapAsset = asset => {
     return (
-      uniswapAssets.find(({ address }) => address === toLower(asset.address)) ||
-      asset.address === ETH_ADDRESS
+      uniswapAssets.find(
+        ({ address }) => address === asset.address.toLowerCase()
+      ) || asset.address === ETH_ADDRESS
     );
   };
   useEffect(() => {
     getUniswapAssets();
   }, [getUniswapAssets]);
 
-  return filter(allAssets, getIsUniswapAsset);
+  return allAssets.filter(getIsUniswapAsset);
 };
 
 export default useUniswapAssetsInWallet;

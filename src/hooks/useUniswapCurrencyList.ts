@@ -1,4 +1,3 @@
-import { filter, forEach, map, toLower, values } from 'lodash';
 import { rankings } from 'match-sorter';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
@@ -10,13 +9,13 @@ import { AppState } from '../redux/store';
 import { uniswapUpdateFavorites } from '../redux/uniswap';
 import {
   RainbowToken as RT,
-  // @ts-ignore
   TokenSearchTokenListId,
 } from '@rainbow-me/entities';
 import { getUniswapV2Tokens } from '@rainbow-me/handlers/dispersion';
 import tokenSearch from '@rainbow-me/handlers/tokenSearch';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
 import tokenSectionTypes from '@rainbow-me/helpers/tokenSectionTypes';
+import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
 import { filterList } from '@rainbow-me/utils';
 
 type UniswapCurrencyListType =
@@ -35,12 +34,11 @@ const searchCurrencyList = async (
 ) => {
   const isAddress = query.match(/^(0x)?[0-9a-fA-F]{40}$/);
   const keys: (keyof RT)[] = isAddress ? ['address'] : ['symbol', 'name'];
-  const formattedQuery = isAddress ? toLower(addHexPrefix(query)) : query;
+  const formattedQuery = isAddress ? addHexPrefix(query).toLowerCase() : query;
   if (typeof searchList === 'string') {
     const threshold = isAddress ? 'CASE_SENSITIVE_EQUAL' : 'CONTAINS';
     return await tokenSearch(searchList, formattedQuery, keys, threshold);
   } else {
-    // @ts-ignore
     return filterList(searchList, formattedQuery, keys, {
       threshold: isAddress ? rankings.CASE_SENSITIVE_EQUAL : rankings.CONTAINS,
     });
@@ -61,19 +59,49 @@ const useUniswapCurrencyList = (searchQuery: string) => {
   const curatedMap = useSelector(uniswapCuratedTokensSelector);
   const favoriteAddresses = useSelector(uniswapFavoritesSelector);
 
+  const handleFavoritesResponse = (favorites: RT[]) => {
+    setUnfilteredFavorites(
+      favorites.map(favorite => {
+        const { address } = favorite;
+        if (address === WETH_ADDRESS) {
+          return {
+            ...favorite,
+            address: ETH_ADDRESS,
+            name: 'Ethereum',
+            symbol: 'ETH',
+            uniqueId: ETH_ADDRESS,
+          };
+        }
+        return favorite;
+      })
+    );
+  };
+
+  const handleVerifiedResponse = useCallback(
+    (tokens: RT[]) => {
+      const addresses = favoriteAddresses.map(a => a.toLowerCase());
+      return tokens.filter(({ address }) => !addresses.includes(address));
+    },
+    [favoriteAddresses]
+  );
+
   useQuery(
     ['tokens/uniswap/v2', favoriteAddresses],
-    () => getUniswapV2Tokens(map(favoriteAddresses, toLower)),
+    () =>
+      getUniswapV2Tokens(
+        favoriteAddresses.map(address => {
+          return address === ETH_ADDRESS ? WETH_ADDRESS : address.toLowerCase();
+        })
+      ),
     {
-      onSuccess: res => setUnfilteredFavorites(res),
+      onSuccess: res => handleFavoritesResponse(res),
     }
   );
 
   const getCurated = useCallback(() => {
-    return filter(
-      values(curatedMap),
-      ({ address }) =>
-        !map(favoriteAddresses, toLower).includes(toLower(address))
+    const addresses = favoriteAddresses.map(a => a.toLowerCase());
+    return Object.values(curatedMap).filter(
+      ({ address }) => !addresses.includes(address.toLowerCase())
     );
   }, [curatedMap, favoriteAddresses]);
 
@@ -87,7 +115,11 @@ const useUniswapCurrencyList = (searchQuery: string) => {
     async (assetType: UniswapCurrencyListType) => {
       switch (assetType) {
         case 'verifiedAssets':
-          setVerifiedAssets(await searchCurrencyList(assetType, searchQuery));
+          setVerifiedAssets(
+            handleVerifiedResponse(
+              await searchCurrencyList(assetType, searchQuery)
+            )
+          );
           break;
         case 'highLiquidityAssets':
           setHighLiquidityAssets(
@@ -107,7 +139,7 @@ const useUniswapCurrencyList = (searchQuery: string) => {
           break;
       }
     },
-    [getCurated, getFavorites, searchQuery]
+    [getCurated, getFavorites, handleVerifiedResponse, searchQuery]
   );
 
   const search = () => {
@@ -117,7 +149,7 @@ const useUniswapCurrencyList = (searchQuery: string) => {
       'verifiedAssets',
     ];
     setLoading(true);
-    forEach(categories, assetType => getResultsForAssetType(assetType));
+    categories.forEach(assetType => getResultsForAssetType(assetType));
   };
 
   const slowSearch = useCallback(async () => {
