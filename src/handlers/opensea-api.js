@@ -89,9 +89,9 @@ export const apiGetNftSemiFungibility = async (
   tokenID
 ) => {
   try {
-    const checkFungibility = `https://${networkPrefix}api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=1`;
+    const requestURL = `https://${networkPrefix}api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=1`;
 
-    const fungibility = await rainbowFetch(checkFungibility, {
+    const fungibility = await rainbowFetch(requestURL, {
       headers: {
         'Accept': 'application/json',
         'X-Api-Key': OPENSEA_API_KEY,
@@ -124,11 +124,11 @@ export const apiGetNftTransactionHistoryForEventType = async (
     let array = [];
     let nextPage = true;
     while (nextPage) {
-      const requestUrl = semiFungible
+      const requestURL = semiFungible
         ? `https://${networkPrefix}api.opensea.io/api/v1/events?account_address=${accountAddress}&asset_contract_address=${contractAddress}&token_id=${tokenID}&event_type=${eventType}&only_opensea=false&offset=${offset}&limit=300`
         : `https://${networkPrefix}api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&event_type=${eventType}&only_opensea=false&offset=${offset}&limit=300`;
 
-      let currentPage = await rainbowFetch(requestUrl, {
+      let currentPage = await rainbowFetch(requestURL, {
         headers: {
           'Accept': 'application/json',
           'X-Api-Key': OPENSEA_API_KEY,

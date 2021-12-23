@@ -26,22 +26,15 @@ import {
   reverseRecordsABI,
 } from '@rainbow-me/references';
 
-const filteredTransactionTypes = new Set([
-  EventTypes.ENS.type,
-  EventTypes.MINT.type,
-  EventTypes.SALE.type,
-  EventTypes.TRANSFER.type
-]);
-
 const Timeline = styled(View)`
   height: 3;
   background-color: ${({ color }) => color};
-  opacity: 0.1;
+  opacity: 0.2;
   border-radius: 1.5;
   position: absolute;
   top: 3.5;
   left: 16;
-  right: 6;
+  right: -11;
 `;
 
 const AccentText = styled(Text).attrs({
@@ -49,11 +42,11 @@ const AccentText = styled(Text).attrs({
   weight: 'heavy',
 })``;
 
-const TokenHistory = ({ contractAndToken, color }) => {
+const TokenHistory = ({ contract, token, color }) => {
   const [tokenHistory, setTokenHistory] = useState([]);
   const [tokenHistoryShort, setTokenHistoryShort] = useState(false);
-  const [contractAddress, setContractAddress] = useState('');
-  const [tokenID, setTokenID] = useState('');
+  const [contractAddress, setContractAddress] = useState(contract);
+  const [tokenID, setTokenID] = useState(token);
   const { colors } = useTheme();
   const { accountAddress } = useAccountProfile();
   const { network } = useAccountSettings();
@@ -62,12 +55,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
   const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
 
   useEffect(() => {
-    const tokenInfoArray = contractAndToken.split('/');
-
-    setContractAddress(tokenInfoArray[0]);
-    setTokenID(tokenInfoArray[1]);
-
-    async function fetch() {
+    async function fetchTransactionHistory() {
       const semiFungible = await apiGetNftSemiFungibility(
         networkPrefix,
         contractAddress,
@@ -103,7 +91,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
         setTokenHistoryShort(true);
       }
     }
-    fetch();
+    fetchTransactionHistory();
   }, [accountAddress, contractAddress, networkPrefix, tokenID]);
 
   const EMPTY_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -170,6 +158,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
     });
   
     let ensArray = await reverseRecordContract.getNames(addressArray);
+    // let ensArray = ["jhfdlhlfhgfzklabhfgjkldjhfdlhlfhgfzklabhfgjkldahfjkleahfjdalhfgdjkafhjdakfdjhfdlhlfhgfzklabhfgjkldahfjkleahfjdalhfgdjkafhjdakfdahfjkleahfjdalhfgdjkafhjdakfd.eth"]
   
     const ensMap = ensArray.reduce(function(tempMap, ens, index) {
       tempMap[addressArray[index]] = ens;
@@ -185,6 +174,10 @@ const TokenHistory = ({ contractAndToken, color }) => {
           : abbreviations.address(address, 2);
       }
     });
+
+    if (events.length == 2) {
+      events.reverse();
+    }
 
     return events;
   };  
@@ -258,12 +251,12 @@ const TokenHistory = ({ contractAndToken, color }) => {
     return (
       <Column>
         {tokenHistory.length > 1 &&
-          <Row style={{height: 10, marginBottom: 6, marginTop: 4}}>
+          <Row style={tokenHistory.length == 2 ? {height: 10, marginBottom: 6, marginTop: 4, paddingLeft: 19} : {height: 10, marginBottom: 6, marginTop: 4, paddingRight: 19}}>
             <View style={{width: 10, height: 10, borderRadius: 10 / 2, backgroundColor: color}} />
-            {!isFirst && <Timeline color={color} />}
+            {((!isFirst && tokenHistory.length != 2) || (isFirst && tokenHistory.length == 2)) && <Timeline style={tokenHistory.length == 2 ? {marginLeft: 19} : {marginRight: 19}} color={color} />}
           </Row>
         }  
-        <Column style={{ paddingRight: 24 }}>
+        <Column style={tokenHistory.length <= 2 ? { paddingLeft: 19 } : { paddingRight: 19 }}>
           <Row style={{ marginBottom: 3 }}>
             <AccentText color={color}>{date}</AccentText>
           </Row>
@@ -275,8 +268,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
           >
             <Row>
               <AccentText color={color}>{icon}</AccentText>
-              <AccentText color={colors.whiteLabel}>
-                {' '}
+              <AccentText style={{marginLeft: 2}} color={colors.whiteLabel}>
                 {label}
                 {isClickable && suffixIcon}
               </AccentText>
@@ -289,7 +281,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
 
   const renderTwoOrLessDataItems = () => {
     return (
-      <Row style={{ marginLeft: 24 }}>
+      <Row style={{ marginLeft: 19 }}>
         {tokenHistory.length == 2 && renderItem({ index: 1, item: tokenHistory[1] })}
         {renderItem({ index: 0, item: tokenHistory[0] })}
       </Row>
@@ -300,10 +292,10 @@ const TokenHistory = ({ contractAndToken, color }) => {
     return (
       <MaskedView maskElement={<TokenHistoryEdgeFade />}>
         <FlatList
-          ListFooterComponent={<View style={{ paddingLeft: 24 }} />}
+          ListFooterComponent={<View style={tokenHistory.length <= 2 ? { paddingLeft: 19} : { paddingRight: 19}} />}
           data={tokenHistory}
           horizontal
-          inverted
+          inverted={tokenHistory.length <= 2 ? false : true }
           renderItem={({ item, index }) => renderItem({ index, item })}
           showsHorizontalScrollIndicator={false}
         />
@@ -313,7 +305,7 @@ const TokenHistory = ({ contractAndToken, color }) => {
 
   return (
     <>
-      {tokenHistoryShort ? renderTwoOrLessDataItems() : renderFlatList()}
+      {tokenHistoryShort ? renderFlatList() : renderFlatList()}
     </>
   );
 };

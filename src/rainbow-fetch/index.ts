@@ -55,7 +55,6 @@ export async function rainbowFetch(
       response,
       responseBody: errorResponseBody,
     });
-
     throw error;
   }
 }

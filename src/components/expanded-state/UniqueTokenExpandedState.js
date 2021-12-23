@@ -208,6 +208,8 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
   const sheetRef = useRef();
   const yPosition = useSharedValue(0);
 
+  const [contractAddress, tokenID] = !isPoap ? urlSuffixForAsset.split('/') : [null, null];
+
   return (
     <Fragment>
       {ios && (
@@ -382,8 +384,9 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
                 <SheetDivider deviceWidth={deviceWidth} />
                 <NftExpandedStateSection isTokenHistory={true} title="History">
                   <TokenHistory 
-                  contractAndToken={urlSuffixForAsset}
-                  color={imageColor}
+                    contract={contractAddress}
+                    token={tokenID}
+                    color={imageColor}
                   />
                 </NftExpandedStateSection>
               </Fragment>
