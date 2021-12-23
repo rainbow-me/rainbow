@@ -11,7 +11,6 @@ import Caret from '../../assets/family-dropdown-arrow.png';
 import { ButtonPressAnimation, RoundButtonCapSize } from '../animations';
 import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
-import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
@@ -48,7 +47,6 @@ const LabelText = styled(AnimatedText).attrs(({ theme: { colors } }) => ({
 `;
 
 const CoinDividerOpenButton = ({ isSmallBalancesOpen, onPress }) => {
-  const { colors } = useTheme();
   const isSmallBalancesOpenValue = useSharedValue(0);
 
   isSmallBalancesOpenValue.value = isSmallBalancesOpen;
