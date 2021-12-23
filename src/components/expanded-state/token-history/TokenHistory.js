@@ -35,9 +35,8 @@ const Timeline = styled(View)`
   border-radius: 1.5;
   position: absolute;
   top: 3.5;
-  width: 90%;
-  padding-left: 100;
-  margin-right: 10;
+  left: 16;
+  right: -13;
 `;
 
 const AccentText = styled(Text).attrs({
@@ -182,7 +181,9 @@ const TokenHistory = ({ contract, token, color }) => {
       }
     });
 
-    events.reverse();
+    if (events.length <= 2) {
+      events.reverse();
+    }
 
     return events;
   };
@@ -245,14 +246,16 @@ const TokenHistory = ({ contract, token, color }) => {
     label,
     suffixIcon,
   }) => {
+    let isFirst = index === 0;
     let isLast = index === tokenHistory.length - 1;
+    let isShort = tokenHistory.length <= 2;
 
     const date = getHumanReadableDateWithoutOn(
       new Date(item.createdDate).getTime() / 1000
     );
 
     return (
-      <Column style={!isLast ? { marginRight: 19 } : {}}>
+      <Column style={(isShort && !isFirst) || (!isShort && !isLast) ? { marginLeft: 19 } : {}}>
         {tokenHistory.length > 1 && (
           <Row
             style={{
@@ -269,7 +272,7 @@ const TokenHistory = ({ contract, token, color }) => {
                 width: 10,
               }}
             />
-            {!isLast && <Timeline color={color} />}
+            {((!isShort && !isFirst) || (isShort && !isLast)) && <Timeline color={color} />}
           </Row>
         )}
         <Column>
@@ -301,6 +304,7 @@ const TokenHistory = ({ contract, token, color }) => {
         contentContainerStyle={{paddingLeft: 19, paddingRight: 19}}
         data={tokenHistory}
         horizontal
+        inverted={tokenHistory.length > 2}
         renderItem={({ item, index }) => renderItem({ index, item })}
         showsHorizontalScrollIndicator={false}
       />
