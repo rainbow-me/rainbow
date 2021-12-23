@@ -122,6 +122,9 @@ export const fetchUniqueTokens = showcaseAddress => async (
       if (shouldStopFetching) {
         const poaps = await fetchPoaps(accountAddress);
         if (poaps.length > 0) {
+          uniqueTokens = uniqueTokens.filter(
+            token => token.familyName !== 'POAP'
+          );
           uniqueTokens = concat(uniqueTokens, poaps);
         }
 
