@@ -23,6 +23,7 @@ import {
   useCoinListEdited,
   useInitializeDiscoverData,
   useInitializeWallet,
+  useIsWalletEthZero,
   useLoadGlobalLateData,
   usePortfolios,
   useRefreshAccountData,
@@ -68,11 +69,9 @@ export default function WalletScreen() {
   const walletReady = useSelector(
     ({ appState: { walletReady } }) => walletReady
   );
-  const {
-    isWalletEthZero,
-    refetchSavings,
-    shouldRefetchSavings,
-  } = useWalletSectionsData();
+
+  const isWalletEthZero = useIsWalletEthZero();
+  const { refetchSavings, shouldRefetchSavings } = useWalletSectionsData();
 
   const dispatch = useDispatch();
 

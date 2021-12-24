@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
-import useIsWalletEthZero from './useIsWalletEthZero';
 import useSavingsAccount from './useSavingsAccount';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
@@ -13,7 +12,6 @@ import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTok
 
 export default function useWalletSectionsData() {
   const sortedAccountData = useSortedAccountAssets();
-  const isWalletEthZero = useIsWalletEthZero();
 
   const { language, network, nativeCurrency } = useAccountSettings();
   const uniqueTokens = useSendableUniqueTokens();
@@ -40,7 +38,6 @@ export default function useWalletSectionsData() {
       ...sortedAccountData,
       ...uniqueTokens,
       ...uniswap,
-      ...isWalletEthZero,
       showcaseTokens,
     };
 
@@ -48,14 +45,12 @@ export default function useWalletSectionsData() {
 
     return {
       briefSectionsData,
-      isWalletEthZero,
       refetchSavings,
       shouldRefetchSavings,
     };
   }, [
     hiddenCoins,
     isCoinListEdited,
-    isWalletEthZero,
     language,
     nativeCurrency,
     network,
