@@ -11,11 +11,11 @@ import { buildBriefWalletSectionsSelector } from '@rainbow-me/helpers/buildWalle
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 
 export default function useWalletSectionsData() {
-  const sortedAccountData = useSortedAccountAssets();
+  const { isLoadingAssets, sortedAssets } = useSortedAccountAssets();
 
-  const { language, network, nativeCurrency } = useAccountSettings();
-  const uniqueTokens = useSendableUniqueTokens();
-  const uniswap = useSelector(readableUniswapSelector);
+  const { nativeCurrency } = useAccountSettings();
+  const { uniqueTokens } = useSendableUniqueTokens();
+  const { uniswap, uniswapTotal } = useSelector(readableUniswapSelector);
   const { showcaseTokens } = useShowcaseTokens();
 
   const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
@@ -30,15 +30,15 @@ export default function useWalletSectionsData() {
     const accountInfo = {
       hiddenCoins,
       isCoinListEdited,
-      language,
+      isLoadingAssets,
       nativeCurrency,
-      network,
       pinnedCoins,
       savings,
-      ...sortedAccountData,
-      ...uniqueTokens,
-      ...uniswap,
       showcaseTokens,
+      sortedAssets,
+      uniqueTokens,
+      uniswap,
+      uniswapTotal,
     };
 
     const briefSectionsData = buildBriefWalletSectionsSelector(accountInfo);
@@ -51,17 +51,17 @@ export default function useWalletSectionsData() {
   }, [
     hiddenCoins,
     isCoinListEdited,
-    language,
+    isLoadingAssets,
     nativeCurrency,
-    network,
     pinnedCoins,
     refetchSavings,
     savings,
     shouldRefetchSavings,
     showcaseTokens,
-    sortedAccountData,
+    sortedAssets,
     uniqueTokens,
     uniswap,
+    uniswapTotal,
   ]);
   return walletSections;
 }
