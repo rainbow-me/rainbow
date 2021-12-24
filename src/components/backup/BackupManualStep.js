@@ -55,22 +55,22 @@ const MastheadIcon = styled(Text).attrs({
   color: 'appleBlue',
   size: 21,
   weight: 'heavy',
-})``;
+})({});
 
 const MastheadTitle = styled(Text).attrs({
   align: 'center',
   size: 'larger',
   weight: 'bold',
-})`
-  ${padding(8)};
-`;
+})({
+  ...padding.object(8),
+});
 
 const MastheadTitleRow = styled(Row).attrs({
   align: 'center',
   justify: 'start',
-})`
-  padding-top: 18;
-`;
+})({
+  paddingTop: 18,
+});
 
 export default function BackupManualStep() {
   const { isTallPhone, isSmallPhone } = useDimensions();
