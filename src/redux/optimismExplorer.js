@@ -26,15 +26,15 @@ const OPTIMISM_EXPLORER_SET_HANDLERS =
 
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 60000;
 
-const network = networkTypes.optimism;
+const optimismNetwork = networkTypes.optimism;
 
 const fetchAssetBalances = async (tokens, address) => {
   try {
     const abi = balanceCheckerContractAbiOVM;
 
     const contractAddress =
-      networkInfo[network].balance_checker_contract_address;
-    const optimismProvider = await getProviderForNetwork(networkTypes.optimism);
+      networkInfo[optimismNetwork].balance_checker_contract_address;
+    const optimismProvider = await getProviderForNetwork(optimismNetwork);
 
     const balanceCheckerContract = new Contract(
       contractAddress,
@@ -54,7 +54,7 @@ const fetchAssetBalances = async (tokens, address) => {
   } catch (e) {
     logger.sentry(
       'Error fetching balances from balanceCheckerContract',
-      network,
+      optimismNetwork,
       e
     );
     captureException(new Error('fallbackExplorer::balanceChecker failure'));
@@ -63,15 +63,15 @@ const fetchAssetBalances = async (tokens, address) => {
 };
 
 export const optimismExplorerInit = () => async (dispatch, getState) => {
-  if (networkInfo[networkTypes.optimism]?.disabled) return;
+  if (networkInfo[optimismNetwork]?.disabled) return;
   const { genericAssets } = getState().data;
   const { accountAddress, nativeCurrency } = getState().settings;
   const formattedNativeCurrency = toLower(nativeCurrency);
 
   const fetchAssetsBalancesAndPrices = async () => {
     const assets = keyBy(
-      chainAssets[network],
-      asset => `${asset.asset.asset_code}_${network}`
+      chainAssets[optimismNetwork],
+      asset => `${asset.asset.asset_code}_${optimismNetwork}`
     );
 
     const tokenAddresses = map(assets, ({ asset: { asset_code } }) =>
@@ -81,7 +81,7 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
     const balances = await fetchAssetBalances(
       tokenAddresses,
       accountAddress,
-      network
+      optimismNetwork
     );
 
     let updatedAssets = assets;
@@ -122,7 +122,6 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
               ...assetWithBalance,
               asset: {
                 ...assetWithBalance.asset,
-                network: networkTypes.optimism,
                 price: asset?.price || {
                   changed_at: prices[assetCoingeckoId].last_updated_at,
                   relative_change_24h:
@@ -154,7 +153,7 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
             false,
             false,
             false,
-            networkTypes.optimism
+            optimismNetwork
           )
         );
         lastUpdatePayload = newPayload;
