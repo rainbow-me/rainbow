@@ -29,7 +29,7 @@ const DefaultShowMoreButton = ({ backgroundColor, color, onPress }) => (
         <Text
           align="center"
           color={color}
-          lineHeight={30}
+          lineHeight={android ? 30 : 20}
           size="lmedium"
           weight="heavy"
         >
@@ -306,7 +306,6 @@ export default function UniswapPools({
                 backgroundColor={colors.alpha(colors.blueGreyDark, 0.06)}
                 color={colors.alpha(colors.blueGreyDark, 0.6)}
                 onPress={handleShowMorePress}
-                paddingTop={10}
               />
             )}
         </Fragment>

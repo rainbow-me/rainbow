@@ -65,7 +65,7 @@ export default function ListHeader({
   totalValue,
 }) {
   const deviceDimensions = useDimensions();
-  const { colors } = useTheme();
+  const { colors, isDarkMode } = useTheme();
   const { isReadOnlyWallet } = useWallets();
   const { accountAddress } = useAccountSettings();
   const { accountENS } = useAccountProfile();
@@ -123,7 +123,15 @@ export default function ListHeader({
           )}
           {children}
         </Content>
-        {showDivider && <Divider color={colors.rowDividerLight} />}
+        {
+          /* 
+           The divider shows up as a white line in dark mode (android)
+           so we won't render it till we figure it out why
+          */
+          showDivider && !(android && isDarkMode) && (
+            <Divider color={colors.rowDividerLight} />
+          )
+        }
         <StickyBackgroundBlocker
           deviceDimensions={deviceDimensions}
           isEditMode={isCoinListEdited}

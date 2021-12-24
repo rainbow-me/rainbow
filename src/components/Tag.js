@@ -38,7 +38,7 @@ const OuterBorder = styled(Centered)({
     color || colors.alpha(colors.whiteLabel, 0.15),
   borderRadius: TagBorderRadius,
   borderWidth: 2,
-  // flex: 0,
+  flex: 0,
   overflow: 'hidden',
   zIndex: 2,
 });

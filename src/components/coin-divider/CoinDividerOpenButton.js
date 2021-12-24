@@ -1,22 +1,22 @@
 import React from 'react';
+import { View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
-  withTiming,
+  withSpring,
 } from 'react-native-reanimated';
-
+import styled from 'styled-components';
 import Caret from '../../assets/family-dropdown-arrow.png';
 import { ButtonPressAnimation, RoundButtonCapSize } from '../animations';
-import { Flex } from '../layout';
 import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
-import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
+
+const AnimatedText = Animated.createAnimatedComponent(Text);
 
 const closedWidth = 52.5;
-const openWidth = 80;
+const openWidth = 78;
 
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,
@@ -26,38 +26,35 @@ const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   width: 8,
 });
 
-const Content = styled(Flex).attrs({
-  align: 'center',
-  direction: 'row',
-  justify: 'space-between',
-})({
-  backgroundColor: ({ theme: { colors } }) => colors.blueGreyDarkLight,
-  ...padding.object(0, 10),
-  borderRadius: RoundButtonCapSize / 2,
-  height: ({ height }) => height,
-});
+const Content = styled(Animated.View)`
+  background-color: ${({ theme: { colors } }) => colors.blueGreyDarkLight};
+  border-radius: ${RoundButtonCapSize / 2};
+  height: 30;
+  width: 78;
+`;
 
-const LabelText = styled(Text).attrs(({ shareButton, theme: { colors } }) => ({
+const LabelText = styled(AnimatedText).attrs(({ theme: { colors } }) => ({
+  align: 'center',
   color: colors.alpha(colors.blueGreyDark, 0.6),
   letterSpacing: 'roundedTight',
   lineHeight: 30,
   size: 'lmedium',
-  weight: shareButton ? 'heavy' : 'bold',
-}))({});
+  weight: 'bold',
+}))`
+  bottom: ${android ? 0 : 0.5};
+  left: 10;
+  position: absolute;
+`;
 
-const CoinDividerOpenButton = ({
-  coinDividerHeight,
-  isSmallBalancesOpen,
-  onPress,
-}) => {
+const CoinDividerOpenButton = ({ isSmallBalancesOpen, onPress }) => {
   const isSmallBalancesOpenValue = useSharedValue(0);
 
   isSmallBalancesOpenValue.value = isSmallBalancesOpen;
   const animation = useDerivedValue(
     () =>
-      withTiming(isSmallBalancesOpen ? 1 : 0, {
-        friction: 20,
-        tension: 200,
+      withSpring(isSmallBalancesOpen ? 1 : 0, {
+        damping: 24,
+        stiffness: 320,
       }),
     [isSmallBalancesOpen]
   );
@@ -65,32 +62,43 @@ const CoinDividerOpenButton = ({
   const style = useAnimatedStyle(() => {
     return {
       height: 20,
-      marginLeft: 4,
-      marginTop: 7,
+      marginTop: 6,
       opacity: 0.6,
+      position: 'absolute',
       transform: [
-        { translateX: animation.value * 7 },
-        { translateY: animation.value * -2 },
+        { translateX: 35 + animation.value * 22 },
+        { translateY: animation.value * -1.25 },
         { rotate: animation.value * -90 + 'deg' },
       ],
     };
   });
+
+  const allLabelStyle = useAnimatedStyle(() => ({
+    opacity: 1 - animation.value * 1,
+  }));
+
+  const lessLabelStyle = useAnimatedStyle(() => ({
+    opacity: animation.value * 1,
+  }));
 
   const wrapperStyle = useAnimatedStyle(() => ({
     width: closedWidth + animation.value * (openWidth - closedWidth),
   }));
 
   return (
-    <Content as={Animated.View} height={coinDividerHeight} style={wrapperStyle}>
-      <ButtonPressAnimation onPress={onPress} style={{ flexDirection: 'row' }}>
-        <LabelText color="secondary30" weight="bold">
-          {isSmallBalancesOpen ? 'Less' : 'All'}
-        </LabelText>
-        <Animated.View style={style}>
-          <CaretIcon />
-        </Animated.View>
+    <View width={isSmallBalancesOpen ? 116 : 90.5}>
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.8}>
+        <View paddingHorizontal={19} paddingVertical={5}>
+          <Content style={wrapperStyle}>
+            <LabelText style={allLabelStyle}>All</LabelText>
+            <LabelText style={lessLabelStyle}>Less</LabelText>
+            <Animated.View style={style}>
+              <CaretIcon />
+            </Animated.View>
+          </Content>
+        </View>
       </ButtonPressAnimation>
-    </Content>
+    </View>
   );
 };
 

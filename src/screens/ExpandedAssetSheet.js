@@ -62,9 +62,12 @@ export default function ExpandedAssetSheet(props) {
       {ios && <TouchableBackdrop onPress={goBack} />}
 
       {createElement(ScreenTypes[params.type], {
-        asset: selectedAsset,
         ...params,
         ...props,
+        asset: {
+          ...params.asset,
+          ...selectedAsset,
+        },
       })}
     </Container>
   );

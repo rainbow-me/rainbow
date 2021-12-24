@@ -11,9 +11,9 @@ import { initialLiquidityPoolExpandedStateSheetHeight } from '../expanded-state/
 import { FlexItem, Row } from '../layout';
 import { PoolValue } from './PoolValue';
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
-import { useAccountSettings } from '@rainbow-me/hooks';
+import { useAccountSettings, useGenericAsset } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { parseAssetsNative } from '@rainbow-me/parsers';
+import { parseAssetNative } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 import styled from 'rainbowed-components';
 
@@ -54,19 +54,16 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
   const { push } = useNavigation();
   const removeNextToLastRoute = useRemoveNextToLast();
   const { nativeCurrency } = useAccountSettings();
-  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
-    genericAssets,
-  }));
+  const genericPoolAsset = useGenericAsset(item.address);
   const { uniswap } = useSelector(readableUniswapSelector);
 
   const handleOpenExpandedState = useCallback(() => {
     let poolAsset = uniswap.find(pool => pool.address === item.address);
     if (!poolAsset) {
-      const genericPoolAsset = genericAssets[item.address];
-      poolAsset = parseAssetsNative(
-        [{ ...item, ...genericPoolAsset }],
+      poolAsset = parseAssetNative(
+        { ...item, ...genericPoolAsset },
         nativeCurrency
-      )[0];
+      );
     }
 
     analytics.track('Pressed Pools Item', {
@@ -87,7 +84,7 @@ export default function UniswapPoolListRow({ assetType, item, ...props }) {
     });
   }, [
     assetType,
-    genericAssets,
+    genericPoolAsset,
     item,
     nativeCurrency,
     push,
