@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import Animated, { useSharedValue } from 'react-native-reanimated';
-import { useCallbackOne } from 'use-memo-one';
+import { useSharedValue } from 'react-native-reanimated';
 import { CoinIcon, CoinIconGroup } from '../../coin-icon';
 import { Column, ColumnWithMargins, Row, RowWithMargins } from '../../layout';
 import ChartAddToListButton from './ChartAddToListButton';
@@ -12,11 +11,9 @@ import {
   ChartPriceLabel,
 } from './chart-data-labels';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
-import { useAccountSettings, useBooleanState } from '@rainbow-me/hooks';
+import { useAccountSettings } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 import styled from 'rainbowed-components';
-
-const { call, cond, onChange, useCode } = Animated;
 
 const noPriceData = 'No price data';
 
@@ -27,23 +24,6 @@ const Container = styled(ColumnWithMargins).attrs({
   ...padding.object(0, 19, showChart ? (android ? 15 : 30) : 0),
 }));
 
-function useTabularNumsWhileScrubbing(isScrubbing) {
-  const [tabularNums, enable, disable] = useBooleanState();
-  // Only enable tabularNums on the price label when the user is scrubbing
-  // because we are obnoxiously into details
-  useCode(
-    useCallbackOne(
-      () =>
-        onChange(
-          isScrubbing,
-          cond(isScrubbing, call([], enable), call([], disable))
-        ),
-      [disable, enable, isScrubbing]
-    )
-  );
-  return tabularNums;
-}
-
 export default function ChartExpandedStateHeader({
   asset,
   changeDirection,
@@ -51,7 +31,6 @@ export default function ChartExpandedStateHeader({
   color: givenColors,
   dateRef,
   isPool,
-  isScrubbing,
   latestChange,
   latestPrice = noPriceData,
   priceRef,
@@ -66,8 +45,6 @@ export default function ChartExpandedStateHeader({
     return isPool ? asset.tokens : [asset];
   }, [asset, isPool]);
   const { nativeCurrency } = useAccountSettings();
-  // TODO: Terry
-  // const tabularNums = useTabularNumsWhileScrubbing(isScrubbing);
 
   const isNoPriceData = latestPrice === noPriceData;
 
@@ -123,10 +100,8 @@ export default function ChartExpandedStateHeader({
             defaultValue={isNoPriceData ? title : price}
             isNoPriceData={isNoPriceData}
             isPool={isPool}
-            // isScrubbing={isScrubbing}
             priceRef={priceRef}
             priceSharedValue={priceSharedValue}
-            // tabularNums={tabularNums}
           />
           {showPriceChange && (
             <ChartPercentChangeLabel
@@ -135,10 +110,8 @@ export default function ChartExpandedStateHeader({
               color={
                 isNoPriceData ? colors.alpha(colors.blueGreyDark, 0.8) : color
               }
-              // isScrubbing={isScrubbing}
               latestChange={latestChange}
               overrideValue={overrideValue}
-              // tabularNums={tabularNums}
             />
           )}
         </RowWithMargins>

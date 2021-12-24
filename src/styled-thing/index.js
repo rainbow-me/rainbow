@@ -1,5 +1,5 @@
 import React from 'react';
-import styledComponent, { css } from 'styled-components';
+import { css } from 'styled-components';
 import hoist from './hoist';
 // eslint-disable-next-line import/no-commonjs
 const reactNative = require('react-native');
@@ -14,9 +14,6 @@ export function StyleThingThemeProvider({ value, children }) {
     <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
   );
 }
-
-// eslint-disable-next-line import/no-commonjs
-// const reactNative = require('react-native');
 
 function filterProps(props, shouldForwardProp) {
   if (typeof shouldForwardProp === 'function') {
@@ -178,7 +175,6 @@ export default function styled(Component) {
           shouldForwardPropFn(prop, filterFn) &&
           passedShouldForwardPropFn(prop, filterFn);
       } else {
-        // eslint-disable-next-line prefer-destructuring
         shouldForwardProp = shouldForwardPropFn;
       }
     }
