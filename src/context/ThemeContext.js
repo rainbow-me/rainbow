@@ -1,4 +1,3 @@
-import { StyleThingThemeProvider } from '@terrysahaidak/style-thing';
 import React, {
   createContext,
   useContext,
@@ -18,6 +17,7 @@ import { getTheme, saveTheme } from '../handlers/localstorage/theme';
 import { darkModeThemeColors, lightModeThemeColors } from '../styles/colors';
 import currentColors from './currentColors';
 import { ColorModeProvider } from '@rainbow-me/design-system';
+import { StyleThingThemeProvider } from 'rainbowed-components';
 
 export const THEMES = {
   DARK: 'dark',
