@@ -1,13 +1,15 @@
 import { getAccountLocal, saveAccountLocal } from './common';
 
+const accountAssetsDataVersion = '0.1.0';
+const accountEmptyVersion = '0.1.0';
 const assetPricesFromUniswapVersion = '0.1.0';
 const assetsVersion = '0.2.0';
 const purchaseTransactionsVersion = '0.1.0';
 const savingsVersion = '0.2.0';
 const transactionsVersion = '0.2.5';
 const uniqueTokensVersion = '0.2.1';
-const accountEmptyVersion = '0.1.0';
 
+const ACCOUNT_ASSETS_DATA = 'accountAssetsData';
 const ACCOUNT_INFO = 'accountInfo';
 const ACCOUNT_EMPTY = 'accountEmpty';
 const ASSET_PRICES_FROM_UNISWAP = 'assetPricesFromUniswap';
@@ -22,6 +24,7 @@ const HIDDEN_COINS = 'hiddenCoins';
 const WEB_DATA_ENABLED = 'webDataEnabled';
 
 export const accountLocalKeys = [
+  ACCOUNT_ASSETS_DATA,
   ACCOUNT_INFO,
   ASSET_PRICES_FROM_UNISWAP,
   ASSETS,
@@ -93,19 +96,45 @@ export const saveAccountEmptyState = (
  * @desc get assets
  * @param  {String}   [address]
  * @param  {String}   [network]
- * @return {Object}
+ * @return {Array}
  */
 export const getAssets = (accountAddress: any, network: any) =>
   getAccountLocal(ASSETS, accountAddress, network, [], assetsVersion);
 
 /**
- * @desc save assets
- * @param  {Array}    [assets]
+ * @desc get account assets data
+ * @param  {String}   [address]
+ * @param  {String}   [network]
+ * @return {Object}
+ */
+export const getAccountAssetsData = (accountAddress: any, network: any) =>
+  getAccountLocal(
+    ACCOUNT_ASSETS_DATA,
+    accountAddress,
+    network,
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{}' is not assignable to paramet... Remove this comment to see the full error message
+    {},
+    accountAssetsDataVersion
+  );
+
+/**
+ * @desc save account assets data
+ * @param  {Object}   [accountAssetsData]
  * @param  {String}   [address]
  * @param  {String}   [network]
  */
-export const saveAssets = (assets: any, accountAddress: any, network: any) =>
-  saveAccountLocal(ASSETS, assets, accountAddress, network, assetsVersion);
+export const saveAccountAssetsData = (
+  accountAssetsData: any,
+  accountAddress: any,
+  network: any
+) =>
+  saveAccountLocal(
+    ACCOUNT_ASSETS_DATA,
+    accountAssetsData,
+    accountAddress,
+    network,
+    accountAssetsDataVersion
+  );
 
 /**
  * @desc get asset prices from Uniswap

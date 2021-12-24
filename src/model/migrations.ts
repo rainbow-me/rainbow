@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import { captureException } from '@sentry/react-native';
-import { findKey, isNumber, keys, uniq } from 'lodash';
+import { findKey, isNumber, keys, toLower, uniq } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { removeLocal } from '../handlers/localstorage/common';
 import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
@@ -491,9 +491,10 @@ export default async function runMigrations() {
         logger.log(JSON.stringify({ hiddenCoins }, null, 2));
 
         const pinnedCoinsMigrated = pinnedCoins.map((address: string) => {
-          const asset = ethereumUtils.getAsset(assets, address);
+          const asset = assets?.find(
+            (asset: any) => asset.address === toLower(address)
+          );
           if (asset?.type && isL2Asset(asset.type)) {
-            // @ts-expect-error
             return `${asset.address}_${asset.network}`;
           } else {
             return address;

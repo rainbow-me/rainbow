@@ -8,7 +8,6 @@ import React, {
 } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
 import L2Disclaimer from '../../L2Disclaimer';
@@ -44,6 +43,7 @@ import {
   useChartThrottledPoints,
   useDelayedValueWithLayoutAnimation,
   useDimensions,
+  useGenericAsset,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -177,9 +177,7 @@ function Description({ text }) {
 }
 
 export default function ChartExpandedState({ asset }) {
-  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
-    genericAssets,
-  }));
+  const genericAsset = useGenericAsset(asset?.address);
 
   const [carouselHeight, setCarouselHeight] = useState(defaultCarouselHeight);
   const { nativeCurrency } = useAccountSettings();
@@ -190,11 +188,8 @@ export default function ChartExpandedState({ asset }) {
   const hasBalance = asset?.balance;
   const assetWithPrice = hasBalance
     ? { ...asset }
-    : genericAssets[asset?.address]
-    ? ethereumUtils.formatGenericAsset(
-        genericAssets[asset?.address],
-        nativeCurrency
-      )
+    : genericAsset
+    ? ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency)
     : { ...asset };
   if (assetWithPrice?.mainnet_address) {
     assetWithPrice.l2Address = assetWithPrice.address;
@@ -304,15 +299,14 @@ export default function ChartExpandedState({ asset }) {
 
   const MoreButton = useCallback(() => {
     return (
-      <CoinDividerOpenButton
-        coinDividerHeight={CoinDividerHeight}
-        isActive
-        isSendSheet
-        isSmallBalancesOpen={delayedMorePoolsVisible}
-        marginLeft={19}
-        marginTop={5}
-        onPress={() => setMorePoolsVisible(prev => !prev)}
-      />
+      <View marginTop={-10}>
+        <CoinDividerOpenButton
+          coinDividerHeight={CoinDividerHeight}
+          isActive
+          isSmallBalancesOpen={delayedMorePoolsVisible}
+          onPress={() => setMorePoolsVisible(prev => !prev)}
+        />
+      </View>
     );
   }, [delayedMorePoolsVisible]);
 
