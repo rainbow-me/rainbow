@@ -1,5 +1,5 @@
 import { useRoute } from '@react-navigation/core';
-import { compact, find, get, isEmpty, keys, map, toLower } from 'lodash';
+import { get, isEmpty, keys, toLower } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { StatusBar } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -32,10 +32,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { updateRefetchSavings } from '@rainbow-me/redux/data';
-import {
-  emitChartsRequest,
-  emitPortfolioRequest,
-} from '@rainbow-me/redux/explorer';
+import { emitPortfolioRequest } from '@rainbow-me/redux/explorer';
 import { position } from '@rainbow-me/styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
@@ -57,7 +54,6 @@ export default function WalletScreen() {
   const { setParams } = useNavigation();
   const [initialized, setInitialized] = useState(!!params?.initialized);
   const [portfoliosFetched, setPortfoliosFetched] = useState(false);
-  const [fetchedCharts, setFetchedCharts] = useState(false);
   const initializeWallet = useInitializeWallet();
   const refreshAccountData = useRefreshAccountData();
   const { isCoinListEdited } = useCoinListEdited();
@@ -75,7 +71,6 @@ export default function WalletScreen() {
   const {
     isWalletEthZero,
     refetchSavings,
-    sections,
     shouldRefetchSavings,
   } = useWalletSectionsData();
 
@@ -141,17 +136,6 @@ export default function WalletScreen() {
       trackPortfolios();
     }
   }, [portfolios, portfoliosFetched, trackPortfolios, userAccounts.length]);
-
-  useEffect(() => {
-    if (initialized && assetsSocket && !fetchedCharts) {
-      const balancesSection = find(sections, ({ name }) => name === 'balances');
-      const assetCodes = compact(map(balancesSection?.data, 'address'));
-      if (!isEmpty(assetCodes)) {
-        dispatch(emitChartsRequest(assetCodes));
-        setFetchedCharts(true);
-      }
-    }
-  }, [assetsSocket, dispatch, fetchedCharts, initialized, sections]);
 
   useEffect(() => {
     if (walletReady && assetsSocket) {
