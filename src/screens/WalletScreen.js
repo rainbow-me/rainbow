@@ -138,6 +138,7 @@ export default function WalletScreen() {
 
   const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);
 
+  // TODO JIN
   const showAddFunds = false;
   return (
     <WalletPage testID="wallet-screen">
