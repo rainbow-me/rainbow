@@ -8,7 +8,9 @@ import { useTheme } from '@rainbow-me/context';
 import logger from 'logger';
 import styled from 'rainbowed-components';
 
+// @ts-ignore
 const Spacer = styled(View)<{ height: Number }>({
+  // @ts-ignore
   height: ({ height }) => height,
 });
 

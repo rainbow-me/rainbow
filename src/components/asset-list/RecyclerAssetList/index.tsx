@@ -154,6 +154,7 @@ const isEqualDataProvider = new DataProvider((r1, r2) => {
 });
 
 const StyledRecyclerListView = styled(RecyclerListView)({
+  // @ts-ignore
   backgroundColor: ({ theme: { colors } }) => colors.white,
   display: 'flex',
   flex: 1,
@@ -161,6 +162,7 @@ const StyledRecyclerListView = styled(RecyclerListView)({
 });
 
 const StyledContainer = styled(View)({
+  // @ts-ignore
   backgroundColor: ({ theme: { colors } }) => colors.white,
   display: 'flex',
   flex: 1,

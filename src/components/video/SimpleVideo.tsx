@@ -35,6 +35,7 @@ const absoluteFill = {
 
 const StyledBackground = styled(View)({
   ...absoluteFill,
+  // @ts-ignore
   backgroundColor: ({ theme: { colors } }) => colors.white,
 });
 
