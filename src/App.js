@@ -31,7 +31,6 @@ import { connect, Provider } from 'react-redux';
 import { RecoilRoot } from 'recoil';
 import PortalConsumer from './components/PortalConsumer';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
-import { FlexItem } from './components/layout';
 import { OfflineToast } from './components/toasts';
 import {
   designSystemPlaygroundEnabled,
@@ -48,7 +47,6 @@ import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
 import { isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
-import { AccountAssetManager } from './hooks/useAccountAssets';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
@@ -285,21 +283,19 @@ class App extends Component {
             <SafeAreaProvider>
               <Provider store={store}>
                 <RecoilRoot>
-                  <AccountAssetManager>
-                    <SharedValuesProvider>
-                      <View style={{ flex: 1 }}>
-                        {this.state.initialRoute && (
-                          <InitialRouteContext.Provider
-                            value={this.state.initialRoute}
-                          >
-                            <RoutesComponent ref={this.handleNavigatorRef} />
-                            <PortalConsumer />
-                          </InitialRouteContext.Provider>
-                        )}
-                        <OfflineToast />
-                      </View>
-                    </SharedValuesProvider>
-                  </AccountAssetManager>
+                  <SharedValuesProvider>
+                    <View style={{ flex: 1 }}>
+                      {this.state.initialRoute && (
+                        <InitialRouteContext.Provider
+                          value={this.state.initialRoute}
+                        >
+                          <RoutesComponent ref={this.handleNavigatorRef} />
+                          <PortalConsumer />
+                        </InitialRouteContext.Provider>
+                      )}
+                      <OfflineToast />
+                    </View>
+                  </SharedValuesProvider>
                 </RecoilRoot>
               </Provider>
             </SafeAreaProvider>
