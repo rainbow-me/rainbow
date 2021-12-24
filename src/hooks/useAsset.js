@@ -8,7 +8,7 @@ import { AssetTypes } from '@rainbow-me/entities';
 // To fetch an asset from account assets,
 // generic assets, and uniqueTokens
 export default function useAsset(asset) {
-  const accountAsset = useAccountAsset(asset.uniqueId);
+  const accountAsset = useAccountAsset(asset?.uniqueId);
 
   const uniqueTokens = useSelector(
     ({ uniqueTokens: { uniqueTokens } }) => uniqueTokens
@@ -23,7 +23,10 @@ export default function useAsset(asset) {
     if (asset.type === AssetTypes.token) {
       matched = accountAsset ?? genericAsset;
     } else if (asset.type === AssetTypes.nft) {
-      matched = find(uniqueTokens, matchesProperty('uniqueId', asset.uniqueId));
+      matched = find(
+        uniqueTokens,
+        matchesProperty('uniqueId', asset?.uniqueId)
+      );
     }
 
     return matched || asset;
