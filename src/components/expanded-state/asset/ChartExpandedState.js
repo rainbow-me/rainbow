@@ -387,9 +387,7 @@ export default function ChartExpandedState({ asset }) {
         />
       )}
 
-      {/*
-        TODO: Terry
-        {!isL2 && (
+      {!isL2 && (
         <CarouselWrapper
           isAnyItemLoading={
             totalVolumeLoading || totalLiquidityLoading || marketCapLoading
@@ -425,7 +423,6 @@ export default function ChartExpandedState({ asset }) {
           <EdgeFade />
         </CarouselWrapper>
       )}
-        */}
       <AdditionalContentWrapper
         onLayout={({
           nativeEvent: {

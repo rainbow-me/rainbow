@@ -1,7 +1,6 @@
 import React from 'react';
-import { View } from 'react-native';
 import { ButtonPressAnimation, ShimmerAnimation } from '../animations';
-import { ColumnWithMargins, RowWithMargins } from '../layout';
+import { ColumnWithMargins } from '../layout';
 import TokenInfoBalanceValue from './TokenInfoBalanceValue';
 import TokenInfoHeading from './TokenInfoHeading';
 import TokenInfoValue from './TokenInfoValue';
@@ -59,7 +58,8 @@ export default function TokenInfoItem({
 
   return (
     <Container
-      as={showDivider ? RowWithMargins : View}
+      // TODO osdnk
+      //as={showDivider ? RowWithMargins : View}
       margin={showDivider ? 12 : 0}
     >
       <ColumnWithMargins
