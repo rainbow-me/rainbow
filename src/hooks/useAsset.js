@@ -14,7 +14,9 @@ export default function useAsset(asset) {
     ({ uniqueTokens: { uniqueTokens } }) => uniqueTokens
   );
 
-  const genericAsset = useGenericAsset(asset.mainnet_address || asset.address);
+  const genericAsset = useGenericAsset(
+    asset?.mainnet_address || asset?.address
+  );
 
   return useMemo(() => {
     if (!asset) return null;
