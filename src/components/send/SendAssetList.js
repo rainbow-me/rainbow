@@ -49,17 +49,17 @@ export default class SendAssetList extends React.Component {
     super(props);
 
     const {
-      allAssets,
       hiddenCoins,
       nativeCurrency,
       network,
       pinnedCoins,
       savings,
+      sortedAssets,
       uniqueTokens,
     } = props;
 
     const { assets } = buildCoinsList(
-      allAssets,
+      sortedAssets,
       nativeCurrency,
       true,
       pinnedCoins,
@@ -83,10 +83,6 @@ export default class SendAssetList extends React.Component {
     this.data = assets;
 
     if (smallBalances.assets.length > 0) {
-      //check for placeholder ETH & remove
-      smallBalances.assets = smallBalances.assets.filter(
-        asset => !asset?.isPlaceholder
-      );
       this.data.push(smallBalances);
     }
 
@@ -212,7 +208,7 @@ export default class SendAssetList extends React.Component {
   };
 
   changeOpenTab = index => {
-    const { allAssets, savings, uniqueTokens } = this.props;
+    const { savings, sortedAssets, uniqueTokens } = this.props;
     const {
       openCards,
       openSavings,
@@ -236,11 +232,11 @@ export default class SendAssetList extends React.Component {
         }
       }
       const smallBalancesheight =
-        allAssets.length === visibleAssetsLength
+        sortedAssets.length === visibleAssetsLength
           ? 0
           : smallBalancesHeader +
             (openShitcoins
-              ? (allAssets.length - visibleAssetsLength) * rowHeight
+              ? (sortedAssets.length - visibleAssetsLength) * rowHeight
               : 0);
       const savingsHeight =
         savings?.length > 0
