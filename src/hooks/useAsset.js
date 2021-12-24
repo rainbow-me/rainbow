@@ -1,6 +1,6 @@
 import { find, matchesProperty } from 'lodash';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { useDeepCompareMemo } from 'use-deep-compare';
 import useAccountAssets from './useAccountAssets';
 import { AssetTypes } from '@rainbow-me/entities';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
@@ -58,7 +58,7 @@ export default function useAsset(asset) {
     ({ data: { genericAssets } }) => genericAssets
   );
 
-  return useDeepCompareMemo(() => {
+  return useMemo(() => {
     if (!asset) return null;
 
     let matched = null;
