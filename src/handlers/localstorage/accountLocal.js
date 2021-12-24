@@ -1,7 +1,6 @@
 import { getAccountLocal, saveAccountLocal } from './common';
 
 const accountAssetsDataVersion = '0.1.0';
-const accountEmptyVersion = '0.1.0';
 const assetPricesFromUniswapVersion = '0.1.0';
 const assetsVersion = '0.2.0';
 const purchaseTransactionsVersion = '0.1.0';
@@ -11,7 +10,6 @@ const uniqueTokensVersion = '0.2.1';
 
 const ACCOUNT_ASSETS_DATA = 'accountAssetsData';
 const ACCOUNT_INFO = 'accountInfo';
-const ACCOUNT_EMPTY = 'accountEmpty';
 const ASSET_PRICES_FROM_UNISWAP = 'assetPricesFromUniswap';
 const ASSETS = 'assets';
 const PURCHASE_TRANSACTIONS = 'purchaseTransactions';
@@ -55,36 +53,6 @@ export const getSavings = (accountAddress, network) =>
  */
 export const saveSavings = (savings, accountAddress, network) =>
   saveAccountLocal(SAVINGS, savings, accountAddress, network, savingsVersion);
-
-/**
- * @desc get account empty state
- * @param  {String}   [address]
- * @param  {String}   [network]
- * @return {Boolean}
- */
-export const getAccountEmptyState = (accountAddress, network) =>
-  getAccountLocal(
-    ACCOUNT_EMPTY,
-    accountAddress,
-    network,
-    false,
-    accountEmptyVersion
-  );
-
-/**
- * @desc save account empty state
- * @param  {Boolean}    [val]
- * @param  {String}   [address]
- * @param  {String}   [network]
- */
-export const saveAccountEmptyState = (val, accountAddress, network) =>
-  saveAccountLocal(
-    ACCOUNT_EMPTY,
-    val,
-    accountAddress,
-    network,
-    accountEmptyVersion
-  );
 
 /**
  * @desc get assets

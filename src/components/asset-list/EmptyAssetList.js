@@ -15,8 +15,8 @@ const Container = styled(Column)`
 
 const EmptyAssetList = ({
   descendingOpacity,
-  isWalletEthZero,
   network,
+  showAddFunds,
   skeletonCount = 5,
   title,
   ...props
@@ -34,7 +34,7 @@ const EmptyAssetList = ({
   return (
     <Container {...props}>
       <Centered flex={1}>
-        {isWalletEthZero ? (
+        {showAddFunds ? (
           <AddFundsInterstitial
             network={network}
             offsetY={interstitialOffset}
@@ -45,8 +45,8 @@ const EmptyAssetList = ({
             <Column cover>
               {times(skeletonCount, index => (
                 <AssetListItemSkeleton
-                  animated={!isWalletEthZero}
-                  descendingOpacity={descendingOpacity || isWalletEthZero}
+                  animated
+                  descendingOpacity={descendingOpacity}
                   index={index}
                   key={`skeleton${index}`}
                 />

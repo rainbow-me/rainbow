@@ -39,7 +39,6 @@ import {
   authenticateWithPIN,
   getExistingPIN,
 } from '@rainbow-me/handlers/authentication';
-import { saveAccountEmptyState } from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
   addHexPrefix,
   isHexString,
@@ -190,8 +189,7 @@ export const walletInit = async (
   color = null,
   name = null,
   overwrite = false,
-  checkedWallet = null,
-  network: string
+  checkedWallet = null
 ): Promise<WalletInitialized> => {
   let walletAddress = null;
   let isNew = false;
@@ -214,7 +212,6 @@ export const walletInit = async (
     const wallet = await createWallet();
     walletAddress = wallet?.address;
     isNew = true;
-    await saveAccountEmptyState(true, walletAddress?.toLowerCase(), network);
   }
   return { isNew, walletAddress };
 };

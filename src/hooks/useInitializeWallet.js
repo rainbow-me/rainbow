@@ -71,8 +71,7 @@ export default function useInitializeWallet() {
           color,
           name,
           overwrite,
-          checkedWallet,
-          network
+          checkedWallet
         );
 
         logger.sentry('walletInit returned ', {
