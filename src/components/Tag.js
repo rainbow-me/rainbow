@@ -38,7 +38,7 @@ const OuterBorder = styled(Centered)`
     color || colors.alpha(colors.whiteLabel, 0.15)};
   border-radius: ${TagBorderRadius};
   border-width: 2;
-  flex: none;
+  flex: 0;
   overflow: hidden;
   z-index: 2;
 `;
@@ -60,7 +60,7 @@ const Title = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
   margin-bottom: 1;
 `;
 
-const Tag = ({ color, slug, text, title, ...props }) => {
+const Tag = ({ color, disableMenu, slug, text, title, ...props }) => {
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === PropertyActionsEnum.viewTraitOnOpensea) {
@@ -110,14 +110,15 @@ const Tag = ({ color, slug, text, title, ...props }) => {
         }
       }
     );
-  }, []);
+  }, [slug, text, title]);
 
   return (
     <ContextMenuButton
       activeOpacity={0}
+      enableContextMenu={!disableMenu}
       menuConfig={menuConfig}
       {...(android ? { onPress: onPressAndroid } : {})}
-      isMenuPrimaryAction
+      isMenuPrimaryAction={!disableMenu}
       onPressMenuItem={handlePressMenuItem}
       useActionSheetFallback={false}
       wrapNativeComponent={false}

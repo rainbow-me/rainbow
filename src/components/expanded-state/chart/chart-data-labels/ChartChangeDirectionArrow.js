@@ -1,12 +1,8 @@
 import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
-import Animated, {
-  useAnimatedStyle,
-  useDerivedValue,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { Icon } from '../../../icons';
-import { useRatio } from './useRatio';
 
 const AnimatedMaskedView = Animated.createAnimatedComponent(MaskedView);
 
@@ -15,27 +11,24 @@ const ArrowIcon = styled(Icon).attrs({
   name: 'fatArrow',
 })``;
 
-export default function ChartChangeDirectionArrow() {
-  const ratio = useRatio('ChartChangeDirectionArrowRatio');
-
+export default function ChartChangeDirectionArrow({ ratio }) {
   const { colors } = useTheme();
-  const arrowColor = useDerivedValue(() =>
-    ratio.value === 1
-      ? colors.blueGreyDark
-      : ratio.value < 1
-      ? colors.red
-      : colors.green
-  );
+
   const arrowWrapperStyle = useAnimatedStyle(() => {
     return {
       opacity: ratio.value === 1 ? 0 : 1,
       transform: [{ rotate: ratio.value < 1 ? '180deg' : '0deg' }],
     };
-  });
+  }, []);
 
   const arrowStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: arrowColor.value,
+      backgroundColor:
+        ratio.value === 1
+          ? colors.blueGreyDark
+          : ratio.value < 1
+          ? colors.red
+          : colors.green,
     };
   });
 

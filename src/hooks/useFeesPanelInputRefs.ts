@@ -31,7 +31,8 @@ export default function useFeesPanelInputRefs() {
     handleFocus,
     lastFocusedInputHandle,
     setLastFocusedInputHandle,
-  } = useMagicAutofocus(maxBaseFieldRef, findNextInput, true);
+    triggerFocus,
+  } = useMagicAutofocus(maxBaseFieldRef, findNextInput, false);
 
   return {
     handleFocus,
@@ -39,5 +40,6 @@ export default function useFeesPanelInputRefs() {
     maxBaseFieldRef,
     minerTipFieldRef,
     setLastFocusedInputHandle,
+    triggerFocus,
   };
 }

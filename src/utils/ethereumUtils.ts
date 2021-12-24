@@ -14,14 +14,7 @@ import {
 } from 'ethereumjs-util';
 import { hdkey } from 'ethereumjs-wallet';
 import { Contract } from 'ethers';
-import {
-  find,
-  isEmpty,
-  isString,
-  matchesProperty,
-  replace,
-  toLower,
-} from 'lodash';
+import { find, isEmpty, isString, replace, toLower } from 'lodash';
 import {
   Alert,
   InteractionManager,
@@ -34,9 +27,11 @@ import { useSelector } from 'react-redux';
 import URL from 'url-parse';
 import {
   EthereumAddress,
+  GasFee,
   LegacySelectedGasFee,
   ParsedAddressAsset,
   RainbowTransaction,
+  SelectedGasFee,
 } from '@rainbow-me/entities';
 import { getOnchainAssetBalance } from '@rainbow-me/handlers/assets';
 import {
@@ -45,6 +40,7 @@ import {
   toHex,
 } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
+import networkInfo from '@rainbow-me/helpers/networkInfo';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -65,7 +61,7 @@ import {
   WalletLibraryType,
 } from '@rainbow-me/model/wallet';
 import { Navigation } from '@rainbow-me/navigation';
-import { parseAssetsNative } from '@rainbow-me/parsers';
+import { parseAssetNative } from '@rainbow-me/parsers';
 import store from '@rainbow-me/redux/store';
 import {
   ARBITRUM_BLOCK_EXPLORER_URL,
@@ -86,42 +82,40 @@ import logger from 'logger';
 
 const { RNBip39 } = NativeModules;
 
-const getNativeAssetAddressForNetwork = (network: Network): EthereumAddress => {
-  let nativeAssetAddress;
+const getNetworkNativeAsset = (
+  network: Network
+): ParsedAddressAsset | undefined => {
+  let nativeAssetUniqueId;
   switch (network) {
     case Network.arbitrum:
-      nativeAssetAddress = ARBITRUM_ETH_ADDRESS;
+      nativeAssetUniqueId = `${ARBITRUM_ETH_ADDRESS}_${network}`;
       break;
     case Network.optimism:
-      nativeAssetAddress = OPTIMISM_ETH_ADDRESS;
+      nativeAssetUniqueId = `${OPTIMISM_ETH_ADDRESS}_${network}`;
       break;
     case Network.polygon:
-      nativeAssetAddress = MATIC_POLYGON_ADDRESS;
+      nativeAssetUniqueId = `${MATIC_POLYGON_ADDRESS}_${network}`;
       break;
     default:
-      nativeAssetAddress = ETH_ADDRESS;
+      nativeAssetUniqueId = ETH_ADDRESS;
   }
-  return nativeAssetAddress;
+  return getAccountAsset(nativeAssetUniqueId);
 };
 
 const getNativeAssetForNetwork = async (
   network: Network,
   address: EthereumAddress
 ): Promise<ParsedAddressAsset | undefined> => {
-  const nativeAssetAddress = getNativeAssetAddressForNetwork(network);
+  const networkNativeAsset = getNetworkNativeAsset(network);
   const { accountAddress } = store.getState().settings;
   let differentWallet = toLower(address) !== toLower(accountAddress);
-  const { assets } = store.getState().data;
-  let nativeAsset =
-    (!differentWallet && getAsset(assets, toLower(nativeAssetAddress))) ||
-    undefined;
+  let nativeAsset = (!differentWallet && networkNativeAsset) || undefined;
 
   // If the asset is on a different wallet, or not available in this wallet
   if (differentWallet || !nativeAsset) {
-    const { genericAssets } = store.getState().data;
     const mainnetAddress =
       network === Network.polygon ? MATIC_MAINNET_ADDRESS : ETH_ADDRESS;
-    nativeAsset = genericAssets[mainnetAddress];
+    nativeAsset = store.getState().data?.genericAssets?.[mainnetAddress];
 
     const provider = await getProviderForNetwork(network);
     if (nativeAsset) {
@@ -149,14 +143,27 @@ const getNativeAssetForNetwork = async (
 };
 
 const getAsset = (
-  assets: ParsedAddressAsset[],
-  address: EthereumAddress = ETH_ADDRESS
-) => find(assets, matchesProperty('address', toLower(address)));
+  accountAssets: Record<string, ParsedAddressAsset>,
+  uniqueId: EthereumAddress = ETH_ADDRESS
+) => {
+  const loweredUniqueId = toLower(uniqueId);
+  return accountAssets[loweredUniqueId];
+};
+
+const getAccountAsset = (
+  uniqueId: EthereumAddress
+): ParsedAddressAsset | undefined => {
+  const loweredUniqueId = toLower(uniqueId);
+  const accountAsset = store.getState().data?.accountAssetsData?.[
+    loweredUniqueId
+  ];
+  return accountAsset;
+};
 
 const getAssetPrice = (address: EthereumAddress = ETH_ADDRESS): number => {
-  const { assets, genericAssets } = store.getState().data;
-  const genericPrice = genericAssets[address]?.price?.value;
-  return genericPrice || getAsset(assets, address)?.price?.value || 0;
+  const genericAsset = store.getState().data?.genericAssets?.[address];
+  const genericPrice = genericAsset?.price?.value;
+  return genericPrice || getAccountAsset(address)?.price?.value || 0;
 };
 
 export const useEth = (): ParsedAddressAsset => {
@@ -189,18 +196,17 @@ const getEthPriceUnit = () => getAssetPrice();
 const getMaticPriceUnit = () => getAssetPrice(MATIC_MAINNET_ADDRESS);
 
 const getBalanceAmount = (
-  selectedGasFee: LegacySelectedGasFee,
+  selectedGasFee: SelectedGasFee | LegacySelectedGasFee,
   selected: ParsedAddressAsset
 ) => {
-  const { assets } = store.getState().data;
-  let amount =
-    selected?.balance?.amount ??
-    getAsset(assets, selected?.address)?.balance?.amount ??
-    0;
+  const accountAsset = getAccountAsset(selected?.uniqueId);
+  let amount = selected?.balance?.amount ?? accountAsset?.balance?.amount ?? 0;
 
   if (selected?.isNativeAsset) {
     if (!isEmpty(selectedGasFee)) {
-      const txFeeRaw = selectedGasFee?.gasFee?.estimatedFee?.value.amount;
+      const gasFee = selectedGasFee?.gasFee as GasFee;
+      const txFeeRaw =
+        gasFee?.maxFee?.value.amount || gasFee?.estimatedFee?.value.amount;
       const txFeeAmount = fromWei(txFeeRaw);
       const remaining = subtract(amount, txFeeAmount);
       amount = greaterThan(remaining, 0) ? remaining : '0';
@@ -232,10 +238,8 @@ const formatGenericAsset = (
   };
 };
 
-export const checkWalletEthZero = (assets: ParsedAddressAsset) => {
-  // @ts-ignore
-  const ethAsset = find(assets, asset => asset.address === ETH_ADDRESS);
-  // @ts-ignore
+export const checkWalletEthZero = () => {
+  const ethAsset = getAccountAsset(ETH_ADDRESS);
   let amount = ethAsset?.balance?.amount ?? 0;
   return isZero(amount);
 };
@@ -288,7 +292,8 @@ const getNetworkFromChainId = (chainId: number): Network => {
  */
 const getNetworkNameFromChainId = (chainId: number): string | undefined => {
   const networkData = find(chains, ['chain_id', chainId]);
-  return networkData?.name;
+  const networkName = networkInfo[networkData?.network ?? Network.mainnet].name;
+  return networkName;
 };
 
 /**
@@ -512,12 +517,10 @@ async function parseEthereumUrl(data: string) {
   while (store.getState().data.isLoadingAssets) {
     await delay(300);
   }
-  const { assets } = store.getState().data;
 
   if (!functionName) {
     // Send native asset
-    const nativeAssetAddress = getNativeAssetAddressForNetwork(network);
-    asset = getAsset(assets, toLower(nativeAssetAddress));
+    asset = getNetworkNativeAsset(network);
 
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
@@ -531,7 +534,8 @@ async function parseEthereumUrl(data: string) {
     nativeAmount = ethUrl.parameters?.value && fromWei(ethUrl.parameters.value);
   } else if (functionName === 'transfer') {
     // Send ERC-20
-    asset = getAsset(assets, toLower(ethUrl.target_address));
+    const targetUniqueId = getUniqueId(ethUrl.target_address, network);
+    asset = getAccountAsset(targetUniqueId);
     // @ts-ignore
     if (!asset || asset?.balance.amount === 0) {
       Alert.alert(
@@ -552,7 +556,7 @@ async function parseEthereumUrl(data: string) {
     return;
   }
 
-  const assetWithPrice = parseAssetsNative([asset], nativeCurrency)[0];
+  const assetWithPrice = parseAssetNative(asset, nativeCurrency);
 
   InteractionManager.runAfterInteractions(() => {
     const params = { address, asset: assetWithPrice, nativeAmount };
@@ -566,6 +570,9 @@ async function parseEthereumUrl(data: string) {
     }
   });
 }
+
+const getUniqueId = (address: EthereumAddress, network: Network) =>
+  network === Network.mainnet ? address : `${address}_${network}`;
 
 const calculateL1FeeOptimism = async (
   tx: RainbowTransaction,
@@ -618,6 +625,7 @@ export default {
   deriveAccountFromPrivateKey,
   deriveAccountFromWalletInput,
   formatGenericAsset,
+  getAccountAsset,
   getAsset,
   getAssetPrice,
   getBalanceAmount,
@@ -631,7 +639,9 @@ export default {
   getNativeAssetForNetwork,
   getNetworkFromChainId,
   getNetworkNameFromChainId,
+  getNetworkNativeAsset,
   getPriceOfNativeAssetForNetwork,
+  getUniqueId,
   hasPreviousTransactions,
   isEthAddress,
   openAddressInBlockExplorer,

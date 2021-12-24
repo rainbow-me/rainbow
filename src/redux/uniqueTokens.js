@@ -12,7 +12,7 @@ import {
   UNIQUE_TOKENS_LIMIT_PER_PAGE,
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '@rainbow-me/handlers/opensea-api';
-//import { fetchPoaps } from '@rainbow-me/handlers/poap';
+import { fetchPoaps } from '@rainbow-me/handlers/poap';
 
 import NetworkTypes from '@rainbow-me/networkTypes';
 import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
@@ -85,7 +85,7 @@ export const fetchUniqueTokens = showcaseAddress => async (
   }
   const { network } = getState().settings;
   const accountAddress = showcaseAddress || getState().settings.accountAddress;
-  const { assets } = getState().data;
+  const { accountAssetsData } = getState().data;
   const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
   const shouldUpdateInBatches = isEmpty(existingUniqueTokens);
 
@@ -120,8 +120,10 @@ export const fetchUniqueTokens = showcaseAddress => async (
         });
       }
       if (shouldStopFetching) {
-        //const poaps = await fetchPoaps(accountAddress);
-        //uniqueTokens = concat(uniqueTokens, poaps);
+        const poaps = await fetchPoaps(accountAddress);
+        if (poaps.length > 0) {
+          uniqueTokens = concat(uniqueTokens, poaps);
+        }
 
         if (!shouldUpdateInBatches) {
           dispatch({
@@ -135,7 +137,7 @@ export const fetchUniqueTokens = showcaseAddress => async (
         const incomingFamilies = without(newFamilies, ...existingFamilies);
         if (incomingFamilies.length) {
           const dedupedAssets = dedupeAssetsWithFamilies(
-            assets,
+            accountAssetsData,
             incomingFamilies
           );
           dispatch(dataUpdateAssets(dedupedAssets));

@@ -220,7 +220,6 @@ const addCashGetTransferHash = (
 ) => async (dispatch, getState) => {
   logger.log('[add cash] - watch for transfer hash');
   const { accountAddress, network } = getState().settings;
-  const { assets } = getState().data;
   const getTransferHash = async (
     referenceInfo,
     transferId,
@@ -245,7 +244,7 @@ const addCashGetTransferHash = (
 
       if (transferHash) {
         logger.log('[add cash] - Wyre transfer hash', transferHash);
-        let asset = ethereumUtils.getAsset(assets, destAssetAddress);
+        let asset = ethereumUtils.getAccountAsset(destAssetAddress);
         if (!asset) {
           asset = AddCashCurrencyInfo[network][destAssetAddress];
         }

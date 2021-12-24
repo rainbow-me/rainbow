@@ -6,6 +6,7 @@ import { FabWrapperBottomPosition, FloatingActionButtonSize } from '../fab';
 import { ListFooter } from '../list';
 import EmptyAssetList from './EmptyAssetList';
 import RecyclerAssetList from './RecyclerAssetList';
+import RecyclerAssetList2 from './RecyclerAssetList2';
 
 const FabSizeWithPadding =
   FloatingActionButtonSize + FabWrapperBottomPosition * 2;
@@ -30,7 +31,7 @@ const AssetList = ({
       network={network}
       title={lang.t('account.tab_balances')}
     />
-  ) : (
+  ) : props.showcase ? (
     <RecyclerAssetList
       fetchData={fetchData}
       hideHeader={hideHeader}
@@ -41,6 +42,8 @@ const AssetList = ({
       sections={sections}
       {...props}
     />
+  ) : (
+    <RecyclerAssetList2 />
   );
 };
 
