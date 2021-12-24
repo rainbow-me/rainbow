@@ -322,7 +322,8 @@ export const fetchOnchainBalances = ({
         : mainnetAssets
       : chainAssetsMap;
 
-  if (isEmpty(assets) && !isEmpty(accountAssetsData)) {
+  const isEmptyAssets = isEmpty(assets);
+  if (isEmptyAssets && !isEmpty(accountAssetsData)) {
     assets = mapValues(accountAssetsData, asset => ({
       asset: {
         asset_code: asset.address,
@@ -336,7 +337,7 @@ export const fetchOnchainBalances = ({
     }));
   }
 
-  if (isEmpty(assets) || (isEmpty(assets) && keepPolling)) {
+  if (isEmptyAssets || (isEmptyAssets && keepPolling)) {
     const fallbackExplorerBalancesHandle = setTimeout(
       () => dispatch(fetchOnchainBalances({ keepPolling, withPrices })),
       10000
