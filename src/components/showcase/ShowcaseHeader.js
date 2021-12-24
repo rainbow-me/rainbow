@@ -20,8 +20,8 @@ import { abbreviations, profileUtils } from '@rainbow-me/utils';
 export const ShowcaseContext = createContext();
 
 const HeaderWrapper = styled.View`
+  padding-top: 12;
   width: 100%;
-  padding-top: 40;
   justify-content: center;
   align-items: center;
   height: ${({ height }) => height};
@@ -168,7 +168,7 @@ export function Header() {
   ]);
 
   const mainText =
-    contextValue?.data?.reverseEns ||
+    contextValue?.ens ||
     contextValue?.addressOrDomain?.toLowerCase();
 
   const secondaryText =
@@ -179,7 +179,7 @@ export function Header() {
   return (
     <HeaderWrapper height={350} testID="showcase-header-wrapper">
       <SheetHandle />
-      <Spacer />
+      <Spacer/>
       <AvatarCircle
         image={null}
         isAvatarPickerAvailable={false}

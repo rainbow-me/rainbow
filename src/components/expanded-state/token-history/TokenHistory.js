@@ -189,9 +189,10 @@ const TokenHistory = ({ contract, token, color }) => {
   };
 
   const handlePress = useCallback(
-    address => {
+    (address, ens) => {
       navigate(Routes.SHOWCASE_SHEET, {
         address: address,
+        ens: ens
       });
     },
     [navigate]
@@ -282,7 +283,7 @@ const TokenHistory = ({ contract, token, color }) => {
           <ButtonPressAnimation
             disabled={!isClickable}
             hapticType="selection"
-            onPress={() => handlePress(item.toAccountEthAddress)}
+            onPress={() => handlePress(item.toAccountEthAddress, item.toAccount)}
             scaleTo={0.92}
           >
             <Row>
