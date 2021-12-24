@@ -14,6 +14,7 @@ import {
 import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
 import store from '@rainbow-me/redux/store';
 import {
+  ETH_ADDRESS,
   ETH_ICON_URL,
   supportedNativeCurrencies,
 } from '@rainbow-me/references';
@@ -36,7 +37,7 @@ const addEthPlaceholder = (
   nativeCurrency,
   emptyCollectibles
 ) => {
-  const hasEth = !!ethereumUtils.getAccountAsset();
+  const hasEth = !!ethereumUtils.getAccountAsset(ETH_ADDRESS);
 
   const { genericAssets } = store.getState().data;
   if (

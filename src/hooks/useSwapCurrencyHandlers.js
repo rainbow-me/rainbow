@@ -23,6 +23,7 @@ import {
   updateSwapInputCurrency,
   updateSwapOutputCurrency,
 } from '@rainbow-me/redux/swap';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 
@@ -60,7 +61,7 @@ export default function useSwapCurrencyHandlers({
 
       // if it does not exist, then set it as output
       if (!defaultInputItemInWallet) {
-        defaultInputItemInWallet = ethereumUtils.getAccountAsset();
+        defaultInputItemInWallet = ethereumUtils.getAccountAsset(ETH_ADDRESS);
         defaultOutputItem = defaultInputAsset;
       }
       dispatch(updateSwapDepositCurrency(defaultInputAsset));
@@ -72,7 +73,7 @@ export default function useSwapCurrencyHandlers({
     if (type === ExchangeModalTypes.swap) {
       return {
         defaultInputItemInWallet:
-          defaultInputAsset ?? ethereumUtils.getAccountAsset(),
+          defaultInputAsset ?? ethereumUtils.getAccountAsset(ETH_ADDRESS),
         defaultOutputItem: defaultOutputAsset ?? null,
       };
     }

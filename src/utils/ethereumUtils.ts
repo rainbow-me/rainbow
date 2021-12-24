@@ -151,7 +151,7 @@ const getAsset = (
 };
 
 const getAccountAsset = (
-  uniqueId: EthereumAddress = ETH_ADDRESS
+  uniqueId: EthereumAddress
 ): ParsedAddressAsset | undefined => {
   const loweredUniqueId = toLower(uniqueId);
   const accountAsset = store.getState().data?.accountAssetsData?.[
@@ -239,7 +239,7 @@ const formatGenericAsset = (
 };
 
 export const checkWalletEthZero = () => {
-  const ethAsset = getAccountAsset();
+  const ethAsset = getAccountAsset(ETH_ADDRESS);
   let amount = ethAsset?.balance?.amount ?? 0;
   return isZero(amount);
 };
