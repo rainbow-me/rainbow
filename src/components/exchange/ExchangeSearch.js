@@ -1,5 +1,4 @@
 import analytics from '@segment/analytics-react-native';
-import styled from '@terrysahaidak/style-thing';
 import { isEmpty } from 'lodash';
 import React, { useCallback, useContext, useEffect, useRef } from 'react';
 import RadialGradient from 'react-native-radial-gradient';
@@ -18,6 +17,7 @@ import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
 import { margin, padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 export const ExchangeSearchHeight = 40;
 const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;

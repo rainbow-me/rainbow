@@ -11,13 +11,13 @@ import React, {
   useState,
 } from 'react';
 import { useSelector } from 'react-redux';
-import styled from '@terrysahaidak/style-thing';
 import { ButtonPressAnimation } from '../animations';
 import { ExchangeSearch } from '../exchange';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
+import styled from 'rainbowed-components';
 
 const CancelButton = styled(ButtonPressAnimation)({
   marginTop: 27,

@@ -5,7 +5,6 @@ import {
   useSpringTransition,
   useTimingTransition,
 } from 'react-native-redash/src/v1';
-import styled from '@terrysahaidak/style-thing';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation, interpolate } from '../animations';
 import { CoinIcon } from '../coin-icon';
@@ -13,6 +12,7 @@ import { Centered, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import PriceImpactWarning from './PriceImpactWarning';
 import { padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const springConfig = {
   damping: 14,

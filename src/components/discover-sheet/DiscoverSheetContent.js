@@ -1,11 +1,11 @@
 import React, { useRef, useState } from 'react';
 import { View } from 'react-native';
-import styled from '@terrysahaidak/style-thing';
 import { ColumnWithMargins, FlexItem } from '../layout';
 import { Text } from '../text';
 import DiscoverHome from './DiscoverHome';
 import DiscoverSearch from './DiscoverSearch';
 import DiscoverSearchContainer from './DiscoverSearchContainer';
+import styled from 'rainbowed-components';
 
 const HeaderTitle = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',

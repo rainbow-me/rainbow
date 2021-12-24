@@ -1,12 +1,12 @@
 import { times } from 'lodash';
 import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import styled from '@terrysahaidak/style-thing';
 import CopyTooltip from '../copy-tooltip';
 import { Centered, ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { Text } from '../text';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { fonts, padding, position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 import ShadowStack from 'react-native-shadow-stack';
 
 const CardBorderRadius = 25;

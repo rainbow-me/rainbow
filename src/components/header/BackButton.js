@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { useCallback } from 'react';
 import { useNavigation } from '../../navigation/Navigation';
 import Icon from '../icons/Icon';
@@ -7,6 +6,7 @@ import Text from '../text/Text';
 import HeaderButton from './HeaderButton';
 import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Container = styled(Row).attrs({ align: 'center' })({
   height: 44,

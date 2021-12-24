@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { TextInput } from 'react-native';
 import Animated, {
@@ -10,6 +9,7 @@ import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
 import { useRatio } from './useRatio';
 import { useChartData } from '@rainbow-me/animated-charts';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 Animated.addWhitelistedNativeProps({ color: true });
 

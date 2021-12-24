@@ -1,10 +1,10 @@
 import React from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { Icon } from '../../icons';
 import { RowWithMargins } from '../../layout';
 import CurrencyTile, { CurrencyTileHeight } from './CurrencyTile';
 import { useSwapCurrencies } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const containerPaddingTop = 34;
 export const SwapDetailsMastheadHeight =

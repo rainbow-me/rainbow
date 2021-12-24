@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import Animated, { SpringUtils } from 'react-native-reanimated';
 import { bin, useSpringTransition } from 'react-native-redash/src/v1';
@@ -7,6 +6,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { Row } from '../layout';
 import { borders, position } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const { add, divide, multiply, sub } = Animated;
 

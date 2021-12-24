@@ -1,10 +1,10 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import styled from '@terrysahaidak/style-thing';
 import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { padding, position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Content = styled(Centered).attrs({
   shrink: 0,

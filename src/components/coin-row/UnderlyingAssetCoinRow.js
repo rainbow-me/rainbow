@@ -1,9 +1,9 @@
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { magicMemo } from '../../utils';
 import { CoinIcon } from '../coin-icon';
 import { Centered, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
+import styled from 'rainbowed-components';
 
 const CoinName = styled(TruncatedText).attrs({
   size: 'large',

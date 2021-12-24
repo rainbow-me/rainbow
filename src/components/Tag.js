@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import { upperCase, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -9,6 +8,7 @@ import { ButtonPressAnimation } from './animations';
 import { Centered, Column } from './layout';
 import { Text as TextElement } from './text';
 import { padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const PropertyActionsEnum = {
   viewTraitOnOpensea: 'viewTraitOnOpensea',

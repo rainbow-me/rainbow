@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { useState } from 'react';
 import Animated, { SpringUtils } from 'react-native-reanimated';
 import { useSpringTransition } from 'react-native-redash/src/v1';
@@ -8,6 +7,7 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 import { useTimeout } from '@rainbow-me/hooks';
 import { borders, position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Container = styled(Animated.View)({
   ...position.centeredAsObject,

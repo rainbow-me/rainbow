@@ -4,7 +4,6 @@ import { pick, startCase, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { requireNativeComponent } from 'react-native';
 import { useDispatch } from 'react-redux';
-import styled from '@terrysahaidak/style-thing';
 import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
 import useExperimentalFlag, {
@@ -32,6 +31,7 @@ import {
   ethereumUtils,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 

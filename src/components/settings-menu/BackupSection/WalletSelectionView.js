@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { useCallback } from 'react';
 import { ScrollView } from 'react-native';
 import { useTheme } from '../../../context/ThemeContext';
@@ -18,6 +17,7 @@ import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import { fonts, padding } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,

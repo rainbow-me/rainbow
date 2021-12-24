@@ -1,5 +1,5 @@
-import styled from '@terrysahaidak/style-thing';
 import { Column } from '../layout';
+import styled from 'rainbowed-components';
 
 const ToastPositionContainerHeight = 40;
 

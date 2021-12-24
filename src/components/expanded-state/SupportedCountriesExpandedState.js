@@ -1,6 +1,5 @@
 import { values } from 'lodash';
 import React from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { FloatingEmojisTapper } from '../floating-emojis';
 import { AssetPanel, FloatingPanels } from '../floating-panels';
 import { Centered } from '../layout';
@@ -10,6 +9,7 @@ import { useDimensions } from '@rainbow-me/hooks';
 import { wyreSupportedCountries } from '@rainbow-me/references';
 import { padding } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const Panel = styled(FloatingPanels)(
   ({ deviceDimensions: { isTallPhone, width } }) => ({

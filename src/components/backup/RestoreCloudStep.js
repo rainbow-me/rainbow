@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, InteractionManager, Keyboard } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -36,6 +35,7 @@ import {
 import Routes from '@rainbow-me/routes';
 import { margin, padding } from '@rainbow-me/styles';
 import logger from 'logger';
+import styled from 'rainbowed-components';
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',

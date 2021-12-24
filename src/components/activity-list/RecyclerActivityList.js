@@ -6,7 +6,6 @@ import {
   RecyclerListView,
 } from 'recyclerlistview';
 import StickyContainer from 'recyclerlistview/dist/reactnative/core/StickyContainer';
-import styled from '@terrysahaidak/style-thing';
 import {
   ContractInteractionCoinRow,
   RequestCoinRow,
@@ -24,6 +23,7 @@ import {
   isNewValueForPath,
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const ViewTypes = {
   COMPONENT_HEADER: 0,

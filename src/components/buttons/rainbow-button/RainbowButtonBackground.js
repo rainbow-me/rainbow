@@ -2,12 +2,12 @@ import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
 import { View } from 'react-native';
 import RadialGradient from 'react-native-radial-gradient';
-import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../../context/ThemeContext';
 import { darkModeThemeColors } from '../../../styles/colors';
 import RainbowButtonTypes from './RainbowButtonTypes';
 import { margin } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const RainbowGradientColorsFactory = darkMode => ({
   inner: {

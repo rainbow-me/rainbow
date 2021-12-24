@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import { RNCamera } from 'react-native-camera';
 import { useIsEmulator } from 'react-native-device-info';
-import styled from '@terrysahaidak/style-thing';
 import { Centered } from '../layout';
 import { ErrorText } from '../text';
 import ConnectedDapps from './ConnectedDapps';
@@ -17,6 +16,7 @@ import SimulatorFakeCameraImageSource from '@rainbow-me/assets/simulator-fake-ca
 import { useBooleanState, useScanner } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Camera = styled(RNCamera)({
   ...position.sizeAsObject('100%'),

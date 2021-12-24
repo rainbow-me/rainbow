@@ -10,9 +10,9 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import RNRestart from 'react-native-restart';
-import styled from '@terrysahaidak/style-thing';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
+import styled from 'rainbowed-components';
 
 const Button = styled(ButtonPressAnimation)({
   alignItems: 'center',

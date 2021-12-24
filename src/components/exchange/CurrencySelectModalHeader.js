@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/native';
 import React, { useCallback } from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { BackButton } from '../header';
 import { Centered } from '../layout';
 import { TruncatedText } from '../text';
@@ -8,6 +7,7 @@ import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { borders, padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const BackButtonWrapper = styled(Centered)({
   bottom: 0,

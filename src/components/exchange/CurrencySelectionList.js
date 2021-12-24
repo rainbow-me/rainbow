@@ -1,7 +1,6 @@
 import { get } from 'lodash';
 import React, { forwardRef, useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from '@terrysahaidak/style-thing';
 import { magicMemo } from '../../utils';
 import { EmptyAssetList } from '../asset-list';
 import { Centered } from '../layout';
@@ -11,6 +10,7 @@ import ExchangeAssetList from './ExchangeAssetList';
 import { ExchangeSearchHeight } from './ExchangeSearch';
 import { usePrevious } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const EmptyCurrencySelectionList = styled(EmptyAssetList).attrs({
   pointerEvents: 'none',

@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { Fragment, useMemo } from 'react';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import LinearGradient from 'react-native-linear-gradient';
@@ -17,6 +16,7 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 import ShadowStack from 'react-native-shadow-stack';
 
 const AssetRowShadow = colors => [

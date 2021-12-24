@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import { startCase } from 'lodash';
 import React from 'react';
 import { View } from 'react-native';
@@ -17,6 +16,7 @@ import {
   haptics,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const InfoButton = styled(Centered)({
   ...padding.object(8, 0),

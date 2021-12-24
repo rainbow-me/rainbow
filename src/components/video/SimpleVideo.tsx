@@ -15,10 +15,10 @@ import {
 // @ts-ignore
 import Video from 'react-native-video';
 import convertToProxyURL from 'react-native-video-cache';
-import styled from '@terrysahaidak/style-thing';
 import { ImgixImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
 import logger from 'logger';
+import styled from 'rainbowed-components';
 
 export type SimpleVideoProps = {
   readonly style?: ViewStyle;

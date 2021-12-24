@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { Fragment } from 'react';
 import { LayoutAnimation } from 'react-native';
 import { View } from 'react-primitives';
@@ -23,6 +22,7 @@ import { Centered } from '../layout';
 import { SavingsListHeader } from '../savings';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from 'rainbowed-components';
 
 const dividerMargin = 5;
 const dividerHeight = DividerSize + dividerMargin * 4;

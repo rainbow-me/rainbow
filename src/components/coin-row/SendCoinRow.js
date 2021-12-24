@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import { concat } from 'lodash';
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
@@ -13,6 +12,7 @@ import CoinRow from './CoinRow';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const isSmallPhone = android || deviceUtils.dimensions.height <= 667;
 const isTinyPhone = deviceUtils.dimensions.height <= 568;

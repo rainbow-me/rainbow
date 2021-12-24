@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
@@ -10,6 +9,7 @@ import CoinName from '../coin-row/CoinName';
 import { FlexItem, Row } from '../layout';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from 'rainbowed-components';
 
 const formatPercentageString = percentString =>
   percentString ? percentString.toString().split('-').join('- ') : '-';

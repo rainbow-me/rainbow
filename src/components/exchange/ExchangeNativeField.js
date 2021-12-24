@@ -1,12 +1,12 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
-import styled from '@terrysahaidak/style-thing';
 import { Row } from '../layout';
 import { Text } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { fonts } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const CurrencySymbol = styled(Text).attrs(({ height, color }) => ({
   color: color,

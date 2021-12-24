@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import { find } from 'lodash';
 import React, {
   useCallback,
@@ -50,6 +49,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const defaultCarouselHeight = 60;
 const baseHeight =

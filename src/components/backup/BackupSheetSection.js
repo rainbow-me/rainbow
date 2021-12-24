@@ -1,5 +1,4 @@
 import analytics from '@segment/analytics-react-native';
-import styled from '@terrysahaidak/style-thing';
 import React, { Fragment, useEffect } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import Divider from '../Divider';
@@ -11,6 +10,7 @@ import BackupIcon from '@rainbow-me/assets/backupIcon.png';
 import BackupIconDark from '@rainbow-me/assets/backupIconDark.png';
 import { ImgixImage } from '@rainbow-me/images';
 import { padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Footer = styled(ColumnWithMargins).attrs({
   margin: 19,

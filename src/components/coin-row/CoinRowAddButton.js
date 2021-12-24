@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -9,6 +8,7 @@ import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const AddButtonPadding = 19;
 

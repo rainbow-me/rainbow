@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
 import { AnimatedNumber, Emoji, Text } from '../text';
@@ -14,6 +13,7 @@ import {
 import { useAccountSettings, useStepper } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const CrystalBallEmoji = styled(Emoji).attrs({
   name: 'crystal_ball',
@@ -35,10 +35,10 @@ const PredictionNumber = styled(AnimatedNumber).attrs(
 
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 const steps = {
-  Monthly: {
+  'Monthly': {
     days: 30,
   },
-  Yearly: {
+  'Yearly': {
     days: 365,
   },
   '5-Year': {

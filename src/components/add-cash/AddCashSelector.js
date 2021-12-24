@@ -1,5 +1,4 @@
 import React from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../context/ThemeContext';
 import { CoinIcon } from '../coin-icon';
 import { JellySelector, JellySelectorShadowIndicator } from '../jelly-selector';
@@ -7,6 +6,7 @@ import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import { getTokenMetadata } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const CurrencyItemHeight = 40;
 

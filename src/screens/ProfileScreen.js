@@ -18,8 +18,8 @@ import {
   useRequests,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
-import styled from '@terrysahaidak/style-thing';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 

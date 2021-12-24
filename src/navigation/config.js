@@ -12,9 +12,9 @@ import { onWillPop } from './Navigation';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
-import styled from '@terrysahaidak/style-thing';
 import { fonts } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 

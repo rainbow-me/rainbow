@@ -1,11 +1,11 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import styled from '@terrysahaidak/style-thing';
 import { useMemoOne } from 'use-memo-one';
 import { interpolate, ScaleInAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import { Centered } from '../../layout';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const { cond, divide, greaterThan } = Animated;
 

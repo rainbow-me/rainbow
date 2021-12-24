@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { magicMemo } from '../../utils';
 import { ButtonPressAnimation, OpacityToggler } from '../animations';
@@ -7,6 +6,7 @@ import { Icon } from '../icons';
 import { Row } from '../layout';
 import { useCoinListFinishEditingOptions } from '@rainbow-me/hooks';
 import { borders, padding, position, shadow } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Container = styled.View({
   ...position.sizeAsObject(CoinIconSize),

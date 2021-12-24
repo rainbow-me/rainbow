@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { useCallback, useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useNavigation } from '../../navigation/Navigation';
@@ -7,6 +6,7 @@ import { Text } from '../text';
 import HeaderButton from './HeaderButton';
 import Routes from '@rainbow-me/routes';
 import { padding, position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 import ShadowStack from 'react-native-shadow-stack';
 
 const DiscoverButtonShadowsFactory = colors => [

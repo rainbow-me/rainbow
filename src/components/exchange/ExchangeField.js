@@ -1,6 +1,5 @@
 import React, { useCallback } from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
-import styled from '@terrysahaidak/style-thing';
 import { TokenSelectionButton } from '../buttons';
 import { CoinIcon, CoinIconSize } from '../coin-icon';
 import { Row, RowWithMargins } from '../layout';
@@ -8,6 +7,7 @@ import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { borders } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const ExchangeFieldHeight = android ? 64 : 38;
 const ExchangeFieldPadding = android ? 15 : 19;

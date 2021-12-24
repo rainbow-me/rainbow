@@ -1,8 +1,8 @@
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { magicMemo } from '../../utils';
 import { ListHeader } from '../list';
 import { Text } from '../text';
+import styled from 'rainbowed-components';
 
 const ActivityListHeaderTitle = styled(Text).attrs({
   size: 'larger',

@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -10,6 +9,7 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const isSmallPhone = android || deviceUtils.dimensions.height <= 667;
 const isTinyPhone = deviceUtils.dimensions.height <= 568;

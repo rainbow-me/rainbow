@@ -1,7 +1,6 @@
 import { isNil } from 'lodash';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import styled from '@terrysahaidak/style-thing';
 import ContractInteraction from '../../assets/contractInteraction.png';
 import { useTheme } from '../../context/ThemeContext';
 import ChainBadge from './ChainBadge';
@@ -14,6 +13,7 @@ import {
   magicMemo,
   CoinIcon as ReactCoinIcon,
 } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 export const CoinIconSize = 40;
 

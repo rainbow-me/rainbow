@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -17,6 +16,7 @@ import {
 } from '@rainbow-me/helpers/emojiHandler';
 import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
 import { deviceUtils, profileUtils } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;

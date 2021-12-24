@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { useMemo } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTheme } from '../../../context/ThemeContext';
@@ -8,6 +7,7 @@ import { Centered, InnerBorder, RowWithMargins } from '../../layout';
 import { Emoji, Text } from '../../text';
 import { containsEmoji } from '@rainbow-me/helpers/strings';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 import ShadowStack from 'react-native-shadow-stack';
 
 const addChartsStyling = isCharts =>

@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -7,6 +6,7 @@ import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token'
 import { Column } from '../layout';
 import { useDimensions, useImageMetadata } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const defaultImageDimensions = { height: 512, width: 512 };
 

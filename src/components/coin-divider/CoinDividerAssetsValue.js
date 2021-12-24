@@ -1,9 +1,9 @@
 import React from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { convertAmountToNativeDisplay } from '../../helpers/utilities';
 import { OpacityToggler } from '../animations';
 import { Text } from '../text';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Container = styled(OpacityToggler)({
   height: 30,

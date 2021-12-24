@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { Row } from '../layout';
 import Text from './Text';
+import styled from 'rainbowed-components';
 
 const Cents = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'right',

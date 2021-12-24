@@ -19,8 +19,8 @@ import {
   useTimeout,
   useWyreApplePay,
 } from '@rainbow-me/hooks';
-import styled from '@terrysahaidak/style-thing';
 import { borders } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);

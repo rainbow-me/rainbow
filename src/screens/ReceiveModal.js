@@ -3,7 +3,6 @@ import { toLower } from 'lodash';
 import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
-import styled from '@terrysahaidak/style-thing';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import { CopyFloatingEmojis } from '../components/floating-emojis';
 import { Centered, Column, ColumnWithMargins } from '../components/layout';
@@ -16,6 +15,7 @@ import { useNavigation } from '../navigation/Navigation';
 import { abbreviations, deviceUtils } from '../utils';
 import { useAccountProfile } from '@rainbow-me/hooks';
 import { padding, shadow } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const QRCodeSize = ios ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
 

@@ -1,5 +1,5 @@
-import styled from '@terrysahaidak/style-thing';
 import { Text } from '../text';
+import styled from 'rainbowed-components';
 
 const BalanceText = styled(Text).attrs(({ color, theme: { colors } }) => ({
   align: 'right',

@@ -15,8 +15,8 @@ import { exchangeTabNavigatorConfig, stackNavigationConfig } from './config';
 import { exchangeModalPreset, expandedPreset } from './effects';
 import Routes from './routesNames';
 import { useDimensions } from '@rainbow-me/hooks';
-import styled from '@terrysahaidak/style-thing';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Stack = createStackNavigator();
 const Tabs = createMaterialTopTabNavigator();

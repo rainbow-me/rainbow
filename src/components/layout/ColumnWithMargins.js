@@ -1,5 +1,5 @@
-import styled from '@terrysahaidak/style-thing';
 import LayoutWithMargins from './LayoutWithMargins';
+import styled from 'rainbowed-components';
 
 const ColumnWithMargins = styled(LayoutWithMargins).attrs(
   ({ direction = 'column', margin = 20 }) => ({

@@ -13,7 +13,7 @@ import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { deviceUtils } from '../utils';
 import { useDimensions, useWallets, useWebData } from '@rainbow-me/hooks';
 import useAccountSettings from '@rainbow-me/hooks/useAccountSettings';
-import styled from '@terrysahaidak/style-thing';
+import styled from 'rainbowed-components';
 
 const AvatarCircleHeight = 65;
 const AvatarCircleMarginTop = 2;

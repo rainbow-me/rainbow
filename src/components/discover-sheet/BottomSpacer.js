@@ -1,9 +1,9 @@
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import {
   FabWrapperBottomPosition,
   FloatingActionButtonSize,
 } from '../../components/fab';
+import styled from 'rainbowed-components';
 
 const SpacerHeight = FabWrapperBottomPosition + FloatingActionButtonSize;
 

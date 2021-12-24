@@ -1,5 +1,5 @@
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
+import styled from 'rainbowed-components';
 
 export const HandleHeight = 5;
 

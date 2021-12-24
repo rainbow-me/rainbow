@@ -1,8 +1,8 @@
 import React from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { ButtonPressAnimation } from '../animations';
 import { Text } from '../text';
 import { lightModeThemeColors, padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const ExchangeDetailsButtonLabel = styled(Text).attrs({
   color: lightModeThemeColors.white,

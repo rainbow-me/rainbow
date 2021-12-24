@@ -1,10 +1,10 @@
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered, Row } from '../layout';
 import { TruncatedText } from '../text';
 import ModalHeaderButton from './ModalHeaderButton';
 import { borders, position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 export const ModalHeaderHeight = 50;
 

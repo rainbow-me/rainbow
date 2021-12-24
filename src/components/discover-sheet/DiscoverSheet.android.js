@@ -15,13 +15,13 @@ import {
   useSharedValue,
   useWorkletCallback,
 } from 'react-native-reanimated';
-import styled from '@terrysahaidak/style-thing';
 import DiscoverSheetContent from './DiscoverSheetContent';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import DiscoverSheetHeader from './DiscoverSheetHeader';
 import CustomBackground from './androidCustomComponents/customBackground';
 import CustomHandle from './androidCustomComponents/customHandle';
 import { deviceUtils } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 function useAreHeaderButtonVisible() {
   const [isSearchModeEnabled, setIsSearchModeEnabled] = useState(false);

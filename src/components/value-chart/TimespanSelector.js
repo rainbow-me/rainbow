@@ -1,10 +1,10 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { useMemo } from 'react';
 import { JellySelector } from '../jelly-selector';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Container = styled(Centered)({
   paddingTop: 49,

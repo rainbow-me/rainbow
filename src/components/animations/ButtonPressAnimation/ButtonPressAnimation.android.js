@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { createContext, useCallback, useContext, useMemo } from 'react';
 import { processColor, requireNativeComponent, View } from 'react-native';
 import { createNativeWrapper } from 'react-native-gesture-handler';
@@ -14,6 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { normalizeTransformOrigin } from './NativeButton';
 import { useLongPressEvents } from '@rainbow-me/hooks';
+import styled from 'rainbowed-components';
 
 const ZoomableRawButton = requireNativeComponent('RNZoomableButton');
 

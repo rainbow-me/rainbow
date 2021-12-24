@@ -1,5 +1,5 @@
-import styled from '@terrysahaidak/style-thing';
 import LayoutWithMargins from './LayoutWithMargins';
+import styled from 'rainbowed-components';
 
 const RowWithMargins = styled(LayoutWithMargins).attrs(
   ({ direction = 'row', margin = 19 }) => ({

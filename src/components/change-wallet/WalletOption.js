@@ -1,10 +1,10 @@
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Container = styled(Row).attrs({
   align: 'center',

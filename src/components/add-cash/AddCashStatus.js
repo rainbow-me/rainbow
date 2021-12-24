@@ -3,7 +3,6 @@ import LottieView from 'lottie-react-native';
 import React, { Fragment, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
-import styled from '@terrysahaidak/style-thing';
 import jumpingDaiAnimation from '../../assets/lottie/jumping-dai.json';
 import jumpingEthAnimation from '../../assets/lottie/jumping-eth.json';
 import { CoinIcon } from '../coin-icon';
@@ -22,6 +21,7 @@ import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { ETH_ADDRESS, getWyreErrorOverride } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const OrderIdText = styled(Text).attrs({
   align: 'center',

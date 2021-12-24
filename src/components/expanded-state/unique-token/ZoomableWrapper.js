@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { StatusBar, StyleSheet, View } from 'react-native';
 import {
@@ -20,6 +19,7 @@ import useReactiveSharedValue from '../../../react-native-animated-charts/src/he
 import { ButtonPressAnimation } from '../../animations';
 import { useDimensions } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const adjustConfig = {
   duration: 300,

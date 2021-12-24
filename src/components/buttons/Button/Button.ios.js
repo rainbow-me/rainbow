@@ -1,11 +1,11 @@
 import { isArray, isString, pick } from 'lodash';
 import React from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered, InnerBorder } from '../../layout';
 import { Text } from '../../text';
 import { padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const ButtonSizeTypes = {
   default: {

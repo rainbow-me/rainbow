@@ -7,9 +7,9 @@ import {
   ViewStyle,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
-import styled from '@terrysahaidak/style-thing';
 import { ImgixImage } from '@rainbow-me/images';
 import { padding, position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 export type ModelViewerProps = {
   readonly setLoading: (loading: boolean) => void;

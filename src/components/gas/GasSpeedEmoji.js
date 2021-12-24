@@ -1,9 +1,9 @@
 import { has } from 'lodash';
 import React from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { Emoji } from '../text';
 import { margin } from '@rainbow-me/styles';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const EmojiForGasSpeedType = {
   [gasUtils.URGENT]: {

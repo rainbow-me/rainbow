@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { useMemo } from 'react';
 import { Image } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
@@ -13,6 +12,7 @@ import {
   isETH,
   magicMemo,
 } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,

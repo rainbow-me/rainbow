@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { magicMemo } from '../../utils';
@@ -6,6 +5,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Button = styled(Centered).attrs({
   scaleTo: 0.8,

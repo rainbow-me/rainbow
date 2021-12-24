@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { useCallback, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
@@ -19,6 +18,7 @@ import {
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import { useAccountSettings, useContacts } from '@rainbow-me/hooks';
 import { margin, padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs(
   ({ theme: { colors } }) => ({

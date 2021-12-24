@@ -1,10 +1,10 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { Fragment, useCallback, useState } from 'react';
 import { InteractionManager } from 'react-native';
 import TextInputMask from 'react-native-text-input-mask';
 import { Text } from '../text';
 import { buildTextStyles } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const AndroidMaskWrapper = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.white,

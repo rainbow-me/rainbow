@@ -1,7 +1,7 @@
 import React from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { Row } from '../layout';
 import ExchangeField from './ExchangeField';
+import styled from 'rainbowed-components';
 
 const paddingTop = android ? 15 : 32;
 

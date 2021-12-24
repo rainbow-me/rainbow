@@ -1,6 +1,5 @@
 import { toLower } from 'lodash';
 import React, { Fragment, useCallback, useState } from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../context/ThemeContext';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../../references';
@@ -15,6 +14,7 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({
   dark: darkMode

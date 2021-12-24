@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
-import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../context/ThemeContext';
 import { initials } from '../../utils';
 import ChainBadge from '../coin-icon/ChainBadge';
@@ -9,6 +8,7 @@ import { Text } from '../text';
 import { CoinIconSize } from './CoinIcon';
 import { ImgixImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 import ShadowStack from 'react-native-shadow-stack';
 
 const RVLIBorderRadius = 16.25;

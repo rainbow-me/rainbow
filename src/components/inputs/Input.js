@@ -1,8 +1,8 @@
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { TextInput as TextInputPrimitive } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { buildTextStyles } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const TextInput = styled(TextInputPrimitive)(buildTextStyles.object);
 

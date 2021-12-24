@@ -1,7 +1,7 @@
-import { css } from '@terrysahaidak/style-thing';
 import { get, isNil } from 'lodash';
 import colors from './colors';
 import fonts from './fonts';
+import { css } from 'rainbowed-components';
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);

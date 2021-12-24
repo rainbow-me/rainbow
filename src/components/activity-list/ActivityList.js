@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { useEffect, useMemo, useState } from 'react';
 import { SectionList } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
@@ -11,6 +10,7 @@ import Text from '../text/Text';
 import ActivityListEmptyState from './ActivityListEmptyState';
 import ActivityListHeader from './ActivityListHeader';
 import RecyclerActivityList from './RecyclerActivityList';
+import styled from 'rainbowed-components';
 
 const getItemLayout = (data, index) => ({
   index,

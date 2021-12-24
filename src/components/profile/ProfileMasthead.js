@@ -1,6 +1,5 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
-import styled from '@terrysahaidak/style-thing';
 import React, { useCallback, useRef } from 'react';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -24,6 +23,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { abbreviations } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const dropdownArrowWidth = 21;
 

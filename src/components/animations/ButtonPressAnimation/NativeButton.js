@@ -1,6 +1,6 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { useMemo } from 'react';
 import { requireNativeComponent, View } from 'react-native';
+import styled from 'rainbowed-components';
 
 const RawNativeButton = requireNativeComponent('Button');
 

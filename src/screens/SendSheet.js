@@ -54,7 +54,6 @@ import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { chainAssets, rainbowTokenList } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import styled from '@terrysahaidak/style-thing';
 import { borders } from '@rainbow-me/styles';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -64,6 +63,7 @@ import {
 } from '@rainbow-me/utilities';
 import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
+import styled from 'rainbowed-components';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);

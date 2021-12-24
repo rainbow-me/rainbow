@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { Fragment } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { Column } from '../layout';
@@ -6,6 +5,7 @@ import SendAssetFormField from './SendAssetFormField';
 import { useDimensions } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { removeLeadingZeros } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const footerMargin = getSoftMenuBarHeight() / 2;
 const FooterContainer = styled(Column).attrs({

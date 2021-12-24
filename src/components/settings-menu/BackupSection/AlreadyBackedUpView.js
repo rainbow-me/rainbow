@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import styled from '@terrysahaidak/style-thing';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { View } from 'react-native';
 import { useTheme } from '../../../context/ThemeContext';
@@ -21,6 +20,7 @@ import {
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { fonts, padding, position, shadow } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const WalletBackupStatus = {
   CLOUD_BACKUP: 0,

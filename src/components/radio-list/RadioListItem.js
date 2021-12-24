@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
-import styled from '@terrysahaidak/style-thing';
 import Icon from '../icons/Icon';
 import { ListItem } from '../list';
+import styled from 'rainbowed-components';
 
 const CheckmarkIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,

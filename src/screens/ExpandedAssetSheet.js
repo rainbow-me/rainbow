@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import styled from '@terrysahaidak/style-thing';
 import React, { createElement } from 'react';
 import { StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -17,6 +16,7 @@ import { useTheme } from '@rainbow-me/context';
 import { useAsset, useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const ScreenTypes = {
   custom_gas: CustomGasState,

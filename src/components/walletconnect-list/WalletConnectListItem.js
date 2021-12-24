@@ -1,6 +1,5 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useMemo } from 'react';
-import styled from '@terrysahaidak/style-thing';
 import ChainLogo from '../ChainLogo';
 import NetworkPill from '../NetworkPill';
 import { RequestVendorLogoIcon } from '../coin-icon';
@@ -31,6 +30,7 @@ import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const ContainerPadding = 15;
 const VendorLogoIconSize = 50;

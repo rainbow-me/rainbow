@@ -1,12 +1,12 @@
 import { upperFirst } from 'lodash';
 import React from 'react';
-import styled from '@terrysahaidak/style-thing';
 import ButtonPressAnimation from '../animations/ButtonPressAnimation';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { GasSpeedEmoji } from '.';
 import { margin, padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const SpeedButton = styled(ButtonPressAnimation).attrs({
   hapticType: 'impactHeavy',

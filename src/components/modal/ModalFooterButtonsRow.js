@@ -1,8 +1,8 @@
-import styled from '@terrysahaidak/style-thing';
 import PropTypes from 'prop-types';
 import React, { Children, Fragment } from 'react';
 import Divider from '../Divider';
 import { Row } from '../layout';
+import styled from 'rainbowed-components';
 
 const Container = styled(Row)({
   borderTopColor: ({ theme: { colors } }) => colors.rowDivider,

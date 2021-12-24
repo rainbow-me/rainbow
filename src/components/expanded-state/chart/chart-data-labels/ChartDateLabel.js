@@ -1,10 +1,10 @@
 import React from 'react';
 import { View } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
-import styled from '@terrysahaidak/style-thing';
 import { useRatio } from './useRatio';
 import { ChartXLabel } from '@rainbow-me/animated-charts';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Label = styled(ChartXLabel)({
   ...fontWithWidth(fonts.weight.semibold),

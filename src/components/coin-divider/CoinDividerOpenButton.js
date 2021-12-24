@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import Animated, {
   useAnimatedStyle,
@@ -14,6 +13,7 @@ import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const closedWidth = 52.5;
 const openWidth = 80;

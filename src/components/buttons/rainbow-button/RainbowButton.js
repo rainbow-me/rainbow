@@ -1,6 +1,5 @@
 import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
-import styled from '@terrysahaidak/style-thing';
 import AddCashIconSource from '../../../assets/addCashIcon.png';
 import { useTheme } from '../../../context/ThemeContext';
 import { ButtonPressAnimation } from '../../animations';
@@ -11,6 +10,7 @@ import RainbowButtonTypes from './RainbowButtonTypes';
 import { useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { position, shadow } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 import ShadowView from 'react-native-shadow-stack/ShadowView';
 
 const AddCashIcon = styled(ImgixImage).attrs({

@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { createContext, useCallback, useContext, useMemo } from 'react';
 import { ColumnWithMargins } from '../layout';
 import AvatarCircle from '../profile/AvatarCircle';
@@ -16,6 +15,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, padding } from '@rainbow-me/styles';
 import { abbreviations, profileUtils } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 export const ShowcaseContext = createContext();
 

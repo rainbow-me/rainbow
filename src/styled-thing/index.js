@@ -188,10 +188,10 @@ export default function styled(Component) {
     hoist(WrappedStyledComponent, Component, {
       // all SC-specific things should not be hoisted
       attrs: true,
-      styles: true,
       displayName: true,
-      shouldForwardProp: true,
       isStyledComponent: true,
+      shouldForwardProp: true,
+      styles: true,
       target: true,
     });
 

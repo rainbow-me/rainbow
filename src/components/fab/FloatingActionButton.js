@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo } from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../context/ThemeContext';
 import { darkModeThemeColors } from '../../styles/colors';
 import { magicMemo } from '../../utils';
@@ -8,6 +7,7 @@ import ButtonPressAnimation, {
 } from '../animations/ButtonPressAnimation';
 import { Centered, InnerBorder } from '../layout';
 import { borders, position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 import ShadowStack from 'react-native-shadow-stack';
 
 export const FloatingActionButtonSize = 56;

@@ -1,9 +1,9 @@
 import React from 'react';
-import styled from '@terrysahaidak/style-thing';
 import Divider from '../../Divider';
 import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
 import { Emoji, Text } from '../../text';
 import { padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Container = styled(ColumnWithMargins).attrs({
   align: 'center',

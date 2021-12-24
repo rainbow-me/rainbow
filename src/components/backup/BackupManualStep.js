@@ -1,6 +1,5 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import styled from '@terrysahaidak/style-thing';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
@@ -16,6 +15,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Content = styled(Column).attrs({
   align: 'center',

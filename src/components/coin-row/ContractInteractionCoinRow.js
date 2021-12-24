@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { useCallback } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { CoinIconSize, RequestVendorLogoIcon } from '../coin-icon';
@@ -6,6 +5,7 @@ import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const BottomRow = ({ dappName }) => <CoinName>{dappName}</CoinName>;
 

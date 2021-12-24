@@ -1,5 +1,4 @@
 import React from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { ColumnWithMargins } from '../../layout';
 import SwapDetailsContractRow from './SwapDetailsContractRow';
 import SwapDetailsPriceRow from './SwapDetailsPriceRow';
@@ -11,6 +10,7 @@ import SwapDetailsUniswapRow from './SwapDetailsUniswapRow';
 import { useSwapAdjustedAmounts, useSwapCurrencies } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 import { isETH } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const contentRowMargin = 24;
 export const SwapDetailsContentMinHeight =

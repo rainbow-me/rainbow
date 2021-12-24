@@ -13,7 +13,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import styled from '@terrysahaidak/style-thing';
 import useWallets from '../../hooks/useWallets';
 import { lightModeThemeColors } from '../../styles/colors';
 import Link from '../Link';
@@ -56,6 +55,7 @@ import {
   magicMemo,
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const NftExpandedStateSection = styled(ExpandedStateSection).attrs({
   isNft: true,

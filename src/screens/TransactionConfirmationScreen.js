@@ -78,7 +78,6 @@ import { useNavigation } from '@rainbow-me/navigation';
 import { parseGasParamsForTransaction } from '@rainbow-me/parsers';
 import { walletConnectRemovePendingRedirect } from '@rainbow-me/redux/walletconnect';
 import Routes from '@rainbow-me/routes';
-import styled from '@terrysahaidak/style-thing';
 import { padding } from '@rainbow-me/styles';
 import {
   convertAmountToNativeDisplay,
@@ -101,6 +100,7 @@ import {
   SIGN_TYPED_DATA,
 } from '@rainbow-me/utils/signingMethods';
 import logger from 'logger';
+import styled from 'rainbowed-components';
 
 const springConfig = {
   damping: 500,

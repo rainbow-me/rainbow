@@ -1,10 +1,10 @@
 import React from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { ButtonPressAnimation } from '../animations';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Container = styled(ButtonPressAnimation)({
   marginRight: 4,

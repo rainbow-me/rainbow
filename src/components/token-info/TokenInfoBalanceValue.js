@@ -1,10 +1,10 @@
 import React from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { CoinIcon } from '../coin-icon';
 import { RowWithMargins } from '../layout';
 import TokenInfoValue from './TokenInfoValue';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { magicMemo } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const InfoValue = styled(TokenInfoValue)(android ? { height: 37.7 } : {});
 

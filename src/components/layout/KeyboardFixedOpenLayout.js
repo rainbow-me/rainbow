@@ -2,10 +2,10 @@ import React, { useEffect, useRef } from 'react';
 import { KeyboardAvoidingView } from 'react-native';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from '@terrysahaidak/style-thing';
 import Centered from './Centered';
 import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Container = styled(Transitioning.View)({
   height: ({ height }) => height,

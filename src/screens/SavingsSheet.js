@@ -31,9 +31,9 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from '@terrysahaidak/style-thing';
 import { position } from '@rainbow-me/styles';
 import { watchingAlert } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 export const SavingsSheetEmptyHeight = 313;
 export const SavingsSheetHeight = android

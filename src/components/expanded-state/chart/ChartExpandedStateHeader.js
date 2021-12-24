@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { useEffect, useMemo } from 'react';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import { useCallbackOne } from 'use-memo-one';
@@ -15,6 +14,7 @@ import {
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useBooleanState } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const { call, cond, onChange, useCode } = Animated;
 

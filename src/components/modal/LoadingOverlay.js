@@ -1,5 +1,4 @@
 import { BlurView } from '@react-native-community/blur';
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import ActivityIndicator from '../ActivityIndicator';
@@ -9,6 +8,7 @@ import { Centered, Column } from '../layout';
 import { Text } from '../text';
 import { padding, position } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const Container = styled(Centered).attrs({
   flex: android ? 1 : undefined,

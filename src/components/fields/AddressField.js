@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import styled from '@terrysahaidak/style-thing';
 import { isHexString } from '../../handlers/web3';
 import { checkIsValidAddressOrDomain } from '../../helpers/validators';
 import { Input } from '../inputs';
@@ -8,6 +7,7 @@ import { Row } from '../layout';
 import { Label } from '../text';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import { abbreviations, addressUtils } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const AddressInput = styled(Input).attrs({
   autoCapitalize: 'none',

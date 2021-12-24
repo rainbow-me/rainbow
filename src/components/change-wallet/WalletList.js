@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import { get, isEmpty } from 'lodash';
 import React, {
   Fragment,
@@ -19,6 +18,7 @@ import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;

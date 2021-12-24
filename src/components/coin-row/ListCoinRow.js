@@ -1,4 +1,3 @@
-import styled, { css } from '@terrysahaidak/style-thing';
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { ButtonPressAnimation } from '../animations';
@@ -10,6 +9,7 @@ import CoinRow from './CoinRow';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils, magicMemo } from '@rainbow-me/utils';
+import styled, { css } from 'rainbowed-components';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;

@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect } from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { cloudPlatform } from '../../../utils/platform';
 import { RainbowButton } from '../../buttons';
 import { Centered, Column } from '../../layout';
@@ -15,6 +14,7 @@ import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { fonts, padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const BackupButton = styled(RainbowButton).attrs({
   type: 'small',

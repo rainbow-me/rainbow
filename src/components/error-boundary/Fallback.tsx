@@ -1,12 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
 import RNExitApp from 'react-native-exit-app';
-import styled from '@terrysahaidak/style-thing';
 import { Centered } from '../layout';
 import { SheetActionButton } from '../sheet';
 import Text from '../text/Text';
 import { useTheme } from '@rainbow-me/context';
 import logger from 'logger';
+import styled from 'rainbowed-components';
 
 const Spacer = styled(View)<{ height: Number }>({
   height: ({ height }) => height,

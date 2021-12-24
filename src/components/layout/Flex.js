@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
-import styled from '@terrysahaidak/style-thing';
 import { buildFlexStyles } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const flexPropTypes = {
   align: PropTypes.oneOf(['baseline', 'center', 'end', 'start', 'stretch']),

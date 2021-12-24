@@ -1,8 +1,8 @@
 import React from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { magicMemo } from '../../utils';
 import { OpacityToggler } from '../animations';
 import { Text } from '../text';
+import styled from 'rainbowed-components';
 
 const LabelText = styled(Text).attrs(({ shareButton, theme: { colors } }) => ({
   color: colors.alpha(colors.blueGreyDark, 0.6),

@@ -2,7 +2,6 @@ import React, { Fragment, useCallback } from 'react';
 import { View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import RadialGradient from 'react-native-radial-gradient';
-import styled from '@terrysahaidak/style-thing';
 import { ButtonPressAnimation } from '../../animations';
 import { Centered } from '../../layout';
 import { Text } from '../../text';
@@ -10,6 +9,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const AddToListButtonPadding = 19;
 

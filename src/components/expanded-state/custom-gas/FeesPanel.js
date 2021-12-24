@@ -4,7 +4,6 @@ import { upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, KeyboardAvoidingView } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
-import styled, { useTheme } from '@terrysahaidak/style-thing';
 import { Alert } from '../../../components/alerts';
 import { ButtonPressAnimation } from '../../animations';
 import { Column, ColumnWithMargins, Row } from '../../layout';
@@ -32,6 +31,7 @@ import { gweiToWei, parseGasFeeParam } from '@rainbow-me/parsers';
 import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
+import styled, { useTheme } from 'rainbowed-components';
 
 const Wrapper = styled(KeyboardAvoidingView)({});
 const { CUSTOM, GAS_TRENDS, NORMAL, URGENT } = gasUtils;

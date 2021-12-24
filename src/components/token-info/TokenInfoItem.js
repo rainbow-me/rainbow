@@ -1,6 +1,5 @@
 import React from 'react';
 import { View } from 'react-native';
-import styled from '@terrysahaidak/style-thing';
 import { ButtonPressAnimation, ShimmerAnimation } from '../animations';
 import { ColumnWithMargins, RowWithMargins } from '../layout';
 import TokenInfoBalanceValue from './TokenInfoBalanceValue';
@@ -8,6 +7,7 @@ import TokenInfoHeading from './TokenInfoHeading';
 import TokenInfoValue from './TokenInfoValue';
 import { useTheme } from '@rainbow-me/context';
 import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
+import styled from 'rainbowed-components';
 
 const Container = styled.View({});
 

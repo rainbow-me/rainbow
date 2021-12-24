@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from 'react';
 import { Pressable } from 'react-native';
-import styled from '@terrysahaidak/style-thing';
 import { Text } from './text';
 import { useAppVersion, useTimeout } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from 'rainbowed-components';
 
 const DEBUG_TAP_COUNT = 15;
 

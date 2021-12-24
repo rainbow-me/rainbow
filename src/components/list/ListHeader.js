@@ -1,6 +1,5 @@
 import React, { createElement, Fragment } from 'react';
 import { Share } from 'react-native';
-import styled from '@terrysahaidak/style-thing';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
 import CoinDividerButtonLabel from '../coin-divider/CoinDividerButtonLabel';
@@ -17,6 +16,7 @@ import {
 } from '@rainbow-me/hooks';
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import { padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 export const ListHeaderHeight = 50;
 

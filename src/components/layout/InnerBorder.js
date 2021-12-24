@@ -1,5 +1,5 @@
-import styled from '@terrysahaidak/style-thing';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const InnerBorder = styled.View.withConfig({
   shouldForwardProp: prop => prop !== 'width',

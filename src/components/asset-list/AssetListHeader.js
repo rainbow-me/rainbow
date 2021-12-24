@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
@@ -15,6 +14,7 @@ import { useAccountProfile, useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { fonts, position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 export const AssetListHeaderHeight = ListHeaderHeight + DividerSize;
 

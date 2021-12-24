@@ -1,9 +1,9 @@
 import React from 'react';
 import RadialGradient from 'react-native-radial-gradient';
-import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../context/ThemeContext';
 import { TruncatedText } from './text';
 import { padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Gradient = styled(RadialGradient).attrs(
   ({ theme: { colors }, borderRadius = 10.5 }) => ({

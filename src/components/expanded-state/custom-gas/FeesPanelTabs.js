@@ -1,7 +1,6 @@
 import { isEmpty, upperFirst } from 'lodash';
 import React from 'react';
 import { View } from 'react-native';
-import styled from '@terrysahaidak/style-thing';
 import { ButtonPressAnimation } from '../../animations';
 import EdgeFade from '../../discover-sheet/EdgeFade';
 import { Column, Row } from '../../layout';
@@ -9,6 +8,7 @@ import { Text } from '../../text';
 import { useGas } from '@rainbow-me/hooks';
 import { margin, padding } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 

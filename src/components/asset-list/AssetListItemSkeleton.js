@@ -1,5 +1,4 @@
 import MaskedView from '@react-native-community/masked-view';
-import styled from '@terrysahaidak/style-thing';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { View } from 'react-native';
@@ -16,6 +15,7 @@ import { interpolate } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { padding, position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const { block, cond, set, startClock, stopClock } = Animated;
 

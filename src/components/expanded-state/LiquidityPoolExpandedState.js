@@ -3,7 +3,6 @@ import { toLower } from 'lodash';
 import React, { Fragment, useEffect, useMemo } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
 import { useDispatch } from 'react-redux';
-import styled from '@terrysahaidak/style-thing';
 import { UniBalanceHeightDifference } from '../../hooks/charts/useChartThrottledPoints';
 import deviceUtils from '../../utils/deviceUtils';
 import EdgeFade from '../discover-sheet/EdgeFade';
@@ -39,6 +38,7 @@ import { emitAssetRequest } from '@rainbow-me/redux/explorer';
 
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import { magicMemo, safeAreaInsetValues } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const Spacer = styled.View({
   height: safeAreaInsetValues.bottom + 20,

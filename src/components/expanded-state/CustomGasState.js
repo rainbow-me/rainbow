@@ -1,7 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import styled from '@terrysahaidak/style-thing';
 import Divider from '../Divider';
 import { ExchangeHeader } from '../exchange';
 import { FloatingPanel } from '../floating-panels';
@@ -20,6 +19,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import { margin } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const FOOTER_HEIGHT = 76;
 const CONTENT_HEIGHT = 310;

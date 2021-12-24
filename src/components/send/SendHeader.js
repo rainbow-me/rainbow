@@ -1,5 +1,4 @@
 import { isHexString } from '@ethersproject/bytes';
-import styled from '@terrysahaidak/style-thing';
 import { get, isEmpty, toLower } from 'lodash';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { ActivityIndicator, Keyboard } from 'react-native';
@@ -19,6 +18,7 @@ import { useClipboard, useDimensions } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { profileUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const AddressInputContainer = styled(Row).attrs({ align: 'center' })(
   ({ isSmallPhone, theme: { colors }, isTinyPhone }) => ({

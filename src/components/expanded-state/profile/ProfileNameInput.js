@@ -1,9 +1,9 @@
 import React, { Fragment, useCallback, useEffect, useRef } from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { Input } from '../../inputs';
 import { PlaceholderText } from '../../text';
 import { useMagicAutofocus } from '@rainbow-me/hooks';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const NameInput = styled(Input).attrs({
   align: 'center',

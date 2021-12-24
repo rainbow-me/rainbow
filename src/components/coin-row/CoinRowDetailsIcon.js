@@ -1,9 +1,9 @@
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { Centered, Column } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
 import { padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const AddButtonPadding = 19;
 

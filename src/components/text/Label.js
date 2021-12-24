@@ -1,5 +1,5 @@
-import styled from '@terrysahaidak/style-thing';
 import Text from './Text';
+import styled from 'rainbowed-components';
 
 const Label = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.blueGreyDark,

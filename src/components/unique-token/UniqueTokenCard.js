@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo } from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { getLowResUrl } from '../../utils/getLowResUrl';
 import { ButtonPressAnimation } from '../animations';
 import { InnerBorder } from '../layout';
@@ -10,6 +9,7 @@ import {
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import { shadow as shadowUtil } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadowFactory = colors => [0, 2, 6, colors.shadow, 0.08];

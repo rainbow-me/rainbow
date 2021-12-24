@@ -1,6 +1,5 @@
 import MaskedView from '@react-native-community/masked-view';
 import analytics from '@segment/analytics-react-native';
-import styled from '@terrysahaidak/style-thing';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Easing } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -36,6 +35,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { position, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
+import styled from 'rainbowed-components';
 
 const {
   and,

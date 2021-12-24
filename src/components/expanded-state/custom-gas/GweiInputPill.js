@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import TextInputMask from 'react-native-text-input-mask';
@@ -6,6 +5,7 @@ import { Row } from '../../../components/layout';
 import { ButtonPressAnimation } from '../../animations';
 import { Text } from '../../text';
 import { buildTextStyles, margin, padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 

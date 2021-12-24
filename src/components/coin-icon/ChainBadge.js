@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
 import ArbitrumBadge from '../../assets/badges/arbitrumBadge.png';
@@ -16,6 +15,7 @@ import PolygonBadgeLargeDark from '../../assets/badges/polygonBadgeLargeDark.png
 import { Centered } from '../layout';
 import { AssetType } from '@rainbow-me/entities';
 import { position as positions } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const sizeConfigs = {
   large: {

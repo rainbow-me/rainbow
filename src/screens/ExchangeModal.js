@@ -17,7 +17,6 @@ import {
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from '@terrysahaidak/style-thing';
 import { useMemoOne } from 'use-memo-one';
 import { dismissingScreenListener } from '../../shim';
 import {
@@ -59,6 +58,7 @@ import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
+import styled from 'rainbowed-components';
 
 const FloatingPanels = ios
   ? AnimatedExchangeFloatingPanels

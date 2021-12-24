@@ -22,9 +22,9 @@ import {
   useUserLists,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import styled from '@terrysahaidak/style-thing';
 import { position } from '@rainbow-me/styles';
 import { haptics } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const Container = styled(Centered).attrs({
   direction: 'column',

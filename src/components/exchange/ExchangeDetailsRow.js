@@ -6,12 +6,12 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import styled from '@terrysahaidak/style-thing';
 import { Centered, Row } from '../layout';
 import ExchangeDetailsButton from './ExchangeDetailsButton';
 import PriceImpactWarning from './PriceImpactWarning';
 import { usePrevious, useSwapCurrencies } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const defaultPriceImpactScale = 1.15;
 const timingConfig = {

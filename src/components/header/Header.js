@@ -1,8 +1,8 @@
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { Row } from '../layout';
 import { useDimensions } from '@rainbow-me/hooks';
+import styled from 'rainbowed-components';
 
 const StatusBarHeight = getStatusBarHeight(true);
 export const HeaderHeight = 44;

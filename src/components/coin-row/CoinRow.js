@@ -1,10 +1,10 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { createElement } from 'react';
 import useCoinListEditOptions from '../../hooks/useCoinListEditOptions';
 import { CoinIcon, CoinIconGroup, CoinIconSize } from '../coin-icon';
 import { Column, Row } from '../layout';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const CoinRowPaddingTop = 9;
 const CoinRowPaddingBottom = 10;

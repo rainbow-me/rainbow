@@ -12,7 +12,7 @@ import { buildUniqueTokenList } from '@rainbow-me/helpers/assets';
 import { tokenFamilyItem } from '@rainbow-me/helpers/buildWalletSections';
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { fetchUniqueTokens } from '@rainbow-me/redux/uniqueTokens';
-import styled from '@terrysahaidak/style-thing';
+import styled from 'rainbowed-components';
 
 async function fetchShowcaseForAddress(address) {
   const response = await rainbowFetch(`${PREFS_ENDPOINT}/address`, {

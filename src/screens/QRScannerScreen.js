@@ -15,8 +15,8 @@ import {
 } from '../components/qrcode-scanner';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from '@terrysahaidak/style-thing';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Background = styled.View({
   backgroundColor: 'black',

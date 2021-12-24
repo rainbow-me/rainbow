@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import { toLower } from 'lodash';
 import React, { useCallback } from 'react';
 import { Linking } from 'react-native';
@@ -23,6 +22,7 @@ import {
   magicMemo,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',

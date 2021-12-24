@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { Fragment } from 'react';
 import {
   removeFirstEmojiFromString,
@@ -17,6 +16,7 @@ import {
 } from '@rainbow-me/helpers/validators';
 import { useDimensions } from '@rainbow-me/hooks';
 import { margin } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const ContactAddress = styled(TruncatedAddress).attrs(
   ({ theme: { colors }, lite }) => ({

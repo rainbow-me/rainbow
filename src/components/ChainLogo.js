@@ -1,6 +1,5 @@
 import React from 'react';
 import FastImage from 'react-native-fast-image';
-import styled from '@terrysahaidak/style-thing';
 import ArbitrumBadge from '../assets/badges/arbitrumBadge.png';
 import ArbitrumBadgeDark from '../assets/badges/arbitrumBadgeDark.png';
 import ArbitrumBadgeNoShadow from '../assets/badges/arbitrumBadgeNoShadow.png';
@@ -13,6 +12,7 @@ import PolygonBadgeNoShadow from '../assets/badges/polygonBadgeNoShadow.png';
 import { Centered } from './layout';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const ChainIcon = styled(FastImage)({
   height: ({ size }) => size,

@@ -1,7 +1,6 @@
 import { toLower } from 'lodash';
 import React, { useMemo } from 'react';
 import { ActivityIndicator, PixelRatio, StyleSheet, View } from 'react-native';
-import styled from '@terrysahaidak/style-thing';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../../../references';
 import { magicMemo } from '../../../utils';
 import { getLowResUrl } from '../../../utils/getLowResUrl';
@@ -17,6 +16,7 @@ import {
   useUniqueToken,
 } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const pixelRatio = PixelRatio.get();
 

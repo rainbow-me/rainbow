@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { useNavigation } from '../../navigation/Navigation';
 import { magicMemo } from '../../utils';
 import { Row } from '../layout';
@@ -13,6 +12,7 @@ import UniqueTokenCard from './UniqueTokenCard';
 import { useWallets } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { padding, position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Container = styled(Row).attrs({ align: 'center' })({
   ...padding.object(0, UniqueTokenRowPadding),

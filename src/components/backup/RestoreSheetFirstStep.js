@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import { forEach } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -12,6 +11,7 @@ import { GradientText, Text } from '../text';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import { useNavigation } from '@rainbow-me/navigation';
 import { deviceUtils } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const deviceWidth = deviceUtils.dimensions.width;
 

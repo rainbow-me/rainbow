@@ -1,5 +1,5 @@
-import styled from '@terrysahaidak/style-thing';
 import { isUndefined } from 'lodash';
+import styled from 'rainbowed-components';
 
 const FlexItem = styled.View(({ flex, grow, shrink }) => {
   const props = {

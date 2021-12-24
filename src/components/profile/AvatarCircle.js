@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
 import ImageAvatar from '../contacts/ImageAvatar';
@@ -7,6 +6,7 @@ import { Flex, InnerBorder } from '../layout';
 import { Text } from '../text';
 import { useAccountProfile } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 import ShadowStack from 'react-native-shadow-stack';
 
 const AvatarCircleSize = 65;

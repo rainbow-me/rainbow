@@ -1,5 +1,4 @@
 import { useRoute } from '@react-navigation/native';
-import styled from '@terrysahaidak/style-thing';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
@@ -10,6 +9,7 @@ import KeyboardTypes from '@rainbow-me/helpers/keyboardTypes';
 import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
 import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
 import { padding } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const Footer = styled(Column)(({ isTallPhone }) => ({
   ...padding.object(20, 15, isTallPhone ? 30 : 15),

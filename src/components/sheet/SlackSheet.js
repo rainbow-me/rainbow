@@ -1,6 +1,5 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
-import styled from '@terrysahaidak/style-thing';
 import React, {
   forwardRef,
   Fragment,
@@ -24,6 +23,7 @@ import SheetHandleFixedToTop, {
 import { useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const AndroidBackground = styled.View({
   ...position.coverAsObject,

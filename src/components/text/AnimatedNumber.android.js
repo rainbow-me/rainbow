@@ -1,7 +1,7 @@
-import styled from '@terrysahaidak/style-thing';
 import React, { useCallback } from 'react';
 import Text from './Text';
 import { buildTextStyles } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const TextWithStyles = styled(Text)(buildTextStyles.object);
 

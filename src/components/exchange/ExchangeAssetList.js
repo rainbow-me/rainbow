@@ -1,5 +1,4 @@
 import { useIsFocused } from '@react-navigation/native';
-import styled from '@terrysahaidak/style-thing';
 import React, {
   forwardRef,
   Fragment,
@@ -22,6 +21,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { abbreviations, deviceUtils, magicMemo } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const deviceWidth = deviceUtils.dimensions.width;
 

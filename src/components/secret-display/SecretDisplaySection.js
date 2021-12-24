@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import { upperFirst } from 'lodash';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
-import styled from '@terrysahaidak/style-thing';
 import {
   identifyWalletType,
   loadSeedPhraseAndMigrateIfNeeded,
@@ -19,6 +18,7 @@ import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import { margin, padding, position, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
+import styled from 'rainbowed-components';
 
 const Title = styled(Text).attrs({
   align: 'center',

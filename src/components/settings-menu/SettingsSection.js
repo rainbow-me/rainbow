@@ -1,5 +1,4 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import styled from '@terrysahaidak/style-thing';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { Image, Linking, NativeModules, ScrollView, Share } from 'react-native';
 // import { REVIEW_ANDROID } from '../../config/experimental';
@@ -39,6 +38,7 @@ import {
   AppleReviewAddress,
   REVIEW_DONE_KEY,
 } from '@rainbow-me/utils/reviewAlert';
+import styled from 'rainbowed-components';
 
 const { RainbowRequestReview, RNReview } = NativeModules;
 

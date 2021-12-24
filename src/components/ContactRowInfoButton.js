@@ -4,7 +4,6 @@ import { View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { ContextMenuButton } from 'react-native-ios-context-menu';
 import RadialGradient from 'react-native-radial-gradient';
-import styled from '@terrysahaidak/style-thing';
 import { ButtonPressAnimation } from './animations';
 import { CoinRowHeight } from './coin-row/CoinRow';
 import { Centered } from './layout';
@@ -18,6 +17,7 @@ import {
   haptics,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
+import styled from 'rainbowed-components';
 
 const InfoButton = styled(Centered)({
   alignItems: 'center',

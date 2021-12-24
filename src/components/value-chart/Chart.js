@@ -1,4 +1,3 @@
-import styled from '@terrysahaidak/style-thing';
 import { invert } from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions } from 'react-native';
@@ -21,6 +20,7 @@ import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 export const { width: WIDTH } = Dimensions.get('window');
 

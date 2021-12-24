@@ -1,9 +1,9 @@
 import React from 'react';
-import styled from '@terrysahaidak/style-thing';
 import { ColumnWithMargins, Row } from '../layout';
 import ExchangeField from './ExchangeField';
 import ExchangeMaxButton from './ExchangeMaxButton';
 import ExchangeNativeField from './ExchangeNativeField';
+import styled from 'rainbowed-components';
 
 const Container = styled(ColumnWithMargins).attrs({ margin: 5 })({
   paddingTop: 6,

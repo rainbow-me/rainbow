@@ -1,8 +1,8 @@
 import React from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
-import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../../context/ThemeContext';
 import { position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 const PageElement = styled.View({
   ...position.sizeAsObject('100%'),
