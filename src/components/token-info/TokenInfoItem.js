@@ -1,14 +1,13 @@
 import React from 'react';
+import { View } from 'react-native';
 import { ButtonPressAnimation, ShimmerAnimation } from '../animations';
-import { ColumnWithMargins } from '../layout';
+import { ColumnWithMargins, RowWithMargins } from '../layout';
 import TokenInfoBalanceValue from './TokenInfoBalanceValue';
 import TokenInfoHeading from './TokenInfoHeading';
 import TokenInfoValue from './TokenInfoValue';
 import { useTheme } from '@rainbow-me/context';
 import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
 import styled from 'rainbowed-components';
-
-const Container = styled.View({});
 
 const VerticalDivider = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.rowDividerExtraLight,
@@ -56,12 +55,10 @@ export default function TokenInfoItem({
     return null;
   }
 
+  const Container = showDivider ? RowWithMargins : View;
+
   return (
-    <Container
-      // TODO osdnk
-      //as={showDivider ? RowWithMargins : View}
-      margin={showDivider ? 12 : 0}
-    >
+    <Container margin={showDivider ? 12 : 0}>
       <ColumnWithMargins
         flex={asset ? 1 : 0}
         justify={align === 'left' ? 'start' : 'end'}
