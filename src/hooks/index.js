@@ -4,7 +4,8 @@ export {
   useChartThrottledPoints,
 } from './charts';
 export { default as useDelayedValueWithLayoutAnimation } from './useDelayedValueWithLayoutAnimation';
-export { default as useAccountAssets } from './useAccountAssets';
+export { default as useAccountAsset } from './useAccountAsset';
+export { default as useSortedAccountAssets } from './useSortedAccountAssets';
 export { default as useFrameDelayedValue } from './useFrameDelayedValue';
 export { default as useAccountEmptyState } from './useAccountEmptyState';
 export { default as useAccountProfile } from './useAccountProfile';
@@ -24,6 +25,7 @@ export {
   default as useCoinListEditOptions,
   useCoinListFinishEditingOptions,
 } from './useCoinListEditOptions';
+export { default as useCollectible } from './useCollectible';
 export { default as useColorForAsset } from './useColorForAsset';
 export { default as useContacts } from './useContacts';
 export { default as useDimensions } from './useDimensions';
@@ -32,6 +34,7 @@ export { default as useEffectDebugger } from './useEffectDebugger';
 export { default as useEmailRainbow } from './useEmailRainbow';
 export { default as useExpandedStateNavigation } from './useExpandedStateNavigation';
 export { default as useGas } from './useGas';
+export { default as useGenericAsset } from './useGenericAsset';
 export { default as useHeight } from './useHeight';
 export { default as useHideSplashScreen } from './useHideSplashScreen';
 export { default as useImageMetadata } from './useImageMetadata';
