@@ -3843,6 +3843,15 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
+"@terrysahaidak/style-thing@0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@terrysahaidak/style-thing/-/style-thing-0.0.2.tgz#499faa730fade0d4bbf50bb1b3b808a3d1102343"
+  integrity sha512-44v7Q3RHlOsQJ6BEwsyX/asK+Yyz4qnStDq/CIoIC2DaxvjDOCEZ5se9pjUPB2pjv/Y0pN0s5SPdlx1x+h3YUg==
+  dependencies:
+    "@terrysahaidak/style-thing" "^0.0.1"
+    react "^17.0.2"
+    styled-components "^5.3.3"
+
 "@terrysahaidak/style-thing@^0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@terrysahaidak/style-thing/-/style-thing-0.0.1.tgz#748a6573a9b21f2a32fc11afa2226c12af96dac6"

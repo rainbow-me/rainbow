@@ -34,7 +34,7 @@ const Footer = styled(Column).attrs({
 
   marginBottom: android ? 30 : 0,
   width: '100%',
-})({});
+});
 
 const Masthead = styled(Column).attrs({
   align: 'center',
@@ -55,22 +55,22 @@ const MastheadIcon = styled(Text).attrs({
   color: 'appleBlue',
   size: 21,
   weight: 'heavy',
-})({});
+})``;
 
 const MastheadTitle = styled(Text).attrs({
   align: 'center',
   size: 'larger',
   weight: 'bold',
-})({
-  ...padding.object(8),
-});
+})`
+  ${padding(8)};
+`;
 
 const MastheadTitleRow = styled(Row).attrs({
   align: 'center',
   justify: 'start',
-})({
-  paddingTop: 18,
-});
+})`
+  padding-top: 18;
+`;
 
 export default function BackupManualStep() {
   const { isTallPhone, isSmallPhone } = useDimensions();
