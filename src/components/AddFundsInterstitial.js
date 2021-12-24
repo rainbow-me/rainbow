@@ -1,9 +1,9 @@
 import analytics from '@segment/analytics-react-native';
 import { captureMessage } from '@sentry/react-native';
+import styled from '@terrysahaidak/style-thing';
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { Linking } from 'react-native';
-import styled from '@terrysahaidak/style-thing';
 import { useTheme } from '../context/ThemeContext';
 import networkInfo from '../helpers/networkInfo';
 import networkTypes from '../helpers/networkTypes';
@@ -100,26 +100,21 @@ const AmountText = styled(Text).attrs(({ children }) => ({
   letterSpacing: 'roundedTightest',
   size: 'bigger',
   weight: 'heavy',
-}))({
+}))(({ color }) => ({
   ...(android ? padding.object(15, 4.5) : padding.object(24, 15, 25)),
   alignSelf: 'center',
-  // TODO terry
-  // text-shadow: 0px 0px 20px ${({ color }) => color};
+  textShadowColor: color,
+  textShadowOffset: { height: 0, width: 0 },
+  textShadowRadius: 20,
   zIndex: 1,
-});
+}));
 
 const AmountButtonWrapper = styled(Row).attrs({
   justify: 'center',
   marginLeft: 7.5,
   marginRight: 7.5,
-})(props => {
-  if (android) {
-    return {
-      width: 100,
-    };
-  }
-
-  return {};
+})({
+  ...(android && { width: 100 }),
 });
 
 const onAddFromFaucet = network => {
