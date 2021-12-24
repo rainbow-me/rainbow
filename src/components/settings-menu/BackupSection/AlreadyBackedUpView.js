@@ -33,7 +33,7 @@ const CheckmarkIconContainer = styled(View)(
     ...shadow.buildAsObject(0, 4, 6, isDarkMode ? colors.shadow : color, 0.4),
     ...position.sizeAsObject(50),
     backgroundColor: color,
-    borderTadius: 25,
+    borderRadius: 25,
     marginBottom: 19,
     paddingTop: ios ? 13 : 7,
   })
