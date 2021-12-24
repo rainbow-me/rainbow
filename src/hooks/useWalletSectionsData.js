@@ -8,10 +8,7 @@ import useSavingsAccount from './useSavingsAccount';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
 import useSortedAccountAssets from './useSortedAccountAssets';
-import {
-  buildBriefWalletSectionsSelector,
-  buildWalletSectionsSelector,
-} from '@rainbow-me/helpers/buildWalletSections';
+import { buildBriefWalletSectionsSelector } from '@rainbow-me/helpers/buildWalletSections';
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 
 export default function useWalletSectionsData() {
@@ -47,15 +44,13 @@ export default function useWalletSectionsData() {
       showcaseTokens,
     };
 
-    const sectionsData = buildWalletSectionsSelector(accountInfo);
     const briefSectionsData = buildBriefWalletSectionsSelector(accountInfo);
 
     return {
+      briefSectionsData,
       isWalletEthZero,
       refetchSavings,
       shouldRefetchSavings,
-      ...sectionsData,
-      briefSectionsData,
     };
   }, [
     hiddenCoins,
