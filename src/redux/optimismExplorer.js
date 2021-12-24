@@ -71,7 +71,7 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
   const fetchAssetsBalancesAndPrices = async () => {
     const assets = keyBy(
       chainAssets[network],
-      asset => `${asset.asset_code}_${network}`
+      asset => `${asset.asset.asset_code}_${network}`
     );
 
     const tokenAddresses = map(assets, ({ asset: { asset_code } }) =>
