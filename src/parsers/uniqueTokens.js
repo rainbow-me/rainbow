@@ -66,7 +66,7 @@ export const parseAccountUniqueTokens = data => {
         familyName:
           asset_contract.address === ENS_NFT_CONTRACT_ADDRESS
             ? 'ENS'
-            : collection.name || 'UNknown',
+            : collection.name,
         id: token_id,
         isSendable:
           asset_contract.nft_version === '1.0' ||
