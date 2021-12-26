@@ -46,24 +46,29 @@ export default async function handleDeeplink(
       }
       case 'token': {
         const { dispatch } = store;
+        // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
         const { addr } = qs.parse(urlObj.query?.substring(1));
         const address = toLower(addr);
         if (address && address.length > 0) {
+          // @ts-expect-error FIXME: Property 'assets' does not exist on type...
           const { assets: allAssets, genericAssets } = store.getState().data;
           const asset =
             Object.values(genericAssets).find(
-              asset => address === toLower(asset.address)
+              (asset: any) => address === toLower(asset.address)
             ) ||
             (address !== ETH_ADDRESS &&
-              allAssets.find(asset => address === toLower(asset.address)));
+              allAssets.find(
+                (asset: any) => address === toLower(asset.address)
+              ));
 
           // First go back to home to dismiss any open shit
           // and prevent a weird crash
           if (initialRoute !== Routes.WELCOME_SCREEN) {
+            // @ts-expect-error FIXME: Expected 2-3 arguments, but got 1.
             Navigation.handleAction(Routes.WALLET_SCREEN);
           }
           setTimeout(() => {
-            const action = asset => {
+            const action = (asset: any) => {
               Navigation.handleAction(Routes.EXPANDED_ASSET_SHEET, {
                 asset,
                 fromDiscover: true,
