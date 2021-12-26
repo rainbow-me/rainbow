@@ -20,9 +20,7 @@ export default function useWalletSectionsData() {
 
   const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
 
-  const { refetchSavings, savings, shouldRefetchSavings } = useSavingsAccount(
-    true
-  );
+  const { savings } = useSavingsAccount(true);
 
   const isCoinListEdited = useCoinListEdited();
 
@@ -43,20 +41,14 @@ export default function useWalletSectionsData() {
 
     const briefSectionsData = buildBriefWalletSectionsSelector(accountInfo);
 
-    return {
-      briefSectionsData,
-      refetchSavings,
-      shouldRefetchSavings,
-    };
+    return briefSectionsData;
   }, [
     hiddenCoins,
     isCoinListEdited,
     isLoadingAssets,
     nativeCurrency,
     pinnedCoins,
-    refetchSavings,
     savings,
-    shouldRefetchSavings,
     showcaseTokens,
     sortedAssets,
     uniqueTokens,

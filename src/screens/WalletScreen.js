@@ -29,10 +29,8 @@ import {
   useRefreshAccountData,
   useUserAccounts,
   useWallets,
-  useWalletSectionsData,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
-import { updateRefetchSavings } from '@rainbow-me/redux/data';
 import { emitPortfolioRequest } from '@rainbow-me/redux/explorer';
 import { position } from '@rainbow-me/styles';
 
@@ -71,7 +69,6 @@ export default function WalletScreen() {
   );
 
   const isWalletEthZero = useIsWalletEthZero();
-  const { refetchSavings, shouldRefetchSavings } = useWalletSectionsData();
 
   const dispatch = useDispatch();
 
@@ -81,16 +78,6 @@ export default function WalletScreen() {
       assetsSocket,
     })
   );
-
-  useEffect(() => {
-    const fetchAndResetFetchSavings = async () => {
-      await refetchSavings();
-      dispatch(updateRefetchSavings(false));
-    };
-    if (shouldRefetchSavings) {
-      fetchAndResetFetchSavings();
-    }
-  }, [dispatch, refetchSavings, shouldRefetchSavings]);
 
   useEffect(() => {
     const initializeAndSetParams = async () => {
