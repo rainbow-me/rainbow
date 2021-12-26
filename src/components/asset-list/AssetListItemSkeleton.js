@@ -1,6 +1,5 @@
 import MaskedView from '@react-native-community/masked-view';
-import PropTypes from 'prop-types';
-import React, { PureComponent } from 'react';
+import React, { useRef } from 'react';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
@@ -67,52 +66,46 @@ const Wrapper = styled(RowWithMargins).attrs({
   background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 
-class AssetListItemSkeleton extends PureComponent {
-  static propTypes = {
-    animated: PropTypes.bool,
-    descendingOpacity: PropTypes.bool,
-    index: PropTypes.number,
+function startShimmerLoop() {
+  const clock = new Clock();
+
+  const config = {
+    duration: new Value(1250),
+    easing: Easing.linear,
+    toValue: new Value(1),
   };
 
-  static defaultProps = {
-    animated: true,
-    index: 0,
+  const state = {
+    finished: new Value(0),
+    frameTime: new Value(0),
+    position: new Value(0),
+    time: new Value(0),
   };
 
-  startShimmerLoop() {
-    const clock = new Clock();
+  return block([
+    startClock(clock),
+    timing(clock, state, config),
+    cond(state.finished, [
+      stopClock(clock),
+      set(state.finished, 0),
+      set(state.position, 0),
+      set(state.time, 0),
+      set(state.frameTime, 0),
+    ]),
+    state.position,
+  ]);
+}
 
-    const config = {
-      duration: new Value(1250),
-      easing: Easing.linear,
-      toValue: new Value(1),
-    };
+function AssetListItemSkeleton({
+  animated = true,
+  index = 0,
+  descendingOpacity,
+  ignorePaddingHorizontal,
+  colors,
+}) {
+  const animation = useRef(animated && ios ? startShimmerLoop() : () => null);
 
-    const state = {
-      finished: new Value(0),
-      frameTime: new Value(0),
-      position: new Value(0),
-      time: new Value(0),
-    };
-
-    return block([
-      startClock(clock),
-      timing(clock, state, config),
-      cond(state.finished, [
-        stopClock(clock),
-        set(state.finished, 0),
-        set(state.position, 0),
-        set(state.time, 0),
-        set(state.frameTime, 0),
-      ]),
-      state.position,
-    ]);
-  }
-
-  animation = this.props.animated && ios ? this.startShimmerLoop() : () => null;
-
-  renderShimmer() {
-    const { colors } = this.props;
+  function renderShimmer() {
     const gradientColors = [
       colors.skeleton,
       colors.shimmer,
@@ -122,7 +115,7 @@ class AssetListItemSkeleton extends PureComponent {
 
     const gradientSteps = [0, 0.2, 0.4, 1];
 
-    const translateX = interpolate(this.animation, {
+    const translateX = interpolate(animation, {
       inputRange: [0, 1],
       outputRange: [
         deviceUtils.dimensions.width * -1.17,
@@ -144,47 +137,35 @@ class AssetListItemSkeleton extends PureComponent {
     );
   }
 
-  render() {
-    const {
-      animated,
-      descendingOpacity,
-      ignorePaddingHorizontal,
-      index,
-      colors,
-    } = this.props;
+  const skeletonElement = (
+    <Wrapper ignorePaddingHorizontal={ignorePaddingHorizontal} index={index}>
+      <FakeAvatar />
+      <ColumnWithMargins
+        backgroundColor={colors.transparent}
+        flex={1}
+        margin={10}
+      >
+        <FakeRow>
+          <FakeText width={100} />
+          <FakeText width={80} />
+        </FakeRow>
+        <FakeRow>
+          <FakeText width={60} />
+          <FakeText width={50} />
+        </FakeRow>
+      </ColumnWithMargins>
+    </Wrapper>
+  );
 
-    const skeletonElement = (
-      <Wrapper ignorePaddingHorizontal={ignorePaddingHorizontal} index={index}>
-        <FakeAvatar />
-        <ColumnWithMargins
-          backgroundColor={colors.transparent}
-          flex={1}
-          margin={10}
-        >
-          <FakeRow>
-            <FakeText width={100} />
-            <FakeText width={80} />
-          </FakeRow>
-          <FakeRow>
-            <FakeText width={60} />
-            <FakeText width={50} />
-          </FakeRow>
-        </ColumnWithMargins>
-      </Wrapper>
-    );
-
-    return (
-      <Container descendingOpacity={descendingOpacity} index={index}>
-        {animated && ios ? (
-          <MaskedView maskElement={skeletonElement}>
-            {this.renderShimmer()}
-          </MaskedView>
-        ) : (
-          skeletonElement
-        )}
-      </Container>
-    );
-  }
+  return (
+    <Container descendingOpacity={descendingOpacity} index={index}>
+      {animated && ios ? (
+        <MaskedView maskElement={skeletonElement}>{renderShimmer()}</MaskedView>
+      ) : (
+        skeletonElement
+      )}
+    </Container>
+  );
 }
 
 export default withThemeContext(AssetListItemSkeleton);
