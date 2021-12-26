@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -186,11 +187,14 @@ export default function ChartExpandedState({ asset }) {
   // If we don't have a balance for this asset
   // It's a generic asset
   const hasBalance = asset?.balance;
-  const assetWithPrice = hasBalance
-    ? { ...asset }
-    : genericAsset
-    ? ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency)
-    : { ...asset };
+  const assetWithPrice = useMemo(() => {
+    return hasBalance
+      ? { ...asset }
+      : genericAsset
+      ? ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency)
+      : { ...asset };
+  }, [asset, genericAsset, hasBalance, nativeCurrency]);
+
   if (assetWithPrice?.mainnet_address) {
     assetWithPrice.l2Address = assetWithPrice.address;
     assetWithPrice.address = assetWithPrice.mainnet_address;
@@ -200,10 +204,12 @@ export default function ChartExpandedState({ asset }) {
     assetWithPrice.type,
   ]);
   // This one includes the original l2 address if exists
-  const ogAsset = {
-    ...assetWithPrice,
-    address: isL2 ? assetWithPrice.l2Address : assetWithPrice.address,
-  };
+  const ogAsset = useMemo(() => {
+    return {
+      ...assetWithPrice,
+      address: isL2 ? assetWithPrice.l2Address : assetWithPrice.address,
+    };
+  }, [assetWithPrice, isL2]);
 
   const { height: screenHeight } = useDimensions();
   const {
@@ -260,8 +266,11 @@ export default function ChartExpandedState({ asset }) {
   });
 
   const uniswapAssetsInWallet = useUniswapAssetsInWallet();
-  const showSwapButton =
-    !isL2 && find(uniswapAssetsInWallet, ['address', assetWithPrice.address]);
+  const showSwapButton = useMemo(
+    () =>
+      !isL2 && find(uniswapAssetsInWallet, ['address', assetWithPrice.address]),
+    [assetWithPrice.address, isL2, uniswapAssetsInWallet]
+  );
 
   const needsEth =
     asset?.address === ETH_ADDRESS && asset?.balance?.amount === '0';

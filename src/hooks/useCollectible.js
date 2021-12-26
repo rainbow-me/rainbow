@@ -10,7 +10,7 @@ export default function useCollectible(asset) {
   return useMemo(() => {
     let matched = find(
       uniqueTokens,
-      matchesProperty('uniqueId', asset.uniqueId)
+      matchesProperty('uniqueId', asset?.uniqueId)
     );
     return matched || asset;
   }, [asset, uniqueTokens]);

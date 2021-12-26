@@ -1,7 +1,6 @@
-import { find, matchesProperty } from 'lodash';
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
 import useAccountAsset from './useAccountAsset';
+import useCollectible from './useCollectible';
 import useGenericAsset from './useGenericAsset';
 import { AssetTypes } from '@rainbow-me/entities';
 
@@ -9,11 +8,7 @@ import { AssetTypes } from '@rainbow-me/entities';
 // generic assets, and uniqueTokens
 export default function useAsset(asset) {
   const accountAsset = useAccountAsset(asset?.uniqueId);
-
-  const uniqueTokens = useSelector(
-    ({ uniqueTokens: { uniqueTokens } }) => uniqueTokens
-  );
-
+  const uniqueToken = useCollectible(asset);
   const genericAsset = useGenericAsset(
     asset?.mainnet_address || asset?.address
   );
@@ -25,12 +20,9 @@ export default function useAsset(asset) {
     if (asset.type === AssetTypes.token) {
       matched = accountAsset ?? genericAsset;
     } else if (asset.type === AssetTypes.nft) {
-      matched = find(
-        uniqueTokens,
-        matchesProperty('uniqueId', asset?.uniqueId)
-      );
+      matched = uniqueToken;
     }
 
     return matched || asset;
-  }, [accountAsset, asset, uniqueTokens, genericAsset]);
+  }, [accountAsset, asset, genericAsset, uniqueToken]);
 }

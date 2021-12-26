@@ -3,7 +3,10 @@ import { captureException } from '@sentry/react-native';
 import { findKey, isNumber, keys, toLower, uniq } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { removeLocal } from '../handlers/localstorage/common';
-import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
+import {
+  getNativeCurrency,
+  IMAGE_METADATA,
+} from '../handlers/localstorage/globalSettings';
 import {
   getMigrationVersion,
   setMigrationVersion,
@@ -588,6 +591,22 @@ export default async function runMigrations() {
   };
 
   migrations.push(v14);
+
+  /*
+   *************** Migration v15 ******************
+   * Exposes the selected nativeCurrency to the price widgets
+   */
+  const v15 = async () => {
+    if (ios) {
+      const nativeCurrency = await getNativeCurrency();
+      saveString('nativeCurrency', nativeCurrency, {
+        accessGroup: 'group.rainbow.me',
+        service: 'rainbow.me.currency',
+      });
+    }
+  };
+
+  migrations.push(v15);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
