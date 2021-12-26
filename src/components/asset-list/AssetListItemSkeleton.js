@@ -137,11 +137,8 @@ function AssetListItemSkeleton({
     <Container descendingOpacity={descendingOpacity} index={index}>
       {animated ? (
         <MaskedView maskElement={skeletonElement}>
-          <Animated.View style={style}>
-            <View
-              backgroundColor={gradientColors[0]}
-              css={position.size('100%')}
-            >
+          <View backgroundColor={gradientColors[0]} css={position.size('100%')}>
+            <Animated.View style={style}>
               <LinearGradient
                 {...position.sizeAsObject('100%')}
                 colors={gradientColors}
@@ -149,8 +146,8 @@ function AssetListItemSkeleton({
                 locations={gradientSteps}
                 start={{ x: 0, y: 0.5 }}
               />
-            </View>
-          </Animated.View>
+            </Animated.View>
+          </View>
         </MaskedView>
       ) : (
         skeletonElement
