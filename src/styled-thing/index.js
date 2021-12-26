@@ -116,6 +116,8 @@ export default function styled(Component) {
       );
 
       const computedProps = { ...props, ...attributes };
+      computedProps.as = undefined;
+      computedProps.$as = undefined;
 
       const forwardedProps = filterProps(
         computedProps,
