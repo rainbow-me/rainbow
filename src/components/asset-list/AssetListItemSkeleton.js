@@ -1,24 +1,21 @@
 import MaskedView from '@react-native-community/masked-view';
-import React, { useRef } from 'react';
+import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
-  Clock,
   Easing,
-  timing,
-  Value,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
 } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { withThemeContext } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
-import { interpolate } from '../animations';
 import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { padding, position } from '@rainbow-me/styles';
-
-const { block, cond, set, startClock, stopClock } = Animated;
-
-const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 export const AssetListItemSkeletonHeight = CoinRowHeight;
 
@@ -66,36 +63,6 @@ const Wrapper = styled(RowWithMargins).attrs({
   background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 
-function startShimmerLoop() {
-  const clock = new Clock();
-
-  const config = {
-    duration: new Value(1250),
-    easing: Easing.linear,
-    toValue: new Value(1),
-  };
-
-  const state = {
-    finished: new Value(0),
-    frameTime: new Value(0),
-    position: new Value(0),
-    time: new Value(0),
-  };
-
-  return block([
-    startClock(clock),
-    timing(clock, state, config),
-    cond(state.finished, [
-      stopClock(clock),
-      set(state.finished, 0),
-      set(state.position, 0),
-      set(state.time, 0),
-      set(state.frameTime, 0),
-    ]),
-    state.position,
-  ]);
-}
-
 function AssetListItemSkeleton({
   animated = true,
   index = 0,
@@ -103,39 +70,48 @@ function AssetListItemSkeleton({
   ignorePaddingHorizontal,
   colors,
 }) {
-  const animation = useRef(animated && ios ? startShimmerLoop() : () => null);
+  const gradientColors = [
+    colors.skeleton,
+    colors.shimmer,
+    colors.skeleton,
+    colors.skeleton,
+  ];
 
-  function renderShimmer() {
-    const gradientColors = [
-      colors.skeleton,
-      colors.shimmer,
-      colors.skeleton,
-      colors.skeleton,
-    ];
+  const gradientSteps = [0, 0.2, 0.4, 1];
 
-    const gradientSteps = [0, 0.2, 0.4, 1];
+  const progress = useSharedValue(0);
 
-    const translateX = interpolate(animation, {
-      inputRange: [0, 1],
-      outputRange: [
+  useEffect(() => {
+    if (!animated) {
+      return;
+    }
+    progress.value = withRepeat(
+      withTiming(1, {
+        duration: 1250,
+        easing: Easing.linear,
+      }),
+      -1
+    );
+  }, [animated, progress]);
+
+  const style = useAnimatedStyle(() => {
+    const translateX = interpolate(
+      progress.value,
+      [0, 1],
+      [
         deviceUtils.dimensions.width * -1.17,
         deviceUtils.dimensions.width * 1.17,
-      ],
-    });
-
-    return (
-      <View backgroundColor={gradientColors[0]} css={position.size('100%')}>
-        <AnimatedLinearGradient
-          {...position.sizeAsObject('100%')}
-          colors={gradientColors}
-          end={{ x: 1, y: 0.5 }}
-          locations={gradientSteps}
-          start={{ x: 0, y: 0.5 }}
-          style={{ transform: [{ translateX }] }}
-        />
-      </View>
+      ]
     );
-  }
+    return {
+      backgroundColor: 'red',
+      transform: [
+        {
+          translateX,
+        },
+      ],
+    };
+  }, []);
 
   const skeletonElement = (
     <Wrapper ignorePaddingHorizontal={ignorePaddingHorizontal} index={index}>
@@ -159,8 +135,23 @@ function AssetListItemSkeleton({
 
   return (
     <Container descendingOpacity={descendingOpacity} index={index}>
-      {animated && ios ? (
-        <MaskedView maskElement={skeletonElement}>{renderShimmer()}</MaskedView>
+      {animated ? (
+        <MaskedView maskElement={skeletonElement}>
+          <Animated.View style={style}>
+            <View
+              backgroundColor={gradientColors[0]}
+              css={position.size('100%')}
+            >
+              <LinearGradient
+                {...position.sizeAsObject('100%')}
+                colors={gradientColors}
+                end={{ x: 1, y: 0.5 }}
+                locations={gradientSteps}
+                start={{ x: 0, y: 0.5 }}
+              />
+            </View>
+          </Animated.View>
+        </MaskedView>
       ) : (
         skeletonElement
       )}
