@@ -1,13 +1,13 @@
 import React from 'react';
 import { CoinDivider } from '../../../coin-divider';
 import { AssetListHeader, AssetListItemSkeleton } from '../../index';
+import WrappedBalanceCoinRow from '../WrappedBalanceCoinRow';
 import WrappedNFT from '../WrappedNFT';
 import WrappedPoolRow from '../WrappedPoolRow';
 import WrappedPoolsListHeader from '../WrappedPoolsListHeader';
 import WrappedSavingsListHeader from '../WrappedSavingsListHeader';
 import WrappedSavingsRow from '../WrappedSavingsRow';
 import WrappedTokenFamilyHeader from '../WrappedTokenFamilyHeader';
-import WrapperBalanceCoinRow from '../WrapperBalanceCoinRow';
 import { useAdditionalRecyclerAssetListData } from './Contexts';
 import {
   AssetsHeaderExtraData,
@@ -57,7 +57,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
             );
           case CellType.COIN:
             return (
-              <WrapperBalanceCoinRow
+              <WrappedBalanceCoinRow
                 uniqueId={(data as CoinExtraData).uniqueId}
               />
             );

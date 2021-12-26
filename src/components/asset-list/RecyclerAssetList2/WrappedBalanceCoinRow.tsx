@@ -2,7 +2,7 @@ import React from 'react';
 import { BalanceCoinRow } from '../../coin-row';
 import { useAccountAsset } from '@rainbow-me/hooks';
 
-export default React.memo(function WrapperBalanceCoinRow({
+export default React.memo(function WrappedBalanceCoinRow({
   uniqueId,
 }: {
   uniqueId: string;
