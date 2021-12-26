@@ -4,11 +4,7 @@ import SheetActionButton from './SheetActionButton';
 import { useExpandedStateNavigation } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
-export default function SendActionButton({
-  asset,
-  color: givenColor,
-  ...props
-}) {
+function SendActionButton({ asset, color: givenColor, ...props }) {
   const { colors } = useTheme();
   const color = givenColor || colors.paleBlue;
   const navigate = useExpandedStateNavigation();
@@ -37,3 +33,5 @@ export default function SendActionButton({
     />
   );
 }
+
+export default React.memo(SendActionButton);
