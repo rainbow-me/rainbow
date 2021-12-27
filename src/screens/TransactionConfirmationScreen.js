@@ -168,7 +168,6 @@ export default function TransactionConfirmationScreen() {
   const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
   const balances = useWalletBalances(wallets);
   const { accountAddress, nativeCurrency } = useAccountSettings();
-  const getNextNonce = useCurrentNonce(accountAddress, currentNetwork);
   const keyboardHeight = useKeyboardHeight();
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
@@ -220,6 +219,8 @@ export default function TransactionConfirmationScreen() {
       address,
     };
   }, [currentNetwork, walletConnector?._accounts, walletNames, wallets]);
+
+  const getNextNonce = useCurrentNonce(accountInfo.address, currentNetwork);
 
   const isL2 = useMemo(() => {
     return isL2Network(currentNetwork);
