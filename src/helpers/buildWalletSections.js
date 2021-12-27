@@ -126,6 +126,7 @@ const withBriefBalanceSection = (
   return [
     {
       type: 'ASSETS_HEADER',
+      uid: 'assets-header',
       value: totalValue,
     },
     {
@@ -133,7 +134,7 @@ const withBriefBalanceSection = (
       uid: 'assets-header-space-after',
     },
     ...(isLoadingAssets
-      ? [{ type: 'LOADING_ASSETS', uid: 'loadings-asset' }]
+      ? [{ type: 'LOADING_ASSETS', uid: 'loading-assets' }]
       : briefAssets),
   ];
 };
