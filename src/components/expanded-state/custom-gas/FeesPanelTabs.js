@@ -36,8 +36,7 @@ const TabPillWrapper = styled(View).attrs({})({
         ? colors.shadowBlack
         : color || colors.appleBlue
       : colors.transparent,
-  //  TODO terry
-  // shadowOffset: 0px 4,
+  shadowOffset: { height: 4, width: 0 },
   shadowOpacity: 0.3,
   shadowRadius: 6,
 });
