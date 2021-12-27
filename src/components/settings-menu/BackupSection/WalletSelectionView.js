@@ -53,19 +53,19 @@ const CheckmarkIcon = styled(Icon).attrs({
 const GreenCheck = styled(CheckmarkIcon).attrs(({ theme: { colors } }) => ({
   color: colors.green,
 }))({
-  // TODO terry
-  // box-shadow: 0px 4px 6px
-  //   ${({ theme: { colors, isDarkMode } }) =>
-  //     colors.alpha(isDarkMode ? colors.shadow : colors.green, 0.4)};
+  shadowColor: ({ theme: { colors, isDarkMode } }) =>
+    colors.alpha(isDarkMode ? colors.shadow : colors.green, 0.4),
+  shadowOffset: { height: 4, width: 0 },
+  shadowRadius: 6,
 });
 
 const GreyCheck = styled(CheckmarkIcon).attrs(({ theme: { colors } }) => ({
   color: colors.blueGreyDark50,
 }))({
-  // TODO terry
-  // box-shadow: 0px 4px 6px
-  //   ${({ theme: { colors, isDarkMode } }) =>
-  //     colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
+  shadowColor: ({ theme: { colors, isDarkMode } }) =>
+    colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4),
+  shadowOffset: { height: 4, width: 0 },
+  shadowRadius: 6,
 });
 
 const WarningIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
@@ -73,12 +73,11 @@ const WarningIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   name: 'warning',
 }))({
   alignSelf: 'center',
-
-  // TODO terry
-  // box-shadow: 0px 4px 6px
-  //   ${({ theme: { colors, isDarkMode } }) =>
-  //     colors.alpha(isDarkMode ? colors.shadow : colors.orangeLight, 0.4)};
   marginRight: 7,
+  shadowColor: ({ theme: { colors, isDarkMode } }) =>
+    colors.alpha(isDarkMode ? colors.shadow : colors.orangeLight, 0.4),
+  shadowOffset: { height: 4, width: 0 },
+  shadowRadius: 6,
 });
 
 const Footer = styled(Centered)({

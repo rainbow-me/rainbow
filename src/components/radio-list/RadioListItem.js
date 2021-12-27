@@ -7,13 +7,13 @@ const CheckmarkIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.appleBlue,
   name: 'checkmarkCircled',
 }))({
-  // TODO terru
-  // box-shadow: 0px 4px 6px
-  // ${({ theme: { colors, isDarkMode } }) =>
-  // colors.alpha(isDarkMode ? colors.shadow : colors.appleBlue, 0.4)};
   marginBottom: 1,
   position: 'absolute',
   right: 0,
+  shadowColor: ({ theme: { colors, isDarkMode } }) =>
+    colors.alpha(isDarkMode ? colors.shadow : colors.appleBlue, 0.4),
+  shadowOffset: { height: 4, width: 0 },
+  shadowRadius: 6,
 });
 
 const RadioListItem = ({ disabled, selected, ...props }) => {

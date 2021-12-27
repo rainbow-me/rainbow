@@ -54,10 +54,10 @@ export const SettingsExternalURLs = {
 const CheckmarkIcon = styled(Icon).attrs({
   name: 'checkmarkCircled',
 })({
-  // TODO terry
-  // box-shadow: 0px 4px 6px
-  //   ${({ theme: { colors, isDarkMode } }) =>
-  //     colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4)};
+  shadowColor: ({ theme: { colors, isDarkMode } }) =>
+    colors.alpha(isDarkMode ? colors.shadow : colors.blueGreyDark50, 0.4),
+  shadowOffset: { height: 4, width: 0 },
+  shadowRadius: 6,
 });
 
 const Container = styled(Column).attrs({})({
@@ -91,12 +91,11 @@ const WarningIcon = styled(Icon).attrs(({ theme: { colors } }) => ({
   color: colors.orangeLight,
   name: 'warning',
 }))({
-  // TODO terry
-  // box-shadow: 0px 4px 6px
-  //   ${({ theme: { colors, isDarkMode } }) =>
-  //     isDarkMode ? colors.shadow : colors.alpha(colors.orangeLight, 0.4)};
-
   marginTop: 1,
+  shadowColor: ({ theme: { colors, isDarkMode } }) =>
+    isDarkMode ? colors.shadow : colors.alpha(colors.orangeLight, 0.4),
+  shadowOffset: { height: 4, width: 0 },
+  shadowRadius: 6,
 });
 
 function capitalizeFirstLetter(string) {
