@@ -16,8 +16,7 @@ const Container = styled(Centered).attrs(({ fixedToTop }) => ({
   ...position.sizeAsObject('100%'),
   shadowColor: ({ shadowColor }) => shadowColor,
 
-  // TODO terry
-  // shadow-offset: 0px 10,
+  shadowOffset: { height: 10, width: 0 },
   shadowOpacity: 0.5,
   shadowRadius: 25,
 });
