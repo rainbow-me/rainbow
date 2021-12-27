@@ -28,8 +28,7 @@ const shadowStyles = (colors, disabled, isDarkMode) => ({
     isDarkMode ? colors.shadow : colors.blueGreyDark,
     isDarkMode && disabled ? 0.2 : 0.5
   ),
-  // TODO terry
-  // shadowOffset: 0px 4,
+  shadowOffset: { height: 4, width: 0 },
   shadowOpacity: 0.2,
   shadowRadius: 6,
 });
