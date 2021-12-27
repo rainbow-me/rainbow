@@ -3,7 +3,7 @@ import React, { forwardRef, useEffect, useRef } from 'react';
 import { Transition, Transitioning } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { magicMemo } from '../../utils';
-import { EmptyAssetList } from '../asset-list';
+import { AssetListSkeleton } from '../asset-list';
 import { Centered } from '../layout';
 import { NoResults } from '../list';
 import { CurrencySelectModalHeaderHeight } from './CurrencySelectModalHeader';
@@ -12,7 +12,7 @@ import { ExchangeSearchHeight } from './ExchangeSearch';
 import { usePrevious } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
 
-const EmptyCurrencySelectionList = styled(EmptyAssetList).attrs({
+const EmptyCurrencySelectionList = styled(AssetListSkeleton).attrs({
   pointerEvents: 'none',
 })`
   ${position.cover};

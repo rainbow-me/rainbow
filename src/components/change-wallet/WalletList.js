@@ -13,7 +13,7 @@ import networkTypes from '../../helpers/networkTypes';
 import WalletTypes from '../../helpers/walletTypes';
 import { address } from '../../utils/abbreviations';
 import Divider from '../Divider';
-import { EmptyAssetList } from '../asset-list';
+import { AssetListSkeleton } from '../asset-list';
 import { Column } from '../layout';
 import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
@@ -52,7 +52,7 @@ const Container = styled(Transitioning.View)`
   margin-top: -2;
 `;
 
-const EmptyWalletList = styled(EmptyAssetList).attrs({
+const EmptyWalletList = styled(AssetListSkeleton).attrs({
   descendingOpacity: true,
   pointerEvents: 'none',
 })`
