@@ -7,11 +7,11 @@ const FlexItem = styled.View(({ flex, grow, shrink }) => {
       isUndefined(flex) && isUndefined(grow) && isUndefined(shrink) ? 1 : flex,
   };
 
-  if (typeof grow !== 'undefined') {
+  if (grow !== undefined) {
     props.flexGrow = grow;
   }
 
-  if (typeof shrink !== 'undefined') {
+  if (shrink !== undefined) {
     props.flexShrink = shrink;
   }
 
