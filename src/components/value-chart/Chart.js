@@ -58,8 +58,7 @@ const InnerDot = styled.View({
   height: 10,
   shadowColor: ({ color, theme: { colors, isDarkMode } }) =>
     isDarkMode ? colors.shadow : color,
-  // TODO terry
-  // shadowOffset: 0 3,
+  shadowOffset: { height: 3, width: 0 },
   shadowOpacity: 0.6,
   shadowRadius: 4.5,
   width: 10,
