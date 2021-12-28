@@ -169,10 +169,13 @@ export const dataLoadState = () => async (dispatch, getState) =>
         accountAddress,
         network
       );
-      dispatch({
-        payload: accountAssetsData,
-        type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-      });
+
+      if (!isEmpty(accountAssetsData)) {
+        dispatch({
+          payload: accountAssetsData,
+          type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
+        });
+      }
     } catch (error) {
       dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE });
     }
