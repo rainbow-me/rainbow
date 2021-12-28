@@ -135,6 +135,7 @@ export default function FeesGweiInput({
         color={buttonColor}
         onBlur={onBlur}
         onChange={onChange}
+        onFocus={onInputPress}
         onPress={onInputPress}
         ref={inputRef}
         testID={testID}
