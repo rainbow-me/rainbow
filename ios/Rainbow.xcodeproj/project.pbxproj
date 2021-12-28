@@ -15,6 +15,9 @@
 		1539422D24C7CF9300E4A9D1 /* SettingsBundleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1539422C24C7CF9300E4A9D1 /* SettingsBundleHelper.swift */; };
 		153D1AAC24777130007E4723 /* TransactionListLoadingViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 153D1AAB24777130007E4723 /* TransactionListLoadingViewCell.swift */; };
 		153D1AAE24777214007E4723 /* TransactionListLoadingViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 153D1AAD24777214007E4723 /* TransactionListLoadingViewCell.xib */; };
+		15D66135277A751C0082F041 /* SelectTokenIntent.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 15D66139277A751C0082F041 /* SelectTokenIntent.intentdefinition */; };
+		15D66136277A751C0082F041 /* SelectTokenIntent.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 15D66139277A751C0082F041 /* SelectTokenIntent.intentdefinition */; };
+		15D66137277A751C0082F041 /* SelectTokenIntent.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = 15D66139277A751C0082F041 /* SelectTokenIntent.intentdefinition */; };
 		15E531D5242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E531D4242B28EF00797B89 /* UIImageViewWithPersistentAnimations.swift */; };
 		15E531DA242DAB7100797B89 /* NotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E531D9242DAB7100797B89 /* NotificationManager.m */; };
 		24979E8920F84250007EB0DA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 24979E7720F84004007EB0DA /* GoogleService-Info.plist */; };
@@ -77,12 +80,9 @@
 		C16DCF69272BA6F000FF5C78 /* PriceWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = C16DCF5C272BA6EF00FF5C78 /* PriceWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		C16DCF71272BA75700FF5C78 /* CoinGeckoToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF6F272BA75700FF5C78 /* CoinGeckoToken.swift */; };
 		C16DCF74272BA77A00FF5C78 /* TokenProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF72272BA77A00FF5C78 /* TokenProvider.swift */; };
-		C16DCF79272BA8A000FF5C78 /* SelectTokenIntent.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF78272BA8A000FF5C78 /* SelectTokenIntent.intentdefinition */; };
-		C16DCF7A272BA8A000FF5C78 /* SelectTokenIntent.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF78272BA8A000FF5C78 /* SelectTokenIntent.intentdefinition */; };
 		C16DCF81272BAB9500FF5C78 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C16DCF80272BAB9500FF5C78 /* Intents.framework */; };
 		C16DCF84272BAB9500FF5C78 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF83272BAB9500FF5C78 /* IntentHandler.swift */; };
 		C16DCF99272BAB9600FF5C78 /* SelectTokenIntent.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = C16DCF7F272BAB9500FF5C78 /* SelectTokenIntent.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		C16DCFA4272BABC300FF5C78 /* SelectTokenIntent.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF78272BA8A000FF5C78 /* SelectTokenIntent.intentdefinition */; };
 		C16DCFA6272BABC700FF5C78 /* CoinGeckoToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF6F272BA75700FF5C78 /* CoinGeckoToken.swift */; };
 		C16DCFA8272BABCB00FF5C78 /* TokenProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCF72272BA77A00FF5C78 /* TokenProvider.swift */; };
 		C16DCFAC272BB8ED00FF5C78 /* PriceDataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16DCFAA272BB8ED00FF5C78 /* PriceDataProvider.swift */; };
@@ -176,6 +176,9 @@
 		153D1AAD24777214007E4723 /* TransactionListLoadingViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TransactionListLoadingViewCell.xib; sourceTree = "<group>"; };
 		157155032418733F009B698B /* RainbowRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowRelease.entitlements; path = Rainbow/RainbowRelease.entitlements; sourceTree = "<group>"; };
 		157155042418734C009B698B /* RainbowDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = RainbowDebug.entitlements; path = Rainbow/RainbowDebug.entitlements; sourceTree = "<group>"; };
+		15D66138277A751C0082F041 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; name = Base; path = Base.lproj/SelectTokenIntent.intentdefinition; sourceTree = "<group>"; };
+		15D6613B277A75230082F041 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/SelectTokenIntent.strings; sourceTree = "<group>"; };
+		15D6613D277A75240082F041 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/SelectTokenIntent.strings; sourceTree = "<group>"; };
 		15DC38CD247E0E0900919009 /* release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = release.xcconfig; sourceTree = SOURCE_ROOT; };
 		15DC38CE247E0E0900919009 /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = debug.xcconfig; sourceTree = SOURCE_ROOT; };
 		15DC38CF247E0E0A00919009 /* localrelease.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = localrelease.xcconfig; sourceTree = SOURCE_ROOT; };
@@ -271,7 +274,6 @@
 		C16DCF6F272BA75700FF5C78 /* CoinGeckoToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoinGeckoToken.swift; sourceTree = "<group>"; };
 		C16DCF72272BA77A00FF5C78 /* TokenProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenProvider.swift; sourceTree = "<group>"; };
 		C16DCF75272BA7AA00FF5C78 /* PriceWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceWidgetView.swift; sourceTree = "<group>"; };
-		C16DCF78272BA8A000FF5C78 /* SelectTokenIntent.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = SelectTokenIntent.intentdefinition; sourceTree = "<group>"; };
 		C16DCF7F272BAB9500FF5C78 /* SelectTokenIntent.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SelectTokenIntent.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C16DCF80272BAB9500FF5C78 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		C16DCF83272BAB9500FF5C78 /* IntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHandler.swift; sourceTree = "<group>"; };
@@ -596,7 +598,7 @@
 				C16DCF64272BA6F000FF5C78 /* Assets.xcassets */,
 				C16DCF66272BA6F000FF5C78 /* Info.plist */,
 				C16DCF75272BA7AA00FF5C78 /* PriceWidgetView.swift */,
-				C16DCF78272BA8A000FF5C78 /* SelectTokenIntent.intentdefinition */,
+				15D66139277A751C0082F041 /* SelectTokenIntent.intentdefinition */,
 			);
 			path = PriceWidget;
 			sourceTree = "<group>";
@@ -1044,7 +1046,7 @@
 				66A1FEB424AB641100C3F539 /* RNCMScreenStack.m in Sources */,
 				C18FCD3E273C64D60079CE28 /* PriceData.swift in Sources */,
 				66F889DC260CEF1E00E27D6E /* SlackBottomSheet.m in Sources */,
-				C16DCF79272BA8A000FF5C78 /* SelectTokenIntent.intentdefinition in Sources */,
+				15D66135277A751C0082F041 /* SelectTokenIntent.intentdefinition in Sources */,
 				C127238A274EBBB6006AC743 /* CurrencyDetails.swift in Sources */,
 				A477567C23DB2FAA005AE8FD /* Transaction.swift in Sources */,
 				A4277DA323CFE85F0042BAF4 /* Theme.swift in Sources */,
@@ -1077,7 +1079,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C16DCF7A272BA8A000FF5C78 /* SelectTokenIntent.intentdefinition in Sources */,
+				15D66136277A751C0082F041 /* SelectTokenIntent.intentdefinition in Sources */,
 				C151287F2739F676006517AB /* IconProvider.swift in Sources */,
 				C1C61A922731A05700E5C0B3 /* RainbowTokenList.swift in Sources */,
 				C16DCF71272BA75700FF5C78 /* CoinGeckoToken.swift in Sources */,
@@ -1099,7 +1101,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C16DCFA4272BABC300FF5C78 /* SelectTokenIntent.intentdefinition in Sources */,
+				15D66137277A751C0082F041 /* SelectTokenIntent.intentdefinition in Sources */,
 				C127238C274EBBB6006AC743 /* CurrencyDetails.swift in Sources */,
 				C179298727499A5B00044684 /* Constants.swift in Sources */,
 				C1C61A932731A05700E5C0B3 /* RainbowTokenList.swift in Sources */,
@@ -1141,6 +1143,16 @@
 			);
 			name = LaunchScreen.xib;
 			path = Rainbow;
+			sourceTree = "<group>";
+		};
+		15D66139277A751C0082F041 /* SelectTokenIntent.intentdefinition */ = {
+			isa = PBXVariantGroup;
+			children = (
+				15D66138277A751C0082F041 /* Base */,
+				15D6613B277A75230082F041 /* English */,
+				15D6613D277A75240082F041 /* en */,
+			);
+			name = SelectTokenIntent.intentdefinition;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
