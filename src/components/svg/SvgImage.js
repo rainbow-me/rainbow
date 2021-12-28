@@ -12,7 +12,6 @@ const ImageTile = styled(ImgixImage)({
   justifyContent: 'center',
 });
 
-// TODO terry I messed up with some styles here
 const getHTML = (svgContent, style) =>
   `
 <html data-key="key-${style.height}-${style.width}">
@@ -31,18 +30,18 @@ const getHTML = (svgContent, style) =>
       html, body {
         margin: 0;
         padding: 0;
-        height: '100%',
-        width: '100%',
-        overflow: 'hidden',
-        backgroundColor: transparent;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        background-color: transparent;
       }
       svg {
         position: fixed;
         top: 0;
         left: 0;
-        height: '100%',
-        width: '100%',
-        overflow: 'hidden',
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
       }
     </style>
   </head>
