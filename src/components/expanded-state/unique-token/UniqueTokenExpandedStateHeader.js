@@ -138,8 +138,7 @@ const FamilyImageWrapper = styled.View({
   height: 20,
   marginRight: 7,
   shadowColor: ({ theme: { colors } }) => colors.shadowBlack,
-  // TODO terry
-  // shadow-offset: 0 3,
+  shadowOffset: { height: 3, width: 0 },
   shadowOpacity: 0.15,
   shadowRadius: 4.5,
   width: 20,

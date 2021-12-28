@@ -46,8 +46,7 @@ const GestureBlocker = styled(View)({
 const Container = styled(Animated.View)({
   alignSelf: 'center',
   shadowColor: ({ theme: { colors } }) => colors.shadowBlack,
-  // TODO terry
-  // shadow-offset: 0 20,
+  shadowOffset: { height: 20, width: 0 },
   shadowOpacity: 0.4,
   shadowRadius: 30,
 });
