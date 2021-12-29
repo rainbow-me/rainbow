@@ -4,10 +4,9 @@ import { ENS_SUGGESTIONS } from '../apollo/queries';
 import { profileUtils } from '@rainbow-me/utils';
 
 export const fetchSuggestions = async (
-  recipient,
-  setSuggestions,
-  // eslint-disable-next-line no-unused-vars
-  setIsFetching = _unused => {}
+  recipient: any,
+  setSuggestions: any,
+  setIsFetching = (_unused: any) => {}
 ) => {
   if (recipient.length > 2) {
     setIsFetching(true);
@@ -22,17 +21,19 @@ export const fetchSuggestions = async (
 
     if (!isEmpty(result?.data?.domains)) {
       const ensSuggestions = result.data.domains
-        .map(ensDomain => ({
+        .map((ensDomain: any) => ({
           address: ensDomain?.resolver?.addr?.id || ensDomain?.name,
+
           color: profileUtils.addressHashedColorIndex(
             ensDomain?.resolver?.addr?.id || ensDomain.name
           ),
+
           ens: true,
           network: 'mainnet',
           nickname: ensDomain?.name,
           uniqueId: ensDomain?.resolver?.addr?.id || ensDomain.name,
         }))
-        .filter(domain => !domain?.nickname?.includes?.('['));
+        .filter((domain: any) => !domain?.nickname?.includes?.('['));
       const sortedEnsSuggestions = sortBy(
         ensSuggestions,
         domain => domain.nickname.length,

@@ -6,12 +6,8 @@ const REQUESTS = 'requests';
 
 export const walletConnectAccountLocalKeys = [REQUESTS];
 
-const isRequestStillValid = request => {
-  if (
-    request &&
-    request.displayDetails &&
-    request.displayDetails.timestampInMs
-  ) {
+const isRequestStillValid = (request: any) => {
+  if (request?.displayDetails?.timestampInMs) {
     const createdAt = request.displayDetails.timestampInMs;
     return differenceInMinutes(Date.now(), createdAt) < 60;
   }
@@ -23,7 +19,8 @@ const isRequestStillValid = request => {
  * @param  {String}   [address]
  * @return {Object}
  */
-export const getLocalRequests = async (accountAddress, network) => {
+export const getLocalRequests = async (accountAddress: any, network: any) => {
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{}' is not assignable to paramet... Remove this comment to see the full error message
   const requests = getAccountLocal(REQUESTS, accountAddress, network, {});
   const openRequests = pickBy(requests, isRequestStillValid);
   await saveLocalRequests(openRequests, accountAddress, network);
@@ -36,8 +33,11 @@ export const getLocalRequests = async (accountAddress, network) => {
  * @param  {String}   [network]
  * @return {Void}
  */
-export const saveLocalRequests = async (requests, accountAddress, network) =>
-  saveAccountLocal(REQUESTS, requests, accountAddress, network);
+export const saveLocalRequests = async (
+  requests: any,
+  accountAddress: any,
+  network: any
+) => saveAccountLocal(REQUESTS, requests, accountAddress, network);
 
 /**
  * @desc remove request
@@ -46,9 +46,14 @@ export const saveLocalRequests = async (requests, accountAddress, network) =>
  * @param  {String}   [requestId]
  * @return {Void}
  */
-export const removeLocalRequest = async (address, network, requestId) => {
+export const removeLocalRequest = async (
+  address: any,
+  network: any,
+  requestId: any
+) => {
   const requests = await getLocalRequests(address, network);
   const updatedRequests = { ...requests };
+  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
   delete updatedRequests[requestId];
   await saveLocalRequests(updatedRequests, address, network);
 };

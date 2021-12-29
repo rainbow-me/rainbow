@@ -55,10 +55,12 @@ import {
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
   DEFAULT_HD_PATH,
-  EthereumPrivateKey,
-  EthereumWalletSeed,
   identifyWalletType,
   WalletLibraryType,
+} from '@rainbow-me/model/wallet';
+import type {
+  EthereumPrivateKey,
+  EthereumWalletSeed,
 } from '@rainbow-me/model/wallet';
 import { Navigation } from '@rainbow-me/navigation';
 import { parseAssetNative } from '@rainbow-me/parsers';
