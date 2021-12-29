@@ -1,5 +1,7 @@
 import React from 'react';
 import { css } from 'styled-components';
+import isEqual from './fastCompare';
+
 import hoist from './hoist';
 // eslint-disable-next-line import/no-commonjs
 const reactNative = require('react-native');
@@ -143,7 +145,10 @@ export default function styled(Component) {
       return React.createElement(elementToBeCreated, forwardedProps);
     }
 
-    WrappedStyledComponent = React.memo(React.forwardRef(StyledComponent));
+    WrappedStyledComponent = React.memo(
+      React.forwardRef(StyledComponent),
+      isEqual
+    );
 
     WrappedStyledComponent.displayName = `StyledThing${Component.name}`;
 
