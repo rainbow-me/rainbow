@@ -1,4 +1,5 @@
 import React from 'react';
+import isEqual from 'react-fast-compare';
 import { css } from 'styled-components';
 import isEqual from './fastCompare';
 
