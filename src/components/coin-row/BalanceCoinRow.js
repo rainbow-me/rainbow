@@ -24,7 +24,7 @@ const formatPercentageString = percentString =>
   percentString ? percentString.split('-').join('- ') : '-';
 
 const BalanceCoinRowCoinCheckButton = styled(CoinCheckButton).attrs({
-  isAbsolute: true,
+  left: 9.5,
 })({
   top: 9,
 });

@@ -36,7 +36,7 @@ const CheckmarkBackground = styled.View`
   ${({ theme: { isDarkMode, colors } }) =>
     shadow.build(0, 4, 12, isDarkMode ? colors.shadow : colors.appleBlue, 0.4)}
   background-color: ${({ theme: { colors } }) => colors.appleBlue};
-  left: ${({ isAbsolute }) => (isAbsolute ? 19 : 0)};
+  left: ${({ left, isAbsolute }) => left || (isAbsolute ? 19 : 0)}};
 `;
 
 const CoinCheckButton = ({
@@ -46,6 +46,7 @@ const CoinCheckButton = ({
   onPress,
   toggle: givenToggle,
   uniqueId,
+  left,
   ...props
 }) => {
   const { selectedItems } = useCoinListFinishEditingOptions();
@@ -58,14 +59,13 @@ const CoinCheckButton = ({
         isAbsolute={isAbsolute}
         onPress={onPress}
         opacityTouchable
-        reanimatedButton
       >
         {isHidden || isPinned ? null : <CircleOutline />}
         {!toggle && (isHidden || isPinned) ? (
           <CoinIconIndicator isPinned={isPinned} />
         ) : null}
         <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
-          <CheckmarkBackground isAbsolute={isAbsolute}>
+          <CheckmarkBackground isAbsolute={isAbsolute} left={left}>
             <Icon color="white" name="checkmark" />
           </CheckmarkBackground>
         </OpacityToggler>
