@@ -9,7 +9,7 @@ import {
   orderBy,
   toLower,
 } from 'lodash';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useMMKVObject } from 'react-native-mmkv';
 import { useDispatch, useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
@@ -97,8 +97,6 @@ function usePersistentBackupSavings(accountAddress, network) {
 }
 
 export default function useSavingsAccount(includeDefaultDai) {
-  const [result, setResult] = useState({});
-
   const dispatch = useDispatch();
   const { accountAddress, network } = useAccountSettings();
   const [backupSavings = null, setBackupSavings] = usePersistentBackupSavings(
@@ -122,8 +120,11 @@ export default function useSavingsAccount(includeDefaultDai) {
     }
   );
 
-  const parseSavingsResult = useCallback(async () => {
-    if (error) return;
+  const result = useMemo(() => {
+    if (error) return {};
+    if (!hasAccountAddress) {
+      return {};
+    }
 
     if (data) {
       const markets = keyBy(data?.markets, 'id');
@@ -166,18 +167,21 @@ export default function useSavingsAccount(includeDefaultDai) {
       );
       dispatch(emitAssetRequest([DAI_ADDRESS, ...underlyingAddresses]));
       setBackupSavings(result);
-      setResult(result);
+      return result;
     } else if (loading && !isNil(backupSavings)) {
-      setResult(backupSavings);
+      return backupSavings;
     } else {
-      setResult({});
+      return {};
     }
-  }, [accountAddress, backupSavings, data, dispatch, error, loading, network]);
-
-  useEffect(() => {
-    if (!hasAccountAddress) return;
-    parseSavingsResult();
-  }, [hasAccountAddress, parseSavingsResult]);
+  }, [
+    backupSavings,
+    data,
+    dispatch,
+    error,
+    hasAccountAddress,
+    loading,
+    setBackupSavings,
+  ]);
 
   const savings = useMemo(() => {
     if (isEmpty(result)) return [];
