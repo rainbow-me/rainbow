@@ -63,6 +63,13 @@ const Wrapper = styled(RowWithMargins).attrs({
   background-color: ${({ theme: { colors } }) => colors.transparent};
 `;
 
+const Gradient = styled(LinearGradient).attrs({
+  end: { x: 1, y: 0.5 },
+  start: { x: 0, y: 0.5 },
+})`
+  ${position.size('100%')};
+`;
+
 function AssetListItemSkeleton({
   animated = true,
   index = 0,
@@ -137,15 +144,9 @@ function AssetListItemSkeleton({
     <Container descendingOpacity={descendingOpacity} index={index}>
       {animated ? (
         <MaskedView maskElement={skeletonElement}>
-          <View backgroundColor={gradientColors[0]} css={position.size('100%')}>
+          <View backgroundColor={gradientColors[0]}>
             <Animated.View style={style}>
-              <LinearGradient
-                {...position.sizeAsObject('100%')}
-                colors={gradientColors}
-                end={{ x: 1, y: 0.5 }}
-                locations={gradientSteps}
-                start={{ x: 0, y: 0.5 }}
-              />
+              <Gradient colors={gradientColors} locations={gradientSteps} />
             </Animated.View>
           </View>
         </MaskedView>
