@@ -7,7 +7,7 @@ import { useExpandedStateNavigation, useWallets } from '@rainbow-me/hooks';
 
 import Routes from '@rainbow-me/routes';
 
-export default function BuyActionButton({ color: givenColor, ...props }) {
+function BuyActionButton({ color: givenColor, ...props }) {
   const { colors } = useTheme();
   const color = givenColor || colors.paleBlue;
   const navigate = useExpandedStateNavigation();
@@ -41,3 +41,5 @@ export default function BuyActionButton({ color: givenColor, ...props }) {
     />
   );
 }
+
+export default React.memo(BuyActionButton);

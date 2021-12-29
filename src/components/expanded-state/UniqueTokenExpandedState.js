@@ -214,28 +214,32 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
 
   return (
     <Fragment>
-      <BlurWrapper height={deviceHeight} width={deviceWidth}>
-        <BackgroundImage>
-          {isSVG ? (
-            <UniqueTokenImage
-              backgroundColor={asset.background}
-              imageUrl={lowResUrl}
-              item={asset}
-              size={deviceHeight}
-            />
-          ) : (
-            <ImgixImage
-              resizeMode="cover"
-              source={{ uri: lowResUrl }}
-              style={{ height: deviceHeight, width: deviceWidth }}
-            />
-          )}
-          <BackgroundBlur />
-        </BackgroundImage>
-      </BlurWrapper>
+      {ios && (
+        <BlurWrapper height={deviceHeight} width={deviceWidth}>
+          <BackgroundImage>
+            {isSVG ? (
+              <UniqueTokenImage
+                backgroundColor={asset.background}
+                imageUrl={lowResUrl}
+                item={asset}
+                size={deviceHeight}
+              />
+            ) : (
+              <ImgixImage
+                resizeMode="cover"
+                source={{ uri: lowResUrl }}
+                style={{ height: deviceHeight, width: deviceWidth }}
+              />
+            )}
+            <BackgroundBlur />
+          </BackgroundImage>
+        </BlurWrapper>
+      )}
       <SlackSheet
         backgroundColor={
-          isDarkMode ? 'rgba(22, 22, 22, 0.4)' : 'rgba(26, 26, 26, 0.4)'
+          isDarkMode
+            ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})`
+            : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`
         }
         bottomInset={42}
         hideHandle

@@ -1,10 +1,11 @@
 import {
-  filter,
   find,
   get,
+  isEmpty,
   isNil,
   map,
   pick,
+  pickBy,
   remove,
   toLower,
   uniq,
@@ -186,15 +187,14 @@ export const parseAccountUniqueTokensPolygon = data => {
 export const getFamilies = uniqueTokens =>
   uniq(map(uniqueTokens, u => get(u, 'asset_contract.address', '')));
 
-export const dedupeUniqueTokens = (assets, uniqueTokens) => {
+export const dedupeUniqueTokens = (newAssets, uniqueTokens) => {
   const uniqueTokenFamilies = getFamilies(uniqueTokens);
-  let updatedAssets = assets;
-  if (assets.length) {
-    updatedAssets = filter(updatedAssets, asset => {
+  let updatedAssets = newAssets;
+  if (!isEmpty(newAssets)) {
+    updatedAssets = pickBy(updatedAssets, newAsset => {
       const matchingElement = find(
         uniqueTokenFamilies,
-        uniqueTokenFamily =>
-          uniqueTokenFamily === get(asset, 'asset.asset_code')
+        uniqueTokenFamily => uniqueTokenFamily === newAsset?.asset?.asset_code
       );
       return !matchingElement;
     });
@@ -202,8 +202,8 @@ export const dedupeUniqueTokens = (assets, uniqueTokens) => {
   return updatedAssets;
 };
 
-export const dedupeAssetsWithFamilies = (assets, families) =>
-  filter(
-    assets,
-    asset => !find(families, family => family === get(asset, 'address'))
+export const dedupeAssetsWithFamilies = (accountAssets, families) =>
+  pickBy(
+    accountAssets,
+    asset => !find(families, family => family === asset?.address)
   );

@@ -34,9 +34,9 @@ const Container = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
 })`
-  ${padding(5, 19, 6)};
-  background-color: ${({ isSticky, theme: { colors } }) =>
-    isSticky ? colors.white : colors.transparent};
+  ${padding(4, 19, 5, 0)};
+  background-color: ${({ isCoinListEdited, theme: { colors } }) =>
+    isCoinListEdited ? colors.white : colors.transparent};
   height: ${CoinDividerContainerHeight};
   width: ${({ deviceWidth }) => deviceWidth};
 `;
@@ -44,6 +44,8 @@ const Container = styled(Row).attrs({
 const CoinDividerButtonRow = styled(RowWithMargins).attrs(
   ({ isCoinListEdited }) => ({
     margin: 10,
+    paddingHorizontal: 19,
+    paddingVertical: 5,
     pointerEvents: isCoinListEdited ? 'auto' : 'none',
   })
 )`
@@ -83,15 +85,14 @@ const useInterpolationRange = () => {
     style: {
       transform: [
         {
-          translateY:
-            position?.interpolate({
-              extrapolateLeft: 'clamp',
-              extrapolateRight: 'extend',
-              inputRange: range,
-              outputRange: range.map(r =>
-                isCoinListEdited ? r - range[0] : 0
-              ),
-            }) ?? 0,
+          translateY: isCoinListEdited
+            ? position?.interpolate({
+                extrapolateLeft: 'clamp',
+                extrapolateRight: 'extend',
+                inputRange: range,
+                outputRange: range.map(r => r - range[0]),
+              })
+            : 0,
         },
       ],
     },
@@ -146,9 +147,12 @@ export default function CoinDivider({ balancesSum }) {
 
   return (
     <Animated.View {...interpolation}>
-      <Container deviceWidth={deviceWidth} isSticky>
+      <Container deviceWidth={deviceWidth} isCoinListEdited={isCoinListEdited}>
         <Row>
-          <View pointerEvents={isCoinListEdited ? 'none' : 'auto'}>
+          <View
+            opacity={isCoinListEdited ? 0 : 1}
+            pointerEvents={isCoinListEdited ? 'none' : 'auto'}
+          >
             <CoinDividerOpenButton
               coinDividerHeight={CoinDividerHeight}
               isSmallBalancesOpen={isSmallBalancesOpen}

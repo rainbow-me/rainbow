@@ -86,7 +86,7 @@ export const fetchUniqueTokens = showcaseAddress => async (
   }
   const { network } = getState().settings;
   const accountAddress = showcaseAddress || getState().settings.accountAddress;
-  const { assets } = getState().data;
+  const { accountAssetsData } = getState().data;
   const { uniqueTokens: existingUniqueTokens } = getState().uniqueTokens;
   const shouldUpdateInBatches = isEmpty(existingUniqueTokens);
 
@@ -138,7 +138,7 @@ export const fetchUniqueTokens = showcaseAddress => async (
         const incomingFamilies = without(newFamilies, ...existingFamilies);
         if (incomingFamilies.length) {
           const dedupedAssets = dedupeAssetsWithFamilies(
-            assets,
+            accountAssetsData,
             incomingFamilies
           );
           dispatch(dataUpdateAssets(dedupedAssets));

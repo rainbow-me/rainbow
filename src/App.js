@@ -130,18 +130,18 @@ class App extends Component {
 
       if (params['+non_branch_link']) {
         const nonBranchUrl = params['+non_branch_link'];
-        handleDeeplink(nonBranchUrl);
+        this.handleOpenLinkingURL(nonBranchUrl);
         return;
       } else if (!params['+clicked_branch_link']) {
         // Indicates initialization success and some other conditions.
         // No link was opened.
         if (IS_TESTING === 'true') {
-          handleDeeplink(uri);
+          this.handleOpenLinkingURL(uri);
         } else {
           return;
         }
       } else if (uri) {
-        handleDeeplink(uri);
+        this.handleOpenLinkingURL(uri);
       }
     });
 
@@ -150,13 +150,13 @@ class App extends Component {
       try {
         const initialUrl = await Linking.getInitialURL();
         if (initialUrl) {
-          handleDeeplink(initialUrl);
+          this.handleOpenLinkingURL(initialUrl);
         }
       } catch (e) {
         logger.log('Error opening deeplink', e);
       }
       Linking.addEventListener('url', ({ url }) => {
-        handleDeeplink(url);
+        this.handleOpenLinkingURL(url);
       });
     }
   }
@@ -199,7 +199,7 @@ class App extends Component {
   };
 
   handleOpenLinkingURL = url => {
-    handleDeeplink(url);
+    handleDeeplink(url, this.state.initialRoute);
   };
 
   onPushNotificationOpened = topic => {
