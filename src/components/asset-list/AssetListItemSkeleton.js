@@ -39,7 +39,7 @@ const FakeRow = styled(Row).attrs({
   justify: 'space-between',
   paddingBottom: 5,
   paddingTop: 5,
-})(Row);
+})({});
 
 const FakeText = styled.View({
   backgroundColor: ({ theme: { colors } }) => colors.skeleton,
