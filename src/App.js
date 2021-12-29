@@ -87,6 +87,8 @@ enableScreens();
 
 const { RNTestFlight } = NativeModules;
 
+const containerStyle = { flex: 1 };
+
 class App extends Component {
   static propTypes = {
     requestsForTopic: PropTypes.func,
@@ -284,7 +286,7 @@ class App extends Component {
               <Provider store={store}>
                 <RecoilRoot>
                   <SharedValuesProvider>
-                    <View style={{ flex: 1 }}>
+                    <View style={containerStyle}>
                       {this.state.initialRoute && (
                         <InitialRouteContext.Provider
                           value={this.state.initialRoute}

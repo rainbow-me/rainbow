@@ -150,6 +150,10 @@ const WalletText = styled(Text).attrs(
   })
 )({});
 
+const messageRequestContainerStyle = padding.object(24, 0);
+
+const rowStyle = padding.object(6, 24, 30);
+
 const NOOP = () => undefined;
 
 export default function TransactionConfirmationScreen() {
@@ -864,7 +868,7 @@ export default function TransactionConfirmationScreen() {
   const renderTransactionSection = useCallback(() => {
     if (isMessageRequest) {
       return (
-        <RowWithMargins css={padding.object(24, 0)}>
+        <RowWithMargins css={messageRequestContainerStyle}>
           <MessageSigningSection message={request.message} method={method} />
         </RowWithMargins>
       );
@@ -1083,7 +1087,7 @@ export default function TransactionConfirmationScreen() {
                   </Column>
                 )}
                 {renderTransactionButtons()}
-                <RowWithMargins css={padding.object(6, 24, 30)} margin={15}>
+                <RowWithMargins css={rowStyle} margin={15}>
                   <Column>
                     <WalletLabel>Wallet</WalletLabel>
                     <RowWithMargins margin={5}>

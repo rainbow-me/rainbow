@@ -62,6 +62,15 @@ const SessionRow = styled(Row)({
   justifyContent: 'space-between',
 });
 
+const rowStyle = padding.object(
+  ContainerPadding,
+  0,
+  ContainerPadding,
+  ContainerPadding
+);
+
+const columnStyle = padding.object(0, 19, 0, 12);
+
 export default function WalletConnectListItem({
   account,
   chainId,
@@ -203,27 +212,14 @@ export default function WalletConnectListItem({
       onPressMenuItem={handleOnPressMenuItem}
     >
       <Row align="center" height={WalletConnectListItemHeight}>
-        <Row
-          align="center"
-          css={padding.object(
-            ContainerPadding,
-            0,
-            ContainerPadding,
-            ContainerPadding
-          )}
-          flex={1}
-        >
+        <Row align="center" css={rowStyle} flex={1}>
           <RequestVendorLogoIcon
             backgroundColor={colors.white}
             dappName={dappName}
             imageUrl={overrideLogo || dappIcon}
             size={VendorLogoIconSize}
           />
-          <ColumnWithMargins
-            css={padding.object(0, 19, 0, 12)}
-            flex={1}
-            margin={5}
-          >
+          <ColumnWithMargins css={columnStyle} flex={1} margin={5}>
             <Row width="70%">
               <TruncatedText size="lmedium" weight="heavy">
                 {overrideName || dappName || 'Unknown Application'}{' '}

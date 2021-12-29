@@ -51,6 +51,8 @@ const ContactName = styled(TruncatedText).attrs(({ lite }) => ({
   width: ({ deviceWidth }) => deviceWidth - 90,
 });
 
+const css = margin.object(6, 19, 13);
+
 const ContactRow = ({ address, color, nickname, ...props }, ref) => {
   const { width: deviceWidth } = useDimensions();
   const { colors } = useTheme();
@@ -103,7 +105,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
       onPress={handlePress}
     >
       <RowWithMargins
-        css={margin.object(6, 19, 13)}
+        css={css}
         height={40}
         margin={10}
         testID={`${testID}-contact-row-${

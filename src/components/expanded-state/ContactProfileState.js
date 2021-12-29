@@ -76,6 +76,9 @@ const SubmitButtonLabel = styled(Text).attrs(({ value }) => ({
   marginBottom: 1.5,
 });
 
+const centerdStyles = padding.object(24, 25);
+const bottomStyles = padding.object(8, 9);
+
 const ContactProfileState = ({ address, color: colorProp, contact }) => {
   const { goBack } = useNavigation();
   const { onAddOrUpdateContacts, onRemoveContact } = useContacts();
@@ -134,7 +137,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
 
   return (
     <ProfileModal onPressBackdrop={handleAddContact}>
-      <Centered css={padding.object(24, 25)} direction="column">
+      <Centered css={centerdStyles} direction="column">
         <ProfileAvatarButton
           changeAvatar={handleChangeAvatar}
           color={color}
@@ -191,7 +194,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
         >
           <Centered
             backgroundColor={colors.white}
-            css={padding.object(8, 9)}
+            css={bottomStyles}
             testID="contact-profile-cancel-button"
           >
             <Text

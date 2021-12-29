@@ -6,11 +6,13 @@ import Tag from '../Tag';
 import { Row } from '../layout';
 import { margin } from '@rainbow-me/styles';
 
+const tagStyle = margin.object(7, 10, 3, 0);
+
 const AttributeItem = ({ color, trait_type: type, slug, value, disableMenu }) =>
   type && value ? (
     <Tag
       color={color}
-      css={margin.object(7, 10, 3, 0)}
+      css={tagStyle}
       disableMenu={disableMenu}
       key={`${type}${value}`}
       slug={slug}

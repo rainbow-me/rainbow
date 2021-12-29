@@ -37,6 +37,8 @@ const GradientAPYHeadingText = styled(GradientText).attrs({
   steps: [0, 1],
 })({});
 
+const css = padding.object(19, 15);
+
 const SavingsSheetEmptyState = ({
   isReadOnlyWallet,
   supplyRate,
@@ -79,7 +81,7 @@ const SavingsSheetEmptyState = ({
         earns you more than ever before
       </BodyText>
       <Divider color={colors.rowDividerLight} inset={[0, 42]} />
-      <ColumnWithMargins css={padding.object(19, 15)} margin={19} width="100%">
+      <ColumnWithMargins css={css} margin={19} width="100%">
         <SheetActionButton
           color={colors.swapPurple}
           label="􀁍 Deposit from Wallet"

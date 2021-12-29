@@ -59,6 +59,8 @@ const SavingsListRowShadowStack = styled(ShadowStack).attrs(
   })
 )({});
 
+const rowStyle = padding.object(9, 10, 10, 11);
+
 const SavingsListRow = ({
   cTokenBalance,
   lifetimeSupplyInterestAccrued,
@@ -158,7 +160,7 @@ const SavingsListRow = ({
           <SavingsListRowGradient colors={colors} />
           <Row
             align="center"
-            css={padding.object(9, 10, 10, 11)}
+            css={rowStyle}
             justify="space-between"
             onPress={onButtonPress}
             scaleTo={0.96}

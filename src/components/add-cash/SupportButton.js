@@ -6,6 +6,8 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 import { padding } from '@rainbow-me/styles';
 
+const css = padding.object(5, 10, 6);
+
 const SupportButton = ({ label, onPress, ...props }) => {
   const { colors } = useTheme();
   return (
@@ -13,7 +15,7 @@ const SupportButton = ({ label, onPress, ...props }) => {
       <Centered
         backgroundColor={colors.alpha(colors.blueGreyDark, 0.06)}
         borderRadius={15}
-        css={padding.object(5, 10, 6)}
+        css={css}
         {...props}
       >
         <Text

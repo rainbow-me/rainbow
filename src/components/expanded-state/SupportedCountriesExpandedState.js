@@ -41,6 +41,8 @@ const countries = values(wyreSupportedCountries).map(c =>
 const countriesList = `${countries.join(', ')}`;
 const emojiArray = values(wyreSupportedCountries).map(c => c.emojiName);
 
+const centeredStyles = padding.object(19, 30, 24);
+
 const SupportCountriesExpandedState = () => {
   const deviceDimensions = useDimensions();
 
@@ -59,7 +61,7 @@ const SupportCountriesExpandedState = () => {
         wiggleFactor={0}
       >
         <AssetPanel>
-          <Centered css={padding.object(19, 30, 24)} direction="column">
+          <Centered css={centeredStyles} direction="column">
             <TitleText>Supported Countries</TitleText>
             <Text
               align="center"

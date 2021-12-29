@@ -15,6 +15,8 @@ const renderIcon = icon =>
     icon
   );
 
+const rowStyle = padding.object(0, 18, 2, 19);
+
 const ListItem = ({
   activeOpacity,
   children,
@@ -45,7 +47,7 @@ const ListItem = ({
     >
       <Row
         align="center"
-        css={padding.object(0, 18, 2, 19)}
+        css={rowStyle}
         height={ListItemHeight}
         justify="space-between"
         {...props}
