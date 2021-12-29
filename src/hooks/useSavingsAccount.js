@@ -10,15 +10,12 @@ import {
   toLower,
 } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMMKVObject } from 'react-native-mmkv';
 import { useDispatch, useSelector } from 'react-redux';
 import useAccountSettings from './useAccountSettings';
 import { compoundClient } from '@rainbow-me/apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@rainbow-me/apollo/queries';
 import { AssetTypes } from '@rainbow-me/entities';
-import {
-  getSavings,
-  saveSavings,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
 import { multiply } from '@rainbow-me/helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '@rainbow-me/parsers';
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
@@ -95,19 +92,24 @@ const getUnderlyingPrice = token => {
   };
 };
 
+function usePersistentBackupSavings(accountAddress, network) {
+  return useMMKVObject('savings-' + accountAddress + network);
+}
+
 export default function useSavingsAccount(includeDefaultDai) {
   const [result, setResult] = useState({});
-  const [backupSavings, setBackupSavings] = useState(null);
 
   const dispatch = useDispatch();
   const { accountAddress, network } = useAccountSettings();
+  const [backupSavings = null, setBackupSavings] = usePersistentBackupSavings(
+    accountAddress,
+    network
+  );
 
   const hasAccountAddress = !!accountAddress;
 
-  const { shouldRefetchSavings } = useSelector(
-    ({ data: { shouldRefetchSavings } }) => ({
-      shouldRefetchSavings,
-    })
+  const shouldRefetchSavings = useSelector(
+    ({ data: { shouldRefetchSavings } }) => shouldRefetchSavings
   );
 
   const { data, error, loading, refetch: refetchSavings } = useQuery(
@@ -119,17 +121,6 @@ export default function useSavingsAccount(includeDefaultDai) {
       variables: { id: toLower(accountAddress) },
     }
   );
-
-  useEffect(() => {
-    if (!hasAccountAddress) return;
-    const fetchBackupSavings = async () => {
-      const backup = await getSavings(accountAddress, network);
-      if (!isEmpty(backup)) {
-        setBackupSavings(backup);
-      }
-    };
-    fetchBackupSavings();
-  }, [accountAddress, hasAccountAddress, network]);
 
   const parseSavingsResult = useCallback(async () => {
     if (error) return;
@@ -174,7 +165,7 @@ export default function useSavingsAccount(includeDefaultDai) {
         token => token?.underlying?.address
       );
       dispatch(emitAssetRequest([DAI_ADDRESS, ...underlyingAddresses]));
-      saveSavings(result, accountAddress, network);
+      setBackupSavings(result);
       setResult(result);
     } else if (loading && !isNil(backupSavings)) {
       setResult(backupSavings);
