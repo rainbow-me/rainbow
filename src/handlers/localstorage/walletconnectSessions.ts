@@ -23,7 +23,7 @@ const getAllWalletConnectSessions = () => getGlobal(WALLETCONNECT, {});
  * @param  {String}   [peerId]
  * @param  {Object}   [session]
  */
-export const saveWalletConnectSession = async (peerId, session) => {
+export const saveWalletConnectSession = async (peerId: any, session: any) => {
   const allSessions = await getAllValidWalletConnectSessions();
   allSessions[peerId] = session;
   await saveGlobal(WALLETCONNECT, allSessions);
@@ -33,7 +33,7 @@ export const saveWalletConnectSession = async (peerId, session) => {
  * @desc remove wallet connect sessions
  * @param  {String}   [sessionId]
  */
-export const removeWalletConnectSessions = async sessionIds => {
+export const removeWalletConnectSessions = async (sessionIds: any) => {
   const allSessions = await getAllWalletConnectSessions();
   const resultingSessions = omit(allSessions, sessionIds);
   await saveGlobal(WALLETCONNECT, resultingSessions);
