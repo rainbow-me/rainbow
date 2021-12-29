@@ -29,7 +29,7 @@ export default function useWalletSectionsData() {
     true
   );
 
-  const isCoinListEdited = useCoinListEdited();
+  const { isCoinListEdited } = useCoinListEdited();
 
   const walletSections = useMemo(() => {
     const accountInfo = {
