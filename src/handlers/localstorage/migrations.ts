@@ -14,5 +14,5 @@ export const getMigrationVersion = () =>
 /**
  * @desc save migrations
  */
-export const setMigrationVersion = migration =>
+export const setMigrationVersion = (migration: any) =>
   saveGlobal(MIGRATION_VERSION, migration, migrationsVersion);

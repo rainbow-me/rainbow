@@ -24,7 +24,7 @@ const nativeAssetsPerNetwork = {
   [networkTypes.ropsten]: ETH_ADDRESS,
 };
 
-export function isL2Asset(type) {
+export function isL2Asset(type: any) {
   switch (type) {
     case AssetTypes.arbitrum:
     case AssetTypes.optimism:
@@ -35,15 +35,15 @@ export function isL2Asset(type) {
   }
 }
 
-export function isNativeAsset(address, network) {
+export function isNativeAsset(address: any, network: any) {
   return toLower(nativeAssetsPerNetwork[network]) === toLower(address);
 }
 
 export async function getOnchainAssetBalance(
-  { address, decimals, symbol },
-  userAddress,
-  network,
-  provider
+  { address, decimals, symbol }: any,
+  userAddress: any,
+  network: any,
+  provider: any
 ) {
   // Check if it's the native chain asset
   if (isNativeAsset(address, network)) {
@@ -61,9 +61,9 @@ export async function getOnchainAssetBalance(
 }
 
 async function getOnchainTokenBalance(
-  { address, decimals, symbol },
-  userAddress,
-  provider
+  { address, decimals, symbol }: any,
+  userAddress: any,
+  provider: any
 ) {
   try {
     const tokenContract = new Contract(address, erc20ABI, provider);
@@ -73,6 +73,7 @@ async function getOnchainTokenBalance(
       decimals
     );
     const displayBalance = convertAmountToBalanceDisplay(tokenBalance, {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ address: any; decimals: any; s... Remove this comment to see the full error message
       address,
       decimals,
       symbol,
@@ -88,9 +89,9 @@ async function getOnchainTokenBalance(
 }
 
 async function getOnchainNativeAssetBalance(
-  { decimals, symbol },
-  userAddress,
-  provider
+  { decimals, symbol }: any,
+  userAddress: any,
+  provider: any
 ) {
   try {
     const balance = await provider.getBalance(userAddress);
@@ -100,6 +101,7 @@ async function getOnchainNativeAssetBalance(
     );
     const displayBalance = convertAmountToBalanceDisplay(tokenBalance, {
       decimals,
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ decimals: any; symbol: any; }'... Remove this comment to see the full error message
       symbol,
     });
 
