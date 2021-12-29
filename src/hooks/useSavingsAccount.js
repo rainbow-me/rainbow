@@ -11,6 +11,7 @@ import {
 } from 'lodash';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import hookMemo from "./hookMemo";
 import useAccountSettings from './useAccountSettings';
 import { compoundClient } from '@rainbow-me/apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@rainbow-me/apollo/queries';
@@ -95,7 +96,7 @@ const getUnderlyingPrice = token => {
   };
 };
 
-export default function useSavingsAccount(includeDefaultDai) {
+export default hookMemo(function useSavingsAccount(includeDefaultDai) {
   const [result, setResult] = useState({});
   const [backupSavings, setBackupSavings] = useState(null);
 
@@ -221,4 +222,4 @@ export default function useSavingsAccount(includeDefaultDai) {
     savings,
     shouldRefetchSavings,
   };
-}
+});
