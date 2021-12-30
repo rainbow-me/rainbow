@@ -4,7 +4,6 @@ import { UniswapCurrency } from '@rainbow-me/entities';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
 import { AppDispatch, AppGetState } from '@rainbow-me/redux/store';
 import { convertAmountFromNativeValue } from '@rainbow-me/utilities';
-import logger from 'logger';
 import { Quote } from 'rainbow-swaps';
 
 export interface SwapAmount {

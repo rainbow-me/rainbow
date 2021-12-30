@@ -47,9 +47,10 @@ export interface Quote {
     outputTokenDecimals?: number;
 }
 export interface TransactionOptions {
-    gasLimit?: string | number;
-    gasPrice?: string;
-    nonce?: number;
+    gasLimit?: string;
+    maxFeePerGas?: string;
+    maxPriorityFeePerGas?: string;
+    nonce?: string;
     value?: number | BigNumberish;
     from?: EthereumAddress;
 }

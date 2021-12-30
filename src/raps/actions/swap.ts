@@ -1,6 +1,6 @@
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
-import { get, toLower } from 'lodash';
+import { toLower } from 'lodash';
 import { Rap, RapActionParameters, SwapActionParameters } from '../common';
 import {
   ProtocolType,
@@ -114,7 +114,7 @@ const swap = async (
   const newTransaction = {
     amount: inputAmount,
     asset: inputCurrency,
-    data: swap.data,
+    data: swap?.data,
     from: accountAddress,
     gasLimit,
     hash: swap?.hash,
@@ -125,17 +125,16 @@ const swap = async (
     status: TransactionStatus.swapping,
     to: swap?.to,
     type: TransactionType.trade,
-    value: toHex(swap.value),
+    value: (swap && toHex(swap.value)) || undefined,
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
 
-
-  // @ts-expect-error Since src/redux/data.js is not typed yet, `accountAddress`
-  // being a string conflicts with the inferred type of "null" for the second
-  // parameter.
   await dispatch(
     dataAddNewTransaction(
       newTransaction,
+      // @ts-expect-error Since src/redux/data.js is not typed yet, `accountAddress`
+      // being a string conflicts with the inferred type of "null" for the second
+      // parameter.
       accountAddress,
       false,
       wallet?.provider as any

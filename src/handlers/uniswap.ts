@@ -1,7 +1,4 @@
-import { Signer } from '@ethersproject/abstract-signer';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { Contract } from '@ethersproject/contracts';
-import { Provider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { get, mapKeys, mapValues, toLower } from 'lodash';
 import { Token } from '../entities/tokens';
@@ -178,8 +175,6 @@ export const executeSwap = async ({
   gasLimit,
   maxFeePerGas,
   maxPriorityFeePerGas,
-  inputCurrency,
-  gasPrice,
   nonce,
   tradeDetails,
   wallet,
@@ -189,8 +184,6 @@ export const executeSwap = async ({
   gasLimit: string | number;
   maxFeePerGas: string;
   maxPriorityFeePerGas: string;
-  inputCurrency: Asset;
-  gasPrice: string;
   nonce?: number;
   tradeDetails: Quote | null;
   wallet: Wallet | null;

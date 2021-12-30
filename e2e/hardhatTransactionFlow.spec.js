@@ -242,7 +242,6 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  
   it('Should swap ETH -> USDC (via ethToToken)', async () => {
     await Helpers.tap('exchange-fab');
     await Helpers.tap('exchange-modal-output-selection-button');
