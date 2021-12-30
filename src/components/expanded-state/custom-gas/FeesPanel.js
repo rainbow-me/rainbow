@@ -206,7 +206,10 @@ export default function FeesPanel({
     const currentBaseFee = currentBlockParams?.baseFeePerGas?.gwei;
     const maxBaseFee = selectedOptionIsCustom
       ? customMaxBaseFee
-      : toFixedDecimals(selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei, 0);
+      : toFixedDecimals(
+          selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei || 0,
+          0
+        );
 
     const maxPriorityFee = selectedOptionIsCustom
       ? customMaxPriorityFee
