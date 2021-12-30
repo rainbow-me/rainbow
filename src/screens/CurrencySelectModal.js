@@ -38,7 +38,7 @@ import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import { filterList } from '@rainbow-me/utils';
-// import logger from 'logger';
+import logger from 'logger';
 
 const TabTransitionAnimation = styled(Animated.View)`
   ${position.size('100%')};
@@ -128,8 +128,8 @@ export default function CurrencySelectModal() {
 
         return section;
       });
-      return list;
     }
+    return list;
   }, [getWalletCurrencyList, type, uniswapCurrencyList]);
 
   const handleFavoriteAsset = useCallback(
