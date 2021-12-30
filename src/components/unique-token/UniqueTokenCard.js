@@ -2,9 +2,11 @@ import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { getLowResUrl } from '../../utils/getLowResUrl';
 import { ButtonPressAnimation } from '../animations';
+import ChainBadge from '../coin-icon/ChainBadge';
 import { InnerBorder } from '../layout';
 import { CardSize } from './CardSize';
 import UniqueTokenImage from './UniqueTokenImage';
+import { AssetType } from '@rainbow-me/entities';
 import {
   usePersistentAspectRatio,
   usePersistentDominantColorFromImage,
@@ -84,6 +86,14 @@ const UniqueTokenCard = ({
           />
         )}
       </Content>
+      {item.network === AssetType.polygon && (
+        <ChainBadge
+          assetType={AssetType.polygon}
+          badgeXPosition={-10}
+          badgeYPosition={-5}
+          size="large"
+        />
+      )}
     </Container>
   );
 };

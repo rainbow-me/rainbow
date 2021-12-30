@@ -6,8 +6,12 @@ import {
   OPENSEA_RINKEBY_API_KEY,
 } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
+import { AssetType } from '@rainbow-me/entities';
 import NetworkTypes from '@rainbow-me/networkTypes';
-import { parseAccountUniqueTokens } from '@rainbow-me/parsers';
+import {
+  parseAccountUniqueTokens,
+  parseAccountUniqueTokensPolygon,
+} from '@rainbow-me/parsers';
 import { handleSignificantDecimals } from '@rainbow-me/utilities';
 import logger from 'logger';
 
@@ -20,14 +24,16 @@ export const apiGetAccountUniqueTokens = async (
   page: any
 ) => {
   try {
+    const isPolygon = network === AssetType.polygon;
     const API_KEY =
       network === NetworkTypes.rinkeby
         ? OPENSEA_RINKEBY_API_KEY
         : OPENSEA_API_KEY;
     const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
     const offset = page * UNIQUE_TOKENS_LIMIT_PER_PAGE;
-    const url = `https://${networkPrefix}api.opensea.io/api/v1/assets`;
-    const data = await rainbowFetch(url, {
+    const url = `https://${networkPrefix}api.opensea.io/api/v1/assets?&owner=${address}&limit=${UNIQUE_TOKENS_LIMIT_PER_PAGE}&offset=${offset}`;
+    const urlV2 = `https://api.opensea.io/api/v2/beta/assets?owner_address=${address}&chain_identifier=matic&limit=${UNIQUE_TOKENS_LIMIT_PER_PAGE}&offset=${offset}`;
+    const data = await rainbowFetch(isPolygon ? urlV2 : url, {
       headers: {
         'Accept': 'application/json',
         'X-Api-Key': API_KEY,
@@ -41,7 +47,9 @@ export const apiGetAccountUniqueTokens = async (
       },
       timeout: 20000, // 20 secs
     });
-    return parseAccountUniqueTokens(data);
+    return isPolygon
+      ? parseAccountUniqueTokensPolygon(data)
+      : parseAccountUniqueTokens(data);
   } catch (error) {
     logger.sentry('Error getting unique tokens', error);
     captureException(new Error('Opensea: Error getting unique tokens'));
