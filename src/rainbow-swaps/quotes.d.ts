@@ -1,4 +1,4 @@
-import { Provider } from '@ethersproject/abstract-provider';
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Transaction } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
 import { ChainId, Quote, QuoteExecutionDetails, QuoteParams, TransactionOptions } from './types';
@@ -28,4 +28,4 @@ export declare const getQuote: ({ source, chainId, fromAddress, sellTokenAddress
  * @returns {Promise<Transaction>}
  */
 export declare const fillQuote: (quote: Quote, transactionOptions: TransactionOptions, wallet: Wallet, permit: boolean, chainId: ChainId) => Promise<Transaction>;
-export declare const getQuoteExecutionDetails: (quote: Quote, transactionOptions: TransactionOptions, provider: Provider) => QuoteExecutionDetails;
+export declare const getQuoteExecutionDetails: (quote: Quote, transactionOptions: TransactionOptions, provider: StaticJsonRpcProvider) => QuoteExecutionDetails;

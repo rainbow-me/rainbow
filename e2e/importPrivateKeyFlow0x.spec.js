@@ -52,11 +52,7 @@ describe('Import from private key flow', () => {
 
   it('with 0x - Should say "PKEY" in the Profile Screen header', async () => {
     await Helpers.swipe('wallet-screen', 'right');
-    if (device.getPlatform() === 'android') {
-      await Helpers.checkIfExistsByText('PKEY');
-    } else {
-      await Helpers.checkIfElementByTextIsVisible('PKEY');
-    }
+    await Helpers.checkIfExistsByText('PKEY');
   });
 
   afterAll(async () => {

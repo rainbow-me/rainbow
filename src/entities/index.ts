@@ -1,7 +1,30 @@
 export { default as AssetTypes, AssetType } from './assetTypes';
-export type { TxFee, SelectedGasPrice } from './gas';
+export type {
+  ConfirmationTimeByPriorityFee,
+  CurrentBlockParams,
+  Fee,
+  GasFee,
+  GasFeesBySpeed,
+  GasPricesAPIData,
+  GasFeeParam,
+  GasFeeParams,
+  GasFeeParamsBySpeed,
+  GasFeesPolygonGasStationData,
+  LegacyGasFee,
+  LegacyGasFeeParams,
+  LegacyGasFeeParamsBySpeed,
+  LegacyGasFeesBySpeed,
+  LegacySelectedGasFee,
+  MaxPriorityFeeSuggestions,
+  TransactionGasParams,
+  RainbowMeteorologyData,
+  SelectedGasFee,
+} from './gas';
+export { NativeCurrencyKeys } from './nativeCurrencyTypes';
 export type Numberish = string | number;
+export type { NonceManager } from './nonce';
 export { default as ProtocolTypeNames, ProtocolType } from './protocolTypes';
+export type { UniqueAsset } from './uniqueAssets';
 export type {
   Asset,
   IndexToken,
@@ -12,12 +35,14 @@ export type {
   ZerionAsset,
 } from './tokens';
 export type {
+  GasFeeType,
   NewTransaction,
   RainbowTransaction,
   ZerionTransaction,
   ZerionTransactionChange,
 } from './transactions';
 export {
+  GasFeeTypes,
   TransactionDirection,
   TransactionDirections,
   TransactionStatus,
@@ -27,3 +52,9 @@ export {
   ZerionTransactionStatus,
 } from './transactions';
 export type { EthereumAddress } from './wallet';
+export type { UserList } from './userLists';
+export type {
+  TokenSearchThreshold,
+  TokenSearchTokenListId,
+  TokenSearchUniswapAssetKey,
+} from './tokenSearch';

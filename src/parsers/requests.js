@@ -2,7 +2,6 @@ import { convertHexToUtf8 } from '@walletconnect/utils';
 import BigNumber from 'bignumber.js';
 import { get, isNil } from 'lodash';
 import { isHexString } from '@rainbow-me/handlers/web3';
-import store from '@rainbow-me/redux/store';
 import { ethUnits, smartContractMethods } from '@rainbow-me/references';
 import {
   convertAmountAndPriceToNativeDisplay,
@@ -130,9 +129,12 @@ const getTransactionDisplayDetails = (
     };
   }
   if (transaction.data.startsWith(tokenTransferHash)) {
-    const { assets } = store.getState().data;
     const contractAddress = transaction.to;
-    const asset = ethereumUtils.getAsset(assets, contractAddress);
+    const accountAssetUniqueId = ethereumUtils.getUniqueId(
+      contractAddress,
+      dappNetwork
+    );
+    const asset = ethereumUtils.getAccountAsset(accountAssetUniqueId);
     const dataPayload = transaction.data.replace(tokenTransferHash, '');
     const toAddress = `0x${dataPayload.slice(0, 64).replace(/^0+/, '')}`;
     const amount = `0x${dataPayload.slice(64, 128).replace(/^0+/, '')}`;

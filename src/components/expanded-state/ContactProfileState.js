@@ -16,7 +16,7 @@ import {
   removeFirstEmojiFromString,
   returnStringFirstEmoji,
 } from '@rainbow-me/helpers/emojiHandler';
-import { isENSAddressFormat } from '@rainbow-me/helpers/validators';
+import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import { useAccountSettings, useContacts } from '@rainbow-me/hooks';
 import { margin, padding } from '@rainbow-me/styles';
 
@@ -158,7 +158,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
           textToCopy={address}
           tooltipText="Copy Address"
         >
-          {isENSAddressFormat(address) ? (
+          {isValidDomainFormat(address) ? (
             <ENSAbbreviation ens={address} />
           ) : (
             <AddressAbbreviation address={address} />

@@ -1,5 +1,5 @@
-import { Provider } from '@ethersproject/abstract-provider';
 import { BigNumberish } from '@ethersproject/bignumber';
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Transaction } from '@ethersproject/transactions';
 import { Wallet } from '@ethersproject/wallet';
 /**
@@ -23,7 +23,7 @@ export declare const unwrapWeth: (amount: BigNumberish, wallet: Wallet) => Promi
  * function that wraps or unwraps, to be used by estimateGas calls
  * (MAINNET ONLY!)
  * @param {string} name
- * @param {Provider} provider]
+ * @param {StaticJsonRpcProvider} provider]
  * @returns {Promise<Transaction>}
  */
-export declare const geWethMethod: (name: string, provider: Provider) => any;
+export declare const geWethMethod: (name: string, provider: StaticJsonRpcProvider) => any;

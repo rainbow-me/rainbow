@@ -26,7 +26,13 @@ const DefaultShowMoreButton = ({ backgroundColor, color, onPress }) => (
         paddingHorizontal={12}
         paddingTop={android ? 3 : 7}
       >
-        <Text align="center" color={color} size="lmedium" weight="heavy">
+        <Text
+          align="center"
+          color={color}
+          lineHeight={android ? 30 : 20}
+          size="lmedium"
+          weight="heavy"
+        >
           Show more
         </Text>
       </Row>
@@ -64,10 +70,10 @@ const PoolListButton = styled(ButtonPressAnimation).attrs({
         border-radius: 12px;
         height: 30px;
         padding-horizontal: 8px;
-        padding-top: ${ios ? 6 : 4}px;
+        padding-top: ${ios ? 6.5 : 4.5}px;
       `
       : `
-        padding-top: ${ios ? 6 : 4}px;
+        padding-top: ${ios ? 6.5 : 4.5}px;
       `}
 `;
 
@@ -300,7 +306,6 @@ export default function UniswapPools({
                 backgroundColor={colors.alpha(colors.blueGreyDark, 0.06)}
                 color={colors.alpha(colors.blueGreyDark, 0.6)}
                 onPress={handleShowMorePress}
-                paddingTop={10}
               />
             )}
         </Fragment>

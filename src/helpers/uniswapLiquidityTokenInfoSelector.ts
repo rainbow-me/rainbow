@@ -10,7 +10,7 @@ import {
 } from 'lodash';
 import { createSelector } from 'reselect';
 import { Asset, ParsedAddressAsset } from '@rainbow-me/entities';
-import { parseAssetsNative } from '@rainbow-me/parsers';
+import { parseAssetNative } from '@rainbow-me/parsers';
 import { AppState } from '@rainbow-me/redux/store';
 import {
   PositionsState,
@@ -86,10 +86,10 @@ const transformPool = (
   if (isEmpty(position)) {
     return null;
   }
-  const liquidityTokenWithNative = parseAssetsNative(
-    [liquidityToken],
+  const liquidityTokenWithNative = parseAssetNative(
+    liquidityToken,
     nativeCurrency
-  )?.[0];
+  );
 
   const price = liquidityTokenWithNative?.price;
   const {

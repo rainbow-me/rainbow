@@ -35,6 +35,7 @@ import {
   addTokenSheetConfig,
   backupSheetConfig,
   basicSheetConfig,
+  customGasSheetConfig,
   defaultScreenStackOptions,
   expandedAssetSheetConfig,
   expandedAssetSheetConfigWithLimit,
@@ -233,7 +234,6 @@ function NativeStackNavigator() {
         component={SettingsModal}
         name={Routes.SETTINGS_MODAL}
         options={{
-          backgroundColor: '#25292E',
           backgroundOpacity: 0.7,
           cornerRadius: 0,
           customStack: true,
@@ -273,7 +273,6 @@ function NativeStackNavigator() {
         name={Routes.SPEED_UP_AND_CANCEL_SHEET}
         options={{
           allowsDragToDismiss: true,
-          backgroundColor: '#25292E',
           backgroundOpacity: 0.6,
           customStack: true,
           headerHeight: 0,
@@ -305,7 +304,6 @@ function NativeStackNavigator() {
         name={Routes.CHANGE_WALLET_SHEET}
         options={{
           allowsDragToDismiss: true,
-          backgroundColor: '#25292E',
           backgroundOpacity: 0.7,
           customStack: true,
           springDamping: 1,
@@ -317,7 +315,6 @@ function NativeStackNavigator() {
         name={Routes.CONNECTED_DAPPS}
         options={{
           allowsDragToDismiss: true,
-          backgroundColor: '#25292E',
           backgroundOpacity: 0.7,
           customStack: true,
           springDamping: 1,
@@ -354,13 +351,17 @@ function NativeStackNavigator() {
         name={Routes.CONFIRM_REQUEST}
         options={{
           allowsDragToDismiss: true,
-          backgroundColor: '#0A0A0A',
           backgroundOpacity: 1,
           customStack: true,
           headerHeight: 0,
           isShortFormEnabled: false,
           topOffset: 0,
         }}
+      />
+      <NativeStack.Screen
+        component={ExpandedAssetSheet}
+        name={Routes.CUSTOM_GAS_SHEET}
+        {...customGasSheetConfig}
       />
       <NativeStack.Screen
         component={WithdrawModal}

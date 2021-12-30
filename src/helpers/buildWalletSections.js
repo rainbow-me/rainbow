@@ -16,20 +16,23 @@ import { BalanceCoinRow } from '../components/coin-row';
 import { UniswapInvestmentRow } from '../components/investment-cards';
 import { CollectibleTokenFamily } from '../components/token-family';
 import { withNavigation } from '../navigation/Navigation';
+import { getLowResUrl } from '../utils/getLowResUrl';
 import { compose, withHandlers } from '../utils/recompactAdapters';
-import { buildCoinsList, buildUniqueTokenList } from './assets';
+import {
+  buildBriefCoinsList,
+  buildBriefUniqueTokenList,
+  buildCoinsList,
+  buildUniqueTokenList,
+} from './assets';
 import networkTypes from './networkTypes';
 import { add, convertAmountToNativeDisplay, multiply } from './utilities';
+import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { ImgixImage } from '@rainbow-me/images';
-import { setIsCoinListEdited } from '@rainbow-me/redux/editOptions';
-import { setOpenSmallBalances } from '@rainbow-me/redux/openStateSettings';
-import store from '@rainbow-me/redux/store';
 import Routes from '@rainbow-me/routes';
 
-const allAssetsSelector = state => state.allAssets;
-const allAssetsCountSelector = state => state.allAssetsCount;
+const sortedAssetsSelector = state => state.sortedAssets;
+const sortedAssetsCountSelector = state => state.sortedAssetsCount;
 const assetsTotalSelector = state => state.assetsTotal;
-const currentActionSelector = state => state.currentAction;
 const hiddenCoinsSelector = state => state.hiddenCoins;
 const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
 const isCoinListEditedSelector = state => state.isCoinListEdited;
@@ -93,6 +96,25 @@ const buildWalletSections = (
   };
 };
 
+const buildBriefWalletSections = (
+  balanceSection,
+  savings,
+  uniqueTokenFamiliesSection,
+  uniswapSection
+) => {
+  const sections = [
+    balanceSection,
+    savings,
+    uniswapSection,
+    uniqueTokenFamiliesSection,
+  ];
+
+  const filteredSections = sections
+    .filter(section => section.length !== 0)
+    .flat(1);
+  return filteredSections;
+};
+
 const withUniswapSection = (
   language,
   nativeCurrency,
@@ -110,6 +132,26 @@ const withUniswapSection = (
     pools: true,
     renderItem: uniswapRenderItem,
   };
+};
+
+const withBriefUniswapSection = (uniswap, uniswapTotal, nativeCurrency) => {
+  const pools = uniswap.map(pool => ({
+    address: pool.address,
+    type: 'UNISWAP_POOL',
+    uid: 'pool-' + pool.address,
+  }));
+
+  if (pools.length > 0) {
+    return [
+      {
+        type: 'POOLS_HEADER',
+        uid: 'pools-header',
+        value: convertAmountToNativeDisplay(uniswapTotal, nativeCurrency),
+      },
+      ...pools,
+    ];
+  }
+  return [];
 };
 
 const withBalanceSavingsSection = savings => {
@@ -143,13 +185,41 @@ const withBalanceSavingsSection = savings => {
   return savingsSection;
 };
 
+const withBriefBalanceSavingsSection = savings => {
+  let totalUnderlyingNativeValue = '0';
+  for (let saving of savings) {
+    const { underlyingBalanceNativeValue } = saving;
+    totalUnderlyingNativeValue = add(
+      totalUnderlyingNativeValue,
+      underlyingBalanceNativeValue || 0
+    );
+  }
+  const addresses = savings?.map(asset => asset.cToken.address);
+  return [
+    {
+      type: 'SAVINGS_HEADER_SPACE_BEFORE',
+      uid: 'savings-header-space-before',
+    },
+    {
+      type: 'SAVINGS_HEADER',
+      uid: 'savings-header',
+      value: totalUnderlyingNativeValue,
+    },
+    ...addresses.map(address => ({
+      address,
+      type: 'SAVINGS',
+      uid: 'savings-' + address,
+    })),
+  ];
+};
+
 const coinEditContextMenu = (
-  allAssets,
+  sortedAssets,
   balanceSectionData,
   isCoinListEdited,
   currentAction,
   isLoadingAssets,
-  allAssetsCount,
+  sortedAssetsCount,
   totalValue,
   addedEth
 ) => {
@@ -157,7 +227,7 @@ const coinEditContextMenu = (
 
   return {
     contextMenuOptions:
-      allAssets.length > 0 && noSmallBalances
+      sortedAssetsCount > 0 && noSmallBalances
         ? {
             cancelButtonIndex: 0,
             dynamicOptions: () => {
@@ -165,8 +235,6 @@ const coinEditContextMenu = (
             },
             onPressActionSheet: async index => {
               if (index === 1) {
-                store.dispatch(setIsCoinListEdited(!isCoinListEdited));
-                store.dispatch(setOpenSmallBalances(true));
                 LayoutAnimation.configureNext(
                   LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
                 );
@@ -175,14 +243,14 @@ const coinEditContextMenu = (
           }
         : undefined,
     title: null,
-    totalItems: isLoadingAssets ? 1 : (addedEth ? 1 : 0) + allAssetsCount,
+    totalItems: isLoadingAssets ? 1 : (addedEth ? 1 : 0) + sortedAssetsCount,
     totalValue: totalValue,
   };
 };
 
 const withBalanceSection = (
-  allAssets,
-  allAssetsCount,
+  sortedAssets,
+  sortedAssetsCount,
   assetsTotal,
   savingsSection,
   isBalancesSectionEmpty,
@@ -193,12 +261,11 @@ const withBalanceSection = (
   isCoinListEdited,
   pinnedCoins,
   hiddenCoins,
-  currentAction,
   uniswapTotal,
   collectibles
 ) => {
   const { addedEth, assets, totalBalancesValue } = buildCoinsList(
-    allAssets,
+    sortedAssets,
     nativeCurrency,
     isCoinListEdited,
     pinnedCoins,
@@ -206,6 +273,7 @@ const withBalanceSection = (
     true,
     !collectibles.length
   );
+
   let balanceSectionData = [...assets];
 
   const totalBalanceWithSavingsValue = add(
@@ -234,12 +302,11 @@ const withBalanceSection = (
     balances: true,
     data: balanceSectionData,
     header: coinEditContextMenu(
-      allAssets,
+      sortedAssets,
       balanceSectionData,
       isCoinListEdited,
-      currentAction,
       isLoadingAssets,
-      allAssetsCount,
+      sortedAssetsCount,
       totalValue,
       addedEth
     ),
@@ -248,6 +315,62 @@ const withBalanceSection = (
       ? balancesSkeletonRenderItem
       : balancesRenderItem,
   };
+};
+
+const withBriefBalanceSection = (
+  sortedAssets,
+  isLoadingAssets,
+  nativeCurrency,
+  isCoinListEdited,
+  pinnedCoins,
+  hiddenCoins,
+  collectibles,
+  savingsSection,
+  uniswapTotal
+) => {
+  const { briefAssets, totalBalancesValue } = buildBriefCoinsList(
+    sortedAssets,
+    nativeCurrency,
+    isCoinListEdited,
+    pinnedCoins,
+    hiddenCoins,
+    true,
+    !collectibles.length
+  );
+
+  const savingsTotalValue = find(
+    savingsSection,
+    item => item.uid === 'savings-header'
+  );
+
+  const totalBalanceWithSavingsValue = add(
+    totalBalancesValue,
+    savingsTotalValue?.value ?? 0
+  );
+
+  const totalBalanceWithAllSectionValues = add(
+    totalBalanceWithSavingsValue,
+    uniswapTotal
+  );
+
+  const totalValue = convertAmountToNativeDisplay(
+    totalBalanceWithAllSectionValues,
+    nativeCurrency
+  );
+
+  return [
+    {
+      type: 'ASSETS_HEADER',
+      value: totalValue,
+    },
+    {
+      type: 'ASSETS_HEADER_SPACE_AFTER',
+      uid: 'assets-header-space-after',
+    },
+    ...(isLoadingAssets
+      ? [{ type: 'LOADING_ASSETS', uid: 'loadings-asset' }]
+      : briefAssets),
+  ];
 };
 
 let isPreloadComplete = false;
@@ -275,12 +398,12 @@ const buildImagesToPreloadArray = (family, index, families) => {
       }
     }
 
-    const images = token.map(({ image_preview_url, uniqueId }) => {
-      if (!image_preview_url) return null;
+    const images = token.map(({ image_url, uniqueId }) => {
+      if (!image_url) return null;
       return {
         id: uniqueId,
         priority,
-        uri: image_preview_url,
+        uri: svgToPngIfNeeded(getLowResUrl(image_url)),
       };
     });
 
@@ -298,7 +421,7 @@ const sortImagesToPreload = images => {
   ];
 };
 
-const withUniqueTokenFamiliesSection = (language, uniqueTokens, data) => {
+const withUniqueTokenFamiliesSection = (uniqueTokens, data) => {
   // TODO preload elsewhere?
   if (!isPreloadComplete) {
     const imagesToPreload = sortImagesToPreload(
@@ -327,9 +450,19 @@ const uniqueTokenDataSelector = createSelector(
   buildUniqueTokenList
 );
 
+const briefUniqueTokenDataSelector = createSelector(
+  [uniqueTokensSelector, showcaseTokensSelector],
+  buildBriefUniqueTokenList
+);
+
 const balanceSavingsSectionSelector = createSelector(
   [savingsSelector],
   withBalanceSavingsSection
+);
+
+const briefBalanceSavingsSectionSelector = createSelector(
+  [savingsSelector],
+  withBriefBalanceSavingsSection
 );
 
 const uniswapSectionSelector = createSelector(
@@ -342,10 +475,15 @@ const uniswapSectionSelector = createSelector(
   withUniswapSection
 );
 
+const briefUniswapSectionSelector = createSelector(
+  [uniswapSelector, uniswapTotalSelector, nativeCurrencySelector],
+  withBriefUniswapSection
+);
+
 const balanceSectionSelector = createSelector(
   [
-    allAssetsSelector,
-    allAssetsCountSelector,
+    sortedAssetsSelector,
+    sortedAssetsCountSelector,
     assetsTotalSelector,
     balanceSavingsSectionSelector,
     isBalancesSectionEmptySelector,
@@ -356,19 +494,43 @@ const balanceSectionSelector = createSelector(
     isCoinListEditedSelector,
     pinnedCoinsSelector,
     hiddenCoinsSelector,
-    currentActionSelector,
     uniswapTotalSelector,
     uniqueTokensSelector,
   ],
   withBalanceSection
 );
 
+const briefBalanceSectionSelector = createSelector(
+  [
+    sortedAssetsSelector,
+    isLoadingAssetsSelector,
+    nativeCurrencySelector,
+    isCoinListEditedSelector,
+    pinnedCoinsSelector,
+    hiddenCoinsSelector,
+    uniqueTokensSelector,
+    briefBalanceSavingsSectionSelector,
+    uniswapTotalSelector,
+  ],
+  withBriefBalanceSection
+);
+
 const uniqueTokenFamiliesSelector = createSelector(
-  [languageSelector, uniqueTokensSelector, uniqueTokenDataSelector],
+  [uniqueTokensSelector, uniqueTokenDataSelector],
   withUniqueTokenFamiliesSection
 );
 
 export const buildWalletSectionsSelector = createSelector(
   [balanceSectionSelector, uniqueTokenFamiliesSelector, uniswapSectionSelector],
   buildWalletSections
+);
+
+export const buildBriefWalletSectionsSelector = createSelector(
+  [
+    briefBalanceSectionSelector,
+    briefBalanceSavingsSectionSelector,
+    briefUniqueTokenDataSelector,
+    briefUniswapSectionSelector,
+  ],
+  buildBriefWalletSections
 );

@@ -14,13 +14,13 @@ import {
   mapKeys,
   mapValues,
   partition,
+  pickBy,
   property,
-  remove,
   toLower,
   toUpper,
   uniqBy,
-  values,
 } from 'lodash';
+import { MMKV } from 'react-native-mmkv';
 import { uniswapClient } from '../apollo/client';
 import {
   UNISWAP_24HOUR_PRICE_QUERY,
@@ -28,7 +28,7 @@ import {
 } from '../apollo/queries';
 /* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
-import { addCoinsToHiddenList } from './editOptions';
+import { decrementNonce, incrementNonce } from './nonceManager';
 // eslint-disable-next-line import/no-cycle
 import { uniqueTokensRefreshState } from './uniqueTokens';
 /* eslint-disable-next-line import/no-cycle */
@@ -40,14 +40,13 @@ import {
   TransactionTypes,
 } from '@rainbow-me/entities';
 import appEvents from '@rainbow-me/handlers/appEvents';
-import { isL2Asset } from '@rainbow-me/handlers/assets';
 import {
+  getAccountAssetsData,
   getAssetPricesFromUniswap,
-  getAssets,
   getLocalTransactions,
+  saveAccountAssetsData,
   saveAccountEmptyState,
   saveAssetPricesFromUniswap,
-  saveAssets,
   saveLocalTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import {
@@ -67,6 +66,7 @@ import {
   parseNewTransaction,
   parseTransactions,
 } from '@rainbow-me/parsers';
+import { setHiddenCoins } from '@rainbow-me/redux/editOptions';
 import {
   coingeckoIdsFallback,
   DPI_ADDRESS,
@@ -84,7 +84,18 @@ import {
 } from '@rainbow-me/utils';
 import logger from 'logger';
 
-const BACKUP_SHEET_DELAY_MS = 3000;
+const storage = new MMKV();
+
+function addHiddenCoins(coins, dispatch, address) {
+  const storageKey = 'hidden-coins-' + address;
+  const storageEntity = storage.getString(storageKey);
+  const list = storageEntity ? JSON.parse(storageEntity) : [];
+  const newList = [...list.filter(i => !coins.includes(i)), ...coins];
+  dispatch(setHiddenCoins(newList));
+  storage.set(storageKey, JSON.stringify(newList));
+}
+
+const BACKUP_SHEET_DELAY_MS = android ? 10000 : 3000;
 
 let pendingTransactionsHandle = null;
 let genericAssetsHandle = null;
@@ -101,7 +112,8 @@ export const COINGECKO_IDS_ENDPOINT =
 
 const DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP =
   'data/DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP';
-const DATA_UPDATE_ASSETS = 'data/DATA_UPDATE_ASSETS';
+const DATA_UPDATE_ACCOUNT_ASSETS_DATA = 'data/DATA_UPDATE_ACCOUNT_ASSETS_DATA';
+
 const DATA_UPDATE_GENERIC_ASSETS = 'data/DATA_UPDATE_GENERIC_ASSETS';
 const DATA_UPDATE_ETH_USD = 'data/DATA_UPDATE_ETH_USD';
 const DATA_UPDATE_ETH_USD_CHARTS = 'data/DATA_UPDATE_ETH_USD_CHARTS';
@@ -110,9 +122,12 @@ const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
 const DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION =
   'data/DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION';
 
-const DATA_LOAD_ASSETS_REQUEST = 'data/DATA_LOAD_ASSETS_REQUEST';
-const DATA_LOAD_ASSETS_SUCCESS = 'data/DATA_LOAD_ASSETS_SUCCESS';
-const DATA_LOAD_ASSETS_FAILURE = 'data/DATA_LOAD_ASSETS_FAILURE';
+const DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST =
+  'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST';
+const DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS =
+  'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS';
+const DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE =
+  'data/DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE';
 
 const DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS =
   'data/DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS';
@@ -149,14 +164,20 @@ export const dataLoadState = () => async (dispatch, getState) =>
       // eslint-disable-next-line no-empty
     } catch (error) {}
     try {
-      dispatch({ type: DATA_LOAD_ASSETS_REQUEST });
-      const assets = await getAssets(accountAddress, network);
-      dispatch({
-        payload: assets,
-        type: DATA_LOAD_ASSETS_SUCCESS,
-      });
+      dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST });
+      const accountAssetsData = await getAccountAssetsData(
+        accountAddress,
+        network
+      );
+
+      if (!isEmpty(accountAssetsData)) {
+        dispatch({
+          payload: accountAssetsData,
+          type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
+        });
+      }
     } catch (error) {
-      dispatch({ type: DATA_LOAD_ASSETS_FAILURE });
+      dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE });
     }
     try {
       dispatch({ type: DATA_LOAD_TRANSACTIONS_REQUEST });
@@ -336,15 +357,29 @@ export const dataResetState = () => (dispatch, getState) => {
   dispatch({ type: DATA_CLEAR_STATE });
 };
 
-export const dataUpdateAssets = assets => (dispatch, getState) => {
+export const dataUpdateAsset = assetData => (dispatch, getState) => {
   const { accountAddress, network } = getState().settings;
-  if (assets.length) {
-    saveAssets(assets, accountAddress, network);
+  const { accountAssetsData } = getState().data;
+  const updatedAssetsData = {
+    ...accountAssetsData,
+    [assetData.uniqueId]: assetData,
+  };
+  dispatch({
+    payload: updatedAssetsData,
+    type: DATA_UPDATE_ACCOUNT_ASSETS_DATA,
+  });
+  saveAccountAssetsData(updatedAssetsData, accountAddress, network);
+};
+
+export const dataUpdateAssets = assetsData => (dispatch, getState) => {
+  const { accountAddress, network } = getState().settings;
+  if (!isEmpty(assetsData)) {
+    saveAccountAssetsData(assetsData, accountAddress, network);
     // Change the state since the account isn't empty anymore
     saveAccountEmptyState(false, accountAddress, network);
     dispatch({
-      payload: assets,
-      type: DATA_UPDATE_ASSETS,
+      payload: assetsData,
+      type: DATA_UPDATE_ACCOUNT_ASSETS_DATA,
     });
   }
 };
@@ -369,6 +404,24 @@ const checkForConfirmedSavingsActions = transactionsData => dispatch => {
   if (foundConfirmedSavings) {
     dispatch(updateRefetchSavings(true));
   }
+};
+
+const checkForUpdatedNonce = transactionData => dispatch => {
+  const txSortedByDescendingNonce = transactionData.sort(
+    ({ nonce: n1 }, { nonce: n2 }) => n2 - n1
+  );
+  const [latestTx] = txSortedByDescendingNonce;
+  const { address_from, network, nonce } = latestTx;
+  dispatch(incrementNonce(address_from, nonce, network));
+};
+
+const checkForRemovedNonce = removedTransactions => dispatch => {
+  const txSortedByAscendingNonce = removedTransactions.sort(
+    ({ nonce: n1 }, { nonce: n2 }) => n1 - n2
+  );
+  const [lowestNonceTx] = txSortedByAscendingNonce;
+  const { address_from, network, nonce } = lowestNonceTx;
+  dispatch(decrementNonce(address_from, nonce, network));
 };
 
 export const portfolioReceived = message => async (dispatch, getState) => {
@@ -397,6 +450,7 @@ export const transactionsReceived = (message, appended = false) => async (
     if (appended) {
       dispatch(checkForConfirmedSavingsActions(transactionData));
     }
+    await dispatch(checkForUpdatedNonce(transactionData));
 
     const { accountAddress, nativeCurrency, network } = getState().settings;
     const { purchaseTransactions } = getState().addCash;
@@ -456,7 +510,7 @@ export const transactionsRemoved = message => async (dispatch, getState) =>
     const { transactions } = getState().data;
     const removeHashes = map(transactionData, txn => txn.hash);
     logger.log('[data] - remove txn hashes', removeHashes);
-    const updatedTransactions = filter(
+    const [updatedTransactions, removedTransactions] = partition(
       transactions,
       txn => !includes(removeHashes, ethereumUtils.getHash(txn))
     );
@@ -465,6 +519,7 @@ export const transactionsRemoved = message => async (dispatch, getState) =>
       payload: updatedTransactions,
       type: DATA_UPDATE_TRANSACTIONS,
     });
+    dispatch(checkForRemovedNonce(removedTransactions));
     saveLocalTransactions(updatedTransactions, accountAddress, network);
   });
 
@@ -479,16 +534,17 @@ export const addressAssetsReceived = (
   if (!isValidMeta) return;
   const { accountAddress, network } = getState().settings;
   const { uniqueTokens } = getState().uniqueTokens;
-  const payload = values(message?.payload?.assets ?? {});
-  let assets = filter(
-    payload,
+  const newAssets = message?.payload?.assets ?? {};
+  let updatedAssets = pickBy(
+    newAssets,
     asset =>
       asset?.asset?.type !== AssetTypes.compound &&
-      asset?.asset?.type !== AssetTypes.trash
+      asset?.asset?.type !== AssetTypes.trash &&
+      !shitcoins.includes(toLower(asset?.asset?.asset_code))
   );
 
   if (removed) {
-    assets = map(payload, asset => {
+    updatedAssets = mapValues(newAssets, asset => {
       return {
         ...asset,
         quantity: 0,
@@ -496,86 +552,75 @@ export const addressAssetsReceived = (
     });
   }
 
-  // Remove spammy tokens
-  remove(assets, asset =>
-    shitcoins.includes(toLower(asset?.asset?.asset_code))
-  );
+  let parsedAssets = parseAccountAssets(updatedAssets, uniqueTokens);
 
-  let parsedAssets = parseAccountAssets(assets, uniqueTokens);
-
-  // remove V2 LP tokens
-  const liquidityTokens = remove(
+  const liquidityTokens = filter(
     parsedAssets,
     asset => asset?.type === AssetTypes.uniswapV2
   );
 
-  const isL2 = assetsNetwork && isL2Network(assetsNetwork);
+  // remove V2 LP tokens
+  parsedAssets = pickBy(
+    parsedAssets,
+    asset => asset?.type !== AssetTypes.uniswapV2
+  );
 
-  if (!isL2) {
+  const isL2 = assetsNetwork && isL2Network(assetsNetwork);
+  if (!isL2 && !assetsNetwork) {
     dispatch(
       uniswapUpdateLiquidityTokens(liquidityTokens, append || change || removed)
     );
   }
 
-  const { assets: existingAssets } = getState().data;
-  if (append || change || removed) {
-    parsedAssets = uniqBy(
-      concat(parsedAssets, existingAssets),
-      item => item.uniqueId
-    );
-  } else if (isL2) {
-    // We need to replace all the assets for that network completely
-    const { assets: existingAssets } = getState().data;
-    const restOfTheAssets = existingAssets.filter(
-      asset => asset.network !== assetsNetwork
-    );
-    parsedAssets = concat(parsedAssets, restOfTheAssets);
-    parsedAssets = uniqBy(parsedAssets, item => item.uniqueId);
-  } else {
-    // We need to merge the response with all l2 assets
-    // to prevent L2 assets temporarily dissapearing
-    const { assets: existingAssets } = getState().data;
-    const l2Assets = existingAssets.filter(asset => isL2Asset(asset.type));
-    parsedAssets = uniqBy(
-      network === networkTypes.mainnet
-        ? concat(parsedAssets, l2Assets)
-        : parsedAssets,
-      item => item.uniqueId
-    );
-  }
+  const { accountAssetsData: existingAccountAssetsData } = getState().data;
+  parsedAssets = {
+    ...existingAccountAssetsData,
+    ...parsedAssets,
+  };
 
-  parsedAssets = parsedAssets.filter(asset => !!Number(asset?.balance?.amount));
+  parsedAssets = pickBy(
+    parsedAssets,
+    asset => !!Number(asset?.balance?.amount)
+  );
 
-  saveAssets(parsedAssets, accountAddress, network);
-  if (parsedAssets.length > 0) {
+  saveAccountAssetsData(parsedAssets, accountAddress, network);
+  if (!isEmpty(parsedAssets)) {
     // Change the state since the account isn't empty anymore
     saveAccountEmptyState(false, accountAddress, network);
   }
 
   dispatch({
     payload: parsedAssets,
-    type: DATA_UPDATE_ASSETS,
+    type: DATA_UPDATE_ACCOUNT_ASSETS_DATA,
   });
   if (!change) {
     const missingPriceAssetAddresses = map(
-      filter(parsedAssets, asset => isNil(asset.price)),
+      filter(parsedAssets, asset => isNil(asset?.price)),
       property('address')
     );
     dispatch(subscribeToMissingPrices(missingPriceAssetAddresses));
   }
 
   //Hide tokens with a url as their token name
-  const assetsWithScamURL = parsedAssets
-    .filter(asset => isValidDomain(asset.name) && !asset.isVerified)
-    .map(({ uniqueId }) => uniqueId);
-  dispatch(addCoinsToHiddenList(assetsWithScamURL));
+  const assetsWithScamURL = map(
+    filter(
+      parsedAssets,
+      asset => isValidDomain(asset.name) && !asset.isVerified
+    ),
+    property('uniqueId')
+  );
+  addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
 
   // Hide coins with price = 0 that are currently not pinned
   if (isL2) {
-    const assetsWithNoPrice = parsedAssets
-      .filter(asset => asset.price?.value === 0)
-      .map(({ uniqueId }) => uniqueId);
-    dispatch(addCoinsToHiddenList(assetsWithNoPrice));
+    const assetsWithNoPrice = map(
+      filter(
+        parsedAssets,
+        asset => asset.price?.value === 0 && asset.network === assetsNetwork
+      ),
+      property('uniqueId')
+    );
+    addHiddenCoins(assetsWithNoPrice, dispatch, accountAddress);
   }
 };
 
@@ -588,7 +633,7 @@ const subscribeToMissingPrices = addresses => (dispatch, getState) => {
   } else {
     const newQuery = uniswapClient.watchQuery({
       fetchPolicy: 'no-cache',
-      pollInterval: 15000, // 15 seconds
+      pollInterval: 30000, // 30 seconds
       query: UNISWAP_PRICES_QUERY,
       variables: {
         addresses,
@@ -689,6 +734,11 @@ const get24HourPrice = async (address, yesterday) => {
   }
 };
 
+const callbacksOnAssetReceived = {};
+export function scheduleActionOnAssetReceived(address, action) {
+  callbacksOnAssetReceived[address.toLowerCase()] = action;
+}
+
 export const assetPricesReceived = (message, fromFallback = false) => (
   dispatch,
   getState
@@ -696,12 +746,12 @@ export const assetPricesReceived = (message, fromFallback = false) => (
   if (!fromFallback) {
     disableGenericAssetsFallbackIfNeeded();
   }
-  const assets = message?.payload?.prices ?? {};
+  const newAssetPrices = message?.payload?.prices ?? {};
   const { nativeCurrency } = getState().settings;
 
   if (toLower(nativeCurrency) === message?.meta?.currency) {
-    if (isEmpty(assets)) return;
-    const parsedAssets = mapValues(assets, asset => parseAsset(asset));
+    if (isEmpty(newAssetPrices)) return;
+    const parsedAssets = mapValues(newAssetPrices, asset => parseAsset(asset));
     const { genericAssets } = getState().data;
 
     const updatedAssets = {
@@ -709,13 +759,20 @@ export const assetPricesReceived = (message, fromFallback = false) => (
       ...parsedAssets,
     };
 
+    const assetAddresses = Object.keys(parsedAssets);
+
+    for (let address of assetAddresses) {
+      callbacksOnAssetReceived[toLower(address)]?.(parsedAssets[address]);
+      callbacksOnAssetReceived[toLower(address)] = undefined;
+    }
+
     dispatch({
       payload: updatedAssets,
       type: DATA_UPDATE_GENERIC_ASSETS,
     });
   }
-  if (message?.meta?.currency === 'usd' && assets[ETH_ADDRESS]) {
-    const value = assets[ETH_ADDRESS]?.price?.value;
+  if (message?.meta?.currency === 'usd' && newAssetPrices[ETH_ADDRESS]) {
+    const value = newAssetPrices[ETH_ADDRESS]?.price?.value;
     dispatch({
       payload: value,
       type: DATA_UPDATE_ETH_USD,
@@ -767,6 +824,13 @@ export const dataAddNewTransaction = (
         type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
       });
       saveLocalTransactions(_transactions, accountAddress, network);
+      await dispatch(
+        incrementNonce(
+          parsedTransaction.from,
+          parsedTransaction.nonce,
+          parsedTransaction.network
+        )
+      );
       if (
         !disableTxnWatcher ||
         network !== networkTypes.mainnet ||
@@ -822,7 +886,6 @@ export const dataWatchPendingTransactions = (
       return true;
     }
     let txStatusesDidChange = false;
-
     const updatedPendingTransactions = await Promise.all(
       pending.map(async tx => {
         const updatedPending = { ...tx };
@@ -890,7 +953,6 @@ export const dataWatchPendingTransactions = (
         filteredPendingTransactions,
         remainingTransactions
       );
-
       dispatch(updatePurchases(updatedTransactions));
       const { accountAddress, network } = getState().settings;
       dispatch({
@@ -1005,8 +1067,8 @@ export const updateRefetchSavings = fetch => dispatch =>
 
 // -- Reducer ----------------------------------------- //
 const INITIAL_STATE = {
+  accountAssetsData: {}, // for account-specific assets
   assetPricesFromUniswap: {},
-  assets: [], // for account-specific assets
   ethUSDCharts: null,
   ethUSDPrice: null,
   genericAssets: {},
@@ -1037,8 +1099,12 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, assetPricesFromUniswap: action.payload };
     case DATA_UPDATE_GENERIC_ASSETS:
       return { ...state, genericAssets: action.payload };
-    case DATA_UPDATE_ASSETS:
-      return { ...state, assets: action.payload, isLoadingAssets: false };
+    case DATA_UPDATE_ACCOUNT_ASSETS_DATA:
+      return {
+        ...state,
+        accountAssetsData: action.payload,
+        isLoadingAssets: false,
+      };
     case DATA_UPDATE_TRANSACTIONS:
       return {
         ...state,
@@ -1076,7 +1142,7 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         isLoadingTransactions: false,
       };
-    case DATA_LOAD_ASSETS_REQUEST:
+    case DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST:
       return {
         ...state,
         isLoadingAssets: true,
@@ -1086,13 +1152,13 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         assetPricesFromUniswap: action.payload,
       };
-    case DATA_LOAD_ASSETS_SUCCESS:
+    case DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS:
       return {
         ...state,
-        assets: action.payload,
+        accountAssetsData: action.payload,
         isLoadingAssets: false,
       };
-    case DATA_LOAD_ASSETS_FAILURE:
+    case DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE:
       return {
         ...state,
         isLoadingAssets: false,

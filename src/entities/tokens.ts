@@ -1,4 +1,5 @@
 import { AssetType } from './assetTypes';
+import { EthereumAddress } from '.';
 import { ChainId } from 'rainbow-swaps';
 
 interface ZerionAssetPrice {
@@ -8,7 +9,7 @@ interface ZerionAssetPrice {
 }
 
 export interface Asset {
-  address: string;
+  address: EthereumAddress;
   decimals: number;
   name: string;
   symbol: string;
@@ -44,8 +45,19 @@ export interface ParsedAddressAsset extends Asset {
     relative_change_24h?: number;
     value?: number;
   };
+  asset_contract?: {
+    address?: string;
+    name?: string;
+    nft_version?: string;
+    schema_name?: string;
+    symbol?: string;
+    total_supply?: number | null;
+  };
   type?: string;
+  id: string;
   uniqueId: string;
+  mainnet_address?: EthereumAddress;
+  isNativeAsset?: boolean;
 }
 
 export interface UniswapCurrency extends ParsedAddressAsset {

@@ -11,6 +11,7 @@ import {
   estimateSwapGasLimit,
   executeSwap,
 } from '@rainbow-me/handlers/uniswap';
+import { toHex } from '@rainbow-me/handlers/web3';
 import { dataAddNewTransaction } from '@rainbow-me/redux/data';
 import store from '@rainbow-me/redux/store';
 import { greaterThan } from '@rainbow-me/utilities';
@@ -35,14 +36,28 @@ const swap = async (
   const { dispatch } = store;
   const { accountAddress, chainId } = store.getState().settings;
   const { inputCurrency } = store.getState().swap;
-  const { gasPrices, selectedGasPrice } = store.getState().gas;
+  const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
 
-  let gasPrice = selectedGasPrice?.value?.amount;
+  let maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
+  let maxPriorityFeePerGas =
+    selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
+
   // if swap isn't the last action, use fast gas or custom (whatever is faster)
-  if (currentRap.actions.length - 1 > index || !gasPrice) {
-    const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
-    if (greaterThan(fastPrice, gasPrice)) {
-      gasPrice = fastPrice;
+  if (
+    currentRap.actions.length - 1 > index ||
+    !maxFeePerGas ||
+    !maxPriorityFeePerGas
+  ) {
+    const fastMaxFeePerGas =
+      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas.amount;
+    const fastMaxPriorityFeePerGas =
+      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxPriorityFeePerGas.amount;
+
+    if (greaterThan(fastMaxFeePerGas, maxFeePerGas)) {
+      maxFeePerGas = fastMaxFeePerGas;
+    }
+    if (greaterThan(fastMaxPriorityFeePerGas, maxPriorityFeePerGas)) {
+      maxPriorityFeePerGas = fastMaxPriorityFeePerGas;
     }
   }
   let gasLimit, methodName;
@@ -63,14 +78,16 @@ const swap = async (
   try {
     logger.sentry(`[${actionName}] executing rap`, {
       gasLimit,
-      gasPrice,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
       methodName,
     });
     const nonce = baseNonce ? baseNonce + index : undefined;
     swap = await executeSwap({
       chainId,
       gasLimit,
-      gasPrice,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
       nonce,
       permit: !!permit,
       tradeDetails,
@@ -100,16 +117,22 @@ const swap = async (
     data: swap.data,
     from: accountAddress,
     gasLimit,
-    gasPrice,
     hash: swap?.hash,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
     nonce: swap?.nonce,
     protocol: ProtocolType.uniswap,
     status: TransactionStatus.swapping,
     to: swap?.to,
     type: TransactionType.trade,
-    value: swap.value,
+    value: toHex(swap.value),
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
+
+
+  // @ts-expect-error Since src/redux/data.js is not typed yet, `accountAddress`
+  // being a string conflicts with the inferred type of "null" for the second
+  // parameter.
   await dispatch(
     dataAddNewTransaction(
       newTransaction,

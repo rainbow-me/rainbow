@@ -1,14 +1,16 @@
+import { Signer } from '@ethersproject/abstract-signer';
 import { BigNumberish } from '@ethersproject/bignumber';
+import { Contract } from '@ethersproject/contracts';
+import { Provider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { get, mapKeys, mapValues, toLower } from 'lodash';
-import { uniswapClient } from '../apollo/client';
-import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
 import { Token } from '../entities/tokens';
 import { loadWallet } from '../model/wallet';
 import {
   estimateGasWithPadding,
   getFlashbotsProvider,
   getProviderForNetwork,
+  toHex,
 } from './web3';
 import { Asset } from '@rainbow-me/entities';
 import {
@@ -19,14 +21,8 @@ import {
   subtract,
 } from '@rainbow-me/helpers/utilities';
 import { Network } from '@rainbow-me/networkTypes';
-import store from '@rainbow-me/redux/store';
-import {
-  uniswapLoadedAllTokens,
-  uniswapUpdateTokens,
-} from '@rainbow-me/redux/uniswap';
 import { ethUnits, UNISWAP_TESTNET_TOKEN_LIST } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
 import {
   ALLOWS_PERMIT,
   ChainId,
@@ -45,8 +41,6 @@ export enum Field {
   INPUT = 'INPUT',
   OUTPUT = 'OUTPUT',
 }
-
-const UniswapPageSize = 1000;
 
 export const getTestnetUniswapPairs = (
   network: Network
@@ -182,6 +176,9 @@ export const computeSlippageAdjustedAmounts = (
 export const executeSwap = async ({
   chainId,
   gasLimit,
+  maxFeePerGas,
+  maxPriorityFeePerGas,
+  inputCurrency,
   gasPrice,
   nonce,
   tradeDetails,
@@ -190,6 +187,9 @@ export const executeSwap = async ({
 }: {
   chainId: ChainId;
   gasLimit: string | number;
+  maxFeePerGas: string;
+  maxPriorityFeePerGas: string;
+  inputCurrency: Asset;
   gasPrice: string;
   nonce?: number;
   tradeDetails: Quote | null;
@@ -215,6 +215,12 @@ export const executeSwap = async ({
 
   const { sellTokenAddress, buyTokenAddress } = tradeDetails;
 
+  const transactionParams = {
+    gasLimit: toHex(gasLimit) || undefined,
+    maxFeePerGas: toHex(maxFeePerGas) || undefined,
+    maxPriorityFeePerGas: toHex(maxPriorityFeePerGas) || undefined,
+    nonce: nonce ? toHex(nonce) : undefined,
+  };
   // Wrap Eth
   if (
     sellTokenAddress === ETH_ADDRESS_AGGREGATORS &&
@@ -231,39 +237,11 @@ export const executeSwap = async ({
   } else {
     return fillQuote(
       tradeDetails,
-      { gasLimit, gasPrice, nonce },
+      transactionParams,
       walletToUse,
       permit,
       chainId
     );
-  }
-};
-
-export const getAllTokens = async () => {
-  const { dispatch } = store;
-  try {
-    let dataEnd = false;
-    let lastId = '';
-
-    while (!dataEnd) {
-      let result = await uniswapClient.query({
-        query: UNISWAP_ALL_TOKENS,
-        variables: {
-          first: UniswapPageSize,
-          lastId,
-        },
-      });
-      const resultTokens = result?.data?.tokens || [];
-      const lastItem = resultTokens[resultTokens.length - 1];
-      lastId = lastItem?.id ?? '';
-      dispatch(uniswapUpdateTokens(resultTokens));
-      if (resultTokens.length < UniswapPageSize) {
-        dispatch(uniswapLoadedAllTokens());
-        dataEnd = true;
-      }
-    }
-  } catch (err) {
-    logger.log('error: ', err);
   }
 };
 

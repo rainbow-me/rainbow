@@ -2,7 +2,6 @@ import { useRoute } from '@react-navigation/native';
 import { useCallback, useLayoutEffect, useMemo } from 'react';
 import { InteractionManager, TextInput } from 'react-native';
 import { useDispatch } from 'react-redux';
-import useAccountAssets from './useAccountAssets';
 import { delayNext } from './useMagicAutofocus';
 import useTimeout from './useTimeout';
 import {
@@ -16,6 +15,7 @@ import {
   updateSwapInputCurrency,
   updateSwapOutputCurrency,
 } from '@rainbow-me/redux/swap';
+import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
 
@@ -31,7 +31,6 @@ export default function useSwapCurrencyHandlers({
   type,
 }) {
   const dispatch = useDispatch();
-  const { allAssets } = useAccountAssets();
   const { navigate, setParams, dangerouslyGetParent } = useNavigation();
   const {
     params: { blockInteractions },
@@ -46,15 +45,14 @@ export default function useSwapCurrencyHandlers({
     }
     if (type === ExchangeModalTypes.deposit) {
       // if the deposit asset exists in wallet, then set it as default input
-      let defaultInputItemInWallet = ethereumUtils.getAsset(
-        allAssets,
+      let defaultInputItemInWallet = ethereumUtils.getAccountAsset(
         defaultInputAsset?.address
       );
       let defaultOutputItem = null;
 
       // if it does not exist, then set it as output
       if (!defaultInputItemInWallet) {
-        defaultInputItemInWallet = ethereumUtils.getAsset(allAssets);
+        defaultInputItemInWallet = ethereumUtils.getAccountAsset(ETH_ADDRESS);
         defaultOutputItem = defaultInputAsset;
       }
       dispatch(updateSwapDepositCurrency(defaultInputAsset));
@@ -66,7 +64,7 @@ export default function useSwapCurrencyHandlers({
     if (type === ExchangeModalTypes.swap) {
       return {
         defaultInputItemInWallet:
-          defaultInputAsset ?? ethereumUtils.getAsset(allAssets),
+          defaultInputAsset ?? ethereumUtils.getAccountAsset(ETH_ADDRESS),
         defaultOutputItem: defaultOutputAsset ?? null,
       };
     }

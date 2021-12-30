@@ -1,4 +1,4 @@
-import { filter, find, get, isNil, map, pick, uniq } from 'lodash';
+import { find, get, isEmpty, isNil, map, pick, pickBy, uniq } from 'lodash';
 import { AssetTypes } from '@rainbow-me/entities';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
 
@@ -88,21 +88,20 @@ export const parseAccountUniqueTokens = data => {
         urlSuffixForAsset: `${get(asset_contract, 'address')}/${token_id}`,
       })
     )
-    .filter(token => !!token.familyName);
+    .filter(token => !!token.familyName && token.familyName !== 'POAP');
 };
 
 export const getFamilies = uniqueTokens =>
   uniq(map(uniqueTokens, u => get(u, 'asset_contract.address', '')));
 
-export const dedupeUniqueTokens = (assets, uniqueTokens) => {
+export const dedupeUniqueTokens = (newAssets, uniqueTokens) => {
   const uniqueTokenFamilies = getFamilies(uniqueTokens);
-  let updatedAssets = assets;
-  if (assets.length) {
-    updatedAssets = filter(updatedAssets, asset => {
+  let updatedAssets = newAssets;
+  if (!isEmpty(newAssets)) {
+    updatedAssets = pickBy(updatedAssets, newAsset => {
       const matchingElement = find(
         uniqueTokenFamilies,
-        uniqueTokenFamily =>
-          uniqueTokenFamily === get(asset, 'asset.asset_code')
+        uniqueTokenFamily => uniqueTokenFamily === newAsset?.asset?.asset_code
       );
       return !matchingElement;
     });
@@ -110,8 +109,8 @@ export const dedupeUniqueTokens = (assets, uniqueTokens) => {
   return updatedAssets;
 };
 
-export const dedupeAssetsWithFamilies = (assets, families) =>
-  filter(
-    assets,
-    asset => !find(families, family => family === get(asset, 'address'))
+export const dedupeAssetsWithFamilies = (accountAssets, families) =>
+  pickBy(
+    accountAssets,
+    asset => !find(families, family => family === asset?.address)
   );

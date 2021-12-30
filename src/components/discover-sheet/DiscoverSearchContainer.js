@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/native';
+import analytics from '@segment/analytics-react-native';
 import React, {
   forwardRef,
   useCallback,
@@ -9,7 +10,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { ExchangeSearch } from '../exchange';
@@ -34,6 +34,16 @@ const CancelText = styled(Text).attrs(({ theme: { colors } }) => ({
   margin-right: 15;
 `;
 
+const sendQueryAnalytics = query => {
+  if (query.length > 1) {
+    analytics.track('Search Query', {
+      category: 'discover',
+      length: query.length,
+      query: query,
+    });
+  }
+};
+
 export default forwardRef(function DiscoverSearchContainer(
   { children, showSearch, setShowSearch },
   ref
@@ -44,9 +54,6 @@ export default forwardRef(function DiscoverSearchContainer(
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [isFetchingEns, setIsFetchingEns] = useState(false);
-  const loadingAllTokens = useSelector(
-    ({ uniswap: { loadingAllTokens } }) => loadingAllTokens
-  );
   const delayedShowSearch = useDelayedValueWithLayoutAnimation(showSearch);
 
   const upperContext = useContext(DiscoverSheetContext);
@@ -105,6 +112,9 @@ export default forwardRef(function DiscoverSearchContainer(
       searchInputRef.current.focus();
     } else {
       setIsInputFocused(true);
+      analytics.track('Tapped Search', {
+        category: 'discover',
+      });
     }
   }, [isSearchModeEnabled, setIsInputFocused]);
 
@@ -128,7 +138,8 @@ export default forwardRef(function DiscoverSearchContainer(
         <Column flex={1} marginTop={19}>
           <ExchangeSearch
             clearTextOnFocus={false}
-            isFetching={loadingAllTokens || isFetchingEns}
+            isDiscover
+            isFetching={isFetchingEns}
             isSearching={isSearching}
             onBlur={() => setIsInputFocused(false)}
             onChangeText={setSearchQuery}
@@ -147,6 +158,7 @@ export default forwardRef(function DiscoverSearchContainer(
           onPress={() => {
             searchInputRef.current?.blur();
             setIsInputFocused(false);
+            sendQueryAnalytics(searchQuery);
           }}
           testID="done-button"
         >

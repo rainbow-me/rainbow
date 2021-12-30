@@ -14,6 +14,7 @@ font.letterSpacing = {
   roundedMedium: 0.5,
   rounded: 0.6,
   uppercase: 0.8,
+  one: 1,
 };
 
 font.lineHeight = {

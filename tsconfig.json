@@ -13,9 +13,11 @@
     "baseUrl": ".",
     "paths": {
       "@rainbow-me/apollo": ["./src/apollo"],
+      "@rainbow-me/apollo/*": ["./src/apollo/*"],
       "@rainbow-me/assets": ["./src/assets"],
       "@rainbow-me/config": ["./src/config"],
       "@rainbow-me/context": ["./src/context"],
+      "@rainbow-me/design-system": ["src/design-system"],
       "@rainbow-me/entities": ["src/entities"],
       "@rainbow-me/handlers": ["./src/handlers"],
       "@rainbow-me/handlers/*": ["./src/handlers/*"],
@@ -24,6 +26,7 @@
       "@rainbow-me/hooks": ["src/hooks"],
       "@rainbow-me/images": ["src/components/images"],
       "@rainbow-me/model": ["src/model"],
+      "@rainbow-me/model/*": ["src/model/*"],
       "@rainbow-me/navigation": ["src/navigation"],
       "@rainbow-me/networkTypes": ["./src/helpers/networkTypes"],
       "@rainbow-me/parsers": ["src/parsers"],
@@ -35,6 +38,7 @@
       "@rainbow-me/styles": ["src/styles"],
       "@rainbow-me/utilities": ["./src/helpers/utilities"],
       "@rainbow-me/utils": ["src/utils"],
+      "@rainbow-me/utils/*": ["src/utils/*"],
       "logger": ["src/utils/logger"],
       "react-native-cool-modals": ["src/react-native-cool-modals"],
       "react-native-yet-another-bottom-sheet": ["src/react-native-yet-another-bottom-sheet"],
@@ -44,7 +48,13 @@
     },
     "resolveJsonModule": true
   },
-  "globals": ["useTheme"],
+  "globals": [
+    "useTheme", 
+    "ios", 
+    "android", 
+    "__DEV__", 
+    "IS_DEV" 
+  ],
   "exclude": [
     "ios",
     "patches/reanimated",

@@ -1204,7 +1204,7 @@ var unwrapWeth = /*#__PURE__*/function () {
  * function that wraps or unwraps, to be used by estimateGas calls
  * (MAINNET ONLY!)
  * @param {string} name
- * @param {Provider} provider]
+ * @param {StaticJsonRpcProvider} provider]
  * @returns {Promise<Transaction>}
  */
 

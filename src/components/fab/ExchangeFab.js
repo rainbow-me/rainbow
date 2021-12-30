@@ -1,10 +1,11 @@
 import React, { useCallback } from 'react';
+import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { delayNext } from '../../hooks/useMagicAutofocus';
 import { useNavigation } from '../../navigation/Navigation';
 import { lightModeThemeColors } from '../../styles/colors';
 import { useEth } from '../../utils/ethereumUtils';
-import { Icon } from '../icons';
+import { Text } from '../text';
 import FloatingActionButton from './FloatingActionButton';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import Routes from '@rainbow-me/routes';
@@ -14,6 +15,14 @@ const FabShadow = [
   [0, 10, 30, lightModeThemeColors.shadow, 0.8],
   [0, 5, 15, lightModeThemeColors.swapPurple, 1],
 ];
+
+const FabIcon = styled(Text).attrs(({ theme: { colors } }) => ({
+  align: 'center',
+  color: colors.whiteLabel,
+  letterSpacing: 'zero',
+  size: 24,
+  weight: 'semibold',
+}))``;
 
 const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
   const { navigate } = useNavigation();
@@ -46,13 +55,7 @@ const ExchangeFab = ({ disabled, isReadOnlyWallet, ...props }) => {
       shadows={FabShadow}
       testID="exchange-fab"
     >
-      <Icon
-        color={colors.whiteLabel}
-        height={21}
-        marginBottom={2}
-        name="swap"
-        width={26}
-      />
+      <FabIcon>􀖅</FabIcon>
     </FloatingActionButton>
   );
 };

@@ -9,7 +9,10 @@ export { default as ContractInteractionCoinRow } from './ContractInteractionCoin
 export { default as ExchangeCoinRow } from './ExchangeCoinRow';
 export { default as ListCoinRow } from './ListCoinRow';
 export { default as RequestCoinRow } from './RequestCoinRow';
-export { default as SavingsCoinRow } from './SavingsCoinRow';
+export {
+  default as SavingsCoinRow,
+  SavingsCoinRowHeight,
+} from './SavingsCoinRow';
 export { default as SendCoinRow } from './SendCoinRow';
 export { default as SendSavingsCoinRow } from './SendSavingsCoinRow';
 export {

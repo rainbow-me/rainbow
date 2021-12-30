@@ -4,12 +4,15 @@ import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { buildUniqueTokenName } from '../../helpers/assets';
 import { ENS_NFT_CONTRACT_ADDRESS } from '../../references';
-import { magicMemo } from '../../utils';
 import { Centered } from '../layout';
 import RemoteSvg from '../svg/RemoteSvg';
 import { Monospace, Text } from '../text';
+import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
-import { useDimensions } from '@rainbow-me/hooks';
+import {
+  useDimensions,
+  usePersistentDominantColorFromImage,
+} from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 
@@ -44,66 +47,75 @@ const ENSText = styled(Text).attrs(
 `;
 
 const UniqueTokenImage = ({
-  backgroundColor,
+  backgroundColor: givenBackgroundColor,
   imageUrl,
   item,
+  isCard = false,
   lowResUrl,
   resizeMode = ImgixImage.resizeMode.cover,
   small,
-  size,
+  transformSvgs = true,
 }) => {
   const { isTinyPhone } = useDimensions();
   const isENS =
     toLower(item.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
   const isSVG = isSupportedUriExtension(imageUrl, ['.svg']);
-  const image = isENS && !isSVG ? `${item.image_url}=s1` : imageUrl;
+  const newImageUrl = transformSvgs ? svgToPngIfNeeded(imageUrl) : imageUrl;
+  const image = isENS && !isSVG ? `${item.image_url}=s1` : newImageUrl;
   const [error, setError] = useState(null);
   const handleError = useCallback(error => setError(error), [setError]);
   const { isDarkMode, colors } = useTheme();
   const [loadedImg, setLoadedImg] = useState(false);
   const onLoad = useCallback(() => setLoadedImg(true), [setLoadedImg]);
-  const remoteSvgStyle = useMemo(() => {
-    // I know... This shit is mad weird :|
-    // I know... This shit even weirder but it's ENS's fault :/
-    const style =
-      isENS && isSVG
-        ? { height: size * 1.1 + 0.1, width: size * 1.1 + 0.1 }
-        : { height: size + 0.1, width: size + 0.1 };
-    return style;
-  }, [isENS, isSVG, size]);
+  let backgroundColor = givenBackgroundColor;
+  const { result: dominantColor } = usePersistentDominantColorFromImage(
+    item.image_url
+  );
+
+  const isOldENS = isENS && !isSVG;
+
+  if (isOldENS && dominantColor) {
+    backgroundColor = dominantColor;
+  }
 
   return (
     <Centered backgroundColor={backgroundColor} style={position.coverAsObject}>
-      {isSVG && !error ? (
+      {isSVG && !transformSvgs && !error ? (
         <RemoteSvg
+          fallbackIfNonAnimated
+          fallbackUri={svgToPngIfNeeded(imageUrl, true)}
+          lowResFallbackUri={svgToPngIfNeeded(imageUrl)}
           onError={handleError}
-          style={remoteSvgStyle}
-          uri={imageUrl}
+          resizeMode={resizeMode}
+          style={position.coverAsObject}
+          uri={item.image_url}
         />
       ) : imageUrl && !error ? (
-        <Fragment>
-          <ImageTile
-            onError={handleError}
-            onLoad={onLoad}
-            resizeMode={ImgixImage.resizeMode[resizeMode]}
-            source={{ uri: image }}
-            style={position.coverAsObject}
-          >
-            {isENS && !isSVG && (
-              <ENSText isTinyPhone={isTinyPhone} small={small}>
-                {item.name}
-              </ENSText>
-            )}
-          </ImageTile>
-          {!loadedImg && lowResUrl && (
+        isOldENS ? (
+          <ENSText isTinyPhone={isTinyPhone} small={small}>
+            {item.name}
+          </ENSText>
+        ) : (
+          <Fragment>
             <ImageTile
-              playing={false}
+              {...(isCard && { fm: 'png' })}
+              onError={handleError}
+              onLoad={onLoad}
               resizeMode={ImgixImage.resizeMode[resizeMode]}
-              source={{ uri: lowResUrl }}
+              source={{ uri: image }}
               style={position.coverAsObject}
             />
-          )}
-        </Fragment>
+            {!loadedImg && lowResUrl && (
+              <ImageTile
+                {...(isCard && { fm: 'png' })}
+                playing={false}
+                resizeMode={ImgixImage.resizeMode[resizeMode]}
+                source={{ uri: lowResUrl }}
+                style={position.coverAsObject}
+              />
+            )}
+          </Fragment>
+        )
       ) : (
         <Monospace
           align="center"
@@ -118,4 +130,4 @@ const UniqueTokenImage = ({
   );
 };
 
-export default magicMemo(UniqueTokenImage, 'imageUrl');
+export default UniqueTokenImage;
