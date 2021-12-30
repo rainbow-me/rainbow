@@ -610,18 +610,6 @@ export const addressAssetsReceived = (
     property('uniqueId')
   );
   addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
-
-  // Hide coins with price = 0 that are currently not pinned
-  if (isL2) {
-    const assetsWithNoPrice = map(
-      filter(
-        parsedAssets,
-        asset => asset.price?.value === 0 && asset.network === assetsNetwork
-      ),
-      property('uniqueId')
-    );
-    addHiddenCoins(assetsWithNoPrice, dispatch, accountAddress);
-  }
 };
 
 const subscribeToMissingPrices = addresses => (dispatch, getState) => {
