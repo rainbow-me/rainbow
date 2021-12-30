@@ -589,16 +589,6 @@ export const addressAssetsReceived = (
     .filter(asset => isValidDomain(asset.name) && !asset.isVerified)
     .map(({ uniqueId }) => uniqueId);
   dispatch(addCoinsToHiddenList(assetsWithScamURL));
-
-  // Hide coins with price = 0 that are currently not pinned
-  if (isL2) {
-    const assetsWithNoPrice = parsedAssets
-      .filter(
-        asset => asset.price?.value === 0 && asset.network === assetsNetwork
-      )
-      .map(({ uniqueId }) => uniqueId);
-    dispatch(addCoinsToHiddenList(assetsWithNoPrice));
-  }
 };
 
 const subscribeToMissingPrices = addresses => (dispatch, getState) => {
