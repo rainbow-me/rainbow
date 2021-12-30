@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { toLower } from 'lodash';
+import { toLower, uniqBy } from 'lodash';
 import { matchSorter } from 'match-sorter';
 import React, {
   Fragment,
@@ -11,6 +11,7 @@ import React, {
   useState,
 } from 'react';
 import { StatusBar } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { useDebounce } from 'use-debounce';
@@ -37,6 +38,7 @@ import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import { filterList } from '@rainbow-me/utils';
+// import logger from 'logger';
 
 const TabTransitionAnimation = styled(Animated.View)`
   ${position.size('100%')};
@@ -85,6 +87,7 @@ export default function CurrencySelectModal() {
   const searchQueryExists = useMemo(() => searchQuery.length > 0, [
     searchQuery,
   ]);
+
   const uniswapAssetsInWallet = useUniswapAssetsInWallet();
   const {
     uniswapCurrencyList,
@@ -92,7 +95,7 @@ export default function CurrencySelectModal() {
     updateFavorites,
   } = useUniswapCurrencyList(searchQueryForSearch);
 
-  const getWalletCurrencyList = useMemo(() => {
+  const getWalletCurrencyList = useCallback(() => {
     if (searchQueryForSearch !== '') {
       const searchResults = searchWalletCurrencyList(
         uniswapAssetsInWallet,
@@ -104,10 +107,30 @@ export default function CurrencySelectModal() {
     }
   }, [searchQueryForSearch, uniswapAssetsInWallet]);
 
-  const currencyList =
-    type === CurrencySelectionTypes.input
-      ? getWalletCurrencyList()
-      : uniswapCurrencyList;
+  const currencyList = useMemo(() => {
+    let list =
+      type === CurrencySelectionTypes.input
+        ? getWalletCurrencyList()
+        : uniswapCurrencyList;
+
+    // Fake tokens with same symbols break detox e2e tests
+    if (IS_TESTING === 'true' && type === CurrencySelectionTypes.output) {
+      let symbols = [];
+      list = list?.map(section => {
+        // Remove dupes
+        section.data = uniqBy(section?.data, 'symbol');
+        // Remove dupes across sections
+        section.data = section?.data?.filter(
+          token => !symbols.includes(token?.symbol)
+        );
+        const sectionSymbols = section?.data?.map(token => token?.symbol);
+        symbols = symbols.concat(sectionSymbols);
+
+        return section;
+      });
+      return list;
+    }
+  }, [getWalletCurrencyList, type, uniswapCurrencyList]);
 
   const handleFavoriteAsset = useCallback(
     (asset, isFavorited) => {
