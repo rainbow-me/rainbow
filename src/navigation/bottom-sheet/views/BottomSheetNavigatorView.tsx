@@ -3,7 +3,14 @@ import {
   StackActions,
   StackNavigationState,
 } from '@react-navigation/native';
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { Screen, ScreenContainer } from 'react-native-screens';
 import type {
   BottomSheetDescriptorMap,
   BottomSheetNavigationConfig,
@@ -72,20 +79,25 @@ const BottomSheetNavigatorView = ({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   //#endregion
   return (
     <NavigationHelpersContext.Provider value={navigation}>
-      {descriptors[firstKey].render()}
+      <ScreenContainer style={{ flex: 1 }}>
+        <Screen active={1}>{descriptors[firstKey].render()}</Screen>
 
-      {Object.keys(descriptorsCache.current).map(key => (
-        <BottomSheetRoute
-          descriptor={descriptorsCache.current[key]}
-          key={key}
-          onDismiss={handleOnDismiss}
-          removing={descriptorsCache.current[key].removing}
-          routeKey={key}
-        />
-      ))}
+        {Object.keys(descriptorsCache.current).map(key => (
+          <Screen active={1} key={key}>
+            <BottomSheetRoute
+              descriptor={descriptorsCache.current[key]}
+              key={key}
+              onDismiss={handleOnDismiss}
+              removing={descriptorsCache.current[key].removing}
+              routeKey={key}
+            />
+          </Screen>
+        ))}
+      </ScreenContainer>
     </NavigationHelpersContext.Provider>
   );
 };
