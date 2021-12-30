@@ -78,7 +78,7 @@ const sendETHtoTestWallet = async () => {
 
 beforeAll(async () => {
   // Connect to hardhat
-  // await exec('yarn hardhat');
+  await exec('yarn hardhat');
   await exec(
     'open /Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/'
   );
