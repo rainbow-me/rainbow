@@ -9,6 +9,7 @@ import React, {
 import { InteractionManager, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { useDebounce } from 'use-debounce/lib';
 import CurrencySelectionTypes from '../../helpers/currencySelectionTypes';
 import { emitAssetRequest } from '../../redux/explorer';
 import deviceUtils from '../../utils/deviceUtils';
@@ -17,7 +18,7 @@ import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/Ch
 import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { fetchSuggestions } from '@rainbow-me/handlers/ens';
-import { useTimeout, useUniswapCurrencyList } from '@rainbow-me/hooks';
+import { usePrevious, useUniswapCurrencyList } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -30,6 +31,7 @@ export default function DiscoverSearch() {
   const { navigate } = useNavigation();
   const dispatch = useDispatch();
   const {
+    isSearching,
     isFetchingEns,
     setIsSearching,
     setIsFetchingEns,
@@ -38,8 +40,7 @@ export default function DiscoverSearch() {
   } = useContext(DiscoverSheetContext);
 
   const currencySelectionListRef = useRef();
-  const [searchQueryForSearch, setSearchQueryForSearch] = useState('');
-  const [startQueryDebounce, stopQueryDebounce] = useTimeout();
+  const [searchQueryForSearch] = useDebounce(searchQuery, 350);
   const [ensResults, setEnsResults] = useState([]);
   const {
     uniswapCurrencyList,
@@ -49,6 +50,7 @@ export default function DiscoverSearch() {
     uniswapCurrencyList,
     ensResults,
   ]);
+  const lastSearchQuery = usePrevious(searchQueryForSearch);
 
   const handlePress = useCallback(
     item => {
@@ -105,21 +107,21 @@ export default function DiscoverSearch() {
   }, []);
 
   useEffect(() => {
-    const searching = searchQuery !== '';
-    if (!searching) {
-      setSearchQueryForSearch(searchQuery);
-    }
-    stopQueryDebounce();
-    startQueryDebounce(
-      () => {
+    if (searchQueryForSearch && !isSearching) {
+      if (lastSearchQuery !== searchQueryForSearch) {
         setIsSearching(true);
-        setSearchQueryForSearch(searchQuery);
         fetchSuggestions(searchQuery, addEnsResults, setIsFetchingEns);
-      },
-      searchQuery === '' ? 1 : 500
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery, setIsSearching, startQueryDebounce, stopQueryDebounce]);
+      }
+    }
+  }, [
+    addEnsResults,
+    isSearching,
+    lastSearchQuery,
+    searchQuery,
+    searchQueryForSearch,
+    setIsFetchingEns,
+    setIsSearching,
+  ]);
 
   useEffect(() => {
     if (!uniswapCurrencyListLoading && !isFetchingEns) {

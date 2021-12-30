@@ -82,8 +82,6 @@ export default function CurrencySelectModal() {
   const [assetsToFavoriteQueue, setAssetsToFavoriteQueue] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
   const [searchQueryForSearch] = useDebounce(searchQuery, 350);
-
-  const [isSearching, setIsSearching] = useState(false);
   const searchQueryExists = useMemo(() => searchQuery.length > 0, [
     searchQuery,
   ]);
@@ -93,7 +91,8 @@ export default function CurrencySelectModal() {
     uniswapCurrencyListLoading,
     updateFavorites,
   } = useUniswapCurrencyList(searchQueryForSearch);
-  const getWalletCurrencyList = () => {
+
+  const getWalletCurrencyList = useMemo(() => {
     if (searchQueryForSearch !== '') {
       const searchResults = searchWalletCurrencyList(
         uniswapAssetsInWallet,
@@ -103,7 +102,8 @@ export default function CurrencySelectModal() {
     } else {
       return headerlessSection(uniswapAssetsInWallet);
     }
-  };
+  }, [searchQueryForSearch, uniswapAssetsInWallet]);
+
   const currencyList =
     type === CurrencySelectionTypes.input
       ? getWalletCurrencyList()
@@ -235,7 +235,7 @@ export default function CurrencySelectModal() {
             />
             <ExchangeSearch
               isFetching={uniswapCurrencyListLoading}
-              isSearching={isSearching}
+              isSearching={uniswapCurrencyListLoading}
               onChangeText={setSearchQuery}
               onFocus={handleFocus}
               ref={searchInputRef}
