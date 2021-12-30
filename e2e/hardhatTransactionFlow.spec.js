@@ -216,13 +216,14 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
-  it('Should swap DAI -> ZRX (via tokenToTokenWithPermit)', async () => {
+  it('Should swap DAI -> USDC (via tokenToTokenWithPermit)', async () => {
     await Helpers.tap('exchange-fab');
     await Helpers.tap('exchange-modal-input-selection-button');
     await Helpers.tap('currency-select-list-exchange-coin-row-DAI');
     await Helpers.tap('exchange-modal-output-selection-button');
-    await Helpers.tap('currency-select-list-exchange-coin-row-ZRX');
-    await Helpers.typeText('exchange-modal-input', '4', true);
+    await Helpers.typeText('currency-select-search-input', 'USDC', true);
+    await Helpers.tap('currency-select-list-exchange-coin-row-USDC');
+await Helpers.typeText('exchange-modal-input', '4', true);
     await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     await acceptAlertIfGasPriceIsHigh();
     await checkIfSwapCompleted('DAI', '4 DAI');
@@ -261,10 +262,10 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'WETH', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-WETH');
-    await Helpers.typeText('exchange-modal-input', '10', true);
+    await Helpers.typeText('exchange-modal-input', '14', true);
     await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     await acceptAlertIfGasPriceIsHigh();
-    await checkIfSwapCompleted('USD Coin', '10 USDC');
+    await checkIfSwapCompleted('USD Coin', '14 USDC');
     await Helpers.swipe('profile-screen', 'left', 'slow');
   });
 
