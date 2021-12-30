@@ -45,7 +45,7 @@ const isNFTOwner = async address => {
     provider
   );
   const ownerAddress = await kittiesContract.ownerOf('1368227');
-  return ownerAddress === address;
+  return ownerAddress?.toLowerCase() === address?.toLowerCase();
 };
 
 const getOnchainBalance = async (address, tokenContractAddress) => {
