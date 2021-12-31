@@ -14,6 +14,12 @@ final class TokenProvider {
   
   static let shared = TokenProvider()
   
+  private var storedTokens = TokenListBundle(allTokens: [:], topTokens: [], otherTokens: [])
+  
+  private init() {
+    getTokens()
+  }
+  
   struct TokenListBundle {
     let allTokens: [String: TokenDetails]
     let topTokens: [TokenDetails]
@@ -25,8 +31,11 @@ final class TokenProvider {
       self.otherTokens = otherTokens
     }
   }
-
   
+  public func getStoredTokens() -> TokenListBundle {
+    return self.storedTokens
+  }
+
   public func getTokens() -> TokenListBundle {
     var rainbowAddressTokenMap = [String: TokenDetails]()
     var finalAddressTokenMap = [String: TokenDetails]()
@@ -62,8 +71,13 @@ final class TokenProvider {
         }
       }
     }
-    finalAddressTokenMap[Constants.eth.address!] = Constants.eth
-    return TokenListBundle(allTokens: finalAddressTokenMap, topTokens: topTokens, otherTokens: otherTokens)
+    
+    if (!finalAddressTokenMap.isEmpty) {
+      finalAddressTokenMap[Constants.eth.address!] = Constants.eth
+    }
+    
+    self.storedTokens = TokenListBundle(allTokens: finalAddressTokenMap, topTokens: topTokens, otherTokens: otherTokens)
+    return self.storedTokens
   }
 
   private func getCoinGeckoTokenList() -> [CoinGeckoToken]? {

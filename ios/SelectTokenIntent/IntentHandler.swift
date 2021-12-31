@@ -14,7 +14,7 @@ class IntentHandler: INExtension, SelectTokenIntentHandling {
     var topTokenItems = [Token]()
     var otherTokenItems = [Token]()
     let tokenProvider = TokenProvider.shared
-    let tokens = tokenProvider.getTokens()
+    let tokens = tokenProvider.getStoredTokens()
     let topTokens = Constants.topTokenAddresses
 
     topTokenItems = tokens.topTokens.map { token in
