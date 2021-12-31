@@ -38,7 +38,7 @@ const OuterBorder = styled(Centered)`
     color || colors.alpha(colors.whiteLabel, 0.15)};
   border-radius: ${TagBorderRadius};
   border-width: 2;
-  flex: none;
+  flex: 0;
   overflow: hidden;
   z-index: 2;
 `;
@@ -110,7 +110,7 @@ const Tag = ({ color, disableMenu, slug, text, title, ...props }) => {
         }
       }
     );
-  }, []);
+  }, [slug, text, title]);
 
   return (
     <ContextMenuButton

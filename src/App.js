@@ -27,6 +27,7 @@ import RNIOS11DeviceCheck from 'react-native-ios11-devicecheck';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 import { connect, Provider } from 'react-redux';
+import { RecoilRoot } from 'recoil';
 import PortalConsumer from './components/PortalConsumer';
 import ErrorBoundary from './components/error-boundary/ErrorBoundary';
 import { FlexItem } from './components/layout';
@@ -46,6 +47,7 @@ import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
 import { isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
+import networkTypes from './helpers/networkTypes';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
@@ -58,7 +60,8 @@ import store from './redux/store';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
-import { ethereumUtils } from './utils';
+import { analyticsUserIdentifier } from './utils/keychainConstants';
+import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
@@ -127,18 +130,18 @@ class App extends Component {
 
       if (params['+non_branch_link']) {
         const nonBranchUrl = params['+non_branch_link'];
-        handleDeeplink(nonBranchUrl);
+        this.handleOpenLinkingURL(nonBranchUrl);
         return;
       } else if (!params['+clicked_branch_link']) {
         // Indicates initialization success and some other conditions.
         // No link was opened.
         if (IS_TESTING === 'true') {
-          handleDeeplink(uri);
+          this.handleOpenLinkingURL(uri);
         } else {
           return;
         }
       } else if (uri) {
-        handleDeeplink(uri);
+        this.handleOpenLinkingURL(uri);
       }
     });
 
@@ -147,13 +150,13 @@ class App extends Component {
       try {
         const initialUrl = await Linking.getInitialURL();
         if (initialUrl) {
-          handleDeeplink(initialUrl);
+          this.handleOpenLinkingURL(initialUrl);
         }
       } catch (e) {
         logger.log('Error opening deeplink', e);
       }
       Linking.addEventListener('url', ({ url }) => {
-        handleDeeplink(url);
+        this.handleOpenLinkingURL(url);
       });
     }
   }
@@ -196,7 +199,7 @@ class App extends Component {
   };
 
   handleOpenLinkingURL = url => {
-    handleDeeplink(url);
+    handleDeeplink(url, this.state.initialRoute);
   };
 
   onPushNotificationOpened = topic => {
@@ -214,15 +217,13 @@ class App extends Component {
   handleInitializeAnalytics = async () => {
     // Comment the line below to debug analytics
     if (__DEV__) return false;
-    const storedIdentifier = await keychain.loadString(
-      'analyticsUserIdentifier'
-    );
+    const storedIdentifier = await keychain.loadString(analyticsUserIdentifier);
 
     if (!storedIdentifier) {
       const identifier = await RNIOS11DeviceCheck.getToken()
         .then(deviceId => deviceId)
         .catch(() => nanoid());
-      await keychain.saveString('analyticsUserIdentifier', identifier);
+      await keychain.saveString(analyticsUserIdentifier, identifier);
       analytics.identify(identifier);
     }
 
@@ -255,7 +256,7 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   handleTransactionConfirmed = tx => {
-    const network = ethereumUtils.getNetworkFromChainId(tx.chainId);
+    const network = tx.network || networkTypes.mainnet;
     const isL2 = isL2Network(network);
     const updateBalancesAfter = (timeout, isL2, network) => {
       setTimeout(() => {
@@ -281,17 +282,21 @@ class App extends Component {
           <Portal>
             <SafeAreaProvider>
               <Provider store={store}>
-                <FlexItem>
-                  {this.state.initialRoute && (
-                    <InitialRouteContext.Provider
-                      value={this.state.initialRoute}
-                    >
-                      <RoutesComponent ref={this.handleNavigatorRef} />
-                      <PortalConsumer />
-                    </InitialRouteContext.Provider>
-                  )}
-                  <OfflineToast />
-                </FlexItem>
+                <RecoilRoot>
+                  <SharedValuesProvider>
+                    <FlexItem>
+                      {this.state.initialRoute && (
+                        <InitialRouteContext.Provider
+                          value={this.state.initialRoute}
+                        >
+                          <RoutesComponent ref={this.handleNavigatorRef} />
+                          <PortalConsumer />
+                        </InitialRouteContext.Provider>
+                      )}
+                      <OfflineToast />
+                    </FlexItem>
+                  </SharedValuesProvider>
+                </RecoilRoot>
               </Provider>
             </SafeAreaProvider>
           </Portal>
