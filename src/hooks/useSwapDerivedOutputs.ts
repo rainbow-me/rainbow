@@ -16,7 +16,6 @@ import {
   updatePrecisionToDisplay,
 } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
-import logger from 'logger';
 import {
   ETH_ADDRESS as ETH_ADDRESS_AGGREGATORS,
   getQuote,

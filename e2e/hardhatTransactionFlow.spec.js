@@ -223,7 +223,7 @@ describe('Hardhat Transaction Flow', () => {
     await Helpers.tap('exchange-modal-output-selection-button');
     await Helpers.typeText('currency-select-search-input', 'USDC', true);
     await Helpers.tap('currency-select-list-exchange-coin-row-USDC');
-await Helpers.typeText('exchange-modal-input', '4', true);
+    await Helpers.typeText('exchange-modal-input', '4', true);
     await Helpers.tapAndLongPress('exchange-modal-confirm-button');
     await acceptAlertIfGasPriceIsHigh();
     await checkIfSwapCompleted('DAI', '4 DAI');
