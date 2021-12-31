@@ -35,10 +35,10 @@ const PredictionNumber = styled(AnimatedNumber).attrs(
 
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 const steps = {
-  Monthly: {
+  'Monthly': {
     days: 30,
   },
-  Yearly: {
+  'Yearly': {
     days: 365,
   },
   '5-Year': {
