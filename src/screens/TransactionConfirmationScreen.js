@@ -57,7 +57,6 @@ import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
-  useAccountAssets,
   useAccountSettings,
   useCurrentNonce,
   useDimensions,
@@ -155,7 +154,6 @@ const NOOP = () => undefined;
 
 export default function TransactionConfirmationScreen() {
   const { colors } = useTheme();
-  const { allAssets } = useAccountAssets();
   const [provider, setProvider] = useState();
   const [currentNetwork, setCurrentNetwork] = useState();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -168,7 +166,6 @@ export default function TransactionConfirmationScreen() {
   const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
   const balances = useWalletBalances(wallets);
   const { accountAddress, nativeCurrency } = useAccountSettings();
-  const getNextNonce = useCurrentNonce(accountAddress, currentNetwork);
   const keyboardHeight = useKeyboardHeight();
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
@@ -221,6 +218,8 @@ export default function TransactionConfirmationScreen() {
     };
   }, [currentNetwork, walletConnector?._accounts, walletNames, wallets]);
 
+  const getNextNonce = useCurrentNonce(accountInfo.address, currentNetwork);
+
   const isL2 = useMemo(() => {
     return isL2Network(currentNetwork);
   }, [currentNetwork]);
@@ -250,7 +249,7 @@ export default function TransactionConfirmationScreen() {
       setNativeAsset(asset);
     };
     currentNetwork && getNativeAsset();
-  }, [accountInfo.address, allAssets, currentNetwork]);
+  }, [accountInfo.address, currentNetwork]);
 
   const {
     gasLimit,
@@ -273,7 +272,7 @@ export default function TransactionConfirmationScreen() {
       isSufficientGasChecked
     )
       return;
-    updateGasFeeOption(selectedGasFeeOption, [nativeAsset]);
+    updateGasFeeOption(selectedGasFeeOption);
     setIsSufficientGasChecked(true);
   }, [
     isSufficientGas,
@@ -541,7 +540,6 @@ export default function TransactionConfirmationScreen() {
 
     setIsBalanceEnough(isEnough);
   }, [
-    allAssets,
     isBalanceEnough,
     isMessageRequest,
     isSufficientGas,
