@@ -40,21 +40,3 @@ export default function useHardwareBack(
 
   useEffect(callback, [callback]);
 }
-
-useHardwareBack.onFocus = function focus(cb: () => void, handleValue = true) {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const callback = useCallback(() => {
-    const handler = () => {
-      cb?.();
-
-      return handleValue;
-    };
-
-    BackHandler.addEventListener('hardwareBackPress', handler);
-
-    return () => BackHandler.removeEventListener('hardwareBackPress', handler);
-  }, [cb, handleValue]);
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  useFocusEffect(callback);
-};

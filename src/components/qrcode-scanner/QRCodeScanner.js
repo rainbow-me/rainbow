@@ -1,7 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { RNCamera } from 'react-native-camera';
 import { useIsEmulator } from 'react-native-device-info';
-import * as Permissions from 'react-native-permissions';
+import {
+  check as checkForPermissions,
+  PERMISSIONS,
+  request as requestPermission,
+  RESULTS,
+} from 'react-native-permissions';
 import styled from 'styled-components';
 import { Centered } from '../layout';
 import { ErrorText } from '../text';
@@ -102,33 +107,27 @@ export default function QRCodeScanner({
     }
 
     const permission = ios
-      ? Permissions.PERMISSIONS.IOS.CAMERA
-      : Permissions.PERMISSIONS.ANDROID.CAMERA;
+      ? PERMISSIONS.IOS.CAMERA
+      : PERMISSIONS.ANDROID.CAMERA;
 
-    const res = await Permissions.check(permission);
+    const res = await checkForPermissions(permission);
 
     // we should ask permission natively with the native alert thing
-    if (
-      res === Permissions.RESULTS.DENIED ||
-      res === Permissions.RESULTS.BLOCKED
-    ) {
-      const askResult = await Permissions.request(permission);
+    if (res === RESULTS.DENIED || res === RESULTS.BLOCKED) {
+      const askResult = await requestPermission(permission);
 
-      if (askResult !== Permissions.RESULTS.GRANTED) {
+      if (askResult !== RESULTS.GRANTED) {
         setCameraState(CameraState.Unauthorized);
       } else {
         setCameraState(CameraState.Scanning);
       }
     }
     // we should ask for permission through the UI
-    else if (
-      res === Permissions.RESULTS.BLOCKED ||
-      res === Permissions.RESULTS.UNAVAILABLE
-    ) {
+    else if (res === RESULTS.BLOCKED || res === RESULTS.UNAVAILABLE) {
       setCameraState(CameraState.Unauthorized);
     }
     // initialize the camera and celebrate
-    else if (res === Permissions.RESULTS.GRANTED) {
+    else if (res === RESULTS.GRANTED) {
       setCameraState(CameraState.Scanning);
     }
   }, [shouldInitializeCamera]);

@@ -101,14 +101,13 @@ export default function useScanner(enabled, onSuccess) {
         await walletConnectOnSessionRequest(qrCodeData, () => {});
       } catch (e) {
         logger.log('walletConnectOnSessionRequest exception', e);
-        // setTimeout(enableScanning, 2000);
       }
     },
     [walletConnectOnSessionRequest, onSuccess]
   );
 
   const handleScanInvalid = useCallback(
-    async qrCodeData => {
+    qrCodeData => {
       haptics.notificationError();
       analytics.track('Scanned broken or unsupported QR code', { qrCodeData });
 

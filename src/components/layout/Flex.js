@@ -25,8 +25,10 @@ const flexPropTypes = {
   wrap: PropTypes.bool,
 };
 
+const propTypesKeys = Object.keys(flexPropTypes);
+
 const validatorFn = memoFn(prop => {
-  return !Object.keys(flexPropTypes).includes(prop);
+  return !propTypesKeys.includes(prop);
 });
 
 const Flex = styled.View.withConfig({
