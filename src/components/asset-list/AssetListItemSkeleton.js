@@ -10,12 +10,12 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import styled from 'rainbowed-components';
 import { withThemeContext } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
 import { padding, position } from '@rainbow-me/styles';
+import styled from 'rainbowed-components';
 
 export const AssetListItemSkeletonHeight = CoinRowHeight;
 
