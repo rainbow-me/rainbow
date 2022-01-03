@@ -48,6 +48,7 @@ import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
 import { isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
+import networkTypes from './helpers/networkTypes';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
@@ -60,7 +61,6 @@ import store from './redux/store';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
-import { ethereumUtils } from './utils';
 import { analyticsUserIdentifier } from './utils/keychainConstants';
 import { SharedValuesProvider } from '@rainbow-me/helpers/SharedValuesContext';
 import Routes from '@rainbow-me/routes';
@@ -131,18 +131,18 @@ class App extends Component {
 
       if (params['+non_branch_link']) {
         const nonBranchUrl = params['+non_branch_link'];
-        handleDeeplink(nonBranchUrl);
+        this.handleOpenLinkingURL(nonBranchUrl);
         return;
       } else if (!params['+clicked_branch_link']) {
         // Indicates initialization success and some other conditions.
         // No link was opened.
         if (IS_TESTING === 'true') {
-          handleDeeplink(uri);
+          this.handleOpenLinkingURL(uri);
         } else {
           return;
         }
       } else if (uri) {
-        handleDeeplink(uri);
+        this.handleOpenLinkingURL(uri);
       }
     });
 
@@ -151,13 +151,13 @@ class App extends Component {
       try {
         const initialUrl = await Linking.getInitialURL();
         if (initialUrl) {
-          handleDeeplink(initialUrl);
+          this.handleOpenLinkingURL(initialUrl);
         }
       } catch (e) {
         logger.log('Error opening deeplink', e);
       }
       Linking.addEventListener('url', ({ url }) => {
-        handleDeeplink(url);
+        this.handleOpenLinkingURL(url);
       });
     }
   }
@@ -200,7 +200,7 @@ class App extends Component {
   };
 
   handleOpenLinkingURL = url => {
-    handleDeeplink(url);
+    handleDeeplink(url, this.state.initialRoute);
   };
 
   onPushNotificationOpened = topic => {
@@ -257,7 +257,7 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   handleTransactionConfirmed = tx => {
-    const network = ethereumUtils.getNetworkFromChainId(tx.chainId);
+    const network = tx.network || networkTypes.mainnet;
     const isL2 = isL2Network(network);
     const updateBalancesAfter = (timeout, isL2, network) => {
       setTimeout(() => {

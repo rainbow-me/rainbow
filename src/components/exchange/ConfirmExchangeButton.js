@@ -110,11 +110,13 @@ export default function ConfirmExchangeButton({
     label = lang.t('button.confirm_exchange.withdraw');
   }
 
-  if (!isSufficientBalance) {
+  if (!doneLoadingReserves) {
+    label = lang.t('button.confirm_exchange.fetching_details');
+  } else if (!isSufficientBalance) {
     label = lang.t('button.confirm_exchange.insufficient_funds');
   } else if (!isSufficientLiquidity) {
     label = lang.t('button.confirm_exchange.insufficient_liquidity');
-  } else if (!isSufficientGas) {
+  } else if (isSufficientGas != null && !isSufficientGas) {
     label = lang.t('button.confirm_exchange.insufficient_eth');
   } else if (isHighPriceImpact) {
     label = isSwapDetailsRoute
@@ -122,8 +124,6 @@ export default function ConfirmExchangeButton({
       : `􀕹 ${lang.t('button.confirm_exchange.view_details')}`;
   } else if (disabled) {
     label = lang.t('button.confirm_exchange.enter_amount');
-  } else if (!doneLoadingReserves) {
-    label = lang.t('button.confirm_exchange.fetching_details');
   }
 
   const isDisabled =

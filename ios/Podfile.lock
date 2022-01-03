@@ -585,6 +585,7 @@ PODS:
   - Shimmer (1.0.2)
   - SRSRadialGradient (1.0.9):
     - React
+  - swift-vibrant (1.0.0)
   - TcpSockets (3.3.2):
     - CocoaAsyncSocket
     - React
@@ -695,6 +696,7 @@ DEPENDENCIES:
   - RNTextSize (from `../node_modules/react-native-text-size`)
   - Shimmer
   - SRSRadialGradient (from `../node_modules/react-native-radial-gradient/ios`)
+  - swift-vibrant
   - TcpSockets (from `../node_modules/react-native-tcp`)
   - ToolTipMenu (from `../node_modules/react-native-tooltip`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -729,6 +731,7 @@ SPEC REPOS:
     - SDWebImageWebPCoder
     - Sentry
     - Shimmer
+    - swift-vibrant
     - TOCropViewController
 
 EXTERNAL SOURCES:
@@ -1056,11 +1059,12 @@ SPEC CHECKSUMS:
   Sentry: 89d26e036063b9cb9caa59b6951dd2f8277aa13b
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SRSRadialGradient: a372b4b3bc65a2f3b1a16b906485cff204e1db3e
+  swift-vibrant: 3def73c5c281db74f420ec386590d9c1c5b0995c
   TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
   TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   Yoga: 2b4a01651f42a32f82e6cef3830a3ba48088237f
 
-PODFILE CHECKSUM: ba8425d4154c1535ff42c6c92d19ca2be6f86110
+PODFILE CHECKSUM: 57c94b75db7f46e64a9d6be6e7513d7bcdaf6cb8
 
 COCOAPODS: 1.11.2

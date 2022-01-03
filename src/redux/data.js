@@ -169,10 +169,13 @@ export const dataLoadState = () => async (dispatch, getState) =>
         accountAddress,
         network
       );
-      dispatch({
-        payload: accountAssetsData,
-        type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-      });
+
+      if (!isEmpty(accountAssetsData)) {
+        dispatch({
+          payload: accountAssetsData,
+          type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
+        });
+      }
     } catch (error) {
       dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE });
     }
@@ -607,18 +610,6 @@ export const addressAssetsReceived = (
     property('uniqueId')
   );
   addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
-
-  // Hide coins with price = 0 that are currently not pinned
-  if (isL2) {
-    const assetsWithNoPrice = map(
-      filter(
-        parsedAssets,
-        asset => asset.price?.value === 0 && asset.network === assetsNetwork
-      ),
-      property('uniqueId')
-    );
-    addHiddenCoins(assetsWithNoPrice, dispatch, accountAddress);
-  }
 };
 
 const subscribeToMissingPrices = addresses => (dispatch, getState) => {
@@ -731,6 +722,11 @@ const get24HourPrice = async (address, yesterday) => {
   }
 };
 
+const callbacksOnAssetReceived = {};
+export function scheduleActionOnAssetReceived(address, action) {
+  callbacksOnAssetReceived[address.toLowerCase()] = action;
+}
+
 export const assetPricesReceived = (message, fromFallback = false) => (
   dispatch,
   getState
@@ -750,6 +746,13 @@ export const assetPricesReceived = (message, fromFallback = false) => (
       ...genericAssets,
       ...parsedAssets,
     };
+
+    const assetAddresses = Object.keys(parsedAssets);
+
+    for (let address of assetAddresses) {
+      callbacksOnAssetReceived[toLower(address)]?.(parsedAssets[address]);
+      callbacksOnAssetReceived[toLower(address)] = undefined;
+    }
 
     dispatch({
       payload: updatedAssets,
