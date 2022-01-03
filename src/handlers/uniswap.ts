@@ -13,17 +13,10 @@ import {
   WETH,
 } from '@uniswap/sdk';
 import { get, mapKeys, mapValues, toLower } from 'lodash';
-import { uniswapClient } from '../apollo/client';
-import { UNISWAP_ALL_TOKENS } from '../apollo/queries';
 import { loadWallet } from '../model/wallet';
 import { estimateGasWithPadding, toHex, web3Provider } from './web3';
 import { Asset } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/networkTypes';
-import store from '@rainbow-me/redux/store';
-import {
-  uniswapLoadedAllTokens,
-  uniswapUpdateTokens,
-} from '@rainbow-me/redux/uniswap';
 import {
   ETH_ADDRESS,
   ethUnits,
@@ -46,8 +39,6 @@ enum SwapType {
   TOKENS_FOR_EXACT_ETH,
   ETH_FOR_EXACT_TOKENS,
 }
-
-const UniswapPageSize = 1000;
 
 // 20 minutes, denominated in seconds
 const DEFAULT_DEADLINE_FROM_NOW = 60 * 20;
@@ -115,7 +106,6 @@ export const estimateSwapGasLimit = async ({
       methodNames.map((methodName: string) =>
         estimateGasWithPadding(
           params,
-          // @ts-ignore
           exchange.estimateGas[methodName],
           updatedMethodArgs
         )
@@ -410,34 +400,6 @@ export const executeSwap = async ({
     ...(value ? { value } : {}),
   };
   return exchange[methodName](...updatedMethodArgs, transactionParams);
-};
-
-export const getAllTokens = async () => {
-  const { dispatch } = store;
-  try {
-    let dataEnd = false;
-    let lastId = '';
-
-    while (!dataEnd) {
-      let result = await uniswapClient.query({
-        query: UNISWAP_ALL_TOKENS,
-        variables: {
-          first: UniswapPageSize,
-          lastId,
-        },
-      });
-      const resultTokens = result?.data?.tokens || [];
-      const lastItem = resultTokens[resultTokens.length - 1];
-      lastId = lastItem?.id ?? '';
-      dispatch(uniswapUpdateTokens(resultTokens));
-      if (resultTokens.length < UniswapPageSize) {
-        dispatch(uniswapLoadedAllTokens());
-        dataEnd = true;
-      }
-    }
-  } catch (err) {
-    logger.log('error: ', err);
-  }
 };
 
 export const getTokenForCurrency = (

@@ -34,10 +34,12 @@ const Spacer = styled.View`
 
 export default function SendAssetFormToken({
   assetAmount,
+  assetInputRef,
   buttonRenderer,
   colorForAsset,
   nativeAmount,
   nativeCurrency,
+  nativeCurrencyInputRef,
   onChangeAssetAmount,
   onChangeNativeAmount,
   onFocusAssetInput,
@@ -70,6 +72,7 @@ export default function SendAssetFormToken({
           onFocus={onFocusAssetInput}
           onPressButton={sendMaxBalance}
           placeholder="0"
+          ref={assetInputRef}
           testID="selected-asset-field"
           value={assetAmount}
         />
@@ -84,6 +87,7 @@ export default function SendAssetFormToken({
           onFocus={onFocusNativeInput}
           onPressButton={sendMaxBalance}
           placeholder={nativePlaceholder}
+          ref={nativeCurrencyInputRef}
           testID="selected-asset-quantity-field"
           value={nativeAmount}
         />

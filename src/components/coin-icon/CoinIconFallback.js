@@ -1,13 +1,16 @@
 import React, { useMemo } from 'react';
+import { Image } from 'react-native';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
+import EthIcon from '@rainbow-me/assets/eth-icon.png';
 import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
 import { ImageWithCachedMetadata } from '@rainbow-me/images';
 import { borders, fonts, position, shadow } from '@rainbow-me/styles';
 import {
   FallbackIcon,
   getUrlForTrustIconFallback,
+  isETH,
   magicMemo,
 } from '@rainbow-me/utils';
 
@@ -20,6 +23,8 @@ const fallbackTextStyles = {
 };
 
 const FallbackImage = styled(ImageWithCachedMetadata)`
+  height: ${({ size }) => size};
+  width: ${({ size }) => size};
   ${position.cover};
   ${({
     shadowColor: color,
@@ -40,6 +45,7 @@ function WrappedFallbackImage({
   shadowOpacity,
   showImage,
   size,
+  eth,
   ...props
 }) {
   const { colors } = useTheme();
@@ -53,6 +59,8 @@ function WrappedFallbackImage({
       style={{ overflow: 'hidden' }}
     >
       <FallbackImage
+        as={eth ? Image : undefined}
+        source={EthIcon}
         {...props}
         overlayColor={color || colors.dark}
         shadowOpacity={shadowOpacity}
@@ -77,6 +85,8 @@ const CoinIconFallback = fallbackProps => {
     address,
   ]);
 
+  const eth = isETH(address);
+
   return (
     <Centered height={height} width={width}>
       {!showImage && (
@@ -91,6 +101,7 @@ const CoinIconFallback = fallbackProps => {
       <FallbackImageElement
         {...fallbackProps}
         color={fallbackIconColor}
+        eth={eth}
         imageUrl={imageUrl}
         onError={hideFallbackImage}
         onLoad={showFallbackImage}

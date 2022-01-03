@@ -8,6 +8,7 @@ import rowRenderer from './RowRenderer';
 import { BaseCellType, RecyclerListViewRef } from './ViewTypes';
 import getLayoutProvider from './getLayoutProvider';
 import useLayoutItemAnimator from './useLayoutItemAnimator';
+import { useCoinListEdited } from '@rainbow-me/hooks';
 
 const dataProvider = new DataProvider((r1, r2) => {
   return r1.uid === r2.uid;
@@ -22,9 +23,10 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
     () => dataProvider.cloneWithRows(briefSectionsData),
     [briefSectionsData]
   );
+  const { isCoinListEdited } = useCoinListEdited();
 
   const layoutProvider = useMemoOne(
-    () => getLayoutProvider(briefSectionsData),
+    () => getLayoutProvider(briefSectionsData, isCoinListEdited),
     [briefSectionsData]
   );
 
@@ -50,7 +52,7 @@ const RawMemoRecyclerAssetList = React.memo(function RawRecyclerAssetList({
       onLayout={onLayout}
       ref={ref as LegacyRef<RecyclerListViewRef>}
       refreshControl={<RefreshControl />}
-      renderAheadOffset={2000}
+      renderAheadOffset={ios ? 700 : 2000}
       rowRenderer={rowRenderer}
     />
   );

@@ -1,8 +1,7 @@
 import React, { useCallback } from 'react';
 import { UniqueTokenCard } from '../../unique-token';
 import { Box, BoxProps } from '@rainbow-me/design-system';
-import { AssetType } from '@rainbow-me/entities';
-import { useAsset } from '@rainbow-me/hooks';
+import { useCollectible } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
@@ -13,7 +12,7 @@ export default React.memo(function WrappedNFT({
   uniqueId: string;
   placement: 'left' | 'right';
 }) {
-  const asset = useAsset({ type: AssetType.nft, uniqueId });
+  const asset = useCollectible({ uniqueId });
   const { navigate } = useNavigation();
 
   const handleItemPress = useCallback(

@@ -128,7 +128,7 @@ const DiscoverSheet = (_, forwardedRef) => {
         >
           <DiscoverSheetHeader yPosition={yPosition} />
           <BottomSheetScrollView
-            onScroll={scrollHandler}
+            onScrollWorklet={scrollHandler}
             ref={sheet}
             removeClippedSubviews
           >

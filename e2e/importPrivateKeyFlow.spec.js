@@ -55,11 +55,7 @@ describe('Import from private key flow', () => {
 
   it('without 0x - Should say "TKEY" in the Profile Screen header', async () => {
     await Helpers.swipe('wallet-screen', 'right');
-    if (device.getPlatform() === 'android') {
-      await Helpers.checkIfExistsByText('TKEY');
-    } else {
-      await Helpers.checkIfElementByTextIsVisible('TKEY');
-    }
+    await Helpers.checkIfExistsByText('TKEY');
   });
 
   afterAll(async () => {

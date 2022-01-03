@@ -4,7 +4,7 @@ import SheetActionButton from './SheetActionButton';
 import { useExpandedStateNavigation } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 
-export default function SwapActionButton({
+function SwapActionButton({
   color: givenColor,
   inputType,
   label,
@@ -15,6 +15,7 @@ export default function SwapActionButton({
 }) {
   const { colors } = useTheme();
   const color = givenColor || colors.swapPurple;
+
   const navigate = useExpandedStateNavigation(inputType);
   const goToSwap = useCallback(() => {
     navigate(Routes.EXCHANGE_MODAL, params => ({
@@ -57,3 +58,5 @@ export default function SwapActionButton({
     />
   );
 }
+
+export default React.memo(SwapActionButton);
