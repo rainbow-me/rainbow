@@ -18,7 +18,7 @@ const Camera = styled(RNCamera)({
   ...position.coverAsObject,
   // just to move it to the top a bit
   // so the part of the video feed isn't covered by the bottom sheet
-  height: deviceUtils.dimensions.height - 230,
+  height: deviceUtils.dimensions.height - 200,
   width: '100%',
 });
 
@@ -29,12 +29,12 @@ const CameraWrapper = styled(Centered)(({ theme }) => ({
 
 const Container = styled.View(({ theme }) => ({
   ...position.coverAsObject,
-  backgroundColor: theme.colors.black,
+  backgroundColor: theme.colors.stackBackground,
 }));
 
 const ContentOverlay = styled(Centered)(({ contentPositionTop }) => ({
   ...position.coverAsObject,
-  bottom: 230,
+  bottom: 200,
   flexDirection: 'column',
   top: contentPositionTop || 0,
 }));
