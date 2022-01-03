@@ -14,7 +14,7 @@ import NeedHelpButton from './NeedHelpButton';
 import SupportButton from './SupportButton';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 import {
-  ADD_CASH_STATUS_TYPES,
+  ADD_CASH_DISPLAYED_STATUS_TYPES,
   WYRE_ORDER_STATUS_TYPES,
 } from '@rainbow-me/helpers/wyreStatusTypes';
 import { useDimensions, usePrevious, useTimeout } from '@rainbow-me/hooks';
@@ -195,21 +195,21 @@ const AddCashStatus = ({
       orderStatus === WYRE_ORDER_STATUS_TYPES.success ||
       transferStatus === TransactionStatusTypes.purchased
     ) {
-      return ADD_CASH_STATUS_TYPES.success;
+      return ADD_CASH_DISPLAYED_STATUS_TYPES.success;
     }
 
     if (
       orderStatus === WYRE_ORDER_STATUS_TYPES.failed ||
       transferStatus === TransactionStatusTypes.failed
     ) {
-      return ADD_CASH_STATUS_TYPES.failed;
+      return ADD_CASH_DISPLAYED_STATUS_TYPES.failed;
     }
 
     if (orderStatus === WYRE_ORDER_STATUS_TYPES.pending) {
-      return ADD_CASH_STATUS_TYPES.pending;
+      return ADD_CASH_DISPLAYED_STATUS_TYPES.pending;
     }
 
-    return ADD_CASH_STATUS_TYPES.checking;
+    return ADD_CASH_DISPLAYED_STATUS_TYPES.checking;
   }, [orderStatus, transferStatus]);
 
   const previousStatus = usePrevious(status);
@@ -228,7 +228,7 @@ const AddCashStatus = ({
 
   return (
     <Transitioning.View ref={ref} style={sx.container} transition={transition}>
-      {status === ADD_CASH_STATUS_TYPES.failed ? (
+      {status === ADD_CASH_DISPLAYED_STATUS_TYPES.failed ? (
         <AddCashFailed
           error={updatedError}
           orderId={orderId}
@@ -240,9 +240,9 @@ const AddCashStatus = ({
           emojis={['money_with_wings']}
           flex={1}
         >
-          {status === ADD_CASH_STATUS_TYPES.success ? (
+          {status === ADD_CASH_DISPLAYED_STATUS_TYPES.success ? (
             <AddCashSuccess currency={currency} />
-          ) : status === ADD_CASH_STATUS_TYPES.pending ? (
+          ) : status === ADD_CASH_DISPLAYED_STATUS_TYPES.pending ? (
             <AddCashPending currency={currency} />
           ) : (
             <AddCashChecking />
