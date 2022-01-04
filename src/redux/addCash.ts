@@ -439,11 +439,7 @@ const addCashGetTransferHash = (
           type: TransactionTypes.purchase,
         };
         logger.log('[add cash] - add new pending txn');
-        const newTxDetails = await dispatch(
-          dataAddNewTransaction(txDetails),
-          //@ts-ignore
-          false
-        );
+        const newTxDetails = await dispatch(dataAddNewTransaction(txDetails));
         dispatch(addCashNewPurchaseTransaction(newTxDetails));
       } else {
         transferHashHandle = setTimeout(
