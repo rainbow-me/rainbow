@@ -3,14 +3,7 @@ import {
   StackActions,
   StackNavigationState,
 } from '@react-navigation/native';
-import React, {
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { Screen, ScreenContainer } from 'react-native-screens';
+import React, { useCallback, useMemo, useRef } from 'react';
 import type {
   BottomSheetDescriptorMap,
   BottomSheetNavigationConfig,
@@ -83,21 +76,17 @@ const BottomSheetNavigatorView = ({
   //#endregion
   return (
     <NavigationHelpersContext.Provider value={navigation}>
-      <ScreenContainer style={{ flex: 1 }}>
-        <Screen active={1}>{descriptors[firstKey].render()}</Screen>
+      {descriptors[firstKey].render()}
 
-        {Object.keys(descriptorsCache.current).map(key => (
-          <Screen active={1} key={key}>
-            <BottomSheetRoute
-              descriptor={descriptorsCache.current[key]}
-              key={key}
-              onDismiss={handleOnDismiss}
-              removing={descriptorsCache.current[key].removing}
-              routeKey={key}
-            />
-          </Screen>
-        ))}
-      </ScreenContainer>
+      {Object.keys(descriptorsCache.current).map(key => (
+        <BottomSheetRoute
+          descriptor={descriptorsCache.current[key]}
+          key={key}
+          onDismiss={handleOnDismiss}
+          removing={descriptorsCache.current[key].removing}
+          routeKey={key}
+        />
+      ))}
     </NavigationHelpersContext.Provider>
   );
 };
