@@ -1,9 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TextInput } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useDerivedValue,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { RowWithMargins } from '../../../layout';
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
@@ -39,36 +36,44 @@ function formatNumber(num) {
   return newDigits.reverse().join('') + '.' + first[1];
 }
 
+const format = (originalY, data, latestChange) => {
+  'worklet';
+  const firstValue = data?.points?.[0]?.y;
+  const lastValue = data?.points?.[data.points.length - 1]?.y;
+
+  return firstValue === Number(firstValue) && firstValue
+    ? (() => {
+        const value =
+          originalY?.value === lastValue || !originalY?.value
+            ? latestChange
+            : ((originalY.value || lastValue) / firstValue) * 100 - 100;
+
+        return (
+          (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
+          ' ' +
+          formatNumber(Math.abs(value).toFixed(2)) +
+          '%'
+        );
+      })()
+    : '';
+};
+
 export default function ChartPercentChangeLabel({ latestChange }) {
-  const { originalY, data } = useChartData();
+  const { originalY, data, isActive } = useChartData();
   const { colors } = useTheme();
-
-  const text = useDerivedValue(() => {
-    const firstValue = data?.points?.[0]?.y;
-    const lastValue = data?.points?.[data.points.length - 1]?.y;
-
-    return firstValue === Number(firstValue) && firstValue
-      ? (() => {
-          const value =
-            originalY?.value === lastValue || !originalY?.value
-              ? latestChange
-              : ((originalY.value || lastValue) / firstValue) * 100 - 100;
-
-          return (
-            (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
-            ' ' +
-            formatNumber(Math.abs(value).toFixed(2)) +
-            '%'
-          );
-        })()
-      : '';
-  }, [data]);
+  const defaultValue = useMemo(() => format(originalY, data, latestChange), [
+    originalY,
+    data,
+    latestChange,
+  ]);
 
   const textProps = useAnimatedStyle(
     () => ({
-      text: text.value,
+      text: isActive.value
+        ? format(originalY, data, latestChange)
+        : defaultValue,
     }),
-    [text]
+    [originalY, data, latestChange, isActive]
   );
 
   const ratio = useRatio();
@@ -90,7 +95,7 @@ export default function ChartPercentChangeLabel({ latestChange }) {
       <PercentLabel
         alignSelf="flex-end"
         animatedProps={textProps}
-        defaultValue={text.value}
+        defaultValue={defaultValue}
         editable={false}
         style={textStyle}
       />
