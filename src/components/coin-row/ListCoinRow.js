@@ -24,6 +24,13 @@ const BottomRowContainer = ios
   ? Fragment
   : styled(Row).attrs({ marginBottom: 10, marginTop: ios ? -10 : 0 })({});
 
+const containerStyles = padding.object(
+  CoinRowPaddingTop,
+  38,
+  CoinRowPaddingBottom,
+  15
+);
+
 const BottomRow = ({ native }) => {
   const percentChange = get(native, 'change');
   const isPositive = percentChange && percentChange.charAt(0) !== '-';
@@ -72,12 +79,7 @@ const ListCoinRow = ({ item, onPress }) => {
       <CoinRow
         {...formattedItem}
         bottomRowRender={BottomRow}
-        containerStyles={padding.object(
-          CoinRowPaddingTop,
-          38,
-          CoinRowPaddingBottom,
-          15
-        )}
+        containerStyles={containerStyles}
         showBalance={false}
         topRowRender={TopRow}
       />

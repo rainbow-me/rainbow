@@ -61,15 +61,15 @@ buildFlexStyles.object = ({
   }
 
   if (typeof flex !== 'undefined') {
-    props.flex = flex;
+    props.flex = Number(flex);
   }
 
   if (typeof grow !== 'undefined') {
-    props.flexGrow = grow;
+    props.flexGrow = Number(grow);
   }
 
   if (typeof shrink !== 'undefined') {
-    props.flexShrink = shrink;
+    props.flexShrink = Number(shrink);
   }
 
   if (centered) {
