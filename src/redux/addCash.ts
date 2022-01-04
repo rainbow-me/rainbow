@@ -6,7 +6,6 @@ import { ThunkDispatch } from 'redux-thunk';
 import { dataAddNewTransaction } from './data';
 import { AppGetState, AppState } from './store';
 import {
-  Asset,
   ParsedAddressAsset,
   RainbowTransaction,
   TransactionStatusTypes,
@@ -23,7 +22,11 @@ import {
   WyreOrderStatusType,
   WyreReferenceInfo,
 } from '@rainbow-me/helpers/wyreStatusTypes';
-import { AddCashCurrencies, AddCashCurrencyInfo } from '@rainbow-me/references';
+import {
+  AddCashCurrencies,
+  AddCashCurrencyAsset,
+  AddCashCurrencyInfo,
+} from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import maybeReviewAlert from '@rainbow-me/utils/reviewAlert';
 import logger from 'logger';
@@ -416,10 +419,9 @@ const addCashGetTransferHash = (
         let asset:
           | ParsedAddressAsset
           | undefined
-          | Pick<
-              Asset,
-              'decimals' | 'name' | 'symbol'
-            > = ethereumUtils.getAccountAsset(destAssetAddress);
+          | AddCashCurrencyAsset = ethereumUtils.getAccountAsset(
+          destAssetAddress
+        );
         if (!asset) {
           asset = AddCashCurrencyInfo[network]?.[destAssetAddress];
         }

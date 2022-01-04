@@ -108,9 +108,11 @@ export const AddCashCurrencies: {
   },
 };
 
+export type AddCashCurrencyAsset = Pick<Asset, 'decimals' | 'name' | 'symbol'>;
+
 export const AddCashCurrencyInfo: {
   [key in Network]?: {
-    [currency: string]: Pick<Asset, 'decimals' | 'name' | 'symbol'>;
+    [currency: string]: AddCashCurrencyAsset;
   };
 } = {
   kovan: {
