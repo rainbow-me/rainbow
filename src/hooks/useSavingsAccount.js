@@ -26,8 +26,7 @@ import {
   DAI_ADDRESS,
   ETH_ADDRESS,
 } from '@rainbow-me/references';
-import { getTokenMetadata } from '@rainbow-me/utils';
-import { getAccountAsset } from '@rainbow-me/utils/ethereumUtils';
+import { ethereumUtils, getTokenMetadata } from '@rainbow-me/utils';
 
 const COMPOUND_QUERY_INTERVAL = 120000; // 120 seconds
 
@@ -87,7 +86,7 @@ const getUnderlyingPrice = (token, genericAssets) => {
   const genericAsset = genericAssets?.[address];
   const genericPrice = genericAsset?.price?.value;
   const underlyingPrice =
-    genericPrice || getAccountAsset(address)?.price?.value || 0;
+    genericPrice || ethereumUtils.getAccountAsset(address)?.price?.value || 0;
 
   const underlyingBalanceNativeValue =
     underlyingPrice && token.supplyBalanceUnderlying

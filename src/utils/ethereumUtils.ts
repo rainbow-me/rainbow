@@ -152,7 +152,7 @@ const getAsset = (
   return accountAssets[loweredUniqueId];
 };
 
-export const getAccountAsset = (
+const getAccountAsset = (
   uniqueId: EthereumAddress
 ): ParsedAddressAsset | undefined => {
   const loweredUniqueId = toLower(uniqueId);
