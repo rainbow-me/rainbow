@@ -1,6 +1,9 @@
 import React from 'react';
 import { TextInput } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  useDerivedValue,
+} from 'react-native-reanimated';
 import styled from 'styled-components';
 import { RowWithMargins } from '../../../layout';
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
@@ -36,56 +39,37 @@ function formatNumber(num) {
   return newDigits.reverse().join('') + '.' + first[1];
 }
 
-export default function ChartPercentChangeLabel({
-  overrideValue = false,
-  latestChange,
-}) {
+export default function ChartPercentChangeLabel({ latestChange }) {
   const { originalY, data } = useChartData();
   const { colors } = useTheme();
 
-  const defaultValue = !data?.points?.length
-    ? ''
-    : (() => {
-        const value = overrideValue
-          ? latestChange
-          : ((data?.points?.[data.points.length - 1]?.y ?? 0) /
-              data?.points?.[0]?.y) *
-              100 -
-            100;
-        if (isNaN(value)) {
-          return '';
-        }
-        return (
-          (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
-          ' ' +
-          formatNumber(Math.abs(value).toFixed(2)) +
-          '%'
-        );
-      })();
-
-  const textProps = useAnimatedStyle(() => {
+  const text = useDerivedValue(() => {
     const firstValue = data?.points?.[0]?.y;
     const lastValue = data?.points?.[data.points.length - 1]?.y;
 
-    return {
-      text:
-        firstValue === Number(firstValue) && firstValue
-          ? (() => {
-              const value =
-                originalY?.value === lastValue || !originalY?.value
-                  ? latestChange
-                  : ((originalY.value || lastValue) / firstValue) * 100 - 100;
+    return firstValue === Number(firstValue) && firstValue
+      ? (() => {
+          const value =
+            originalY?.value === lastValue || !originalY?.value
+              ? latestChange
+              : ((originalY.value || lastValue) / firstValue) * 100 - 100;
 
-              return (
-                (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
-                ' ' +
-                formatNumber(Math.abs(value).toFixed(2)) +
-                '%'
-              );
-            })()
-          : '',
-    };
+          return (
+            (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
+            ' ' +
+            formatNumber(Math.abs(value).toFixed(2)) +
+            '%'
+          );
+        })()
+      : '';
   }, [data]);
+
+  const textProps = useAnimatedStyle(
+    () => ({
+      text: text.value,
+    }),
+    [text]
+  );
 
   const ratio = useRatio();
 
@@ -106,7 +90,7 @@ export default function ChartPercentChangeLabel({
       <PercentLabel
         alignSelf="flex-end"
         animatedProps={textProps}
-        defaultValue={defaultValue}
+        defaultValue={text.value}
         editable={false}
         style={textStyle}
       />
