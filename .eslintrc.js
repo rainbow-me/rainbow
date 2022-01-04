@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { parse: babelParse } = require('@babel/parser');
 const data = fs.readFileSync(
-  path.join(__dirname, './globalVariables.js'),
+  path.resolve(__dirname, './globalVariables.js'),
   'utf8'
 );
 const { parse } = require('ast-parser');
@@ -26,6 +26,8 @@ module.exports = {
   extends: 'rainbow',
   settings: {
     'import/resolver': {
+      // eslint wants it to be `'node'` but prettier `node`
+      // prettier-ignore
       'node': {
         extensions: [
           '.js',

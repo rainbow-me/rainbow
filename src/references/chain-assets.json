@@ -151,26 +151,6 @@
         "quantity": 0
       }
     ],
-    "arbitrum": [
-      {
-        "asset": {
-          "mainnet_address": "eth",
-          "asset_code": "0x0000000000000000000000000000000000000000",
-          "coingecko_id": "ethereum",
-          "decimals": 18,
-          "icon_url": "https://s3.amazonaws.com/icons.assets/ETH.png",
-          "name": "Ether",
-          "price": {
-            "changed_at": 1582568575,
-            "relative_change_24h": -4.586615622469276,
-            "value": 259.2
-          },
-          "symbol": "ETH",
-          "type": "arbitrum"
-        },
-        "quantity": 0
-      }
-    ],
     "optimism": [
       {
         "asset": {
@@ -180,6 +160,7 @@
           "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/ETH.png",
           "name": "Ether",
+          "network": "optimism",
           "price": {
             "changed_at": 1582568575,
             "relative_change_24h": -4.586615622469276,
@@ -198,6 +179,7 @@
           "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/DAI_mcd.png",
           "name": "Dai",
+          "network": "optimism",
           "price": {
             "changed_at": 1582562452,
             "relative_change_24h": 0.8470466197462612,
@@ -216,6 +198,7 @@
           "decimals": 8,
           "icon_url": "https://s3.amazonaws.com/icons.assets/USDC.png",
           "name": "USD Coin",
+          "network": "optimism",
           "price": {
             "changed_at": 1582562452,
             "relative_change_24h": 0.01,
@@ -234,6 +217,7 @@
           "decimals": 8,
           "icon_url": "https://s3.amazonaws.com/icons.assets/USDT.png",
           "name": "Tether USD",
+          "network": "optimism",
           "price": {
             "changed_at": 1582562452,
             "relative_change_24h": 0.8470466197462612,
@@ -252,6 +236,7 @@
           "decimals": 8,
           "icon_url": "https://s3.amazonaws.com/icons.assets/SNX.png",
           "name": "Synthetix",
+          "network": "optimism",
           "price": {
             "changed_at": 1582562452,
             "relative_change_24h": 0.8470466197462612,
@@ -270,6 +255,7 @@
           "decimals": 8,
           "icon_url": "https://s3.amazonaws.com/icons.assets/WBTC.png",
           "name": "Wrapped Bitcoin",
+          "network": "optimism",
           "price": {
             "changed_at": 1582562452,
             "relative_change_24h": 0.8470466197462612,
@@ -288,6 +274,7 @@
           "decimals": 8,
           "icon_url": "https://ethereum-optimism.github.io/logos/0xBTC.png",
           "name": "0xBitcoin",
+          "network": "optimism",
           "price": {
             "changed_at": 1582562452,
             "relative_change_24h": 0.8470466197462612,
@@ -306,6 +293,7 @@
           "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/SUSD.png",
           "name": "Synthetic USD",
+          "network": "optimism",
           "price": {
             "changed_at": 1582562452,
             "relative_change_24h": 0.8470466197462612,
@@ -324,6 +312,7 @@
           "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/SETH.png",
           "name": "Synthetic Ether",
+          "network": "optimism",
           "price": {
             "changed_at": 1582562452,
             "relative_change_24h": 0.8470466197462612,
@@ -342,6 +331,7 @@
           "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/SBTC.png",
           "name": "Synthetic Bitcoin",
+          "network": "optimism",
           "price": {
             "changed_at": 1582562452,
             "relative_change_24h": 0.8470466197462612,
@@ -360,6 +350,7 @@
           "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/SLINK.png",
           "name": "Synthetic Chainlink",
+          "network": "optimism",
           "price": {
             "changed_at": 1582562452,
             "relative_change_24h": 0.8470466197462612,
@@ -378,6 +369,7 @@
           "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/LUSD.png",
           "name": "LUSD Stablecoin",
+          "network": "optimism",
           "price": {
             "changed_at": 1582562452,
             "relative_change_24h": 0.8470466197462612,
@@ -396,6 +388,7 @@
           "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/RGT.png",
           "name": "Rari Governance Token",
+          "network": "optimism",
           "price": {
             "changed_at": 1582562452,
             "relative_change_24h": 0.8470466197462612,
@@ -414,6 +407,7 @@
           "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/RAI.png",
           "name": "Rai Reflex Index",
+          "network": "optimism",
           "price": {
             "changed_at": 1582562452,
             "relative_change_24h": 0.8470466197462612,
@@ -432,6 +426,7 @@
           "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/RETH.png",
           "name": "Rocket Pool ETH",
+          "network": "optimism",
           "price": {
             "changed_at": 1582562452,
             "relative_change_24h": 0.8470466197462612,
@@ -450,6 +445,7 @@
           "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/UNI.png",
           "name": "Uniswap",
+          "network": "optimism",
           "price": {
             "changed_at": 1582562452,
             "relative_change_24h": 0.8470466197462612,
@@ -468,6 +464,7 @@
           "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/LINK.png",
           "name": "Chainlink",
+          "network": "optimism",
           "price": {
             "changed_at": 1582562452,
             "relative_change_24h": 0.8470466197462612,
@@ -486,6 +483,7 @@
           "decimals": 18,
           "icon_url": "https://s3.amazonaws.com/icons.assets/LINK.png",
           "name": "Ethereum Name Service",
+          "network": "optimism",
           "price": {
             "changed_at": 1582562452,
             "relative_change_24h": 0.8470466197462612,
@@ -493,98 +491,6 @@
           },
           "symbol": "ENS",
           "type": "optimism"
-        },
-        "quantity": 0
-      }
-    ],
-    "polygon": [
-      {
-        "asset": {
-          "mainnet_address": "eth",
-          "asset_code": "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
-          "coingecko_id": "ethereum",
-          "decimals": 18,
-          "icon_url": "https://s3.amazonaws.com/icons.assets/ETH.png",
-          "name": "Ether",
-          "price": {
-            "changed_at": 1582568575,
-            "relative_change_24h": -4.586615622469276,
-            "value": 259.2
-          },
-          "symbol": "ETH",
-          "type": "polygon"
-        },
-        "quantity": 0
-      },
-      {
-        "asset": {
-          "mainnet_address": "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
-          "asset_code": "0x0000000000000000000000000000000000001010",
-          "coingecko_id": "matic-network",
-          "decimals": 18,
-          "icon_url": "https://s3.amazonaws.com/icons.assets/MATIC.png",
-          "name": "Matic",
-          "price": {
-            "changed_at": 1582568575,
-            "relative_change_24h": -4.586615622469276,
-            "value": 259.2
-          },
-          "symbol": "MATIC",
-          "type": "polygon"
-        },
-        "quantity": 0
-      },
-      {
-        "asset": {
-          "mainnet_address": "0x6b175474e89094c44da98b954eedeac495271d0f",
-          "asset_code": "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063",
-          "coingecko_id": "dai",
-          "decimals": 18,
-          "icon_url": "https://s3.amazonaws.com/icons.assets/DAI_mcd.png",
-          "name": "Dai",
-          "price": {
-            "changed_at": 1582562452,
-            "relative_change_24h": 0.8470466197462612,
-            "value": 1
-          },
-          "symbol": "DAI",
-          "type": "polygon"
-        },
-        "quantity": 0
-      },
-      {
-        "asset": {
-          "mainnet_address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-          "asset_code": "0x56836Eec6d4EfCcFBc162C0851007D9F72aD202B",
-          "coingecko_id": "usd-coin",
-          "decimals": 6,
-          "icon_url": "https://s3.amazonaws.com/icons.assets/USDC.png",
-          "name": "USD Coin",
-          "price": {
-            "changed_at": 1582562452,
-            "relative_change_24h": 0.8470466197462612,
-            "value": 1
-          },
-          "symbol": "USDC",
-          "type": "polygon"
-        },
-        "quantity": 0
-      },
-      {
-        "asset": {
-          "mainnet_address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-          "asset_code": "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
-          "coingecko_id": "wrapped-bitcoin",
-          "decimals": 8,
-          "icon_url": "https://s3.amazonaws.com/icons.assets/WBTC.png",
-          "name": "Wrapped Bitcoin",
-          "price": {
-            "changed_at": 1582562452,
-            "relative_change_24h": 0.8470466197462612,
-            "value": 1
-          },
-          "symbol": "WBTC",
-          "type": "polygon"
         },
         "quantity": 0
       }

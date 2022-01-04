@@ -473,7 +473,7 @@ PODS:
     - React
   - rn-fetch-blob (0.12.0):
     - React-Core
-  - RNAnalytics (1.4.3):
+  - RNAnalytics (1.5.0):
     - Analytics
     - React-Core
   - RNCAsyncStorage (1.12.1):
@@ -523,8 +523,8 @@ PODS:
   - RNInputMask (4.1.0)
   - RNKeyboard (1.0.5):
     - React
-  - RNKeychain (6.2.0):
-    - React
+  - RNKeychain (8.0.0):
+    - React-Core
   - RNLanguages (3.0.2):
     - React
   - RNOS (1.2.8):
@@ -585,6 +585,7 @@ PODS:
   - Shimmer (1.0.2)
   - SRSRadialGradient (1.0.9):
     - React
+  - swift-vibrant (1.0.0)
   - TcpSockets (3.3.2):
     - CocoaAsyncSocket
     - React
@@ -695,6 +696,7 @@ DEPENDENCIES:
   - RNTextSize (from `../node_modules/react-native-text-size`)
   - Shimmer
   - SRSRadialGradient (from `../node_modules/react-native-radial-gradient/ios`)
+  - swift-vibrant
   - TcpSockets (from `../node_modules/react-native-tcp`)
   - ToolTipMenu (from `../node_modules/react-native-tooltip`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -729,6 +731,7 @@ SPEC REPOS:
     - SDWebImageWebPCoder
     - Sentry
     - Shimmer
+    - swift-vibrant
     - TOCropViewController
 
 EXTERNAL SOURCES:
@@ -1023,7 +1026,7 @@ SPEC CHECKSUMS:
   ReactNativeDarkMode: 0178ffca3b10f6a7c9f49d6f9810232b328fa949
   ReactNativePayments: 40a266450628c05db440fe219b631210e4358a49
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
-  RNAnalytics: 43a09152058061b4096eb6cb806093e7b772b1e5
+  RNAnalytics: a6dc48511d5d99b1ecaaf7157d8b5c618d15337e
   RNCAsyncStorage: b03032fdbdb725bea0bd9e5ec5a7272865ae7398
   RNCClipboard: 48eaf27bea3de7c9a265529725434268d47a2ee9
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
@@ -1040,7 +1043,7 @@ SPEC CHECKSUMS:
   RNImageCropPicker: 54e5ea3d0e298ed51e1441a2fa0a0e7c90ee256d
   RNInputMask: 815461ebdf396beb62cf58916c35cf6930adb991
   RNKeyboard: ceec456427493b286539f40442620881b5840dff
-  RNKeychain: b8e0711b959a19c5b057d1e970d3c83d159b6da5
+  RNKeychain: 4f63aada75ebafd26f4bc2c670199461eab85d94
   RNLanguages: 962e562af0d34ab1958d89bcfdb64fafc37c513e
   RNOS: 31db6fa4a197d179afbba9e6b4d28d450a7f250b
   RNPermissions: 7043bacbf928eae25808275cfe73799b8f618911
@@ -1056,11 +1059,12 @@ SPEC CHECKSUMS:
   Sentry: 89d26e036063b9cb9caa59b6951dd2f8277aa13b
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SRSRadialGradient: a372b4b3bc65a2f3b1a16b906485cff204e1db3e
+  swift-vibrant: 3def73c5c281db74f420ec386590d9c1c5b0995c
   TcpSockets: bd31674146c0931a064fc254a59812dfd1a73ae0
   TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
   ToolTipMenu: 8ac61aded0fbc4acfe7e84a7d0c9479d15a9a382
   Yoga: 2b4a01651f42a32f82e6cef3830a3ba48088237f
 
-PODFILE CHECKSUM: ba8425d4154c1535ff42c6c92d19ca2be6f86110
+PODFILE CHECKSUM: 57c94b75db7f46e64a9d6be6e7513d7bcdaf6cb8
 
 COCOAPODS: 1.11.2

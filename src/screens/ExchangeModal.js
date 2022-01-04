@@ -14,6 +14,7 @@ import {
   Keyboard,
   NativeModules,
 } from 'react-native';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -110,6 +111,7 @@ export default function ExchangeModal({
   typeSpecificParams,
 }) {
   const dispatch = useDispatch();
+  const insets = useSafeArea();
 
   useLayoutEffect(() => {
     dispatch(updateSwapTypeDetails(type, typeSpecificParams));
@@ -599,15 +601,15 @@ export default function ExchangeModal({
               testID={`${testID}-confirm-button`}
             />
           )}
-          <GasSpeedButton
-            asset={outputCurrency}
-            currentNetwork={network}
-            dontBlur
-            onCustomGasBlur={handleCustomGasBlur}
-            testID={`${testID}-gas`}
-            topPadding={25}
-          />
         </FloatingPanels>
+        <GasSpeedButton
+          asset={outputCurrency}
+          bottom={insets.bottom - 7}
+          currentNetwork={network}
+          dontBlur
+          onCustomGasBlur={handleCustomGasBlur}
+          testID={`${testID}-gas`}
+        />
       </InnerWrapper>
     </Wrapper>
   );

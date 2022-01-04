@@ -8,7 +8,6 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { dismissingScreenListener } from '../../shim';
 import { GasSpeedButton } from '../components/gas';
 import { Column } from '../components/layout';
 import {
@@ -34,19 +33,19 @@ import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { checkIsValidAddressOrDomain } from '@rainbow-me/helpers/validators';
 import {
-  useAccountAssets,
   useAccountSettings,
   useCoinListEditOptions,
   useColorForAsset,
   useContacts,
   useCurrentNonce,
   useGas,
-  useMagicAutofocus,
   useMaxInputBalance,
   usePrevious,
   useRefreshAccountData,
   useSendableUniqueTokens,
   useSendSavingsAccount,
+  useSendSheetInputRefs,
+  useSortedAccountAssets,
   useTransactionConfirmation,
   useUpdateAssetOnchainBalance,
   useUserAccounts,
@@ -94,10 +93,10 @@ const KeyboardSizeView = styled(KeyboardArea)`
 
 export default function SendSheet(props) {
   const dispatch = useDispatch();
-  const { goBack, navigate, addListener } = useNavigation();
+  const { goBack, navigate } = useNavigation();
   const { dataAddNewTransaction } = useTransactionConfirmation();
   const updateAssetOnchainBalanceIfNeeded = useUpdateAssetOnchainBalance();
-  const { allAssets } = useAccountAssets();
+  const { sortedAssets } = useSortedAccountAssets();
   const {
     gasFeeParamsBySpeed,
     gasLimit,
@@ -109,14 +108,12 @@ export default function SendSheet(props) {
     updateDefaultGasLimit,
     updateTxFee,
   } = useGas();
-  const isDismissing = useRef(false);
   const recipientFieldRef = useRef();
 
   const { contacts, onRemoveContact, filteredContacts } = useContacts();
   const { userAccounts, watchedAccounts } = useUserAccounts();
   const { sendableUniqueTokens } = useSendableUniqueTokens();
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
-  const getNextNonce = useCurrentNonce(accountAddress, network);
 
   const savings = useSendSavingsAccount();
   const fetchData = useRefreshAccountData();
@@ -131,6 +128,8 @@ export default function SendSheet(props) {
   const prevNetwork = usePrevious(currentNetwork);
   const [currentInput, setCurrentInput] = useState('');
 
+  const getNextNonce = useCurrentNonce(accountAddress, currentNetwork);
+
   const { params } = useRoute();
   const assetOverride = params?.asset;
   const prevAssetOverride = usePrevious(assetOverride);
@@ -144,6 +143,12 @@ export default function SendSheet(props) {
   const [isValidAddress, setIsValidAddress] = useState(!!recipientOverride);
   const [currentProvider, setCurrentProvider] = useState();
   const { colors, isDarkMode } = useTheme();
+
+  const {
+    nativeCurrencyInputRef,
+    setLastFocusedInputHandle,
+    assetInputRef,
+  } = useSendSheetInputRefs();
 
   const showEmptyState = !isValidAddress;
   const showAssetList = isValidAddress && isEmpty(selected);
@@ -165,31 +170,6 @@ export default function SendSheet(props) {
   const isL2 = useMemo(() => {
     return isL2Network(currentNetwork);
   }, [currentNetwork]);
-
-  const { triggerFocus } = useMagicAutofocus(recipientFieldRef);
-
-  useEffect(() => {
-    if (ios) {
-      return;
-    }
-    dismissingScreenListener.current = () => {
-      Keyboard.dismiss();
-      isDismissing.current = true;
-    };
-    const unsubscribe = addListener(
-      'transitionEnd',
-      ({ data: { closing } }) => {
-        if (!closing && isDismissing.current) {
-          isDismissing.current = false;
-          recipientFieldRef?.current?.focus();
-        }
-      }
-    );
-    return () => {
-      unsubscribe();
-      dismissingScreenListener.current = undefined;
-    };
-  }, [addListener]);
 
   const sendUpdateAssetAmount = useCallback(
     newAssetAmount => {
@@ -343,7 +323,7 @@ export default function SendSheet(props) {
     if (isEmpty(selected)) return;
     if (currentProvider?._network?.chainId) {
       const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
-        currentProvider._network.chainId
+        Number(currentProvider._network.chainId)
       );
 
       const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
@@ -395,7 +375,7 @@ export default function SendSheet(props) {
       });
       analytics.track('Changed native currency input in Send flow');
     },
-    [maxInputBalance, selected]
+    [maxInputBalance, selected.decimals, selected?.price?.value]
   );
 
   const sendMaxBalance = useCallback(async () => {
@@ -487,7 +467,7 @@ export default function SendSheet(props) {
         );
 
         if (!lessThan(updatedGasLimit, gasLimit)) {
-          if (network === networkTypes.optimism) {
+          if (currentNetwork === networkTypes.optimism) {
             updateTxFeeForOptimism(updatedGasLimit);
           } else {
             updateTxFee(updatedGasLimit, null);
@@ -564,7 +544,6 @@ export default function SendSheet(props) {
     getNextNonce,
     isSufficientGas,
     isValidAddress,
-    network,
     selected,
     selectedGasFee,
     toAddress,
@@ -612,9 +591,11 @@ export default function SendSheet(props) {
       // Don't allow sending funds directly to known ERC20 contracts on L2
       if (isL2) {
         const currentChainAssets = chainAssets[currentNetwork];
-        const found = currentChainAssets.find(
-          item => toLower(item.asset?.asset_code) === toLower(toAddress)
-        );
+        const found =
+          currentChainAssets &&
+          currentChainAssets.find(
+            item => toLower(item.asset?.asset_code) === toLower(toAddress)
+          );
         if (found) {
           return false;
         }
@@ -631,7 +612,7 @@ export default function SendSheet(props) {
     let label = 'Enter an Amount';
 
     let nativeToken = 'ETH';
-    if (network === networkTypes.polygon) {
+    if (currentNetwork === networkTypes.polygon) {
       nativeToken = 'MATIC';
     }
     if (
@@ -658,7 +639,7 @@ export default function SendSheet(props) {
     amountDetails.isSufficientBalance,
     gasFeeParamsBySpeed,
     isSufficientGas,
-    network,
+    currentNetwork,
     selectedGasFee,
   ]);
 
@@ -670,7 +651,8 @@ export default function SendSheet(props) {
       toAddress = await resolveNameOrAddress(recipient);
     }
     const validRecipient = await validateRecipient(toAddress);
-
+    assetInputRef?.current?.blur();
+    nativeCurrencyInputRef?.current?.blur();
     if (!validRecipient) {
       navigate(Routes.EXPLAIN_SHEET, {
         onClose: () => {
@@ -685,7 +667,6 @@ export default function SendSheet(props) {
       });
       return;
     }
-
     navigate(Routes.SEND_CONFIRMATION_SHEET, {
       amountDetails: amountDetails,
       asset: selected,
@@ -698,10 +679,12 @@ export default function SendSheet(props) {
     });
   }, [
     amountDetails,
+    assetInputRef,
     buttonDisabled,
     currentNetwork,
     isL2,
     isNft,
+    nativeCurrencyInputRef,
     navigate,
     recipient,
     selected,
@@ -761,15 +744,14 @@ export default function SendSheet(props) {
   useEffect(() => {
     if (!currentProvider?._network?.chainId) return;
     const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
-      currentProvider._network.chainId
+      Number(currentProvider._network.chainId)
     );
     const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
     if (
       assetNetwork === currentNetwork &&
       currentProviderNetwork === currentNetwork &&
       isValidAddress &&
-      !isEmpty(selected) &&
-      !isEmpty(gasFeeParamsBySpeed)
+      !isEmpty(selected)
     ) {
       estimateGasLimit(
         {
@@ -790,7 +772,7 @@ export default function SendSheet(props) {
           }
         })
         .catch(e => {
-          logger.sentry('Error getting optimism l1 fee', e);
+          logger.sentry('Error calculating gas limit', e);
           updateTxFee(null, null);
         });
     }
@@ -806,7 +788,6 @@ export default function SendSheet(props) {
     updateTxFee,
     updateTxFeeForOptimism,
     network,
-    gasFeeParamsBySpeed,
   ]);
 
   return (
@@ -819,7 +800,6 @@ export default function SendSheet(props) {
           isValidAddress={isValidAddress}
           onChangeAddressInput={onChangeInput}
           onPressPaste={setRecipient}
-          onRefocusInput={triggerFocus}
           recipient={recipient}
           recipientFieldRef={recipientFieldRef}
           removeContact={onRemoveContact}
@@ -840,7 +820,6 @@ export default function SendSheet(props) {
         )}
         {showAssetList && (
           <SendAssetList
-            allAssets={allAssets}
             fetchData={fetchData}
             hiddenCoins={hiddenCoins}
             nativeCurrency={nativeCurrency}
@@ -848,6 +827,7 @@ export default function SendSheet(props) {
             onSelectAsset={sendUpdateSelected}
             pinnedCoins={pinnedCoins}
             savings={savings}
+            sortedAssets={sortedAssets}
             uniqueTokens={sendableUniqueTokens}
           />
         )}
@@ -855,6 +835,7 @@ export default function SendSheet(props) {
           <SendAssetForm
             {...props}
             assetAmount={amountDetails.assetAmount}
+            assetInputRef={assetInputRef}
             buttonRenderer={
               <SheetActionButton
                 color={colorForAsset}
@@ -870,16 +851,19 @@ export default function SendSheet(props) {
             }
             nativeAmount={amountDetails.nativeAmount}
             nativeCurrency={nativeCurrency}
+            nativeCurrencyInputRef={nativeCurrencyInputRef}
             onChangeAssetAmount={onChangeAssetAmount}
             onChangeNativeAmount={onChangeNativeAmount}
             onResetAssetSelection={onResetAssetSelection}
             selected={selected}
             sendMaxBalance={sendMaxBalance}
+            setLastFocusedInputHandle={setLastFocusedInputHandle}
             txSpeedRenderer={
               <GasSpeedButton
                 asset={selected}
                 currentNetwork={currentNetwork}
                 horizontalPadding={0}
+                marginBottom={17}
                 theme={isDarkMode ? 'dark' : 'light'}
               />
             }

@@ -5,10 +5,11 @@ const CoinName = styled(TruncatedText).attrs(
   ({ color, size, theme: { colors } }) => ({
     color: color || colors.dark,
     letterSpacing: 'roundedMedium',
-    lineHeight: android ? 'normalTight' : 'normal',
+    lineHeight: 'normal',
     size: size || 'lmedium',
   })
 )`
+  margin-top: ${android ? 1.5 : 0};
   padding-right: ${({ paddingRight = 19 }) => paddingRight};
 `;
 

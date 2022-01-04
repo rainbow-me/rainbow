@@ -21,17 +21,24 @@ const TabPillsContainer = styled(Row).attrs({
 `;
 
 const TabPillWrapper = styled(View).attrs({})`
-  ${padding(3, 8)};
-  ${margin(0, 4, 0, 4)};
+  ${padding(5, 10)};
+  ${margin(0, 5, 0, 5)};
   height: 30px;
-  border: ${({ isSelected, color, theme: { colors } }) =>
-    `2px solid ${
-      isSelected
-        ? color || colors.appleBlue
-        : colors.alpha(colors.blueGreyDark, 0.06)
-    }`};
+  background-color: ${({ isSelected, color, theme: { colors } }) =>
+    isSelected
+      ? color || colors.appleBlue
+      : colors.alpha(color || colors.appleBlue, 0.06)};
   border-radius: 15px;
   line-height: 20px;
+  shadow-color: ${({ color, isSelected, theme: { colors, isDarkMode } }) =>
+    isSelected
+      ? isDarkMode
+        ? colors.shadowBlack
+        : color || colors.appleBlue
+      : colors.transparent};
+  shadow-offset: 0px 4px;
+  shadow-opacity: 0.3;
+  shadow-radius: 6;
 `;
 
 const TabPillText = styled(Text).attrs({
@@ -42,8 +49,8 @@ const TabPillText = styled(Text).attrs({
   color: ${({ isSelected, theme: { colors }, color }) =>
     `${
       isSelected
-        ? color || colors.appleBlue
-        : colors.alpha(colors.blueGreyDark, 0.4)
+        ? colors.whiteLabel
+        : colors.alpha(color || colors.appleBlue, 0.9)
     }`};
   ${margin(
     android ? -ANDROID_EXTRA_LINE_HEIGHT : 0,
@@ -64,14 +71,9 @@ const TabPill = ({
     handleOnPressTabPill(label);
   };
   return (
-    <ButtonPressAnimation onPress={handleOnPress} testID={testID}>
+    <ButtonPressAnimation onPress={handleOnPress} scaleTo={0.8} testID={testID}>
       <TabPillWrapper color={color} isSelected={isSelected}>
-        <TabPillText
-          color={color}
-          isSelected={isSelected}
-          size="lmedium"
-          weight="bold"
-        >
+        <TabPillText color={color} isSelected={isSelected}>
           {upperFirst(label)}
         </TabPillText>
       </TabPillWrapper>

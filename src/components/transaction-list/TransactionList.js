@@ -224,11 +224,11 @@ export default function TransactionList({
                   type: 'cancel',
                 });
                 break;
-              case TransactionActions.close:
-                return;
-              default: {
+              case blockExplorerAction:
                 ethereumUtils.openTransactionInBlockExplorer(hash, network);
                 break;
+              default: {
+                return;
               }
             }
           }

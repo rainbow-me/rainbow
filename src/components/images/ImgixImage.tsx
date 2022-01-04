@@ -9,7 +9,11 @@ export type ImgixImageProps = FastImageProps & {
 
 // Here we're emulating the pattern used in react-native-fast-image:
 // https://github.com/DylanVann/react-native-fast-image/blob/0439f7190f141e51a391c84890cdd8a7067c6ad3/src/index.tsx#L146
-type HiddenImgixImageProps = { forwardedRef: React.Ref<any>; size?: Number };
+type HiddenImgixImageProps = {
+  forwardedRef: React.Ref<any>;
+  size?: Number;
+  fm?: String;
+};
 type MergedImgixImageProps = ImgixImageProps & HiddenImgixImageProps;
 
 // ImgixImage must be a class Component to support Animated.createAnimatedComponent.
@@ -19,38 +23,36 @@ class ImgixImage extends React.PureComponent<
 > {
   constructor(props: MergedImgixImageProps) {
     super(props);
-    const { source } = props;
+    const { source, size, fm } = props;
+    const options = {
+      ...(fm && { fm: fm }),
+      ...(size && {
+        h: size,
+        w: size,
+      }),
+    };
     this.state = {
       source:
         !!source && typeof source === 'object'
-          ? maybeSignSource(
-              source,
-              props.size
-                ? {
-                    h: props.size,
-                    w: props.size,
-                  }
-                : {}
-            )
+          ? maybeSignSource(source, options)
           : source,
     };
   }
   componentDidUpdate(prevProps: ImgixImageProps) {
     const { source: prevSource } = prevProps;
-    const { source, size } = this.props;
+    const { source, size, fm } = this.props;
     if (prevSource !== source) {
       // If the source has changed and looks signable, attempt to sign it.
       if (!!source && typeof source === 'object') {
+        const options = {
+          ...(fm && { fm: fm }),
+          ...(size && {
+            h: size,
+            w: size,
+          }),
+        };
         Object.assign(this.state, {
-          source: maybeSignSource(
-            source,
-            size
-              ? {
-                  h: size,
-                  w: size,
-                }
-              : {}
-          ),
+          source: maybeSignSource(source, options),
         });
       } else {
         // Else propagate the source as normal.
@@ -68,20 +70,17 @@ class ImgixImage extends React.PureComponent<
   }
 }
 
-const preload = (sources: Source[], size?: Number): void => {
+const preload = (sources: Source[], size?: Number, fm?: String): void => {
   if (sources.length) {
+    const options = {
+      ...(fm && { fm: fm }),
+      ...(size && {
+        h: size,
+        w: size,
+      }),
+    };
     return FastImage.preload(
-      sources.map(source =>
-        maybeSignSource(
-          source,
-          size
-            ? {
-                h: size,
-                w: size,
-              }
-            : {}
-        )
-      )
+      sources.map(source => maybeSignSource(source, options))
     );
   }
   return;
