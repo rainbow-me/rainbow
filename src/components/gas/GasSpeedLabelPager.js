@@ -13,7 +13,7 @@ const SpeedButton = styled(ButtonPressAnimation).attrs({
   height: 30,
 })({
   ...padding.object(2.5, 4, android ? 2.5 : 3.5, 5),
-  borderCOlor: ({ color, theme: { colors } }) => color ?? colors.appleBlue,
+  borderColor: ({ color, theme: { colors } }) => color ?? colors.appleBlue,
   borderRadius: 19,
   borderWidth: 2,
 });

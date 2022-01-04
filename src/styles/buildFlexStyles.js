@@ -52,8 +52,8 @@ buildFlexStyles.object = ({
   const props = {
     alignItems: getFlexStylesFromShorthand(align),
     flexDirection: direction,
+    flexWrap: wrap ? 'wrap' : 'nowrap',
     justifyContent: getFlexStylesFromShorthand(justify),
-    wrap: wrap ? 'wrap' : 'nowrap',
   };
 
   if (self) {
