@@ -142,7 +142,7 @@ export const uniswapPairsInit = () => (
       ? rainbowTokenList.CURATED_TOKENS
       : getTestnetUniswapPairs(network);
   dispatch({
-    // @ts-ignore
+    // @ts-expect-error
     payload: pairs,
     type: UNISWAP_UPDATE_PAIRS,
   });

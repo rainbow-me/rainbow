@@ -179,7 +179,7 @@ export const addRequestToApprove = (
     dappNetwork
   );
   const oneHourAgoTs = Date.now() - EXPIRATION_THRESHOLD_IN_MS;
-  // @ts-ignore
+  // @ts-expect-error
   if (displayDetails.timestampInMs < oneHourAgoTs) {
     logger.log('request expired!');
     return;
