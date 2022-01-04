@@ -130,33 +130,30 @@ buildTextStyles.object = ({
   // function is used because of default argument values
   (({ size = 'medium' }) => {
     styles.fontSize =
-      typeof size === 'number' ? size : get(fonts, `size[${size}]`, size);
+      typeof size === 'number' ? size : fonts.size[size] ?? size;
   })({
     size,
   });
 
   // function is used because of default argument values
   (({ isEmoji, weight = 'regular' }) => {
-    if (isEmoji) {
+    if (isEmoji || isNil(weight) || android) {
       return;
     }
 
-    styles.fontWeight = get(fonts, `weight[${weight}]`, weight);
+    styles.fontWeight = fonts.weight[weight] ?? weight;
   })({ isEmoji, weight });
 
   // function is used because of default argument values
   (({ letterSpacing = 'rounded' }) => {
     if (!isNil(letterSpacing)) {
-      styles.letterSpacing = get(
-        fonts,
-        `letterSpacing[${letterSpacing}]`,
-        letterSpacing
-      );
+      styles.letterSpacing =
+        fonts.letterSpacing[letterSpacing] ?? letterSpacing;
     }
   })({ letterSpacing });
 
-  if (!isNil(lineHeight) || !(isEmoji && android)) {
-    styles.lineHeight = get(fonts, `lineHeight[${lineHeight}]`, lineHeight);
+  if (!(isNil(lineHeight) || (isEmoji && android))) {
+    styles.lineHeight = fonts.lineHeight[lineHeight] ?? lineHeight;
   }
 
   if (!isNil(opacity)) {
