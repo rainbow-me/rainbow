@@ -10,14 +10,14 @@ import styled from 'rainbowed-components';
 
 const Container = styled.View({
   ...position.sizeAsObject(CoinIconSize),
-  position: ({ isAbsolute }) => (isAbsolute ? 'absolute' : 'relative'),
+  position: 'relative',
   top: 0,
 });
 
-const Content = styled(Row).attrs(({ isAbsolute }) => ({
+const Content = styled(Row).attrs({
   align: 'center',
-  justify: isAbsolute ? 'start' : 'center',
-}))({
+  justify: 'center',
+})({
   ...position.sizeAsObject('100%'),
 });
 
@@ -31,11 +31,11 @@ const CircleOutline = styled.View({
 });
 
 const CheckmarkBackground = styled.View(
-  ({ theme: { colors, isDarkMode }, isAbsolute }) => ({
+  ({ theme: { colors, isDarkMode }, left }) => ({
     ...borders.buildCircleAsObject(22),
     ...padding.object(4.5),
     backgroundColor: colors.appleBlue,
-    left: isAbsolute ? 19 : 0,
+    left: left || 0,
 
     ...shadow.buildAsObject(
       0,
@@ -48,32 +48,26 @@ const CheckmarkBackground = styled.View(
 );
 
 const CoinCheckButton = ({
-  isAbsolute,
   isHidden,
   isPinned,
   onPress,
   toggle: givenToggle,
   uniqueId,
+  left,
   ...props
 }) => {
   const { selectedItems } = useCoinListFinishEditingOptions();
   const toggle = givenToggle || selectedItems.includes(uniqueId);
 
   return (
-    <Container {...props} isAbsolute={isAbsolute}>
-      <Content
-        as={ButtonPressAnimation}
-        isAbsolute={isAbsolute}
-        onPress={onPress}
-        opacityTouchable
-        reanimatedButton
-      >
+    <Container {...props}>
+      <Content as={ButtonPressAnimation} onPress={onPress} opacityTouchable>
         {isHidden || isPinned ? null : <CircleOutline />}
         {!toggle && (isHidden || isPinned) ? (
           <CoinIconIndicator isPinned={isPinned} />
         ) : null}
         <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
-          <CheckmarkBackground isAbsolute={isAbsolute}>
+          <CheckmarkBackground left={left}>
             <Icon color="white" name="checkmark" />
           </CheckmarkBackground>
         </OpacityToggler>

@@ -26,6 +26,7 @@ public class RNZoomableButtonManager extends
         int mDuration = 160;
         float pivotX = 0.5f;
         float pivotY = 0.5f;
+        boolean shouldLongPressEndPress = false;
 
 
         public ZoomableButtonViewGroup(Context context) {
@@ -71,6 +72,9 @@ public class RNZoomableButtonManager extends
                 }
                 mLongPressTimer.cancel();
                 mLongPressTimer = new Timer();
+                if (shouldLongPressEndPress) {
+                    animate(false);
+                }
             }
 
             return super.onTouchEvent(ev);
@@ -89,7 +93,9 @@ public class RNZoomableButtonManager extends
                         mIsTaskScheduled = false;
                         mIsLongTaskScheduled = true;
                         onReceivePressEvent(true);
-                        animate(false);
+                        if (!shouldLongPressEndPress) {
+                            animate(false);
+                        }
                     }
                 }, mMinLongPressDuration);
             }
@@ -151,6 +157,11 @@ public class RNZoomableButtonManager extends
     @ReactProp(name = "scaleTo")
     public void setScaleTo(ZoomableButtonViewGroup view, float scaleTo) {
         view.mScaleTo = scaleTo;
+    }
+
+    @ReactProp(name = "shouldLongPressEndPress")
+    public void setShouldLongPressEndPress(ZoomableButtonViewGroup view, boolean shouldLongPressEndPress) {
+        view.shouldLongPressEndPress = shouldLongPressEndPress;
     }
 
     @ReactProp(name = "duration")

@@ -36,7 +36,6 @@ const RoundButtonSizeToggler = ({
   color,
   endingWidth,
   isOpen,
-  isAbsolute,
   startingWidth,
 }) => {
   const animation = useSpringTransition(
@@ -81,7 +80,7 @@ const RoundButtonSizeToggler = ({
   const colorToUse = color || colors.blueGreyDarkLight;
 
   return (
-    <Container isAbsolute={isAbsolute}>
+    <Container>
       <Cap capDirection="left" color={colorToUse} />
       <Center>
         <AnimatedCenter color={colorToUse} style={centerStyle} />
