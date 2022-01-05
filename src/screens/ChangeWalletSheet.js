@@ -234,9 +234,22 @@ export default function ChangeWalletSheet() {
                     newWallets[walletId].addresses,
                     async (account, index) => {
                       if (account.address === address) {
-                        newWallets[walletId].addresses[index].label = args.name;
-                        newWallets[walletId].addresses[index].color =
-                          args.color;
+                        const updatedAddress = {
+                          ...newWallets[walletId].addresses[index],
+                          color: args.color,
+                          label: args.name,
+                        };
+
+                        let updatedWalletAddresses = [
+                          ...newWallets[walletId].addresses,
+                        ];
+                        updatedWalletAddresses[index] = updatedAddress;
+
+                        newWallets[walletId] = {
+                          ...newWallets[walletId],
+                          addresses: updatedWalletAddresses,
+                        };
+
                         if (currentSelectedWallet.id === walletId) {
                           await setCurrentSelectedWallet(wallet);
                           await dispatch(
