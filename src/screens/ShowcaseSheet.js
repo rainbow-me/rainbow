@@ -40,7 +40,7 @@ const LoadingWrapper = styled.View`
 `;
 
 export default function ShowcaseScreen() {
-  const { params: { address: addressOrDomain, ens: ensName } = {} } = useRoute();
+  const { params: { address: addressOrDomain } = {} } = useRoute();
 
   const [userData, setUserData] = useState(null);
   const [accountAddress, setAcccountAddress] = useState(null);
@@ -105,10 +105,9 @@ export default function ShowcaseScreen() {
     () => ({
       ...userData,
       address: accountAddress,
-      ens: ensName,
       addressOrDomain,
     }),
-    [addressOrDomain, accountAddress, userData, ensName]
+    [addressOrDomain, accountAddress, userData]
   );
 
   const loading = userData === null || uniqueTokensShowcaseLoading;

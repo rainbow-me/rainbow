@@ -190,9 +190,10 @@ const TokenHistory = ({ contract, token, color }) => {
 
   const handlePress = useCallback(
     (address, ens) => {
+      console.log(ens);
       navigate(Routes.SHOWCASE_SHEET, {
         address: address,
-        ens: ens
+        addressOrDomain: ens
       });
     },
     [navigate]

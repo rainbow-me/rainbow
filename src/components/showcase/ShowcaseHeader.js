@@ -38,6 +38,10 @@ const Spacer = styled.View`
   height: 19;
 `;
 
+const BiggerSpacer = styled.View`
+  height: 47;
+`;
+
 const ButtonSpacer = styled.View`
   height: 0;
 `;
@@ -168,7 +172,7 @@ export function Header() {
   ]);
 
   const mainText =
-    contextValue?.ens ||
+    contextValue?.data?.reverseEns ||
     contextValue?.addressOrDomain?.toLowerCase();
 
   const secondaryText =
@@ -179,7 +183,7 @@ export function Header() {
   return (
     <HeaderWrapper height={350} testID="showcase-header-wrapper">
       <SheetHandle />
-      <Spacer/>
+      {secondaryText ? <Spacer /> : <BiggerSpacer />}
       <AvatarCircle
         image={null}
         isAvatarPickerAvailable={false}
