@@ -32,6 +32,7 @@
   "devDependencies": {
     "@babel/generator": "7.16.0",
     "@babel/preset-typescript": "7.16.0",
+    "@lavamoat/preinstall-always-fail": "1.0.0",
     "@types/babel-plugin-macros": "2.8.5",
     "@vanilla-extract/next-plugin": "1.0.1",
     "babel-loader": "8.2.3",
