@@ -1,12 +1,12 @@
 import lzString from 'lz-string';
 import React from 'react';
 
-import { useSourceFromExample } from '../../hooks/useSourceFromExample';
 import ChevronDownIcon from '../../icons/ChevronDownIcon';
 import ChevronUpIcon from '../../icons/ChevronUpIcon';
 import PlayIcon from '../../icons/PlayIcon';
 import { Button, ButtonLink, CodeBlock, Inline, Stack } from '../../system';
 import { sprinkles } from '../../system/sprinkles.css';
+import { getSourceFromExample } from '../../utils/getSourceFromExample.web';
 import { Source } from '../../utils/source.macro';
 
 export const CodePreview = ({
@@ -25,9 +25,13 @@ export const CodePreview = ({
   Example: () => Source<React.ReactChild>;
 }) => {
   const [showCode, setShowCode] = React.useState(Boolean(defaultShowCode));
-  const { displayCode, playroomCode, element } = useSourceFromExample({
-    Example,
-  });
+  const { displayCode, playroomCode, element } = React.useMemo(
+    () =>
+      getSourceFromExample({
+        Example,
+      }),
+    [Example]
+  );
 
   return (
     <Stack space="16px">

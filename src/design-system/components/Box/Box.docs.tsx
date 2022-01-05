@@ -1,5 +1,7 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
+import dedent from 'dedent';
+
 import * as Docs from '../../docs/components';
 import { Docs as DocsType } from '../../docs/types';
 import source from '../../docs/utils/source.macro';
@@ -211,26 +213,28 @@ const docs: DocsType = {
             prop.
           </Docs.Text>
           <Docs.CodeBlock
-            code={`const offsetX = useSharedValue(0);
+            code={dedent`
+              const offsetX = useSharedValue(0);
 
-const animatedStyles = useAnimatedStyle(() => ({
-  transform: [
-    {
-      translateX: withSpring(offsetX.value),
-    },
-  ],
-}));
+              const animatedStyles = useAnimatedStyle(() => ({
+                transform: [
+                  {
+                    translateX: withSpring(offsetX.value),
+                  },
+                ],
+              }));
 
-return (
-  <>
-    <Box as={Animated.View} style={animatedStyles} />
-    <TouchableOpacity onPress={() => (offsetX.value = 100)}>
-      <Text>
-        Move
-      </Text>
-    </TouchableOpacity>
-  </>
-);`}
+              return (
+                <>
+                  <Box as={Animated.View} style={animatedStyles} />
+                  <TouchableOpacity onPress={() => (offsetX.value = 100)}>
+                    <Text>
+                      Move
+                    </Text>
+                  </TouchableOpacity>
+                </>
+              );
+            `}
           />
         </>
       ),

@@ -1,6 +1,6 @@
 import { DocsExample } from '../types';
 
-export const useSourceFromExample = ({
+export const getSourceFromExample = ({
   Example,
 }: {
   Example: DocsExample['Example'];

@@ -14,7 +14,7 @@ function prettify(code: string) {
     .replace(/\n$/, '');
 }
 
-export const useSourceFromExample = ({
+export const getSourceFromExample = ({
   Example,
 }: {
   Example: DocsExample['Example'];
