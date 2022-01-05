@@ -3,15 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "yarn prepare && npm-run-all --print-label --parallel dev:*",
+    "dev": "npm-run-all --print-label --parallel dev:*",
     "dev:docs": "next dev",
     "dev:playroom": "playroom start",
     "build": "yarn prepare && yarn build:docs && yarn build:playroom",
     "build:docs": "next build && next export",
     "build:playroom": "playroom build",
     "start": "next start",
-    "lint": "next lint",
-    "prepare": "patch-package"
+    "lint": "next lint"
   },
   "peerDependencies": {
     "react": "*"
@@ -34,7 +33,6 @@
   "devDependencies": {
     "@babel/generator": "7.16.0",
     "@babel/preset-typescript": "7.16.0",
-    "@lavamoat/preinstall-always-fail": "1.0.0",
     "@types/babel-plugin-macros": "2.8.5",
     "@vanilla-extract/next-plugin": "1.0.1",
     "babel-loader": "8.2.3",

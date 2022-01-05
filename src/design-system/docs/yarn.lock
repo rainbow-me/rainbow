@@ -1048,11 +1048,6 @@
   resolved "https://registry.yarnpkg.com/@hapi/hoek/-/hoek-9.2.1.tgz#9551142a1980503752536b5050fd99f4a7f13b17"
   integrity sha512-gfta+H8aziZsm8pZa0vj04KO6biEiisppNgA1kbJvFrrWu9Vm7eaUEy76DIxsuTaWvti5fkJVhllWc6ZTE+Mdw==
 
-"@lavamoat/preinstall-always-fail@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@lavamoat/preinstall-always-fail/-/preinstall-always-fail-1.0.0.tgz#e78a6e3d9e212a4fef869ec37d4f5fb498dea373"
-  integrity sha512-vD2DcC0ffJj1w2y1Lu0OU39wHmlPEd2tCDW04Bm6Kf4LyRnCHCezTsS8yzeSJ+4so7XP+TITuR5FGJRWxPb+GA==
-
 "@napi-rs/triples@1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@napi-rs/triples/-/triples-1.0.3.tgz#76d6d0c3f4d16013c61e45dfca5ff1e6c31ae53c"
@@ -5363,10 +5358,10 @@ platform@1.3.6:
   resolved "https://registry.yarnpkg.com/platform/-/platform-1.3.6.tgz#48b4ce983164b209c2d45a107adb31f473a6e7a7"
   integrity sha512-fnWVljUchTro6RiCFvCXBbNhJc2NijN7oIQxbwsyL0buWJPG85v81ehlHI9fXrJsMNgTofEoWIQeClKpgxFLrg==
 
-playroom@0.27.7:
-  version "0.27.7"
-  resolved "https://registry.yarnpkg.com/playroom/-/playroom-0.27.7.tgz#93e9b0e62d084ee0711feb6028e8de0251f45011"
-  integrity sha512-fLCAQFqAHR4M5MA1zkqZaGBxxHALEE7ARw4kDo/DbHP33NkBLca674+SHDzMBNcDnAhENU3TFidVh+lAcKjlbg==
+playroom@0.27.9:
+  version "0.27.9"
+  resolved "https://registry.yarnpkg.com/playroom/-/playroom-0.27.9.tgz#3f3758d1c1e4c12e9f3cccf26028daea5832127b"
+  integrity sha512-eEwKLOhdfd27Z1a6hloolnrihZGTmsnKvLmq3KXLSPqBFvWAk/zDzCoolVYsbzjAK+S9VlGSfqw9hqErj53f+g==
   dependencies:
     "@babel/cli" "^7.13.10"
     "@babel/core" "^7.13.10"
