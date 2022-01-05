@@ -36,6 +36,26 @@
    yarn install-bundle && yarn install-pods
    ```
 
+
+### MacOs on M1/arm 
+You are likely to run into issues with CocoaPods during step 3.
+If that's the case try the following steps.
+
+1. Open a Rosetta Terminal
+   - Right-click on Terminal in Finder
+   - Get Info
+   - Open with Rosetta
+
+2. Install ffi
+```shell
+sudo gem install ffi
+```
+
+3. Install CocoaPods using arch x86
+```shell
+arch -x86_64 yarn install-pods
+```
+
 ### Linux
 
 1. Install system dependencies:
