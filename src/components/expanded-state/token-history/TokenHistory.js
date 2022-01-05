@@ -190,10 +190,10 @@ const TokenHistory = ({ contract, token, color }) => {
 
   const handlePress = useCallback(
     (address, ens) => {
+      console.log("zoink");
       console.log(ens);
       navigate(Routes.SHOWCASE_SHEET, {
-        address: address,
-        addressOrDomain: ens
+        address: ens && ens.slice(-4) === '.eth' ? ens : address
       });
     },
     [navigate]
