@@ -372,6 +372,8 @@ const withBriefBalanceSection = (
           { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
           { type: 'LOADING_ASSETS', uid: 'loadings-asset-2' },
           { type: 'LOADING_ASSETS', uid: 'loadings-asset-3' },
+          { type: 'LOADING_ASSETS', uid: 'loadings-asset-4' },
+          { type: 'LOADING_ASSETS', uid: 'loadings-asset-5' },
         ]
       : briefAssets),
   ];
