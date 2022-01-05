@@ -20,8 +20,8 @@ import rowDocs from '../components/Row/Row.docs';
 import stackDocs from '../components/Stack/Stack.docs';
 import textDocs from '../components/Text/Text.docs';
 import textLinkDocs from '../components/TextLink/TextLink.docs';
-import { useSourceFromExample } from '../docs/hooks/useSourceFromExample';
 import { Docs, DocsExample } from '../docs/types';
+import { getSourceFromExample } from '../docs/utils/getSourceFromExample';
 
 const allDocs = [
   backgroundDocs,
@@ -50,7 +50,9 @@ const styles = StyleSheet.create({
 });
 
 const CodePreview = ({ Example }: { Example: DocsExample['Example'] }) => {
-  const { element } = useSourceFromExample({ Example });
+  const { element } = React.useMemo(() => getSourceFromExample({ Example }), [
+    Example,
+  ]);
   return <>{element}</>;
 };
 
