@@ -30,6 +30,14 @@ import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
 
+const LOADING_ASSETS_PLACEHOLDER = [
+  { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
+  { type: 'LOADING_ASSETS', uid: 'loadings-asset-2' },
+  { type: 'LOADING_ASSETS', uid: 'loadings-asset-3' },
+  { type: 'LOADING_ASSETS', uid: 'loadings-asset-4' },
+  { type: 'LOADING_ASSETS', uid: 'loadings-asset-5' },
+];
+
 const sortedAssetsSelector = state => state.sortedAssets;
 const sortedAssetsCountSelector = state => state.sortedAssetsCount;
 const assetsTotalSelector = state => state.assetsTotal;
@@ -367,15 +375,7 @@ const withBriefBalanceSection = (
       type: 'ASSETS_HEADER_SPACE_AFTER',
       uid: 'assets-header-space-after',
     },
-    ...(isLoadingAssets
-      ? [
-          { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
-          { type: 'LOADING_ASSETS', uid: 'loadings-asset-2' },
-          { type: 'LOADING_ASSETS', uid: 'loadings-asset-3' },
-          { type: 'LOADING_ASSETS', uid: 'loadings-asset-4' },
-          { type: 'LOADING_ASSETS', uid: 'loadings-asset-5' },
-        ]
-      : briefAssets),
+    ...(isLoadingAssets ? LOADING_ASSETS_PLACEHOLDER : briefAssets),
   ];
 };
 
