@@ -1,5 +1,4 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
-import chroma from 'chroma-js';
 import React from 'react';
 import { Box } from '../components/Box/Box';
 import { Columns } from '../components/Columns/Columns';
@@ -12,7 +11,6 @@ import {
   BackgroundColor,
   backgroundColors,
   ColorMode,
-  colors,
   ForegroundColor,
   foregroundColors,
 } from './palettes';
@@ -59,33 +57,6 @@ const ForegroundColors = ({ mode }: { mode: ColorMode }) => (
   </Stack>
 );
 
-const PaletteColors = () => (
-  <>
-    {Object.entries(colors).map(([color, value]) => (
-      <div
-        key={color}
-        style={{
-          backgroundColor: value,
-          paddingTop: 8,
-          paddingBottom: 8,
-          paddingLeft: 16,
-          paddingRight: 16,
-        }}
-      >
-        <Text
-          color={{
-            custom: chroma.contrast(value, '#fff') > 2.125 ? 'white' : 'black',
-          }}
-          size="18px"
-          weight="bold"
-        >
-          {color}
-        </Text>
-      </div>
-    ))}
-  </>
-);
-
 const docs: DocsType = {
   name: 'Colors',
   category: 'Color',
@@ -111,17 +82,6 @@ const docs: DocsType = {
           <Columns space="24px">
             <ForegroundColors mode="light" />
             <ForegroundColors mode="dark" />
-          </Columns>
-        ),
-    },
-    {
-      name: 'Global palette',
-      enableCodeSnippet: false,
-      enablePlayroom: false,
-      Example: () =>
-        source(
-          <Columns space="24px">
-            <PaletteColors />
           </Columns>
         ),
     },
