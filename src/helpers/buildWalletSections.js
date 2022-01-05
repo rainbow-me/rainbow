@@ -368,7 +368,11 @@ const withBriefBalanceSection = (
       uid: 'assets-header-space-after',
     },
     ...(isLoadingAssets
-      ? [{ type: 'LOADING_ASSETS', uid: 'loadings-asset' }]
+      ? [
+          { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
+          { type: 'LOADING_ASSETS', uid: 'loadings-asset-2' },
+          { type: 'LOADING_ASSETS', uid: 'loadings-asset-3' },
+        ]
       : briefAssets),
   ];
 };
