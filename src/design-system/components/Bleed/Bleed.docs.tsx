@@ -11,23 +11,26 @@ import { Bleed } from './Bleed';
 const docs: DocsType = {
   name: 'Bleed',
   category: 'Layout',
-  description: [
-    <Docs.Text key="1">
-      Renders a <Docs.Strong>container with negative margins</Docs.Strong>{' '}
-      allowing content to{' '}
-      <Docs.TextLink href="https://en.wikipedia.org/wiki/Bleed_(printing)">
-        &quot;bleed&quot;
-      </Docs.TextLink>{' '}
-      into the surrounding layout. This effectively works as the opposite of{' '}
-      <Docs.Strong>Inset</Docs.Strong> and is designed to support visually
-      breaking out of a parent container without having to refactor the entire
-      component tree.
-    </Docs.Text>,
-    <Docs.Text key="2">
-      If there is only a single child node, no space or separators will be
-      rendered.
-    </Docs.Text>,
-  ],
+  description: (
+    <>
+      <Docs.Text>
+        Renders a <Docs.Strong>container with negative margins</Docs.Strong>{' '}
+        allowing content to{' '}
+        <Docs.TextLink href="https://en.wikipedia.org/wiki/Bleed_(printing)">
+          &quot;bleed&quot;
+        </Docs.TextLink>{' '}
+        into the surrounding layout. This effectively works as the opposite of{' '}
+        <Docs.Strong>Inset</Docs.Strong> and is designed to support visually
+        breaking out of a parent container without having to refactor the entire
+        component tree.
+      </Docs.Text>
+      <Docs.Text>
+        If there is only a single child node, no space or separators will be
+        rendered.
+      </Docs.Text>
+      ,
+    </>
+  ),
   examples: [
     {
       name: 'Basic usage',

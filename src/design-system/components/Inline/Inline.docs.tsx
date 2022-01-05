@@ -9,18 +9,20 @@ import { Inline } from './Inline';
 const docs: DocsType = {
   name: 'Inline',
   category: 'Layout',
-  description: [
-    <Docs.Text key="1">
-      Arranges child nodes{' '}
-      <Docs.Strong>
-        horizontally, wrapping to multiple lines if needed
-      </Docs.Strong>
-      , with equal spacing between items.
-    </Docs.Text>,
-    <Docs.Text key="2">
-      If there is only a single child node, no space will be rendered.
-    </Docs.Text>,
-  ],
+  description: (
+    <>
+      <Docs.Text>
+        Arranges child nodes{' '}
+        <Docs.Strong>
+          horizontally, wrapping to multiple lines if needed
+        </Docs.Strong>
+        , with equal spacing between items.
+      </Docs.Text>
+      <Docs.Text>
+        If there is only a single child node, no space will be rendered.
+      </Docs.Text>
+    </>
+  ),
   examples: [
     {
       name: 'Basic usage',
