@@ -95,6 +95,7 @@
     "@react-navigation/stack": "5.9.3",
     "@segment/analytics-react-native": "1.5.0",
     "@sentry/react-native": "2.6.0",
+    "@shopify/react-native-skia": "https://github.com/Shopify/react-native-skia/releases/download/v0.1.60-alpha/shopify-react-native-skia-0.1.60.tgz",
     "@tradle/react-native-http": "2.0.1",
     "@types/i18n-js": "3.0.3",
     "@types/lodash": "4.14.168",
@@ -255,8 +256,6 @@
     "zxcvbn": "4.4.2"
   },
   "devDependencies": {
-    "@types/d3-scale": "4.0.2",
-    "@types/d3-shape": "3.0.2",
     "@babel/core": "7.14.2",
     "@babel/parser": "7.12.14",
     "@babel/plugin-transform-react-inline-elements": "7.12.1",
@@ -267,6 +266,8 @@
     "@nomiclabs/hardhat-ethers": "2.0.2",
     "@nomiclabs/hardhat-waffle": "2.0.1",
     "@types/chroma-js": "2.1.3",
+    "@types/d3-scale": "4.0.2",
+    "@types/d3-shape": "3.0.2",
     "@types/jest": "26.0.14",
     "@types/node": "16.11.6",
     "@types/react": "16.9.52",
@@ -468,12 +469,10 @@
       "detox": true,
       "dtrace-provider": false,
       "esbuild": false,
-      "fsevents": false,
       "husky": false,
       "keccak": false,
       "react-native-storage": false,
       "react-query": false,
-      "scrypt": false,
       "secp256k1": false,
       "@sentry/cli": true,
       "web3": false,
@@ -482,7 +481,8 @@
       "bufferutil": false,
       "utf-8-validate": false,
       "postinstall-postinstall": false,
-      "core-js-pure": false
+      "core-js-pure": false,
+      "github:Shopify/": false
     }
   },
   "typeCoverage": {

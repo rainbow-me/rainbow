@@ -1,3 +1,10 @@
+import {
+  Canvas,
+  mix,
+  Rect,
+  useSharedValueEffect,
+  Path
+} from '@shopify/react-native-skia';
 import { find } from 'lodash';
 import React, {
   useCallback,
@@ -7,8 +14,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { LayoutAnimation, View } from 'react-native';
+import { LayoutAnimation, View, StyleSheet } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import Animated, {
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 import styled from 'styled-components';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
 import L2Disclaimer from '../../L2Disclaimer';
@@ -177,6 +189,20 @@ function Description({ text }) {
   );
 }
 
+const MyComponent = () => {
+  const progress2 = useSharedValue("M 128 0 L 168 80 L 256 93 L 192 155 L 207 244 L 128 202 L 49 244 L 64 155 L 0 93 L 88 80 L 128 0 Z");
+  const canvasRef = useRef(null);
+  useSharedValueEffect(canvasRef, progress2);
+  return (
+    <Canvas innerRef={canvasRef} style={StyleSheet.absoluteFill}>
+      <Path
+        path={() => progress2.value}
+        color="lightblue"
+      />
+    </Canvas>
+  );
+};
+
 export default function ChartExpandedState({ asset }) {
   const genericAsset = useGenericAsset(asset?.address);
 
@@ -328,6 +354,7 @@ export default function ChartExpandedState({ asset }) {
         ? { height: '100%' }
         : { additionalTopPadding: true, contentHeight: screenHeight - 80 })}
     >
+      <MyComponent />
       <ChartPathProvider data={throttledData}>
         <Chart
           {...chartData}
