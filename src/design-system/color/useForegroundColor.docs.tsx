@@ -8,53 +8,53 @@ import { useForegroundColor } from './useForegroundColor';
 
 const docs: DocsType = {
   category: 'Color',
-  description: [
-    <Docs.Text key="">
-      Low-level access to the foreground color palette is available via the
-      <Docs.Code>useForegroundColor</Docs.Code> Hook. This ensures that you get
-      the correct color palette based on the contextual color mode.
-    </Docs.Text>,
-    <Docs.CodePreview
-      Example={() =>
-        source(
-          (() => {
-            const borderColor = useForegroundColor('accent');
+  description: (
+    <>
+      <Docs.Text>
+        Low-level access to the foreground color palette is available via the
+        <Docs.Code>useForegroundColor</Docs.Code> Hook. This ensures that you
+        get the correct color palette based on the contextual color mode.
+      </Docs.Text>
+      <Docs.CodePreview
+        Example={() =>
+          source(
+            (() => {
+              const borderColor = useForegroundColor('accent');
 
-            return (
-              <Box padding="6px" style={{ borderColor, borderWidth: 2 }}>
-                <Text color="accent">Hello world</Text>
-              </Box>
-            );
-          })()
-        )
-      }
-      key=""
-    />,
-    <Docs.Text key="">
-      Custom colors can also be passed to this Hook in an object format.
-    </Docs.Text>,
-    <Docs.CodePreview
-      Example={() =>
-        source(
-          (() => {
-            const borderColor = useForegroundColor({
-              custom: {
-                dark: 'white',
-                light: 'black',
-              },
-            });
+              return (
+                <Box padding="6px" style={{ borderColor, borderWidth: 2 }}>
+                  <Text color="accent">Hello world</Text>
+                </Box>
+              );
+            })()
+          )
+        }
+      />
+      <Docs.Text>
+        Custom colors can also be passed to this Hook in an object format.
+      </Docs.Text>
+      <Docs.CodePreview
+        Example={() =>
+          source(
+            (() => {
+              const borderColor = useForegroundColor({
+                custom: {
+                  dark: 'white',
+                  light: 'black',
+                },
+              });
 
-            return (
-              <Box padding="6px" style={{ borderColor, borderWidth: 2 }}>
-                <Text color="accent">Hello world</Text>
-              </Box>
-            );
-          })()
-        )
-      }
-      key=""
-    />,
-  ],
+              return (
+                <Box padding="6px" style={{ borderColor, borderWidth: 2 }}>
+                  <Text color="accent">Hello world</Text>
+                </Box>
+              );
+            })()
+          )
+        }
+      />
+    </>
+  ),
   name: 'useForegroundColor',
 };
 

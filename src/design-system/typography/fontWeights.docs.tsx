@@ -9,12 +9,12 @@ import source from '../docs/utils/source.macro';
 const docs: DocsType = {
   name: 'Font weights',
   category: 'Typography',
-  description: [
-    <Docs.Text key="">
+  description: (
+    <Docs.Text>
       To adjust the thickness of typography components, the{' '}
       <Docs.Code>weight</Docs.Code> prop is made available.
-    </Docs.Text>,
-  ],
+    </Docs.Text>
+  ),
   examples: [
     {
       name: 'Weights',

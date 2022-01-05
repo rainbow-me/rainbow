@@ -8,38 +8,39 @@ import { ColorModeProvider } from './ColorMode';
 
 const docs: DocsType = {
   category: 'Color',
-  description: [
-    <Docs.Text key="">
-      If you&apos;re rendering a custom background color, you can take control
-      of the color mode by manually rendering a ColorModeProvider.
-    </Docs.Text>,
-    <Docs.Text key="">
-      Beyond the usual light and dark modes, there are also lightTinted and
-      darkTinted modes which are designed for non-neutral background colors
-      where foreground colors should be desaturated.
-    </Docs.Text>,
-    <Docs.CodePreview
-      Example={() =>
-        source(
-          <>
-            <Box padding="24px" style={{ backgroundColor: 'black' }}>
-              <ColorModeProvider value="dark">
-                <Text>Hi Mom!</Text>
-              </ColorModeProvider>
-            </Box>
-            <Box padding="24px" style={{ backgroundColor: 'white' }}>
-              <ColorModeProvider value="light">
-                <Text>Hi Rainbow!</Text>
-              </ColorModeProvider>
-            </Box>
-          </>
-        )
-      }
-      disableActions
-      key=""
-      showCode
-    />,
-  ],
+  description: (
+    <>
+      <Docs.Text>
+        If you&apos;re rendering a custom background color, you can take control
+        of the color mode by manually rendering a ColorModeProvider.
+      </Docs.Text>
+      <Docs.Text>
+        Beyond the usual light and dark modes, there are also lightTinted and
+        darkTinted modes which are designed for non-neutral background colors
+        where foreground colors should be desaturated.
+      </Docs.Text>
+      <Docs.CodePreview
+        Example={() =>
+          source(
+            <>
+              <Box padding="24px" style={{ backgroundColor: 'black' }}>
+                <ColorModeProvider value="dark">
+                  <Text>Hi Mom!</Text>
+                </ColorModeProvider>
+              </Box>
+              <Box padding="24px" style={{ backgroundColor: 'white' }}>
+                <ColorModeProvider value="light">
+                  <Text>Hi Rainbow!</Text>
+                </ColorModeProvider>
+              </Box>
+            </>
+          )
+        }
+        disableActions
+        showCode
+      />
+    </>
+  ),
   name: 'ColorModeProvider',
 };
 

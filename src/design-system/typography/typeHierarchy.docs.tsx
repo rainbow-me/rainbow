@@ -10,12 +10,12 @@ import source from '../docs/utils/source.macro';
 const docs: DocsType = {
   name: 'Font sizes',
   category: 'Typography',
-  description: [
-    <Docs.Text key="">
+  description: (
+    <Docs.Text>
       To adjust the size of typography components, the{' '}
       <Docs.Code>size</Docs.Code> prop is made available.
-    </Docs.Text>,
-  ],
+    </Docs.Text>
+  ),
   examples: [
     {
       name: 'Heading sizes',
