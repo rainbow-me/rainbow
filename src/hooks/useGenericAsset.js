@@ -13,16 +13,15 @@ const makeGenericAssetSelector = () =>
     (genericAssets, address) => genericAssets?.[address]
   );
 
-const genericManyAssetsSelector = () =>
-  createSelector(
-    genericAssetsSelector,
-    addressesSelector,
-    (genericAssets, addresses) =>
-      addresses.reduce((acc, address) => {
-        acc[address] = genericAssets?.[address];
-        return acc;
-      }, {})
-  );
+const genericManyAssetsSelector = createSelector(
+  genericAssetsSelector,
+  addressesSelector,
+  (genericAssets, addresses) =>
+    addresses?.reduce((acc, address) => {
+      acc[address] = genericAssets?.[address];
+      return acc;
+    }, {})
+);
 
 export default function useGenericAsset(address) {
   const selectGenericAsset = useMemo(makeGenericAssetSelector, []);

@@ -371,15 +371,19 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
     if (!TokensListenedCache?.[nativeCurrency]) {
       TokensListenedCache[nativeCurrency] = {};
     }
-    TokensListenedCache[nativeCurrency][code] = true;
+    assetsSocket && (TokensListenedCache[nativeCurrency][code] = true);
   });
 
-  if (newAssetsCodes.length > 0) {
-    assetsSocket?.emit(
-      ...assetPricesSubscription(newAssetsCodes, nativeCurrency)
-    );
-    assetsSocket?.emit(...ethUSDSubscription);
-    return true;
+  if (assetsSocket) {
+    if (newAssetsCodes.length > 0) {
+      assetsSocket.emit(
+        ...assetPricesSubscription(newAssetsCodes, nativeCurrency)
+      );
+      assetsSocket.emit(...ethUSDSubscription);
+      return true;
+    }
+  } else {
+    setTimeout(() => emitAssetRequest(assetAddress), 100);
   }
   return false;
 };
