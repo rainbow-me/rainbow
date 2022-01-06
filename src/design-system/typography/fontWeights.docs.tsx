@@ -7,8 +7,10 @@ import { Docs as DocsType } from '../docs/types';
 import source from '../docs/utils/source.macro';
 
 const docs: DocsType = {
-  name: 'Font weights',
-  category: 'Typography',
+  meta: {
+    name: 'Font weights',
+    category: 'Typography',
+  },
   description: (
     <Docs.Text>
       To adjust the thickness of typography components, the{' '}

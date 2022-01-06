@@ -1,3 +1,4 @@
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 import { Box } from '../components/Box/Box';
 import { Text } from '../components/Text/Text';
@@ -7,7 +8,10 @@ import source from '../docs/utils/source.macro';
 import { useForegroundColor } from './useForegroundColor';
 
 const docs: DocsType = {
-  category: 'Color',
+  meta: {
+    category: 'Color',
+    name: 'useForegroundColor',
+  },
   description: (
     <>
       <Docs.Text>
@@ -55,7 +59,6 @@ const docs: DocsType = {
       />
     </>
   ),
-  name: 'useForegroundColor',
 };
 
 export default docs;

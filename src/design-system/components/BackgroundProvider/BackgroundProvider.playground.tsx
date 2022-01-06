@@ -1,9 +1,9 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
-import { Docs } from '../../docs/types';
+import { Playground } from '../../docs/types';
 import * as examples from './BackgroundProvider.examples';
 import meta from './BackgroundProvider.meta';
 
-const docs: Docs = {
+const playground: Playground = {
   meta,
   examples: [
     examples.standardBackgrounds,
@@ -12,4 +12,4 @@ const docs: Docs = {
   ],
 };
 
-export default docs;
+export default playground;

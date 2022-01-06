@@ -58,8 +58,10 @@ const ForegroundColors = ({ mode }: { mode: ColorMode }) => (
 );
 
 const docs: DocsType = {
-  name: 'Colors',
-  category: 'Color',
+  meta: {
+    name: 'Colors',
+    category: 'Color',
+  },
   examples: [
     {
       name: 'Background colors',

@@ -1,22 +1,14 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
-import { View } from 'react-native';
 
 import * as Docs from '../../docs/components';
 import { Docs as DocsType } from '../../docs/types';
-import source from '../../docs/utils/source.macro';
-import { Placeholder } from '../../playground/Placeholder';
-import { Inset } from '../Inset/Inset';
-import { Text } from '../Text/Text';
 import { Stack } from './Stack';
-
-const MockDivider = () => (
-  <View style={{ backgroundColor: '#999', height: 1, width: '50%' }} />
-);
+import * as examples from './Stack.examples';
+import meta from './Stack.meta';
 
 const docs: DocsType = {
-  name: 'Stack',
-  category: 'Layout',
+  meta,
   description: (
     <Stack space="24px">
       <Docs.Text>
@@ -32,128 +24,23 @@ const docs: DocsType = {
     </Stack>
   ),
   examples: [
+    examples.basicUsage,
+    examples.customSpace,
     {
-      name: 'Basic usage',
-      Example: () =>
-        source(
-          <Stack space="12px">
-            <Placeholder />
-            <Placeholder />
-            <Placeholder />
-          </Stack>
-        ),
-    },
-    {
-      name: 'Custom space',
-      Example: () =>
-        source(
-          <Stack space={{ custom: 5 }}>
-            <Placeholder />
-            <Placeholder />
-            <Placeholder />
-          </Stack>
-        ),
-    },
-    {
-      name: 'Nested',
+      ...examples.nested,
       description: (
         <Docs.Text>
           Stacks can be nested within each other for layouts with differing
           amounts of space between groups of content.
         </Docs.Text>
       ),
-      Example: () =>
-        source(
-          <Inset horizontal="19px" vertical="24px">
-            <Stack space="42px">
-              <Stack space="12px">
-                <Placeholder />
-                <Placeholder />
-                <Placeholder />
-              </Stack>
-              <Stack space="12px">
-                <Placeholder />
-                <Placeholder />
-                <Placeholder />
-              </Stack>
-            </Stack>
-          </Inset>
-        ),
     },
-    {
-      name: 'With text',
-      Example: () =>
-        source(
-          <Stack space="15px">
-            <Text>Lorem ipsum</Text>
-            <Text>Lorem ipsum</Text>
-            <Text>Lorem ipsum</Text>
-          </Stack>
-        ),
-    },
-    {
-      name: 'With center alignment',
-      Example: () =>
-        source(
-          <Stack alignHorizontal="center" space="19px">
-            <Placeholder width={30} />
-            <Placeholder width={90} />
-            <Placeholder width={60} />
-          </Stack>
-        ),
-    },
-    {
-      name: 'With separators',
-      Example: () =>
-        source(
-          <Stack separator={<MockDivider />} space="19px">
-            <Placeholder />
-            <Placeholder />
-            <Placeholder />
-          </Stack>
-        ),
-    },
-    {
-      name: 'With center alignment and dividers',
-      Example: () =>
-        source(
-          <Stack
-            alignHorizontal="center"
-            separator={<MockDivider />}
-            space="19px"
-          >
-            <Placeholder width={30} />
-            <Placeholder width={90} />
-            <Placeholder width={60} />
-          </Stack>
-        ),
-    },
-    {
-      name: 'With right alignment and dividers',
-      Example: () =>
-        source(
-          <Stack
-            alignHorizontal="right"
-            separator={<MockDivider />}
-            space="19px"
-          >
-            <Placeholder width={30} />
-            <Placeholder width={90} />
-            <Placeholder width={60} />
-          </Stack>
-        ),
-    },
-    {
-      name: 'With no space and separators',
-      Example: () =>
-        source(
-          <Stack alignHorizontal="center" separator={<MockDivider />}>
-            <Placeholder width={30} />
-            <Placeholder width={90} />
-            <Placeholder width={60} />
-          </Stack>
-        ),
-    },
+    examples.withText,
+    examples.withCenterAlignment,
+    examples.withSeparators,
+    examples.withCenterAlignmentAndDividers,
+    examples.withRightAlignmentAndDividers,
+    examples.withNoSpaceAndSeparators,
   ],
 };
 

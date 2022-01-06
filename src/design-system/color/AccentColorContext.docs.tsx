@@ -1,3 +1,4 @@
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 import { Box } from '../components/Box/Box';
 import { Text } from '../components/Text/Text';
@@ -7,7 +8,10 @@ import source from '../docs/utils/source.macro';
 import { AccentColorProvider } from './AccentColorContext';
 
 const docs: DocsType = {
-  category: 'Color',
+  meta: {
+    category: 'Color',
+    name: 'AccentColorProvider',
+  },
   description: (
     <>
       <Docs.Text>
@@ -44,10 +48,8 @@ const docs: DocsType = {
         disableActions
         showCode
       />
-      ,
     </>
   ),
-  name: 'AccentColorProvider',
 };
 
 export default docs;

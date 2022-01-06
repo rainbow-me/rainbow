@@ -1,9 +1,9 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
-import { Docs } from '../../docs/types';
+import { Playground } from '../../docs/types';
 import * as examples from './Text.examples';
 import meta from './Text.meta';
 
-const docs: Docs = {
+const playground: Playground = {
   meta,
   examples: [
     ...examples.sizes,
@@ -14,4 +14,4 @@ const docs: Docs = {
   ],
 };
 
-export default docs;
+export default playground;

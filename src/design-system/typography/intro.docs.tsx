@@ -1,9 +1,13 @@
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 import * as Docs from '../docs/components';
 import { Docs as DocsType } from '../docs/types';
 
 const docs: DocsType = {
-  category: 'Typography',
+  meta: {
+    category: 'Typography',
+    name: 'Introduction',
+  },
   description: (
     <>
       <Docs.Text>
@@ -43,10 +47,8 @@ const docs: DocsType = {
         <Docs.Code>color</Docs.Code>, <Docs.Code>uppercase</Docs.Code> and{' '}
         <Docs.Code>tabularNumbers</Docs.Code>.
       </Docs.Text>
-      ,
     </>
   ),
-  name: 'Introduction',
 };
 
 export default docs;

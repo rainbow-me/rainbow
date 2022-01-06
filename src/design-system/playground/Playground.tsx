@@ -8,34 +8,34 @@ import {
 } from 'react-native';
 import useHideSplashScreen from '../../hooks/useHideSplashScreen';
 import { Heading, Inline, Inset, Stack } from '../';
-import backgroundDocs from '../components/BackgroundProvider/BackgroundProvider.docs';
-import bleedDocs from '../components/Bleed/Bleed.docs';
-import boxDocs from '../components/Box/Box.docs';
-import columnsDocs from '../components/Columns/Columns.docs';
-import headingDocs from '../components/Heading/Heading.docs';
-import inlineDocs from '../components/Inline/Inline.docs';
-import insetDocs from '../components/Inset/Inset.docs';
-import markdownTextDocs from '../components/MarkdownText/MarkdownText.docs';
-import rowDocs from '../components/Row/Row.docs';
-import stackDocs from '../components/Stack/Stack.docs';
-import textDocs from '../components/Text/Text.docs';
-import textLinkDocs from '../components/TextLink/TextLink.docs';
-import { Docs, DocsExample } from '../docs/types';
+import backgroundPlayground from '../components/BackgroundProvider/BackgroundProvider.playground';
+import bleedPlayground from '../components/Bleed/Bleed.playground';
+import boxPlayground from '../components/Box/Box.playground';
+import columnsPlayground from '../components/Columns/Columns.playground';
+import headingPlayground from '../components/Heading/Heading.playground';
+import inlinePlayground from '../components/Inline/Inline.playground';
+import insetPlayground from '../components/Inset/Inset.playground';
+import markdownTextPlayground from '../components/MarkdownText/MarkdownText.playground';
+import rowPlayground from '../components/Row/Row.playground';
+import stackPlayground from '../components/Stack/Stack.playground';
+import textPlayground from '../components/Text/Text.playground';
+import textLinkPlayground from '../components/TextLink/TextLink.playground';
+import { Docs, Example } from '../docs/types';
 import { getSourceFromExample } from '../docs/utils/getSourceFromExample';
 
 const allDocs = [
-  backgroundDocs,
-  bleedDocs,
-  boxDocs,
-  columnsDocs,
-  headingDocs,
-  inlineDocs,
-  insetDocs,
-  markdownTextDocs,
-  rowDocs,
-  stackDocs,
-  textDocs,
-  textLinkDocs,
+  backgroundPlayground,
+  boxPlayground,
+  bleedPlayground,
+  columnsPlayground,
+  headingPlayground,
+  inlinePlayground,
+  insetPlayground,
+  markdownTextPlayground,
+  rowPlayground,
+  stackPlayground,
+  textPlayground,
+  textLinkPlayground,
 ];
 
 const styles = StyleSheet.create({
@@ -49,14 +49,14 @@ const styles = StyleSheet.create({
   },
 });
 
-const CodePreview = ({ Example }: { Example: DocsExample['Example'] }) => {
+const CodePreview = ({ Example }: { Example: Example['Example'] }) => {
   const { element } = React.useMemo(() => getSourceFromExample({ Example }), [
     Example,
   ]);
   return <>{element}</>;
 };
 
-const DocsRow = ({ name, category, examples }: Docs) => {
+const DocsRow = ({ meta, examples }: Docs) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -68,7 +68,7 @@ const DocsRow = ({ name, category, examples }: Docs) => {
           <View style={styles.docsRowToggle}>
             <Heading size="20px">{open ? '-' : '+'}</Heading>
           </View>
-          <Heading size="20px">{name}</Heading>
+          <Heading size="20px">{meta.name}</Heading>
         </Inline>
       </TouchableOpacity>
       {open
@@ -80,7 +80,7 @@ const DocsRow = ({ name, category, examples }: Docs) => {
                 </Heading>
                 <View
                   style={
-                    category === 'Layout' && name !== 'Box'
+                    meta.category === 'Layout' && name !== 'Box'
                       ? styles.layoutContainer
                       : undefined
                   }
@@ -104,13 +104,8 @@ export const Playground = () => {
       {android ? <View style={{ height: StatusBar.currentHeight }} /> : null}
       <Inset space="19px">
         <Stack space="24px">
-          {allDocs.map(({ name, category, examples }, index) => (
-            <DocsRow
-              category={category}
-              examples={examples}
-              key={index}
-              name={name}
-            />
+          {allDocs.map(({ meta, examples }, index) => (
+            <DocsRow examples={examples} key={index} meta={meta} />
           ))}
         </Stack>
       </Inset>

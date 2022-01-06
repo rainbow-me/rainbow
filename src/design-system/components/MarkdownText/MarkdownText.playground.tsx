@@ -93,8 +93,10 @@ const customSpaceMarkdown = `
 `;
 
 const docs: Docs = {
-  name: 'MarkdownText',
-  category: 'Content',
+  meta: {
+    name: 'MarkdownText',
+    category: 'Content',
+  },
   examples: [
     {
       name: 'Basic usage',
@@ -107,7 +109,6 @@ const docs: Docs = {
           </>
         ),
     },
-
     {
       name: 'Custom space',
       Example: () =>

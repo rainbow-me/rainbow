@@ -1,3 +1,4 @@
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
 import { Box } from '../components/Box/Box';
 import { Text } from '../components/Text/Text';
@@ -6,7 +7,10 @@ import { Docs as DocsType } from '../docs/types';
 import source from '../docs/utils/source.macro';
 
 const docs: DocsType = {
-  category: 'Color',
+  meta: {
+    category: 'Color',
+    name: 'Introduction',
+  },
   description: (
     <>
       <Docs.Text>
@@ -57,7 +61,6 @@ const docs: DocsType = {
       </Docs.Text>
     </>
   ),
-  name: 'Introduction',
 };
 
 export default docs;

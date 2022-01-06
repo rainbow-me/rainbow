@@ -4,16 +4,11 @@ import React from 'react';
 
 import * as Docs from '../../docs/components';
 import { Docs as DocsType } from '../../docs/types';
-import source from '../../docs/utils/source.macro';
-import { Placeholder } from '../../playground/Placeholder';
-import { Inset } from '../Inset/Inset';
-import { Stack } from '../Stack/Stack';
-import { Text } from '../Text/Text';
-import { Box } from './Box';
+import * as examples from './Box.examples';
+import meta from './Box.meta';
 
 const docs: DocsType = {
-  name: 'Box',
-  category: 'Layout',
+  meta,
   description: (
     <>
       <Docs.Text>
@@ -31,7 +26,7 @@ const docs: DocsType = {
   ),
   examples: [
     {
-      name: 'Background',
+      ...examples.background,
       description: (
         <>
           <Docs.Text>
@@ -48,34 +43,9 @@ const docs: DocsType = {
           </Docs.Text>
         </>
       ),
-      Example: () =>
-        source(
-          <>
-            <Box background="body" padding="19px">
-              <Text size="18px" weight="bold">
-                Body
-              </Text>
-            </Box>
-            <Box background="accent" padding="19px">
-              <Text size="18px" weight="bold">
-                Accent
-              </Text>
-            </Box>
-            <Box background="action" padding="19px">
-              <Text size="18px" weight="bold">
-                Action
-              </Text>
-            </Box>
-            <Box background="swap" padding="19px">
-              <Text size="18px" weight="bold">
-                Swap
-              </Text>
-            </Box>
-          </>
-        ),
     },
     {
-      name: 'Padding',
+      ...examples.padding,
       description: (
         <Docs.Text>
           To apply padding to the bounds of Box, pass the{' '}
@@ -83,35 +53,9 @@ const docs: DocsType = {
           particular direction or side, as seen below.
         </Docs.Text>
       ),
-      Example: () =>
-        source(
-          <Stack space="12px">
-            <Box background="body" padding="19px">
-              <Placeholder />
-            </Box>
-            <Box background="body" paddingHorizontal="19px">
-              <Placeholder />
-            </Box>
-            <Box background="body" paddingVertical="19px">
-              <Placeholder />
-            </Box>
-            <Box background="body" paddingLeft="19px">
-              <Placeholder />
-            </Box>
-            <Box background="body" paddingRight="19px">
-              <Placeholder />
-            </Box>
-            <Box background="body" paddingTop="19px">
-              <Placeholder />
-            </Box>
-            <Box background="body" paddingBottom="19px">
-              <Placeholder />
-            </Box>
-          </Stack>
-        ),
     },
     {
-      name: 'Margin',
+      ...examples.margin,
       description: (
         <Docs.Text>
           To apply margin to the bounds of Box, pass the{' '}
@@ -119,41 +63,9 @@ const docs: DocsType = {
           particular direction or side, as seen below.
         </Docs.Text>
       ),
-      Example: () =>
-        source(
-          <Stack space="12px">
-            <Box background="body" margin="-19px">
-              <Placeholder />
-            </Box>
-            <Inset vertical="19px">
-              <Box background="body" marginHorizontal="-19px">
-                <Placeholder />
-              </Box>
-            </Inset>
-            <Box background="body" marginVertical="-19px">
-              <Placeholder />
-            </Box>
-            <Inset vertical="19px">
-              <Box background="body" marginLeft="-19px">
-                <Placeholder />
-              </Box>
-            </Inset>
-            <Box background="body" marginRight="-19px">
-              <Placeholder />
-            </Box>
-            <Inset vertical="19px">
-              <Box background="body" marginTop="-19px">
-                <Placeholder />
-              </Box>
-            </Inset>
-            <Box background="body" marginBottom="-19px">
-              <Placeholder />
-            </Box>
-          </Stack>
-        ),
     },
     {
-      name: 'Border radius',
+      ...examples.borderRadius,
       description: (
         <Docs.Text>
           To apply a border radius, supply the{' '}
@@ -162,31 +74,9 @@ const docs: DocsType = {
           corners as seen below.
         </Docs.Text>
       ),
-      Example: () =>
-        source(
-          <Stack space="24px">
-            <Box background="accent" borderRadius={16} padding="19px" />
-            <Box background="accent" borderLeftRadius={16} padding="19px" />
-            <Box background="accent" borderRightRadius={16} padding="19px" />
-            <Box background="accent" borderTopRadius={16} padding="19px" />
-            <Box background="accent" borderBottomRadius={16} padding="19px" />
-            <Box
-              background="accent"
-              borderBottomLeftRadius={16}
-              padding="19px"
-            />
-            <Box
-              background="accent"
-              borderBottomRightRadius={16}
-              padding="19px"
-            />
-            <Box background="accent" borderTopLeftRadius={16} padding="19px" />
-            <Box background="accent" borderTopRightRadius={16} padding="19px" />
-          </Stack>
-        ),
     },
     {
-      name: 'Widths',
+      ...examples.widths,
       description: (
         <Docs.Text>
           To apply a width, fractional values (e.g. <Docs.Code>1/3</Docs.Code>)
@@ -194,13 +84,6 @@ const docs: DocsType = {
           <Docs.Code>width</Docs.Code> prop.
         </Docs.Text>
       ),
-      Example: () =>
-        source(
-          <Stack space="12px">
-            <Box background="accent" padding="24px" width="1/3" />
-            <Box background="accent" padding="24px" width="full" />
-          </Stack>
-        ),
     },
     {
       name: 'Composition',

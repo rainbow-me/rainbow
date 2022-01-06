@@ -3,7 +3,6 @@ import * as Docs from '../docs/components';
 import { Docs as DocsType } from '../docs/types';
 
 const docs: DocsType = {
-  category: 'Layout',
   description: (
     <>
       <Docs.Text>
@@ -35,7 +34,10 @@ const docs: DocsType = {
       </Docs.Blockquote>
     </>
   ),
-  name: 'Introduction',
+  meta: {
+    category: 'Layout',
+    name: 'Introduction',
+  },
 };
 
 export default docs;

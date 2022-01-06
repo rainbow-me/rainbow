@@ -8,8 +8,10 @@ import { Docs as DocsType } from '../docs/types';
 import source from '../docs/utils/source.macro';
 
 const docs: DocsType = {
-  name: 'Font sizes',
-  category: 'Typography',
+  meta: {
+    name: 'Font sizes',
+    category: 'Typography',
+  },
   description: (
     <Docs.Text>
       To adjust the size of typography components, the{' '}

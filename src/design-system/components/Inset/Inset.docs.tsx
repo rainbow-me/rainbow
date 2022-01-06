@@ -2,13 +2,11 @@
 import React from 'react';
 import * as Docs from '../../docs/components';
 import { Docs as DocsType } from '../../docs/types';
-import source from '../../docs/utils/source.macro';
-import { Placeholder } from '../../playground/Placeholder';
-import { Inset } from './Inset';
+import * as examples from './Inset.examples';
+import meta from './Inset.meta';
 
 const docs: DocsType = {
-  name: 'Inset',
-  category: 'Layout',
+  meta,
   description: (
     <Docs.Text>
       Renders a <Docs.Strong>container with equal padding</Docs.Strong> on all
@@ -17,50 +15,23 @@ const docs: DocsType = {
   ),
   examples: [
     {
-      name: 'Basic usage',
+      ...examples.basicUsage,
       showFrame: true,
-      Example: () =>
-        source(
-          <Inset space="19px">
-            <Placeholder height={100} />
-          </Inset>
-        ),
     },
-
     {
-      name: 'Custom space',
+      ...examples.customSpace,
       showFrame: true,
-      Example: () =>
-        source(
-          <Inset space={{ custom: 12 }}>
-            <Placeholder height={100} />
-          </Inset>
-        ),
     },
-
     {
-      name: 'Horizontal space',
+      ...examples.horizontalSpace,
       description: (
         <Docs.Text>Space can also be customized per axis.</Docs.Text>
       ),
       showFrame: true,
-      Example: () =>
-        source(
-          <Inset horizontal="19px">
-            <Placeholder height={100} />
-          </Inset>
-        ),
     },
-
     {
-      name: 'Vertical space',
+      ...examples.verticalSpace,
       showFrame: true,
-      Example: () =>
-        source(
-          <Inset vertical="19px">
-            <Placeholder height={100} />
-          </Inset>
-        ),
     },
   ],
 };

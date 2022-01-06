@@ -1,6 +1,6 @@
 import typescript from 'prettier/parser-typescript';
 import prettier from 'prettier/standalone';
-import { DocsExample } from '../types';
+import { Example } from '../types';
 
 function prettify(code: string) {
   return prettier
@@ -17,7 +17,7 @@ function prettify(code: string) {
 export const getSourceFromExample = ({
   Example,
 }: {
-  Example: DocsExample['Example'];
+  Example: Example['Example'];
 }) => {
   let isIffe = false;
   let jsxString = '';

@@ -1,9 +1,9 @@
-import { DocsExample } from '../types';
+import { Example } from '../types';
 
 export const getSourceFromExample = ({
   Example,
 }: {
-  Example: DocsExample['Example'];
+  Example: Example['Example'];
 }) => {
   let element;
 

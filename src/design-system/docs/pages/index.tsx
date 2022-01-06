@@ -19,7 +19,10 @@ const Home: NextPage = () => {
     (currentCategories: { [key: string]: Docs[] }, { default: doc }) => {
       return {
         ...currentCategories,
-        [doc.category]: [...(currentCategories[doc.category] || []), doc],
+        [doc.meta.category]: [
+          ...(currentCategories[doc.meta.category] || []),
+          doc,
+        ],
       };
     },
     {}
@@ -31,12 +34,12 @@ const Home: NextPage = () => {
         ...subCategoryNames.map(
           subCategoryName =>
             docsByCategory[category].find(
-              subCategory => subCategory.name === subCategoryName
+              subCategory => subCategory.meta.name === subCategoryName
             ) as Docs
         ),
         ...docsByCategory[category],
       ],
-      'name'
+      'meta.name'
     );
     return [category, subCategories];
   });

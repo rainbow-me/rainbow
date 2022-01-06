@@ -5,11 +5,7 @@ import { sprinkles } from '../../system/sprinkles.css';
 import { Docs, DocsExample } from '../../types';
 import { CodePreview } from '../CodePreview';
 
-export const DocsAccordion = ({
-  name: componentName,
-  description,
-  examples,
-}: Docs) => {
+export const DocsAccordion = ({ meta, description, examples }: Docs) => {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -34,8 +30,7 @@ export const DocsAccordion = ({
           })}
           style={{ fontSize: '23px' }}
         >
-          <div style={{ width: '32px' }}>{open ? '-' : '+'}</div>{' '}
-          {componentName}
+          <div style={{ width: '32px' }}>{open ? '-' : '+'}</div> {meta.name}
         </div>
       </button>
       {open && (
