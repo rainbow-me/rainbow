@@ -61,7 +61,7 @@ const OuterButton = styled.View(
     ...shadow.buildAsObject(0, 5, 15, colors.shadow),
     backgroundColor: colors.dark,
     borderRadius: height / 2 + strokeWidth,
-    height: height,
+    height,
     shadowOpacity: isDarkMode && disabled ? 0 : isDarkMode ? 0.1 : 0.4,
     width,
   })
