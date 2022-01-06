@@ -22,7 +22,7 @@ const Container = styled(Column)(
     borderRadius: radius,
     minHeight: minHeight || 0,
     opacity: 1,
-    overflow: overflow,
+    overflow,
     zIndex: 1,
   })
 );
