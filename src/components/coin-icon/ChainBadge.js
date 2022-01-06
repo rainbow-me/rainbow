@@ -48,7 +48,7 @@ const IndicatorIconContainer = styled(Centered)(
     left: position === 'relative' ? 0 : badgeXPosition,
     ...positions.sizeAsObject(iconSize),
     elevation: 10,
-    marginBottom: marginBottom,
+    marginBottom,
     overflow: 'visible',
     position: position || 'absolute',
     zIndex: 10,
