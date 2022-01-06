@@ -18,7 +18,7 @@ const Container = styled(Row).attrs({
       ignorePaddingBottom ? 0 : 24
     ),
 
-    ...(paddingBottom ? { paddingBottom: paddingBottom } : {}),
+    ...(paddingBottom && { paddingBottom }),
     elevation: -1,
     width: '100%',
     zIndex: 2,
