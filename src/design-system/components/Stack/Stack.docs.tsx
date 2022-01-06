@@ -3,14 +3,14 @@ import React from 'react';
 
 import * as Docs from '../../docs/components';
 import { Docs as DocsType } from '../../docs/types';
-import { Stack } from './Stack';
+
 import * as examples from './Stack.examples';
 import meta from './Stack.meta';
 
 const docs: DocsType = {
   meta,
   description: (
-    <Stack space="24px">
+    <>
       <Docs.Text>
         Arranges children <Docs.Strong>vertically</Docs.Strong> with equal
         spacing between them, plus an optional <Docs.Code>separator</Docs.Code>{' '}
@@ -21,7 +21,7 @@ const docs: DocsType = {
         If there is only a single child node, no space or separators will be
         rendered.
       </Docs.Text>
-    </Stack>
+    </>
   ),
   examples: [
     examples.basicUsage,

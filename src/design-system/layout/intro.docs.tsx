@@ -1,8 +1,14 @@
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
+
 import * as Docs from '../docs/components';
 import { Docs as DocsType } from '../docs/types';
 
 const docs: DocsType = {
+  meta: {
+    category: 'Layout',
+    name: 'Introduction',
+  },
   description: (
     <>
       <Docs.Text>
@@ -33,11 +39,7 @@ const docs: DocsType = {
         </Docs.Text>
       </Docs.Blockquote>
     </>
-  ),
-  meta: {
-    category: 'Layout',
-    name: 'Introduction',
-  },
+  )
 };
 
 export default docs;

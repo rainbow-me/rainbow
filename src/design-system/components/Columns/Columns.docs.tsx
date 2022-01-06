@@ -1,9 +1,10 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
+
 import * as Docs from '../../docs/components';
 import { Docs as DocsType } from '../../docs/types';
-import * as examples from './Columns.examples';
 
+import * as examples from './Columns.examples';
 import meta from './Columns.meta';
 
 const docs: DocsType = {

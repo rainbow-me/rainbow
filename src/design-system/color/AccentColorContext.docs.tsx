@@ -1,10 +1,12 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
+
 import { Box } from '../components/Box/Box';
 import { Text } from '../components/Text/Text';
 import * as Docs from '../docs/components';
 import { Docs as DocsType } from '../docs/types';
 import source from '../docs/utils/source.macro';
+
 import { AccentColorProvider } from './AccentColorContext';
 
 const docs: DocsType = {

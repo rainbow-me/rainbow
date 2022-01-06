@@ -1,11 +1,13 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
+
 import { Box } from '../components/Box/Box';
 import { Columns } from '../components/Columns/Columns';
 import { Stack } from '../components/Stack/Stack';
 import { Text } from '../components/Text/Text';
 import { Docs as DocsType } from '../docs/types';
 import source from '../docs/utils/source.macro';
+
 import { ColorModeProvider } from './ColorMode';
 import {
   BackgroundColor,

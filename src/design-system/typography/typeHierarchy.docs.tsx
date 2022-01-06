@@ -1,5 +1,6 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
+
 import { Heading } from '../components/Heading/Heading';
 import { Stack } from '../components/Stack/Stack';
 import { Text } from '../components/Text/Text';
