@@ -69,7 +69,7 @@ const InnerGradient = styled(RainbowButtonGradient).attrs(
 )(({ width, height }) => ({
   height: width,
   top: -(width - height) / 2,
-  width: width,
+  width,
 }));
 
 const OuterGradient = styled(RainbowButtonGradient).attrs(
