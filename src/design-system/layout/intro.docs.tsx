@@ -39,7 +39,7 @@ const docs: DocsType = {
         </Docs.Text>
       </Docs.Blockquote>
     </>
-  )
+  ),
 };
 
 export default docs;
