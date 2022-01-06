@@ -30,3 +30,13 @@ export const getUniswapV2Tokens = async (
     return res?.data?.tokens;
   }
 };
+
+export const getDPIBalance = async () => {
+  const res = await dispersionApi.get('/dispersion/v1/dpi');
+  return res?.data?.data;
+};
+
+export const getTrendingAddresses = async () => {
+  const res = await dispersionApi.get('/dispersion/v1/trending');
+  return res?.data?.data?.trending || [];
+};
