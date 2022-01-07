@@ -81,7 +81,7 @@ const SavingsSheetEmptyState = ({
         earns you more than ever before
       </BodyText>
       <Divider color={colors.rowDividerLight} inset={[0, 42]} />
-      <ColumnWithMargins css={css} margin={19} width="100%">
+      <ColumnWithMargins margin={19} style={css} width="100%">
         <SheetActionButton
           color={colors.swapPurple}
           label="􀁍 Deposit from Wallet"

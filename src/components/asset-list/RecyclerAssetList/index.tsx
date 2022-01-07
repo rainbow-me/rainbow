@@ -154,7 +154,7 @@ const isEqualDataProvider = new DataProvider((r1, r2) => {
 });
 
 const StyledRecyclerListView = styled(RecyclerListView)({
-  // @ts-ignore
+  // @ts-expect-error
   backgroundColor: ({ theme: { colors } }) => colors.white,
   display: 'flex',
   flex: 1,
@@ -162,7 +162,7 @@ const StyledRecyclerListView = styled(RecyclerListView)({
 });
 
 const StyledContainer = styled(View)({
-  // @ts-ignore
+  // @ts-expect-error
   backgroundColor: ({ theme: { colors } }) => colors.white,
   display: 'flex',
   flex: 1,

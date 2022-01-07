@@ -50,7 +50,7 @@ export default function CoinRow({
   const isPinned = pinnedCoins.includes(props.uniqueId);
   const isHidden = hiddenCoins.includes(props.uniqueId);
   return (
-    <Container css={containerStyles}>
+    <Container style={containerStyles}>
       {isPool ? (
         <CoinIconGroup tokens={tokens} />
       ) : (

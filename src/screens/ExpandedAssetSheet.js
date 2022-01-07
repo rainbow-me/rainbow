@@ -33,14 +33,12 @@ const Container = styled(Centered).attrs({
   direction: 'column',
   flex: 1,
   justifyContent: 'flex-end',
-})(({ deviceHeight, height }) =>
-  height
-    ? {
-        height: height + deviceHeight,
-        ...position.coverAsObject,
-      }
-    : position.coverAsObject
-);
+})(({ deviceHeight, height }) => ({
+  ...(height && {
+    height: height + deviceHeight,
+  }),
+  ...position.coverAsObject,
+}));
 
 export default function ExpandedAssetSheet(props) {
   const { height: deviceHeight } = useDimensions();

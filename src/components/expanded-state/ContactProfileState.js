@@ -137,7 +137,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
 
   return (
     <ProfileModal onPressBackdrop={handleAddContact}>
-      <Centered css={centerdStyles} direction="column">
+      <Centered direction="column" style={centerdStyles}>
         <ProfileAvatarButton
           changeAvatar={handleChangeAvatar}
           color={color}
@@ -194,7 +194,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
         >
           <Centered
             backgroundColor={colors.white}
-            css={bottomStyles}
+            style={bottomStyles}
             testID="contact-profile-cancel-button"
           >
             <Text

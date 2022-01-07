@@ -868,7 +868,7 @@ export default function TransactionConfirmationScreen() {
   const renderTransactionSection = useCallback(() => {
     if (isMessageRequest) {
       return (
-        <RowWithMargins css={messageRequestContainerStyle}>
+        <RowWithMargins style={messageRequestContainerStyle}>
           <MessageSigningSection message={request.message} method={method} />
         </RowWithMargins>
       );
@@ -1087,7 +1087,7 @@ export default function TransactionConfirmationScreen() {
                   </Column>
                 )}
                 {renderTransactionButtons()}
-                <RowWithMargins css={rowStyle} margin={15}>
+                <RowWithMargins margin={15} style={rowStyle}>
                   <Column>
                     <WalletLabel>Wallet</WalletLabel>
                     <RowWithMargins margin={5}>

@@ -10,11 +10,11 @@ const FloatingPanels = React.forwardRef(
   ({ margin = FloatingPanelsMargin, ...props }, ref) => (
     <ColumnWithMargins
       {...props}
-      css={css}
       justify="center"
       margin={margin}
       pointerEvents="box-none"
       ref={ref}
+      style={css}
     />
   )
 );

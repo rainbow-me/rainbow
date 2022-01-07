@@ -212,14 +212,14 @@ export default function WalletConnectListItem({
       onPressMenuItem={handleOnPressMenuItem}
     >
       <Row align="center" height={WalletConnectListItemHeight}>
-        <Row align="center" css={rowStyle} flex={1}>
+        <Row align="center" flex={1} style={rowStyle}>
           <RequestVendorLogoIcon
             backgroundColor={colors.white}
             dappName={dappName}
             imageUrl={overrideLogo || dappIcon}
             size={VendorLogoIconSize}
           />
-          <ColumnWithMargins css={columnStyle} flex={1} margin={5}>
+          <ColumnWithMargins flex={1} margin={5} style={columnStyle}>
             <Row width="70%">
               <TruncatedText size="lmedium" weight="heavy">
                 {overrideName || dappName || 'Unknown Application'}{' '}

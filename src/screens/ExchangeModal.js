@@ -68,18 +68,15 @@ const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
 
 const InnerWrapper = styled(Centered).attrs({
   direction: 'column',
-})(
-  ios
-    ? {
-        ...position.sizeAsObject('100%'),
-        backgroundColor: ({ theme: { colors } }) => colors.transparent,
-      }
+})({
+  backgroundColor: ({ theme: { colors } }) => colors.transparent,
+  ...(ios
+    ? position.sizeAsObject('100%')
     : {
-        backgroundColor: ({ theme: { colors } }) => colors.transparent,
         height: 500,
         top: 0,
-      }
-);
+      }),
+});
 
 const Spacer = styled.View({
   height: 20,

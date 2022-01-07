@@ -61,7 +61,7 @@ const SupportCountriesExpandedState = () => {
         wiggleFactor={0}
       >
         <AssetPanel>
-          <Centered css={centeredStyles} direction="column">
+          <Centered direction="column" style={centeredStyles}>
             <TitleText>Supported Countries</TitleText>
             <Text
               align="center"

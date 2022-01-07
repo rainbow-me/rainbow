@@ -42,11 +42,10 @@ export const SavingsSheetHeight = android
 
 const Container = styled(Centered).attrs({
   direction: 'column',
-})(({ deviceHeight, height }) =>
-  height
-    ? { height: height + deviceHeight, ...position.coverAsObject }
-    : position.coverAsObject
-);
+})(({ deviceHeight, height }) => ({
+  ...position.coverAsObject,
+  ...(height && { height: height + deviceHeight }),
+}));
 
 const SavingsSheet = () => {
   const { colors, isDarkMode } = useTheme();

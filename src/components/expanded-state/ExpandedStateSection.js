@@ -8,8 +8,8 @@ const Container = styled(ColumnWithMargins).attrs({
   margin: 12,
 })(({ isNft, isL2 }) => ({
   ...padding.object(android ? 19 : 36, 19, 24),
-  paddingTop: isL2 || isNft ? 24 : android ? 19 : 36,
   ...padding.object(android ? 19 : 36, isNft ? 24 : 19, 24),
+  paddingTop: isL2 || isNft ? 24 : android ? 19 : 36,
 }));
 
 export default function ExpandedStateSection({

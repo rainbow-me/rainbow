@@ -28,8 +28,8 @@ const Sheet = ({
       <TouchableBackdrop onPress={goBack} />
       <Column
         backgroundColor={colors.white}
-        css={borders.buildRadius('top', borderRadius)}
         paddingBottom={noInsets ? 0 : insets.bottom}
+        style={borders.buildRadius('top', borderRadius)}
         width="100%"
       >
         <Centered paddingBottom={paddingBottom} paddingTop={paddingTop}>

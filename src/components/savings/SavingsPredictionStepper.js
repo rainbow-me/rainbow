@@ -35,10 +35,10 @@ const PredictionNumber = styled(AnimatedNumber).attrs(
 
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 const steps = {
-  'Monthly': {
+  Monthly: {
     days: 30,
   },
-  'Yearly': {
+  Yearly: {
     days: 365,
   },
   '5-Year': {
@@ -89,7 +89,7 @@ const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
       scaleTo={1.04}
       width="100%"
     >
-      <Row align="center" css={rowStyle}>
+      <Row align="center" style={rowStyle}>
         <RowWithMargins align="center" margin={5}>
           <CrystalBallEmoji />
           <Text color={colors.dark} size="lmedium" weight="medium">

@@ -46,22 +46,17 @@ const fetchTrendingAddresses = async coingeckoIds => {
 
 const ListButton = styled(ButtonPressAnimation).attrs({
   scaleTo: 0.96,
-})(({ selected, theme: { colors } }) =>
-  selected
-    ? {
-        backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
-        borderRadius: 12,
-        height: 30,
-        marginRight: 16,
-        paddingHorizontal: 8,
-        paddingTop: ios ? 6.5 : 4.5,
-      }
-    : {
-        marginRight: 16,
+})(({ selected, theme: { colors } }) => ({
+  marginRight: 16,
+  paddingTop: ios ? 6.5 : 4.5,
 
-        paddingTop: ios ? 6.5 : 4.5,
-      }
-);
+  ...(selected && {
+    backgroundColor: colors.alpha(colors.blueGreyDark, 0.06),
+    borderRadius: 12,
+    height: 30,
+    paddingHorizontal: 8,
+  }),
+}));
 
 const ListName = styled(Text)({
   marginLeft: 3,

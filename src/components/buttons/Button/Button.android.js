@@ -87,11 +87,10 @@ const Button = ({
         backgroundColor={
           backgroundColor || (isDarkMode ? colors.offWhite : colors.grey)
         }
-        css={containerStyles}
         disabled={disabled}
         showShadow={showShadow}
         size={size}
-        style={style}
+        style={[containerStyles, style]}
         type={type}
       >
         {shouldRenderChildrenAsText(children) ? (

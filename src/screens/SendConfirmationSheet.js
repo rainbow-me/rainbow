@@ -46,11 +46,10 @@ import styled from 'rainbowed-components';
 
 const Container = styled(Centered).attrs({
   direction: 'column',
-})(({ deviceHeight, height }) =>
-  height
-    ? { height: height + deviceHeight, ...position.coverAsObject }
-    : position.coverAsObject
-);
+})(({ deviceHeight, height }) => ({
+  ...(height && { height: height + deviceHeight }),
+  ...position.coverAsObject,
+}));
 
 const CheckboxContainer = styled(Row)({
   height: 20,

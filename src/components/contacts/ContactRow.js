@@ -105,9 +105,9 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
       onPress={handlePress}
     >
       <RowWithMargins
-        css={css}
         height={40}
         margin={10}
+        style={css}
         testID={`${testID}-contact-row-${
           removeFirstEmojiFromString(nickname) || ''
         }`}

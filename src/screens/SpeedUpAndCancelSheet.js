@@ -53,14 +53,12 @@ const springConfig = {
 
 const Container = styled(Centered).attrs({
   direction: 'column',
-})(({ deviceHeight, height }) =>
-  height
-    ? {
-        height: height + deviceHeight,
-        ...position.coverAsObject,
-      }
-    : position.coverAsObject
-);
+})(({ deviceHeight, height }) => ({
+  ...(height && {
+    height: height + deviceHeight,
+  }),
+  ...position.coverAsObject,
+}));
 
 const CenteredSheet = styled(Centered)({
   borderTopLeftRadius: 39,

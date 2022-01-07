@@ -9,7 +9,7 @@ const containerStyle = padding.object(17, 0, 8);
 const SavingsSheetHeader = ({ balance, lifetimeAccruedInterest }) => {
   const { colors } = useTheme();
   return (
-    <Centered css={containerStyle} direction="column">
+    <Centered direction="column" style={containerStyle}>
       <Text
         color={colors.alpha(colors.blueGreyDark, 0.5)}
         letterSpacing="uppercase"

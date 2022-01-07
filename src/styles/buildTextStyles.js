@@ -102,12 +102,12 @@ const buildTextStyles = css`
 buildTextStyles.object = ({
   color,
   theme,
-  size,
+  size = 'medium',
   isEmoji,
-  family,
+  family = 'SFProRounded',
   mono,
   weight,
-  letterSpacing,
+  letterSpacing = 'rounded',
   lineHeight,
   opacity,
   align,
@@ -116,41 +116,24 @@ buildTextStyles.object = ({
 }) => {
   const styles = {
     color: colors.get(color, theme.colors) || theme.colors.dark,
+    fontSize: typeof size === 'number' ? size : fonts.size[size] ?? size,
   };
 
-  // function is used because of default argument values
-  (({ isEmoji, family = 'SFProRounded', mono, weight }) => {
-    if (isEmoji) {
-      return;
-    }
-
+  if (!isEmoji) {
     styles.fontFamily = familyFontWithAndroidWidth(weight, family, mono);
-  })({ family, isEmoji, mono, weight });
+  }
 
-  // function is used because of default argument values
-  (({ size = 'medium' }) => {
-    styles.fontSize =
-      typeof size === 'number' ? size : fonts.size[size] ?? size;
-  })({
-    size,
-  });
-
-  // function is used because of default argument values
-  (({ isEmoji, weight = 'regular' }) => {
-    if (isEmoji || isNil(weight) || android) {
-      return;
+  if (!(isEmoji || isNil(weight) || android)) {
+    if (typeof weight === 'undefined') {
+      weight = 'regular';
     }
 
     styles.fontWeight = fonts.weight[weight] ?? weight;
-  })({ isEmoji, weight });
+  }
 
-  // function is used because of default argument values
-  (({ letterSpacing = 'rounded' }) => {
-    if (!isNil(letterSpacing)) {
-      styles.letterSpacing =
-        fonts.letterSpacing[letterSpacing] ?? letterSpacing;
-    }
-  })({ letterSpacing });
+  if (!isNil(letterSpacing)) {
+    styles.letterSpacing = fonts.letterSpacing[letterSpacing] ?? letterSpacing;
+  }
 
   if (!(isNil(lineHeight) || (isEmoji && android))) {
     styles.lineHeight = fonts.lineHeight[lineHeight] ?? lineHeight;

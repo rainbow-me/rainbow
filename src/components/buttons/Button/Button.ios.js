@@ -87,11 +87,10 @@ export default function Button({
           backgroundColor || (isDarkMode ? colors.offWhite : colors.grey)
         }
         borderRadius={borderRadius}
-        css={containerStyles}
         disabled={disabled}
         showShadow={showShadow}
         size={size}
-        style={style}
+        style={[containerStyles, style]}
       >
         {shouldRenderChildrenAsText(children) ? (
           <Text

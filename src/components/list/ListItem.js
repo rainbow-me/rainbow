@@ -47,9 +47,9 @@ const ListItem = ({
     >
       <Row
         align="center"
-        css={rowStyle}
         height={ListItemHeight}
         justify="space-between"
+        style={rowStyle}
         {...props}
       >
         <RowWithMargins

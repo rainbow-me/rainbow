@@ -160,10 +160,10 @@ const SavingsListRow = ({
           <SavingsListRowGradient colors={colors} />
           <Row
             align="center"
-            css={rowStyle}
             justify="space-between"
             onPress={onButtonPress}
             scaleTo={0.96}
+            style={rowStyle}
           >
             {underlying.symbol && supplyBalanceUnderlying ? (
               <Centered>
