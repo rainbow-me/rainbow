@@ -7,7 +7,7 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 import { useTimeout } from '@rainbow-me/hooks';
 import { borders, position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const Container = styled(Animated.View)({
   ...position.centeredAsObject,

@@ -20,7 +20,7 @@ import { useTimeout, useUniswapCurrencyList } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 export const SearchContainer = styled(Row)({
   height: '100%',

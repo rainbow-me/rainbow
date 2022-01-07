@@ -17,7 +17,7 @@ import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import { fonts, padding } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const CaretIcon = styled(ImgixImage).attrs(({ theme: { colors } }) => ({
   source: Caret,

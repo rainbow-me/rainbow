@@ -10,7 +10,7 @@ import SwapDetailsUniswapRow from './SwapDetailsUniswapRow';
 import { useSwapAdjustedAmounts, useSwapCurrencies } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 import { isETH } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const contentRowMargin = 24;
 export const SwapDetailsContentMinHeight =

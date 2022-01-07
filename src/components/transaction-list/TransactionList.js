@@ -31,7 +31,7 @@ import {
   ethereumUtils,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 

@@ -5,7 +5,7 @@ import TokenFamilyHeader, {
   TokenFamilyHeaderAnimationDuration,
 } from './TokenFamilyHeader';
 import { useTimeout } from '@rainbow-me/hooks';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 export const TokenFamilyWrapPaddingTop = 6;
 

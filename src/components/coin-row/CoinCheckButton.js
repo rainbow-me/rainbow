@@ -6,7 +6,7 @@ import { Icon } from '../icons';
 import { Row } from '../layout';
 import { useCoinListFinishEditingOptions } from '@rainbow-me/hooks';
 import { borders, padding, position, shadow } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const Container = styled.View({
   ...position.sizeAsObject(CoinIconSize),

@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import React, { useCallback } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
@@ -13,7 +14,6 @@ import {
 import { useAccountSettings, useStepper } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
 
 const CrystalBallEmoji = styled(Emoji).attrs({
   name: 'crystal_ball',

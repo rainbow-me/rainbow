@@ -10,7 +10,7 @@ import {
 import { Centered } from '../components/layout';
 import { useNavigation } from '@rainbow-me/navigation';
 import { padding, position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const ModalTypes = {
   contact_profile: ContactProfileState,

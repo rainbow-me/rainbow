@@ -5,7 +5,7 @@ import { useSafeArea } from 'react-native-safe-area-context';
 import Centered from './Centered';
 import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const Container = styled(Transitioning.View)({
   height: ({ height }) => height,

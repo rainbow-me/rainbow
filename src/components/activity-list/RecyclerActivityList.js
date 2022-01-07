@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import { get } from 'lodash';
 import React, { PureComponent } from 'react';
 import {
@@ -23,7 +24,6 @@ import {
   isNewValueForPath,
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
 
 const ViewTypes = {
   COMPONENT_HEADER: 0,

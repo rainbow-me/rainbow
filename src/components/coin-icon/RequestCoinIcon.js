@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { CircularProgress } from 'react-native-circular-progress';
 import { useTheme } from '../../context/ThemeContext';
 import RequestVendorLogoIcon from './RequestVendorLogoIcon';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const RequestCoinIconSize = 48;
 

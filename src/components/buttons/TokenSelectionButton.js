@@ -7,7 +7,7 @@ import CaretImageSource from '@rainbow-me/assets/family-dropdown-arrow.png';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { padding, position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 import ShadowStack from 'react-native-shadow-stack';
 
 const TokenSelectionButtonHeight = 46;

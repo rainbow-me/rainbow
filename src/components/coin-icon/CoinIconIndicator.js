@@ -4,7 +4,7 @@ import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { useIsCoinListEditedSharedValue } from '@rainbow-me/helpers/SharedValuesContext';
 import { borders, shadow } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const IndicatorIcon = styled(Icon).attrs(({ isPinned, theme: { colors } }) => ({
   color: colors.whiteLabel,

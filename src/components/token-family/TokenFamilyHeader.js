@@ -8,7 +8,7 @@ import TokenFamilyHeaderIcon from './TokenFamilyHeaderIcon';
 import { useTheme } from '@rainbow-me/context';
 import { ImgixImage } from '@rainbow-me/images';
 import { padding } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const AnimatedImgixImage = Animated.createAnimatedComponent(ImgixImage);
 

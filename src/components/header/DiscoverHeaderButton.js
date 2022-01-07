@@ -6,7 +6,7 @@ import { Text } from '../text';
 import HeaderButton from './HeaderButton';
 import Routes from '@rainbow-me/routes';
 import { padding, position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 import ShadowStack from 'react-native-shadow-stack';
 
 const DiscoverButtonShadowsFactory = colors => [

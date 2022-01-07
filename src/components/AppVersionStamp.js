@@ -4,7 +4,7 @@ import { Text } from './text';
 import { useAppVersion, useTimeout } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const DEBUG_TAP_COUNT = 15;
 

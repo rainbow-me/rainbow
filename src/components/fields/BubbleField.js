@@ -4,7 +4,7 @@ import { MiniButton } from '../buttons';
 import { ExchangeInput } from '../exchange';
 import { Column, Row } from '../layout';
 import { useDimensions } from '@rainbow-me/hooks';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const BubbleInput = styled(ExchangeInput).attrs(
   ({ isSmallPhone, isTinyPhone, theme: { isDarkMode } }) => ({

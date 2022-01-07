@@ -3,7 +3,7 @@ import { StatusBar, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Spinner from '../Spinner';
 import { Centered, FlexItem } from '../layout';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const Container = styled(FlexItem)({
   backgroundColor: ({ theme: { colors } }) => colors.transparent,

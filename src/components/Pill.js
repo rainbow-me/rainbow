@@ -3,7 +3,7 @@ import RadialGradient from 'react-native-radial-gradient';
 import { useTheme } from '../context/ThemeContext';
 import { TruncatedText } from './text';
 import { padding } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const Gradient = styled(RadialGradient).attrs(
   ({ theme: { colors }, borderRadius = 10.5 }) => ({

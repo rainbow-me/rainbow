@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import { useRoute } from '@react-navigation/core';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert } from 'react-native';
@@ -17,7 +18,6 @@ import { useBlockBackButton } from '@rainbow-me/hooks/useBlockBackButton';
 import { ImgixImage } from '@rainbow-me/images';
 import { padding } from '@rainbow-me/styles';
 import { haptics } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
 
 const Logo = styled(ImgixImage).attrs({
   source: RainbowLogo,

@@ -11,7 +11,7 @@ import { ExchangeInput } from '../exchange';
 import { Column, Row } from '../layout';
 import { Text } from '../text';
 import { useDimensions } from '@rainbow-me/hooks';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 const BubbleInput = styled(ExchangeInput).attrs(
   ({ isSmallPhone, isTinyPhone, theme: { isDarkMode } }) => ({
     disableTabularNums: true,

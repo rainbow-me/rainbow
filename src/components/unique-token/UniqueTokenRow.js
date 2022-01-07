@@ -12,7 +12,7 @@ import UniqueTokenCard from './UniqueTokenCard';
 import { useWallets } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { padding, position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const Container = styled(Row).attrs({ align: 'center' })({
   ...padding.object(0, UniqueTokenRowPadding),

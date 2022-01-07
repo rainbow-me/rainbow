@@ -9,7 +9,7 @@ import FloatingActionButton from './FloatingActionButton';
 import { enableActionsOnReadOnlyWallet } from '@rainbow-me/config/debug';
 import Routes from '@rainbow-me/routes';
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const FabShadow = [
   [0, 10, 30, lightModeThemeColors.shadow, 0.8],

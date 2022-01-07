@@ -5,7 +5,7 @@ import { interpolate, ScaleInAnimation } from '../../animations';
 import { Icon } from '../../icons';
 import { Centered } from '../../layout';
 import { position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const { cond, divide, greaterThan } = Animated;
 

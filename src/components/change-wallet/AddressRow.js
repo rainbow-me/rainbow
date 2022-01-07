@@ -16,7 +16,7 @@ import {
 } from '@rainbow-me/helpers/emojiHandler';
 import { fonts, fontWithWidth, getFontSize } from '@rainbow-me/styles';
 import { deviceUtils, profileUtils } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const maxAccountLabelWidth = deviceUtils.dimensions.width - 88;
 const NOOP = () => undefined;

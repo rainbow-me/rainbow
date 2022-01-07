@@ -14,7 +14,7 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 import WalletBackupStepTypes from '@rainbow-me/helpers/walletBackupStepTypes';
 import { fonts } from '@rainbow-me/styles';
 import { deviceUtils, safeAreaInsetValues } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 export const sharedCoolModalTopOffset = safeAreaInsetValues.top;
 

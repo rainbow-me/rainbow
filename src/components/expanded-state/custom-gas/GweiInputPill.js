@@ -5,7 +5,7 @@ import { Row } from '../../../components/layout';
 import { ButtonPressAnimation } from '../../animations';
 import { Text } from '../../text';
 import { buildTextStyles, margin, padding } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 

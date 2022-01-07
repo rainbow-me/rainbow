@@ -10,7 +10,7 @@ import RainbowButtonTypes from './RainbowButtonTypes';
 import { useDimensions } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { position, shadow } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 import ShadowView from 'react-native-shadow-stack/ShadowView';
 
 const AddCashIcon = styled(ImgixImage).attrs({

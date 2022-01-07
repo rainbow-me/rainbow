@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import analytics from '@segment/analytics-react-native';
 import { isEmpty } from 'lodash';
 import React, {
@@ -58,7 +59,6 @@ import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
-import styled from 'rainbowed-components';
 
 const FloatingPanels = ios
   ? AnimatedExchangeFloatingPanels

@@ -5,7 +5,7 @@ import { Sheet } from '../components/sheet';
 import { Text } from '../components/text';
 import { useNavigation } from '../navigation/Navigation';
 import { useAppState } from '@rainbow-me/hooks';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const BodyText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',
@@ -18,20 +18,20 @@ const BodyText = styled(Text).attrs(({ theme: { colors } }) => ({
 });
 
 const emojisMap = {
-  'connect': '🥳',
-  'reject': '👻',
-  'sign': '🥳',
+  connect: '🥳',
+  reject: '👻',
+  sign: '🥳',
   'sign-canceled': '👻',
-  'transaction': '🥳',
+  transaction: '🥳',
   'transaction-canceled': '👻',
 };
 
 const titlesMap = {
-  'connect': "You're connected!",
-  'reject': 'Connection canceled',
-  'sign': 'Message signed!',
+  connect: "You're connected!",
+  reject: 'Connection canceled',
+  sign: 'Message signed!',
   'sign-canceled': 'Transaction canceled!',
-  'transaction': 'Transaction sent!',
+  transaction: 'Transaction sent!',
   'transaction-canceled': 'Transaction canceled!',
 };
 

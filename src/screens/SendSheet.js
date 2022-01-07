@@ -63,7 +63,7 @@ import {
 } from '@rainbow-me/utilities';
 import { deviceUtils, ethereumUtils } from '@rainbow-me/utils';
 import logger from 'logger';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const sheetHeight = deviceUtils.dimensions.height - (android ? 30 : 10);
 const statusBarHeight = getStatusBarHeight(true);

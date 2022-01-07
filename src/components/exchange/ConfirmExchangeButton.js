@@ -16,7 +16,7 @@ import {
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { lightModeThemeColors, padding } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const paddingHorizontal = 19;
 

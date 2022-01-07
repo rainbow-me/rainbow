@@ -38,7 +38,7 @@ import {
   AppleReviewAddress,
   REVIEW_DONE_KEY,
 } from '@rainbow-me/utils/reviewAlert';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const { RainbowRequestReview, RNReview } = NativeModules;
 

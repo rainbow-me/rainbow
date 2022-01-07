@@ -13,7 +13,7 @@ import {
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const noPriceData = 'No price data';
 

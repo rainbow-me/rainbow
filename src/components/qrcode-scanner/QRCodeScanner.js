@@ -16,7 +16,7 @@ import SimulatorFakeCameraImageSource from '@rainbow-me/assets/simulator-fake-ca
 import { useBooleanState, useScanner } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const Camera = styled(RNCamera)({
   ...position.sizeAsObject('100%'),

@@ -13,7 +13,7 @@ import {
   magicMemo,
   CoinIcon as ReactCoinIcon,
 } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 export const CoinIconSize = 40;
 

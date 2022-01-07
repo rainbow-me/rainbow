@@ -2,7 +2,7 @@ import { constant, isNil, isNumber, times } from 'lodash';
 import React from 'react';
 import { magicMemo } from '../utils';
 import { borders, position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 export const DividerSize = 2;
 

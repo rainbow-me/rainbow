@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import { times } from 'lodash';
 import React, { Fragment, useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, LayoutAnimation } from 'react-native';
@@ -10,7 +11,6 @@ import { Text } from '../text';
 import EdgeFade from './EdgeFade';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useAccountSettings, useUniswapPools } from '@rainbow-me/hooks';
-import styled from 'rainbowed-components';
 
 const INITIAL_PAGE_AMOUNT = 15;
 

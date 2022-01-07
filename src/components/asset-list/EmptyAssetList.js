@@ -7,7 +7,7 @@ import { Centered, Column } from '../layout';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 import AssetListItemSkeleton from './AssetListItemSkeleton';
 import { position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const Container = styled(Column)(position.sizeAsObject('100%'));
 

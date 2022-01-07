@@ -10,7 +10,7 @@ import ExchangeAssetList from './ExchangeAssetList';
 import { ExchangeSearchHeight } from './ExchangeSearch';
 import { usePrevious } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const EmptyCurrencySelectionList = styled(EmptyAssetList).attrs({
   pointerEvents: 'none',

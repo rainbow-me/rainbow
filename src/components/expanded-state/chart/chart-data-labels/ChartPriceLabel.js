@@ -9,7 +9,7 @@ import { NativeCurrencyKeys } from '@rainbow-me/entities';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const ChartPriceRow = styled(Row)({});
 

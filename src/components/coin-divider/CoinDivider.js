@@ -25,7 +25,7 @@ import {
 } from '@rainbow-me/hooks';
 import { emitChartsRequest } from '@rainbow-me/redux/explorer';
 import { padding } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 export const CoinDividerHeight = 30;
 export const CoinDividerContainerHeight = CoinDividerHeight + 11;

@@ -40,7 +40,7 @@ import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const LoadingSpinner = styled(android ? Spinner : ActivityIndicator).attrs(
   ({ theme: { colors } }) => ({

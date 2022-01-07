@@ -4,7 +4,7 @@ import RadialGradient from 'react-native-radial-gradient';
 import Animated from 'react-native-reanimated';
 import { Text } from '../text';
 import { useDimensions } from '@rainbow-me/hooks';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const FontSizeMultiple = 0.24;
 const HeightMultiple = 0.288;

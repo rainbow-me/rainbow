@@ -9,7 +9,7 @@ import { RowWithMargins } from '../layout';
 import { TruncatedText } from '../text';
 import { useDimensions } from '@rainbow-me/hooks';
 import { padding, position, shadow } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const springConfig = {
   damping: 14,

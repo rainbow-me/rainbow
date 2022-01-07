@@ -1,5 +1,5 @@
 import Text from './Text';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const H1 = styled(Text).attrs(
   ({

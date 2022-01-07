@@ -19,7 +19,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import { margin } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const FOOTER_HEIGHT = 76;
 const CONTENT_HEIGHT = 310;

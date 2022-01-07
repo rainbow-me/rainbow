@@ -2,7 +2,7 @@ import React from 'react';
 import { Centered } from '../layout';
 import SheetHandle, { HandleHeight } from './SheetHandle';
 import { padding } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const paddingBottom = 6;
 const paddingTop = 6;

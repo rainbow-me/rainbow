@@ -3,7 +3,7 @@ import { magicMemo } from '../../utils';
 import { CoinIcon } from '../coin-icon';
 import { Centered, Row } from '../layout';
 import { Text, TruncatedText } from '../text';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const CoinName = styled(TruncatedText).attrs({
   size: 'large',

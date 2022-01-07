@@ -15,7 +15,7 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { padding } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const Content = styled(Column).attrs({
   align: 'center',

@@ -35,7 +35,7 @@ import {
 import Routes from '@rainbow-me/routes';
 import { margin, padding } from '@rainbow-me/styles';
 import logger from 'logger';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const DescriptionText = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',

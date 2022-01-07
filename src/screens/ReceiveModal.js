@@ -15,7 +15,7 @@ import { useNavigation } from '../navigation/Navigation';
 import { abbreviations, deviceUtils } from '../utils';
 import { useAccountProfile } from '@rainbow-me/hooks';
 import { padding, shadow } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const QRCodeSize = ios ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
 

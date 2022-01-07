@@ -6,7 +6,7 @@ import { Text, TruncatedText } from '../../text';
 import TransactionSheet from '../TransactionSheet';
 import { formatFixedDecimals } from '@rainbow-me/helpers/utilities';
 import { padding } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const Amount = styled(TruncatedText).attrs(({ theme: { colors } }) => ({
   color: colors.dark,

@@ -16,7 +16,7 @@ import {
 } from '@rainbow-me/hooks';
 import { RAINBOW_PROFILES_BASE_URL } from '@rainbow-me/references';
 import { padding } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 export const ListHeaderHeight = 50;
 

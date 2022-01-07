@@ -18,7 +18,7 @@ import AddressRow from './AddressRow';
 import WalletOption from './WalletOption';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const listTopPadding = 7.5;
 const rowHeight = 59;

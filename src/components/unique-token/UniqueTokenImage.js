@@ -14,7 +14,7 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({
   dark: darkMode

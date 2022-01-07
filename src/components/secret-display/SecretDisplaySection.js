@@ -18,7 +18,7 @@ import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
 import { margin, padding, position, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const Title = styled(Text).attrs({
   align: 'center',

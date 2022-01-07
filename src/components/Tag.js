@@ -8,7 +8,7 @@ import { ButtonPressAnimation } from './animations';
 import { Centered, Column } from './layout';
 import { Text as TextElement } from './text';
 import { padding } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const PropertyActionsEnum = {
   viewTraitOnOpensea: 'viewTraitOnOpensea',

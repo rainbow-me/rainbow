@@ -3,7 +3,7 @@ import Divider from '../../Divider';
 import { Centered, Column, ColumnWithMargins, Row } from '../../layout';
 import { Emoji, Text } from '../../text';
 import { padding } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const Container = styled(ColumnWithMargins).attrs({
   align: 'center',

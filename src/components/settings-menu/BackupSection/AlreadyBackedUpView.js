@@ -20,7 +20,7 @@ import {
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { fonts, padding, position, shadow } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const WalletBackupStatus = {
   CLOUD_BACKUP: 0,

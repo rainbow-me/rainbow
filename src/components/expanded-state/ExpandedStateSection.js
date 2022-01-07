@@ -1,8 +1,8 @@
+import styled from '@rainbow-me/styled-components';
 import React from 'react';
 import { ColumnWithMargins } from '../layout';
 import { Text } from '../text';
 import { padding } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
 
 const Container = styled(ColumnWithMargins).attrs({
   margin: 12,

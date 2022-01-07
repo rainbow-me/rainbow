@@ -43,7 +43,7 @@ import {
 } from '@rainbow-me/utils';
 
 import logger from 'logger';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const footerHeight = 111;

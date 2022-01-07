@@ -27,7 +27,7 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import { padding, position } from '@rainbow-me/styles';
 import { abbreviations } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const springConfig = {
   damping: 500,

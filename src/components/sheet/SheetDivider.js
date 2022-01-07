@@ -1,6 +1,6 @@
 import { neverRerender } from '../../utils';
 import Divider from '../Divider';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const SheetDivider = styled(Divider).attrs(({ theme: { colors } }) => ({
   color: colors.rowDividerExtraLight,

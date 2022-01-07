@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
@@ -33,7 +34,6 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
 import { watchingAlert } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
 
 export const SavingsSheetEmptyHeight = 313;
 export const SavingsSheetHeight = android

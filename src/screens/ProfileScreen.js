@@ -19,7 +19,7 @@ import {
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const ACTIVITY_LIST_INITIALIZATION_DELAY = 5000;
 

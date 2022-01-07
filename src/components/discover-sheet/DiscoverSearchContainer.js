@@ -16,7 +16,7 @@ import { Column, Row } from '../layout';
 import { Text } from '../text';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { useDelayedValueWithLayoutAnimation } from '@rainbow-me/hooks';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const CancelButton = styled(ButtonPressAnimation)({
   marginTop: 27,

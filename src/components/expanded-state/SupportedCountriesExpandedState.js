@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import { values } from 'lodash';
 import React from 'react';
 import { FloatingEmojisTapper } from '../floating-emojis';
@@ -9,7 +10,6 @@ import { useDimensions } from '@rainbow-me/hooks';
 import { wyreSupportedCountries } from '@rainbow-me/references';
 import { padding } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
 
 const Panel = styled(FloatingPanels)(
   ({ deviceDimensions: { isTallPhone, width } }) => ({

@@ -1,6 +1,6 @@
 import React, { useImperativeHandle, useState } from 'react';
 import Text from './Text';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const Placeholder = styled(Text).attrs(({ theme: { colors } }) => ({
   align: 'center',

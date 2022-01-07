@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
@@ -16,7 +17,6 @@ import {
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
 
 const Background = styled.View({
   backgroundColor: 'black',

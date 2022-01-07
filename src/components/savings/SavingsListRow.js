@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import analytics from '@segment/analytics-react-native';
 import BigNumber from 'bignumber.js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -24,7 +25,6 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { padding, position } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
 import ShadowStack from 'react-native-shadow-stack';
 
 const MS_IN_1_DAY = 1000 * 60 * 60 * 24;

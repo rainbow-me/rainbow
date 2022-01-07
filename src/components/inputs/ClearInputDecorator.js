@@ -5,7 +5,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const Button = styled(Centered).attrs({
   scaleTo: 0.8,

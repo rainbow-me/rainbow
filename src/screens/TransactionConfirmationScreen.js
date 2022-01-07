@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
@@ -99,7 +100,6 @@ import {
   SIGN_TYPED_DATA,
 } from '@rainbow-me/utils/signingMethods';
 import logger from 'logger';
-import styled from 'rainbowed-components';
 
 const springConfig = {
   damping: 500,

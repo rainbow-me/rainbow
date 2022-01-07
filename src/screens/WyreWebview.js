@@ -6,7 +6,7 @@ import Spinner from '../components/Spinner';
 import { Centered, FlexItem } from '../components/layout';
 import { reserveWyreOrder } from '../handlers/wyre';
 import { useAccountSettings } from '@rainbow-me/hooks';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const Container = styled(FlexItem)({
   backgroundColor: ({ theme: { colors } }) => colors.white,

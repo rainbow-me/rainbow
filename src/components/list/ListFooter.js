@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const ListFooterHeight = 27;
 

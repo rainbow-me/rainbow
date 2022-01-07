@@ -15,7 +15,7 @@ import PolygonBadgeLargeDark from '../../assets/badges/polygonBadgeLargeDark.png
 import { Centered } from '../layout';
 import { AssetType } from '@rainbow-me/entities';
 import { position as positions } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const sizeConfigs = {
   large: {

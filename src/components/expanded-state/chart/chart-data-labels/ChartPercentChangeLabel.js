@@ -6,7 +6,7 @@ import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
 import { useRatio } from './useRatio';
 import { useChartData } from '@rainbow-me/animated-charts';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 Animated.addWhitelistedNativeProps({ color: true });
 

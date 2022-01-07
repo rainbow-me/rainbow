@@ -1,5 +1,5 @@
 import LayoutWithDividers from './LayoutWithDividers';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const RowWithDividers = styled(LayoutWithDividers).attrs({
   direction: 'row',

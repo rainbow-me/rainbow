@@ -3,7 +3,7 @@ import { Input } from '../../inputs';
 import { PlaceholderText } from '../../text';
 import { useMagicAutofocus } from '@rainbow-me/hooks';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const NameInput = styled(Input).attrs({
   align: 'center',

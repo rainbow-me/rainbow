@@ -18,7 +18,7 @@ import convertToProxyURL from 'react-native-video-cache';
 import { ImgixImage } from '@rainbow-me/images';
 import { position } from '@rainbow-me/styles';
 import logger from 'logger';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 export type SimpleVideoProps = {
   readonly style?: ViewStyle;

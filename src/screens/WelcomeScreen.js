@@ -35,7 +35,7 @@ import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { position, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const {
   and,

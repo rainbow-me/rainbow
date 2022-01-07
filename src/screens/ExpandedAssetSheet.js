@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import { useRoute } from '@react-navigation/native';
 import React, { createElement } from 'react';
 import { StatusBar } from 'react-native';
@@ -16,7 +17,6 @@ import { useTheme } from '@rainbow-me/context';
 import { useAsset, useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
 
 const ScreenTypes = {
   custom_gas: CustomGasState,

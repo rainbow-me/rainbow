@@ -21,7 +21,7 @@ import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { ETH_ADDRESS, getWyreErrorOverride } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const OrderIdText = styled(Text).attrs({
   align: 'center',

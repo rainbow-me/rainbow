@@ -1,5 +1,5 @@
 import { TruncatedText } from '../text';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const BottomRowText = styled(TruncatedText).attrs(
   ({ align = 'left', color, theme: { colors } }) => ({

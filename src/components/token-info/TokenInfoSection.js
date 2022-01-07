@@ -1,6 +1,6 @@
 import { ColumnWithMargins } from '../layout';
 import { padding } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const TokenInfoSection = styled(ColumnWithMargins).attrs({
   margin: 15,

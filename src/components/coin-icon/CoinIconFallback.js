@@ -12,7 +12,7 @@ import {
   isETH,
   magicMemo,
 } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,

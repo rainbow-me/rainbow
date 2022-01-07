@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import React, { useCallback, useMemo } from 'react';
 import { calculateAPY } from '../../helpers/savings';
 import { useNavigation } from '../../navigation/Navigation';
@@ -11,7 +12,6 @@ import { DAI_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
 
 const APYHeadingText = styled(Text).attrs(({ theme: { colors } }) => ({
   color: colors.dark,

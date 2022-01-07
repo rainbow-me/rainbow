@@ -4,7 +4,7 @@ import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const ButtonIcon = styled(Icon)({
   ...position.maxSizeAsObject('100%'),

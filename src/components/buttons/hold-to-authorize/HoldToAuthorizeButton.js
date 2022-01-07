@@ -17,7 +17,7 @@ import { BiometryTypes } from '@rainbow-me/helpers';
 import { useBiometryType, useDimensions } from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
 import { haptics } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 import ShadowStack from 'react-native-shadow-stack';
 
 const { divide, multiply, proc } = Animated;

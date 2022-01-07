@@ -8,7 +8,7 @@ import { useAccountSettings, useColorForAsset } from '@rainbow-me/hooks';
 import { SwapModalField } from '@rainbow-me/redux/swap';
 import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 import { convertAmountAndPriceToNativeDisplay } from '@rainbow-me/utilities';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 export const CurrencyTileHeight = 143;
 

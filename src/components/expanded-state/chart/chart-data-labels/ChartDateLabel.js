@@ -4,7 +4,7 @@ import { useAnimatedStyle } from 'react-native-reanimated';
 import { useRatio } from './useRatio';
 import { ChartXLabel } from '@rainbow-me/animated-charts';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const Label = styled(ChartXLabel)({
   ...fontWithWidth(fonts.weight.semibold),

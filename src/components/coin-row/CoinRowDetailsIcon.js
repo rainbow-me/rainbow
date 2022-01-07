@@ -3,7 +3,7 @@ import { Centered, Column } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
 import { padding } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const AddButtonPadding = 19;
 

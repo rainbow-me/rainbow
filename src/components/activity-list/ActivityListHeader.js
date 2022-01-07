@@ -2,7 +2,7 @@ import React from 'react';
 import { magicMemo } from '../../utils';
 import { ListHeader } from '../list';
 import { Text } from '../text';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const ActivityListHeaderTitle = styled(Text).attrs({
   size: 'larger',

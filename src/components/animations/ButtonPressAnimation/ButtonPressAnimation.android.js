@@ -13,7 +13,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { normalizeTransformOrigin } from './NativeButton';
 import { useLongPressEvents } from '@rainbow-me/hooks';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const ZoomableRawButton = requireNativeComponent('RNZoomableButton');
 

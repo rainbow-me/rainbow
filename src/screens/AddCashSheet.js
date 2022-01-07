@@ -20,7 +20,7 @@ import {
   useWyreApplePay,
 } from '@rainbow-me/hooks';
 import { borders } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const statusBarHeight = getStatusBarHeight(true);

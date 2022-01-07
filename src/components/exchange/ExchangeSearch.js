@@ -17,7 +17,7 @@ import { Text } from '../text';
 import { ImgixImage } from '@rainbow-me/images';
 import { margin, padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 export const ExchangeSearchHeight = 40;
 const ExchangeSearchWidth = deviceUtils.dimensions.width - 30;

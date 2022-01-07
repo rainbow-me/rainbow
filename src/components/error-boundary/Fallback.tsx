@@ -6,7 +6,7 @@ import { SheetActionButton } from '../sheet';
 import Text from '../text/Text';
 import { useTheme } from '@rainbow-me/context';
 import logger from 'logger';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 // @ts-ignore
 const Spacer = styled(View)<{ height: Number }>({

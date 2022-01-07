@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import { startCase } from 'lodash';
 import React from 'react';
 import { View } from 'react-native';
@@ -17,7 +18,6 @@ import {
   haptics,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
 
 const InfoButton = styled(Centered)({
   alignItems: 'center',

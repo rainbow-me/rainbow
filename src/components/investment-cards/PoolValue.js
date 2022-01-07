@@ -1,10 +1,10 @@
+import styled from '@rainbow-me/styled-components';
 import React from 'react';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
 
 const PoolValueWrapper = styled(Row)(({ simple }) => ({
   borderRadius: simple ? 0 : 15,

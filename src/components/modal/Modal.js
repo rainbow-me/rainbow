@@ -6,7 +6,7 @@ import TouchableBackdrop from '../TouchableBackdrop';
 import { Centered, Column } from '../layout';
 import { useDimensions } from '@rainbow-me/hooks';
 import { position } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const Container = styled(Centered).attrs(({ fixedToTop }) => ({
   direction: 'column',

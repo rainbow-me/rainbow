@@ -3,7 +3,7 @@ import { findNodeHandle, NativeModules, TextInput } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { isSymbolStablecoin } from '../../helpers/savings';
 import { fonts, fontWithWidth } from '@rainbow-me/styles';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const TextChunk = styled(TextInput).attrs({
   editable: false,

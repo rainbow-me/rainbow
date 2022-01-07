@@ -3,7 +3,7 @@ import React from 'react';
 import { Emoji } from '../text';
 import { margin } from '@rainbow-me/styles';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const EmojiForGasSpeedType = {
   [gasUtils.URGENT]: {

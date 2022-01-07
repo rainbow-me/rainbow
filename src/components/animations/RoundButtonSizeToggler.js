@@ -6,7 +6,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { Row } from '../layout';
 import { borders, position } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const { add, divide, multiply, sub } = Animated;
 

@@ -6,7 +6,7 @@ import { RowWithMargins } from '../layout';
 import { Text } from '../text';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import { getTokenMetadata } from '@rainbow-me/utils';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const CurrencyItemHeight = 40;
 

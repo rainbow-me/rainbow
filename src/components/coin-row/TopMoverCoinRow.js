@@ -9,7 +9,7 @@ import { CoinIcon } from '../coin-icon';
 import { Centered, ColumnWithMargins, RowWithMargins } from '../layout';
 import BottomRowText from './BottomRowText';
 import CoinName from './CoinName';
-import styled from 'rainbowed-components';
+import styled from '@rainbow-me/styled-components';
 
 const TopMoverCoinIconSize = 36;
 const TopMoverCoinRowMargin = 8;

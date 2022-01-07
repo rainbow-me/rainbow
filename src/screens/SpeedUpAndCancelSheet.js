@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import { useRoute } from '@react-navigation/native';
 import { captureException } from '@sentry/react-native';
 import { BigNumber } from 'bignumber.js';
@@ -41,7 +42,6 @@ import { ethUnits } from '@rainbow-me/references';
 import { position } from '@rainbow-me/styles';
 import { gasUtils, safeAreaInsetValues } from '@rainbow-me/utils';
 import logger from 'logger';
-import styled from 'rainbowed-components';
 
 const { CUSTOM, URGENT } = gasUtils;
 
