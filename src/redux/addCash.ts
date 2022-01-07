@@ -423,7 +423,7 @@ const addCashGetTransferHash = (
           destAssetAddress
         );
         if (!asset) {
-          asset = AddCashCurrencyInfo[network]?.[destAssetAddress];
+          asset = AddCashCurrencyInfo[network]![destAssetAddress];
         }
         const txDetails = {
           amount: destAmount,
