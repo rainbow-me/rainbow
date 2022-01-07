@@ -16,9 +16,9 @@ import { Text } from '../text';
 import SecretDisplayCard from './SecretDisplayCard';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { useWallets } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { margin, padding, position, shadow } from '@rainbow-me/styles';
 import logger from 'logger';
-import styled from '@rainbow-me/styled-components';
 
 const Title = styled(Text).attrs({
   align: 'center',

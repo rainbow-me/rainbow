@@ -6,8 +6,8 @@ import { Row, RowWithMargins } from '../layout';
 import { EnDash } from '../text';
 import ExchangeInput from './ExchangeInput';
 import { useColorForAsset } from '@rainbow-me/hooks';
-import { borders } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { borders } from '@rainbow-me/styles';
 
 const ExchangeFieldHeight = android ? 64 : 38;
 const ExchangeFieldPadding = android ? 15 : 19;

@@ -4,8 +4,8 @@ import { Column } from '../layout';
 import SendAssetFormField from './SendAssetFormField';
 import { useDimensions } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
-import { removeLeadingZeros } from '@rainbow-me/utils';
 import styled from '@rainbow-me/styled-components';
+import { removeLeadingZeros } from '@rainbow-me/utils';
 
 const footerMargin = getSoftMenuBarHeight() / 2;
 const FooterContainer = styled(Column).attrs({

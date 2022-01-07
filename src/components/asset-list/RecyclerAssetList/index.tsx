@@ -1,6 +1,5 @@
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { BottomSheetContext } from '@gorhom/bottom-sheet/src/contexts/external';
-import styled from '@rainbow-me/styled-components';
 import { findIndex, get } from 'lodash';
 import React, {
   useCallback,
@@ -44,6 +43,7 @@ import {
   useOpenSmallBalances,
   usePrevious,
 } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { deviceUtils, logger } from '@rainbow-me/utils';
 
 const extractCollectiblesIdFromRow = (row: {

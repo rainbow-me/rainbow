@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import { useRoute } from '@react-navigation/native';
 import React, { createElement } from 'react';
 import { StatusBar } from 'react-native';
@@ -16,6 +15,7 @@ import { Centered } from '../components/layout';
 import { useTheme } from '@rainbow-me/context';
 import { useAsset, useDimensions } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
 const ScreenTypes = {

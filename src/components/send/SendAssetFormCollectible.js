@@ -5,8 +5,8 @@ import { OpacityToggler } from '../animations';
 import { UniqueTokenExpandedStateContent } from '../expanded-state/unique-token';
 import { Column } from '../layout';
 import { useDimensions, useImageMetadata } from '@rainbow-me/hooks';
-import { padding, position } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { padding, position } from '@rainbow-me/styles';
 
 const defaultImageDimensions = { height: 512, width: 512 };
 

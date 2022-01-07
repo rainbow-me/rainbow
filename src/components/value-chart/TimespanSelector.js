@@ -3,8 +3,8 @@ import { JellySelector } from '../jelly-selector';
 import { Centered, Row } from '../layout';
 import { Text } from '../text';
 import ChartTypes from '@rainbow-me/helpers/chartTypes';
-import { padding } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { padding } from '@rainbow-me/styles';
 
 const Container = styled(Centered)({
   paddingTop: 49,

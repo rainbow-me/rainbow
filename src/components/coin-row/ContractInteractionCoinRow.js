@@ -4,8 +4,8 @@ import { CoinIconSize, RequestVendorLogoIcon } from '../coin-icon';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import TransactionStatusBadge from './TransactionStatusBadge';
-import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 import styled from '@rainbow-me/styled-components';
+import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 
 const BottomRow = ({ dappName }) => <CoinName>{dappName}</CoinName>;
 

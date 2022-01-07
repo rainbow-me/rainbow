@@ -16,13 +16,13 @@ import {
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
 import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
+import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 import {
   buildRainbowUrl,
   magicMemo,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
-import styled from '@rainbow-me/styled-components';
 
 const AssetActionsEnum = {
   copyTokenID: 'copyTokenID',

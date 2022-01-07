@@ -27,9 +27,9 @@ import {
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import logger from 'logger';
-import styled from '@rainbow-me/styled-components';
 
 const DescriptionText = styled(Text).attrs(
   ({ isTinyPhone, theme: { colors } }) => ({

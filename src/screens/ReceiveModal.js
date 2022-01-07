@@ -14,8 +14,8 @@ import { CopyToast, ToastPositionContainer } from '../components/toasts';
 import { useNavigation } from '../navigation/Navigation';
 import { abbreviations, deviceUtils } from '../utils';
 import { useAccountProfile } from '@rainbow-me/hooks';
-import { padding, shadow } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { padding, shadow } from '@rainbow-me/styles';
 
 const QRCodeSize = ios ? 250 : Math.min(230, deviceUtils.dimensions.width - 20);
 

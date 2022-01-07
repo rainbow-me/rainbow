@@ -15,8 +15,8 @@ import {
 } from '@rainbow-me/hooks';
 import { ETH_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import { lightModeThemeColors, padding } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { lightModeThemeColors, padding } from '@rainbow-me/styles';
 
 const paddingHorizontal = 19;
 

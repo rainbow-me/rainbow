@@ -2,8 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import { findNodeHandle, NativeModules, TextInput } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
 import { isSymbolStablecoin } from '../../helpers/savings';
-import { fonts, fontWithWidth } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const TextChunk = styled(TextInput).attrs({
   editable: false,

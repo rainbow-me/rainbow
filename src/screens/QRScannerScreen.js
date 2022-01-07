@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import { useIsFocused } from '@react-navigation/native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
@@ -15,6 +14,7 @@ import {
 } from '../components/qrcode-scanner';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
 const Background = styled.View({

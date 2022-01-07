@@ -24,9 +24,9 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { sheetVerticalOffset } from '@rainbow-me/navigation/effects';
+import styled from '@rainbow-me/styled-components';
 import { borders, padding } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
-import styled from '@rainbow-me/styled-components';
 
 const sheetBottomPadding = 19;
 

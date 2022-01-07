@@ -1,6 +1,6 @@
 import { Text } from '../text';
-import { fonts, fontWithWidth } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const TokenInfoHeading = styled(Text).attrs(
   ({ color, isNft, theme: { colors } }) => ({

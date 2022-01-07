@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import React, { useCallback, useRef, useState } from 'react';
 import { Keyboard } from 'react-native';
 import { useTheme } from '../../context/ThemeContext';
@@ -18,6 +17,7 @@ import {
 } from '@rainbow-me/helpers/emojiHandler';
 import { isValidDomainFormat } from '@rainbow-me/helpers/validators';
 import { useAccountSettings, useContacts } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { margin, padding } from '@rainbow-me/styles';
 
 const AddressAbbreviation = styled(TruncatedAddress).attrs(

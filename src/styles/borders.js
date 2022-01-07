@@ -1,7 +1,7 @@
-import { css } from '@rainbow-me/styled-components';
 import { upperFirst } from 'lodash';
 import colors from './colors';
 import position from './position';
+import { css } from '@rainbow-me/styled-components';
 
 const border = {};
 

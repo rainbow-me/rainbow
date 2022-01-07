@@ -10,8 +10,8 @@ import { Centered, Row } from '../layout';
 import ExchangeDetailsButton from './ExchangeDetailsButton';
 import PriceImpactWarning from './PriceImpactWarning';
 import { usePrevious, useSwapCurrencies } from '@rainbow-me/hooks';
-import { padding, position } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { padding, position } from '@rainbow-me/styles';
 
 const defaultPriceImpactScale = 1.15;
 const timingConfig = {

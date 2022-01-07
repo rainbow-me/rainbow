@@ -1,6 +1,6 @@
-import { css } from '@rainbow-me/styled-components';
 import { StyleSheet } from 'react-native';
 import position from './position';
+import { css } from '@rainbow-me/styled-components';
 
 export const getFlexStylesFromShorthand = style =>
   style === 'end' || style === 'start' ? `flex-${style}` : style;

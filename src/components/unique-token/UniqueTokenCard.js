@@ -8,8 +8,8 @@ import {
   usePersistentAspectRatio,
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
-import { shadow as shadowUtil } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { shadow as shadowUtil } from '@rainbow-me/styles';
 
 const UniqueTokenCardBorderRadius = 20;
 const UniqueTokenCardShadowFactory = colors => [0, 2, 6, colors.shadow, 0.08];

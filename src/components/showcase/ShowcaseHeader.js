@@ -13,9 +13,9 @@ import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import { useImportingWallet, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { colors, padding } from '@rainbow-me/styles';
 import { abbreviations, profileUtils } from '@rainbow-me/utils';
-import styled from '@rainbow-me/styled-components';
 
 export const ShowcaseContext = createContext();
 

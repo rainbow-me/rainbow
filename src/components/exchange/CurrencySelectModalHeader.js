@@ -6,8 +6,8 @@ import { TruncatedText } from '../text';
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
-import { borders, padding } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { borders, padding } from '@rainbow-me/styles';
 
 const BackButtonWrapper = styled(Centered)({
   bottom: 0,

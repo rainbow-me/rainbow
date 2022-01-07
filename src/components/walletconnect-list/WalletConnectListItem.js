@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback, useMemo } from 'react';
 import ChainLogo from '../ChainLogo';
@@ -29,6 +28,7 @@ import {
 } from '@rainbow-me/hooks';
 import { Navigation, useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { ethereumUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
 

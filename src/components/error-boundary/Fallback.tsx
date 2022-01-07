@@ -5,8 +5,8 @@ import { Centered } from '../layout';
 import { SheetActionButton } from '../sheet';
 import Text from '../text/Text';
 import { useTheme } from '@rainbow-me/context';
-import logger from 'logger';
 import styled from '@rainbow-me/styled-components';
+import logger from 'logger';
 
 // @ts-ignore
 const Spacer = styled(View)<{ height: Number }>({

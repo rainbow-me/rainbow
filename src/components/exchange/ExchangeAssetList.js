@@ -19,9 +19,9 @@ import { TokenSectionTypes } from '@rainbow-me/helpers';
 import { usePrevious } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { abbreviations, deviceUtils, magicMemo } from '@rainbow-me/utils';
-import styled from '@rainbow-me/styled-components';
 
 const deviceWidth = deviceUtils.dimensions.width;
 

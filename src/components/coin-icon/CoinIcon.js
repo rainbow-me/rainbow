@@ -7,13 +7,13 @@ import ChainBadge from './ChainBadge';
 import CoinIconFallback from './CoinIconFallback';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
 import {
   getTokenMetadata,
   isETH,
   magicMemo,
   CoinIcon as ReactCoinIcon,
 } from '@rainbow-me/utils';
-import styled from '@rainbow-me/styled-components';
 
 export const CoinIconSize = 40;
 

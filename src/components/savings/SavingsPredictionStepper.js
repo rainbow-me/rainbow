@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import React, { useCallback } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
@@ -12,6 +11,7 @@ import {
   handleSignificantDecimals,
 } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useStepper } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
@@ -35,10 +35,10 @@ const PredictionNumber = styled(AnimatedNumber).attrs(
 
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 const steps = {
-  Monthly: {
+  'Monthly': {
     days: 30,
   },
-  Yearly: {
+  'Yearly': {
     days: 365,
   },
   '5-Year': {

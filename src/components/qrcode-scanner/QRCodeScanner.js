@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { RNCamera } from 'react-native-camera';
 import { useIsEmulator } from 'react-native-device-info';
@@ -16,6 +15,7 @@ import QRCodeScannerNeedsAuthorization from './QRCodeScannerNeedsAuthorization';
 import SimulatorFakeCameraImageSource from '@rainbow-me/assets/simulator-fake-camera-image.jpg';
 import { useAsyncEffect, useHardwareBack, useScanner } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 

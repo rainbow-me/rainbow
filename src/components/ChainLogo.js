@@ -11,8 +11,8 @@ import PolygonBadgeDark from '../assets/badges/polygonBadgeDark.png';
 import PolygonBadgeNoShadow from '../assets/badges/polygonBadgeNoShadow.png';
 import { Centered } from './layout';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
-import { position } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { position } from '@rainbow-me/styles';
 
 const ChainIcon = styled(FastImage)({
   height: ({ size }) => size,

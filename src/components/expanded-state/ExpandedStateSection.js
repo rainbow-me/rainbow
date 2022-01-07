@@ -1,7 +1,7 @@
-import styled from '@rainbow-me/styled-components';
 import React from 'react';
 import { ColumnWithMargins } from '../layout';
 import { Text } from '../text';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const Container = styled(ColumnWithMargins).attrs({

@@ -8,8 +8,8 @@ import { SheetHandleFixedToTopHeight } from '../sheet';
 import KeyboardTypes from '@rainbow-me/helpers/keyboardTypes';
 import { useDimensions, useKeyboardHeight } from '@rainbow-me/hooks';
 import { sharedCoolModalTopOffset } from '@rainbow-me/navigation/config';
-import { padding } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { padding } from '@rainbow-me/styles';
 
 const Footer = styled(Column)(({ isTallPhone }) => ({
   ...padding.object(20, 15, isTallPhone ? 30 : 15),

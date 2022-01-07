@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import React, { useEffect } from 'react';
 import { useSafeArea } from 'react-native-safe-area-context';
 import Divider from '../components/Divider';
@@ -9,6 +8,7 @@ import WalletConnectListItem, {
 } from '../components/walletconnect-list/WalletConnectListItem';
 import { useWalletConnectConnections } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import styled from '@rainbow-me/styled-components';
 
 const MAX_VISIBLE_DAPPS = 7;
 

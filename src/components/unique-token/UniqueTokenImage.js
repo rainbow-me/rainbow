@@ -13,8 +13,8 @@ import {
   usePersistentDominantColorFromImage,
 } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { fonts, fontWithWidth, position } from '@rainbow-me/styles';
 
 const FallbackTextColorVariants = (darkMode, colors) => ({
   dark: darkMode

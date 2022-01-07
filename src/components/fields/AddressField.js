@@ -6,8 +6,8 @@ import { Input } from '../inputs';
 import { Row } from '../layout';
 import { Label } from '../text';
 import { useClipboard, useDimensions } from '@rainbow-me/hooks';
-import { abbreviations, addressUtils } from '@rainbow-me/utils';
 import styled from '@rainbow-me/styled-components';
+import { abbreviations, addressUtils } from '@rainbow-me/utils';
 
 const AddressInput = styled(Input).attrs({
   autoCapitalize: 'none',

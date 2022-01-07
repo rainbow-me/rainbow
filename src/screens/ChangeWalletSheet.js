@@ -36,6 +36,7 @@ import {
   useWebData,
 } from '@rainbow-me/hooks';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import {
   abbreviations,
   deviceUtils,
@@ -43,7 +44,6 @@ import {
 } from '@rainbow-me/utils';
 
 import logger from 'logger';
-import styled from '@rainbow-me/styled-components';
 
 const deviceHeight = deviceUtils.dimensions.height;
 const footerHeight = 111;

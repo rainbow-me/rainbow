@@ -1,9 +1,9 @@
-import styled from '@rainbow-me/styled-components';
 import React from 'react';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
 import { useAccountSettings } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const PoolValueWrapper = styled(Row)(({ simple }) => ({

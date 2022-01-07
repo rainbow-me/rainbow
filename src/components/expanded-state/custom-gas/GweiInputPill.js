@@ -4,8 +4,8 @@ import TextInputMask from 'react-native-text-input-mask';
 import { Row } from '../../../components/layout';
 import { ButtonPressAnimation } from '../../animations';
 import { Text } from '../../text';
-import { buildTextStyles, margin, padding } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { buildTextStyles, margin, padding } from '@rainbow-me/styles';
 
 const ANDROID_EXTRA_LINE_HEIGHT = 6;
 

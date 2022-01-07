@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import { values } from 'lodash';
 import React from 'react';
 import { FloatingEmojisTapper } from '../floating-emojis';
@@ -8,6 +7,7 @@ import { Text } from '../text';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
 import { useDimensions } from '@rainbow-me/hooks';
 import { wyreSupportedCountries } from '@rainbow-me/references';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { neverRerender } from '@rainbow-me/utils';
 

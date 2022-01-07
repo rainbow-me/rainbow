@@ -7,9 +7,9 @@ import { useTheme } from '../../context/ThemeContext';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
-import styled from '@rainbow-me/styled-components';
 
 const FavoriteButtonPadding = 19;
 

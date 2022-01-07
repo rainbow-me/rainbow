@@ -5,6 +5,7 @@ import { Centered } from '../layout';
 import EthIcon from '@rainbow-me/assets/eth-icon.png';
 import { useBooleanState, useColorForAsset } from '@rainbow-me/hooks';
 import { ImageWithCachedMetadata } from '@rainbow-me/images';
+import styled from '@rainbow-me/styled-components';
 import { borders, fonts, position, shadow } from '@rainbow-me/styles';
 import {
   FallbackIcon,
@@ -12,7 +13,6 @@ import {
   isETH,
   magicMemo,
 } from '@rainbow-me/utils';
-import styled from '@rainbow-me/styled-components';
 
 const fallbackTextStyles = {
   fontFamily: fonts.family.SFProRounded,

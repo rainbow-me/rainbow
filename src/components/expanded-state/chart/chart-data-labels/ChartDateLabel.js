@@ -3,8 +3,8 @@ import { View } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
 import { useRatio } from './useRatio';
 import { ChartXLabel } from '@rainbow-me/animated-charts';
-import { fonts, fontWithWidth } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 const Label = styled(ChartXLabel)({
   ...fontWithWidth(fonts.weight.semibold),

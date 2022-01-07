@@ -47,6 +47,7 @@ import {
 import { ImgixImage } from '@rainbow-me/images';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { convertAmountToNativeDisplay } from '@rainbow-me/utilities';
 import {
@@ -55,7 +56,6 @@ import {
   magicMemo,
   safeAreaInsetValues,
 } from '@rainbow-me/utils';
-import styled from '@rainbow-me/styled-components';
 
 const NftExpandedStateSection = styled(ExpandedStateSection).attrs({
   isNft: true,

@@ -34,9 +34,9 @@ import {
 import { delayNext } from '@rainbow-me/hooks/useMagicAutofocus';
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { filterList } from '@rainbow-me/utils';
-import styled from '@rainbow-me/styled-components';
 
 const TabTransitionAnimation = styled(Animated.View)(
   position.sizeAsObject('100%')

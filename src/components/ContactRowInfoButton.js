@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import { startCase } from 'lodash';
 import React from 'react';
 import { View } from 'react-native';
@@ -10,6 +9,7 @@ import { CoinRowHeight } from './coin-row/CoinRow';
 import { Centered } from './layout';
 import { Text } from './text';
 import { useClipboard } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, padding } from '@rainbow-me/styles';
 
 import {

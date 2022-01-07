@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import MaskedView from '@react-native-community/masked-view';
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
@@ -15,6 +14,7 @@ import { withThemeContext } from '../../context/ThemeContext';
 import { deviceUtils } from '../../utils';
 import { CoinRowHeight } from '../coin-row';
 import { ColumnWithMargins, Row, RowWithMargins } from '../layout';
+import styled from '@rainbow-me/styled-components';
 import { padding, position } from '@rainbow-me/styles';
 
 export const AssetListItemSkeletonHeight = CoinRowHeight;

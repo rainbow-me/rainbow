@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import { get } from 'lodash';
 import React, { PureComponent } from 'react';
 import {
@@ -19,6 +18,7 @@ import ActivityListHeader from './ActivityListHeader';
 import LoadingState from './LoadingState';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 import { buildTransactionUniqueIdentifier } from '@rainbow-me/helpers/transactions';
+import styled from '@rainbow-me/styled-components';
 import {
   deviceUtils,
   isNewValueForPath,

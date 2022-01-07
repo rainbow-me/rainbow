@@ -9,6 +9,7 @@ import { Centered } from '../layout';
 import { Text } from '../text';
 import { CoinRowHeight } from './CoinRow';
 import { useClipboard } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { fonts, fontWithWidth, padding } from '@rainbow-me/styles';
 import {
   abbreviations,
@@ -16,7 +17,6 @@ import {
   haptics,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
-import styled from '@rainbow-me/styled-components';
 
 const InfoButton = styled(Centered)({
   ...padding.object(8, 0),

@@ -33,12 +33,12 @@ import {
   useSendFeedback,
   useWallets,
 } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import {
   AppleReviewAddress,
   REVIEW_DONE_KEY,
 } from '@rainbow-me/utils/reviewAlert';
-import styled from '@rainbow-me/styled-components';
 
 const { RainbowRequestReview, RNReview } = NativeModules;
 

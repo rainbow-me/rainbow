@@ -5,8 +5,8 @@ import { Text } from '../text';
 import { useChartData } from '@rainbow-me/animated-charts';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
-import { fonts } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { fonts } from '@rainbow-me/styles';
 
 function trim(val) {
   return Math.min(Math.max(val, 0.05), 0.95);

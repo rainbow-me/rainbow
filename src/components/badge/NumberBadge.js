@@ -6,8 +6,8 @@ import { interpolate } from '../animations';
 import { Centered } from '../layout';
 import { Text } from '../text';
 import { useTimeout } from '@rainbow-me/hooks';
-import { borders, position } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { borders, position } from '@rainbow-me/styles';
 
 const Container = styled(Animated.View)({
   ...position.centeredAsObject,

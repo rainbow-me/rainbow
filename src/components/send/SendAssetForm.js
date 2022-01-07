@@ -15,8 +15,8 @@ import {
   useDimensions,
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
-import { padding, position } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const AssetRowShadow = colors => [

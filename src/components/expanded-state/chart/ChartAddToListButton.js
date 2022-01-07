@@ -7,9 +7,9 @@ import { Centered } from '../../layout';
 import { Text } from '../../text';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
-import styled from '@rainbow-me/styled-components';
 
 const AddToListButtonPadding = 19;
 

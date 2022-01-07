@@ -20,8 +20,8 @@ import DiscoverSheetContext from './DiscoverSheetContext';
 import DiscoverSheetHeader from './DiscoverSheetHeader';
 import CustomBackground from './androidCustomComponents/customBackground';
 import CustomHandle from './androidCustomComponents/customHandle';
-import { deviceUtils } from '@rainbow-me/utils';
 import styled from '@rainbow-me/styled-components';
+import { deviceUtils } from '@rainbow-me/utils';
 
 function useAreHeaderButtonVisible() {
   const [isSearchModeEnabled, setIsSearchModeEnabled] = useState(false);

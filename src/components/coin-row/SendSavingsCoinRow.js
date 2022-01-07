@@ -8,8 +8,8 @@ import { Text } from '../text';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { useColorForAsset } from '@rainbow-me/hooks';
-import { padding } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { padding } from '@rainbow-me/styles';
 
 const isSmallPhone = android || deviceUtils.dimensions.height <= 667;
 const isTinyPhone = deviceUtils.dimensions.height <= 568;

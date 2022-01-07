@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import analytics from '@segment/analytics-react-native';
 import { findIndex, keys, times, toLower } from 'lodash';
 import React, {
@@ -23,6 +22,7 @@ import networkTypes from '@rainbow-me/helpers/networkTypes';
 import { useAccountSettings, useUserLists } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 const COINGECKO_TRENDING_ENDPOINT =

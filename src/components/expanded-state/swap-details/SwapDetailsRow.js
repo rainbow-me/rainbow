@@ -1,8 +1,8 @@
 import React from 'react';
 import { Centered } from '../../layout';
 import { Nbsp, Text, TruncatedText } from '../../text';
-import { fonts, fontWithWidth } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { fonts, fontWithWidth } from '@rainbow-me/styles';
 
 export const SwapDetailsRowHeight = 17;
 

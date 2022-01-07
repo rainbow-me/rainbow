@@ -26,12 +26,12 @@ import {
 import { useNavigation } from '@rainbow-me/navigation/Navigation';
 import { removeRequest } from '@rainbow-me/redux/requests';
 import Routes from '@rainbow-me/routes';
+import styled from '@rainbow-me/styled-components';
 import {
   abbreviations,
   ethereumUtils,
   showActionSheetWithOptions,
 } from '@rainbow-me/utils';
-import styled from '@rainbow-me/styled-components';
 
 const NativeTransactionListView = requireNativeComponent('TransactionListView');
 

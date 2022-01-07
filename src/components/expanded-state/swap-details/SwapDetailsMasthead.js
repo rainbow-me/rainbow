@@ -3,8 +3,8 @@ import { Icon } from '../../icons';
 import { RowWithMargins } from '../../layout';
 import CurrencyTile, { CurrencyTileHeight } from './CurrencyTile';
 import { useSwapCurrencies } from '@rainbow-me/hooks';
-import { padding } from '@rainbow-me/styles';
 import styled from '@rainbow-me/styled-components';
+import { padding } from '@rainbow-me/styles';
 
 const containerPaddingTop = 34;
 export const SwapDetailsMastheadHeight =
