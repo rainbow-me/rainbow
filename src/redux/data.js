@@ -338,7 +338,7 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
   }, GENERIC_ASSETS_REFRESH_INTERVAL);
 };
 
-const disableGenericAssetsFallbackIfNeeded = () => {
+export const disableGenericAssetsFallbackIfNeeded = () => {
   if (genericAssetsHandle) {
     clearTimeout(genericAssetsHandle);
   }

@@ -6,6 +6,7 @@ import {
   addressAssetsReceived,
   assetPricesChanged,
   assetPricesReceived,
+  disableGenericAssetsFallbackIfNeeded,
   portfolioReceived,
   transactionsReceived,
   transactionsRemoved,
@@ -307,7 +308,11 @@ export const explorerInit = () => async (dispatch, getState) => {
   dispatch(listenOnAssetMessages(newAssetsSocket));
 
   newAssetsSocket.on(messages.CONNECT, () => {
-    dispatch(emitAssetRequest(keys(pairs)));
+    const newAssetsEmitted = dispatch(emitAssetRequest(keys(pairs)));
+    if (!newAssetsEmitted) {
+      disableGenericAssetsFallbackIfNeeded();
+    }
+
     dispatch(emitAssetInfoRequest());
     if (!disableCharts) {
       // We need this for Uniswap Pools profit calculation
@@ -373,7 +378,9 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
       ...assetPricesSubscription(newAssetsCodes, nativeCurrency)
     );
     assetsSocket?.emit(...ethUSDSubscription);
+    return true;
   }
+  return false;
 };
 
 export const emitAssetInfoRequest = () => (dispatch, getState) => {
