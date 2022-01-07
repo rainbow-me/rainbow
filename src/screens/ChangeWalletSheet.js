@@ -27,7 +27,6 @@ import {
   walletsSetSelected,
   walletsUpdate,
 } from '../redux/wallets';
-import { asyncSome } from '@rainbow-me/helpers/utilities';
 import WalletBackupTypes from '@rainbow-me/helpers/walletBackupTypes';
 import {
   useAccountSettings,
