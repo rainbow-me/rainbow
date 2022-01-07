@@ -11,8 +11,9 @@ export default function useAccountEmptyState() {
   useEffect(() => {
     const checkStorage = async () => {
       const reallyEmpty = await getAccountEmptyState(accountAddress, network);
-      if (reallyEmpty) {
-        setIsReallyEmpty(true);
+
+      if (!isEmpty && reallyEmpty) {
+        setIsReallyEmpty(reallyEmpty);
       } else {
         setIsReallyEmpty(isEmpty);
       }

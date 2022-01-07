@@ -31,6 +31,7 @@ import {
 } from '../utils/keychainConstants';
 import { addressHashedColorIndex } from '../utils/profileUtils';
 import { updateWebDataEnabled } from './showcaseTokens';
+import { saveAccountEmptyState } from '@rainbow-me/handlers/localstorage/accountLocal';
 import { lightModeThemeColors } from '@rainbow-me/styles';
 
 // -- Constants --------------------------------------- //
@@ -182,6 +183,7 @@ export const createAccountForWallet = (id, color, name) => async (
   dispatch,
   getState
 ) => {
+  const { network } = getState().settings;
   const { wallets } = getState().wallets;
   const newWallets = { ...wallets };
   let index = 0;
@@ -212,6 +214,7 @@ export const createAccountForWallet = (id, color, name) => async (
   await saveAddress(account.address);
   // Set the wallet selected (KEYCHAIN)
   await setSelectedWallet(newWallets[id]);
+  await saveAccountEmptyState(true, account.address, network);
 
   dispatch({
     payload: { selected: newWallets[id], wallets: newWallets },
