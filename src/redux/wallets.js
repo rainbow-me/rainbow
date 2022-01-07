@@ -214,7 +214,6 @@ export const createAccountForWallet = (id, color, name) => async (
   await saveAddress(account.address);
   // Set the wallet selected (KEYCHAIN)
   await setSelectedWallet(newWallets[id]);
-  await saveAccountEmptyState(true, account.address, network);
 
   dispatch({
     payload: { selected: newWallets[id], wallets: newWallets },
