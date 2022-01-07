@@ -240,11 +240,14 @@ export default function ChangeWalletSheet() {
                     color: args.color,
                     label: args.name,
                   };
-                  walletAddresses[walletAddressIndex] = updatedWalletAddress;
+                  let updatedWalletAddresses = [...walletAddresses];
+                  updatedWalletAddresses[
+                    walletAddressIndex
+                  ] = updatedWalletAddress;
 
                   const updatedWallet = {
                     ...wallets[walletId],
-                    addresses: walletAddresses,
+                    addresses: updatedWalletAddresses,
                   };
                   const updatedWallets = {
                     ...wallets,
