@@ -1,6 +1,7 @@
+import styled from '@rainbow-me/styled-components';
 import PropTypes from 'prop-types';
 import { buildFlexStyles } from '@rainbow-me/styles';
-import styled from '@rainbow-me/styled-components';
+import { memoFn } from '@rainbow-me/utils/memoFn';
 
 const flexPropTypes = {
   align: PropTypes.oneOf(['baseline', 'center', 'end', 'start', 'stretch']),
@@ -24,13 +25,17 @@ const flexPropTypes = {
   wrap: PropTypes.bool,
 };
 
-const keys = Object.keys(flexPropTypes);
+const propTypesKeys = Object.keys(flexPropTypes);
+
+const validatorFn = memoFn(prop => {
+  return !propTypesKeys.includes(prop);
+});
 
 const Flex = styled.View.withConfig({
   // We need to prevent the buildFlexStyles-related props from being
   // passed to the root element because our namespace collides with some native props
   shouldForwardProp: (prop, defaultValidatorFn) =>
-    !keys.includes(prop) && defaultValidatorFn(prop),
+    validatorFn(prop) && defaultValidatorFn(prop),
 })(buildFlexStyles.object);
 
 Flex.displayName = 'Flex';

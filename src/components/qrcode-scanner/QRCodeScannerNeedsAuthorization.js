@@ -1,12 +1,14 @@
+import styled from '@rainbow-me/styled-components';
+import pWaitFor from 'p-wait-for';
 import React, { useCallback } from 'react';
-import { Linking } from 'react-native';
+import { AppState, Linking } from 'react-native';
 import { darkModeThemeColors } from '../../styles/colors';
 import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered } from '../layout';
 import { Text } from '../text';
+import { delay } from '@rainbow-me/helpers/utilities';
 import { margin, padding, position } from '@rainbow-me/styles';
-import styled from '@rainbow-me/styled-components';
 
 const Button = styled(ButtonPressAnimation).attrs({
   scaleTo: 1.1,
@@ -50,10 +52,16 @@ const Title = styled(Text).attrs(({ theme: { colors } }) => ({
   weight: 'bold',
 }))(margin.object(20.5, 0, 8));
 
-export default function QRCodeScannerNeedsAuthorization() {
-  const handlePressSettings = useCallback(() => {
+export default function QRCodeScannerNeedsAuthorization({ onGetBack }) {
+  const handlePressSettings = useCallback(async () => {
     Linking.openSettings();
-  }, []);
+
+    await delay(1000);
+
+    await pWaitFor(() => AppState.currentState === 'active');
+
+    onGetBack?.();
+  }, [onGetBack]);
 
   return (
     <Container>

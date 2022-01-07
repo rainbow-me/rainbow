@@ -8,7 +8,6 @@ import { DiscoverSheet } from '../components/discover-sheet';
 import { FabWrapper, SearchFab } from '../components/fab';
 import { BackButton, Header, HeaderHeight } from '../components/header';
 import { Centered } from '../components/layout';
-
 import {
   CameraDimmer,
   EmulatorPasteUriButton,
