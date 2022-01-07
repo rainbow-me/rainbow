@@ -225,48 +225,49 @@ export default function ChangeWalletSheet() {
             asset: [],
             onCloseModal: async args => {
               if (args) {
-                const newWallets = { ...wallets };
                 if ('name' in args) {
                   analytics.track('Tapped "Done" after editing wallet', {
                     wallet_label: args.name,
                   });
-                  asyncSome(
-                    newWallets[walletId].addresses,
-                    async (account, index) => {
-                      if (account.address === address) {
-                        const updatedAddress = {
-                          ...newWallets[walletId].addresses[index],
-                          color: args.color,
-                          label: args.name,
-                        };
 
-                        let updatedWalletAddresses = [
-                          ...newWallets[walletId].addresses,
-                        ];
-                        updatedWalletAddresses[index] = updatedAddress;
-
-                        newWallets[walletId] = {
-                          ...newWallets[walletId],
-                          addresses: updatedWalletAddresses,
-                        };
-
-                        if (currentSelectedWallet.id === walletId) {
-                          await setCurrentSelectedWallet(wallet);
-                          await dispatch(
-                            walletsSetSelected(newWallets[walletId])
-                          );
-                        }
-                        updateWebProfile(
-                          address,
-                          args.name,
-                          colors.avatarBackgrounds[args.color]
-                        );
-                        return true;
-                      }
-                      return false;
-                    }
+                  const walletAddresses = wallets[walletId].addresses;
+                  const walletAddressIndex = walletAddresses.findIndex(
+                    account => account.address === address
                   );
-                  await dispatch(walletsUpdate(newWallets));
+                  const walletAddress = walletAddresses[walletAddressIndex];
+
+                  const updatedWalletAddress = {
+                    ...walletAddress,
+                    color: args.color,
+                    label: args.name,
+                  };
+
+                  let updatedWalletAddresses = [...walletAddresses];
+                  updatedWalletAddresses[
+                    walletAddressIndex
+                  ] = updatedWalletAddress;
+
+                  const updatedWallet = {
+                    ...wallets[walletId],
+                    addresses: updatedWalletAddresses,
+                  };
+                  const updatedWallets = {
+                    ...wallets,
+                    [walletId]: updatedWallet,
+                  };
+
+                  if (currentSelectedWallet.id === walletId) {
+                    await setCurrentSelectedWallet(updatedWallet);
+                    await dispatch(walletsSetSelected(updatedWallet));
+                  }
+
+                  updateWebProfile(
+                    address,
+                    args.name,
+                    colors.avatarBackgrounds[args.color]
+                  );
+
+                  await dispatch(walletsUpdate(updatedWallets));
                 } else {
                   analytics.track('Tapped "Cancel" after editing wallet');
                 }
