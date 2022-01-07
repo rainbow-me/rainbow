@@ -179,7 +179,10 @@ export const addRequestToApprove = (
     dappNetwork
   );
   const oneHourAgoTs = Date.now() - EXPIRATION_THRESHOLD_IN_MS;
-  // @ts-expect-error
+  // @ts-expect-error This fails to compile as `displayDetails` does not
+  // always return an object with `timestampInMs`. Still, the error thrown
+  // by an invalid access might be caught or expected elsewhere, so for now
+  // `ts-expect-error` is used.
   if (displayDetails.timestampInMs < oneHourAgoTs) {
     logger.log('request expired!');
     return;
