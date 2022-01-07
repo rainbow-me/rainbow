@@ -116,4 +116,6 @@ export { default as useCurrentNonce } from './useCurrentNonce';
 export { default as usePersistentAspectRatio } from './usePersistentAspectRatio';
 export { default as usePersistentDominantColorFromImage } from './usePersistentDominantColorFromImage';
 export { default as useFeesPanelInputRefs } from './useFeesPanelInputRefs';
+export { default as useAsyncEffect } from './useAsyncEffect';
+export { default as useHardwareBack } from './useHardwareBack';
 export { default as useUniswapCurrencyList } from './useUniswapCurrencyList';
