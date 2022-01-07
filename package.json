@@ -324,7 +324,7 @@
     "**/madge": "4.0.2",
     "**/minimist": "1.2.3",
     "**/netmask": "2.0.1",
-    "**/postcss": "8.2.10",
+    "**/postcss": "8.2.13",
     "**/resolve": "1.8.1",
     "**/semver": "7.3.2",
     "**/xmldom": "github:xmldom/xmldom#c568938641cc1f121cef5b4df80fcfda1e489b6e",
