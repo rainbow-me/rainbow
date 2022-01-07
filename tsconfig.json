@@ -47,7 +47,6 @@
       ],
       "@rainbow-me/animated-charts": ["src/react-native-animated-charts/src"],
       "react-native-shadow-stack": ["src/react-native-shadow-stack"],
-      "@terrysahaidak/style-thing": ["src/styled-thing"],
       "rainbowed-components": ["src/styled-thing"]
     },
     "resolveJsonModule": true
