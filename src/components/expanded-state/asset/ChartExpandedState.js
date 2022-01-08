@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
 import L2Disclaimer from '../../L2Disclaimer';
@@ -38,6 +39,7 @@ import SocialLinks from './SocialLinks';
 import { ChartPathProvider } from '@rainbow-me/animated-charts';
 import { isL2Network } from '@rainbow-me/handlers/web3';
 import AssetInputTypes from '@rainbow-me/helpers/assetInputTypes';
+import { sortAssetsByNativeAmountSelector } from '@rainbow-me/helpers/assetSelectors';
 import {
   useAccountSettings,
   useAdditionalAssetData,
@@ -45,7 +47,6 @@ import {
   useDelayedValueWithLayoutAnimation,
   useDimensions,
   useGenericAsset,
-  useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import { ETH_ADDRESS } from '@rainbow-me/references';
@@ -263,11 +264,10 @@ export default function ChartExpandedState({ asset }) {
     ),
   });
 
-  const uniswapAssetsInWallet = useUniswapAssetsInWallet();
+  const { sortedAssets } = useSelector(sortAssetsByNativeAmountSelector);
   const showSwapButton = useMemo(
-    () =>
-      !isL2 && find(uniswapAssetsInWallet, ['address', assetWithPrice.address]),
-    [assetWithPrice.address, isL2, uniswapAssetsInWallet]
+    () => !isL2 && find(sortedAssets, ['address', assetWithPrice.address]),
+    [assetWithPrice.address, isL2, sortedAssets]
   );
 
   const needsEth =
