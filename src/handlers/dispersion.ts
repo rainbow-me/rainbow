@@ -10,7 +10,7 @@ import UniswapAssetsCache from '@rainbow-me/utils/uniswapAssetsCache';
 import logger from 'logger';
 
 const dispersionApi = new RainbowFetchClient({
-  baseURL: 'https://metadata.p.rainbow.me',
+  baseURL: 'http://localhost:8080',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
@@ -80,4 +80,14 @@ export const getTrendingAddresses = async (): Promise<
     captureException(error);
     return null;
   }
+};
+
+export const getAdditionalAssetData = async (address: EthereumAddress) => {
+  const res = await dispersionApi.get(`/dispersion/v1/expanded/${address}`);
+  return res?.data?.data;
+};
+
+export const getCoingeckoIds = async () => {
+  const res = await dispersionApi.get('/dispersion/v1/coingecko/ids');
+  return res?.data?.data?.ids;
 };
