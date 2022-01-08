@@ -21,7 +21,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
   let defaultToken = Constants.eth
   
   func placeholder(in context: Context) -> CustomTokenEntry {
-    let currency = getCurrency()
+    let currency = CurrencyProvider.getCurrency()
      
     let priceData = priceDataProvider.getPriceData(token: defaultToken.coinGeckoId!)
     let priceChange = priceData?.marketData.priceChangePercentage24h
@@ -80,35 +80,9 @@ struct PriceWidgetProvider: IntentTimelineProvider {
   
   private func lookupCurrency(for configuration: SelectTokenIntent) -> CurrencyDetails {
     if let currency = configuration.currency {
-      return Constants.currencyDict[currency.identifier!] ?? getCurrency()
+      return Constants.currencyDict[currency.identifier!] ?? CurrencyProvider.getCurrency()
     }
-    return getCurrency()
-  }
-  
-  private func getCurrency() -> CurrencyDetails {
-    let query = [kSecClass: kSecClassInternetPassword,
-            kSecAttrServer: "nativeCurrency",
-      kSecReturnAttributes: kCFBooleanTrue!,
-            kSecReturnData: kCFBooleanTrue!,
-            kSecMatchLimit: kSecMatchLimitOne] as [String: Any]
-    var item: CFTypeRef?
-    
-    let fallbackCurrency = Constants.currencyDict[Constants.Currencies.usd.identifier]!
-    
-    let readStatus = SecItemCopyMatching(query as CFDictionary, &item)
-    if readStatus != 0 {
-      return fallbackCurrency
-    }
-    let found = item as? NSDictionary
-    if found == nil {
-      return fallbackCurrency
-    }
-    let currency = String(data: (found!.value(forKey: kSecValueData as String)) as! Data, encoding: .utf8)
-
-    if !(currency?.isEmpty ?? true) {
-      return Constants.currencyDict[currency!.lowercased()] ?? fallbackCurrency
-    }
-    return fallbackCurrency
+    return CurrencyProvider.getCurrency()
   }
   
   func getPrice(data: PriceData?, currency: CurrencyDetails) -> Double? {
