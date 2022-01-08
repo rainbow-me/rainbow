@@ -38,12 +38,12 @@ interface ChartsState {
   /**
    * Data for the ETH-USD day chart.
    */
-  chartsEthUSDDay: {} | ChartDataPoints;
+  chartsEthUSDDay: ChartDataPoints;
 
   /**
    * Data for the ETH-USD month chart.
    */
-  chartsEthUSDMonth: {} | ChartDataPoints;
+  chartsEthUSDMonth: ChartDataPoints;
 
   /**
    * The first store's selected chart type.
@@ -193,8 +193,8 @@ export const assetChartsReceived = (message: ChartsReceivedMessage) => (
 
 const INITIAL_STATE: ChartsState = {
   charts: {},
-  chartsEthUSDDay: {},
-  chartsEthUSDMonth: {},
+  chartsEthUSDDay: [],
+  chartsEthUSDMonth: [],
   chartType: DEFAULT_CHART_TYPE,
   chartType2: DEFAULT_CHART_TYPE,
   fetchingCharts: false,
