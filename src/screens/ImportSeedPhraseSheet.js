@@ -85,7 +85,7 @@ const SecretTextArea = styled(Input).attrs({
   lineHeight: 'looser',
   multiline: true,
   numberOfLines: 3,
-  placeholder: placeholder,
+  placeholder,
   returnKeyType: 'done',
   size: 'large',
   spellCheck: false,
