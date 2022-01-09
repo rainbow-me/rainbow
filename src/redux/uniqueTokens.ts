@@ -241,7 +241,6 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   });
   if (showcaseAddress) {
     dispatch({
-      showcase: !!showcaseAddress,
       type: UNIQUE_TOKENS_CLEAR_STATE_SHOWCASE,
     });
   }
