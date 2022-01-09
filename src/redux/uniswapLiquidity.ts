@@ -30,20 +30,36 @@ interface UniswapPoolToken {
 }
 
 /**
- * Details for a loaded Uniswap pool.
+ * Fully loaded details for a Uniswap pool from the dispersion API.
  */
-interface UniswapPoolAddressDetails {
-  address: string;
+interface UniswapPoolAddressDetailsFull {
+  address: string | undefined;
   annualized_fees: number;
   liquidity: number;
   oneDayVolumeUSD: number;
-  profit30d: number;
+  profit30d: number | undefined;
   symbol: string;
   token0: UniswapPoolToken;
   token1: UniswapPoolToken;
   tokenNames: string;
   type: string;
 }
+
+/**
+ * Partially loaded details for a Uniswap pool from The Graph API.
+ */
+type UniswapPoolAddressDetailsPartial = Pick<
+  UniswapPoolAddressDetailsFull,
+  'annualized_fees' | 'liquidity' | 'oneDayVolumeUSD'
+>;
+
+/**
+ * Details for a loaded Uniswap pool.
+ */
+type UniswapPoolAddressDetails =
+  | UniswapPoolAddressDetailsFull
+  | UniswapPoolAddressDetailsPartial;
+
 /**
  * Represents the current state of the `uniswapLiquidity` reducer.
  */
