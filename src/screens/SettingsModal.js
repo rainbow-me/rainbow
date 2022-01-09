@@ -60,38 +60,38 @@ function cardStyleInterpolator({
 const SettingsPages = {
   backup: {
     component: View,
+    getTitle: () => lang.t('settings.backup'),
     key: 'BackupSection',
-    title: () => lang.t('settings.backup'),
   },
   currency: {
     component: CurrencySection,
+    getTitle: () => lang.t('settings.currency'),
     key: 'CurrencySection',
-    title: () => lang.t('settings.currency'),
   },
   default: {
     component: null,
+    getTitle: () => lang.t('settings.label'),
     key: 'SettingsSection',
-    title: () => lang.t('settings.label'),
   },
   dev: {
     component: IS_DEV ? DevSection : null,
+    getTitle: () => lang.t('settings.developer'),
     key: 'DevSection',
-    title: () => lang.t('settings.developer'),
   },
   language: {
     component: LanguageSection,
+    getTitle: () => lang.t('settings.language'),
     key: 'LanguageSection',
-    title: () => lang.t('settings.language'),
   },
   network: {
     component: NetworkSection,
+    getTitle: () => lang.t('settings.network'),
     key: 'NetworkSection',
-    title: () => lang.t('settings.network'),
   },
   privacy: {
     component: PrivacySection,
+    getTitle: () => 'Privacy',
     key: 'PrivacySection',
-    title: () => 'Privacy',
   },
 };
 
@@ -200,7 +200,7 @@ export default function SettingsModal() {
             )}
           </Stack.Screen>
           {Object.values(SettingsPages).map(
-            ({ component, title, key }) =>
+            ({ component, getTitle, key }) =>
               component && (
                 <Stack.Screen
                   component={component}
@@ -208,9 +208,9 @@ export default function SettingsModal() {
                   name={key}
                   options={{
                     cardStyleInterpolator,
-                    title: title(),
+                    title: getTitle(),
                   }}
-                  title={title()}
+                  title={getTitle()}
                 />
               )
           )}
