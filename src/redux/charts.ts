@@ -175,12 +175,12 @@ export const assetChartsReceived = (message: ChartsReceivedMessage) => (
     message?.meta?.currency === currenyTypes.usd &&
     assetCharts[ETH_ADDRESS]
   ) {
-    if (message?.meta?.charts_type === 'm') {
+    if (message?.meta?.charts_type === ChartTypes.month) {
       dispatch({
         payload: reverse(assetCharts[ETH_ADDRESS]),
         type: CHARTS_UPDATE_USD_MONTH,
       });
-    } else if (message?.meta?.charts_type === 'd') {
+    } else if (message?.meta?.charts_type === ChartTypes.day) {
       dispatch({
         payload: reverse(assetCharts[ETH_ADDRESS]),
         type: CHARTS_UPDATE_USD_DAY,
