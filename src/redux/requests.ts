@@ -100,7 +100,7 @@ interface RequestsState {
    * objects.
    */
   requests: {
-    [requestId: string]: RequestData;
+    [requestId: number]: RequestData;
   };
 }
 
