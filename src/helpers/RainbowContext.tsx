@@ -58,7 +58,7 @@ export default function RainbowContextWrapper({ children }: any) {
   return (
     <RainbowContext.Provider value={initialValue}>
       {children}
-      // @ts-expect-error ts-migrate(2741) FIXME: Property 'color' is missing in type '{ initialDisp... Remove this comment to see the full error message
+      {/* @ts-expect-error ts-migrate(2741) FIXME: Property 'color' is missing in type '{ initialDisp... Remove this comment to see the full error message */}
       {showReloadButton && __DEV__ && <DevButton initialDisplacement={200} />}
       {showSwitchModeButton && __DEV__ && (
         <DevButton
@@ -66,7 +66,7 @@ export default function RainbowContextWrapper({ children }: any) {
           // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
           onPress={() => setTheme(isDarkMode ? 'light' : 'dark')}
         >
-          // @ts-expect-error ts-migrate(2741) FIXME: Property 'name' is missing in type '{ children: st... Remove this comment to see the full error message
+          {/* @ts-expect-error ts-migrate(2741) FIXME: Property 'name' is missing in type '{ children: st... Remove this comment to see the full error message */}
           <Emoji>{isDarkMode ? '🌞' : '🌚'}</Emoji>
         </DevButton>
       )}
