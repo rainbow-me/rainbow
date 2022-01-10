@@ -30,11 +30,11 @@ const MONTHS = [
   'Dec',
 ];
 
-function formatDatetime(value, chartTimeSharedValue) {
+function formatDatetime(value, chartTimeDefaultValue) {
   'worklet';
   // we have to do it manually due to limitations of reanimated
   if (value === '') {
-    return chartTimeSharedValue.value;
+    return chartTimeDefaultValue;
   }
 
   const date = new Date(Number(value) * 1000);
@@ -81,7 +81,7 @@ function formatDatetime(value, chartTimeSharedValue) {
   return res;
 }
 
-export default function ChartDateLabel({ chartTimeSharedValue }) {
+export default function ChartDateLabel({ chartTimeDefaultValue }) {
   const ratio = useRatio('ChartDataLabel');
   const { colors } = useTheme();
 
@@ -101,7 +101,7 @@ export default function ChartDateLabel({ chartTimeSharedValue }) {
       <Label
         format={value => {
           'worklet';
-          return formatDatetime(value, chartTimeSharedValue);
+          return formatDatetime(value, chartTimeDefaultValue);
         }}
         style={textStyle}
       />

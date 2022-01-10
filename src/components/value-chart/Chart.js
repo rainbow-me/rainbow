@@ -130,7 +130,7 @@ export default function ChartWrapper({
   const { progress } = useChartData();
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0);
-  const chartTimeSharedValue = useSharedValue('');
+
   const { colors } = useTheme();
 
   const { setOptions } = useNavigation();
@@ -190,22 +190,21 @@ export default function ChartWrapper({
   const formattedTimespan =
     timespan.charAt(0).toUpperCase() + timespan.slice(1);
 
-  useEffect(() => {
+  const defaultTimeValue = useMemo(() => {
     if (chartType === ChartTypes.day) {
-      chartTimeSharedValue && (chartTimeSharedValue.value = 'Today');
+      return 'Today';
     } else if (chartType === ChartTypes.max) {
-      chartTimeSharedValue && (chartTimeSharedValue.value = 'All Time');
+      return 'All Time';
     } else {
-      chartTimeSharedValue &&
-        (chartTimeSharedValue.value = `Past ${formattedTimespan}`);
+      return `Past ${formattedTimespan}`;
     }
-  }, [chartTimeSharedValue, chartType, formattedTimespan]);
+  }, [chartType, formattedTimespan]);
 
   return (
     <Container>
       <ChartExpandedStateHeader
         {...props}
-        chartTimeSharedValue={chartTimeSharedValue}
+        chartTimeDefaultValue={defaultTimeValue}
         color={color}
         isPool={isPool}
         overrideValue={overrideValue}

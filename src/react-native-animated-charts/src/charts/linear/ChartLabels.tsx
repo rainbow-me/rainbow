@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TextInput, TextInputProps } from 'react-native';
 import Animated, { useAnimatedProps } from 'react-native-reanimated';
 import { useChartData } from '../../helpers/useChartData';
@@ -11,21 +11,30 @@ interface ChartLabelProps extends TextInputProps {
 
 const ChartLabelFactory = (fieldName: 'originalX' | 'originalY') => {
   const ChartLabel = React.memo(({ format, ...props }: ChartLabelProps) => {
-    const chartData = useChartData();
+    const { isActive, data, ...chartData } = useChartData();
     const val = chartData[fieldName];
+
+    // we need to recreate defaultValue on data change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const defaultValue = useMemo(() => format?.(val.value) ?? val.value, [
+      format,
+      val,
+      data,
+    ]);
 
     const textProps = useAnimatedProps(
       () => ({
-        text: format?.(val.value) ?? val.value,
-        value: format?.(val.value) ?? val.value,
+        text: isActive.value ? format?.(val.value) ?? val.value : defaultValue,
+        value: isActive.value ? format?.(val.value) ?? val.value : defaultValue,
       }),
-      [chartData.data]
+      [data, defaultValue, isActive]
     );
 
     return (
       <AnimatedTextInput
         {...props}
         animatedProps={textProps}
+        defaultValue={defaultValue}
         editable={false}
       />
     );
