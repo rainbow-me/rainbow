@@ -177,6 +177,12 @@ export default function TransactionConfirmationScreen() {
     ({ walletconnect }) => walletconnect.pendingRedirect
   );
 
+  const walletConnectors = useSelector(
+    ({ walletconnect }) => walletconnect.walletConnectors
+  );
+
+  const walletConnector = walletConnectors[peerId];
+  
   const {
     dataAddNewTransaction,
     removeRequest,
