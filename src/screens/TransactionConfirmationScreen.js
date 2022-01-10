@@ -207,6 +207,14 @@ export default function TransactionConfirmationScreen() {
     [requestVersion]
   );
 
+  const requestChainId = useMemo(() => {
+    if (isWalletConnectV2Request) {
+      return chainId
+    } else {
+      return Number(walletConnector?._chainId)
+    }
+  }, [])
+
   const accountInfo = useMemo(() => {
     const selectedWallet = findWalletWithAccount(wallets, address);
     const profileInfo = getAccountProfileInfo(
@@ -219,7 +227,7 @@ export default function TransactionConfirmationScreen() {
       ...profileInfo,
       address,
     };
-  }, [currentNetwork, walletConnector?._accounts, walletNames, wallets]);
+  }, [currentNetwork, walletNames, wallets, address]);
 
 const getNextNonce = useCurrentNonce(accountInfo.address, currentNetwork);
 
@@ -227,11 +235,9 @@ const isL2 = useMemo(() => {
   return isL2Network(currentNetwork);
 }, [currentNetwork]);
 
-useEffect(() => {
-  setCurrentNetwork(
-    ethereumUtils.getNetworkFromChainId(Number(walletConnector?._chainId))
-  );
-}, [walletConnector?._chainId]);
+useEffect(() => setCurrentNetwork(
+    ethereumUtils.getNetworkFromChainId(requestChainId)
+  ), [requestChainId]);
 
   useEffect(() => {
     const initProvider = async () => {

@@ -2687,29 +2687,12 @@
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@graphql-typed-document-node/core/-/core-3.1.0.tgz#0eee6373e11418bfe0b5638f654df7a4ca6a3950"
 
-<<<<<<< HEAD
-"@hapi/accept@5.0.2":
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/@hapi/accept/-/accept-5.0.2.tgz#ab7043b037e68b722f93f376afb05e85c0699523"
-  dependencies:
-    "@hapi/boom" "9.x.x"
-    "@hapi/hoek" "9.x.x"
-
-"@hapi/boom@9.x.x":
-  version "9.1.4"
-  resolved "https://registry.yarnpkg.com/@hapi/boom/-/boom-9.1.4.tgz#1f9dad367c6a7da9f8def24b4a986fc5a7bd9db6"
-  dependencies:
-    "@hapi/hoek" "9.x.x"
-
 "@hapi/bourne@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@hapi/bourne/-/bourne-2.0.0.tgz#5bb2193eb685c0007540ca61d166d4e1edaf918d"
   integrity sha512-WEezM1FWztfbzqIUbsDzFRVMxSoLy3HugVcux6KDDtTqzPsLE8NDRHfXvev66aH1i2oOKKar3/XDjbvh/OUBdg==
 
-"@hapi/hoek@8.5.1", "@hapi/hoek@9.x.x", "@hapi/hoek@^9.0.0":
-=======
 "@hapi/hoek@8.5.1", "@hapi/hoek@^9.0.0":
->>>>>>> develop
   version "8.5.1"
   resolved "https://registry.yarnpkg.com/@hapi/hoek/-/hoek-8.5.1.tgz#fde96064ca446dec8c55a8c2f130957b070c6e06"
 
@@ -4481,10 +4464,10 @@
   version "1.6.6"
   resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-1.6.6.tgz#8d644e2a390e494e40424c60272e91b4820bf0d4"
 
-"@walletconnect/types@^2.0.0-beta.21", "@walletconnect/types@npm:@walletconnect/types@2.0.0-beta.21", "@walletconnectv2/types@npm:@walletconnect/types@2.0.0-beta.21":
-  version "2.0.0-beta.21"
-  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.0.0-beta.21.tgz#2674dda4292f2077855701d07385dcf108f1385b"
-  integrity sha512-QX72PZlU7Am3v1UyoyaWu0IsJQbk8wfNFssGYoDWf/PDZspOIh8Hq6HsToNeuXHMM6dxgOY3CMMpdJjDZPKf6Q==
+"@walletconnect/types@^2.0.0-beta.22", "@walletconnect/types@npm:@walletconnect/types@2.0.0-beta.22", "@walletconnectv2/types@npm:@walletconnect/types@2.0.0-beta.22":
+  version "2.0.0-beta.22"
+  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.0.0-beta.22.tgz#3d000f07357ec9254104a7334a5eec0dd20e3d9a"
+  integrity sha512-5CFy+3qLp8B0tdECxlsCY70twU0CJNCT1FNTs0ye8BfniyrLM4cd0G/+O5mLxZHgJsPJNt92fJnsNFZG3z0H7g==
   dependencies:
     "@walletconnect/jsonrpc-types" "^1.0.0"
     keyvaluestorage "^0.7.1"
@@ -4503,17 +4486,18 @@
     js-sha3 "0.8.0"
     query-string "6.13.5"
 
-"@walletconnect/utils@^2.0.0-beta.21", "@walletconnect/utils@npm:@walletconnect/utils@2.0.0-beta.21", "@walletconnectv2/utils@npm:@walletconnect/utils@2.0.0-beta.21":
-  version "2.0.0-beta.21"
-  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-2.0.0-beta.21.tgz#139510bd41563819e2e7ae7b0c4761bd7df70a1f"
-  integrity sha512-wqUN3oYvQtVn5Rx1S7ORD/aS7xZaf2zOb++Ul1uM24uBgSXeG+TwubybLMmlK9Zun2eIQBOPoDC7EvqmrHI9Iw==
+"@walletconnect/utils@^2.0.0-beta.22", "@walletconnect/utils@npm:@walletconnect/utils@2.0.0-beta.22", "@walletconnectv2/utils@npm:@walletconnect/utils@2.0.0-beta.22":
+  version "2.0.0-beta.22"
+  resolved "https://registry.yarnpkg.com/@walletconnect/utils/-/utils-2.0.0-beta.22.tgz#60b52d3f43f3b394659db5abde954a856ba5a06b"
+  integrity sha512-mlZwahk+0j9LcDhi8xrAgPJ1SzzswzMBMdP/Eunb4Yb3X6fmkoZy9YSrT4B+13UwaefPq5TFqvZp40sC7StXvQ==
   dependencies:
     "@walletconnect/ecies-25519" "^1.0.1"
     "@walletconnect/encoding" "^1.0.0"
     "@walletconnect/jsonrpc-utils" "^1.0.0"
     "@walletconnect/logger" "^1.0.0"
+    "@walletconnect/relay-api" "^1.0.0"
     "@walletconnect/safe-json" "^1.0.0"
-    "@walletconnect/types" "^2.0.0-beta.21"
+    "@walletconnect/types" "^2.0.0-beta.22"
     "@walletconnect/window-getters" "^1.0.0"
     "@walletconnect/window-metadata" "^1.0.0"
     lodash.union "^4.6.0"
@@ -4529,10 +4513,10 @@
   dependencies:
     "@walletconnect/window-getters" "^1.0.0"
 
-"@walletconnectv2/client@npm:@walletconnect/client@2.0.0-beta.21":
-  version "2.0.0-beta.21"
-  resolved "https://registry.yarnpkg.com/@walletconnect/client/-/client-2.0.0-beta.21.tgz#dacd24655550215ab257b8b28dac9feebf7378ec"
-  integrity sha512-JBGFXk7xDQIb5NT8G0pHInIGpM0Rf/ExQVtolK/FBxoQSRlXe2Owth+s/AYuLBYDIM1wspinVQEqHwaLNiFMYw==
+"@walletconnectv2/client@npm:@walletconnect/client@2.0.0-beta.22":
+  version "2.0.0-beta.22"
+  resolved "https://registry.yarnpkg.com/@walletconnect/client/-/client-2.0.0-beta.22.tgz#a9fd0b118afc08eb173cd41dcd979735ae8e2ab2"
+  integrity sha512-ZymLewI/afTmh3MWvDFw1P8UDDA8HdBngb54zmrSwk2ympYYxnuzjYQ7tda0wczXwiJFrIXQfPdtgk7rT9xbNA==
   dependencies:
     "@walletconnect/encoding" "^1.0.0"
     "@walletconnect/jsonrpc-provider" "^1.0.0"
@@ -4541,8 +4525,8 @@
     "@walletconnect/logger" "^1.0.0"
     "@walletconnect/relay-api" "^1.0.0"
     "@walletconnect/safe-json" "^1.0.0"
-    "@walletconnect/types" "^2.0.0-beta.21"
-    "@walletconnect/utils" "^2.0.0-beta.21"
+    "@walletconnect/types" "^2.0.0-beta.22"
+    "@walletconnect/utils" "^2.0.0-beta.22"
     ws "^8.3.0"
 
 "@wry/context@^0.5.2":
@@ -6328,9 +6312,10 @@ chalk@1.1.3, chalk@^1.0.0, chalk@^1.1.3:
     strip-ansi "^3.0.0"
     supports-color "^2.0.0"
 
-chalk@^2.0.0, chalk@^2.0.1, chalk@^2.4.1, chalk@^2.4.2:
+chalk@2.4.2, chalk@^2.0.0, chalk@^2.0.1, chalk@^2.4.1, chalk@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
+  integrity sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==
   dependencies:
     ansi-styles "^3.2.1"
     escape-string-regexp "^1.0.5"
@@ -7264,19 +7249,17 @@ decompress-response@^3.2.0, decompress-response@^3.3.0:
   dependencies:
     mimic-response "^1.0.0"
 
-<<<<<<< HEAD
 decompress-response@^6.0.0:
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/decompress-response/-/decompress-response-6.0.0.tgz#ca387612ddb7e104bd16d85aab00d5ecf09c66fc"
   integrity sha512-aW35yZM6Bb/4oJlZncMH2LCoZtJXTRxES17vE3hoRiowU2kWHaJKFkSBDnDR+cm9J+9QhXmREyIfv0pji9ejCQ==
   dependencies:
     mimic-response "^3.1.0"
-=======
+
 dedent@0.7.0, dedent@^0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/dedent/-/dedent-0.7.0.tgz#2495ddbaf6eb874abb0e1be9df22d2e5a544326c"
   integrity sha1-JJXduvbrh0q7Dhvp3yLS5aVEMmw=
->>>>>>> develop
 
 dedent@^0.6.0:
   version "0.6.0"
@@ -7776,17 +7759,7 @@ encoding-down@^6.3.0:
     level-codec "^9.0.0"
     level-errors "^2.0.0"
 
-<<<<<<< HEAD
-encoding@0.1.13:
-  version "0.1.13"
-  resolved "https://registry.yarnpkg.com/encoding/-/encoding-0.1.13.tgz#56574afdd791f54a8e9b2785c0582a2d26210fa9"
-  dependencies:
-    iconv-lite "^0.6.2"
-
 end-of-stream@^1.1.0, end-of-stream@^1.4.1:
-=======
-end-of-stream@^1.1.0:
->>>>>>> develop
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/end-of-stream/-/end-of-stream-1.4.4.tgz#5ae64a5f45057baf3626ec14da0ca5e4b2431eb0"
   dependencies:
@@ -11846,30 +11819,11 @@ load-json-file@^1.0.0:
     pinkie-promise "^2.0.0"
     strip-bom "^2.0.0"
 
-<<<<<<< HEAD
-loader-utils@1.2.3:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/loader-utils/-/loader-utils-1.2.3.tgz#1ff5dc6911c9f0a062531a4c04b609406108c2c7"
-  dependencies:
-    big.js "^5.2.2"
-    emojis-list "^2.0.0"
-    json5 "^1.0.1"
-
-loader-utils@^2.0.0:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/loader-utils/-/loader-utils-2.0.2.tgz#d6e3b4fb81870721ae4e0868ab11dd638368c129"
-  dependencies:
-    big.js "^5.2.2"
-    emojis-list "^3.0.0"
-    json5 "^2.1.2"
-
 localStorage@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/localStorage/-/localStorage-1.0.4.tgz#57dfa28084385f81431accb8ae24b196398223f7"
   integrity sha512-r35zrihcDiX+dqWlJSeIwS9nrF95OQTgqMFm3FB2D/+XgdmZtcutZOb7t0xXkhOEM8a9kpuu7cc28g1g36I5DQ==
 
-=======
->>>>>>> develop
 localforage@^1.8.1:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/localforage/-/localforage-1.10.0.tgz#5c465dc5f62b2807c3a84c0c6a1b1b3212781dd4"
@@ -15079,11 +15033,7 @@ readable-stream@^2.0.0, readable-stream@^2.0.5, readable-stream@^2.0.6, readable
     string_decoder "~1.1.1"
     util-deprecate "~1.0.1"
 
-<<<<<<< HEAD
-readable-stream@^3.0.0, readable-stream@^3.0.6, readable-stream@^3.1.0, readable-stream@^3.1.1, readable-stream@^3.4.0, readable-stream@^3.5.0, readable-stream@^3.6.0:
-=======
-readable-stream@^3.0.6, readable-stream@^3.1.0, readable-stream@^3.1.1, readable-stream@^3.4.0, readable-stream@^3.6.0:
->>>>>>> develop
+readable-stream@^3.0.0, readable-stream@^3.0.6, readable-stream@^3.1.0, readable-stream@^3.1.1, readable-stream@^3.4.0, readable-stream@^3.6.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-3.6.0.tgz#337bbda3adc0706bd3e024426a286d4b4b2c9198"
   dependencies:
