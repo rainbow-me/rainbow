@@ -2,7 +2,6 @@ import { concat, isEmpty, isNil, keyBy, keys, toLower } from 'lodash';
 import io from 'socket.io-client';
 import config from '../model/config';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
-/* eslint-disable-next-line import/no-cycle */
 import {
   addressAssetsReceived,
   assetPricesChanged,

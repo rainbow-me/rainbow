@@ -3,7 +3,6 @@ import { captureException } from '@sentry/react-native';
 import { get, isEmpty, keyBy, map, mapValues, toLower, uniqBy } from 'lodash';
 import isEqual from 'react-fast-compare';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
-// eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
 import { explorerInitL2 } from './explorer';
