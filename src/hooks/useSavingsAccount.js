@@ -9,16 +9,15 @@ import {
   orderBy,
   toLower,
 } from 'lodash';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
+import { useMMKVObject } from 'react-native-mmkv';
 import { useDispatch, useSelector } from 'react-redux';
+import { useDeepCompareMemo } from 'use-deep-compare';
 import useAccountSettings from './useAccountSettings';
+import { useGenericAssets } from './useGenericAsset';
 import { compoundClient } from '@rainbow-me/apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@rainbow-me/apollo/queries';
 import { AssetTypes } from '@rainbow-me/entities';
-import {
-  getSavings,
-  saveSavings,
-} from '@rainbow-me/handlers/localstorage/accountLocal';
 import { multiply } from '@rainbow-me/helpers/utilities';
 import { parseAssetName, parseAssetSymbol } from '@rainbow-me/parsers';
 import { emitAssetRequest } from '@rainbow-me/redux/explorer';
@@ -82,8 +81,13 @@ const getUnderlyingData = marketData => {
   };
 };
 
-const getUnderlyingPrice = token => {
-  const underlyingPrice = ethereumUtils.getAssetPrice(token.underlying.address);
+const getUnderlyingPrice = (token, genericAssets) => {
+  const address = token.underlying.address;
+  const genericAsset = genericAssets?.[address];
+  const genericPrice = genericAsset?.price?.value;
+  const underlyingPrice =
+    genericPrice || ethereumUtils.getAccountAsset(address)?.price?.value || 0;
+
   const underlyingBalanceNativeValue =
     underlyingPrice && token.supplyBalanceUnderlying
       ? multiply(underlyingPrice, token.supplyBalanceUnderlying)
@@ -95,19 +99,22 @@ const getUnderlyingPrice = token => {
   };
 };
 
-export default function useSavingsAccount(includeDefaultDai) {
-  const [result, setResult] = useState({});
-  const [backupSavings, setBackupSavings] = useState(null);
+function usePersistentBackupSavings(accountAddress, network) {
+  return useMMKVObject('savings-' + accountAddress + network);
+}
 
+export default function useSavingsAccount(includeDefaultDai) {
   const dispatch = useDispatch();
   const { accountAddress, network } = useAccountSettings();
+  const [backupSavings = null, setBackupSavings] = usePersistentBackupSavings(
+    accountAddress,
+    network
+  );
 
   const hasAccountAddress = !!accountAddress;
 
-  const { shouldRefetchSavings } = useSelector(
-    ({ data: { shouldRefetchSavings } }) => ({
-      shouldRefetchSavings,
-    })
+  const shouldRefetchSavings = useSelector(
+    ({ data: { shouldRefetchSavings } }) => shouldRefetchSavings
   );
 
   const { data, error, loading, refetch: refetchSavings } = useQuery(
@@ -120,19 +127,11 @@ export default function useSavingsAccount(includeDefaultDai) {
     }
   );
 
-  useEffect(() => {
-    if (!hasAccountAddress) return;
-    const fetchBackupSavings = async () => {
-      const backup = await getSavings(accountAddress, network);
-      if (!isEmpty(backup)) {
-        setBackupSavings(backup);
-      }
-    };
-    fetchBackupSavings();
-  }, [accountAddress, hasAccountAddress, network]);
-
-  const parseSavingsResult = useCallback(async () => {
-    if (error) return;
+  const result = useMemo(() => {
+    if (error) return {};
+    if (!hasAccountAddress) {
+      return {};
+    }
 
     if (data) {
       const markets = keyBy(data?.markets, 'id');
@@ -174,25 +173,37 @@ export default function useSavingsAccount(includeDefaultDai) {
         token => token?.underlying?.address
       );
       dispatch(emitAssetRequest([DAI_ADDRESS, ...underlyingAddresses]));
-      saveSavings(result, accountAddress, network);
-      setResult(result);
+      setBackupSavings(result);
+      return result;
     } else if (loading && !isNil(backupSavings)) {
-      setResult(backupSavings);
+      return backupSavings;
     } else {
-      setResult({});
+      return {};
     }
-  }, [accountAddress, backupSavings, data, dispatch, error, loading, network]);
+  }, [
+    backupSavings,
+    data,
+    dispatch,
+    error,
+    hasAccountAddress,
+    loading,
+    setBackupSavings,
+  ]);
 
-  useEffect(() => {
-    if (!hasAccountAddress) return;
-    parseSavingsResult();
-  }, [hasAccountAddress, parseSavingsResult]);
+  const accountTokensAddresses = useDeepCompareMemo(
+    () => result.accountTokens?.map(token => token.underlying.address),
+    [result.accountTokens]
+  );
+
+  const genericAssets = useGenericAssets(accountTokensAddresses);
 
   const savings = useMemo(() => {
     if (isEmpty(result)) return [];
 
     const { accountTokens, daiMarketData } = result;
-    const accountTokensWithPrices = map(accountTokens, getUnderlyingPrice);
+    const accountTokensWithPrices = accountTokens?.map(token =>
+      getUnderlyingPrice(token, genericAssets)
+    );
 
     const orderedAccountTokens = orderBy(
       accountTokensWithPrices,
@@ -211,10 +222,13 @@ export default function useSavingsAccount(includeDefaultDai) {
       includeDefaultDai && !accountHasCDAI && !isEmpty(daiMarketData);
 
     if (shouldAddDai) {
-      savings = concat(orderedAccountTokens, getUnderlyingPrice(daiMarketData));
+      savings = concat(
+        orderedAccountTokens,
+        getUnderlyingPrice(daiMarketData, genericAssets)
+      );
     }
     return savings;
-  }, [includeDefaultDai, result]);
+  }, [includeDefaultDai, result, genericAssets]);
 
   return {
     refetchSavings,
