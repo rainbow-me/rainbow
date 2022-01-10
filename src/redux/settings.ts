@@ -1,10 +1,11 @@
 import analytics from '@segment/analytics-react-native';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { updateLanguage } from '../languages';
+import { updateLanguageLocale } from '../languages';
 import { saveString } from '../model/keychain';
 import { NativeCurrencyKeys } from '@rainbow-me/entities';
 import {
+  getLanguage,
   getNativeCurrency,
   getNetwork,
   saveLanguage,
@@ -106,6 +107,21 @@ export const settingsLoadNetwork = () => async (
   }
 };
 
+export const settingsLoadLanguage = () => async (
+  dispatch: Dispatch<SettingsStateUpdateLanguageSuccessAction>
+) => {
+  try {
+    const language = await getLanguage();
+    updateLanguageLocale(language);
+    dispatch({
+      payload: language,
+      type: SETTINGS_UPDATE_LANGUAGE_SUCCESS,
+    });
+  } catch (error) {
+    logger.log('Error loading language settings', error);
+  }
+};
+
 export const settingsUpdateAccountAddress = (accountAddress: string) => async (
   dispatch: Dispatch<SettingsStateUpdateSettingsAddressAction>
 ) => {
@@ -134,7 +150,7 @@ export const settingsUpdateNetwork = (network: Network) => async (
 export const settingsChangeLanguage = (language: string) => async (
   dispatch: Dispatch<SettingsStateUpdateLanguageSuccessAction>
 ) => {
-  updateLanguage(language);
+  updateLanguageLocale(language);
   try {
     dispatch({
       payload: language,

@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { Fragment, useCallback, useEffect, useMemo } from 'react';
 import { StatusBar } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
@@ -180,14 +181,14 @@ const SavingsSheet = () => {
             <SheetActionButtonRow>
               <SheetActionButton
                 color={isDarkMode ? colors.darkModeDark : colors.dark}
-                label="􀁏 Withdraw"
+                label={`􀁏 ${lang.t('savings.withdraw')}`}
                 onPress={onWithdraw}
                 radiusAndroid={24}
                 weight="heavy"
               />
               <SheetActionButton
                 color={colors.swapPurple}
-                label="􀁍 Deposit"
+                label={`􀁍 ${lang.t('savings.deposit')}`}
                 onPress={onDeposit}
                 radiusAndroid={24}
                 weight="heavy"
