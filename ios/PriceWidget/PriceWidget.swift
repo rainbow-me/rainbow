@@ -24,7 +24,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
     let currency = CurrencyProvider.getCurrency()
      
     let priceData = priceDataProvider.getPriceData(token: defaultToken.coinGeckoId!)
-    let priceChange = priceData?.marketData.priceChangePercentage24h
+    let priceChange = getPriceChangePercentage(data: priceData, currency: currency)
     let price = getPrice(data: priceData, currency: currency)
     
     let icon = priceData != nil ? iconProvider.getTokenIcon(token: defaultToken.symbol!, address: defaultToken.address!) : nil
@@ -54,7 +54,7 @@ struct PriceWidgetProvider: IntentTimelineProvider {
     let currency = lookupCurrency(for: configuration)
     
     let priceData = priceDataProvider.getPriceData(token: tokenDetails.coinGeckoId!)
-    let priceChange = priceData?.marketData.priceChangePercentage24h
+    let priceChange = getPriceChangePercentage(data: priceData, currency: currency)
     let price = getPrice(data: priceData, currency: currency)
     
     let icon = priceData != nil ? iconProvider.getTokenIcon(token: tokenDetails.symbol!, address: tokenDetails.address!) : nil
@@ -119,6 +119,43 @@ struct PriceWidgetProvider: IntentTimelineProvider {
       return currentPrices?.zar
     default:
       return currentPrices?.usd
+    }
+  }
+  
+  func getPriceChangePercentage(data: PriceData?, currency: CurrencyDetails) -> Double? {
+    let priceChangePercentages = data?.marketData.priceChangePercentage24hInCurrency
+    
+    switch currency {
+    case Constants.Currencies.eth:
+      return priceChangePercentages?.eth
+    case Constants.Currencies.usd:
+      return priceChangePercentages?.usd
+    case Constants.Currencies.eur:
+      return priceChangePercentages?.eur
+    case Constants.Currencies.gbp:
+      return priceChangePercentages?.gbp
+    case Constants.Currencies.aud:
+      return priceChangePercentages?.aud
+    case Constants.Currencies.cny:
+      return priceChangePercentages?.cny
+    case Constants.Currencies.krw:
+      return priceChangePercentages?.krw
+    case Constants.Currencies.rub:
+      return priceChangePercentages?.rub
+    case Constants.Currencies.inr:
+      return priceChangePercentages?.inr
+    case Constants.Currencies.jpy:
+      return priceChangePercentages?.jpy
+    case Constants.Currencies.try:
+      return priceChangePercentages?.try
+    case Constants.Currencies.cad:
+      return priceChangePercentages?.cad
+    case Constants.Currencies.nzd:
+      return priceChangePercentages?.nzd
+    case Constants.Currencies.zar:
+      return priceChangePercentages?.zar
+    default:
+      return priceChangePercentages?.usd
     }
   }
 }
