@@ -1,8 +1,10 @@
+#!/bin/bash
+
 # This script finds `lang.t` or similar translation IDs that are missing in language
 # resources. Note, this script currently **does not** support interpolated
 # translations such as `lang.t(`my.\${variable}.based.${path}`).
 #
-# The script can be run with
+# The script can be run with `yarn check-translations` or
 # `sh ./scripts/check-translations.sh ./src './src/languages/*.json' lang.t`
 # or similar from the top-level project directory.
 
@@ -16,6 +18,19 @@ RESOURCES=$2
 
 # The function to search for.
 FUNCTION=$3
+
+### Checks ###
+
+# Check to see if the necessary utilities are installed.
+REQUIRED_COMMANDS="ggrep node"
+for REQUIRED in $REQUIRED_COMMANDS
+do
+  if [ -z $(command -v $REQUIRED) ]
+  then
+    echo "\`$REQUIRED\` is not installed, but is required for this script. Please install it and try again."
+    exit 1
+  fi
+done
 
 ### Execution ###
 
@@ -106,10 +121,10 @@ OUT_DYNAMIC_UNIQ=$(echo "$OUT_DYNAMIC" | sort -u)
 
 for DYNAMIC_CALL in $OUT_DYNAMIC_UNIQ
 do
-echo "    🔶 Manual check required for \"$DYNAMIC_CALL\"."
+  echo "    🔶 Manual check required for \"$DYNAMIC_CALL\"."
 done
 
-if [$(echo "$OUT_DYNAMIC_UNIQ" | wc -l) == 0 ]
+if [ $(echo "$OUT_DYNAMIC_UNIQ" | wc -l) == 0 ]
 then
-echo "    ✅ No template calls found."
+  echo "    ✅ No template calls found."
 fi
