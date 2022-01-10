@@ -966,7 +966,7 @@ useEffect(() => setCurrentNetwork(
   let sheetHeight =
     (isMessageRequest
       ? MessageSheetHeight
-      : (amount && amount !== '0.00') || !isBalanceEnough
+      : isBalanceEnough
       ? TallSheetHeight
       : ShortSheetHeight) * (android ? 1.5 : 1);
 
