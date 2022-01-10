@@ -1,16 +1,22 @@
 import { useCallback, useEffect } from 'react';
-import { useMMKVBoolean } from 'react-native-mmkv';
-import useAccountSettings from './useAccountSettings';
+import { atom, useRecoilState } from 'recoil';
+
+const areOpenSmallBalancesAtom = atom({
+  default: false,
+  key: 'areOpenSmallBalances',
+});
+
+const areOpenSmallBalancesStaggerAtom = atom({
+  default: false,
+  key: 'areOpenSmallBalancesStagger',
+});
 
 export default function useOpenSmallBalances() {
-  const { accountAddress } = useAccountSettings();
-  const [isSmallBalancesOpen, setIsSmallBalancesOpen] = useMMKVBoolean(
-    'small-balances-open-' + accountAddress
+  const [isSmallBalancesOpen, setIsSmallBalancesOpen] = useRecoilState(
+    areOpenSmallBalancesAtom
   );
 
-  const [stagger, setStagger] = useMMKVBoolean(
-    'small-balances-open-stagger-' + accountAddress
-  );
+  const [stagger, setStagger] = useRecoilState(areOpenSmallBalancesStaggerAtom);
 
   useEffect(() => {
     if (stagger) {
@@ -29,6 +35,7 @@ export default function useOpenSmallBalances() {
 
   return {
     isSmallBalancesOpen,
+    setIsSmallBalancesOpen,
     stagger,
     toggleOpenSmallBalances,
   };

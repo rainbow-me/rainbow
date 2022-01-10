@@ -5,6 +5,7 @@ import React, {
   ReactElement,
   useCallback,
   useContext,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -18,7 +19,11 @@ const Context = React.createContext<
   | {
       scrollViewRef: MutableRefObject<BaseScrollView | undefined>;
       interpolationsRanges: Record<string, { range: number[]; last: boolean }>;
-      setMeasures: (position: number, height: number, name: string) => void;
+      setMeasures: (
+        position: number | undefined,
+        height: number | undefined,
+        name: string
+      ) => void;
     }
   | undefined
 >(undefined);
@@ -75,6 +80,13 @@ function StickyHeaderInternal({
     );
   }, [name, scrollViewRef, setMeasures]);
 
+  useLayoutEffect(
+    () => () => {
+      setMeasures(undefined, undefined, name);
+    },
+    [setMeasures, name]
+  );
+
   if (!position) {
     return children;
   }
@@ -116,15 +128,30 @@ export function StickyHeaderManager({ children }: { children: ReactElement }) {
     return rangesKeyed;
   }, [positions]);
   const scrollViewRef = useRef<BaseScrollView>();
+  const setMeasures = useCallback(
+    (
+      position: number | undefined,
+      height: number | undefined,
+      name: string
+    ) => {
+      setPositions(prev => {
+        if (position === undefined || height === undefined) {
+          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+          delete prev[name];
+          return { ...prev };
+        }
+        return { ...prev, [name]: { height, name, position } };
+      });
+    },
+    []
+  );
   const value = useMemo(
     () => ({
       interpolationsRanges,
       scrollViewRef,
-      setMeasures(position: number, height: number, name: string) {
-        setPositions(prev => ({ ...prev, [name]: { height, name, position } }));
-      },
+      setMeasures,
     }),
-    [interpolationsRanges]
+    [interpolationsRanges, setMeasures]
   );
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }

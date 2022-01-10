@@ -1,8 +1,16 @@
 import { map } from 'lodash';
-import React, { useCallback, useEffect, useState } from 'react';
-import { LayoutAnimation, View } from 'react-native';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { Animated, LayoutAnimation, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { useRecyclerAssetListPosition } from '../asset-list/RecyclerAssetList2/core/Contexts';
+import { StickyHeaderContext } from '../asset-list/RecyclerAssetList2/core/StickyHeaders';
 import { Row, RowWithMargins } from '../layout';
 import CoinDividerAssetsValue from './CoinDividerAssetsValue';
 import CoinDividerEditButton from './CoinDividerEditButton';
@@ -26,9 +34,9 @@ const Container = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
 })`
-  ${padding(5, 19, 6)};
-  background-color: ${({ isSticky, theme: { colors } }) =>
-    isSticky ? colors.white : colors.transparent};
+  ${padding(4, 19, 5, 0)};
+  background-color: ${({ isCoinListEdited, theme: { colors } }) =>
+    isCoinListEdited ? colors.white : colors.transparent};
   height: ${CoinDividerContainerHeight};
   width: ${({ deviceWidth }) => deviceWidth};
 `;
@@ -36,6 +44,8 @@ const Container = styled(Row).attrs({
 const CoinDividerButtonRow = styled(RowWithMargins).attrs(
   ({ isCoinListEdited }) => ({
     margin: 10,
+    paddingHorizontal: 19,
+    paddingVertical: 5,
     pointerEvents: isCoinListEdited ? 'auto' : 'none',
   })
 )`
@@ -49,7 +59,48 @@ const EditButtonWrapper = styled(Row).attrs({
   right: 0;
 `;
 
-export default function CoinDivider({ balancesSum, isSticky = false }) {
+const useInterpolationRange = () => {
+  const { isCoinListEdited } = useCoinListEdited();
+  const position = useRecyclerAssetListPosition();
+  const ref = useRef();
+
+  const { scrollViewRef } = useContext(StickyHeaderContext) || {};
+  const [range, setRanges] = useState([0, 0]);
+  const onLayout = useCallback(() => {
+    const nativeScrollRef = scrollViewRef?.current?.getNativeScrollRef();
+    if (!nativeScrollRef) {
+      return;
+    }
+    ref.current?.measureLayout?.(
+      nativeScrollRef,
+      (_left, top) => {
+        setRanges([top - 50, top]);
+      },
+      () => {}
+    );
+  }, [scrollViewRef]);
+  return {
+    onLayout,
+    ref,
+    style: {
+      transform: [
+        {
+          translateY: isCoinListEdited
+            ? position?.interpolate({
+                extrapolateLeft: 'clamp',
+                extrapolateRight: 'extend',
+                inputRange: range,
+                outputRange: range.map(r => r - range[0]),
+              })
+            : 0,
+        },
+      ],
+    },
+  };
+};
+
+export default function CoinDivider({ balancesSum }) {
+  const interpolation = useInterpolationRange();
   const { nativeCurrency } = useAccountSettings();
   const dispatch = useDispatch();
   const assets = useSelector(({ data: { assets } }) => assets);
@@ -95,53 +146,58 @@ export default function CoinDivider({ balancesSum, isSticky = false }) {
   }, [clearSelectedCoins, setIsCoinListEdited]);
 
   return (
-    <Container deviceWidth={deviceWidth} isSticky={isSticky}>
-      <Row>
-        <View pointerEvents={isCoinListEdited ? 'none' : 'auto'}>
-          <CoinDividerOpenButton
-            coinDividerHeight={CoinDividerHeight}
-            isSmallBalancesOpen={isSmallBalancesOpen}
-            isVisible={isCoinListEdited}
-            onPress={toggleOpenSmallBalances}
+    <Animated.View {...interpolation}>
+      <Container deviceWidth={deviceWidth} isCoinListEdited={isCoinListEdited}>
+        <Row>
+          <View
+            opacity={isCoinListEdited ? 0 : 1}
+            pointerEvents={isCoinListEdited ? 'none' : 'auto'}
+          >
+            <CoinDividerOpenButton
+              coinDividerHeight={CoinDividerHeight}
+              isSmallBalancesOpen={isSmallBalancesOpen}
+              isVisible={isCoinListEdited}
+              onPress={toggleOpenSmallBalances}
+            />
+          </View>
+          <CoinDividerButtonRow isCoinListEdited={isCoinListEdited}>
+            <CoinDividerEditButton
+              isActive={currentAction !== EditAction.none}
+              isVisible={isCoinListEdited}
+              onPress={setPinnedCoins}
+              shouldReloadList
+              text={currentAction === EditAction.unpin ? 'Unpin' : 'Pin'}
+            />
+            <CoinDividerEditButton
+              isActive={currentAction !== EditAction.none}
+              isVisible={isCoinListEdited}
+              onPress={setHiddenCoins}
+              shouldReloadList
+              text={currentAction === EditAction.unhide ? 'Unhide' : 'Hide'}
+            />
+          </CoinDividerButtonRow>
+        </Row>
+        <Row justify="end">
+          <CoinDividerAssetsValue
+            balancesSum={balancesSum}
+            nativeCurrency={nativeCurrency}
+            openSmallBalances={isSmallBalancesOpen}
           />
-        </View>
-        <CoinDividerButtonRow isCoinListEdited={isCoinListEdited}>
-          <CoinDividerEditButton
-            isActive={currentAction !== EditAction.none}
-            isVisible={isCoinListEdited}
-            onPress={setPinnedCoins}
-            shouldReloadList
-            text={currentAction === EditAction.unpin ? 'Unpin' : 'Pin'}
-          />
-          <CoinDividerEditButton
-            isActive={currentAction !== EditAction.none}
-            isVisible={isCoinListEdited}
-            onPress={setHiddenCoins}
-            shouldReloadList
-            text={currentAction === EditAction.unhide ? 'Unhide' : 'Hide'}
-          />
-        </CoinDividerButtonRow>
-      </Row>
-      <Row justify="end">
-        <CoinDividerAssetsValue
-          balancesSum={balancesSum}
-          nativeCurrency={nativeCurrency}
-          openSmallBalances={isSmallBalancesOpen}
-        />
-        <EditButtonWrapper
-          pointerEvents={
-            isCoinListEdited || isSmallBalancesOpen ? 'auto' : 'none'
-          }
-        >
-          <CoinDividerEditButton
-            isActive={isCoinListEdited}
-            isVisible={isCoinListEdited || isSmallBalancesOpen}
-            onPress={handlePressEdit}
-            text={isCoinListEdited ? 'Done' : 'Edit'}
-            textOpacityAlwaysOn
-          />
-        </EditButtonWrapper>
-      </Row>
-    </Container>
+          <EditButtonWrapper
+            pointerEvents={
+              isCoinListEdited || isSmallBalancesOpen ? 'auto' : 'none'
+            }
+          >
+            <CoinDividerEditButton
+              isActive={isCoinListEdited}
+              isVisible={isCoinListEdited || isSmallBalancesOpen}
+              onPress={handlePressEdit}
+              text={isCoinListEdited ? 'Done' : 'Edit'}
+              textOpacityAlwaysOn
+            />
+          </EditButtonWrapper>
+        </Row>
+      </Container>
+    </Animated.View>
   );
 }

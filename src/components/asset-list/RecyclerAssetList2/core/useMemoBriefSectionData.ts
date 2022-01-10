@@ -1,7 +1,8 @@
 import { useDeepCompareMemo } from 'use-deep-compare';
-import { CellType, NFTFamilyExtraData } from './ViewTypes';
+import { CellType, CoinExtraData, NFTFamilyExtraData } from './ViewTypes';
 import {
   useCoinListEdited,
+  useCoinListEditOptions,
   useOpenFamilies,
   useOpenInvestmentCards,
   useOpenSavings,
@@ -15,6 +16,7 @@ export default function useMemoBriefSectionData() {
   const { isSavingsOpen } = useOpenSavings();
   const { isInvestmentCardsOpen } = useOpenInvestmentCards();
   const { isCoinListEdited } = useCoinListEdited();
+  const { hiddenCoins } = useCoinListEditOptions();
   const { openFamilies } = useOpenFamilies();
 
   const result = useDeepCompareMemo(() => {
@@ -22,10 +24,28 @@ export default function useMemoBriefSectionData() {
     let isGroupOpen = true;
     const stickyHeaders = [];
     let index = 0;
+    let isAnyAssetBelowDivider = false;
+    let afterCoins = false;
     // load firstly 12, then the rest after 1 sec
     let numberOfSmallBalancesAllowed = stagger ? 12 : briefSectionsData.length;
     const briefSectionsDataFiltered = briefSectionsData
-      .filter(data => {
+      .filter((data, arrIndex, arr) => {
+        if (
+          arr[arrIndex - 1]?.type === CellType.COIN &&
+          data.type !== CellType.COIN_DIVIDER &&
+          data.type !== CellType.COIN
+        ) {
+          afterCoins = true;
+        }
+        if (afterCoins && isCoinListEdited) {
+          return false;
+        }
+
+        // removes NFTS_HEADER if wallet doesn't have NFTs
+        if (data.type === CellType.NFTS_HEADER && !arr[arrIndex + 2]) {
+          return false;
+        }
+
         if (
           data.type === CellType.ASSETS_HEADER ||
           data.type === CellType.NFTS_HEADER
@@ -33,9 +53,25 @@ export default function useMemoBriefSectionData() {
           stickyHeaders.push(index);
         }
         if (
+          afterDivider &&
+          data.type === CellType.COIN &&
+          !hiddenCoins.includes((data as CoinExtraData).uniqueId)
+        ) {
+          isAnyAssetBelowDivider = true;
+        }
+
+        if (
           data.type === CellType.COIN &&
           !isSmallBalancesOpen &&
           afterDivider
+        ) {
+          return false;
+        }
+
+        if (
+          data.type === CellType.COIN &&
+          hiddenCoins.includes((data as CoinExtraData).uniqueId) &&
+          !isCoinListEdited
         ) {
           return false;
         }
@@ -82,6 +118,12 @@ export default function useMemoBriefSectionData() {
         index++;
         return true;
       })
+      .filter(
+        ({ type }) =>
+          type !== CellType.COIN_DIVIDER ||
+          isAnyAssetBelowDivider ||
+          isCoinListEdited
+      )
       .map(({ uid, type }) => ({ type, uid }));
 
     return briefSectionsDataFiltered;

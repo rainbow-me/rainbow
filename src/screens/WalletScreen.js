@@ -16,7 +16,6 @@ import {
   ScanHeaderButton,
 } from '../components/header';
 import { Page, RowWithMargins } from '../components/layout';
-import { useEth } from '../utils/ethereumUtils';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import {
   useAccountEmptyState,
@@ -37,7 +36,6 @@ import {
   emitChartsRequest,
   emitPortfolioRequest,
 } from '@rainbow-me/redux/explorer';
-import { updatePositions } from '@rainbow-me/redux/usersPositions';
 import { position } from '@rainbow-me/styles';
 
 const HeaderOpacityToggler = styled(OpacityToggler).attrs(({ isVisible }) => ({
@@ -81,14 +79,7 @@ export default function WalletScreen() {
     shouldRefetchSavings,
   } = useWalletSectionsData();
 
-  const eth = useEth();
-  const numberOfPools = sections.find(({ pools }) => pools)?.data.length ?? 0;
-
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    eth?.price?.value && dispatch(updatePositions());
-  }, [dispatch, eth?.price?.value, numberOfPools]);
 
   const { addressSocket, assetsSocket } = useSelector(
     ({ explorer: { addressSocket, assetsSocket } }) => ({
@@ -210,7 +201,6 @@ export default function WalletScreen() {
           isWalletEthZero={isWalletEthZero}
           network={network}
           scrollViewTracker={scrollViewTracker}
-          sections={sections}
         />
       </FabWrapper>
     </WalletPage>

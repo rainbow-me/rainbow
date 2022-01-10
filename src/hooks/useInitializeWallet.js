@@ -10,13 +10,14 @@ import {
   settingsLoadNetwork,
   settingsUpdateAccountAddress,
 } from '../redux/settings';
-import { uniswapGetAllExchanges, uniswapPairsInit } from '../redux/uniswap';
+import { uniswapPairsInit } from '../redux/uniswap';
 import { walletsLoadState } from '../redux/wallets';
 import useAccountSettings from './useAccountSettings';
 import useHideSplashScreen from './useHideSplashScreen';
 import useInitializeAccountData from './useInitializeAccountData';
 import useLoadAccountData from './useLoadAccountData';
 import useLoadGlobalEarlyData from './useLoadGlobalEarlyData';
+import useOpenSmallBalances from './useOpenSmallBalances';
 import useResetAccountState from './useResetAccountState';
 import { runKeychainIntegrityChecks } from '@rainbow-me/handlers/walletReadyEvents';
 import { additionalDataCoingeckoIds } from '@rainbow-me/redux/additionalAssetsData';
@@ -31,6 +32,7 @@ export default function useInitializeWallet() {
   const initializeAccountData = useInitializeAccountData();
   const { network } = useAccountSettings();
   const hideSplashScreen = useHideSplashScreen();
+  const { setIsSmallBalancesOpen } = useOpenSmallBalances();
 
   const initializeWallet = useCallback(
     async (
@@ -58,6 +60,8 @@ export default function useInitializeWallet() {
           await runMigrations();
           logger.sentry('done with migrations');
         }
+
+        setIsSmallBalancesOpen(false);
 
         // Load the network first
         await dispatch(settingsLoadNetwork());
@@ -120,7 +124,6 @@ export default function useInitializeWallet() {
 
         if (!switching) {
           dispatch(uniswapPairsInit());
-          dispatch(uniswapGetAllExchanges());
           dispatch(additionalDataCoingeckoIds);
         }
 
@@ -149,6 +152,7 @@ export default function useInitializeWallet() {
       loadGlobalEarlyData,
       network,
       resetAccountState,
+      setIsSmallBalancesOpen,
     ]
   );
 

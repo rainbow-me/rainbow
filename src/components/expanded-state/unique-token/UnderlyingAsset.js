@@ -7,7 +7,7 @@ import { ButtonPressAnimation } from '../../animations';
 import { UnderlyingAssetCoinRow } from '../../coin-row';
 import { Column, Row } from '../../layout';
 import { Text } from '../../text';
-import { useAccountAssets, useAccountSettings } from '@rainbow-me/hooks';
+import { useAccountSettings } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { position } from '@rainbow-me/styles';
@@ -28,7 +28,6 @@ export default function UnderlyingAsset({
   const { nativeCurrency } = useAccountSettings();
 
   const { colors, isDarkMode } = useTheme();
-  const { allAssets } = useAccountAssets();
   const { push } = useNavigation();
   const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
     genericAssets,
@@ -38,7 +37,7 @@ export default function UnderlyingAsset({
 
   const handlePress = useCallback(() => {
     const asset =
-      ethereumUtils.getAsset(allAssets, toLower(address)) ||
+      ethereumUtils.getAccountAsset(address) ||
       ethereumUtils.formatGenericAsset(
         genericAssets[toLower(address)],
         nativeCurrency
@@ -51,14 +50,7 @@ export default function UnderlyingAsset({
       asset,
       type: 'token',
     });
-  }, [
-    address,
-    allAssets,
-    genericAssets,
-    nativeCurrency,
-    push,
-    removeNextToLastRoute,
-  ]);
+  }, [address, genericAssets, nativeCurrency, push, removeNextToLastRoute]);
 
   return (
     <Row

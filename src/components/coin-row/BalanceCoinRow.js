@@ -1,5 +1,5 @@
 import { get } from 'lodash';
-import React, { Fragment, useCallback } from 'react';
+import React, { Fragment, useCallback, useMemo } from 'react';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { View } from 'react-primitives';
 import styled from 'styled-components';
@@ -14,6 +14,7 @@ import CoinCheckButton from './CoinCheckButton';
 import CoinName from './CoinName';
 import CoinRow from './CoinRow';
 import { useIsCoinListEditedSharedValue } from '@rainbow-me/helpers/SharedValuesContext';
+import { buildAssetUniqueIdentifier } from '@rainbow-me/helpers/assets';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 
@@ -23,7 +24,7 @@ const formatPercentageString = percentString =>
   percentString ? percentString.split('-').join('- ') : '-';
 
 const BalanceCoinRowCoinCheckButton = styled(CoinCheckButton).attrs({
-  isAbsolute: true,
+  left: 9.5,
 })({
   top: 9,
 });
@@ -98,6 +99,13 @@ const TopRow = ({ name, native, nativeCurrencySymbol }) => {
   );
 };
 
+const arePropsEqual = (prev, next) => {
+  const itemIdentifier = buildAssetUniqueIdentifier(prev.item);
+  const nextItemIdentifier = buildAssetUniqueIdentifier(next.item);
+  const isSameItem = itemIdentifier === nextItemIdentifier;
+  return isSameItem;
+};
+
 const BalanceCoinRow = ({
   containerStyles = null,
   isFirstCoinRow = false,
@@ -147,8 +155,13 @@ const BalanceCoinRow = ({
   );
 
   const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
-  const isPinned = pinnedCoins.includes(item.uniqueId);
-  const isHidden = hiddenCoins.includes(item.uniqueId);
+  const isPinned = useMemo(() => {
+    return pinnedCoins.includes(item.uniqueId);
+  }, [pinnedCoins, item.uniqueId]);
+
+  const isHidden = useMemo(() => {
+    return hiddenCoins.includes(item.uniqueId);
+  }, [hiddenCoins, item.uniqueId]);
 
   return (
     <Row flex={1}>
@@ -183,4 +196,4 @@ const BalanceCoinRow = ({
   );
 };
 
-export default React.memo(BalanceCoinRow);
+export default React.memo(BalanceCoinRow, arePropsEqual);

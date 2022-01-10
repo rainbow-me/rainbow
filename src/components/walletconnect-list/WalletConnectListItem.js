@@ -109,7 +109,7 @@ export default function WalletConnectListItem({
   }, [walletNames, wallets, network, account]);
 
   const connectionNetworkInfo = useMemo(() => {
-    const network = ethereumUtils.getNetworkFromChainId(chainId);
+    const network = ethereumUtils.getNetworkFromChainId(Number(chainId));
     return {
       chainId,
       color: colors.networkColors[network],

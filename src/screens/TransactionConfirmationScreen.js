@@ -58,7 +58,6 @@ import { isDappAuthenticated } from '@rainbow-me/helpers/dappNameHandler';
 import { findWalletWithAccount } from '@rainbow-me/helpers/findWalletWithAccount';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
 import {
-  useAccountAssets,
   useAccountSettings,
   useCurrentNonce,
   useDimensions,
@@ -157,9 +156,8 @@ const NOOP = () => undefined;
 
 export default function TransactionConfirmationScreen() {
   const { colors } = useTheme();
-  const { allAssets } = useAccountAssets();
   const [provider, setProvider] = useState();
-  const [network, setNetwork] = useState();
+  const [currentNetwork, setCurrentNetwork] = useState();
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const [methodName, setMethodName] = useState(null);
   const calculatingGasLimit = useRef(false);
@@ -170,7 +168,6 @@ export default function TransactionConfirmationScreen() {
   const { wallets, walletNames, switchToWalletWithAddress } = useWallets();
   const balances = useWalletBalances(wallets);
   const { accountAddress, nativeCurrency } = useAccountSettings();
-  const getNextNonce = useCurrentNonce(accountAddress, network);
   const keyboardHeight = useKeyboardHeight();
   const dispatch = useDispatch();
   const { params: routeParams } = useRoute();
@@ -215,39 +212,47 @@ export default function TransactionConfirmationScreen() {
     const profileInfo = getAccountProfileInfo(
       selectedWallet,
       walletNames,
-      network,
+      currentNetwork,
       address
     );
     return {
       ...profileInfo,
       address,
     };
-  }, [address, network, walletNames, wallets]);
+  }, [currentNetwork, walletConnector?._accounts, walletNames, wallets]);
 
-  const isL2 = useMemo(() => isL2Network(network), [network]);
+const getNextNonce = useCurrentNonce(accountInfo.address, currentNetwork);
 
-  useEffect(() => {
-    setNetwork(ethereumUtils.getNetworkFromChainId(Number(chainId)));
-  }, [chainId]);
+const isL2 = useMemo(() => {
+  return isL2Network(currentNetwork);
+}, [currentNetwork]);
+
+useEffect(() => {
+  setCurrentNetwork(
+    ethereumUtils.getNetworkFromChainId(Number(walletConnector?._chainId))
+  );
+}, [walletConnector?._chainId]);
 
   useEffect(() => {
     const initProvider = async () => {
-      const p = isL2 ? await getProviderForNetwork(network) : web3Provider;
+      const p = isL2
+        ? await getProviderForNetwork(currentNetwork)
+        : web3Provider;
       setProvider(p);
     };
-    network && initProvider();
-  }, [isL2, network]);
+    currentNetwork && initProvider();
+  }, [isL2, currentNetwork]);
 
   useEffect(() => {
     const getNativeAsset = async () => {
       const asset = await ethereumUtils.getNativeAssetForNetwork(
-        network,
+        currentNetwork,
         accountInfo.address
       );
       setNativeAsset(asset);
     };
-    network && getNativeAsset();
-  }, [accountInfo.address, allAssets, network]);
+    currentNetwork && getNativeAsset();
+  }, [accountInfo.address, currentNetwork]);
 
   const {
     gasLimit,
@@ -266,17 +271,17 @@ export default function TransactionConfirmationScreen() {
       isEmpty(selectedGasFee?.gasFee) ||
       isEmpty(gasFeeParamsBySpeed) ||
       !nativeAsset ||
-      !network ||
+      !currentNetwork ||
       isSufficientGasChecked
     )
       return;
-    updateGasFeeOption(selectedGasFeeOption, [nativeAsset]);
+    updateGasFeeOption(selectedGasFeeOption);
     setIsSufficientGasChecked(true);
   }, [
     isSufficientGas,
     isSufficientGasChecked,
     nativeAsset,
-    network,
+    currentNetwork,
     selectedGasFee,
     selectedGasFeeOption,
     updateGasFeeOption,
@@ -302,9 +307,9 @@ export default function TransactionConfirmationScreen() {
 
   const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
-      type: network,
+      type: currentNetwork,
     });
-  }, [navigate, network]);
+  }, [navigate, currentNetwork]);
 
   const fetchMethodName = useCallback(
     async data => {
@@ -341,9 +346,9 @@ export default function TransactionConfirmationScreen() {
       ReactNativeHapticFeedback.trigger('notificationSuccess');
     }
     InteractionManager.runAfterInteractions(() => {
-      if (network) {
+      if (currentNetwork) {
         if (!isMessageRequest) {
-          startPollingGasFees(network);
+          startPollingGasFees(currentNetwork);
           fetchMethodName(params[0].data);
         } else {
           setMethodName(lang.t('wallet.message_signing.request'));
@@ -356,7 +361,7 @@ export default function TransactionConfirmationScreen() {
     fetchMethodName,
     isMessageRequest,
     method,
-    network,
+    currentNetwork,
     openAutomatically,
     params,
     startPollingGasFees,
@@ -464,7 +469,7 @@ export default function TransactionConfirmationScreen() {
     } finally {
       logger.log('Setting gas limit to', convertHexToString(gas));
 
-      if (network === networkTypes.optimism) {
+      if (currentNetwork === networkTypes.optimism) {
         const l1GasFeeOptimism = await ethereumUtils.calculateL1FeeOptimism(
           txPayload,
           provider
@@ -474,7 +479,7 @@ export default function TransactionConfirmationScreen() {
         updateTxFee(gas, null);
       }
     }
-  }, [network, params, provider, updateTxFee]);
+  }, [currentNetwork, params, provider, updateTxFee]);
 
   useEffect(() => {
     if (
@@ -546,12 +551,11 @@ export default function TransactionConfirmationScreen() {
 
     setIsBalanceEnough(isEnough);
   }, [
-    allAssets,
     isBalanceEnough,
     isMessageRequest,
     isSufficientGas,
     method,
-    network,
+    currentNetwork,
     params,
     selectedGasFee,
     walletBalance.amount,
@@ -568,7 +572,7 @@ export default function TransactionConfirmationScreen() {
         gasLimitFromPayload: convertHexToString(gasLimitFromPayload),
       });
 
-      if (network === networkTypes.mainnet) {
+      if (currentNetwork === networkTypes.mainnet) {
         // Estimate the tx with gas limit padding before sending
         const rawGasLimit = await estimateGasWithPadding(
           txPayload,
@@ -652,7 +656,7 @@ export default function TransactionConfirmationScreen() {
           from: displayDetails?.request?.from,
           gasLimit,
           hash: result.hash,
-          network,
+          network: currentNetwork,
           nonce: result.nonce,
           to: displayDetails?.request?.to,
           value: result.value.toString(),
@@ -709,7 +713,7 @@ export default function TransactionConfirmationScreen() {
     method,
     params,
     selectedGasFee,
-    network,
+    currentNetwork,
     gasLimit,
     provider,
     accountInfo.address,
@@ -886,7 +890,7 @@ export default function TransactionConfirmationScreen() {
 
     if (isTransactionDisplayType(method) && request?.asset) {
       const priceOfNativeAsset = ethereumUtils.getPriceOfNativeAssetForNetwork(
-        network
+        currentNetwork
       );
       const amount = request?.value ?? '0.00';
       const nativeAmount = multiply(priceOfNativeAsset, amount);
@@ -914,7 +918,7 @@ export default function TransactionConfirmationScreen() {
         value={request?.value}
       />
     );
-  }, [isMessageRequest, method, nativeCurrency, network, request]);
+  }, [isMessageRequest, method, nativeCurrency, currentNetwork, request]);
 
   const offset = useSharedValue(0);
   const sheetOpacity = useSharedValue(1);
@@ -972,7 +976,7 @@ export default function TransactionConfirmationScreen() {
     if (
       request?.asset &&
       walletBalance &&
-      network &&
+      currentNetwork &&
       provider &&
       nativeAsset &&
       !isEmpty(selectedGasFee)
@@ -981,7 +985,7 @@ export default function TransactionConfirmationScreen() {
     }
   }, [
     nativeAsset,
-    network,
+    currentNetwork,
     provider,
     ready,
     request?.asset,
@@ -1037,7 +1041,7 @@ export default function TransactionConfirmationScreen() {
                 <DappLogo
                   dappName={dappName || ''}
                   imageUrl={imageUrl || ''}
-                  network={network}
+                  network={currentNetwork}
                 />
                 <Row marginBottom={android ? -6 : 5}>
                   <Text
@@ -1087,7 +1091,7 @@ export default function TransactionConfirmationScreen() {
                   <Column margin={android ? 24 : 0} width="100%">
                     <Row height={android ? 0 : 19} />
                     <L2Disclaimer
-                      assetType={network}
+                      assetType={currentNetwork}
                       colors={colors}
                       hideDivider
                       onPress={handleL2DisclaimerPress}
@@ -1140,7 +1144,7 @@ export default function TransactionConfirmationScreen() {
             )}
           </AnimatedSheet>
           {!isMessageRequest && (
-            <GasSpeedButton currentNetwork={network} theme="dark" />
+            <GasSpeedButton network={currentNetwork} theme="dark" />
           )}
         </Column>
       </SlackSheet>

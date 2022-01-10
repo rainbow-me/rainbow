@@ -65,6 +65,11 @@
             value = "disable"
             isEnabled = "YES">
          </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "RAINBOW_TOKEN_LIST_URL"
+            value = "$(RAINBOW_TOKEN_LIST_URL)"
+            isEnabled = "YES">
+         </EnvironmentVariable>
       </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction

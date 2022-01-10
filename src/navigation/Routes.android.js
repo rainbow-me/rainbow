@@ -273,7 +273,7 @@ function BSNavigator() {
         component={ShowcaseSheet}
         name={Routes.SHOWCASE_SHEET}
         options={{
-          height: '90%',
+          height: '95%',
         }}
       />
       <BSStack.Screen

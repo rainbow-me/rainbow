@@ -1,4 +1,12 @@
-import { filter, get, groupBy, isEmpty, isNil, map, toNumber } from 'lodash';
+import {
+  get,
+  groupBy,
+  isEmpty,
+  isNil,
+  mapValues,
+  toNumber,
+  values,
+} from 'lodash';
 import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
 import { parseAssetsNativeWithTotals } from '@rainbow-me/parsers';
@@ -7,21 +15,19 @@ const EMPTY_ARRAY = [];
 
 const assetPricesFromUniswapSelector = state =>
   state.data.assetPricesFromUniswap;
-const assetsSelector = state => state.data.assets;
+const accountAssetsDataSelector = state => state.data.accountAssetsData;
 const isLoadingAssetsSelector = state => state.data.isLoadingAssets;
 const nativeCurrencySelector = state => state.settings.nativeCurrency;
-const hiddenCoinsSelector = state => state.editOptions.hiddenCoins;
 
 const sortAssetsByNativeAmount = (
-  originalAssets,
+  accountAssetsData,
   assetPricesFromUniswap,
   isLoadingAssets,
-  nativeCurrency,
-  hiddenCoins
+  nativeCurrency
 ) => {
-  let updatedAssets = originalAssets;
+  let updatedAssets = accountAssetsData;
   if (!isEmpty(assetPricesFromUniswap)) {
-    updatedAssets = map(originalAssets, asset => {
+    updatedAssets = mapValues(accountAssetsData, asset => {
       if (isNil(asset.price)) {
         const assetPrice = get(
           assetPricesFromUniswap,
@@ -44,7 +50,7 @@ const sortAssetsByNativeAmount = (
       return asset;
     });
   }
-  let assetsNativePrices = updatedAssets;
+  let assetsNativePrices = values(updatedAssets);
   let total = null;
   if (!isEmpty(assetsNativePrices)) {
     const parsedAssets = parseAssetsNativeWithTotals(
@@ -59,7 +65,7 @@ const sortAssetsByNativeAmount = (
     noValue = EMPTY_ARRAY,
   } = groupAssetsByMarketValue(assetsNativePrices);
 
-  const sortedAssets = sortList(
+  const sortedAssetsNoShitcoins = sortList(
     hasValue,
     'native.balance.amount',
     'desc',
@@ -67,25 +73,14 @@ const sortAssetsByNativeAmount = (
     toNumber
   );
   const sortedShitcoins = sortList(noValue, 'name', 'asc');
-  const allAssets = sortedAssets.concat(sortedShitcoins);
-  const allAssetsWithoutHidden = filter(
-    allAssets,
-    asset => hiddenCoins && !hiddenCoins.includes(asset.uniqueId)
-  );
+  const sortedAssets = sortedAssetsNoShitcoins.concat(sortedShitcoins);
 
   return {
-    allAssets,
-    allAssetsCount: allAssets.length,
-    allAssetsWithoutHidden,
-    assetPricesFromUniswap,
-    assets: sortedAssets,
-    assetsCount: sortedAssets.length,
     assetsTotal: total,
-    isBalancesSectionEmpty: isEmpty(allAssets),
+    isBalancesSectionEmpty: isEmpty(sortedAssets),
     isLoadingAssets,
-    nativeCurrency,
-    shitcoins: sortedShitcoins,
-    shitcoinsCount: sortedShitcoins.length,
+    sortedAssets,
+    sortedAssetsCount: sortedAssets.length,
   };
 };
 
@@ -94,11 +89,10 @@ const groupAssetsByMarketValue = assets =>
 
 export const sortAssetsByNativeAmountSelector = createSelector(
   [
-    assetsSelector,
+    accountAssetsDataSelector,
     assetPricesFromUniswapSelector,
     isLoadingAssetsSelector,
     nativeCurrencySelector,
-    hiddenCoinsSelector,
   ],
   sortAssetsByNativeAmount
 );

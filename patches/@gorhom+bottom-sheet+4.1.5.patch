@@ -1,5 +1,5 @@
 diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetScrollable/createBottomSheetScrollableComponent.tsx b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetScrollable/createBottomSheetScrollableComponent.tsx
-index c6a7507..b21bc7b 100644
+index c6a7507..1d2468f 100644
 --- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetScrollable/createBottomSheetScrollableComponent.tsx
 +++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheetScrollable/createBottomSheetScrollableComponent.tsx
 @@ -47,7 +47,7 @@ export function createBottomSheetScrollableComponent<T, P>(
@@ -7,12 +7,12 @@ index c6a7507..b21bc7b 100644
      //#region hooks
      const { scrollableRef, scrollableContentOffsetY, scrollHandler } =
 -      useScrollHandler(scrollEventsHandlersHook);
-+      useScrollHandler(scrollEventsHandlersHook, rest.onScroll);
++      useScrollHandler(scrollEventsHandlersHook, rest.onScrollWorklet);
      const {
        enableContentPanningGesture,
        animatedFooterHeight,
 diff --git a/node_modules/@gorhom/bottom-sheet/src/hooks/useScrollHandler.ts b/node_modules/@gorhom/bottom-sheet/src/hooks/useScrollHandler.ts
-index 8acc126..bc0f6f8 100644
+index 8acc126..262f682 100644
 --- a/node_modules/@gorhom/bottom-sheet/src/hooks/useScrollHandler.ts
 +++ b/node_modules/@gorhom/bottom-sheet/src/hooks/useScrollHandler.ts
 @@ -8,7 +8,8 @@ import { workletNoop as noop } from '../utilities';
@@ -25,13 +25,15 @@ index 8acc126..bc0f6f8 100644
  ) => {
    // refs
    const scrollableRef = useAnimatedRef<Scrollable>();
-@@ -28,7 +29,10 @@ export const useScrollHandler = (
+@@ -28,7 +29,12 @@ export const useScrollHandler = (
    // callbacks
    const scrollHandler = useAnimatedScrollHandler(
      {
 -      onScroll: handleOnScroll,
 +      onScroll: (...args) => {
-+        onScroll?.(...args)
++          if (typeof onScroll === 'function') {
++              onScroll(...args)
++          }
 +        handleOnScroll(...args)
 +      },
        onBeginDrag: handleOnBeginDrag,

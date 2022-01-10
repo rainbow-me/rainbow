@@ -1,4 +1,4 @@
-import { get, isNil, map, toUpper } from 'lodash';
+import { get, isNil, map, mapValues, toUpper } from 'lodash';
 import { dedupeUniqueTokens } from './uniqueTokens';
 import { AssetTypes } from '@rainbow-me/entities';
 import { isNativeAsset } from '@rainbow-me/handlers/assets';
@@ -19,7 +19,7 @@ import { getTokenMetadata, isLowerCaseMatch } from '@rainbow-me/utils';
  */
 export const parseAccountAssets = (data, uniqueTokens) => {
   const dedupedAssets = dedupeUniqueTokens(data, uniqueTokens);
-  return dedupedAssets.map(assetData => {
+  return mapValues(dedupedAssets, assetData => {
     const asset = parseAsset(assetData.asset);
     return {
       ...asset,
@@ -95,33 +95,33 @@ export const parseAssetsNativeWithTotals = (assets, nativeCurrency) => {
 };
 
 export const parseAssetsNative = (assets, nativeCurrency) =>
-  map(assets, asset => {
-    const assetNativePrice = get(asset, 'price');
-    if (isNil(assetNativePrice)) {
-      return asset;
-    }
+  map(assets, asset => parseAssetNative(asset, nativeCurrency));
 
-    const priceUnit = get(assetNativePrice, 'value', 0);
-    const nativeDisplay = convertAmountAndPriceToNativeDisplay(
-      get(asset, 'balance.amount', 0),
-      priceUnit,
-      nativeCurrency
-    );
-    return {
-      ...asset,
-      native: {
-        balance: nativeDisplay,
-        change: isLowerCaseMatch(get(asset, 'symbol'), nativeCurrency)
-          ? null
-          : assetNativePrice.relative_change_24h
-          ? convertAmountToPercentageDisplay(
-              assetNativePrice.relative_change_24h
-            )
-          : '',
-        price: {
-          amount: priceUnit,
-          display: convertAmountToNativeDisplay(priceUnit, nativeCurrency),
-        },
+export const parseAssetNative = (asset, nativeCurrency) => {
+  const assetNativePrice = get(asset, 'price');
+  if (isNil(assetNativePrice)) {
+    return asset;
+  }
+
+  const priceUnit = get(assetNativePrice, 'value', 0);
+  const nativeDisplay = convertAmountAndPriceToNativeDisplay(
+    get(asset, 'balance.amount', 0),
+    priceUnit,
+    nativeCurrency
+  );
+  return {
+    ...asset,
+    native: {
+      balance: nativeDisplay,
+      change: isLowerCaseMatch(get(asset, 'symbol'), nativeCurrency)
+        ? null
+        : assetNativePrice.relative_change_24h
+        ? convertAmountToPercentageDisplay(assetNativePrice.relative_change_24h)
+        : '',
+      price: {
+        amount: priceUnit,
+        display: convertAmountToNativeDisplay(priceUnit, nativeCurrency),
       },
-    };
-  });
+    },
+  };
+};
