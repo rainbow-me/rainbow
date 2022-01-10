@@ -38,27 +38,28 @@ const LOADING_ASSETS_PLACEHOLDER = [
   { type: 'LOADING_ASSETS', uid: 'loadings-asset-5' },
 ];
 
-const sortedAssetsSelector = state => state.sortedAssets;
-const sortedAssetsCountSelector = state => state.sortedAssetsCount;
-const assetsTotalSelector = state => state.assetsTotal;
-const hiddenCoinsSelector = state => state.hiddenCoins;
-const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
-const isCoinListEditedSelector = state => state.isCoinListEdited;
-const isLoadingAssetsSelector = state => state.isLoadingAssets;
-const languageSelector = state => state.language;
-const networkSelector = state => state.network;
-const nativeCurrencySelector = state => state.nativeCurrency;
-const pinnedCoinsSelector = state => state.pinnedCoins;
-const savingsSelector = state => state.savings;
-const showcaseTokensSelector = state => state.showcaseTokens;
-const uniqueTokensSelector = state => state.uniqueTokens;
-const uniswapSelector = state => state.uniswap;
-const uniswapTotalSelector = state => state.uniswapTotal;
+const sortedAssetsSelector = (state: any) => state.sortedAssets;
+const sortedAssetsCountSelector = (state: any) => state.sortedAssetsCount;
+const assetsTotalSelector = (state: any) => state.assetsTotal;
+const hiddenCoinsSelector = (state: any) => state.hiddenCoins;
+const isBalancesSectionEmptySelector = (state: any) =>
+  state.isBalancesSectionEmpty;
+const isCoinListEditedSelector = (state: any) => state.isCoinListEdited;
+const isLoadingAssetsSelector = (state: any) => state.isLoadingAssets;
+const languageSelector = (state: any) => state.language;
+const networkSelector = (state: any) => state.network;
+const nativeCurrencySelector = (state: any) => state.nativeCurrency;
+const pinnedCoinsSelector = (state: any) => state.pinnedCoins;
+const savingsSelector = (state: any) => state.savings;
+const showcaseTokensSelector = (state: any) => state.showcaseTokens;
+const uniqueTokensSelector = (state: any) => state.uniqueTokens;
+const uniswapSelector = (state: any) => state.uniswap;
+const uniswapTotalSelector = (state: any) => state.uniswapTotal;
 
 const enhanceRenderItem = compose(
   withNavigation,
   withHandlers({
-    onPress: ({ assetType, navigation }) => (item, params) => {
+    onPress: ({ assetType, navigation }: any) => (item: any, params: any) => {
       navigation.navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: item,
         type: assetType,
@@ -70,28 +71,30 @@ const enhanceRenderItem = compose(
 
 const TokenItem = enhanceRenderItem(BalanceCoinRow);
 
-const balancesSkeletonRenderItem = item => (
+const balancesSkeletonRenderItem = (item: any) => (
   <AssetListItemSkeleton animated descendingOpacity={false} {...item} />
 );
 
-const balancesRenderItem = item => <TokenItem {...item} assetType="token" />;
+const balancesRenderItem = (item: any) => (
+  <TokenItem {...item} assetType="token" />
+);
 
-export const tokenFamilyItem = item => (
+export const tokenFamilyItem = (item: any) => (
   <CollectibleTokenFamily {...item} uniqueId={item.uniqueId} />
 );
-const uniswapRenderItem = item => (
+const uniswapRenderItem = (item: any) => (
   <UniswapInvestmentRow {...item} assetType="uniswap" isCollapsible />
 );
 
-const filterWalletSections = sections =>
-  sections.filter(({ data, header }) =>
+const filterWalletSections = (sections: any) =>
+  sections.filter(({ data, header }: any) =>
     data ? get(header, 'totalItems') : true
   );
 
 const buildWalletSections = (
-  balanceSection,
-  uniqueTokenFamiliesSection,
-  uniswapSection
+  balanceSection: any,
+  uniqueTokenFamiliesSection: any,
+  uniswapSection: any
 ) => {
   const sections = [balanceSection, uniswapSection, uniqueTokenFamiliesSection];
 
@@ -105,10 +108,10 @@ const buildWalletSections = (
 };
 
 const buildBriefWalletSections = (
-  balanceSection,
-  savings,
-  uniqueTokenFamiliesSection,
-  uniswapSection
+  balanceSection: any,
+  savings: any,
+  uniqueTokenFamiliesSection: any,
+  uniswapSection: any
 ) => {
   const sections = [
     balanceSection,
@@ -124,10 +127,10 @@ const buildBriefWalletSections = (
 };
 
 const withUniswapSection = (
-  language,
-  nativeCurrency,
-  uniswap,
-  uniswapTotal
+  language: any,
+  nativeCurrency: any,
+  uniswap: any,
+  uniswapTotal: any
 ) => {
   return {
     data: uniswap,
@@ -142,8 +145,12 @@ const withUniswapSection = (
   };
 };
 
-const withBriefUniswapSection = (uniswap, uniswapTotal, nativeCurrency) => {
-  const pools = uniswap.map(pool => ({
+const withBriefUniswapSection = (
+  uniswap: any,
+  uniswapTotal: any,
+  nativeCurrency: any
+) => {
+  const pools = uniswap.map((pool: any) => ({
     address: pool.address,
     type: 'UNISWAP_POOL',
     uid: 'pool-' + pool.address,
@@ -162,7 +169,7 @@ const withBriefUniswapSection = (uniswap, uniswapTotal, nativeCurrency) => {
   return [];
 };
 
-const withBalanceSavingsSection = savings => {
+const withBalanceSavingsSection = (savings: any) => {
   let totalUnderlyingNativeValue = '0';
   const savingsAssets = map(savings, asset => {
     const {
@@ -193,7 +200,7 @@ const withBalanceSavingsSection = savings => {
   return savingsSection;
 };
 
-const withBriefBalanceSavingsSection = savings => {
+const withBriefBalanceSavingsSection = (savings: any) => {
   let totalUnderlyingNativeValue = '0';
   for (let saving of savings) {
     const { underlyingBalanceNativeValue } = saving;
@@ -202,7 +209,7 @@ const withBriefBalanceSavingsSection = savings => {
       underlyingBalanceNativeValue || 0
     );
   }
-  const addresses = savings?.map(asset => asset.cToken.address);
+  const addresses = savings?.map((asset: any) => asset.cToken.address);
   return [
     {
       type: 'SAVINGS_HEADER_SPACE_BEFORE',
@@ -213,7 +220,7 @@ const withBriefBalanceSavingsSection = savings => {
       uid: 'savings-header',
       value: totalUnderlyingNativeValue,
     },
-    ...addresses.map(address => ({
+    ...addresses.map((address: any) => ({
       address,
       type: 'SAVINGS',
       uid: 'savings-' + address,
@@ -222,14 +229,14 @@ const withBriefBalanceSavingsSection = savings => {
 };
 
 const coinEditContextMenu = (
-  sortedAssets,
-  balanceSectionData,
-  isCoinListEdited,
-  currentAction,
-  isLoadingAssets,
-  sortedAssetsCount,
-  totalValue,
-  addedEth
+  sortedAssets: any,
+  balanceSectionData: any,
+  isCoinListEdited: any,
+  currentAction: any,
+  isLoadingAssets: any,
+  sortedAssetsCount: any,
+  totalValue: any,
+  addedEth: any
 ) => {
   const noSmallBalances = !find(balanceSectionData, 'smallBalancesContainer');
 
@@ -241,7 +248,7 @@ const coinEditContextMenu = (
             dynamicOptions: () => {
               return [lang.t('button.cancel'), lang.t('button.edit')];
             },
-            onPressActionSheet: async index => {
+            onPressActionSheet: async (index: any) => {
               if (index === 1) {
                 LayoutAnimation.configureNext(
                   LayoutAnimation.create(200, 'easeInEaseOut', 'opacity')
@@ -257,20 +264,20 @@ const coinEditContextMenu = (
 };
 
 const withBalanceSection = (
-  sortedAssets,
-  sortedAssetsCount,
-  assetsTotal,
-  savingsSection,
-  isBalancesSectionEmpty,
-  isLoadingAssets,
-  language,
-  nativeCurrency,
-  network,
-  isCoinListEdited,
-  pinnedCoins,
-  hiddenCoins,
-  uniswapTotal,
-  collectibles
+  sortedAssets: any,
+  sortedAssetsCount: any,
+  assetsTotal: any,
+  savingsSection: any,
+  isBalancesSectionEmpty: any,
+  isLoadingAssets: any,
+  language: any,
+  nativeCurrency: any,
+  network: any,
+  isCoinListEdited: any,
+  pinnedCoins: any,
+  hiddenCoins: any,
+  uniswapTotal: any,
+  collectibles: any
 ) => {
   const { addedEth, assets, totalBalancesValue } = buildCoinsList(
     sortedAssets,
@@ -309,6 +316,7 @@ const withBalanceSection = (
   return {
     balances: true,
     data: balanceSectionData,
+    // @ts-expect-error ts-migrate(2554) FIXME: Expected 8 arguments, but got 7.
     header: coinEditContextMenu(
       sortedAssets,
       balanceSectionData,
@@ -326,15 +334,15 @@ const withBalanceSection = (
 };
 
 const withBriefBalanceSection = (
-  sortedAssets,
-  isLoadingAssets,
-  nativeCurrency,
-  isCoinListEdited,
-  pinnedCoins,
-  hiddenCoins,
-  collectibles,
-  savingsSection,
-  uniswapTotal
+  sortedAssets: any,
+  isLoadingAssets: any,
+  nativeCurrency: any,
+  isCoinListEdited: any,
+  pinnedCoins: any,
+  hiddenCoins: any,
+  collectibles: any,
+  savingsSection: any,
+  uniswapTotal: any
 ) => {
   const { briefAssets, totalBalancesValue } = buildBriefCoinsList(
     sortedAssets,
@@ -384,12 +392,12 @@ const largeFamilyThreshold = 4;
 const jumboFamilyThreshold = largeFamilyThreshold * 2;
 const minTopFoldThreshold = 10;
 
-const buildImagesToPreloadArray = (family, index, families) => {
+const buildImagesToPreloadArray = (family: any, index: any, families: any) => {
   const isLargeFamily = family.tokens.length > largeFamilyThreshold;
   const isJumboFamily = family.tokens.length >= jumboFamilyThreshold;
   const isTopFold = index < Math.max(families.length / 2, minTopFoldThreshold);
 
-  return family.tokens.map((token, rowIndex) => {
+  return family.tokens.map((token: any, rowIndex: any) => {
     let priority = ImgixImage.priority[isTopFold ? 'high' : 'normal'];
 
     if (isTopFold && isLargeFamily) {
@@ -398,17 +406,19 @@ const buildImagesToPreloadArray = (family, index, families) => {
       } else if (isJumboFamily) {
         const isMedium =
           rowIndex > largeFamilyThreshold && rowIndex <= jumboFamilyThreshold;
+        // @ts-expect-error ts-migrate(2322) FIXME: Type '"normal" | "low"' is not assignable to type ... Remove this comment to see the full error message
         priority = ImgixImage.priority[isMedium ? 'normal' : 'low'];
       } else {
         priority = ImgixImage.priority.normal;
       }
     }
 
-    const images = token.map(({ image_url, uniqueId }) => {
+    const images = token.map(({ image_url, uniqueId }: any) => {
       if (!image_url) return null;
       return {
         id: uniqueId,
         priority,
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
         uri: svgToPngIfNeeded(getLowResUrl(image_url)),
       };
     });
@@ -417,7 +427,7 @@ const buildImagesToPreloadArray = (family, index, families) => {
   });
 };
 
-const sortImagesToPreload = images => {
+const sortImagesToPreload = (images: any) => {
   const filtered = compact(flattenDeep(images));
   const grouped = groupBy(filtered, property('priority'));
   return [
@@ -427,13 +437,14 @@ const sortImagesToPreload = images => {
   ];
 };
 
-const withUniqueTokenFamiliesSection = (uniqueTokens, data) => {
+const withUniqueTokenFamiliesSection = (uniqueTokens: any, data: any) => {
   // TODO preload elsewhere?
   if (!isPreloadComplete) {
     const imagesToPreload = sortImagesToPreload(
       data.map(buildImagesToPreloadArray)
     );
     isPreloadComplete = !!imagesToPreload.length;
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(false | "" | 0 | null | undefin... Remove this comment to see the full error message
     ImgixImage.preload(imagesToPreload, 200);
   }
 

@@ -56,6 +56,7 @@ it('convertBipsToPercentage, 10 bips to 1 decimal', () => {
 });
 
 it('convertBipsToPercentage, returns 0 when given nullish value', () => {
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'null' is not assignable to param... Remove this comment to see the full error message
   const result = convertBipsToPercentage(null, 1);
   expect(result).toBe('0');
 });

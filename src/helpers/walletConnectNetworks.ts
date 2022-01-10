@@ -5,7 +5,7 @@ const androidNetworkActions = Object.values(networkInfo)
   .filter(({ disabled, testnet }) => !disabled && !testnet)
   .map(netInfo => netInfo.name);
 
-const androidReverseNetworkWithName = name =>
+const androidReverseNetworkWithName = (name: any) =>
   Object.values(networkInfo).find(netInfo => netInfo.name === name);
 
 export const NETWORK_MENU_ACTION_KEY_FILTER = 'switch-to-network-';
@@ -63,15 +63,16 @@ export const changeConnectionMenuItems = () => {
   return baseOptions;
 };
 
-export const androidShowNetworksActionSheet = callback => {
+export const androidShowNetworksActionSheet = (callback: any) => {
   showActionSheetWithOptions(
     {
       options: androidNetworkActions,
       showSeparators: true,
       title: `Available Networks`,
     },
-    idx => {
+    (idx: any) => {
       if (idx !== undefined) {
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'value' does not exist on type '{ balance... Remove this comment to see the full error message
         const { value } = androidReverseNetworkWithName(
           androidNetworkActions[idx]
         );

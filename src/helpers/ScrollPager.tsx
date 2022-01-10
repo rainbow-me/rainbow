@@ -15,24 +15,30 @@ class ScrollPager extends React.Component {
   };
 
   componentDidMount() {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'layout' does not exist on type 'Readonly... Remove this comment to see the full error message
     if (this.props.layout.width) {
       this.scrollTo(
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'navigationState' does not exist on type ... Remove this comment to see the full error message
         this.props.navigationState.index * this.props.layout.width,
         false
       );
     }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: any) {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'navigationState' does not exist on type ... Remove this comment to see the full error message
     const offset = this.props.navigationState.index * this.props.layout.width;
 
     if (
       prevProps.navigationState.routes.length !==
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'navigationState' does not exist on type ... Remove this comment to see the full error message
         this.props.navigationState.routes.length ||
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'layout' does not exist on type 'Readonly... Remove this comment to see the full error message
       prevProps.layout.width !== this.props.layout.width
     ) {
       this.scrollTo(offset, false);
     } else if (
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'navigationState' does not exist on type ... Remove this comment to see the full error message
       prevProps.navigationState.index !== this.props.navigationState.index
     ) {
       if (this.interactionHandle === null) {
@@ -41,7 +47,9 @@ class ScrollPager extends React.Component {
       this.scrollTo(offset);
     }
 
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'layout' does not exist on type 'Readonly... Remove this comment to see the full error message
     if (prevProps.layout.width !== this.props.layout.width) {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'layout' does not exist on type 'Readonly... Remove this comment to see the full error message
       this.layoutWidthNode.setValue(this.props.layout.width);
     }
   }
@@ -54,6 +62,7 @@ class ScrollPager extends React.Component {
   }
 
   initialOffset = {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'navigationState' does not exist on type ... Remove this comment to see the full error message
     x: this.props.navigationState.index * this.props.layout.width,
     y: 0,
   };
@@ -65,13 +74,17 @@ class ScrollPager extends React.Component {
 
   scrollViewRef = React.createRef();
 
-  jumpTo = key => {
+  jumpTo = (key: any) => {
     this.wasTouched = false;
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'navigationState' does not exist on type ... Remove this comment to see the full error message
     const { navigationState, keyboardDismissMode, onIndexChange } = this.props;
 
-    const index = navigationState.routes.findIndex(route => route.key === key);
+    const index = navigationState.routes.findIndex(
+      (route: any) => route.key === key
+    );
 
     if (navigationState.index === index) {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'layout' does not exist on type 'Readonly... Remove this comment to see the full error message
       this.scrollTo(index * this.props.layout.width);
     } else {
       onIndexChange(index);
@@ -81,8 +94,9 @@ class ScrollPager extends React.Component {
     }
   };
 
-  scrollTo = (x, animated = true) => {
+  scrollTo = (x: any, animated = true) => {
     if (this.scrollViewRef.current) {
+      // @ts-expect-error ts-migrate(2571) FIXME: Object is of type 'unknown'.
       this.scrollViewRef.current.getNode().scrollTo({
         animated: animated,
         x,
@@ -92,19 +106,21 @@ class ScrollPager extends React.Component {
 
   enterListeners = [];
 
-  addListener = (type, listener) => {
+  addListener = (type: any, listener: any) => {
     // eslint-disable-next-line default-case
     switch (type) {
       case 'enter':
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
         this.enterListeners.push(listener);
         break;
     }
   };
 
-  removeListener = (type, listener) => {
+  removeListener = (type: any, listener: any) => {
     // eslint-disable-next-line default-case
     switch (type) {
       case 'enter': {
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
         const index = this.enterListeners.indexOf(listener);
 
         if (index > -1) {
@@ -117,18 +133,23 @@ class ScrollPager extends React.Component {
   };
 
   position = new Value(
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'navigationState' does not exist on type ... Remove this comment to see the full error message
     this.props.navigationState.index * this.props.layout.width
   );
 
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'layout' does not exist on type 'Readonly... Remove this comment to see the full error message
   layoutWidthNode = new Value(this.props.layout.width);
 
-  changeIndexIfNeeded = newIndex => {
+  changeIndexIfNeeded = (newIndex: any) => {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'navigationState' does not exist on type ... Remove this comment to see the full error message
     if (this.props.navigationState.index !== newIndex) {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'onIndexChange' does not exist on type 'R... Remove this comment to see the full error message
       this.props.onIndexChange(newIndex);
     }
   };
 
-  handleMomentumScrollEnd = ({ nativeEvent }) => {
+  handleMomentumScrollEnd = ({ nativeEvent }: any) => {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'onMomentumScrollEnd' does not exist on t... Remove this comment to see the full error message
     this.props.onMomentumScrollEnd?.(nativeEvent.contentOffset.x);
     if (this.interactionHandle !== null) {
       InteractionManager.clearInteractionHandle(this.interactionHandle);
@@ -144,20 +165,25 @@ class ScrollPager extends React.Component {
   render() {
     const {
       children,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'layout' does not exist on type 'Readonly... Remove this comment to see the full error message
       layout,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'onSwipeStart' does not exist on type 'Re... Remove this comment to see the full error message
       onSwipeStart,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'onSwipeEnd' does not exist on type 'Read... Remove this comment to see the full error message
       onSwipeEnd,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'overscroll' does not exist on type 'Read... Remove this comment to see the full error message
       overscroll,
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'navigationState' does not exist on type ... Remove this comment to see the full error message
       navigationState,
     } = this.props;
 
-    const handleSwipeStart = ({ nativeEvent }) => {
+    const handleSwipeStart = ({ nativeEvent }: any) => {
       this.wasTouched = false;
       onSwipeStart?.(nativeEvent.contentOffset.x);
       this.interactionHandle = InteractionManager.createInteractionHandle();
     };
 
-    const handleSwipeEnd = ({ nativeEvent }) => {
+    const handleSwipeEnd = ({ nativeEvent }: any) => {
       this.wasTouched = true;
       onSwipeEnd?.(
         nativeEvent.contentOffset.x,
@@ -175,11 +201,12 @@ class ScrollPager extends React.Component {
       }
     };
 
+    // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
     return children({
       addListener: this.addListener,
       jumpTo: this.jumpTo,
       removeListener: this.removeListener,
-      render: children => (
+      render: (children: any) => (
         <AnimatedScrollView
           automaticallyAdjustContentInsets={false}
           bounces={overscroll}
@@ -196,12 +223,14 @@ class ScrollPager extends React.Component {
           directionalLockEnabled
           keyboardShouldPersistTaps="always"
           onMomentumScrollEnd={this.handleMomentumScrollEnd}
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'scrollHandler' does not exist on type 'R... Remove this comment to see the full error message
           onScroll={this.props.scrollHandler}
           onScrollBeginDrag={handleSwipeStart}
           onScrollEndDrag={handleSwipeEnd}
           overScrollMode="never"
           pagingEnabled
           ref={this.scrollViewRef}
+          // @ts-expect-error ts-migrate(2339) FIXME: Property 'swipeEnabled' does not exist on type 'Re... Remove this comment to see the full error message
           scrollEnabled={this.props.swipeEnabled}
           scrollEventThrottle={1}
           scrollToOverflowEnabled
@@ -216,7 +245,7 @@ class ScrollPager extends React.Component {
   }
 }
 
-export default function ScrollPagerWrapperWithScrollHandler(props) {
+export default function ScrollPagerWrapperWithScrollHandler(props: any) {
   const scrollHandler = useAnimatedScrollHandler(event => {
     props.position.value =
       event.contentOffset.x / event.layoutMeasurement.width;

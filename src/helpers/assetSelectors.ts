@@ -11,19 +11,19 @@ import { createSelector } from 'reselect';
 import { sortList } from '../helpers/sortList';
 import { parseAssetsNativeWithTotals } from '@rainbow-me/parsers';
 
-const EMPTY_ARRAY = [];
+const EMPTY_ARRAY: any = [];
 
-const assetPricesFromUniswapSelector = state =>
+const assetPricesFromUniswapSelector = (state: any) =>
   state.data.assetPricesFromUniswap;
-const accountAssetsDataSelector = state => state.data.accountAssetsData;
-const isLoadingAssetsSelector = state => state.data.isLoadingAssets;
-const nativeCurrencySelector = state => state.settings.nativeCurrency;
+const accountAssetsDataSelector = (state: any) => state.data.accountAssetsData;
+const isLoadingAssetsSelector = (state: any) => state.data.isLoadingAssets;
+const nativeCurrencySelector = (state: any) => state.settings.nativeCurrency;
 
 const sortAssetsByNativeAmount = (
-  accountAssetsData,
-  assetPricesFromUniswap,
-  isLoadingAssets,
-  nativeCurrency
+  accountAssetsData: any,
+  assetPricesFromUniswap: any,
+  isLoadingAssets: any,
+  nativeCurrency: any
 ) => {
   let updatedAssets = accountAssetsData;
   if (!isEmpty(assetPricesFromUniswap)) {
@@ -72,6 +72,7 @@ const sortAssetsByNativeAmount = (
     0,
     toNumber
   );
+  // @ts-expect-error ts-migrate(2554) FIXME: Expected 5 arguments, but got 3.
   const sortedShitcoins = sortList(noValue, 'name', 'asc');
   const sortedAssets = sortedAssetsNoShitcoins.concat(sortedShitcoins);
 
@@ -84,7 +85,7 @@ const sortAssetsByNativeAmount = (
   };
 };
 
-const groupAssetsByMarketValue = assets =>
+const groupAssetsByMarketValue = (assets: any) =>
   groupBy(assets, ({ native }) => (isNil(native) ? 'noValue' : 'hasValue'));
 
 export const sortAssetsByNativeAmountSelector = createSelector(

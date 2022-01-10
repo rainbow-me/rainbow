@@ -22,7 +22,7 @@ import { ethereumUtils } from '@rainbow-me/utils';
 
 const COINS_TO_SHOW = 5;
 
-export const buildAssetUniqueIdentifier = item => {
+export const buildAssetUniqueIdentifier = (item: any) => {
   const balance = get(item, 'balance.amount', '');
   const nativePrice = get(item, 'native.price.display', '');
   const uniqueId = get(item, 'uniqueId');
@@ -31,11 +31,11 @@ export const buildAssetUniqueIdentifier = item => {
 };
 
 const addEthPlaceholder = (
-  assets,
-  includePlaceholder,
-  pinnedCoins,
-  nativeCurrency,
-  emptyCollectibles
+  assets: any,
+  includePlaceholder: any,
+  pinnedCoins: any,
+  nativeCurrency: any,
+  emptyCollectibles: any
 ) => {
   const hasEth = !!ethereumUtils.getAccountAsset(ETH_ADDRESS);
 
@@ -85,9 +85,10 @@ const addEthPlaceholder = (
   return { addedEth: false, assets };
 };
 
-const getTotal = assets =>
+const getTotal = (assets: any) =>
   reduce(
     assets,
+    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     (acc, asset) => {
       const balance = asset?.native?.balance?.amount ?? 0;
       return add(acc, balance);
@@ -96,18 +97,18 @@ const getTotal = assets =>
   );
 
 export const buildCoinsList = (
-  sortedAssets,
-  nativeCurrency,
-  isCoinListEdited,
-  pinnedCoins,
-  hiddenCoins,
+  sortedAssets: any,
+  nativeCurrency: any,
+  isCoinListEdited: any,
+  pinnedCoins: any,
+  hiddenCoins: any,
   includePlaceholder = false,
-  emptyCollectibles
+  emptyCollectibles: any
 ) => {
-  let standardAssets = [],
-    pinnedAssets = [],
-    smallAssets = [],
-    hiddenAssets = [];
+  let standardAssets: any = [],
+    pinnedAssets: any = [],
+    smallAssets: any = [],
+    hiddenAssets: any = [];
 
   const { addedEth, assets } = addEthPlaceholder(
     sortedAssets,
@@ -136,6 +137,7 @@ export const buildCoinsList = (
     } else if (
       greaterThan(
         asset.native?.balance?.amount,
+        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         supportedNativeCurrencies[nativeCurrency].smallThreshold
       )
     ) {
@@ -193,13 +195,13 @@ export const buildCoinsList = (
 
 // TODO make it better
 export const buildBriefCoinsList = (
-  sortedAssets,
-  nativeCurrency,
-  isCoinListEdited,
-  pinnedCoins,
-  hiddenCoins,
+  sortedAssets: any,
+  nativeCurrency: any,
+  isCoinListEdited: any,
+  pinnedCoins: any,
+  hiddenCoins: any,
   includePlaceholder = false,
-  emptyCollectibles
+  emptyCollectibles: any
 ) => {
   const { assets, smallBalancesValue, totalBalancesValue } = buildCoinsList(
     sortedAssets,
@@ -240,8 +242,11 @@ export const buildBriefCoinsList = (
   return { briefAssets, totalBalancesValue };
 };
 
-export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
-  let rows = [];
+export const buildUniqueTokenList = (
+  uniqueTokens: any,
+  selectedShowcaseTokens: any
+) => {
+  let rows: any = [];
   const showcaseTokens = [];
   const bundledShowcaseTokens = [];
 
@@ -249,7 +254,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
   const families = Object.keys(grouped);
 
   for (let i = 0; i < families.length; i++) {
-    const tokensRow = [];
+    const tokensRow: any = [];
     for (let j = 0; j < grouped[families[i]].length; j += 2) {
       if (includes(selectedShowcaseTokens, grouped[families[i]][j].uniqueId)) {
         showcaseTokens.push(grouped[families[i]][j]);
@@ -270,7 +275,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
     // eslint-disable-next-line no-loop-func
     tokens.forEach((tokenChunk, index) => {
       const id = tokensRow[0]
-        .map(({ uniqueId }) => uniqueId)
+        .map(({ uniqueId }: any) => uniqueId)
         .join(`__${index}`);
       rows.push({
         childrenAmount: grouped[families[i]].length,
@@ -315,6 +320,7 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
     ].concat(rows);
   }
 
+  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'row' implicitly has an 'any' type.
   rows.forEach((row, i) => {
     row.familyId = i;
     row.tokens[0][0].rowNumber = i;
@@ -325,12 +331,12 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
 const regex = RegExp(/\s*(the)\s/, 'i');
 
 export const buildBriefUniqueTokenList = (
-  uniqueTokens,
-  selectedShowcaseTokens
+  uniqueTokens: any,
+  selectedShowcaseTokens: any
 ) => {
   const uniqueTokensInShowcase = uniqueTokens
-    .filter(({ uniqueId }) => selectedShowcaseTokens.includes(uniqueId))
-    .map(({ uniqueId }) => uniqueId);
+    .filter(({ uniqueId }: any) => selectedShowcaseTokens.includes(uniqueId))
+    .map(({ uniqueId }: any) => uniqueId);
   const grouped2 = groupBy(uniqueTokens, token => token.familyName);
   const families2 = sortBy(Object.keys(grouped2), row =>
     row.replace(regex, '').toLowerCase()
@@ -341,9 +347,11 @@ export const buildBriefUniqueTokenList = (
     { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
   ];
   if (uniqueTokensInShowcase.length > 0) {
+    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     result.push({ name: 'Showcase', type: 'FAMILY_HEADER', uid: 'showcase' });
     for (let index = 0; index < uniqueTokensInShowcase.length; index++) {
       const uniqueId = uniqueTokensInShowcase[index];
+      // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       result.push({ index, type: 'NFT', uid: uniqueId, uniqueId });
     }
 
@@ -351,6 +359,7 @@ export const buildBriefUniqueTokenList = (
   }
   for (let family of families2) {
     result.push({
+      // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       image: grouped2[family][0].familyImage,
       name: family,
       total: grouped2[family].length,
@@ -361,6 +370,7 @@ export const buildBriefUniqueTokenList = (
     for (let index = 0; index < tokens.length; index++) {
       const uniqueId = tokens[index];
 
+      // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       result.push({ index, type: 'NFT', uid: uniqueId, uniqueId });
     }
 
@@ -369,5 +379,5 @@ export const buildBriefUniqueTokenList = (
   return result;
 };
 
-export const buildUniqueTokenName = ({ collection, id, name }) =>
+export const buildUniqueTokenName = ({ collection, id, name }: any) =>
   name || `${collection.name} #${id}`;

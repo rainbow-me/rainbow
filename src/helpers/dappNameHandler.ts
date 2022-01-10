@@ -1,7 +1,7 @@
 import URL from 'url-parse';
 import { memoFn } from '../utils/memoFn';
 
-const buildAssetUrl = hostname =>
+const buildAssetUrl = (hostname: any) =>
   `https://raw.githubusercontent.com/rainbow-me/rainbow/develop/src/assets/dappLogos/${hostname}.jpg`;
 
 const DisplayDappNames = Object.freeze({
@@ -227,22 +227,26 @@ const DisplayDappNames = Object.freeze({
   },
 });
 
-export const dappNameOverride = url => {
+export const dappNameOverride = (url: any) => {
   const hostname = getDappHostname(url);
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   return DisplayDappNames[hostname]?.name;
 };
 
-export const isDappAuthenticated = url => {
+export const isDappAuthenticated = (url: any) => {
   const hostname = getDappHostname(url);
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   return !!DisplayDappNames[hostname]?.name;
 };
 
-export const dappLogoOverride = url => {
+export const dappLogoOverride = (url: any) => {
   const hostname = getDappHostname(url);
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   return DisplayDappNames[hostname]?.uri;
 };
 
 export const getDappHostname = memoFn(url => {
+  // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
   const urlObject = new URL(url);
   let hostname;
   const subdomains = urlObject.hostname.split('.');
