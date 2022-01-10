@@ -1,3 +1,4 @@
+// @ts-expect-error Module '"react-native"' has no exported member 'TurboModuleRegistry'.
 import { TurboModuleRegistry } from 'react-native';
 
 export default !(

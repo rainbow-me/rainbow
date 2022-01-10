@@ -70,9 +70,9 @@ class ScrollPager extends React.Component {
   wasTouched = false;
 
   // InteractionHandle to handle tasks around animations
-  interactionHandle = null;
+  interactionHandle: null | number = null;
 
-  scrollViewRef = React.createRef();
+  scrollViewRef = React.createRef<typeof AnimatedScrollView>();
 
   jumpTo = (key: any) => {
     this.wasTouched = false;
@@ -107,7 +107,6 @@ class ScrollPager extends React.Component {
   enterListeners = [];
 
   addListener = (type: any, listener: any) => {
-    // eslint-disable-next-line default-case
     switch (type) {
       case 'enter':
         // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
@@ -117,7 +116,6 @@ class ScrollPager extends React.Component {
   };
 
   removeListener = (type: any, listener: any) => {
-    // eslint-disable-next-line default-case
     switch (type) {
       case 'enter': {
         // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.

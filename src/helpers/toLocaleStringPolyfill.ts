@@ -1,4 +1,4 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix,no-extend-native,default-case */
+/* eslint-disable sort-keys-fix/sort-keys-fix,no-extend-native */
 // adapted from https://github.com/Girish-K/polyfill-Number.toLocaleString-with-Locales
 export default function toLocaleStringPolyfill() {
   'use strict';
@@ -10,12 +10,12 @@ export default function toLocaleStringPolyfill() {
   var replaceSeparators = function (sNum: any, separators: any) {
     sNum = '' + roundOff(sNum, 2);
     var sNumParts = sNum.split('.');
-    if (separators && separators.thousands) {
+    if (separators?.thousands) {
       sNumParts[0] = sNumParts[0].replace(
         /(\d)(?=(\d\d\d)+(?!\d))/g,
         '$1' + separators.thousands
       );
-    } else if (separators && separators.hundreds) {
+    } else if (separators?.hundreds) {
       sNumParts[0] = sNumParts[0].replace(
         /(\d)(?=(\d\d)+(?!\d))/g,
         '$1' + separators.hundreds
@@ -49,7 +49,7 @@ export default function toLocaleStringPolyfill() {
   };
   var mapMatch = function (map: any, locale: any) {
     var match = locale;
-    var language = locale && locale.toLowerCase().match(/^\w+/);
+    var language = locale?.toLowerCase().match(/^\w+/);
     if (!map.hasOwnProperty(locale)) {
       if (map.hasOwnProperty(language)) {
         match = language;
@@ -272,13 +272,13 @@ export default function toLocaleStringPolyfill() {
     if (locale && locale.length < 2)
       throw new RangeError('Invalid language tag: ' + locale);
     var sNum;
-    if (options && options.minimumFractionDigits !== undefined) {
+    if (options?.minimumFractionDigits !== undefined) {
       sNum = this.toFixed(options.minimumFractionDigits);
     } else {
       sNum = this.toString();
     }
     sNum = mapMatch(transformForLocale, locale)(sNum, options);
-    if (options && options.currency && options.style === 'currency') {
+    if (options?.currency && options.style === 'currency') {
       // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       var format = currencyFormats[mapMatch(currencyFormatMap, locale)];
       if (options.currencyDisplay === 'code') {

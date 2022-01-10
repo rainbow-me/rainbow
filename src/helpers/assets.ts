@@ -120,7 +120,7 @@ export const buildCoinsList = (
 
   // separate into standard, pinned, small balances, hidden assets
   forEach(assets, asset => {
-    if (hiddenCoins && hiddenCoins.includes(asset.uniqueId)) {
+    if (hiddenCoins?.includes(asset.uniqueId)) {
       hiddenAssets.push({
         isCoin: true,
         isHidden: true,
@@ -253,21 +253,19 @@ export const buildUniqueTokenList = (
   const grouped = groupBy(uniqueTokens, token => token.familyName);
   const families = Object.keys(grouped);
 
-  for (let i = 0; i < families.length; i++) {
+  for (let family of families) {
     const tokensRow: any = [];
-    for (let j = 0; j < grouped[families[i]].length; j += 2) {
-      if (includes(selectedShowcaseTokens, grouped[families[i]][j].uniqueId)) {
-        showcaseTokens.push(grouped[families[i]][j]);
+    for (let j = 0; j < grouped[family].length; j += 2) {
+      if (includes(selectedShowcaseTokens, grouped[family][j].uniqueId)) {
+        showcaseTokens.push(grouped[family][j]);
       }
-      if (grouped[families[i]][j + 1]) {
-        if (
-          includes(selectedShowcaseTokens, grouped[families[i]][j + 1].uniqueId)
-        ) {
-          showcaseTokens.push(grouped[families[i]][j + 1]);
+      if (grouped[family][j + 1]) {
+        if (includes(selectedShowcaseTokens, grouped[family][j + 1].uniqueId)) {
+          showcaseTokens.push(grouped[family][j + 1]);
         }
-        tokensRow.push([grouped[families[i]][j], grouped[families[i]][j + 1]]);
+        tokensRow.push([grouped[family][j], grouped[family][j + 1]]);
       } else {
-        tokensRow.push([grouped[families[i]][j]]);
+        tokensRow.push([grouped[family][j]]);
       }
     }
     let tokens = compact(tokensRow);
@@ -278,9 +276,9 @@ export const buildUniqueTokenList = (
         .map(({ uniqueId }: any) => uniqueId)
         .join(`__${index}`);
       rows.push({
-        childrenAmount: grouped[families[i]].length,
+        childrenAmount: grouped[family].length,
         familyImage: get(tokensRow, '[0][0].familyImage', null),
-        familyName: families[i],
+        familyName: family,
         isHeader: index === 0,
         stableId: id,
         tokens: tokenChunk,
