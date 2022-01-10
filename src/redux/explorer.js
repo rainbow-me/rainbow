@@ -7,6 +7,7 @@ import {
   addressAssetsReceived,
   assetPricesChanged,
   assetPricesReceived,
+  disableGenericAssetsFallbackIfNeeded,
   portfolioReceived,
   transactionsReceived,
   transactionsRemoved,
@@ -308,7 +309,11 @@ export const explorerInit = () => async (dispatch, getState) => {
   dispatch(listenOnAssetMessages(newAssetsSocket));
 
   newAssetsSocket.on(messages.CONNECT, () => {
-    dispatch(emitAssetRequest(keys(pairs)));
+    const newAssetsEmitted = dispatch(emitAssetRequest(keys(pairs)));
+    if (!newAssetsEmitted) {
+      disableGenericAssetsFallbackIfNeeded();
+    }
+
     dispatch(emitAssetInfoRequest());
     if (!disableCharts) {
       // We need this for Uniswap Pools profit calculation
@@ -366,15 +371,21 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
     if (!TokensListenedCache?.[nativeCurrency]) {
       TokensListenedCache[nativeCurrency] = {};
     }
-    TokensListenedCache[nativeCurrency][code] = true;
+    assetsSocket && (TokensListenedCache[nativeCurrency][code] = true);
   });
 
-  if (newAssetsCodes.length > 0) {
-    assetsSocket?.emit(
-      ...assetPricesSubscription(newAssetsCodes, nativeCurrency)
-    );
-    assetsSocket?.emit(...ethUSDSubscription);
+  if (assetsSocket) {
+    if (newAssetsCodes.length > 0) {
+      assetsSocket.emit(
+        ...assetPricesSubscription(newAssetsCodes, nativeCurrency)
+      );
+      assetsSocket.emit(...ethUSDSubscription);
+      return true;
+    }
+  } else {
+    setTimeout(() => emitAssetRequest(assetAddress), 100);
   }
+  return false;
 };
 
 export const emitAssetInfoRequest = () => (dispatch, getState) => {
