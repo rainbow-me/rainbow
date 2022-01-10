@@ -1,23 +1,12 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
-import React from 'react';
-import { Docs } from '../../playground/Docs';
-import { Text } from '../Text/Text';
-import { TextLink } from './TextLink';
+import { Docs } from '../../docs/types';
+
+import * as examples from './TextLink.examples';
+import meta from './TextLink.meta';
 
 const docs: Docs = {
-  name: 'TextLink',
-  category: 'Content',
-  examples: [
-    {
-      name: 'Basic usage',
-      Example: () => (
-        <Text>
-          This text contains a{' '}
-          <TextLink url="https://rainbow.me">link</TextLink>
-        </Text>
-      ),
-    },
-  ],
+  meta,
+  examples: [examples.basicUsage],
 };
 
 export default docs;

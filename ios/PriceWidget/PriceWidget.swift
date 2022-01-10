@@ -35,14 +35,16 @@ struct PriceWidgetProvider: IntentTimelineProvider {
   }
   
   func getSnapshot(for configuration: SelectTokenIntent, in context: Context, completion: @escaping (CustomTokenEntry) -> Void) {
+    let tokenDetails = lookupTokenDetails(for: configuration)
     let currency = lookupCurrency(for: configuration)
     
-    let priceChangePlaceholder = 9.99
-    let pricePlaceholder = 9999.99
+    let priceData = priceDataProvider.getPriceData(token: tokenDetails.coinGeckoId!)
+    let priceChange = priceData?.marketData.priceChangePercentage24h
+    let price = getPrice(data: priceData, currency: currency)
     
     let icon = iconProvider.getTokenIcon(token: defaultToken.symbol!, address: defaultToken.address!)
     
-    let tokenData = TokenData(tokenDetails: defaultToken, priceChange: priceChangePlaceholder, price: pricePlaceholder, icon: icon, currency: currency)
+    let tokenData = TokenData(tokenDetails: priceData != nil ? tokenDetails : nil, priceChange: priceChange, price: price, icon: icon, currency: currency)
     let entry = CustomTokenEntry(date: Date(), tokenData: tokenData)
     
     completion(entry)
