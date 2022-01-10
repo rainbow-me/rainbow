@@ -145,8 +145,8 @@
   return self;
 }
 
-- (void) willMoveToSuperview: (UIView *) newSuperview{
-    if(newSuperview == nil){
+- (void) willMoveToSuperview: (UIView *) newSuperview {
+    if (newSuperview == nil) {
       [_timer invalidate];
       _timer = nil;
     }
