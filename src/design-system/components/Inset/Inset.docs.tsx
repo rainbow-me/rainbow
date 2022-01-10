@@ -1,83 +1,54 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
-import { Docs } from '../../playground/Docs';
-import { Placeholder } from '../../playground/Placeholder';
-import { Inset } from './Inset';
 
-const docs: Docs = {
-  name: 'Inset',
-  category: 'Layout',
+import * as Docs from '../../docs/components';
+import { Docs as DocsType } from '../../docs/types';
+
+import * as examples from './Inset.examples';
+import meta from './Inset.meta';
+
+const docs: DocsType = {
+  meta,
+  description: (
+    <Docs.Text>
+      Renders a <Docs.Strong>container with padding.</Docs.Strong>
+    </Docs.Text>
+  ),
   examples: [
     {
-      name: 'Basic usage',
-      Example: () => (
-        <Inset space="19px">
-          <Placeholder />
-        </Inset>
-      ),
+      ...examples.basicUsage,
+      showFrame: true,
     },
-
     {
-      name: 'Custom space',
-      Example: () => (
-        <Inset space={{ custom: 12 }}>
-          <Placeholder />
-        </Inset>
-      ),
+      ...examples.customSpace,
+      showFrame: true,
     },
-
     {
-      name: 'Horizontal space',
-      Example: () => (
-        <Inset horizontal="19px">
-          <Placeholder />
-        </Inset>
+      ...examples.horizontalSpace,
+      description: (
+        <Docs.Text>Space can also be customized per axis.</Docs.Text>
       ),
+      showFrame: true,
     },
-
     {
-      name: 'Vertical space',
-      Example: () => (
-        <Inset vertical="19px">
-          <Placeholder />
-        </Inset>
-      ),
+      ...examples.verticalSpace,
+      showFrame: true,
     },
-
     {
-      name: 'Top space',
-      Example: () => (
-        <Inset top="19px">
-          <Placeholder />
-        </Inset>
-      ),
+      ...examples.topSpace,
+      showFrame: true,
     },
-
     {
-      name: 'Bottom space',
-      Example: () => (
-        <Inset bottom="19px">
-          <Placeholder />
-        </Inset>
-      ),
+      ...examples.bottomSpace,
+      showFrame: true,
     },
-
     {
-      name: 'Left space',
-      Example: () => (
-        <Inset left="19px">
-          <Placeholder />
-        </Inset>
-      ),
+      ...examples.leftSpace,
+      showFrame: true,
     },
-
     {
-      name: 'Right space',
-      Example: () => (
-        <Inset right="19px">
-          <Placeholder />
-        </Inset>
-      ),
+      ...examples.rightSpace,
+      showFrame: true,
     },
   ],
 };

@@ -15,6 +15,8 @@ export { Row } from './components/Row/Row';
 export { Stack } from './components/Stack/Stack';
 export { Text } from './components/Text/Text';
 export { TextLink } from './components/TextLink/TextLink';
+export { useForegroundColor } from './color/useForegroundColor';
+
 export type { BackgroundProviderProps } from './components/BackgroundProvider/BackgroundProvider';
 export type { BleedProps } from './components/Bleed/Bleed';
 export type { BoxProps } from './components/Box/Box';

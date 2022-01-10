@@ -1,6 +1,7 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import React from 'react';
-import { Docs } from '../../playground/Docs';
+import { Docs } from '../../docs/types';
+import source from '../../docs/utils/source.macro';
 import { Guide } from '../../playground/Guide';
 import { MarkdownText } from './MarkdownText';
 
@@ -88,69 +89,72 @@ const customSpaceMarkdown = `
 `;
 
 const docs: Docs = {
-  name: 'MarkdownText',
-  category: 'Content',
+  meta: {
+    name: 'MarkdownText',
+    category: 'Content',
+  },
   examples: [
     {
       name: 'Basic usage',
-      Example: () => (
-        <>
-          <Guide />
-          <MarkdownText listSpace="19px" paragraphSpace="30px">
-            {markdown}
-          </MarkdownText>
-          <Guide />
-        </>
-      ),
+      Example: () =>
+        source(
+          <>
+            <Guide />
+            <MarkdownText listSpace="19px" paragraphSpace="30px">
+              {markdown}
+            </MarkdownText>
+            <Guide />
+          </>
+        ),
     },
-
     {
       name: 'Custom space',
-      Example: () => (
-        <>
-          <Guide />
-          <MarkdownText listSpace={{ custom: 30 }} paragraphSpace="42px">
-            {customSpaceMarkdown}
-          </MarkdownText>
-          <Guide />
-        </>
-      ),
+      Example: () =>
+        source(
+          <>
+            <Guide />
+            <MarkdownText listSpace={{ custom: 30 }} paragraphSpace="42px">
+              {customSpaceMarkdown}
+            </MarkdownText>
+            <Guide />
+          </>
+        ),
     },
-
     {
       name: 'Custom text color',
-      Example: () => (
-        <>
-          <Guide />
-          <MarkdownText
-            color="secondary60"
-            listSpace="19px"
-            paragraphSpace="30px"
-          >
-            {headingsAndParagraphMarkdown}
-          </MarkdownText>
-          <Guide />
-        </>
-      ),
+      Example: () =>
+        source(
+          <>
+            <Guide />
+            <MarkdownText
+              color="secondary60"
+              listSpace="19px"
+              paragraphSpace="30px"
+            >
+              {headingsAndParagraphMarkdown}
+            </MarkdownText>
+            <Guide />
+          </>
+        ),
     },
-
     {
       name: 'Custom text and heading colors',
-      Example: () => (
-        <>
-          <Guide />
-          <MarkdownText
-            color="secondary60"
-            heading1Color="primary"
-            heading2Color="secondary80"
-            listSpace="19px"
-            paragraphSpace="30px"
-          >
-            {headingsAndParagraphMarkdown}
-          </MarkdownText>
-          <Guide />
-        </>
-      ),
+      Example: () =>
+        source(
+          <>
+            <Guide />
+            <MarkdownText
+              color="secondary60"
+              heading1Color="primary"
+              heading2Color="secondary80"
+              listSpace="19px"
+              paragraphSpace="30px"
+            >
+              {headingsAndParagraphMarkdown}
+            </MarkdownText>
+            <Guide />
+          </>
+        ),
     },
   ],
 };
