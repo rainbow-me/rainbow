@@ -8,7 +8,7 @@ export const SIGN_TYPED_DATA = 'eth_signTypedData';
 export const SIGN_TYPED_DATA_V4 = 'eth_signTypedData_v4';
 
 const displayTypes = {
-  message: [PERSONAL_SIGN, SIGN, SIGN_TYPED_DATA],
+  message: [PERSONAL_SIGN, SIGN, SIGN_TYPED_DATA, SIGN_TYPED_DATA_V4],
   transaction: [SEND_TRANSACTION, SIGN_TRANSACTION],
 };
 const firstParamSigning = [PERSONAL_SIGN];
