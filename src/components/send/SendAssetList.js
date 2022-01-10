@@ -22,7 +22,6 @@ import { Centered } from '../layout';
 import { SavingsListHeader } from '../savings';
 import TokenFamilyHeader from '../token-family/TokenFamilyHeader';
 import { ImgixImage } from '@rainbow-me/images';
-import styled from '@rainbow-me/styled-components';
 
 const dividerMargin = 5;
 const dividerHeight = DividerSize + dividerMargin * 4;
@@ -31,9 +30,7 @@ const familyHeaderHeight = 49;
 const rowHeight = 59;
 const smallBalancesHeader = 42;
 
-const SendAssetRecyclerListView = styled(RecyclerListView)({
-  minHeight: 1,
-});
+const SendAssetRecyclerListView = RecyclerListView;
 
 const SendAssetListDivider = () => {
   const { colors } = useTheme();
@@ -425,6 +422,7 @@ export default class SendAssetList extends React.Component {
           onScroll={this.handleScroll}
           ref={this.handleRef}
           rowRenderer={this.renderRow}
+          style={{ minHeight: 1 }}
           testID="send-asset-list"
         />
       </FlyInAnimation>
