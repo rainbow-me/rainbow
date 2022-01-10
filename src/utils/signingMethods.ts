@@ -29,3 +29,6 @@ export const isSignSecondParamType = (method: string) =>
 
 export const isSignFirstParamType = (method: string) =>
   includes(firstParamSigning, method);
+
+export const isSignTypedData = (method: string) =>
+  method.startsWith(SIGN_TYPED_DATA);

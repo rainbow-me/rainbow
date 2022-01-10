@@ -93,11 +93,13 @@ import {
   isMessageDisplayType,
   isSignFirstParamType,
   isSignSecondParamType,
+  isSignTypedData,
   isTransactionDisplayType,
   PERSONAL_SIGN,
   SEND_TRANSACTION,
   SIGN,
   SIGN_TYPED_DATA,
+  SIGN_TYPED_DATA_V4,
 } from '@rainbow-me/utils/signingMethods';
 import logger from 'logger';
 
@@ -749,6 +751,7 @@ export default function TransactionConfirmationScreen() {
       case PERSONAL_SIGN:
         response = await signPersonalMessage(message, existingWallet);
         break;
+      case SIGN_TYPED_DATA_V4:
       case SIGN_TYPED_DATA:
         response = await signTypedDataMessage(message, existingWallet);
         break;
@@ -928,7 +931,7 @@ export default function TransactionConfirmationScreen() {
   const ShortSheetHeight = 486 + safeAreaInsetValues.bottom;
   const TallSheetHeight = 656 + safeAreaInsetValues.bottom;
   const MessageSheetHeight =
-    (method === SIGN_TYPED_DATA ? 630 : android ? 595 : 580) +
+    (isSignTypedData(method) ? 630 : android ? 595 : 580) +
     safeAreaInsetValues.bottom;
 
   const balanceTooLow = isBalanceEnough === false && isSufficientGas !== null;
