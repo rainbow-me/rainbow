@@ -1,5 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureMessage } from '@sentry/react-native';
+import lang from 'i18n-js';
 import { get } from 'lodash';
 import React, { Fragment, useCallback } from 'react';
 import { Linking } from 'react-native';
@@ -255,7 +256,7 @@ const AddFundsInterstitial = ({ network }) => {
                 size="large"
                 weight="bold"
               >
-                􀍡 Other amount
+                {` 􀍡 ${lang.t('wallet.add_cash.interstitial.other_amount')}`}
               </Text>
             </InterstitialButton>
           </InterstitialButtonRow>
@@ -317,7 +318,7 @@ const AddFundsInterstitial = ({ network }) => {
             size="large"
             weight="bold"
           >
-            Copy address
+            {lang.t('wallet.settings.copy_address')}
           </Text>
         </RowWithMargins>
       </CopyAddressButton>

@@ -1,6 +1,7 @@
 import { useRoute } from '@react-navigation/core';
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
+import lang from 'i18n-js';
 import { get, toLower } from 'lodash';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { InteractionManager } from 'react-native';
@@ -299,9 +300,9 @@ export default function ChangeWalletSheet() {
         }
       }
 
-      const buttons = ['Edit Wallet'];
-      buttons.push('Delete Wallet');
-      buttons.push('Cancel');
+      const buttons = [lang.t('wallet.action.edit')];
+      buttons.push(lang.t('wallet.action.delete'));
+      buttons.push(lang.t('button.cancel'));
 
       showActionSheetWithOptions(
         {
@@ -322,8 +323,11 @@ export default function ChangeWalletSheet() {
               {
                 cancelButtonIndex: 1,
                 destructiveButtonIndex: 0,
-                message: `Are you sure you want to delete this wallet?`,
-                options: ['Delete Wallet', 'Cancel'],
+                message: lang.t('wallet.action.delete_confirm'),
+                options: [
+                  lang.t('wallet.action.delete'),
+                  lang.t('button.cancel'),
+                ],
               },
               async buttonIndex => {
                 if (buttonIndex === 0) {
@@ -509,13 +513,13 @@ export default function ChangeWalletSheet() {
       {android && <Whitespace />}
       <Column height={headerHeight} justify="space-between">
         <Centered>
-          <SheetTitle>Wallets</SheetTitle>
+          <SheetTitle>{lang.t('wallet.label')}</SheetTitle>
 
           {!watchOnly && (
             <Row style={{ position: 'absolute', right: 0 }}>
               <EditButton editMode={editMode} onPress={onPressEditMode}>
                 <EditButtonLabel editMode={editMode}>
-                  {editMode ? 'Done' : 'Edit'}
+                  {editMode ? lang.t('button.done') : lang.t('button.edit')}
                 </EditButtonLabel>
               </EditButton>
             </Row>
@@ -525,7 +529,6 @@ export default function ChangeWalletSheet() {
           <Divider color={colors.rowDividerExtraLight} inset={[0, 15]} />
         )}
       </Column>
-
       <WalletList
         accountAddress={currentAddress}
         allWallets={walletsWithBalancesAndNames}

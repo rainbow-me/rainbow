@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { get, isEmpty } from 'lodash';
 import React, {
   Fragment,
@@ -225,13 +226,13 @@ export default function WalletList({
               <WalletOption
                 editMode={editMode}
                 icon="arrowBack"
-                label="􀁍 Create a new wallet"
+                label={`􀁍 ${lang.t('wallet.action.create_new')}`}
                 onPress={onPressAddAccount}
               />
               <WalletOption
                 editMode={editMode}
                 icon="arrowBack"
-                label="􀂍 Add an existing wallet"
+                label={`􀂍 ${lang.t('wallet.action.add_existing')}`}
                 onPress={onPressImportSeedPhrase}
               />
             </WalletListFooter>

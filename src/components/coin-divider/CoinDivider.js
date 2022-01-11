@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { map } from 'lodash';
 import React, {
   useCallback,
@@ -166,14 +167,22 @@ export default function CoinDivider({ balancesSum }) {
               isVisible={isCoinListEdited}
               onPress={setPinnedCoins}
               shouldReloadList
-              text={currentAction === EditAction.unpin ? 'Unpin' : 'Pin'}
+              text={
+                currentAction === EditAction.unpin
+                  ? lang.t('button.unpin')
+                  : lang.t('button.pin')
+              }
             />
             <CoinDividerEditButton
               isActive={currentAction !== EditAction.none}
               isVisible={isCoinListEdited}
               onPress={setHiddenCoins}
               shouldReloadList
-              text={currentAction === EditAction.unhide ? 'Unhide' : 'Hide'}
+              text={
+                currentAction === EditAction.unhide
+                  ? lang.t('button.unhide')
+                  : lang.t('button.hide')
+              }
             />
           </CoinDividerButtonRow>
         </Row>
@@ -192,7 +201,9 @@ export default function CoinDivider({ balancesSum }) {
               isActive={isCoinListEdited}
               isVisible={isCoinListEdited || isSmallBalancesOpen}
               onPress={handlePressEdit}
-              text={isCoinListEdited ? 'Done' : 'Edit'}
+              text={
+                isCoinListEdited ? lang.t('button.done') : lang.t('button.edit')
+              }
               textOpacityAlwaysOn
             />
           </EditButtonWrapper>

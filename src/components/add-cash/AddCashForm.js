@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import { isEmpty } from 'lodash';
 import React, { Fragment, useCallback, useState } from 'react';
 import { Clock } from 'react-native-reanimated';
@@ -83,11 +84,13 @@ const AddCashForm = ({
       );
       Alert({
         buttons: [
-          { style: 'cancel', text: 'Cancel' },
-          { onPress: handlePurchase, text: 'Proceed' },
+          { style: 'cancel', text: lang.t('button.cancel') },
+          { onPress: handlePurchase, text: lang.t('button.proceed') },
         ],
-        message: `The wallet you have open is read-only, so you can’t control what’s inside. Are you sure you want to add cash to ${truncatedAddress}?`,
-        title: `You’re in Watching Mode`,
+        message: lang.t('wallet.add_cash.watching_mode_confirm_message', {
+          truncatedAddress,
+        }),
+        title: lang.t('wallet.add_cash.watching_mode_confirm_title'),
       });
     } else {
       await handlePurchase();
@@ -168,10 +171,11 @@ const AddCashForm = ({
     val => {
       if (isWalletEthZero) {
         Alert({
-          buttons: [{ text: 'Okay' }],
-          message:
-            'Before you can purchase DAI you must have some ETH in your wallet!',
-          title: `You don't have any ETH!`,
+          buttons: [{ text: lang.t('button.okay') }],
+          message: lang.t(
+            'wallet.add_cash.purchasing_dai_requires_eth_message'
+          ),
+          title: lang.t('wallet.add_cash.purchasing_dai_requires_eth_title'),
         });
         analytics.track('Tried to purchase DAI but doesnt own any ETH', {
           category: 'add cash',

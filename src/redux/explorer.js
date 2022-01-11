@@ -2,7 +2,6 @@ import { concat, isEmpty, isNil, keyBy, keys, toLower } from 'lodash';
 import io from 'socket.io-client';
 import config from '../model/config';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
-/* eslint-disable-next-line import/no-cycle */
 import {
   addressAssetsReceived,
   assetPricesChanged,
@@ -371,15 +370,19 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
     if (!TokensListenedCache?.[nativeCurrency]) {
       TokensListenedCache[nativeCurrency] = {};
     }
-    TokensListenedCache[nativeCurrency][code] = true;
+    assetsSocket && (TokensListenedCache[nativeCurrency][code] = true);
   });
 
-  if (newAssetsCodes.length > 0) {
-    assetsSocket?.emit(
-      ...assetPricesSubscription(newAssetsCodes, nativeCurrency)
-    );
-    assetsSocket?.emit(...ethUSDSubscription);
-    return true;
+  if (assetsSocket) {
+    if (newAssetsCodes.length > 0) {
+      assetsSocket.emit(
+        ...assetPricesSubscription(newAssetsCodes, nativeCurrency)
+      );
+      assetsSocket.emit(...ethUSDSubscription);
+      return true;
+    }
+  } else {
+    setTimeout(() => emitAssetRequest(assetAddress), 100);
   }
   return false;
 };

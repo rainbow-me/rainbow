@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useMemo } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { ButtonPressAnimation } from '../animations';
@@ -81,7 +82,7 @@ export default function TokenSelectionButton({
           testID={testID + '-text'}
           weight="bold"
         >
-          {symbol || 'Choose Token'}
+          {symbol || lang.t('swap.choose_token')}
         </Text>
         <CaretIcon />
       </Content>

@@ -328,16 +328,10 @@ export const buildBriefUniqueTokenList = (
   uniqueTokens,
   selectedShowcaseTokens
 ) => {
-  const uniqueTokensNotInShowcase = uniqueTokens.filter(
-    ({ uniqueId }) => !selectedShowcaseTokens.includes(uniqueId)
-  );
   const uniqueTokensInShowcase = uniqueTokens
     .filter(({ uniqueId }) => selectedShowcaseTokens.includes(uniqueId))
     .map(({ uniqueId }) => uniqueId);
-  const grouped2 = groupBy(
-    uniqueTokensNotInShowcase,
-    token => token.familyName
-  );
+  const grouped2 = groupBy(uniqueTokens, token => token.familyName);
   const families2 = sortBy(Object.keys(grouped2), row =>
     row.replace(regex, '').toLowerCase()
   );

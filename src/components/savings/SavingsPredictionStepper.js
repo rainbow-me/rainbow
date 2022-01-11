@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { ButtonPressAnimation } from '../animations';
 import { Row, RowWithMargins } from '../layout';
@@ -36,24 +37,31 @@ const PredictionNumber = styled(AnimatedNumber).attrs(
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 const steps = {
   'Monthly': {
+    label: lang.t('savings.earnings.monthly'),
     days: 30,
   },
   'Yearly': {
+    label: lang.t('savings.earnings.yearly'),
     days: 365,
   },
   '5-Year': {
+    label: lang.t('savings.earnings.5_year'),
     days: 365 * 5,
   },
   '10-Year': {
+    label: lang.t('savings.earnings.10_year'),
     days: 365 * 10,
   },
   '20-Year': {
+    label: lang.t('savings.earnings.20_year'),
     days: 365 * 20,
   },
   '50-Year': {
+    label: lang.t('savings.earnings.50_year'),
     days: 365 * 50,
   },
   '100-Year': {
+    label: lang.t('savings.earnings.100_year'),
     days: 365 * 100,
   },
 };
@@ -93,7 +101,9 @@ const SavingsPredictionStepper = ({ asset, balance, interestRate }) => {
         <RowWithMargins align="center" margin={5}>
           <CrystalBallEmoji />
           <Text color={colors.dark} size="lmedium" weight="medium">
-            {`Est. ${Object.keys(steps)[step]} Earnings`}
+            {`${lang.t('savings.earnings.est')} ${
+              Object.keys(steps)[step]
+            } ${lang.t('savings.earnings.label')}`}
           </Text>
         </RowWithMargins>
         <Row flex={1} justify="end">

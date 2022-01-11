@@ -26,12 +26,9 @@ import {
   UNISWAP_24HOUR_PRICE_QUERY,
   UNISWAP_PRICES_QUERY,
 } from '../apollo/queries';
-/* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
 import { decrementNonce, incrementNonce } from './nonceManager';
-// eslint-disable-next-line import/no-cycle
 import { uniqueTokensRefreshState } from './uniqueTokens';
-/* eslint-disable-next-line import/no-cycle */
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
   AssetTypes,

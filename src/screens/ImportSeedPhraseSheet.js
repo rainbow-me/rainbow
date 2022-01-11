@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useMemo } from 'react';
 import { StatusBar } from 'react-native';
 import { KeyboardArea } from 'react-native-keyboard-area';
@@ -73,6 +74,7 @@ const FooterButton = styled(MiniButton).attrs({
 const KeyboardSizeView = styled(KeyboardArea)({
   backgroundColor: ({ theme: { colors } }) => colors.white,
 });
+const placeholder = lang.t('wallet.new.enter_seeds_placeholder');
 
 const SecretTextArea = styled(Input).attrs({
   align: 'center',
@@ -84,7 +86,7 @@ const SecretTextArea = styled(Input).attrs({
   lineHeight: 'looser',
   multiline: true,
   numberOfLines: 3,
-  placeholder: 'Secret phrase, private key, Ethereum address, or ENS name',
+  placeholder,
   returnKeyType: 'done',
   size: 'large',
   spellCheck: false,
@@ -159,7 +161,7 @@ export default function ImportSeedPhraseSheet() {
       <Sheet>
         <SheetHandle marginBottom={7} marginTop={6} />
         <Text size="large" weight="bold">
-          Add Wallet
+          {lang.t('wallet.action.import_wallet')}
         </Text>
         <SecretTextAreaContainer>
           <SecretTextArea
@@ -167,7 +169,7 @@ export default function ImportSeedPhraseSheet() {
             onChangeText={handleSetSeedPhrase}
             onFocus={handleFocus}
             onSubmitEditing={handlePressImportButton}
-            placeholder="Secret phrase, private key, Ethereum address or ENS name"
+            placeholder={lang.t('wallet.new.enter_seeds_placeholder')}
             placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.3)}
             ref={inputRef}
             returnKeyType="done"
@@ -199,7 +201,7 @@ export default function ImportSeedPhraseSheet() {
                   testID="import-sheet-button-label"
                   weight="bold"
                 >
-                  Import
+                  {lang.t('button.import')}
                 </Text>
               </Row>
             </FooterButton>
@@ -215,7 +217,7 @@ export default function ImportSeedPhraseSheet() {
                 testID="import-sheet-button-label"
                 weight="bold"
               >
-                Paste
+                {lang.t('button.paste')}
               </Text>
             </FooterButton>
           )}

@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { get } from 'lodash';
 import React, { PureComponent } from 'react';
 import {
@@ -172,7 +173,9 @@ export default class RecyclerActivityList extends PureComponent {
       return this.props.isLoading ? (
         <LoadingState>{header}</LoadingState>
       ) : this.props.isEmpty ? (
-        <ActivityListEmptyState label="No transactions yet">
+        <ActivityListEmptyState
+          label={lang.t('activity_list.empty_state.recycler_label')}
+        >
           {header}
         </ActivityListEmptyState>
       ) : (

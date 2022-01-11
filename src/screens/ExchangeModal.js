@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import analytics from '@segment/analytics-react-native';
 import { isEmpty } from 'lodash';
 import React, {
@@ -39,6 +40,7 @@ import {
   useAccountSettings,
   useBlockPolling,
   useCurrentNonce,
+  useDimensions,
   useGas,
   usePrevious,
   usePriceImpactDetails,
@@ -55,7 +57,6 @@ import { multicallClearState } from '@rainbow-me/redux/multicall';
 import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
@@ -68,15 +69,16 @@ const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
 
 const InnerWrapper = styled(Centered).attrs({
   direction: 'column',
-})({
-  backgroundColor: ({ theme: { colors } }) => colors.transparent,
+})(({ isSmallPhone, theme: { colors } }) => ({
+  backgroundColor: colors.transparent,
   ...(ios
     ? position.sizeAsObject('100%')
     : {
         height: 500,
         top: 0,
       }),
-});
+  ...(ios && isSmallPhone && { maxHeight: 354 }),
+}));
 
 const Spacer = styled.View({
   height: 20,
@@ -110,6 +112,7 @@ export default function ExchangeModal({
   type,
   typeSpecificParams,
 }) {
+  const { isSmallPhone } = useDimensions();
   const dispatch = useDispatch();
   const insets = useSafeArea();
 
@@ -530,7 +533,7 @@ export default function ExchangeModal({
 
   return (
     <Wrapper>
-      <InnerWrapper>
+      <InnerWrapper isSmallPhone={isSmallPhone}>
         <FloatingPanels>
           <FloatingPanel
             overflow="visible"
