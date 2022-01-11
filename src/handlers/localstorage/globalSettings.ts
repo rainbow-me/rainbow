@@ -75,6 +75,6 @@ export const getTestnetsEnabled = () => getGlobal(TESTNETS_ENABLED, false);
  * @desc save testnets enabled preference
  * @param  {Boolean}  [value]
  */
-export const saveTestnetsEnabled = preference => {
+export const saveTestnetsEnabled = (preference: boolean) => {
   saveGlobal(TESTNETS_ENABLED, preference);
 };
