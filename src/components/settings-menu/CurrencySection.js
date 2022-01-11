@@ -1,12 +1,12 @@
 import analytics from '@segment/analytics-react-native';
 import { isNil } from 'lodash';
 import React, { useCallback } from 'react';
+import { reloadTimelines } from 'react-native-widgetkit';
 import { CoinIcon } from '../coin-icon';
 import { RadioList, RadioListItem } from '../radio-list';
 import { Emoji } from '../text';
 import { useAccountSettings } from '@rainbow-me/hooks';
 import { supportedNativeCurrencies } from '@rainbow-me/references';
-import { reloadTimelines } from 'react-native-widgetkit';
 
 const currencyListItems = Object.values(supportedNativeCurrencies).map(
   ({ currency, ...item }) => ({
@@ -39,7 +39,7 @@ const CurrencySection = () => {
   const onSelectCurrency = useCallback(
     currency => {
       settingsChangeNativeCurrency(currency);
-      reloadTimelines("PriceWidget");
+      reloadTimelines('PriceWidget');
       analytics.track('Changed native currency', { currency });
     },
     [settingsChangeNativeCurrency]
