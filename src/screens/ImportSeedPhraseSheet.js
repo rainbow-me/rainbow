@@ -47,8 +47,8 @@ const Footer = styled(Row).attrs({
   align: 'start',
   justify: 'end',
 })({
-  bottom: android ? 15 : 0,
-  position: android ? 'absolute' : 'relative',
+  bottom: 0,
+  position: 'relative',
   right: 0,
   width: '100%',
   ...(android
