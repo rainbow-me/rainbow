@@ -82,8 +82,6 @@ class IntentHandler: INExtension, SelectTokenIntentHandling {
       currencyDict[$0.identifier!]!.rank < currencyDict[$1.identifier!]!.rank
     })
     
-    WidgetCenter.shared.reloadAllTimelines();
-    
     completion(INObjectCollection(items: currencies), nil)
   }
 }
