@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.6.1](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.1)
+### Changed
+* Fixes for Arbitrum sends
+* Fixes for nonce management
+* Fixes for NFT filtering
+
 ## [1.5.40](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.40)
 
 ### Changed
