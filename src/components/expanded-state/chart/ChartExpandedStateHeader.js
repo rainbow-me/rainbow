@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo } from 'react';
-import Animated, { useSharedValue } from 'react-native-reanimated';
+import React, { useMemo } from 'react';
+import Animated from 'react-native-reanimated';
 import styled from 'styled-components';
 import { useCallbackOne } from 'use-memo-one';
 import { CoinIcon, CoinIconGroup } from '../../coin-icon';
