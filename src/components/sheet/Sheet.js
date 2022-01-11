@@ -29,7 +29,7 @@ const Sheet = ({
       <Column
         backgroundColor={colors.white}
         paddingBottom={noInsets ? 0 : insets.bottom}
-        style={borders.buildRadius('top', borderRadius)}
+        style={borders.buildRadiusAsObject('top', borderRadius)}
         width="100%"
       >
         <Centered paddingBottom={paddingBottom} paddingTop={paddingTop}>

@@ -8,7 +8,7 @@ import styled from '@rainbow-me/styled-components';
 const SpacerHeight = FabWrapperBottomPosition + FloatingActionButtonSize;
 
 const Spacer = styled.View({
-  heigh: SpacerHeight,
+  height: SpacerHeight,
   width: '100%',
 });
 
