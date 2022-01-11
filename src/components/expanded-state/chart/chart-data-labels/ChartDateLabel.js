@@ -12,7 +12,7 @@ const Label = styled(ChartXLabel)({
   fontVariant: ['tabular-nums'],
   letterSpacing: fonts.letterSpacing.roundedMedium,
   textAlign: 'right',
-  ...(android ? { marginVertical: 20 } : {}),
+  ...(android ? { height: 50, marginTop: -11 } : {}),
 });
 
 const MONTHS = [
