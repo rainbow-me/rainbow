@@ -1,6 +1,5 @@
 import { isNil } from 'lodash';
 import React, { useMemo } from 'react';
-import ReactCoinIcon from 'react-coin-icon';
 import { View } from 'react-native';
 import styled from 'styled-components';
 import ContractInteraction from '../../assets/contractInteraction.png';
@@ -9,7 +8,12 @@ import ChainBadge from './ChainBadge';
 import CoinIconFallback from './CoinIconFallback';
 import { useColorForAsset } from '@rainbow-me/hooks';
 import { ImgixImage } from '@rainbow-me/images';
-import { getTokenMetadata, isETH, magicMemo } from '@rainbow-me/utils';
+import {
+  getTokenMetadata,
+  isETH,
+  magicMemo,
+  CoinIcon as ReactCoinIcon,
+} from '@rainbow-me/utils';
 
 export const CoinIconSize = 40;
 

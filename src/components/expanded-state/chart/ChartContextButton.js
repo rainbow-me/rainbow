@@ -2,18 +2,21 @@ import lang from 'i18n-js';
 import { startCase } from 'lodash';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { ContextCircleButton } from '../../context-menu';
-import EditOptions from '@rainbow-me/helpers/editOptionTypes';
-import { useCoinListEditOptions } from '@rainbow-me/hooks';
+import EditAction from '@rainbow-me/helpers/EditAction';
+import {
+  useCoinListEditOptions,
+  useCoinListFinishEditingOptions,
+} from '@rainbow-me/hooks';
 import { ethereumUtils } from '@rainbow-me/utils';
 
 export default function ChartContextButton({ asset, color }) {
+  const { clearSelectedCoins, pushSelectedCoin } = useCoinListEditOptions();
+
   const {
-    clearSelectedCoins,
     currentAction,
-    pushSelectedCoin,
     setHiddenCoins,
     setPinnedCoins,
-  } = useCoinListEditOptions();
+  } = useCoinListFinishEditingOptions();
 
   useEffect(() => {
     // Ensure this expanded state's asset is always actively inside
@@ -48,14 +51,24 @@ export default function ChartContextButton({ asset, color }) {
 
   const options = useMemo(
     () => [
-      `📌️ ${currentAction === EditOptions.unpin ? 'Unpin' : 'Pin'}`,
-      `🙈️ ${currentAction === EditOptions.unhide ? 'Unhide' : 'Hide'}`,
+      `📌️ ${
+        currentAction === EditAction.unpin
+          ? lang.t('wallet.action.unpin')
+          : lang.t('wallet.action.pin')
+      }`,
+      `🙈️ ${
+        currentAction === EditAction.unhide
+          ? lang.t('wallet.action.unhide')
+          : lang.t('wallet.action.hide')
+      }`,
       ...(asset?.isNativeAsset
         ? []
         : [
-            `🔍 View on ${startCase(
-              ethereumUtils.getBlockExplorer(asset?.type)
-            )}`,
+            `🔍 ${lang.t('wallet.action.view_on', {
+              blockExplorerName: startCase(
+                ethereumUtils.getBlockExplorer(asset?.type)
+              ),
+            })}`,
           ]),
       ...(ios ? [lang.t('wallet.action.cancel')] : []),
     ],

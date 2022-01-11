@@ -1,5 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException } from '@sentry/react-native';
+import lang from 'i18n-js';
 import { values } from 'lodash';
 import { useCallback } from 'react';
 import { Alert, Linking } from 'react-native';
@@ -58,9 +59,8 @@ export default function useWalletCloudBackup() {
           category: 'backup',
         });
         Alert.alert(
-          'iCloud Not Enabled',
-          `Looks like iCloud drive is not enabled on your device.
-          Do you want to see how to enable it?`,
+          lang.t('modal.back_up.alerts.cloud_not_enabled.label'),
+          lang.t('modal.back_up.alerts.cloud_not_enabled.description'),
           [
             {
               onPress: () => {
@@ -69,7 +69,7 @@ export default function useWalletCloudBackup() {
                   category: 'backup',
                 });
               },
-              text: 'Yes, Show me',
+              text: lang.t('modal.back_up.alerts.cloud_not_enabled.show_me'),
             },
             {
               onPress: () => {
@@ -78,7 +78,7 @@ export default function useWalletCloudBackup() {
                 });
               },
               style: 'cancel',
-              text: 'No thanks',
+              text: lang.t('modal.back_up.alerts.cloud_not_enabled.no_thanks'),
             },
           ]
         );

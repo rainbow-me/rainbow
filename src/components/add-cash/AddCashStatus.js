@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { isEmpty, toLower } from 'lodash';
 import LottieView from 'lottie-react-native';
 import React, { Fragment, useEffect, useMemo, useRef } from 'react';
@@ -14,7 +15,7 @@ import NeedHelpButton from './NeedHelpButton';
 import SupportButton from './SupportButton';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 import {
-  ADD_CASH_STATUS_TYPES,
+  ADD_CASH_DISPLAYED_STATUS_TYPES,
   WYRE_ORDER_STATUS_TYPES,
 } from '@rainbow-me/helpers/wyreStatusTypes';
 import { useDimensions, usePrevious, useTimeout } from '@rainbow-me/hooks';
@@ -102,19 +103,21 @@ const AddCashFailed = ({ error, orderId, resetAddCashForm }) => {
         <StatusMessageText>{errorMessage}</StatusMessageText>
       ) : (
         <StatusMessageText>
-          Sorry, your purchase failed. <Br />
-          You were not charged.
+          {lang.t('wallet.add_cash.purchase_failed_title')} <Br />
+          {lang.t('wallet.add_cash.purchase_failed_subtitle')}
         </StatusMessageText>
       )}
       {orderId && (
         <OrderIdText>
           <Br />
-          Order ID: {orderId}
+          {lang.t('wallet.add_cash.purchase_failed_order_id', {
+            orderId,
+          })}
         </OrderIdText>
       )}
       <Row>
         <SupportButton
-          label="Try again"
+          label={lang.t('button.try_again')}
           marginTop={24}
           onPress={resetAddCashForm}
         />
@@ -123,7 +126,12 @@ const AddCashFailed = ({ error, orderId, resetAddCashForm }) => {
           marginLeft={10}
           marginTop={24}
           subject={
-            orderId ? `Purchase Failed - Order ${orderId}` : 'Purchase Failed'
+            orderId
+              ? lang.t(
+                  'wallet.add_cash.purchase_failed_support_subject_with_order_id',
+                  { orderId }
+                )
+              : lang.t('wallet.add_cash.purchase_failed_support_subject')
           }
         />
       </Row>
@@ -136,7 +144,9 @@ const AddCashChecking = () => (
     <Centered height={85}>
       <Emoji name="bank" size={50} />
     </Centered>
-    <StatusMessageText>Running checks...</StatusMessageText>
+    <StatusMessageText>
+      {lang.t('wallet.add_cash.running_checks')}
+    </StatusMessageText>
   </Content>
 );
 
@@ -154,8 +164,11 @@ const AddCashPending = ({ currency }) => (
         />
       </Centered>
       <StatusMessageText>
-        Your {currency.toUpperCase()} is on the way <Br />
-        and will arrive shortly
+        {lang.t('wallet.add_cash.on_the_way_line_1', {
+          currencySymbol: currency.toUpperCase(),
+        })}{' '}
+        <Br />
+        {lang.t('wallet.add_cash.on_the_way_line_2')}
       </StatusMessageText>
     </Content>
     <Centered>
@@ -175,7 +188,9 @@ const AddCashSuccess = ({ currency }) => {
       <Centered paddingBottom={19}>
         <CoinIcon size={60} symbol={currency} />
       </Centered>
-      <StatusMessageText>It&#39;s here! 🥳</StatusMessageText>
+      <StatusMessageText>
+        {lang.t('wallet.add_cash.success_message')}
+      </StatusMessageText>
     </Content>
   );
 };
@@ -195,21 +210,21 @@ const AddCashStatus = ({
       orderStatus === WYRE_ORDER_STATUS_TYPES.success ||
       transferStatus === TransactionStatusTypes.purchased
     ) {
-      return ADD_CASH_STATUS_TYPES.success;
+      return ADD_CASH_DISPLAYED_STATUS_TYPES.success;
     }
 
     if (
       orderStatus === WYRE_ORDER_STATUS_TYPES.failed ||
       transferStatus === TransactionStatusTypes.failed
     ) {
-      return ADD_CASH_STATUS_TYPES.failed;
+      return ADD_CASH_DISPLAYED_STATUS_TYPES.failed;
     }
 
     if (orderStatus === WYRE_ORDER_STATUS_TYPES.pending) {
-      return ADD_CASH_STATUS_TYPES.pending;
+      return ADD_CASH_DISPLAYED_STATUS_TYPES.pending;
     }
 
-    return ADD_CASH_STATUS_TYPES.checking;
+    return ADD_CASH_DISPLAYED_STATUS_TYPES.checking;
   }, [orderStatus, transferStatus]);
 
   const previousStatus = usePrevious(status);
@@ -228,7 +243,7 @@ const AddCashStatus = ({
 
   return (
     <Transitioning.View ref={ref} style={sx.container} transition={transition}>
-      {status === ADD_CASH_STATUS_TYPES.failed ? (
+      {status === ADD_CASH_DISPLAYED_STATUS_TYPES.failed ? (
         <AddCashFailed
           error={updatedError}
           orderId={orderId}
@@ -240,9 +255,9 @@ const AddCashStatus = ({
           emojis={['money_with_wings']}
           flex={1}
         >
-          {status === ADD_CASH_STATUS_TYPES.success ? (
+          {status === ADD_CASH_DISPLAYED_STATUS_TYPES.success ? (
             <AddCashSuccess currency={currency} />
-          ) : status === ADD_CASH_STATUS_TYPES.pending ? (
+          ) : status === ADD_CASH_DISPLAYED_STATUS_TYPES.pending ? (
             <AddCashPending currency={currency} />
           ) : (
             <AddCashChecking />

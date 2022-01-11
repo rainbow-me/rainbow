@@ -23,8 +23,8 @@ const getPermissionAndroid = async () => {
 
 function alertError(err) {
   Alert.alert(
-    'Save remote Image',
-    'Failed to save Image' + err.message ? `: ${err.message}` : '',
+    'Failed to save Image',
+    err.message ? `${err.message}` : '',
     [{ text: 'OK' }],
     { cancelable: false }
   );
@@ -43,7 +43,7 @@ function getFilename(url) {
 async function downloadImageAndroid(url) {
   const granted = await getPermissionAndroid();
   if (!granted) {
-    alertError('no permission');
+    alertError({ message: 'Access to photo library was denied' });
     return;
   }
   let { filename, ext } = getFilename(url);

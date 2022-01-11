@@ -175,7 +175,7 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
   const familyMenuConfig = useMemo(() => {
     return {
       menuItems: [
-        {
+        !asset?.isPoap && {
           ...FamilyActions[FamilyActionsEnum.viewCollection],
         },
         (asset.external_link || asset.collection.external_url) && {
@@ -270,17 +270,19 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
     const hasWebsite = !!(asset.external_link || asset.collection.external_url);
     const hasTwitter = !!asset.collection.twitter_username;
     const hasDiscord = !!asset.collection.discord_url;
+    const hasCollection = !!asset.collection.slug;
     const baseActions = [
       'View Collection',
       'Collection Website',
       'Twitter',
       'Discord',
     ];
-
+    const websiteIndex = 1 - (!hasCollection && 1);
     const twitterIndex = 2 - (!hasWebsite && 1);
     const discordIndex = 3 - (!hasWebsite && 1) - (!hasTwitter && 1);
 
-    if (!hasWebsite) baseActions.splice(1, 1);
+    if (!hasCollection) baseActions.splice(1, 1);
+    if (!hasWebsite) baseActions.splice(websiteIndex, 1);
     if (!hasTwitter) baseActions.splice(twitterIndex, 1);
     if (!hasDiscord) baseActions.splice(discordIndex, 1);
 

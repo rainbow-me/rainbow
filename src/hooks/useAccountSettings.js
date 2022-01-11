@@ -2,6 +2,7 @@ import lang from 'i18n-js';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
+import { updateLanguageLocale } from '../languages';
 import {
   settingsChangeLanguage as changeLanguage,
   settingsChangeNativeCurrency as changeNativeCurrency,
@@ -13,7 +14,7 @@ const languageSelector = state => state.settings.language;
 
 const withLanguage = language => {
   if (language !== lang.locale) {
-    lang.locale = language;
+    updateLanguageLocale(language);
   }
   return { language };
 };

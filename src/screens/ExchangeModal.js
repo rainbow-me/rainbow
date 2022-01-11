@@ -14,6 +14,7 @@ import {
   Keyboard,
   NativeModules,
 } from 'react-native';
+import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -39,6 +40,7 @@ import {
   useAccountSettings,
   useBlockPolling,
   useCurrentNonce,
+  useDimensions,
   useGas,
   usePrevious,
   usePriceImpactDetails,
@@ -75,6 +77,7 @@ const InnerWrapper = styled(Centered).attrs({
     top: 0;
   `};
   background-color: ${({ theme: { colors } }) => colors.transparent};
+  ${({ isSmallPhone }) => ios && isSmallPhone && `max-height: 354;`};
 `;
 
 const Spacer = styled.View`
@@ -109,7 +112,9 @@ export default function ExchangeModal({
   type,
   typeSpecificParams,
 }) {
+  const { isSmallPhone } = useDimensions();
   const dispatch = useDispatch();
+  const insets = useSafeArea();
 
   useLayoutEffect(() => {
     dispatch(updateSwapTypeDetails(type, typeSpecificParams));
@@ -528,7 +533,7 @@ export default function ExchangeModal({
 
   return (
     <Wrapper>
-      <InnerWrapper>
+      <InnerWrapper isSmallPhone={isSmallPhone}>
         <FloatingPanels>
           <FloatingPanel
             overflow="visible"
@@ -599,15 +604,15 @@ export default function ExchangeModal({
               testID={`${testID}-confirm-button`}
             />
           )}
-          <GasSpeedButton
-            asset={outputCurrency}
-            currentNetwork={network}
-            dontBlur
-            onCustomGasBlur={handleCustomGasBlur}
-            testID={`${testID}-gas`}
-            topPadding={25}
-          />
         </FloatingPanels>
+        <GasSpeedButton
+          asset={outputCurrency}
+          bottom={insets.bottom - 7}
+          currentNetwork={network}
+          dontBlur
+          onCustomGasBlur={handleCustomGasBlur}
+          testID={`${testID}-gas`}
+        />
       </InnerWrapper>
     </Wrapper>
   );

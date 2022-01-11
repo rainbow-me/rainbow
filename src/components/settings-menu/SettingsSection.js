@@ -1,11 +1,10 @@
 import AsyncStorage from '@react-native-community/async-storage';
+import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo } from 'react';
 import { Image, Linking, NativeModules, ScrollView, Share } from 'react-native';
 import styled from 'styled-components';
-// import { REVIEW_ANDROID } from '../../config/experimental';
-// import useExperimentalFlag from '../../config/experimentalHooks';
-// import { supportedLanguages } from '../../languages';
 import { THEMES, useTheme } from '../../context/ThemeContext';
+import { supportedLanguages } from '../../languages';
 import AppVersionStamp from '../AppVersionStamp';
 import { Icon } from '../icons';
 import { Column, ColumnWithDividers } from '../layout';
@@ -22,10 +21,15 @@ import CurrencyIcon from '@rainbow-me/assets/settingsCurrency.png';
 import CurrencyIconDark from '@rainbow-me/assets/settingsCurrencyDark.png';
 import DarkModeIcon from '@rainbow-me/assets/settingsDarkMode.png';
 import DarkModeIconDark from '@rainbow-me/assets/settingsDarkModeDark.png';
+import LanguageIcon from '@rainbow-me/assets/settingsLanguage.png';
+import LanguageIconDark from '@rainbow-me/assets/settingsLanguageDark.png';
 import NetworkIcon from '@rainbow-me/assets/settingsNetwork.png';
 import NetworkIconDark from '@rainbow-me/assets/settingsNetworkDark.png';
 import PrivacyIcon from '@rainbow-me/assets/settingsPrivacy.png';
 import PrivacyIconDark from '@rainbow-me/assets/settingsPrivacyDark.png';
+import useExperimentalFlag, {
+  LANGUAGE_SETTINGS,
+} from '@rainbow-me/config/experimentalHooks';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import {
@@ -129,14 +133,21 @@ export default function SettingsSection({
   onPressCurrency,
   onPressDev,
   onPressIcloudBackup,
+  onPressLanguage,
   onPressNetwork,
   onPressPrivacy,
   onPressShowSecret,
 }) {
   const isReviewAvailable = false;
   const { wallets, isReadOnlyWallet } = useWallets();
-  const { nativeCurrency, network, testnetsEnabled } = useAccountSettings();
+  const {
+    language,
+    nativeCurrency,
+    network,
+    testnetsEnabled,
+  } = useAccountSettings();
   const { isSmallPhone } = useDimensions();
+  const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
 
   const { colors, isDarkMode, setTheme, colorScheme } = useTheme();
 
@@ -208,7 +219,7 @@ export default function SettingsSection({
                   source={isDarkMode ? BackupIconDark : BackupIcon}
                 />
               }
-              label="Backup"
+              label={lang.t('settings.backup')}
               onPress={onPressBackup}
               onPressIcloudBackup={onPressIcloudBackup}
               onPressShowSecret={onPressShowSecret}
@@ -232,7 +243,7 @@ export default function SettingsSection({
                 source={isDarkMode ? CurrencyIconDark : CurrencyIcon}
               />
             }
-            label="Currency"
+            label={lang.t('settings.currency')}
             onPress={onPressCurrency}
             testID="currency-section"
           >
@@ -260,7 +271,7 @@ export default function SettingsSection({
                 source={isDarkMode ? DarkModeIconDark : DarkModeIcon}
               />
             }
-            label="Theme"
+            label={lang.t('settings.theme')}
             onPress={toggleTheme}
             testID={`darkmode-section-${isDarkMode}`}
           >
@@ -281,11 +292,26 @@ export default function SettingsSection({
                   source={isDarkMode ? PrivacyIconDark : PrivacyIcon}
                 />
               }
-              label="Privacy"
+              label={lang.t('settings.privacy')}
               onPress={onPressPrivacy}
               testID="privacy"
             >
               <ListItemArrowGroup />
+            </ListItem>
+          )}
+          {isLanguageSelectionEnabled && (
+            <ListItem
+              icon={
+                <SettingIcon
+                  source={isDarkMode ? LanguageIconDark : LanguageIcon}
+                />
+              }
+              label={lang.t('settings.language')}
+              onPress={onPressLanguage}
+            >
+              <ListItemArrowGroup>
+                {supportedLanguages[language] || ''}
+              </ListItemArrowGroup>
             </ListItem>
           )}
         </ColumnWithDividers>
@@ -300,7 +326,7 @@ export default function SettingsSection({
           />
           <ListItem
             icon={<Emoji name="brain" />}
-            label="Learn about Rainbow and Ethereum"
+            label={lang.t('settings.learn')}
             onPress={onPressLearn}
             testID="learn-section"
             value={SettingsExternalURLs.rainbowLearn}
@@ -314,14 +340,18 @@ export default function SettingsSection({
           />
           <ListItem
             icon={<Emoji name={ios ? 'speech_balloon' : 'lady_beetle'} />}
-            label={ios ? 'Feedback and Support' : 'Feedback & Bug Reports'}
+            label={
+              ios
+                ? lang.t('settings.feedback_and_support')
+                : lang.t('settings.feedback_and_reports')
+            }
             onPress={onSendFeedback}
             testID="feedback-section"
           />
           {isReviewAvailable && (
             <ListItem
               icon={<Emoji name="red_heart" />}
-              label="Review Rainbow"
+              label={lang.t('settings.review')}
               onPress={onPressReview}
               testID="review-section"
             />
@@ -332,7 +362,7 @@ export default function SettingsSection({
             <ListFooter height={10} />
             <ListItem
               icon={<Emoji name="construction" />}
-              label="Developer Settings"
+              label={lang.t('settings.developer')}
               onPress={onPressDev}
               testID="developer-section"
             />

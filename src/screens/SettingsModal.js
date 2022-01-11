@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import lang from 'i18n-js';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { Animated, InteractionManager, View } from 'react-native';
 import styled from 'styled-components';
@@ -60,38 +61,38 @@ function cardStyleInterpolator({
 const SettingsPages = {
   backup: {
     component: View,
+    getTitle: () => lang.t('settings.backup'),
     key: 'BackupSection',
-    title: 'Backup',
   },
   currency: {
     component: CurrencySection,
+    getTitle: () => lang.t('settings.currency'),
     key: 'CurrencySection',
-    title: 'Currency',
   },
   default: {
     component: null,
+    getTitle: () => lang.t('settings.label'),
     key: 'SettingsSection',
-    title: 'Settings',
   },
   dev: {
     component: IS_DEV ? DevSection : UserDevSection,
+    getTitle: () => lang.t('settings.developer'),
     key: 'DevSection',
-    title: 'Developer',
   },
   language: {
     component: LanguageSection,
+    getTitle: () => lang.t('settings.language'),
     key: 'LanguageSection',
-    title: 'Language',
   },
   network: {
     component: NetworkSection,
+    getTitle: () => lang.t('settings.network'),
     key: 'NetworkSection',
-    title: 'Network',
   },
   privacy: {
     component: PrivacySection,
+    getTitle: () => 'Privacy',
     key: 'PrivacySection',
-    title: 'Privacy',
   },
 };
 
@@ -146,7 +147,11 @@ export default function SettingsModal() {
   const renderHeaderRight = useCallback(
     () =>
       ios ? (
-        <ModalHeaderButton label="Done" onPress={goBack} side="right" />
+        <ModalHeaderButton
+          label={lang.t('settings.done')}
+          onPress={goBack}
+          side="right"
+        />
       ) : null,
     [goBack]
   );
@@ -180,7 +185,7 @@ export default function SettingsModal() {
           <Stack.Screen
             name="SettingsSection"
             options={{
-              title: 'Settings',
+              title: lang.t('settings.label'),
             }}
           >
             {() => (
@@ -196,7 +201,7 @@ export default function SettingsModal() {
             )}
           </Stack.Screen>
           {Object.values(SettingsPages).map(
-            ({ component, title, key }) =>
+            ({ component, getTitle, key }) =>
               component && (
                 <Stack.Screen
                   component={component}
@@ -204,9 +209,9 @@ export default function SettingsModal() {
                   name={key}
                   options={{
                     cardStyleInterpolator,
-                    title,
+                    title: getTitle(),
                   }}
-                  title={title}
+                  title={getTitle()}
                 />
               )
           )}
@@ -217,7 +222,7 @@ export default function SettingsModal() {
             options={{
               cardStyle: { backgroundColor: colors.white, marginTop: 6 },
               cardStyleInterpolator,
-              title: 'Backup',
+              title: lang.t('settings.backup'),
             }}
           />
           <Stack.Screen
@@ -225,7 +230,7 @@ export default function SettingsModal() {
             name="SettingsBackupView"
             options={({ route }) => ({
               cardStyleInterpolator,
-              title: route.params?.title || 'Backup',
+              title: route.params?.title || lang.t('settings.backup'),
             })}
           />
           <Stack.Screen
@@ -233,7 +238,7 @@ export default function SettingsModal() {
             name="ShowSecretView"
             options={({ route }) => ({
               cardStyleInterpolator,
-              title: route.params?.title || 'Backup',
+              title: route.params?.title || lang.t('settings.backup'),
             })}
           />
         </Stack.Navigator>

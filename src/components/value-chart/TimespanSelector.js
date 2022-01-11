@@ -7,7 +7,7 @@ import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { padding } from '@rainbow-me/styles';
 
 const Container = styled(Centered)`
-  padding-top: 30;
+  padding-top: 49;
   width: 100%;
 `;
 

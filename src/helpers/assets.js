@@ -2,7 +2,6 @@ import {
   chunk,
   compact,
   concat,
-  find,
   forEach,
   get,
   groupBy,
@@ -15,9 +14,11 @@ import {
 import { add, convertAmountToNativeDisplay, greaterThan } from './utilities';
 import store from '@rainbow-me/redux/store';
 import {
+  ETH_ADDRESS,
   ETH_ICON_URL,
   supportedNativeCurrencies,
 } from '@rainbow-me/references';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 const COINS_TO_SHOW = 5;
 
@@ -36,7 +37,7 @@ const addEthPlaceholder = (
   nativeCurrency,
   emptyCollectibles
 ) => {
-  const hasEth = !!find(assets, asset => asset.address === 'eth');
+  const hasEth = !!ethereumUtils.getAccountAsset(ETH_ADDRESS);
 
   const { genericAssets } = store.getState().data;
   if (
@@ -57,7 +58,6 @@ const addEthPlaceholder = (
       icon_url: ETH_ICON_URL,
       isCoin: true,
       isPinned: pinnedCoins.includes('eth'),
-      isPlaceholder: true,
       isSmall: false,
       name: 'Ethereum',
       native: {
@@ -96,7 +96,7 @@ const getTotal = assets =>
   );
 
 export const buildCoinsList = (
-  assetsOriginal,
+  sortedAssets,
   nativeCurrency,
   isCoinListEdited,
   pinnedCoins,
@@ -110,7 +110,7 @@ export const buildCoinsList = (
     hiddenAssets = [];
 
   const { addedEth, assets } = addEthPlaceholder(
-    assetsOriginal,
+    sortedAssets,
     includePlaceholder,
     pinnedCoins,
     nativeCurrency,
@@ -183,7 +183,61 @@ export const buildCoinsList = (
     });
   }
 
-  return { addedEth, assets: allAssets, totalBalancesValue };
+  return {
+    addedEth,
+    assets: allAssets,
+    smallBalancesValue,
+    totalBalancesValue,
+  };
+};
+
+// TODO make it better
+export const buildBriefCoinsList = (
+  sortedAssets,
+  nativeCurrency,
+  isCoinListEdited,
+  pinnedCoins,
+  hiddenCoins,
+  includePlaceholder = false,
+  emptyCollectibles
+) => {
+  const { assets, smallBalancesValue, totalBalancesValue } = buildCoinsList(
+    sortedAssets,
+    nativeCurrency,
+    isCoinListEdited,
+    pinnedCoins,
+    hiddenCoins,
+    includePlaceholder,
+    emptyCollectibles
+  );
+  const briefAssets = [];
+  if (assets) {
+    for (let asset of assets) {
+      if (asset.coinDivider) {
+        briefAssets.push({
+          type: 'COIN_DIVIDER',
+          uid: 'coin-divider',
+          value: smallBalancesValue,
+        });
+      } else if (asset.smallBalancesContainer) {
+        for (let smallAsset of asset.assets) {
+          briefAssets.push({
+            type: 'COIN',
+            uid: 'coin-' + smallAsset.uniqueId,
+            uniqueId: smallAsset.uniqueId,
+          });
+        }
+      } else {
+        briefAssets.push({
+          type: 'COIN',
+          uid: 'coin-' + asset.uniqueId,
+          uniqueId: asset.uniqueId,
+        });
+      }
+    }
+  }
+
+  return { briefAssets, totalBalancesValue };
 };
 
 export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
@@ -266,6 +320,53 @@ export const buildUniqueTokenList = (uniqueTokens, selectedShowcaseTokens) => {
     row.tokens[0][0].rowNumber = i;
   });
   return rows;
+};
+
+const regex = RegExp(/\s*(the)\s/, 'i');
+
+export const buildBriefUniqueTokenList = (
+  uniqueTokens,
+  selectedShowcaseTokens
+) => {
+  const uniqueTokensInShowcase = uniqueTokens
+    .filter(({ uniqueId }) => selectedShowcaseTokens.includes(uniqueId))
+    .map(({ uniqueId }) => uniqueId);
+  const grouped2 = groupBy(uniqueTokens, token => token.familyName);
+  const families2 = sortBy(Object.keys(grouped2), row =>
+    row.replace(regex, '').toLowerCase()
+  );
+  const result = [
+    { type: 'NFTS_HEADER_SPACE_BEFORE', uid: 'nfts-header-space-before' },
+    { type: 'NFTS_HEADER', uid: 'nfts-header' },
+    { type: 'NFTS_HEADER_SPACE_AFTER', uid: 'nfts-header-space-after' },
+  ];
+  if (uniqueTokensInShowcase.length > 0) {
+    result.push({ name: 'Showcase', type: 'FAMILY_HEADER', uid: 'showcase' });
+    for (let index = 0; index < uniqueTokensInShowcase.length; index++) {
+      const uniqueId = uniqueTokensInShowcase[index];
+      result.push({ index, type: 'NFT', uid: uniqueId, uniqueId });
+    }
+
+    result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
+  }
+  for (let family of families2) {
+    result.push({
+      image: grouped2[family][0].familyImage,
+      name: family,
+      total: grouped2[family].length,
+      type: 'FAMILY_HEADER',
+      uid: family,
+    });
+    const tokens = grouped2[family].map(({ uniqueId }) => uniqueId);
+    for (let index = 0; index < tokens.length; index++) {
+      const uniqueId = tokens[index];
+
+      result.push({ index, type: 'NFT', uid: uniqueId, uniqueId });
+    }
+
+    result.push({ type: 'NFT_SPACE_AFTER', uid: `${family}-space-after` });
+  }
+  return result;
 };
 
 export const buildUniqueTokenName = ({ collection, id, name }) =>

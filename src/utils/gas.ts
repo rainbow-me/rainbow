@@ -6,15 +6,14 @@ const FAST = 'fast';
 const NORMAL = 'normal';
 const SLOW = 'slow';
 
-const GasSpeedOrder = [NORMAL, FAST, URGENT, CUSTOM];
+const SURGING = 'surging';
+const RISING = 'rising';
+const STABLE = 'stable';
+const FALLING = 'falling';
+const NO_TREND = 'notrend';
 
-const GAS_PRICE_SOURCES = {
-  ARBITRUM_NODE: 'arbitrumNode',
-  ETH_GAS_STATION: 'ethGasStation',
-  ETHERSCAN: 'etherscan',
-  OPTIMISM_NODE: 'optimismNode',
-  POLYGON_GAS_STATION: 'polygonGasStation',
-};
+const GasSpeedOrder = [NORMAL, FAST, URGENT, CUSTOM];
+const GasTrends = { FALLING, NO_TREND, RISING, STABLE, SURGING };
 
 const GAS_ICONS = {
   [CUSTOM]: 'gear',
@@ -24,19 +23,20 @@ const GAS_ICONS = {
 };
 
 const GAS_TRENDS = {
-  falling: { color: colors.green, label: '􀄱 Falling' },
-  rising: { color: colors.orange, label: '􀰾 Rising' },
-  stable: { color: colors.yellowFavorite, label: '􀆮 Stable' },
-  surging: { color: colors.red, label: '􀇿 Surging' },
+  [FALLING]: { color: colors.green, label: '􀄱 Falling' },
+  [NO_TREND]: { color: colors.appleBlue, label: '' },
+  [RISING]: { color: colors.orange, label: '􀰾 Rising' },
+  [STABLE]: { color: colors.yellowFavorite, label: '􀆮 Stable' },
+  [SURGING]: { color: colors.red, label: '􀇿 Surging' },
 };
 
 export default {
   CUSTOM,
   FAST,
   GAS_ICONS,
-  GAS_PRICE_SOURCES,
   GAS_TRENDS,
   GasSpeedOrder,
+  GasTrends,
   NORMAL,
   SLOW,
   URGENT,

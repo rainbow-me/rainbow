@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
@@ -37,7 +38,11 @@ export default function ModalHeader({
   return (
     <Container backgroundColor={colors.white} {...props}>
       {showBackButton && (
-        <ModalHeaderButton label="Settings" onPress={onPressBack} side="left" />
+        <ModalHeaderButton
+          label={lang.t('settings.label')}
+          onPress={onPressBack}
+          side="left"
+        />
       )}
       <TitleContainer>
         <TruncatedText
@@ -52,7 +57,11 @@ export default function ModalHeader({
         </TruncatedText>
       </TitleContainer>
       {showDoneButton && (
-        <ModalHeaderButton label="Done" onPress={onPressClose} side="right" />
+        <ModalHeaderButton
+          label={lang.t('settings.done')}
+          onPress={onPressClose}
+          side="right"
+        />
       )}
     </Container>
   );

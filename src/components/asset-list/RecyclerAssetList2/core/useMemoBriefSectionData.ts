@@ -1,0 +1,149 @@
+import { useDeepCompareMemo } from 'use-deep-compare';
+import { CellType, CoinExtraData, NFTFamilyExtraData } from './ViewTypes';
+import {
+  useCoinListEdited,
+  useCoinListEditOptions,
+  useOpenFamilies,
+  useOpenInvestmentCards,
+  useOpenSavings,
+  useOpenSmallBalances,
+  useWalletSectionsData,
+} from '@rainbow-me/hooks';
+
+export default function useMemoBriefSectionData() {
+  const { briefSectionsData } = useWalletSectionsData();
+  const { isSmallBalancesOpen, stagger } = useOpenSmallBalances();
+  const { isSavingsOpen } = useOpenSavings();
+  const { isInvestmentCardsOpen } = useOpenInvestmentCards();
+  const { isCoinListEdited } = useCoinListEdited();
+  const { hiddenCoins } = useCoinListEditOptions();
+  const { openFamilies } = useOpenFamilies();
+
+  const result = useDeepCompareMemo(() => {
+    let afterDivider = false;
+    let isGroupOpen = true;
+    const stickyHeaders = [];
+    let index = 0;
+    let isAnyAssetBelowDivider = false;
+    let afterCoins = false;
+    // load firstly 12, then the rest after 1 sec
+    let numberOfSmallBalancesAllowed = stagger ? 12 : briefSectionsData.length;
+    const briefSectionsDataFiltered = briefSectionsData
+      .filter((data, arrIndex, arr) => {
+        if (
+          arr[arrIndex - 1]?.type === CellType.COIN &&
+          data.type !== CellType.COIN_DIVIDER &&
+          data.type !== CellType.COIN
+        ) {
+          afterCoins = true;
+        }
+        if (afterCoins && isCoinListEdited) {
+          return false;
+        }
+
+        // removes NFTS_HEADER if wallet doesn't have NFTs
+        if (data.type === CellType.NFTS_HEADER && !arr[arrIndex + 2]) {
+          return false;
+        }
+
+        if (
+          data.type === CellType.ASSETS_HEADER ||
+          data.type === CellType.NFTS_HEADER
+        ) {
+          stickyHeaders.push(index);
+        }
+        if (
+          afterDivider &&
+          data.type === CellType.COIN &&
+          !hiddenCoins.includes((data as CoinExtraData).uniqueId)
+        ) {
+          isAnyAssetBelowDivider = true;
+        }
+
+        if (
+          data.type === CellType.COIN &&
+          !isSmallBalancesOpen &&
+          afterDivider
+        ) {
+          return false;
+        }
+
+        if (
+          data.type === CellType.COIN &&
+          hiddenCoins.includes((data as CoinExtraData).uniqueId) &&
+          !isCoinListEdited
+        ) {
+          return false;
+        }
+
+        if (data.type === CellType.COIN_DIVIDER) {
+          afterDivider = true;
+        }
+
+        if (afterDivider && data.type === CellType.COIN) {
+          numberOfSmallBalancesAllowed--;
+          if (numberOfSmallBalancesAllowed <= 0) {
+            return false;
+          }
+        }
+
+        if (data.type === CellType.SAVINGS && !isSavingsOpen) {
+          return false;
+        }
+
+        if (data.type === CellType.FAMILY_HEADER) {
+          const name = (data as NFTFamilyExtraData).name;
+          isGroupOpen = openFamilies[name];
+        }
+
+        if (
+          data.type === CellType.NFT ||
+          data.type === CellType.NFT_SPACE_AFTER
+        ) {
+          return isGroupOpen;
+        }
+
+        if (
+          (data.type === CellType.POOLS_HEADER ||
+            data.type === CellType.UNISWAP_POOL) &&
+          isCoinListEdited
+        ) {
+          return false;
+        }
+
+        if (data.type === CellType.UNISWAP_POOL && !isInvestmentCardsOpen) {
+          return false;
+        }
+
+        index++;
+        return true;
+      })
+      .filter(
+        ({ type }) =>
+          type !== CellType.COIN_DIVIDER ||
+          isAnyAssetBelowDivider ||
+          isCoinListEdited
+      )
+      .map(({ uid, type }) => ({ type, uid }));
+
+    return briefSectionsDataFiltered;
+  }, [
+    briefSectionsData,
+    isSmallBalancesOpen,
+    isSavingsOpen,
+    isInvestmentCardsOpen,
+    isCoinListEdited,
+    openFamilies,
+    stagger,
+  ]);
+  const memoizedResult = useDeepCompareMemo(() => result, [result]);
+  const additionalData = useDeepCompareMemo(
+    () =>
+      briefSectionsData.reduce((acc, data) => {
+        acc[data.uid] = data;
+        return acc;
+      }, {}),
+    [briefSectionsData]
+  );
+  return { additionalData, memoizedResult };
+}
