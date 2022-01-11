@@ -175,11 +175,6 @@ export function Header() {
     contextValue?.data?.reverseEns ||
     contextValue?.addressOrDomain?.toLowerCase();
 
-  console.log("hi");
-  console.log(mainText);
-  console.log(contextValue?.data?.reverseEns);
-  console.log(contextValue?.addressOrDomain?.toLowerCase());
-
   const secondaryText =
     contextValue?.address?.toLowerCase() === mainText
       ? null

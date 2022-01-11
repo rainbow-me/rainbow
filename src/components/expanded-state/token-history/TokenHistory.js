@@ -164,7 +164,6 @@ const TokenHistory = ({ contract, token, color }) => {
     });
 
     let ensArray = await reverseRecordContract.getNames(addressArray);
-    // let ensArray = ["jhfdlhlfhgfzklabhfgjkldjhfdlhlfhgfzklabhfgjkldahfjkleahfjdalhfgdjkafhjdakfdjhfdlhlfhgfzklabhfgjkldahfjkleahfjdalhfgdjkafhjdakfdahfjkleahfjdalhfgdjkafhjdakfd.eth"]
 
     const ensMap = ensArray.reduce(function (tempMap, ens, index) {
       tempMap[addressArray[index]] = ens;
@@ -190,8 +189,6 @@ const TokenHistory = ({ contract, token, color }) => {
 
   const handlePress = useCallback(
     (address, ens) => {
-      console.log("zoink");
-      console.log(ens);
       navigate(Routes.SHOWCASE_SHEET, {
         address: ens && ens.slice(-4) === '.eth' ? ens : address
       });
@@ -257,6 +254,7 @@ const TokenHistory = ({ contract, token, color }) => {
     );
 
     return (
+      // when the token history isShort, invert the horizontal scroll so the history is pinned to the left instead of right
       <Column style={(isShort && !isFirst) || (!isShort && !isLast) ? { marginLeft: 19 } : {}}>
         {tokenHistory.length > 1 && (
           <Row
@@ -287,9 +285,9 @@ const TokenHistory = ({ contract, token, color }) => {
             onPress={() => handlePress(item.toAccountEthAddress, item.toAccount)}
             scaleTo={0.92}
           >
-            <Row>
-              <AccentText color={color}>{icon}</AccentText>
-              <AccentText color={colors.whiteLabel} style={{ marginLeft: 2 }}>
+            <Row style={{ marginTop: -3 }}>
+              <AccentText color={color} style={{ lineHeight: 20 }}>{icon}</AccentText>
+              <AccentText color={colors.whiteLabel} style={{ marginLeft: 2, lineHeight: 20 }}>
                 {label}
                 {isClickable && suffixIcon}
               </AccentText>
