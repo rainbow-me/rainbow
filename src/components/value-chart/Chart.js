@@ -1,4 +1,3 @@
-import { invert } from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions } from 'react-native';
 import Animated, {
@@ -186,25 +185,11 @@ export default function ChartWrapper({
     };
   });
 
-  const timespan = invert(ChartTypes)[chartType];
-  const formattedTimespan =
-    timespan.charAt(0).toUpperCase() + timespan.slice(1);
-
-  const defaultTimeValue = useMemo(() => {
-    if (chartType === ChartTypes.day) {
-      return 'Today';
-    } else if (chartType === ChartTypes.max) {
-      return 'All Time';
-    } else {
-      return `Past ${formattedTimespan}`;
-    }
-  }, [chartType, formattedTimespan]);
-
   return (
     <Container>
       <ChartExpandedStateHeader
         {...props}
-        chartTimeDefaultValue={defaultTimeValue}
+        chartType={chartType}
         color={color}
         isPool={isPool}
         overrideValue={overrideValue}
