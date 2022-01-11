@@ -12,11 +12,11 @@ import {
 } from '@rainbow-me/utilities';
 import { ethereumUtils } from '@rainbow-me/utils';
 import {
+  isSignTypedData,
   PERSONAL_SIGN,
   SEND_TRANSACTION,
   SIGN,
   SIGN_TRANSACTION,
-  SIGN_TYPED_DATA,
 } from '@rainbow-me/utils/signingMethods';
 
 export const getRequestDisplayDetails = (
@@ -79,7 +79,7 @@ export const getRequestDisplayDetails = (
   // Aside from expecting the address as the first parameter
   // and data as the second one it's safer to verify that
   // and switch order if needed to ensure max compatibility with dapps
-  if (payload.method === SIGN_TYPED_DATA) {
+  if (isSignTypedData(payload.method)) {
     if (payload.params.length && payload.params[0]) {
       let data = get(payload, 'params[0]', null);
       if (ethereumUtils.isEthAddress(get(payload, 'params[0]', ''))) {
