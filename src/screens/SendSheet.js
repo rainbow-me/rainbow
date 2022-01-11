@@ -348,7 +348,7 @@ export default function SendSheet(props) {
     if (isEmpty(selected)) return;
     if (currentProvider?._network?.chainId) {
       const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
-        currentProvider._network.chainId
+        Number(currentProvider._network.chainId)
       );
 
       const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
@@ -569,7 +569,6 @@ export default function SendSheet(props) {
     getNextNonce,
     isSufficientGas,
     isValidAddress,
-    network,
     selected,
     selectedGasFee,
     toAddress,
@@ -770,7 +769,7 @@ export default function SendSheet(props) {
   useEffect(() => {
     if (!currentProvider?._network?.chainId) return;
     const currentProviderNetwork = ethereumUtils.getNetworkFromChainId(
-      currentProvider._network.chainId
+      Number(currentProvider._network.chainId)
     );
     const assetNetwork = isL2Asset(selected?.type) ? selected.type : network;
     if (

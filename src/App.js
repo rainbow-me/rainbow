@@ -46,6 +46,7 @@ import handleDeeplink from './handlers/deeplinks';
 import { runWalletBackupStatusChecks } from './handlers/walletReadyEvents';
 import { isL2Network } from './handlers/web3';
 import RainbowContextWrapper from './helpers/RainbowContext';
+import networkTypes from './helpers/networkTypes';
 import { registerTokenRefreshListener, saveFCMToken } from './model/firebase';
 import * as keychain from './model/keychain';
 import { loadAddress } from './model/wallet';
@@ -58,7 +59,6 @@ import store from './redux/store';
 import { uniswapPairsInit } from './redux/uniswap';
 import { walletConnectLoadState } from './redux/walletconnect';
 import { rainbowTokenList } from './references';
-import { ethereumUtils } from './utils';
 import Routes from '@rainbow-me/routes';
 import logger from 'logger';
 import { Portal } from 'react-native-cool-modals/Portal';
@@ -255,7 +255,7 @@ class App extends Component {
     Navigation.setTopLevelNavigator(navigatorRef);
 
   handleTransactionConfirmed = tx => {
-    const network = ethereumUtils.getNetworkFromChainId(tx.chainId);
+    const network = tx.network || networkTypes.mainnet;
     const isL2 = isL2Network(network);
     const updateBalancesAfter = (timeout, isL2, network) => {
       setTimeout(() => {

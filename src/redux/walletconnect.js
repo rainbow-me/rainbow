@@ -368,6 +368,7 @@ const listenOnNewMessages = walletConnector => (dispatch, getState) => {
                 accounts: [accountAddress],
                 chainId: numericChainId,
               });
+              dispatch(setWalletConnector(walletConnector));
               saveWalletConnectSession(
                 walletConnector.peerId,
                 walletConnector.session
@@ -561,22 +562,6 @@ export const removeWalletConnector = peerId => (dispatch, getState) => {
   dispatch({
     payload: updatedWalletConnectors,
     type: WALLETCONNECT_REMOVE_SESSION,
-  });
-};
-
-export const walletConnectUpdateSessions = () => (dispatch, getState) => {
-  const { accountAddress, chainId } = getState().settings;
-  const { walletConnectors } = getState().walletconnect;
-
-  Object.keys(walletConnectors).forEach(key => {
-    const connector = walletConnectors[key];
-    const newSessionData = {
-      accounts: [accountAddress],
-      chainId,
-    };
-    connector.updateSession(newSessionData);
-
-    saveWalletConnectSession(connector.peerId, connector.session);
   });
 };
 
