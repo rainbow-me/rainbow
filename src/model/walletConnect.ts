@@ -48,6 +48,7 @@ const wcTrack = (
   });
 
 const toEIP55Format = (chainId: string | number) => `eip155:${chainId}`;
+
 export const fromEIP55Format = (chain: string) => {
   const [, chainId] = chain?.split(':');
   return chainId;
