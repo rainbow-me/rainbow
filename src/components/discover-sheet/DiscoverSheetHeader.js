@@ -30,8 +30,8 @@ const ChildWrapperView = styled.View`
 `;
 
 export const FloatingActionButtonShadow = colors => [
-  [0, 10, android ? 0 : 30, colors.shadow, 0.5],
-  [0, 5, android ? 0 : 15, colors.shadow, 1],
+  [0, 10, 30, colors.shadow, 0.5],
+  [0, 5, 15, colors.shadow, 1],
 ];
 
 const BackgroundFill = styled(Centered).attrs({

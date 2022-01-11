@@ -52,12 +52,13 @@ export default function AvatarCircle({
   const shadows = useMemo(
     () => ({
       default: [
-        [0, 2, 5, isDarkMode ? colors.trueBlack : colors.dark, 0.2],
+        [0, 2, 5, isDarkMode ? colors.trueBlack : colors.dark, 0.08],
         [
           0,
           6,
           10,
           isDarkMode ? colors.trueBlack : colors.alpha(resolvedColor, 0.6),
+          0.2,
         ],
       ],
       overlay: [
@@ -81,7 +82,6 @@ export default function AvatarCircle({
         {...position.sizeAsObject(AvatarCircleSize)}
         backgroundColor={overlayStyles ? 'rgb(51, 54, 59)' : colors.white}
         borderRadius={AvatarCircleSize}
-        marginBottom={12}
         shadows={shadows[overlayStyles ? 'overlay' : 'default']}
         {...(android && {
           height: 64,

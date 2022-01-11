@@ -14195,6 +14195,13 @@ react-native-dotenv@2.4.2:
   dependencies:
     dotenv "^8.0.0"
 
+react-native-drop-shadow@0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-drop-shadow/-/react-native-drop-shadow-0.0.4.tgz#af2ceff6a3e1468b01cd5fb55941854cbe30dad6"
+  integrity sha512-45Bsq24dcc1rK9H+42H91xEYN/Ql5S0693FseQWdCKgri6D+4vkFeL9dgtrSD5Bg3+RffjMbPDD7BuNS9BZuvg==
+  dependencies:
+    logkitty "^0.7.1"
+
 react-native-dynamic@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/react-native-dynamic/-/react-native-dynamic-1.0.0.tgz#d971618fd278cf66acb0add46536aa7a68fd8d4f"

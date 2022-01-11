@@ -12,8 +12,8 @@ import Routes from '@rainbow-me/routes';
 import { magicMemo, watchingAlert } from '@rainbow-me/utils';
 
 const FabShadow = [
-  [0, 10, 30, lightModeThemeColors.shadow, 0.8],
-  [0, 5, 15, lightModeThemeColors.swapPurple, 1],
+  [0, 10, 30, lightModeThemeColors.shadow, android ? 0.4 : 0.8],
+  [0, 5, 15, lightModeThemeColors.swapPurple, android ? 0.5 : 1],
 ];
 
 const FabIcon = styled(Text).attrs(({ theme: { colors } }) => ({

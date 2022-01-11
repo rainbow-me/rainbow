@@ -2,6 +2,7 @@ import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useRef } from 'react';
+import { View } from 'react-native';
 import styled from 'styled-components';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
@@ -173,6 +174,7 @@ export default function ProfileMasthead({
         isAvatarPickerAvailable={isAvatarPickerAvailable}
         onPress={handlePressAvatar}
       />
+      <View style={{ height: 16 }} />
       <ButtonPressAnimation onPress={handlePressChangeWallet}>
         <Row>
           <AccountName deviceWidth={deviceWidth}>{accountName}</AccountName>

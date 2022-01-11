@@ -59,7 +59,7 @@ export default function DiscoverHeaderButton() {
     <HeaderButton
       {...(__DEV__ ? { onLongPress } : {})}
       onPress={onPress}
-      paddingLeft={0}
+      paddingLeft={ios ? 0 : undefined}
       paddingRight={0}
       scaleTo={0.9}
       testID="discover-button"

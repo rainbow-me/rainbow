@@ -6,8 +6,8 @@ import { Text } from '../text';
 import FloatingActionButton from './FloatingActionButton';
 
 const FabShadow = [
-  [0, 10, 30, lightModeThemeColors.shadow, 0.6],
-  [0, 5, 15, lightModeThemeColors.blueGreyDark, 1],
+  [0, 10, 30, lightModeThemeColors.shadow, android ? 0.3 : 0.6],
+  [0, 5, 15, lightModeThemeColors.blueGreyDark, android ? 0.5 : 1],
 ];
 
 const SearchFab = ({ disabled, ...props }) => {
