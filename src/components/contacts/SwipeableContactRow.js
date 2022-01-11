@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback, useImperativeHandle, useRef } from 'react';
 import { Animated } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
@@ -97,13 +98,13 @@ const SwipeableContactRow = (
         <RightAction
           onPress={handleEditContact}
           progress={progress}
-          text="Edit"
+          text={lang.t('button.edit')}
           x={120}
         />
         <RightAction
           onPress={handleDeleteContact}
           progress={progress}
-          text="Delete"
+          text={lang.t('button.delete')}
           x={90}
         />
       </Row>

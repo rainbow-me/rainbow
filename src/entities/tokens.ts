@@ -28,6 +28,15 @@ export interface SavingsAsset extends Asset {
   contractAddress: string;
 }
 
+export interface AssetContract {
+  address?: string;
+  name?: string;
+  nft_version?: string;
+  schema_name?: string;
+  symbol?: string;
+  total_supply?: number | null;
+}
+
 export interface ParsedAddressAsset extends Asset {
   balance?: {
     amount?: string;
@@ -40,14 +49,7 @@ export interface ParsedAddressAsset extends Asset {
     relative_change_24h?: number;
     value?: number;
   };
-  asset_contract?: {
-    address?: string;
-    name?: string;
-    nft_version?: string;
-    schema_name?: string;
-    symbol?: string;
-    total_supply?: number | null;
-  };
+  asset_contract?: AssetContract;
   type?: string;
   id: string;
   uniqueId: string;

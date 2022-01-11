@@ -3,12 +3,12 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 import { LayoutAnimation, View } from 'react-native';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { ModalContext } from '../../../react-native-cool-modals/NativeStackView';
 import L2Disclaimer from '../../L2Disclaimer';
@@ -44,6 +44,7 @@ import {
   useChartThrottledPoints,
   useDelayedValueWithLayoutAnimation,
   useDimensions,
+  useGenericAsset,
   useUniswapAssetsInWallet,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
@@ -177,9 +178,7 @@ function Description({ text }) {
 }
 
 export default function ChartExpandedState({ asset }) {
-  const { genericAssets } = useSelector(({ data: { genericAssets } }) => ({
-    genericAssets,
-  }));
+  const genericAsset = useGenericAsset(asset?.address);
 
   const [carouselHeight, setCarouselHeight] = useState(defaultCarouselHeight);
   const { nativeCurrency } = useAccountSettings();
@@ -188,14 +187,14 @@ export default function ChartExpandedState({ asset }) {
   // If we don't have a balance for this asset
   // It's a generic asset
   const hasBalance = asset?.balance;
-  const assetWithPrice = hasBalance
-    ? { ...asset }
-    : genericAssets[asset?.address]
-    ? ethereumUtils.formatGenericAsset(
-        genericAssets[asset?.address],
-        nativeCurrency
-      )
-    : { ...asset };
+  const assetWithPrice = useMemo(() => {
+    return hasBalance
+      ? { ...asset }
+      : genericAsset
+      ? ethereumUtils.formatGenericAsset(genericAsset, nativeCurrency)
+      : { ...asset };
+  }, [asset, genericAsset, hasBalance, nativeCurrency]);
+
   if (assetWithPrice?.mainnet_address) {
     assetWithPrice.l2Address = assetWithPrice.address;
     assetWithPrice.address = assetWithPrice.mainnet_address;
@@ -205,10 +204,12 @@ export default function ChartExpandedState({ asset }) {
     assetWithPrice.type,
   ]);
   // This one includes the original l2 address if exists
-  const ogAsset = {
-    ...assetWithPrice,
-    address: isL2 ? assetWithPrice.l2Address : assetWithPrice.address,
-  };
+  const ogAsset = useMemo(() => {
+    return {
+      ...assetWithPrice,
+      address: isL2 ? assetWithPrice.l2Address : assetWithPrice.address,
+    };
+  }, [assetWithPrice, isL2]);
 
   const { height: screenHeight } = useDimensions();
   const {
@@ -265,8 +266,11 @@ export default function ChartExpandedState({ asset }) {
   });
 
   const uniswapAssetsInWallet = useUniswapAssetsInWallet();
-  const showSwapButton =
-    !isL2 && find(uniswapAssetsInWallet, ['address', assetWithPrice.address]);
+  const showSwapButton = useMemo(
+    () =>
+      !isL2 && find(uniswapAssetsInWallet, ['address', assetWithPrice.address]),
+    [assetWithPrice.address, isL2, uniswapAssetsInWallet]
+  );
 
   const needsEth =
     asset?.address === ETH_ADDRESS && asset?.balance?.amount === '0';
@@ -346,10 +350,10 @@ export default function ChartExpandedState({ asset }) {
               <TokenInfoBalanceValue asset={asset} />
             </TokenInfoItem>
             <TokenInfoItem
-              title={asset?.native?.balance.display ? 'Value' : ' '}
+              title={asset?.native?.balance?.display ? 'Value' : ' '}
               weight="bold"
             >
-              {asset?.native?.balance.display || ' '}
+              {asset?.native?.balance?.display || ' '}
             </TokenInfoItem>
           </TokenInfoRow>
         </TokenInfoSection>

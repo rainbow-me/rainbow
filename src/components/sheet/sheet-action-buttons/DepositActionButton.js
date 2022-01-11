@@ -1,4 +1,5 @@
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { useCallback, useState } from 'react';
 import { Linking } from 'react-native';
 import SheetActionButton from './SheetActionButton';
@@ -35,7 +36,7 @@ function DepositActionButton({
     <SheetActionButton
       {...props}
       color={color}
-      label="􀁍 Deposit"
+      label={`􀁍 ${lang.t('pools.deposit')}`}
       onPress={handlePress}
     />
   );

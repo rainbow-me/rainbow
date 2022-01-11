@@ -57,8 +57,7 @@ export default function useGas() {
   );
 
   const updateGasFeeOption = useCallback(
-    (option, assetsOverride = null) =>
-      dispatch(gasUpdateGasFeeOption(option, assetsOverride)),
+    option => dispatch(gasUpdateGasFeeOption(option)),
     [dispatch]
   );
 

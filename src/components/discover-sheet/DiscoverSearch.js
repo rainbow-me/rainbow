@@ -17,13 +17,10 @@ import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/Ch
 import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { fetchSuggestions } from '@rainbow-me/handlers/ens';
-import {
-  useAccountAssets,
-  useTimeout,
-  useUniswapCurrencyList,
-} from '@rainbow-me/hooks';
+import { useTimeout, useUniswapCurrencyList } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
+import { ethereumUtils } from '@rainbow-me/utils';
 
 export const SearchContainer = styled(Row)`
   height: 100%;
@@ -31,7 +28,6 @@ export const SearchContainer = styled(Row)`
 
 export default function DiscoverSearch() {
   const { navigate } = useNavigation();
-  const { allAssets } = useAccountAssets();
   const dispatch = useDispatch();
   const {
     isFetchingEns,
@@ -64,7 +60,7 @@ export default function DiscoverSearch() {
           });
         });
       } else {
-        const asset = allAssets.find(asset => item.address === asset.address);
+        const asset = ethereumUtils.getAccountAsset(item.uniqueId);
         dispatch(emitAssetRequest(item.address));
         navigate(Routes.EXPANDED_ASSET_SHEET, {
           asset: asset || item,
@@ -73,7 +69,7 @@ export default function DiscoverSearch() {
         });
       }
     },
-    [allAssets, dispatch, navigate]
+    [dispatch, navigate]
   );
 
   const handleActionAsset = useCallback(

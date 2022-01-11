@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import { web3Provider } from '../../handlers/web3';
 import networkTypes from '../../helpers/networkTypes';
@@ -14,7 +15,7 @@ const OfflineToast = () => {
     <Toast
       icon="offline"
       isVisible={!isConnected && isMainnet}
-      text="Offline"
+      text={lang.t('button.offline')}
     />
   );
 };
