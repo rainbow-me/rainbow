@@ -33,7 +33,7 @@ import {
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils, logger, watchingAlert } from '@rainbow-me/utils';
 
-const WC_RELAY_PROVIDER = 'wss://relay.walletconnect.org';
+const WC_RELAY_PROVIDER = 'wss://relay.walletconnect.com';
 
 const wcTrack = (
   event: string,
@@ -90,7 +90,7 @@ export const walletConnectInit = async () => {
       controller: true,
       metadata: RAINBOW_METADATA,
       projectId: WALLET_CONNECT_PROJECT_ID,
-      relayProvider: WC_RELAY_PROVIDER,
+      relayUrl: WC_RELAY_PROVIDER,
       storageOptions: {
         asyncStorage: AsyncStorage as any,
       },
@@ -178,7 +178,10 @@ export const walletConnectInit = async () => {
           });
           await client.reject({
             proposal,
-            reason: error,
+            reason: {
+              code: 100,
+              message: String(error),
+            },
           });
           captureException(error);
           Alert.alert(lang.t('wallet.wallet_connect.error'));
@@ -219,6 +222,7 @@ export const walletConnectInit = async () => {
                       response: {
                         id: request.id,
                         jsonrpc: '2.0',
+                        result: 'Request approved',
                       },
                       topic,
                     };
@@ -226,7 +230,11 @@ export const walletConnectInit = async () => {
                   } else {
                     walletConnectV2HandleAction('reject');
                     const response = {
-                      response: 'User rejected request',
+                      response: {
+                        id: request.id,
+                        jsonrpc: '2.0',
+                        result: 'User rejected request',
+                      },
                       topic,
                     };
                     await client.respond(response);
@@ -240,7 +248,11 @@ export const walletConnectInit = async () => {
               });
             } else {
               const response = {
-                response: 'Chain currently not supported',
+                response: {
+                  id: request.id,
+                  jsonrpc: '2.0',
+                  result: 'Chain currently not supported',
+                },
                 topic,
               };
               await client.respond(response);
@@ -321,7 +333,14 @@ export const walletConnectInit = async () => {
             version: WC_VERSION_2,
           });
           await client.respond({
-            response: { error, id: requestEvent.request.id, jsonrpc: '2.0' },
+            response: {
+              error: {
+                code: 100,
+                message: String(error),
+              },
+              id: requestEvent.request.id,
+              jsonrpc: '2.0',
+            },
             topic: requestEvent.topic,
           });
 
@@ -369,7 +388,7 @@ export const walletConnectUpdateSessionByUrl = async (
     topic: session.topic,
   });
   await client.update({
-    state: session.state.accounts,
+    state: session.state,
     topic: session.topic,
   });
 
