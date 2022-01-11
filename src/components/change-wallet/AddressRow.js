@@ -55,15 +55,6 @@ const sx = StyleSheet.create({
     marginLeft: 19,
     textAlign: 'center',
   },
-  readOnlyText: {
-    fontFamily: fonts.family.SFProRounded,
-    fontWeight: fonts.weight.semibold,
-    letterSpacing: fonts.letterSpacing.roundedTight,
-    lineHeight: 22,
-    paddingHorizontal: 6.5,
-    paddingVertical: 1,
-    textAlign: 'center',
-  },
   rightContent: {
     flex: 0,
     flexDirection: 'row',
@@ -86,9 +77,14 @@ const StyledBottomRowText = styled(BottomRowText)({
   ...fontWithWidth(sx.bottomRowText.fontWeight),
 });
 
-const ReadOnlyText = styled(Text)({
-  ...sx.readOnlyText,
-  ...fontWithWidth(sx.readOnlyText.fontWeight),
+const ReadOnlyText = styled(Text).attrs({
+  align: 'center',
+  letterSpacing: 'roundedTight',
+  lineHeight: 'paragraphSmall',
+  weight: 'semibold',
+})({
+  paddingHorizontal: 6.5,
+  paddingVertical: 1,
 });
 
 const OptionsIcon = ({ onPress }) => {
