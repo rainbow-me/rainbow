@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { Alert } from 'react-native';
 import SheetActionButton from './SheetActionButton';
@@ -51,7 +52,7 @@ function SwapActionButton({
     <SheetActionButton
       {...props}
       color={color}
-      label={label || '􀖅 Swap'}
+      label={label || `􀖅 ${lang.t('button.swap')}`}
       onPress={handlePress}
       testID="swap"
       weight={weight}

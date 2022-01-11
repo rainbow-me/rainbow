@@ -40,6 +40,7 @@ import {
   useAccountSettings,
   useBlockPolling,
   useCurrentNonce,
+  useDimensions,
   useGas,
   usePrevious,
   usePriceImpactDetails,
@@ -76,6 +77,7 @@ const InnerWrapper = styled(Centered).attrs({
     top: 0;
   `};
   background-color: ${({ theme: { colors } }) => colors.transparent};
+  ${({ isSmallPhone }) => ios && isSmallPhone && `max-height: 354;`};
 `;
 
 const Spacer = styled.View`
@@ -110,6 +112,7 @@ export default function ExchangeModal({
   type,
   typeSpecificParams,
 }) {
+  const { isSmallPhone } = useDimensions();
   const dispatch = useDispatch();
   const insets = useSafeArea();
 
@@ -530,7 +533,7 @@ export default function ExchangeModal({
 
   return (
     <Wrapper>
-      <InnerWrapper>
+      <InnerWrapper isSmallPhone={isSmallPhone}>
         <FloatingPanels>
           <FloatingPanel
             overflow="visible"

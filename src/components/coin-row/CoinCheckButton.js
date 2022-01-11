@@ -10,14 +10,14 @@ import { borders, padding, position, shadow } from '@rainbow-me/styles';
 
 const Container = styled.View`
   ${position.size(CoinIconSize)};
-  position: ${({ isAbsolute }) => (isAbsolute ? 'absolute' : 'relative')};
+  position: relative;
   top: 0;
 `;
 
-const Content = styled(Row).attrs(({ isAbsolute }) => ({
+const Content = styled(Row).attrs({
   align: 'center',
-  justify: isAbsolute ? 'start' : 'center',
-}))`
+  justify: 'center',
+})`
   ${position.size('100%')};
 `;
 
@@ -36,36 +36,30 @@ const CheckmarkBackground = styled.View`
   ${({ theme: { isDarkMode, colors } }) =>
     shadow.build(0, 4, 12, isDarkMode ? colors.shadow : colors.appleBlue, 0.4)}
   background-color: ${({ theme: { colors } }) => colors.appleBlue};
-  left: ${({ isAbsolute }) => (isAbsolute ? 19 : 0)};
+  left: ${({ left }) => left || 0};
 `;
 
 const CoinCheckButton = ({
-  isAbsolute,
   isHidden,
   isPinned,
   onPress,
   toggle: givenToggle,
   uniqueId,
+  left,
   ...props
 }) => {
   const { selectedItems } = useCoinListFinishEditingOptions();
   const toggle = givenToggle || selectedItems.includes(uniqueId);
 
   return (
-    <Container {...props} isAbsolute={isAbsolute}>
-      <Content
-        as={ButtonPressAnimation}
-        isAbsolute={isAbsolute}
-        onPress={onPress}
-        opacityTouchable
-        reanimatedButton
-      >
+    <Container {...props}>
+      <Content as={ButtonPressAnimation} onPress={onPress} opacityTouchable>
         {isHidden || isPinned ? null : <CircleOutline />}
         {!toggle && (isHidden || isPinned) ? (
           <CoinIconIndicator isPinned={isPinned} />
         ) : null}
         <OpacityToggler friction={20} isVisible={!toggle} tension={1000}>
-          <CheckmarkBackground isAbsolute={isAbsolute}>
+          <CheckmarkBackground left={left}>
             <Icon color="white" name="checkmark" />
           </CheckmarkBackground>
         </OpacityToggler>

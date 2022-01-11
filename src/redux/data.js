@@ -26,12 +26,9 @@ import {
   UNISWAP_24HOUR_PRICE_QUERY,
   UNISWAP_PRICES_QUERY,
 } from '../apollo/queries';
-/* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
 import { decrementNonce, incrementNonce } from './nonceManager';
-// eslint-disable-next-line import/no-cycle
 import { uniqueTokensRefreshState } from './uniqueTokens';
-/* eslint-disable-next-line import/no-cycle */
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
   AssetTypes,
@@ -169,10 +166,13 @@ export const dataLoadState = () => async (dispatch, getState) =>
         accountAddress,
         network
       );
-      dispatch({
-        payload: accountAssetsData,
-        type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
-      });
+
+      if (!isEmpty(accountAssetsData)) {
+        dispatch({
+          payload: accountAssetsData,
+          type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
+        });
+      }
     } catch (error) {
       dispatch({ type: DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE });
     }
@@ -338,7 +338,7 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
   }, GENERIC_ASSETS_REFRESH_INTERVAL);
 };
 
-const disableGenericAssetsFallbackIfNeeded = () => {
+export const disableGenericAssetsFallbackIfNeeded = () => {
   if (genericAssetsHandle) {
     clearTimeout(genericAssetsHandle);
   }
@@ -607,18 +607,6 @@ export const addressAssetsReceived = (
     property('uniqueId')
   );
   addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
-
-  // Hide coins with price = 0 that are currently not pinned
-  if (isL2) {
-    const assetsWithNoPrice = map(
-      filter(
-        parsedAssets,
-        asset => asset.price?.value === 0 && asset.network === assetsNetwork
-      ),
-      property('uniqueId')
-    );
-    addHiddenCoins(assetsWithNoPrice, dispatch, accountAddress);
-  }
 };
 
 const subscribeToMissingPrices = addresses => (dispatch, getState) => {

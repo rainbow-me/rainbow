@@ -234,7 +234,8 @@ const useUniswapCurrencyList = (searchQuery: string) => {
   ]);
 
   const updateFavorites = useCallback(
-    (...data) => dispatch(uniswapUpdateFavorites(...data)),
+    (...data: [string | string[], boolean]) =>
+      dispatch(uniswapUpdateFavorites(...data)),
     [dispatch]
   );
 
