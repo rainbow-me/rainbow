@@ -82,6 +82,10 @@ const ProfileMastheadDivider = styled(Divider).attrs(
   position: absolute;
 `;
 
+const Spacer = styled.View`
+  height: 12;
+`;
+
 export default function ProfileMasthead({
   addCashAvailable,
   recyclerListRef,
@@ -174,7 +178,7 @@ export default function ProfileMasthead({
         isAvatarPickerAvailable={isAvatarPickerAvailable}
         onPress={handlePressAvatar}
       />
-      <View style={{ height: 16 }} />
+      <Spacer />
       <ButtonPressAnimation onPress={handlePressChangeWallet}>
         <Row>
           <AccountName deviceWidth={deviceWidth}>{accountName}</AccountName>
