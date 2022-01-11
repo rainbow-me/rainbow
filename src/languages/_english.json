@@ -72,6 +72,7 @@
         "enter_amount": "Enter an Amount",
         "fetching_details": "Fetching Details...",
         "insufficient_eth": "Insufficient ETH",
+        "invalid_fee": "Invalid Fee",
         "insufficient_funds": "Insufficient Funds",
         "insufficient_liquidity": "Insufficient Liquidity",
         "swap": "Hold to Swap",

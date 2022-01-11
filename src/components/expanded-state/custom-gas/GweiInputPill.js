@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import TextInputMask from 'react-native-text-input-mask';
 import styled from 'styled-components';
@@ -70,10 +70,26 @@ const GweiLabel = styled(Text).attrs(() => ({
 `;
 
 function GweiInputPill(
-  { value, onPress, onChange, onFocus, onBlur, testID, color },
+  {
+    value,
+    onPress,
+    onChange: onChangeCallback,
+    onFocus,
+    onBlur,
+    testID,
+    color,
+  },
   ref
 ) {
   const { colors } = useTheme();
+
+  const onChangeText = useCallback(
+    text => {
+      text = text === '.' || text === ',' ? `0${text}` : text;
+      onChangeCallback(text);
+    },
+    [onChangeCallback]
+  );
 
   return (
     <ButtonPressAnimation onPress={onPress}>
@@ -83,7 +99,7 @@ function GweiInputPill(
             contextMenuHidden
             mask="[9999]{.}[999]"
             onBlur={onBlur}
-            onChange={onChange}
+            onChangeText={onChangeText}
             onFocus={onFocus}
             placeholder="0"
             placeholderTextColor={colors.alpha(colors.blueGreyDark, 0.4)}

@@ -256,6 +256,7 @@ export default function TransactionConfirmationScreen() {
   const {
     gasLimit,
     isSufficientGas,
+    isValidGas,
     startPollingGasFees,
     stopPollingGasFees,
     updateGasFeeOption,
@@ -791,13 +792,14 @@ export default function TransactionConfirmationScreen() {
     if (isMessageRequest) {
       return handleSignMessage();
     }
-    if (!isBalanceEnough) return;
+    if (!isBalanceEnough || !isValidGas) return;
     return handleConfirmTransaction();
   }, [
     handleConfirmTransaction,
     handleSignMessage,
     isBalanceEnough,
     isMessageRequest,
+    isValidGas,
   ]);
 
   const onPressSend = useCallback(async () => {
@@ -820,13 +822,17 @@ export default function TransactionConfirmationScreen() {
       ready = false;
     }
     return !isMessage &&
-      isBalanceEnough === false &&
+      (isBalanceEnough === false || !isValidGas) &&
       isSufficientGas !== null ? (
       <Column marginBottom={24} marginTop={19}>
         <SheetActionButton
           color={colors.transparent}
           disabled
-          label={`${nativeAsset?.symbol} balance too low`}
+          label={
+            !isValidGas
+              ? `Invalid fee`
+              : `${nativeAsset?.symbol} balance too low`
+          }
           onPress={onCancel}
           size="big"
           textColor={colors.avatarColor[7]}
@@ -854,14 +860,15 @@ export default function TransactionConfirmationScreen() {
       </SheetActionButtonRow>
     );
   }, [
-    colors,
-    isBalanceEnough,
     isMessageRequest,
+    isBalanceEnough,
     isSufficientGas,
+    isValidGas,
+    colors,
     nativeAsset?.symbol,
     onCancel,
-    onPressSend,
     onPressCancel,
+    onPressSend,
   ]);
 
   const renderTransactionSection = useCallback(() => {
