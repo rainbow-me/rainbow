@@ -102,6 +102,7 @@ export default function SendSheet(props) {
     gasFeeParamsBySpeed,
     gasLimit,
     isSufficientGas,
+    isValidGas,
     prevSelectedGasFee,
     selectedGasFee,
     startPollingGasFees,
@@ -462,12 +463,16 @@ export default function SendSheet(props) {
 
   const onSubmit = useCallback(async () => {
     const validTransaction =
-      isValidAddress && amountDetails.isSufficientBalance && isSufficientGas;
+      isValidAddress &&
+      amountDetails.isSufficientBalance &&
+      isSufficientGas &&
+      isValidGas;
     if (!selectedGasFee?.gasFee?.estimatedFee || !validTransaction) {
       logger.sentry('preventing tx submit for one of the following reasons:');
       logger.sentry('selectedGasFee ? ', selectedGasFee);
       logger.sentry('selectedGasFee.maxFee ? ', selectedGasFee?.maxFee);
       logger.sentry('validTransaction ? ', validTransaction);
+      logger.sentry('isValidGas ? ', isValidGas);
       captureEvent('Preventing tx submit');
       return false;
     }
@@ -569,6 +574,7 @@ export default function SendSheet(props) {
     getNextNonce,
     isSufficientGas,
     isValidAddress,
+    isValidGas,
     selected,
     selectedGasFee,
     toAddress,
@@ -650,6 +656,9 @@ export default function SendSheet(props) {
     } else if (!isZeroAssetAmount && !isSufficientGas) {
       disabled = true;
       label = `Insufficient ${nativeToken}`;
+    } else if (!isValidGas) {
+      disabled = true;
+      label = 'Invalid fee';
     } else if (!isZeroAssetAmount && !amountDetails.isSufficientBalance) {
       disabled = true;
       label = 'Insufficient Funds';
@@ -662,10 +671,11 @@ export default function SendSheet(props) {
   }, [
     amountDetails.assetAmount,
     amountDetails.isSufficientBalance,
-    gasFeeParamsBySpeed,
-    isSufficientGas,
     currentNetwork,
+    gasFeeParamsBySpeed,
     selectedGasFee,
+    isSufficientGas,
+    isValidGas,
   ]);
 
   const showConfirmationSheet = useCallback(async () => {

@@ -25,6 +25,7 @@ export default function useGas() {
         gasFeesBySpeed,
         gasLimit,
         isSufficientGas,
+        isValidGas,
         selectedGasFee,
       },
     }: AppState) => ({
@@ -34,6 +35,7 @@ export default function useGas() {
       gasFeesBySpeed,
       gasLimit,
       isSufficientGas,
+      isValidGas,
       selectedGasFee,
       selectedGasFeeOption: selectedGasFee.option,
     })
