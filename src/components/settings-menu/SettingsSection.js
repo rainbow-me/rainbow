@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import AsyncStorage from '@react-native-community/async-storage';
 import lang from 'i18n-js';
 import React, { Fragment, useCallback, useMemo } from 'react';
@@ -38,6 +37,7 @@ import {
   useSendFeedback,
   useWallets,
 } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import {
   AppleReviewAddress,
