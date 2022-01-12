@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import useAccountAssets from './useAccountAssets';
 import useAccountSettings from './useAccountSettings';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useCoinListEdited from './useCoinListEdited';
@@ -8,6 +7,7 @@ import useIsWalletEthZero from './useIsWalletEthZero';
 import useSavingsAccount from './useSavingsAccount';
 import useSendableUniqueTokens from './useSendableUniqueTokens';
 import useShowcaseTokens from './useShowcaseTokens';
+import useSortedAccountAssets from './useSortedAccountAssets';
 import {
   buildBriefWalletSectionsSelector,
   buildWalletSectionsSelector,
@@ -15,7 +15,7 @@ import {
 import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 
 export default function useWalletSectionsData() {
-  const accountData = useAccountAssets();
+  const sortedAccountData = useSortedAccountAssets();
   const isWalletEthZero = useIsWalletEthZero();
 
   const { language, network, nativeCurrency } = useAccountSettings();
@@ -29,7 +29,7 @@ export default function useWalletSectionsData() {
     true
   );
 
-  const isCoinListEdited = useCoinListEdited();
+  const { isCoinListEdited } = useCoinListEdited();
 
   const walletSections = useMemo(() => {
     const accountInfo = {
@@ -40,7 +40,7 @@ export default function useWalletSectionsData() {
       network,
       pinnedCoins,
       savings,
-      ...accountData,
+      ...sortedAccountData,
       ...uniqueTokens,
       ...uniswap,
       ...isWalletEthZero,
@@ -58,7 +58,6 @@ export default function useWalletSectionsData() {
       briefSectionsData,
     };
   }, [
-    accountData,
     hiddenCoins,
     isCoinListEdited,
     isWalletEthZero,
@@ -70,6 +69,7 @@ export default function useWalletSectionsData() {
     savings,
     shouldRefetchSavings,
     showcaseTokens,
+    sortedAccountData,
     uniqueTokens,
     uniswap,
   ]);

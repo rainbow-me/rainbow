@@ -27,6 +27,7 @@ export { default as ProtocolTypeNames, ProtocolType } from './protocolTypes';
 export type { UniqueAsset } from './uniqueAssets';
 export type {
   Asset,
+  AssetContract,
   IndexToken,
   SavingsAsset,
   ParsedAddressAsset,
@@ -53,3 +54,8 @@ export {
 } from './transactions';
 export type { EthereumAddress } from './wallet';
 export type { UserList } from './userLists';
+export type {
+  TokenSearchThreshold,
+  TokenSearchTokenListId,
+  TokenSearchUniswapAssetKey,
+} from './tokenSearch';

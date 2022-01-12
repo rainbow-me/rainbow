@@ -211,6 +211,7 @@ const SimpleScaleButton = ({
           onPress={onNativePress}
           rippleColor={processColor('transparent')}
           scaleTo={scaleTo}
+          shouldLongPressEndPress={shouldLongPressEndPress}
           style={{ overflow: 'visible' }}
           transformOrigin={transformOrigin}
         >

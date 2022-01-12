@@ -12,6 +12,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Removed
 
+## [1.6.1](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.1)
+### Changed
+* Fix nonce manager issues
+* Fix Arbitrum gas price updates
+* Fix POAP filtering
+* Fix network switching issues with WC
+
+## [1.6.0](https://github.com/rainbow-me/rainbow/releases/tag/v1.6.0)
+### Changed
+* Compressed images without quality loss
+* Fix send max ETH
+* Fix send sheet input focus handling
+
 ## [1.5.42](https://github.com/rainbow-me/rainbow/releases/tag/v1.5.42)
 ### Added
 * EIP-1559 support

@@ -30,8 +30,16 @@ import svgToPngIfNeeded from '@rainbow-me/handlers/svgs';
 import { ImgixImage } from '@rainbow-me/images';
 import Routes from '@rainbow-me/routes';
 
-const allAssetsSelector = state => state.allAssets;
-const allAssetsCountSelector = state => state.allAssetsCount;
+const LOADING_ASSETS_PLACEHOLDER = [
+  { type: 'LOADING_ASSETS', uid: 'loadings-asset-1' },
+  { type: 'LOADING_ASSETS', uid: 'loadings-asset-2' },
+  { type: 'LOADING_ASSETS', uid: 'loadings-asset-3' },
+  { type: 'LOADING_ASSETS', uid: 'loadings-asset-4' },
+  { type: 'LOADING_ASSETS', uid: 'loadings-asset-5' },
+];
+
+const sortedAssetsSelector = state => state.sortedAssets;
+const sortedAssetsCountSelector = state => state.sortedAssetsCount;
 const assetsTotalSelector = state => state.assetsTotal;
 const hiddenCoinsSelector = state => state.hiddenCoins;
 const isBalancesSectionEmptySelector = state => state.isBalancesSectionEmpty;
@@ -124,7 +132,7 @@ const withUniswapSection = (
   return {
     data: uniswap,
     header: {
-      title: 'Pools',
+      title: lang.t('account.tab_investments'),
       totalItems: uniswap.length,
       totalValue: convertAmountToNativeDisplay(uniswapTotal, nativeCurrency),
     },
@@ -214,12 +222,11 @@ const withBriefBalanceSavingsSection = savings => {
 };
 
 const coinEditContextMenu = (
-  allAssets,
+  sortedAssets,
   balanceSectionData,
   isCoinListEdited,
-  currentAction,
   isLoadingAssets,
-  allAssetsCount,
+  sortedAssetsCount,
   totalValue,
   addedEth
 ) => {
@@ -227,11 +234,11 @@ const coinEditContextMenu = (
 
   return {
     contextMenuOptions:
-      allAssets.length > 0 && noSmallBalances
+      sortedAssetsCount > 0 && noSmallBalances
         ? {
             cancelButtonIndex: 0,
             dynamicOptions: () => {
-              return ['Cancel', 'Edit'];
+              return [lang.t('button.cancel'), lang.t('button.edit')];
             },
             onPressActionSheet: async index => {
               if (index === 1) {
@@ -243,14 +250,14 @@ const coinEditContextMenu = (
           }
         : undefined,
     title: null,
-    totalItems: isLoadingAssets ? 1 : (addedEth ? 1 : 0) + allAssetsCount,
+    totalItems: isLoadingAssets ? 1 : (addedEth ? 1 : 0) + sortedAssetsCount,
     totalValue: totalValue,
   };
 };
 
 const withBalanceSection = (
-  allAssets,
-  allAssetsCount,
+  sortedAssets,
+  sortedAssetsCount,
   assetsTotal,
   savingsSection,
   isBalancesSectionEmpty,
@@ -265,7 +272,7 @@ const withBalanceSection = (
   collectibles
 ) => {
   const { addedEth, assets, totalBalancesValue } = buildCoinsList(
-    allAssets,
+    sortedAssets,
     nativeCurrency,
     isCoinListEdited,
     pinnedCoins,
@@ -302,11 +309,11 @@ const withBalanceSection = (
     balances: true,
     data: balanceSectionData,
     header: coinEditContextMenu(
-      allAssets,
+      sortedAssets,
       balanceSectionData,
       isCoinListEdited,
       isLoadingAssets,
-      allAssetsCount,
+      sortedAssetsCount,
       totalValue,
       addedEth
     ),
@@ -318,7 +325,7 @@ const withBalanceSection = (
 };
 
 const withBriefBalanceSection = (
-  allAssets,
+  sortedAssets,
   isLoadingAssets,
   nativeCurrency,
   isCoinListEdited,
@@ -329,7 +336,7 @@ const withBriefBalanceSection = (
   uniswapTotal
 ) => {
   const { briefAssets, totalBalancesValue } = buildBriefCoinsList(
-    allAssets,
+    sortedAssets,
     nativeCurrency,
     isCoinListEdited,
     pinnedCoins,
@@ -367,9 +374,7 @@ const withBriefBalanceSection = (
       type: 'ASSETS_HEADER_SPACE_AFTER',
       uid: 'assets-header-space-after',
     },
-    ...(isLoadingAssets
-      ? [{ type: 'LOADING_ASSETS', uid: 'loadings-asset' }]
-      : briefAssets),
+    ...(isLoadingAssets ? LOADING_ASSETS_PLACEHOLDER : briefAssets),
   ];
 };
 
@@ -482,8 +487,8 @@ const briefUniswapSectionSelector = createSelector(
 
 const balanceSectionSelector = createSelector(
   [
-    allAssetsSelector,
-    allAssetsCountSelector,
+    sortedAssetsSelector,
+    sortedAssetsCountSelector,
     assetsTotalSelector,
     balanceSavingsSectionSelector,
     isBalancesSectionEmptySelector,
@@ -502,7 +507,7 @@ const balanceSectionSelector = createSelector(
 
 const briefBalanceSectionSelector = createSelector(
   [
-    allAssetsSelector,
+    sortedAssetsSelector,
     isLoadingAssetsSelector,
     nativeCurrencySelector,
     isCoinListEditedSelector,

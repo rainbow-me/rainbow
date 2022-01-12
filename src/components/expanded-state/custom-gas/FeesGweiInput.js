@@ -10,7 +10,8 @@ import { usePrevious } from '@rainbow-me/hooks';
 
 const PLUS_ACTION_TYPE = 'plus';
 const MINUS_ACTION_TYPE = 'minus';
-const DELAY_THRESHOLD = 69;
+const LONG_PRESS_DELAY_THRESHOLD = 69;
+const MIN_LONG_PRESS_DELAY_THRESHOLD = 200;
 
 const Wrapper = styled(Row)``;
 
@@ -36,9 +37,10 @@ const GweiStepButton = ({
 }) => {
   return (
     <StepButtonWrapper
+      minLongPressDuration={MIN_LONG_PRESS_DELAY_THRESHOLD}
       onLongPress={onLongPress}
       onLongPressEnded={onLongPressEnded}
-      onPressStart={onPress}
+      onPress={onPress}
       shouldLongPressEndPress={shouldLongPressEndPress}
       useLateHaptic={false}
     >
@@ -81,7 +83,7 @@ export default function FeesGweiInput({
   const onLongPressLoop = useCallback(async () => {
     setTrigger(true);
     setTrigger(false);
-    await delay(DELAY_THRESHOLD);
+    await delay(LONG_PRESS_DELAY_THRESHOLD);
     longPressHandle.current && onLongPressLoop();
   }, []);
 

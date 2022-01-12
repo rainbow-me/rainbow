@@ -25,6 +25,7 @@ export default function useGas() {
         gasFeesBySpeed,
         gasLimit,
         isSufficientGas,
+        isValidGas,
         selectedGasFee,
       },
     }: AppState) => ({
@@ -34,6 +35,7 @@ export default function useGas() {
       gasFeesBySpeed,
       gasLimit,
       isSufficientGas,
+      isValidGas,
       selectedGasFee,
       selectedGasFeeOption: selectedGasFee.option,
     })
@@ -57,8 +59,7 @@ export default function useGas() {
   );
 
   const updateGasFeeOption = useCallback(
-    (option, assetsOverride = null) =>
-      dispatch(gasUpdateGasFeeOption(option, assetsOverride)),
+    option => dispatch(gasUpdateGasFeeOption(option)),
     [dispatch]
   );
 

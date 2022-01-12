@@ -1,6 +1,6 @@
 import { captureException } from '@sentry/react-native';
 import delay from 'delay';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import NetworkTypes from '../helpers/networkTypes';
 import { fetchOnchainBalances } from '../redux/fallbackExplorer';
@@ -16,8 +16,9 @@ export default function useRefreshAccountData() {
   const dispatch = useDispatch();
   const { network } = useAccountSettings();
   const { refetchSavings } = useSavingsAccount();
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const refreshAccountData = useCallback(async () => {
+  const fetchAccountData = useCallback(async () => {
     // Refresh unique tokens for Rinkeby
     if (network === NetworkTypes.rinkeby) {
       const getUniqueTokens = dispatch(uniqueTokensRefreshState());
@@ -53,5 +54,22 @@ export default function useRefreshAccountData() {
     }
   }, [dispatch, network, refetchSavings]);
 
-  return refreshAccountData;
+  const refresh = useCallback(async () => {
+    if (isRefreshing) return;
+
+    setIsRefreshing(true);
+
+    try {
+      await fetchAccountData();
+    } catch (e) {
+      logger.error(e);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [fetchAccountData, isRefreshing]);
+
+  return {
+    isRefreshing,
+    refresh,
+  };
 }

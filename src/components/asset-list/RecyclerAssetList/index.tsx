@@ -43,8 +43,9 @@ import {
   useOpenSavings,
   useOpenSmallBalances,
   usePrevious,
+  useRefreshAccountData,
 } from '@rainbow-me/hooks';
-import { deviceUtils, logger } from '@rainbow-me/utils';
+import { deviceUtils } from '@rainbow-me/utils';
 
 const extractCollectiblesIdFromRow = (row: {
   item: {
@@ -213,7 +214,6 @@ const NoStickyContainer = ({
 }): JSX.Element => children;
 
 export type RecyclerAssetListProps = {
-  readonly fetchData: () => Promise<unknown>;
   // TODO: This needs to be migrated into a global type.
   readonly colors: {
     readonly alpha: (color: string, alpha: number) => string;
@@ -230,7 +230,6 @@ export type RecyclerAssetListProps = {
 };
 
 function RecyclerAssetList({
-  fetchData,
   colors,
   sections,
   paddingBottom = 0,
@@ -246,6 +245,7 @@ function RecyclerAssetList({
   const {
     isInvestmentCardsOpen: openInvestmentCards,
   } = useOpenInvestmentCards();
+  const { refresh, isRefreshing } = useRefreshAccountData();
   const { isSavingsOpen: openSavings } = useOpenSavings();
   const { isSmallBalancesOpen: openSmallBalances } = useOpenSmallBalances();
   const { openFamilies: openFamilyTabs } = useOpenFamilies();
@@ -254,7 +254,6 @@ function RecyclerAssetList({
   const [globalDeviceDimensions, setGlobalDeviceDimensions] = useState<number>(
     0
   );
-  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const {
     areSmallCollectibles,
     items,
@@ -351,19 +350,6 @@ function RecyclerAssetList({
     },
     [stickyCoinDividerRef, coinDividerIndex, isCoinListEdited]
   );
-  const handleRefresh = useCallback(async () => {
-    if (isRefreshing || !fetchData) {
-      return;
-    }
-    try {
-      setIsRefreshing(true);
-      await fetchData();
-    } catch (e) {
-      logger.error(e);
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, [isRefreshing, setIsRefreshing, fetchData]);
   const onLayout = useCallback(
     ({ nativeEvent }: LayoutChangeEvent) => {
       // set globalDeviceDimensions
@@ -652,14 +638,14 @@ function RecyclerAssetList({
         : {
             refreshControl: (
               <RefreshControl
-                onRefresh={handleRefresh}
+                onRefresh={refresh}
                 progressViewOffset={android ? 30 : 0}
                 refreshing={isRefreshing}
                 tintColor={colors.alpha(colors.blueGreyDark, 0.4)}
               />
             ),
           },
-    [disableRefreshControl, handleRefresh, isRefreshing, colors]
+    [disableRefreshControl, refresh, isRefreshing, colors]
   );
 
   const extendedState = useMemo(() => ({ sectionsIndices }), [sectionsIndices]);
