@@ -19,7 +19,6 @@ import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import io.branch.rnbranch.RNBranchModule;
-import me.jerson.mobile.palette.RNPalettePackage;
 import me.rainbow.NativeModules.Internals.InternalPackage;
 import me.rainbow.NativeModules.RNBip39.RNBip39Package;
 import me.rainbow.NativeModules.RNBackHandler.RNBackHandlerPackage;
