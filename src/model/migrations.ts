@@ -592,22 +592,6 @@ export default async function runMigrations() {
 
   migrations.push(v14);
 
-  /*
-   *************** Migration v15 ******************
-   * Exposes the selected nativeCurrency to the price widgets
-   */
-  const v15 = async () => {
-    if (ios) {
-      const nativeCurrency = await getNativeCurrency();
-      saveString('nativeCurrency', nativeCurrency, {
-        accessGroup: 'group.rainbow.me',
-        service: 'rainbow.me.currency',
-      });
-    }
-  };
-
-  migrations.push(v15);
-
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`
   );
