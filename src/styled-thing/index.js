@@ -128,9 +128,12 @@ export default function styled(Component) {
 
       forwardedProps.ref = ref;
 
-      forwardedProps.style = [generatedStyles];
+      forwardedProps.style = generatedStyles;
 
       if (style) {
+        // convert to styles array
+        forwardedProps.style = [generatedStyles];
+
         if (Array.isArray(style)) {
           forwardedProps.style.push(...style);
         } else {
@@ -139,6 +142,11 @@ export default function styled(Component) {
       }
 
       if (props.css) {
+        if (!style) {
+          // also convert to styles array
+          forwardedProps.style = [generatedStyles];
+        }
+
         forwardedProps.style.push(css);
       }
 
