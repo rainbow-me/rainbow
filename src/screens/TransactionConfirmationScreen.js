@@ -93,11 +93,13 @@ import {
   isMessageDisplayType,
   isSignFirstParamType,
   isSignSecondParamType,
+  isSignTypedData,
   isTransactionDisplayType,
   PERSONAL_SIGN,
   SEND_TRANSACTION,
   SIGN,
   SIGN_TYPED_DATA,
+  SIGN_TYPED_DATA_V4,
 } from '@rainbow-me/utils/signingMethods';
 import logger from 'logger';
 
@@ -258,6 +260,7 @@ export default function TransactionConfirmationScreen() {
   const {
     gasLimit,
     isSufficientGas,
+    isValidGas,
     startPollingGasFees,
     stopPollingGasFees,
     updateGasFeeOption,
@@ -753,6 +756,7 @@ export default function TransactionConfirmationScreen() {
       case PERSONAL_SIGN:
         response = await signPersonalMessage(message, existingWallet);
         break;
+      case SIGN_TYPED_DATA_V4:
       case SIGN_TYPED_DATA:
         response = await signTypedDataMessage(message, existingWallet);
         break;
@@ -792,13 +796,14 @@ export default function TransactionConfirmationScreen() {
     if (isMessageRequest) {
       return handleSignMessage();
     }
-    if (!isBalanceEnough) return;
+    if (!isBalanceEnough || !isValidGas) return;
     return handleConfirmTransaction();
   }, [
     handleConfirmTransaction,
     handleSignMessage,
     isBalanceEnough,
     isMessageRequest,
+    isValidGas,
   ]);
 
   const onPressSend = useCallback(async () => {
@@ -821,13 +826,17 @@ export default function TransactionConfirmationScreen() {
       ready = false;
     }
     return !isMessage &&
-      isBalanceEnough === false &&
+      (isBalanceEnough === false || !isValidGas) &&
       isSufficientGas !== null ? (
       <Column marginBottom={24} marginTop={19}>
         <SheetActionButton
           color={colors.transparent}
           disabled
-          label={`${nativeAsset?.symbol} balance too low`}
+          label={
+            !isValidGas
+              ? `Invalid fee`
+              : `${nativeAsset?.symbol} balance too low`
+          }
           onPress={onCancel}
           size="big"
           textColor={colors.avatarColor[7]}
@@ -855,14 +864,15 @@ export default function TransactionConfirmationScreen() {
       </SheetActionButtonRow>
     );
   }, [
-    colors,
-    isBalanceEnough,
     isMessageRequest,
+    isBalanceEnough,
     isSufficientGas,
+    isValidGas,
+    colors,
     nativeAsset?.symbol,
     onCancel,
-    onPressSend,
     onPressCancel,
+    onPressSend,
   ]);
 
   const renderTransactionSection = useCallback(() => {
@@ -932,7 +942,7 @@ export default function TransactionConfirmationScreen() {
   const ShortSheetHeight = 486 + safeAreaInsetValues.bottom;
   const TallSheetHeight = 656 + safeAreaInsetValues.bottom;
   const MessageSheetHeight =
-    (method === SIGN_TYPED_DATA ? 630 : android ? 595 : 580) +
+    (isSignTypedData(method) ? 630 : android ? 595 : 580) +
     safeAreaInsetValues.bottom;
 
   const balanceTooLow = isBalanceEnough === false && isSufficientGas !== null;

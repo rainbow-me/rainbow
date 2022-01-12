@@ -1,7 +1,7 @@
 import { addHexPrefix } from '@walletconnect/utils';
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
-import { PERSONAL_SIGN, SIGN_TYPED_DATA } from '../../utils/signingMethods';
+import { isSignTypedData, PERSONAL_SIGN } from '../../utils/signingMethods';
 import { Row } from '../layout';
 import { Text } from '../text';
 import { isHexString } from '@rainbow-me/handlers/web3';
@@ -32,7 +32,7 @@ const TransactionMessage = ({ maxHeight = 150, message, method }) => {
   let msg = message;
   let maximumHeight = maxHeight;
   let minimumHeight = 150;
-  if (method === SIGN_TYPED_DATA) {
+  if (isSignTypedData(method)) {
     maximumHeight = 200;
     minimumHeight = 200;
     try {

@@ -2,7 +2,11 @@ import { useIsFocused, useNavigation } from '@react-navigation/core';
 import { useRoute } from '@react-navigation/native';
 import { upperFirst } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Keyboard, KeyboardAvoidingView } from 'react-native';
+import {
+  InteractionManager,
+  Keyboard,
+  KeyboardAvoidingView,
+} from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import { Alert } from '../../../components/alerts';
 import { useTheme } from '../../../context/ThemeContext';
@@ -16,7 +20,6 @@ import {
 } from '@rainbow-me/helpers/gas';
 import {
   add,
-  delay,
   greaterThan,
   isZero,
   multiply,
@@ -192,9 +195,8 @@ export default function FeesPanel({
   );
 
   const { maxFee, currentBaseFee, maxBaseFee, maxPriorityFee } = useMemo(() => {
-    const maxFee = selectedGasFee?.gasFee?.maxFee?.native?.value?.display || 0;
-    const currentBaseFee = currentBlockParams?.baseFeePerGas?.gwei || 0;
-
+    const maxFee = selectedGasFee?.gasFee?.maxFee?.native?.value?.display;
+    const currentBaseFee = currentBlockParams?.baseFeePerGas?.gwei;
     const maxBaseFee = selectedOptionIsCustom
       ? customMaxBaseFee
       : toFixedDecimals(
@@ -204,7 +206,7 @@ export default function FeesPanel({
 
     const maxPriorityFee = selectedOptionIsCustom
       ? customMaxPriorityFee
-      : selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei || 0;
+      : selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.gwei;
 
     return { currentBaseFee, maxBaseFee, maxFee, maxPriorityFee };
   }, [
@@ -294,11 +296,11 @@ export default function FeesPanel({
         gweiToWei(newGweiMaxPriorityFeePerGas)
       );
 
-      if (newMaxPriorityFeePerGas.amount < 0) return;
+      if (greaterThan(0, newMaxPriorityFeePerGas.amount)) return;
 
       setCustomFees({
         customMaxBaseFee: selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei,
-        customMaxPriorityFee: newMaxPriorityFeePerGas?.gwei || 0,
+        customMaxPriorityFee: newMaxPriorityFeePerGas?.gwei,
       });
 
       const newGasParams = {
@@ -328,7 +330,7 @@ export default function FeesPanel({
 
       const newMaxFeePerGas = parseGasFeeParam(gweiToWei(newGweiMaxFeePerGas));
 
-      if (newMaxFeePerGas.amount < 0) return;
+      if (greaterThan(0, newMaxFeePerGas.amount)) return;
 
       setCustomFees({
         customMaxBaseFee: newMaxFeePerGas?.gwei,
@@ -367,8 +369,7 @@ export default function FeesPanel({
   }, [updateFeePerGas]);
 
   const onMaxBaseFeeChange = useCallback(
-    ({ nativeEvent: { text } }) => {
-      text = text === '.' || text === ',' ? `0${text}` : text;
+    text => {
       const maxFeePerGas = parseGasFeeParam(gweiToWei(text || 0));
 
       if (greaterThan(0, maxFeePerGas.amount)) return;
@@ -389,14 +390,11 @@ export default function FeesPanel({
   );
 
   const onMinerTipChange = useCallback(
-    ({ nativeEvent: { text } }) => {
-      text = text === '.' || text === ',' ? `0${text}` : text;
+    text => {
       const maxPriorityFeePerGas = parseGasFeeParam(gweiToWei(text || 0));
 
       if (greaterThan(0, maxPriorityFeePerGas.amount)) return;
 
-      // we don't use the round number here, if we did
-      // when users type "1." it will default to "1"
       setCustomFees({
         customMaxBaseFee: selectedGasFee?.gasFeeParams?.maxFeePerGas?.gwei,
         customMaxPriorityFee: text,
@@ -685,16 +683,14 @@ export default function FeesPanel({
 
   useEffect(() => {
     const focus = async () => {
-      await delay(200);
-      // without this focus seems like it looses the context on the first `focus()`
-      // inside the async function
-      minerTipFieldRef?.current?.focus();
       if (focusTo === FOCUS_TO_MINER_TIP) {
         setLastFocusedInputHandle(minerTipFieldRef);
       } else {
         setLastFocusedInputHandle(maxBaseFieldRef);
       }
-      triggerFocus();
+      InteractionManager.runAfterInteractions(() => {
+        triggerFocus();
+      });
     };
     focus();
   }, [
