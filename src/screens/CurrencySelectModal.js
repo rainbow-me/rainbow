@@ -93,7 +93,7 @@ export default function CurrencySelectModal() {
   const filteredUniswapAssetsInWallet = useMemo(
     () =>
       uniswapAssetsInWallet.filter(
-        ({ address }) => !hiddenCoins.includes(address)
+        ({ uniqueId }) => !hiddenCoins.includes(uniqueId)
       ),
     [uniswapAssetsInWallet, hiddenCoins]
   );
