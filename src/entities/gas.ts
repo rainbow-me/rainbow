@@ -140,7 +140,8 @@ export interface RainbowMeteorologyData {
     baseFeeSuggestion: string;
     baseFeeTrend: number;
     confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee;
-    blocksToConfirmation: BlocksToConfirmation;
+    blocksToConfirmationByPriorityFee: BlocksToConfirmationByPriorityFee;
+    blocksToConfirmationByBaseFee: BlocksToConfirmationByBaseFee;
     maxPriorityFeeSuggestions: MaxPriorityFeeSuggestions;
   };
   meta: {

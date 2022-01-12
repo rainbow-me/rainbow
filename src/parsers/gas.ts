@@ -121,7 +121,7 @@ export const parseRainbowMeteorologyData = (
 
   // API compatible
   let blocksToConfirmation: BlocksToConfirmation;
-  if (!rainbowMeterologyData.data.blocksToConfirmation) {
+  if (!rainbowMeterologyData.data.blocksToConfirmationByBaseFee) {
     const byPriorityFee: BlocksToConfirmationByPriorityFee = {
       1: confirmationTimeByPriorityFee[15],
       2: confirmationTimeByPriorityFee[30],
@@ -140,7 +140,11 @@ export const parseRainbowMeteorologyData = (
       byPriorityFee,
     };
   } else {
-    blocksToConfirmation = rainbowMeterologyData.data.blocksToConfirmation;
+    blocksToConfirmation = {
+      byBaseFee: rainbowMeterologyData.data.blocksToConfirmationByBaseFee,
+      byPriorityFee:
+        rainbowMeterologyData.data.blocksToConfirmationByPriorityFee,
+    };
   }
 
   const parsedFees: GasFeeParamsBySpeed = {};
