@@ -9,7 +9,7 @@ import {
 } from 'react-native-dotenv';
 import { AppDispatch, AppGetState } from './store';
 import {
-  ConfirmationTimeByPriorityFee,
+  ConfirmationBlocks,
   CurrentBlockParams,
   GasFee,
   GasFeeParam,
@@ -104,7 +104,7 @@ interface GasState {
   gasFeesBySpeed: GasFeesBySpeed | LegacyGasFeesBySpeed;
   txNetwork: Network | null;
   currentBlockParams: CurrentBlockParams;
-  confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee;
+  confirmationBlocks: ConfirmationBlocks;
   customGasFeeModifiedByUser: boolean;
   l1GasFeeOptimism: BigNumber | null;
 }
@@ -259,7 +259,10 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
     gasFeeParamsBySpeed,
     gasLimit,
     currentBlockParams,
-    confirmationTimeByPriorityFee,
+    confirmationBlocks: {
+      confirmationBlocksByPriorityFee,
+      confirmationBlocksByBaseFee,
+    },
   } = getState().gas;
 
   const { nativeCurrency } = getState().settings;
@@ -283,10 +286,10 @@ export const gasUpdateToCustomGasFee = (gasParams: GasFeeParams) => async (
   newGasFeesBySpeed[CUSTOM] = customGasFees;
   newGasFeeParamsBySpeed[CUSTOM] = defaultGasParamsFormat(
     CUSTOM,
-    currentBlockParams.baseFeePerGas.amount,
     gasParams.maxFeePerGas.amount,
     gasParams.maxPriorityFeePerGas.amount,
-    confirmationTimeByPriorityFee
+    confirmationBlocksByPriorityFee,
+    confirmationBlocksByBaseFee
   );
   const newSelectedGasFee = getSelectedGasFee(
     newGasFeeParamsBySpeed,
@@ -373,11 +376,11 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
       baseFeePerGas,
       baseFeeTrend,
       currentBaseFee,
-      confirmationTimeByPriorityFee,
+      confirmationBlocks,
     } = parseRainbowMeteorologyData(data);
     return {
       baseFeePerGas,
-      confirmationTimeByPriorityFee,
+      confirmationBlocks,
       currentBaseFee,
       gasFeeParamsBySpeed,
       trend: baseFeeTrend,
@@ -465,7 +468,7 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
                   baseFeePerGas,
                   trend,
                   currentBaseFee,
-                  confirmationTimeByPriorityFee,
+                  confirmationBlocks,
                 } = await getEIP1559GasParams();
 
                 // Set a really gas estimate to guarantee that we're gonna be over
@@ -514,7 +517,7 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
 
                 dispatch({
                   payload: {
-                    confirmationTimeByPriorityFee,
+                    confirmationBlocks,
                     currentBlockParams: {
                       baseFeePerGas: currentBaseFee,
                       trend,
@@ -670,7 +673,7 @@ export const gasPricesStopPolling = () => (dispatch: AppDispatch) => {
 
 // -- Reducer --------------------------------------------------------------- //
 const INITIAL_STATE: GasState = {
-  confirmationTimeByPriorityFee: {} as ConfirmationTimeByPriorityFee,
+  confirmationBlocks: {} as ConfirmationBlocks,
   currentBlockParams: {} as CurrentBlockParams,
   customGasFeeModifiedByUser: false,
   defaultGasLimit: ethUnits.basic_tx,
@@ -707,8 +710,7 @@ export default (
     case GAS_FEES_SUCCESS:
       return {
         ...state,
-        confirmationTimeByPriorityFee:
-          action.payload.confirmationTimeByPriorityFee,
+        confirmationBlocks: action.payload.confirmationBlocks,
         currentBlockParams: action.payload.currentBlockParams,
         gasFeeParamsBySpeed: action.payload.gasFeeParamsBySpeed,
         gasFeesBySpeed: action.payload.gasFeesBySpeed,

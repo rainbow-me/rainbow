@@ -19,6 +19,9 @@ export type {
   TransactionGasParams,
   RainbowMeteorologyData,
   SelectedGasFee,
+  ConfirmationBlocks,
+  ConfirmationBlocksByBaseFee,
+  ConfirmationBlocksByPriorityFee,
 } from './gas';
 export { NativeCurrencyKeys } from './nativeCurrencyTypes';
 export type Numberish = string | number;
@@ -27,7 +30,6 @@ export { default as ProtocolTypeNames, ProtocolType } from './protocolTypes';
 export type { UniqueAsset } from './uniqueAssets';
 export type {
   Asset,
-  AssetContract,
   IndexToken,
   SavingsAsset,
   ParsedAddressAsset,
