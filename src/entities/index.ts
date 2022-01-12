@@ -19,9 +19,9 @@ export type {
   TransactionGasParams,
   RainbowMeteorologyData,
   SelectedGasFee,
-  ConfirmationBlocks,
-  ConfirmationBlocksByBaseFee,
-  ConfirmationBlocksByPriorityFee,
+  BlocksToConfirmation,
+  BlocksToConfirmationByBaseFee,
+  BlocksToConfirmationByPriorityFee,
 } from './gas';
 export { NativeCurrencyKeys } from './nativeCurrencyTypes';
 export type Numberish = string | number;

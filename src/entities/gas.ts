@@ -108,14 +108,14 @@ export interface ConfirmationTimeByPriorityFee {
   60: string;
 }
 
-export interface ConfirmationBlocksByPriorityFee {
+export interface BlocksToConfirmationByPriorityFee {
   1: string;
   2: string;
   3: string;
   4: string;
 }
 
-export interface ConfirmationBlocksByBaseFee {
+export interface BlocksToConfirmationByBaseFee {
   4: string;
   8: string;
   40: string;
@@ -123,9 +123,9 @@ export interface ConfirmationBlocksByBaseFee {
   240: string;
 }
 
-export interface ConfirmationBlocks {
-  confirmationBlocksByBaseFee: ConfirmationBlocksByBaseFee;
-  confirmationBlocksByPriorityFee: ConfirmationBlocksByPriorityFee;
+export interface BlocksToConfirmation {
+  byBaseFee: BlocksToConfirmationByBaseFee;
+  byPriorityFee: BlocksToConfirmationByPriorityFee;
 }
 
 export interface MaxPriorityFeeSuggestions {
@@ -140,9 +140,7 @@ export interface RainbowMeteorologyData {
     baseFeeSuggestion: string;
     baseFeeTrend: number;
     confirmationTimeByPriorityFee: ConfirmationTimeByPriorityFee;
-    confirmationBlocks: ConfirmationBlocks;
-    confirmationBlocksByPriorityFee: ConfirmationBlocksByPriorityFee;
-    confirmationBlocksByBaseFee: ConfirmationBlocksByBaseFee;
+    blocksToConfirmation: BlocksToConfirmation;
     maxPriorityFeeSuggestions: MaxPriorityFeeSuggestions;
   };
   meta: {

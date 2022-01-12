@@ -2,9 +2,9 @@ import BigNumber from 'bignumber.js';
 import { map, zipObject } from 'lodash';
 import { gasUtils } from '../utils';
 import {
-  ConfirmationBlocks,
-  ConfirmationBlocksByBaseFee,
-  ConfirmationBlocksByPriorityFee,
+  BlocksToConfirmation,
+  BlocksToConfirmationByBaseFee,
+  BlocksToConfirmationByPriorityFee,
   GasFeeParam,
   GasFeeParams,
   GasFeeParamsBySpeed,
@@ -58,31 +58,31 @@ const parseOtherL2GasPrices = (data: GasPricesAPIData) => ({
 const parseGasDataConfirmationTime = (
   maxBaseFee: string,
   maxPriorityFee: string,
-  confirmationBlocksByPriorityFee: ConfirmationBlocksByPriorityFee,
-  confirmationBlocksByBaseFee: ConfirmationBlocksByBaseFee
+  blocksToConfirmation: BlocksToConfirmation
 ) => {
   let blocksToWaitForPriorityFee = 0;
   let blocksToWaitForBaseFee = 0;
+  const { byPriorityFee, byBaseFee } = blocksToConfirmation;
 
-  if (lessThan(maxPriorityFee, confirmationBlocksByPriorityFee[1])) {
+  if (lessThan(maxPriorityFee, byPriorityFee[1])) {
     blocksToWaitForPriorityFee += 1;
-  } else if (lessThan(maxPriorityFee, confirmationBlocksByPriorityFee[2])) {
+  } else if (lessThan(maxPriorityFee, byPriorityFee[2])) {
     blocksToWaitForPriorityFee += 2;
-  } else if (lessThan(maxPriorityFee, confirmationBlocksByPriorityFee[3])) {
+  } else if (lessThan(maxPriorityFee, byPriorityFee[3])) {
     blocksToWaitForPriorityFee += 3;
-  } else if (lessThan(maxPriorityFee, confirmationBlocksByPriorityFee[4])) {
+  } else if (lessThan(maxPriorityFee, byPriorityFee[4])) {
     blocksToWaitForPriorityFee += 4;
   }
 
-  if (lessThan(confirmationBlocksByBaseFee[4], maxBaseFee)) {
+  if (lessThan(byBaseFee[4], maxBaseFee)) {
     blocksToWaitForBaseFee += 1;
-  } else if (lessThan(confirmationBlocksByBaseFee[8], maxBaseFee)) {
+  } else if (lessThan(byBaseFee[8], maxBaseFee)) {
     blocksToWaitForBaseFee += 4;
-  } else if (lessThan(confirmationBlocksByBaseFee[40], maxBaseFee)) {
+  } else if (lessThan(byBaseFee[40], maxBaseFee)) {
     blocksToWaitForBaseFee += 8;
-  } else if (lessThan(confirmationBlocksByBaseFee[120], maxBaseFee)) {
+  } else if (lessThan(byBaseFee[120], maxBaseFee)) {
     blocksToWaitForBaseFee += 40;
-  } else if (lessThan(confirmationBlocksByBaseFee[240], maxBaseFee)) {
+  } else if (lessThan(byBaseFee[240], maxBaseFee)) {
     blocksToWaitForBaseFee += 120;
   } else {
     blocksToWaitForBaseFee += 240;
@@ -109,7 +109,7 @@ export const parseRainbowMeteorologyData = (
   baseFeePerGas: GasFeeParam;
   baseFeeTrend: number;
   currentBaseFee: GasFeeParam;
-  confirmationBlocks: ConfirmationBlocks;
+  blocksToConfirmation: BlocksToConfirmation;
 } => {
   const {
     baseFeeSuggestion,
@@ -120,36 +120,32 @@ export const parseRainbowMeteorologyData = (
   } = rainbowMeterologyData.data;
 
   // API compatible
-  let confirmationBlocks: ConfirmationBlocks;
-  if (!rainbowMeterologyData.data.confirmationBlocks) {
-    const confirmationBlocksByPriorityFee: ConfirmationBlocksByPriorityFee = {
+  let blocksToConfirmation: BlocksToConfirmation;
+  if (!rainbowMeterologyData.data.blocksToConfirmation) {
+    const byPriorityFee: BlocksToConfirmationByPriorityFee = {
       1: confirmationTimeByPriorityFee[15],
       2: confirmationTimeByPriorityFee[30],
       3: confirmationTimeByPriorityFee[45],
       4: confirmationTimeByPriorityFee[60],
     };
-    const confirmationBlocksByBaseFee: ConfirmationBlocksByBaseFee = {
+    const byBaseFee: BlocksToConfirmationByBaseFee = {
       120: new BigNumber(multiply(baseFeeSuggestion, 0.75)).toFixed(0),
       240: new BigNumber(multiply(baseFeeSuggestion, 0.72)).toFixed(0),
       4: new BigNumber(multiply(baseFeeSuggestion, 0.92)).toFixed(0),
       40: new BigNumber(multiply(baseFeeSuggestion, 0.79)).toFixed(0),
       8: new BigNumber(multiply(baseFeeSuggestion, 0.88)).toFixed(0),
     };
-    confirmationBlocks = {
-      confirmationBlocksByBaseFee,
-      confirmationBlocksByPriorityFee,
+    blocksToConfirmation = {
+      byBaseFee,
+      byPriorityFee,
     };
   } else {
-    confirmationBlocks = rainbowMeterologyData.data.confirmationBlocks;
+    blocksToConfirmation = rainbowMeterologyData.data.blocksToConfirmation;
   }
 
   const parsedFees: GasFeeParamsBySpeed = {};
   const parsedCurrentBaseFee = parseGasFeeParam(currentBaseFee);
   const parsedBaseFeeSuggestion = parseGasFeeParam(baseFeeSuggestion);
-  const {
-    confirmationBlocksByPriorityFee,
-    confirmationBlocksByBaseFee,
-  } = confirmationBlocks;
 
   Object.keys(maxPriorityFeeSuggestions).forEach(speed => {
     const baseFeeMultiplier = getBaseFeeMultiplier(speed);
@@ -171,8 +167,7 @@ export const parseRainbowMeteorologyData = (
       estimatedTime: parseGasDataConfirmationTime(
         cleanMaxBaseFee,
         cleanMaxPriorityFee,
-        confirmationBlocksByPriorityFee,
-        confirmationBlocksByBaseFee
+        blocksToConfirmation
       ),
       maxFeePerGas: parseGasFeeParam(cleanMaxBaseFee),
       maxPriorityFeePerGas: parseGasFeeParam(cleanMaxPriorityFee),
@@ -184,7 +179,7 @@ export const parseRainbowMeteorologyData = (
   return {
     baseFeePerGas: parsedBaseFeeSuggestion,
     baseFeeTrend,
-    confirmationBlocks,
+    blocksToConfirmation,
     currentBaseFee: parsedCurrentBaseFee,
     gasFeeParamsBySpeed: parsedFees,
   };
@@ -270,21 +265,19 @@ export const parseGasFeeParam = (weiAmount: string): GasFeeParam => {
  * @param option - Speed option
  * @param maxFeePerGas - `maxFeePerGas` value in gwei unit
  * @param maxPriorityFeePerGas - `maxPriorityFeePerGas` value in gwei unit
- * @param confirmationTimeByPriorityFee - ConfirmationTimeByPriorityFee object
+ * @param blocksToConfirmation - blocksToConfirmation object
  * @returns GasFeeParams
  */
 export const defaultGasParamsFormat = (
   option: string,
   maxFeePerGas: string,
   maxPriorityFeePerGas: string,
-  confirmationBlocksByPriorityFee: ConfirmationBlocksByPriorityFee,
-  confirmationBlocksByBaseFee: ConfirmationBlocksByBaseFee
+  blocksToConfirmation: BlocksToConfirmation
 ): GasFeeParams => {
   const time = parseGasDataConfirmationTime(
     maxFeePerGas,
     maxPriorityFeePerGas,
-    confirmationBlocksByPriorityFee,
-    confirmationBlocksByBaseFee
+    blocksToConfirmation
   );
   return {
     estimatedTime: time,
