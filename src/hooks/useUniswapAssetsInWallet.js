@@ -24,18 +24,28 @@ const useUniswapAssetsInWallet = () => {
     }
     setUniswapAssets(uniswapAssets);
   }, [sortedAssets, isMainnet]);
-  const getIsUniswapAsset = asset => {
-    return (
-      uniswapAssets.find(
-        ({ address }) => address === asset.address.toLowerCase()
-      ) || asset.address === ETH_ADDRESS
-    );
-  };
+
+  const getIsUniswapAsset = useCallback(
+    asset => {
+      return (
+        uniswapAssets.find(
+          ({ address }) => address === asset.address.toLowerCase()
+        ) || asset.address === ETH_ADDRESS
+      );
+    },
+    [uniswapAssets]
+  );
+
   useEffect(() => {
     getUniswapAssets();
   }, [getUniswapAssets]);
 
-  return sortedAssets.filter(getIsUniswapAsset);
+  const uniswapAssetsInWallet = useMemo(
+    () => sortedAssets.filter(getIsUniswapAsset),
+    [sortedAssets, getIsUniswapAsset]
+  );
+
+  return uniswapAssetsInWallet;
 };
 
 export default useUniswapAssetsInWallet;
