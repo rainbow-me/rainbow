@@ -67,14 +67,7 @@ platform :ios do
       scheme: "Rainbow",
       include_symbols: true,
       configuration: "Release",
-      export_method: "app-store",
-      # export_options: {        
-      #   provisioningProfiles: { 
-      #     "me.rainbow" => "#{sigh_me.rainbow.PriceWidget_appstore_profile-name}",
-      #     "me.rainbow.PriceWidget" => "#{sigh_me.rainbow.PriceWidget_appstore_profile-name}",
-      #     "me.rainbow.SelectTokenIntent" => "#{sigh_me.rainbow.SelectTokenIntent_appstore_profile-name}"
-      #   } 
-      # }
+      export_method: "app-store"
     )
 
     pilot(

@@ -3,10 +3,7 @@ import { captureException } from '@sentry/react-native';
 import { findKey, isNumber, keys, toLower, uniq } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
 import { removeLocal } from '../handlers/localstorage/common';
-import {
-  getNativeCurrency,
-  IMAGE_METADATA,
-} from '../handlers/localstorage/globalSettings';
+import { IMAGE_METADATA } from '../handlers/localstorage/globalSettings';
 import {
   getMigrationVersion,
   setMigrationVersion,
@@ -591,6 +588,16 @@ export default async function runMigrations() {
   };
 
   migrations.push(v14);
+
+  /*
+   *************** Migration v15 ******************
+   Ignored
+   */
+  const v15 = async () => {
+    return true;
+  };
+
+  migrations.push(v15);
 
   logger.sentry(
     `Migrations: ready to run migrations starting on number ${currentVersion}`

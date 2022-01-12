@@ -178,10 +178,6 @@ export const settingsChangeNativeCurrency = (nativeCurrency: string) => async (
     });
     dispatch(explorerInit());
     saveNativeCurrency(nativeCurrency);
-    // saveString('nativeCurrency', nativeCurrency, {
-    //   accessGroup: 'group.rainbow.me',
-    //   service: 'rainbow.me.currency',
-    // });
     analytics.identify(null, { currency: nativeCurrency });
   } catch (error) {
     logger.log('Error changing native currency', error);
