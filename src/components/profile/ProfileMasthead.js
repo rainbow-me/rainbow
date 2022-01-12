@@ -2,7 +2,6 @@ import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
 import lang from 'i18n-js';
 import React, { useCallback, useRef } from 'react';
-import { View } from 'react-native';
 import styled from 'styled-components';
 import Divider from '../Divider';
 import { ButtonPressAnimation } from '../animations';
