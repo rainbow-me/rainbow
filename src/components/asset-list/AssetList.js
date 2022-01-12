@@ -12,7 +12,6 @@ const FabSizeWithPadding =
   FloatingActionButtonSize + FabWrapperBottomPosition * 2;
 
 const AssetList = ({
-  fetchData,
   hideHeader,
   isEmpty,
   isWalletEthZero,
@@ -33,7 +32,6 @@ const AssetList = ({
     />
   ) : props.showcase ? (
     <RecyclerAssetList
-      fetchData={fetchData}
       hideHeader={hideHeader}
       paddingBottom={
         insets.bottom + FabSizeWithPadding - ListFooter.height + (android && 60)
