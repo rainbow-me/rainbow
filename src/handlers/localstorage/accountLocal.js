@@ -2,7 +2,7 @@ import { getAccountLocal, saveAccountLocal } from './common';
 
 const assetPricesFromUniswapVersion = '0.1.0';
 const assetsVersion = '0.2.0';
-const purchaseTransactionsVersion = '0.1.0';
+const purchaseTransactionsVersion = '0.2.0';
 const savingsVersion = '0.2.0';
 const transactionsVersion = '0.2.5';
 const uniqueTokensVersion = '0.2.1';

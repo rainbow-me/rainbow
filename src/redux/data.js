@@ -779,13 +779,15 @@ export const dataAddNewTransaction = (
         type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
       });
       saveLocalTransactions(_transactions, accountAddress, network);
-      await dispatch(
-        incrementNonce(
-          parsedTransaction.from,
-          parsedTransaction.nonce,
-          parsedTransaction.network
-        )
-      );
+      if (parsedTransaction.from && parsedTransaction.nonce) {
+        await dispatch(
+          incrementNonce(
+            parsedTransaction.from,
+            parsedTransaction.nonce,
+            parsedTransaction.network
+          )
+        );
+      }
       if (
         !disableTxnWatcher ||
         network !== networkTypes.mainnet ||
