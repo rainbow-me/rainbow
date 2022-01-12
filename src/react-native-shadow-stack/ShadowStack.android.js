@@ -18,15 +18,10 @@ const ShadowStack = React.forwardRef(
     },
     ref
   ) => {
-    const radius = Math.max(...shadows.map(shadow => shadow[2]));
-
-    let width = widthProp;
-    if (typeof width !== 'number') {
-      width = '100%';
-    }
-
+    const width = typeof widthProp === 'number' ? widthProp : '100%';
     const adjustHeightForRadius = typeof height === 'number';
     const adjustWidthForRadius = typeof width === 'number';
+    const radius = Math.max(...shadows.map(shadow => shadow[2]));
 
     return (
       <View

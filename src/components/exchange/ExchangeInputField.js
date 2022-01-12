@@ -6,6 +6,7 @@ import ExchangeMaxButton from './ExchangeMaxButton';
 import ExchangeNativeField from './ExchangeNativeField';
 
 const Container = styled(ColumnWithMargins).attrs({ margin: 5 })`
+  padding-bottom: ${android ? 10 : 0};
   padding-top: 6;
   width: 100%;
   z-index: 1;
@@ -15,6 +16,7 @@ const NativeFieldRow = styled(Row).attrs({
   align: 'center',
   justify: 'space-between',
 })`
+  margin-top: ${android ? -4 : 0};
   height: ${android ? 16 : 32};
   padding-left: 19;
 `;

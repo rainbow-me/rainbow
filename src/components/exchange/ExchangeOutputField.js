@@ -4,10 +4,11 @@ import { Row } from '../layout';
 import ExchangeField from './ExchangeField';
 
 const paddingTop = android ? 15 : 32;
+const paddingBottom = android ? 10 : 21;
 
 const Container = styled(Row).attrs({ align: 'center' })`
   overflow: hidden;
-  padding-bottom: 21;
+  padding-bottom: ${paddingBottom};
   padding-top: ${paddingTop};
   width: 100%;
 `;

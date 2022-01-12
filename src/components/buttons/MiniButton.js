@@ -71,7 +71,6 @@ export default function MiniButton({
       disabled={disabled}
       onPress={onPress}
       opacity={isDarkMode && disabled ? 0.6 : 1}
-      radiusAndroid={borderRadius}
       scaleTo={scaleTo}
       {...props}
     >
@@ -79,11 +78,7 @@ export default function MiniButton({
         <ShadowStack
           {...position.coverAsObject}
           backgroundColor={
-            android
-              ? 'none'
-              : disabled
-              ? colors.lightGrey
-              : backgroundColor || colors.appleBlue
+            disabled ? colors.lightGrey : backgroundColor || colors.appleBlue
           }
           borderRadius={borderRadius}
           height={height}

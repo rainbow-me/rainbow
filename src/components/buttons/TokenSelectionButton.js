@@ -12,7 +12,6 @@ import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
 const TokenSelectionButtonHeight = 46;
-const TokenSelectionButtonElevation = ios ? 0 : 8;
 
 const Content = styled(RowWithMargins).attrs({
   align: 'center',
@@ -59,8 +58,9 @@ export default function TokenSelectionButton({
     <ButtonPressAnimation
       borderRadius={borderRadius}
       contentContainerStyle={{
-        backgroundColor: colorForAsset,
+        backgroundColor: 'transparent',
         borderRadius,
+        paddingVertical: android ? 12 : 0,
       }}
       onPress={onPress}
       radiusAndroid={borderRadius}
@@ -70,8 +70,9 @@ export default function TokenSelectionButton({
         {...position.coverAsObject}
         backgroundColor={colorForAsset}
         borderRadius={borderRadius}
-        elevation={TokenSelectionButtonElevation}
+        height={TokenSelectionButtonHeight}
         shadows={shadowsForAsset}
+        width="100%"
       />
       <Content>
         <Text

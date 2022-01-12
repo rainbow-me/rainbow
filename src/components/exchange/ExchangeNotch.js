@@ -13,13 +13,14 @@ import { useDimensions } from '@rainbow-me/hooks';
 
 const notchHeight = 48;
 const notchSideWidth = 78;
+const notchTopOffset = android ? 142 : 132;
 
 const Container = styled(Row).attrs({
   pointerEvents: 'none',
 })`
   height: ${notchHeight};
   position: absolute;
-  top: 132;
+  top: ${notchTopOffset};
   width: 100%;
 `;
 
