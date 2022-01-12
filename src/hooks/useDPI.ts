@@ -15,10 +15,12 @@ export default function useDPI() {
 
   const fetchDPIData = useCallback(async () => {
     const defiPulseData = await getDPIBalance();
-    const underlyingAddresses = defiPulseData.underlying.map(
+    const underlyingAddresses = defiPulseData?.underlying.map(
       (token: IndexToken) => token.address
     );
-    dispatch(emitAssetRequest(underlyingAddresses));
+    if (underlyingAddresses) {
+      dispatch(emitAssetRequest(underlyingAddresses));
+    }
     return defiPulseData;
   }, [dispatch]);
 

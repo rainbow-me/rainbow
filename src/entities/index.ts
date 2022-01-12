@@ -58,3 +58,4 @@ export type {
   TokenSearchTokenListId,
   TokenSearchUniswapAssetKey,
 } from './tokenSearch';
+export type { UniswapPoolData } from './dispersion';
