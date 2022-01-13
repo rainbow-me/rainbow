@@ -23,8 +23,10 @@ const AmountRow = styled(LinearGradient).attrs(({ theme: { colors } }) => ({
 }))({
   ...padding.object(android ? 1 : 7, 12, android ? 2 : 9, 11),
   borderRadius: 40,
-  margin: 'auto',
   marginBottom: 17,
+  marginLeft: 'auto',
+  marginRight: 'auto',
+  marginTop: 'auto',
   overflow: 'hidden',
 });
 
