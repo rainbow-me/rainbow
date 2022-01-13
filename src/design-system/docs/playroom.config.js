@@ -21,6 +21,7 @@ module.exports = {
             path.join(__dirname, '..'),
             /react-native-markdown-display/,
             /react-native-reanimated/,
+            /react-native-drop-shadow/,
           ],
           test: /\.(js|ts|tsx)$/,
           use: {
@@ -60,11 +61,16 @@ module.exports = {
         __DEV__: true,
         android: false,
         ios: false,
+        web: true,
       }),
     ],
     resolve: {
       alias: {
         'react-native$': 'react-native-web',
+        'react-native-drop-shadow': path.join(
+          __dirname,
+          './react-native-drop-shadow.tsx'
+        ),
       },
       extensions: ['.web.js', '.web.ts', '.web.tsx', '.js', '.ts', '.tsx'],
       modules: [path.join(__dirname, './node_modules'), 'node_modules'],

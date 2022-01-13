@@ -46,6 +46,7 @@ const docs: DocsType = {
     },
     {
       ...examples.padding,
+      showFrame: true,
       description: (
         <Docs.Text>
           To apply padding to the bounds of Box, pass the{' '}
@@ -84,6 +85,23 @@ const docs: DocsType = {
           <Docs.Code>width</Docs.Code> prop.
         </Docs.Text>
       ),
+    },
+    {
+      ...examples.shadows,
+      description: (
+        <Docs.Text>
+          To apply a shadow, a blur radius & weight pair (e.g.{' '}
+          <Docs.Code>30px light</Docs.Code>) can be supplied to the{' '}
+          <Docs.Code>shadow</Docs.Code> prop.
+        </Docs.Text>
+      ),
+      showFrame: true,
+      examples: [
+        examples.shadowsWithSizes,
+        examples.shadowsWithColors,
+        examples.shadowsWithCustomColors,
+        examples.shadowsWithCustomSizes,
+      ],
     },
     {
       name: 'Composition',

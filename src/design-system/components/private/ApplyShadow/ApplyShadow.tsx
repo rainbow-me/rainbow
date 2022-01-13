@@ -95,7 +95,7 @@ export const ApplyShadow = React.forwardRef(
     );
     return (
       <View ref={ref} style={parentStyles}>
-        {ios && (
+        {(ios || web) && (
           <IOSShadow backgroundColor={backgroundColor} shadows={shadows} />
         )}
         <ConditionalWrap

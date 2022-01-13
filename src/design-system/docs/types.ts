@@ -4,15 +4,11 @@ import { Source } from './utils/source.macro';
 export type Docs = {
   meta: Meta;
   description?: JSX.Element | JSX.Element[];
-  examples?: (Example & {
-    description?: JSX.Element | JSX.Element[];
-    enablePlayroom?: boolean;
-    enableCodeSnippet?: boolean;
-    showFrame?: boolean;
-  })[];
+  examples?: DocsExample[];
 };
 
 export type DocsExample = Example & {
+  examples?: DocsExample[];
   description?: JSX.Element | JSX.Element[];
   enablePlayroom?: boolean;
   enableCodeSnippet?: boolean;
@@ -21,6 +17,7 @@ export type DocsExample = Example & {
 
 export type Example = {
   name: string;
+  subTitle?: string;
   Example?: () => Source<React.ReactChild>;
 };
 

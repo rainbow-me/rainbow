@@ -4,7 +4,7 @@ import type { ShadowColor } from '../color/palettes';
 
 export { shadowColors } from '../color/palettes';
 
-export { ShadowColor };
+export type { ShadowColor };
 
 export type ShadowValue = {
   offset: {
