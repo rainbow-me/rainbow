@@ -1,0 +1,23 @@
+[
+  {
+    "level": "INFO",
+    "message": "Start JSON generation. Platform version: 16 min SDK version: x86_64",
+    "file": "/Users/osdnk/work/rainbow-priv/src/rainbow-list/android/CMakeLists.txt",
+    "tag": "debug|x86_64",
+    "diagnosticCode": "UNKNOWN"
+  },
+  {
+    "level": "INFO",
+    "message": "JSON \u0027/Users/osdnk/work/rainbow-priv/src/rainbow-list/android/.cxx/cmake/debug/x86_64/android_gradle_build.json\u0027 was up-to-date",
+    "file": "/Users/osdnk/work/rainbow-priv/src/rainbow-list/android/CMakeLists.txt",
+    "tag": "debug|x86_64",
+    "diagnosticCode": "UNKNOWN"
+  },
+  {
+    "level": "INFO",
+    "message": "JSON generation completed without problems",
+    "file": "/Users/osdnk/work/rainbow-priv/src/rainbow-list/android/CMakeLists.txt",
+    "tag": "debug|x86_64",
+    "diagnosticCode": "UNKNOWN"
+  }
+]

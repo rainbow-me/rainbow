@@ -58,13 +58,12 @@ const format = (originalY, data, latestChange) => {
     : '';
 };
 
-export default function ChartPercentChangeLabel({ latestChange }) {
+export default function ChartPercentChangeLabel({ ratio, latestChange }) {
   const { originalY, data, isActive } = useChartData();
   const { colors } = useTheme();
   const defaultValue = useMemo(() => format(originalY, data, latestChange), [
     originalY,
     data,
-    latestChange,
   ]);
 
   const textProps = useAnimatedStyle(
@@ -76,22 +75,26 @@ export default function ChartPercentChangeLabel({ latestChange }) {
     [originalY, data, latestChange, isActive]
   );
 
-  const ratio = useRatio();
+  const sharedRatio = useRatio();
 
   const textStyle = useAnimatedStyle(() => {
+    1;
+    const realRatio = isActive.value ? sharedRatio.value : ratio;
     return {
       color:
-        ratio.value === 1
+        realRatio === 1
           ? colors.blueGreyDark
-          : ratio.value < 1
+          : realRatio < 1
           ? colors.red
           : colors.green,
     };
-  });
+  }, [ratio]);
 
   return (
     <RowWithMargins align="center" margin={4}>
-      {android ? <ChartChangeDirectionArrow ratio={ratio} /> : null}
+      {android ? (
+        <ChartChangeDirectionArrow ratio={ratio} sharedRatio={sharedRatio} />
+      ) : null}
       <PercentLabel
         alignSelf="flex-end"
         animatedProps={textProps}

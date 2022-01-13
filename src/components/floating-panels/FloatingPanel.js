@@ -15,7 +15,15 @@ const FloatingPanelShadow = colors =>
   shadow.buildAsObject(0, 10, 50, colors.shadow, 0.6);
 
 const Container = styled(Column)(
-  ({ hideShadow, color, theme: { colors }, radius, minHeight, overflow }) => ({
+  ({
+    hideShadow,
+    color,
+    theme: { colors },
+    radius,
+    minHeight,
+    overflow,
+    translateY = 0,
+  }) => ({
     ...(hideShadow ? {} : FloatingPanelShadow(colors)),
 
     backgroundColor: color,
@@ -23,6 +31,7 @@ const Container = styled(Column)(
     minHeight: minHeight || 0,
     opacity: 1,
     overflow,
+    transform: [{ translateY }],
     zIndex: 1,
   })
 );

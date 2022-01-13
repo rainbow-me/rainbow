@@ -71,12 +71,14 @@ export default forwardRef(function DiscoverSearchContainer(
     () => ({
       ...upperContext,
       isFetchingEns,
+      searchInputRef,
       searchQuery,
       sectionListRef,
       setIsFetchingEns,
       setIsSearching,
     }),
     [
+      searchInputRef,
       searchQuery,
       upperContext,
       isFetchingEns,

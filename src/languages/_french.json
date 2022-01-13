@@ -72,9 +72,9 @@
         "enter_amount": "Entrez un Montant",
         "fetching_details": "Fetching Details... :)",
         "insufficient_eth": "ETH Insuffisants",
-        "invalid_fee": "Frais Non Valides",
         "insufficient_funds": "Fonds Insuffisants",
         "insufficient_liquidity": "Insufficient Liquidity :)",
+        "invalid_fee": "Frais Non Valides",
         "swap": "Tenir pour Swap",
         "swap_anyway": "Echanger quand Même",
         "view_details": "View Details :)",
@@ -312,6 +312,7 @@
       "back": "Retour",
       "backup": "Sauvegarder",
       "currency": "Devise",
+      "dev": "Dev :)",
       "developer": "Developer Settings :)",
       "done": "Terminé",
       "feedback_and_reports": "Feedback & Bug Reports :)",
@@ -530,6 +531,7 @@
       },
       "settings": {
         "copy_address": "Copier adresse",
+        "copy_address_capitalized": "Copier Adresse",
         "copy_seed_phrase": "Copier clé mnémonique",
         "hide_seed_phrase": "Cacher clé mnémonique",
         "show_seed_phrase": "Afficher clé mnémonique"
