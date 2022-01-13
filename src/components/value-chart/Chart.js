@@ -1,4 +1,3 @@
-import { invert } from 'lodash';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions } from 'react-native';
 import Animated, {
@@ -130,7 +129,7 @@ export default function ChartWrapper({
   const { progress } = useChartData();
   const spinnerRotation = useSharedValue(0);
   const spinnerScale = useSharedValue(0);
-  const chartTimeSharedValue = useSharedValue('');
+
   const { colors } = useTheme();
 
   const { setOptions } = useNavigation();
@@ -186,26 +185,11 @@ export default function ChartWrapper({
     };
   });
 
-  const timespan = invert(ChartTypes)[chartType];
-  const formattedTimespan =
-    timespan.charAt(0).toUpperCase() + timespan.slice(1);
-
-  useEffect(() => {
-    if (chartType === ChartTypes.day) {
-      chartTimeSharedValue && (chartTimeSharedValue.value = 'Today');
-    } else if (chartType === ChartTypes.max) {
-      chartTimeSharedValue && (chartTimeSharedValue.value = 'All Time');
-    } else {
-      chartTimeSharedValue &&
-        (chartTimeSharedValue.value = `Past ${formattedTimespan}`);
-    }
-  }, [chartTimeSharedValue, chartType, formattedTimespan]);
-
   return (
     <Container>
       <ChartExpandedStateHeader
         {...props}
-        chartTimeSharedValue={chartTimeSharedValue}
+        chartType={chartType}
         color={color}
         isPool={isPool}
         overrideValue={overrideValue}

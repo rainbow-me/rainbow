@@ -141,7 +141,7 @@ export default function SendHeader({
         options: [
           lang.t('contacts.options.delete'), // <-- destructiveButtonIndex
           lang.t('contacts.options.edit'),
-          lang.t('wallet.settings.copy_address'),
+          lang.t('wallet.settings.copy_address_capitalized'),
           lang.t('contacts.options.cancel'), // <-- cancelButtonIndex
         ],
       },
