@@ -153,19 +153,14 @@ export function Header() {
   const { handleSetSeedPhrase, handlePressImportButton } = useImportingWallet();
 
   const onWatchAddress = useCallback(() => {
+    contextValue?.setIsSearchModeEnabled(false);
     handleSetSeedPhrase(contextValue.address);
     handlePressImportButton(
       color,
       contextValue.address,
       contextValue?.data?.profile?.accountSymbol
     );
-  }, [
-    color,
-    contextValue.address,
-    handlePressImportButton,
-    handleSetSeedPhrase,
-    contextValue?.data?.profile?.accountSymbol,
-  ]);
+  }, [contextValue, handleSetSeedPhrase, handlePressImportButton, color]);
 
   const mainText =
     contextValue?.data?.reverseEns ||
