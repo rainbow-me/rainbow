@@ -190,7 +190,8 @@ const TokenHistory = ({ contract, token, color }) => {
   const handlePress = useCallback(
     (address, ens) => {
       navigate(Routes.SHOWCASE_SHEET, {
-        address: ens && ens.slice(-4) === '.eth' ? ens : address
+        address: ens && ens.slice(-4) === '.eth' ? ens : address,
+        backupAddress: address
       });
     },
     [navigate]
