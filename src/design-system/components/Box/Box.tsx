@@ -1,11 +1,17 @@
 import { flatten } from 'lodash';
 import React, { forwardRef, ReactNode, useMemo } from 'react';
 import { View } from 'react-native';
+import {
+  CustomColor,
+  useForegroundColors,
+} from '../../color/useForegroundColor';
+import { Shadow, ShadowColor, shadows } from '../../layout/shadow';
 import { NegativeSpace, negativeSpace, Space, space } from '../../layout/space';
 import {
   BackgroundProvider,
   BackgroundProviderProps,
 } from '../BackgroundProvider/BackgroundProvider';
+import { ApplyShadow } from '../private/ApplyShadow/ApplyShadow';
 import type * as Polymorphic from './polymorphic';
 
 const fraction = (numerator: number, denominator: number) =>
@@ -37,7 +43,6 @@ function resolveToken<TokenName extends string, TokenValue, CustomValue>(
 
 export type BoxProps = {
   alignItems?: 'flex-start' | 'flex-end' | 'center' | 'stretch';
-  background?: BackgroundProviderProps['color'];
   borderRadius?: number;
   borderTopLeftRadius?: number;
   borderTopRightRadius?: number;
@@ -83,7 +88,19 @@ export type BoxProps = {
       borderRightRadius?: number;
       borderTopRadius?: never;
     }
-);
+) &
+  (
+    | {
+        background?: BackgroundProviderProps['color'];
+        shadowColor?: never;
+        shadow?: never;
+      }
+    | {
+        background: BackgroundProviderProps['color'];
+        shadowColor?: ShadowColor | CustomColor | (ShadowColor | CustomColor)[];
+        shadow: Shadow;
+      }
+  );
 
 type PolymorphicBox = Polymorphic.ForwardRefComponent<typeof View, BoxProps>;
 
@@ -128,6 +145,8 @@ export const Box = forwardRef(function Box(
     paddingRight: paddingRightProp,
     paddingTop: paddingTopProp,
     paddingVertical: paddingVerticalProp,
+    shadowColor: shadowColorProp = 'shadow',
+    shadow: shadowProp,
     style: styleProp,
     width,
     ...restProps
@@ -149,6 +168,11 @@ export const Box = forwardRef(function Box(
   const paddingRight = resolveToken(space, paddingRightProp);
   const paddingTop = resolveToken(space, paddingTopProp);
   const paddingVertical = resolveToken(space, paddingVerticalProp);
+
+  const shadows = useShadow({
+    shadow: shadowProp,
+    shadowColor: shadowColorProp,
+  });
 
   const styles = useMemo(() => {
     return {
@@ -240,9 +264,19 @@ export const Box = forwardRef(function Box(
   return background ? (
     <BackgroundProvider color={background}>
       {backgroundStyle => (
-        <Component style={[backgroundStyle, ...style]} {...restProps} ref={ref}>
-          {children}
-        </Component>
+        <ApplyShadow
+          backgroundColor={backgroundStyle.backgroundColor}
+          enabled={Boolean(shadows)}
+          shadows={shadows}
+        >
+          <Component
+            style={[backgroundStyle, ...style]}
+            {...restProps}
+            ref={ref}
+          >
+            {children}
+          </Component>
+        </ApplyShadow>
       )}
     </BackgroundProvider>
   ) : (
@@ -251,3 +285,41 @@ export const Box = forwardRef(function Box(
     </Component>
   );
 }) as PolymorphicBox;
+
+function useShadow({
+  shadow: shadowProp,
+  shadowColor: shadowColorProp = 'shadow',
+}: {
+  shadow: BoxProps['shadow'];
+  shadowColor: BoxProps['shadowColor'];
+}) {
+  const shadow = resolveToken(shadows, shadowProp);
+
+  let shadowColors = useMemo(
+    () =>
+      Array.isArray(shadowColorProp)
+        ? [...shadowColorProp].reverse()
+        : [shadowColorProp],
+    [shadowColorProp]
+  );
+  const parsedShadowColors = useForegroundColors(shadowColors);
+
+  return useMemo(
+    () =>
+      shadow
+        ? [...shadow].reverse().map((item, index) => {
+            const { offset, blur, opacity } = item;
+            return {
+              color: parsedShadowColors[index],
+              offset: {
+                height: offset.y,
+                width: offset.x,
+              },
+              opacity,
+              radius: blur,
+            };
+          })
+        : undefined,
+    [parsedShadowColors, shadow]
+  );
+}

@@ -80,7 +80,7 @@ const DocsRow = ({ meta, examples }: Docs) => {
                 </Heading>
                 <View
                   style={
-                    meta.category === 'Layout' && name !== 'Box'
+                    meta.category === 'Layout' && meta.name !== 'Box'
                       ? styles.layoutContainer
                       : undefined
                   }
