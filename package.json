@@ -274,6 +274,7 @@
     "@types/dedent": "0.7.0",
     "@types/jest": "26.0.14",
     "@types/node": "16.11.6",
+    "@types/mocha": "9.0.0",
     "@types/react": "16.9.52",
     "@types/react-native": "0.63.25",
     "@types/react-native-dotenv": "0.2.0",
