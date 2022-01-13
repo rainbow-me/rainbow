@@ -74,7 +74,7 @@ const InnerWrapper = styled(Centered).attrs({
   ...(ios
     ? position.sizeAsObject('100%')
     : {
-        height: ios ? 500 : 540,
+        height: ios ? 500 : 600,
         top: 0,
       }),
   ...(ios && isSmallPhone && { maxHeight: 354 }),
