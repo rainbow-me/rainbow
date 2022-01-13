@@ -73,7 +73,7 @@ const InnerWrapper = styled(Centered).attrs({
   ${ios
     ? position.sizeAsObject('100%')
     : `
-    height: 500;
+    height: 540.5;
     top: 0;
   `};
   background-color: ${({ theme: { colors } }) => colors.transparent};
