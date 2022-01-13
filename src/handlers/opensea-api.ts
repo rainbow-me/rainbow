@@ -94,9 +94,9 @@ export const apiGetUniqueTokenFloorPrice = async (
 };
 
 export const apiGetNftSemiFungibility = async (
-  networkPrefix,
-  contractAddress,
-  tokenID
+  networkPrefix: string,
+  contractAddress: string,
+  tokenID: string
 ) => {
   try {
     const requestURL = `https://${networkPrefix}api.opensea.io/api/v1/events?asset_contract_address=${contractAddress}&token_id=${tokenID}&only_opensea=false&offset=0&limit=1`;
@@ -122,16 +122,16 @@ export const apiGetNftSemiFungibility = async (
 };
 
 export const apiGetNftTransactionHistoryForEventType = async (
-  networkPrefix,
-  semiFungible,
-  accountAddress,
-  contractAddress,
-  tokenID,
-  eventType
+  networkPrefix: string,
+  semiFungible: boolean,
+  accountAddress: string,
+  contractAddress: string,
+  tokenID: string,
+  eventType: string
 ) => {
   try {
     let offset = 0;
-    let array = [];
+    let array: any[] = [];
     let nextPage = true;
     while (nextPage) {
       const requestURL = semiFungible

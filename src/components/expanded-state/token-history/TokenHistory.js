@@ -191,16 +191,16 @@ const TokenHistory = ({ contract, token, color }) => {
     (address, ens) => {
       navigate(Routes.SHOWCASE_SHEET, {
         address: ens && ens.slice(-4) === '.eth' ? ens : address,
-        backupAddress: address
+        backupAddress: address,
       });
     },
     [navigate]
   );
 
   const renderItem = ({ item, index }) => {
-    let suffixIcon = `􀆊`;
+    let clickableIcon = `􀆊`;
     let isClickable = false;
-    let label, icon, suffix;
+    let label, icon;
 
     switch (item?.eventType) {
       case EventTypes.ENS.type:
@@ -229,12 +229,12 @@ const TokenHistory = ({ contract, token, color }) => {
         break;
     }
     return renderHistoryDescription({
+      clickableIcon,
       icon,
-      isClickable,
       index,
+      isClickable,
       item,
       label,
-      suffixIcon,
     });
   };
 
@@ -244,7 +244,7 @@ const TokenHistory = ({ contract, token, color }) => {
     index,
     item,
     label,
-    suffixIcon,
+    clickableIcon,
   }) => {
     let isFirst = index === 0;
     let isLast = index === tokenHistory.length - 1;
@@ -256,7 +256,13 @@ const TokenHistory = ({ contract, token, color }) => {
 
     return (
       // when the token history isShort, invert the horizontal scroll so the history is pinned to the left instead of right
-      <Column style={(isShort && !isFirst) || (!isShort && !isLast) ? { marginLeft: 19 } : {}}>
+      <Column
+        style={
+          (isShort && !isFirst) || (!isShort && !isLast)
+            ? { marginLeft: 19 }
+            : {}
+        }
+      >
         {tokenHistory.length > 1 && (
           <Row
             style={{
@@ -273,7 +279,9 @@ const TokenHistory = ({ contract, token, color }) => {
                 width: 10,
               }}
             />
-            {((!isShort && !isFirst) || (isShort && !isLast)) && <Timeline color={color} />}
+            {((!isShort && !isFirst) || (isShort && !isLast)) && (
+              <Timeline color={color} />
+            )}
           </Row>
         )}
         <Column>
@@ -283,14 +291,21 @@ const TokenHistory = ({ contract, token, color }) => {
           <ButtonPressAnimation
             disabled={!isClickable}
             hapticType="selection"
-            onPress={() => handlePress(item.toAccountEthAddress, item.toAccount)}
+            onPress={() =>
+              handlePress(item.toAccountEthAddress, item.toAccount)
+            }
             scaleTo={0.92}
           >
             <Row style={{ marginTop: -3 }}>
-              <AccentText color={color} style={{ lineHeight: 20 }}>{icon}</AccentText>
-              <AccentText color={colors.whiteLabel} style={{ marginLeft: 2, lineHeight: 20 }}>
+              <AccentText color={color} style={{ lineHeight: 20 }}>
+                {icon}
+              </AccentText>
+              <AccentText
+                color={colors.whiteLabel}
+                style={{ lineHeight: 20, marginLeft: 2 }}
+              >
                 {label}
-                {isClickable && suffixIcon}
+                {isClickable && clickableIcon}
               </AccentText>
             </Row>
           </ButtonPressAnimation>
@@ -302,7 +317,7 @@ const TokenHistory = ({ contract, token, color }) => {
   return (
     <MaskedView maskElement={<TokenHistoryEdgeFade />}>
       <FlatList
-        contentContainerStyle={{paddingLeft: 19, paddingRight: 19}}
+        contentContainerStyle={{ paddingLeft: 19, paddingRight: 19 }}
         data={tokenHistory}
         horizontal
         inverted={tokenHistory.length > 2}

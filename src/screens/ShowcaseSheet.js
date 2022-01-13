@@ -40,7 +40,9 @@ const LoadingWrapper = styled.View`
 `;
 
 export default function ShowcaseScreen() {
-  const { params: { address: addressOrDomain, backupAddress } = {} } = useRoute();
+  const {
+    params: { address: addressOrDomain, backupAddress } = {},
+  } = useRoute();
 
   const [userData, setUserData] = useState(null);
   const [accountAddress, setAcccountAddress] = useState(null);
@@ -49,11 +51,13 @@ export default function ShowcaseScreen() {
 
   useEffect(() => {
     const init = async () => {
-      const address = backupAddress ? backupAddress : await resolveNameOrAddress(addressOrDomain);
+      const address = backupAddress
+        ? backupAddress
+        : await resolveNameOrAddress(addressOrDomain);
       setAcccountAddress(address?.toLowerCase());
     };
     init();
-  }, [addressOrDomain]);
+  }, [addressOrDomain, backupAddress]);
 
   useEffect(() => {
     accountAddress && dispatch(fetchUniqueTokens(accountAddress));
