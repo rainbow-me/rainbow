@@ -147,7 +147,7 @@ export default function styled(Component) {
           forwardedProps.style = [generatedStyles];
         }
 
-        forwardedProps.style.push(css);
+        forwardedProps.style.push(props.css);
       }
 
       return React.createElement(elementToBeCreated, forwardedProps);
