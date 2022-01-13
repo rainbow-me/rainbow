@@ -66,7 +66,10 @@ export default function useInitializeWallet() {
         // Load the network first
         await dispatch(settingsLoadNetwork());
 
+        // When the `seedPhrase` is not defined in the args, then
+        // this means it's a new fresh wallet created by the user.
         const defaultIsNew = typeof seedPhrase === 'undefined';
+
         const { isNew, walletAddress } = await walletInit(
           seedPhrase,
           color,
