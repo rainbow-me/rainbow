@@ -1,11 +1,13 @@
 import { times } from 'lodash';
 import React, { useMemo } from 'react';
+import { RefreshControl, ScrollView } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import AddFundsInterstitial from '../AddFundsInterstitial';
 import { FabWrapperBottomPosition } from '../fab';
 import { Centered, Column } from '../layout';
 import AssetListHeader, { AssetListHeaderHeight } from './AssetListHeader';
 import AssetListItemSkeleton from './AssetListItemSkeleton';
+import { useRefreshAccountData } from '@rainbow-me/hooks';
 import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 
@@ -29,31 +31,39 @@ const EmptyAssetList = ({
     return offset * -1;
   }, [bottomInset, title]);
 
+  const { refresh, isRefreshing } = useRefreshAccountData();
+
   return (
-    <Container {...props}>
-      <Centered flex={1}>
-        {isWalletEthZero ? (
-          <AddFundsInterstitial
-            network={network}
-            offsetY={interstitialOffset}
-          />
-        ) : (
-          <React.Fragment>
-            {title && <AssetListHeader title={title} />}
-            <Column cover>
-              {times(skeletonCount, index => (
-                <AssetListItemSkeleton
-                  animated={!isWalletEthZero}
-                  descendingOpacity={descendingOpacity || isWalletEthZero}
-                  index={index}
-                  key={`skeleton${index}`}
-                />
-              ))}
-            </Column>
-          </React.Fragment>
-        )}
-      </Centered>
-    </Container>
+    <ScrollView
+      refreshControl={
+        <RefreshControl onRefresh={refresh} refreshing={isRefreshing} />
+      }
+    >
+      <Container {...props}>
+        <Centered flex={1}>
+          {isWalletEthZero ? (
+            <AddFundsInterstitial
+              network={network}
+              offsetY={interstitialOffset}
+            />
+          ) : (
+            <React.Fragment>
+              {title && <AssetListHeader title={title} />}
+              <Column cover>
+                {times(skeletonCount, index => (
+                  <AssetListItemSkeleton
+                    animated={!isWalletEthZero}
+                    descendingOpacity={descendingOpacity || isWalletEthZero}
+                    index={index}
+                    key={`skeleton${index}`}
+                  />
+                ))}
+              </Column>
+            </React.Fragment>
+          )}
+        </Centered>
+      </Container>
+    </ScrollView>
   );
 };
 

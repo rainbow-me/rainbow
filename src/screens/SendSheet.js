@@ -40,7 +40,6 @@ import {
   useGas,
   useMaxInputBalance,
   usePrevious,
-  useRefreshAccountData,
   useSendableUniqueTokens,
   useSendSavingsAccount,
   useSendSheetInputRefs,
@@ -117,7 +116,6 @@ export default function SendSheet(props) {
   const { accountAddress, nativeCurrency, network } = useAccountSettings();
 
   const savings = useSendSavingsAccount();
-  const fetchData = useRefreshAccountData();
   const { hiddenCoins, pinnedCoins } = useCoinListEditOptions();
   const [toAddress, setToAddress] = useState();
   const [amountDetails, setAmountDetails] = useState({
@@ -830,7 +828,6 @@ export default function SendSheet(props) {
         )}
         {showAssetList && (
           <SendAssetList
-            fetchData={fetchData}
             hiddenCoins={hiddenCoins}
             nativeCurrency={nativeCurrency}
             network={network}

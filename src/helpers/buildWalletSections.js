@@ -225,7 +225,6 @@ const coinEditContextMenu = (
   sortedAssets,
   balanceSectionData,
   isCoinListEdited,
-  currentAction,
   isLoadingAssets,
   sortedAssetsCount,
   totalValue,
