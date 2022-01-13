@@ -222,9 +222,8 @@ export default function TransactionConfirmationScreen() {
 
   const getNextNonce = useCurrentNonce(accountInfo.address, currentNetwork);
 
-
   const isTestnet = useMemo(() => {
-    return isTestnet(currentNetwork);
+    return isTestnetNetwork(currentNetwork);
   }, [currentNetwork]);
 
   const isL2 = useMemo(() => {
@@ -239,11 +238,11 @@ export default function TransactionConfirmationScreen() {
 
   useEffect(() => {
     const initProvider = async () => {
-      const p = await getProviderForNetwork(network);
+      const p = await getProviderForNetwork(currentNetwork);
       setProvider(p);
     };
     currentNetwork && initProvider();
-  }, [isL2, isTestnet, network]);
+  }, [isL2, isTestnet, currentNetwork]);
 
   useEffect(() => {
     const getNativeAsset = async () => {
@@ -254,7 +253,7 @@ export default function TransactionConfirmationScreen() {
       provider && setNativeAsset(asset);
     };
     currentNetwork && getNativeAsset();
-  }, [accountInfo.address, currentNetwork]);
+  }, [accountInfo.address, currentNetwork, provider]);
 
   const {
     gasLimit,
@@ -313,7 +312,7 @@ export default function TransactionConfirmationScreen() {
     navigate(Routes.EXPLAIN_SHEET, {
       type: currentNetwork,
     });
-  }, [isTestnet, navigate, network]);
+  }, [isTestnet, navigate, currentNetwork]);
 
   const fetchMethodName = useCallback(
     async data => {
@@ -716,37 +715,32 @@ export default function TransactionConfirmationScreen() {
     method,
     params,
     selectedGasFee,
-    currentNetwork,
     gasLimit,
+    getNextNonce,
+    currentNetwork,
     provider,
     accountInfo.address,
     callback,
+    requestId,
     closeScreen,
-    dappName,
-    dappScheme,
-    dappUrl,
-    dataAddNewTransaction,
-    dispatch,
+    displayDetails?.request?.value,
     displayDetails?.request?.asset,
     displayDetails?.request?.from,
     displayDetails?.request?.to,
-    displayDetails?.request?.value,
-    formattedDappUrl,
-    gasLimit,
-    isAuthenticated,
-    isTestnet,
-    method,
     nativeAsset,
-    network,
-    onCancel,
-    params,
-    peerId,
-    provider,
+    dappName,
+    accountAddress,
+    dispatch,
+    dataAddNewTransaction,
     removeRequest,
-    requestId,
-    selectedGasFee,
-    switchToWalletWithAddress,
     walletConnectSendStatus,
+    peerId,
+    switchToWalletWithAddress,
+    onCancel,
+    dappScheme,
+    dappUrl,
+    formattedDappUrl,
+    isAuthenticated,
   ]);
 
   const handleSignMessage = useCallback(async () => {
