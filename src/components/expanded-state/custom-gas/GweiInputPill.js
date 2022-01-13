@@ -96,6 +96,7 @@ function GweiInputPill(
       <GweiPill>
         <Row alignSelf="center" marginHorizontal={-40}>
           <GweiNumberInput
+            allowFontScaling={false}
             contextMenuHidden
             mask="[9999]{.}[999]"
             onBlur={onBlur}

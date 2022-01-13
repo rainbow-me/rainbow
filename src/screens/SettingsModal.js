@@ -76,7 +76,7 @@ const SettingsPages = {
   },
   dev: {
     component: IS_DEV ? DevSection : UserDevSection,
-    getTitle: () => lang.t('settings.developer'),
+    getTitle: () => lang.t('settings.dev'),
     key: 'DevSection',
   },
   language: {
