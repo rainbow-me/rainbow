@@ -25,7 +25,6 @@ import {
   useInitializeWallet,
   useLoadGlobalLateData,
   usePortfolios,
-  useRefreshAccountData,
   useUserAccounts,
   useWallets,
   useWalletSectionsData,
@@ -59,7 +58,6 @@ export default function WalletScreen() {
   const [portfoliosFetched, setPortfoliosFetched] = useState(false);
   const [fetchedCharts, setFetchedCharts] = useState(false);
   const initializeWallet = useInitializeWallet();
-  const refreshAccountData = useRefreshAccountData();
   const { isCoinListEdited } = useCoinListEdited();
   const scrollViewTracker = useValue(0);
   const { isReadOnlyWallet } = useWallets();
@@ -196,7 +194,6 @@ export default function WalletScreen() {
         </HeaderOpacityToggler>
         <AssetList
           disableRefreshControl={isLoadingAssets}
-          fetchData={refreshAccountData}
           isEmpty={isAccountEmpty || !!params?.emptyWallet}
           isWalletEthZero={isWalletEthZero}
           network={network}

@@ -157,7 +157,9 @@ export default function BackupSheet() {
         return (
           //TODO: ADD CloudPlatform to back_up.description
           <BackupSheetSection
-            descriptionText={lang.t('modal.back_up.imported.description')}
+            descriptionText={lang.t('modal.back_up.imported.description', {
+              cloudPlatformName: cloudPlatform,
+            })}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={goBack}
             primaryLabel={`􀙶 ${lang.t('modal.back_up.imported.button.back_up', {
@@ -180,7 +182,9 @@ export default function BackupSheet() {
       default:
         return (
           <BackupSheetSection
-            descriptionText={lang.t('modal.back_up.default.description')}
+            descriptionText={lang.t('modal.back_up.default.description', {
+              cloudPlatformName: cloudPlatform,
+            })}
             onPrimaryAction={onIcloudBackup}
             onSecondaryAction={onManualBackup}
             primaryLabel={`􀙶 ${lang.t('modal.back_up.default.button.cloud', {
