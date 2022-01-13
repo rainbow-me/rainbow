@@ -191,10 +191,11 @@ export const walletInit = async (
   name = null,
   overwrite = false,
   checkedWallet = null,
-  network: string
+  network: string,
+  defaultIsNew: boolean = false
 ): Promise<WalletInitialized> => {
   let walletAddress = null;
-  let isNew = false;
+  let isNew = defaultIsNew;
   // Importing a seedphrase
   if (!isEmpty(seedPhrase)) {
     const wallet = await createWallet(
@@ -214,7 +215,9 @@ export const walletInit = async (
     const wallet = await createWallet();
     walletAddress = wallet?.address;
     isNew = true;
-    await saveAccountEmptyState(true, walletAddress?.toLowerCase(), network);
+  }
+  if (isNew) {
+    saveAccountEmptyState(true, walletAddress?.toLowerCase(), network);
   }
   return { isNew, walletAddress };
 };

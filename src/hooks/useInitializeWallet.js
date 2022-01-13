@@ -66,13 +66,15 @@ export default function useInitializeWallet() {
         // Load the network first
         await dispatch(settingsLoadNetwork());
 
+        const defaultIsNew = typeof seedPhrase === 'undefined';
         const { isNew, walletAddress } = await walletInit(
           seedPhrase,
           color,
           name,
           overwrite,
           checkedWallet,
-          network
+          network,
+          defaultIsNew
         );
 
         logger.sentry('walletInit returned ', {
