@@ -23,6 +23,7 @@ const Container = styled(Column)`
   opacity: 1;
   overflow: ${({ overflow }) => overflow};
   z-index: 1;
+  transform: translateY(${({ translateY = 0 }) => translateY}px);
 `;
 
 const FloatingPanel = ({

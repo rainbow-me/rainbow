@@ -33,7 +33,7 @@ export type CallbackType = {
 export interface PathData {
   path: string;
   parsed: null | Path;
-  points: Point[];
+  points: (Point & { originalY: number; originalX: number })[];
   data: Point[];
   smallestX?: Point;
   smallestY?: Point;
