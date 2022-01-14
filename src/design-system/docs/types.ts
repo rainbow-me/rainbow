@@ -19,6 +19,7 @@ export type Example = {
   name: string;
   subTitle?: string;
   Example?: () => Source<React.ReactChild>;
+  examples?: Example[];
 };
 
 export type Meta = {

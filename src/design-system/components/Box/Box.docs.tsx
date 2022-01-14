@@ -96,7 +96,32 @@ const docs: DocsType = {
         </Docs.Text>
       ),
       showFrame: true,
-      examples: [examples.shadowsWithSizes, examples.shadowsWithColors],
+      examples: [
+        examples.shadowsWithSizes,
+        {
+          ...examples.shadowsWithColors,
+          description: (
+            <Docs.Text>
+              Passing a valid shadow color (e.g. <Docs.Code>accent</Docs.Code>{' '}
+              or <Docs.Code>swap</Docs.Code>) as a third parameter to the{' '}
+              <Docs.Code>shadow</Docs.Code> prop string, will apply a colored
+              glow to the shadow.
+            </Docs.Text>
+          ),
+        },
+        {
+          ...examples.shadowsWithCustom,
+          description: (
+            <Docs.Text>
+              The <Docs.Code>shadow</Docs.Code> prop also accepts a custom
+              shadow in the form of an array of shadow properties. The shadows
+              are applied as a stack, from top to bottom, meaning that the first
+              element of the array is the most front facing shadow, and the last
+              is the back facing shadow.
+            </Docs.Text>
+          ),
+        },
+      ],
     },
     {
       name: 'Composition',

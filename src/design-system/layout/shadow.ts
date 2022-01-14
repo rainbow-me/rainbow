@@ -114,20 +114,6 @@ export const shadows = {
       opacity: 0.2,
     },
   ] as ShadowValue,
-  'rainbow': [
-    {
-      color: { custom: 'red' },
-      offset: { x: 0, y: 5 },
-      blur: 15,
-      opacity: 0.4,
-    },
-    {
-      color: { custom: 'red' },
-      offset: { x: 0, y: 10 },
-      blur: 30,
-      opacity: 0.2,
-    },
-  ] as ShadowValue,
 } as const;
 export type ShadowVariant = keyof typeof shadows;
 

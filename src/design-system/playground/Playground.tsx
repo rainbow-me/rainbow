@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import useHideSplashScreen from '../../hooks/useHideSplashScreen';
-import { Heading, Inline, Inset, Stack } from '../';
+import { Heading, Inline, Inset, Stack, Text } from '../';
 import backgroundPlayground from '../components/BackgroundProvider/BackgroundProvider.playground';
 import bleedPlayground from '../components/Bleed/Bleed.playground';
 import boxPlayground from '../components/Box/Box.playground';
@@ -20,7 +20,7 @@ import rowPlayground from '../components/Row/Row.playground';
 import stackPlayground from '../components/Stack/Stack.playground';
 import textPlayground from '../components/Text/Text.playground';
 import textLinkPlayground from '../components/TextLink/TextLink.playground';
-import { Docs, Example } from '../docs/types';
+import { Docs, Example, Meta } from '../docs/types';
 import { getSourceFromExample } from '../docs/utils/getSourceFromExample';
 
 const allDocs = [
@@ -56,11 +56,49 @@ const CodePreview = ({ Example }: { Example: Example['Example'] }) => {
   return <>{element}</>;
 };
 
+const ExamplePreview = ({
+  name,
+  subTitle,
+  meta,
+  Example,
+  examples,
+}: Example & { meta: Meta }) => {
+  return (
+    <Stack space="19px">
+      {subTitle ? (
+        <Text size="16px" weight="medium">
+          {subTitle}
+        </Text>
+      ) : (
+        <Heading size="18px" weight="bold">
+          {name}
+        </Heading>
+      )}
+      {Example && (
+        <View
+          style={
+            meta.category === 'Layout' && meta.name !== 'Box'
+              ? styles.layoutContainer
+              : undefined
+          }
+        >
+          <CodePreview Example={Example} />
+        </View>
+      )}
+      {examples?.map((example, i) => (
+        <Inset key={i} vertical="12px">
+          <ExamplePreview {...example} meta={meta} />
+        </Inset>
+      ))}
+    </Stack>
+  );
+};
+
 const DocsRow = ({ meta, examples }: Docs) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <Stack space="30px">
+    <Stack space="42px">
       <TouchableOpacity
         onPress={useCallback(() => setOpen(x => !x), [setOpen])}
       >
@@ -72,22 +110,16 @@ const DocsRow = ({ meta, examples }: Docs) => {
         </Inline>
       </TouchableOpacity>
       {open
-        ? examples?.map(({ name, Example }, index) =>
-            Example ? (
-              <Stack key={index} space="12px">
-                <Heading size="18px" weight="bold">
-                  {name}
-                </Heading>
-                <View
-                  style={
-                    meta.category === 'Layout' && meta.name !== 'Box'
-                      ? styles.layoutContainer
-                      : undefined
-                  }
-                >
-                  <CodePreview Example={Example} />
-                </View>
-              </Stack>
+        ? examples?.map(({ name, subTitle, Example, examples }, index) =>
+            Example || examples ? (
+              <ExamplePreview
+                Example={Example}
+                examples={examples}
+                key={index}
+                meta={meta}
+                name={name}
+                subTitle={subTitle}
+              />
             ) : null
           )
         : null}
