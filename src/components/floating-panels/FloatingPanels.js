@@ -14,7 +14,7 @@ const FloatingPanels = React.forwardRef(
       margin={margin}
       pointerEvents="box-none"
       ref={ref}
-      style={css}
+      style={[css, props.style]}
     />
   )
 );

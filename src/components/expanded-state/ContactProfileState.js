@@ -160,7 +160,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
         <CopyTooltip
           onHide={handleTriggerFocusInput}
           textToCopy={address}
-          tooltipText={lang.t('wallet.settings.copy_address')}
+          tooltipText={lang.t('wallet.settings.copy_address_capitalized')}
         >
           {isValidDomainFormat(address) ? (
             <ENSAbbreviation ens={address} />

@@ -1,0 +1,33 @@
+{
+  "buildFiles": [
+    "/Users/osdnk/work/rainbow-priv/src/rainbow-list/android/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/osdnk/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja",
+      "-C",
+      "/Users/osdnk/work/rainbow-priv/src/rainbow-list/android/.cxx/cmake/debug/x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/osdnk/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja",
+    "-C",
+    "/Users/osdnk/work/rainbow-priv/src/rainbow-list/android/.cxx/cmake/debug/x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "rnultimatelist-Debug-x86": {
+      "artifactName": "rnultimatelist",
+      "buildCommandComponents": [
+        "/Users/osdnk/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja",
+        "-C",
+        "/Users/osdnk/work/rainbow-priv/src/rainbow-list/android/.cxx/cmake/debug/x86",
+        "rnultimatelist"
+      ],
+      "abi": "x86",
+      "output": "/Users/osdnk/work/rainbow-priv/src/rainbow-list/android/build/intermediates/cmake/debug/obj/x86/librnultimatelist.so",
+      "runtimeFiles": []
+    }
+  }
+}

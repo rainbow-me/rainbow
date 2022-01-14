@@ -61,7 +61,7 @@ export default class SendAssetList extends React.Component {
     const { assets } = buildCoinsList(
       sortedAssets,
       nativeCurrency,
-      true,
+      false,
       pinnedCoins,
       hiddenCoins
     );

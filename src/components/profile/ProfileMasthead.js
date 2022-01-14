@@ -187,7 +187,7 @@ export default function ProfileMasthead({
           onPress={handlePressCopyAddress}
           radiusWrapperStyle={{ marginRight: 10, width: 150 }}
           scaleTo={0.88}
-          text={lang.t('wallet.settings.copy_address')}
+          text={lang.t('wallet.settings.copy_address_capitalized')}
           width={127}
           wrapperProps={{
             containerStyle: {

@@ -1,0 +1,13 @@
+# ninja log v5
+1	507	1638202295	CMakeFiles/rnultimatelist.dir/Users/osdnk/work/rainbow-priv/src/rainbow-list/cpp/ShareableNativeValue.cpp.o	215a5bdb7f890c51
+1	508	1638202295	CMakeFiles/rnultimatelist.dir/Users/osdnk/work/rainbow-priv/node_modules/react-native/ReactCommon/jsi/jsi/jsi.cpp.o	6599dc8987e01e8b
+1	772	1638202296	CMakeFiles/rnultimatelist.dir/Users/osdnk/work/rainbow-priv/src/rainbow-list/cpp/rainbow-me-ultimate-list.cpp.o	9d8fb6e9ec39272b
+2	1162	1638202296	CMakeFiles/rnultimatelist.dir/Users/osdnk/work/rainbow-priv/node_modules/react-native/ReactCommon/jsi/jsi/JSIDynamic.cpp.o	8491a928b53e3e61
+1	1451	1638202296	CMakeFiles/rnultimatelist.dir/cpp-adapter.cpp.o	d95c8a26a209c799
+1451	1552	1638202296	../../../../build/intermediates/cmake/debug/obj/x86/librnultimatelist.so	d007c38d6727b969
+3	741	1638211812	CMakeFiles/rnultimatelist.dir/Users/osdnk/work/rainbow-priv/src/rainbow-list/cpp/rainbow-me-ultimate-list.cpp.o	9d8fb6e9ec39272b
+3	1409	1638211813	CMakeFiles/rnultimatelist.dir/cpp-adapter.cpp.o	d95c8a26a209c799
+1409	1510	1638211813	../../../../build/intermediates/cmake/debug/obj/x86/librnultimatelist.so	d007c38d6727b969
+4	759	1638262978	CMakeFiles/rnultimatelist.dir/Users/osdnk/work/rainbow-priv/src/rainbow-list/cpp/rainbow-me-ultimate-list.cpp.o	9d8fb6e9ec39272b
+3	1429	1638262979	CMakeFiles/rnultimatelist.dir/cpp-adapter.cpp.o	d95c8a26a209c799
+1430	1538	1638262979	../../../../build/intermediates/cmake/debug/obj/x86/librnultimatelist.so	d007c38d6727b969

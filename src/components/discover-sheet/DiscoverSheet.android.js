@@ -115,6 +115,9 @@ const DiscoverSheet = (_, forwardedRef) => {
           animatedPosition={sheetPosition}
           animationDuration={300}
           backgroundComponent={CustomBackground}
+          enableContentPanningGesture={
+            !headerButtonsHandlers.isSearchModeEnabled
+          }
           failOffsetX={[-10, 10]}
           handleComponent={CustomHandle}
           index={1}

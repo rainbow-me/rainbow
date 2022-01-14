@@ -1,0 +1,4 @@
+ninja: Entering directory `/Users/osdnk/work/rainbow-priv/src/rainbow-list/android/.cxx/cmake/debug/armeabi-v7a'
+[1/3] Building CXX object CMakeFiles/rnultimatelist.dir/Users/osdnk/work/rainbow-priv/src/rainbow-list/cpp/rainbow-me-ultimate-list.cpp.o
+[2/3] Building CXX object CMakeFiles/rnultimatelist.dir/cpp-adapter.cpp.o
+[3/3] Linking CXX shared library ../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/librnultimatelist.so
