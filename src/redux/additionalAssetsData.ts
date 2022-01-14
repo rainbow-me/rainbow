@@ -32,8 +32,10 @@ export const additionalDataCoingeckoIds = async (
   // @ts-ignore
   if (Object.keys(getState().additionalAssetsData.coingeckoIds).length === 0) {
     const idMap = await getCoingeckoIds();
-    idMap['eth'] = 'ethereum';
-    dispatch({ payload: idMap, type: ADDITIONAL_ASSET_DATA_COINGECKO_IDS });
+    if (idMap) {
+      idMap['eth'] = 'ethereum';
+      dispatch({ payload: idMap, type: ADDITIONAL_ASSET_DATA_COINGECKO_IDS });
+    }
   }
 };
 
