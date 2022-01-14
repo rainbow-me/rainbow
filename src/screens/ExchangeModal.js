@@ -1,7 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { isEmpty } from 'lodash';
 import React, {
-  Fragment,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -13,7 +12,6 @@ import {
   InteractionManager,
   Keyboard,
   NativeModules,
-  Platform,
 } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
@@ -66,24 +64,19 @@ const FloatingPanels = ios
   ? AnimatedExchangeFloatingPanels
   : ExchangeFloatingPanels;
 
-const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
+const Wrapper = KeyboardFixedOpenLayout;
 
 const InnerWrapper = styled(Centered).attrs({
   direction: 'column',
-})`
-  ${ios
-    ? position.sizeAsObject('100%')
-    : `
-    height: ${Platform.select({ android: '540', ios: '500' })}px;
-    top: 0;
-  `};
-  background-color: ${({ theme: { colors } }) => colors.transparent};
-  ${({ isSmallPhone }) => ios && isSmallPhone && `max-height: 354;`};
-`;
+})(({ isSmallPhone, theme: { colors } }) => ({
+  backgroundColor: colors.yellow,
+  ...(ios ? position.sizeAsObject('100%') : position.sizeAsObject('100%')),
+  ...(ios && isSmallPhone && { maxHeight: 354 }),
+}));
 
-const Spacer = styled.View`
-  height: 20;
-`;
+const Spacer = styled.View({
+  height: 20,
+});
 
 const getInputHeaderTitle = (type, defaultInputAsset) => {
   switch (type) {
@@ -546,6 +539,7 @@ export default function ExchangeModal({
             <ExchangeHeader testID={testID} title={title} />
             <ExchangeInputField
               disableInputCurrencySelection={isWithdrawal}
+              editable={!!inputCurrency}
               inputAmount={inputAmountDisplay}
               inputCurrencyAddress={inputCurrency?.address}
               inputCurrencySymbol={inputCurrency?.symbol}
@@ -562,6 +556,7 @@ export default function ExchangeModal({
             />
             {showOutputField && (
               <ExchangeOutputField
+                editable={!!outputCurrency}
                 onFocus={handleFocus}
                 onPressSelectOutputCurrency={navigateToSelectOutputCurrency}
                 outputAmount={outputAmountDisplay}
