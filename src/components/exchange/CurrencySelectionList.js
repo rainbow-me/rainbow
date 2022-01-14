@@ -65,7 +65,9 @@ const CurrencySelectionList = (
       {showList && (
         <Centered flex={1}>
           {showNoResults ? (
-            <NoCurrencyResults />
+            loading ? null : (
+              <NoCurrencyResults />
+            )
           ) : (
             <ExchangeAssetList
               footerSpacer={footerSpacer}
