@@ -36,7 +36,7 @@ export const getUniswapV2Pools = async (
 
 export const getUniswapV2Tokens = async (
   addresses: EthereumAddress[]
-): Promise<RainbowToken[]> => {
+): Promise<Record<EthereumAddress, RainbowToken>> => {
   try {
     const key = addresses.join(',');
     if (UniswapAssetsCache.cache[key]) {
@@ -45,14 +45,14 @@ export const getUniswapV2Tokens = async (
       const res = await dispersionApi.post('/dispersion/v1/tokens/uniswap/v2', {
         addresses,
       });
-      UniswapAssetsCache.cache[key] = [...res?.data?.tokens];
+      UniswapAssetsCache.cache[key] = res?.data?.tokens;
       return res?.data?.tokens;
     }
   } catch (error) {
     logger.sentry(`Error fetching uniswap v2 tokens: ${error}`);
     captureException(error);
   }
-  return [];
+  return {};
 };
 
 export const getDPIBalance = async (): Promise<
