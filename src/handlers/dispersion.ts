@@ -10,7 +10,7 @@ import UniswapAssetsCache from '@rainbow-me/utils/uniswapAssetsCache';
 import logger from 'logger';
 
 const dispersionApi = new RainbowFetchClient({
-  baseURL: 'http://localhost:8080',
+  baseURL: 'https://metadata.p.rainbow.me',
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
