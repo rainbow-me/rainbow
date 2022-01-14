@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { forEach } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
@@ -142,11 +143,11 @@ export default function RestoreSheetFirstStep({
         <Column>
           <TextIcon color={colors.purple}>􀑚</TextIcon>
           <TitleRow justify="space-between" width="100%">
-            <Title>Restore with a secret phrase or private key</Title>
+            <Title>{lang.t('wallet.restore.phrase_key.label')}</Title>
             <CaretIcon />
           </TitleRow>
           <DescriptionText>
-            Use your secret phrase from Rainbow or another crypto wallet
+            {lang.t('wallet.restore.phrase_key.description')}
           </DescriptionText>
         </Column>
       </SheetRow>
@@ -161,10 +162,12 @@ export default function RestoreSheetFirstStep({
         <Column>
           <TextIcon color={colors.mintDark}>􀒒</TextIcon>
           <TitleRow justify="space-between" width="100%">
-            <Title>Watch an Ethereum address </Title>
+            <Title>{lang.t('wallet.restore.watch.label')}</Title>
             <CaretIcon />
           </TitleRow>
-          <DescriptionText>Watch a public address or ENS name</DescriptionText>
+          <DescriptionText>
+            {lang.t('wallet.restore.watch.description')}
+          </DescriptionText>
         </Column>
       </SheetRow>
     </Container>

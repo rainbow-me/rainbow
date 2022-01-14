@@ -1,21 +1,38 @@
 import analytics from '@segment/analytics-react-native';
 import { captureException, captureMessage } from '@sentry/react-native';
 import { find, map, toLower } from 'lodash';
-/* eslint-disable-next-line import/no-cycle */
+import { Dispatch } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
 import { dataAddNewTransaction } from './data';
-import { TransactionStatusTypes, TransactionTypes } from '@rainbow-me/entities';
+import { AppGetState, AppState } from './store';
+import {
+  ParsedAddressAsset,
+  RainbowTransaction,
+  TransactionStatusTypes,
+  TransactionTypes,
+} from '@rainbow-me/entities';
 import {
   getPurchaseTransactions,
   savePurchaseTransactions,
 } from '@rainbow-me/handlers/localstorage/accountLocal';
 import { trackWyreOrder, trackWyreTransfer } from '@rainbow-me/handlers/wyre';
-import { WYRE_ORDER_STATUS_TYPES } from '@rainbow-me/helpers/wyreStatusTypes';
-import { AddCashCurrencies, AddCashCurrencyInfo } from '@rainbow-me/references';
+import {
+  WYRE_ORDER_STATUS_TYPES,
+  WyreError,
+  WyreOrderStatusType,
+  WyreReferenceInfo,
+} from '@rainbow-me/helpers/wyreStatusTypes';
+import {
+  AddCashCurrencies,
+  AddCashCurrencyAsset,
+  AddCashCurrencyInfo,
+} from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import maybeReviewAlert from '@rainbow-me/utils/reviewAlert';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
+
 const ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS =
   'addCash/ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS';
 
@@ -35,13 +52,118 @@ const ADD_CASH_ORDER_FAILURE = 'addCash/ADD_CASH_ORDER_FAILURE';
 const ADD_CASH_CLEAR_STATE = 'addCash/ADD_CASH_CLEAR_STATE';
 
 // -- Actions ---------------------------------------- //
-let orderStatusHandle = null;
-let transferHashHandle = null;
+
+/**
+ * Represents the state of the `addCash` reducer.
+ */
+interface AddCashState {
+  /**
+   * The status of the current Wyre order.
+   */
+  currentOrderStatus: null | WyreOrderStatusType;
+
+  /**
+   * The current Wyre transfer ID.
+   */
+  currentTransferId: null | string;
+
+  /**
+   * The current Wyre transfer or order error, if there is one.
+   */
+  error: {} | WyreError;
+
+  /**
+   * An array of past transactions.
+   */
+  purchaseTransactions: RainbowTransaction[];
+}
+
+/**
+ * An action for the `addCash` reducer.
+ */
+type AddCashAction =
+  | AddCashUpdatePurchaseTransactionsAction
+  | AddCashClearStateAction
+  | AddCashOrderFailureAction
+  | AddCashUpdateCurrentOrderStatus
+  | AddCashUpdateCurrentTransferId
+  | AddCashResetCurrentOrderAction
+  | AddCashOrderCreationFailureAction;
+
+/**
+ * The action for updating the `purchaseTransactions` field.
+ */
+interface AddCashUpdatePurchaseTransactionsAction {
+  type: typeof ADD_CASH_UPDATE_PURCHASE_TRANSACTIONS;
+  payload: RainbowTransaction[];
+}
+
+/**
+ * The action for clearing the `addCash` state.
+ */
+interface AddCashClearStateAction {
+  type: typeof ADD_CASH_CLEAR_STATE;
+}
+
+/**
+ * The action used when a Wyre error is received.
+ */
+interface AddCashOrderFailureAction {
+  type: typeof ADD_CASH_ORDER_FAILURE;
+  payload: WyreError;
+}
+
+/**
+ * The action for updating the Wyre order status.
+ */
+interface AddCashUpdateCurrentOrderStatus {
+  type: typeof ADD_CASH_UPDATE_CURRENT_ORDER_STATUS;
+  payload: WyreOrderStatusType;
+}
+
+/**
+ * The action for updating the Wyre transfer ID.
+ */
+interface AddCashUpdateCurrentTransferId {
+  type: typeof ADD_CASH_UPDATE_CURRENT_TRANSFER_ID;
+  payload: string;
+}
+
+/**
+ * The action for resetting the current Wyre order.
+ */
+interface AddCashResetCurrentOrderAction {
+  type: typeof ADD_CASH_RESET_CURRENT_ORDER;
+}
+
+/**
+ * The action used when Wyre order creation fails.
+ */
+interface AddCashOrderCreationFailureAction {
+  type: typeof ADD_CASH_ORDER_CREATION_FAILURE;
+  payload: WyreError;
+}
+
+/**
+ * The ID for a timeout that fetches the order status, or null.
+ */
+let orderStatusHandle: null | ReturnType<typeof setTimeout> = null;
+
+/**
+ * The ID for a timeout that fetches a transfer hash, or null.
+ */
+let transferHashHandle: null | ReturnType<typeof setTimeout> = null;
 
 const MAX_TRIES = 10 * 60;
 const MAX_ERROR_TRIES = 3;
 
-export const addCashLoadState = () => async (dispatch, getState) => {
+/**
+ * Loads past purchase transactions into the reducer's state from local storage.
+ */
+export const addCashLoadState = () => async (
+  dispatch: Dispatch<AddCashUpdatePurchaseTransactionsAction>,
+  getState: AppGetState
+) => {
   const { accountAddress, network } = getState().settings;
   try {
     const purchases = await getPurchaseTransactions(accountAddress, network);
@@ -53,13 +175,27 @@ export const addCashLoadState = () => async (dispatch, getState) => {
   } catch (error) {}
 };
 
-export const addCashClearState = () => dispatch => {
+/**
+ * Resets the reducer's state and clears any saved timeouts.
+ */
+export const addCashClearState = () => (
+  dispatch: Dispatch<AddCashClearStateAction>
+) => {
   orderStatusHandle && clearTimeout(orderStatusHandle);
   transferHashHandle && clearTimeout(transferHashHandle);
   dispatch({ type: ADD_CASH_CLEAR_STATE });
 };
 
-export const addCashUpdatePurchases = purchases => (dispatch, getState) => {
+/**
+ * Updates purchase transactions in state.
+ *
+ * @param purchases An array of updated purchase transactions to compare
+ * against the current transactions in state.
+ */
+export const addCashUpdatePurchases = (purchases: RainbowTransaction[]) => (
+  dispatch: Dispatch<AddCashUpdatePurchaseTransactionsAction>,
+  getState: AppGetState
+) => {
   const { purchaseTransactions } = getState().addCash;
   const { accountAddress, network } = getState().settings;
 
@@ -88,7 +224,15 @@ export const addCashUpdatePurchases = purchases => (dispatch, getState) => {
   savePurchaseTransactions(updatedPurchases, accountAddress, network);
 };
 
-const addCashNewPurchaseTransaction = txDetails => (dispatch, getState) => {
+/**
+ * Adds a new purchase transaction to state.
+ *
+ * @param txDetails The new purchase transaction.
+ */
+const addCashNewPurchaseTransaction = (txDetails: RainbowTransaction) => (
+  dispatch: Dispatch<AddCashUpdatePurchaseTransactionsAction>,
+  getState: AppGetState
+) => {
   const { purchaseTransactions } = getState().addCash;
   const { accountAddress, network } = getState().settings;
   const updatedPurchases = [txDetails, ...purchaseTransactions];
@@ -99,21 +243,39 @@ const addCashNewPurchaseTransaction = txDetails => (dispatch, getState) => {
   savePurchaseTransactions(updatedPurchases, accountAddress, network);
 };
 
+/**
+ * Fetches an order's status and updates the state.
+ *
+ * @param referenceInfo The `WyreReferenceInfo` for the order.
+ * @param destCurrency The destination curreny.
+ * @param orderId The Wyre order ID.
+ * @param paymentResponse The Wyre payment response.
+ * @param sourceAmount The source amount.
+ */
 export const addCashGetOrderStatus = (
-  referenceInfo,
-  destCurrency,
-  orderId,
-  paymentResponse,
-  sourceAmount
-) => async (dispatch, getState) => {
+  referenceInfo: WyreReferenceInfo,
+  destCurrency: string,
+  orderId: string,
+  paymentResponse: any,
+  sourceAmount: string
+) => async (
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    | AddCashUpdateCurrentOrderStatus
+    | AddCashOrderFailureAction
+    | AddCashUpdateCurrentTransferId
+  >,
+  getState: AppGetState
+) => {
   logger.log('[add cash] - watch for order status', orderId);
   const { accountAddress, network } = getState().settings;
   const getOrderStatus = async (
-    referenceInfo,
-    destCurrency,
-    orderId,
-    paymentResponse,
-    sourceAmount,
+    referenceInfo: WyreReferenceInfo,
+    destCurrency: string,
+    orderId: string,
+    paymentResponse: any,
+    sourceAmount: string,
     remainingTries = MAX_TRIES,
     remainingErrorTries = MAX_ERROR_TRIES
   ) => {
@@ -213,17 +375,27 @@ export const addCashGetOrderStatus = (
   );
 };
 
+/**
+ * Fetches a transaction's hash and updates state.
+ *
+ * @param referenceInfo The `WyreReferenceInfo`.
+ * @param transferId The Wyre transfer ID.
+ * @param sourceAmount The source amount.
+ */
 const addCashGetTransferHash = (
-  referenceInfo,
-  transferId,
-  sourceAmount
-) => async (dispatch, getState) => {
+  referenceInfo: WyreReferenceInfo,
+  transferId: string,
+  sourceAmount: string
+) => async (
+  dispatch: ThunkDispatch<AppState, unknown, never>,
+  getState: AppGetState
+) => {
   logger.log('[add cash] - watch for transfer hash');
   const { accountAddress, network } = getState().settings;
   const getTransferHash = async (
-    referenceInfo,
-    transferId,
-    sourceAmount,
+    referenceInfo: WyreReferenceInfo,
+    transferId: string,
+    sourceAmount: string,
     remainingTries = MAX_TRIES,
     remainingErrorTries = MAX_ERROR_TRIES
   ) => {
@@ -239,14 +411,19 @@ const addCashGetTransferHash = (
       if (currentAccountAddress !== accountAddress) return;
 
       const destAssetAddress = toLower(
-        AddCashCurrencies[network][destCurrency]
+        AddCashCurrencies[network]?.[destCurrency]
       );
 
       if (transferHash) {
         logger.log('[add cash] - Wyre transfer hash', transferHash);
-        let asset = ethereumUtils.getAccountAsset(destAssetAddress);
+        let asset:
+          | ParsedAddressAsset
+          | undefined
+          | AddCashCurrencyAsset = ethereumUtils.getAccountAsset(
+          destAssetAddress
+        );
         if (!asset) {
-          asset = AddCashCurrencyInfo[network][destAssetAddress];
+          asset = AddCashCurrencyInfo[network]![destAssetAddress];
         }
         const txDetails = {
           amount: destAmount,
@@ -262,10 +439,7 @@ const addCashGetTransferHash = (
           type: TransactionTypes.purchase,
         };
         logger.log('[add cash] - add new pending txn');
-        const newTxDetails = await dispatch(
-          dataAddNewTransaction(txDetails),
-          false
-        );
+        const newTxDetails = await dispatch(dataAddNewTransaction(txDetails));
         dispatch(addCashNewPurchaseTransaction(newTxDetails));
       } else {
         transferHashHandle = setTimeout(
@@ -298,26 +472,40 @@ const addCashGetTransferHash = (
   await getTransferHash(referenceInfo, transferId, sourceAmount);
 };
 
-export const addCashResetCurrentOrder = () => dispatch =>
+/**
+ * Resets the current order in state.
+ */
+export const addCashResetCurrentOrder = () => (
+  dispatch: Dispatch<AddCashResetCurrentOrderAction>
+) =>
   dispatch({
     type: ADD_CASH_RESET_CURRENT_ORDER,
   });
 
-export const addCashOrderCreationFailure = error => dispatch =>
+/**
+ * Updates state to include a new order-creation error.
+ */
+export const addCashOrderCreationFailure = (error: WyreError) => (
+  dispatch: Dispatch<AddCashOrderCreationFailureAction>
+) =>
   dispatch({
     payload: error,
     type: ADD_CASH_ORDER_CREATION_FAILURE,
   });
 
 // -- Reducer ----------------------------------------- //
-const INITIAL_STATE = {
+
+const INITIAL_STATE: AddCashState = {
   currentOrderStatus: null,
   currentTransferId: null,
   error: {},
   purchaseTransactions: [],
 };
 
-export default (state = INITIAL_STATE, action) => {
+export default (
+  state: AddCashState = INITIAL_STATE,
+  action: AddCashAction
+): AddCashState => {
   switch (action.type) {
     case ADD_CASH_RESET_CURRENT_ORDER:
       return {

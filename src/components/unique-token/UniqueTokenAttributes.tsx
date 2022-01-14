@@ -3,13 +3,14 @@ import { sortList } from '../../helpers/sortList';
 import { magicMemo } from '../../utils';
 import Tag from '../Tag';
 import { Inline } from '@rainbow-me/design-system';
+import { UniqueAsset } from '@rainbow-me/entities';
 
 interface AttributeItemProps {
   color: string;
   disableMenu?: boolean;
   trait_type: string;
   slug: string;
-  value: string;
+  value: string | number;
 }
 
 const renderAttributeItem = ({
@@ -34,10 +35,7 @@ interface UniqueTokenAttributesProps {
   color: string;
   disableMenu?: boolean;
   slug: string;
-  traits: {
-    trait_type: string;
-    value: string;
-  }[];
+  traits: UniqueAsset['traits'];
 }
 
 const UniqueTokenAttributes = ({

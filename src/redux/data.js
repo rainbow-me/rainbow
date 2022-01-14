@@ -26,12 +26,9 @@ import {
   UNISWAP_24HOUR_PRICE_QUERY,
   UNISWAP_PRICES_QUERY,
 } from '../apollo/queries';
-/* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
 import { decrementNonce, incrementNonce } from './nonceManager';
-// eslint-disable-next-line import/no-cycle
 import { uniqueTokensRefreshState } from './uniqueTokens';
-/* eslint-disable-next-line import/no-cycle */
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
   AssetTypes,
@@ -812,13 +809,15 @@ export const dataAddNewTransaction = (
         type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
       });
       saveLocalTransactions(_transactions, accountAddress, network);
-      await dispatch(
-        incrementNonce(
-          parsedTransaction.from,
-          parsedTransaction.nonce,
-          parsedTransaction.network
-        )
-      );
+      if (parsedTransaction.from && parsedTransaction.nonce) {
+        await dispatch(
+          incrementNonce(
+            parsedTransaction.from,
+            parsedTransaction.nonce,
+            parsedTransaction.network
+          )
+        );
+      }
       if (
         !disableTxnWatcher ||
         network !== networkTypes.mainnet ||

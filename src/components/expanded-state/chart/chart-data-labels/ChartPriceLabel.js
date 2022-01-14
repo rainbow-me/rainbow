@@ -39,10 +39,10 @@ const AndroidCurrencySymbolLabel = styled(ChartYLabel)`
   top: ${PixelRatio.get() <= 2.625 ? 22 : 23};
 `;
 
-export function formatNative(value, priceSharedValue, nativeSelected) {
+export function formatNative(value, defaultPriceValue, nativeSelected) {
   'worklet';
   if (!value) {
-    return priceSharedValue?.value || '';
+    return defaultPriceValue || '';
   }
   if (value === 'undefined') {
     return nativeSelected?.alignment === 'left'
@@ -71,7 +71,7 @@ export function formatNative(value, priceSharedValue, nativeSelected) {
 export default function ChartPriceLabel({
   defaultValue,
   isNoPriceData,
-  priceSharedValue,
+  priceValue,
 }) {
   const { nativeCurrency } = useAccountSettings();
   const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
@@ -79,13 +79,13 @@ export default function ChartPriceLabel({
   const format = useWorkletCallback(
     value => {
       'worklet';
-      const formatted = formatNative(value, priceSharedValue, nativeSelected);
+      const formatted = formatNative(value, priceValue, nativeSelected);
       if (android) {
         return formatted.replace(/[^\d.,-]/g, '');
       }
       return formatted;
     },
-    [nativeSelected]
+    [nativeSelected, priceValue]
   );
 
   return isNoPriceData ? (

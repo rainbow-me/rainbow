@@ -148,8 +148,10 @@ const UniqueTokenExpandedStateHeader = ({
   const { width: deviceWidth } = useDimensions();
 
   const formattedCollectionUrl = useMemo(() => {
+    // @ts-expect-error external_link could be null or undefined?
     const { hostname } = new URL(asset.external_link);
     const { hostname: hostnameFallback } = new URL(
+      // @ts-expect-error external_url could be null or undefined?
       asset.collection.external_url
     );
     const formattedUrl = hostname || hostnameFallback;
@@ -177,6 +179,7 @@ const UniqueTokenExpandedStateHeader = ({
     } as const;
   }, [asset, formattedCollectionUrl]);
 
+  // @ts-expect-error image_url could be null or undefined?
   const isSVG = isSupportedUriExtension(asset.image_url, ['.svg']);
   const isENS =
     toLower(asset.asset_contract.address) === toLower(ENS_NFT_CONTRACT_ADDRESS);
@@ -218,6 +221,7 @@ const UniqueTokenExpandedStateHeader = ({
             '?search[sortAscending]=true&search[sortBy]=PRICE&search[toggles][0]=BUY_NOW'
         );
       } else if (actionKey === FamilyActionsEnum.collectionWebsite) {
+        // @ts-expect-error external_link and external_url could be null or undefined?
         Linking.openURL(asset.external_link || asset.collection.external_url);
       } else if (actionKey === FamilyActionsEnum.twitter) {
         Linking.openURL(
@@ -290,6 +294,7 @@ const UniqueTokenExpandedStateHeader = ({
         if (idx === 1) {
           if (hasWebsite) {
             Linking.openURL(
+              // @ts-expect-error external_link and external_url could be null or undefined?
               asset.external_link || asset.collection.external_url
             );
           } else if (hasTwitter && twitterIndex === 1) {

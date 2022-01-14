@@ -51,14 +51,24 @@ export default function ChartContextButton({ asset, color }) {
 
   const options = useMemo(
     () => [
-      `📌️ ${currentAction === EditAction.unpin ? 'Unpin' : 'Pin'}`,
-      `🙈️ ${currentAction === EditAction.unhide ? 'Unhide' : 'Hide'}`,
+      `📌️ ${
+        currentAction === EditAction.unpin
+          ? lang.t('wallet.action.unpin')
+          : lang.t('wallet.action.pin')
+      }`,
+      `🙈️ ${
+        currentAction === EditAction.unhide
+          ? lang.t('wallet.action.unhide')
+          : lang.t('wallet.action.hide')
+      }`,
       ...(asset?.isNativeAsset
         ? []
         : [
-            `🔍 View on ${startCase(
-              ethereumUtils.getBlockExplorer(asset?.type)
-            )}`,
+            `🔍 ${lang.t('wallet.action.view_on', {
+              blockExplorerName: startCase(
+                ethereumUtils.getBlockExplorer(asset?.type)
+              ),
+            })}`,
           ]),
       ...(ios ? [lang.t('wallet.action.cancel')] : []),
     ],

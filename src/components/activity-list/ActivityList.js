@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useEffect, useMemo, useState } from 'react';
 import { SectionList } from 'react-native';
 import styled from 'styled-components';
@@ -134,7 +135,7 @@ const ActivityList = ({
   ) : (
     <ActivityListEmptyState
       emoji="👻"
-      label="Your testnet transaction history starts now!"
+      label={lang.t('activity_list.empty_state.testnet_label')}
     >
       {header}
     </ActivityListEmptyState>

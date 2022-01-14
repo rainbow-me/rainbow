@@ -217,6 +217,7 @@ const UniqueTokenExpandedState = ({
   const isSVG = isSupportedUriExtension(lowResUrl, ['.svg']);
 
   const imageColor =
+    // @ts-expect-error image_url could be null or undefined?
     usePersistentDominantColorFromImage(asset.image_url).result ||
     colors.paleBlue;
 
@@ -421,6 +422,7 @@ const UniqueTokenExpandedState = ({
                             !currentPrice
                               ? currentPrice || lastSalePrice
                               : convertAmountToNativeDisplay(
+                                  // @ts-expect-error currentPrice is a number?
                                   parseFloat(currentPrice) * priceOfEth,
                                   nativeCurrency
                                 )}
