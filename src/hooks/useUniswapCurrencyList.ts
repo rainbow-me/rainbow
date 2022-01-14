@@ -1,5 +1,5 @@
 import { rankings } from 'match-sorter';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 // @ts-expect-error ts-migrate(2305) FIXME: Module '"react-native-dotenv"' has no exported mem... Remove this comment to see the full error message
 import { IS_TESTING } from 'react-native-dotenv';
 import { useQuery } from 'react-query';
@@ -233,6 +233,10 @@ const useUniswapCurrencyList = (searchQuery: string) => {
     verifiedAssets,
   ]);
 
+  const lastNonEmptyCurrencyList = useRef<typeof currencyList>([]);
+  lastNonEmptyCurrencyList.current =
+    currencyList.length === 0 ? lastNonEmptyCurrencyList.current : currencyList;
+
   const updateFavorites = useCallback(
     (...data: [string | string[], boolean]) =>
       dispatch(uniswapUpdateFavorites(...data)),
@@ -240,7 +244,9 @@ const useUniswapCurrencyList = (searchQuery: string) => {
   );
 
   return {
-    uniswapCurrencyList: currencyList,
+    uniswapCurrencyList: loading
+      ? lastNonEmptyCurrencyList.current
+      : currencyList,
     uniswapCurrencyListLoading: loading,
     updateFavorites,
   };
