@@ -93,7 +93,6 @@ function addHiddenCoins(coins: any, dispatch: any, address: any) {
   storage.set(storageKey, JSON.stringify(newList));
 }
 
-// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'android'.
 const BACKUP_SHEET_DELAY_MS = android ? 10000 : 3000;
 
 let pendingTransactionsHandle: any = null;
@@ -305,10 +304,10 @@ const genericAssetsFallback = () => async (dispatch: any, getState: any) => {
 
   if (!isEmpty(prices)) {
     Object.keys(prices).forEach(key => {
-      for (let i = 0; i < allAssetsUnique.length; i++) {
-        if (toLower(allAssetsUnique[i].coingecko_id) === toLower(key)) {
+      for (let uniqueAsset of allAssetsUnique) {
+        if (toLower(uniqueAsset.coingecko_id) === toLower(key)) {
           // @ts-expect-error ts-migrate(2339) FIXME: Property 'price' does not exist on type '{ asset_c... Remove this comment to see the full error message
-          allAssetsUnique[i].price = {
+          uniqueAsset.price = {
             // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
             changed_at: prices[key].last_updated_at,
             relative_change_24h:
@@ -357,9 +356,7 @@ export const disableGenericAssetsFallbackIfNeeded = () => {
 
 export const dataResetState = () => (dispatch: any, getState: any) => {
   const { uniswapPricesSubscription } = getState().data;
-  uniswapPricesSubscription &&
-    uniswapPricesSubscription.unsubscribe &&
-    uniswapPricesSubscription.unsubscribe();
+  uniswapPricesSubscription?.unsubscribe?.unsubscribe();
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
   genericAssetsHandle && clearTimeout(genericAssetsHandle);
   dispatch({ type: DATA_CLEAR_STATE });
@@ -591,7 +588,6 @@ export const addressAssetsReceived = (
     asset => asset?.type !== AssetTypes.uniswapV2
   );
 
-  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'null' is not assignable to param... Remove this comment to see the full error message
   const isL2 = assetsNetwork && isL2Network(assetsNetwork);
   if (!isL2 && !assetsNetwork) {
     dispatch(
@@ -836,7 +832,6 @@ export const dataAddNewTransaction = (
     const { accountAddress, nativeCurrency, network } = getState().settings;
     if (
       accountAddressToUpdate &&
-      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'null' is not assignable to param... Remove this comment to see the full error message
       toLower(accountAddressToUpdate) !== toLower(accountAddress)
     )
       return;
@@ -928,10 +923,7 @@ export const dataWatchPendingTransactions = (
           const txObj = await p.getTransaction(txHash);
           // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
           const nonceAlreadyIncluded = currentNonce > tx.nonce;
-          if (
-            (txObj && txObj.blockNumber && txObj.blockHash) ||
-            nonceAlreadyIncluded
-          ) {
+          if ((txObj?.blockNumber && txObj.blockHash) || nonceAlreadyIncluded) {
             // When speeding up a non "normal tx" we need to resubscribe
             // because zerion "append" event isn't reliable
             logger.log('TX CONFIRMED!', txObj);
