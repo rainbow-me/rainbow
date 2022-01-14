@@ -96,12 +96,7 @@ const docs: DocsType = {
         </Docs.Text>
       ),
       showFrame: true,
-      examples: [
-        examples.shadowsWithSizes,
-        examples.shadowsWithColors,
-        examples.shadowsWithCustomColors,
-        examples.shadowsWithCustomSizes,
-      ],
+      examples: [examples.shadowsWithSizes, examples.shadowsWithColors],
     },
     {
       name: 'Composition',

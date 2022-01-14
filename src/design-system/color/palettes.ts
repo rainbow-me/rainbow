@@ -241,5 +241,10 @@ export const textColors = selectForegroundColors(
 );
 export type TextColor = typeof textColors[number];
 
-export const shadowColors = selectForegroundColors('shadow', 'swap', 'action');
+export const shadowColors = selectForegroundColors(
+  'shadow',
+  'accent',
+  'swap',
+  'action'
+);
 export type ShadowColor = typeof shadowColors[number];

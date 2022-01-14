@@ -24,7 +24,7 @@ type Width = Exclude<NonNullable<BoxProps['width']>, 'full'>;
 
 export interface ColumnProps {
   width?: Width | 'content';
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 /**

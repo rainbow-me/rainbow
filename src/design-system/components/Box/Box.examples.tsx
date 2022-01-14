@@ -147,16 +147,27 @@ export const shadowsWithSizes: Example = {
     source(
       <Stack space="30px">
         <Columns space="30px">
+          <Column width="1/3" />
           <Column width="1/3">
-            <Box background="body" padding="15px" shadow="9px light" />
+            <Box background="body" padding="15px" shadow="9px medium" />
           </Column>
         </Columns>
         <Columns space="30px">
+          <Column width="1/3" />
           <Column width="1/3">
             <Box background="body" padding="15px" shadow="12px medium" />
           </Column>
           <Column width="1/3">
             <Box background="body" padding="15px" shadow="12px heavy" />
+          </Column>
+        </Columns>
+        <Columns space="30px">
+          <Column width="1/3">
+            <Box background="body" padding="15px" shadow="21px light" />
+          </Column>
+          <Column width="1/3" />
+          <Column width="1/3">
+            <Box background="body" padding="15px" shadow="21px heavy" />
           </Column>
         </Columns>
         <Columns space="30px">
@@ -174,31 +185,16 @@ export const shadowsWithColors: Example = {
   Example: () =>
     source(
       <Columns space="30px">
-        <Box
-          background="body"
-          padding="15px"
-          shadow="30px heavy"
-          shadowColor="swap"
-        />
-        <Box
-          background="body"
-          padding="15px"
-          shadow="30px heavy"
-          shadowColor="action"
-        />
-        <Box
-          background="body"
-          padding="15px"
-          shadow="30px heavy"
-          shadowColor={['shadow', 'swap']}
-        />
+        <Box background="body" padding="15px" shadow="12px medium accent" />
+        <Box background="body" padding="15px" shadow="21px heavy swap" />
+        <Box background="body" padding="15px" shadow="30px heavy action" />
       </Columns>
     ),
 };
 
-export const shadowsWithCustomSizes: Example = {
+export const shadowsWithCustom: Example = {
   name: 'Shadows',
-  subTitle: 'Custom sizes',
+  subTitle: 'Custom shadows',
   Example: () =>
     source(
       <Columns space="30px">
@@ -226,49 +222,25 @@ export const shadowsWithCustomSizes: Example = {
           shadow={{
             custom: [
               {
+                color: { custom: '#FF54BB' },
                 offset: { x: 0, y: 2 },
-                opacity: 1,
+                opacity: 0.5,
                 blur: 5,
               },
               {
+                color: 'swap',
                 offset: { x: 0, y: 4 },
-                opacity: 1,
+                opacity: 0.5,
                 blur: 10,
               },
               {
-                offset: { x: 0, y: 6 },
-                opacity: 1,
+                color: 'shadow',
+                offset: { x: 0, y: 4 },
+                opacity: 0.5,
                 blur: 15,
               },
             ],
           }}
-          shadowColor={[
-            { custom: '#FF54BB' },
-            { custom: '#00F0FF' },
-            { custom: '#FFB114' },
-          ]}
-        />
-      </Columns>
-    ),
-};
-
-export const shadowsWithCustomColors: Example = {
-  name: 'Shadows',
-  subTitle: 'Custom colors',
-  Example: () =>
-    source(
-      <Columns space="30px">
-        <Box
-          background="body"
-          padding="15px"
-          shadow="12px heavy"
-          shadowColor={{ custom: 'red' }}
-        />
-        <Box
-          background="body"
-          padding="15px"
-          shadow="12px heavy"
-          shadowColor={[{ custom: 'red' }, 'swap']}
         />
       </Columns>
     ),

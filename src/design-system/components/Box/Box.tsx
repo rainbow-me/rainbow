@@ -5,7 +5,12 @@ import {
   CustomColor,
   useForegroundColors,
 } from '../../color/useForegroundColor';
-import { Shadow, ShadowColor, shadows } from '../../layout/shadow';
+import {
+  Shadow,
+  ShadowColor,
+  shadows,
+  ShadowVariant,
+} from '../../layout/shadow';
 import { NegativeSpace, negativeSpace, Space, space } from '../../layout/space';
 import {
   BackgroundProvider,
@@ -92,12 +97,10 @@ export type BoxProps = {
   (
     | {
         background?: BackgroundProviderProps['color'];
-        shadowColor?: never;
         shadow?: never;
       }
     | {
         background: BackgroundProviderProps['color'];
-        shadowColor?: ShadowColor | CustomColor | (ShadowColor | CustomColor)[];
         shadow: Shadow;
       }
   );
@@ -145,8 +148,7 @@ export const Box = forwardRef(function Box(
     paddingRight: paddingRightProp,
     paddingTop: paddingTopProp,
     paddingVertical: paddingVerticalProp,
-    shadowColor: shadowColorProp = 'shadow',
-    shadow: shadowProp,
+    shadow,
     style: styleProp,
     width,
     ...restProps
@@ -169,10 +171,7 @@ export const Box = forwardRef(function Box(
   const paddingTop = resolveToken(space, paddingTopProp);
   const paddingVertical = resolveToken(space, paddingVerticalProp);
 
-  const shadows = useShadow({
-    shadow: shadowProp,
-    shadowColor: shadowColorProp,
-  });
+  const shadows = useShadow(shadow);
 
   const styles = useMemo(() => {
     return {
@@ -286,23 +285,39 @@ export const Box = forwardRef(function Box(
   );
 }) as PolymorphicBox;
 
-function useShadow({
-  shadow: shadowProp,
-  shadowColor: shadowColorProp = 'shadow',
-}: {
-  shadow: BoxProps['shadow'];
-  shadowColor: BoxProps['shadowColor'];
-}) {
-  const shadow = resolveToken(shadows, shadowProp);
+function useShadow(shadowProp: BoxProps['shadow']) {
+  const { shadowVariant, shadowColor } = useMemo(() => {
+    let shadowVariant;
+    let shadowColor: ShadowColor | CustomColor = 'shadow';
 
-  let shadowColors = useMemo(
-    () =>
-      Array.isArray(shadowColorProp)
-        ? [...shadowColorProp].reverse()
-        : [shadowColorProp],
-    [shadowColorProp]
-  );
-  const parsedShadowColors = useForegroundColors(shadowColors);
+    if (typeof shadowProp === 'string') {
+      const shadowMatcher = shadowProp.match(/^(\d*px\s\w+)\s?(\w+$)?/);
+      if (shadowMatcher) {
+        shadowVariant = shadowMatcher[1] as ShadowVariant;
+        shadowColor = shadowMatcher[2] as ShadowColor;
+      } else {
+        shadowVariant = shadowProp as ShadowVariant;
+      }
+    } else if (typeof shadowProp === 'object' && shadowProp.custom) {
+      shadowVariant = shadowProp;
+    }
+
+    return { shadowColor, shadowVariant };
+  }, [shadowProp]);
+
+  const shadow = resolveToken(shadows, shadowVariant);
+
+  const shadowColors = useMemo(() => {
+    if (shadow) {
+      return [...shadow]
+        .reverse()
+        .map(
+          ({ color }, index) => color || (index === 0 ? 'shadow' : shadowColor)
+        );
+    }
+    return [shadowColor];
+  }, [shadow, shadowColor]);
+  const colors = useForegroundColors(shadowColors);
 
   return useMemo(
     () =>
@@ -310,7 +325,7 @@ function useShadow({
         ? [...shadow].reverse().map((item, index) => {
             const { offset, blur, opacity } = item;
             return {
-              color: parsedShadowColors[index],
+              color: colors[index],
               offset: {
                 height: offset.y,
                 width: offset.x,
@@ -320,6 +335,6 @@ function useShadow({
             };
           })
         : undefined,
-    [parsedShadowColors, shadow]
+    [colors, shadow]
   );
 }

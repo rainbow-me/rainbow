@@ -3,10 +3,8 @@ import React from 'react';
 
 import { Playground } from '../../docs/types';
 import source from '../../docs/utils/source.macro';
-import { Column, Columns } from '../Columns/Columns';
 import { Stack } from '../Stack/Stack';
 
-import { Box } from './Box';
 import * as examples from './Box.examples';
 import meta from './Box.meta';
 
@@ -23,10 +21,10 @@ const playground: Playground = {
       Example: () =>
         source(
           <Stack space="30px">
+            {examples.shadows.Example?.()}
             {examples.shadowsWithSizes.Example?.()}
             {examples.shadowsWithColors.Example?.()}
-            {examples.shadowsWithCustomColors.Example?.()}
-            {examples.shadowsWithCustomSizes.Example?.()}
+            {examples.shadowsWithCustom.Example?.()}
           </Stack>
         ),
     },
