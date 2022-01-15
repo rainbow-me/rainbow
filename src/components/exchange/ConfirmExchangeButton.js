@@ -109,8 +109,6 @@ export default function ConfirmExchangeButton({
     label = lang.t('button.confirm_exchange.fetching_details');
   } else if (!isSufficientBalance) {
     label = lang.t('button.confirm_exchange.insufficient_funds');
-  } else if (!isSufficientLiquidity) {
-    label = lang.t('button.confirm_exchange.insufficient_liquidity');
   } else if (isSufficientGas != null && !isSufficientGas) {
     label = lang.t('button.confirm_exchange.insufficient_eth');
   } else if (!isValidGas) {
