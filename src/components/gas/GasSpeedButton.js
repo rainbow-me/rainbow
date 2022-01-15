@@ -31,7 +31,7 @@ import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
-import logger from 'logger';
+
 const {
   GAS_ICONS,
   GasSpeedOrder,
@@ -225,7 +225,6 @@ const GasSpeedButton = ({
   }, []);
 
   const openCustomGasSheet = useCallback(() => {
-    logger.debug('openCustomGasSheet');
     if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
       asset,
@@ -430,7 +429,6 @@ const GasSpeedButton = ({
   }, [gasIsNotReady, handlePressSpeedOption, speedOptions]);
 
   const renderGasSpeedPager = useMemo(() => {
-    logger.debug('renderGasSpeedPager');
     if (showGasOptions) return;
     const label = flashbotsEnabled ? FLASHBOTS : selectedGasFeeOption ?? NORMAL;
     const pager = (
