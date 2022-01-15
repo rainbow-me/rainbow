@@ -1,5 +1,6 @@
 import Clipboard from '@react-native-community/clipboard';
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { useCallback, useRef } from 'react';
 import styled from 'styled-components';
 import Divider from '../Divider';
@@ -186,7 +187,7 @@ export default function ProfileMasthead({
           onPress={handlePressCopyAddress}
           radiusWrapperStyle={{ marginRight: 10, width: 150 }}
           scaleTo={0.88}
-          text="Copy Address"
+          text={lang.t('wallet.settings.copy_address_capitalized')}
           width={127}
           wrapperProps={{
             containerStyle: {
@@ -202,7 +203,7 @@ export default function ProfileMasthead({
           onPress={handlePressReceive}
           radiusWrapperStyle={{ marginRight: 10, width: 104 }}
           scaleTo={0.88}
-          text="Receive"
+          text={lang.t('button.receive')}
           width={81}
           wrapperProps={{
             containerStyle: {

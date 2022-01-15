@@ -27,6 +27,7 @@ import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
 import { CurrencySelectionTypes } from '@rainbow-me/helpers';
 import {
+  useCoinListEditOptions,
   useInteraction,
   useMagicAutofocus,
   usePrevious,
@@ -88,6 +89,16 @@ export default function CurrencySelectModal() {
   ]);
 
   const uniswapAssetsInWallet = useUniswapAssetsInWallet();
+  const { hiddenCoins } = useCoinListEditOptions();
+
+  const filteredUniswapAssetsInWallet = useMemo(
+    () =>
+      uniswapAssetsInWallet.filter(
+        ({ uniqueId }) => !hiddenCoins.includes(uniqueId)
+      ),
+    [uniswapAssetsInWallet, hiddenCoins]
+  );
+
   const {
     uniswapCurrencyList,
     uniswapCurrencyListLoading,
@@ -97,12 +108,12 @@ export default function CurrencySelectModal() {
   const getWalletCurrencyList = useCallback(() => {
     if (searchQueryForSearch !== '') {
       const searchResults = searchWalletCurrencyList(
-        uniswapAssetsInWallet,
+        filteredUniswapAssetsInWallet,
         searchQueryForSearch
       );
       return headerlessSection(searchResults);
     } else {
-      return headerlessSection(uniswapAssetsInWallet);
+      return headerlessSection(filteredUniswapAssetsInWallet);
     }
   }, [searchQueryForSearch, uniswapAssetsInWallet]);
 

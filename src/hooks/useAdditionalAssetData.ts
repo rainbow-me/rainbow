@@ -58,7 +58,7 @@ export default function useAdditionalAssetData(
     const id =
       address?.toLowerCase() === 'eth' ? WETH_ADDRESS : address.toLowerCase();
     const uniswapData = await getUniswapV2Tokens([id]);
-    const token = uniswapData?.[0];
+    const token = uniswapData?.[id];
     setTotalLiqudity(token?.totalLiquidity);
   }, [address]);
   const dispatch = useDispatch();

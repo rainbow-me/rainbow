@@ -13,6 +13,7 @@ import {
   InteractionManager,
   Keyboard,
   NativeModules,
+  Platform,
 } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
@@ -41,6 +42,7 @@ import {
   useAccountSettings,
   useBlockPolling,
   useCurrentNonce,
+  useDimensions,
   useGas,
   usePrevious,
   usePriceImpactDetails,
@@ -72,10 +74,11 @@ const InnerWrapper = styled(Centered).attrs({
   ${ios
     ? position.sizeAsObject('100%')
     : `
-    height: 500;
+    height: ${Platform.select({ android: '540', ios: '500' })}px;
     top: 0;
   `};
   background-color: ${({ theme: { colors } }) => colors.transparent};
+  ${({ isSmallPhone }) => ios && isSmallPhone && `max-height: 354;`};
 `;
 
 const Spacer = styled.View`
@@ -110,6 +113,7 @@ export default function ExchangeModal({
   type,
   typeSpecificParams,
 }) {
+  const { isSmallPhone } = useDimensions();
   const dispatch = useDispatch();
   const insets = useSafeArea();
 
@@ -529,7 +533,7 @@ export default function ExchangeModal({
 
   return (
     <Wrapper>
-      <InnerWrapper>
+      <InnerWrapper isSmallPhone={isSmallPhone}>
         <FloatingPanels>
           <FloatingPanel
             overflow="visible"

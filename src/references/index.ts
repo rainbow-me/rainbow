@@ -90,7 +90,9 @@ export const TRANSFER_EVENT_TOPIC_LENGTH = 3;
 export const TRANSFER_EVENT_KECCAK =
   '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 
-export const AddCashCurrencies = {
+export const AddCashCurrencies: {
+  [key in Network]?: { [currency: string]: string };
+} = {
   kovan: {
     DAI: '0xc4375b7de8af5a38a93548eb8453a498222c4ff2',
     ETH: ETH_ADDRESS,
@@ -101,7 +103,13 @@ export const AddCashCurrencies = {
   },
 };
 
-export const AddCashCurrencyInfo = {
+export type AddCashCurrencyAsset = Pick<Asset, 'decimals' | 'name' | 'symbol'>;
+
+export const AddCashCurrencyInfo: {
+  [key in Network]?: {
+    [currency: string]: AddCashCurrencyAsset;
+  };
+} = {
   kovan: {
     '0xc4375b7de8af5a38a93548eb8453a498222c4ff2': {
       decimals: 18,

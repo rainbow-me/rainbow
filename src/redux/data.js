@@ -26,12 +26,9 @@ import {
   UNISWAP_24HOUR_PRICE_QUERY,
   UNISWAP_PRICES_QUERY,
 } from '../apollo/queries';
-/* eslint-disable-next-line import/no-cycle */
 import { addCashUpdatePurchases } from './addCash';
 import { decrementNonce, incrementNonce } from './nonceManager';
-// eslint-disable-next-line import/no-cycle
 import { uniqueTokensRefreshState } from './uniqueTokens';
-/* eslint-disable-next-line import/no-cycle */
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
   AssetTypes,
@@ -341,7 +338,7 @@ const genericAssetsFallback = () => async (dispatch, getState) => {
   }, GENERIC_ASSETS_REFRESH_INTERVAL);
 };
 
-const disableGenericAssetsFallbackIfNeeded = () => {
+export const disableGenericAssetsFallbackIfNeeded = () => {
   if (genericAssetsHandle) {
     clearTimeout(genericAssetsHandle);
   }
@@ -610,18 +607,6 @@ export const addressAssetsReceived = (
     property('uniqueId')
   );
   addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
-
-  // Hide coins with price = 0 that are currently not pinned
-  if (isL2) {
-    const assetsWithNoPrice = map(
-      filter(
-        parsedAssets,
-        asset => asset.price?.value === 0 && asset.network === assetsNetwork
-      ),
-      property('uniqueId')
-    );
-    addHiddenCoins(assetsWithNoPrice, dispatch, accountAddress);
-  }
 };
 
 const subscribeToMissingPrices = addresses => (dispatch, getState) => {
@@ -824,13 +809,15 @@ export const dataAddNewTransaction = (
         type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
       });
       saveLocalTransactions(_transactions, accountAddress, network);
-      await dispatch(
-        incrementNonce(
-          parsedTransaction.from,
-          parsedTransaction.nonce,
-          parsedTransaction.network
-        )
-      );
+      if (parsedTransaction.from && parsedTransaction.nonce) {
+        await dispatch(
+          incrementNonce(
+            parsedTransaction.from,
+            parsedTransaction.nonce,
+            parsedTransaction.network
+          )
+        );
+      }
       if (
         !disableTxnWatcher ||
         network !== networkTypes.mainnet ||
