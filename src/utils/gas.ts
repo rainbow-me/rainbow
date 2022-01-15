@@ -34,11 +34,11 @@ const GAS_TRENDS = {
 export default {
   CUSTOM,
   FAST,
+  FLASHBOTS,
   GAS_ICONS,
   GAS_TRENDS,
   GasSpeedOrder,
   GasTrends,
-  FLASHBOTS,
   NORMAL,
   SLOW,
   URGENT,

@@ -64,6 +64,7 @@ export default function ChartPercentChangeLabel({ ratio, latestChange }) {
   const defaultValue = useMemo(() => format(originalY, data, latestChange), [
     originalY,
     data,
+    latestChange,
   ]);
 
   const textProps = useAnimatedStyle(

@@ -115,7 +115,7 @@ export default function CurrencySelectModal() {
     } else {
       return headerlessSection(filteredUniswapAssetsInWallet);
     }
-  }, [searchQueryForSearch, uniswapAssetsInWallet]);
+  }, [filteredUniswapAssetsInWallet, searchQueryForSearch]);
 
   const currencyList = useMemo(() => {
     let list =
