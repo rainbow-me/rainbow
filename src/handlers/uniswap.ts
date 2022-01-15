@@ -1,6 +1,7 @@
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Wallet } from '@ethersproject/wallet';
 import { get, mapKeys, mapValues, toLower } from 'lodash';
+import { flashbotsEnabled } from '../config/debug';
 import { Token } from '../entities/tokens';
 import { loadWallet } from '../model/wallet';
 import {
@@ -18,6 +19,7 @@ import {
   subtract,
 } from '@rainbow-me/helpers/utilities';
 import { Network } from '@rainbow-me/networkTypes';
+import { gweiToWei } from '@rainbow-me/parsers';
 import { ethUnits, UNISWAP_TESTNET_TOKEN_LIST } from '@rainbow-me/references';
 import { ethereumUtils } from '@rainbow-me/utils';
 import {
@@ -189,12 +191,12 @@ export const executeSwap = async ({
   wallet: Wallet | null;
   permit: boolean;
 }) => {
-  const useFlashbots = false;
   let walletToUse = wallet;
   const network = ethereumUtils.getNetworkFromChainId(chainId);
-  // Switch to the flashbots provider!
   let provider = await getProviderForNetwork(network);
-  if (useFlashbots) {
+
+  // Switch to the flashbots provider if enabled
+  if (flashbotsEnabled) {
     provider = await getFlashbotsProvider();
   }
 
@@ -211,7 +213,11 @@ export const executeSwap = async ({
   const transactionParams = {
     gasLimit: toHex(gasLimit) || undefined,
     maxFeePerGas: toHex(maxFeePerGas) || undefined,
-    maxPriorityFeePerGas: toHex(maxPriorityFeePerGas) || undefined,
+    // Flashbots recommends a priority fee of 3-5
+    // See https://docs.flashbots.net/flashbots-protect/rpc/quick-start#choosing-the-right-gas-price
+    maxPriorityFeePerGas: flashbotsEnabled
+      ? toHex(gweiToWei('5'))
+      : toHex(maxPriorityFeePerGas) || undefined,
     nonce: nonce ? toHex(nonce) : undefined,
   };
   // Wrap Eth
