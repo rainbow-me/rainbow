@@ -30,8 +30,16 @@ import { ETH_ADDRESS, MATIC_MAINNET_ADDRESS } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
 import { fonts, fontWithWidth, margin, padding } from '@rainbow-me/styles';
 import { gasUtils, showActionSheetWithOptions } from '@rainbow-me/utils';
-
-const { GAS_ICONS, GasSpeedOrder, CUSTOM, URGENT, NORMAL, FAST } = gasUtils;
+import logger from 'logger';
+const {
+  GAS_ICONS,
+  GasSpeedOrder,
+  CUSTOM,
+  URGENT,
+  NORMAL,
+  FAST,
+  FLASHBOTS,
+} = gasUtils;
 
 const CustomGasButton = styled(ButtonPressAnimation).attrs({
   align: 'center',
@@ -125,6 +133,7 @@ const GasSpeedButton = ({
   asset,
   bottom = 0,
   currentNetwork,
+  flashbotsEnabled = false,
   horizontalPadding = 19,
   marginBottom = 20,
   speeds = null,
@@ -215,6 +224,7 @@ const GasSpeedButton = ({
   }, []);
 
   const openCustomGasSheet = useCallback(() => {
+    logger.debug('openCustomGasSheet');
     if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
       asset,
@@ -386,9 +396,10 @@ const GasSpeedButton = ({
     speedOptions,
   ]);
 
-  const gasOptionsAvailable = useMemo(() => speedOptions.length > 1, [
-    speedOptions,
-  ]);
+  const gasOptionsAvailable = useMemo(
+    () => !flashbotsEnabled && speedOptions.length > 1,
+    [flashbotsEnabled, speedOptions.length]
+  );
 
   const onDonePress = useCallback(() => {
     if (canGoBack) {
@@ -417,7 +428,9 @@ const GasSpeedButton = ({
   }, [gasIsNotReady, handlePressSpeedOption, speedOptions]);
 
   const renderGasSpeedPager = useMemo(() => {
+    logger.debug('renderGasSpeedPager');
     if (showGasOptions) return;
+    const label = flashbotsEnabled ? FLASHBOTS : selectedGasFeeOption ?? NORMAL;
     const pager = (
       <GasSpeedLabelPager
         colorForAsset={
@@ -430,7 +443,7 @@ const GasSpeedButton = ({
         }
         currentNetwork={currentNetwork}
         dropdownEnabled={gasOptionsAvailable}
-        label={selectedGasFeeOption ?? NORMAL}
+        label={label}
         showGasOptions={showGasOptions}
         showPager
         theme={theme}
@@ -454,6 +467,7 @@ const GasSpeedButton = ({
   }, [
     colors,
     currentNetwork,
+    flashbotsEnabled,
     gasIsNotReady,
     gasOptionsAvailable,
     handlePressMenuItem,
@@ -573,55 +587,57 @@ const GasSpeedButton = ({
           <GasSpeedPagerCentered testID="gas-speed-pager">
             {renderGasSpeedPager}
           </GasSpeedPagerCentered>
-          <Centered>
-            {isL2 ? (
-              <ChainBadgeContainer>
-                <ChainBadge assetType={currentNetwork} position="relative" />
-              </ChainBadgeContainer>
-            ) : showGasOptions ? (
-              <CustomGasButton
-                borderColor={makeColorMoreChill(
-                  rawColorForAsset || colors.appleBlue,
-                  colors.shadowBlack
-                )}
-                onPress={onDonePress}
-                testID="gas-speed-done-button"
-              >
-                <DoneCustomGas
-                  color={
-                    theme !== 'light'
-                      ? colors.whiteLabel
-                      : makeColorMoreChill(
-                          rawColorForAsset || colors.appleBlue,
-                          colors.shadowBlack
-                        )
-                  }
+          {!flashbotsEnabled && (
+            <Centered>
+              {isL2 ? (
+                <ChainBadgeContainer>
+                  <ChainBadge assetType={currentNetwork} position="relative" />
+                </ChainBadgeContainer>
+              ) : showGasOptions ? (
+                <CustomGasButton
+                  borderColor={makeColorMoreChill(
+                    rawColorForAsset || colors.appleBlue,
+                    colors.shadowBlack
+                  )}
+                  onPress={onDonePress}
+                  testID="gas-speed-done-button"
                 >
-                  Done
-                </DoneCustomGas>
-              </CustomGasButton>
-            ) : (
-              <CustomGasButton
-                borderColor={
-                  theme === 'dark'
-                    ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.12)
-                    : colors.alpha(colors.blueGreyDark, 0.06)
-                }
-                onPress={openCustomOptions}
-                testID="gas-speed-custom"
-              >
-                <Symbol
-                  color={
+                  <DoneCustomGas
+                    color={
+                      theme !== 'light'
+                        ? colors.whiteLabel
+                        : makeColorMoreChill(
+                            rawColorForAsset || colors.appleBlue,
+                            colors.shadowBlack
+                          )
+                    }
+                  >
+                    Done
+                  </DoneCustomGas>
+                </CustomGasButton>
+              ) : (
+                <CustomGasButton
+                  borderColor={
                     theme === 'dark'
-                      ? colors.whiteLabel
-                      : colors.alpha(colors.blueGreyDark, 0.8)
+                      ? colors.alpha(darkModeThemeColors.blueGreyDark, 0.12)
+                      : colors.alpha(colors.blueGreyDark, 0.06)
                   }
+                  onPress={openCustomOptions}
+                  testID="gas-speed-custom"
                 >
-                  􀌆
-                </Symbol>
-              </CustomGasButton>
-            )}
-          </Centered>
+                  <Symbol
+                    color={
+                      theme === 'dark'
+                        ? colors.whiteLabel
+                        : colors.alpha(colors.blueGreyDark, 0.8)
+                    }
+                  >
+                    􀌆
+                  </Symbol>
+                </CustomGasButton>
+              )}
+            </Centered>
+          )}
         </Centered>
       </Row>
     </Container>

@@ -6,6 +6,11 @@ import { margin } from '@rainbow-me/styles';
 import { gasUtils, magicMemo } from '@rainbow-me/utils';
 
 const EmojiForGasSpeedType = {
+  [gasUtils.FLASHBOTS]: {
+    emoji: 'high_voltage',
+    // ⚡
+    top: android ? -2 : -0.5,
+  },
   [gasUtils.URGENT]: {
     emoji: 'police_car_light',
     // 🚨

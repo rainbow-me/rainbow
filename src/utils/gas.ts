@@ -3,6 +3,7 @@ import { colors } from '@rainbow-me/styles';
 const CUSTOM = 'custom';
 const URGENT = 'urgent';
 const FAST = 'fast';
+const FLASHBOTS = 'flashbots';
 const NORMAL = 'normal';
 const SLOW = 'slow';
 
@@ -37,6 +38,7 @@ export default {
   GAS_TRENDS,
   GasSpeedOrder,
   GasTrends,
+  FLASHBOTS,
   NORMAL,
   SLOW,
   URGENT,
