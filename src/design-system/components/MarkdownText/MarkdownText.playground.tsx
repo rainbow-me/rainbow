@@ -8,7 +8,7 @@ import { MarkdownText } from './MarkdownText';
 const loremIpsum =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
 
-const markdown = `
+const headingsAndParagraphMarkdown = `
   # Heading 1
 
   ## Heading 2
@@ -22,6 +22,10 @@ const markdown = `
   ###### Heading 6
 
   Paragraph. ${loremIpsum}
+`;
+
+const markdown = `
+  ${headingsAndParagraphMarkdown}
 
   > Blockquote paragraph. ${loremIpsum}
 
@@ -77,19 +81,11 @@ const markdown = `
 const customSpaceMarkdown = `
   ${loremIpsum}
 
-  ${loremIpsum}
-
   - Bullet list
 
     ${loremIpsum}
 
   - Bullet list
-
-    ${loremIpsum}
-
-  - Bullet list
-
-    ${loremIpsum}
 `;
 
 const docs: Docs = {
@@ -104,7 +100,9 @@ const docs: Docs = {
         source(
           <>
             <Guide />
-            <MarkdownText>{markdown}</MarkdownText>
+            <MarkdownText listSpace="19px" paragraphSpace="30px">
+              {markdown}
+            </MarkdownText>
             <Guide />
           </>
         ),
@@ -115,8 +113,44 @@ const docs: Docs = {
         source(
           <>
             <Guide />
-            <MarkdownText nestedSpace={{ custom: 30 }} space="42px">
+            <MarkdownText listSpace={{ custom: 30 }} paragraphSpace="42px">
               {customSpaceMarkdown}
+            </MarkdownText>
+            <Guide />
+          </>
+        ),
+    },
+    {
+      name: 'Custom text color',
+      Example: () =>
+        source(
+          <>
+            <Guide />
+            <MarkdownText
+              color="secondary60"
+              listSpace="19px"
+              paragraphSpace="30px"
+            >
+              {headingsAndParagraphMarkdown}
+            </MarkdownText>
+            <Guide />
+          </>
+        ),
+    },
+    {
+      name: 'Custom text and heading colors',
+      Example: () =>
+        source(
+          <>
+            <Guide />
+            <MarkdownText
+              color="secondary60"
+              heading1Color="primary"
+              heading2Color="secondary80"
+              listSpace="19px"
+              paragraphSpace="30px"
+            >
+              {headingsAndParagraphMarkdown}
             </MarkdownText>
             <Guide />
           </>

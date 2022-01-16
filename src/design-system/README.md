@@ -98,7 +98,7 @@ To better understand layout, let's step through the available layout components 
 
 #### Inset
 
-Renders a **container with equal padding** on all sides.
+Renders a **container with padding.**
 
 ```tsx
 import { Inset } from '@rainbow-me/design-system';
@@ -295,6 +295,22 @@ export default () => (
 );
 ```
 
+#### DebugLayout
+
+Renders a bright red container around a child element to help debug its position within a layout during development.
+
+```tsx
+import { DebugLayout, Stack } from '@rainbow-me/design-system';
+
+export default () => (
+  <Stack space="30px">
+    ...
+    <DebugLayout>...</DebugLayout>
+    ...
+  </Stack>
+);
+```
+
 #### Box
 
 Renders an individual `View` element with quick access to the standard padding and negative margin scales, as well as other common layout properties. Ideally you're not supposed to need this component much unless you're building a design system component.
@@ -374,6 +390,25 @@ import { SomeComponent } from 'some-component';
 
 export default () => (
   <BackgroundProvider color="accent">
+    {backgroundStyle => (
+      <SomeComponent style={backgroundStyle}>...</SomeComponent>
+    )}
+  </BackgroundProvider>
+);
+```
+
+You can also pass a `style` object to `BackgroundProvider` so that additional styles are memoized alongside the background color styles.
+
+```tsx
+import { BackgroundProvider } from '@rainbow-me/design-system';
+import { SomeComponent } from 'some-component';
+
+const customStyles = {
+  /* ... */
+} as const;
+
+export default () => (
+  <BackgroundProvider color="accent" style={customStyles}>
     {backgroundStyle => (
       <SomeComponent style={backgroundStyle}>...</SomeComponent>
     )}

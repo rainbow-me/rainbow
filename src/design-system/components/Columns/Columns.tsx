@@ -56,7 +56,7 @@ const getColumnProps = (node: NonNullable<ReactNode>): ColumnProps | null =>
     : null;
 
 interface PrivateColumnProps extends ColumnProps {
-  space: Space;
+  space?: Space;
   alignVertical: AlignVertical | undefined;
 }
 
@@ -87,7 +87,7 @@ function PrivateColumn({
 }
 
 export interface ColumnsProps {
-  space: Space;
+  space?: Space;
   children: ReactNode;
   alignHorizontal?: AlignHorizontal;
   alignVertical?: AlignVertical;
@@ -123,7 +123,7 @@ export function Columns({
           ? alignHorizontalToFlexAlign[alignHorizontal]
           : undefined
       }
-      marginRight={negateSpace(space)}
+      marginRight={space ? negateSpace(space) : undefined}
     >
       {Children.map(flattenChildren(children), child => {
         const columnProps = getColumnProps(child);
