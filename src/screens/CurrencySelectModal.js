@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
-import { toLower } from 'lodash';
+import { find, toLower } from 'lodash';
 import { matchSorter } from 'match-sorter';
 import React, {
   Fragment,
@@ -12,6 +12,7 @@ import React, {
 } from 'react';
 import { StatusBar } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import GestureBlocker from '../components/GestureBlocker';
 import {
@@ -24,6 +25,7 @@ import { Modal } from '../components/modal';
 import { usePagerPosition } from '../navigation/ScrollPositionContext';
 import { addHexPrefix } from '@rainbow-me/handlers/web3';
 import { CurrencySelectionTypes } from '@rainbow-me/helpers';
+import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 import {
   useCoinListEditOptions,
   useInteraction,
@@ -90,12 +92,16 @@ export default function CurrencySelectModal() {
   const uniswapAssetsInWallet = useUniswapAssetsInWallet();
   const { hiddenCoins } = useCoinListEditOptions();
 
+  const { uniswap: poolsInWallet } = useSelector(readableUniswapSelector);
+
   const filteredUniswapAssetsInWallet = useMemo(
     () =>
       uniswapAssetsInWallet.filter(
-        ({ uniqueId }) => !hiddenCoins.includes(uniqueId)
+        ({ uniqueId }) =>
+          !hiddenCoins.includes(uniqueId) &&
+          !find(poolsInWallet, ['uniqueId', uniqueId])
       ),
-    [uniswapAssetsInWallet, hiddenCoins]
+    [uniswapAssetsInWallet, hiddenCoins, poolsInWallet]
   );
 
   const {
