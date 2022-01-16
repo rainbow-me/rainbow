@@ -1,5 +1,8 @@
+import { find } from 'lodash';
+import { useSelector } from 'react-redux';
 import { useDeepCompareMemo } from 'use-deep-compare';
 import { CellType, CoinExtraData, NFTFamilyExtraData } from './ViewTypes';
+import { readableUniswapSelector } from '@rainbow-me/helpers/uniswapLiquidityTokenInfoSelector';
 import {
   useCoinListEdited,
   useCoinListEditOptions,
@@ -18,6 +21,7 @@ export default function useMemoBriefSectionData() {
   const { isCoinListEdited } = useCoinListEdited();
   const { hiddenCoins } = useCoinListEditOptions();
   const { openFamilies } = useOpenFamilies();
+  const { uniswap: poolsInWallet } = useSelector(readableUniswapSelector);
 
   const result = useDeepCompareMemo(() => {
     let afterDivider = false;
@@ -51,6 +55,12 @@ export default function useMemoBriefSectionData() {
           data.type === CellType.NFTS_HEADER
         ) {
           stickyHeaders.push(index);
+        }
+        if (
+          data.type === CellType.COIN &&
+          find(poolsInWallet, ['uniqueId', (data as CoinExtraData).uniqueId])
+        ) {
+          return false;
         }
         if (
           afterDivider &&
