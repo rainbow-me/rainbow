@@ -56,7 +56,7 @@ export default function useSwapInputHandlers() {
               text: 'Auto adjust',
             },
           ],
-          message: `You are about to swap all the ${inputCurrencyAddress.toUpperCase()} available in your wallet. If you want to swap back to ${inputCurrencyAddress.toUpperCase()}, you may not be able to afford the gas.
+          message: `You are about to swap all the ${inputCurrencyAddress.toUpperCase()} available in your wallet. If you want to swap back to ${inputCurrencyAddress.toUpperCase()}, you may not be able to afford the fee.
     
 Would you like to auto adjust the balance to leave some ${inputCurrencyAddress.toUpperCase()}?`,
           title: 'Are you sure?',
