@@ -4,32 +4,36 @@ import { Box, BoxProps } from '../Box/Box';
 
 export type InsetProps = {
   children: BoxProps['children'];
-} & (
-  | {
-      space?: never;
-      horizontal?: Space;
-      vertical: Space;
-    }
-  | {
-      space?: never;
-      horizontal: Space;
-      vertical?: Space;
-    }
-  | {
-      space: Space;
-      horizontal?: Space;
-      vertical?: Space;
-    }
-);
+  space?: Space;
+  horizontal?: Space;
+  vertical?: Space;
+  top?: Space;
+  bottom?: Space;
+  left?: Space;
+  right?: Space;
+};
 
 /**
- * @description Renders a container with equal padding on each axis.
+ * @description Renders a container with padding.
  */
-export function Inset({ space, horizontal, vertical, children }: InsetProps) {
+export function Inset({
+  space,
+  horizontal,
+  vertical,
+  top,
+  bottom,
+  left,
+  right,
+  children,
+}: InsetProps) {
   return (
     <Box
       padding={space}
+      paddingBottom={bottom}
       paddingHorizontal={horizontal}
+      paddingLeft={left}
+      paddingRight={right}
+      paddingTop={top}
       paddingVertical={vertical}
     >
       {children}
