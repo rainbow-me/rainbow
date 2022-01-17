@@ -79,11 +79,16 @@ function splitPositionStyles(style: ViewStyle) {
 
 export const ApplyShadow = React.forwardRef(
   (
-    { backgroundColor, children: child, shadows }: ApplyShadowProps,
+    {
+      backgroundColor,
+      children: child,
+      shadows: shadowsProp,
+    }: ApplyShadowProps,
     ref: React.Ref<any>
   ) => {
-    if (!shadows || shadows.length === 0) return child;
+    if (!shadowsProp || shadowsProp.length === 0) return child;
 
+    const shadows = [...shadowsProp].reverse();
     const [parentStyles, childStyles] = splitPositionStyles(
       StyleSheet.flatten(child.props.style) || {}
     );

@@ -6,7 +6,7 @@ import { CustomColor } from '../color/useForegroundColor';
 export { shadowColors };
 export type { ShadowColor };
 
-const defaultShadowColor = 'shadow' as ShadowColor;
+const defaultShadowColor = 'shadow';
 
 export type ShadowValue = {
   color?: ShadowColor | CustomColor;
@@ -140,7 +140,9 @@ export const shadows = Object.entries(shadowHierarchy).reduce(
   {}
 ) as { [key in ShadowKey]: ShadowValue };
 
-type ShadowKey = `${ShadowHierarchy}${'' | ` ${ShadowColor}`}`;
+type ShadowKey = `${ShadowHierarchy}${
+  | ''
+  | ` ${Exclude<ShadowColor, typeof defaultShadowColor>}`}`;
 export type CustomShadow = {
   custom: ShadowValue;
 };

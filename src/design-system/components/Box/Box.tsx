@@ -290,10 +290,10 @@ function useShadow(shadowProp: BoxProps['shadow']) {
   return useMemo(
     () =>
       shadow
-        ? [...shadow].reverse().map((item, index) => {
+        ? shadow.map((item, index) => {
             const { offset, blur, opacity } = item;
             return {
-              color: colors[shadow.length - 1 - index],
+              color: colors[index],
               offset: {
                 height: offset.y,
                 width: offset.x,
