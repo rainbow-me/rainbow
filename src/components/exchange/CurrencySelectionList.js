@@ -62,9 +62,9 @@ const CurrencySelectionList = (
       testID={testID}
       transition={skeletonTransition}
     >
-      {showList && (
+      {showList && !showSkeleton && (
         <Centered flex={1}>
-          {showNoResults ? (
+          {showNoResults && !loading ? (
             loading ? null : (
               <NoCurrencyResults />
             )
