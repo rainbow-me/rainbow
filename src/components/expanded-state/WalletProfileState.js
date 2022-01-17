@@ -175,7 +175,7 @@ export default function WalletProfileState({
           <CopyTooltip
             onHide={handleTriggerFocusInput}
             textToCopy={address}
-            tooltipText={lang.t('wallet.copy_address')}
+            tooltipText={lang.t('wallet.settings.copy_address_capitalized')}
           >
             <WalletProfileAddressText address={address} />
           </CopyTooltip>
