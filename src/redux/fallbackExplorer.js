@@ -1,6 +1,15 @@
 import { Contract } from '@ethersproject/contracts';
 import { captureException } from '@sentry/react-native';
-import { get, isEmpty, keyBy, map, mapValues, toLower, uniqBy } from 'lodash';
+import {
+  find,
+  get,
+  isEmpty,
+  keyBy,
+  map,
+  mapValues,
+  toLower,
+  uniqBy,
+} from 'lodash';
 import isEqual from 'react-fast-compare';
 import { ETHERSCAN_API_KEY } from 'react-native-dotenv';
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
@@ -11,6 +20,7 @@ import { getAssetsFromCovalent } from '@rainbow-me/handlers/covalent';
 import { web3Provider } from '@rainbow-me/handlers/web3';
 import networkInfo from '@rainbow-me/helpers/networkInfo';
 import NetworkTypes from '@rainbow-me/helpers/networkTypes';
+import store from '@rainbow-me/redux/store';
 import {
   balanceCheckerContractAbi,
   chainAssets,
@@ -58,7 +68,14 @@ const getMainnetAssetsFromCovalent = async (
   const data = await getAssetsFromCovalent(chainId, accountAddress, currency);
   if (data) {
     const updatedAt = new Date(data.updated_at).getTime();
-    const assets = data.items.map(item => {
+    const poolsInWallet = store.getState().uniswapLiquidity.liquidityTokens;
+
+    // remove V2 LP tokens
+    const assets = data.items.filter(
+      item => !find(poolsInWallet, ['address', item.contract_address])
+    );
+
+    assets.map(item => {
       let contractAddress = item.contract_address;
       const isETH = toLower(contractAddress) === toLower(COVALENT_ETH_ADDRESS);
       if (isETH) {
