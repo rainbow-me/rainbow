@@ -13,7 +13,7 @@ import {
   BackgroundColor,
   backgroundColors,
   ColorMode,
-  foregroundColors,
+  textColors,
 } from './palettes';
 
 const BackgroundColors = ({ mode }: { mode: ColorMode }) => (
@@ -43,9 +43,7 @@ const ForegroundColors = ({ mode }: { mode: ColorMode }) => (
     <ColorModeProvider value={mode}>
       <Box background="body" padding="24px">
         <Stack space="12px">
-          {(Object.keys(
-            foregroundColors
-          ) as (keyof typeof foregroundColors)[]).map((color: any) => (
+          {textColors.map(color => (
             <Text color={color} key={color} size="18px" weight="bold">
               {color}
             </Text>

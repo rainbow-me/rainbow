@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import {
   ScrollView,
   StatusBar,
@@ -7,11 +7,23 @@ import {
   View,
 } from 'react-native';
 import useHideSplashScreen from '../../hooks/useHideSplashScreen';
-import { Heading, Inline, Inset, Stack, Text } from '../';
+import {
+  Box,
+  ColorModeProvider,
+  Divider,
+  Heading,
+  Inline,
+  Inset,
+  Stack,
+  Text,
+} from '../';
+import { ColorMode } from '../color/palettes';
 import backgroundPlayground from '../components/BackgroundProvider/BackgroundProvider.playground';
 import bleedPlayground from '../components/Bleed/Bleed.playground';
 import boxPlayground from '../components/Box/Box.playground';
 import columnsPlayground from '../components/Columns/Columns.playground';
+import debugLayoutPlayground from '../components/DebugLayout/DebugLayout.playground';
+import dividerPlayground from '../components/Divider/Divider.playground';
 import headingPlayground from '../components/Heading/Heading.playground';
 import inlinePlayground from '../components/Inline/Inline.playground';
 import insetPlayground from '../components/Inset/Inset.playground';
@@ -28,6 +40,8 @@ const allDocs = [
   boxPlayground,
   bleedPlayground,
   columnsPlayground,
+  debugLayoutPlayground,
+  dividerPlayground,
   headingPlayground,
   inlinePlayground,
   insetPlayground,
@@ -127,20 +141,47 @@ const DocsRow = ({ meta, examples }: Docs) => {
   );
 };
 
-export const Playground = () => {
+const colorModes: ColorMode[] = ['light', 'dark', 'darkTinted'];
+
+const HideSplashScreen = ({ children }: { children: ReactNode }) => {
   const hideSplashScreen = useHideSplashScreen();
   useEffect(hideSplashScreen, [hideSplashScreen]);
 
+  return <>{children}</>;
+};
+
+export const Playground = () => {
+  const [colorModeIndex, setColorModeIndex] = useState(0);
+  const colorMode = colorModes[colorModeIndex];
+
+  const toggleColorMode = useCallback(
+    () =>
+      setColorModeIndex(currentIndex => (currentIndex + 1) % colorModes.length),
+    [setColorModeIndex]
+  );
+
   return (
-    <ScrollView contentInsetAdjustmentBehavior="automatic">
-      {android ? <View style={{ height: StatusBar.currentHeight }} /> : null}
-      <Inset space="19px">
-        <Stack space="24px">
-          {allDocs.map(({ meta, examples }, index) => (
-            <DocsRow examples={examples} key={index} meta={meta} />
-          ))}
-        </Stack>
-      </Inset>
-    </ScrollView>
+    <HideSplashScreen>
+      <ColorModeProvider value={colorMode}>
+        <Box background="body" flexGrow={1}>
+          <ScrollView contentInsetAdjustmentBehavior="automatic">
+            {android ? (
+              <View style={{ height: StatusBar.currentHeight }} />
+            ) : null}
+            <Inset space="19px">
+              <Stack space="24px">
+                <TouchableOpacity onPress={toggleColorMode}>
+                  <Heading>Color mode: {colorMode}</Heading>
+                </TouchableOpacity>
+                <Divider />
+                {allDocs.map(({ meta, examples }, index) => (
+                  <DocsRow examples={examples} key={index} meta={meta} />
+                ))}
+              </Stack>
+            </Inset>
+          </ScrollView>
+        </Box>
+      </ColorModeProvider>
+    </HideSplashScreen>
   );
 };

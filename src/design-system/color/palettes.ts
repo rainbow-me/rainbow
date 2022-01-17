@@ -84,6 +84,10 @@ export const backgroundColors: Record<
 
 export type ForegroundColor =
   | 'action'
+  | 'divider20'
+  | 'divider40'
+  | 'divider60'
+  | 'divider80'
   | 'primary'
   | 'secondary'
   | 'secondary10'
@@ -102,6 +106,26 @@ export const foregroundColors: Record<
   string | ContextualColorValue<string>
 > = {
   action: colors.appleBlue,
+  divider20: {
+    dark: 'rgba(60, 66, 82, 0.025)',
+    darkTinted: 'rgba(255, 255, 255, 0.01)',
+    light: 'rgba(60, 66, 82, 0.01)',
+  },
+  divider40: {
+    dark: 'rgba(60, 66, 82, 0.0375)',
+    darkTinted: 'rgba(255, 255, 255, 0.0375)',
+    light: 'rgba(60, 66, 82, 0.015)',
+  },
+  divider60: {
+    dark: 'rgba(60, 66, 82, 0.05)',
+    darkTinted: 'rgba(255, 255, 255, 0.05)',
+    light: 'rgba(60, 66, 82, 0.02)',
+  },
+  divider80: {
+    dark: 'rgba(60, 66, 82, 0.075)',
+    darkTinted: 'rgba(255, 255, 255, 0.075)',
+    light: 'rgba(60, 66, 82, 0.03)',
+  },
   primary: {
     dark: colors.sky,
     darkTinted: colors.white,
@@ -248,3 +272,11 @@ export const shadowColors = selectForegroundColors(
   'action'
 );
 export type ShadowColor = typeof shadowColors[number];
+
+export const dividerColors = selectForegroundColors(
+  'divider20',
+  'divider40',
+  'divider60',
+  'divider80'
+);
+export type DividerColor = typeof dividerColors[number];

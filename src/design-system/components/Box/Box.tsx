@@ -1,6 +1,6 @@
 import { flatten } from 'lodash';
 import React, { forwardRef, ReactNode, useMemo } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useForegroundColors } from '../../color/useForegroundColor';
 import { Shadow, ShadowColor, shadows } from '../../layout/shadow';
 import { NegativeSpace, negativeSpace, Space, space } from '../../layout/space';
@@ -253,17 +253,10 @@ export const Box = forwardRef(function Box(
   }, [styles, styleProp, Component]);
 
   return background ? (
-    <BackgroundProvider color={background}>
-      {backgroundStyle => (
-        <ApplyShadow
-          backgroundColor={backgroundStyle.backgroundColor}
-          shadows={shadows}
-        >
-          <Component
-            style={[backgroundStyle, ...style]}
-            {...restProps}
-            ref={ref}
-          >
+    <BackgroundProvider color={background} style={style}>
+      {({ backgroundColor, backgroundStyle }) => (
+        <ApplyShadow backgroundColor={backgroundColor} shadows={shadows}>
+          <Component style={backgroundStyle} {...restProps} ref={ref}>
             {children}
           </Component>
         </ApplyShadow>

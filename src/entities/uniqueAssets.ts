@@ -30,7 +30,7 @@ export interface UniqueAsset {
     trait_type: string;
     value: string | number;
     display_type: string;
-  };
+  }[];
   asset_contract: AssetContract;
   background: string | null;
   collection: {
