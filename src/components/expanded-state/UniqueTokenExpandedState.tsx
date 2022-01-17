@@ -29,7 +29,6 @@ import {
 import { ToastPositionContainer, ToggleStateToast } from '../toasts';
 import { TokenInfoItem } from '../token-info';
 import { UniqueTokenAttributes, UniqueTokenImage } from '../unique-token';
-import { UniqueTokenExpandedStateProps } from './UniqueTokenExpandedStateProps';
 import {
   UniqueTokenExpandedStateContent,
   UniqueTokenExpandedStateHeader,
@@ -51,6 +50,7 @@ import {
   Text,
   TextProps,
 } from '@rainbow-me/design-system';
+import { UniqueAsset } from '@rainbow-me/entities';
 import { apiGetUniqueTokenFloorPrice } from '@rainbow-me/handlers/opensea-api';
 import { buildUniqueTokenName } from '@rainbow-me/helpers/assets';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
@@ -167,6 +167,12 @@ const Markdown = ({
     </MarkdownText>
   );
 };
+
+interface UniqueTokenExpandedStateProps {
+  asset: UniqueAsset;
+  external: boolean;
+  lowResUrl: string;
+}
 
 const UniqueTokenExpandedState = ({
   asset,

@@ -7,7 +7,6 @@ import styled from 'styled-components';
 import URL from 'url-parse';
 import { buildUniqueTokenName } from '../../../helpers/assets';
 import { ButtonPressAnimation } from '../../animations';
-import { UniqueTokenExpandedStateProps } from '../UniqueTokenExpandedStateProps';
 import saveToCameraRoll from './saveToCameraRoll';
 import {
   Bleed,
@@ -20,6 +19,7 @@ import {
   Stack,
   Text,
 } from '@rainbow-me/design-system';
+import { UniqueAsset } from '@rainbow-me/entities';
 import isSupportedUriExtension from '@rainbow-me/helpers/isSupportedUriExtension';
 import {
   useAccountProfile,
@@ -137,7 +137,7 @@ const FamilyImage = styled(ImgixImage)`
 `;
 
 interface UniqueTokenExpandedStateHeaderProps {
-  asset: UniqueTokenExpandedStateProps['asset'];
+  asset: UniqueAsset;
 }
 
 const UniqueTokenExpandedStateHeader = ({
