@@ -1,16 +1,8 @@
 import { flatten } from 'lodash';
 import React, { forwardRef, ReactNode, useMemo } from 'react';
 import { View } from 'react-native';
-import {
-  CustomColor,
-  useForegroundColors,
-} from '../../color/useForegroundColor';
-import {
-  Shadow,
-  ShadowColor,
-  shadows,
-  ShadowVariant,
-} from '../../layout/shadow';
+import { useForegroundColors } from '../../color/useForegroundColor';
+import { Shadow, ShadowColor, shadows } from '../../layout/shadow';
 import { NegativeSpace, negativeSpace, Space, space } from '../../layout/space';
 import {
   BackgroundProvider,
@@ -286,37 +278,14 @@ export const Box = forwardRef(function Box(
 }) as PolymorphicBox;
 
 function useShadow(shadowProp: BoxProps['shadow']) {
-  const { shadowVariant, shadowColor } = useMemo(() => {
-    let shadowVariant;
-    let shadowColor: ShadowColor | CustomColor = 'shadow';
-
-    if (typeof shadowProp === 'string') {
-      const shadowMatcher = shadowProp.match(/^(\d*px\s\w+)\s?(\w+$)?/);
-      if (shadowMatcher) {
-        shadowVariant = shadowMatcher[1] as ShadowVariant;
-        shadowColor = shadowMatcher[2] as ShadowColor;
-      } else {
-        shadowVariant = shadowProp as ShadowVariant;
-      }
-    } else if (typeof shadowProp === 'object' && shadowProp.custom) {
-      shadowVariant = shadowProp;
-    }
-
-    return { shadowColor, shadowVariant };
-  }, [shadowProp]);
-
-  const shadow = resolveToken(shadows, shadowVariant);
+  const shadow = resolveToken(shadows, shadowProp);
 
   const shadowColors = useMemo(() => {
     if (shadow) {
-      return [...shadow]
-        .reverse()
-        .map(
-          ({ color }, index) => color || (index === 0 ? 'shadow' : shadowColor)
-        );
+      return shadow.map(({ color }) => color || 'shadow');
     }
-    return [shadowColor];
-  }, [shadow, shadowColor]);
+    return ['shadow' as ShadowColor];
+  }, [shadow]);
   const colors = useForegroundColors(shadowColors);
 
   return useMemo(
@@ -325,7 +294,7 @@ function useShadow(shadowProp: BoxProps['shadow']) {
         ? [...shadow].reverse().map((item, index) => {
             const { offset, blur, opacity } = item;
             return {
-              color: colors[index],
+              color: colors[shadow.length - 1 - index],
               offset: {
                 height: offset.y,
                 width: offset.x,

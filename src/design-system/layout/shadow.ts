@@ -1,11 +1,12 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
-
+import { shadowColors } from '../color/palettes';
 import type { ShadowColor } from '../color/palettes';
 import { CustomColor } from '../color/useForegroundColor';
 
-export { shadowColors } from '../color/palettes';
-
+export { shadowColors };
 export type { ShadowColor };
+
+const defaultShadowColor = 'shadow' as ShadowColor;
 
 export type ShadowValue = {
   color?: ShadowColor | CustomColor;
@@ -17,7 +18,7 @@ export type ShadowValue = {
   blur: number;
 }[];
 
-export const shadows = {
+export const shadowHierarchy = {
   '9px medium': [
     {
       offset: { x: 0, y: 1 },
@@ -115,9 +116,32 @@ export const shadows = {
     },
   ] as ShadowValue,
 } as const;
-export type ShadowVariant = keyof typeof shadows;
+export type ShadowHierarchy = keyof typeof shadowHierarchy;
 
+export const shadows = Object.entries(shadowHierarchy).reduce(
+  (currentShadows, [key, hierarchy]) => {
+    const nextShadows = shadowColors.reduce(
+      (currentShadows, color) => ({
+        ...currentShadows,
+        [`${key} ${color}`]: hierarchy.map((attrs, i) => ({
+          ...attrs,
+          color: i === hierarchy.length - 1 ? defaultShadowColor : color,
+        })),
+      }),
+      {}
+    );
+
+    return {
+      ...currentShadows,
+      [key]: hierarchy.map(attrs => ({ ...attrs, color: defaultShadowColor })),
+      ...nextShadows,
+    };
+  },
+  {}
+) as { [key in ShadowKey]: ShadowValue };
+
+type ShadowKey = `${ShadowHierarchy}${'' | ` ${ShadowColor}`}`;
 export type CustomShadow = {
   custom: ShadowValue;
 };
-export type Shadow = `${ShadowVariant}${'' | ` ${ShadowColor}`}` | CustomShadow;
+export type Shadow = ShadowKey | CustomShadow;
