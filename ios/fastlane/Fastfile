@@ -61,17 +61,13 @@ platform :ios do
       app_identifier: ["me.rainbow", "me.rainbow.PriceWidget", "me.rainbow.SelectTokenIntent"],
       git_url: "git@github.com:rainbow-me/rainbow-code-signing.git"
     )
-
-    update_code_signing_settings(
-      use_automatic_signing: false
-    )
     
     gym(
       workspace: "Rainbow.xcworkspace",
       scheme: "Rainbow",
       include_symbols: true,
       configuration: "Release",
-      export_method: "app-store",
+      export_method: "app-store"
     )
 
     pilot(

@@ -2,7 +2,6 @@ import analytics from '@segment/analytics-react-native';
 import { Dispatch } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { updateLanguageLocale } from '../languages';
-import { saveString } from '../model/keychain';
 import { NativeCurrencyKeys } from '@rainbow-me/entities';
 import {
   getLanguage,
@@ -179,10 +178,6 @@ export const settingsChangeNativeCurrency = (nativeCurrency: string) => async (
     });
     dispatch(explorerInit());
     saveNativeCurrency(nativeCurrency);
-    saveString('nativeCurrency', nativeCurrency, {
-      accessGroup: 'group.rainbow.me',
-      service: 'rainbow.me.currency',
-    });
     analytics.identify(null, { currency: nativeCurrency });
   } catch (error) {
     logger.log('Error changing native currency', error);

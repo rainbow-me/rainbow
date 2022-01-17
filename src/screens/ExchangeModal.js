@@ -13,6 +13,7 @@ import {
   InteractionManager,
   Keyboard,
   NativeModules,
+  Platform,
 } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 import { useAndroidBackHandler } from 'react-navigation-backhandler';
@@ -73,7 +74,7 @@ const InnerWrapper = styled(Centered).attrs({
   ${ios
     ? position.sizeAsObject('100%')
     : `
-    height: 500;
+    height: ${Platform.select({ android: '540', ios: '500' })}px;
     top: 0;
   `};
   background-color: ${({ theme: { colors } }) => colors.transparent};
