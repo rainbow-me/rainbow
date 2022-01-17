@@ -15,7 +15,6 @@ export type ShadowItem = {
 export type ApplyShadowProps = {
   backgroundColor: ViewStyle['backgroundColor'];
   children: React.ReactElement<ViewProps>;
-  enabled?: boolean;
   shadows?: ShadowItem[];
 };
 
@@ -80,15 +79,10 @@ function splitPositionStyles(style: ViewStyle) {
 
 export const ApplyShadow = React.forwardRef(
   (
-    {
-      backgroundColor,
-      children: child,
-      enabled = true,
-      shadows,
-    }: ApplyShadowProps,
+    { backgroundColor, children: child, shadows }: ApplyShadowProps,
     ref: React.Ref<any>
   ) => {
-    if (!enabled || !shadows) return child;
+    if (!shadows || shadows.length === 0) return child;
 
     const [parentStyles, childStyles] = splitPositionStyles(
       StyleSheet.flatten(child.props.style) || {}

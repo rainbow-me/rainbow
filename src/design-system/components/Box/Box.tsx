@@ -257,7 +257,6 @@ export const Box = forwardRef(function Box(
       {backgroundStyle => (
         <ApplyShadow
           backgroundColor={backgroundStyle.backgroundColor}
-          enabled={Boolean(shadows)}
           shadows={shadows}
         >
           <Component
