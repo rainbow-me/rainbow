@@ -94,7 +94,7 @@ const useUniswapCurrencyList = (searchQuery: string) => {
         })
       ),
     {
-      onSuccess: res => handleFavoritesResponse(res),
+      onSuccess: res => handleFavoritesResponse(Object.values(res)),
     }
   );
 

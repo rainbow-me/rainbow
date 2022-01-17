@@ -176,7 +176,7 @@ export const explainers = network => ({
       />
     ),
     readMoreLink:
-      'https://rainbow.me/learn/a-beginners-guide-to-layer-2-networks',
+      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
     text: OPTIMISM_EXPLAINER,
     title: `What's Optimism?`,
   },
@@ -192,7 +192,7 @@ export const explainers = network => ({
       />
     ),
     readMoreLink:
-      'https://rainbow.me/learn/a-beginners-guide-to-layer-2-networks',
+      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
     text: ARBITRUM_EXPLAINER,
     title: `What's Arbitrum?`,
   },
@@ -208,7 +208,7 @@ export const explainers = network => ({
       />
     ),
     readMoreLink:
-      'https://rainbow.me/learn/a-beginners-guide-to-layer-2-networks',
+      'https://learn.rainbow.me/a-beginners-guide-to-layer-2-networks',
     text: POLYGON_EXPLAINER,
     title: `What's Polygon?`,
   },
