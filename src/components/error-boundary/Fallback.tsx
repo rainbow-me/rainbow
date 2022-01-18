@@ -68,6 +68,8 @@ export default function Fallback() {
           <SheetActionButton
             color={colors.alpha(colors.appleBlue, 0.06)}
             isTransparent
+            // @ts-expect-error `SheetActionButton` is untyped so `label`
+            // is expected to be `null`.
             label={`🌈 ${lang.t('error_boundary.restart_button')}`}
             onPress={handleRestart}
             // @ts-ignore
