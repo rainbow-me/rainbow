@@ -8,7 +8,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { OpacityToggler } from '../components/animations';
 import { AssetList } from '../components/asset-list';
-import { ExchangeFab, FabWrapper, SendFab } from '../components/fab';
+import {
+  ExchangeFab,
+  FabWrapper,
+  RegisterEnsFab,
+  SendFab,
+} from '../components/fab';
 import {
   DiscoverHeaderButton,
   Header,
@@ -165,6 +170,7 @@ export default function WalletScreen() {
       [
         !!get(networkInfo[network], 'exchange_enabled') && ExchangeFab,
         SendFab,
+        RegisterEnsFab,
       ].filter(e => !!e),
     [network]
   );
