@@ -80,7 +80,7 @@ const CurrencySelectionList = (
           )}
         </Centered>
       )}
-      {showSkeleton || (initialRender && <EmptyCurrencySelectionList />)}
+      {(showSkeleton || initialRender) && <EmptyCurrencySelectionList />}
     </Transitioning.View>
   );
 };
