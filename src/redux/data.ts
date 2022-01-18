@@ -96,19 +96,23 @@ import logger from 'logger';
 
 const storage = new MMKV();
 
-function addHiddenCoins(coins: any, dispatch: any, address: any) {
+function addHiddenCoins(
+  coins: string[],
+  dispatch: ThunkDispatch<AppState, unknown, never>,
+  address: string
+) {
   const storageKey = 'hidden-coins-' + address;
   const storageEntity = storage.getString(storageKey);
   const list = storageEntity ? JSON.parse(storageEntity) : [];
-  const newList = [...list.filter((i: any) => !coins.includes(i)), ...coins];
+  const newList = [...list.filter((i: string) => !coins.includes(i)), ...coins];
   dispatch(setHiddenCoins(newList));
   storage.set(storageKey, JSON.stringify(newList));
 }
 
 const BACKUP_SHEET_DELAY_MS = android ? 10000 : 3000;
 
-let pendingTransactionsHandle: any = null;
-let genericAssetsHandle: any = null;
+let pendingTransactionsHandle: ReturnType<typeof setTimeout> | null = null;
+let genericAssetsHandle: ReturnType<typeof setTimeout> | null = null;
 const TXN_WATCHER_MAX_TRIES = 60;
 const TXN_WATCHER_MAX_TRIES_LAYER_2 = 200;
 const TXN_WATCHER_POLL_INTERVAL = 5000; // 5 seconds
@@ -120,14 +124,9 @@ export const COINGECKO_IDS_ENDPOINT =
 
 // -- Constants --------------------------------------- //
 
-const DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP =
-  'data/DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP';
-const DATA_UPDATE_ACCOUNT_ASSETS_DATA = 'data/DATA_UPDATE_ACCOUNT_ASSETS_DATA';
-
 const DATA_UPDATE_GENERIC_ASSETS = 'data/DATA_UPDATE_GENERIC_ASSETS';
 const DATA_UPDATE_ETH_USD = 'data/DATA_UPDATE_ETH_USD';
 const DATA_UPDATE_PORTFOLIOS = 'data/DATA_UPDATE_PORTFOLIOS';
-const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
 const DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION =
   'data/DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION';
 
@@ -154,7 +153,7 @@ const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
 
 const mutex = new Mutex();
 
-const withRunExclusive = async <T>(callback: (...args: any[]) => T) =>
+const withRunExclusive = async <T>(callback: (...args: unknown[]) => T) =>
   await mutex.runExclusive(callback);
 
 // -- Actions ---------------------------------------- //
@@ -188,10 +187,7 @@ interface DataState {
 type DataAction =
   | DataUpdateUniswapPricesSubscriptionAction
   | DataUpdateRefetchSavingsAction
-  | DataUpdateAssetPricesFromUniswapAction
   | DataUpdateGenericAssetsAction
-  | DataUpdateAccountAssetsDataAction
-  | DataUpdateTransactionsAction
   | DataUpdatePortfoliosAction
   | DataUpdateEthUsdAction
   | DataLoadTransactionsRequestAction
@@ -244,24 +240,9 @@ interface CoingeckoApiResponseWithLastUpdate {
   };
 }
 
-interface DataUpdateAssetPricesFromUniswapAction {
-  type: typeof DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP;
-  payload: DataState['assetPricesFromUniswap'];
-}
-
 interface DataUpdateGenericAssetsAction {
   type: typeof DATA_UPDATE_GENERIC_ASSETS;
   payload: DataState['genericAssets'];
-}
-
-interface DataUpdateAccountAssetsDataAction {
-  type: typeof DATA_UPDATE_ACCOUNT_ASSETS_DATA;
-  payload: DataState['accountAssetsData'];
-}
-
-interface DataUpdateTransactionsAction {
-  type: typeof DATA_UPDATE_TRANSACTIONS;
-  payload: DataState['transactions'];
 }
 
 interface DataUpdatePortfoliosAction {
@@ -453,7 +434,7 @@ export const fetchAssetPricesWithCoingecko = async (
 ): Promise<CoingeckoApiResponseWithLastUpdate | undefined> => {
   try {
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoIds
-      .filter((val: any) => !!val)
+      .filter(val => !!val)
       .sort()
       .join(
         ','
@@ -622,7 +603,7 @@ export const dataResetState = () => (
 };
 
 export const dataUpdateAsset = (assetData: ParsedAddressAsset) => (
-  dispatch: Dispatch<DataUpdateAccountAssetsDataAction>,
+  dispatch: Dispatch<DataLoadAccountAssetsDataSuccessAction>,
   getState: AppGetState
 ) => {
   const { accountAddress, network } = getState().settings;
@@ -633,14 +614,17 @@ export const dataUpdateAsset = (assetData: ParsedAddressAsset) => (
   };
   dispatch({
     payload: updatedAssetsData,
-    type: DATA_UPDATE_ACCOUNT_ASSETS_DATA,
+    type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
   });
   saveAccountAssetsData(updatedAssetsData, accountAddress, network);
 };
 
 export const dataUpdateAssets = (assetsData: {
   [uniqueId: string]: ParsedAddressAsset;
-}) => (dispatch: any, getState: any) => {
+}) => (
+  dispatch: Dispatch<DataLoadAccountAssetsDataSuccessAction>,
+  getState: AppGetState
+) => {
   const { accountAddress, network } = getState().settings;
   if (!isEmpty(assetsData)) {
     saveAccountAssetsData(assetsData, accountAddress, network);
@@ -648,7 +632,7 @@ export const dataUpdateAssets = (assetsData: {
     saveAccountEmptyState(false, accountAddress, network);
     dispatch({
       payload: assetsData,
-      type: DATA_UPDATE_ACCOUNT_ASSETS_DATA,
+      type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
     });
   }
 };
@@ -668,7 +652,7 @@ const checkMeta = (message: DataMessage | undefined) => (
 
 const checkForConfirmedSavingsActions = (
   transactionsData: ZerionTransaction[]
-) => (dispatch: any) => {
+) => (dispatch: ThunkDispatch<AppState, unknown, never>) => {
   const foundConfirmedSavings = find(
     transactionsData,
     (transaction: ZerionTransaction) =>
@@ -733,7 +717,10 @@ export const portfolioReceived = (
 export const transactionsReceived = (
   message: TransactionsReceivedMessage | undefined,
   appended = false
-) => async (dispatch: any, getState: any) =>
+) => async (
+  dispatch: ThunkDispatch<AppState, unknown, DataLoadTransactionSuccessAction>,
+  getState: AppGetState
+) =>
   withRunExclusive(async () => {
     const isValidMeta = dispatch(checkMeta(message));
     if (!isValidMeta) return;
@@ -767,7 +754,7 @@ export const transactionsReceived = (
     }
     dispatch({
       payload: parsedTransactions,
-      type: DATA_UPDATE_TRANSACTIONS,
+      type: DATA_LOAD_TRANSACTIONS_SUCCESS,
     });
     dispatch(updatePurchases(parsedTransactions));
     saveLocalTransactions(parsedTransactions, accountAddress, network);
@@ -791,7 +778,7 @@ export const transactionsReceived = (
 export const transactionsRemoved = (
   message: TransactionsRemovedMessage | undefined
 ) => async (
-  dispatch: ThunkDispatch<AppState, unknown, DataUpdateTransactionsAction>,
+  dispatch: ThunkDispatch<AppState, unknown, DataLoadTransactionSuccessAction>,
   getState: AppGetState
 ) =>
   withRunExclusive(() => {
@@ -813,7 +800,7 @@ export const transactionsRemoved = (
 
     dispatch({
       payload: updatedTransactions,
-      type: DATA_UPDATE_TRANSACTIONS,
+      type: DATA_LOAD_TRANSACTIONS_SUCCESS,
     });
     dispatch(checkForRemovedNonce(removedTransactions as any));
     saveLocalTransactions(updatedTransactions, accountAddress, network);
@@ -826,7 +813,11 @@ export const addressAssetsReceived = (
   removed: boolean = false,
   assetsNetwork: Network | string | null = null
 ) => (
-  dispatch: ThunkDispatch<AppState, unknown, DataUpdateAccountAssetsDataAction>,
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    DataLoadAccountAssetsDataSuccessAction
+  >,
   getState: AppGetState
 ) => {
   const isValidMeta = dispatch(checkMeta(message));
@@ -892,7 +883,7 @@ export const addressAssetsReceived = (
 
   dispatch({
     payload: parsedAssets,
-    type: DATA_UPDATE_ACCOUNT_ASSETS_DATA,
+    type: DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS,
   });
   if (!change) {
     const missingPriceAssetAddresses: string[] = map(
@@ -903,7 +894,7 @@ export const addressAssetsReceived = (
   }
 
   //Hide tokens with a url as their token name
-  const assetsWithScamURL = map(
+  const assetsWithScamURL: string[] = map(
     filter(
       parsedAssets,
       asset => isValidDomain(asset.name) && !asset.isVerified
@@ -915,7 +906,7 @@ export const addressAssetsReceived = (
 
 const subscribeToMissingPrices = (addresses: string[]) => (
   dispatch: Dispatch<
-    | DataUpdateAssetPricesFromUniswapAction
+    | DataLoadAssetPricesFromUniswapSuccessAction
     | DataUpdateUniswapPricesSubscriptionAction
   >,
   getState: AppGetState
@@ -979,7 +970,7 @@ const subscribeToMissingPrices = (addresses: string[]) => (
                   `[${key}]`
                 );
                 // mappedPricingData[key].id will be a `string`, assuming `key`
-                // is present, but `get` resolves to an unknown type, so must
+                // is present, but `get` resolves to an incorrect type, so must
                 // be casted.
                 const tokenAddress: string = get(
                   mappedPricingData,
@@ -1006,7 +997,7 @@ const subscribeToMissingPrices = (addresses: string[]) => (
             );
             dispatch({
               payload: tokenPricingInfo,
-              type: DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP,
+              type: DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS,
             });
           }
         } catch (error) {
@@ -1212,7 +1203,7 @@ export const dataWatchPendingTransactions = (
   provider: StaticJsonRpcProvider | null = null,
   currentNonce: number = -1
 ) => async (
-  dispatch: ThunkDispatch<AppState, unknown, DataUpdateTransactionsAction>,
+  dispatch: ThunkDispatch<AppState, unknown, DataLoadTransactionSuccessAction>,
   getState: AppGetState
 ) =>
   withRunExclusive(async () => {
@@ -1297,7 +1288,7 @@ export const dataWatchPendingTransactions = (
       const { accountAddress, network } = getState().settings;
       dispatch({
         payload: updatedTransactions,
-        type: DATA_UPDATE_TRANSACTIONS,
+        type: DATA_LOAD_TRANSACTIONS_SUCCESS,
       });
       saveLocalTransactions(updatedTransactions, accountAddress, network);
 
@@ -1315,18 +1306,18 @@ export const dataUpdateTransaction = (
   watch: boolean,
   provider: StaticJsonRpcProvider | null = null
 ) => async (
-  dispatch: ThunkDispatch<AppState, unknown, DataUpdateTransactionsAction>,
+  dispatch: ThunkDispatch<AppState, unknown, DataLoadTransactionSuccessAction>,
   getState: AppGetState
 ) =>
   withRunExclusive(async () => {
     const { transactions } = getState().data;
 
-    const allOtherTx = transactions.filter((tx: any) => tx.hash !== txHash);
+    const allOtherTx = transactions.filter(tx => tx.hash !== txHash);
     const updatedTransactions = [txObj].concat(allOtherTx);
 
     dispatch({
       payload: updatedTransactions,
-      type: DATA_UPDATE_TRANSACTIONS,
+      type: DATA_LOAD_TRANSACTIONS_SUCCESS,
     });
     const { accountAddress, network } = getState().settings;
     saveLocalTransactions(updatedTransactions, accountAddress, network);
@@ -1357,7 +1348,10 @@ const updatePurchases = (updatedTransactions: RainbowTransaction[]) => (
 export const checkPendingTransactionsOnInitialize = (
   accountAddressToWatch: string,
   provider: StaticJsonRpcProvider | null = null
-) => async (dispatch: any, getState: any) => {
+) => async (
+  dispatch: ThunkDispatch<AppState, unknown, never>,
+  getState: AppGetState
+) => {
   const { accountAddress: currentAccountAddress } = getState().settings;
   if (currentAccountAddress !== accountAddressToWatch) return;
   const currentNonce = await (provider || web3Provider).getTransactionCount(
@@ -1371,7 +1365,10 @@ export const watchPendingTransactions = (
   accountAddressToWatch: string,
   remainingTries: number = TXN_WATCHER_MAX_TRIES,
   provider: StaticJsonRpcProvider | null = null
-) => async (dispatch: any, getState: any) => {
+) => async (
+  dispatch: ThunkDispatch<AppState, unknown, never>,
+  getState: AppGetState
+) => {
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
   if (remainingTries === 0) return;
 
@@ -1427,22 +1424,8 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
       };
     case DATA_UPDATE_REFETCH_SAVINGS:
       return { ...state, shouldRefetchSavings: action.payload };
-    case DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP:
-      return { ...state, assetPricesFromUniswap: action.payload };
     case DATA_UPDATE_GENERIC_ASSETS:
       return { ...state, genericAssets: action.payload };
-    case DATA_UPDATE_ACCOUNT_ASSETS_DATA:
-      return {
-        ...state,
-        accountAssetsData: action.payload,
-        isLoadingAssets: false,
-      };
-    case DATA_UPDATE_TRANSACTIONS:
-      return {
-        ...state,
-        isLoadingTransactions: false,
-        transactions: action.payload,
-      };
     case DATA_UPDATE_PORTFOLIOS:
       return {
         ...state,
@@ -1475,10 +1458,7 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
         isLoadingAssets: true,
       };
     case DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS:
-      return {
-        ...state,
-        assetPricesFromUniswap: action.payload,
-      };
+      return { ...state, assetPricesFromUniswap: action.payload };
     case DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS:
       return {
         ...state,
