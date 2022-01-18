@@ -49,17 +49,6 @@ export interface AssetContract {
   total_supply?: number | null;
 }
 
-export interface RainbowToken extends Asset {
-  color?: string;
-  highLiquidity?: boolean;
-  totalLiquidity?: number;
-  favorite?: boolean;
-  isRainbowCurated?: boolean;
-  isVerified?: boolean;
-  shadowColor?: string;
-  uniqueId: string;
-}
-
 // Represents fields in `RainbowToken` that are not present in `Asset`. These
 // fields can be included in `ParsedAddressAsset`.
 type RainbowTokenOwnFields = Omit<RainbowToken, keyof Asset>;
@@ -97,6 +86,17 @@ export interface UniswapCurrency extends ParsedAddressAsset {
       amount?: string;
     };
   };
+}
+
+export interface RainbowToken extends Asset {
+  color?: string;
+  highLiquidity?: boolean;
+  totalLiquidity?: number;
+  favorite?: boolean;
+  isRainbowCurated?: boolean;
+  isVerified?: boolean;
+  shadowColor?: string;
+  uniqueId: string;
 }
 
 export interface IndexToken extends Asset {
