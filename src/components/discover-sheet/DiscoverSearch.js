@@ -127,7 +127,7 @@ export default function DiscoverSearch() {
   }, [searchQuery, setIsSearching, startQueryDebounce, stopQueryDebounce]);
 
   useEffect(() => {
-    if (!uniswapCurrencyListLoading || !isFetchingEns) {
+    if (!uniswapCurrencyListLoading && !isFetchingEns) {
       setIsSearching(false);
     }
   }, [isFetchingEns, setIsSearching, uniswapCurrencyListLoading]);
