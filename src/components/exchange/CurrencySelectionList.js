@@ -54,7 +54,7 @@ const CurrencySelectionList = (
     if (!showSkeleton && prevShowSkeleton) {
       skeletonTransitionRef.current?.animateNextTransition();
     }
-  }, [loading, prevShowSkeleton, showSkeleton]);
+  }, [prevShowSkeleton, showSkeleton]);
 
   return (
     <Transitioning.View
