@@ -64,7 +64,7 @@ const CurrencySelectionList = (
     >
       {showList && !showSkeleton && (
         <Centered flex={1}>
-          {showNoResults && !loading ? (
+          {showNoResults ? (
             loading ? null : (
               <NoCurrencyResults />
             )
