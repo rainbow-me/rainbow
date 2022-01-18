@@ -17,6 +17,7 @@ import ExplainSheet from '../screens/ExplainSheet';
 import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import ReceiveModal from '../screens/ReceiveModal';
+import RegisterEnsSheet from '../screens/RegisterEnsSheet';
 import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
@@ -245,6 +246,11 @@ function NativeStackNavigator() {
         component={ExchangeModalNavigator}
         name={Routes.EXCHANGE_MODAL}
         options={{ ...nativeStackDefaultConfig, interactWithScrollView: false }}
+      />
+      <Stack.Screen
+        component={RegisterEnsSheet}
+        name={Routes.REGISTER_ENS_SHEET}
+        {...expandedAssetSheetConfigWithLimit}
       />
       <NativeStack.Screen
         component={ExpandedAssetSheet}

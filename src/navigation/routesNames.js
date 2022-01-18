@@ -33,6 +33,7 @@ const Routes = {
   PROFILE_SCREEN: 'ProfileScreen',
   QR_SCANNER_SCREEN: 'QRScannerScreen',
   RECEIVE_MODAL: 'ReceiveModal',
+  REGISTER_ENS_SHEET: 'RegisterEnsSheet',
   RESTORE_SHEET: 'RestoreSheet',
   SAVINGS_DEPOSIT_MODAL: 'SavingsDepositModal',
   SAVINGS_SHEET: 'SavingsSheet',

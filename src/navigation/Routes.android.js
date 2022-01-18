@@ -15,6 +15,7 @@ import ImportSeedPhraseSheet from '../screens/ImportSeedPhraseSheet';
 import ModalScreen from '../screens/ModalScreen';
 import PinAuthenticationScreen from '../screens/PinAuthenticationScreen';
 import ReceiveModal from '../screens/ReceiveModal';
+import RegisterEnsSheet from '../screens/RegisterEnsSheet';
 import RestoreSheet from '../screens/RestoreSheet';
 import SavingsSheet from '../screens/SavingsSheet';
 import SendConfirmationSheet from '../screens/SendConfirmationSheet';
@@ -268,6 +269,10 @@ function BSNavigator() {
       <BSStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SHEET}
+      />
+      <BSStack.Screen
+        component={RegisterEnsSheet}
+        name={Routes.REGISTER_ENS_SHEET}
       />
       <BSStack.Screen
         component={ShowcaseSheet}
