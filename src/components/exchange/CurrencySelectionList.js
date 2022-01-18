@@ -45,7 +45,7 @@ const CurrencySelectionList = (
   ref
 ) => {
   const skeletonTransitionRef = useRef();
-  const showNoResults = get(listItems, '[0].data', []).length === 0;
+  const showNoResults = !loading && get(listItems, '[0].data', []).length === 0;
   const showSkeleton = showNoResults && loading;
   const prevShowSkeleton = usePrevious(showSkeleton);
   const initialRender = prevShowSkeleton === undefined;
