@@ -191,11 +191,14 @@ export const walletInit = async (
   name = null,
   overwrite = false,
   checkedWallet = null,
-  network: string,
-  defaultIsNew: boolean = false
+  network: string
 ): Promise<WalletInitialized> => {
   let walletAddress = null;
-  let isNew = defaultIsNew;
+
+  // When the `seedPhrase` is not defined in the args, then
+  // this means it's a new fresh wallet created by the user.
+  let isNew = typeof seedPhrase === 'undefined';
+
   // Importing a seedphrase
   if (!isEmpty(seedPhrase)) {
     const wallet = await createWallet(
