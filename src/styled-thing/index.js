@@ -24,6 +24,11 @@ function filterProps(props, shouldForwardProp) {
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
 
+      // TODO (terry): Make sure we don't pass `as` and all the `$` props for web compatibility
+      // in the styled components sources they somehow convert all the `as` props into forwardedAs props
+      // we don't do that so we just use `as` prop as is.
+      // https://github.dev/styled-components/styled-components/blob/80cf751528f5711349dd3c27621022b4c95b4b7f/packages/styled-components/src/models/StyledNativeComponent.ts#L73-L80
+
       if (shouldForwardProp(key, () => true)) {
         forwardedProps[key] = props[key];
       }
@@ -118,8 +123,12 @@ export default function styled(Component) {
       );
 
       const computedProps = { ...props, ...attributes };
-      computedProps.as = undefined;
-      computedProps.$as = undefined;
+      // we don't need to pass it since we used it as elementToBeCreated
+      // assigning `undefined` will result into wrong `Object.assign` operations
+      // in the userland for example
+      // Object.assign({ as: true }, { as: undefined }) // { as: undefined }
+      delete computedProps.as;
+      delete computedProps.$as;
 
       const forwardedProps = filterProps(
         computedProps,
