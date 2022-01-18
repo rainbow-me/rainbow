@@ -1,8 +1,16 @@
 import { flatten } from 'lodash';
 import React, { forwardRef, ReactNode, useMemo } from 'react';
 import { View } from 'react-native';
-import { useForegroundColors } from '../../color/useForegroundColor';
-import { Shadow, ShadowColor, shadows } from '../../layout/shadow';
+import {
+  useForegroundColor,
+  useForegroundColors,
+} from '../../color/useForegroundColor';
+import {
+  defaultShadowColor,
+  Shadow,
+  ShadowColor,
+  shadows,
+} from '../../layout/shadow';
 import { NegativeSpace, negativeSpace, Space, space } from '../../layout/space';
 import {
   BackgroundProvider,
@@ -272,30 +280,40 @@ export const Box = forwardRef(function Box(
 function useShadow(shadowProp: BoxProps['shadow']) {
   const shadow = resolveToken(shadows, shadowProp);
 
-  const shadowColors = useMemo(() => {
+  const iosColors = useMemo(() => {
     if (shadow) {
-      return shadow.map(({ color }) => color || 'shadow');
+      return shadow.ios.map(({ color }) => color || defaultShadowColor);
     }
-    return ['shadow' as ShadowColor];
+    return [defaultShadowColor as ShadowColor];
   }, [shadow]);
-  const colors = useForegroundColors(shadowColors);
+  const iosShadowColors = useForegroundColors(iosColors);
+
+  const androidColor = useForegroundColor(
+    shadow?.android.color || defaultShadowColor
+  );
 
   return useMemo(
     () =>
       shadow
-        ? shadow.map((item, index) => {
-            const { offset, blur, opacity } = item;
-            return {
-              color: colors[index],
-              offset: {
-                height: offset.y,
-                width: offset.x,
-              },
-              opacity,
-              radius: blur,
-            };
-          })
+        ? {
+            android: {
+              ...shadow.android,
+              color: androidColor,
+            },
+            ios: shadow.ios.map((item, index) => {
+              const { offset, blur, opacity } = item;
+              return {
+                color: iosShadowColors[index],
+                offset: {
+                  height: offset.y,
+                  width: offset.x,
+                },
+                opacity,
+                radius: blur,
+              };
+            }),
+          }
         : undefined,
-    [colors, shadow]
+    [androidColor, iosShadowColors, shadow]
   );
 }

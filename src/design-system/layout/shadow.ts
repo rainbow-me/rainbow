@@ -6,115 +6,170 @@ import { CustomColor } from '../color/useForegroundColor';
 export { shadowColors };
 export type { ShadowColor };
 
-const defaultShadowColor = 'shadow';
+export const defaultShadowColor = 'shadow';
 
 export type ShadowValue = {
-  color?: ShadowColor | CustomColor;
-  offset: {
-    x: number;
-    y: number;
+  ios: {
+    color?: ShadowColor | CustomColor;
+    offset: {
+      x: number;
+      y: number;
+    };
+    opacity: number;
+    blur: number;
+  }[];
+  android: {
+    color?: ShadowColor | CustomColor;
+    elevation: number;
+    opacity: number;
   };
-  opacity: number;
-  blur: number;
-}[];
+};
 
 export const shadowHierarchy = {
-  '9px medium': [
-    {
-      offset: { x: 0, y: 1 },
-      blur: 3,
-      opacity: 0.12,
+  '9px medium': {
+    ios: [
+      {
+        offset: { x: 0, y: 1 },
+        blur: 3,
+        opacity: 0.12,
+      },
+      {
+        offset: { x: 0, y: 3 },
+        blur: 9,
+        opacity: 0.04,
+      },
+    ],
+    android: {
+      elevation: 9,
+      opacity: 0.8,
     },
-    {
-      offset: { x: 0, y: 3 },
-      blur: 9,
-      opacity: 0.04,
+  } as ShadowValue,
+  '12px medium': {
+    ios: [
+      {
+        offset: { x: 0, y: 2 },
+        blur: 4,
+        opacity: 0.12,
+      },
+      {
+        offset: { x: 0, y: 6 },
+        blur: 12,
+        opacity: 0.04,
+      },
+    ],
+    android: {
+      elevation: 12,
+      opacity: 0.8,
     },
-  ] as ShadowValue,
-  '12px medium': [
-    {
-      offset: { x: 0, y: 2 },
-      blur: 4,
-      opacity: 0.12,
+  } as ShadowValue,
+  '12px heavy': {
+    ios: [
+      {
+        offset: { x: 0, y: 2 },
+        blur: 4,
+        opacity: 0.3,
+      },
+      {
+        offset: { x: 0, y: 6 },
+        blur: 12,
+        opacity: 0.1,
+      },
+    ],
+    android: {
+      elevation: 12,
+      opacity: 1,
     },
-    {
-      offset: { x: 0, y: 6 },
-      blur: 12,
-      opacity: 0.04,
+  } as ShadowValue,
+  '21px light': {
+    ios: [
+      {
+        offset: { x: 0, y: 3.5 },
+        blur: 10.5,
+        opacity: 0.06,
+      },
+      {
+        offset: { x: 0, y: 7 },
+        blur: 21,
+        opacity: 0.04,
+      },
+    ],
+    android: {
+      elevation: 21,
+      opacity: 0.5,
     },
-  ] as ShadowValue,
-  '12px heavy': [
-    {
-      offset: { x: 0, y: 2 },
-      blur: 4,
-      opacity: 0.3,
+  } as ShadowValue,
+  '21px heavy': {
+    ios: [
+      {
+        offset: { x: 0, y: 3.5 },
+        blur: 10.5,
+        opacity: 0.35,
+      },
+      {
+        offset: { x: 0, y: 7 },
+        blur: 21,
+        opacity: 0.25,
+      },
+    ],
+    android: {
+      elevation: 21,
+      opacity: 1,
     },
-    {
-      offset: { x: 0, y: 6 },
-      blur: 12,
-      opacity: 0.1,
+  } as ShadowValue,
+  '30px light': {
+    ios: [
+      {
+        offset: { x: 0, y: 5 },
+        blur: 15,
+        opacity: 0.06,
+      },
+      {
+        offset: { x: 0, y: 10 },
+        blur: 30,
+        opacity: 0.04,
+      },
+    ],
+    android: {
+      elevation: 30,
+      opacity: 0.5,
     },
-  ] as ShadowValue,
-  '21px light': [
-    {
-      offset: { x: 0, y: 3.5 },
-      blur: 10.5,
-      opacity: 0.06,
+  } as ShadowValue,
+  '30px medium': {
+    ios: [
+      {
+        offset: { x: 0, y: 5 },
+        blur: 15,
+        opacity: 0.12,
+      },
+      {
+        offset: { x: 0, y: 10 },
+        blur: 30,
+        opacity: 0.04,
+      },
+    ],
+    android: {
+      elevation: 30,
+      opacity: 0.8,
     },
-    {
-      offset: { x: 0, y: 7 },
-      blur: 21,
-      opacity: 0.04,
+  } as ShadowValue,
+  '30px heavy': {
+    ios: [
+      {
+        offset: { x: 0, y: 5 },
+        blur: 15,
+        opacity: 0.4,
+      },
+      {
+        offset: { x: 0, y: 10 },
+        blur: 30,
+        opacity: 0.2,
+      },
+    ],
+    android: {
+      elevation: 30,
+      opacity: 1,
     },
-  ] as ShadowValue,
-  '21px heavy': [
-    {
-      offset: { x: 0, y: 3.5 },
-      blur: 10.5,
-      opacity: 0.35,
-    },
-    {
-      offset: { x: 0, y: 7 },
-      blur: 21,
-      opacity: 0.25,
-    },
-  ] as ShadowValue,
-  '30px light': [
-    {
-      offset: { x: 0, y: 5 },
-      blur: 15,
-      opacity: 0.06,
-    },
-    {
-      offset: { x: 0, y: 10 },
-      blur: 30,
-      opacity: 0.04,
-    },
-  ] as ShadowValue,
-  '30px medium': [
-    {
-      offset: { x: 0, y: 5 },
-      blur: 15,
-      opacity: 0.12,
-    },
-    {
-      offset: { x: 0, y: 10 },
-      blur: 30,
-      opacity: 0.04,
-    },
-  ] as ShadowValue,
-  '30px heavy': [
-    {
-      offset: { x: 0, y: 5 },
-      blur: 15,
-      opacity: 0.4,
-    },
-    {
-      offset: { x: 0, y: 10 },
-      blur: 30,
-      opacity: 0.2,
-    },
-  ] as ShadowValue,
+  } as ShadowValue,
 } as const;
 export type ShadowHierarchy = keyof typeof shadowHierarchy;
 
@@ -123,17 +178,32 @@ export const shadows = Object.entries(shadowHierarchy).reduce(
     const nextShadows = shadowColors.reduce(
       (currentShadows, color) => ({
         ...currentShadows,
-        [`${key} ${color}`]: hierarchy.map((attrs, i) => ({
-          ...attrs,
-          color: i === hierarchy.length - 1 ? defaultShadowColor : color,
-        })),
+        [`${key} ${color}`]: {
+          ios: hierarchy.ios.map((attrs, i) => ({
+            ...attrs,
+            color: i === hierarchy.ios.length - 1 ? defaultShadowColor : color,
+          })),
+          android: {
+            ...hierarchy.android,
+            color: color || defaultShadowColor,
+          },
+        },
       }),
       {}
     );
 
     return {
       ...currentShadows,
-      [key]: hierarchy.map(attrs => ({ ...attrs, color: defaultShadowColor })),
+      [key]: {
+        ios: hierarchy.ios.map(attrs => ({
+          ...attrs,
+          color: defaultShadowColor,
+        })),
+        android: {
+          ...hierarchy.android,
+          color: defaultShadowColor,
+        },
+      },
       ...nextShadows,
     };
   },

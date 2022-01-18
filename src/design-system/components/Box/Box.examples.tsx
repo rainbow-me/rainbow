@@ -202,44 +202,57 @@ export const shadowsWithCustom: Example = {
           background="body"
           padding="15px"
           shadow={{
-            custom: [
-              {
-                offset: { x: 0, y: 5 },
-                opacity: 0.05,
-                blur: 10,
+            custom: {
+              ios: [
+                {
+                  offset: { x: 0, y: 5 },
+                  opacity: 0.05,
+                  blur: 10,
+                },
+                {
+                  offset: { x: 0, y: 10 },
+                  opacity: 0.15,
+                  blur: 20,
+                },
+              ],
+              android: {
+                elevation: 15,
+                opacity: 0.5,
               },
-              {
-                offset: { x: 0, y: 10 },
-                opacity: 0.15,
-                blur: 20,
-              },
-            ],
+            },
           }}
         />
         <Box
           background="body"
           padding="15px"
           shadow={{
-            custom: [
-              {
+            custom: {
+              ios: [
+                {
+                  color: { custom: '#FF54BB' },
+                  offset: { x: 0, y: 2 },
+                  opacity: 0.5,
+                  blur: 5,
+                },
+                {
+                  color: 'swap',
+                  offset: { x: 0, y: 4 },
+                  opacity: 0.5,
+                  blur: 10,
+                },
+                {
+                  color: 'shadow',
+                  offset: { x: 0, y: 4 },
+                  opacity: 0.5,
+                  blur: 15,
+                },
+              ],
+              android: {
                 color: { custom: '#FF54BB' },
-                offset: { x: 0, y: 2 },
-                opacity: 0.5,
-                blur: 5,
+                elevation: 15,
+                opacity: 1,
               },
-              {
-                color: 'swap',
-                offset: { x: 0, y: 4 },
-                opacity: 0.5,
-                blur: 10,
-              },
-              {
-                color: 'shadow',
-                offset: { x: 0, y: 4 },
-                opacity: 0.5,
-                blur: 15,
-              },
-            ],
+            },
           }}
         />
       </Columns>

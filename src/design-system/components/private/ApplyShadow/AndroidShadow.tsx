@@ -1,29 +1,29 @@
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
-import type { ShadowItem } from './ApplyShadow';
+import type { AndroidShadowItem } from './ApplyShadow';
 
 export function AndroidShadow({
   backgroundColor,
-  shadows,
+  shadow,
 }: {
   backgroundColor: ViewStyle['backgroundColor'];
-  shadows: ShadowItem[];
+  shadow: AndroidShadowItem;
 }) {
-  const elevation = Math.max(...shadows.map(({ radius }) => radius || 0)) / 3;
-  const shadowColor = shadows[shadows.length - 1].color;
-  const opacity = Math.max(...shadows.map(({ opacity }) => opacity || 0)) * 5;
+  const { color, elevation = 0, opacity } = shadow;
   return (
-    <View
-      style={[
-        StyleSheet.absoluteFill,
-        {
-          backgroundColor,
-          elevation,
-          opacity,
-          shadowColor,
-        },
-      ]}
-    />
+    <>
+      <View
+        style={[
+          StyleSheet.absoluteFill,
+          {
+            backgroundColor,
+            elevation: elevation / 2,
+            opacity,
+            shadowColor: color,
+          },
+        ]}
+      />
+    </>
   );
 }

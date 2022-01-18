@@ -2,24 +2,31 @@ import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { StyleSheet, View, ViewProps, ViewStyle } from 'react-native';
 
+import { featureFlags } from '../../../config';
 import { AndroidShadow } from './AndroidShadow';
 import { AndroidShadow as AndroidShadowV2 } from './AndroidShadow.v2';
 import { IOSShadow } from './IOSShadow';
-import useExperimentalFlag, {
-  ANDROID_SHADOWS_V2,
-} from '@rainbow-me/config/experimentalHooks';
 
+export type AndroidShadowItem = {
+  elevation: ViewStyle['elevation'];
+  opacity: ViewStyle['opacity'];
+  color: ViewStyle['shadowColor'];
+};
 export type ShadowItem = {
   color: ViewStyle['shadowColor'];
   offset: ViewStyle['shadowOffset'];
   opacity: ViewStyle['shadowOpacity'];
   radius: ViewStyle['shadowRadius'];
 };
+export type Shadows = {
+  ios: ShadowItem[];
+  android: AndroidShadowItem;
+};
 
 export type ApplyShadowProps = {
   backgroundColor: ViewStyle['backgroundColor'];
   children: React.ReactElement<ViewProps>;
-  shadows?: ShadowItem[];
+  shadows?: Shadows;
 };
 
 function splitPositionStyles(style: ViewStyle) {
@@ -83,42 +90,38 @@ function splitPositionStyles(style: ViewStyle) {
 
 export const ApplyShadow = React.forwardRef(
   (
-    {
-      backgroundColor,
-      children: child,
-      shadows: shadowsProp,
-    }: ApplyShadowProps,
+    { backgroundColor, children: child, shadows }: ApplyShadowProps,
     ref: React.Ref<any>
   ) => {
-    const isAndroidV2Shadows = useExperimentalFlag(ANDROID_SHADOWS_V2);
+    if (!shadows) return child;
 
-    if (!shadowsProp || shadowsProp.length === 0) return child;
-
-    const shadows = [...shadowsProp].reverse();
+    const isAndroidV2Shadows = featureFlags.androidShadowsV2;
     const [parentStyles, childStyles] = splitPositionStyles(
       StyleSheet.flatten(child.props.style) || {}
     );
-
-    const maxElevation = Math.max(...shadows.map(({ radius }) => radius || 0));
+    const iosShadows = [...shadows.ios].reverse();
     const androidChildStyles = {
-      elevation: maxElevation + 1,
+      elevation: (shadows.android.elevation || 0) + 1,
       shadowColor: 'transparent',
     };
 
     return (
       <View ref={ref} style={parentStyles}>
         {(ios || web) && (
-          <IOSShadow backgroundColor={backgroundColor} shadows={shadows} />
+          <IOSShadow backgroundColor={backgroundColor} shadows={iosShadows} />
         )}
         {android && !isAndroidV2Shadows && (
-          <AndroidShadow backgroundColor={backgroundColor} shadows={shadows} />
+          <AndroidShadow
+            backgroundColor={backgroundColor}
+            shadow={shadows.android}
+          />
         )}
         <ConditionalWrap
           condition={Boolean(android && isAndroidV2Shadows)}
           wrap={children => (
             <AndroidShadowV2
               backgroundColor={backgroundColor}
-              shadows={shadows}
+              shadows={iosShadows}
             >
               {children}
             </AndroidShadowV2>
