@@ -1,6 +1,4 @@
 import lang from 'i18n-js';
-import { toLower } from 'lodash';
-import { rankings } from 'match-sorter';
 import React, {
   useCallback,
   useContext,
