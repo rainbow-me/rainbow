@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import RainbowContextWrapper from '../../helpers/RainbowContext';
 import useHideSplashScreen from '../../hooks/useHideSplashScreen';
 import {
   Box,
@@ -162,26 +163,28 @@ export const Playground = () => {
 
   return (
     <HideSplashScreen>
-      <ColorModeProvider value={colorMode}>
-        <Box background="body" flexGrow={1}>
-          <ScrollView contentInsetAdjustmentBehavior="automatic">
-            {android ? (
-              <View style={{ height: StatusBar.currentHeight }} />
-            ) : null}
-            <Inset space="19px">
-              <Stack space="24px">
-                <TouchableOpacity onPress={toggleColorMode}>
-                  <Heading>Color mode: {colorMode}</Heading>
-                </TouchableOpacity>
-                <Divider />
-                {allDocs.map(({ meta, examples }, index) => (
-                  <DocsRow examples={examples} key={index} meta={meta} />
-                ))}
-              </Stack>
-            </Inset>
-          </ScrollView>
-        </Box>
-      </ColorModeProvider>
+      <RainbowContextWrapper>
+        <ColorModeProvider value={colorMode}>
+          <Box background="body" flexGrow={1}>
+            <ScrollView contentInsetAdjustmentBehavior="automatic">
+              {android ? (
+                <View style={{ height: StatusBar.currentHeight }} />
+              ) : null}
+              <Inset space="19px">
+                <Stack space="24px">
+                  <TouchableOpacity onPress={toggleColorMode}>
+                    <Heading>Color mode: {colorMode}</Heading>
+                  </TouchableOpacity>
+                  <Divider />
+                  {allDocs.map(({ meta, examples }, index) => (
+                    <DocsRow examples={examples} key={index} meta={meta} />
+                  ))}
+                </Stack>
+              </Inset>
+            </ScrollView>
+          </Box>
+        </ColorModeProvider>
+      </RainbowContextWrapper>
     </HideSplashScreen>
   );
 };

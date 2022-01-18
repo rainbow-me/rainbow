@@ -3,7 +3,11 @@ import React from 'react';
 import { StyleSheet, View, ViewProps, ViewStyle } from 'react-native';
 
 import { AndroidShadow } from './AndroidShadow';
+import { AndroidShadow as AndroidShadowV2 } from './AndroidShadow.v2';
 import { IOSShadow } from './IOSShadow';
+import useExperimentalFlag, {
+  ANDROID_SHADOWS_V2,
+} from '@rainbow-me/config/experimentalHooks';
 
 export type ShadowItem = {
   color: ViewStyle['shadowColor'];
@@ -86,27 +90,45 @@ export const ApplyShadow = React.forwardRef(
     }: ApplyShadowProps,
     ref: React.Ref<any>
   ) => {
+    const isAndroidV2Shadows = useExperimentalFlag(ANDROID_SHADOWS_V2);
+
     if (!shadowsProp || shadowsProp.length === 0) return child;
 
     const shadows = [...shadowsProp].reverse();
     const [parentStyles, childStyles] = splitPositionStyles(
       StyleSheet.flatten(child.props.style) || {}
     );
+
+    const maxElevation = Math.max(...shadows.map(({ radius }) => radius || 0));
+    const androidChildStyles = {
+      elevation: maxElevation + 1,
+      shadowColor: 'transparent',
+    };
+
     return (
       <View ref={ref} style={parentStyles}>
         {(ios || web) && (
           <IOSShadow backgroundColor={backgroundColor} shadows={shadows} />
         )}
+        {android && !isAndroidV2Shadows && (
+          <AndroidShadow backgroundColor={backgroundColor} shadows={shadows} />
+        )}
         <ConditionalWrap
-          condition={android}
+          condition={Boolean(android && isAndroidV2Shadows)}
           wrap={children => (
-            <AndroidShadow backgroundColor={backgroundColor} shadows={shadows}>
+            <AndroidShadowV2
+              backgroundColor={backgroundColor}
+              shadows={shadows}
+            >
               {children}
-            </AndroidShadow>
+            </AndroidShadowV2>
           )}
         >
           {React.cloneElement(child, {
-            style: [childStyles, { backgroundColor }],
+            style: [
+              childStyles,
+              android && !isAndroidV2Shadows ? androidChildStyles : undefined,
+            ],
           })}
         </ConditionalWrap>
       </View>
