@@ -1,9 +1,12 @@
+import { ObservableQuery } from '@apollo/client';
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Mutex } from 'async-mutex';
 import { getUnixTime, startOfMinute, sub } from 'date-fns';
 import isValidDomain from 'is-valid-domain';
 import {
   concat,
   filter,
+  find,
   get,
   includes,
   isEmpty,
@@ -21,6 +24,8 @@ import {
   uniqBy,
 } from 'lodash';
 import { MMKV } from 'react-native-mmkv';
+import { Dispatch } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
 import { uniswapClient } from '../apollo/client';
 import {
   UNISWAP_24HOUR_PRICE_QUERY,
@@ -28,13 +33,21 @@ import {
 } from '../apollo/queries';
 import { addCashUpdatePurchases } from './addCash';
 import { decrementNonce, incrementNonce } from './nonceManager';
+import { AppGetState, AppState } from './store';
 import { uniqueTokensRefreshState } from './uniqueTokens';
 import { uniswapUpdateLiquidityTokens } from './uniswapLiquidity';
 import {
   AssetTypes,
-  TransactionDirections,
-  TransactionStatusTypes,
+  NewTransactionOrAddCashTransaction,
+  ParsedAddressAsset,
+  RainbowTransaction,
+  TransactionDirection,
+  TransactionStatus,
+  TransactionType,
   TransactionTypes,
+  ZerionAsset,
+  ZerionAssetOrFallback,
+  ZerionTransaction,
 } from '@rainbow-me/entities';
 import appEvents from '@rainbow-me/handlers/appEvents';
 import {
@@ -53,9 +66,8 @@ import {
 } from '@rainbow-me/handlers/web3';
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
-// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@rainbow-me/navigation/onNavig... Remove this comment to see the full error message
 import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
-import networkTypes from '@rainbow-me/networkTypes';
+import networkTypes, { Network } from '@rainbow-me/networkTypes';
 import {
   getTitle,
   getTransactionLabel,
@@ -114,7 +126,6 @@ const DATA_UPDATE_ACCOUNT_ASSETS_DATA = 'data/DATA_UPDATE_ACCOUNT_ASSETS_DATA';
 
 const DATA_UPDATE_GENERIC_ASSETS = 'data/DATA_UPDATE_GENERIC_ASSETS';
 const DATA_UPDATE_ETH_USD = 'data/DATA_UPDATE_ETH_USD';
-const DATA_UPDATE_ETH_USD_CHARTS = 'data/DATA_UPDATE_ETH_USD_CHARTS';
 const DATA_UPDATE_PORTFOLIOS = 'data/DATA_UPDATE_PORTFOLIOS';
 const DATA_UPDATE_TRANSACTIONS = 'data/DATA_UPDATE_TRANSACTIONS';
 const DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION =
@@ -137,18 +148,261 @@ const DATA_LOAD_TRANSACTIONS_FAILURE = 'data/DATA_LOAD_TRANSACTIONS_FAILURE';
 const DATA_ADD_NEW_TRANSACTION_SUCCESS =
   'data/DATA_ADD_NEW_TRANSACTION_SUCCESS';
 
-const DATA_ADD_NEW_SUBSCRIBER = 'data/DATA_ADD_NEW_SUBSCRIBER';
 const DATA_UPDATE_REFETCH_SAVINGS = 'data/DATA_UPDATE_REFETCH_SAVINGS';
 
 const DATA_CLEAR_STATE = 'data/DATA_CLEAR_STATE';
 
 const mutex = new Mutex();
 
-const withRunExclusive = async (callback: any) =>
+const withRunExclusive = async <T>(callback: (...args: any[]) => T) =>
   await mutex.runExclusive(callback);
 
 // -- Actions ---------------------------------------- //
-export const dataLoadState = () => async (dispatch: any, getState: any) =>
+
+interface DataState {
+  accountAssetsData: {
+    [uniqueId: string]: ParsedAddressAsset;
+  };
+  assetPricesFromUniswap: {
+    [address: string]: UniswapAssetPriceData;
+  };
+  ethUSDCharts: null;
+  ethUSDPrice: number | undefined | null;
+  genericAssets: {
+    [address: string]: ParsedAddressAsset;
+  };
+  isLoadingAssets: boolean;
+  isLoadingTransactions: boolean;
+  portfolios: {
+    [address: string]: ZerionPortfolio;
+  };
+  shouldRefetchSavings: boolean;
+  transactions: RainbowTransaction[];
+  uniswapPricesQuery: ObservableQuery<
+    UniswapPricesQueryData,
+    UniswapPricesQueryVariables
+  > | null;
+  uniswapPricesSubscription: ZenObservable.Subscription | null;
+}
+
+type DataAction =
+  | DataUpdateUniswapPricesSubscriptionAction
+  | DataUpdateRefetchSavingsAction
+  | DataUpdateAssetPricesFromUniswapAction
+  | DataUpdateGenericAssetsAction
+  | DataUpdateAccountAssetsDataAction
+  | DataUpdateTransactionsAction
+  | DataUpdatePortfoliosAction
+  | DataUpdateEthUsdAction
+  | DataLoadTransactionsRequestAction
+  | DataLoadTransactionSuccessAction
+  | DataLoadTransactionsFailureAction
+  | DataLoadAccountAssetsDataRequestAction
+  | DataLoadAssetPricesFromUniswapSuccessAction
+  | DataLoadAccountAssetsDataSuccessAction
+  | DataLoadAccountAssetsDataFailureAction
+  | DataAddNewTransactionSuccessAction
+  | DataClearStateAction;
+
+interface DataUpdateUniswapPricesSubscriptionAction {
+  type: typeof DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION;
+  payload: {
+    uniswapPricesQuery: DataState['uniswapPricesQuery'];
+    uniswapPricesSubscription: DataState['uniswapPricesSubscription'];
+  };
+}
+
+interface DataUpdateRefetchSavingsAction {
+  type: typeof DATA_UPDATE_REFETCH_SAVINGS;
+  payload: boolean;
+}
+
+interface UniswapPricesQueryData {
+  tokens: {
+    id: string;
+    derivedETH: string;
+    symbol: string;
+    name: string;
+    decimals: string;
+  }[];
+}
+
+interface UniswapPricesQueryVariables {
+  addresses: string[];
+}
+
+interface UniswapAssetPriceData {
+  price: string;
+  relativePriceChange: number;
+  tokenAddress: string;
+}
+
+interface CoingeckoApiResponseWithLastUpdate {
+  [coingeckoId: string]: {
+    [currencyIdOr24hChange: string]: number;
+    last_updated_at: number;
+  };
+}
+
+interface DataUpdateAssetPricesFromUniswapAction {
+  type: typeof DATA_UPDATE_ASSET_PRICES_FROM_UNISWAP;
+  payload: DataState['assetPricesFromUniswap'];
+}
+
+interface DataUpdateGenericAssetsAction {
+  type: typeof DATA_UPDATE_GENERIC_ASSETS;
+  payload: DataState['genericAssets'];
+}
+
+interface DataUpdateAccountAssetsDataAction {
+  type: typeof DATA_UPDATE_ACCOUNT_ASSETS_DATA;
+  payload: DataState['accountAssetsData'];
+}
+
+interface DataUpdateTransactionsAction {
+  type: typeof DATA_UPDATE_TRANSACTIONS;
+  payload: DataState['transactions'];
+}
+
+interface DataUpdatePortfoliosAction {
+  type: typeof DATA_UPDATE_PORTFOLIOS;
+  payload: DataState['portfolios'];
+}
+
+interface DataUpdateEthUsdAction {
+  type: typeof DATA_UPDATE_ETH_USD;
+  payload: number | undefined;
+}
+
+interface DataLoadTransactionsRequestAction {
+  type: typeof DATA_LOAD_TRANSACTIONS_REQUEST;
+}
+
+interface DataLoadTransactionSuccessAction {
+  type: typeof DATA_LOAD_TRANSACTIONS_SUCCESS;
+  payload: DataState['transactions'];
+}
+
+interface DataLoadTransactionsFailureAction {
+  type: typeof DATA_LOAD_TRANSACTIONS_FAILURE;
+}
+
+interface DataLoadAccountAssetsDataRequestAction {
+  type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST;
+}
+
+interface DataLoadAssetPricesFromUniswapSuccessAction {
+  type: typeof DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS;
+  payload: DataState['assetPricesFromUniswap'];
+}
+
+interface DataLoadAccountAssetsDataSuccessAction {
+  type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS;
+  payload: DataState['accountAssetsData'];
+}
+
+interface DataLoadAccountAssetsDataFailureAction {
+  type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE;
+}
+
+interface DataAddNewTransactionSuccessAction {
+  type: typeof DATA_ADD_NEW_TRANSACTION_SUCCESS;
+  payload: DataState['transactions'];
+}
+
+interface DataClearStateAction {
+  type: typeof DATA_CLEAR_STATE;
+}
+
+interface AddressAssetsReceivedMessage {
+  payload?: {
+    assets?: {
+      [id: string]: {
+        asset: ZerionAsset;
+      };
+    };
+  };
+  meta?: MessageMeta;
+}
+
+interface PortfolioReceivedMessage {
+  payload?: {
+    portfolio?: ZerionPortfolio;
+  };
+  meta?: MessageMeta;
+}
+
+interface TransactionsReceivedMessage {
+  payload?: {
+    transactions?: ZerionTransactionWithNetwork[];
+  };
+  meta?: MessageMeta;
+}
+
+interface TransactionsRemovedMessage {
+  payload?: {
+    transactions?: ZerionTransaction[];
+  };
+  meta?: MessageMeta;
+}
+
+interface AssetPricesReceivedMessage {
+  payload?: {
+    prices?: {
+      [id: string]: ZerionAssetOrFallback;
+    };
+  };
+  meta?: MessageMeta;
+}
+
+interface AssetPricesChangedMessage {
+  payload?: {
+    prices?: ZerionAsset[];
+  };
+  meta?: MessageMeta & { asset_code?: string };
+}
+
+type DataMessage =
+  | AddressAssetsReceivedMessage
+  | PortfolioReceivedMessage
+  | TransactionsReceivedMessage
+  | TransactionsRemovedMessage
+  | AssetPricesReceivedMessage
+  | AssetPricesChangedMessage;
+
+interface MessageMeta {
+  address?: string;
+  currency?: string;
+  status?: string;
+}
+
+interface ZerionPortfolio {
+  assets_value: number;
+  deposited_value: number;
+  borrowed_value: number;
+  locked_value: number;
+  staked_value: number;
+  bsc_assets_value: number;
+  polygon_assets_value: number;
+  total_value: number;
+  absolute_change_24h: number;
+  relative_change_24h: number;
+}
+
+export const dataLoadState = () => async (
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    | DataLoadAssetPricesFromUniswapSuccessAction
+    | DataLoadAccountAssetsDataRequestAction
+    | DataLoadAccountAssetsDataSuccessAction
+    | DataLoadAccountAssetsDataFailureAction
+    | DataLoadTransactionSuccessAction
+    | DataLoadTransactionsRequestAction
+    | DataLoadTransactionsFailureAction
+  >,
+  getState: AppGetState
+) =>
   withRunExclusive(async () => {
     const { accountAddress, network } = getState().settings;
     try {
@@ -194,9 +448,9 @@ export const dataLoadState = () => async (dispatch: any, getState: any) =>
   });
 
 export const fetchAssetPricesWithCoingecko = async (
-  coingeckoIds: any,
-  nativeCurrency: any
-) => {
+  coingeckoIds: string[],
+  nativeCurrency: string
+): Promise<CoingeckoApiResponseWithLastUpdate | undefined> => {
   try {
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoIds
       .filter((val: any) => !!val)
@@ -212,7 +466,7 @@ export const fetchAssetPricesWithCoingecko = async (
 };
 
 export const fetchCoingeckoIds = async () => {
-  let ids;
+  let ids: typeof coingeckoIdsFallback;
   try {
     const request = await fetch(COINGECKO_IDS_ENDPOINT);
     ids = await request.json();
@@ -220,22 +474,26 @@ export const fetchCoingeckoIds = async () => {
     ids = coingeckoIdsFallback;
   }
 
-  const idsMap = {};
-  ids.forEach(({ id, platforms: { ethereum: tokenAddress } }: any) => {
+  const idsMap: {
+    [address: string]: string;
+  } = {};
+  ids.forEach(({ id, platforms: { ethereum: tokenAddress } }) => {
     const address = tokenAddress && toLower(tokenAddress);
     if (address && address.substr(0, 2) === '0x') {
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       idsMap[address] = id;
     }
   });
   return idsMap;
 };
 
-const genericAssetsFallback = () => async (dispatch: any, getState: any) => {
+const genericAssetsFallback = () => async (
+  dispatch: ThunkDispatch<AppState, unknown, never>,
+  getState: AppGetState
+) => {
   logger.log('ZERION IS DOWN! ENABLING GENERIC ASSETS FALLBACK');
   const { nativeCurrency } = getState().settings;
   const formattedNativeCurrency = toLower(nativeCurrency);
-  let ids: any;
+  let ids: typeof coingeckoIdsFallback;
   try {
     const request = await fetch(COINGECKO_IDS_ENDPOINT);
     ids = await request.json();
@@ -243,7 +501,7 @@ const genericAssetsFallback = () => async (dispatch: any, getState: any) => {
     ids = coingeckoIdsFallback;
   }
 
-  const allAssets = [
+  const allAssets: ZerionAssetOrFallback[] = [
     {
       asset_code: ETH_ADDRESS,
       coingecko_id: ETH_COINGECKO_ID,
@@ -262,13 +520,11 @@ const genericAssetsFallback = () => async (dispatch: any, getState: any) => {
 
   keys(TokensListenedCache?.[nativeCurrency]).forEach(address => {
     const coingeckoAsset = ids.find(
-      // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'tokenAddress' implicitly has an '... Remove this comment to see the full error message
       ({ platforms: { ethereum: tokenAddress } }) =>
         toLower(tokenAddress) === address
     );
 
     if (coingeckoAsset) {
-      // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       allAssets.push({
         asset_code: address,
         coingecko_id: coingeckoAsset?.id,
@@ -280,7 +536,7 @@ const genericAssetsFallback = () => async (dispatch: any, getState: any) => {
 
   const allAssetsUnique = uniqBy(allAssets, token => token.asset_code);
 
-  let prices = {};
+  let prices: CoingeckoApiResponseWithLastUpdate = {};
   const pricePageSize = 80;
   const pages = Math.ceil(allAssetsUnique.length / pricePageSize);
   try {
@@ -306,14 +562,10 @@ const genericAssetsFallback = () => async (dispatch: any, getState: any) => {
     Object.keys(prices).forEach(key => {
       for (let uniqueAsset of allAssetsUnique) {
         if (toLower(uniqueAsset.coingecko_id) === toLower(key)) {
-          // @ts-expect-error ts-migrate(2339) FIXME: Property 'price' does not exist on type '{ asset_c... Remove this comment to see the full error message
           uniqueAsset.price = {
-            // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
             changed_at: prices[key].last_updated_at,
             relative_change_24h:
-              // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
               prices[key][`${formattedNativeCurrency}_24h_change`],
-            // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
             value: prices[key][`${formattedNativeCurrency}`],
           };
           break;
@@ -322,10 +574,14 @@ const genericAssetsFallback = () => async (dispatch: any, getState: any) => {
     });
   }
 
-  const allPrices = {};
+  // At this point, `allPrices` will include the `coingecko_id` field, but it
+  // is not included as part of the `ZerionAsset` that it is meant to conform
+  // to.
+  const allPrices: {
+    [id: string]: ZerionAssetOrFallback;
+  } = {};
 
   allAssetsUnique.forEach(asset => {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     allPrices[asset.asset_code] = asset;
   });
 
@@ -354,17 +610,20 @@ export const disableGenericAssetsFallbackIfNeeded = () => {
   }
 };
 
-export const dataResetState = () => (dispatch: any, getState: any) => {
+export const dataResetState = () => (
+  dispatch: Dispatch<DataClearStateAction>,
+  getState: AppGetState
+) => {
   const { uniswapPricesSubscription } = getState().data;
-  uniswapPricesSubscription?.unsubscribe?.unsubscribe();
+  (uniswapPricesSubscription?.unsubscribe as any)?.unsubscribe();
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
   genericAssetsHandle && clearTimeout(genericAssetsHandle);
   dispatch({ type: DATA_CLEAR_STATE });
 };
 
-export const dataUpdateAsset = (assetData: any) => (
-  dispatch: any,
-  getState: any
+export const dataUpdateAsset = (assetData: ParsedAddressAsset) => (
+  dispatch: Dispatch<DataUpdateAccountAssetsDataAction>,
+  getState: AppGetState
 ) => {
   const { accountAddress, network } = getState().settings;
   const { accountAssetsData } = getState().data;
@@ -379,10 +638,9 @@ export const dataUpdateAsset = (assetData: any) => (
   saveAccountAssetsData(updatedAssetsData, accountAddress, network);
 };
 
-export const dataUpdateAssets = (assetsData: any) => (
-  dispatch: any,
-  getState: any
-) => {
+export const dataUpdateAssets = (assetsData: {
+  [uniqueId: string]: ParsedAddressAsset;
+}) => (dispatch: any, getState: any) => {
   const { accountAddress, network } = getState().settings;
   if (!isEmpty(assetsData)) {
     saveAccountAssetsData(assetsData, accountAddress, network);
@@ -395,23 +653,25 @@ export const dataUpdateAssets = (assetsData: any) => (
   }
 };
 
-const checkMeta = (message: any) => (dispatch: any, getState: any) => {
+const checkMeta = (message: DataMessage | undefined) => (
+  dispatch: Dispatch<never>,
+  getState: AppGetState
+) => {
   const { accountAddress, nativeCurrency } = getState().settings;
   const address = message?.meta?.address;
   const currency = message?.meta?.currency;
   return (
-    isLowerCaseMatch(address, accountAddress) &&
-    isLowerCaseMatch(currency, nativeCurrency)
+    isLowerCaseMatch(address!, accountAddress) &&
+    isLowerCaseMatch(currency!, nativeCurrency)
   );
 };
 
-const checkForConfirmedSavingsActions = (transactionsData: any) => (
-  dispatch: any
-) => {
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'find'.
+const checkForConfirmedSavingsActions = (
+  transactionsData: ZerionTransaction[]
+) => (dispatch: any) => {
   const foundConfirmedSavings = find(
     transactionsData,
-    (transaction: any) =>
+    (transaction: ZerionTransaction) =>
       (transaction?.type === 'deposit' || transaction?.type === 'withdraw') &&
       transaction?.status === 'confirmed'
   );
@@ -420,29 +680,41 @@ const checkForConfirmedSavingsActions = (transactionsData: any) => (
   }
 };
 
-const checkForUpdatedNonce = (transactionData: any) => (dispatch: any) => {
+type ZerionTransactionWithNetwork = ZerionTransaction & {
+  network: Network;
+};
+
+const checkForUpdatedNonce = (
+  transactionData: ZerionTransactionWithNetwork[]
+) => (dispatch: ThunkDispatch<AppState, unknown, never>) => {
   const txSortedByDescendingNonce = transactionData.sort(
-    // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'n1' implicitly has an 'any' type.
+    // @ts-expect-error TypeScript prevents this subtraction since `n1` or `n2`
+    // may be null, but subtracting null and a number is possible.
     ({ nonce: n1 }, { nonce: n2 }) => n2 - n1
   );
   const [latestTx] = txSortedByDescendingNonce;
   const { address_from, network, nonce } = latestTx;
-  dispatch(incrementNonce(address_from, nonce, network));
+  dispatch(incrementNonce(address_from!, nonce!, network));
 };
 
-const checkForRemovedNonce = (removedTransactions: any) => (dispatch: any) => {
+const checkForRemovedNonce = (
+  removedTransactions: ZerionTransactionWithNetwork[]
+) => (dispatch: ThunkDispatch<AppState, unknown, never>) => {
   const txSortedByAscendingNonce = removedTransactions.sort(
-    // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'n1' implicitly has an 'any' type.
+    // @ts-expect-error TypeScript prevents this subtraction since `n1` or `n2`
+    // may be null, but subtracting null and a number is possible.
     ({ nonce: n1 }, { nonce: n2 }) => n1 - n2
   );
   const [lowestNonceTx] = txSortedByAscendingNonce;
   const { address_from, network, nonce } = lowestNonceTx;
-  dispatch(decrementNonce(address_from, nonce, network));
+  dispatch(decrementNonce(address_from!, nonce!, network));
 };
 
-export const portfolioReceived = (message: any) => async (
-  dispatch: any,
-  getState: any
+export const portfolioReceived = (
+  message: PortfolioReceivedMessage | undefined
+) => async (
+  dispatch: Dispatch<DataUpdatePortfoliosAction>,
+  getState: AppGetState
 ) => {
   if (message?.meta?.status !== 'ok') return;
   if (!message?.payload?.portfolio) return;
@@ -450,7 +722,7 @@ export const portfolioReceived = (message: any) => async (
   const { portfolios } = getState().data;
 
   const newPortfolios = { ...portfolios };
-  newPortfolios[message.meta.address] = message.payload.portfolio;
+  newPortfolios[message.meta.address!] = message.payload.portfolio;
 
   dispatch({
     payload: newPortfolios,
@@ -458,10 +730,10 @@ export const portfolioReceived = (message: any) => async (
   });
 };
 
-export const transactionsReceived = (message: any, appended = false) => async (
-  dispatch: any,
-  getState: any
-) =>
+export const transactionsReceived = (
+  message: TransactionsReceivedMessage | undefined,
+  appended = false
+) => async (dispatch: any, getState: any) =>
   withRunExclusive(async () => {
     const isValidMeta = dispatch(checkMeta(message));
     if (!isValidMeta) return;
@@ -516,9 +788,11 @@ export const transactionsReceived = (message: any, appended = false) => async (
     }
   });
 
-export const transactionsRemoved = (message: any) => async (
-  dispatch: any,
-  getState: any
+export const transactionsRemoved = (
+  message: TransactionsRemovedMessage | undefined
+) => async (
+  dispatch: ThunkDispatch<AppState, unknown, DataUpdateTransactionsAction>,
+  getState: AppGetState
 ) =>
   withRunExclusive(() => {
     const isValidMeta = dispatch(checkMeta(message));
@@ -541,17 +815,20 @@ export const transactionsRemoved = (message: any) => async (
       payload: updatedTransactions,
       type: DATA_UPDATE_TRANSACTIONS,
     });
-    dispatch(checkForRemovedNonce(removedTransactions));
+    dispatch(checkForRemovedNonce(removedTransactions as any));
     saveLocalTransactions(updatedTransactions, accountAddress, network);
   });
 
 export const addressAssetsReceived = (
-  message: any,
-  append = false,
-  change = false,
-  removed = false,
-  assetsNetwork = null
-) => (dispatch: any, getState: any) => {
+  message: AddressAssetsReceivedMessage,
+  append: boolean = false,
+  change: boolean = false,
+  removed: boolean = false,
+  assetsNetwork: Network | string | null = null
+) => (
+  dispatch: ThunkDispatch<AppState, unknown, DataUpdateAccountAssetsDataAction>,
+  getState: AppGetState
+) => {
   const isValidMeta = dispatch(checkMeta(message));
   if (!isValidMeta) return;
   const { accountAddress, network } = getState().settings;
@@ -574,7 +851,9 @@ export const addressAssetsReceived = (
     });
   }
 
-  let parsedAssets = parseAccountAssets(updatedAssets, uniqueTokens);
+  let parsedAssets = parseAccountAssets(updatedAssets, uniqueTokens) as {
+    [id: string]: ParsedAddressAsset;
+  };
 
   const liquidityTokens = filter(
     parsedAssets,
@@ -582,7 +861,6 @@ export const addressAssetsReceived = (
   );
 
   // remove V2 LP tokens
-  // @ts-expect-error ts-migrate(2740) FIXME: Type 'Dictionary<any>' is missing the following pr... Remove this comment to see the full error message
   parsedAssets = pickBy(
     parsedAssets,
     asset => asset?.type !== AssetTypes.uniswapV2
@@ -601,7 +879,6 @@ export const addressAssetsReceived = (
     ...parsedAssets,
   };
 
-  // @ts-expect-error ts-migrate(2322) FIXME: Type 'Dictionary<any>' is not assignable to type '... Remove this comment to see the full error message
   parsedAssets = pickBy(
     parsedAssets,
     asset => !!Number(asset?.balance?.amount)
@@ -618,7 +895,7 @@ export const addressAssetsReceived = (
     type: DATA_UPDATE_ACCOUNT_ASSETS_DATA,
   });
   if (!change) {
-    const missingPriceAssetAddresses = map(
+    const missingPriceAssetAddresses: string[] = map(
       filter(parsedAssets, asset => isNil(asset?.price)),
       property('address')
     );
@@ -636,9 +913,12 @@ export const addressAssetsReceived = (
   addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
 };
 
-const subscribeToMissingPrices = (addresses: any) => (
-  dispatch: any,
-  getState: any
+const subscribeToMissingPrices = (addresses: string[]) => (
+  dispatch: Dispatch<
+    | DataUpdateAssetPricesFromUniswapAction
+    | DataUpdateUniswapPricesSubscriptionAction
+  >,
+  getState: AppGetState
 ) => {
   const { accountAddress, network } = getState().settings;
   const { uniswapPricesQuery } = getState().data;
@@ -646,7 +926,10 @@ const subscribeToMissingPrices = (addresses: any) => (
   if (uniswapPricesQuery) {
     uniswapPricesQuery.refetch({ addresses });
   } else {
-    const newQuery = uniswapClient.watchQuery({
+    const newQuery = uniswapClient.watchQuery<
+      UniswapPricesQueryData,
+      UniswapPricesQueryVariables
+    >({
       fetchPolicy: 'no-cache',
       pollInterval: 30000, // 30 seconds
       query: UNISWAP_PRICES_QUERY,
@@ -660,7 +943,7 @@ const subscribeToMissingPrices = (addresses: any) => (
         try {
           if (data?.tokens) {
             const nativePriceOfEth = ethereumUtils.getEthPriceUnit();
-            const tokenAddresses = map(data.tokens, property('id'));
+            const tokenAddresses: string[] = map(data.tokens, property('id'));
 
             const yesterday = getUnixTime(
               startOfMinute(sub(Date.now(), { days: 1 }))
@@ -695,9 +978,16 @@ const subscribeToMissingPrices = (addresses: any) => (
                   missingHistoricalPrices,
                   `[${key}]`
                 );
-                const tokenAddress = get(mappedPricingData, `[${key}].id`);
+                // mappedPricingData[key].id will be a `string`, assuming `key`
+                // is present, but `get` resolves to an unknown type, so must
+                // be casted.
+                const tokenAddress: string = get(
+                  mappedPricingData,
+                  `[${key}].id`
+                ) as any;
                 const relativePriceChange = historicalPrice
-                  ? // @ts-expect-error ts-migrate(2362) FIXME: The left-hand side of an arithmetic operation must... Remove this comment to see the full error message
+                  ? // @ts-expect-error TypeScript disallows string arithmetic,
+                    // even though it works correctly.
                     ((currentPrice - historicalPrice) / currentPrice) * 100
                   : 0;
                 return {
@@ -737,7 +1027,7 @@ const subscribeToMissingPrices = (addresses: any) => (
   }
 };
 
-const get24HourPrice = async (address: any, yesterday: any) => {
+const get24HourPrice = async (address: string, yesterday: number) => {
   try {
     const result = await uniswapClient.query({
       fetchPolicy: 'no-cache',
@@ -750,15 +1040,23 @@ const get24HourPrice = async (address: any, yesterday: any) => {
   }
 };
 
-const callbacksOnAssetReceived = {};
-export function scheduleActionOnAssetReceived(address: any, action: any) {
-  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+const callbacksOnAssetReceived: {
+  [address: string]: ((asset: ParsedAddressAsset) => unknown) | undefined;
+} = {};
+
+export function scheduleActionOnAssetReceived(
+  address: string,
+  action: (asset: ParsedAddressAsset) => unknown
+) {
   callbacksOnAssetReceived[address.toLowerCase()] = action;
 }
 
-export const assetPricesReceived = (message: any, fromFallback = false) => (
-  dispatch: any,
-  getState: any
+export const assetPricesReceived = (
+  message: AssetPricesReceivedMessage | undefined,
+  fromFallback: boolean = false
+) => (
+  dispatch: Dispatch<DataUpdateGenericAssetsAction | DataUpdateEthUsdAction>,
+  getState: AppGetState
 ) => {
   if (!fromFallback) {
     disableGenericAssetsFallbackIfNeeded();
@@ -768,7 +1066,11 @@ export const assetPricesReceived = (message: any, fromFallback = false) => (
 
   if (toLower(nativeCurrency) === message?.meta?.currency) {
     if (isEmpty(newAssetPrices)) return;
-    const parsedAssets = mapValues(newAssetPrices, asset => parseAsset(asset));
+    const parsedAssets = mapValues(newAssetPrices, asset =>
+      parseAsset(asset)
+    ) as {
+      [id: string]: ParsedAddressAsset;
+    };
     const { genericAssets } = getState().data;
 
     const updatedAssets = {
@@ -779,9 +1081,7 @@ export const assetPricesReceived = (message: any, fromFallback = false) => (
     const assetAddresses = Object.keys(parsedAssets);
 
     for (let address of assetAddresses) {
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       callbacksOnAssetReceived[toLower(address)]?.(parsedAssets[address]);
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       callbacksOnAssetReceived[toLower(address)] = undefined;
     }
 
@@ -799,9 +1099,11 @@ export const assetPricesReceived = (message: any, fromFallback = false) => (
   }
 };
 
-export const assetPricesChanged = (message: any) => (
-  dispatch: any,
-  getState: any
+export const assetPricesChanged = (
+  message: AssetPricesChangedMessage | undefined
+) => (
+  dispatch: Dispatch<DataUpdateGenericAssetsAction>,
+  getState: AppGetState
 ) => {
   const price = message?.payload?.prices?.[0]?.price;
   const assetAddress = message?.meta?.asset_code;
@@ -814,7 +1116,10 @@ export const assetPricesChanged = (message: any) => (
   const updatedAssets = {
     ...genericAssets,
     [assetAddress]: genericAsset,
+  } as {
+    [address: string]: ParsedAddressAsset;
   };
+
   dispatch({
     payload: updatedAssets,
     type: DATA_UPDATE_GENERIC_ASSETS,
@@ -822,82 +1127,94 @@ export const assetPricesChanged = (message: any) => (
 };
 
 export const dataAddNewTransaction = (
-  txDetails: any,
-  accountAddressToUpdate = null,
-  disableTxnWatcher = false,
-  provider = null
-) => async (dispatch: any, getState: any) =>
-  withRunExclusive(async () => {
-    const { transactions } = getState().data;
-    const { accountAddress, nativeCurrency, network } = getState().settings;
-    if (
-      accountAddressToUpdate &&
-      toLower(accountAddressToUpdate) !== toLower(accountAddress)
-    )
-      return;
-    try {
-      const parsedTransaction = await parseNewTransaction(
-        txDetails,
-        nativeCurrency
-      );
-      const _transactions = [parsedTransaction, ...transactions];
-      dispatch({
-        payload: _transactions,
-        type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
-      });
-      saveLocalTransactions(_transactions, accountAddress, network);
-      if (parsedTransaction.from && parsedTransaction.nonce) {
-        await dispatch(
-          incrementNonce(
-            parsedTransaction.from,
-            parsedTransaction.nonce,
-            parsedTransaction.network
-          )
-        );
-      }
+  txDetails: NewTransactionOrAddCashTransaction,
+  accountAddressToUpdate: string | null = null,
+  disableTxnWatcher: boolean = false,
+  provider: StaticJsonRpcProvider | null = null
+) => async (
+  dispatch: ThunkDispatch<
+    AppState,
+    unknown,
+    DataAddNewTransactionSuccessAction
+  >,
+  getState: AppGetState
+) =>
+  withRunExclusive(
+    async (): Promise<RainbowTransaction | undefined> => {
+      const { transactions } = getState().data;
+      const { accountAddress, nativeCurrency, network } = getState().settings;
       if (
-        !disableTxnWatcher ||
-        network !== networkTypes.mainnet ||
-        parsedTransaction?.network
-      ) {
-        dispatch(
-          watchPendingTransactions(
-            accountAddress,
-            parsedTransaction.network
-              ? TXN_WATCHER_MAX_TRIES_LAYER_2
-              : TXN_WATCHER_MAX_TRIES,
-            null,
-            // @ts-expect-error ts-migrate(2554) FIXME: Expected 1-3 arguments, but got 4.
-            provider
-          )
+        accountAddressToUpdate &&
+        toLower(accountAddressToUpdate) !== toLower(accountAddress)
+      )
+        return;
+      try {
+        const parsedTransaction = await parseNewTransaction(
+          txDetails,
+          nativeCurrency
         );
-      }
-      return parsedTransaction;
-      // eslint-disable-next-line no-empty
-    } catch (error) {}
-  });
+        const _transactions = [parsedTransaction, ...transactions];
+        dispatch({
+          payload: _transactions,
+          type: DATA_ADD_NEW_TRANSACTION_SUCCESS,
+        });
+        saveLocalTransactions(_transactions, accountAddress, network);
+        if (parsedTransaction.from && parsedTransaction.nonce) {
+          await dispatch(
+            incrementNonce(
+              parsedTransaction.from,
+              parsedTransaction.nonce,
+              parsedTransaction.network
+            )
+          );
+        }
+        if (
+          !disableTxnWatcher ||
+          network !== networkTypes.mainnet ||
+          parsedTransaction?.network
+        ) {
+          dispatch(
+            watchPendingTransactions(
+              accountAddress,
+              parsedTransaction.network
+                ? TXN_WATCHER_MAX_TRIES_LAYER_2
+                : TXN_WATCHER_MAX_TRIES,
+              null,
+              // @ts-expect-error `watchPendingTransactions` only takes 3 arguments.
+              provider
+            )
+          );
+        }
+        return parsedTransaction;
+        // eslint-disable-next-line no-empty
+      } catch (error) {}
+    }
+  );
 
-const getConfirmedState = (type: any) => {
+const getConfirmedState = (type: TransactionType): TransactionStatus => {
   switch (type) {
     case TransactionTypes.authorize:
-      return TransactionStatusTypes.approved;
+      return TransactionStatus.approved;
     case TransactionTypes.deposit:
-      return TransactionStatusTypes.deposited;
+      return TransactionStatus.deposited;
     case TransactionTypes.withdraw:
-      return TransactionStatusTypes.withdrew;
+      return TransactionStatus.withdrew;
     case TransactionTypes.receive:
-      return TransactionStatusTypes.received;
+      return TransactionStatus.received;
     case TransactionTypes.purchase:
-      return TransactionStatusTypes.purchased;
+      return TransactionStatus.purchased;
     default:
-      return TransactionStatusTypes.sent;
+      return TransactionStatus.sent;
   }
 };
 
 export const dataWatchPendingTransactions = (
-  provider = null,
-  currentNonce = -1
-) => async (dispatch: any, getState: any) =>
+  provider: StaticJsonRpcProvider | null = null,
+  currentNonce: number = -1
+) => async (
+  dispatch: ThunkDispatch<AppState, unknown, DataUpdateTransactionsAction>,
+  getState: AppGetState
+) =>
   withRunExclusive(async () => {
     const { transactions } = getState().data;
     if (!transactions.length) return true;
@@ -919,10 +1236,9 @@ export const dataWatchPendingTransactions = (
           logger.log('Checking pending tx with hash', txHash);
           const p =
             provider || (await getProviderForNetwork(updatedPending.network));
-          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | undefined' is not assig... Remove this comment to see the full error message
-          const txObj = await p.getTransaction(txHash);
+          const txObj = await p.getTransaction(txHash!);
           // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
-          const nonceAlreadyIncluded = currentNonce > tx.nonce;
+          const nonceAlreadyIncluded = currentNonce > tx.nonce!;
           if ((txObj?.blockNumber && txObj.blockHash) || nonceAlreadyIncluded) {
             // When speeding up a non "normal tx" we need to resubscribe
             // because zerion "append" event isn't reliable
@@ -932,28 +1248,26 @@ export const dataWatchPendingTransactions = (
             }
             const minedAt = Math.floor(Date.now() / 1000);
             txStatusesDidChange = true;
-            // @ts-expect-error ts-migrate(2339) FIXME: Property 'status' does not exist on type 'Transact... Remove this comment to see the full error message
+            // @ts-expect-error `txObj` is not typed as having a `status` field.
             if (txObj && !isZero(txObj.status)) {
-              const isSelf = toLower(tx?.from) === toLower(tx?.to);
+              const isSelf = toLower(tx?.from!) === toLower(tx?.to!);
               const newStatus = getTransactionLabel({
-                // @ts-expect-error ts-migrate(2322) FIXME: Type 'string' is not assignable to type 'Transacti... Remove this comment to see the full error message
                 direction: isSelf
-                  ? TransactionDirections.self
-                  : TransactionDirections.out,
+                  ? TransactionDirection.self
+                  : TransactionDirection.out,
                 pending: false,
                 protocol: tx?.protocol,
-                // @ts-expect-error ts-migrate(2322) FIXME: Type 'string' is not assignable to type 'ZerionTra... Remove this comment to see the full error message
                 status:
-                  tx.status === TransactionStatusTypes.cancelling
-                    ? TransactionStatusTypes.cancelled
+                  tx.status === TransactionStatus.cancelling
+                    ? TransactionStatus.cancelled
                     : getConfirmedState(tx.type),
                 type: tx?.type,
               });
               updatedPending.status = newStatus;
             } else if (nonceAlreadyIncluded) {
-              updatedPending.status = TransactionStatusTypes.unknown;
+              updatedPending.status = TransactionStatus.unknown;
             } else {
-              updatedPending.status = TransactionStatusTypes.failed;
+              updatedPending.status = TransactionStatus.failed;
             }
             const title = getTitle({
               protocol: tx.protocol,
@@ -973,7 +1287,7 @@ export const dataWatchPendingTransactions = (
 
     if (txStatusesDidChange) {
       const filteredPendingTransactions = updatedPendingTransactions?.filter(
-        ({ status }) => status !== TransactionStatusTypes.unknown
+        ({ status }) => status !== TransactionStatus.unknown
       );
       const updatedTransactions = concat(
         filteredPendingTransactions,
@@ -996,11 +1310,14 @@ export const dataWatchPendingTransactions = (
   });
 
 export const dataUpdateTransaction = (
-  txHash: any,
-  txObj: any,
-  watch: any,
-  provider = null
-) => async (dispatch: any, getState: any) =>
+  txHash: string,
+  txObj: RainbowTransaction,
+  watch: boolean,
+  provider: StaticJsonRpcProvider | null = null
+) => async (
+  dispatch: ThunkDispatch<AppState, unknown, DataUpdateTransactionsAction>,
+  getState: AppGetState
+) =>
   withRunExclusive(async () => {
     const { transactions } = getState().data;
 
@@ -1025,19 +1342,21 @@ export const dataUpdateTransaction = (
     }
   });
 
-const updatePurchases = (updatedTransactions: any) => (dispatch: any) => {
+const updatePurchases = (updatedTransactions: RainbowTransaction[]) => (
+  dispatch: ThunkDispatch<AppState, unknown, never>
+) => {
   const confirmedPurchases = filter(updatedTransactions, txn => {
     return (
       txn.type === TransactionTypes.purchase &&
-      txn.status !== TransactionStatusTypes.purchasing
+      txn.status !== TransactionStatus.purchasing
     );
   });
   dispatch(addCashUpdatePurchases(confirmedPurchases));
 };
 
 export const checkPendingTransactionsOnInitialize = (
-  accountAddressToWatch: any,
-  provider = null
+  accountAddressToWatch: string,
+  provider: StaticJsonRpcProvider | null = null
 ) => async (dispatch: any, getState: any) => {
   const { accountAddress: currentAccountAddress } = getState().settings;
   if (currentAccountAddress !== accountAddressToWatch) return;
@@ -1049,9 +1368,9 @@ export const checkPendingTransactionsOnInitialize = (
 };
 
 export const watchPendingTransactions = (
-  accountAddressToWatch: any,
-  remainingTries = TXN_WATCHER_MAX_TRIES,
-  provider = null
+  accountAddressToWatch: string,
+  remainingTries: number = TXN_WATCHER_MAX_TRIES,
+  provider: StaticJsonRpcProvider | null = null
 ) => async (dispatch: any, getState: any) => {
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
   if (remainingTries === 0) return;
@@ -1074,28 +1393,16 @@ export const watchPendingTransactions = (
   }
 };
 
-export const addNewSubscriber = (subscriber: any, type: any) => (
-  dispatch: any,
-  getState: any
-) => {
-  const { subscribers } = getState().data;
-  const newSubscribers = { ...subscribers };
-  newSubscribers[type] = concat(newSubscribers[type], subscriber);
-
-  dispatch({
-    payload: newSubscribers,
-    type: DATA_ADD_NEW_SUBSCRIBER,
-  });
-};
-
-export const updateRefetchSavings = (fetch: any) => (dispatch: any) =>
+export const updateRefetchSavings = (fetch: boolean) => (
+  dispatch: Dispatch<DataUpdateRefetchSavingsAction>
+) =>
   dispatch({
     payload: fetch,
     type: DATA_UPDATE_REFETCH_SAVINGS,
   });
 
 // -- Reducer ----------------------------------------- //
-const INITIAL_STATE = {
+const INITIAL_STATE: DataState = {
   accountAssetsData: {}, // for account-specific assets
   assetPricesFromUniswap: {},
   ethUSDCharts: null,
@@ -1105,16 +1412,12 @@ const INITIAL_STATE = {
   isLoadingTransactions: true,
   portfolios: {},
   shouldRefetchSavings: false,
-  subscribers: {
-    appended: [],
-    received: [],
-  },
   transactions: [],
   uniswapPricesQuery: null,
   uniswapPricesSubscription: null,
 };
 
-export default (state = INITIAL_STATE, action: any) => {
+export default (state: DataState = INITIAL_STATE, action: DataAction) => {
   switch (action.type) {
     case DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION:
       return {
@@ -1149,11 +1452,6 @@ export default (state = INITIAL_STATE, action: any) => {
       return {
         ...state,
         ethUSDPrice: action.payload,
-      };
-    case DATA_UPDATE_ETH_USD_CHARTS:
-      return {
-        ...state,
-        ethUSDCharts: action.payload,
       };
     case DATA_LOAD_TRANSACTIONS_REQUEST:
       return {
@@ -1196,11 +1494,6 @@ export default (state = INITIAL_STATE, action: any) => {
       return {
         ...state,
         transactions: action.payload,
-      };
-    case DATA_ADD_NEW_SUBSCRIBER:
-      return {
-        ...state,
-        subscribers: action.payload,
       };
     case DATA_CLEAR_STATE:
       return {
