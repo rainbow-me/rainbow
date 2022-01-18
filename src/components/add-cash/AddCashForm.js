@@ -66,17 +66,7 @@ const AddCashForm = ({
       }
     }
 
-    if (value <= 50) {
-      Alert({
-        buttons: [
-          { style: 'cancel', text: 'Cancel' },
-          { onPress: handlePurchase, text: 'Proceed' },
-        ],
-        message:
-          'You will receive this amount, but the blockchain fees associated with the purchase will likely be much higher.',
-        title: 'Are you sure?',
-      });
-    } else if (isReadOnlyWallet) {
+    if (isReadOnlyWallet) {
       const truncatedAddress = abbreviations.formatAddressForDisplay(
         toChecksumAddress(accountAddress),
         4,
@@ -91,6 +81,16 @@ const AddCashForm = ({
           truncatedAddress,
         }),
         title: lang.t('wallet.add_cash.watching_mode_confirm_title'),
+      });
+    } else if (value <= 50) {
+      Alert({
+        buttons: [
+          { style: 'cancel', text: 'Cancel' },
+          { onPress: handlePurchase, text: 'Proceed' },
+        ],
+        message:
+          'You will receive this amount, but the blockchain fees associated with the purchase will likely be much higher.',
+        title: 'Are you sure?',
       });
     } else {
       await handlePurchase();
