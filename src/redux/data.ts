@@ -775,7 +775,7 @@ export const dataResetState = () => (
   getState: AppGetState
 ) => {
   const { uniswapPricesSubscription } = getState().data;
-  (uniswapPricesSubscription?.unsubscribe as any)?.unsubscribe();
+  uniswapPricesSubscription?.unsubscribe();
   pendingTransactionsHandle && clearTimeout(pendingTransactionsHandle);
   genericAssetsHandle && clearTimeout(genericAssetsHandle);
   dispatch({ type: DATA_CLEAR_STATE });
