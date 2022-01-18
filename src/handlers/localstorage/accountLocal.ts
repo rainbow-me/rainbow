@@ -1,6 +1,6 @@
 import { getAccountLocal, saveAccountLocal } from './common';
 
-const accountAssetsDataVersion = '0.1.0';
+const accountAssetsDataVersion = '0.1.1';
 const accountEmptyVersion = '0.1.0';
 const assetPricesFromUniswapVersion = '0.1.0';
 const assetsVersion = '0.2.0';
