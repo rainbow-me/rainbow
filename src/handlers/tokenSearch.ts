@@ -22,7 +22,7 @@ const uniswapSearch = async (
   threshold: TokenSearchThreshold
 ) => {
   try {
-    const tokenSearch = await tokenSearchApi.post('', {
+    const tokenSearch = await tokenSearchApi.post('/v1', {
       keys,
       list,
       query,
