@@ -30,7 +30,6 @@ const FirstLetter = styled(Text).attrs(({ theme: { colors } }) => ({
 `;
 
 export default function AvatarCircle({
-  isAvatarPickerAvailable,
   onPress,
   overlayStyles,
   image,
@@ -70,12 +69,11 @@ export default function AvatarCircle({
 
   return (
     <ButtonPressAnimation
-      disabled={!isAvatarPickerAvailable}
-      enableHapticFeedback={isAvatarPickerAvailable}
+      enableHapticFeedback
       marginTop={2}
       onPress={onPress}
       pressOutDuration={200}
-      scaleTo={isAvatarPickerAvailable ? 0.9 : 1}
+      scaleTo={0.9}
     >
       <ShadowStack
         {...position.sizeAsObject(AvatarCircleSize)}
