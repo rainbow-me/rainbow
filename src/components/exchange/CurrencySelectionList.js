@@ -65,9 +65,7 @@ const CurrencySelectionList = (
       {showList && !showSkeleton && (
         <Centered flex={1}>
           {showNoResults ? (
-            loading ? null : (
-              <NoCurrencyResults />
-            )
+            <NoCurrencyResults />
           ) : (
             <ExchangeAssetList
               footerSpacer={footerSpacer}
@@ -81,7 +79,7 @@ const CurrencySelectionList = (
           )}
         </Centered>
       )}
-      {(showSkeleton || !showList) && <EmptyCurrencySelectionList />}
+      {showSkeleton && <EmptyCurrencySelectionList />}
     </Transitioning.View>
   );
 };
