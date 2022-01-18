@@ -1,6 +1,6 @@
-import lang from 'i18n-js';
 import { useRoute } from '@react-navigation/native';
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, {
   forwardRef,
   useCallback,

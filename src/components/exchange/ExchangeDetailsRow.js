@@ -1,5 +1,5 @@
-import lang from 'i18n-js';
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { useEffect } from 'react';
 import Animated, {
   Easing,

@@ -1,7 +1,6 @@
 import lang from 'i18n-js';
 
 /* eslint-disable sort-keys-fix/sort-keys-fix */
-
 export const Categories = {
   people: {
     icon: 'emojiSmileys',
@@ -52,3 +51,5 @@ export const Categories = {
     width: 57,
   },
 };
+
+/* eslint-enable sort-keys-fix/sort-keys-fix */

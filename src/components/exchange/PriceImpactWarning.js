@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import styled from 'styled-components';

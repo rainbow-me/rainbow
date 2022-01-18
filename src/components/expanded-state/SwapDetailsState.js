@@ -1,5 +1,5 @@
-import lang from 'i18n-js';
 import { useIsFocused, useRoute } from '@react-navigation/native';
+import lang from 'i18n-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import styled from 'styled-components';

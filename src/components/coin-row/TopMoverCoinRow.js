@@ -1,5 +1,5 @@
-import lang from 'i18n-js';
 import analytics from '@segment/analytics-react-native';
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import styled from 'styled-components';

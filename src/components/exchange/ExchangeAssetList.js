@@ -1,4 +1,5 @@
 import { useIsFocused } from '@react-navigation/native';
+import lang from 'i18n-js';
 import React, {
   forwardRef,
   Fragment,
