@@ -96,6 +96,13 @@ import logger from 'logger';
 
 const storage = new MMKV();
 
+/**
+ * Adds new hidden coins for an address and updates key-value storage.
+ *
+ * @param coins New coin IDs.
+ * @param dispatch The Redux dispatch.
+ * @param address The address to hide coins for.
+ */
 function addHiddenCoins(
   coins: string[],
   dispatch: ThunkDispatch<AppState, unknown, never>,
@@ -158,32 +165,80 @@ const withRunExclusive = async <T>(callback: (...args: unknown[]) => T) =>
 
 // -- Actions ---------------------------------------- //
 
+/**
+ * The state for the `data` reducer.
+ */
 interface DataState {
+  /**
+   * Parsed asset information for assets belonging to this account.
+   */
   accountAssetsData: {
     [uniqueId: string]: ParsedAddressAsset;
   };
+
+  /**
+   * Uniswap price data for assets.
+   */
   assetPricesFromUniswap: {
-    [address: string]: UniswapAssetPriceData;
+    [assetAddress: string]: UniswapAssetPriceData;
   };
-  ethUSDCharts: null;
+
+  /**
+   * The ETH price in USD.
+   */
   ethUSDPrice: number | undefined | null;
+
+  /**
+   * Parsed asset information for generic loaded assets.
+   */
   genericAssets: {
-    [address: string]: ParsedAddressAsset;
+    [assetAddress: string]: ParsedAddressAsset;
   };
+
+  /**
+   * Whether or not assets are currently being loaded.
+   */
   isLoadingAssets: boolean;
+
+  /**
+   * Whether or not transactions are currently being loaded.
+   */
   isLoadingTransactions: boolean;
+
+  /**
+   * Zerion portfolio information keyed by account address.
+   */
   portfolios: {
-    [address: string]: ZerionPortfolio;
+    [accountAddress: string]: ZerionPortfolio;
   };
+
+  /**
+   * Whether or not savings should be reset.
+   */
   shouldRefetchSavings: boolean;
+
+  /**
+   * Transactions for this account.
+   */
   transactions: RainbowTransaction[];
+
+  /**
+   * A GraphQL query for Uniswap data.
+   */
   uniswapPricesQuery: ObservableQuery<
     UniswapPricesQueryData,
     UniswapPricesQueryVariables
   > | null;
+
+  /**
+   * An active subscription for data from `uniswapPricesQuery`.
+   */
   uniswapPricesSubscription: ZenObservable.Subscription | null;
 }
 
+/**
+ * An action for the `data` reducer.
+ */
 type DataAction =
   | DataUpdateUniswapPricesSubscriptionAction
   | DataUpdateRefetchSavingsAction
@@ -200,6 +255,9 @@ type DataAction =
   | DataAddNewTransactionSuccessAction
   | DataClearStateAction;
 
+/**
+ * The action to update the Uniswap prices query and subscription.
+ */
 interface DataUpdateUniswapPricesSubscriptionAction {
   type: typeof DATA_UPDATE_UNISWAP_PRICES_SUBSCRIPTION;
   payload: {
@@ -208,11 +266,113 @@ interface DataUpdateUniswapPricesSubscriptionAction {
   };
 }
 
+/**
+ * The action to change `shouldRefetchSavings`.
+ */
 interface DataUpdateRefetchSavingsAction {
   type: typeof DATA_UPDATE_REFETCH_SAVINGS;
   payload: boolean;
 }
 
+/**
+ * The action to update `genericAssets`.
+ */
+interface DataUpdateGenericAssetsAction {
+  type: typeof DATA_UPDATE_GENERIC_ASSETS;
+  payload: DataState['genericAssets'];
+}
+
+/**
+ * The action to update `portfolios`.
+ */
+interface DataUpdatePortfoliosAction {
+  type: typeof DATA_UPDATE_PORTFOLIOS;
+  payload: DataState['portfolios'];
+}
+
+/**
+ * The action to update `ethUSDPrice`.
+ */
+interface DataUpdateEthUsdAction {
+  type: typeof DATA_UPDATE_ETH_USD;
+  payload: number | undefined;
+}
+
+/**
+ * The action to set `isLoadingTransactions` to `true`.
+ */
+interface DataLoadTransactionsRequestAction {
+  type: typeof DATA_LOAD_TRANSACTIONS_REQUEST;
+}
+
+/**
+ * The action used to update transactions and indicate that loading transactions
+ * was successful.
+ */
+interface DataLoadTransactionSuccessAction {
+  type: typeof DATA_LOAD_TRANSACTIONS_SUCCESS;
+  payload: DataState['transactions'];
+}
+
+/**
+ * The action used to indicate that loading a transaction failed.
+ */
+interface DataLoadTransactionsFailureAction {
+  type: typeof DATA_LOAD_TRANSACTIONS_FAILURE;
+}
+
+/**
+ * The action to set `isLoadingAssets` to `true`.
+ */
+interface DataLoadAccountAssetsDataRequestAction {
+  type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST;
+}
+
+/**
+ * The action to update `assetPricesFromUniswap`.
+ */
+interface DataLoadAssetPricesFromUniswapSuccessAction {
+  type: typeof DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS;
+  payload: DataState['assetPricesFromUniswap'];
+}
+
+/**
+ * The action to update `accountAssetsData` and indicate that loading was
+ * successful.
+ */
+interface DataLoadAccountAssetsDataSuccessAction {
+  type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS;
+  payload: DataState['accountAssetsData'];
+}
+
+/**
+ * The action used to incidate that loading account asset data failed.
+ */
+interface DataLoadAccountAssetsDataFailureAction {
+  type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE;
+}
+
+/**
+ * The action used to indicate that transactions were added successfully,
+ * with a payload including the entire new array for `transactions`.
+ */
+interface DataAddNewTransactionSuccessAction {
+  type: typeof DATA_ADD_NEW_TRANSACTION_SUCCESS;
+  payload: DataState['transactions'];
+}
+
+/**
+ * The action used to clear the state while maintaining generic asset data.
+ */
+interface DataClearStateAction {
+  type: typeof DATA_CLEAR_STATE;
+}
+
+// Interafaces:
+
+/**
+ * Price data loaded from a Uniswap query.
+ */
 interface UniswapPricesQueryData {
   tokens: {
     id: string;
@@ -223,16 +383,27 @@ interface UniswapPricesQueryData {
   }[];
 }
 
+/**
+ * Variables included in the Uniswap price query.
+ */
 interface UniswapPricesQueryVariables {
   addresses: string[];
 }
 
+/**
+ * Data stored following a successful Uniswap query.
+ */
 interface UniswapAssetPriceData {
   price: string;
   relativePriceChange: number;
   tokenAddress: string;
 }
 
+/**
+ * Data loaded from the Coingecko API when the `last_updated_at` field is
+ * requested. Keys of the format `[currency_id]` and `[currency_id]_24h_change`
+ * are also included.
+ */
 interface CoingeckoApiResponseWithLastUpdate {
   [coingeckoId: string]: {
     [currencyIdOr24hChange: string]: number;
@@ -240,61 +411,26 @@ interface CoingeckoApiResponseWithLastUpdate {
   };
 }
 
-interface DataUpdateGenericAssetsAction {
-  type: typeof DATA_UPDATE_GENERIC_ASSETS;
-  payload: DataState['genericAssets'];
+/**
+ * Data loaded from the Zerion API for a portfolio. See
+ * https://docs.zerion.io/websockets/models#portfolio for details.
+ */
+interface ZerionPortfolio {
+  assets_value: number;
+  deposited_value: number;
+  borrowed_value: number;
+  locked_value: number;
+  staked_value: number;
+  bsc_assets_value: number;
+  polygon_assets_value: number;
+  total_value: number;
+  absolute_change_24h: number;
+  relative_change_24h?: number;
 }
 
-interface DataUpdatePortfoliosAction {
-  type: typeof DATA_UPDATE_PORTFOLIOS;
-  payload: DataState['portfolios'];
-}
-
-interface DataUpdateEthUsdAction {
-  type: typeof DATA_UPDATE_ETH_USD;
-  payload: number | undefined;
-}
-
-interface DataLoadTransactionsRequestAction {
-  type: typeof DATA_LOAD_TRANSACTIONS_REQUEST;
-}
-
-interface DataLoadTransactionSuccessAction {
-  type: typeof DATA_LOAD_TRANSACTIONS_SUCCESS;
-  payload: DataState['transactions'];
-}
-
-interface DataLoadTransactionsFailureAction {
-  type: typeof DATA_LOAD_TRANSACTIONS_FAILURE;
-}
-
-interface DataLoadAccountAssetsDataRequestAction {
-  type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_REQUEST;
-}
-
-interface DataLoadAssetPricesFromUniswapSuccessAction {
-  type: typeof DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS;
-  payload: DataState['assetPricesFromUniswap'];
-}
-
-interface DataLoadAccountAssetsDataSuccessAction {
-  type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS;
-  payload: DataState['accountAssetsData'];
-}
-
-interface DataLoadAccountAssetsDataFailureAction {
-  type: typeof DATA_LOAD_ACCOUNT_ASSETS_DATA_FAILURE;
-}
-
-interface DataAddNewTransactionSuccessAction {
-  type: typeof DATA_ADD_NEW_TRANSACTION_SUCCESS;
-  payload: DataState['transactions'];
-}
-
-interface DataClearStateAction {
-  type: typeof DATA_CLEAR_STATE;
-}
-
+/**
+ * A message from the Zerion API indicating that assets were received.
+ */
 interface AddressAssetsReceivedMessage {
   payload?: {
     assets?: {
@@ -306,6 +442,9 @@ interface AddressAssetsReceivedMessage {
   meta?: MessageMeta;
 }
 
+/**
+ * A message from the Zerion API indicating that portfolio data was received.
+ */
 interface PortfolioReceivedMessage {
   payload?: {
     portfolio?: ZerionPortfolio;
@@ -343,6 +482,12 @@ interface AssetPricesChangedMessage {
   meta?: MessageMeta & { asset_code?: string };
 }
 
+interface MessageMeta {
+  address?: string;
+  currency?: string;
+  status?: string;
+}
+
 type DataMessage =
   | AddressAssetsReceivedMessage
   | PortfolioReceivedMessage
@@ -350,25 +495,6 @@ type DataMessage =
   | TransactionsRemovedMessage
   | AssetPricesReceivedMessage
   | AssetPricesChangedMessage;
-
-interface MessageMeta {
-  address?: string;
-  currency?: string;
-  status?: string;
-}
-
-interface ZerionPortfolio {
-  assets_value: number;
-  deposited_value: number;
-  borrowed_value: number;
-  locked_value: number;
-  staked_value: number;
-  bsc_assets_value: number;
-  polygon_assets_value: number;
-  total_value: number;
-  absolute_change_24h: number;
-  relative_change_24h: number;
-}
 
 export const dataLoadState = () => async (
   dispatch: ThunkDispatch<
@@ -1402,7 +1528,6 @@ export const updateRefetchSavings = (fetch: boolean) => (
 const INITIAL_STATE: DataState = {
   accountAssetsData: {}, // for account-specific assets
   assetPricesFromUniswap: {},
-  ethUSDCharts: null,
   ethUSDPrice: null,
   genericAssets: {},
   isLoadingAssets: true,
