@@ -1801,7 +1801,10 @@ export default (state: DataState = INITIAL_STATE, action: DataAction) => {
         isLoadingAssets: true,
       };
     case DATA_LOAD_ASSET_PRICES_FROM_UNISWAP_SUCCESS:
-      return { ...state, assetPricesFromUniswap: action.payload };
+      return {
+        ...state,
+        assetPricesFromUniswap: action.payload,
+      };
     case DATA_LOAD_ACCOUNT_ASSETS_DATA_SUCCESS:
       return {
         ...state,
