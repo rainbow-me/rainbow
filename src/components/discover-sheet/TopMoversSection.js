@@ -1,5 +1,4 @@
 import lang from 'i18n-js';
-import { toLower } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
 import { initialChartExpandedStateSheetHeight } from '../expanded-state/asset/ChartExpandedState';
@@ -8,11 +7,7 @@ import { MarqueeList } from '../list';
 import { Text } from '../text';
 import EdgeFade from './EdgeFade';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
-import {
-  useAccountAssets,
-  useAccountSettings,
-  useTopMovers,
-} from '@rainbow-me/hooks';
+import { useAccountSettings, useTopMovers } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -32,13 +27,12 @@ const ErrorMessage = ({ colors, children }) => (
 export default function TopMoversSection() {
   const { gainers = [], losers = [] } = useTopMovers() || {};
   const { navigate } = useNavigation();
-  const { allAssets } = useAccountAssets();
   const { network } = useAccountSettings();
   const { colors } = useTheme();
   const handlePress = useCallback(
     asset => {
       const assetFormatted =
-        ethereumUtils.getAsset(allAssets, toLower(asset.address)) || asset;
+        ethereumUtils.getAccountAsset(asset.address) || asset;
 
       navigate(Routes.EXPANDED_ASSET_SHEET, {
         asset: assetFormatted,
@@ -47,7 +41,7 @@ export default function TopMoversSection() {
         type: 'token',
       });
     },
-    [allAssets, navigate]
+    [navigate]
   );
 
   const formatItems = useCallback(

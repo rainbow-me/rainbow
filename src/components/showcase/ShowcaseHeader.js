@@ -11,11 +11,7 @@ import { Text, TruncatedAddress } from '../text';
 import { getContacts } from '@rainbow-me/handlers/localstorage/contacts';
 import { isHexString } from '@rainbow-me/handlers/web3';
 import isNativeStackAvailable from '@rainbow-me/helpers/isNativeStackAvailable';
-import {
-  useDimensions,
-  useImportingWallet,
-  useWallets,
-} from '@rainbow-me/hooks';
+import { useImportingWallet, useWallets } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { colors, padding } from '@rainbow-me/styles';
@@ -86,8 +82,6 @@ function hashCode(text) {
 }
 
 export function Header() {
-  const { width: deviceWidth } = useDimensions();
-  const maxButtonWidth = deviceWidth - 50;
   const { goBack, navigate } = useNavigation();
   const contextValue = useContext(ShowcaseContext);
   const { isReadOnlyWallet } = useWallets();
@@ -159,19 +153,14 @@ export function Header() {
   const { handleSetSeedPhrase, handlePressImportButton } = useImportingWallet();
 
   const onWatchAddress = useCallback(() => {
+    contextValue?.setIsSearchModeEnabled(false);
     handleSetSeedPhrase(contextValue.address);
     handlePressImportButton(
       color,
       contextValue.address,
       contextValue?.data?.profile?.accountSymbol
     );
-  }, [
-    color,
-    contextValue.address,
-    handlePressImportButton,
-    handleSetSeedPhrase,
-    contextValue?.data?.profile?.accountSymbol,
-  ]);
+  }, [contextValue, handleSetSeedPhrase, handlePressImportButton, color]);
 
   const mainText =
     contextValue?.data?.reverseEns ||
@@ -203,9 +192,6 @@ export function Header() {
       <Footer>
         <SheetActionButtonRow ignorePaddingBottom>
           <SheetActionButton
-            androidWidth={
-              isReadOnlyWallet ? maxButtonWidth : maxButtonWidth / 2
-            }
             color={color}
             label=" 􀜖 Add"
             onPress={onAddToContact}
@@ -215,7 +201,6 @@ export function Header() {
           />
           {!isReadOnlyWallet && (
             <SheetActionButton
-              androidWidth={maxButtonWidth / 2}
               color={color}
               label=" 􀈠 Send"
               onPress={onSend}
@@ -228,7 +213,6 @@ export function Header() {
         {android && <ButtonSpacer />}
         <SheetActionButtonRow ignorePaddingBottom>
           <SheetActionButton
-            androidWidth={maxButtonWidth}
             color={colors.blueGreyDark30}
             label="􀨭 Watch this Wallet"
             onPress={onWatchAddress}

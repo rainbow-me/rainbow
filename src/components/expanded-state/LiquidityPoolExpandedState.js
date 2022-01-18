@@ -49,7 +49,9 @@ export const underlyingAssetsHeight = 70;
 const heightWithoutChart = 452 + (android ? 20 - getSoftMenuBarHeight() : 0);
 const heightWithChart = heightWithoutChart + 293;
 
-export const initialLiquidityPoolExpandedStateSheetHeight = heightWithoutChart;
+export const initialLiquidityPoolExpandedStateSheetHeight = android
+  ? undefined
+  : heightWithoutChart;
 
 const formatTokenAddress = address => {
   if (!address || toLower(address) === ETH_ADDRESS) {
@@ -257,7 +259,6 @@ const LiquidityPoolExpandedState = () => {
       ) : (
         <SheetActionButtonRow>
           <DepositActionButton
-            fullWidth
             symbol={tokenNames}
             token1Address={tokenAddresses[0]}
             token2Address={tokenAddresses[1]}

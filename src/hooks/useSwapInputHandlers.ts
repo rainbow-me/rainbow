@@ -20,7 +20,6 @@ export default function useSwapInputHandlers() {
     (state: AppState) =>
       state.swap.typeSpecificParameters?.supplyBalanceUnderlying
   );
-  const assets = useSelector((state: AppState) => state.data.assets);
   const inputCurrencyAddress = useSelector(
     (state: AppState) => state.swap.inputCurrency?.address
   );
@@ -30,15 +29,15 @@ export default function useSwapInputHandlers() {
       dispatch(updateSwapInputAmount(supplyBalanceUnderlying));
     } else {
       let amount =
-        ethereumUtils.getAsset(assets, inputCurrencyAddress)?.balance?.amount ??
-        0;
+        ethereumUtils.getAccountAsset(inputCurrencyAddress)?.balance?.amount ??
+        '0';
       if (inputCurrencyAddress === ETH_ADDRESS) {
         const remaining = subtract(amount, MIN_ETH);
         amount = greaterThan(remaining, 0) ? remaining : '0';
       }
       dispatch(updateSwapInputAmount(amount));
     }
-  }, [assets, dispatch, inputCurrencyAddress, supplyBalanceUnderlying, type]);
+  }, [dispatch, inputCurrencyAddress, supplyBalanceUnderlying, type]);
 
   const updateInputAmount = useCallback(
     value => {

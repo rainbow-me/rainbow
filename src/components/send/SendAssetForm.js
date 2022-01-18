@@ -11,7 +11,11 @@ import { Text } from '../text';
 import SendAssetFormCollectible from './SendAssetFormCollectible';
 import SendAssetFormToken from './SendAssetFormToken';
 import { AssetTypes } from '@rainbow-me/entities';
-import { useColorForAsset, useDimensions } from '@rainbow-me/hooks';
+import {
+  useColorForAsset,
+  useDimensions,
+  useKeyboardHeight,
+} from '@rainbow-me/hooks';
 import { padding, position } from '@rainbow-me/styles';
 import ShadowStack from 'react-native-shadow-stack';
 
@@ -56,6 +60,9 @@ export default function SendAssetForm({
   nativeCurrency,
   onChangeAssetAmount,
   onChangeNativeAmount,
+  setLastFocusedInputHandle,
+  nativeCurrencyInputRef,
+  assetInputRef,
   onResetAssetSelection,
   selected,
   sendMaxBalance,
@@ -63,6 +70,7 @@ export default function SendAssetForm({
   ...props
 }) {
   const { isTinyPhone, width: deviceWidth } = useDimensions();
+  const keyboardHeight = useKeyboardHeight();
   const [showNativeValue, setShowNativeValue] = useState(true);
 
   const isNft = selected.type === AssetTypes.nft;
@@ -75,12 +83,14 @@ export default function SendAssetForm({
     : SendCoinRow;
 
   const onFocusAssetInput = useCallback(() => {
+    setLastFocusedInputHandle(assetInputRef);
     setShowNativeValue(false);
-  }, []);
+  }, [assetInputRef, setLastFocusedInputHandle]);
 
   const onFocusNativeInput = useCallback(() => {
+    setLastFocusedInputHandle(nativeCurrencyInputRef);
     setShowNativeValue(true);
-  }, []);
+  }, [nativeCurrencyInputRef, setLastFocusedInputHandle]);
 
   const { colors } = useTheme();
 
@@ -142,10 +152,12 @@ export default function SendAssetForm({
             <SendAssetFormToken
               {...props}
               assetAmount={assetAmount}
+              assetInputRef={assetInputRef}
               buttonRenderer={buttonRenderer}
               colorForAsset={colorForAsset}
               nativeAmount={nativeAmount}
               nativeCurrency={nativeCurrency}
+              nativeCurrencyInputRef={nativeCurrencyInputRef}
               onChangeAssetAmount={onChangeAssetAmount}
               onChangeNativeAmount={onChangeNativeAmount}
               onFocusAssetInput={onFocusAssetInput}
@@ -154,7 +166,9 @@ export default function SendAssetForm({
               sendMaxBalance={sendMaxBalance}
               txSpeedRenderer={txSpeedRenderer}
             />
-            {ios ? <KeyboardSizeView isOpen /> : null}
+            {ios ? (
+              <KeyboardSizeView initialHeight={keyboardHeight} isOpen />
+            ) : null}
           </Fragment>
         )}
       </FormContainer>

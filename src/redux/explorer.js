@@ -1,14 +1,12 @@
-import { concat, isEmpty, isNil, keys, toLower } from 'lodash';
+import { concat, isEmpty, isNil, keyBy, keys, toLower } from 'lodash';
 import io from 'socket.io-client';
 import config from '../model/config';
-// eslint-disable-next-line import/no-cycle
-import { arbitrumExplorerInit } from './arbitrumExplorer';
 import { assetChartsReceived, DEFAULT_CHART_TYPE } from './charts';
-/* eslint-disable-next-line import/no-cycle */
 import {
   addressAssetsReceived,
   assetPricesChanged,
   assetPricesReceived,
+  disableGenericAssetsFallbackIfNeeded,
   portfolioReceived,
   transactionsReceived,
   transactionsRemoved,
@@ -21,8 +19,6 @@ import {
 } from './fallbackExplorer';
 // eslint-disable-next-line import/no-cycle
 import { optimismExplorerInit } from './optimismExplorer';
-// eslint-disable-next-line import/no-cycle
-import { polygonExplorerInit } from './polygonExplorer';
 import { updateTopMovers } from './topMovers';
 import { disableCharts, forceFallbackProvider } from '@rainbow-me/config/debug';
 import { getProviderForNetwork, isHardHat } from '@rainbow-me/handlers/web3';
@@ -34,7 +30,7 @@ import {
   ETH_ADDRESS,
   MATIC_MAINNET_ADDRESS,
 } from '@rainbow-me/references';
-import { TokensListenedCache } from '@rainbow-me/utils';
+import { ethereumUtils, TokensListenedCache } from '@rainbow-me/utils';
 import logger from 'logger';
 
 // -- Constants --------------------------------------- //
@@ -55,6 +51,8 @@ const messages = {
     APPENDED: 'appended address assets',
     CHANGED: 'changed address assets',
     RECEIVED: 'received address assets',
+    RECEIVED_ARBITRUM: 'received address arbitrum-assets',
+    RECEIVED_POLYGON: 'received address polygon-assets',
     REMOVED: 'removed address assets',
   },
   ADDRESS_PORTFOLIO: {
@@ -165,6 +163,17 @@ const assetInfoRequest = (currency, order = 'desc') => [
       search_query: '#Token is:verified',
     },
     scope: ['info'],
+  },
+];
+
+const addressAssetsRequest = (address, currency) => [
+  'get',
+  {
+    payload: {
+      address,
+      currency: toLower(currency),
+    },
+    scope: ['assets'],
   },
 ];
 
@@ -299,7 +308,11 @@ export const explorerInit = () => async (dispatch, getState) => {
   dispatch(listenOnAssetMessages(newAssetsSocket));
 
   newAssetsSocket.on(messages.CONNECT, () => {
-    dispatch(emitAssetRequest(keys(pairs)));
+    const newAssetsEmitted = dispatch(emitAssetRequest(keys(pairs)));
+    if (!newAssetsEmitted) {
+      disableGenericAssetsFallbackIfNeeded();
+    }
+
     dispatch(emitAssetInfoRequest());
     if (!disableCharts) {
       // We need this for Uniswap Pools profit calculation
@@ -357,15 +370,21 @@ export const emitAssetRequest = assetAddress => (dispatch, getState) => {
     if (!TokensListenedCache?.[nativeCurrency]) {
       TokensListenedCache[nativeCurrency] = {};
     }
-    TokensListenedCache[nativeCurrency][code] = true;
+    assetsSocket && (TokensListenedCache[nativeCurrency][code] = true);
   });
 
-  if (newAssetsCodes.length > 0) {
-    assetsSocket?.emit(
-      ...assetPricesSubscription(newAssetsCodes, nativeCurrency)
-    );
-    assetsSocket?.emit(...ethUSDSubscription);
+  if (assetsSocket) {
+    if (newAssetsCodes.length > 0) {
+      assetsSocket.emit(
+        ...assetPricesSubscription(newAssetsCodes, nativeCurrency)
+      );
+      assetsSocket.emit(...ethUSDSubscription);
+      return true;
+    }
+  } else {
+    setTimeout(() => emitAssetRequest(assetAddress), 100);
   }
+  return false;
 };
 
 export const emitAssetInfoRequest = () => (dispatch, getState) => {
@@ -422,24 +441,67 @@ export const explorerInitL2 = (network = null) => (dispatch, getState) => {
   if (getState().settings.network === NetworkTypes.mainnet) {
     switch (network) {
       case NetworkTypes.arbitrum:
-        // Start watching arbitrum assets
-        dispatch(arbitrumExplorerInit());
+      case NetworkTypes.polygon:
+        // Fetch all assets from refraction
+        dispatch(fetchAssetsFromRefraction());
         break;
       case NetworkTypes.optimism:
         // Start watching optimism assets
         dispatch(optimismExplorerInit());
         break;
-      case NetworkTypes.polygon:
-        // Start watching polygon assets
-        dispatch(polygonExplorerInit());
-        break;
       default:
         // Start watching all L2 assets
-        dispatch(arbitrumExplorerInit());
+        dispatch(fetchAssetsFromRefraction());
         dispatch(optimismExplorerInit());
-        dispatch(polygonExplorerInit());
     }
   }
+};
+
+const fetchAssetsFromRefraction = () => (_dispatch, getState) => {
+  const { accountAddress, nativeCurrency } = getState().settings;
+  const { addressSocket } = getState().explorer;
+  addressSocket.emit(...addressAssetsRequest(accountAddress, nativeCurrency));
+};
+
+const l2AddressAssetsReceived = (message, network) => (dispatch, getState) => {
+  const { genericAssets } = getState().data;
+
+  const newAssets = message?.payload?.assets?.map(asset => {
+    const mainnetAddress = toLower(asset?.asset?.mainnet_address);
+    const fallbackAsset =
+      mainnetAddress &&
+      (ethereumUtils.getAccountAsset(mainnetAddress) ||
+        genericAssets[mainnetAddress]);
+
+    if (fallbackAsset) {
+      return {
+        ...asset,
+        asset: {
+          ...asset?.asset,
+          price: {
+            ...asset?.asset?.price,
+            ...fallbackAsset.price,
+          },
+        },
+      };
+    }
+    return asset;
+  });
+
+  // temporary until backend supports sending back map for L2 data
+  const newAssetsMap = keyBy(
+    newAssets,
+    asset => `${asset.asset.asset_code}_${asset.asset.network}`
+  );
+  const updatedMessage = {
+    ...message,
+    payload: {
+      ...message?.payload,
+      assets: newAssetsMap,
+    },
+  };
+
+  dispatch(addressAssetsReceived(updatedMessage, false, false, false, network));
 };
 
 const listenOnAddressMessages = socket => dispatch => {
@@ -476,6 +538,14 @@ const listenOnAddressMessages = socket => dispatch => {
     dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));
   });
 
+  socket.on(messages.ADDRESS_ASSETS.RECEIVED_ARBITRUM, message => {
+    dispatch(l2AddressAssetsReceived(message, NetworkTypes.arbitrum));
+  });
+
+  socket.on(messages.ADDRESS_ASSETS.RECEIVED_POLYGON, message => {
+    dispatch(l2AddressAssetsReceived(message, NetworkTypes.polygon));
+  });
+
   socket.on(messages.ADDRESS_ASSETS.RECEIVED, message => {
     dispatch(addressAssetsReceived(message));
     if (isValidAssetsResponseFromZerion(message)) {
@@ -483,7 +553,7 @@ const listenOnAddressMessages = socket => dispatch => {
         '😬 Cancelling fallback data provider listener. Zerion is good!'
       );
       dispatch(disableFallbackIfNeeded());
-      dispatch(explorerInitL2());
+      dispatch(explorerInitL2(NetworkTypes.optimism));
       // Fetch balances onchain to override zerion's
       // which is likely behind
       dispatch(fetchOnchainBalances({ keepPolling: false, withPrices: false }));

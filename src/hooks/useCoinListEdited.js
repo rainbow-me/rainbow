@@ -1,13 +1,17 @@
-import { useSelector } from 'react-redux';
+import { atom, useRecoilState } from 'recoil';
+
+const isCoinListEditedAtom = atom({
+  default: false,
+  key: 'isCoinListEditedAtom',
+});
 
 export default function useCoinListEdited() {
-  return useSelector(({ editOptions: { isCoinListEdited } }) => ({
-    isCoinListEdited,
-  }));
-}
-
-export function useCoinListEditedValue() {
-  return useSelector(
-    ({ editOptions: { isCoinListEditedValue } }) => isCoinListEditedValue
+  const [isCoinListEdited, setIsCoinListEdited] = useRecoilState(
+    isCoinListEditedAtom
   );
+
+  return {
+    isCoinListEdited,
+    setIsCoinListEdited,
+  };
 }

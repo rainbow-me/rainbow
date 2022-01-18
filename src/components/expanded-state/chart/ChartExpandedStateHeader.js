@@ -1,6 +1,7 @@
 import lang from 'i18n-js';
-import React, { useEffect, useMemo } from 'react';
-import Animated, { useSharedValue } from 'react-native-reanimated';
+import { invert } from 'lodash';
+import React, { useMemo } from 'react';
+import Animated from 'react-native-reanimated';
 import styled from 'styled-components';
 import { useCallbackOne } from 'use-memo-one';
 import { CoinIcon, CoinIconGroup } from '../../coin-icon';
@@ -13,6 +14,8 @@ import {
   ChartPercentChangeLabel,
   ChartPriceLabel,
 } from './chart-data-labels';
+import { useChartData } from '@rainbow-me/animated-charts';
+import ChartTypes from '@rainbow-me/helpers/chartTypes';
 import { convertAmountToNativeDisplay } from '@rainbow-me/helpers/utilities';
 import { useAccountSettings, useBooleanState } from '@rainbow-me/hooks';
 import { padding } from '@rainbow-me/styles';
@@ -56,10 +59,10 @@ export default function ChartExpandedStateHeader({
   latestChange,
   latestPrice = noPriceData,
   priceRef,
-  chartTimeSharedValue,
   showChart,
   testID,
   overrideValue = false,
+  chartType,
 }) {
   const { colors } = useTheme();
   const color = givenColors || colors.dark;
@@ -71,21 +74,6 @@ export default function ChartExpandedStateHeader({
 
   const isNoPriceData = latestPrice === noPriceData;
 
-  const price = useMemo(
-    () => convertAmountToNativeDisplay(latestPrice, nativeCurrency),
-    [latestPrice, nativeCurrency]
-  );
-
-  const priceSharedValue = useSharedValue('');
-
-  useEffect(() => {
-    if (!isNoPriceData) {
-      priceSharedValue.value = price;
-    } else {
-      priceSharedValue.value = '';
-    }
-  }, [price, isNoPriceData, priceSharedValue]);
-
   const title = isPool
     ? lang.t('expanded_state.chart.token_pool', {
         tokenName: asset.tokenNames,
@@ -95,6 +83,41 @@ export default function ChartExpandedStateHeader({
   const titleOrNoPriceData = isNoPriceData ? noPriceData : title;
 
   const showPriceChange = !isNoPriceData && showChart && !isNaN(latestChange);
+
+  const timespan = invert(ChartTypes)[chartType];
+
+  const formattedTimespan =
+    timespan.charAt(0).toUpperCase() + timespan.slice(1);
+
+  const { data } = useChartData();
+
+  const defaultTimeValue = useMemo(() => {
+    if (chartType === ChartTypes.day) {
+      return 'Today';
+    } else if (chartType === ChartTypes.max) {
+      return 'All Time';
+    } else {
+      return `Past ${formattedTimespan}`;
+    }
+    // we need to make sure we recreate this value only when chart's data change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
+  const price = useMemo(
+    () => convertAmountToNativeDisplay(latestPrice, nativeCurrency),
+    // we need to make sure we recreate this value only when chart's data change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data, latestPrice, nativeCurrency]
+  );
+
+  const defaultPriceValue = isNoPriceData ? '' : price;
+
+  const ratio = useMemo(() => {
+    const firstValue = data?.points?.[0]?.y;
+    const lastValue = data?.points?.[data.points.length - 1]?.y;
+
+    return firstValue === Number(firstValue) ? lastValue / firstValue : 1;
+  }, [data]);
 
   return (
     <Container showChart={showChart}>
@@ -128,7 +151,7 @@ export default function ChartExpandedStateHeader({
             isPool={isPool}
             isScrubbing={isScrubbing}
             priceRef={priceRef}
-            priceSharedValue={priceSharedValue}
+            priceValue={defaultPriceValue}
             tabularNums={tabularNums}
           />
           {showPriceChange && (
@@ -141,6 +164,7 @@ export default function ChartExpandedStateHeader({
               isScrubbing={isScrubbing}
               latestChange={latestChange}
               overrideValue={overrideValue}
+              ratio={ratio}
               tabularNums={tabularNums}
             />
           )}
@@ -163,8 +187,9 @@ export default function ChartExpandedStateHeader({
           </ChartHeaderSubtitle>
           {showPriceChange && (
             <ChartDateLabel
-              chartTimeSharedValue={chartTimeSharedValue}
+              chartTimeDefaultValue={defaultTimeValue}
               dateRef={dateRef}
+              ratio={ratio}
             />
           )}
         </RowWithMargins>

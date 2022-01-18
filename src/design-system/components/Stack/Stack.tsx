@@ -19,13 +19,9 @@ type AlignHorizontal = keyof typeof alignHorizontalToFlexAlign;
 export type StackProps = {
   children: ReactNode;
   alignHorizontal?: AlignHorizontal;
-} & (
-  | { space?: never; separator: ReactElement }
-  | {
-      space: Space;
-      separator?: ReactElement;
-    }
-);
+  space?: Space;
+  separator?: ReactElement;
+};
 
 /**
  * @description Arranges child nodes vertically with equal spacing between
@@ -36,7 +32,7 @@ export type StackProps = {
  * of content.
  */
 export function Stack({
-  children,
+  children: childrenProp,
   alignHorizontal,
   separator,
   space,
@@ -44,6 +40,8 @@ export function Stack({
   if (__DEV__ && separator && !isValidElement(separator)) {
     throw new Error(`Stack: The 'separator' prop must be a React element`);
   }
+
+  const children = flattenChildren(childrenProp);
 
   return (
     <Box
@@ -53,24 +51,32 @@ export function Stack({
           : undefined
       }
     >
-      {Children.map(flattenChildren(children), (child, index) => (
-        <>
-          {separator && index > 0 ? (
-            <Box
-              alignItems={
-                alignHorizontal
-                  ? alignHorizontalToFlexAlign[alignHorizontal]
-                  : undefined
-              }
-              paddingTop={space}
-              width="full"
-            >
-              {separator}
-            </Box>
-          ) : null}
-          {space && index > 0 ? <Box paddingTop={space}>{child}</Box> : child}
-        </>
-      ))}
+      {Children.map(children, (child, index) => {
+        const isLastChild = index === children.length - 1;
+
+        return (
+          <>
+            {space && !isLastChild ? (
+              <Box paddingBottom={space}>{child}</Box>
+            ) : (
+              child
+            )}
+            {separator && !isLastChild ? (
+              <Box
+                alignItems={
+                  alignHorizontal
+                    ? alignHorizontalToFlexAlign[alignHorizontal]
+                    : undefined
+                }
+                paddingBottom={space}
+                width="full"
+              >
+                {separator}
+              </Box>
+            ) : null}
+          </>
+        );
+      })}
     </Box>
   );
 }

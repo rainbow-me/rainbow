@@ -12,7 +12,6 @@ import { resolveNameOrAddress } from '@rainbow-me/handlers/web3';
 import { buildUniqueTokenList } from '@rainbow-me/helpers/assets';
 import { tokenFamilyItem } from '@rainbow-me/helpers/buildWalletSections';
 import { useAccountSettings, useWallets } from '@rainbow-me/hooks';
-import { removeShowcase } from '@rainbow-me/redux/openStateSettings';
 import { fetchUniqueTokens } from '@rainbow-me/redux/uniqueTokens';
 
 async function fetchShowcaseForAddress(address) {
@@ -41,7 +40,9 @@ const LoadingWrapper = styled.View`
 `;
 
 export default function ShowcaseScreen() {
-  const { params: { address: addressOrDomain } = {} } = useRoute();
+  const {
+    params: { address: addressOrDomain, setIsSearchModeEnabled } = {},
+  } = useRoute();
 
   const [userData, setUserData] = useState(null);
   const [accountAddress, setAcccountAddress] = useState(null);
@@ -55,10 +56,6 @@ export default function ShowcaseScreen() {
     };
     init();
   }, [addressOrDomain]);
-
-  useEffect(() => {
-    dispatch(removeShowcase);
-  }, [dispatch]);
 
   useEffect(() => {
     accountAddress && dispatch(fetchUniqueTokens(accountAddress));
@@ -111,8 +108,9 @@ export default function ShowcaseScreen() {
       ...userData,
       address: accountAddress,
       addressOrDomain,
+      setIsSearchModeEnabled,
     }),
-    [addressOrDomain, accountAddress, userData]
+    [userData, accountAddress, addressOrDomain, setIsSearchModeEnabled]
   );
 
   const loading = userData === null || uniqueTokensShowcaseLoading;

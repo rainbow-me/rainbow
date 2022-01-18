@@ -174,14 +174,13 @@ export default function TokenIndexExpandedState({ asset }) {
         <SheetDivider />
         {needsEth ? (
           <SheetActionButtonRow>
-            <BuyActionButton color={color} fullWidth />
+            <BuyActionButton color={color} />
           </SheetActionButtonRow>
         ) : (
           <SheetActionButtonRow>
             <Column marginTop={5}>
               <SwapActionButton
                 color={color}
-                fullWidth
                 inputType={AssetInputTypes.out}
                 label={`􀖅 ${lang.t('expanded_state.token_index.get_token', {
                   assetSymbol: asset?.symbol,

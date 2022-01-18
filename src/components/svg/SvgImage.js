@@ -17,6 +17,15 @@ const getHTML = (svgContent, style) =>
 <html data-key="key-${style.height}-${style.width}">
   <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no"> 
+  <script>
+    function overLoadFunctions() {
+      window.alert = () => false;
+      window.prompt = () => false;
+      window.confirm  = () => false;
+    }
+    overLoadFunctions();
+    window.onload = overLoadFunctions();
+  </script>
   <style>
       html, body {
         margin: 0;

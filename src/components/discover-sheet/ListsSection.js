@@ -21,11 +21,7 @@ import { Centered, Column, Flex, Row } from '../layout';
 import { Emoji, Text } from '../text';
 import EdgeFade from './EdgeFade';
 import networkTypes from '@rainbow-me/helpers/networkTypes';
-import {
-  useAccountAssets,
-  useAccountSettings,
-  useUserLists,
-} from '@rainbow-me/hooks';
+import { useAccountSettings, useUserLists } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
 import Routes from '@rainbow-me/routes';
 import { ethereumUtils } from '@rainbow-me/utils';
@@ -60,10 +56,10 @@ const ListButton = styled(ButtonPressAnimation).attrs({
         border-radius: 12px;
         height: 30px;
         padding-horizontal: 8px;
-        padding-top: ${ios ? 6 : 4}px;
+        padding-top: ${ios ? 6.5 : 4.5}px;
       `
       : `
-        padding-top: ${ios ? 6 : 4}px;
+        padding-top: ${ios ? 6.5 : 4.5}px;
       `}
 `;
 
@@ -102,7 +98,6 @@ export default function ListSection() {
   } = useUserLists();
   const listRef = useRef(null);
   const initialized = useRef(false);
-  const { allAssets } = useAccountAssets();
   const genericAssets = useSelector(
     ({ data: { genericAssets } }) => genericAssets
   );
@@ -197,7 +192,7 @@ export default function ListSection() {
       items = favorites
         .map(
           address =>
-            ethereumUtils.getAsset(allAssets, toLower(address)) ||
+            ethereumUtils.getAccountAsset(address) ||
             ethereumUtils.formatGenericAsset(
               genericAssets[toLower(address)],
               nativeCurrency
@@ -213,7 +208,7 @@ export default function ListSection() {
 
       items = currentList.tokens.map(
         address =>
-          ethereumUtils.getAsset(allAssets, toLower(address)) ||
+          ethereumUtils.getAccountAsset(address) ||
           ethereumUtils.formatGenericAsset(
             genericAssets[toLower(address)],
             nativeCurrency
@@ -222,15 +217,7 @@ export default function ListSection() {
     }
 
     return items.filter(item => item.symbol && Number(item.price?.value) > 0);
-  }, [
-    allAssets,
-    favorites,
-    genericAssets,
-    lists,
-    nativeCurrency,
-    network,
-    selectedList,
-  ]);
+  }, [favorites, genericAssets, lists, nativeCurrency, network, selectedList]);
 
   const handlePress = useCallback(
     item => {

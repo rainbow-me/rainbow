@@ -11,7 +11,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { ButtonPressAnimation } from '../animations';
 import { ExchangeSearch } from '../exchange';
@@ -56,9 +55,6 @@ export default forwardRef(function DiscoverSearchContainer(
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [isFetchingEns, setIsFetchingEns] = useState(false);
-  const loadingAllTokens = useSelector(
-    ({ uniswap: { loadingAllTokens } }) => loadingAllTokens
-  );
   const delayedShowSearch = useDelayedValueWithLayoutAnimation(showSearch);
 
   const upperContext = useContext(DiscoverSheetContext);
@@ -76,12 +72,14 @@ export default forwardRef(function DiscoverSearchContainer(
     () => ({
       ...upperContext,
       isFetchingEns,
+      searchInputRef,
       searchQuery,
       sectionListRef,
       setIsFetchingEns,
       setIsSearching,
     }),
     [
+      searchInputRef,
       searchQuery,
       upperContext,
       isFetchingEns,
@@ -144,7 +142,7 @@ export default forwardRef(function DiscoverSearchContainer(
           <ExchangeSearch
             clearTextOnFocus={false}
             isDiscover
-            isFetching={loadingAllTokens || isFetchingEns}
+            isFetching={isFetchingEns}
             isSearching={isSearching}
             onBlur={() => setIsInputFocused(false)}
             onChangeText={setSearchQuery}

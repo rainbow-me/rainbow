@@ -2,7 +2,7 @@ import { MaxUint256 } from '@ethersproject/constants';
 import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
 import { captureException } from '@sentry/react-native';
-import { get, isNull, toLower } from 'lodash';
+import { isNull, toLower } from 'lodash';
 import { alwaysRequireApprove } from '../../config/debug';
 import { Rap, RapActionParameters, UnlockActionParameters } from '../common';
 import {
@@ -62,14 +62,16 @@ const executeApprove = (
   tokenAddress: string,
   spender: string,
   gasLimit: number | string,
-  gasPrice: string,
+  maxFeePerGas: string,
+  maxPriorityFeePerGas: string,
   wallet: Wallet,
   nonce: number | null = null
 ) => {
   const exchange = new Contract(tokenAddress, erc20ABI, wallet);
   return exchange.approve(spender, MaxUint256, {
     gasLimit: toHex(gasLimit) || undefined,
-    gasPrice: toHex(gasPrice) || undefined,
+    maxFeePerGas: toHex(maxFeePerGas) || undefined,
+    maxPriorityFeePerGas: toHex(maxPriorityFeePerGas) || undefined,
     nonce: nonce ? toHex(nonce) : undefined,
   });
 };
@@ -86,7 +88,7 @@ const unlock = async (
   logger.log(`[${actionName}] base nonce`, baseNonce, 'index:', index);
   const { dispatch } = store;
   const { accountAddress } = store.getState().settings;
-  const { gasPrices, selectedGasPrice } = store.getState().gas;
+  const { gasFeeParamsBySpeed, selectedGasFee } = store.getState().gas;
   const {
     assetToUnlock,
     contractAddress,
@@ -112,13 +114,24 @@ const unlock = async (
     throw e;
   }
   let approval;
-  let gasPrice;
+  let maxFeePerGas;
+  let maxPriorityFeePerGas;
   try {
     // approvals should always use fast gas or custom (whatever is faster)
-    gasPrice = selectedGasPrice?.value?.amount;
-    const fastPrice = get(gasPrices, `[${gasUtils.FAST}].value.amount`);
-    if (greaterThan(fastPrice, gasPrice)) {
-      gasPrice = fastPrice;
+    maxFeePerGas = selectedGasFee?.gasFeeParams?.maxFeePerGas?.amount;
+    maxPriorityFeePerGas =
+      selectedGasFee?.gasFeeParams?.maxPriorityFeePerGas?.amount;
+
+    const fastMaxFeePerGas =
+      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxFeePerGas?.amount;
+    const fastMaxPriorityFeePerGas =
+      gasFeeParamsBySpeed?.[gasUtils.FAST]?.maxPriorityFeePerGas?.amount;
+
+    if (greaterThan(fastMaxFeePerGas, maxFeePerGas)) {
+      maxFeePerGas = fastMaxFeePerGas;
+    }
+    if (greaterThan(fastMaxPriorityFeePerGas, maxPriorityFeePerGas)) {
+      maxPriorityFeePerGas = fastMaxPriorityFeePerGas;
     }
 
     logger.sentry(`[${actionName}] about to approve`, {
@@ -131,7 +144,8 @@ const unlock = async (
       assetAddress,
       contractAddress,
       gasLimit,
-      gasPrice,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
       wallet,
       nonce
     );
@@ -156,15 +170,19 @@ const unlock = async (
     data: approval.data,
     from: accountAddress,
     gasLimit,
-    gasPrice,
     hash: approval?.hash,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
     nonce: approval?.nonce,
     status: TransactionStatus.approving,
     to: approval?.to,
     type: TransactionType.authorize,
-    value: approval.value,
+    value: toHex(approval.value),
   };
   logger.log(`[${actionName}] adding new txn`, newTransaction);
+  // @ts-expect-error Since src/redux/data.js is not typed yet, `accountAddress`
+  // being a string conflicts with the inferred type of "null" for the second
+  // parameter.
   await dispatch(dataAddNewTransaction(newTransaction, accountAddress));
   return approval?.nonce;
 };

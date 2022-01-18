@@ -18,6 +18,8 @@
       "tab_collectibles": "Collections",
       "tab_interactions": "Interactions",
       "tab_interactions_tooltip": "Interactions de smart-contracts",
+      "tab_investments": "Investissements",
+      "tab_savings": "Epargnes",
       "tab_transactions": "Transactions",
       "tab_transactions_tooltip": "Transactions et transferts de tokens",
       "tab_uniquetokens": "Tokens uniques",
@@ -127,11 +129,32 @@
       }
     },
     "button": {
+      "add": "Ajouter",
+      "add_cash": "Ajouter de l'argent",
+      "all": "Tous",
       "cancel": "Annuler",
       "close": "Fermer",
       "confirm": "Confirmer",
+      "confirm_exchange": {
+        "deposit": "Tenir pour Déposer",
+        "enter_amount": "Entrez un Montant",
+        "fetching_details": "Fetching Details... :)",
+        "insufficient_eth": "ETH Insuffisants",
+        "insufficient_funds": "Fonds Insuffisants",
+        "insufficient_liquidity": "Insufficient Liquidity :)",
+        "invalid_fee": "Frais Non Valides",
+        "swap": "Tenir pour Swap",
+        "swap_anyway": "Echanger quand Même",
+        "view_details": "View Details :)",
+        "withdraw": "Tenir pour Retirer"
+      },
       "connect_walletconnect": "Utiliser WalletConnect",
+      "delete": "Effacer",
       "donate": "Donner de l’ETH",
+      "done": "Terminé",
+      "edit": "Modifier",
+      "enter": "Entrer",
+      "etherscan": "🔍 Affichage à Etherscan :)",
       "exchange": "Échanger",
       "exchange_again": "Échanger encore",
       "exchange_search_uniswap": "Cherche",
@@ -151,6 +174,7 @@
       "offline": "Hors connexion",
       "ok": "D'accord",
       "okay": "Okay :)",
+      "paste": "Coller",
       "paste_address": "Paste :)",
       "paste_seed_phrase": "Coller",
       "pin": "Epingler",
@@ -158,7 +182,11 @@
       "receive": "Recevoir",
       "send": "Envoyer",
       "send_another": "Envoyer un autre",
+      "share": "Share :)",
+      "swap": "Swap",
       "try_again": "Réessayer",
+      "unhide": "Afficher",
+      "unpin": "Détacher",
       "view": "Affichage"
     },
     "cloud": {
@@ -282,7 +310,7 @@
           }
         },
         "no_price_data": "No price data :)",
-        "token_pool": "%{tokenName} Poll :)"
+        "token_pool": "%{tokenName} Pool :)"
       },
       "liquidity_pool": {
         "annualized_fees": "Annualized fees :)",
@@ -396,15 +424,49 @@
       "web3_unknown_network": "Réseau inconnu, veuillez basculer vers un autre"
     },
     "modal": {
-      "approve_tx": "Permettre une transaction de {{walletType}}",
-      "confirm_tx": "Confirmer une transaction de {{walletName}}",
-      "default_wallet": " Wallet",
+      "approve_tx": "Permettre une transaction de %{walletType}",
+      "back_up": {
+        "alerts": {
+          "cloud_not_enabled": {
+            "description": "Looks like iCloud drive is not enabled on your device.\n\n Do you want to see how to enable it? :)",
+            "label": "iCloud not enabled :)",
+            "no_thanks": "No thanks :)",
+            "show_me": "Yes, Show me :)"
+          }
+        },
+        "default": {
+          "button": {
+            "cloud": "Back up your wallet :)",
+            "manual": "Back up manually :)"
+          },
+          "description": "Don't lose your wallet! Save an encrypted copy to %{cloudPlatformName} :)",
+          "title": "Back up your wallet :)"
+        },
+        "existing": {
+          "button": {
+            "later": "Maybe later :)",
+            "now": "Back up now :)"
+          },
+          "description": "You have wallets that have not been backed up yet. Back them up in case you lose this device. :)",
+          "title": "Would you like to back up? :)"
+        },
+        "imported": {
+          "button": {
+            "back_up": "Back up to %{cloudPlatformName} :)",
+            "no_thanks": "No thanks :)"
+          },
+          "description": "Don't lose your wallet! Save an encrypted copy to %{cloudPlatformName}. :)",
+          "title": "Would you like to back up? :)"
+        }
+      },
+      "confirm_tx": "Confirmer une transaction de %{walletName}",
+      "default_wallet": "Wallet",
       "deposit_dropdown_label": "Échanger mes",
       "deposit_input_label": "Payer",
-      "donate_title": "Envoyer de {{walletName}} au Balance Manager",
+      "donate_title": "Envoyer de %{walletName} au Balance Manager",
       "exchange_fee": "Frais d’échange",
       "exchange_max": "Échanger la valeur max",
-      "exchange_title": "Échanger de {{walletName}}",
+      "exchange_title": "Échanger de %{walletName}",
       "gas_average": "Moyen",
       "gas_fast": "Vite",
       "gas_fee": "Frais",
@@ -418,9 +480,9 @@
       "invalid_address": "Adresse non valide",
       "new": "New",
       "previous_short": "Préc.",
-      "receive_title": "Recevoir à {{walletName}}",
+      "receive_title": "Recevoir à %{walletName}",
       "send_max": "Envoyer la valeur max",
-      "send_title": "Envoyer de {{walletName}}",
+      "send_title": "Envoyer de %{walletName}",
       "tx_confirm_amount": "Quantité",
       "tx_confirm_fee": "Frais de transaction",
       "tx_confirm_recipient": "Bénéficiaire",
@@ -449,12 +511,102 @@
         "address_copied_to_clipboard": "L’adresse a été copiée dans le presse-papiers"
       }
     },
+    "pools": {
+      "balance": "Soldes",
+      "deposit": "Dépôt",
+      "label": "Pools",
+      "per_share": "par action",
+      "pool": "Pool",
+      "pool_shares": "Partages de Pool",
+      "total_value": "Valeur totale",
+      "withdraw": "Retrait"
+    },
+    "savings": {
+      "deposit": "Dépôt",
+      "earnings": {
+        "5_year": "5-Ans",
+        "10_year": "10-Ans",
+        "20_year": "20-Ans",
+        "50_year": "50-Ans",
+        "100_year": "100-Ans",
+        "est": "Est.",
+        "label": "Gains",
+        "monthly": "Mensuel",
+        "yearly": "Annuel"
+      },
+      "label": "Epargne",
+      "withdraw": "Retrait"
+    },
+    "send_feedback": {
+      "copy_email": "Copy email address :)",
+      "email_error": {
+        "description": "Would you like to manually copy our feedback email address to your clipboard? :)",
+        "title": "Error launching email client :)"
+      },
+      "no_thanks": "No thanks :)"
+    },
+    "settings": {
+      "back": "Retour",
+      "backup": "Sauvegarder",
+      "currency": "Devise",
+      "dev": "Dev :)",
+      "developer": "Developer Settings :)",
+      "done": "Terminé",
+      "feedback_and_reports": "Feedback & Bug Reports :)",
+      "feedback_and_support": "Feedback & Support :)",
+      "follow_twitter": "Follow Us on Twitter :)",
+      "label": "Réglages",
+      "language": "Langue",
+      "learn": "Learn about Rainbow and Ethereum :)",
+      "network": "Réseau",
+      "privacy": "Privacy :)",
+      "review": "Review Rainbow :)",
+      "share": "Share Rainbow:)",
+      "theme": "Theme :)"
+    },
     "subscribe_form": {
       "email_already_subscribed": "Désolé, vous vous êtes déjà inscrit avec cette adresse de courriel",
       "generic_error": "Oups, une erreur s’est produite",
       "sending": "En train d’en envoyer...",
       "successful": "Veuillez consulter vos courriels",
       "too_many_signup_request": "Nous avons détecté trop de demandes d’inscription, veuillez réessayer plus tard"
+    },
+    "swap": {
+      "choose_token": "Choisir le Jeton",
+      "gas": {
+        "custom": "Personnalisé",
+        "edit_price": "Modifier le prix du gaz",
+        "enter_price": "Enter Gas Price :)",
+        "fast": "Rapide",
+        "network_fee": "Frais de Réseau",
+        "normal": "Normal",
+        "slow": "Lent"
+      },
+      "label": "Swap",
+      "loading": "Loading...",
+      "max": "Max",
+      "modal_types": {
+        "confirm": "Confirme dans",
+        "deposit": "Dépôts dans",
+        "swap": "Swaps en",
+        "withdraw": "Se retire dans"
+      },
+      "warning": {
+        "edit_price": "Modifier le prix du gaz",
+        "invalid_price": {
+          "message": "Vous devez entrer un montant valide",
+          "title": "Prix du gaz invalide"
+        },
+        "proceed_anyway": "Continuer malgré tout",
+        "too_high": {
+          "message": "Vérifiez à nouveau que vous avez saisi le montant correct. Vous paierez probablement plus que nécessaire!",
+          "title": "Prix de l'essence élevé!"
+        },
+        "too_low": {
+          "message": "Il est recommandé de fixer un prix du gaz plus élevé pour éviter les problèmes.",
+          "title": "Prix de l'essence bas - la transaction pourrait rester bloquée!"
+        }
+      }
     },
     "time": {
       "days": {
@@ -516,11 +668,47 @@
     },
     "wallet": {
       "action": {
+        "add_existing": "Ajouter un portefeuille existant",
         "cancel": "Annuler",
+        "create_new": "Créez un nouveau portefeuille",
+        "delete": "Supprimer le Portefeuille",
+        "delete_confirm": "Voulez-vous vraiment supprimer ce portefeuille",
+        "edit": "Moadifier le Portefeuille",
+        "hide": "Hide :)",
+        "import_wallet": "Importer un portefeuille",
         "paste": "Coller",
+        "pin": "Pin :)",
         "reject": "Refuser",
         "send": "Envoyer",
-        "to": "À"
+        "to": "À",
+        "unhide": "Unhide :)",
+        "unpin": "Unpin :)",
+        "value": "Value :)",
+        "view_on": "View on %{blockExplorerName} :)"
+      },
+      "add_cash": {
+        "card_notice": "Works with most debit cards :)",
+        "interstitial": {
+          "buy_eth": "To get started, buy some ETH with Apple Pay :)",
+          "other_amount": "Other amount :) ",
+          "send_description": "Send from Coinbase or another exchange—or ask a friend! :)",
+          "send_eth": "or send ETH to your wallet :)"
+        },
+        "need_help_button_email_subject": "support :)",
+        "need_help_button_label": "Get Support :)",
+        "on_the_way_line_1": "Your %{currencySymbol} is on the way :)",
+        "on_the_way_line_2": "and will arrive shortly :)",
+        "purchase_failed_order_id": "Order ID: %{orderId} :)",
+        "purchase_failed_subtitle": "You were not charged. :)",
+        "purchase_failed_support_subject": "Purchase Failed :)",
+        "purchase_failed_support_subject_with_order_id": "Purchase Failed - Order %{orderId} :)",
+        "purchase_failed_title": "Sorry, your purchase failed. :)",
+        "purchasing_dai_requires_eth_message": "Before you can purchase DAI you must have some ETH in your wallet! :)",
+        "purchasing_dai_requires_eth_title": "You don't have any ETH! :)",
+        "running_checks": "Running checks... :)",
+        "success_message": "It's here 🥳 :)",
+        "watching_mode_confirm_message": "The wallet you have open is read-only, so you can’t control what’s inside. Are you sure you want to add cash to %{truncatedAddress}? :)",
+        "watching_mode_confirm_title": "You’re in Watching Mode :)"
       },
       "assets": {
         "no_price": "actifs sans données de prix"
@@ -548,6 +736,7 @@
         "warning": "Ceci est une version alpha de l'application.",
         "welcome": "Bienvenue sur Rainbow"
       },
+      "label": "Portefeuilles",
       "loading": {
         "error": "Une erreur est survenue lors du chargement du portefeuille. Veuillez redémarrer l'application.",
         "message": "Chargement"
@@ -571,8 +760,19 @@
         "please_enable_title": "Rainbow would like to send you push notifications :)"
       },
       "receive": "Recovoir",
+      "restore": {
+        "phrase_key": {
+          "description": "Use your recovery phrase from Rainbow or another crypto wallet :)",
+          "label": "Restore with a recovery phrase or private key :) "
+        },
+        "watch": {
+          "description": "Watch a public address or ENS name :)",
+          "label": "Watch an Ethereum address  :) "
+        }
+      },
       "settings": {
         "copy_address": "Copier adresse",
+        "copy_address_capitalized": "Copier Adresse",
         "copy_seed_phrase": "Copier clé mnémonique",
         "hide_seed_phrase": "Cacher clé mnémonique",
         "show_seed_phrase": "Afficher clé mnémonique"
@@ -581,6 +781,8 @@
         "alert": {
           "authentication": "L'authentication a échouée",
           "cancelled_transaction": "Échec de l'envoie de la transaction annulée à WalletConnect",
+          "failed_sign_message": "Failed to sign message :)",
+          "failed_transaction": "Failed to send transaction :)",
           "failed_transaction_status": "Échec de l'envoie du status de la transaction échouée",
           "transaction_status": "Échec de l'envoie du status de la transaction"
         },
@@ -588,8 +790,27 @@
         "request": "Demande de transaction",
         "send": "Envoyer transaction"
       },
+      "unrecognized_qrcode": "Sorry, this QR code could not be recognized. :)",
+      "unrecognized_qrcode_title": "Unrecognized QR Code :)",
       "wallet_connect": {
-        "error": "Erreur d'initialisation avec WalletConnect"
+        "error": "Erreur d'initialisation avec WalletConnect",
+        "missing_fcm": "Unable to initialize WalletConnect: missing push notification token. Please try again. :)"
+      }
+    },
+    "walletconnect": {
+      "learn_more": "Apprendre encore plus",
+      "paste_uri": {
+        "button": "Coller l'URI de session",
+        "message": "Collez l'URI WalletConnect ci-dessous",
+        "title": "Nouvelle session WalletConnect"
+      },
+      "scan_to_connect": {
+        "description": "WalletConnect vous permet de vous connecter à des sites Web de bureau en scannant un code QR",
+        "label": "Scannez pour connecter votre portefeuille"
+      },
+      "scan_to_send": {
+        "description": "Vous pouvez scanner un code QR pour envoyer de l'argent",
+        "label": "Numériser pour envoyer"
       }
     },
     "warning": {

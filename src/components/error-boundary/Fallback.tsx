@@ -7,7 +7,6 @@ import { Centered } from '../layout';
 import { SheetActionButton } from '../sheet';
 import Text from '../text/Text';
 import { useTheme } from '@rainbow-me/context';
-import { useDimensions } from '@rainbow-me/hooks';
 import logger from 'logger';
 
 const Spacer = styled(View)<{ height: Number }>`
@@ -28,7 +27,6 @@ const Message = styled(View)`
 
 export default function Fallback() {
   const { colors } = useTheme();
-  const { width: deviceWidth } = useDimensions();
   const handleRestart = () => {
     logger.sentry('Restarting app after Error Boundary catch');
     RNExitApp.exitApp();
@@ -68,7 +66,6 @@ export default function Fallback() {
         <Spacer height={33} />
         <Centered>
           <SheetActionButton
-            androidWidth={deviceWidth - 60}
             color={colors.alpha(colors.appleBlue, 0.06)}
             isTransparent
             label={`🌈 ${lang.t('error_boundary.restart_button')}`}

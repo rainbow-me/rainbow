@@ -1,7 +1,7 @@
 import { Contract } from '@ethersproject/contracts';
-import { toLower } from 'lodash';
+import { captureException } from '@sentry/react-native';
+import { isEmpty, keyBy, map, mapValues, pickBy, toLower } from 'lodash';
 import isEqual from 'react-fast-compare';
-// eslint-disable-next-line import/no-cycle
 import { addressAssetsReceived, fetchAssetPricesWithCoingecko } from './data';
 // eslint-disable-next-line import/no-cycle
 import { emitAssetRequest, emitChartsRequest } from './explorer';
@@ -25,15 +25,15 @@ const OPTIMISM_EXPLORER_SET_HANDLERS =
 
 const UPDATE_BALANCE_AND_PRICE_FREQUENCY = 60000;
 
-const network = networkTypes.optimism;
+const optimismNetwork = networkTypes.optimism;
 
 const fetchAssetBalances = async (tokens, address) => {
   try {
     const abi = balanceCheckerContractAbiOVM;
 
     const contractAddress =
-      networkInfo[network].balance_checker_contract_address;
-    const optimismProvider = await getProviderForNetwork(networkTypes.optimism);
+      networkInfo[optimismNetwork].balance_checker_contract_address;
+    const optimismProvider = await getProviderForNetwork(optimismNetwork);
 
     const balanceCheckerContract = new Contract(
       contractAddress,
@@ -51,50 +51,41 @@ const fetchAssetBalances = async (tokens, address) => {
     });
     return balances[address];
   } catch (e) {
-    logger.log(
+    logger.sentry(
       'Error fetching balances from balanceCheckerContract',
-      network,
+      optimismNetwork,
       e
     );
+    captureException(new Error('fallbackExplorer::balanceChecker failure'));
     return null;
   }
 };
 
 export const optimismExplorerInit = () => async (dispatch, getState) => {
-  if (networkInfo[networkTypes.optimism]?.disabled) return;
-  const { assets: allAssets, genericAssets } = getState().data;
+  if (networkInfo[optimismNetwork]?.disabled) return;
+  const { genericAssets } = getState().data;
   const { accountAddress, nativeCurrency } = getState().settings;
   const formattedNativeCurrency = toLower(nativeCurrency);
 
   const fetchAssetsBalancesAndPrices = async () => {
-    const assets = chainAssets[network];
-    if (!assets || !assets.length) {
-      const optimismExplorerBalancesHandle = setTimeout(
-        fetchAssetsBalancesAndPrices,
-        10000
-      );
-      dispatch({
-        payload: {
-          optimismExplorerBalancesHandle,
-        },
-        type: OPTIMISM_EXPLORER_SET_BALANCE_HANDLER,
-      });
-      return;
-    }
+    const assets = keyBy(
+      chainAssets[optimismNetwork],
+      asset => `${asset.asset.asset_code}_${optimismNetwork}`
+    );
 
-    const tokenAddresses = assets.map(({ asset: { asset_code } }) =>
+    const tokenAddresses = map(assets, ({ asset: { asset_code } }) =>
       toLower(asset_code)
     );
 
     const balances = await fetchAssetBalances(
       tokenAddresses,
       accountAddress,
-      network
+      optimismNetwork
     );
 
     let updatedAssets = assets;
     if (balances) {
-      updatedAssets = assets.map(assetAndQuantity => {
+      updatedAssets = mapValues(assets, assetAndQuantity => {
         const assetCode = toLower(assetAndQuantity.asset.asset_code);
         return {
           asset: {
@@ -105,46 +96,49 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
       });
     }
 
-    const assetsWithBalance = updatedAssets.filter(asset => asset.quantity > 0);
+    let assetsWithBalance = pickBy(updatedAssets, asset => asset.quantity > 0);
 
-    if (assetsWithBalance.length) {
+    if (!isEmpty(assetsWithBalance)) {
       dispatch(emitAssetRequest(tokenAddresses));
       dispatch(emitChartsRequest(tokenAddresses));
+
+      const coingeckoIds = map(assetsWithBalance, 'asset.coingecko_id');
       const prices = await fetchAssetPricesWithCoingecko(
-        assetsWithBalance.map(({ asset: { coingecko_id } }) => coingecko_id),
+        coingeckoIds,
         formattedNativeCurrency
       );
 
       if (prices) {
-        Object.keys(prices).forEach(key => {
-          for (let i = 0; i < assetsWithBalance.length; i++) {
-            if (
-              toLower(assetsWithBalance[i].asset.coingecko_id) === toLower(key)
-            ) {
-              const asset =
-                ethereumUtils.getAsset(
-                  allAssets,
-                  toLower(assetsWithBalance[i].asset.mainnet_address)
-                ) ||
-                genericAssets[
-                  toLower(assetsWithBalance[i].asset.mainnet_address)
-                ];
-              assetsWithBalance[i].asset.network = networkTypes.optimism;
-              assetsWithBalance[i].asset.price = asset?.price || {
-                changed_at: prices[key].last_updated_at,
-                relative_change_24h:
-                  prices[key][`${formattedNativeCurrency}_24h_change`],
-                value: prices[key][`${formattedNativeCurrency}`],
-              };
-              break;
-            }
+        assetsWithBalance = mapValues(assetsWithBalance, assetWithBalance => {
+          const assetCoingeckoId = toLower(assetWithBalance.asset.coingecko_id);
+          if (prices[assetCoingeckoId]) {
+            const asset =
+              ethereumUtils.getAccountAsset(
+                assetWithBalance.asset.mainnet_address
+              ) ||
+              genericAssets[toLower(assetWithBalance.asset.mainnet_address)];
+            return {
+              ...assetWithBalance,
+              asset: {
+                ...assetWithBalance.asset,
+                price: asset?.price || {
+                  changed_at: prices[assetCoingeckoId].last_updated_at,
+                  relative_change_24h:
+                    prices[assetCoingeckoId][
+                      `${formattedNativeCurrency}_24h_change`
+                    ],
+                  value: prices[assetCoingeckoId][`${formattedNativeCurrency}`],
+                },
+              },
+            };
           }
+          return assetWithBalance;
         });
       }
 
       const newPayload = { assets: assetsWithBalance };
 
-      if (!isEqual(lastUpdatePayload, newPayload)) {
+      if (balances && !isEqual(lastUpdatePayload, newPayload)) {
         dispatch(
           addressAssetsReceived(
             {
@@ -158,7 +152,7 @@ export const optimismExplorerInit = () => async (dispatch, getState) => {
             false,
             false,
             false,
-            networkTypes.optimism
+            optimismNetwork
           )
         );
         lastUpdatePayload = newPayload;

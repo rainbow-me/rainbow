@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
 import { useTheme } from '../../context/ThemeContext';
@@ -53,7 +54,7 @@ const AddCashFooter = ({ disabled, onDisabledPress, onSubmit, ...props }) => {
               size="lmedium"
               weight="semibold"
             >
-              Works with most debit cards
+              {lang.t('wallet.add_cash.card_notice')}
             </Text>
             <Centered marginLeft={2} marginTop={0.5}>
               <Icon

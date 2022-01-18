@@ -1,9 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { TextInput } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import styled from 'styled-components';
 import { RowWithMargins } from '../../../layout';
 import ChartChangeDirectionArrow from './ChartChangeDirectionArrow';
@@ -39,81 +36,65 @@ function formatNumber(num) {
   return newDigits.reverse().join('') + '.' + first[1];
 }
 
-export default function ChartPercentChangeLabel({
-  overrideValue = false,
-  latestChange,
-}) {
-  const { originalY, data } = useChartData();
-  const { colors } = useTheme();
+const format = (originalY, data, latestChange) => {
+  'worklet';
+  const firstValue = data?.points?.[0]?.y;
+  const lastValue = data?.points?.[data.points.length - 1]?.y;
 
-  const firstValue = useSharedValue(data?.points?.[0]?.y);
-  const lastValue = useSharedValue(data?.points?.[data.points.length - 1]?.y);
-
-  const defaultValue =
-    data?.points.length === 0
-      ? ''
-      : (() => {
-          const value = overrideValue
+  return firstValue === Number(firstValue) && firstValue
+    ? (() => {
+        const value =
+          originalY?.value === lastValue || !originalY?.value
             ? latestChange
-            : ((data?.points?.[data.points.length - 1]?.y ?? 0) /
-                data?.points?.[0]?.y) *
-                100 -
-              100;
-          if (isNaN(value)) {
-            return '';
-          }
-          return (
-            (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
-            ' ' +
-            formatNumber(Math.abs(value).toFixed(2)) +
-            '%'
-          );
-        })();
+            : ((originalY.value || lastValue) / firstValue) * 100 - 100;
 
-  useEffect(() => {
-    firstValue.value = data?.points?.[0]?.y || 0;
-    lastValue.value = data?.points?.[data.points.length - 1]?.y;
-  }, [data, firstValue, lastValue, latestChange, overrideValue]);
+        return (
+          (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
+          ' ' +
+          formatNumber(Math.abs(value).toFixed(2)) +
+          '%'
+        );
+      })()
+    : '';
+};
 
-  const textProps = useAnimatedStyle(() => {
-    return {
-      text:
-        firstValue.value === Number(firstValue.value) && firstValue.value
-          ? (() => {
-              const value =
-                originalY?.value === lastValue?.value || !originalY?.value
-                  ? latestChange
-                  : ((originalY.value || lastValue.value) / firstValue.value) *
-                      100 -
-                    100;
+export default function ChartPercentChangeLabel({ ratio, latestChange }) {
+  const { originalY, data, isActive } = useChartData();
+  const { colors } = useTheme();
+  const defaultValue = useMemo(() => format(originalY, data, latestChange), [
+    originalY,
+    data,
+  ]);
 
-              return (
-                (android ? '' : value > 0 ? '↑' : value < 0 ? '↓' : '') +
-                ' ' +
-                formatNumber(Math.abs(value).toFixed(2)) +
-                '%'
-              );
-            })()
-          : '',
-    };
-  });
+  const textProps = useAnimatedStyle(
+    () => ({
+      text: isActive.value
+        ? format(originalY, data, latestChange)
+        : defaultValue,
+    }),
+    [originalY, data, latestChange, isActive]
+  );
 
-  const ratio = useRatio();
+  const sharedRatio = useRatio();
 
   const textStyle = useAnimatedStyle(() => {
+    1;
+    const realRatio = isActive.value ? sharedRatio.value : ratio;
     return {
       color:
-        ratio.value === 1
+        realRatio === 1
           ? colors.blueGreyDark
-          : ratio.value < 1
+          : realRatio < 1
           ? colors.red
           : colors.green,
     };
-  });
+  }, [ratio]);
 
   return (
     <RowWithMargins align="center" margin={4}>
-      {android ? <ChartChangeDirectionArrow /> : null}
+      {android ? (
+        <ChartChangeDirectionArrow ratio={ratio} sharedRatio={sharedRatio} />
+      ) : null}
       <PercentLabel
         alignSelf="flex-end"
         animatedProps={textProps}

@@ -5,7 +5,6 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 # Prevent Cocoapods from collecting stats, which adds time to each pod installation
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
-
 target 'Rainbow' do
   # Pods for Rainbow
   config = use_native_modules!
@@ -14,6 +13,7 @@ target 'Rainbow' do
     # to enable hermes on iOS, change `false` to `true` and then install pods
     :hermes_enabled => ENV['USE_HERMES'] != 'NO'
   )
+  pod 'swift-vibrant'
 
   # Rainbow's Internal Modules.
   pod 'Rainbow-Internals', :path => './Internals'
@@ -30,7 +30,6 @@ target 'Rainbow' do
   pod "PanModal", :git => 'https://github.com/osdnk/PanModal', :commit => 'ab97d74279ba28c2891b47a5dc767ed4dd7cf994'
 
   pod 'Shimmer'
-
   use_native_modules!
   if ENV['SKIP_FLIPPER'] != "true"
     # use_flipper!()

@@ -47,7 +47,6 @@ export default function CoinRow({
   ...props
 }) {
   const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
-
   return (
     <Container css={containerStyles}>
       {isPool ? (

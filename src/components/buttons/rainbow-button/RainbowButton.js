@@ -1,4 +1,5 @@
 import MaskedView from '@react-native-community/masked-view';
+import lang from 'i18n-js';
 import React from 'react';
 import styled from 'styled-components';
 import AddCashIconSource from '../../../assets/addCashIcon.png';
@@ -18,7 +19,7 @@ const AddCashIcon = styled(ImgixImage).attrs({
   source: AddCashIconSource,
 })`
   ${position.size(45)};
-  margin-top: 7;
+  margin-top: 7.5;
 `;
 
 const ButtonContainer = styled(MaskedView).attrs({
@@ -33,9 +34,9 @@ const ButtonContent = styled(RowWithMargins).attrs({
   margin: -2.5,
 })`
   align-self: center;
+  bottom: 2;
   height: 100%;
   margin-right: ${({ type }) => (type === 'addCash' ? 9 : 0)};
-  padding-bottom: 4;
 `;
 
 const ButtonLabel = styled(Text).attrs(
@@ -45,7 +46,7 @@ const ButtonLabel = styled(Text).attrs(
     letterSpacing:
       type === RainbowButtonTypes.addCash ? 'roundedTight' : 'rounded',
     size: type === RainbowButtonTypes.small ? 'large' : 'larger',
-    weight: 'bold',
+    weight: type === RainbowButtonTypes.small ? 'bold' : 'heavy',
   })
 )``;
 
@@ -133,7 +134,9 @@ const RainbowButton = ({
         <ButtonContent type={type}>
           {type === RainbowButtonTypes.addCash && <AddCashIcon />}
           <ButtonLabel disabled={disabled} isDarkMode={isDarkMode} type={type}>
-            {type === RainbowButtonTypes.addCash ? 'Add Cash' : label}
+            {type === RainbowButtonTypes.addCash
+              ? lang.t('button.add_cash')
+              : label}
           </ButtonLabel>
         </ButtonContent>
       </ButtonContainer>

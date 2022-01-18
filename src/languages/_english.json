@@ -142,6 +142,7 @@
         "insufficient_eth": "Insufficient ETH",
         "insufficient_funds": "Insufficient Funds",
         "insufficient_liquidity": "Insufficient Liquidity",
+        "invalid_fee": "Invalid Fee",
         "swap": "Hold to Swap",
         "swap_anyway": "Swap Anyway",
         "view_details": "View Details",
@@ -171,6 +172,7 @@
       "offline": "Offline",
       "ok": "OK",
       "okay": "Okay",
+      "paste": "Paste",
       "paste_address": "Paste",
       "paste_seed_phrase": "Paste",
       "pin": "Pin",
@@ -306,7 +308,7 @@
           }
         },
         "no_price_data": "No price data",
-        "token_pool": "%{tokenName} Poll"
+        "token_pool": "%{tokenName} Pool"
       },
       "liquidity_pool": {
         "annualized_fees": "Annualized fees",
@@ -447,15 +449,49 @@
       "web3_unknown_network": "Unknown network, please switch to another one"
     },
     "modal": {
-      "approve_tx": "Approve transaction on {{walletType}}",
-      "confirm_tx": "Confirm transaction from {{walletName}}",
+      "approve_tx": "Approve transaction on %{walletType}",
+      "back_up": {
+        "alerts": {
+          "cloud_not_enabled": {
+            "description": "Looks like iCloud drive is not enabled on your device.\n\n Do you want to see how to enable it?",
+            "label": "iCloud Not Enabled",
+            "no_thanks": "No thanks",
+            "show_me": "Yes, Show me"
+          }
+        },
+        "default": {
+          "button": {
+            "cloud": "Back up your wallet",
+            "manual": "Back up manually"
+          },
+          "description": "Don't lose your wallet! Save an encrypted copy to %{cloudPlatformName}",
+          "title": "Back up your wallet"
+        },
+        "existing": {
+          "button": {
+            "later": "Maybe later",
+            "now": "Back up now"
+          },
+          "description": "You have wallets that have not been backed up yet. Back them up in case you lose this device.",
+          "title": "Would you like to back up?"
+        },
+        "imported": {
+          "button": {
+            "back_up": "Back up to %{cloudPlatformName}",
+            "no_thanks": "No thanks"
+          },
+          "description": "Don't lose your wallet! Save an encrypted copy to %{cloudPlatformName}.",
+          "title": "Would you like to back up?"
+        }
+      },
+      "confirm_tx": "Confirm transaction from %{walletName}",
       "default_wallet": " Wallet",
       "deposit_dropdown_label": "Exchange my",
       "deposit_input_label": "Pay",
-      "donate_title": "Send from {{walletName}} to Balance Manager",
+      "donate_title": "Send from %{walletName} to Balance Manager",
       "exchange_fee": "Exchange Fee",
       "exchange_max": "Exchange max",
-      "exchange_title": "Exchange from {{walletName}}",
+      "exchange_title": "Exchange from %{walletName}",
       "gas_average": "Average",
       "gas_fast": "Fast",
       "gas_fee": "Fee",
@@ -469,9 +505,9 @@
       "invalid_address": "Invalid Address",
       "new": "New",
       "previous_short": "Prev.",
-      "receive_title": "Receive to {{walletName}}",
+      "receive_title": "Receive to %{walletName}",
       "send_max": "Send max",
-      "send_title": "Send from {{walletName}}",
+      "send_title": "Send from %{walletName}",
       "tx_confirm_amount": "Amount",
       "tx_confirm_fee": "Transaction Fee",
       "tx_confirm_recipient": "Recipient",
@@ -500,12 +536,91 @@
         "address_copied_to_clipboard": "Address copied to clipboard"
       }
     },
+    "pools": {
+      "deposit": "Deposit",
+      "withdraw": "Withdraw"
+    },
+    "savings": {
+      "deposit": "Deposit",
+      "earnings": {
+        "5_year": "5-Year",
+        "10_year": "10-Year",
+        "20_year": "20-Year",
+        "50_year": "50-Year",
+        "100_year": "100-Year",
+        "est": "Est.",
+        "label": "Earnings",
+        "monthly": "Monthly",
+        "yearly": "Yearly"
+      },
+      "label": "Savings",
+      "withdraw": "Withdraw"
+    },
+    "send_feedback": {
+      "copy_email": "Copy email address",
+      "email_error": {
+        "description": "Would you like to manually copy our feedback email address to your clipboard?",
+        "title": "Error launching email client"
+      },
+      "no_thanks": "No thanks"
+    },
+    "settings": {
+      "backup": "Backup",
+      "currency": "Currency",
+      "dev": "Dev",
+      "developer": "Developer Settings",
+      "done": "Done",
+      "feedback_and_reports": "Feedback & Bug Reports",
+      "feedback_and_support": "Feedback and Support",
+      "label": "Settings",
+      "language": "Language",
+      "learn": "Learn about Rainbow and Ethereum",
+      "network": "Network",
+      "privacy": "Privacy",
+      "review": "Review Rainbow",
+      "theme": "Theme"
+    },
     "subscribe_form": {
       "email_already_subscribed": "Sorry, you've already signed up with this email",
       "generic_error": "Oops, something went wrong",
       "sending": "Sending...",
       "successful": "Check your email",
       "too_many_signup_request": "Too many signup requests, please try again later"
+    },
+    "swap": {
+      "choose_token": "Choose Token",
+      "gas": {
+        "custom": "Custom",
+        "edit_price": "Edit Gas Price",
+        "enter_price": "Enter Gas Price",
+        "fast": "Fast",
+        "network_fee": "Network Fee",
+        "normal": "Normal",
+        "slow": "Slow"
+      },
+      "loading": "Loading...",
+      "modal_types": {
+        "confirm": "Confirm",
+        "deposit": "Deposit",
+        "swap": "Swap",
+        "withdraw": "Withdraw"
+      },
+      "warning": {
+        "edit_price": "Edit Gas Price",
+        "invalid_price": {
+          "message": "You need to enter a valid amount",
+          "title": "Invalid Gas Price"
+        },
+        "proceed_anyway": "Proceed Anyway",
+        "too_high": {
+          "message": "Double check that you entered the correct amount—you’re likely paying more than you need to!",
+          "title": "High gas price!"
+        },
+        "too_low": {
+          "message": "Setting a higher gas price is recommended to avoid issues.",
+          "title": "Low gas price–transaction might get stuck!"
+        }
+      }
     },
     "time": {
       "days": {
@@ -567,13 +682,45 @@
     },
     "wallet": {
       "action": {
+        "add_existing": "Add an existing wallet",
         "cancel": "Cancel",
+        "create_new": "Create a new wallet",
+        "delete": "Delete Wallet",
+        "delete_confirm": "Are you sure you want to delete this wallet?",
+        "edit": "Edit Wallet",
+        "hide": "Hide",
+        "import_wallet": "Add Wallet",
         "input": "Transaction Input",
         "paste": "Paste",
+        "pin": "Pin",
         "reject": "Reject",
         "send": "Send",
         "to": "To",
-        "value": "Value"
+        "unhide": "Unhide",
+        "unpin": "Unpin",
+        "value": "Value",
+        "view_on": "View on %{blockExplorerName}"
+      },
+      "add_cash": {
+        "card_notice": "Works with most debit cards",
+        "interstitial": {
+          "other_amount": "Other amount"
+        },
+        "need_help_button_email_subject": "support",
+        "need_help_button_label": "Get Support",
+        "on_the_way_line_1": "Your %{currencySymbol} is on the way",
+        "on_the_way_line_2": "and will arrive shortly",
+        "purchase_failed_order_id": "Order ID: %{orderId}",
+        "purchase_failed_subtitle": "You were not charged.",
+        "purchase_failed_support_subject": "Purchase Failed",
+        "purchase_failed_support_subject_with_order_id": "Purchase Failed - Order %{orderId}",
+        "purchase_failed_title": "Sorry, your purchase failed.",
+        "purchasing_dai_requires_eth_message": "Before you can purchase DAI you must have some ETH in your wallet!",
+        "purchasing_dai_requires_eth_title": "You don't have any ETH!",
+        "running_checks": "Running checks...",
+        "success_message": "It's here 🥳",
+        "watching_mode_confirm_message": "The wallet you have open is read-only, so you can’t control what’s inside. Are you sure you want to add cash to %{truncatedAddress}?",
+        "watching_mode_confirm_title": "You’re in Watching Mode"
       },
       "assets": {
         "no_price": "Small Balances"
@@ -601,6 +748,7 @@
         "warning": "This is alpha software.",
         "welcome": "Welcome to Rainbow"
       },
+      "label": "Wallets",
       "loading": {
         "error": "There has been an error loading the wallet. Please kill the app and retry.",
         "message": "Loading"
@@ -623,8 +771,19 @@
         "please_enable_body": "It looks like you are using WalletConnect. Please enable push notifications to be notified of transaction requests from WalletConnect.",
         "please_enable_title": "Rainbow would like to send you push notifications"
       },
+      "restore": {
+        "phrase_key": {
+          "description": "Use your secret phrase from Rainbow or another crypto wallet",
+          "label": "Restore with a secret phrase or private key"
+        },
+        "watch": {
+          "description": "Watch a public address or ENS name",
+          "label": "Watch an Ethereum address"
+        }
+      },
       "settings": {
-        "copy_address": "Copy Address",
+        "copy_address": "Copy address",
+        "copy_address_capitalized": "Copy Address",
         "copy_seed_phrase": "Copy Secret Phrase",
         "hide_seed_phrase": "Hide Secret Phrase",
         "show_seed_phrase": "Show Secret Phrase"
@@ -647,6 +806,13 @@
       "wallet_connect": {
         "error": "Error initializing with WalletConnect",
         "missing_fcm": "Unable to initialize WalletConnect: missing push notification token. Please try again."
+      }
+    },
+    "walletconnect": {
+      "paste_uri": {
+        "button": "Paste session URI",
+        "message": "Paste WalletConnect URI below",
+        "title": "New WalletConnect Session"
       }
     },
     "warning": {

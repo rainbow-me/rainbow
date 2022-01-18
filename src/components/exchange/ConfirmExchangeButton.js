@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/native';
+import lang from 'i18n-js';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
@@ -52,7 +53,7 @@ export default function ConfirmExchangeButton({
   );
   const { inputCurrency, outputCurrency } = useSwapCurrencies();
   const asset = outputCurrency ?? inputCurrency;
-  const { isSufficientGas } = useGas();
+  const { isSufficientGas, isValidGas } = useGas();
   const { name: routeName } = useRoute();
 
   const isSwapDetailsRoute = routeName === Routes.SWAP_DETAILS_SHEET;
@@ -78,7 +79,8 @@ export default function ConfirmExchangeButton({
     [colors, isDarkMode]
   );
 
-  const colorForAsset = useColorForAsset(asset, undefined, true);
+  const colorForAsset = useColorForAsset(asset, undefined, true, true);
+
   const { buttonColor, shadowsForAsset } = useMemo(() => {
     const color =
       asset.address === ETH_ADDRESS
@@ -101,25 +103,29 @@ export default function ConfirmExchangeButton({
 
   let label = '';
   if (type === ExchangeModalTypes.deposit) {
-    label = 'Hold to Deposit';
+    label = lang.t('button.confirm_exchange.deposit');
   } else if (type === ExchangeModalTypes.swap) {
-    label = 'Hold to Swap';
+    label = lang.t('button.confirm_exchange.swap');
   } else if (type === ExchangeModalTypes.withdrawal) {
-    label = 'Hold to Withdraw';
+    label = lang.t('button.confirm_exchange.withdraw');
   }
 
-  if (!isSufficientBalance) {
-    label = 'Insufficient Funds';
+  if (!doneLoadingReserves) {
+    label = lang.t('button.confirm_exchange.fetching_details');
+  } else if (!isSufficientBalance) {
+    label = lang.t('button.confirm_exchange.insufficient_funds');
   } else if (!isSufficientLiquidity) {
-    label = 'Insufficient Liquidity';
-  } else if (!isSufficientGas) {
-    label = 'Insufficient ETH';
+    label = lang.t('button.confirm_exchange.insufficient_liquidity');
+  } else if (isSufficientGas != null && !isSufficientGas) {
+    label = lang.t('button.confirm_exchange.insufficient_eth');
+  } else if (!isValidGas) {
+    label = lang.t('button.confirm_exchange.invalid_fee');
   } else if (isHighPriceImpact) {
-    label = isSwapDetailsRoute ? 'Swap Anyway' : '􀕹 View Details';
+    label = isSwapDetailsRoute
+      ? lang.t('button.confirm_exchange.swap_anyway')
+      : `􀕹 ${lang.t('button.confirm_exchange.view_details')}`;
   } else if (disabled) {
-    label = 'Enter an Amount';
-  } else if (!doneLoadingReserves) {
-    label = 'Fetching Details...';
+    label = lang.t('button.confirm_exchange.enter_amount');
   }
 
   const isDisabled =
@@ -127,6 +133,7 @@ export default function ConfirmExchangeButton({
     !doneLoadingReserves ||
     !isSufficientBalance ||
     !isSufficientGas ||
+    !isValidGas ||
     !isSufficientLiquidity;
 
   return (

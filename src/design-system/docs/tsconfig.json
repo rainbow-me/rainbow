@@ -19,6 +19,10 @@
     "jsx": "preserve",
     "incremental": true
   },
+  "globals": [
+    "android",
+    "ios"
+  ],
   "include": [
     "next-env.d.ts",
     "**/*.ts",

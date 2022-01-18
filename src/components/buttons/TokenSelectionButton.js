@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { useTheme } from '../../context/ThemeContext';
@@ -17,7 +18,7 @@ const Content = styled(RowWithMargins).attrs({
   align: 'center',
   margin: 7,
 })`
-  ${padding(11, 14, 14, 16)};
+  ${padding(11.5, 14, 13.5, 16)};
   height: ${TokenSelectionButtonHeight};
   z-index: 1;
 `;
@@ -81,7 +82,7 @@ export default function TokenSelectionButton({
           testID={testID + '-text'}
           weight="bold"
         >
-          {symbol || 'Choose Token'}
+          {symbol || lang.t('swap.choose_token')}
         </Text>
         <CaretIcon />
       </Content>

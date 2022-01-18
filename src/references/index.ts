@@ -1,6 +1,8 @@
 import { mapKeys, mapValues } from 'lodash';
 import { savingsAssets } from './compound';
+import { default as DefaultTokenListsSource } from './default-token-lists.json';
 import { Asset, SavingsAsset } from '@rainbow-me/entities';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 
 export { default as balanceCheckerContractAbi } from './balances-checker-abi.json';
 export { default as balanceCheckerContractAbiOVM } from './balances-checker-abi-ovm.json';
@@ -9,7 +11,7 @@ export { default as arbitrumTokenMapping } from './arbitrum-token-mapping.json';
 export { default as chainAssets } from './chain-assets.json';
 export { default as coingeckoIdsFallback } from './coingecko/ids.json';
 export { compoundCERC20ABI, compoundCETHABI } from './compound';
-export { default as DefaultTokenLists } from './default-token-lists.json';
+export { DefaultTokenListsSource as DefaultTokenLists };
 export {
   defiSdkAdapterRegistryABI,
   DEFI_SDK_ADAPTER_REGISTRY_ADDRESS,
@@ -22,6 +24,7 @@ export { default as emojis } from './emojis.json';
 export { default as erc20ABI } from './erc20-abi.json';
 export { default as optimismGasOracleAbi } from './optimism-gas-oracle-abi.json';
 export { default as ethUnits } from './ethereum-units.json';
+export { default as timeUnits } from './time-units.json';
 export { DPI_ADDRESS } from './indexes';
 
 export { default as migratedTokens } from './migratedTokens.json';
@@ -92,7 +95,9 @@ export const TRANSFER_EVENT_TOPIC_LENGTH = 3;
 export const TRANSFER_EVENT_KECCAK =
   '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 
-export const AddCashCurrencies = {
+export const AddCashCurrencies: {
+  [key in Network]?: { [currency: string]: string };
+} = {
   kovan: {
     DAI: '0xc4375b7de8af5a38a93548eb8453a498222c4ff2',
     ETH: ETH_ADDRESS,
@@ -103,7 +108,13 @@ export const AddCashCurrencies = {
   },
 };
 
-export const AddCashCurrencyInfo = {
+export type AddCashCurrencyAsset = Pick<Asset, 'decimals' | 'name' | 'symbol'>;
+
+export const AddCashCurrencyInfo: {
+  [key in Network]?: {
+    [currency: string]: AddCashCurrencyAsset;
+  };
+} = {
   kovan: {
     '0xc4375b7de8af5a38a93548eb8453a498222c4ff2': {
       decimals: 18,
@@ -129,6 +140,18 @@ export const AddCashCurrencyInfo = {
     },
   },
 };
+
+/**
+ * A `Record` representation of the default token lists. This is useful
+ * for instances where a `Network` must be used as a key for the token lists,
+ * but the particular network does not actually exist in the data. In that
+ * case, we can cast the token lists to `TokenListsExtendedRecord` to get
+ * undefined as the value, instead of a TypeScript compilation error.
+ */
+export type TokenListsExtendedRecord = Record<
+  Network,
+  typeof DefaultTokenListsSource[keyof typeof DefaultTokenListsSource]
+>;
 
 export const DefaultUniswapFavorites = {
   mainnet: [ETH_ADDRESS, DAI_ADDRESS, WBTC_ADDRESS, SOCKS_ADDRESS],

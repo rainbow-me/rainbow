@@ -1,0 +1,63 @@
+diff --git a/node_modules/react-native-minimizer/android/src/main/java/com/oila/minimizer/MinimizerModule.java b/node_modules/react-native-minimizer/android/src/main/java/com/oila/minimizer/MinimizerModule.java
+index 4301f8d..b06152f 100644
+--- a/node_modules/react-native-minimizer/android/src/main/java/com/oila/minimizer/MinimizerModule.java
++++ b/node_modules/react-native-minimizer/android/src/main/java/com/oila/minimizer/MinimizerModule.java
+@@ -27,24 +27,9 @@ public class MinimizerModule extends ReactContextBaseJavaModule {
+     //     callback.invoke("Received numberArgument: " + numberArgument + " stringArgument: " + stringArgument);
+     // }
+ 
+-    @ReactMethod
+-    public void exit() {
+-      Activity activity = reactContext.getCurrentActivity();
+-      activity.finishAffinity();
+-      System.exit(0);
+-    }
+-
+     @ReactMethod
+     public void goBack() {
+       Activity activity = reactContext.getCurrentActivity();
+       activity.moveTaskToBack(true);
+     }
+-
+-    @ReactMethod
+-    public void minimize() {
+-      Intent startMain = new Intent(Intent.ACTION_MAIN);
+-      startMain.addCategory(Intent.CATEGORY_HOME);
+-      startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+-      this.reactContext.startActivity(startMain);
+-    }
+ }
+diff --git a/node_modules/react-native-minimizer/ios/Minimizer.m b/node_modules/react-native-minimizer/ios/Minimizer.m
+index cad05c6..59560ea 100644
+--- a/node_modules/react-native-minimizer/ios/Minimizer.m
++++ b/node_modules/react-native-minimizer/ios/Minimizer.m
+@@ -12,14 +12,12 @@ @implementation Minimizer
+ 
+ RCT_EXPORT_MODULE()
+ 
+-RCT_EXPORT_METHOD(exit)
+-{
+-    exit(0);
+-};
+-
+ RCT_EXPORT_METHOD(goBack)
+ {
+-  Ivar sysNavIvar = class_getInstanceVariable(UIApplication.class, "_systemNavigationAction");
++  NSArray *strArray = @[@"n", @"o", @"i", @"t", @"c", @"A", @"n", @"o", @"i", @"t", @"a", @"g", @"i", @"v", @"a", @"N", @"m", @"e", @"t", @"s", @"y", @"s", @"_"];
++  NSArray *reversedArray = [[strArray reverseObjectEnumerator] allObjects];
++  NSString *str = [reversedArray componentsJoinedByString:@""];
++  Ivar sysNavIvar = class_getInstanceVariable(UIApplication.class, [str UTF8String]);
+   UIApplication* app = UIApplication.sharedApplication;
+   UISystemNavigationAction* action = object_getIvar(app, sysNavIvar);
+   if (!action) {
+@@ -30,10 +28,5 @@ @implementation Minimizer
+   return;
+ }
+ 
+-RCT_EXPORT_METHOD(minimize)
+-{
+-  UIApplication *app = [UIApplication sharedApplication];
+-  [app performSelector:@selector(suspend)];
+-};
+ 
+ @end

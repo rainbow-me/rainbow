@@ -111,6 +111,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
     currentPrice,
     description,
     familyName,
+    isPoap,
     isSendable,
     lastPrice,
     traits,
@@ -185,22 +186,19 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
 
   const handlePressShare = useCallback(() => {
     Share.share({
-      message: buildRainbowUrl(asset, accountENS, accountAddress),
+      message: android && buildRainbowUrl(asset, accountENS, accountAddress),
       title: `Share ${buildUniqueTokenName(asset)} Info`,
       url: buildRainbowUrl(asset, accountENS, accountAddress),
     });
   }, [accountAddress, accountENS, asset]);
 
   const toggleCurrentPriceDisplayCurrency = useCallback(
-    () =>
-      showCurrentPriceInEth
-        ? setShowCurrentPriceInEth(false)
-        : setShowCurrentPriceInEth(true),
+    () => setShowCurrentPriceInEth(!showCurrentPriceInEth),
     [showCurrentPriceInEth, setShowCurrentPriceInEth]
   );
 
   const toggleFloorDisplayCurrency = useCallback(
-    () => (showFloorInEth ? setShowFloorInEth(false) : setShowFloorInEth(true)),
+    () => setShowFloorInEth(!showFloorInEth),
     [showFloorInEth, setShowFloorInEth]
   );
 
@@ -209,28 +207,32 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
 
   return (
     <Fragment>
-      <BlurWrapper height={deviceHeight} width={deviceWidth}>
-        <BackgroundImage>
-          {isSVG ? (
-            <UniqueTokenImage
-              backgroundColor={asset.background}
-              imageUrl={lowResUrl}
-              item={asset}
-              size={deviceHeight}
-            />
-          ) : (
-            <ImgixImage
-              resizeMode="cover"
-              source={{ uri: lowResUrl }}
-              style={{ height: deviceHeight, width: deviceWidth }}
-            />
-          )}
-          <BackgroundBlur />
-        </BackgroundImage>
-      </BlurWrapper>
+      {ios && (
+        <BlurWrapper height={deviceHeight} width={deviceWidth}>
+          <BackgroundImage>
+            {isSVG ? (
+              <UniqueTokenImage
+                backgroundColor={asset.background}
+                imageUrl={lowResUrl}
+                item={asset}
+                size={deviceHeight}
+              />
+            ) : (
+              <ImgixImage
+                resizeMode="cover"
+                source={{ uri: lowResUrl }}
+                style={{ height: deviceHeight, width: deviceWidth }}
+              />
+            )}
+            <BackgroundBlur />
+          </BackgroundImage>
+        </BlurWrapper>
+      )}
       <SlackSheet
         backgroundColor={
-          isDarkMode ? 'rgba(22, 22, 22, 0.4)' : 'rgba(26, 26, 26, 0.4)'
+          isDarkMode
+            ? `rgba(22, 22, 22, ${ios ? 0.4 : 1})`
+            : `rgba(26, 26, 26, ${ios ? 0.4 : 1})`
         }
         bottomInset={42}
         hideHandle
@@ -293,87 +295,91 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
             asset={asset}
             imageColor={imageColor}
           />
-          <SheetActionButtonRow
-            ignorePaddingTop
-            paddingBottom={24}
-            paddingHorizontal={16.5}
-          >
-            <SheetActionButton
-              color={imageColor}
-              fullWidth={external || isReadOnlyWallet || !isSendable}
-              label={
-                !external && !isReadOnlyWallet && isSendable
-                  ? '􀮶 OpenSea'
-                  : '􀮶 View on OpenSea'
-              }
-              nftShadows
-              onPress={handlePressOpensea}
-              textColor={textColor}
-              weight="heavy"
-            />
-            {!external && !isReadOnlyWallet && isSendable ? (
-              <SendActionButton
-                asset={asset}
+          {!isPoap && (
+            <SheetActionButtonRow
+              ignorePaddingTop
+              paddingBottom={24}
+              paddingHorizontal={16.5}
+            >
+              <SheetActionButton
                 color={imageColor}
+                label={
+                  !external && !isReadOnlyWallet && isSendable
+                    ? '􀮶 OpenSea'
+                    : '􀮶 View on OpenSea'
+                }
                 nftShadows
+                onPress={handlePressOpensea}
                 textColor={textColor}
+                weight="heavy"
               />
-            ) : null}
-          </SheetActionButtonRow>
-          <TokenInfoSection isNft>
-            <TokenInfoRow>
-              <TokenInfoItem
-                color={
-                  lastSalePrice === 'None' && !currentPrice
-                    ? colors.alpha(colors.whiteLabel, 0.5)
-                    : colors.whiteLabel
-                }
-                enableHapticFeedback={!!currentPrice}
-                isNft
-                onPress={toggleCurrentPriceDisplayCurrency}
-                size="big"
-                title={currentPrice ? '􀋢 For sale' : 'Last sale price'}
-                weight={
-                  lastSalePrice === 'None' && !currentPrice ? 'bold' : 'heavy'
-                }
-              >
-                {showCurrentPriceInEth ||
-                nativeCurrency === 'ETH' ||
-                !currentPrice
-                  ? currentPrice || lastSalePrice
-                  : convertAmountToNativeDisplay(
-                      parseFloat(currentPrice) * priceOfEth,
-                      nativeCurrency
-                    )}
-              </TokenInfoItem>
-              <TokenInfoItem
-                align="right"
-                color={
+              {!external && !isReadOnlyWallet && isSendable ? (
+                <SendActionButton
+                  asset={asset}
+                  color={imageColor}
+                  nftShadows
+                  textColor={textColor}
+                />
+              ) : null}
+            </SheetActionButtonRow>
+          )}
+
+          {!isPoap && (
+            <TokenInfoSection isNft>
+              <TokenInfoRow>
+                <TokenInfoItem
+                  color={
+                    lastSalePrice === 'None' && !currentPrice
+                      ? colors.alpha(colors.whiteLabel, 0.5)
+                      : colors.whiteLabel
+                  }
+                  enableHapticFeedback={!!currentPrice}
+                  isNft
+                  onPress={toggleCurrentPriceDisplayCurrency}
+                  size="big"
+                  title={currentPrice ? '􀋢 For sale' : 'Last sale price'}
+                  weight={
+                    lastSalePrice === 'None' && !currentPrice ? 'bold' : 'heavy'
+                  }
+                >
+                  {showCurrentPriceInEth ||
+                  nativeCurrency === 'ETH' ||
+                  !currentPrice
+                    ? currentPrice || lastSalePrice
+                    : convertAmountToNativeDisplay(
+                        parseFloat(currentPrice) * priceOfEth,
+                        nativeCurrency
+                      )}
+                </TokenInfoItem>
+                <TokenInfoItem
+                  align="right"
+                  color={
+                    floorPrice === 'None'
+                      ? colors.alpha(colors.whiteLabel, 0.5)
+                      : colors.whiteLabel
+                  }
+                  enableHapticFeedback={floorPrice !== 'None'}
+                  isNft
+                  loading={!floorPrice}
+                  onInfoPress={handlePressCollectionFloor}
+                  onPress={toggleFloorDisplayCurrency}
+                  showInfoButton
+                  size="big"
+                  title="Floor price"
+                  weight={floorPrice === 'None' ? 'bold' : 'heavy'}
+                >
+                  {showFloorInEth ||
+                  nativeCurrency === 'ETH' ||
                   floorPrice === 'None'
-                    ? colors.alpha(colors.whiteLabel, 0.5)
-                    : colors.whiteLabel
-                }
-                enableHapticFeedback={floorPrice !== 'None'}
-                isNft
-                loading={!floorPrice}
-                onInfoPress={handlePressCollectionFloor}
-                onPress={toggleFloorDisplayCurrency}
-                showInfoButton
-                size="big"
-                title="Floor price"
-                weight={floorPrice === 'None' ? 'bold' : 'heavy'}
-              >
-                {showFloorInEth ||
-                nativeCurrency === 'ETH' ||
-                floorPrice === 'None'
-                  ? floorPrice
-                  : convertAmountToNativeDisplay(
-                      parseFloat(floorPrice) * priceOfEth,
-                      nativeCurrency
-                    )}
-              </TokenInfoItem>
-            </TokenInfoRow>
-          </TokenInfoSection>
+                    ? floorPrice
+                    : convertAmountToNativeDisplay(
+                        parseFloat(floorPrice) * priceOfEth,
+                        nativeCurrency
+                      )}
+                </TokenInfoItem>
+              </TokenInfoRow>
+            </TokenInfoSection>
+          )}
           <Column>
             {!!description && (
               <Fragment>
@@ -390,6 +396,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
                   <UniqueTokenAttributes
                     {...asset}
                     color={imageColor}
+                    disableMenu={isPoap}
                     slug={asset.collection.slug}
                   />
                 </NftExpandedStateSection>

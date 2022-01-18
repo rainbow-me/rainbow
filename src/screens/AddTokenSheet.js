@@ -84,12 +84,12 @@ export default function AddTokenSheet() {
   const isTokenInList = useCallback(
     listId => {
       if (listId === 'favorites') {
-        return !!favorites.find(
+        return !!favorites?.find(
           address => toLower(address) === toLower(item.address)
         );
       } else {
-        const list = lists.find(list => list?.id === listId);
-        return !!list.tokens.find(
+        const list = lists?.find(list => list?.id === listId);
+        return !!list?.tokens?.find(
           token => toLower(token) === toLower(item.address)
         );
       }
@@ -192,7 +192,6 @@ export default function AddTokenSheet() {
           <SheetActionButtonRow>
             <SheetActionButton
               color={colors.white}
-              fullWidth
               label="Cancel"
               onPress={goBack}
               size="big"

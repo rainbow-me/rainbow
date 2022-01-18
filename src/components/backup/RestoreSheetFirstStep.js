@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { forEach } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
 import { IS_TESTING } from 'react-native-dotenv';
