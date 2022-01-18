@@ -129,11 +129,13 @@ export const parseRainbowMeteorologyData = (
       4: confirmationTimeByPriorityFee[60],
     };
     const byBaseFee: BlocksToConfirmationByBaseFee = {
+      4: new BigNumber(multiply(baseFeeSuggestion, 0.92)).toFixed(0),
+      8: new BigNumber(multiply(baseFeeSuggestion, 0.88)).toFixed(0),
+      // eslint-disable-next-line sort-keys-fix/sort-keys-fix
+      40: new BigNumber(multiply(baseFeeSuggestion, 0.79)).toFixed(0),
+      // eslint-disable-next-line sort-keys-fix/sort-keys-fix
       120: new BigNumber(multiply(baseFeeSuggestion, 0.75)).toFixed(0),
       240: new BigNumber(multiply(baseFeeSuggestion, 0.72)).toFixed(0),
-      4: new BigNumber(multiply(baseFeeSuggestion, 0.92)).toFixed(0),
-      40: new BigNumber(multiply(baseFeeSuggestion, 0.79)).toFixed(0),
-      8: new BigNumber(multiply(baseFeeSuggestion, 0.88)).toFixed(0),
     };
     blocksToConfirmation = {
       byBaseFee,
@@ -269,7 +271,7 @@ export const parseGasFeeParam = (weiAmount: string): GasFeeParam => {
  * @param option - Speed option
  * @param maxFeePerGas - `maxFeePerGas` value in gwei unit
  * @param maxPriorityFeePerGas - `maxPriorityFeePerGas` value in gwei unit
- * @param blocksToConfirmation - blocksToConfirmation object
+ * @param blocksToConfirmation - BlocksToConfirmation object
  * @returns GasFeeParams
  */
 export const defaultGasParamsFormat = (
