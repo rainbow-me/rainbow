@@ -46,7 +46,7 @@ import {
   TransactionType,
   TransactionTypes,
   ZerionAsset,
-  ZerionAssetOrFallback,
+  ZerionAssetFallback,
   ZerionTransaction,
 } from '@rainbow-me/entities';
 import appEvents from '@rainbow-me/handlers/appEvents';
@@ -368,7 +368,7 @@ interface DataClearStateAction {
   type: typeof DATA_CLEAR_STATE;
 }
 
-// Interafaces:
+// Uniswap types:
 
 /**
  * Price data loaded from a Uniswap query.
@@ -399,6 +399,8 @@ interface UniswapAssetPriceData {
   tokenAddress: string;
 }
 
+// Coingecko types:
+
 /**
  * Data loaded from the Coingecko API when the `last_updated_at` field is
  * requested. Keys of the format `[currency_id]` and `[currency_id]_24h_change`
@@ -410,6 +412,8 @@ interface CoingeckoApiResponseWithLastUpdate {
     last_updated_at: number;
   };
 }
+
+// Zerion types:
 
 /**
  * Data loaded from the Zerion API for a portfolio. See
@@ -452,13 +456,19 @@ interface PortfolioReceivedMessage {
   meta?: MessageMeta;
 }
 
+/**
+ * A message from the Zerion API indicating that transaction data was received.
+ */
 interface TransactionsReceivedMessage {
   payload?: {
-    transactions?: ZerionTransactionWithNetwork[];
+    transactions?: ZerionTransaction[];
   };
   meta?: MessageMeta;
 }
 
+/**
+ * A message from the Zerion API indicating that transactions were removed.
+ */
 interface TransactionsRemovedMessage {
   payload?: {
     transactions?: ZerionTransaction[];
@@ -466,15 +476,24 @@ interface TransactionsRemovedMessage {
   meta?: MessageMeta;
 }
 
+/**
+ * A message from the Zerion API indicating that asset data was received. Note,
+ * an actual message directly from Zerion would only include `ZerionAsset`
+ * as the value type in the `prices` map, but this message type is also used
+ * when manually invoking `assetPricesReceived` with fallback values.
+ */
 interface AssetPricesReceivedMessage {
   payload?: {
     prices?: {
-      [id: string]: ZerionAssetOrFallback;
+      [id: string]: ZerionAsset | ZerionAssetFallback;
     };
   };
   meta?: MessageMeta;
 }
 
+/**
+ * A message from the Zerion API indicating that asset prices were changed.
+ */
 interface AssetPricesChangedMessage {
   payload?: {
     prices?: ZerionAsset[];
@@ -482,12 +501,18 @@ interface AssetPricesChangedMessage {
   meta?: MessageMeta & { asset_code?: string };
 }
 
+/**
+ * Metadata for a message from the Zerion API.
+ */
 interface MessageMeta {
   address?: string;
   currency?: string;
   status?: string;
 }
 
+/**
+ * A message from the Zerion API.
+ */
 type DataMessage =
   | AddressAssetsReceivedMessage
   | PortfolioReceivedMessage
@@ -496,6 +521,11 @@ type DataMessage =
   | AssetPricesReceivedMessage
   | AssetPricesChangedMessage;
 
+// Functions:
+
+/**
+ * Loads initial state from account local storage.
+ */
 export const dataLoadState = () => async (
   dispatch: ThunkDispatch<
     AppState,
@@ -554,6 +584,14 @@ export const dataLoadState = () => async (
     }, GENERIC_ASSETS_FALLBACK_TIMEOUT);
   });
 
+/**
+ * Fetches asset prices from the Coingecko API.
+ *
+ * @param coingeckoIds The Coingecko IDs to fetch asset prices for.
+ * @param nativeCurrency The native currency use for reporting asset prices.
+ * @returns The Coingecko API response, or undefined if the fetch is
+ * unsuccessful.
+ */
 export const fetchAssetPricesWithCoingecko = async (
   coingeckoIds: string[],
   nativeCurrency: string
@@ -572,7 +610,14 @@ export const fetchAssetPricesWithCoingecko = async (
   }
 };
 
-export const fetchCoingeckoIds = async () => {
+/**
+ * Fetches Coingecko IDs.
+ *
+ * @returns An object mapping addresses to Coingecko IDs.
+ */
+export const fetchCoingeckoIds = async (): Promise<{
+  [address: string]: string;
+}> => {
   let ids: typeof coingeckoIdsFallback;
   try {
     const request = await fetch(COINGECKO_IDS_ENDPOINT);
@@ -593,6 +638,10 @@ export const fetchCoingeckoIds = async () => {
   return idsMap;
 };
 
+/**
+ * Loads generic asset prices from fallback data and updates state, in the
+ * event that Zerion is unavailable.
+ */
 const genericAssetsFallback = () => async (
   dispatch: ThunkDispatch<AppState, unknown, never>,
   getState: AppGetState
@@ -608,7 +657,7 @@ const genericAssetsFallback = () => async (
     ids = coingeckoIdsFallback;
   }
 
-  const allAssets: ZerionAssetOrFallback[] = [
+  const allAssets: ZerionAssetFallback[] = [
     {
       asset_code: ETH_ADDRESS,
       coingecko_id: ETH_COINGECKO_ID,
@@ -681,11 +730,8 @@ const genericAssetsFallback = () => async (
     });
   }
 
-  // At this point, `allPrices` will include the `coingecko_id` field, but it
-  // is not included as part of the `ZerionAsset` that it is meant to conform
-  // to.
   const allPrices: {
-    [id: string]: ZerionAssetOrFallback;
+    [id: string]: ZerionAssetFallback;
   } = {};
 
   allAssetsUnique.forEach(asset => {
@@ -711,12 +757,19 @@ const genericAssetsFallback = () => async (
   }, GENERIC_ASSETS_REFRESH_INTERVAL);
 };
 
+/**
+ * Disables the generic asset fallback timeout if one is set.
+ */
 export const disableGenericAssetsFallbackIfNeeded = () => {
   if (genericAssetsHandle) {
     clearTimeout(genericAssetsHandle);
   }
 };
 
+/**
+ * Resets state, with the exception of generic asset prices, and unsubscribes
+ * from listeners and timeouts.
+ */
 export const dataResetState = () => (
   dispatch: Dispatch<DataClearStateAction>,
   getState: AppGetState
@@ -728,6 +781,13 @@ export const dataResetState = () => (
   dispatch({ type: DATA_CLEAR_STATE });
 };
 
+/**
+ * Updates account asset data in state for a specific asset and saves to account
+ * local storage.
+ *
+ * @param assetData The updated asset, which replaces or adds to the current
+ * account's asset data based on it's `uniqueId`.
+ */
 export const dataUpdateAsset = (assetData: ParsedAddressAsset) => (
   dispatch: Dispatch<DataLoadAccountAssetsDataSuccessAction>,
   getState: AppGetState
@@ -745,6 +805,11 @@ export const dataUpdateAsset = (assetData: ParsedAddressAsset) => (
   saveAccountAssetsData(updatedAssetsData, accountAddress, network);
 };
 
+/**
+ * Replaces the account asset data in state and saves to account local storage.
+ *
+ * @param assetsData The new asset data.
+ */
 export const dataUpdateAssets = (assetsData: {
   [uniqueId: string]: ParsedAddressAsset;
 }) => (
@@ -763,6 +828,11 @@ export const dataUpdateAssets = (assetsData: {
   }
 };
 
+/**
+ * Checks whether or not metadata received from Zerion is valid.
+ *
+ * @param message The message received from Zerion.
+ */
 const checkMeta = (message: DataMessage | undefined) => (
   dispatch: Dispatch<never>,
   getState: AppGetState
@@ -776,6 +846,12 @@ const checkMeta = (message: DataMessage | undefined) => (
   );
 };
 
+/**
+ * Checks to see if new savings are available based on incoming transaction data,
+ * and if so, updates state to request refetching savings.
+ *
+ * @param transactionsData Incoming transaction data.
+ */
 const checkForConfirmedSavingsActions = (
   transactionsData: ZerionTransaction[]
 ) => (dispatch: ThunkDispatch<AppState, unknown, never>) => {
@@ -790,36 +866,54 @@ const checkForConfirmedSavingsActions = (
   }
 };
 
-type ZerionTransactionWithNetwork = ZerionTransaction & {
-  network: Network;
-};
-
-const checkForUpdatedNonce = (
-  transactionData: ZerionTransactionWithNetwork[]
-) => (dispatch: ThunkDispatch<AppState, unknown, never>) => {
+/**
+ * Checks to see if a network's nonce should be incremented for an acount
+ * based on incoming transaction data, and if so, updates state.
+ *
+ * @param transactionData Incoming transaction data.
+ */
+const checkForUpdatedNonce = (transactionData: ZerionTransaction[]) => (
+  dispatch: ThunkDispatch<AppState, unknown, never>
+) => {
   const txSortedByDescendingNonce = transactionData.sort(
     // @ts-expect-error TypeScript prevents this subtraction since `n1` or `n2`
     // may be null, but subtracting null and a number is possible.
     ({ nonce: n1 }, { nonce: n2 }) => n2 - n1
   );
   const [latestTx] = txSortedByDescendingNonce;
+  // @ts-expect-error `ZerionTransaction` doesn't have a `network` field, but
+  // the undefined network is defaulted to mainnet later.
   const { address_from, network, nonce } = latestTx;
   dispatch(incrementNonce(address_from!, nonce!, network));
 };
 
-const checkForRemovedNonce = (
-  removedTransactions: ZerionTransactionWithNetwork[]
-) => (dispatch: ThunkDispatch<AppState, unknown, never>) => {
+/**
+ * Checks to see if a network's nonce should be decremented for an account
+ * based on incoming transaction data, and if so, updates state.
+ *
+ * @param removedTransactions Removed transaction data.
+ */
+const checkForRemovedNonce = (removedTransactions: ZerionTransaction[]) => (
+  dispatch: ThunkDispatch<AppState, unknown, never>
+) => {
   const txSortedByAscendingNonce = removedTransactions.sort(
     // @ts-expect-error TypeScript prevents this subtraction since `n1` or `n2`
     // may be null, but subtracting null and a number is possible.
     ({ nonce: n1 }, { nonce: n2 }) => n1 - n2
   );
   const [lowestNonceTx] = txSortedByAscendingNonce;
+  // @ts-expect-error `ZerionTransaction` doesn't have a `network` field, but
+  // the undefined network is defaulted to mainnet later.
   const { address_from, network, nonce } = lowestNonceTx;
   dispatch(decrementNonce(address_from!, nonce!, network));
 };
 
+/**
+ * Handles an incoming portfolio data message from Zerion and updates state
+ * accordidngly.
+ *
+ * @param message The `PortfolioReceivedMessage`, or undefined.
+ */
 export const portfolioReceived = (
   message: PortfolioReceivedMessage | undefined
 ) => async (
@@ -840,6 +934,13 @@ export const portfolioReceived = (
   });
 };
 
+/**
+ * Handles a `TransactionsReceivedMessage` message from Zerion and updates
+ * state and account local storage accordingly.
+ *
+ * @param message The `TransactionsReceivedMessage`, or undefined.
+ * @param appended Whether or not transactions are being appended.
+ */
 export const transactionsReceived = (
   message: TransactionsReceivedMessage | undefined,
   appended = false
@@ -901,6 +1002,12 @@ export const transactionsReceived = (
     }
   });
 
+/**
+ * Handles a `TransactionsRemovedMessage` from Zerion and updates state and
+ * account local storage.
+ *
+ * @param message The incoming `TransactionsRemovedMessage` or undefined.
+ */
 export const transactionsRemoved = (
   message: TransactionsRemovedMessage | undefined
 ) => async (
@@ -932,12 +1039,22 @@ export const transactionsRemoved = (
     saveLocalTransactions(updatedTransactions, accountAddress, network);
   });
 
+/**
+ * Handles an `AddressAssetsReceivedMessage` from Zerion and updates state and
+ * account local storage.
+ *
+ * @param message The message.
+ * @param append Whether or not the asset data is being appended.
+ * @param change Whether or not an existing asset is being changed.
+ * @param removed Whether or not an asset is being removed.
+ * @param assetsNetwork The asset's network.
+ */
 export const addressAssetsReceived = (
   message: AddressAssetsReceivedMessage,
   append: boolean = false,
   change: boolean = false,
   removed: boolean = false,
-  assetsNetwork: Network | string | null = null
+  assetsNetwork: Network | null = null
 ) => (
   dispatch: ThunkDispatch<
     AppState,
@@ -1030,6 +1147,12 @@ export const addressAssetsReceived = (
   addHiddenCoins(assetsWithScamURL, dispatch, accountAddress);
 };
 
+/**
+ * Subscribes to asset prices on Uniswap and updates state and local storage
+ * when price data is loaded.
+ *
+ * @param addresses The asset addresses to subscribe to.
+ */
 const subscribeToMissingPrices = (addresses: string[]) => (
   dispatch: Dispatch<
     | DataLoadAssetPricesFromUniswapSuccessAction
@@ -1081,7 +1204,7 @@ const subscribeToMissingPrices = (addresses: string[]) => (
 
             const missingHistoricalPrices = mapValues(
               mappedHistoricalData,
-              value => multiply(ethereumPriceOneDayAgo, value?.derivedETH)
+              value => multiply(ethereumPriceOneDayAgo, value?.derivedETH!)
             );
 
             const mappedPricingData = keyBy(data.tokens, 'id');
@@ -1144,7 +1267,17 @@ const subscribeToMissingPrices = (addresses: string[]) => (
   }
 };
 
-const get24HourPrice = async (address: string, yesterday: number) => {
+/**
+ * Fetches a single asset's 24-hour price data from Uniswap.
+ *
+ * @param address The asset address.
+ * @param yesterday The numerical representation of yesterday's date.
+ * @returns The loaded price data, or null on failure.
+ */
+const get24HourPrice = async (
+  address: string,
+  yesterday: number
+): Promise<UniswapPricesQueryData['tokens'][0] | null> => {
   try {
     const result = await uniswapClient.query({
       fetchPolicy: 'no-cache',
@@ -1161,6 +1294,12 @@ const callbacksOnAssetReceived: {
   [address: string]: ((asset: ParsedAddressAsset) => unknown) | undefined;
 } = {};
 
+/**
+ * Saves a callback function to be called when an asset's price is loaded.
+ *
+ * @param address The asset's address.
+ * @param action The callback.
+ */
 export function scheduleActionOnAssetReceived(
   address: string,
   action: (asset: ParsedAddressAsset) => unknown
@@ -1168,6 +1307,12 @@ export function scheduleActionOnAssetReceived(
   callbacksOnAssetReceived[address.toLowerCase()] = action;
 }
 
+/**
+ * Handles a `AssetPricesReceivedMessage` from Zerion and updates state.
+ *
+ * @param message The message, or undefined.
+ * @param fromFallback Whether or not this message is provided as a fallback.
+ */
 export const assetPricesReceived = (
   message: AssetPricesReceivedMessage | undefined,
   fromFallback: boolean = false
@@ -1216,6 +1361,11 @@ export const assetPricesReceived = (
   }
 };
 
+/**
+ * Handles a `AssetPricesChangedMessage` from Zerion and updates state.
+ *
+ * @param message The message.
+ */
 export const assetPricesChanged = (
   message: AssetPricesChangedMessage | undefined
 ) => (
@@ -1243,6 +1393,17 @@ export const assetPricesChanged = (
   });
 };
 
+/**
+ * Updates state and account local storage with a new transaction.
+ *
+ * @param txDetails The transaction details to parse.
+ * @param accountAddressToUpdate The account to add the transaction to, or null
+ * to default to the currently selected account.
+ * @param disableTxnWatcher Whether or not to disable the pending transaction
+ * watcher.
+ * @param provider A `StaticJsonRpcProvider` to use for watching the pending
+ * transaction, or null to use the default provider.
+ */
 export const dataAddNewTransaction = (
   txDetails: NewTransactionOrAddCashTransaction,
   accountAddressToUpdate: string | null = null,
@@ -1308,6 +1469,13 @@ export const dataAddNewTransaction = (
     }
   );
 
+/**
+ * Returns the `TransactionStatus` that represents completion for a given
+ * transaction type.
+ *
+ * @param type The transaction type.
+ * @returns The confirmed status.
+ */
 const getConfirmedState = (type: TransactionType): TransactionStatus => {
   switch (type) {
     case TransactionTypes.authorize:
@@ -1325,6 +1493,15 @@ const getConfirmedState = (type: TransactionType): TransactionStatus => {
   }
 };
 
+/**
+ * Watches pending transactions and updates state and account local storage
+ * when new data is available.
+ *
+ * @param provider A `StaticJsonRpcProvider`, or null to use the default
+ * provider.
+ * @param currentNonce The nonce of the last confirmed transaction, used to
+ * determine if a transaction has been dropped.
+ */
 export const dataWatchPendingTransactions = (
   provider: StaticJsonRpcProvider | null = null,
   currentNonce: number = -1
@@ -1426,6 +1603,16 @@ export const dataWatchPendingTransactions = (
     return false;
   });
 
+/**
+ * Updates a transaction in state and account local storage and watches it,
+ * if `watch` is true.
+ *
+ * @param txHash The transaction hash to update.
+ * @param txObj The updated transaction data.
+ * @param watch Whether or not to watch the new transaction.
+ * @param provider A `StaticJsonRpcProvider`, or null to use the default
+ * provider.
+ */
 export const dataUpdateTransaction = (
   txHash: string,
   txObj: RainbowTransaction,
@@ -1459,6 +1646,12 @@ export const dataUpdateTransaction = (
     }
   });
 
+/**
+ * Updates purchases using the `addCash` reducer to reflect new transaction data.
+ * Called when new transaction information is loaded.
+ *
+ * @param updatedTransactions The array of updated transactions.
+ */
 const updatePurchases = (updatedTransactions: RainbowTransaction[]) => (
   dispatch: ThunkDispatch<AppState, unknown, never>
 ) => {
@@ -1471,6 +1664,15 @@ const updatePurchases = (updatedTransactions: RainbowTransaction[]) => (
   dispatch(addCashUpdatePurchases(confirmedPurchases));
 };
 
+/**
+ * Checks the current account's transaction count and subscribes to pending
+ * transaction updates using `dataWatchPendingTransactions`.
+ *
+ * @param accountAddressToWatch The address to watch. If this does not match
+ * the currently selected address, the subscription is not started.
+ * @param provider A `StaticJsonRpcProvider`, or null to use the default
+ * provider.
+ */
 export const checkPendingTransactionsOnInitialize = (
   accountAddressToWatch: string,
   provider: StaticJsonRpcProvider | null = null
@@ -1487,6 +1689,17 @@ export const checkPendingTransactionsOnInitialize = (
   await dispatch(dataWatchPendingTransactions(provider, currentNonce));
 };
 
+/**
+ * Repeatedly attempts to subscribe to transaction updates using
+ * `dataWatchPendingTransactions` until there are no more pending transactions
+ * or `remainingTries` attempts are exhausted.
+ *
+ * @param accountAddressToWatch The account address to watch. If this does
+ * not match the currently selected address, the subscription is not started.
+ * @param remainingTries The remaining number of attempts.
+ * @param provider A `StaticJsonRpcProvider`, or null to use the default
+ * provider.
+ */
 export const watchPendingTransactions = (
   accountAddressToWatch: string,
   remainingTries: number = TXN_WATCHER_MAX_TRIES,
@@ -1516,6 +1729,11 @@ export const watchPendingTransactions = (
   }
 };
 
+/**
+ * Updates state to indicate whether or not savings data should be refetched.
+ *
+ * @param fetch Whether or not savings should be refetched.
+ */
 export const updateRefetchSavings = (fetch: boolean) => (
   dispatch: Dispatch<DataUpdateRefetchSavingsAction>
 ) =>

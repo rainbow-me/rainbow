@@ -24,9 +24,14 @@ export interface ZerionAsset {
   price?: ZerionAssetPrice | null;
 }
 
+// Fields that may or may not be present in a `ZerionAssetFallback` but are
+// present in a `ZerionAsset`.
 type ZerionAssetFallbackOmittedFields = 'decimals' | 'type';
 
-export type ZerionAssetOrFallback = {
+// An asset fallback for a `ZerionAsset`, which has
+// the additional `coingecko_id` property but may or may not have the
+// fields specified in `ZerionAssetFallbackOmittedFields`.
+export type ZerionAssetFallback = {
   coingecko_id: string;
 } & Omit<ZerionAsset, ZerionAssetFallbackOmittedFields> &
   Partial<Pick<ZerionAsset, ZerionAssetFallbackOmittedFields>>;
