@@ -42,11 +42,11 @@ export const fetchSuggestions = async (
 
       const slicedSortedSuggestions = sortedEnsSuggestions.slice(0, 3);
       setSuggestions(slicedSortedSuggestions);
+    } else {
+      setSuggestions([]);
     }
-  } else {
-    setSuggestions([]);
+    setIsFetching(false);
   }
-  setIsFetching(false);
 };
 
 export const debouncedFetchSuggestions = debounce(fetchSuggestions, 200);
