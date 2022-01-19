@@ -32,7 +32,7 @@ const widths = {
   '3/4': fraction(3, 4),
   '3/5': fraction(3, 5),
   '4/5': fraction(4, 5),
-  full: '100%', // eslint-disable-line prettier/prettier
+  'full': '100%',
 } as const;
 
 function resolveToken<TokenName extends string, TokenValue, CustomValue>(

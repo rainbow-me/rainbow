@@ -7,7 +7,7 @@ import {
 import { typeHierarchy } from './typography.css';
 
 export const space = {
-  none: '0', // eslint-disable-line prettier/prettier
+  'none': '0',
   '2px': '2px',
   '4px': '4px',
   '8px': '8px',
@@ -23,8 +23,8 @@ export const space = {
 export type Space = keyof typeof space;
 
 export const negativeSpace = {
-  auto: 'auto', // eslint-disable-line prettier/prettier
-  none: '0', // eslint-disable-line prettier/prettier
+  'auto': 'auto',
+  'none': '0',
   '-2px': '-2px',
   '-4px': '-4px',
   '-8px': '-8px',
