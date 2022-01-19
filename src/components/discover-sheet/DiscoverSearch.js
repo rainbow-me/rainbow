@@ -18,7 +18,7 @@ import { Row } from '../layout';
 import DiscoverSheetContext from './DiscoverSheetContext';
 import { fetchSuggestions } from '@rainbow-me/handlers/ens';
 import {
-  useHardwareBack,
+  useHardwareBackOnFocus,
   useTimeout,
   useUniswapCurrencyList,
 } from '@rainbow-me/hooks';
@@ -57,7 +57,7 @@ export default function DiscoverSearch() {
     ensResults,
   ]);
 
-  useHardwareBack(() => {
+  useHardwareBackOnFocus(() => {
     cancelSearch();
     // prevent other back handlers from firing
     return true;
