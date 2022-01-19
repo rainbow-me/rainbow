@@ -2,7 +2,7 @@ import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { StyleSheet, View, ViewProps, ViewStyle } from 'react-native';
 
-import { featureFlags } from '../../../config';
+import { useExperimentalFlags } from '../../../context/private/useExperimentalFlags';
 import { AndroidShadow } from './AndroidShadow';
 import { AndroidShadow as AndroidShadowV2 } from './AndroidShadow.v2';
 import { IOSShadow } from './IOSShadow';
@@ -93,9 +93,10 @@ export const ApplyShadow = React.forwardRef(
     { backgroundColor, children: child, shadows }: ApplyShadowProps,
     ref: React.Ref<any>
   ) => {
+    const { androidShadowsV2 } = useExperimentalFlags();
+
     if (!shadows) return child;
 
-    const isAndroidV2Shadows = featureFlags.androidShadowsV2;
     const [parentStyles, childStyles] = splitPositionStyles(
       StyleSheet.flatten(child.props.style) || {}
     );
@@ -110,14 +111,14 @@ export const ApplyShadow = React.forwardRef(
         {(ios || web) && (
           <IOSShadow backgroundColor={backgroundColor} shadows={iosShadows} />
         )}
-        {android && !isAndroidV2Shadows && (
+        {android && !androidShadowsV2 && (
           <AndroidShadow
             backgroundColor={backgroundColor}
             shadow={shadows.android}
           />
         )}
         <ConditionalWrap
-          condition={Boolean(android && isAndroidV2Shadows)}
+          condition={Boolean(android && androidShadowsV2)}
           wrap={children => (
             <AndroidShadowV2
               backgroundColor={backgroundColor}
@@ -130,7 +131,7 @@ export const ApplyShadow = React.forwardRef(
           {React.cloneElement(child, {
             style: [
               childStyles,
-              android && !isAndroidV2Shadows ? androidChildStyles : undefined,
+              android && !androidShadowsV2 ? androidChildStyles : undefined,
             ],
           })}
         </ConditionalWrap>

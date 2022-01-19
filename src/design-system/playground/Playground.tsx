@@ -10,7 +10,7 @@ import RainbowContextWrapper from '../../helpers/RainbowContext';
 import useHideSplashScreen from '../../hooks/useHideSplashScreen';
 import {
   Box,
-  ColorModeProvider,
+  DesignSystemProvider,
   Divider,
   Heading,
   Inline,
@@ -164,7 +164,7 @@ export const Playground = () => {
   return (
     <HideSplashScreen>
       <RainbowContextWrapper>
-        <ColorModeProvider value={colorMode}>
+        <DesignSystemProvider colorMode={colorMode}>
           <Box background="body" flexGrow={1}>
             <ScrollView contentInsetAdjustmentBehavior="automatic">
               {android ? (
@@ -183,7 +183,7 @@ export const Playground = () => {
               </Inset>
             </ScrollView>
           </Box>
-        </ColorModeProvider>
+        </DesignSystemProvider>
       </RainbowContextWrapper>
     </HideSplashScreen>
   );
