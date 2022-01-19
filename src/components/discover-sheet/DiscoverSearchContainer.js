@@ -67,26 +67,6 @@ export default forwardRef(function DiscoverSearchContainer(
     params: { setSwipeEnabled: setViewPagerSwipeEnabled },
   } = useRoute();
 
-  const contextValue = useMemo(
-    () => ({
-      ...upperContext,
-      isFetchingEns,
-      searchInputRef,
-      searchQuery,
-      sectionListRef,
-      setIsFetchingEns,
-      setIsSearching,
-    }),
-    [
-      searchInputRef,
-      searchQuery,
-      upperContext,
-      isFetchingEns,
-      setIsFetchingEns,
-      setIsSearching,
-      sectionListRef,
-    ]
-  );
   const setIsInputFocused = useCallback(
     value => {
       setShowSearch(value);
@@ -122,6 +102,35 @@ export default forwardRef(function DiscoverSearchContainer(
 
   onFabSearch.current = onTapSearch;
 
+  const cancelSearch = useCallback(() => {
+    searchInputRef.current?.blur();
+    setIsInputFocused(false);
+    sendQueryAnalytics(searchQuery);
+  }, [searchInputRef, setIsInputFocused, searchQuery]);
+
+  const contextValue = useMemo(
+    () => ({
+      ...upperContext,
+      cancelSearch,
+      isFetchingEns,
+      searchInputRef,
+      searchQuery,
+      sectionListRef,
+      setIsFetchingEns,
+      setIsSearching,
+    }),
+    [
+      searchInputRef,
+      searchQuery,
+      upperContext,
+      isFetchingEns,
+      setIsFetchingEns,
+      setIsSearching,
+      sectionListRef,
+      cancelSearch,
+    ]
+  );
+
   useEffect(() => {
     if (!isSearchModeEnabled) {
       setSearchQuery('');
@@ -156,14 +165,7 @@ export default forwardRef(function DiscoverSearchContainer(
             testID="discover-search"
           />
         </Column>
-        <CancelButton
-          onPress={() => {
-            searchInputRef.current?.blur();
-            setIsInputFocused(false);
-            sendQueryAnalytics(searchQuery);
-          }}
-          testID="done-button"
-        >
+        <CancelButton onPress={cancelSearch} testID="done-button">
           {delayedShowSearch && <CancelText>Done</CancelText>}
         </CancelButton>
       </Row>
