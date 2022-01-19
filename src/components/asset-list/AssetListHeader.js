@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { View } from 'react-native';
 import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { abbreviations, magicMemo, measureText } from '../../utils';
 import { DividerSize } from '../Divider';
@@ -8,6 +10,7 @@ import { ButtonPressAnimation } from '../animations';
 import { Icon } from '../icons';
 import { Centered, Row } from '../layout';
 import { ListHeader, ListHeaderHeight } from '../list';
+import Skeleton, { FakeText } from '../skeleton/Skeleton';
 import { H1, TruncatedText } from '../text';
 import { StickyHeader } from './RecyclerAssetList2/core/StickyHeaders';
 import { useTheme } from '@rainbow-me/context';
@@ -19,6 +22,7 @@ import { fonts, position } from '@rainbow-me/styles';
 export const AssetListHeaderHeight = ListHeaderHeight + DividerSize;
 
 const dropdownArrowWidth = 30;
+const placeholderWidth = 120;
 
 const AccountName = styled(TruncatedText).attrs({
   align: 'left',
@@ -31,8 +35,7 @@ const AccountName = styled(TruncatedText).attrs({
   height: ${android ? '35' : '30'};
   margin-top: 2;
   margin-bottom: ${android ? '8' : '0'};
-  max-width: ${({ deviceWidth, totalValueLength }) =>
-    deviceWidth - dropdownArrowWidth - 32 - totalValueLength * 15};
+  max-width: ${({ maxWidth }) => maxWidth};
   padding-right: 6;
 `;
 
@@ -43,12 +46,21 @@ const DropdownArrow = styled(Centered)`
   width: ${dropdownArrowWidth};
 `;
 
+const WalletSelectButtonWrapper = styled(View)`
+  flex: 1;
+`;
+
+const TotalAmountSkeleton = styled(Skeleton)`
+  align-items: flex-end;
+  justify-content: center;
+`;
+
 const WalletSelectButton = ({
   truncatedAccountName,
   onChangeWallet,
   deviceWidth,
   textWidth,
-  totalValue,
+  maxWidth,
 }) => {
   const { colors } = useTheme();
   return (
@@ -56,8 +68,8 @@ const WalletSelectButton = ({
       <Row>
         <AccountName
           deviceWidth={deviceWidth}
+          maxWidth={maxWidth}
           textWidth={textWidth}
-          totalValueLength={totalValue?.length}
         >
           {truncatedAccountName}
         </AccountName>
@@ -91,15 +103,18 @@ const AssetListHeader = ({
   const { width: deviceWidth } = useDimensions();
   const { accountName } = useAccountProfile();
   const { navigate } = useNavigation();
+  const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);
 
   const onChangeWallet = useCallback(() => {
     navigate(Routes.CHANGE_WALLET_SHEET);
   }, [navigate]);
 
-  const [textWidth, setTextWidth] = useState(deviceWidth);
+  const [textWidth, setTextWidth] = useState(0);
 
-  const maxWidth =
-    deviceWidth - dropdownArrowWidth - 32 - totalValue?.length * 15;
+  const amountWidth = isLoadingAssets
+    ? placeholderWidth + 16
+    : totalValue?.length * 15;
+  const maxWidth = deviceWidth - dropdownArrowWidth - amountWidth - 32;
 
   useEffect(() => {
     async function measure() {
@@ -116,11 +131,14 @@ const AssetListHeader = ({
   const truncated = textWidth > maxWidth - 6;
 
   const truncatedAccountName = useMemo(() => {
-    if (truncated && accountName?.endsWith('.eth')) {
-      return accountName.slice(0, -4);
+    if (textWidth > 0) {
+      if (truncated && accountName?.endsWith('.eth')) {
+        return accountName.slice(0, -4);
+      }
+      return accountName;
     }
-    return accountName;
-  }, [accountName, truncated]);
+    return '';
+  }, [accountName, textWidth, truncated]);
 
   return (
     <StickyHeader name={title}>
@@ -132,15 +150,21 @@ const AssetListHeader = ({
         {...props}
       >
         {!title && (
-          <WalletSelectButton
-            deviceWidth={deviceWidth}
-            onChangeWallet={onChangeWallet}
-            textWidth={textWidth}
-            totalValue={totalValue}
-            truncatedAccountName={truncatedAccountName}
-          />
+          <WalletSelectButtonWrapper>
+            <WalletSelectButton
+              deviceWidth={deviceWidth}
+              maxWidth={maxWidth}
+              onChangeWallet={onChangeWallet}
+              textWidth={textWidth}
+              truncatedAccountName={truncatedAccountName}
+            />
+          </WalletSelectButtonWrapper>
         )}
-        {totalValue ? (
+        {isLoadingAssets ? (
+          <TotalAmountSkeleton>
+            <FakeText height={16} width={placeholderWidth} />
+          </TotalAmountSkeleton>
+        ) : totalValue ? (
           <H1 align="right" letterSpacing="roundedTight" weight="semibold">
             {totalValue}
           </H1>

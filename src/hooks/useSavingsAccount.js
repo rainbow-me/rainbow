@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useDeepCompareMemo } from 'use-deep-compare';
 import useAccountSettings from './useAccountSettings';
 import { useGenericAssets } from './useGenericAsset';
+import useWallets from './useWallets';
 import { compoundClient } from '@rainbow-me/apollo/client';
 import { COMPOUND_ACCOUNT_AND_MARKET_QUERY } from '@rainbow-me/apollo/queries';
 import { AssetTypes } from '@rainbow-me/entities';
@@ -105,13 +106,16 @@ function usePersistentBackupSavings(accountAddress, network) {
 
 export default function useSavingsAccount(includeDefaultDai) {
   const dispatch = useDispatch();
+  const { selectedWallet } = useWallets();
   const { accountAddress, network } = useAccountSettings();
   const [backupSavings = null, setBackupSavings] = usePersistentBackupSavings(
     accountAddress,
     network
   );
 
-  const hasAccountAddress = !!accountAddress;
+  const hasAccountAddress =
+    !!accountAddress &&
+    selectedWallet.addresses.find(({ address }) => accountAddress === address);
 
   const shouldRefetchSavings = useSelector(
     ({ data: { shouldRefetchSavings } }) => shouldRefetchSavings
