@@ -89,14 +89,16 @@ export default async function handleDeeplink(
         break;
       }
       default: {
-        const addressOrENS = urlObj.pathname?.split('/')?.[1] || '';
-        const isValid = await checkIsValidAddressOrDomain(addressOrENS);
-        if (isValid) {
-          return Navigation.handleAction(Routes.SHOWCASE_SHEET, {
-            address: addressOrENS,
-          });
-        } else {
-          Alert.alert('Uh oh! We couldn’t recognize this URL!');
+        const addressOrENS = urlObj.pathname?.split('/')?.[1];
+        if (addressOrENS) {
+          const isValid = await checkIsValidAddressOrDomain(addressOrENS);
+          if (isValid) {
+            return Navigation.handleAction(Routes.SHOWCASE_SHEET, {
+              address: addressOrENS,
+            });
+          } else {
+            Alert.alert('Uh oh! We couldn’t recognize this URL!');
+          }
         }
       }
     }
