@@ -45,10 +45,10 @@ const CurrencySelectionList = (
   ref
 ) => {
   const skeletonTransitionRef = useRef();
-  const showNoResults = !loading && get(listItems, '[0].data', []).length === 0;
-  const showSkeleton = showNoResults && loading;
+  const noResults = get(listItems, '[0].data', []).length === 0;
+  const showGhost = !loading && noResults;
+  const showSkeleton = noResults && loading;
   const prevShowSkeleton = usePrevious(showSkeleton);
-  const initialRender = prevShowSkeleton === undefined;
 
   useEffect(() => {
     if (!showSkeleton && prevShowSkeleton) {
@@ -63,9 +63,9 @@ const CurrencySelectionList = (
       testID={testID}
       transition={skeletonTransition}
     >
-      {showList && !showSkeleton && !initialRender && (
+      {showList && !showSkeleton && (
         <Centered flex={1}>
-          {showNoResults ? (
+          {showGhost ? (
             <NoCurrencyResults />
           ) : (
             <ExchangeAssetList
@@ -80,7 +80,7 @@ const CurrencySelectionList = (
           )}
         </Centered>
       )}
-      {(showSkeleton || initialRender) && <EmptyCurrencySelectionList />}
+      {(showSkeleton || !showList) && <EmptyCurrencySelectionList />}
     </Transitioning.View>
   );
 };

@@ -31,7 +31,6 @@ export default function DiscoverSearch() {
   const dispatch = useDispatch();
   const {
     isFetchingEns,
-    isSearching,
     setIsSearching,
     setIsFetchingEns,
     searchQuery,
@@ -150,7 +149,7 @@ export default function DiscoverSearch() {
           itemProps={itemProps}
           keyboardDismissMode="on-drag"
           listItems={currencyList}
-          loading={isSearching}
+          loading={uniswapCurrencyListLoading || isFetchingEns}
           query={searchQueryForSearch}
           ref={currencySelectionListRef}
           showList
