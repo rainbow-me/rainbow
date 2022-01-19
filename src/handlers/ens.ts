@@ -1,6 +1,10 @@
 import { debounce, isEmpty, sortBy } from 'lodash';
 import { ensClient } from '../apollo/client';
-import { ENS_SUGGESTIONS } from '../apollo/queries';
+import {
+  ENS_DOMAINS,
+  ENS_REGISTRATIONS,
+  ENS_SUGGESTIONS,
+} from '../apollo/queries';
 import { profileUtils } from '@rainbow-me/utils';
 
 export const fetchSuggestions = async (
@@ -50,3 +54,44 @@ export const fetchSuggestions = async (
 };
 
 export const debouncedFetchSuggestions = debounce(fetchSuggestions, 200);
+
+export const fetchRegistration = async (
+  recipient: any,
+  setRegistration: any,
+  setIsFetching = (_unused: any) => {}
+) => {
+  if (recipient.length > 2) {
+    setIsFetching(true);
+    const recpt = recipient.toLowerCase();
+    const result = await ensClient.query({
+      query: ENS_DOMAINS,
+      variables: {
+        name: recpt,
+      },
+    });
+    const labelHash = result?.data?.domains?.[0]?.labelhash;
+
+    const registrations = await ensClient.query({
+      query: ENS_REGISTRATIONS,
+      variables: {
+        labelHash,
+      },
+    });
+
+    const { registrationDate, expiryDate } =
+      registrations?.data?.registrations?.[0] || {};
+
+    if (!isEmpty(registrations?.data?.registrations?.[0])) {
+      setRegistration({ expiryDate, isRegistered: true, registrationDate });
+    } else {
+      setRegistration({
+        expiryDate: null,
+        isRegistered: false,
+        registrationDate: null,
+      });
+    }
+    setIsFetching(false);
+  }
+};
+
+export const debouncedFetchRegistration = debounce(fetchRegistration, 200);
