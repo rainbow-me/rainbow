@@ -5,7 +5,7 @@ import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import React from 'react';
 
-import { DesignSystemProvider } from '../../context/DesignSystemProvider';
+import { DesignSystemProvider } from '../../Context';
 import { ColorModeProvider, ColorModeToggle } from '../system/ColorMode';
 import { sprinkles } from '../system/sprinkles.css';
 
