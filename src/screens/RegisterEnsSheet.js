@@ -45,42 +45,44 @@ export default function RegisterEnsSheet() {
       <SlackSheet
         backgroundColor="white"
         bottomInset={42}
-        hideHandle
         {...(ios
           ? { height: '100%' }
           : { additionalTopPadding: true, contentHeight: deviceHeight })}
       >
-        <Stack alignHorizontal="center" space="10px">
-          <Text size="23px" weight="bold">
-            Find your name
-          </Text>
-          <Text color="secondary40" size="18px" weight="bold">
-            Search available profile names
-          </Text>
-        </Stack>
+        <Box paddingTop="30px">
+          <Stack alignHorizontal="center" space="10px">
+            <Text size="23px" weight="bold">
+              Find your name
+            </Text>
+            <Text color="secondary40" size="18px" weight="bold">
+              Search available profile names
+            </Text>
+          </Stack>
 
-        <Box
-          alignItems="center"
-          paddingHorizontal="19px"
-          paddingVertical="42px"
-        >
-          <Input
-            onChangeText={setSearchQuery}
-            placeholder="Input placeholder"
-          />
+          <Box
+            alignItems="center"
+            paddingHorizontal="19px"
+            paddingVertical="42px"
+          >
+            <Input
+              onChangeText={setSearchQuery}
+              placeholder="Input placeholder"
+            />
+          </Box>
+
+          <Stack alignHorizontal="center" space="5px">
+            <Text color="secondary40" size="18px" weight="bold">
+              Registered:{' '}
+              {currentRegistration.isRegistered ? 'yeah' : 'not yet'}
+            </Text>
+            <Text color="secondary40" size="18px" weight="bold">
+              Registration date: {currentRegistration.registrationDate}
+            </Text>
+            <Text color="secondary40" size="18px" weight="bold">
+              Expiry date: {currentRegistration.expiryDate}
+            </Text>
+          </Stack>
         </Box>
-
-        <Stack alignHorizontal="center" space="5px">
-          <Text color="secondary40" size="18px" weight="bold">
-            Registerd: {currentRegistration.isRegistered ? 'yeah' : 'not yet'}
-          </Text>
-          <Text color="secondary40" size="18px" weight="bold">
-            Registration date: {currentRegistration.registrationDate}
-          </Text>
-          <Text color="secondary40" size="18px" weight="bold">
-            Expiry date: {currentRegistration.expiryDate}
-          </Text>
-        </Stack>
       </SlackSheet>
     </Container>
   );
