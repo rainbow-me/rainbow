@@ -1,6 +1,6 @@
-import { RainbowToken } from '@rainbow-me/entities';
+import { EthereumAddress, RainbowToken } from '@rainbow-me/entities';
 
-const cache: Record<string, RainbowToken[]> = {};
+const cache: Record<string, Record<EthereumAddress, RainbowToken>> = {};
 
 const UniswapAssetsCache = {
   cache,

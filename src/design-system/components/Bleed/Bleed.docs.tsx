@@ -34,6 +34,14 @@ const docs: DocsType = {
       showFrame: true,
     },
     {
+      ...examples.horizontal,
+      showFrame: true,
+    },
+    {
+      ...examples.vertical,
+      showFrame: true,
+    },
+    {
       ...examples.customSpace,
       showFrame: true,
     },
@@ -51,6 +59,10 @@ const docs: DocsType = {
     },
     {
       ...examples.bottom,
+      showFrame: true,
+    },
+    {
+      ...examples.allSides,
       showFrame: true,
     },
   ],
