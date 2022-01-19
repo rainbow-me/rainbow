@@ -2,7 +2,11 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from '../components/alerts';
 import { ExchangeModalTypes } from '@rainbow-me/helpers';
-import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
+import {
+  multiply,
+  subtract,
+  toFixedDecimals,
+} from '@rainbow-me/helpers/utilities';
 import { useGas } from '@rainbow-me/hooks';
 import { AppState } from '@rainbow-me/redux/store';
 import {
@@ -45,10 +49,9 @@ export default function useSwapInputHandlers() {
             { style: 'cancel', text: 'No thanks' },
             {
               onPress: () => {
-                const transactionFee =
-                  parseFloat(oldAmount) - parseFloat(newAmount);
+                const transactionFee = subtract(oldAmount, newAmount);
                 newAmount = toFixedDecimals(
-                  parseFloat(newAmount) - transactionFee * 1.5,
+                  subtract(newAmount, multiply(transactionFee, 1.5)),
                   6
                 );
                 dispatch(updateSwapInputAmount(newAmount));
