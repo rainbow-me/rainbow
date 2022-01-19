@@ -2,7 +2,7 @@ import ConditionalWrap from 'conditional-wrap';
 import React from 'react';
 import { StyleSheet, View, ViewProps, ViewStyle } from 'react-native';
 
-import { useExperimentalFlags } from '../../../Context';
+import { useExperimentalFlags } from '../../../context/ExperimentalFlagsContext';
 import { AndroidShadow } from './AndroidShadow';
 import { AndroidShadow as AndroidShadowV2 } from './AndroidShadow.v2';
 import { IOSShadow } from './IOSShadow';

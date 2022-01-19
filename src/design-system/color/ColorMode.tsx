@@ -1,6 +1,8 @@
 import React, { createContext, ReactNode, useContext, useMemo } from 'react';
 import { ColorMode, Palette, palettes } from './palettes';
 
+export type { ColorMode };
+
 function contextValueForColorMode(colorMode: ColorMode): ColorModeContextValue {
   return {
     colorMode,

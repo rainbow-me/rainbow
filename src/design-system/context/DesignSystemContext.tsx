@@ -1,7 +1,10 @@
 import React from 'react';
 
-import { ColorModeProvider } from './color/ColorMode';
-import { ColorMode } from './color/palettes';
+import { ColorMode, ColorModeProvider } from '../color/ColorMode';
+import {
+  ExperimentalFlags,
+  ExperimentalFlagsProvider,
+} from './ExperimentalFlagsContext';
 
 type DesignSystemContextValue = {
   experimentalFlags: {
@@ -22,12 +25,12 @@ export function DesignSystemProvider({
 }: {
   children: React.ReactNode;
   colorMode: ColorMode;
-  experimentalFlags?: DesignSystemContextValue['experimentalFlags'];
+  experimentalFlags?: ExperimentalFlags;
 }) {
   return (
-    <DesignSystemContext.Provider value={{ experimentalFlags }}>
+    <ExperimentalFlagsProvider value={experimentalFlags}>
       <ColorModeProvider value={colorMode}>{children}</ColorModeProvider>
-    </DesignSystemContext.Provider>
+    </ExperimentalFlagsProvider>
   );
 }
 

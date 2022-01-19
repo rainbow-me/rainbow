@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import './fonts.css';
 import './global.css';
 
-import { DesignSystemProvider } from '../../Context';
+import { DesignSystemProvider } from '../../context/DesignSystemContext';
 import { Box } from '../../components/Box/Box';
 
 export default ({ children, themeName }) => (
