@@ -7,6 +7,8 @@ export * as BleedDocs from '../components/Bleed/Bleed.docs';
 export * as BoxDocs from '../components/Box/Box.docs';
 export * as ColorModeDocs from '../color/ColorMode.docs';
 export * as ColumnsDocs from '../components/Columns/Columns.docs';
+export * as DebugLayoutDocs from '../components/DebugLayout/DebugLayout.docs';
+export * as DividerDocs from '../components/Divider/Divider.docs';
 export * as HeadingDocs from '../components/Heading/Heading.docs';
 export * as InlineDocs from '../components/Inline/Inline.docs';
 export * as InsetDocs from '../components/Inset/Inset.docs';

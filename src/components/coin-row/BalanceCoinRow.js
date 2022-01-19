@@ -176,6 +176,8 @@ const BalanceCoinRow = ({
               bottomRowRender={BottomRow}
               containerStyles={containerStyles}
               isFirstCoinRow={isFirstCoinRow}
+              isHidden={isHidden}
+              isPinned={isPinned}
               onPress={handlePress}
               topRowRender={TopRow}
               {...item}

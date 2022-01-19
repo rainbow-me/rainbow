@@ -178,6 +178,7 @@ const SavingsListRow = ({
               <SavingsListRowAnimatedNumber
                 initialValue={initialValue}
                 interval={ANIMATE_NUMBER_INTERVAL}
+                key={initialValue + 'savings'}
                 steps={steps}
                 symbol={underlying.symbol}
                 value={displayValue}

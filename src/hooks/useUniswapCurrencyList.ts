@@ -94,7 +94,7 @@ const useUniswapCurrencyList = (searchQuery: string) => {
         })
       ),
     {
-      onSuccess: res => handleFavoritesResponse(res),
+      onSuccess: res => handleFavoritesResponse(Object.values(res)),
     }
   );
 
@@ -153,8 +153,13 @@ const useUniswapCurrencyList = (searchQuery: string) => {
   };
 
   const slowSearch = useCallback(async () => {
-    await getResultsForAssetType('lowLiquidityAssets');
-    setLoading(false);
+    try {
+      await getResultsForAssetType('lowLiquidityAssets');
+      // eslint-disable-next-line no-empty
+    } catch (e) {
+    } finally {
+      setLoading(false);
+    }
   }, [getResultsForAssetType]);
 
   const clearSearch = useCallback(() => {

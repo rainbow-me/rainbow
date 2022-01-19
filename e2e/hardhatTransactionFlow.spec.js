@@ -435,7 +435,7 @@ describe('Hardhat Transaction Flow', () => {
       signature !==
       '0xb78f17ff5779826ebfe4a7572a569a8802c02962242ff0195bd17bd4c07248b930a8c459276bc6eaa02dfb4523b8dc66d0020742d3f60a9209bde811aebb39351b'
     ) {
-      throw new Error('WC personal sign failed');
+      throw new Error('WC typed data failed');
     }
   });
 

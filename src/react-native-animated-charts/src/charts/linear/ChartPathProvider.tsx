@@ -151,7 +151,7 @@ export const ChartPathProvider = React.memo<ChartPathProviderProps>(
 
     // position of the dot
     const positionX = useSharedValue(0);
-    const positionY = useSharedValue(0);
+    const positionY = useSharedValue(-1);
 
     // componentDidMount hack
     const initialized = useRef(false);

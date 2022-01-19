@@ -471,7 +471,7 @@ export default function WelcomeScreen() {
         borderWidth: ios ? 0 : 3,
         width: 230 + (ios ? 0 : 6),
       },
-      text: lang.t('wallet.new.create_wallet'),
+      text: lang.t('wallet.new.get_new_wallet'),
       textColor: colors.white,
     };
   }, [rValue]);

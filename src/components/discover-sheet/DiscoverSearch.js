@@ -35,6 +35,8 @@ export default function DiscoverSearch() {
     setIsFetchingEns,
     searchQuery,
     isSearchModeEnabled,
+    setIsSearchModeEnabled,
+    searchInputRef,
   } = useContext(DiscoverSheetContext);
 
   const currencySelectionListRef = useRef();
@@ -54,9 +56,11 @@ export default function DiscoverSearch() {
     item => {
       if (item.ens) {
         // navigate to Showcase sheet
+        searchInputRef?.current?.blur();
         InteractionManager.runAfterInteractions(() => {
           navigate(Routes.SHOWCASE_SHEET, {
             address: item.nickname,
+            setIsSearchModeEnabled,
           });
         });
       } else {
@@ -69,7 +73,7 @@ export default function DiscoverSearch() {
         });
       }
     },
-    [dispatch, navigate]
+    [dispatch, navigate, searchInputRef, setIsSearchModeEnabled]
   );
 
   const handleActionAsset = useCallback(
@@ -138,7 +142,7 @@ export default function DiscoverSearch() {
   }, [isSearchModeEnabled]);
 
   return (
-    <View style={[!android && { height: deviceUtils.dimensions.height - 140 }]}>
+    <View style={{ height: deviceUtils.dimensions.height - 140 }}>
       <SearchContainer>
         <CurrencySelectionList
           footerSpacer

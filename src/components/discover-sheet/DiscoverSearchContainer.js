@@ -71,19 +71,14 @@ export default forwardRef(function DiscoverSearchContainer(
     () => ({
       ...upperContext,
       isFetchingEns,
+      isSearching,
+      searchInputRef,
       searchQuery,
       sectionListRef,
       setIsFetchingEns,
       setIsSearching,
     }),
-    [
-      searchQuery,
-      upperContext,
-      isFetchingEns,
-      setIsFetchingEns,
-      setIsSearching,
-      sectionListRef,
-    ]
+    [upperContext, isFetchingEns, isSearching, searchQuery]
   );
   const setIsInputFocused = useCallback(
     value => {

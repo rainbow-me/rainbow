@@ -45,15 +45,16 @@ const CurrencySelectionList = (
   ref
 ) => {
   const skeletonTransitionRef = useRef();
-  const showNoResults = get(listItems, '[0].data', []).length === 0;
-  const showSkeleton = showNoResults && loading;
+  const noResults = get(listItems, '[0].data', []).length === 0;
+  const showGhost = !loading && noResults;
+  const showSkeleton = noResults && loading;
   const prevShowSkeleton = usePrevious(showSkeleton);
 
   useEffect(() => {
     if (!showSkeleton && prevShowSkeleton) {
       skeletonTransitionRef.current?.animateNextTransition();
     }
-  }, [loading, prevShowSkeleton, showSkeleton]);
+  }, [prevShowSkeleton, showSkeleton]);
 
   return (
     <Transitioning.View
@@ -62,9 +63,9 @@ const CurrencySelectionList = (
       testID={testID}
       transition={skeletonTransition}
     >
-      {showList && (
+      {showList && !showSkeleton && (
         <Centered flex={1}>
-          {showNoResults ? (
+          {showGhost ? (
             <NoCurrencyResults />
           ) : (
             <ExchangeAssetList
@@ -86,5 +87,6 @@ const CurrencySelectionList = (
 
 export default magicMemo(forwardRef(CurrencySelectionList), [
   'listItems',
+  'loading',
   'showList',
 ]);

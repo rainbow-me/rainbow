@@ -74,6 +74,7 @@
         "insufficient_eth": "Insufficient ETH",
         "insufficient_funds": "Insufficient Funds",
         "insufficient_liquidity": "Insufficient Liquidity",
+        "invalid_fee": "Invalid Fee",
         "swap": "Hold to Swap",
         "swap_anyway": "Swap Anyway",
         "view_details": "View Details",
@@ -329,6 +330,7 @@
     "settings": {
       "backup": "Backup",
       "currency": "Currency",
+      "dev": "Dev",
       "developer": "Developer Settings",
       "done": "Done",
       "feedback_and_reports": "Feedback & Bug Reports",
@@ -539,7 +541,8 @@
         }
       },
       "settings": {
-        "copy_address": "Copy Address",
+        "copy_address": "Copy address",
+        "copy_address_capitalized": "Copy Address",
         "copy_seed_phrase": "Copy Secret Phrase",
         "hide_seed_phrase": "Hide Secret Phrase",
         "show_seed_phrase": "Show Secret Phrase"
