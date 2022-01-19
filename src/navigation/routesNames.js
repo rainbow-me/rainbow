@@ -34,6 +34,7 @@ const Routes = {
   QR_SCANNER_SCREEN: 'QRScannerScreen',
   RECEIVE_MODAL: 'ReceiveModal',
   REGISTER_ENS_SHEET: 'RegisterEnsSheet',
+  REGISTER_ENS_SHEET_NAVIGATOR: 'RegisterEnsSheetNavigator',
   RESTORE_SHEET: 'RestoreSheet',
   SAVINGS_DEPOSIT_MODAL: 'SavingsDepositModal',
   SAVINGS_SHEET: 'SavingsSheet',

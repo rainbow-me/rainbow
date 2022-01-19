@@ -83,6 +83,20 @@ function SendFlowNavigator() {
   );
 }
 
+function RegisterENSFlowNavigator() {
+  return (
+    <Stack.Navigator
+      {...stackNavigationConfig}
+      initialRouteName={Routes.REGISTER_ENS_SHEET}
+    >
+      <Stack.Screen
+        component={RegisterEnsSheet}
+        name={Routes.REGISTER_ENS_SHEET}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function ImportSeedPhraseFlowNavigator() {
   return (
     <Stack.Navigator
@@ -389,6 +403,10 @@ function NativeStackNavigator() {
           <NativeStack.Screen
             component={SendFlowNavigator}
             name={Routes.SEND_SHEET_NAVIGATOR}
+          />
+          <NativeStack.Screen
+            component={RegisterENSFlowNavigator}
+            name={Routes.REGISTER_ENS_SHEET_NAVIGATOR}
           />
           <NativeStack.Screen
             component={ImportSeedPhraseFlowNavigator}

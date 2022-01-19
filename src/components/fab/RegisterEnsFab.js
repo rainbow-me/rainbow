@@ -26,7 +26,7 @@ const RegisterEnsFab = ({ disabled, ...props }) => {
   const { colors } = useTheme();
 
   const handlePress = useCallback(() => {
-    navigate(Routes.REGISTER_ENS_SHEET);
+    navigate(Routes.REGISTER_ENS_SHEET_NAVIGATOR);
   }, [navigate]);
 
   return (
