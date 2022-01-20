@@ -9,20 +9,29 @@ import useWalletSectionsData from './useWalletSectionsData';
 
 export default function useAccountEmptyState() {
   const { network, accountAddress } = useAccountSettings();
-  const { isEmpty } = useWalletSectionsData();
+  const { isEmpty: isSectionsEmpty } = useWalletSectionsData();
   const isLoadingAssets = useSelector(state => state.data.isLoadingAssets);
-  const isReallyEmpty = useMemo(
+  const isAccountEmptyInStorage = useMemo(
     () => getAccountEmptyState(accountAddress, network),
     [accountAddress, network]
+  );
+  const isEmpty = useMemo(
+    () => ({
+      ...isEmpty,
+      [accountAddress]: isLoadingAssets
+        ? isAccountEmptyInStorage
+        : isSectionsEmpty,
+    }),
+    [accountAddress, isAccountEmptyInStorage, isLoadingAssets, isSectionsEmpty]
   );
 
   useEffect(() => {
     if (!isLoadingAssets) {
-      saveAccountEmptyState(isEmpty, accountAddress, network);
+      saveAccountEmptyState(false, accountAddress, network);
     }
-  }, [accountAddress, isEmpty, isLoadingAssets, network]);
+  }, [accountAddress, isLoadingAssets, isSectionsEmpty, network]);
 
   return {
-    isEmpty: isReallyEmpty || isEmpty,
+    isEmpty: isEmpty[accountAddress],
   };
 }

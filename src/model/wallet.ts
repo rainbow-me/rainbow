@@ -186,7 +186,7 @@ export const DEFAULT_WALLET_NAME = 'My Wallet';
 const authenticationPrompt = lang.t('wallet.authenticate.please');
 
 export const walletInit = async (
-  seedPhrase = null,
+  seedPhrase = undefined,
   color = null,
   name = null,
   overwrite = false,
