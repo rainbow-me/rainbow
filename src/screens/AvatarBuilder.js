@@ -66,6 +66,7 @@ const AvatarBuilder = ({ route: { params } }) => {
   const [currentAccountColor, setCurrentAccountColor] = useState(
     colors.avatarBackgrounds[params.initialAccountColor]
   );
+  const { saveInfo } = useUpdateEmoji();
 
   const onChangeEmoji = event => {
     ReactNativeHapticFeedback.trigger('selection');
@@ -85,8 +86,6 @@ const AvatarBuilder = ({ route: { params } }) => {
       }}
     />
   ));
-
-  const { saveInfo } = useUpdateEmoji();
 
   const colorCircleTopPadding = 15;
   const colorCircleBottomPadding = 19;
