@@ -77,7 +77,7 @@ export function hashCode(text: string) {
 }
 
 export function getRandomEmojiWithColor(
-  prevColorIndex: number
+  prevColorIndex: number = 0
 ): { emoji: string; colorIndex: number } {
   const index = Math.floor(Math.random() * avatars.length);
   if (index === prevColorIndex) {

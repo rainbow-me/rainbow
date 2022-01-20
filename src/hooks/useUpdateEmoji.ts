@@ -8,13 +8,12 @@ import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import { getRandomEmojiWithColor } from '@rainbow-me/utils/profileUtils';
 
 export default function useUpdateEmoji() {
-  const { accountName } = useAccountProfile();
+  const { accountColor, accountName } = useAccountProfile();
   const { wallets, selectedWallet } = useWallets();
   const { updateWebProfile } = useWebData();
   const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
   const dispatch = useDispatch();
-
   const saveInfo = useCallback(
     async (name, color) => {
       const walletId = selectedWallet.id;
@@ -41,12 +40,12 @@ export default function useUpdateEmoji() {
       updateWebProfile(
         accountAddress,
         name,
-        (color !== undefined && colors.avatarBackgrounds[color]) || accountName
+        (color !== undefined && colors.avatarBackgrounds[color]) || accountColor
       );
     },
     [
       accountAddress,
-      accountName,
+      accountColor,
       colors.avatarBackgrounds,
       dispatch,
       selectedWallet.id,
