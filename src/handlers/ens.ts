@@ -13,6 +13,7 @@ export const fetchSuggestions = async (
   setIsFetching = (_unused: any) => {}
 ) => {
   if (recipient.length > 2) {
+    let suggestions = [];
     setIsFetching(true);
     const recpt = recipient.toLowerCase();
     let result = await ensClient.query({
@@ -44,24 +45,20 @@ export const fetchSuggestions = async (
         ['asc']
       );
 
-      const slicedSortedSuggestions = sortedEnsSuggestions.slice(0, 3);
-      setSuggestions(slicedSortedSuggestions);
-    } else {
-      setSuggestions([]);
+      suggestions = sortedEnsSuggestions.slice(0, 3);
     }
+
+    setSuggestions(suggestions);
     setIsFetching(false);
+
+    return suggestions;
   }
 };
 
 export const debouncedFetchSuggestions = debounce(fetchSuggestions, 200);
 
-export const fetchRegistration = async (
-  recipient: any,
-  setRegistration: any,
-  setIsFetching = (_unused: any) => {}
-) => {
+export const fetchRegistration = async (recipient: any) => {
   if (recipient.length > 2) {
-    setIsFetching(true);
     const recpt = recipient.toLowerCase();
     const result = await ensClient.query({
       query: ENS_DOMAINS,
@@ -82,16 +79,13 @@ export const fetchRegistration = async (
       registrations?.data?.registrations?.[0] || {};
 
     if (!isEmpty(registrations?.data?.registrations?.[0])) {
-      setRegistration({ expiryDate, isRegistered: true, registrationDate });
+      return { expiryDate, isRegistered: true, registrationDate };
     } else {
-      setRegistration({
+      return {
         expiryDate: null,
         isRegistered: false,
         registrationDate: null,
-      });
+      };
     }
-    setIsFetching(false);
   }
 };
-
-export const debouncedFetchRegistration = debounce(fetchRegistration, 200);
