@@ -6,6 +6,10 @@ import {
   ExperimentalFlagsProvider,
 } from './ExperimentalFlagsContext';
 
+const defaultExperimentalFlags = {
+  androidShadowsV2: false,
+};
+
 type DesignSystemContextValue = {
   experimentalFlags: {
     androidShadowsV2?: boolean;
@@ -13,15 +17,13 @@ type DesignSystemContextValue = {
 };
 
 const DesignSystemContext = React.createContext<DesignSystemContextValue>({
-  experimentalFlags: {
-    androidShadowsV2: false,
-  },
+  experimentalFlags: defaultExperimentalFlags,
 });
 
 export function DesignSystemProvider({
   children,
   colorMode,
-  experimentalFlags = {},
+  experimentalFlags = defaultExperimentalFlags,
 }: {
   children: React.ReactNode;
   colorMode: ColorMode;
