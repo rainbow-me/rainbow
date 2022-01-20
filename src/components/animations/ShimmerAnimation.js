@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
+import { View } from 'react-native';
+import { IS_TESTING } from 'react-native-dotenv';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
   Easing,
@@ -15,7 +17,9 @@ const timingConfig = {
   easing: Easing.bezier(0.76, 0, 0.24, 1),
 };
 
-const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
+const AnimatedLinearGradient = Animated.createAnimatedComponent(
+  IS_TESTING === 'true' ? View : LinearGradient
+);
 const ColorGradient = styled(AnimatedLinearGradient).attrs({
   end: { x: 0, y: 0.5 },
   start: { x: 1, y: 0.5 },
