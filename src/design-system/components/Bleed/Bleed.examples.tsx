@@ -14,11 +14,43 @@ export const basicUsage: Example = {
     source(
       <Inset space="19px">
         <Stack space="19px">
-          <Placeholder height={100} />
+          <Placeholder />
           <Bleed horizontal="19px">
-            <Placeholder height={100} />
+            <Placeholder />
           </Bleed>
-          <Placeholder height={100} />
+          <Placeholder />
+        </Stack>
+      </Inset>
+    ),
+};
+
+export const horizontal: Example = {
+  name: 'Horizontal',
+  Example: () =>
+    source(
+      <Inset space="19px">
+        <Stack space="19px">
+          <Placeholder />
+          <Bleed horizontal="19px">
+            <Placeholder />
+          </Bleed>
+          <Placeholder />
+        </Stack>
+      </Inset>
+    ),
+};
+
+export const vertical: Example = {
+  name: 'Vertical',
+  Example: () =>
+    source(
+      <Inset space="19px">
+        <Stack space="19px">
+          <Placeholder />
+          <Bleed vertical="19px">
+            <Placeholder />
+          </Bleed>
+          <Placeholder />
         </Stack>
       </Inset>
     ),
@@ -30,11 +62,11 @@ export const customSpace: Example = {
     source(
       <Inset space={{ custom: 17 }}>
         <Stack space={{ custom: 17 }}>
-          <Placeholder height={100} />
+          <Placeholder />
           <Bleed horizontal={{ custom: 17 }}>
-            <Placeholder height={100} />
+            <Placeholder />
           </Bleed>
-          <Placeholder height={100} />
+          <Placeholder />
         </Stack>
       </Inset>
     ),
@@ -46,11 +78,11 @@ export const right: Example = {
     source(
       <Inset space="19px">
         <Stack space="19px">
-          <Placeholder height={100} />
+          <Placeholder />
           <Bleed right="19px">
-            <Placeholder height={100} />
+            <Placeholder />
           </Bleed>
-          <Placeholder height={100} />
+          <Placeholder />
         </Stack>
       </Inset>
     ),
@@ -62,11 +94,11 @@ export const left: Example = {
     source(
       <Inset space="19px">
         <Stack space="19px">
-          <Placeholder height={100} />
+          <Placeholder />
           <Bleed left="19px">
-            <Placeholder height={100} />
+            <Placeholder />
           </Bleed>
-          <Placeholder height={100} />
+          <Placeholder />
         </Stack>
       </Inset>
     ),
@@ -79,10 +111,10 @@ export const top: Example = {
       <Inset space="19px">
         <Stack space="19px">
           <Bleed top="19px">
-            <Placeholder height={100} />
+            <Placeholder />
           </Bleed>
-          <Placeholder height={100} />
-          <Placeholder height={100} />
+          <Placeholder />
+          <Placeholder />
         </Stack>
       </Inset>
     ),
@@ -94,11 +126,27 @@ export const bottom: Example = {
     source(
       <Inset space="19px">
         <Stack space="19px">
-          <Placeholder height={100} />
-          <Placeholder height={100} />
+          <Placeholder />
+          <Placeholder />
           <Bleed bottom="19px">
-            <Placeholder height={100} />
+            <Placeholder />
           </Bleed>
+        </Stack>
+      </Inset>
+    ),
+};
+
+export const allSides: Example = {
+  name: 'All sides',
+  Example: () =>
+    source(
+      <Inset space="19px">
+        <Stack space="19px">
+          <Placeholder />
+          <Bleed space="19px">
+            <Placeholder />
+          </Bleed>
+          <Placeholder />
         </Stack>
       </Inset>
     ),

@@ -132,7 +132,12 @@ const PulseIndex = () => {
                 All the top DeFi tokens in one
               </Text>
             </Column>
-            <Column align="end" flex={1} margin={15} marginTop={ios ? 13.5 : 6}>
+            <Column
+              align="end"
+              flex={1}
+              marginRight={15}
+              marginTop={ios ? 13.5 : 6}
+            >
               <Text
                 align="right"
                 color={colors.whiteLabel}

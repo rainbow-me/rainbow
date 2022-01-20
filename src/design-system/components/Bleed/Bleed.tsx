@@ -4,6 +4,7 @@ import { Box, BoxProps } from '../Box/Box';
 
 export type BleedProps = {
   children: BoxProps['children'];
+  space?: Space;
   top?: Space;
   bottom?: Space;
   left?: Space;
@@ -21,6 +22,7 @@ export type BleedProps = {
  */
 export function Bleed({
   top,
+  space,
   bottom,
   left,
   right,
@@ -30,6 +32,7 @@ export function Bleed({
 }: BleedProps) {
   return (
     <Box
+      margin={space ? negateSpace(space) : undefined}
       marginBottom={bottom ? negateSpace(bottom) : undefined}
       marginHorizontal={horizontal ? negateSpace(horizontal) : undefined}
       marginLeft={left ? negateSpace(left) : undefined}

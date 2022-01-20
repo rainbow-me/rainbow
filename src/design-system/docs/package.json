@@ -34,7 +34,7 @@
     "@babel/preset-typescript": "7.16.0",
     "@lavamoat/preinstall-always-fail": "1.0.0",
     "@types/babel-plugin-macros": "2.8.5",
-    "@vanilla-extract/next-plugin": "1.0.1",
+    "@vanilla-extract/next-plugin": "2.0.1",
     "babel-loader": "8.2.3",
     "babel-plugin-macros": "3.1.0",
     "babel-plugin-react-native-web": "0.17.5",
