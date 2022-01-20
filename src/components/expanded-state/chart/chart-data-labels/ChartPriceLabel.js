@@ -22,6 +22,7 @@ const Label = styled(ChartYLabel)`
   `margin-top: -30;
      margin-bottom: -30;
      `}
+  ${({ tabularNums }) => (tabularNums ? 'font-variant: tabular-nums' : '')};
 `;
 
 const AndroidCurrencySymbolLabel = styled(ChartYLabel)`
@@ -72,6 +73,7 @@ export default function ChartPriceLabel({
   defaultValue,
   isNoPriceData,
   priceValue,
+  tabularNums,
 }) {
   const { nativeCurrency } = useAccountSettings();
   const nativeSelected = get(supportedNativeCurrencies, `${nativeCurrency}`);
@@ -101,7 +103,7 @@ export default function ChartPriceLabel({
           {nativeSelected?.symbol}
         </AndroidCurrencySymbolLabel>
       )}
-      <Label format={format} />
+      <Label format={format} tabularNums={tabularNums} />
     </ChartPriceRow>
   );
 }
