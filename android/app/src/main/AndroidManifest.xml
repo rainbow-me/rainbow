@@ -34,7 +34,14 @@
         android:screenOrientation="portrait"
         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
         android:launchMode="singleTask"
-        android:windowSoftInputMode="adjustResize">
+        android:theme="@style/Theme.MyGreenTheme"
+         android:windowSoftInputMode="adjustResize">
+      </activity>
+      <activity
+          android:name=".SplashActivity"
+          android:adjustViewBounds="true"
+          android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+          android:theme="@style/Theme.MyGreenTheme">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />

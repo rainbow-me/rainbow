@@ -76,14 +76,10 @@ export function hashCode(text: string) {
   return hash;
 }
 
-export function getRandomEmojiWithColor(
+export function getNextEmojiWithColor(
   prevColorIndex: number = 0
 ): { emoji: string; colorIndex: number } {
-  const index = Math.floor(Math.random() * avatars.length);
-  if (index === prevColorIndex) {
-    return getRandomEmojiWithColor(prevColorIndex);
-  }
-  return avatars[Math.floor(Math.random() * avatars.length)];
+  return avatars[(prevColorIndex + 1) % avatars.length];
 }
 
 export function addressHashedIndex(address: string) {
@@ -127,7 +123,7 @@ export default {
   emojiColorIndexes,
   emojiCount,
   getOldAvatarColorToAvatarBackgroundIndex,
-  getRandomEmojiWithColor,
+  getNextEmojiWithColor,
   hashCode,
   popularEmojis,
   isEthAddress,

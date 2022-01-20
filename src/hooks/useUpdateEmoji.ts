@@ -5,7 +5,7 @@ import useAccountSettings from './useAccountSettings';
 import { useWallets, useWebData } from './index';
 import { useTheme } from '@rainbow-me/context';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
-import { getRandomEmojiWithColor } from '@rainbow-me/utils/profileUtils';
+import { getNextEmojiWithColor } from '@rainbow-me/utils/profileUtils';
 
 export default function useUpdateEmoji() {
   const { accountColor, accountName } = useAccountProfile();
@@ -61,7 +61,7 @@ export default function useUpdateEmoji() {
         ({ address }: { address: string }) =>
           address.toLowerCase() === accountAddress.toLowerCase()
       ) || {};
-    const { emoji, colorIndex } = getRandomEmojiWithColor(color);
+    const { emoji, colorIndex } = getNextEmojiWithColor(color);
     const name = `${emoji} ${accountName}`;
     saveInfo(name, colorIndex);
   }, [accountAddress, accountName, saveInfo, selectedWallet.id, wallets]);
