@@ -4,6 +4,7 @@ export { Bleed } from './components/Bleed/Bleed';
 export { Box } from './components/Box/Box';
 export { ColorModeProvider } from './color/ColorMode';
 export { Columns, Column } from './components/Columns/Columns';
+export { Cover } from './components/Cover/Cover';
 export { Divider } from './components/Divider/Divider';
 export { DebugLayout } from './components/DebugLayout/DebugLayout';
 export { Heading } from './components/Heading/Heading';
@@ -21,6 +22,7 @@ export type { BackgroundProviderProps } from './components/BackgroundProvider/Ba
 export type { BleedProps } from './components/Bleed/Bleed';
 export type { BoxProps } from './components/Box/Box';
 export type { ColumnsProps, ColumnProps } from './components/Columns/Columns';
+export type { CoverProps } from './components/Cover/Cover';
 export type { DividerProps } from './components/Divider/Divider';
 export type { HeadingProps } from './components/Heading/Heading';
 export type { InlineProps } from './components/Inline/Inline';
