@@ -69,16 +69,16 @@ export default class SendAssetList extends React.Component {
     let smallBalances = [];
     let shitcoins = [];
 
-    if (assets[assets?.length - 1].smallBalancesContainer) {
+    if (assets[assets.length - 1].smallBalancesContainer) {
       smallBalances = assets.pop();
       shitcoins = smallBalances.assets;
     }
 
-    if (assets[assets?.length - 1].coinDivider) {
+    if (assets[assets.length - 1].coinDivider) {
       assets.pop(); // removes not needed coin divider
     }
 
-    const visibleAssetsLength = assets?.length;
+    const visibleAssetsLength = assets.length;
 
     this.data = assets;
 
