@@ -1031,6 +1031,12 @@ export const transactionsRemoved = (
       payload: updatedTransactions,
       type: DATA_LOAD_TRANSACTIONS_SUCCESS,
     });
+
+    // In this case `removedTransactions` is an array of `RainbowTransaction`s,
+    // while `checkForRemovedNonce` wants `ZerionTransaction`s. However,
+    // `RainbowTransaction` doesn't have the `address_from` field used in
+    // `checkForRemovedNonce`. Therefore, this likely does not work as intended,
+    // but is being kept for later review!
     dispatch(checkForRemovedNonce(removedTransactions as any));
     saveLocalTransactions(updatedTransactions, accountAddress, network);
   });
