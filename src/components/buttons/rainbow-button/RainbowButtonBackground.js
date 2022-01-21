@@ -9,7 +9,7 @@ import RainbowButtonTypes from './RainbowButtonTypes';
 import { margin } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
-const RainbowGradientColorsFactory = darkMode => ({
+export const RainbowGradientColorsFactory = darkMode => ({
   inner: {
     addCash: ['#FFB114', '#FF54BB', '#00F0FF'],
     default: darkModeThemeColors.gradients.rainbow,
@@ -20,6 +20,8 @@ const RainbowGradientColorsFactory = darkMode => ({
           darkModeThemeColors.blueGreyDark20,
         ]
       : ['#B0B3B9', '#B0B3B9', '#B0B3B9'],
+    rainbow: ['#FFB114', '#FF54BB', '#00F0FF'],
+    rainbowTint: ['#fffaf1', '#fff5fb', '#f0feff'],
   },
   outer: {
     addCash: ['#F5AA13', '#F551B4', '#00E6F5'],
@@ -31,11 +33,12 @@ const RainbowGradientColorsFactory = darkMode => ({
           darkModeThemeColors.blueGreyDark20,
         ]
       : ['#A5A8AE', '#A5A8AE', '#A5A8AE'],
+    rainbow: ['#F5AA13', '#F551B4', '#00E6F5'],
   },
 });
 
-const RainbowGradientColorsDark = RainbowGradientColorsFactory(true);
-const RainbowGradientColorsLight = RainbowGradientColorsFactory(false);
+export const RainbowGradientColorsDark = RainbowGradientColorsFactory(true);
+export const RainbowGradientColorsLight = RainbowGradientColorsFactory(false);
 
 const RainbowButtonGradient = styled(RadialGradient).attrs(
   ({ type, width }) => ({

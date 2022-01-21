@@ -13,6 +13,8 @@ export const space = {
   '24px': 24,
   '30px': 30,
   '42px': 42,
+  '60px': 60,
+  '72px': 72,
 } as const;
 
 export const negativeSpace = {
@@ -29,6 +31,8 @@ export const negativeSpace = {
   '-24px': -24,
   '-30px': -30,
   '-42px': -42,
+  '-60px': -60,
+  '-72px': -72,
 } as const;
 
 const spaceToNegativeSpace: Record<
@@ -48,6 +52,8 @@ const spaceToNegativeSpace: Record<
   '24px': '-24px',
   '30px': '-30px',
   '42px': '-42px',
+  '60px': '-60px',
+  '72px': '-72px',
 };
 
 type CustomSpace = { custom: number };

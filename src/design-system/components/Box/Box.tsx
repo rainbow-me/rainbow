@@ -8,6 +8,11 @@ import {
 } from '../BackgroundProvider/BackgroundProvider';
 import type * as Polymorphic from './polymorphic';
 
+const heights = {
+  '58px': 58,
+  '64px': 64,
+} as const;
+
 const fraction = (numerator: number, denominator: number) =>
   `${(numerator * 100) / denominator}%`;
 
@@ -55,6 +60,7 @@ export type BoxProps = {
     | 'center'
     | 'space-between'
     | 'space-around';
+  height?: keyof typeof heights;
   margin?: NegativeSpace;
   marginBottom?: NegativeSpace;
   marginHorizontal?: NegativeSpace;
@@ -114,6 +120,7 @@ export const Box = forwardRef(function Box(
     flexShrink,
     flexWrap,
     justifyContent,
+    height,
     margin: marginProp,
     marginBottom: marginBottomProp,
     marginHorizontal: marginHorizontalProp,
@@ -178,6 +185,7 @@ export const Box = forwardRef(function Box(
       flexGrow,
       flexShrink,
       flexWrap,
+      height: height ? heights[height] : undefined,
       justifyContent,
       margin,
       marginBottom,
@@ -197,11 +205,11 @@ export const Box = forwardRef(function Box(
     };
   }, [
     alignItems,
-    borderBottomRadius,
     borderBottomLeftRadius,
-    borderBottomRightRadius,
+    borderBottomRadius,
     borderLeftRadius,
     borderRadius,
+    borderBottomRightRadius,
     borderRightRadius,
     borderTopLeftRadius,
     borderTopRadius,
@@ -211,6 +219,7 @@ export const Box = forwardRef(function Box(
     flexGrow,
     flexShrink,
     flexWrap,
+    height,
     justifyContent,
     margin,
     marginBottom,
