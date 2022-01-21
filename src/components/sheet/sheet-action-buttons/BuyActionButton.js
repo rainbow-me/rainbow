@@ -1,10 +1,12 @@
 import analytics from '@segment/analytics-react-native';
 import React, { useCallback } from 'react';
-import useAccountSettings from '../../../hooks/useAccountSettings';
-
 import SheetActionButton from './SheetActionButton';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
-import { useExpandedStateNavigation, useWallets } from '@rainbow-me/hooks';
+import {
+  useAccountSettings,
+  useExpandedStateNavigation,
+  useWallets,
+} from '@rainbow-me/hooks';
 
 import Routes from '@rainbow-me/routes';
 
@@ -36,7 +38,7 @@ function BuyActionButton({ color: givenColor, ...props }) {
       category: 'add cash',
       source: 'expanded state',
     });
-  }, [isDamaged, navigate, accountAddress]);
+  }, [accountAddress, isDamaged, navigate]);
 
   return (
     <SheetActionButton
