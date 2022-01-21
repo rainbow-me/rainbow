@@ -165,18 +165,20 @@ export const buildCoinsList = (
   const bigBalancesValue = getTotal(assetsAboveDivider);
   const totalBalancesValue = add(bigBalancesValue, smallBalancesValue);
 
+  const defaultToEditButton = assetsBelowDivider.length === 0;
   // include hidden assets if in edit mode
   if (isCoinListEdited) {
     assetsBelowDivider = concat(assetsBelowDivider, hiddenAssets);
   }
-
   const allAssets = assetsAboveDivider;
 
-  if (assetsBelowDivider.length > 0 || isCoinListEdited) {
-    allAssets.push({
-      coinDivider: true,
-      value: smallBalancesValue,
-    });
+  allAssets.push({
+    coinDivider: true,
+    defaultToEditButton: defaultToEditButton,
+    value: smallBalancesValue,
+  });
+
+  if (assetsBelowDivider.length > 0) {
     allAssets.push({
       assets: assetsBelowDivider,
       smallBalancesContainer: true,
@@ -215,6 +217,7 @@ export const buildBriefCoinsList = (
     for (let asset of assets) {
       if (asset.coinDivider) {
         briefAssets.push({
+          defaultToEditButton: asset.defaultToEditButton,
           type: 'COIN_DIVIDER',
           uid: 'coin-divider',
           value: smallBalancesValue,
