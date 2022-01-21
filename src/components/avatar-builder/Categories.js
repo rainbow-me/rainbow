@@ -41,7 +41,7 @@ export const Categories = {
   icons: {
     icon: 'emojiSymbols',
     index: 6,
-    name: lang.t('avatar_builder.emoji_categories.objects'),
+    name: lang.t('avatar_builder.emoji_categories.symbols'),
     width: 79,
   },
   flags: {
