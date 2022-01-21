@@ -13,6 +13,7 @@ export const widths = {
   '4/5': fraction(4, 5),
   'full': '100%',
 } as const;
+
 export const heights = {
   '30px': 30,
   '40px': 40,
