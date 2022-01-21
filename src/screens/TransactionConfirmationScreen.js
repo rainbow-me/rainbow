@@ -200,6 +200,7 @@ export default function TransactionConfirmationScreen() {
       requestId,
     },
   } = routeParams;
+  console.log('params: ', routeParams);
   const isMessageRequest = isMessageDisplayType(method);
   const [ready, setReady] = useState(isMessageRequest);
 
