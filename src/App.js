@@ -118,7 +118,6 @@ class App extends Component {
     this.backgroundNotificationListener = messaging().setBackgroundMessageHandler(
       async remoteMessage => {
         setTimeout(() => {
-          console.log('remote messafge:', remoteMessage)
           const topic = get(remoteMessage, 'data.topic');
           this.onPushNotificationOpened(topic);
         }, WALLETCONNECT_SYNC_DELAY);
