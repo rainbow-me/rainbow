@@ -61,7 +61,7 @@ export default function useUpdateEmoji() {
         ({ address }: { address: string }) =>
           address.toLowerCase() === accountAddress.toLowerCase()
       ) || {};
-    const maybeEmoji = label.split(' ')[0];
+    const maybeEmoji = label?.split(' ')[0] ?? '';
     const { emoji, colorIndex } = getNextEmojiWithColor(maybeEmoji);
     const name = `${emoji} ${accountName}`;
     saveInfo(name, colorIndex);
