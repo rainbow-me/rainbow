@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="Theme.MyGreenTheme" parent="@android:style/Theme.Light.NoTitleBar.Fullscreen">
-        <item name="android:windowBackground">#11aa22</item>
-        <item name="android:windowDisablePreview">true</item>
-    </style>
-</resources>
