@@ -166,6 +166,7 @@ export default function ProfileMasthead({
         accountColor={accountColor}
         accountSymbol={accountSymbol}
         image={accountImage}
+        isAvatarPickerAvailable
         onPress={handlePressAvatar}
       />
       <ButtonPressAnimation onPress={handlePressChangeWallet}>
