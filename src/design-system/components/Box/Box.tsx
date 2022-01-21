@@ -1,33 +1,23 @@
 import { flatten } from 'lodash';
 import React, { forwardRef, ReactNode, useMemo } from 'react';
 import { View } from 'react-native';
-import { NegativeSpace, negativeSpace, Space, space } from '../../layout/space';
+import { Height, heights, Width, widths } from '../../layout/size';
+import {
+  NegativeSpace,
+  negativeSpace,
+  positionSpace,
+  PositionSpace,
+  Space,
+  space,
+} from '../../layout/space';
 import {
   BackgroundProvider,
   BackgroundProviderProps,
 } from '../BackgroundProvider/BackgroundProvider';
 import type * as Polymorphic from './polymorphic';
 
-const heights = {
-  '58px': 58,
-  '64px': 64,
-} as const;
-
-const fraction = (numerator: number, denominator: number) =>
-  `${(numerator * 100) / denominator}%`;
-
-const widths = {
-  '1/2': fraction(1, 2),
-  '1/3': fraction(1, 3),
-  '1/4': fraction(1, 4),
-  '1/5': fraction(1, 5),
-  '2/3': fraction(2, 3),
-  '2/5': fraction(2, 5),
-  '3/4': fraction(3, 4),
-  '3/5': fraction(3, 5),
-  '4/5': fraction(4, 5),
-  'full': '100%',
-} as const;
+const positions = ['absolute'] as const;
+type Position = typeof positions[number];
 
 function resolveToken<TokenName extends string, TokenValue, CustomValue>(
   scale: Record<TokenName, TokenValue>,
@@ -48,12 +38,15 @@ export type BoxProps = {
   borderTopRightRadius?: number;
   borderBottomLeftRadius?: number;
   borderBottomRightRadius?: number;
+  bottom?: PositionSpace;
   children?: ReactNode;
   flexBasis?: 0;
   flexDirection?: 'row' | 'row-reverse' | 'column';
   flexGrow?: 0 | 1;
   flexShrink?: 0 | 1;
   flexWrap?: 'wrap';
+  height?: Height;
+  left?: PositionSpace;
   justifyContent?:
     | 'flex-start'
     | 'flex-end'
@@ -75,7 +68,10 @@ export type BoxProps = {
   paddingRight?: Space;
   paddingTop?: Space;
   paddingVertical?: Space;
-  width?: keyof typeof widths;
+  position?: Position;
+  right?: PositionSpace;
+  top?: PositionSpace;
+  width?: Width;
 } & (
   | {
       borderBottomRadius?: number;
@@ -113,6 +109,7 @@ export const Box = forwardRef(function Box(
     borderTopLeftRadius,
     borderTopRadius,
     borderTopRightRadius,
+    bottom: bottomProp,
     children,
     flexBasis,
     flexDirection,
@@ -120,7 +117,8 @@ export const Box = forwardRef(function Box(
     flexShrink,
     flexWrap,
     justifyContent,
-    height,
+    height: heightProp,
+    left: leftProp,
     margin: marginProp,
     marginBottom: marginBottomProp,
     marginHorizontal: marginHorizontalProp,
@@ -135,8 +133,11 @@ export const Box = forwardRef(function Box(
     paddingRight: paddingRightProp,
     paddingTop: paddingTopProp,
     paddingVertical: paddingVerticalProp,
+    position,
+    right: rightProp,
     style: styleProp,
-    width,
+    top: topProp,
+    width: widthProp,
     ...restProps
   },
   ref
@@ -156,6 +157,14 @@ export const Box = forwardRef(function Box(
   const paddingRight = resolveToken(space, paddingRightProp);
   const paddingTop = resolveToken(space, paddingTopProp);
   const paddingVertical = resolveToken(space, paddingVerticalProp);
+
+  const bottom = resolveToken(positionSpace, bottomProp);
+  const left = resolveToken(positionSpace, leftProp);
+  const right = resolveToken(positionSpace, rightProp);
+  const top = resolveToken(positionSpace, topProp);
+
+  const width = resolveToken(widths, widthProp);
+  const height = resolveToken(heights, heightProp);
 
   const styles = useMemo(() => {
     return {
@@ -180,13 +189,15 @@ export const Box = forwardRef(function Box(
         borderTopRadius ??
         borderRightRadius ??
         borderRadius,
+      bottom,
       flexBasis,
       flexDirection,
       flexGrow,
       flexShrink,
       flexWrap,
-      height: height ? heights[height] : undefined,
+      height,
       justifyContent,
+      left,
       margin,
       marginBottom,
       marginHorizontal,
@@ -201,7 +212,10 @@ export const Box = forwardRef(function Box(
       paddingRight,
       paddingTop,
       paddingVertical,
-      width: width ? widths[width] : undefined,
+      position,
+      right,
+      top,
+      width,
     };
   }, [
     alignItems,
@@ -214,6 +228,7 @@ export const Box = forwardRef(function Box(
     borderTopLeftRadius,
     borderTopRadius,
     borderTopRightRadius,
+    bottom,
     flexBasis,
     flexDirection,
     flexGrow,
@@ -221,6 +236,7 @@ export const Box = forwardRef(function Box(
     flexWrap,
     height,
     justifyContent,
+    left,
     margin,
     marginBottom,
     marginHorizontal,
@@ -235,6 +251,9 @@ export const Box = forwardRef(function Box(
     paddingRight,
     paddingTop,
     paddingVertical,
+    position,
+    right,
+    top,
     width,
   ]);
 
