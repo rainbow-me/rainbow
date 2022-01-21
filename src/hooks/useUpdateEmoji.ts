@@ -56,12 +56,13 @@ export default function useUpdateEmoji() {
 
   const setNextEmoji = useCallback(() => {
     const walletId = selectedWallet.id;
-    const { color } =
+    const { label } =
       wallets[walletId].addresses.find(
         ({ address }: { address: string }) =>
           address.toLowerCase() === accountAddress.toLowerCase()
       ) || {};
-    const { emoji, colorIndex } = getNextEmojiWithColor(color);
+    const maybeEmoji = label.split(' ')[0];
+    const { emoji, colorIndex } = getNextEmojiWithColor(maybeEmoji);
     const name = `${emoji} ${accountName}`;
     saveInfo(name, colorIndex);
   }, [accountAddress, accountName, saveInfo, selectedWallet.id, wallets]);

@@ -77,9 +77,10 @@ export function hashCode(text: string) {
 }
 
 export function getNextEmojiWithColor(
-  prevColorIndex: number = 0
+  prevEmoji: string
 ): { emoji: string; colorIndex: number } {
-  return avatars[(prevColorIndex + 1) % avatars.length];
+  const prevIndex = avatars.findIndex(({ emoji }) => emoji === prevEmoji); // if not matched, we get -1, what's fine
+  return avatars[(prevIndex + 1) % avatars.length];
 }
 
 export function addressHashedIndex(address: string) {
