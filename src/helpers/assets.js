@@ -347,7 +347,12 @@ export const buildBriefUniqueTokenList = (
     result.push({ name: 'Showcase', type: 'FAMILY_HEADER', uid: 'showcase' });
     for (let index = 0; index < uniqueTokensInShowcase.length; index++) {
       const uniqueId = uniqueTokensInShowcase[index];
-      result.push({ index, type: 'NFT', uid: uniqueId, uniqueId });
+      result.push({
+        index,
+        type: 'NFT',
+        uid: `showcase-${uniqueId}`,
+        uniqueId,
+      });
     }
 
     result.push({ type: 'NFT_SPACE_AFTER', uid: `showcase-space-after` });
