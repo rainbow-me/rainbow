@@ -876,9 +876,7 @@ const checkForUpdatedNonce = (transactionData: ZerionTransaction[]) => (
   dispatch: ThunkDispatch<AppState, unknown, never>
 ) => {
   const txSortedByDescendingNonce = transactionData.sort(
-    // @ts-expect-error TypeScript prevents this subtraction since `n1` or `n2`
-    // may be null, but subtracting null and a number is possible.
-    ({ nonce: n1 }, { nonce: n2 }) => n2 - n1
+    ({ nonce: n1 }, { nonce: n2 }) => (n2 ?? 0) - (n1 ?? 0)
   );
   const [latestTx] = txSortedByDescendingNonce;
   // @ts-expect-error `ZerionTransaction` doesn't have a `network` field, but
@@ -897,9 +895,7 @@ const checkForRemovedNonce = (removedTransactions: ZerionTransaction[]) => (
   dispatch: ThunkDispatch<AppState, unknown, never>
 ) => {
   const txSortedByAscendingNonce = removedTransactions.sort(
-    // @ts-expect-error TypeScript prevents this subtraction since `n1` or `n2`
-    // may be null, but subtracting null and a number is possible.
-    ({ nonce: n1 }, { nonce: n2 }) => n1 - n2
+    ({ nonce: n1 }, { nonce: n2 }) => (n1 ?? 0) - (n2 ?? 0)
   );
   const [lowestNonceTx] = txSortedByAscendingNonce;
   // @ts-expect-error `ZerionTransaction` doesn't have a `network` field, but
@@ -1533,7 +1529,10 @@ export const dataWatchPendingTransactions = (
           const txObj = await p.getTransaction(txHash!);
           // if the nonce of last confirmed tx is higher than this pending tx then it got dropped
           const nonceAlreadyIncluded = currentNonce > tx.nonce!;
-          if ((txObj?.blockNumber && txObj.blockHash) || nonceAlreadyIncluded) {
+          if (
+            (txObj?.blockNumber && txObj?.blockHash) ||
+            nonceAlreadyIncluded
+          ) {
             // When speeding up a non "normal tx" we need to resubscribe
             // because zerion "append" event isn't reliable
             logger.log('TX CONFIRMED!', txObj);
