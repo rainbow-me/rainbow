@@ -200,7 +200,6 @@ export default function TransactionConfirmationScreen() {
       requestId,
     },
   } = routeParams;
-  console.log('params: ', routeParams);
   const isMessageRequest = isMessageDisplayType(method);
   const [ready, setReady] = useState(isMessageRequest);
 
@@ -413,7 +412,6 @@ export default function TransactionConfirmationScreen() {
       } catch (error) {
         logger.log('error while handling cancel request', error);
         closeScreen(true);
-        Alert.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
       }
     },
     [
