@@ -87,11 +87,11 @@ export default () => {
     }
   }, [accountAddress, accountENS]);
 
-  const { setRandomEmoji } = useUpdateEmoji();
+  const { setNextEmoji } = useUpdateEmoji();
 
   const onAvatarPress = useCallback(() => {
     if (android) {
-      setRandomEmoji();
+      setNextEmoji();
       return;
     }
     const avatarActionSheetOptions = [

@@ -54,7 +54,7 @@ export default function useUpdateEmoji() {
     ]
   );
 
-  const setRandomEmoji = useCallback(() => {
+  const setNextEmoji = useCallback(() => {
     const walletId = selectedWallet.id;
     const { color } =
       wallets[walletId].addresses.find(
@@ -68,6 +68,6 @@ export default function useUpdateEmoji() {
 
   return {
     saveInfo,
-    setRandomEmoji,
+    setNextEmoji,
   };
 }
