@@ -27,19 +27,20 @@ function BuyActionButton({ color: givenColor, ...props }) {
     if (ios) {
       navigate(Routes.ADD_CASH_FLOW, params => params);
     } else {
-      navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, {
+      navigate(Routes.WYRE_WEBVIEW_NAVIGATOR, params => ({
         params: {
           address: accountAddress,
+          params,
         },
         screen: Routes.WYRE_WEBVIEW,
-      });
+      }));
     }
 
     analytics.track('Tapped Add Cash', {
       category: 'add cash',
       source: 'expanded state',
     });
-  }, [navigate, isDamaged]);
+  }, [isDamaged, navigate, accountAddress]);
 
   return (
     <SheetActionButton
