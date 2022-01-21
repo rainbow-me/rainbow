@@ -36,7 +36,7 @@ export function Inset({
       paddingTop={top}
       paddingVertical={vertical}
     >
-      {children}
+      <Box>{children}</Box>
     </Box>
   );
 }
