@@ -14,7 +14,7 @@ export const basicUsage: Example = {
         <Cover>
           <Placeholder height="100%" width="100%" />
         </Cover>
-        <Inset space="15px">
+        <Inset space="10px">
           <Placeholder />
         </Inset>
       </>
