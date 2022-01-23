@@ -86,6 +86,9 @@
         "enter_backup": "Enter backup password",
         "enter_backup_description": "To add this wallet to your %{cloudPlatformName} backup, enter your existing backup password"
       },
+      "explainers": {
+        "backup": "Don't forget this password! It is separate from your %{cloudPlatformName} password, and you should save it in a secure location.\n\nYou will need it in order to restore your wallet from the backup in the future."
+      },
       "manual": {
         "label": "Your secret phrase",
         "pkey": {

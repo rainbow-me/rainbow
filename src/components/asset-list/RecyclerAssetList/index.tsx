@@ -813,7 +813,7 @@ function RecyclerAssetList({
           },
         ]}
       >
-        <CoinDivider balancesSum={0} />
+        <CoinDivider balancesSum={0} defaultToEditButton={false} />
       </View>
     </StyledContainer>
   );
