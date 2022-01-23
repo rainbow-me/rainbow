@@ -81,7 +81,7 @@ const GradientInput = ({ onChangeText, value }: GradientInputProps) => {
               <Box
                 background="body"
                 borderRadius={46}
-                height="58px"
+                height={{ custom: 58 }}
                 width="full"
               />
             }
