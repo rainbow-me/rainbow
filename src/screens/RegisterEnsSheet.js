@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
-import GradientInput from '../components/inputs/GradientInput';
+import { Input } from '../components/inputs';
 import {
   SheetActionButton,
   SheetActionButtonRow,
@@ -73,7 +73,7 @@ export default function RegisterEnsSheet() {
             paddingHorizontal="19px"
             paddingVertical="42px"
           >
-            <GradientInput
+            <Input
               onChangeText={setSearchQuery}
               placeholder="Input placeholder"
             />
