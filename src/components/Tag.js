@@ -8,7 +8,8 @@ import { magicMemo, showActionSheetWithOptions } from '../utils';
 import { ButtonPressAnimation } from './animations';
 import { Centered, Column } from './layout';
 import { Text as TextElement } from './text';
-import { padding } from '@rainbow-me/styles';
+import { Row } from '@rainbow-me/design-system';
+import { lightModeThemeColors, padding } from '@rainbow-me/styles';
 
 const PropertyActionsEnum = {
   viewTraitOnOpensea: 'viewTraitOnOpensea',
@@ -43,8 +44,8 @@ const OuterBorder = styled(Centered)`
   z-index: 2;
 `;
 
-const Text = styled(TextElement).attrs(({ theme: { colors } }) => ({
-  color: colors.whiteLabel,
+const Text = styled(TextElement).attrs(({ theme: { colors }, max }) => ({
+  color: max ? lightModeThemeColors.grey : colors.whiteLabel,
   size: 'lmedium',
   weight: 'semibold',
 }))`
@@ -60,7 +61,7 @@ const Title = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
   margin-bottom: 1;
 `;
 
-const Tag = ({ color, disableMenu, slug, text, title, ...props }) => {
+const Tag = ({ color, disableMenu, slug, text, title, maxValue, ...props }) => {
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === PropertyActionsEnum.viewTraitOnOpensea) {
@@ -127,7 +128,10 @@ const Tag = ({ color, disableMenu, slug, text, title, ...props }) => {
         <OuterBorder {...props} color={color}>
           <Container>
             <Title color={color}>{upperCase(title)}</Title>
-            <Text>{upperFirst(text)}</Text>
+            <Row>
+              <Text>{upperFirst(text)}</Text>
+              {maxValue && <Text max>{` of ${maxValue}`}</Text>}
+            </Row>
           </Container>
         </OuterBorder>
       </ButtonPressAnimation>
@@ -142,4 +146,4 @@ Tag.propTypes = {
   title: PropTypes.string.isRequired,
 };
 
-export default magicMemo(Tag, ['color', 'slug', 'text', 'title']);
+export default magicMemo(Tag, ['color', 'slug', 'text', 'title', 'maxValue']);
