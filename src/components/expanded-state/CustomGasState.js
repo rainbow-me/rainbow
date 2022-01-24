@@ -1,6 +1,7 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import styled from 'styled-components';
 import Divider from '../Divider';
 import { ExchangeHeader } from '../exchange';
@@ -33,7 +34,7 @@ function useAndroidDisableGesturesOnFocus() {
 }
 
 const FeesPanelWrapper = styled(Column)`
-  ${margin(13, 12, 30, 24)}
+  ${margin(ios ? 13 : 3, 12, ios ? 30 : 10, 24)}
 `;
 
 const FeesPanelTabswrapper = styled(Column)`
@@ -78,13 +79,15 @@ export default function CustomGasState({ asset }) {
   return (
     <SlackSheet
       additionalTopPadding
-      backgroundColor={android ? colors.shadowBlack : colors.transparent}
-      borderBottomRadius={0}
-      contentHeight={longFormHeight}
-      deviceHeight={deviceHeight}
       hideHandle
+      {...(ios && {
+        borderBottomRadius: 0,
+        deviceHeight,
+        removeTopPadding: true,
+      })}
+      backgroundColor={colors.transparent}
+      contentHeight={ios ? longFormHeight : deviceHeight - getStatusBarHeight()}
       radius={0}
-      removeTopPadding
       scrollEnabled={false}
     >
       <FloatingPanel radius={android ? 30 : 39}>

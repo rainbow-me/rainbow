@@ -303,6 +303,9 @@ function BSNavigator() {
       <BSStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.CUSTOM_GAS_SHEET}
+        options={{
+          backdropOpacity: 1,
+        }}
       />
       <BSStack.Screen
         component={WalletDiagnosticsSheet}
