@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
-import GradientInput from '../components/inputs/GradientInput';
+import GradientInput from '../components/inputs/GradientInput/GradientInput';
 import {
   SheetActionButton,
   SheetActionButtonRow,
@@ -32,7 +32,7 @@ export default function RegisterEnsSheet() {
   const debouncedSearchQuery = useDebounceString(searchQuery);
 
   const { data: registration, status } = useQuery(
-    searchQuery.length > 3 && ['registration', debouncedSearchQuery],
+    debouncedSearchQuery.length > 3 && ['registration', debouncedSearchQuery],
     async (_, searchQuery) => {
       const fastFormatter = timestamp => {
         const date = new Date(Number(timestamp) * 1000);
@@ -48,6 +48,14 @@ export default function RegisterEnsSheet() {
   );
   const isLoading = status === 'loading';
   const isSuccess = registration && status === 'success';
+
+  let inputVariant = 'rainbow';
+  if (isSuccess && registration.isRegistered) {
+    inputVariant = 'warning';
+  }
+  if (isSuccess && !registration.isRegistered) {
+    inputVariant = 'success';
+  }
 
   return (
     <Container>
@@ -76,6 +84,7 @@ export default function RegisterEnsSheet() {
             <GradientInput
               onChangeText={setSearchQuery}
               placeholder="Input placeholder"
+              variant={inputVariant}
             />
           </Box>
 

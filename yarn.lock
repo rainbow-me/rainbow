@@ -3576,6 +3576,12 @@
     xcode "3.0.1"
     yargs "^16.2.0"
 
+"@shopify/react-native-skia@https://github.com/Shopify/react-native-skia/releases/download/v0.1.75-alpha/shopify-react-native-skia-0.1.75.tgz":
+  version "0.1.75"
+  resolved "https://github.com/Shopify/react-native-skia/releases/download/v0.1.75-alpha/shopify-react-native-skia-0.1.75.tgz#5a6f2a35432ec1f21e82d7ee96b7c3d1a7dda841"
+  dependencies:
+    react-reconciler "^0.26.2"
+
 "@sideway/address@^4.1.0":
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/@sideway/address/-/address-4.1.2.tgz#811b84333a335739d3969cfc434736268170cad1"
@@ -14573,6 +14579,15 @@ react-query@1.5.10:
   dependencies:
     "@scarf/scarf" "^1.0.6"
     ts-toolbelt "^6.9.4"
+
+react-reconciler@^0.26.2:
+  version "0.26.2"
+  resolved "https://registry.yarnpkg.com/react-reconciler/-/react-reconciler-0.26.2.tgz#bbad0e2d1309423f76cf3c3309ac6c96e05e9d91"
+  integrity sha512-nK6kgY28HwrMNwDnMui3dvm3rCFjZrcGiuwLc5COUipBK5hWHLOxMJhSnSomirqWwjPBJKV1QcbkI0VJr7Gl1Q==
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    scheduler "^0.20.2"
 
 react-redux@7.2.1:
   version "7.2.1"

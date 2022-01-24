@@ -53,7 +53,6 @@ export type BoxProps = {
     | 'center'
     | 'space-between'
     | 'space-around';
-  height?: keyof typeof heights;
   margin?: NegativeSpace;
   marginBottom?: NegativeSpace;
   marginHorizontal?: NegativeSpace;

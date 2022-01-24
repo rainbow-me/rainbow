@@ -15,6 +15,7 @@ export const space = {
   '42px': 42,
   '60px': 60,
   '72px': 72,
+  '76px': 76,
 } as const;
 
 export const negativeSpace = {
@@ -33,6 +34,7 @@ export const negativeSpace = {
   '-42px': -42,
   '-60px': -60,
   '-72px': -72,
+  '-76px': -76,
 } as const;
 
 const spaceToNegativeSpace: Record<
@@ -54,6 +56,7 @@ const spaceToNegativeSpace: Record<
   '42px': '-42px',
   '60px': '-60px',
   '72px': '-72px',
+  '76px': '-76px',
 };
 
 export const positionSpace = {
