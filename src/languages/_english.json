@@ -352,6 +352,7 @@
         "about": "About %{assetFamilyName}",
         "attributes": "Attributes",
         "description": "Description",
+        "in_showcase": "In Showcase",
         "showcase": "Showcase",
         "toast_added_to_showcase": "Added to showcase",
         "toast_removed_from_showcase": "Removed from showcase"
@@ -546,11 +547,11 @@
     "savings": {
       "deposit": "Deposit",
       "earnings": {
-        "5_year": "5-Year",
+        "100_year": "100-Year",
         "10_year": "10-Year",
         "20_year": "20-Year",
         "50_year": "50-Year",
-        "100_year": "100-Year",
+        "5_year": "5-Year",
         "est": "Est.",
         "label": "Earnings",
         "monthly": "Monthly",

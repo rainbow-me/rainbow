@@ -271,7 +271,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
                 weight="heavy"
               >
                 {isShowcaseAsset
-                  ? `􀁏 ${lang.t('expanded_state.unique_expanded.showcase')}`
+                  ? `􀁏 ${lang.t('expanded_state.unique_expanded.in_showcase')}`
                   : `􀁍 ${lang.t('expanded_state.unique_expanded.showcase')}`}
               </Text>
             </ButtonPressAnimation>

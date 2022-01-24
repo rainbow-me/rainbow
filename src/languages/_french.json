@@ -354,6 +354,7 @@
         "about": "About %{assetFamilyName} :)",
         "attributes": "Attributes :)",
         "description": "Description :)",
+        "in_showcase": "In Showcase :)",
         "showcase": "Showcase :)",
         "toast_added_to_showcase": "Added to showcase :)",
         "toast_removed_from_showcase": "Removed from showcase :)"
@@ -527,11 +528,11 @@
     "savings": {
       "deposit": "Dépôt",
       "earnings": {
-        "5_year": "5-Ans",
+        "100_year": "100-Ans",
         "10_year": "10-Ans",
         "20_year": "20-Ans",
         "50_year": "50-Ans",
-        "100_year": "100-Ans",
+        "5_year": "5-Ans",
         "est": "Est.",
         "label": "Gains",
         "monthly": "Mensuel",
