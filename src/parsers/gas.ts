@@ -64,14 +64,16 @@ const parseGasDataConfirmationTime = (
   let blocksToWaitForBaseFee = 0;
   const { byPriorityFee, byBaseFee } = blocksToConfirmation;
 
-  if (lessThan(maxPriorityFee, byPriorityFee[1])) {
-    blocksToWaitForPriorityFee += 1;
-  } else if (lessThan(maxPriorityFee, byPriorityFee[2])) {
-    blocksToWaitForPriorityFee += 2;
-  } else if (lessThan(maxPriorityFee, byPriorityFee[3])) {
-    blocksToWaitForPriorityFee += 3;
+  if (lessThan(maxPriorityFee, divide(byPriorityFee[4], 2))) {
+    blocksToWaitForPriorityFee += 240;
   } else if (lessThan(maxPriorityFee, byPriorityFee[4])) {
     blocksToWaitForPriorityFee += 4;
+  } else if (lessThan(maxPriorityFee, byPriorityFee[3])) {
+    blocksToWaitForPriorityFee += 3;
+  } else if (lessThan(maxPriorityFee, byPriorityFee[2])) {
+    blocksToWaitForPriorityFee += 2;
+  } else if (lessThan(maxPriorityFee, byPriorityFee[1])) {
+    blocksToWaitForPriorityFee += 1;
   }
 
   if (lessThan(byBaseFee[4], maxBaseFee)) {
@@ -89,8 +91,8 @@ const parseGasDataConfirmationTime = (
   }
 
   const totalBlocksToWait =
-    blocksToWaitForBaseFee > 4
-      ? blocksToWaitForBaseFee
+    blocksToWaitForBaseFee > 240
+      ? blocksToWaitForPriorityFee
       : blocksToWaitForBaseFee + blocksToWaitForPriorityFee;
   let timeAmount = 15 * totalBlocksToWait;
 
