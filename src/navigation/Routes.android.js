@@ -1,6 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext, useMemo } from 'react';
+import { PROFILES_ENABLED } from 'react-native-dotenv';
 import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
 import AddTokenSheet from '../screens/AddTokenSheet';
@@ -270,10 +271,12 @@ function BSNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SHEET}
       />
-      <BSStack.Screen
-        component={RegisterEnsSheet}
-        name={Routes.REGISTER_ENS_SHEET}
-      />
+      {PROFILES_ENABLED === 'YES' && (
+        <BSStack.Screen
+          component={RegisterEnsSheet}
+          name={Routes.REGISTER_ENS_SHEET}
+        />
+      )}
       <BSStack.Screen
         component={ShowcaseSheet}
         name={Routes.SHOWCASE_SHEET}
