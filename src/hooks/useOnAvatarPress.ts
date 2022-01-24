@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { RainbowAccount } from '../model/wallet';
 import { useNavigation } from '../navigation/Navigation';
 import useAccountProfile from './useAccountProfile';
+import useUpdateEmoji from './useUpdateEmoji';
 import useWallets from './useWallets';
 import { walletsSetSelected, walletsUpdate } from '@rainbow-me/redux/wallets';
 import Routes from '@rainbow-me/routes';
@@ -86,7 +87,13 @@ export default () => {
     }
   }, [accountAddress, accountENS]);
 
+  const { setNextEmoji } = useUpdateEmoji();
+
   const onAvatarPress = useCallback(() => {
+    if (android) {
+      setNextEmoji();
+      return;
+    }
     const avatarActionSheetOptions = [
       'Choose from Library',
       ...(!accountImage ? ['Pick an Emoji'] : []),
