@@ -24,7 +24,6 @@ export default function useMemoBriefSectionData() {
     let isGroupOpen = true;
     const stickyHeaders = [];
     let index = 0;
-    let isAnyAssetBelowDivider = false;
     let afterCoins = false;
     // load firstly 12, then the rest after 1 sec
     let numberOfSmallBalancesAllowed = stagger ? 12 : briefSectionsData.length;
@@ -53,21 +52,13 @@ export default function useMemoBriefSectionData() {
           stickyHeaders.push(index);
         }
         if (
-          afterDivider &&
-          data.type === CellType.COIN &&
-          !hiddenCoins.includes((data as CoinExtraData).uniqueId)
-        ) {
-          isAnyAssetBelowDivider = true;
-        }
-
-        if (
           data.type === CellType.COIN &&
           !isSmallBalancesOpen &&
+          !isCoinListEdited &&
           afterDivider
         ) {
           return false;
         }
-
         if (
           data.type === CellType.COIN &&
           hiddenCoins.includes((data as CoinExtraData).uniqueId) &&
@@ -118,14 +109,7 @@ export default function useMemoBriefSectionData() {
         index++;
         return true;
       })
-      .filter(
-        ({ type }) =>
-          type !== CellType.COIN_DIVIDER ||
-          isAnyAssetBelowDivider ||
-          isCoinListEdited
-      )
       .map(({ uid, type }) => ({ type, uid }));
-
     return briefSectionsDataFiltered;
   }, [
     briefSectionsData,
