@@ -77,6 +77,20 @@ function SendFlowNavigator() {
   );
 }
 
+function RegisterENSFlowNavigator() {
+  return (
+    <Stack.Navigator
+      {...stackNavigationConfig}
+      initialRouteName={Routes.REGISTER_ENS_SHEET}
+    >
+      <Stack.Screen
+        component={RegisterEnsSheet}
+        name={Routes.REGISTER_ENS_SHEET}
+      />
+    </Stack.Navigator>
+  );
+}
+
 function ImportSeedPhraseFlowNavigator() {
   return (
     <Stack.Navigator
@@ -273,8 +287,8 @@ function BSNavigator() {
       />
       {PROFILES_ENABLED === 'YES' && (
         <BSStack.Screen
-          component={RegisterEnsSheet}
-          name={Routes.REGISTER_ENS_SHEET}
+          component={RegisterENSFlowNavigator}
+          name={Routes.REGISTER_ENS_SHEET_NAVIGATOR}
         />
       )}
       <BSStack.Screen
