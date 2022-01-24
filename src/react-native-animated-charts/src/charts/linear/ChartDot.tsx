@@ -31,7 +31,7 @@ const ChartDot = React.memo(
       );
 
       return {
-        opacity: animation,
+        opacity: positionY.value === -1 ? 0 : animation,
         transform: [
           { translateX },
           { translateY },

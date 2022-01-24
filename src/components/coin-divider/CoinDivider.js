@@ -100,7 +100,7 @@ const useInterpolationRange = () => {
   };
 };
 
-export default function CoinDivider({ balancesSum }) {
+export default function CoinDivider({ balancesSum, defaultToEditButton }) {
   const interpolation = useInterpolationRange();
   const { nativeCurrency } = useAccountSettings();
   const dispatch = useDispatch();
@@ -151,13 +151,15 @@ export default function CoinDivider({ balancesSum }) {
       <Container deviceWidth={deviceWidth} isCoinListEdited={isCoinListEdited}>
         <Row>
           <View
-            opacity={isCoinListEdited ? 0 : 1}
-            pointerEvents={isCoinListEdited ? 'none' : 'auto'}
+            opacity={defaultToEditButton || isCoinListEdited ? 0 : 1}
+            pointerEvents={
+              defaultToEditButton || isCoinListEdited ? 'none' : 'auto'
+            }
           >
             <CoinDividerOpenButton
               coinDividerHeight={CoinDividerHeight}
               isSmallBalancesOpen={isSmallBalancesOpen}
-              isVisible={isCoinListEdited}
+              isVisible={defaultToEditButton || isCoinListEdited}
               onPress={toggleOpenSmallBalances}
             />
           </View>
@@ -190,16 +192,20 @@ export default function CoinDivider({ balancesSum }) {
           <CoinDividerAssetsValue
             balancesSum={balancesSum}
             nativeCurrency={nativeCurrency}
-            openSmallBalances={isSmallBalancesOpen}
+            openSmallBalances={defaultToEditButton || isSmallBalancesOpen}
           />
           <EditButtonWrapper
             pointerEvents={
-              isCoinListEdited || isSmallBalancesOpen ? 'auto' : 'none'
+              defaultToEditButton || isCoinListEdited || isSmallBalancesOpen
+                ? 'auto'
+                : 'none'
             }
           >
             <CoinDividerEditButton
               isActive={isCoinListEdited}
-              isVisible={isCoinListEdited || isSmallBalancesOpen}
+              isVisible={
+                defaultToEditButton || isCoinListEdited || isSmallBalancesOpen
+              }
               onPress={handlePressEdit}
               text={
                 isCoinListEdited ? lang.t('button.done') : lang.t('button.edit')
