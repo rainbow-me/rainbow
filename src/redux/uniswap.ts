@@ -1,18 +1,36 @@
 import produce from 'immer';
-import { concat, isArray, map, remove, toLower, uniq, without } from 'lodash';
+import {
+  concat,
+  isArray,
+  map,
+  omit,
+  remove,
+  toLower,
+  uniq,
+  without,
+} from 'lodash';
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
-import { RainbowToken } from '@rainbow-me/entities';
+import {
+  EthereumAddress,
+  RainbowToken,
+  UniswapFavoriteTokenData,
+} from '@rainbow-me/entities';
+import { getUniswapV2Tokens } from '@rainbow-me/handlers/dispersion';
 import {
   getUniswapFavorites,
+  getUniswapFavoritesMetadata as getUniswapFavoritesMetadataLS,
   saveUniswapFavorites,
+  saveUniswapFavoritesMetadata,
 } from '@rainbow-me/handlers/localstorage/uniswap';
 import { getTestnetUniswapPairs } from '@rainbow-me/handlers/uniswap';
 import networkTypes from '@rainbow-me/networkTypes';
 import {
   DefaultUniswapFavorites,
+  ETH_ADDRESS,
   rainbowTokenList,
   SOCKS_ADDRESS,
+  WETH_ADDRESS,
 } from '@rainbow-me/references';
 
 // -- Constants ------------------------------------------------------------- //
@@ -36,6 +54,11 @@ interface UniswapState {
    * An array of addresses for the user's favorite Uniswap pairs.
    */
   favorites: string[];
+
+  /**
+   * Data associated with user's favorite Uniswap pairs.
+   */
+  favoritesMeta: UniswapFavoriteTokenData;
 
   /**
    * Whether or not data from Uniswap is currently being loaded.
@@ -71,7 +94,10 @@ interface UniswapLoadRequestAction {
  */
 interface UniswapLoadSuccessAction {
   type: typeof UNISWAP_LOAD_SUCCESS;
-  payload: UniswapState['favorites'];
+  payload: {
+    favorites: UniswapState['favorites'];
+    favoritesMeta: UniswapState['favoritesMeta'];
+  };
 }
 
 /**
@@ -94,7 +120,10 @@ interface UniswapUpdatePairsAction {
  */
 interface UniswapUpdateFavoritesAction {
   type: typeof UNISWAP_UPDATE_FAVORITES;
-  payload: UniswapState['favorites'];
+  payload: {
+    favorites: UniswapState['favorites'];
+    favoritesMeta: UniswapState['favoritesMeta'];
+  };
 }
 
 /**
@@ -120,8 +149,14 @@ export const uniswapLoadState = () => async (
   try {
     const favorites: string[] = await getUniswapFavorites(network);
     remove(favorites, address => toLower(address) === toLower(SOCKS_ADDRESS));
+    const favoritesMeta: UniswapFavoriteTokenData = await getUniswapFavoritesMetadata(
+      favorites
+    );
     dispatch({
-      payload: favorites,
+      payload: {
+        favorites,
+        favoritesMeta,
+      },
       type: UNISWAP_LOAD_SUCCESS,
     });
   } catch (error) {
@@ -156,6 +191,34 @@ export const uniswapResetState = () => (
 ) => dispatch({ type: UNISWAP_CLEAR_STATE });
 
 /**
+ * Loads uniswap favorites metadata from local storage or fetches new data
+ * on update / when persisting default favorites for the first time
+ */
+const getUniswapFavoritesMetadata = async (addresses: EthereumAddress[]) => {
+  let favoritesMetaData = await getUniswapFavoritesMetadataLS();
+  if (Object.keys(favoritesMetaData).length !== addresses.length) {
+    favoritesMetaData = await getUniswapV2Tokens(
+      addresses.map(address => {
+        return address === ETH_ADDRESS ? WETH_ADDRESS : address.toLowerCase();
+      })
+    );
+    if (favoritesMetaData[WETH_ADDRESS]) {
+      const favorite = favoritesMetaData[WETH_ADDRESS];
+      favoritesMetaData[ETH_ADDRESS] = {
+        ...favorite,
+        address: ETH_ADDRESS,
+        name: 'Ethereum',
+        symbol: 'ETH',
+        uniqueId: ETH_ADDRESS,
+      };
+      favoritesMetaData = omit(favoritesMetaData, WETH_ADDRESS);
+    }
+    saveUniswapFavoritesMetadata(favoritesMetaData);
+  }
+  return favoritesMetaData || {};
+};
+
+/**
  * Updates a user's Uniswap favorites in state and updates global storage.
  *
  * @param assetAddress The addresses to use when updating favorites.
@@ -165,7 +228,7 @@ export const uniswapResetState = () => (
 export const uniswapUpdateFavorites = (
   assetAddress: string | string[],
   add = true
-) => (
+) => async (
   dispatch: Dispatch<UniswapUpdateFavoritesAction>,
   getState: AppGetState
 ) => {
@@ -177,17 +240,25 @@ export const uniswapUpdateFavorites = (
     : isArray(assetAddress)
     ? without(normalizedFavorites, ...assetAddress)
     : without(normalizedFavorites, assetAddress);
+  const updatedFavoritesMeta = await getUniswapFavoritesMetadata(
+    updatedFavorites
+  );
   dispatch({
-    payload: updatedFavorites,
+    payload: {
+      favorites: updatedFavorites,
+      favoritesMeta: updatedFavoritesMeta,
+    },
     type: UNISWAP_UPDATE_FAVORITES,
   });
   saveUniswapFavorites(updatedFavorites);
+  saveUniswapFavoritesMetadata(updatedFavoritesMeta);
 };
 
 // -- Reducer --------------------------------------------------------------- //
 
 export const INITIAL_UNISWAP_STATE: UniswapState = {
   favorites: DefaultUniswapFavorites['mainnet'],
+  favoritesMeta: {},
   loadingUniswap: false,
   get pairs() {
     return rainbowTokenList.CURATED_TOKENS;
@@ -207,11 +278,13 @@ export default (
         draft.pairs = action.payload;
         break;
       case UNISWAP_LOAD_SUCCESS:
-        draft.favorites = action.payload;
+        draft.favorites = action.payload.favorites;
+        draft.favoritesMeta = action.payload.favoritesMeta;
         draft.loadingUniswap = false;
         break;
       case UNISWAP_UPDATE_FAVORITES:
-        draft.favorites = action.payload;
+        draft.favorites = action.payload.favorites;
+        draft.favoritesMeta = action.payload.favoritesMeta;
         break;
       case UNISWAP_LOAD_FAILURE:
         draft.loadingUniswap = false;

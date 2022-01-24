@@ -1,3 +1,4 @@
+import { EthereumAddress, RainbowToken } from '../../entities';
 import { DefaultUniswapFavorites } from '../../references';
 import {
   getAccountLocal,
@@ -10,6 +11,7 @@ const ASSETS = 'uniswapassets';
 const LIQUIDITY = 'uniswapliquidity';
 const UNISWAP_POSITIONS = 'uniswapPositions';
 const UNISWAP_FAVORITES = 'uniswapFavorites';
+const UNISWAP_FAVORITES_METADATA = 'uniswapFavoritesMetaData';
 const uniswapLiquidityVersion = '0.2.0';
 const uniswapPositionsVersion = '0.1.0';
 
@@ -21,6 +23,13 @@ export const getUniswapFavorites = (network: any) =>
 
 export const saveUniswapFavorites = (favorites: any) =>
   saveGlobal(UNISWAP_FAVORITES, favorites);
+
+export const getUniswapFavoritesMetadata = () =>
+  getGlobal(UNISWAP_FAVORITES_METADATA, {});
+
+export const saveUniswapFavoritesMetadata = (
+  data: Record<EthereumAddress, RainbowToken>
+) => saveGlobal(UNISWAP_FAVORITES_METADATA, data);
 
 export const getUniswapPositions = (accountAddress: any, network: any) =>
   getAccountLocal(
