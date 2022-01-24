@@ -150,7 +150,7 @@
     "make-color-more-chill": "0.2.2",
     "match-sorter": "6.3.0",
     "mnemonist": "0.38.1",
-    "nanoid": "2.1.11",
+    "nanoid": "3.2.0",
     "p-wait-for": "4.1.0",
     "parse-domain": "4.1.0",
     "parse-ms": "2.1.0",
@@ -317,7 +317,7 @@
     "typescript-coverage-report": "0.6.1"
   },
   "resolutions": {
-    "**/node-fetch": "2.6.1",
+    "**/node-fetch": "2.6.7",
     "**/web3": "1.6.1",
     "**/underscore": "1.12.1",
     "**/socket.io-parser": "3.3.1",
