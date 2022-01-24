@@ -19,7 +19,7 @@ import type * as Polymorphic from './polymorphic';
 const positions = ['absolute'] as const;
 type Position = typeof positions[number];
 
-function resolveToken<TokenName extends string, TokenValue, CustomValue>(
+export function resolveToken<TokenName extends string, TokenValue, CustomValue>(
   scale: Record<TokenName, TokenValue>,
   value: TokenName | { custom: CustomValue } | undefined
 ) {

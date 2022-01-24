@@ -139,12 +139,12 @@ export const heights: Example = {
   Example: () =>
     source(
       <Stack space="12px">
-        <Box background="accent" height="30px" padding="24px" />
-        <Box background="accent" height="40px" padding="24px" />
-        <Box background="accent" height="46px" padding="24px" />
-        <Box background="accent" height="56px" padding="24px" />
-        <Box background="accent" height="64px" padding="24px" />
-        <Box background="accent" height={{ custom: 30 }} padding="24px" />
+        <Box background="accent" height="30px" />
+        <Box background="accent" height="40px" />
+        <Box background="accent" height="46px" />
+        <Box background="accent" height="56px" />
+        <Box background="accent" height="64px" />
+        <Box background="accent" height={{ custom: 30 }} />
       </Stack>
     ),
 };

@@ -14,7 +14,7 @@ export type CoverProps = {
 };
 
 /**
- * @description Renders an absolutely filled container relative to it's parent.
+ * @description Renders an absolutely filled container relative to its parent.
  */
 export function Cover({
   alignVertical,
