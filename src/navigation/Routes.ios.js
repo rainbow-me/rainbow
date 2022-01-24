@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { omit } from 'lodash';
 import React, { useContext } from 'react';
 import { StatusBar } from 'react-native';
+import { PROFILES_ENABLED } from 'react-native-dotenv';
 import { useTheme } from '../context/ThemeContext';
 import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
@@ -261,11 +262,6 @@ function NativeStackNavigator() {
         name={Routes.EXCHANGE_MODAL}
         options={{ ...nativeStackDefaultConfig, interactWithScrollView: false }}
       />
-      <Stack.Screen
-        component={RegisterEnsSheet}
-        name={Routes.REGISTER_ENS_SHEET}
-        {...expandedAssetSheetConfigWithLimit}
-      />
       <NativeStack.Screen
         component={ExpandedAssetSheet}
         name={Routes.EXPANDED_ASSET_SHEET}
@@ -404,10 +400,12 @@ function NativeStackNavigator() {
             component={SendFlowNavigator}
             name={Routes.SEND_SHEET_NAVIGATOR}
           />
-          <NativeStack.Screen
-            component={RegisterENSFlowNavigator}
-            name={Routes.REGISTER_ENS_SHEET_NAVIGATOR}
-          />
+          {PROFILES_ENABLED === 'YES' && (
+            <NativeStack.Screen
+              component={RegisterENSFlowNavigator}
+              name={Routes.REGISTER_ENS_SHEET_NAVIGATOR}
+            />
+          )}
           <NativeStack.Screen
             component={ImportSeedPhraseFlowNavigator}
             name={Routes.IMPORT_SEED_PHRASE_SHEET_NAVIGATOR}

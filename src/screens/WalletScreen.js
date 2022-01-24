@@ -2,6 +2,7 @@ import { useRoute } from '@react-navigation/core';
 import { compact, find, get, isEmpty, keys, map, toLower } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import { StatusBar } from 'react-native';
+import { PROFILES_ENABLED } from 'react-native-dotenv';
 import Animated from 'react-native-reanimated';
 import { useValue } from 'react-native-redash/src/v1';
 import { useDispatch, useSelector } from 'react-redux';
@@ -170,7 +171,7 @@ export default function WalletScreen() {
       [
         !!get(networkInfo[network], 'exchange_enabled') && ExchangeFab,
         SendFab,
-        RegisterEnsFab,
+        PROFILES_ENABLED === 'YES' ? RegisterEnsFab : null,
       ].filter(e => !!e),
     [network]
   );
