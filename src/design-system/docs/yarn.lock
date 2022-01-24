@@ -1466,10 +1466,10 @@
     escape-string-regexp "^4.0.0"
     outdent "^0.8.0"
 
-"@vanilla-extract/integration@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@vanilla-extract/integration/-/integration-2.0.0.tgz#bcb5e30939a2e8e489bc5e9d3b5b0d835e6b06c3"
-  integrity sha512-ooJ3yj1jYzOBdIwZ9k3T7DD9w9hpZcUOnv98FB11pYCjbTjLEk4nOvEf+zqd+oUCQBZ42R4SKJwYm3n5KcyTiQ==
+"@vanilla-extract/integration@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@vanilla-extract/integration/-/integration-2.0.1.tgz#042508b92388cb37cea17834eea1108abe4eca21"
+  integrity sha512-OT0WLxmfDengj63NJAnb3noJmy2Yg9W8FbvGjvGe7c8GMKKMuwRJdW1fV5MeL3tPvZwIeh3YQPsUwCD1mIWS+g==
   dependencies:
     "@vanilla-extract/css" "^1.6.8"
     chalk "^4.1.1"
@@ -1480,12 +1480,13 @@
     lodash "^4.17.21"
     outdent "^0.8.0"
 
-"@vanilla-extract/next-plugin@1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@vanilla-extract/next-plugin/-/next-plugin-1.0.1.tgz#8a718eff3dbe00e889da11bcb1b5bc341c76e7ec"
-  integrity sha512-e0PIc75Tb5DCdSRZXd7Ph0eAv8VadPrh6NfCzP+S8lLEqeOFrNDVOOjKErlj1ngGNk3R+W/BcMDwJ8SKk+GQig==
+"@vanilla-extract/next-plugin@2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@vanilla-extract/next-plugin/-/next-plugin-2.0.1.tgz#7e368568193bcc1975c01316d936acf942cd3b0b"
+  integrity sha512-pCM6XNtmcVByRjNqEQZewGiMEVXmc8D0nivRaFFjFFdJrBqqr5ikRi8mfZVw3NzmHih4Uk20+sExYYrMwMVMyQ==
   dependencies:
-    "@vanilla-extract/webpack-plugin" "^2.0.0"
+    "@vanilla-extract/webpack-plugin" "^2.1.5"
+    browserslist "^4.19.1"
 
 "@vanilla-extract/private@^1.0.1", "@vanilla-extract/private@^1.0.3":
   version "1.0.3"
@@ -1497,12 +1498,12 @@
   resolved "https://registry.yarnpkg.com/@vanilla-extract/sprinkles/-/sprinkles-1.3.1.tgz#18de2841327e423ded745c398fe82786e3614b62"
   integrity sha512-RxD+Thb4ZdrJB/rnfGkZR3jFYj48/oKlK79yIe9MS1+s5L0oC9E6L727PJoHEP+69EMuuCrufdHge4AdPzovxA==
 
-"@vanilla-extract/webpack-plugin@^2.0.0":
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/@vanilla-extract/webpack-plugin/-/webpack-plugin-2.1.4.tgz#79574215105d0fdd76e8cd1e40ae7c0ac77381b6"
-  integrity sha512-v50pYwlJvjTOofyQ3LmKK0nmquxDDKzJGwX/lmhFGE00IXXUEv/gLqaZLDRsBU+C/fFUyl3WBpH8r7U3mHBCTg==
+"@vanilla-extract/webpack-plugin@^2.1.5":
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/@vanilla-extract/webpack-plugin/-/webpack-plugin-2.1.5.tgz#9cb06fd4f62a31c48045733c6698cc78278e985a"
+  integrity sha512-9drlDXQiOyozjJNVYyKx5Q1Wp3MFV8qIYJK/yBPFWAywHto2bU1hiREkF7DVVr4fJ1RM/xm+Ps3T0pwVxw61hQ==
   dependencies:
-    "@vanilla-extract/integration" "^2.0.0"
+    "@vanilla-extract/integration" "^2.0.1"
     chalk "^4.1.1"
     debug "^4.3.1"
     loader-utils "^2.0.0"
@@ -2138,6 +2139,17 @@ browserslist@^4.14.5, browserslist@^4.17.5, browserslist@^4.18.1:
     node-releases "^2.0.1"
     picocolors "^1.0.0"
 
+browserslist@^4.19.1:
+  version "4.19.1"
+  resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.19.1.tgz#4ac0435b35ab655896c31d53018b6dd5e9e4c9a3"
+  integrity sha512-u2tbbG5PdKRTUoctO3NBD8FQ5HdPh1ZXPHzp1rwaa5jTc+RV9/+RlWiAIKmjRPQF+xbGM9Kklj5bZQFa2s/38A==
+  dependencies:
+    caniuse-lite "^1.0.30001286"
+    electron-to-chromium "^1.4.17"
+    escalade "^3.1.1"
+    node-releases "^2.0.1"
+    picocolors "^1.0.0"
+
 buffer-from@^1.0.0:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/buffer-from/-/buffer-from-1.1.2.tgz#2b146a6fd72e80b4f55d255f35ed59a3a9a41bd5"
@@ -2206,6 +2218,11 @@ caniuse-lite@^1.0.30001202, caniuse-lite@^1.0.30001219, caniuse-lite@^1.0.300012
   version "1.0.30001285"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001285.tgz#fe1e52229187e11d6670590790d669b9e03315b7"
   integrity sha512-KAOkuUtcQ901MtmvxfKD+ODHH9YVDYnBt+TGYSz2KIfnq22CiArbUxXPN9067gNbgMlnNYRSwho8OPXZPALB9Q==
+
+caniuse-lite@^1.0.30001286:
+  version "1.0.30001300"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001300.tgz#11ab6c57d3eb6f964cba950401fd00a146786468"
+  integrity sha512-cVjiJHWGcNlJi8TZVKNMnvMid3Z3TTdDHmLDzlOdIiZq138Exvo0G+G0wTdVYolxKb4AYwC+38pxodiInVtJSA==
 
 chalk@2.4.2, chalk@^2.0.0, chalk@^2.4.1, chalk@^2.4.2:
   version "2.4.2"
@@ -2936,6 +2953,11 @@ electron-to-chromium@^1.3.723, electron-to-chromium@^1.3.896:
   version "1.4.12"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.12.tgz#5f73d1278c6205fc41d7a0ebd75563046b77c5d8"
   integrity sha512-zjfhG9Us/hIy8AlQ5OzfbR/C4aBv1Dg/ak4GX35CELYlJ4tDAtoEcQivXvyBdqdNQ+R6PhlgQqV8UNPJmhkJog==
+
+electron-to-chromium@^1.4.17:
+  version "1.4.46"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.46.tgz#c88a6fedc766589826db0481602a888864ade1ca"
+  integrity sha512-UtV0xUA/dibCKKP2JMxOpDtXR74zABevuUEH4K0tvduFSIoxRVcYmQsbB51kXsFTX8MmOyWMt8tuZAlmDOqkrQ==
 
 elliptic@^6.5.3:
   version "6.5.4"

@@ -11,12 +11,12 @@ export default function useCurrentNonce(
   network?: Network
 ) {
   const nonceInState = useSelector((state: AppState) => {
-    if (!network) return undefined;
+    if (!network || !accountAddress) return undefined;
     return state.nonceManager[accountAddress.toLowerCase()]?.[network]?.nonce;
   });
   const getNextNonce = useCallback(async () => {
     try {
-      if (!network) return undefined;
+      if (!network || !accountAddress) return undefined;
       const provider = await getProviderForNetwork(network);
       const transactionCount = await provider.getTransactionCount(
         accountAddress,
