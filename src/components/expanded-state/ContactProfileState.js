@@ -88,23 +88,13 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
   const inputRef = useRef(null);
   const { network } = useAccountSettings();
 
-  const handleAddContact = useCallback(() => {
+  const handleAddContact = () => {
+    goBack();
     const nickname = (emoji ? `${emoji} ${value}` : value).trim();
     if (value.length > 0 || color !== colorProp) {
       onAddOrUpdateContacts(address, nickname, color, network);
-      goBack();
     }
-    android && Keyboard.dismiss();
-  }, [
-    address,
-    color,
-    colorProp,
-    emoji,
-    goBack,
-    network,
-    onAddOrUpdateContacts,
-    value,
-  ]);
+  };
 
   const handleDeleteContact = useCallback(() => {
     showDeleteContactActionSheet({
@@ -134,7 +124,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
   }, [emoji, setColor]);
 
   return (
-    <ProfileModal onPressBackdrop={handleAddContact}>
+    <ProfileModal onPressBackdrop={goBack}>
       <Centered css={padding(24, 25)} direction="column">
         <ProfileAvatarButton
           changeAvatar={handleChangeAvatar}
@@ -147,7 +137,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
         <Spacer />
         <ProfileNameInput
           onChange={setValue}
-          onSubmitEditing={handleAddContact}
+          {...(ios && { onSubmitEditing: handleAddContact })}
           placeholder="Name"
           ref={inputRef}
           selectionColor={colors.avatarBackgrounds[color]}
@@ -181,14 +171,7 @@ const ContactProfileState = ({ address, color: colorProp, contact }) => {
         </SubmitButton>
         <ButtonPressAnimation
           marginTop={11}
-          onPress={
-            isContact
-              ? handleDeleteContact
-              : () => {
-                  goBack();
-                  android && Keyboard.dismiss();
-                }
-          }
+          onPress={isContact ? handleDeleteContact : goBack}
         >
           <Centered
             backgroundColor={colors.white}
