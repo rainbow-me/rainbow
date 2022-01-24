@@ -21,6 +21,7 @@ import backgroundPlayground from '../components/BackgroundProvider/BackgroundPro
 import bleedPlayground from '../components/Bleed/Bleed.playground';
 import boxPlayground from '../components/Box/Box.playground';
 import columnsPlayground from '../components/Columns/Columns.playground';
+import coverPlayground from '../components/Cover/Cover.playground';
 import debugLayoutPlayground from '../components/DebugLayout/DebugLayout.playground';
 import dividerPlayground from '../components/Divider/Divider.playground';
 import headingPlayground from '../components/Heading/Heading.playground';
@@ -39,6 +40,7 @@ const allDocs = [
   boxPlayground,
   bleedPlayground,
   columnsPlayground,
+  coverPlayground,
   debugLayoutPlayground,
   dividerPlayground,
   headingPlayground,
