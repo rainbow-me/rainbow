@@ -83,7 +83,12 @@ export const ViewTypes = {
     index: 2,
     renderComponent: ({ data }) => {
       const { item = {} } = data;
-      return <CoinDivider balancesSum={item.value} />;
+      return (
+        <CoinDivider
+          balancesSum={item.value}
+          defaultToEditButton={item.defaultToEditButton}
+        />
+      );
     },
     visibleDuringCoinEdit: true,
   },
