@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import RadialGradient from 'react-native-radial-gradient';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
 import { Input } from '../components/inputs';
@@ -24,6 +25,54 @@ import { colors } from '@rainbow-me/styles';
 const Container = styled.View`
   flex: 1;
 `;
+
+const AvailabilityIndicator = props => {
+  if (props.isRegistered == null) {
+    throw new Error(
+      'AvailabilityIndicator component requires boolean prop "isRegistered".'
+    );
+  }
+
+  let text, containerWidth, bgColor, textColor;
+
+  if (props.isRegistered) {
+    text = '😭 Taken';
+    containerWidth = 110;
+    bgColor = 'rgba(255, 166, 77, 0.06)';
+    textColor = 'rgba(255, 166, 77, 1)';
+  } else {
+    text = '🥳 Available';
+    containerWidth = 140;
+    bgColor = 'rgba(44, 204, 0, 0.06)';
+    textColor = 'rgba(44, 204, 0, 1)';
+  }
+
+  return (
+    <RadialGradient
+      center={[0, 46]}
+      colors={['transparent', bgColor]}
+      stops={[0, 1]}
+      style={{
+        alignItems: 'center',
+        borderRadius: 46,
+        height: 40,
+        justifyContent: 'center',
+        left: 19,
+        overflow: 'hidden',
+        width: containerWidth,
+      }}
+    >
+      <Text
+        color={{ custom: textColor }}
+        containsEmoji
+        size="18px"
+        weight="heavy"
+      >
+        {text}
+      </Text>
+    </RadialGradient>
+  );
+};
 
 export default function RegisterEnsSheet() {
   const { height: deviceHeight } = useDimensions();
@@ -88,9 +137,9 @@ export default function RegisterEnsSheet() {
             <Stack alignHorizontal="center" space="5px">
               <Columns alignHorizontal="center" space="19px">
                 <Column width="1/2">
-                  <Text color="secondary40" size="18px" weight="bold">
-                    {registration.isRegistered ? 'Taken' : 'Available'}
-                  </Text>
+                  <AvailabilityIndicator
+                    isRegistered={registration.isRegistered}
+                  />
                 </Column>
                 <Column width="1/2">
                   <Text color="secondary40" size="18px" weight="bold">
