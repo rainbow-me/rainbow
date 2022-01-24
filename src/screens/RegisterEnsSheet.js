@@ -49,13 +49,15 @@ export default function RegisterEnsSheet() {
   const isLoading = status === 'loading';
   const isSuccess = registration && status === 'success';
 
-  let inputVariant = 'rainbow';
-  if (isSuccess && registration.isRegistered) {
-    inputVariant = 'warning';
-  }
-  if (isSuccess && !registration.isRegistered) {
-    inputVariant = 'success';
-  }
+  const inputVariant = useMemo(() => {
+    if (isSuccess) {
+      if (registration?.isRegistered) {
+        return 'warning';
+      }
+      return 'success';
+    }
+    return 'rainbow';
+  }, [isSuccess, registration?.isRegistered]);
 
   return (
     <Container>
