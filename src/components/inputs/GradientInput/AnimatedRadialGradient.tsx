@@ -47,39 +47,61 @@ const AnimatedRadialGradient = ({
 
   const gradients = gradientSets[type];
 
-  const animatedGradients = React.useMemo(
+  const animatedStates = React.useMemo(
     () => ({
-      colors: () => [
-        interpolateColors(
-          progress.value,
-          [-1, 0, 1],
-          [gradients.warning[0], gradients.rainbow[0], gradients.success[0]]
-        ),
-        interpolateColors(
-          progress.value,
-          [-1, 0, 1],
-          [gradients.warning[1], gradients.rainbow[1], gradients.success[1]]
-        ),
-        interpolateColors(
-          progress.value,
-          [-1, 0, 1],
-          [gradients.warning[2], gradients.rainbow[2], gradients.success[2]]
-        ),
-      ],
-      states: {
-        rainbow: 0,
-        success: 1,
-        warning: -1,
-      },
+      rainbow: 0,
+      success: 1,
+      warning: -1,
     }),
-    [gradients.rainbow, gradients.success, gradients.warning, progress.value]
+    []
+  );
+
+  const animatedColors = React.useMemo(
+    () => () => [
+      interpolateColors(
+        progress.value,
+        [
+          animatedStates.warning,
+          animatedStates.rainbow,
+          animatedStates.success,
+        ],
+        [gradients.warning[0], gradients.rainbow[0], gradients.success[0]]
+      ),
+      interpolateColors(
+        progress.value,
+        [
+          animatedStates.warning,
+          animatedStates.rainbow,
+          animatedStates.success,
+        ],
+        [gradients.warning[1], gradients.rainbow[1], gradients.success[1]]
+      ),
+      interpolateColors(
+        progress.value,
+        [
+          animatedStates.warning,
+          animatedStates.rainbow,
+          animatedStates.success,
+        ],
+        [gradients.warning[2], gradients.rainbow[2], gradients.success[2]]
+      ),
+    ],
+    [
+      animatedStates.rainbow,
+      animatedStates.success,
+      animatedStates.warning,
+      gradients.rainbow,
+      gradients.success,
+      gradients.warning,
+      progress.value,
+    ]
   );
 
   useAnimatedReaction(
     () => variant,
     (result, previous) => {
       if (result !== previous) {
-        let nextValue = previous ? animatedGradients.states[result] : 0;
+        let nextValue = previous ? animatedStates[result] : 0;
 
         progress.value = withTiming(nextValue, {
           duration: 200,
@@ -111,7 +133,7 @@ const AnimatedRadialGradient = ({
       <Paint>
         <RadialGradient
           c={useMemo(() => vec(width, width / 2), [width])}
-          colors={animatedGradients.colors}
+          colors={animatedColors}
           r={width}
         />
       </Paint>
