@@ -226,7 +226,7 @@ class EmojiSelector extends PureComponent {
     let keys = categoryKeys;
     keys.map(category => {
       const emojiCategory = [
-        { header: true, title: Categories[category].name },
+        { header: true, title: Categories[category].getTitle() },
         {
           data: sortEmoji(emojiByCategory(Categories[category].name)).map(
             emoji => ({
@@ -487,7 +487,7 @@ class EmojiSelector extends PureComponent {
                       { color: colors.alpha(colors.blueGreyDark, 0.5) },
                     ]}
                   >
-                    {Categories.people.name}
+                    {Categories.people.getTitle()}
                   </Text>
                 </View>
                 {null}
