@@ -8,24 +8,26 @@ import {
   useSharedValueEffect,
   vec,
 } from '@shopify/react-native-skia';
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import {
   useAnimatedReaction,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
 import { GradientInputProps } from './GradientInput';
+import { Box } from '@rainbow-me/design-system';
 
-const defaultGradients = {
-  rainbow: ['#FFB114', '#FF54BB', '#00F0FF'],
-  success: ['#FAFF00', '#2CCC00', '#2CCC00'],
-  warning: ['#FFD963', '#FFB200', '#FFB200'],
-};
-
-const tintGradients = {
-  rainbow: ['#fffaf1', '#fff5fb', '#f0feff'],
-  success: ['#fffff0', '#fcfefb', '#fcfefb'],
-  warning: ['#fffdf6', '#fffbf2', '#fffbf2'],
+const gradientSets = {
+  default: {
+    rainbow: ['#FFB114', '#FF54BB', '#00F0FF'],
+    success: ['#FAFF00', '#2CCC00', '#2CCC00'],
+    warning: ['#FFD963', '#FFB200', '#FFB200'],
+  },
+  tint: {
+    rainbow: ['#fffaf1', '#fff5fb', '#f0feff'],
+    success: ['#fffff0', '#fcfefb', '#fcfefb'],
+    warning: ['#fffdf6', '#fffbf2', '#fffbf2'],
+  },
 };
 
 const AnimatedRadialGradient = ({
@@ -43,7 +45,7 @@ const AnimatedRadialGradient = ({
   const canvasRef = useRef<SkiaView>(null);
   useSharedValueEffect(canvasRef, progress);
 
-  const gradients = type === 'default' ? defaultGradients : tintGradients;
+  const gradients = gradientSets[type];
 
   const animatedGradients = React.useMemo(
     () => ({
@@ -88,29 +90,33 @@ const AnimatedRadialGradient = ({
   );
 
   return (
-    <Canvas
+    <Box
+      as={Canvas}
       innerRef={canvasRef}
-      style={{
-        height: width,
-        position: 'absolute',
-        top: -(width - height) / 2,
-        transform: [
-          {
-            scaleY: 0.7884615385,
-          },
-        ],
-        width: width,
-      }}
+      style={useMemo(
+        () => ({
+          height: width,
+          position: 'absolute' as 'absolute',
+          top: -(width - height) / 2,
+          transform: [
+            {
+              scaleY: 0.7884615385,
+            },
+          ],
+          width: width,
+        }),
+        [height, width]
+      )}
     >
       <Paint>
         <RadialGradient
-          c={vec(width, width / 2)}
+          c={useMemo(() => vec(width, width / 2), [width])}
           colors={animatedGradients.colors}
           r={width}
         />
       </Paint>
       <Rect height={width} width={width} x={0} y={0} />
-    </Canvas>
+    </Box>
   );
 };
 
