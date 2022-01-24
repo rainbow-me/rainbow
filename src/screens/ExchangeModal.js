@@ -1,7 +1,6 @@
 import analytics from '@segment/analytics-react-native';
 import { isEmpty } from 'lodash';
 import React, {
-  Fragment,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -40,6 +39,7 @@ import {
   useAccountSettings,
   useBlockPolling,
   useCurrentNonce,
+  useDimensions,
   useGas,
   usePrevious,
   usePriceImpactDetails,
@@ -64,18 +64,14 @@ const FloatingPanels = ios
   ? AnimatedExchangeFloatingPanels
   : ExchangeFloatingPanels;
 
-const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
+const Wrapper = KeyboardFixedOpenLayout;
 
 const InnerWrapper = styled(Centered).attrs({
   direction: 'column',
 })`
-  ${ios
-    ? position.sizeAsObject('100%')
-    : `
-    height: 500;
-    top: 0;
-  `};
+  ${position.sizeAsObject('100%')}
   background-color: ${({ theme: { colors } }) => colors.transparent};
+  ${({ isSmallPhone }) => ios && isSmallPhone && `max-height: 354;`};
 `;
 
 const Spacer = styled.View`
@@ -110,6 +106,7 @@ export default function ExchangeModal({
   type,
   typeSpecificParams,
 }) {
+  const { isSmallPhone } = useDimensions();
   const dispatch = useDispatch();
   const insets = useSafeArea();
 
@@ -530,7 +527,7 @@ export default function ExchangeModal({
 
   return (
     <Wrapper>
-      <InnerWrapper>
+      <InnerWrapper isSmallPhone={isSmallPhone}>
         <FloatingPanels>
           <FloatingPanel
             overflow="visible"

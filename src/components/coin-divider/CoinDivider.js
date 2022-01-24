@@ -1,3 +1,4 @@
+import lang from 'i18n-js';
 import { map } from 'lodash';
 import React, {
   useCallback,
@@ -99,7 +100,7 @@ const useInterpolationRange = () => {
   };
 };
 
-export default function CoinDivider({ balancesSum }) {
+export default function CoinDivider({ balancesSum, defaultToEditButton }) {
   const interpolation = useInterpolationRange();
   const { nativeCurrency } = useAccountSettings();
   const dispatch = useDispatch();
@@ -150,13 +151,15 @@ export default function CoinDivider({ balancesSum }) {
       <Container deviceWidth={deviceWidth} isCoinListEdited={isCoinListEdited}>
         <Row>
           <View
-            opacity={isCoinListEdited ? 0 : 1}
-            pointerEvents={isCoinListEdited ? 'none' : 'auto'}
+            opacity={defaultToEditButton || isCoinListEdited ? 0 : 1}
+            pointerEvents={
+              defaultToEditButton || isCoinListEdited ? 'none' : 'auto'
+            }
           >
             <CoinDividerOpenButton
               coinDividerHeight={CoinDividerHeight}
               isSmallBalancesOpen={isSmallBalancesOpen}
-              isVisible={isCoinListEdited}
+              isVisible={defaultToEditButton || isCoinListEdited}
               onPress={toggleOpenSmallBalances}
             />
           </View>
@@ -166,14 +169,22 @@ export default function CoinDivider({ balancesSum }) {
               isVisible={isCoinListEdited}
               onPress={setPinnedCoins}
               shouldReloadList
-              text={currentAction === EditAction.unpin ? 'Unpin' : 'Pin'}
+              text={
+                currentAction === EditAction.unpin
+                  ? lang.t('button.unpin')
+                  : lang.t('button.pin')
+              }
             />
             <CoinDividerEditButton
               isActive={currentAction !== EditAction.none}
               isVisible={isCoinListEdited}
               onPress={setHiddenCoins}
               shouldReloadList
-              text={currentAction === EditAction.unhide ? 'Unhide' : 'Hide'}
+              text={
+                currentAction === EditAction.unhide
+                  ? lang.t('button.unhide')
+                  : lang.t('button.hide')
+              }
             />
           </CoinDividerButtonRow>
         </Row>
@@ -181,18 +192,24 @@ export default function CoinDivider({ balancesSum }) {
           <CoinDividerAssetsValue
             balancesSum={balancesSum}
             nativeCurrency={nativeCurrency}
-            openSmallBalances={isSmallBalancesOpen}
+            openSmallBalances={defaultToEditButton || isSmallBalancesOpen}
           />
           <EditButtonWrapper
             pointerEvents={
-              isCoinListEdited || isSmallBalancesOpen ? 'auto' : 'none'
+              defaultToEditButton || isCoinListEdited || isSmallBalancesOpen
+                ? 'auto'
+                : 'none'
             }
           >
             <CoinDividerEditButton
               isActive={isCoinListEdited}
-              isVisible={isCoinListEdited || isSmallBalancesOpen}
+              isVisible={
+                defaultToEditButton || isCoinListEdited || isSmallBalancesOpen
+              }
               onPress={handlePressEdit}
-              text={isCoinListEdited ? 'Done' : 'Edit'}
+              text={
+                isCoinListEdited ? lang.t('button.done') : lang.t('button.edit')
+              }
               textOpacityAlwaysOn
             />
           </EditButtonWrapper>

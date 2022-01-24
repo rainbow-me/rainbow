@@ -61,7 +61,7 @@ export default class SendAssetList extends React.Component {
     const { assets } = buildCoinsList(
       sortedAssets,
       nativeCurrency,
-      true,
+      false,
       pinnedCoins,
       hiddenCoins
     );
@@ -82,7 +82,7 @@ export default class SendAssetList extends React.Component {
 
     this.data = assets;
 
-    if (smallBalances.assets.length > 0) {
+    if (smallBalances.assets?.length > 0) {
       this.data.push(smallBalances);
     }
 

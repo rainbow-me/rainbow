@@ -22,13 +22,9 @@ export type RowProps = {
   children: ReactNode;
   alignHorizontal?: AlignHorizontal;
   alignVertical?: AlignVertical;
-} & (
-  | { space?: never; separator: ReactElement }
-  | {
-      space: Space;
-      separator?: ReactElement;
-    }
-);
+  space?: Space;
+  separator?: ReactElement;
+};
 
 /**
  * @description Arranges child nodes horizontally with equal spacing between
@@ -36,12 +32,14 @@ export type RowProps = {
  * horizontally and/or vertically with `alignHorizontal` and `alignVertical`.
  */
 export function Row({
-  children,
+  children: childrenProp,
   alignHorizontal,
   alignVertical,
   separator,
   space,
 }: RowProps) {
+  const children = flattenChildren(childrenProp);
+
   return (
     <Box
       alignItems={
@@ -54,14 +52,22 @@ export function Row({
           : undefined
       }
     >
-      {Children.map(flattenChildren(children), (child, index) => (
-        <>
-          {separator && index > 0 ? (
-            <Box paddingLeft={space}>{separator}</Box>
-          ) : null}
-          {space && index > 0 ? <Box paddingLeft={space}>{child}</Box> : child}
-        </>
-      ))}
+      {Children.map(children, (child, index) => {
+        const isLastChild = index === children.length - 1;
+
+        return (
+          <>
+            {space && !isLastChild ? (
+              <Box paddingRight={space}>{child}</Box>
+            ) : (
+              child
+            )}
+            {separator && !isLastChild ? (
+              <Box paddingRight={space}>{separator}</Box>
+            ) : null}
+          </>
+        );
+      })}
     </Box>
   );
 }

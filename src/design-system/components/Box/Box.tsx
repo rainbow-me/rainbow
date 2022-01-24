@@ -21,7 +21,7 @@ const widths = {
   '3/4': fraction(3, 4),
   '3/5': fraction(3, 5),
   '4/5': fraction(4, 5),
-  full: '100%', // eslint-disable-line prettier/prettier
+  'full': '100%',
 } as const;
 
 function resolveToken<TokenName extends string, TokenValue, CustomValue>(
@@ -238,9 +238,9 @@ export const Box = forwardRef(function Box(
   }, [styles, styleProp, Component]);
 
   return background ? (
-    <BackgroundProvider color={background}>
+    <BackgroundProvider color={background} style={style}>
       {backgroundStyle => (
-        <Component style={[backgroundStyle, ...style]} {...restProps} ref={ref}>
+        <Component style={backgroundStyle} {...restProps} ref={ref}>
           {children}
         </Component>
       )}

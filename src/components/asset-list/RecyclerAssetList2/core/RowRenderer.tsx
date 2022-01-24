@@ -36,7 +36,7 @@ function CellDataProvider({
 
 function rowRenderer(type: CellType, { uid }: { uid: string }) {
   return (
-    <CellDataProvider uid={uid}>
+    <CellDataProvider key={uid} uid={uid}>
       {data => {
         switch (type) {
           case CellType.ASSETS_HEADER_SPACE_AFTER:
@@ -47,7 +47,12 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
             return null;
           case CellType.COIN_DIVIDER:
             return (
-              <CoinDivider balancesSum={(data as CoinDividerExtraData).value} />
+              <CoinDivider
+                balancesSum={(data as CoinDividerExtraData).value}
+                defaultToEditButton={
+                  (data as CoinDividerExtraData).defaultToEditButton
+                }
+              />
             );
           case CellType.ASSETS_HEADER:
             return (

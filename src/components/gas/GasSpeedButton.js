@@ -1,4 +1,5 @@
 import AnimateNumber from '@bankify/react-native-animate-number';
+import lang from 'i18n-js';
 import { isEmpty, isNaN, isNil, lowerCase, upperFirst } from 'lodash';
 import makeColorMoreChill from 'make-color-more-chill';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -234,7 +235,8 @@ const GasSpeedButton = ({
 
   const renderGasPriceText = useCallback(
     animatedNumber => {
-      const priceText = animatedNumber === 0 ? 'Loading...' : animatedNumber;
+      const priceText =
+        animatedNumber === 0 ? lang.t('swap.loading') : animatedNumber;
       return (
         <Text
           color={
@@ -597,7 +599,7 @@ const GasSpeedButton = ({
                         )
                   }
                 >
-                  Done
+                  {lang.t('button.done')}
                 </DoneCustomGas>
               </CustomGasButton>
             ) : (

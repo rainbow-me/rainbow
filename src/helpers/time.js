@@ -1,6 +1,6 @@
+import lang from 'i18n-js';
 import { findKey, isObjectLike, isString, omitBy, pick } from 'lodash';
 import parseMilliseconds from 'parse-ms';
-import lang from '../languages';
 import { convertStringToNumber } from './utilities';
 
 const MinimalTimeUnitWhitelist = ['days', 'hours', 'minutes', 'seconds'];

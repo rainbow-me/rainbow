@@ -179,9 +179,11 @@ export default function TransactionCoinRow({ item, ...props }) {
               break;
             case TransactionActions.close:
               return;
-            default: {
+            case blockExplorerAction:
               ethereumUtils.openTransactionInBlockExplorer(hash, network);
               break;
+            default: {
+              return;
             }
           }
         }

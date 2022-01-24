@@ -1,8 +1,9 @@
+import './languages';
 import messaging from '@react-native-firebase/messaging';
 import analytics from '@segment/analytics-react-native';
 import * as Sentry from '@sentry/react-native';
 import { get } from 'lodash';
-import nanoid from 'nanoid/non-secure';
+import { nanoid } from 'nanoid/non-secure';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
