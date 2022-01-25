@@ -1,6 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useContext, useMemo } from 'react';
+import { PROFILES_ENABLED } from 'react-native-dotenv';
 import { InitialRouteContext } from '../context/initialRoute';
 import AddCashSheet from '../screens/AddCashSheet';
 import AddTokenSheet from '../screens/AddTokenSheet';
@@ -71,6 +72,20 @@ function SendFlowNavigator() {
         component={SendSheet}
         name={Routes.SEND_SHEET}
         options={sheetPreset}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function RegisterENSFlowNavigator() {
+  return (
+    <Stack.Navigator
+      {...stackNavigationConfig}
+      initialRouteName={Routes.REGISTER_ENS_SHEET}
+    >
+      <Stack.Screen
+        component={RegisterEnsSheet}
+        name={Routes.REGISTER_ENS_SHEET}
       />
     </Stack.Navigator>
   );
@@ -270,10 +285,12 @@ function BSNavigator() {
         component={ExpandedAssetSheet}
         name={Routes.TOKEN_INDEX_SHEET}
       />
-      <BSStack.Screen
-        component={RegisterEnsSheet}
-        name={Routes.REGISTER_ENS_SHEET}
-      />
+      {PROFILES_ENABLED === 'YES' && (
+        <BSStack.Screen
+          component={RegisterENSFlowNavigator}
+          name={Routes.REGISTER_ENS_SHEET_NAVIGATOR}
+        />
+      )}
       <BSStack.Screen
         component={ShowcaseSheet}
         name={Routes.SHOWCASE_SHEET}
