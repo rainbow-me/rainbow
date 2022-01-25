@@ -28,7 +28,6 @@ import {
 
 import {
   polygonGasStationGetGasPrices,
-  polygonGetGasEstimates,
   rainbowMeteorologyGetData,
 } from '@rainbow-me/handlers/gasFees';
 import {
@@ -322,27 +321,32 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
     } = await polygonGasStationGetGasPrices();
     // Override required to make it compatible with other responses
     const polygonGasStationPrices = {
-      average: Math.ceil(Number(result['SafeGasPrice'])),
       fast: Math.ceil(Number(result['ProposeGasPrice'])),
-      fastest: Math.ceil(Number(result['FastGasPrice'])),
+      fastWait: 0.2,
+      normal: Math.ceil(Number(result['SafeGasPrice'])),
+      normalWait: 0.5,
+      urgent: Math.ceil(Number(result['FastGasPrice'])),
+      urgentWait: 0.1,
     };
-    return polygonGetGasEstimates(polygonGasStationPrices);
+    return polygonGasStationPrices;
   };
 
   const getArbitrumGasPrices = async () => {
     const provider = await getProviderForNetwork(Network.arbitrum);
     const baseGasPrice = await provider.getGasPrice();
     const baseGasPriceGwei = weiToGwei(baseGasPrice.toString());
-    const fastGasPriceAdjusted = multiply(baseGasPriceGwei, '1.2');
+
     const normalGasPriceAdjusted = multiply(baseGasPriceGwei, '1');
-    const safeLowGasPriceWithBuffer = multiply(baseGasPriceGwei, '0.8');
+    const fastGasPriceAdjusted = multiply(baseGasPriceGwei, '1.2');
+    const urgentGasPriceAdjusted = multiply(baseGasPriceGwei, '1.5');
+
     const priceData = {
-      average: Number(normalGasPriceAdjusted),
-      avgWait: 0.5,
       fast: Number(fastGasPriceAdjusted),
       fastWait: 0.2,
-      safeLow: Number(safeLowGasPriceWithBuffer),
-      safeLowWait: 1,
+      normal: Number(normalGasPriceAdjusted),
+      normalWait: 0.5,
+      urgent: Number(urgentGasPriceAdjusted),
+      urgentWait: 0.1,
     };
 
     return priceData;
@@ -351,15 +355,19 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
   const getOptimismGasPrices = async () => {
     const provider = await getProviderForNetwork(Network.optimism);
     const baseGasPrice = await provider.getGasPrice();
-    const gasPriceGwei = Number(weiToGwei(baseGasPrice.toString()));
+    const gasPriceGwei = weiToGwei(baseGasPrice.toString());
+
+    const normalGasPriceAdjusted = multiply(gasPriceGwei, '1');
+    const fastGasPriceAdjusted = multiply(gasPriceGwei, '1.2');
+    const urgentGasPriceAdjusted = multiply(gasPriceGwei, '1.5');
 
     const priceData = {
-      average: gasPriceGwei,
-      avgWait: 0.5,
-      fast: gasPriceGwei,
+      fast: fastGasPriceAdjusted,
       fastWait: 0.2,
-      safeLow: gasPriceGwei,
-      safeLowWait: 1,
+      normal: normalGasPriceAdjusted,
+      normalWait: 0.5,
+      urgent: urgentGasPriceAdjusted,
+      urgentWait: 1,
     };
     return priceData;
   };
@@ -416,6 +424,7 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
                 adjustedGasFees = await getOptimismGasPrices();
                 dataIsReady = l1GasFeeOptimism !== null;
               }
+              if (!adjustedGasFees) return;
 
               const gasFeeParamsBySpeed = parseL2GasPrices(
                 adjustedGasFees,

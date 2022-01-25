@@ -47,9 +47,9 @@ const getBaseFeeMultiplier = (speed: string) => {
   }
 };
 const parseOtherL2GasPrices = (data: GasPricesAPIData) => ({
-  [FAST]: defaultGasPriceFormat(FAST, data.avgWait, data.average),
-  [NORMAL]: defaultGasPriceFormat(NORMAL, data.avgWait, data.average),
-  [URGENT]: defaultGasPriceFormat(URGENT, data.fastWait, data.fast),
+  [FAST]: defaultGasPriceFormat(FAST, data.fastWait, data.fast),
+  [NORMAL]: defaultGasPriceFormat(NORMAL, data.normalWait, data.normal),
+  [URGENT]: defaultGasPriceFormat(URGENT, data.urgentWait, data.urgent),
 });
 
 const parseGasDataConfirmationTime = (
@@ -182,18 +182,18 @@ const parseGasPricesPolygonGasStation = (data: GasPricesAPIData) => {
   return {
     [FAST]: defaultGasPriceFormat(
       FAST,
-      0.5,
-      Math.ceil(Number(data.fast) * polygonGasPriceBumpFactor)
+      data.fastWait,
+      Math.ceil(Number(multiply(data.fast, polygonGasPriceBumpFactor)))
     ),
     [NORMAL]: defaultGasPriceFormat(
       NORMAL,
-      1,
-      Math.ceil(Number(data.average) * polygonGasPriceBumpFactor)
+      data.normalWait,
+      Math.ceil(Number(multiply(data.normal, polygonGasPriceBumpFactor)))
     ),
     [URGENT]: defaultGasPriceFormat(
       URGENT,
-      0.2,
-      Math.ceil(Number(data.fastest) * polygonGasPriceBumpFactor)
+      data.urgentWait,
+      Math.ceil(Number(multiply(data.urgent, polygonGasPriceBumpFactor)))
     ),
   };
 };
