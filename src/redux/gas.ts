@@ -326,15 +326,18 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
       fast: Math.ceil(
         Number(multiply(result['ProposeGasPrice'], polygonGasPriceBumpFactor))
       ),
-      fastWait: 0.2,
+      // 1 blocks, 2.5 - 3 secs
+      fastWait: 0.05,
       normal: Math.ceil(
         Number(multiply(result['SafeGasPrice'], polygonGasPriceBumpFactor))
       ),
-      normalWait: 0.5,
+      // 2 blocks, 6 secs
+      normalWait: 0.1,
       urgent: Math.ceil(
         Number(multiply(result['FastGasPrice'], polygonGasPriceBumpFactor))
       ),
-      urgentWait: 0.1,
+      // 1 blocks, 2.5 - 3 secs
+      urgentWait: 0.05,
     };
     return polygonGasStationPrices;
   };
@@ -343,16 +346,15 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
     const provider = await getProviderForNetwork(Network.arbitrum);
     const baseGasPrice = await provider.getGasPrice();
     const normalGasPrice = weiToGwei(baseGasPrice.toString());
-    const fastGasPriceAdjusted = multiply(normalGasPrice, '1.2');
-    const urgentGasPriceAdjusted = multiply(normalGasPrice, '1.5');
 
     const priceData = {
-      fast: Number(fastGasPriceAdjusted),
-      fastWait: 0.2,
+      fast: Number(normalGasPrice),
+      fastWait: 0.14,
+      // 2 blocks, 8 secs
       normal: Number(normalGasPrice),
-      normalWait: 0.5,
-      urgent: Number(urgentGasPriceAdjusted),
-      urgentWait: 0.1,
+      normalWait: 0.14,
+      urgent: Number(normalGasPrice),
+      urgentWait: 0.14,
     };
 
     return priceData;
@@ -362,16 +364,15 @@ export const gasPricesStartPolling = (network = Network.mainnet) => async (
     const provider = await getProviderForNetwork(Network.optimism);
     const baseGasPrice = await provider.getGasPrice();
     const normalGasPrice = weiToGwei(baseGasPrice.toString());
-    const fastGasPriceAdjusted = multiply(normalGasPrice, '1.2');
-    const urgentGasPriceAdjusted = multiply(normalGasPrice, '1.5');
 
     const priceData = {
-      fast: fastGasPriceAdjusted,
-      fastWait: 0.2,
+      fast: normalGasPrice,
+      fastWait: 0.34,
       normal: normalGasPrice,
-      normalWait: 0.5,
-      urgent: urgentGasPriceAdjusted,
-      urgentWait: 1,
+      // 20 secs
+      normalWait: 0.34,
+      urgent: normalGasPrice,
+      urgentWait: 34,
     };
     return priceData;
   };
