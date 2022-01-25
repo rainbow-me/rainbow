@@ -18,7 +18,6 @@ import {
   SelectedGasFee,
 } from '@rainbow-me/entities';
 import { toHex } from '@rainbow-me/handlers/web3';
-import { Network } from '@rainbow-me/helpers/networkTypes';
 import { getMinimalTimeUnitStringForMs } from '@rainbow-me/helpers/time';
 import { ethUnits, timeUnits } from '@rainbow-me/references';
 import {
@@ -46,11 +45,6 @@ const getBaseFeeMultiplier = (speed: string) => {
       return 1;
   }
 };
-const parseOtherL2GasPrices = (data: GasPricesAPIData) => ({
-  [FAST]: defaultGasPriceFormat(FAST, data.fastWait, data.fast),
-  [NORMAL]: defaultGasPriceFormat(NORMAL, data.normalWait, data.normal),
-  [URGENT]: defaultGasPriceFormat(URGENT, data.urgentWait, data.urgent),
-});
 
 const parseGasDataConfirmationTime = (
   maxBaseFee: string,
@@ -177,46 +171,15 @@ export const parseRainbowMeteorologyData = (
   };
 };
 
-const parseGasPricesPolygonGasStation = (data: GasPricesAPIData) => {
-  const polygonGasPriceBumpFactor = 1.05;
-  return {
-    [FAST]: defaultGasPriceFormat(
-      FAST,
-      data.fastWait,
-      Math.ceil(Number(multiply(data.fast, polygonGasPriceBumpFactor)))
-    ),
-    [NORMAL]: defaultGasPriceFormat(
-      NORMAL,
-      data.normalWait,
-      Math.ceil(Number(multiply(data.normal, polygonGasPriceBumpFactor)))
-    ),
-    [URGENT]: defaultGasPriceFormat(
-      URGENT,
-      data.urgentWait,
-      Math.ceil(Number(multiply(data.urgent, polygonGasPriceBumpFactor)))
-    ),
-  };
-};
-
 /**
  * @desc parse ether gas prices
  * @param {Object} data
- * @param {String} network
- */
-export const parseL2GasPrices = (
-  data: GasPricesAPIData,
-  network: Network
-): LegacyGasFeeParamsBySpeed | null => {
-  if (!data) return null;
-  switch (network) {
-    case Network.polygon:
-      return parseGasPricesPolygonGasStation(data);
-    case Network.arbitrum:
-    case Network.optimism:
-    default:
-      return parseOtherL2GasPrices(data);
-  }
-};
+s */
+export const parseL2GasPrices = (data: GasPricesAPIData) => ({
+  [FAST]: defaultGasPriceFormat(FAST, data.fastWait, data.fast),
+  [NORMAL]: defaultGasPriceFormat(NORMAL, data.normalWait, data.normal),
+  [URGENT]: defaultGasPriceFormat(URGENT, data.urgentWait, data.urgent),
+});
 
 export const defaultGasPriceFormat = (
   option: string,
