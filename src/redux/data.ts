@@ -67,7 +67,7 @@ import {
 import WalletTypes from '@rainbow-me/helpers/walletTypes';
 import { Navigation } from '@rainbow-me/navigation';
 import { triggerOnSwipeLayout } from '@rainbow-me/navigation/onNavigationStateChange';
-import networkTypes, { Network } from '@rainbow-me/networkTypes';
+import { Network } from '@rainbow-me/networkTypes';
 import {
   getTitle,
   getTransactionLabel,
@@ -1450,7 +1450,7 @@ export const dataAddNewTransaction = (
         }
         if (
           !disableTxnWatcher ||
-          network !== networkTypes.mainnet ||
+          network !== Network.mainnet ||
           parsedTransaction?.network
         ) {
           dispatch(
