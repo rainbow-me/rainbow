@@ -203,9 +203,7 @@ export default function AddressRow({
               <StyledBottomRowText
                 color={colors.alpha(colors.blueGreyDark, 0.5)}
               >
-                {lang.t('wallet.change_wallet.balance_eth', {
-                  balanceEth: cleanedUpBalance || '0',
-                })}
+                {cleanedUpBalance || 0} ETH
               </StyledBottomRowText>
             </ColumnWithMargins>
           </Row>

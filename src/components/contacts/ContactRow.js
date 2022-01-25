@@ -140,9 +140,7 @@ const ContactRow = ({ address, color, nickname, ...props }, ref) => {
                 letterSpacing="roundedMedium"
                 weight="medium"
               >
-                {lang.t('contacts.contact_row.balance_eth', {
-                  balanceEth: cleanedUpBalance || '0',
-                })}
+                {cleanedUpBalance || 0} ETH
               </BottomRowText>
             </Fragment>
           ) : (
