@@ -1,22 +1,13 @@
 import React, { Children, ReactNode } from 'react';
 import flattenChildren from 'react-flatten-children';
+import {
+  AlignHorizontal,
+  alignHorizontalToFlexAlign,
+  AlignVertical,
+  alignVerticalToFlexAlign,
+} from '../../layout/alignment';
 import { negateSpace, Space } from '../../layout/space';
 import { Box } from '../Box/Box';
-
-const alignHorizontalToFlexAlign = {
-  center: 'center',
-  justify: 'space-between',
-  left: 'flex-start',
-  right: 'flex-end',
-} as const;
-type AlignHorizontal = keyof typeof alignHorizontalToFlexAlign;
-
-const alignVerticalToFlexAlign = {
-  bottom: 'flex-end',
-  center: 'center',
-  top: 'flex-start',
-} as const;
-type AlignVertical = keyof typeof alignVerticalToFlexAlign;
 
 export type InlineProps = {
   children: ReactNode;

@@ -1,6 +1,6 @@
 import React, { ElementRef, forwardRef, ReactNode, useMemo } from 'react';
 import { Text as NativeText } from 'react-native';
-import { useForegroundColor } from '../../color/useForegroundColor';
+
 import { createLineHeightFixNode } from '../../typography/createLineHeightFixNode';
 import {
   nodeHasEmoji,
@@ -8,6 +8,7 @@ import {
   renderStringWithEmoji,
 } from '../../typography/renderStringWithEmoji';
 import { headingSizes, headingWeights } from '../../typography/typography';
+import { useHeadingStyle } from './useHeadingStyle';
 
 export type HeadingProps = {
   align?: 'center' | 'left' | 'right';
@@ -29,13 +30,13 @@ export type HeadingProps = {
 export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
   function Heading(
     {
+      align,
       numberOfLines,
       containsEmoji: containsEmojiProp = false,
       children,
       testID,
-      align: textAlign,
-      size = '20px',
-      weight = 'heavy',
+      size,
+      weight,
     },
     ref
   ) {
@@ -53,24 +54,11 @@ export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
       }
     }
 
-    const sizeStyles = headingSizes[size];
-    const weightStyles = headingWeights[weight];
-    const color = useForegroundColor('primary');
+    const headingStyle = useHeadingStyle({ align, size, weight });
 
     const lineHeightFixNode = useMemo(
-      () => createLineHeightFixNode(sizeStyles.lineHeight),
-      [sizeStyles]
-    );
-
-    const textStyle = useMemo(
-      () =>
-        ({
-          color,
-          textAlign,
-          ...sizeStyles,
-          ...weightStyles,
-        } as const),
-      [sizeStyles, weightStyles, textAlign, color]
+      () => createLineHeightFixNode(headingStyle.lineHeight),
+      [headingStyle]
     );
 
     return (
@@ -78,7 +66,7 @@ export const Heading = forwardRef<ElementRef<typeof NativeText>, HeadingProps>(
         allowFontScaling={false}
         numberOfLines={numberOfLines}
         ref={ref}
-        style={textStyle}
+        style={headingStyle}
         testID={testID}
       >
         {ios && containsEmojiProp && nodeIsString(children)
