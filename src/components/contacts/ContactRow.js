@@ -1,4 +1,3 @@
-import lang from 'i18n-js';
 import React, { Fragment } from 'react';
 import styled from 'styled-components';
 import {
