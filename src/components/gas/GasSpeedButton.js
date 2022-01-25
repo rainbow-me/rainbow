@@ -210,17 +210,14 @@ const GasSpeedButton = ({
     [gasPriceReady, isL2, nativeCurrencySymbol, nativeCurrency]
   );
 
-  const openCustomOptions = useCallback(focusTo => {
-    android && Keyboard.dismiss();
-    setShouldOpenCustomGasSheet({ focusTo, shouldOpen: true });
-  }, []);
+  const openCustomOptionsRef = useRef();
 
   const openCustomGasSheet = useCallback(() => {
     if (gasIsNotReady) return;
     navigate(Routes.CUSTOM_GAS_SHEET, {
       asset,
       focusTo: shouldOpenCustomGasSheet.focusTo,
-      openCustomOptions: focusTo => openCustomOptions(focusTo),
+      openCustomOptions: focusTo => openCustomOptionsRef.current(focusTo),
       speeds: speeds ?? GasSpeedOrder,
       type: 'custom_gas',
     });
@@ -230,8 +227,21 @@ const GasSpeedButton = ({
     asset,
     shouldOpenCustomGasSheet.focusTo,
     speeds,
-    openCustomOptions,
   ]);
+
+  const openCustomOptions = useCallback(
+    focusTo => {
+      android && Keyboard.dismiss();
+      if (ios) {
+        setShouldOpenCustomGasSheet({ focusTo, shouldOpen: true });
+      } else {
+        openCustomGasSheet();
+      }
+    },
+    [openCustomGasSheet]
+  );
+
+  openCustomOptionsRef.current = openCustomOptions;
 
   const renderGasPriceText = useCallback(
     animatedNumber => {
@@ -258,16 +268,20 @@ const GasSpeedButton = ({
   const handlePressSpeedOption = useCallback(
     selectedSpeed => {
       updateGasFeeOption(selectedSpeed);
-      InteractionManager.runAfterInteractions(() => {
-        if (selectedSpeed === CUSTOM) {
-          setShouldOpenCustomGasSheet({
-            focusTo: null,
-            shouldOpen: true,
+      if (selectedSpeed === CUSTOM) {
+        if (ios) {
+          InteractionManager.runAfterInteractions(() => {
+            setShouldOpenCustomGasSheet({
+              focusTo: null,
+              shouldOpen: true,
+            });
           });
+        } else {
+          openCustomGasSheet();
         }
-      });
+      }
     },
-    [updateGasFeeOption]
+    [updateGasFeeOption, openCustomGasSheet]
   );
 
   const formatTransactionTime = useCallback(() => {

@@ -34,7 +34,7 @@ function useAndroidDisableGesturesOnFocus() {
 }
 
 const FeesPanelWrapper = styled(Column)`
-  ${margin(ios ? 13 : 3, 12, ios ? 30 : 10, 24)}
+  ${margin(13, 12, 30, 24)}
 `;
 
 const FeesPanelTabswrapper = styled(Column)`
