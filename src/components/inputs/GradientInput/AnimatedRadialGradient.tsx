@@ -47,7 +47,7 @@ const AnimatedRadialGradient = ({
 
   const gradients = gradientSets[type];
 
-  const animatedStates = React.useMemo(
+  const animatedStates = useMemo(
     () => ({
       rainbow: 0,
       success: 1,
@@ -56,7 +56,7 @@ const AnimatedRadialGradient = ({
     []
   );
 
-  const animatedColors = React.useMemo(
+  const animatedColors = useMemo(
     () => () => [
       interpolateColors(
         progress.value,
