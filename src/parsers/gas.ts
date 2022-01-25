@@ -88,10 +88,10 @@ const parseGasDataConfirmationTime = (
     blocksToWaitForBaseFee += 240;
   }
 
+  // 1 hour as max estimate, 240 blocks
   const totalBlocksToWait =
-    blocksToWaitForBaseFee > 240
-      ? blocksToWaitForPriorityFee
-      : blocksToWaitForBaseFee + blocksToWaitForPriorityFee;
+    blocksToWaitForBaseFee +
+    (blocksToWaitForBaseFee < 240 ? blocksToWaitForPriorityFee : 0);
   let timeAmount = 15 * totalBlocksToWait;
 
   return {
