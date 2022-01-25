@@ -84,7 +84,7 @@ export const getTrendingAddresses = async (): Promise<
 
 export const getAdditionalAssetData = async (address: EthereumAddress) => {
   try {
-    const res = await dispersionApi.get(`/dispersion/v1/expanded/${address}`);
+    const res = await dispersionApi.get(`/dispersion/v1/expanded/1/${address}`);
     return res?.data?.data;
   } catch (error) {
     logger.sentry(`Error fetching additional asset data: ${error}`);
@@ -96,7 +96,7 @@ export const getCoingeckoIds = async (): Promise<
   Record<EthereumAddress, string> | undefined
 > => {
   try {
-    const res = await dispersionApi.get('/dispersion/v1/coingecko/ids');
+    const res = await dispersionApi.get('/dispersion/v1/coingecko/ids/1');
     return res?.data?.data?.ids;
   } catch (error) {
     logger.sentry(`Error fetching coingecko ids: ${error}`);

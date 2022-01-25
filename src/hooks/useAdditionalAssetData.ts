@@ -5,7 +5,6 @@ import { useAccountSettings } from './index';
 import { EthereumAddress } from '@rainbow-me/entities';
 import { getAdditionalAssetData } from '@rainbow-me/handlers/dispersion';
 import { bigNumberFormat } from '@rainbow-me/helpers/bigNumberFormat';
-
 import { ETH_ADDRESS, WETH_ADDRESS } from '@rainbow-me/references';
 
 function cutIfOver10000(value: number): number {
