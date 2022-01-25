@@ -81,10 +81,13 @@ const docs: DocsType = {
         <Docs.Text>
           To apply a width, fractional values (e.g. <Docs.Code>1/3</Docs.Code>)
           or <Docs.Code>full</Docs.Code> can be supplied to the{' '}
-          <Docs.Code>width</Docs.Code> prop.
+          <Docs.Code>width</Docs.Code> prop. The <Docs.Code>width</Docs.Code>{' '}
+          prop also supports the <Docs.Code>custom</Docs.Code> attribute for
+          custom sizes.
         </Docs.Text>
       ),
     },
+    examples.heights,
     {
       name: 'Composition',
       description: (

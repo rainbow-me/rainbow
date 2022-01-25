@@ -7,9 +7,6 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { getRandomColor } from '../../styles/colors';
 import { FloatingEmojis } from '../floating-emojis';
-import useExperimentalFlag, {
-  AVATAR_PICKER,
-} from '@rainbow-me/config/experimentalHooks';
 import { TransactionStatusTypes } from '@rainbow-me/entities';
 import showWalletErrorAlert from '@rainbow-me/helpers/support';
 import TransactionActions from '@rainbow-me/helpers/transactionActions';
@@ -264,8 +261,6 @@ export default function TransactionList({
     isFocused,
   ]);
 
-  const isAvatarPickerAvailable = useExperimentalFlag(AVATAR_PICKER);
-
   const safeAccountImage = useSafeImageUri(accountImage);
   const { isDarkMode, colors } = useTheme();
 
@@ -325,7 +320,6 @@ export default function TransactionList({
         avatarOptions={avatarOptions}
         darkMode={isDarkMode}
         data={data}
-        isAvatarPickerAvailable={isAvatarPickerAvailable}
         isLoading={loading}
         onAccountNamePress={onAccountNamePress}
         onAddCashPress={onAddCashPress}

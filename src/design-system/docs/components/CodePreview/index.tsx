@@ -1,6 +1,7 @@
 import lzString from 'lz-string';
 import React from 'react';
 
+import { Box } from '../../../components/Box/Box';
 import ChevronDownIcon from '../../icons/ChevronDownIcon';
 import ChevronUpIcon from '../../icons/ChevronUpIcon';
 import PlayIcon from '../../icons/PlayIcon';
@@ -52,7 +53,7 @@ export const CodePreview = ({
               : {}),
           })}
         >
-          {element}
+          <Box>{element}</Box>
         </div>
       </div>
       {displayCode && (
