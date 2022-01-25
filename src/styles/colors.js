@@ -29,6 +29,7 @@ const darkModeColors = {
   lighterGrey: '#12131A',
   lightestGrey: '#FFFFFF',
   lightGrey: '#333333',
+  lightOrange: '#FFA64D',
   offWhite: '#1F222A',
   offWhite80: '#1C1F27',
   rowDivider: 'rgba(60, 66, 82, 0.075)',
@@ -100,6 +101,7 @@ const getColorsByTheme = darkMode => {
     lighterGrey: '#F7F7F8', // '247, 247, 248'
     lightestGrey: '#E9EBEF', // '238, 233, 232'
     lightGrey: '#CDCFD4', // '205, 207, 212'
+    lightOrange: '#FFA64D', // '255, 166, 77'
     mediumGrey: '#A1A5B3', // '161, 165, 179'
     mintDark: '#00E0A9', // '0, 224, 169'
     neonSkyblue: '#34FFFF', // '52, 255, 255'
@@ -173,6 +175,12 @@ const getColorsByTheme = darkMode => {
     lightGreyTransparent: [
       buildRgba(base.blueGreyDark, 0.02),
       buildRgba(base.blueGreyDark, 0.06),
+    ],
+    transparentToLightGrey: ['transparent', buildRgba(base.blueGreyDark, 0.06)],
+    transparentToGreen: ['transparent', buildRgba(base.green, 0.06)],
+    transparentToLightOrange: [
+      'transparent',
+      buildRgba(base.lightOrange, 0.06),
     ],
     lightGreyWhite: [buildRgba('#F0F2F5', 0.5), buildRgba('#FFFFFF', 0.5)],
     offWhite: [base.white, base.offWhite],
@@ -262,6 +270,15 @@ const getColorsByTheme = darkMode => {
       lightGreyTransparent: [
         buildRgba(base.blueGreyDark, 0.06),
         buildRgba(base.blueGreyDark, 0.025),
+      ],
+      transparentToLightGrey: [
+        'transparent',
+        buildRgba(base.blueGreyDark, 0.06),
+      ],
+      transparentToGreen: ['transparent', buildRgba(base.green, 0.06)],
+      transparentToLightOrange: [
+        'transparent',
+        buildRgba(base.lightOrange, 0.06),
       ],
       lightGreyWhite: [buildRgba('#F0F2F5', 0.05), buildRgba('#FFFFFF', 0.01)],
       offWhite: ['#1F222A', '#1F222A'],

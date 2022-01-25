@@ -3,6 +3,7 @@ import RadialGradient from 'react-native-radial-gradient';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
 import { Input } from '../components/inputs';
+import { memoFn } from '../utils/memoFn';
 import {
   SheetActionButton,
   SheetActionButtonRow,
@@ -26,51 +27,66 @@ const Container = styled.View`
   flex: 1;
 `;
 
-const AvailabilityIndicator = props => {
-  if (props.isRegistered == null) {
+const Indicator = props => {
+  if (!['availability', 'expiration', 'price'].includes(props.type)) {
     throw new Error(
-      'AvailabilityIndicator component requires boolean prop "isRegistered".'
+      'Indicator component requires prop "type" with value equal to one of ["availability", "expiration", "price"].'
     );
   }
 
-  let text, containerWidth, bgColor, textColor;
-
-  if (props.isRegistered) {
-    text = '😭 Taken';
-    containerWidth = 110;
-    bgColor = 'rgba(255, 166, 77, 0.06)';
-    textColor = 'rgba(255, 166, 77, 1)';
-  } else {
-    text = '🥳 Available';
-    containerWidth = 140;
-    bgColor = 'rgba(44, 204, 0, 0.06)';
-    textColor = 'rgba(44, 204, 0, 1)';
+  let text, containerWidth, gradient, textColor;
+  switch (props.type) {
+    case 'availability':
+      if (props.isRegistered) {
+        text = '😭 Taken';
+        containerWidth = 110;
+        gradient = colors.gradients.transparentToLightOrange;
+        textColor = colors.lightOrange;
+      } else {
+        text = '🥳 Available';
+        containerWidth = 140;
+        gradient = colors.gradients.transparentToGreen;
+        textColor = colors.green;
+      }
+      break;
+    case 'expiration':
+      text = `Til ${props.expiryDate}`; // fix when we have backend
+      containerWidth = 210;
+      gradient = colors.gradients.transparentToLightGrey;
+      textColor = colors.blueGreyDark;
+      break;
+    case 'price':
+      text = props.price; // fix when we have backend
+      containerWidth = 110;
+      gradient = colors.gradients.transparentToLightGrey;
+      textColor = colors.blueGreyDark;
+      break;
   }
 
+  const IndicatorContainer = styled(RadialGradient).attrs(props => ({
+    center: [0, 46],
+    colors: gradient,
+    stops: [0, 1],
+  }))`
+    align-items: center;
+    border-radius: 46;
+    height: 40;
+    justify-content: center;
+    overflow: hidden;
+    width: ${containerWidth};
+  `;
+
   return (
-    <RadialGradient
-      center={[0, 46]}
-      colors={['transparent', bgColor]}
-      stops={[0, 1]}
-      style={{
-        alignItems: 'center',
-        borderRadius: 46,
-        height: 40,
-        justifyContent: 'center',
-        left: 19,
-        overflow: 'hidden',
-        width: containerWidth,
-      }}
-    >
+    <IndicatorContainer>
       <Text
         color={{ custom: textColor }}
-        containsEmoji
+        containsEmoji={props.type === 'availability'}
         size="18px"
         weight="heavy"
       >
         {text}
       </Text>
-    </RadialGradient>
+    </IndicatorContainer>
   );
 };
 
@@ -107,7 +123,7 @@ export default function RegisterEnsSheet() {
           ? { height: '100%' }
           : { additionalTopPadding: true, contentHeight: deviceHeight })}
       >
-        <Box paddingTop="30px">
+        <Box paddingTop="30px" paddingHorizontal="19px">
           <Stack alignHorizontal="center" space="15px">
             <Heading size="23px" weight="heavy">
               􀠎 Find your name
@@ -117,11 +133,7 @@ export default function RegisterEnsSheet() {
             </Text>
           </Stack>
 
-          <Box
-            alignItems="center"
-            paddingHorizontal="19px"
-            paddingVertical="42px"
-          >
+          <Box alignItems="center" paddingVertical="42px">
             <Input
               onChangeText={setSearchQuery}
               placeholder="Input placeholder"
@@ -134,20 +146,22 @@ export default function RegisterEnsSheet() {
             </Text>
           )}
           {isSuccess && (
-            <Stack alignHorizontal="center" space="5px">
-              <Columns alignHorizontal="center" space="19px">
-                <Column width="1/2">
-                  <AvailabilityIndicator
-                    isRegistered={registration.isRegistered}
+            <Stack space="5px">
+              <Row alignHorizontal="justify">
+                <Indicator
+                  type="availability"
+                  isRegistered={registration.isRegistered}
+                />
+                {registration.isRegistered ? (
+                  <Indicator
+                    type="expiration"
+                    expiryDate={registration.expiryDate}
                   />
-                </Column>
-                <Column width="1/2">
-                  <Text color="secondary40" size="18px" weight="bold">
-                    {registration.isRegistered ? 'Taken' : 'Available'}
-                  </Text>
-                </Column>
-              </Columns>
-              <Row>
+                ) : (
+                  <Indicator type="price" price="$5 / Year" />
+                )}
+              </Row>
+              <Row alignHorizontal="center">
                 <Text color="secondary40" size="18px" weight="bold">
                   {registration.isRegistered
                     ? `Til ${registration.expiryDate}`
