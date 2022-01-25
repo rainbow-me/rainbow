@@ -10,12 +10,14 @@ export const basicUsage: Example = {
   name: 'Basic usage',
   Example: () =>
     source(
-      <Inset space="19px">
+      <>
         <Cover>
           <Placeholder height="100%" width="100%" />
         </Cover>
-        <Placeholder />
-      </Inset>
+        <Inset space="10px">
+          <Placeholder />
+        </Inset>
+      </>
     ),
 };
 

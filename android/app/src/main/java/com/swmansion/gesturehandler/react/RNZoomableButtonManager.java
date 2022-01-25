@@ -26,7 +26,8 @@ public class RNZoomableButtonManager extends
         int mDuration = 160;
         float pivotX = 0.5f;
         float pivotY = 0.5f;
-        boolean shouldLongPressEndPress = false;
+        boolean isLongPress = false;
+        boolean shouldLongPressHoldPress = false;
 
 
         public ZoomableButtonViewGroup(Context context) {
@@ -58,53 +59,71 @@ public class RNZoomableButtonManager extends
 
 
         @Override
-        public boolean onTouchEvent(MotionEvent ev){
-            if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-                this.animate(true);
+        public boolean performClick() {
+            if (!mIsLongTaskScheduled) {
+                onReceivePressEvent(false);
             }
+            return super.performClick();
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent ev){
             if (ev.getAction() == MotionEvent.ACTION_UP) {
-                if (mIsTaskScheduled) {
-                    onReceivePressEvent(false);
-                }
                 mIsTaskScheduled = false;
-                if (mIsLongTaskScheduled) {
+                if (mIsLongTaskScheduled && isLongPress && shouldLongPressHoldPress) {
                     onReceivePressEndedEvent();
                 }
                 mLongPressTimer.cancel();
                 mLongPressTimer = new Timer();
-                if (shouldLongPressEndPress) {
-                    animate(false);
-                }
             }
-
             return super.onTouchEvent(ev);
         }
 
+        static ButtonViewGroup sButtonResponder;
+
         @Override
         public void setPressed(boolean pressed) {
+            if (pressed && sButtonResponder == null) {
+                // first button to be pressed grabs button responder
+                sButtonResponder = this;
+            }
+            if (!pressed || sButtonResponder == this) {
+                // we set pressed state only for current responder
+                setPressedInternal(pressed);
+            }
+            if (!pressed && sButtonResponder == this) {
+                // if the responder is no longer pressed we release button responder
+                sButtonResponder = null;
+            }
+        }
+
+        private void setPressedInternal(boolean pressed) {
             this.animate(pressed);
             super.setPressed(pressed);
 
             if (pressed && !mIsTaskScheduled) {
                 mIsTaskScheduled = true;
-                mLongPressTimer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        mIsTaskScheduled = false;
-                        mIsLongTaskScheduled = true;
-                        onReceivePressEvent(true);
-                        if (!shouldLongPressEndPress) {
-                            animate(false);
+                mIsLongTaskScheduled = false;
+                if (isLongPress) {
+                    mLongPressTimer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            mIsTaskScheduled = false;
+                            mIsLongTaskScheduled = true;
+
+                            onReceivePressEvent(true);
+                            if (!shouldLongPressHoldPress) {
+                                animate(false);
+                            }
                         }
-                    }
-                }, mMinLongPressDuration);
+                    }, mMinLongPressDuration);
+                }
             }
 
             if (!pressed && mIsTaskScheduled) {
                 mLongPressTimer.cancel();
                 mLongPressTimer = new Timer();
                 mIsTaskScheduled = false;
-                mIsLongTaskScheduled = false;
             }
         }
 
@@ -159,9 +178,14 @@ public class RNZoomableButtonManager extends
         view.mScaleTo = scaleTo;
     }
 
-    @ReactProp(name = "shouldLongPressEndPress")
-    public void setShouldLongPressEndPress(ZoomableButtonViewGroup view, boolean shouldLongPressEndPress) {
-        view.shouldLongPressEndPress = shouldLongPressEndPress;
+    @ReactProp(name = "isLongPress")
+    public void setIsLongPress(ZoomableButtonViewGroup view, boolean isLongPress) {
+        view.isLongPress = isLongPress;
+    }
+
+    @ReactProp(name = "shouldLongPressHoldPress")
+    public void setShouldLongPressHoldPress(ZoomableButtonViewGroup view, boolean shouldLongPressHoldPress) {
+        view.shouldLongPressHoldPress = shouldLongPressHoldPress;
     }
 
     @ReactProp(name = "duration")
