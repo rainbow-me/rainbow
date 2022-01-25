@@ -1,6 +1,5 @@
 export { default as AssetTypes, AssetType } from './assetTypes';
 export type {
-  ConfirmationTimeByPriorityFee,
   CurrentBlockParams,
   Fee,
   GasFee,

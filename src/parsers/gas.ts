@@ -3,8 +3,6 @@ import { map, zipObject } from 'lodash';
 import { gasUtils } from '../utils';
 import {
   BlocksToConfirmation,
-  BlocksToConfirmationByBaseFee,
-  BlocksToConfirmationByPriorityFee,
   GasFeeParam,
   GasFeeParams,
   GasFeeParamsBySpeed,
@@ -117,39 +115,13 @@ export const parseRainbowMeteorologyData = (
     baseFeeSuggestion,
     baseFeeTrend,
     maxPriorityFeeSuggestions,
-    confirmationTimeByPriorityFee,
     currentBaseFee,
   } = rainbowMeterologyData.data;
 
-  // API compatible
-  let blocksToConfirmation: BlocksToConfirmation;
-  if (!rainbowMeterologyData.data.blocksToConfirmationByBaseFee) {
-    const byPriorityFee: BlocksToConfirmationByPriorityFee = {
-      1: confirmationTimeByPriorityFee[15],
-      2: confirmationTimeByPriorityFee[30],
-      3: confirmationTimeByPriorityFee[45],
-      4: confirmationTimeByPriorityFee[60],
-    };
-    const byBaseFee: BlocksToConfirmationByBaseFee = {
-      4: new BigNumber(multiply(baseFeeSuggestion, 0.92)).toFixed(0),
-      8: new BigNumber(multiply(baseFeeSuggestion, 0.88)).toFixed(0),
-      // eslint-disable-next-line sort-keys-fix/sort-keys-fix
-      40: new BigNumber(multiply(baseFeeSuggestion, 0.79)).toFixed(0),
-      // eslint-disable-next-line sort-keys-fix/sort-keys-fix
-      120: new BigNumber(multiply(baseFeeSuggestion, 0.75)).toFixed(0),
-      240: new BigNumber(multiply(baseFeeSuggestion, 0.72)).toFixed(0),
-    };
-    blocksToConfirmation = {
-      byBaseFee,
-      byPriorityFee,
-    };
-  } else {
-    blocksToConfirmation = {
-      byBaseFee: rainbowMeterologyData.data.blocksToConfirmationByBaseFee,
-      byPriorityFee:
-        rainbowMeterologyData.data.blocksToConfirmationByPriorityFee,
-    };
-  }
+  const blocksToConfirmation: BlocksToConfirmation = {
+    byBaseFee: rainbowMeterologyData.data.blocksToConfirmationByBaseFee,
+    byPriorityFee: rainbowMeterologyData.data.blocksToConfirmationByPriorityFee,
+  };
 
   const parsedFees: GasFeeParamsBySpeed = {};
   const parsedCurrentBaseFee = parseGasFeeParam(currentBaseFee);
