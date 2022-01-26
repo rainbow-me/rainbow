@@ -1,10 +1,12 @@
 import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
-import { TextInputProps, View } from 'react-native';
-import { Input } from '../';
-import AnimatedRadialGradient from './AnimatedRadialGradient';
+import { TextInputProps } from 'react-native';
+import { Input } from '../../inputs';
+import RadialGradientBackground from './RadialGradientBackground';
 import {
   Box,
+  Column,
+  Columns,
   Cover,
   Heading,
   Inset,
@@ -12,17 +14,17 @@ import {
 } from '@rainbow-me/design-system';
 import { useDimensions } from '@rainbow-me/hooks';
 
-export type GradientInputProps = {
+export type SearchInputProps = {
   onChangeText: TextInputProps['onChangeText'];
   value: TextInputProps['value'];
-  variant: 'rainbow' | 'warning';
+  variant: 'rainbow' | 'warning' | 'success';
 };
 
-const GradientInput = ({
+const SearchInput = ({
   onChangeText,
   value,
   variant = 'rainbow',
-}: GradientInputProps) => {
+}: SearchInputProps) => {
   const { width: deviceWidth } = useDimensions();
   const headingStyle = useHeadingStyle({ size: '30px', weight: 'heavy' });
 
@@ -44,7 +46,7 @@ const GradientInput = ({
           }
           style={{ height: '100%', width: '100%' }}
         >
-          <AnimatedRadialGradient
+          <RadialGradientBackground
             height={height}
             variant={variant}
             width={width}
@@ -52,7 +54,7 @@ const GradientInput = ({
         </MaskedView>
       </Cover>
       <Cover>
-        <View style={{ height: '100%', width: '100%' }}>
+        <Box style={{ height: '100%', width: '100%' }}>
           <Inset space="3px">
             <MaskedView
               maskElement={
@@ -64,7 +66,7 @@ const GradientInput = ({
                 />
               }
             >
-              <AnimatedRadialGradient
+              <RadialGradientBackground
                 height={height}
                 type="tint"
                 variant={variant}
@@ -72,56 +74,49 @@ const GradientInput = ({
               />
             </MaskedView>
           </Inset>
-        </View>
+        </Box>
       </Cover>
-      <Cover>
-        <MaskedView
-          maskElement={
-            <Box
-              height={`${height}px`}
-              justifyContent="center"
-              paddingLeft="15px"
-              width="full"
-            >
+      <Box height={`${height}px`} justifyContent="center" width="full">
+        <Inset left="15px" right="19px">
+          <Columns alignHorizontal="justify">
+            <Column width="content">
+              <Box style={{ width: 42 }}>
+                <MaskedView
+                  maskElement={
+                    <Box height={`${height}px`}>
+                      <Heading size="30px" weight="heavy">
+                        􀊫
+                      </Heading>
+                    </Box>
+                  }
+                >
+                  <RadialGradientBackground
+                    height={height}
+                    variant={variant}
+                    width={width}
+                  />
+                </MaskedView>
+              </Box>
+            </Column>
+            <Input
+              autoFocus
+              onChangeText={onChangeText}
+              style={{
+                ...headingStyle,
+                marginTop: -5,
+              }}
+              value={value}
+            />
+            <Column width="content">
               <Heading size="30px" weight="heavy">
-                􀊫
+                .eth
               </Heading>
-            </Box>
-          }
-          style={{
-            height: '100%',
-            width: '100%',
-          }}
-        >
-          <AnimatedRadialGradient
-            height={height}
-            variant={variant}
-            width={width}
-          />
-        </MaskedView>
-      </Cover>
-      <Cover alignHorizontal="right" alignVertical="center">
-        <Inset right="19px">
-          <Heading size="30px" weight="heavy">
-            .eth
-          </Heading>
-        </Inset>
-      </Cover>
-      <Box height={`${height}px`} justifyContent="center">
-        <Inset left="60px" right="76px">
-          <Input
-            autoFocus
-            onChangeText={onChangeText}
-            style={{
-              ...headingStyle,
-              marginTop: -5,
-            }}
-            value={value}
-          />
+            </Column>
+          </Columns>
         </Inset>
       </Box>
     </Box>
   );
 };
 
-export default GradientInput;
+export default SearchInput;
