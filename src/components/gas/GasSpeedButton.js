@@ -267,7 +267,6 @@ const GasSpeedButton = ({
 
   const handlePressSpeedOption = useCallback(
     selectedSpeed => {
-      updateGasFeeOption(selectedSpeed);
       if (selectedSpeed === CUSTOM) {
         if (ios) {
           InteractionManager.runAfterInteractions(() => {
@@ -278,8 +277,11 @@ const GasSpeedButton = ({
           });
         } else {
           openCustomGasSheet();
+          setTimeout(() => updateGasFeeOption(selectedSpeed), 500);
+          return;
         }
       }
+      updateGasFeeOption(selectedSpeed);
     },
     [updateGasFeeOption, openCustomGasSheet]
   );
