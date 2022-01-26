@@ -2,6 +2,8 @@ import { captureException } from '@sentry/react-native';
 import {
   // @ts-ignore
   NFT_API_KEY,
+  // @ts-ignore
+  NFT_API_URL,
 } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
 import NetworkTypes from '@rainbow-me/networkTypes';
@@ -20,7 +22,7 @@ export const apiGetAccountUniqueTokens = async (
   try {
     const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
     const offset = page * UNIQUE_TOKENS_LIMIT_PER_PAGE;
-    const url = `https://${networkPrefix}nftp.rainbow.me/api/v1/assets`;
+    const url = `https://${networkPrefix}${NFT_API_URL}/api/v1/assets`;
     const data = await rainbowFetch(url, {
       headers: {
         'Accept': 'application/json',
@@ -49,7 +51,7 @@ export const apiGetUniqueTokenFloorPrice = async (
 ) => {
   try {
     const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
-    const url = `https://${networkPrefix}nftp.rainbow.me/api/v1/asset/${urlSuffixForAsset}`;
+    const url = `https://${networkPrefix}${NFT_API_URL}/api/v1/asset/${urlSuffixForAsset}`;
     const data = await rainbowFetch(url, {
       headers: {
         'Accept': 'application/json',
@@ -61,7 +63,7 @@ export const apiGetUniqueTokenFloorPrice = async (
 
     const slug = data?.data?.collection?.slug;
 
-    const collectionURL = `https://${networkPrefix}nftp.rainbow.me/api/v1/collection/${slug}`;
+    const collectionURL = `https://${networkPrefix}${NFT_API_URL}/api/v1/collection/${slug}`;
     const collectionData = await rainbowFetch(collectionURL, {
       headers: {
         'Accept': 'application/json',
