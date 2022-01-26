@@ -5,6 +5,8 @@ import {
   ENS_REGISTRATIONS,
   ENS_SUGGESTIONS,
 } from '../apollo/queries';
+import { ParsedAddressAsset } from '@rainbow-me/entities';
+import { convertAmountFromNativeValue } from '@rainbow-me/helpers/utilities';
 import { profileUtils } from '@rainbow-me/utils';
 
 export const fetchSuggestions = async (
@@ -88,4 +90,33 @@ export const fetchRegistration = async (recipient: any) => {
       };
     }
   }
+};
+/**
+ * Get USD and ETH cost of the registration of a given name during given years
+ *
+ * @param ethAsset ETH asset from general assets in state
+ * @param name ENS name to get the cost
+ * @param years Years of registration
+ */
+export const getENSCost = (
+  ethAsset: ParsedAddressAsset,
+  name: string,
+  years: number
+) => {
+  //https://docs.ens.domains/frequently-asked-questions
+  if (name.length < 3) return null;
+  const priceUnit = ethAsset?.price?.value ?? 0;
+  let usdAmount = 5;
+  if (name.length === 4) {
+    usdAmount = 160;
+  } else if (name.length === 3) {
+    usdAmount = 640;
+  }
+  const totalUSDAmount = usdAmount * years;
+  const convertedAssetAmount = convertAmountFromNativeValue(
+    totalUSDAmount,
+    priceUnit,
+    5
+  );
+  return { ETH: convertedAssetAmount, USD: totalUSDAmount };
 };
