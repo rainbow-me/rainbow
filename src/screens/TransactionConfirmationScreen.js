@@ -88,6 +88,7 @@ import {
   multiply,
 } from '@rainbow-me/utilities';
 import { ethereumUtils, safeAreaInsetValues } from '@rainbow-me/utils';
+import { useNativeAssetForNetwork } from '@rainbow-me/utils/ethereumUtils';
 import { methodRegistryLookupAndParse } from '@rainbow-me/utils/methodRegistry';
 import {
   isMessageDisplayType,
@@ -202,8 +203,16 @@ export default function TransactionConfirmationScreen() {
   } = routeParams;
   const isMessageRequest = isMessageDisplayType(method);
   const [ready, setReady] = useState(isMessageRequest);
+  const genericNativeAsset = useNativeAssetForNetwork(currentNetwork);
 
   const walletConnector = walletConnectors[peerId];
+
+  const priceOfNativeAsset = useMemo(() => {
+    if (greaterThan(genericNativeAsset?.price?.value, 1)) {
+      return genericNativeAsset?.price?.value;
+    }
+    return null;
+  }, [genericNativeAsset?.price?.value]);
 
   const accountInfo = useMemo(() => {
     const address = walletConnector?._accounts?.[0];
@@ -880,9 +889,6 @@ export default function TransactionConfirmationScreen() {
     }
 
     if (isTransactionDisplayType(method) && request?.asset) {
-      const priceOfNativeAsset = ethereumUtils.getPriceOfNativeAssetForNetwork(
-        currentNetwork
-      );
       const amount = request?.value ?? '0.00';
       const nativeAmount = multiply(priceOfNativeAsset, amount);
       const nativeAmountDisplay = convertAmountToNativeDisplay(
@@ -896,7 +902,7 @@ export default function TransactionConfirmationScreen() {
           amount={amount}
           method={method}
           name={request?.asset?.name}
-          nativeAmountDisplay={nativeAmountDisplay}
+          nativeAmountDisplay={priceOfNativeAsset ? nativeAmountDisplay : null}
           symbol={request?.asset?.symbol}
         />
       );
@@ -909,7 +915,17 @@ export default function TransactionConfirmationScreen() {
         value={request?.value}
       />
     );
-  }, [isMessageRequest, method, nativeCurrency, currentNetwork, request]);
+  }, [
+    isMessageRequest,
+    method,
+    request?.asset,
+    request?.to,
+    request?.data,
+    request?.value,
+    request.message,
+    priceOfNativeAsset,
+    nativeCurrency,
+  ]);
 
   const offset = useSharedValue(0);
   const sheetOpacity = useSharedValue(1);

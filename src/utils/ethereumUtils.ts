@@ -179,6 +179,21 @@ export const useEth = (): ParsedAddressAsset => {
   );
 };
 
+export const useNativeAssetForNetwork = (
+  network: Network
+): ParsedAddressAsset => {
+  const address =
+    network === Network.polygon ? MATIC_MAINNET_ADDRESS : ETH_ADDRESS;
+  return useSelector(
+    ({
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
+      data: {
+        genericAssets: { [address]: asset },
+      },
+    }) => asset
+  );
+};
+
 export const useEthUSDPrice = (): number => {
   // @ts-expect-error ts-migrate(2339) FIXME: Property 'data' does not exist on type 'DefaultRoo... Remove this comment to see the full error message
   return useSelector(({ data: { ethUSDPrice } }) => ethUSDPrice);
