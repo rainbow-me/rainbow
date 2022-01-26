@@ -9,7 +9,7 @@ import { ButtonPressAnimation } from './animations';
 import { Centered, Column } from './layout';
 import { Text as TextElement } from './text';
 import { Row } from '@rainbow-me/design-system';
-import { lightModeThemeColors, padding } from '@rainbow-me/styles';
+import { padding } from '@rainbow-me/styles';
 
 const HairlineSpace = '\u200a';
 
