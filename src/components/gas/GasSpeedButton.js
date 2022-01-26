@@ -264,6 +264,7 @@ const GasSpeedButton = ({
     [theme, colors]
   );
 
+  // I'M SHITTY CODE BUT GOT THINGS DONE REFACTOR ME ASAP
   const handlePressSpeedOption = useCallback(
     selectedSpeed => {
       if (selectedSpeed === CUSTOM) {
