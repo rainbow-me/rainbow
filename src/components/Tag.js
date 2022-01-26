@@ -11,6 +11,8 @@ import { Text as TextElement } from './text';
 import { Row } from '@rainbow-me/design-system';
 import { lightModeThemeColors, padding } from '@rainbow-me/styles';
 
+const HairlineSpace = '\u200a';
+
 const PropertyActionsEnum = {
   viewTraitOnOpensea: 'viewTraitOnOpensea',
 };
@@ -44,8 +46,8 @@ const OuterBorder = styled(Centered)`
   z-index: 2;
 `;
 
-const Text = styled(TextElement).attrs(({ theme: { colors }, max }) => ({
-  color: max ? lightModeThemeColors.grey : colors.whiteLabel,
+const Text = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
+  color: color || colors.whiteLabel,
   size: 'lmedium',
   weight: 'semibold',
 }))`
@@ -62,6 +64,8 @@ const Title = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
 `;
 
 const Tag = ({ color, disableMenu, slug, text, title, maxValue, ...props }) => {
+  const { colors } = useTheme();
+
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === PropertyActionsEnum.viewTraitOnOpensea) {
@@ -130,7 +134,14 @@ const Tag = ({ color, disableMenu, slug, text, title, maxValue, ...props }) => {
             <Title color={color}>{upperCase(title)}</Title>
             <Row>
               <Text>{upperFirst(text)}</Text>
-              {maxValue && <Text max>{` of ${maxValue}`}</Text>}
+              {maxValue && (
+                <Text>
+                  <Text color={colors.alpha(colors.whiteLabel, 0.8)}>
+                    {HairlineSpace}/{HairlineSpace}
+                  </Text>
+                  {maxValue}
+                </Text>
+              )}
             </Row>
           </Container>
         </OuterBorder>
