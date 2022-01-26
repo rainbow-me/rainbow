@@ -17,9 +17,10 @@ import {
   Text,
 } from '@rainbow-me/design-system';
 
-import { fetchRegistration } from '@rainbow-me/handlers/ens';
+import { fetchRegistration, getENSCost } from '@rainbow-me/handlers/ens';
 import { useDebounceString, useDimensions } from '@rainbow-me/hooks';
 import { colors } from '@rainbow-me/styles';
+import { useEth } from '@rainbow-me/utils/ethereumUtils';
 
 const Container = styled.View`
   flex: 1;
@@ -30,9 +31,15 @@ export default function RegisterEnsSheet() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearchQuery = useDebounceString(searchQuery);
+  const ethAsset = useEth();
+
+  const estimatedENSCost = useMemo(() => getENSCost(ethAsset, searchQuery, 1), [
+    ethAsset,
+    searchQuery,
+  ]);
 
   const { data: registration, status } = useQuery(
-    searchQuery.length > 3 && ['registration', debouncedSearchQuery],
+    searchQuery.length > 2 && ['registration', debouncedSearchQuery],
     async (_, searchQuery) => {
       const fastFormatter = timestamp => {
         const date = new Date(Number(timestamp) * 1000);
@@ -46,6 +53,7 @@ export default function RegisterEnsSheet() {
       };
     }
   );
+
   const isLoading = status === 'loading';
   const isSuccess = registration && status === 'success';
 
@@ -92,24 +100,13 @@ export default function RegisterEnsSheet() {
                     {registration.isRegistered ? 'Taken' : 'Available'}
                   </Text>
                 </Column>
-                <Column width="1/2">
-                  <Text color="secondary40" size="18px" weight="bold">
-                    {registration.isRegistered ? 'Taken' : 'Available'}
-                  </Text>
-                </Column>
               </Columns>
-              <Row>
-                <Text color="secondary40" size="18px" weight="bold">
-                  {registration.isRegistered
-                    ? `Til ${registration.expiryDate}`
-                    : `"Price"`}
-                </Text>
-              </Row>
-              {!registration.isRegistered && (
-                <Text color="secondary40" size="18px" weight="bold">
-                  Estimated cost?
-                </Text>
-              )}
+              <Row />
+              <Text color="secondary40" size="18px" weight="bold">
+                {!registration.isRegistered
+                  ? `Estimated cost: ${estimatedENSCost.ETH} ETH ${estimatedENSCost.USD} USD`
+                  : `Til ${registration.expiryDate}`}
+              </Text>
             </Stack>
           )}
         </Box>
