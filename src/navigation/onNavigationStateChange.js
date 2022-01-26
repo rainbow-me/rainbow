@@ -119,8 +119,7 @@ export function onNavigationStateChange(currentState) {
       routeName === Routes.SWAP_DETAILS_SCREEN ||
       routeName === Routes.SWAP_DETAILS_SHEET ||
       routeName === Routes.QR_SCANNER_SCREEN ||
-      (android &&
-        routeName === Routes.MODAL_SCREEN &&
+      (routeName === Routes.MODAL_SCREEN &&
         Navigation.getActiveRoute().params?.type === 'contact_profile')
     ) {
       AndroidKeyboardAdjust.setAdjustPan();
