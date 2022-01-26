@@ -231,7 +231,6 @@ const GasSpeedButton = ({
 
   const openCustomOptions = useCallback(
     focusTo => {
-      android && Keyboard.dismiss();
       if (ios) {
         setShouldOpenCustomGasSheet({ focusTo, shouldOpen: true });
       } else {
