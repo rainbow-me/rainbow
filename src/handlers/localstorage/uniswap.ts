@@ -1,5 +1,8 @@
 import { EthereumAddress, RainbowToken } from '../../entities';
-import { DefaultUniswapFavorites } from '../../references';
+import {
+  DefaultUniswapFavorites,
+  DefaultUniswapFavoritesMeta,
+} from '../../references';
 import {
   getAccountLocal,
   getGlobal,
@@ -11,21 +14,26 @@ const ASSETS = 'uniswapassets';
 const LIQUIDITY = 'uniswapliquidity';
 const UNISWAP_POSITIONS = 'uniswapPositions';
 const UNISWAP_FAVORITES = 'uniswapFavorites';
-const UNISWAP_FAVORITES_METADATA = 'uniswapFavoritesMetaData';
+const UNISWAP_FAVORITES_METADATA = 'uniswapFavoritesMetadata';
 const uniswapLiquidityVersion = '0.2.0';
 const uniswapPositionsVersion = '0.1.0';
 
 export const uniswapAccountLocalKeys = [ASSETS, LIQUIDITY, UNISWAP_POSITIONS];
 
-export const getUniswapFavorites = (network: any) =>
+export const getUniswapFavorites = (network: any): Promise<EthereumAddress[]> =>
   // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   getGlobal(UNISWAP_FAVORITES, DefaultUniswapFavorites[network]);
 
 export const saveUniswapFavorites = (favorites: any) =>
   saveGlobal(UNISWAP_FAVORITES, favorites);
 
-export const getUniswapFavoritesMetadata = () =>
-  getGlobal(UNISWAP_FAVORITES_METADATA, {});
+export const getUniswapFavoritesMetadata = (
+  network: string | undefined
+): Promise<Record<EthereumAddress, RainbowToken>> =>
+  getGlobal(
+    UNISWAP_FAVORITES_METADATA,
+    DefaultUniswapFavoritesMeta[network || 'mainnet']
+  );
 
 export const saveUniswapFavoritesMetadata = (
   data: Record<EthereumAddress, RainbowToken>

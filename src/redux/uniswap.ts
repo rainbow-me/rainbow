@@ -1,14 +1,5 @@
 import produce from 'immer';
-import {
-  concat,
-  isArray,
-  map,
-  omit,
-  remove,
-  toLower,
-  uniq,
-  without,
-} from 'lodash';
+import { concat, isArray, map, omit, toLower, uniq, without } from 'lodash';
 import { Dispatch } from 'redux';
 import { AppGetState } from './store';
 import {
@@ -27,11 +18,12 @@ import { getTestnetUniswapPairs } from '@rainbow-me/handlers/uniswap';
 import networkTypes from '@rainbow-me/networkTypes';
 import {
   DefaultUniswapFavorites,
+  DefaultUniswapFavoritesMeta,
   ETH_ADDRESS,
   rainbowTokenList,
-  SOCKS_ADDRESS,
   WETH_ADDRESS,
 } from '@rainbow-me/references';
+import logger from 'logger';
 
 // -- Constants ------------------------------------------------------------- //
 
@@ -148,9 +140,9 @@ export const uniswapLoadState = () => async (
   dispatch({ type: UNISWAP_LOAD_REQUEST });
   try {
     const favorites: string[] = await getUniswapFavorites(network);
-    remove(favorites, address => toLower(address) === toLower(SOCKS_ADDRESS));
     const favoritesMeta: UniswapFavoriteTokenData = await getUniswapFavoritesMetadata(
-      favorites
+      favorites,
+      network
     );
     dispatch({
       payload: {
@@ -194,28 +186,40 @@ export const uniswapResetState = () => (
  * Loads uniswap favorites metadata from local storage or fetches new data
  * on update / when persisting default favorites for the first time
  */
-const getUniswapFavoritesMetadata = async (addresses: EthereumAddress[]) => {
-  let favoritesMetaData = await getUniswapFavoritesMetadataLS();
-  if (Object.keys(favoritesMetaData).length !== addresses.length) {
-    favoritesMetaData = await getUniswapV2Tokens(
-      addresses.map(address => {
-        return address === ETH_ADDRESS ? WETH_ADDRESS : address.toLowerCase();
-      })
-    );
-    if (favoritesMetaData[WETH_ADDRESS]) {
-      const favorite = favoritesMetaData[WETH_ADDRESS];
-      favoritesMetaData[ETH_ADDRESS] = {
-        ...favorite,
-        address: ETH_ADDRESS,
-        name: 'Ethereum',
-        symbol: 'ETH',
-        uniqueId: ETH_ADDRESS,
-      };
-      favoritesMetaData = omit(favoritesMetaData, WETH_ADDRESS);
+const getUniswapFavoritesMetadata = async (
+  addresses: EthereumAddress[],
+  network?: string
+) => {
+  let favoritesMetadata = await getUniswapFavoritesMetadataLS(network);
+  if (Object.keys(favoritesMetadata).length !== addresses.length) {
+    try {
+      const newFavoritesMeta = await getUniswapV2Tokens(
+        addresses.map(address => {
+          return address === ETH_ADDRESS ? WETH_ADDRESS : address.toLowerCase();
+        })
+      );
+      if (newFavoritesMeta) {
+        favoritesMetadata = newFavoritesMeta;
+        if (favoritesMetadata[WETH_ADDRESS]) {
+          const favorite = favoritesMetadata[WETH_ADDRESS];
+          favoritesMetadata[ETH_ADDRESS] = {
+            ...favorite,
+            address: ETH_ADDRESS,
+            name: 'Ethereum',
+            symbol: 'ETH',
+            uniqueId: ETH_ADDRESS,
+          };
+          favoritesMetadata = omit(favoritesMetadata, WETH_ADDRESS);
+        }
+      }
+    } catch (e) {
+      logger.sentry(
+        `An error occurred while fetching uniswap favorite metadata: ${e}`
+      );
     }
-    saveUniswapFavoritesMetadata(favoritesMetaData);
+    saveUniswapFavoritesMetadata(favoritesMetadata);
   }
-  return favoritesMetaData || {};
+  return favoritesMetadata || {};
 };
 
 /**
@@ -258,7 +262,7 @@ export const uniswapUpdateFavorites = (
 
 export const INITIAL_UNISWAP_STATE: UniswapState = {
   favorites: DefaultUniswapFavorites['mainnet'],
-  favoritesMeta: {},
+  favoritesMeta: DefaultUniswapFavoritesMeta['mainnet'],
   loadingUniswap: false,
   get pairs() {
     return rainbowTokenList.CURATED_TOKENS;
