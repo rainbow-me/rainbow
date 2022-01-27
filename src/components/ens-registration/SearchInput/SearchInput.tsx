@@ -1,6 +1,7 @@
 import MaskedView from '@react-native-community/masked-view';
 import React from 'react';
 import { TextInputProps } from 'react-native';
+import Spinner from '../../Spinner';
 import { Input } from '../../inputs';
 import RadialGradientBackground from './RadialGradientBackground';
 import {
@@ -15,12 +16,14 @@ import {
 import { useDimensions } from '@rainbow-me/hooks';
 
 export type SearchInputProps = {
+  isLoading?: boolean;
   onChangeText: TextInputProps['onChangeText'];
   value: TextInputProps['value'];
   variant: 'rainbow' | 'warning' | 'success';
 };
 
 const SearchInput = ({
+  isLoading,
   onChangeText,
   value,
   variant = 'rainbow',
@@ -84,9 +87,15 @@ const SearchInput = ({
                 <MaskedView
                   maskElement={
                     <Box height={`${height}px`}>
-                      <Heading size="30px" weight="heavy">
-                        􀊫
-                      </Heading>
+                      {isLoading ? (
+                        <Box marginLeft="-8px" marginTop="-4px">
+                          <Spinner duration={1000} size={28} />
+                        </Box>
+                      ) : (
+                        <Heading size="30px" weight="heavy">
+                          􀊫
+                        </Heading>
+                      )}
                     </Box>
                   }
                 >

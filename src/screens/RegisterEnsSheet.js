@@ -84,6 +84,7 @@ export default function RegisterEnsSheet() {
             paddingVertical="42px"
           >
             <SearchInput
+              isLoading={isLoading}
               onChangeText={setSearchQuery}
               placeholder="Input placeholder"
               variant={inputVariant}

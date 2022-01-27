@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { ViewProps } from 'react-native';
 import RadialGradient, {
   RadialGradientProps,
 } from 'react-native-radial-gradient';
@@ -63,27 +62,13 @@ const RadialGradientBackground = ({
   return (
     <>
       {gradients.map(({ name, gradient }, i) => (
-        <AnimatedGradient
-          center={[width, width / 2]}
+        <AnimatedRadialGradient
           colors={gradient}
           currentVariant={variant}
+          height={height}
           key={i}
-          radius={width}
-          stops={[0, 0.544872, 1]}
-          style={[
-            {
-              height: width,
-              position: 'absolute',
-              top: -(width - height) / 2,
-              transform: [
-                {
-                  scaleY: 0.7884615385,
-                },
-              ],
-              width,
-            },
-          ]}
           variant={name as SearchInputProps['variant']}
+          width={width}
         />
       ))}
     </>
@@ -94,17 +79,19 @@ export default RadialGradientBackground;
 
 //////////////////////////////////////////////////////////////////
 
-const AnimatedRadialGradient = Animated.createAnimatedComponent(RadialGradient);
+const AnimatedGradient = Animated.createAnimatedComponent(RadialGradient);
 
-const AnimatedGradient = ({
+const AnimatedRadialGradient = ({
   variant,
   currentVariant,
-  style,
+  height,
+  width,
   ...props
 }: RadialGradientProps & {
   variant: RadialGradientBackgroundProps['variant'];
   currentVariant: RadialGradientBackgroundProps['variant'];
-  style: ViewProps['style'];
+  height: number;
+  width: number;
 }) => {
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: withTiming(
@@ -112,5 +99,30 @@ const AnimatedGradient = ({
       { duration: 200 }
     ),
   }));
-  return <AnimatedRadialGradient {...props} style={[animatedStyle, style]} />;
+
+  const center = useMemo(() => [width, width / 2], [width]);
+  const stops = useMemo(() => [0, 0.544872, 1], []);
+
+  return (
+    <AnimatedGradient
+      {...props}
+      center={center}
+      radius={width}
+      stops={stops}
+      style={[
+        animatedStyle,
+        {
+          height: width,
+          position: 'absolute',
+          top: -(width - height) / 2,
+          transform: [
+            {
+              scaleY: 0.7884615385,
+            },
+          ],
+          width,
+        },
+      ]}
+    />
+  );
 };

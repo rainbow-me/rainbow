@@ -3,7 +3,7 @@ declare module 'react-native-radial-gradient' {
   import { StyleProp, ViewStyle } from 'react-native';
 
   interface RadialGradientProps {
-    center?: [number, number];
+    center?: number[];
     colors?: string[];
     radius?: number;
     style?: StyleProp<ViewStyle>;
