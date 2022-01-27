@@ -3,7 +3,7 @@ import React from 'react';
 import { TextInputProps } from 'react-native';
 import Spinner from '../../Spinner';
 import { Input } from '../../inputs';
-import RadialGradientBackground from './RadialGradientBackground';
+import SearchInputGradientBackground from './SearchInputGradientBackground';
 import {
   Box,
   Column,
@@ -52,7 +52,7 @@ const SearchInput = ({
           }
           style={{ height: '100%', width: '100%' }}
         >
-          <RadialGradientBackground
+          <SearchInputGradientBackground
             height={height}
             state={state}
             variant={variant}
@@ -75,7 +75,7 @@ const SearchInput = ({
           }
           style={{ height: '100%', width: '100%' }}
         >
-          <RadialGradientBackground
+          <SearchInputGradientBackground
             height={height}
             state={state}
             type="tint"
@@ -104,7 +104,7 @@ const SearchInput = ({
                 }
                 style={{ height, width: 42 }}
               >
-                <RadialGradientBackground
+                <SearchInputGradientBackground
                   height={height}
                   state={state}
                   variant={variant}
