@@ -1,4 +1,8 @@
-import { EthereumAddress, RainbowToken } from '../../entities';
+import {
+  EthereumAddress,
+  RainbowToken,
+  UniswapFavoriteTokenData,
+} from '../../entities';
 import {
   DefaultUniswapFavorites,
   DefaultUniswapFavoritesMeta,
@@ -28,8 +32,8 @@ export const saveUniswapFavorites = (favorites: any) =>
   saveGlobal(UNISWAP_FAVORITES, favorites);
 
 export const getUniswapFavoritesMetadata = (
-  network: string | undefined
-): Promise<Record<EthereumAddress, RainbowToken>> =>
+  network?: string
+): Promise<UniswapFavoriteTokenData> =>
   getGlobal(
     UNISWAP_FAVORITES_METADATA,
     DefaultUniswapFavoritesMeta[network || 'mainnet']

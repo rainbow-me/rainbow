@@ -3,9 +3,8 @@ import { savingsAssets } from './compound';
 import { default as DefaultTokenListsSource } from './default-token-lists.json';
 import {
   Asset,
-  EthereumAddress,
-  RainbowToken,
   SavingsAsset,
+  UniswapFavoriteTokenData,
 } from '@rainbow-me/entities';
 import { Network } from '@rainbow-me/helpers/networkTypes';
 
@@ -170,7 +169,7 @@ export const DefaultUniswapFavorites = {
 
 export const DefaultUniswapFavoritesMeta: Record<
   string,
-  Record<EthereumAddress, RainbowToken>
+  UniswapFavoriteTokenData
 > = {
   mainnet: {
     [DAI_ADDRESS]: {
