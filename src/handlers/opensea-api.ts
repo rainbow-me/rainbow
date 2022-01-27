@@ -1,9 +1,9 @@
 import { captureException } from '@sentry/react-native';
 import {
   // @ts-ignore
-  OPENSEA_API_KEY,
+  NFT_API_KEY,
   // @ts-ignore
-  OPENSEA_RINKEBY_API_KEY,
+  NFT_API_URL,
 } from 'react-native-dotenv';
 import { rainbowFetch } from '../rainbow-fetch';
 import NetworkTypes from '@rainbow-me/networkTypes';
@@ -20,17 +20,13 @@ export const apiGetAccountUniqueTokens = async (
   page: any
 ) => {
   try {
-    const API_KEY =
-      network === NetworkTypes.rinkeby
-        ? OPENSEA_RINKEBY_API_KEY
-        : OPENSEA_API_KEY;
     const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
     const offset = page * UNIQUE_TOKENS_LIMIT_PER_PAGE;
-    const url = `https://${networkPrefix}api.opensea.io/api/v1/assets`;
+    const url = `https://${networkPrefix}${NFT_API_URL}/api/v1/assets`;
     const data = await rainbowFetch(url, {
       headers: {
         'Accept': 'application/json',
-        'X-Api-Key': API_KEY,
+        'X-Api-Key': NFT_API_KEY,
       },
       method: 'get',
       // @ts-expect-error ts-migrate(2322) FIXME: Type '{ limit: number; offset: number; owner: any;... Remove this comment to see the full error message
@@ -55,23 +51,23 @@ export const apiGetUniqueTokenFloorPrice = async (
 ) => {
   try {
     const networkPrefix = network === NetworkTypes.mainnet ? '' : `${network}-`;
-    const url = `https://${networkPrefix}api.opensea.io/api/v1/asset/${urlSuffixForAsset}`;
+    const url = `https://${networkPrefix}${NFT_API_URL}/api/v1/asset/${urlSuffixForAsset}`;
     const data = await rainbowFetch(url, {
-      // @ts-expect-error ts-migrate(2322) FIXME: Type '{ Accept: string; method: string; timeout: n... Remove this comment to see the full error message
       headers: {
-        Accept: 'application/json',
-        method: 'get',
-        timeout: 5000, // 5 secs
+        'Accept': 'application/json',
+        'X-Api-Key': NFT_API_KEY, // 5 secs
       },
+      method: 'get',
+      timeout: 5000,
     });
 
     const slug = data?.data?.collection?.slug;
 
-    const collectionURL = `https://${networkPrefix}api.opensea.io/api/v1/collection/${slug}`;
+    const collectionURL = `https://${networkPrefix}${NFT_API_URL}/api/v1/collection/${slug}`;
     const collectionData = await rainbowFetch(collectionURL, {
       headers: {
         'Accept': 'application/json',
-        'X-Api-Key': OPENSEA_API_KEY,
+        'X-Api-Key': NFT_API_KEY,
       },
       method: 'get',
       timeout: 5000, // 5 secs
