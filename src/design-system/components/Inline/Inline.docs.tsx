@@ -49,6 +49,11 @@ const docs: DocsType = {
     },
     examples.bottomAlignedVertically,
     examples.centerAlignedHorizontallyVertically,
+    examples.fixedHeightSeparators,
+    examples.fixedHeightSeparatorsVerticalAlignment,
+    examples.fixedHeightSeparatorsHorizontalAlignment,
+    examples.fullHeightSeparators,
+    examples.noSpaceAndSeparators,
   ],
 };
 
