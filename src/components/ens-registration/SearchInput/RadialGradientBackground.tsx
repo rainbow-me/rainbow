@@ -13,20 +13,17 @@ type RadialGradientBackgroundProps = {
   variant: SearchInputProps['variant'];
   width: number;
   height: number;
+  state: SearchInputProps['state'];
   type?: 'default' | 'tint';
 };
 
 const RadialGradientBackground = ({
-  variant = 'rainbow',
+  variant,
   width,
   height,
+  state,
   type = 'default',
-}: {
-  variant: SearchInputProps['variant'];
-  width: number;
-  height: number;
-  type?: 'default' | 'tint';
-}) => {
+}: RadialGradientBackgroundProps) => {
   const { colors } = useTheme();
 
   const gradientSets = useMemo(
@@ -64,10 +61,11 @@ const RadialGradientBackground = ({
       {gradients.map(({ name, gradient }, i) => (
         <AnimatedRadialGradient
           colors={gradient}
-          currentVariant={variant}
+          currentState={state}
           height={height}
           key={i}
-          variant={name as SearchInputProps['variant']}
+          name={name}
+          variant={variant}
           width={width}
         />
       ))}
@@ -83,21 +81,22 @@ const AnimatedGradient = Animated.createAnimatedComponent(RadialGradient);
 
 const AnimatedRadialGradient = ({
   variant,
-  currentVariant,
+  currentState,
   height,
+  name,
   width,
   ...props
 }: RadialGradientProps & {
   variant: RadialGradientBackgroundProps['variant'];
-  currentVariant: RadialGradientBackgroundProps['variant'];
+  currentState: RadialGradientBackgroundProps['state'];
+  name: string;
   height: number;
   width: number;
 }) => {
   const animatedStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(
-      variant === currentVariant || variant === 'rainbow' ? 1 : 0,
-      { duration: 200 }
-    ),
+    opacity: withTiming(name === currentState || name === variant ? 1 : 0, {
+      duration: 200,
+    }),
   }));
 
   const center = useMemo(() => [width, width / 2], [width]);

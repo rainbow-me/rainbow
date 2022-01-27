@@ -49,14 +49,14 @@ export default function RegisterEnsSheet() {
   const isLoading = status === 'loading';
   const isSuccess = registration && status === 'success';
 
-  const inputVariant = useMemo(() => {
+  const state = useMemo(() => {
     if (isSuccess) {
       if (registration?.isRegistered) {
         return 'warning';
       }
       return 'success';
     }
-    return 'rainbow';
+    return undefined;
   }, [isSuccess, registration?.isRegistered]);
 
   return (
@@ -87,7 +87,7 @@ export default function RegisterEnsSheet() {
               isLoading={isLoading}
               onChangeText={setSearchQuery}
               placeholder="Input placeholder"
-              variant={inputVariant}
+              state={state}
             />
           </Box>
 

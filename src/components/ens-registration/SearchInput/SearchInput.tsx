@@ -19,7 +19,8 @@ export type SearchInputProps = {
   isLoading?: boolean;
   onChangeText: TextInputProps['onChangeText'];
   value: TextInputProps['value'];
-  variant: 'rainbow' | 'warning' | 'success';
+  variant: 'rainbow';
+  state?: 'success' | 'warning';
 };
 
 const SearchInput = ({
@@ -27,6 +28,7 @@ const SearchInput = ({
   onChangeText,
   value,
   variant = 'rainbow',
+  state,
 }: SearchInputProps) => {
   const { width: deviceWidth } = useDimensions();
   const headingStyle = useHeadingStyle({ size: '30px', weight: 'heavy' });
@@ -38,7 +40,8 @@ const SearchInput = ({
   return (
     <Box width="full">
       <Cover>
-        <MaskedView
+        <Box
+          as={MaskedView}
           maskElement={
             <Box
               background="body"
@@ -51,68 +54,71 @@ const SearchInput = ({
         >
           <RadialGradientBackground
             height={height}
+            state={state}
             variant={variant}
             width={width}
           />
-        </MaskedView>
+        </Box>
       </Cover>
       <Cover>
-        <Box style={{ height: '100%', width: '100%' }}>
-          <Inset space="3px">
-            <MaskedView
-              maskElement={
-                <Box
-                  background="body"
-                  borderRadius={46}
-                  height={{ custom: height - strokeWidth * 2 }}
-                  width="full"
-                />
-              }
-            >
-              <RadialGradientBackground
-                height={height}
-                type="tint"
-                variant={variant}
-                width={width}
+        <Box
+          as={MaskedView}
+          maskElement={
+            <Inset space="3px">
+              <Box
+                background="body"
+                borderRadius={46}
+                height={{ custom: height - strokeWidth * 2 }}
+                width="full"
               />
-            </MaskedView>
-          </Inset>
+            </Inset>
+          }
+          style={{ height: '100%', width: '100%' }}
+        >
+          <RadialGradientBackground
+            height={height}
+            state={state}
+            type="tint"
+            variant={variant}
+            width={width}
+          />
         </Box>
       </Cover>
       <Box height={`${height}px`} justifyContent="center" width="full">
         <Inset left="15px" right="19px">
-          <Columns alignHorizontal="justify">
+          <Columns alignHorizontal="justify" alignVertical="center">
             <Column width="content">
-              <Box style={{ width: 42 }}>
-                <MaskedView
-                  maskElement={
-                    <Box height={`${height}px`}>
-                      {isLoading ? (
-                        <Box marginLeft="-8px" marginTop="-4px">
-                          <Spinner duration={1000} size={28} />
-                        </Box>
-                      ) : (
-                        <Heading size="30px" weight="heavy">
-                          􀊫
-                        </Heading>
-                      )}
-                    </Box>
-                  }
-                >
-                  <RadialGradientBackground
-                    height={height}
-                    variant={variant}
-                    width={width}
-                  />
-                </MaskedView>
-              </Box>
+              <MaskedView
+                maskElement={
+                  <Box height={`${height}px`} paddingTop={{ custom: 22 }}>
+                    {isLoading ? (
+                      <Box marginLeft="-8px" marginTop="-4px">
+                        <Spinner duration={1000} size={28} />
+                      </Box>
+                    ) : (
+                      <Heading size="30px" weight="heavy">
+                        􀊫
+                      </Heading>
+                    )}
+                  </Box>
+                }
+                style={{ height, width: 42 }}
+              >
+                <RadialGradientBackground
+                  height={height}
+                  state={state}
+                  variant={variant}
+                  width={width}
+                />
+              </MaskedView>
             </Column>
             <Input
               autoFocus
               onChangeText={onChangeText}
               style={{
                 ...headingStyle,
-                marginTop: -5,
+                height,
+                top: ios ? 1.5 : 8,
               }}
               value={value}
             />
