@@ -97,7 +97,6 @@
     "@react-navigation/stack": "5.9.3",
     "@segment/analytics-react-native": "1.5.0",
     "@sentry/react-native": "2.6.0",
-    "@shopify/react-native-skia": "https://github.com/Shopify/react-native-skia/releases/download/v0.1.75-alpha/shopify-react-native-skia-0.1.75.tgz",
     "@tradle/react-native-http": "2.0.1",
     "@types/i18n-js": "3.0.3",
     "@types/lodash": "4.14.168",

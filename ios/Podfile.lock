@@ -380,35 +380,6 @@ PODS:
     - React-Core
   - react-native-safe-area-context (0.5.0):
     - React
-  - react-native-skia (0.1.75):
-    - React
-    - React-callinvoker
-    - React-Core
-    - react-native-skia/Api (= 0.1.75)
-    - react-native-skia/Jsi (= 0.1.75)
-    - react-native-skia/RNSkia (= 0.1.75)
-    - react-native-skia/SkiaHeaders (= 0.1.75)
-    - react-native-skia/Utils (= 0.1.75)
-  - react-native-skia/Api (0.1.75):
-    - React
-    - React-callinvoker
-    - React-Core
-  - react-native-skia/Jsi (0.1.75):
-    - React
-    - React-callinvoker
-    - React-Core
-  - react-native-skia/RNSkia (0.1.75):
-    - React
-    - React-callinvoker
-    - React-Core
-  - react-native-skia/SkiaHeaders (0.1.75):
-    - React
-    - React-callinvoker
-    - React-Core
-  - react-native-skia/Utils (0.1.75):
-    - React
-    - React-callinvoker
-    - React-Core
   - react-native-splash-screen (3.2.0):
     - React
   - react-native-text-input-mask (2.0.0):
@@ -672,7 +643,6 @@ DEPENDENCIES:
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-restart (from `../node_modules/react-native-restart`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
-  - "react-native-skia (from `../node_modules/@shopify/react-native-skia`)"
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-text-input-mask (from `../node_modules/react-native-text-input-mask`)
   - react-native-udp (from `../node_modules/react-native-udp`)
@@ -850,8 +820,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-restart"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
-  react-native-skia:
-    :path: "../node_modules/@shopify/react-native-skia"
   react-native-splash-screen:
     :path: "../node_modules/react-native-splash-screen"
   react-native-text-input-mask:
@@ -1035,7 +1003,6 @@ SPEC CHECKSUMS:
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
   react-native-restart: 733a51ad137f15b0f8dc34c4082e55af7da00979
   react-native-safe-area-context: 13004a45f3021328fdd9ee1f987c3131fb65928d
-  react-native-skia: c363e5641c65f3d09963d0db67e486e5bf433f72
   react-native-splash-screen: 200d11d188e2e78cea3ad319964f6142b6384865
   react-native-text-input-mask: 07227297075f9653315f43b0424d596423a01736
   react-native-udp: 96a517e5a121cfe69f4b05eeeafefe00c623debf
