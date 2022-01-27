@@ -1,15 +1,12 @@
 import React, { useMemo } from 'react';
-import RadialGradient, {
-  RadialGradientProps,
-} from 'react-native-radial-gradient';
-import Animated, {
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
+import { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import RadialGradientBackground, {
+  RadialGradientBackgroundProps,
+} from '../../RadialGradientBackground';
 import { SearchInputProps } from './SearchInput';
 import { useTheme } from '@rainbow-me/context';
 
-type RadialGradientBackgroundProps = {
+type SearchInputGradientBackgroundProps = {
   variant: SearchInputProps['variant'];
   width: number;
   height: number;
@@ -17,13 +14,13 @@ type RadialGradientBackgroundProps = {
   type?: 'default' | 'tint';
 };
 
-const RadialGradientBackground = ({
+const SearchInputGradientBackground = ({
   variant,
   width,
   height,
   state,
   type = 'default',
-}: RadialGradientBackgroundProps) => {
+}: SearchInputGradientBackgroundProps) => {
   const { colors } = useTheme();
 
   const gradientSets = useMemo(
@@ -86,27 +83,19 @@ const RadialGradientBackground = ({
   );
 };
 
-export default RadialGradientBackground;
+export default SearchInputGradientBackground;
 
 //////////////////////////////////////////////////////////////////
-
-const AnimatedGradient = Animated.createAnimatedComponent(RadialGradient);
 
 const AnimatedRadialGradient = ({
   variant,
   currentState,
-  height,
   name,
-  width,
-  stops,
   ...props
-}: RadialGradientProps & {
-  variant: RadialGradientBackgroundProps['variant'];
-  currentState: RadialGradientBackgroundProps['state'];
+}: RadialGradientBackgroundProps & {
+  variant: SearchInputGradientBackgroundProps['variant'];
+  currentState: SearchInputGradientBackgroundProps['state'];
   name: string;
-  height: number;
-  width: number;
-  stops: number[];
 }) => {
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: withTiming(name === currentState || name === variant ? 1 : 0, {
@@ -114,23 +103,5 @@ const AnimatedRadialGradient = ({
     }),
   }));
 
-  const center = useMemo(() => [width, width / 2], [width]);
-
-  return (
-    <AnimatedGradient
-      {...props}
-      center={center}
-      radius={width}
-      stops={stops}
-      style={[
-        animatedStyle,
-        {
-          height: width,
-          position: 'absolute',
-          top: -(width - height) / 2,
-          width,
-        },
-      ]}
-    />
-  );
+  return <RadialGradientBackground {...props} style={animatedStyle} />;
 };
