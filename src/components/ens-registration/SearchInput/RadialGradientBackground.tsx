@@ -29,16 +29,28 @@ const RadialGradientBackground = ({
   const gradientSets = useMemo(
     () => ({
       rainbow: {
-        default: colors.gradients.vividRainbow,
-        tint: colors.gradients.vividRainbowTint,
+        default: {
+          colors: colors.gradients.vividRainbow,
+          stops: [0, 0.6354, 1],
+        },
+        tint: {
+          colors: colors.gradients.vividRainbowTint,
+          stops: [0, 0.6354, 1],
+        },
       },
       success: {
-        default: colors.gradients.success,
-        tint: colors.gradients.successTint,
+        default: {
+          colors: colors.gradients.success,
+          stops: [0, 1],
+        },
+        tint: {
+          colors: colors.gradients.successTint,
+          stops: [0, 1],
+        },
       },
       warning: {
-        default: colors.gradients.warning,
-        tint: colors.gradients.warningTint,
+        default: { colors: colors.gradients.warning, stops: [0, 1] },
+        tint: { colors: colors.gradients.warningTint, stops: [0, 1] },
       },
     }),
     [
@@ -60,11 +72,12 @@ const RadialGradientBackground = ({
     <>
       {gradients.map(({ name, gradient }, i) => (
         <AnimatedRadialGradient
-          colors={gradient}
+          colors={gradient.colors}
           currentState={state}
           height={height}
           key={i}
           name={name}
+          stops={gradient.stops}
           variant={variant}
           width={width}
         />
@@ -85,6 +98,7 @@ const AnimatedRadialGradient = ({
   height,
   name,
   width,
+  stops,
   ...props
 }: RadialGradientProps & {
   variant: RadialGradientBackgroundProps['variant'];
@@ -92,6 +106,7 @@ const AnimatedRadialGradient = ({
   name: string;
   height: number;
   width: number;
+  stops: number[];
 }) => {
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: withTiming(name === currentState || name === variant ? 1 : 0, {
@@ -100,7 +115,6 @@ const AnimatedRadialGradient = ({
   }));
 
   const center = useMemo(() => [width, width / 2], [width]);
-  const stops = useMemo(() => [0, 0.544872, 1], []);
 
   return (
     <AnimatedGradient
