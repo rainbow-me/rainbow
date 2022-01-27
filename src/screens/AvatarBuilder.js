@@ -2,18 +2,16 @@ import React, { useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated from 'react-native-reanimated';
 import { useValues } from 'react-native-redash/src/v1';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import TouchableBackdrop from '../components/TouchableBackdrop';
 import ColorCircle from '../components/avatar-builder/ColorCircle';
 import EmojiSelector from '../components/avatar-builder/EmojiSelector';
 import { HeaderHeightWithStatusBar } from '../components/header';
 import { Column, Row } from '../components/layout';
+import useUpdateEmoji from '../hooks/useUpdateEmoji';
 import { useNavigation } from '../navigation/Navigation';
-import { walletsSetSelected, walletsUpdate } from '../redux/wallets';
 import { deviceUtils } from '../utils';
-import { useDimensions, useWallets, useWebData } from '@rainbow-me/hooks';
-import useAccountSettings from '@rainbow-me/hooks/useAccountSettings';
+import { useDimensions } from '@rainbow-me/hooks';
 
 const AvatarCircleHeight = 65;
 const AvatarCircleMarginTop = 2;
@@ -62,16 +60,13 @@ const springTo = (node, toValue) =>
 
 const AvatarBuilder = ({ route: { params } }) => {
   const { height, width } = useDimensions();
-  const { wallets, selectedWallet } = useWallets();
-  const { updateWebProfile } = useWebData();
   const [translateX] = useValues(params.initialAccountColor * 40);
   const { goBack } = useNavigation();
-  const { accountAddress } = useAccountSettings();
   const { colors } = useTheme();
   const [currentAccountColor, setCurrentAccountColor] = useState(
     colors.avatarBackgrounds[params.initialAccountColor]
   );
-  const dispatch = useDispatch();
+  const { saveInfo } = useUpdateEmoji();
 
   const onChangeEmoji = event => {
     ReactNativeHapticFeedback.trigger('selection');
@@ -91,34 +86,6 @@ const AvatarBuilder = ({ route: { params } }) => {
       }}
     />
   ));
-
-  const saveInfo = async (name, color) => {
-    const walletId = selectedWallet.id;
-    const newWallets = {
-      ...wallets,
-      [walletId]: {
-        ...wallets[walletId],
-        addresses: wallets[walletId].addresses.map(singleAddress =>
-          singleAddress.address.toLowerCase() === accountAddress.toLowerCase()
-            ? {
-                ...singleAddress,
-                ...(name && { label: name }),
-                ...(color !== undefined && { color }),
-              }
-            : singleAddress
-        ),
-      },
-    };
-
-    await dispatch(walletsSetSelected(newWallets[walletId]));
-    await dispatch(walletsUpdate(newWallets));
-    updateWebProfile(
-      accountAddress,
-      name,
-      (color !== undefined && colors.avatarBackgrounds[color]) ||
-        currentAccountColor
-    );
-  };
 
   const colorCircleTopPadding = 15;
   const colorCircleBottomPadding = 19;

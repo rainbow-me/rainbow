@@ -113,22 +113,14 @@ export default forwardRef(function DiscoverSearchContainer(
       ...upperContext,
       cancelSearch,
       isFetchingEns,
+      isSearching,
       searchInputRef,
       searchQuery,
       sectionListRef,
       setIsFetchingEns,
       setIsSearching,
     }),
-    [
-      searchInputRef,
-      searchQuery,
-      upperContext,
-      isFetchingEns,
-      setIsFetchingEns,
-      setIsSearching,
-      sectionListRef,
-      cancelSearch,
-    ]
+    [upperContext, isFetchingEns, isSearching, searchQuery, cancelSearch]
   );
 
   useEffect(() => {

@@ -12,6 +12,7 @@ const playground: Playground = {
     examples.margin,
     examples.borderRadius,
     examples.widths,
+    examples.heights,
   ],
 };
 
