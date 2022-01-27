@@ -9,7 +9,7 @@ import RainbowButtonTypes from './RainbowButtonTypes';
 import { margin } from '@rainbow-me/styles';
 import { magicMemo } from '@rainbow-me/utils';
 
-export const RainbowGradientColorsFactory = darkMode => ({
+const RainbowGradientColorsFactory = darkMode => ({
   inner: {
     addCash: ['#FFB114', '#FF54BB', '#00F0FF'],
     default: darkModeThemeColors.gradients.rainbow,
@@ -37,8 +37,8 @@ export const RainbowGradientColorsFactory = darkMode => ({
   },
 });
 
-export const RainbowGradientColorsDark = RainbowGradientColorsFactory(true);
-export const RainbowGradientColorsLight = RainbowGradientColorsFactory(false);
+const RainbowGradientColorsDark = RainbowGradientColorsFactory(true);
+const RainbowGradientColorsLight = RainbowGradientColorsFactory(false);
 
 const RainbowButtonGradient = styled(RadialGradient).attrs(
   ({ type, width }) => ({
