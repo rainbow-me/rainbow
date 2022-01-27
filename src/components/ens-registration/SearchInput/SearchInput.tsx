@@ -35,7 +35,6 @@ const SearchInput = ({
 
   const height = 64;
   const strokeWidth = 3;
-  const width = deviceWidth;
 
   return (
     <Box width="full">
@@ -56,7 +55,7 @@ const SearchInput = ({
             height={height}
             state={state}
             variant={variant}
-            width={width}
+            width={deviceWidth}
           />
         </Box>
       </Cover>
@@ -80,7 +79,7 @@ const SearchInput = ({
             state={state}
             type="tint"
             variant={variant}
-            width={width}
+            width={deviceWidth}
           />
         </Box>
       </Cover>
@@ -108,7 +107,7 @@ const SearchInput = ({
                   height={height}
                   state={state}
                   variant={variant}
-                  width={width}
+                  width={deviceWidth}
                 />
               </MaskedView>
             </Column>
