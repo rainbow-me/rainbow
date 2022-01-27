@@ -180,12 +180,12 @@ const getColorsByTheme = darkMode => {
     savings: ['#FFFFFF', '#F7F9FA'],
     searchBar: ['#FCFDFE', '#F0F2F5'],
     sendBackground: ['#FAFAFA00', '#FAFAFAFF'],
-    success: ['#FAFF00', '#2CCC00', '#2CCC00'],
-    successTint: ['#FFFFF0', '#FCFEFB', '#FCFEFB'],
+    success: ['#FAFF00', '#2CCC00'],
+    successTint: ['#FFFFF0', '#FCFEFB'],
     vividRainbow: ['#FFB114', '#FF54BB', '#00F0FF'],
     vividRainbowTint: ['#FFFAF1', '#FFF5FB', '#F0FEFF'],
-    warning: ['#FFD963', '#FFB200', '#FFB200'],
-    warningTint: ['#FFFDF6', '#FFFBF2', '#FFFBF2'],
+    warning: ['#FFD963', '#FFB200'],
+    warningTint: ['#FFFDF6', '#FFFBF2'],
     whiteButton: ['#FFFFFF', '#F7F9FA'],
   };
 
