@@ -100,7 +100,7 @@ const AnimatedRadialGradient = ({
   }));
 
   const center = useMemo(() => [width, width / 2], [width]);
-  const stops = useMemo(() => [0, 0.544872, 1], []);
+  const stops = useMemo(() => [0, 0.6354, 1], []);
 
   return (
     <AnimatedGradient
@@ -114,11 +114,6 @@ const AnimatedRadialGradient = ({
           height: width,
           position: 'absolute',
           top: -(width - height) / 2,
-          transform: [
-            {
-              scaleY: 0.7884615385,
-            },
-          ],
           width,
         },
       ]}
