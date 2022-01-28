@@ -1,7 +1,21 @@
-import { find, get, isEmpty, isNil, map, pick, pickBy, uniq } from 'lodash';
+import {
+  find,
+  get,
+  isEmpty,
+  isNil,
+  map,
+  pick,
+  pickBy,
+  remove,
+  toLower,
+  uniq,
+} from 'lodash';
 import { AssetTypes } from '@rainbow-me/entities';
 import NetworkTypes from '@rainbow-me/networkTypes';
-import { ENS_NFT_CONTRACT_ADDRESS } from '@rainbow-me/references';
+import {
+  ENS_NFT_CONTRACT_ADDRESS,
+  polygonAllowList,
+} from '@rainbow-me/references';
 
 /**
  * @desc parse unique tokens from opensea
@@ -161,10 +175,10 @@ export const parseAccountUniqueTokensPolygon = async data => {
     .filter(token => !!token.familyName && token.familyName !== 'POAP');
 
   //filter out NFTs that are not on our allow list
-  /*remove(
+  remove(
     erc721s,
     NFT => !polygonAllowList.includes(toLower(NFT.asset_contract.address))
-  );*/
+  );
 
   return erc721s;
 };
