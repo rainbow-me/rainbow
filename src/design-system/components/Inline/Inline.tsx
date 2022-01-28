@@ -1,4 +1,4 @@
-import React, { Children, ReactElement, ReactNode } from 'react';
+import React, { Children, ReactElement, ReactNode, useMemo } from 'react';
 import flattenChildren from 'react-flatten-children';
 import {
   AlignHorizontal,
@@ -44,6 +44,10 @@ export function Inline({
   const verticalSpace = verticalSpaceProp ?? space;
   const horizontalSpace = horizontalSpaceProp ?? space;
 
+  const flattenedChildren = useMemo(() => flattenChildren(children), [
+    children,
+  ]);
+
   return (
     <Box
       alignItems={
@@ -61,7 +65,7 @@ export function Inline({
       }
       marginTop={wrap && verticalSpace ? negateSpace(verticalSpace) : undefined}
     >
-      {Children.map(flattenChildren(children), (child, index) => {
+      {Children.map(flattenedChildren, (child, index) => {
         if (wrap) {
           return (
             <Box paddingRight={horizontalSpace} paddingTop={verticalSpace}>
@@ -70,7 +74,7 @@ export function Inline({
           );
         }
 
-        const isLastChild = index === flattenChildren(children).length - 1;
+        const isLastChild = index === flattenedChildren.length - 1;
         return (
           <>
             {horizontalSpace && !isLastChild ? (
