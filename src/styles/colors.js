@@ -275,12 +275,12 @@ const getColorsByTheme = darkMode => {
       savings: ['#1F222A', '#1F222A'],
       searchBar: [buildRgba('#1F222A', 0.4), '#1F222A'],
       sendBackground: ['#12131A00', '#12131AFF'],
-      success: ['#FAFF00', '#2CCC00', '#2CCC00'],
-      successTint: ['#FFFFF0', '#FCFEFB', '#FCFEFB'],
+      success: ['#FAFF00', '#2CCC00'],
+      successTint: ['#202118', '#141E18'],
       vividRainbow: ['#FFB114', '#FF54BB', '#00F0FF'],
-      vividRainbowTint: ['#FFFAF1', '#FFF5FB', '#F0FEFF'],
-      warning: ['#FFD963', '#FFB200', '#FFB200'],
-      warningTint: ['#FFFDF6', '#FFFBF2', '#FFFBF2'],
+      vividRainbowTint: ['#201C19', '#201723', '#112028'],
+      warning: ['#FFD963', '#FFB200'],
+      warningTint: ['#201F1E', '#201C18'],
       whiteButton: ['#404656', buildRgba('#404656', 0.8)],
     };
 
