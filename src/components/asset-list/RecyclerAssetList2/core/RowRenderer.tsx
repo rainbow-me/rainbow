@@ -47,7 +47,12 @@ function rowRenderer(type: CellType, { uid }: { uid: string }) {
             return null;
           case CellType.COIN_DIVIDER:
             return (
-              <CoinDivider balancesSum={(data as CoinDividerExtraData).value} />
+              <CoinDivider
+                balancesSum={(data as CoinDividerExtraData).value}
+                defaultToEditButton={
+                  (data as CoinDividerExtraData).defaultToEditButton
+                }
+              />
             );
           case CellType.ASSETS_HEADER:
             return (

@@ -1,5 +1,6 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import { useRoute } from '@react-navigation/native';
+import lang from 'i18n-js';
 import React, { useCallback } from 'react';
 import { Linking, StatusBar } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
@@ -14,6 +15,7 @@ import { toFixedDecimals } from '@rainbow-me/helpers/utilities';
 import { useDimensions } from '@rainbow-me/hooks';
 import { fonts, fontWithWidth, padding, position } from '@rainbow-me/styles';
 import { gasUtils } from '@rainbow-me/utils';
+import { cloudPlatformAccountName } from '@rainbow-me/utils/platform';
 
 const { GAS_TRENDS } = gasUtils;
 export const ExplainSheetHeight = android ? 454 : 434;
@@ -94,9 +96,9 @@ const POLYGON_EXPLAINER = `Polygon is a sidechain, a distinct network that runs 
 
 It allows for cheaper and faster transactions, but unlike Layer 2 networks, Polygon has its own security and consensus mechanisms that differ from Ethereum.`;
 
-const BACKUP_EXPLAINER = `Don't forget this password! It is separate from your Apple iCloud password, and you should save it in a secure location. 
-
-You will need it in order to restore your wallet from the backup in the future.`;
+const BACKUP_EXPLAINER = lang.t('back_up.explainers.backup', {
+  cloudPlatformName: cloudPlatformAccountName,
+});
 
 export const explainers = network => ({
   floor_price: {

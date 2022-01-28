@@ -11,6 +11,7 @@ interface AttributeItemProps {
   trait_type: string;
   slug: string;
   value: string | number;
+  max_value?: string | number;
 }
 
 const renderAttributeItem = ({
@@ -19,12 +20,14 @@ const renderAttributeItem = ({
   trait_type: type,
   slug,
   value,
+  max_value: maxValue,
 }: AttributeItemProps) =>
   type && value ? (
     <Tag
       color={color}
       disableMenu={disableMenu}
       key={`${type}${value}`}
+      maxValue={maxValue}
       slug={slug}
       text={value}
       title={type}
