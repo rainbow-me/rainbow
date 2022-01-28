@@ -7,8 +7,8 @@ import { Stack } from '../components/Stack/Stack';
 import { Text } from '../components/Text/Text';
 import { Docs as DocsType } from '../docs/types';
 import source from '../docs/utils/source.macro';
-
 import { ColorModeProvider } from './ColorMode';
+
 import {
   BackgroundColor,
   backgroundColors,

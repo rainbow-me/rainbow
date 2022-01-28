@@ -6614,6 +6614,11 @@ concat-stream@^1.4.4, concat-stream@^1.5.1:
     readable-stream "^2.2.2"
     typedarray "^0.0.6"
 
+conditional-wrap@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/conditional-wrap/-/conditional-wrap-1.0.2.tgz#a993fd402e7747d83d1e36c675175f89852c25e5"
+  integrity sha512-jaL1qJC7JImOXiWC4/OxrSMjbPSZG+tWj2VmUtdBOOQhJj0gbFoDCF2Y0F5xLgQUpg+CDSymssaTX+Vn+1yM3Q==
+
 connect@^3.6.5:
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/connect/-/connect-3.7.0.tgz#5d49348910caa5e07a01800b030d0c35f20484f8"
@@ -14222,6 +14227,13 @@ react-native-dotenv@2.4.2:
   resolved "https://registry.yarnpkg.com/react-native-dotenv/-/react-native-dotenv-2.4.2.tgz#231071a1c3a9c29d96e6221b80d2cef6d9be39b7"
   dependencies:
     dotenv "^8.0.0"
+
+react-native-drop-shadow@0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-drop-shadow/-/react-native-drop-shadow-0.0.4.tgz#af2ceff6a3e1468b01cd5fb55941854cbe30dad6"
+  integrity sha512-45Bsq24dcc1rK9H+42H91xEYN/Ql5S0693FseQWdCKgri6D+4vkFeL9dgtrSD5Bg3+RffjMbPDD7BuNS9BZuvg==
+  dependencies:
+    logkitty "^0.7.1"
 
 react-native-dynamic@1.0.0:
   version "1.0.0"
