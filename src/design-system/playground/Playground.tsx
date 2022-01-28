@@ -28,6 +28,7 @@ import headingPlayground from '../components/Heading/Heading.playground';
 import inlinePlayground from '../components/Inline/Inline.playground';
 import insetPlayground from '../components/Inset/Inset.playground';
 import markdownTextPlayground from '../components/MarkdownText/MarkdownText.playground';
+import rowsPlayground from '../components/Rows/Rows.playground';
 import stackPlayground from '../components/Stack/Stack.playground';
 import textPlayground from '../components/Text/Text.playground';
 import textLinkPlayground from '../components/TextLink/TextLink.playground';
@@ -46,6 +47,7 @@ const allDocs = [
   inlinePlayground,
   insetPlayground,
   markdownTextPlayground,
+  rowsPlayground,
   stackPlayground,
   textPlayground,
   textLinkPlayground,
