@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { getSoftMenuBarHeight } from 'react-native-extra-dimensions-android';
@@ -19,6 +18,7 @@ import {
   useKeyboardHeight,
 } from '@rainbow-me/hooks';
 import { useNavigation } from '@rainbow-me/navigation';
+import styled from '@rainbow-me/styled-components';
 import { margin } from '@rainbow-me/styles';
 import { deviceUtils } from '@rainbow-me/utils';
 

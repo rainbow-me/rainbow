@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import { upperCase, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -9,6 +8,7 @@ import { ButtonPressAnimation } from './animations';
 import { Centered, Column } from './layout';
 import { Text as TextElement } from './text';
 import { Row } from '@rainbow-me/design-system';
+import styled from '@rainbow-me/styled-components';
 import { padding } from '@rainbow-me/styles';
 
 const HairlineSpace = '\u200a';

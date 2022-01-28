@@ -61,6 +61,9 @@ const format = (originalY, data, latestChange) => {
 export default function ChartPercentChangeLabel({ ratio, latestChange }) {
   const { originalY, data, isActive } = useChartData();
   const { colors } = useTheme();
+
+  // we don't need to format on latestChange changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const defaultValue = useMemo(() => format(originalY, data, latestChange), [
     originalY,
     data,

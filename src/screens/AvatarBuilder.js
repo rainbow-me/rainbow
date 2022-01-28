@@ -1,4 +1,3 @@
-import styled from '@rainbow-me/styled-components';
 import React, { useState } from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Animated from 'react-native-reanimated';
@@ -12,6 +11,7 @@ import useUpdateEmoji from '../hooks/useUpdateEmoji';
 import { useNavigation } from '../navigation/Navigation';
 import { deviceUtils } from '../utils';
 import { useDimensions } from '@rainbow-me/hooks';
+import styled from '@rainbow-me/styled-components';
 
 const AvatarCircleHeight = 65;
 const AvatarCircleMarginTop = 2;
