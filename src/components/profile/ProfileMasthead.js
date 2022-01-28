@@ -168,6 +168,7 @@ export default function ProfileMasthead({
         image={accountImage}
         isAvatarPickerAvailable
         onPress={handlePressAvatar}
+        style={{ marginTop: 10 }}
       />
       <ButtonPressAnimation onPress={handlePressChangeWallet}>
         <Row>
