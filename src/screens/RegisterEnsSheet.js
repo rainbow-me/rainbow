@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import RadialGradient from 'react-native-radial-gradient';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
 import { Input } from '../components/inputs';
 import { memoFn } from '../utils/memoFn';
+import Indicator from '../components/ens-registration/Indicator';
 import {
   SheetActionButton,
   SheetActionButtonRow,
@@ -26,69 +26,6 @@ import { colors } from '@rainbow-me/styles';
 const Container = styled.View`
   flex: 1;
 `;
-
-const Indicator = props => {
-  if (!['availability', 'expiration', 'price'].includes(props.type)) {
-    throw new Error(
-      'Indicator component requires prop "type" with value equal to one of ["availability", "expiration", "price"].'
-    );
-  }
-
-  let text, containerWidth, gradient, textColor;
-  switch (props.type) {
-    case 'availability':
-      if (props.isRegistered) {
-        text = '😭 Taken';
-        containerWidth = 110;
-        gradient = colors.gradients.transparentToLightOrange;
-        textColor = colors.lightOrange;
-      } else {
-        text = '🥳 Available';
-        containerWidth = 140;
-        gradient = colors.gradients.transparentToGreen;
-        textColor = colors.green;
-      }
-      break;
-    case 'expiration':
-      text = `Til ${props.expiryDate}`; // fix when we have backend
-      containerWidth = 210;
-      gradient = colors.gradients.transparentToLightGrey;
-      textColor = colors.blueGreyDark;
-      break;
-    case 'price':
-      text = props.price; // fix when we have backend
-      containerWidth = 110;
-      gradient = colors.gradients.transparentToLightGrey;
-      textColor = colors.blueGreyDark;
-      break;
-  }
-
-  const IndicatorContainer = styled(RadialGradient).attrs(props => ({
-    center: [0, 46],
-    colors: gradient,
-    stops: [0, 1],
-  }))`
-    align-items: center;
-    border-radius: 46;
-    height: 40;
-    justify-content: center;
-    overflow: hidden;
-    width: ${containerWidth};
-  `;
-
-  return (
-    <IndicatorContainer>
-      <Text
-        color={{ custom: textColor }}
-        containsEmoji={props.type === 'availability'}
-        size="18px"
-        weight="heavy"
-      >
-        {text}
-      </Text>
-    </IndicatorContainer>
-  );
-};
 
 export default function RegisterEnsSheet() {
   const { height: deviceHeight } = useDimensions();
