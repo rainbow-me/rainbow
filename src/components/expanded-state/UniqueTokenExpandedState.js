@@ -341,7 +341,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
             />
           )}
 
-          {!isPoap && (
+          {!isPoap && asset.network !== AssetTypes.polygon && (
             <TokenInfoSection isNft>
               <TokenInfoRow>
                 <TokenInfoItem
