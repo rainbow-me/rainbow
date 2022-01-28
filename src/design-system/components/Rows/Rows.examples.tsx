@@ -5,11 +5,7 @@ import { Example } from '../../docs/types';
 import source from '../../docs/utils/source.macro';
 import { Placeholder } from '../../playground/Placeholder';
 import { Box } from '../Box/Box';
-import { Text } from '../Text/Text';
 import { Row, Rows } from './Rows';
-
-const loremIpsum =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
 
 export const basicUsage: Example = {
   name: 'Basic usage',
@@ -122,6 +118,62 @@ export const nestedRowsWithExplicitHeightsContent: Example = {
               </Row>
             </Rows>
           </Row>
+        </Rows>
+      </Box>
+    ),
+};
+
+export const centerAlignedVertically: Example = {
+  name: 'Center-aligned vertically',
+  Example: () =>
+    source(
+      <Box height={{ custom: 300 }}>
+        <Rows alignVertical="center" space="19px">
+          <Placeholder height={30} />
+          <Placeholder height={60} />
+          <Placeholder height={20} />
+        </Rows>
+      </Box>
+    ),
+};
+
+export const bottomAlignedVertically: Example = {
+  name: 'Bottom-aligned vertically',
+  Example: () =>
+    source(
+      <Box height={{ custom: 300 }}>
+        <Rows alignVertical="bottom" space="19px">
+          <Placeholder height={30} />
+          <Placeholder height={60} />
+          <Placeholder height={20} />
+        </Rows>
+      </Box>
+    ),
+};
+
+export const centerAlignedHorizontally: Example = {
+  name: 'Center-aligned horizontally',
+  Example: () =>
+    source(
+      <Box height={{ custom: 200 }}>
+        <Rows alignHorizontal="center" space="19px">
+          <Placeholder height="100%" width={30} />
+          <Placeholder height="100%" width={60} />
+          <Placeholder height="100%" width={20} />
+        </Rows>
+      </Box>
+    ),
+};
+
+export const rightAlignedHorizontally: Example = {
+  name: 'Right-aligned horizontally',
+  Example: () =>
+    source(
+      <Box height={{ custom: 200 }}>
+        <Rows alignHorizontal="right" space="19px">
+          <Placeholder height="100%" width={30} />
+          <Placeholder height="100%" width={60} />
+          <Placeholder height="100%" width={20} />
         </Rows>
       </Box>
     ),

@@ -14,6 +14,10 @@ const playground: Playground = {
     examples.nestedRows,
     examples.nestedRowsWithExplicitHeights,
     examples.nestedRowsWithExplicitHeightsContent,
+    examples.centerAlignedVertically,
+    examples.bottomAlignedVertically,
+    examples.centerAlignedHorizontally,
+    examples.rightAlignedHorizontally,
   ],
 };
 
