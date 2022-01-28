@@ -7,6 +7,7 @@ const webpack = require('webpack'); // eslint-disable-line import/no-extraneous-
 const withTM = createTM([
   'react-native-reanimated',
   'react-native-markdown-display',
+  'react-native-drop-shadow',
 ]);
 const withVanillaExtract = createVanillaExtractPlugin();
 
@@ -30,6 +31,7 @@ const nextConfig = {
         __DEV__: true,
         android: false,
         ios: false,
+        web: true,
       })
     );
     return config;
