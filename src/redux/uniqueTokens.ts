@@ -308,6 +308,8 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
         type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_FAILURE,
       });
       captureException(error);
+      // stop fetching if there is an error
+      shouldStopFetching = true;
     }
     return shouldStopFetching;
   };
