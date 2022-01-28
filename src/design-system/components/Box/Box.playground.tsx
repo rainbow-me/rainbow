@@ -13,6 +13,14 @@ const playground: Playground = {
     examples.borderRadius,
     examples.widths,
     examples.heights,
+    {
+      ...examples.shadows,
+      examples: [
+        examples.shadowsWithSizes,
+        examples.shadowsWithColors,
+        examples.shadowsWithCustom,
+      ],
+    },
   ],
 };
 
