@@ -46,6 +46,7 @@ const docs: DocsType = {
     },
     {
       ...examples.padding,
+      showFrame: true,
       description: (
         <Docs.Text>
           To apply padding to the bounds of Box, pass the{' '}
@@ -88,6 +89,43 @@ const docs: DocsType = {
       ),
     },
     examples.heights,
+    {
+      ...examples.shadows,
+      description: (
+        <Docs.Text>
+          To apply a shadow, a blur radius & weight pair (e.g.{' '}
+          <Docs.Code>30px light</Docs.Code>) can be supplied to the{' '}
+          <Docs.Code>shadow</Docs.Code> prop.
+        </Docs.Text>
+      ),
+      showFrame: true,
+      examples: [
+        examples.shadowsWithSizes,
+        {
+          ...examples.shadowsWithColors,
+          description: (
+            <Docs.Text>
+              Passing a valid shadow color (e.g. <Docs.Code>accent</Docs.Code>{' '}
+              or <Docs.Code>swap</Docs.Code>) as a third parameter to the{' '}
+              <Docs.Code>shadow</Docs.Code> prop string, will apply a colored
+              glow to the shadow.
+            </Docs.Text>
+          ),
+        },
+        {
+          ...examples.shadowsWithCustom,
+          description: (
+            <Docs.Text>
+              The <Docs.Code>shadow</Docs.Code> prop also accepts a custom
+              shadow in the form of an array of shadow properties. The shadows
+              are applied as a stack, from top to bottom, meaning that the first
+              element of the array is the most front facing shadow, and the last
+              is the back facing shadow.
+            </Docs.Text>
+          ),
+        },
+      ],
+    },
     {
       name: 'Composition',
       description: (
