@@ -62,7 +62,6 @@ export default function RegisterEnsSheet() {
   return (
     <Container>
       <SlackSheet
-        backgroundColor="white"
         bottomInset={42}
         {...(ios
           ? { height: '100%' }
