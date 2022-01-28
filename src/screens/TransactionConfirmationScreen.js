@@ -416,7 +416,6 @@ export default function TransactionConfirmationScreen() {
       } catch (error) {
         logger.log('error while handling cancel request', error);
         closeScreen(true);
-        Alert.alert(lang.t('wallet.transaction.alert.cancelled_transaction'));
       }
     },
     [

@@ -1,3 +1,4 @@
+import styled from '@rainbow-me/styled-components';
 import { upperCase, upperFirst } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -7,8 +8,10 @@ import { magicMemo, showActionSheetWithOptions } from '../utils';
 import { ButtonPressAnimation } from './animations';
 import { Centered, Column } from './layout';
 import { Text as TextElement } from './text';
-import styled from '@rainbow-me/styled-components';
+import { Row } from '@rainbow-me/design-system';
 import { padding } from '@rainbow-me/styles';
+
+const HairlineSpace = '\u200a';
 
 const PropertyActionsEnum = {
   viewTraitOnOpensea: 'viewTraitOnOpensea',
@@ -43,8 +46,8 @@ const OuterBorder = styled(Centered)({
   zIndex: 2,
 });
 
-const Text = styled(TextElement).attrs(({ theme: { colors } }) => ({
-  color: colors.whiteLabel,
+const Text = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
+  color: color || colors.whiteLabel,
   size: 'lmedium',
   weight: 'semibold',
 }))({
@@ -60,7 +63,9 @@ const Title = styled(TextElement).attrs(({ color, theme: { colors } }) => ({
   marginBottom: 1,
 });
 
-const Tag = ({ color, disableMenu, slug, text, title, ...props }) => {
+const Tag = ({ color, disableMenu, slug, text, title, maxValue, ...props }) => {
+  const { colors } = useTheme();
+
   const handlePressMenuItem = useCallback(
     ({ nativeEvent: { actionKey } }) => {
       if (actionKey === PropertyActionsEnum.viewTraitOnOpensea) {
@@ -127,7 +132,17 @@ const Tag = ({ color, disableMenu, slug, text, title, ...props }) => {
         <OuterBorder {...props} color={color}>
           <Container>
             <Title color={color}>{upperCase(title)}</Title>
-            <Text>{upperFirst(text)}</Text>
+            <Row>
+              <Text>{upperFirst(text)}</Text>
+              {maxValue && (
+                <Text>
+                  <Text color={colors.alpha(colors.whiteLabel, 0.8)}>
+                    {HairlineSpace}/{HairlineSpace}
+                  </Text>
+                  {maxValue}
+                </Text>
+              )}
+            </Row>
           </Container>
         </OuterBorder>
       </ButtonPressAnimation>
@@ -142,4 +157,4 @@ Tag.propTypes = {
   title: PropTypes.string.isRequired,
 };
 
-export default magicMemo(Tag, ['color', 'slug', 'text', 'title']);
+export default magicMemo(Tag, ['color', 'slug', 'text', 'title', 'maxValue']);

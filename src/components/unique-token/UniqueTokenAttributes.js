@@ -8,12 +8,20 @@ import { margin } from '@rainbow-me/styles';
 
 const tagStyle = margin.object(7, 10, 3, 0);
 
-const AttributeItem = ({ color, trait_type: type, slug, value, disableMenu }) =>
+const AttributeItem = ({
+  color,
+  trait_type: type,
+  slug,
+  value,
+  disableMenu,
+  max_value: maxValue,
+}) =>
   type && value ? (
     <Tag
       color={color}
       disableMenu={disableMenu}
       key={`${type}${value}`}
+      maxValue={maxValue}
       slug={slug}
       style={tagStyle}
       text={value}

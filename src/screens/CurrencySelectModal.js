@@ -230,6 +230,10 @@ export default function CurrencySelectModal() {
     }
   }, [assetsToFavoriteQueue, handleApplyFavoritesQueue, searchQueryExists]);
 
+  useEffect(() => {
+    setIsSearching(uniswapCurrencyListLoading);
+  }, [uniswapCurrencyListLoading]);
+
   const style = useAnimatedStyle(() => ({
     opacity: scrollPosition.value,
     transform: [

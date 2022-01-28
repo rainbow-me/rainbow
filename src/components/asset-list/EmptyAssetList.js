@@ -35,6 +35,7 @@ const EmptyAssetList = ({
 
   return (
     <ScrollView
+      contentContainerStyle={{ height: '100%' }}
       refreshControl={
         <RefreshControl onRefresh={refresh} refreshing={isRefreshing} />
       }

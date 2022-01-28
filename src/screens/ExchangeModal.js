@@ -1,7 +1,7 @@
+import styled from '@rainbow-me/styled-components';
 import analytics from '@segment/analytics-react-native';
 import { isEmpty } from 'lodash';
 import React, {
-  Fragment,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -56,7 +56,6 @@ import { multicallClearState } from '@rainbow-me/redux/multicall';
 import { swapClearState, updateSwapTypeDetails } from '@rainbow-me/redux/swap';
 import { ETH_ADDRESS, ethUnits } from '@rainbow-me/references';
 import Routes from '@rainbow-me/routes';
-import styled from '@rainbow-me/styled-components';
 import { position } from '@rainbow-me/styles';
 import { useEthUSDPrice } from '@rainbow-me/utils/ethereumUtils';
 import logger from 'logger';
@@ -65,19 +64,14 @@ const FloatingPanels = ios
   ? AnimatedExchangeFloatingPanels
   : ExchangeFloatingPanels;
 
-const Wrapper = ios ? KeyboardFixedOpenLayout : Fragment;
+const Wrapper = KeyboardFixedOpenLayout;
 
 const InnerWrapper = styled(Centered).attrs({
   direction: 'column',
 })(({ isSmallPhone, theme: { colors } }) => ({
-  backgroundColor: colors.transparent,
-  ...(ios
-    ? position.sizeAsObject('100%')
-    : {
-        height: ios ? 500 : 600,
-        top: 0,
-      }),
+  ...position.sizeAsObject('100%'),
   ...(ios && isSmallPhone && { maxHeight: 354 }),
+  backgroundColor: colors.transparent,
 }));
 
 const Spacer = styled.View({

@@ -177,7 +177,6 @@ export function Header() {
       <Spacer />
       <AvatarCircle
         image={null}
-        isAvatarPickerAvailable={false}
         onPress={() => {}}
         showcaseAccountColor={color}
         showcaseAccountSymbol={emoji}
