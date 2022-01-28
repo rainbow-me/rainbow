@@ -95,7 +95,6 @@ export const parseAccountUniqueTokens = data => {
 export const parseAccountUniqueTokensPolygon = async data => {
   let erc721s = data?.data?.results;
   if (isNil(erc721s)) throw new Error('Invalid data from OpenSea Polygon');
-  //console.log('erc721s', erc721s[4]);
   erc721s = erc721s
     .map(({ asset_contract, collection, token_id, metadata, ...asset }) => ({
       ...pick(metadata, [
