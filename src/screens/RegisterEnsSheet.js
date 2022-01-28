@@ -1,23 +1,14 @@
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
+import SearchResultIndicator from '../components/ens-registration/SearchResultIndicator';
 import { Input } from '../components/inputs';
-import { memoFn } from '../utils/memoFn';
-import Indicator from '../components/ens-registration/Indicator';
 import {
   SheetActionButton,
   SheetActionButtonRow,
   SlackSheet,
 } from '../components/sheet';
-import {
-  Box,
-  Column,
-  Columns,
-  Heading,
-  Row,
-  Stack,
-  Text,
-} from '@rainbow-me/design-system';
+import { Box, Heading, Row, Stack, Text } from '@rainbow-me/design-system';
 
 import { fetchRegistration } from '@rainbow-me/handlers/ens';
 import { useDebounceString, useDimensions } from '@rainbow-me/hooks';
@@ -60,7 +51,7 @@ export default function RegisterEnsSheet() {
           ? { height: '100%' }
           : { additionalTopPadding: true, contentHeight: deviceHeight })}
       >
-        <Box paddingTop="30px" paddingHorizontal="19px">
+        <Box paddingHorizontal="19px" paddingTop="30px">
           <Stack alignHorizontal="center" space="15px">
             <Heading size="23px" weight="heavy">
               􀠎 Find your name
@@ -85,17 +76,17 @@ export default function RegisterEnsSheet() {
           {isSuccess && (
             <Stack space="5px">
               <Row alignHorizontal="justify">
-                <Indicator
-                  type="availability"
+                <SearchResultIndicator
                   isRegistered={registration.isRegistered}
+                  type="availability"
                 />
                 {registration.isRegistered ? (
-                  <Indicator
-                    type="expiration"
+                  <SearchResultIndicator
                     expiryDate={registration.expiryDate}
+                    type="expiration"
                   />
                 ) : (
-                  <Indicator type="price" price="$5 / Year" />
+                  <SearchResultIndicator price="$5 / Year" type="price" />
                 )}
               </Row>
               <Row alignHorizontal="center">

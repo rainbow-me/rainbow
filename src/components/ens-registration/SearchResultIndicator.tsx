@@ -1,12 +1,26 @@
 import React from 'react';
+import LinearGradient from 'react-native-linear-gradient';
+import styled from 'styled-components';
 import { Text } from '../text';
 import { colors } from '@rainbow-me/styles';
-import styled from 'styled-components';
-import RadialGradient from 'react-native-radial-gradient';
-import LinearGradient from 'react-native-linear-gradient';
 
-export default Indicator = ({ type, isRegistered, price, expiryDate }) => {
-  let text, containerWidth, gradient, textColor;
+interface Props {
+  type: string;
+  isRegistered: boolean;
+  price: string;
+  expiryDate: string;
+}
+
+const SearchResultIndicator = ({
+  type,
+  isRegistered,
+  price,
+  expiryDate,
+}: Props) => {
+  let text: string,
+    containerWidth: number,
+    gradient: string[],
+    textColor: string;
   switch (type) {
     case 'availability':
       if (isRegistered) {
@@ -33,13 +47,15 @@ export default Indicator = ({ type, isRegistered, price, expiryDate }) => {
       gradient = colors.gradients.transparentToLightGrey;
       textColor = colors.blueGreyDark;
       break;
+    default:
+      return;
   }
 
-  const IndicatorContainer = styled(LinearGradient).attrs(props => ({
+  const Gradient = styled(LinearGradient).attrs({
     colors: gradient,
-    start: { x: 0, y: 1 },
     end: { x: 1, y: 0 },
-  }))`
+    start: { x: 0, y: 1 },
+  })`
     align-items: center;
     border-radius: 46;
     height: 40;
@@ -49,7 +65,7 @@ export default Indicator = ({ type, isRegistered, price, expiryDate }) => {
   `;
 
   return (
-    <IndicatorContainer>
+    <Gradient>
       <Text
         color={textColor}
         containsEmoji={type === 'availability'}
@@ -58,6 +74,8 @@ export default Indicator = ({ type, isRegistered, price, expiryDate }) => {
       >
         {text}
       </Text>
-    </IndicatorContainer>
+    </Gradient>
   );
 };
+
+export default SearchResultIndicator;

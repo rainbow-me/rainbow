@@ -176,18 +176,18 @@ const getColorsByTheme = darkMode => {
       buildRgba(base.blueGreyDark, 0.02),
       buildRgba(base.blueGreyDark, 0.06),
     ],
-    transparentToLightGrey: ['transparent', buildRgba(base.blueGreyDark, 0.06)],
-    transparentToGreen: ['transparent', buildRgba(base.green, 0.06)],
-    transparentToLightOrange: [
-      'transparent',
-      buildRgba(base.lightOrange, 0.06),
-    ],
     lightGreyWhite: [buildRgba('#F0F2F5', 0.5), buildRgba('#FFFFFF', 0.5)],
     offWhite: [base.white, base.offWhite],
     rainbow: ['#FFB114', '#FF54BB', '#7EA4DE'],
     savings: ['#FFFFFF', '#F7F9FA'],
     searchBar: ['#FCFDFE', '#F0F2F5'],
     sendBackground: ['#FAFAFA00', '#FAFAFAFF'],
+    transparentToGreen: ['transparent', buildRgba(base.green, 0.06)],
+    transparentToLightGrey: ['transparent', buildRgba(base.blueGreyDark, 0.06)],
+    transparentToLightOrange: [
+      'transparent',
+      buildRgba(base.lightOrange, 0.06),
+    ],
     whiteButton: ['#FFFFFF', '#F7F9FA'],
   };
 
@@ -271,21 +271,21 @@ const getColorsByTheme = darkMode => {
         buildRgba(base.blueGreyDark, 0.06),
         buildRgba(base.blueGreyDark, 0.025),
       ],
-      transparentToLightGrey: [
-        'transparent',
-        buildRgba(base.blueGreyDark, 0.06),
-      ],
-      transparentToGreen: ['transparent', buildRgba(base.green, 0.06)],
-      transparentToLightOrange: [
-        'transparent',
-        buildRgba(base.lightOrange, 0.06),
-      ],
       lightGreyWhite: [buildRgba('#F0F2F5', 0.05), buildRgba('#FFFFFF', 0.01)],
       offWhite: ['#1F222A', '#1F222A'],
       rainbow: ['#FFB114', '#FF54BB', '#7EA4DE'],
       savings: ['#1F222A', '#1F222A'],
       searchBar: [buildRgba('#1F222A', 0.4), '#1F222A'],
       sendBackground: ['#12131A00', '#12131AFF'],
+      transparentToGreen: ['transparent', buildRgba(base.green, 0.06)],
+      transparentToLightGrey: [
+        'transparent',
+        buildRgba(base.blueGreyDark, 0.06),
+      ],
+      transparentToLightOrange: [
+        'transparent',
+        buildRgba(base.lightOrange, 0.06),
+      ],
       whiteButton: ['#404656', buildRgba('#404656', 0.8)],
     };
 
