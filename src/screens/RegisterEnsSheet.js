@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { KeyboardArea } from 'react-native-keyboard-area';
 import { useQuery } from 'react-query';
 import dice from '../assets/dice.png';
+import TintButton from '../components/buttons/TintButton';
 import SearchInput from '../components/ens-registration/SearchInput/SearchInput';
 import {
   SheetActionButton,
@@ -63,9 +64,8 @@ export default function RegisterEnsSheet() {
   }, [isSuccess, registration?.isRegistered]);
 
   return (
-    <Box flexGrow={1}>
+    <Box background="body" flexGrow={1}>
       <SlackSheet
-        backgroundColor="white"
         bottomInset={42}
         limitScrollViewContent
         {...(ios
@@ -92,6 +92,7 @@ export default function RegisterEnsSheet() {
               onChangeText={setSearchQuery}
               placeholder="Input placeholder"
               state={state}
+              value={searchQuery}
             />
           </Box>
 
@@ -129,7 +130,7 @@ export default function RegisterEnsSheet() {
             </Stack>
           )}
         </Box>
-        <Box style={{ backgroundColor: 'white' }}>
+        <Box>
           {debouncedSearchQuery.length < 3 && (
             <Row alignHorizontal="center" alignVertical="center" space="6px">
               <Box>
@@ -144,17 +145,15 @@ export default function RegisterEnsSheet() {
             {isSuccess && debouncedSearchQuery.length > 2 && (
               <>
                 {registration.isRegistered ? (
-                  <SheetActionButton
-                    color={colors.grey}
-                    label="Clear"
-                    onPress={() => null}
-                    weight="heavy"
-                  />
+                  <TintButton onPress={() => setSearchQuery('')}>
+                    􀅉 Clear
+                  </TintButton>
                 ) : (
                   <SheetActionButton
                     color={colors.green}
-                    label="Continue on"
+                    label="Continue on 􀆊"
                     onPress={() => null}
+                    size="big"
                     weight="heavy"
                   />
                 )}
