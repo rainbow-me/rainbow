@@ -16,7 +16,7 @@ import Animated, {
 import styled from 'styled-components';
 import useWallets from '../../hooks/useWallets';
 import { lightModeThemeColors } from '../../styles/colors';
-import L2Explainer from '../L2Disclaimer';
+import L2Disclaimer from '../L2Disclaimer';
 import Link from '../Link';
 import { ButtonPressAnimation } from '../animations';
 import { Centered, Column, Row } from '../layout';
@@ -137,7 +137,7 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
     opacity: 1 - animationProgress.value,
   }));
 
-  const handleL2ExplainerPress = useCallback(() => {
+  const handleL2DisclaimerPress = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
       type: asset.network,
     });
@@ -331,12 +331,12 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
           )}
 
           {asset.network === AssetTypes.polygon && (
-            <L2Explainer
+            <L2Disclaimer
               assetType={AssetTypes.polygon}
               colors={colors}
               hideDivider
               isNft
-              onPress={handleL2ExplainerPress}
+              onPress={handleL2DisclaimerPress}
               symbol="NFT"
             />
           )}
