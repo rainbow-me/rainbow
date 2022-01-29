@@ -168,10 +168,12 @@ const UniqueTokenExpandedState = ({ asset, external, lowResUrl }) => {
   }, [colors.whiteLabel, imageColor]);
 
   useEffect(() => {
-    apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then(result => {
-      setFloorPrice(result);
-    });
-  }, [network, urlSuffixForAsset]);
+    !isPoap &&
+      asset.network !== AssetTypes.polygon &&
+      apiGetUniqueTokenFloorPrice(network, urlSuffixForAsset).then(result => {
+        setFloorPrice(result);
+      });
+  }, [asset.network, isPoap, network, urlSuffixForAsset]);
 
   const handlePressCollectionFloor = useCallback(() => {
     navigate(Routes.EXPLAIN_SHEET, {
