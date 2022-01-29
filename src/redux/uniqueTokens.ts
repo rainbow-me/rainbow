@@ -284,11 +284,17 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
         uniqueTokens.length >= UNIQUE_TOKENS_LIMIT_TOTAL;
 
       if (shouldUpdateInBatches) {
-        dispatch({
-          payload: uniqueTokens,
-          showcase: !!showcaseAddress,
-          type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
-        });
+        // check that the account address to fetch for has not changed while fetching
+        const isCurrentAccountAddress =
+          accountAddress ===
+          (showcaseAddress || getState().settings.accountAddress);
+        if (isCurrentAccountAddress) {
+          dispatch({
+            payload: uniqueTokens,
+            showcase: !!showcaseAddress,
+            type: UNIQUE_TOKENS_GET_UNIQUE_TOKENS_SUCCESS,
+          });
+        }
       }
       if (shouldStopFetching) {
         const existingFamilies = getFamilies(existingUniqueTokens);
