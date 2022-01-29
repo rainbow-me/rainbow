@@ -356,7 +356,8 @@
     "**/json-schema": "0.4.0",
     "**/@ethersproject/**": "5.4.0",
     "**/follow-redirects": "1.14.7",
-    "**/markdown-it": "12.3.2"
+    "**/markdown-it": "12.3.2",
+    "**/simple-get": "4.0.1"
   },
   "jest": {
     "preset": "react-native",
