@@ -11,7 +11,7 @@ import {
   uniq,
 } from 'lodash';
 import { AssetTypes } from '@rainbow-me/entities';
-import NetworkTypes from '@rainbow-me/networkTypes';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 import {
   ENS_NFT_CONTRACT_ADDRESS,
   polygonAllowList,
@@ -163,10 +163,10 @@ export const parseAccountUniqueTokensPolygon = async data => {
         ? asset.last_sale?.payment_token?.usd_price
         : null,
       lastSale: asset.last_sale,
-      network: NetworkTypes.polygon,
+      network: Network.polygon,
       permalink: asset.permalink,
       type: AssetTypes.nft,
-      uniqueId: `${NetworkTypes.polygon}_${get(
+      uniqueId: `${Network.polygon}_${get(
         asset_contract,
         'address'
       )}_${token_id}`,

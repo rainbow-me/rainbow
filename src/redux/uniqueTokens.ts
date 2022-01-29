@@ -16,7 +16,7 @@ import {
   UNIQUE_TOKENS_LIMIT_TOTAL,
 } from '@rainbow-me/handlers/opensea-api';
 import { fetchPoaps } from '@rainbow-me/handlers/poap';
-import NetworkTypes, { Network } from '@rainbow-me/networkTypes';
+import { Network } from '@rainbow-me/helpers/networkTypes';
 import { dedupeAssetsWithFamilies, getFamilies } from '@rainbow-me/parsers';
 
 // -- Constants ------------------------------------------------------------- //
@@ -207,7 +207,7 @@ export const uniqueTokensRefreshState = () => async (
   const { network } = getState().settings;
 
   // Currently not supported in testnets
-  if (network !== NetworkTypes.mainnet && network !== NetworkTypes.rinkeby) {
+  if (network !== Network.mainnet && network !== Network.rinkeby) {
     return;
   }
 
@@ -246,7 +246,7 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
   let uniqueTokens: UniqueAsset[] = [];
 
   const fetchNetwork = async (network: Network) => {
-    let shouldStopFetching: boolean = false!;
+    let shouldStopFetching: boolean = false;
     let page: number = 0;
     while (!shouldStopFetching) {
       shouldStopFetching = (await fetchPage(
@@ -316,13 +316,13 @@ export const fetchUniqueTokens = (showcaseAddress?: string) => async (
 
   await fetchNetwork(currentNetwork);
   // Only include poaps and L2 nft's on mainnet
-  if (currentNetwork === NetworkTypes.mainnet) {
+  if (currentNetwork === Network.mainnet) {
     const poaps = (await fetchPoaps(accountAddress)) ?? [];
     if (poaps.length > 0) {
       uniqueTokens = uniqueTokens.filter(token => token.familyName !== 'POAP');
       uniqueTokens = concat(uniqueTokens, poaps);
     }
-    await fetchNetwork(NetworkTypes.polygon);
+    await fetchNetwork(Network.polygon);
     //we only care about analytics for mainnet + L2's
     analytics.identify(null, { NFTs: uniqueTokens.length });
   }
