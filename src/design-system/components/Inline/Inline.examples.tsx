@@ -21,6 +21,11 @@ export const basicUsage: Example = {
         <Placeholder height={40} width={40} />
         <Placeholder height={40} width={40} />
         <Placeholder height={40} width={40} />
+        <Placeholder height={40} width={40} />
+        <Placeholder height={40} width={40} />
+        <Placeholder height={40} width={40} />
+        <Placeholder height={40} width={40} />
+        <Placeholder height={40} width={40} />
       </Inline>
     ),
 };
@@ -30,6 +35,11 @@ export const noWrap: Example = {
   Example: () =>
     source(
       <Inline space="12px" wrap={false}>
+        <Placeholder height={40} width={40} />
+        <Placeholder height={40} width={40} />
+        <Placeholder height={40} width={40} />
+        <Placeholder height={40} width={40} />
+        <Placeholder height={40} width={40} />
         <Placeholder height={40} width={40} />
         <Placeholder height={40} width={40} />
         <Placeholder height={40} width={40} />
