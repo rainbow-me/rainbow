@@ -122,9 +122,12 @@ export const centerAlignedVertically: Example = {
   Example: () =>
     source(
       <Rows alignVertical="center" space="19px">
-        <Placeholder height={30} />
-        <Placeholder height={60} />
-        <Placeholder height={20} />
+        <Row height="1/2">
+          <Placeholder height="100%" />
+        </Row>
+        <Row height="1/4">
+          <Placeholder height="100%" />
+        </Row>
       </Rows>
     ),
 };
@@ -135,9 +138,12 @@ export const bottomAlignedVertically: Example = {
   Example: () =>
     source(
       <Rows alignVertical="bottom" space="19px">
-        <Placeholder height={30} />
-        <Placeholder height={60} />
-        <Placeholder height={20} />
+        <Row height="1/2">
+          <Placeholder height="100%" />
+        </Row>
+        <Row height="1/4">
+          <Placeholder height="100%" />
+        </Row>
       </Rows>
     ),
 };
