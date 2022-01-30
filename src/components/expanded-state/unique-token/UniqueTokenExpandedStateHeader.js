@@ -255,7 +255,8 @@ const UniqueTokenExpandedStateHeader = ({ asset, imageColor }) => {
       if (actionKey === AssetActionsEnum.etherscan) {
         ethereumUtils.openNftInBlockExplorer(
           asset.asset_contract.address,
-          asset.id
+          asset.id,
+          asset?.network
         );
       } else if (actionKey === AssetActionsEnum.rainbowWeb) {
         Linking.openURL(buildRainbowUrl(asset, accountENS, accountAddress));
